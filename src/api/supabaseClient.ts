@@ -298,6 +298,78 @@ export class SupabaseLogger {
     return (data || []).map((n: { note_id: string }) => n.note_id);
   }
 
+  /**
+   * Existence + first-snapshot state for a note in a single read. Lets the
+   * scraper decide whether to create the note row and whether it still needs its
+   * `first_snapshot_at` stamped, without an extra round-trip.
+   */
+  async getNoteSnapshotState(noteId: string): Promise<{ exists: boolean; hasFirstSnapshot: boolean }> {
+    const { data, error } = await this.client
+      .from("notes")
+      .select("note_id, first_snapshot_at")
+      .eq("note_id", noteId)
+      .single();
+
+    if (error && error.code !== "PGRST116") {
+      console.error("[SupabaseLogger] Error reading note snapshot state:", error);
+      throw error;
+    }
+
+    return { exists: !!data, hasFirstSnapshot: !!data?.first_snapshot_at };
+  }
+
+  /**
+   * Stamp when a note first received a scraper snapshot. Idempotent — only sets
+   * the value while it is still null. This is what makes getOldestUnscrapedNoteId
+   * a cheap indexed lookup instead of a scan of the whole snapshots time-series.
+   */
+  async markFirstSnapshot(noteId: string): Promise<void> {
+    const { error } = await this.client
+      .from("notes")
+      .update({ first_snapshot_at: new Date().toISOString() })
+      .eq("note_id", noteId)
+      .is("first_snapshot_at", null);
+
+    if (error) {
+      console.error("[SupabaseLogger] Error stamping first_snapshot_at:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Oldest known note that has never received a notewriter-scraper snapshot, used
+   * to anchor the --incremental scrape window. `first_snapshot_at` is stamped on a
+   * note's first snapshot (see markFirstSnapshot + migration 048) and backed by a
+   * partial index on `first_snapshot_at IS NULL`, so this is a cheap indexed read
+   * rather than a scan of the whole snapshots time-series. Returns null when every
+   * known note already has a snapshot.
+   */
+  async getOldestUnscrapedNoteId(): Promise<string | null> {
+    // note_id is text so .order() is lexicographic; take the smallest window and
+    // pick the true min as a BigInt to guard against any mixed-length ids.
+    const TOP_CANDIDATES = 50;
+    const { data, error } = await this.client
+      .from("notes")
+      .select("note_id")
+      .is("first_snapshot_at", null)
+      .not("note_id", "like", "tweet_%")
+      .not("note_id", "like", "unavailable_%")
+      .order("note_id", { ascending: true })
+      .limit(TOP_CANDIDATES);
+
+    if (error) {
+      console.error("[SupabaseLogger] Error fetching oldest unscraped note id:", error);
+      throw error;
+    }
+
+    const numericIds = (data || [])
+      .map((n: { note_id: string }) => n.note_id)
+      .filter((id: string) => /^\d+$/.test(id));
+    if (numericIds.length === 0) return null;
+
+    return numericIds.reduce((min, id) => (BigInt(id) < BigInt(min) ? id : min));
+  }
+
   // ============================================
   // Tweets
   // ============================================
