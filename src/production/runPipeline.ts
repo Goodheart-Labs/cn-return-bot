@@ -3,7 +3,7 @@
  *
  * Single-pass pipeline: fetch tweets, generate notes, submit immediately.
  *
- * Runs on GitHub Actions every 15 minutes.
+ * Runs on GitHub Actions every 30 minutes.
  *
  * Flags:
  *   --local              route Supabase to LOCAL_SUPABASE_URL/KEY; write CSV + auto-open dashboard
@@ -103,15 +103,17 @@ function writePipelineRowToCsv(output: OutputFolder, event: TweetProcessedEvent)
   output.appendRow(row);
 }
 
-// 22.5 min: the serial misinfo pre-pass now runs before the regular pipeline,
-// so the same deadline has to cover both. The GH Actions job timeout (30 min)
-// sits above this so the watchdog, not the runner kill, is the normal exit.
-const MAX_RUNTIME_MS = 22.5 * 60 * 1000;
+// 27 min: the serial misinfo pre-pass runs before the regular pipeline, so the
+// same deadline has to cover both. The 30-min cron gives each run this much wall
+// clock without overlapping the next tick. The GH Actions job timeout (35 min)
+// sits above this — plus multi-minute setup — so the watchdog (clean exit), not
+// the runner kill, is the normal stop.
+const MAX_RUNTIME_MS = 27 * 60 * 1000;
 const MAX_POSTS_LOCAL = 5;
 const MAX_POSTS_FALLBACK = 5;
 
 const globalTimeout = setTimeout(async () => {
-  console.log("[pipeline] Maximum runtime reached (22.5 minutes), forcing exit");
+  console.log("[pipeline] Maximum runtime reached (27 minutes), forcing exit");
   await closeBrowser();
   process.exit(0);
 }, MAX_RUNTIME_MS);
@@ -131,7 +133,9 @@ async function main() {
       console.log("[pipeline] Supabase logging disabled (env vars not set)");
     }
 
-    // 30 min comfortably exceeds the 15 min job timeout.
+    // Clear in_progress rows abandoned by a prior run that was killed before
+    // finalizing them. Concurrency prevents overlapping runs, so this never
+    // sweeps a live run's rows.
     if (supabaseLogger) {
       try {
         const swept = await supabaseLogger.sweepStuckRuns({ olderThanMinutes: 30 });

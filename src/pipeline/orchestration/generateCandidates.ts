@@ -9,6 +9,7 @@ import { fetchEligiblePosts } from "../../api/fetchEligiblePosts";
 import { SupabaseLogger } from "../../api/supabaseClient";
 import { getBotById } from "../../bots/index";
 import { processSingleTweet, type ProcessTweetResult } from "./processTweet";
+import { MAX_POSTS_CAP } from "./computeMaxPosts";
 import type { Candidate } from "./submitCandidates";
 import { createTweetLog, withTweetLog, formatTweetLogSummary, formatTweetLogFull, formatRunSummary, getLoggedBotId, type TweetLogMap } from "../utils/tweetLog";
 import { buildPostSelection } from "./utils/feedSizeStrategy";
@@ -37,9 +38,11 @@ const SMALL_ONLY_LADDER: FeedSize[] = ["small"];
 // Only broaden past the curated small feed when we estimate we need to process
 // a lot of tweets to hit the writing limit. When the estimate is low the small
 // feed alone supplies enough fresh, higher-quality posts, so we skip the larger
-// tiers entirely. The estimate is uncapped (unlike maxPosts), so the threshold
-// can sensibly exceed MAX_POSTS_CAP.
-const BROADEN_FEED_ESTIMATE_THRESHOLD = 40;
+// tiers entirely. Pinned to 2× the per-run cap so the two move together: we dig
+// into the larger/lower-quality tiers only once demand exceeds roughly two full
+// runs' worth. The estimate is uncapped (unlike maxPosts), so this exceeds it.
+const BROADEN_FEED_ESTIMATE_CAP_MULTIPLE = 2;
+const BROADEN_FEED_ESTIMATE_THRESHOLD = BROADEN_FEED_ESTIMATE_CAP_MULTIPLE * MAX_POSTS_CAP;
 
 function selectFeedLadder(estimate: number): FeedSize[] {
   return estimate >= BROADEN_FEED_ESTIMATE_THRESHOLD ? FULL_FEED_LADDER : SMALL_ONLY_LADDER;

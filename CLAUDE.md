@@ -4,7 +4,7 @@ Project context for Claude Code sessions.
 
 ## What this is
 
-A bot that automatically writes Community Notes for X/Twitter posts. Runs on GitHub Actions every 15 minutes. Posts using X note writing API. There are several bots that are writing and then predicting the outcome of their writing.
+A bot that automatically writes Community Notes for X/Twitter posts. Runs on GitHub Actions every 30 minutes. Posts using X note writing API. There are several bots that are writing and then predicting the outcome of their writing.
 
 ## Strategic context
 
