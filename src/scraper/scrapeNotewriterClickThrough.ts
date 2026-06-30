@@ -19,9 +19,10 @@
  *    --fresh: Open a new tab and start from top (otherwise reuses existing tab)
  *    --start-from <noteId>: Scroll to this note ID before scraping
  *    --stop-at <noteId>: Stop scraping when reaching this note ID (instead of BOTTOM_NOTE_ID)
- *    --incremental: Scrape from the top and auto-stop ~1 week before the newest note
- *                   already observed by this scraper, re-sampling recent notes for
- *                   fresh view counts and catching any unsynced backlog.
+ *    --incremental: Scrape from the top and auto-stop ~1 week before the newest
+ *                   known note that has not been scraped yet. If there is no
+ *                   unsynced backlog, auto-stop ~1 week before the newest note
+ *                   already observed by this scraper for fresh view counts.
  *                   This is the mode for the unattended daily run. Implies --fresh.
  */
 
@@ -1211,23 +1212,30 @@ async function main() {
   }
   const notewriterUrl = `https://x.com/i/communitynotes/u/${username}`;
 
-  // --incremental: unattended daily mode. Scrape from the top and stop ~1 week
-  // before the newest note that already has a scraper snapshot. This catches
-  // any notes known from submission/public data but not yet scraped, while also
-  // re-sampling recent notes for fresh view counts.
+  // --incremental: unattended daily mode. First catch up known notes that do
+  // not have any scraper snapshots yet: scrape from the top until ~1 week
+  // before the newest unsynced note. Once there is no unsynced backlog, fall
+  // back to the daily resampling window anchored on the newest scraped note.
   if (args.includes('--incremental')) {
     const RESAMPLE_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
     const INCREMENTAL_MAX_NOTES = 100_000;
     freshStart = true;
     maxNotes = INCREMENTAL_MAX_NOTES;
-    const newestNoteId = await supabase.getNewestScrapedNoteId();
-    if (newestNoteId) {
-      const cutoffMillis = snowflakeToMillis(newestNoteId) - RESAMPLE_WINDOW_MS;
+    const newestUnscrapedNoteId = await supabase.getNewestUnscrapedNoteId();
+    const newestScrapedNoteId = newestUnscrapedNoteId ? null : await supabase.getNewestScrapedNoteId();
+    const anchorNoteId = newestUnscrapedNoteId ?? newestScrapedNoteId;
+    if (anchorNoteId) {
+      const cutoffMillis = snowflakeToMillis(anchorNoteId) - RESAMPLE_WINDOW_MS;
       stopAtNoteId = millisToSnowflakeFloor(cutoffMillis);
-      console.log(`🔁 Incremental: newest note with a scraper snapshot ${newestNoteId} (${snowflakeToDate(newestNoteId).toISOString().slice(0, 10)}).`);
-      console.log(`   Scraping from top, stopping ~1 week back at note <= ${stopAtNoteId} (${new Date(cutoffMillis).toISOString().slice(0, 10)}).\n`);
+      if (newestUnscrapedNoteId) {
+        console.log(`🔁 Incremental: newest known note without a scraper snapshot ${newestUnscrapedNoteId} (${snowflakeToDate(newestUnscrapedNoteId).toISOString().slice(0, 10)}).`);
+        console.log(`   Catching up backlog from top, stopping ~1 week before that at note <= ${stopAtNoteId} (${new Date(cutoffMillis).toISOString().slice(0, 10)}).\n`);
+      } else {
+        console.log(`🔁 Incremental: all known notes have snapshots; newest scraped note ${newestScrapedNoteId} (${snowflakeToDate(newestScrapedNoteId!).toISOString().slice(0, 10)}).`);
+        console.log(`   Re-sampling from top, stopping ~1 week back at note <= ${stopAtNoteId} (${new Date(cutoffMillis).toISOString().slice(0, 10)}).\n`);
+      }
     } else {
-      console.log(`🔁 Incremental: DB has no scraper snapshots yet — doing a full pass to BOTTOM_NOTE_ID.\n`);
+      console.log(`🔁 Incremental: DB has no known numeric notes/snapshots yet — doing a full pass to BOTTOM_NOTE_ID.\n`);
     }
   }
 

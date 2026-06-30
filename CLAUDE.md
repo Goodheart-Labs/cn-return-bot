@@ -90,7 +90,7 @@ Usage:
 bun run scrape              # default 500 notes
 bun run scrape 5000 --fresh # full pass from the top
 bun run scrape 5000 --start-from <noteId>  # resume from a previous run
-bun run scrape --incremental # daily mode: from top, auto-stop ~1 week before the newest note with a scraper snapshot
+bun run scrape --incremental # daily mode: from top, catch up newest known-unscraped note (+1 week buffer), then daily resample
 ```
 
 Background-throttling: the `scrape` command launches Chrome with
@@ -103,10 +103,12 @@ Chrome start — if a flag-less debug Chrome is already on :9222 it gets reused.
 
 ### Daily automated scrape (launchd)
 
-`--incremental` is the unattended daily mode: scrape from the top, re-sampling every
-note back to ~1 week before the newest note already observed by the scraper, so each note
-accumulates multiple view-count datapoints (`scraped_notewriter_snapshots`) over time.
-The window is anchored on the newest scraped note, so skipped days auto-extend it.
+`--incremental` is the unattended daily mode. It first looks for the newest known
+note that has no `scraped_notewriter_snapshots` row yet, then scrapes from the
+top until ~1 week before that note. This catches unsynced backlog even after a
+partial recent scrape. Once every known note has at least one snapshot, it falls
+back to re-sampling every note back to ~1 week before the newest scraped note so
+each note accumulates multiple view-count datapoints over time.
 
 Scheduled on this Mac via a LaunchAgent (source of truth checked in at
 `scripts/com.cnreturnbot.dailyscrape.plist`, wrapper at `scripts/run-daily-scrape.sh`):

@@ -331,6 +331,47 @@ export class SupabaseLogger {
     return numericIds.reduce((max, id) => (BigInt(id) > BigInt(max) ? id : max));
   }
 
+  /**
+   * Newest known numeric note that has no notewriter-scraper snapshot yet.
+   *
+   * Incremental scrape needs this backlog anchor: after a partial recent scrape,
+   * "newest scraped note" becomes recent again, but older known notes can still
+   * be unsynced. We intentionally compute this client-side from paginated reads
+   * instead of relying on a PostgREST anti-join, because these tables are small
+   * and the local set difference is straightforward.
+   */
+  async getNewestUnscrapedNoteId(): Promise<string | null> {
+    const notes = await this.fetchAllRows<{ note_id: string }>(
+      (client) => client.from("notes")
+        .select("note_id")
+        .not("note_id", "like", "tweet_%")
+        .not("note_id", "like", "unavailable_%"),
+      "note_id",
+      "getNewestUnscrapedNoteId.notes",
+    );
+
+    const snapshots = await this.fetchAllRows<{ id: string; note_id: string }>(
+      (client) => client.from("scraped_notewriter_snapshots")
+        .select("id, note_id")
+        .not("note_id", "like", "tweet_%")
+        .not("note_id", "like", "unavailable_%"),
+      "id",
+      "getNewestUnscrapedNoteId.snapshots",
+    );
+
+    const scrapedIds = new Set(
+      snapshots
+        .map((s) => s.note_id)
+        .filter((id) => /^\d+$/.test(id)),
+    );
+    const unscrapedIds = notes
+      .map((n) => n.note_id)
+      .filter((id) => /^\d+$/.test(id) && !scrapedIds.has(id));
+
+    if (unscrapedIds.length === 0) return null;
+    return unscrapedIds.reduce((max, id) => (BigInt(id) > BigInt(max) ? id : max));
+  }
+
   // ============================================
   // Tweets
   // ============================================
