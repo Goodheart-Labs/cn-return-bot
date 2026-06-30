@@ -1,14 +1,16 @@
 name: Create Notes Routine
 
 on:
-  schedule:
-    - cron: "*/30 * * * *" # Runs every 30 minutes
   workflow_dispatch:
 
+# Triggered solely by Supabase pg_cron (every 30 min) via workflow_dispatch —
+# GitHub's own scheduler dropped/delayed runs, so it was removed. See
+# migrations/047_schedule_create_notes_dispatch.sql.
+#
 # Never run two pipelines at once. Runs normally finish within the 27-min
-# in-process watchdog, under the 30-min cron — but setup + a slow shutdown can
-# occasionally spill past a tick. Queue (don't cancel) so a run is never killed
-# mid note-submission.
+# in-process watchdog, but setup + a slow shutdown can occasionally spill past a
+# dispatch tick. Queue (don't cancel) so a run is never killed mid
+# note-submission.
 concurrency:
   group: create-notes-routine
   cancel-in-progress: false
