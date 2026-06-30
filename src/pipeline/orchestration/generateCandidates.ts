@@ -13,6 +13,7 @@ import { MAX_POSTS_CAP } from "./computeMaxPosts";
 import type { Candidate } from "./submitCandidates";
 import { createTweetLog, withTweetLog, formatTweetLogSummary, formatTweetLogFull, formatRunSummary, getLoggedBotId, type TweetLogMap } from "../utils/tweetLog";
 import { buildPostSelection } from "./utils/feedSizeStrategy";
+import { hitWritingLimitRecently } from "./writingLimit";
 import { ageInHours, formatCount, sortByRecencyAndImpressions } from "./utils/tweetSorting";
 import { runABTests, getBotProbabilities, getForcedPicks, withForcedPicks } from "../ab-testing/abTests";
 import { AB_TESTS } from "../ab-testing/abTestsData";
@@ -44,7 +45,13 @@ const SMALL_ONLY_LADDER: FeedSize[] = ["small"];
 const BROADEN_FEED_ESTIMATE_CAP_MULTIPLE = 2;
 const BROADEN_FEED_ESTIMATE_THRESHOLD = BROADEN_FEED_ESTIMATE_CAP_MULTIPLE * MAX_POSTS_CAP;
 
-function selectFeedLadder(estimate: number): FeedSize[] {
+// Narrowing to small-only only makes sense when we're genuinely submission-
+// constrained. Until X actually rejects with a daily-limit error, writing_limit
+// is just a probe (count+1), so remainingSlots ≈ 1 and the estimate is
+// artificially tiny — that must not starve us into small-only. Gate the narrowing
+// on a real limit hit in the last 24h; otherwise always use the full ladder.
+function selectFeedLadder(estimate: number, hitLimitRecently: boolean): FeedSize[] {
+  if (!hitLimitRecently) return FULL_FEED_LADDER;
   return estimate >= BROADEN_FEED_ESTIMATE_THRESHOLD ? FULL_FEED_LADDER : SMALL_ONLY_LADDER;
 }
 
@@ -97,8 +104,9 @@ async function fetchPosts(
   const takenIds = new Set<string>();
   const allNew: Post[] = [];
 
-  const feedLadder = selectFeedLadder(estimate);
-  console.log(`[generate] estimate=${estimate} → feed ladder [${feedLadder.join(", ")}]`);
+  const hitLimitRecently = supabaseLogger ? await hitWritingLimitRecently(supabaseLogger) : false;
+  const feedLadder = selectFeedLadder(estimate, hitLimitRecently);
+  console.log(`[generate] estimate=${estimate} limitHitRecently=${hitLimitRecently} → feed ladder [${feedLadder.join(", ")}]`);
   for (const feedSize of feedLadder) {
     if (selected.length >= maxPosts) break;
     let posts: Post[];

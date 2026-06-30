@@ -40,11 +40,13 @@ export interface PipelineRunAggregate {
   run_count: number;
 }
 
-// Per-full-pick-combination run outcome counts, used by the A/B comparison
-// panel to compute candidate-share and "all runs" denominators. Keyed by the
-// full ab_test_picks dict (default-filled via resolvePicks); the client
-// projects these onto whichever tests it is splitting by and sums.
+// Per-(UTC-day, full-pick-combination) run outcome counts, used by the A/B
+// comparison panel to compute candidate-share and "all runs" denominators, and
+// to scope the comparison to a "last N days" window. Keyed by the full
+// ab_test_picks dict (default-filled via resolvePicks); the client filters by
+// date, projects onto whichever tests it is splitting by, and sums.
 export interface AbOutcomeAggregate {
+  date: string;                              // YYYY-MM-DD (created_at, UTC)
   ab_test_picks_key: string;
   ab_test_picks: Record<string, string> | null;
   total: number; // terminal runs: outcome !== "in_progress"

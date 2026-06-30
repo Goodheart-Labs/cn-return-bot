@@ -22,7 +22,7 @@ import { BarChart } from "./components/BarChart";
 import { NoteList } from "./components/NoteList";
 import { AbFilterPanel } from "../../dashboard-shared/AbFilterPanel";
 import { AbComparisonPanel } from "./components/AbComparisonPanel";
-import { buildAbCombos, type AbComparisonStat } from "./lib/abComparison";
+import { buildAbCombos, windowStartDate, type AbComparisonStat } from "./lib/abComparison";
 import type { ConfidenceLevel } from "./lib/confidenceIntervals";
 import { WritingLimitPanel } from "./components/WritingLimitPanel";
 import { useResizeWidth } from "./lib/useResizeWidth";
@@ -42,6 +42,7 @@ export function App() {
   const [abFilters, setAbFilters] = useState<ABFilters>({});
   const [cmpDims, setCmpDims] = useState<string[]>([]);
   const [cmpStat, setCmpStat] = useState<AbComparisonStat>("pct_helpful");
+  const [cmpWindowDays, setCmpWindowDays] = useState<number | null>(null);
   const [cmpIncludeNonCandidate, setCmpIncludeNonCandidate] = useState(false);
   const [cmpLevel, setCmpLevel] = useState<ConfidenceLevel>(95);
   const [cmpHidden, setCmpHidden] = useState<Set<string>>(() => new Set());
@@ -85,9 +86,9 @@ export function App() {
   const abCombos = useMemo(
     () =>
       devMode && snapshot
-        ? buildAbCombos(snapshot.notes, snapshot.ab_outcome_aggregates, cmpDims, filtersForData)
+        ? buildAbCombos(snapshot.notes, snapshot.ab_outcome_aggregates, cmpDims, filtersForData, windowStartDate(cmpWindowDays))
         : [],
-    [devMode, snapshot, cmpDims, filtersForData],
+    [devMode, snapshot, cmpDims, filtersForData, cmpWindowDays],
   );
   const sortedNotes = useMemo(() => sortNotesForList(filteredNotes, sort), [filteredNotes, sort]);
   const writingLimitMetrics = useMemo(
@@ -141,6 +142,8 @@ export function App() {
           onDimsChange={setCmpDims}
           stat={cmpStat}
           onStatChange={setCmpStat}
+          windowDays={cmpWindowDays}
+          onWindowDaysChange={setCmpWindowDays}
           includeNonCandidate={cmpIncludeNonCandidate}
           onIncludeNonCandidateChange={setCmpIncludeNonCandidate}
           level={cmpLevel}

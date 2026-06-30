@@ -141,17 +141,20 @@ function buildPipelineAggregates(runs: RawPipelineRunRow[]): PipelineRunAggregat
   }));
 }
 
-// Per-full-pick run outcome counts for the A/B comparison panel. `total`
+// Per-(day, full-pick) run outcome counts for the A/B comparison panel. `total`
 // excludes only in-progress (non-terminal) runs; `candidate` counts any run
-// that produced a gate-passing note (candidate or submitted).
+// that produced a gate-passing note (candidate or submitted). Day-bucketed so
+// the panel can scope to a "last N days" window; the client sums across days.
 function buildAbOutcomeAggregates(runs: RawPipelineRunRow[]): AbOutcomeAggregate[] {
   const byKey = new Map<string, AbOutcomeAggregate>();
   for (const run of runs) {
     if (run.outcome === "in_progress") continue;
-    const key = picksKey(run.ab_test_picks);
+    const date = run.created_at.slice(0, 10);
+    const picks = picksKey(run.ab_test_picks);
+    const key = `${date}|${picks}`;
     let agg = byKey.get(key);
     if (!agg) {
-      agg = { ab_test_picks_key: key, ab_test_picks: run.ab_test_picks, total: 0, candidate: 0, submitted: 0, cost: 0 };
+      agg = { date, ab_test_picks_key: picks, ab_test_picks: run.ab_test_picks, total: 0, candidate: 0, submitted: 0, cost: 0 };
       byKey.set(key, agg);
     }
     agg.total++;
