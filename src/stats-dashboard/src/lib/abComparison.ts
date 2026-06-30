@@ -80,6 +80,7 @@ export function buildAbCombos(
   outcomeAggs: AbOutcomeAggregate[],
   dims: string[],
   filters: ABFilters,
+  sinceDate: string | null,
 ): AbCombo[] {
   if (dims.length === 0) return [];
   const byKey = new Map<string, AbCombo>();
@@ -96,6 +97,7 @@ export function buildAbCombos(
 
   // Notes pass — helpful / unhelpful / nmr (same branch logic as bucketize).
   for (const note of notes) {
+    if (sinceDate && note.submitted_at.slice(0, 10) < sinceDate) continue;
     if (!matchesAbFilters(note.ab_test_picks, filters)) continue;
     const projected = projectPicks(note.ab_test_picks, dims);
     if (!projected) continue;
@@ -107,6 +109,7 @@ export function buildAbCombos(
 
   // Run-aggregates pass — candidate / total denominators.
   for (const agg of outcomeAggs) {
+    if (sinceDate && agg.date < sinceDate) continue;
     if (!matchesAbFilters(agg.ab_test_picks, filters)) continue;
     const projected = projectPicks(agg.ab_test_picks, dims);
     if (!projected) continue;
@@ -180,3 +183,19 @@ export const STAT_LABELS: Record<AbComparisonStat, string> = {
   pct_candidate: "Percent of Candidate Runs out of all runs",
   cost_per_helpful: "Cost per Helpful Note",
 };
+
+// "Last N days" window options for the comparison panel; null = all time.
+export const WINDOW_DAY_OPTIONS: (number | null)[] = [null, 7, 14, 30, 90];
+
+export function windowLabel(days: number | null): string {
+  return days === null ? "All time" : `Last ${days} days`;
+}
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+// Inclusive UTC start date (YYYY-MM-DD) for a "last N days" window: rows whose
+// date is on or after this are kept. null window → null (keep everything).
+export function windowStartDate(days: number | null): string | null {
+  if (days === null) return null;
+  return new Date(Date.now() - days * MS_PER_DAY).toISOString().slice(0, 10);
+}

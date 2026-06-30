@@ -6,6 +6,8 @@ import {
   statInterval,
   statKind,
   STAT_LABELS,
+  WINDOW_DAY_OPTIONS,
+  windowLabel,
   type AbCombo,
   type AbComparisonStat,
   type AbStatKind,
@@ -35,6 +37,8 @@ export function AbComparisonPanel({
   onDimsChange,
   stat,
   onStatChange,
+  windowDays,
+  onWindowDaysChange,
   includeNonCandidate,
   onIncludeNonCandidateChange,
   level,
@@ -48,6 +52,8 @@ export function AbComparisonPanel({
   onDimsChange: (dims: string[]) => void;
   stat: AbComparisonStat;
   onStatChange: (stat: AbComparisonStat) => void;
+  windowDays: number | null;
+  onWindowDaysChange: (days: number | null) => void;
   includeNonCandidate: boolean;
   onIncludeNonCandidateChange: (v: boolean) => void;
   level: ConfidenceLevel;
@@ -108,6 +114,21 @@ export function AbComparisonPanel({
           >
             {STAT_OPTIONS.map((s) => (
               <option key={s} value={s}>{STAT_LABELS[s]}</option>
+            ))}
+          </select>
+        </label>
+
+        <label className="flex items-center gap-2 text-sm text-gray-700">
+          <span className="text-xs uppercase tracking-wide text-gray-500">Window</span>
+          <select
+            value={windowDays === null ? "all" : String(windowDays)}
+            onChange={(e) => onWindowDaysChange(e.target.value === "all" ? null : Number(e.target.value))}
+            className="border border-gray-300 rounded px-2 py-1 bg-white text-sm"
+          >
+            {WINDOW_DAY_OPTIONS.map((days) => (
+              <option key={days ?? "all"} value={days === null ? "all" : String(days)}>
+                {windowLabel(days)}
+              </option>
             ))}
           </select>
         </label>
