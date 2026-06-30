@@ -59,7 +59,7 @@
     "build-stats": "bun run build-stats-data && cd src/stats-dashboard && bunx vite build",
     "preview-stats": "cd src/stats-dashboard && bunx vite preview --port 8002",
     "stats": "lsof -ti:8002 | xargs kill -9 2>/dev/null; bun run dev-stats",
-    "scrape": "(curl -sf http://127.0.0.1:9222/json/version > /dev/null 2>&1 || (echo '🌐 Starting Chrome with remote debugging...' && open -na 'Google Chrome' --args --remote-debugging-port=9222 --user-data-dir=$HOME/.chrome-debug-profile && until curl -sf http://127.0.0.1:9222/json/version > /dev/null 2>&1; do sleep 0.5; done)) && bun run src/scraper/scrapeNotewriterClickThrough.ts"
+    "scrape": "(curl -sf http://127.0.0.1:9222/json/version > /dev/null 2>&1 || (echo '🌐 Starting Chrome with remote debugging...' && open -na 'Google Chrome' --args --remote-debugging-port=9222 --user-data-dir=$HOME/.chrome-debug-profile --disable-backgrounding-occluded-windows --disable-renderer-backgrounding --disable-background-timer-throttling && until curl -sf http://127.0.0.1:9222/json/version > /dev/null 2>&1; do sleep 0.5; done)) && bun run src/scraper/scrapeNotewriterClickThrough.ts"
   },
   "knip": {
     "ignoreBinaries": ["lsof", "open", "sleep"],

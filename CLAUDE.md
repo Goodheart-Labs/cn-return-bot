@@ -4,7 +4,7 @@ Project context for Claude Code sessions.
 
 ## What this is
 
-A bot that automatically writes Community Notes for X/Twitter posts. Runs on GitHub Actions every 30 minutes. Posts using X note writing API. There are several bots that are writing and then predicting the outcome of their writing.
+A bot that automatically writes Community Notes for X/Twitter posts. Runs on GitHub Actions every 15 minutes. Posts using X note writing API. There are several bots that are writing and then predicting the outcome of their writing.
 
 ## Strategic context
 
@@ -90,7 +90,49 @@ Usage:
 bun run scrape              # default 500 notes
 bun run scrape 5000 --fresh # full pass from the top
 bun run scrape 5000 --start-from <noteId>  # resume from a previous run
+bun run scrape --incremental # daily mode: from top until ~1 week before the oldest un-snapshotted note (also re-samples recent notes)
 ```
+
+Background-throttling: the `scrape` command launches Chrome with
+`--disable-backgrounding-occluded-windows --disable-renderer-backgrounding --disable-background-timer-throttling`
+so the scrape keeps running at full speed even when the Chrome window is covered,
+minimized, or behind a fullscreen app. Without these, macOS marks the tab hidden,
+Chrome pauses `requestAnimationFrame` + throttles timers, and the X virtualizer
+stops rendering new cells (the scrape stalls). Flags only take effect on a cold
+Chrome start — if a flag-less debug Chrome is already on :9222 it gets reused.
+
+### Daily automated scrape (launchd)
+
+`--incremental` is the unattended daily mode. It finds the oldest known note that
+has no scraper snapshot yet (cheap indexed lookup on `notes.first_snapshot_at`,
+see migration 048) and scrapes from the top until ~1 week before that note. That
+same pass re-samples every note above the cutoff, so recent notes accumulate
+multiple view-count datapoints over time. If every known note already has a
+snapshot there is nothing to catch up and the script exits without scraping.
+
+A note the scrape scrolls past but never captures (deleted, never shown, etc.)
+accrues a miss; after 2 misses it's given up (`notes.scrape_misses = 2`) and no
+longer anchors the window, so a permanently-dead note can't pin the daily scrape
+to its date. A later capture (e.g. a full `--fresh` pass) stamps its snapshot and
+drops it from the candidate set, healing the give-up.
+
+Scheduled on this Mac via a LaunchAgent (source of truth checked in at
+`scripts/com.cnreturnbot.dailyscrape.plist`, wrapper at `scripts/run-daily-scrape.sh`):
+
+```bash
+# Install / change schedule
+cp scripts/com.cnreturnbot.dailyscrape.plist ~/Library/LaunchAgents/
+launchctl unload ~/Library/LaunchAgents/com.cnreturnbot.dailyscrape.plist 2>/dev/null
+launchctl load -w ~/Library/LaunchAgents/com.cnreturnbot.dailyscrape.plist
+
+launchctl start com.cnreturnbot.dailyscrape   # run now (one-off)
+launchctl list | grep dailyscrape             # check it's loaded
+ls -t ~/Library/Logs/cn-scrape/               # per-run logs
+```
+
+Runs daily at 13:00 local. If the Mac is asleep then, launchd runs it on next wake
+(no auto-wake). One-time prerequisite: the `~/.chrome-debug-profile` Chrome must be
+logged into X on the notewriter account; that session persists across runs.
 
 ## Standing permissions
 
