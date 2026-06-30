@@ -19,6 +19,9 @@ interface NoteCardProps {
   onFailureModesChange: (id: string, modes: string[]) => void;
   onCreateFailureMode: (name: string) => void;
   onCommentChange: (id: string, comment: string | null) => void;
+  // Fetch this run's logs on demand (called when the log panel is first opened).
+  // Resolves once the fetch settles, so the card can stop showing "Loading…".
+  onRequestLogs: (runId: string) => Promise<void>;
 }
 
 function reviewItemToTweet(item: ReviewItem): Tweet {
@@ -104,8 +107,10 @@ export function NoteCard({
   onFailureModesChange,
   onCreateFailureMode,
   onCommentChange,
+  onRequestLogs,
 }: NoteCardProps) {
   const [logsOpen, setLogsOpen] = useState(false);
+  const [logsLoading, setLogsLoading] = useState(false);
   const [comparisonOpen, setComparisonOpen] = useState(false);
   const [commentEditing, setCommentEditing] = useState(false);
   const [commentDraft, setCommentDraft] = useState("");
@@ -307,7 +312,21 @@ export function NoteCard({
       {/* Pipeline logs */}
       <div>
         <button
-          onClick={() => setLogsOpen(!logsOpen)}
+          onClick={async () => {
+            if (logsOpen) {
+              setLogsOpen(false);
+              return;
+            }
+            setLogsOpen(true);
+            if (!item.logs && item.pipelineRunId) {
+              setLogsLoading(true);
+              try {
+                await onRequestLogs(item.pipelineRunId);
+              } finally {
+                setLogsLoading(false);
+              }
+            }
+          }}
           className="text-sm text-gray-600 hover:text-gray-800 flex items-center gap-1"
         >
           <span className="text-xs">{logsOpen ? "▼" : "▶"}</span>
@@ -315,7 +334,11 @@ export function NoteCard({
         </button>
         {logsOpen && (
           <div className="mt-2">
-            <JsonViewer data={item.logs ?? buildLogsFallback(item)} />
+            {logsLoading ? (
+              <div className="text-sm text-gray-400 px-1 py-2">Loading logs…</div>
+            ) : (
+              <JsonViewer data={item.logs ?? buildLogsFallback(item)} />
+            )}
           </div>
         )}
       </div>

@@ -146,7 +146,6 @@ export function App() {
   // "recently varied" detection sees every pick from the window — not just the
   // injected first-paint subset.
   const [recentNotesLoaded, setRecentNotesLoaded] = useState(false);
-  const [loadingLogs, setLoadingLogs] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Production: all items in the current date window are loaded up-front
@@ -469,37 +468,21 @@ export function App() {
     align();
   }, [visible, firstRatedIndex]);
 
-  // Lazy-load logs for visible production items that don't have them yet.
-  // Dataset runs already carry logs inline (they're small & come from uploads),
-  // so this only fires for production.
-  const visibleRunIdsKey = useMemo(
-    () => visible.map((i) => i.pipelineRunId ?? "").join(","),
-    [visible],
-  );
-  useEffect(() => {
-    if (dataset.type !== "production") return;
-    const needIds = Array.from(
-      new Set(
-        visible
-          .map((i) => i.pipelineRunId)
-          .filter((id): id is string => !!id && !logsByRunId.has(id)),
-      ),
-    );
-    if (needIds.length === 0) return;
-    setLoadingLogs(true);
-    fetchLogsForRuns(needIds)
-      .then((newLogs) => {
-        if (newLogs.size === 0) return;
-        setLogsByRunId((prev) => {
-          const merged = new Map(prev);
-          for (const [k, v] of newLogs) merged.set(k, v);
-          return merged;
-        });
-      })
-      .finally(() => setLoadingLogs(false));
-    // visibleRunIdsKey guards against re-running when only object identity
-    // changes but the actual set of visible items hasn't.
-  }, [dataset.type, visibleRunIdsKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Fetch one run's logs on demand — when a card's log panel is expanded. The
+  // log panel is collapsed by default, so eager-loading every visible card meant
+  // pulling tens of MB of TOASTed JSONB up front (one slow/failed batch wiped
+  // logs for the whole page). Now we pay the TOAST cost only for the card the
+  // user actually opens. Dataset-run items carry logs inline, so they never call
+  // this. Cached in logsByRunId so re-expanding is instant.
+  const requestLogs = useCallback(async (runId: string) => {
+    try {
+      const fetched = await fetchLogsForRuns([runId]);
+      const logs = fetched.get(runId);
+      if (logs) setLogsByRunId((prev) => new Map(prev).set(runId, logs));
+    } catch (e) {
+      console.warn(`Failed to load logs for run ${runId}:`, e);
+    }
+  }, []);
 
   const handleLoadMore = useCallback(() => {
     setWindowDays((prev) => prev + WINDOW_DAYS_STEP);
@@ -760,8 +743,8 @@ export function App() {
             ? "Loading..."
             : dataset.type === "production"
               ? tagFilterActive
-                ? `${visible.length} notes · all time, tagged${loadingLogs ? " · loading logs…" : ""}`
-                : `${visible.length} notes${loadingLogs ? " · loading logs…" : ""}`
+                ? `${visible.length} notes · all time, tagged`
+                : `${visible.length} notes`
               : `${filtered.length} items shown`}
         </div>
         {firstRatedIndex > 0 && (
@@ -787,6 +770,7 @@ export function App() {
               onFailureModesChange={handleFailureModesChange}
               onCreateFailureMode={handleCreateFailureMode}
               onCommentChange={handleCommentChange}
+              onRequestLogs={requestLogs}
             />
           </div>
         ))}

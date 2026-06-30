@@ -11,6 +11,7 @@ import type { SupabaseLogger } from "../../api/supabaseClient";
 
 const WINDOW_HOURS = 24;
 const STATE_KEY = "writing_limit";
+const LIMIT_HIT_AT_KEY = "limit_hit_at";
 
 export async function readWritingLimit(logger: SupabaseLogger): Promise<number | null> {
   const raw = await logger.getPipelineState(STATE_KEY);
@@ -22,9 +23,23 @@ export async function readWritingLimit(logger: SupabaseLogger): Promise<number |
 /** Daily-limit error from X: cap is exactly the current submission count. */
 export async function recordDailyLimitHit(logger: SupabaseLogger): Promise<void> {
   const count = await logger.countRecentSubmissions(WINDOW_HOURS);
-  await logger.setPipelineState("limit_hit_at", new Date().toISOString());
+  await logger.setPipelineState(LIMIT_HIT_AT_KEY, new Date().toISOString());
   await logger.setPipelineState(STATE_KEY, String(count));
   console.log(`[writing-limit] Daily limit hit → writing_limit=${count}`);
+}
+
+/**
+ * True if X rejected a submission with its daily limit within the last
+ * WINDOW_HOURS. Absent a real hit, writing_limit is only a probe (count+1),
+ * so the remaining-slots estimate is artificially ~1 — we don't let that
+ * narrow the feed; we only narrow once we've proven we're capped.
+ */
+export async function hitWritingLimitRecently(logger: SupabaseLogger): Promise<boolean> {
+  const raw = await logger.getPipelineState(LIMIT_HIT_AT_KEY);
+  if (!raw) return false;
+  const hitAt = Date.parse(raw);
+  if (!Number.isFinite(hitAt)) return false;
+  return Date.now() - hitAt < WINDOW_HOURS * 60 * 60 * 1000;
 }
 
 /**
