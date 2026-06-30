@@ -3,7 +3,7 @@
  *
  * Single-pass pipeline: fetch tweets, generate notes, submit immediately.
  *
- * Runs on GitHub Actions every 15 minutes.
+ * Runs on GitHub Actions every 30 minutes.
  *
  * Flags:
  *   --local              route Supabase to LOCAL_SUPABASE_URL/KEY; write CSV + auto-open dashboard
@@ -133,7 +133,9 @@ async function main() {
       console.log("[pipeline] Supabase logging disabled (env vars not set)");
     }
 
-    // 30 min comfortably exceeds the 15 min job timeout.
+    // Clear in_progress rows abandoned by a prior run that was killed before
+    // finalizing them. Concurrency prevents overlapping runs, so this never
+    // sweeps a live run's rows.
     if (supabaseLogger) {
       try {
         const swept = await supabaseLogger.sweepStuckRuns({ olderThanMinutes: 30 });
