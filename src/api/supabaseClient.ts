@@ -298,6 +298,39 @@ export class SupabaseLogger {
     return (data || []).map((n: { note_id: string }) => n.note_id);
   }
 
+  /**
+   * Newest note that has actually been observed by the notewriter scraper.
+   * The notes table also contains submitted/public-data rows that may not have
+   * snapshots yet, so anchoring incremental mode on notes.note_id would skip
+   * unsynced backlog. Used to anchor the --incremental scrape window.
+   */
+  async getNewestScrapedNoteId(): Promise<string | null> {
+    // note_id is text, so .order() is lexicographic; take a small window of the
+    // top candidates and pick the true max as a BigInt to guard against any
+    // mixed-length ids. All real note ids are same-length snowflakes, so this is
+    // exact in practice and a cheap single read.
+    const TOP_CANDIDATES = 50;
+    const { data, error } = await this.client
+      .from("scraped_notewriter_snapshots")
+      .select("note_id")
+      .not("note_id", "like", "tweet_%")
+      .not("note_id", "like", "unavailable_%")
+      .order("note_id", { ascending: false })
+      .limit(TOP_CANDIDATES);
+
+    if (error) {
+      console.error("[SupabaseLogger] Error fetching newest scraped note id:", error);
+      throw error;
+    }
+
+    const numericIds = (data || [])
+      .map((n: { note_id: string }) => n.note_id)
+      .filter((id: string) => /^\d+$/.test(id));
+    if (numericIds.length === 0) return null;
+
+    return numericIds.reduce((max, id) => (BigInt(id) > BigInt(max) ? id : max));
+  }
+
   // ============================================
   // Tweets
   // ============================================

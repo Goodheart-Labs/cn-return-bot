@@ -82,12 +82,15 @@ export async function createBotInput(post: Post, logTag: string): Promise<BotInp
   // posts. Fails open — never blocks note generation.
   const mediaMadeWithAiLabel = hasMedia ? await detectMadeWithAiLabel(post.id, logTag) : false;
 
-  // Author history (best-effort)
+  // Author history (best-effort; gated by the author_history A/B test). When
+  // off, skip the lookup entirely so the writer gets no author-history block.
   let authorHistory: AuthorNoteHistory | undefined;
-  try {
-    authorHistory = await getAuthorNoteHistory(post.author_id);
-  } catch (err: any) {
-    console.warn(`[${logTag}] Author history lookup failed: ${err.message}`);
+  if (config.author_history) {
+    try {
+      authorHistory = await getAuthorNoteHistory(post.author_id);
+    } catch (err: any) {
+      console.warn(`[${logTag}] Author history lookup failed: ${err.message}`);
+    }
   }
 
   // Comments (best-effort)

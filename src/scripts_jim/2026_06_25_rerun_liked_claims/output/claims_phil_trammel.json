@@ -1,0 +1,22 @@
+{
+  "video": {
+    "url": "https://www.youtube.com/watch?v=Jj-kBHzUohs",
+    "id": "phil_trammel",
+    "title": "phil_trammel",
+    "uploadDate": "2026-06-04"
+  },
+  "range": {
+    "beginMin": 0,
+    "endMin": null
+  },
+  "claims": [
+    {
+      "claim": "Atkinson published a paper showing that if accounting methods are kept constant over time, labor share has not fallen.",
+      "judgement": "likely true",
+      "context": "Some might say labor share has been falling in the last 20 to 30 years. But there have been a lot of accounting changes in the last 30 to 40 years. For example, Atkinson has a paper showing that if you keep the accounting constant over the years, labor share hasn't even fallen ever.",
+      "timestampSeconds": 462,
+      "videoLink": "https://www.youtube.com/watch?v=Jj-kBHzUohs&t=462s",
+      "endTimestampSeconds": 479
+    }
+  ]
+}

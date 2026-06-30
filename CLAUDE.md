@@ -90,7 +90,41 @@ Usage:
 bun run scrape              # default 500 notes
 bun run scrape 5000 --fresh # full pass from the top
 bun run scrape 5000 --start-from <noteId>  # resume from a previous run
+bun run scrape --incremental # daily mode: from top, auto-stop ~1 week before the newest note with a scraper snapshot
 ```
+
+Background-throttling: the `scrape` command launches Chrome with
+`--disable-backgrounding-occluded-windows --disable-renderer-backgrounding --disable-background-timer-throttling`
+so the scrape keeps running at full speed even when the Chrome window is covered,
+minimized, or behind a fullscreen app. Without these, macOS marks the tab hidden,
+Chrome pauses `requestAnimationFrame` + throttles timers, and the X virtualizer
+stops rendering new cells (the scrape stalls). Flags only take effect on a cold
+Chrome start — if a flag-less debug Chrome is already on :9222 it gets reused.
+
+### Daily automated scrape (launchd)
+
+`--incremental` is the unattended daily mode: scrape from the top, re-sampling every
+note back to ~1 week before the newest note already observed by the scraper, so each note
+accumulates multiple view-count datapoints (`scraped_notewriter_snapshots`) over time.
+The window is anchored on the newest scraped note, so skipped days auto-extend it.
+
+Scheduled on this Mac via a LaunchAgent (source of truth checked in at
+`scripts/com.cnreturnbot.dailyscrape.plist`, wrapper at `scripts/run-daily-scrape.sh`):
+
+```bash
+# Install / change schedule
+cp scripts/com.cnreturnbot.dailyscrape.plist ~/Library/LaunchAgents/
+launchctl unload ~/Library/LaunchAgents/com.cnreturnbot.dailyscrape.plist 2>/dev/null
+launchctl load -w ~/Library/LaunchAgents/com.cnreturnbot.dailyscrape.plist
+
+launchctl start com.cnreturnbot.dailyscrape   # run now (one-off)
+launchctl list | grep dailyscrape             # check it's loaded
+ls -t ~/Library/Logs/cn-scrape/               # per-run logs
+```
+
+Runs daily at 13:00 local. If the Mac is asleep then, launchd runs it on next wake
+(no auto-wake). One-time prerequisite: the `~/.chrome-debug-profile` Chrome must be
+logged into X on the notewriter account; that session persists across runs.
 
 ## Standing permissions
 

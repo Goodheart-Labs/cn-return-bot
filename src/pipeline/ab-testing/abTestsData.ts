@@ -377,6 +377,23 @@ const EVAL_SUBMIT_THRESHOLD_TEST: ABTest = {
   ],
 };
 
+// Inject the post author's past helpful community notes (ours + competing notes
+// on tweets we've noted) into the writer's user message — see
+// getAuthorNoteHistory. The lookup was silently broken from migration 033 until
+// June 2026 (queried the dropped pipeline_runs.author_id), so this input has been
+// effectively off the whole time. Now a clean 50/50 to measure whether the
+// author-history context helps. Not prereq-gated (the input is gathered for every
+// bot in createBotInput); defaultVariant "off" so historical rows resolve to the
+// no-context behaviour they actually had.
+const AUTHOR_HISTORY_TEST: ABTest = {
+  name: "author_history",
+  defaultVariant: "off",
+  variants: [
+    { variant: { name: "off", overrides: { author_history: false } }, weight: 50 },
+    { variant: { name: "on",  overrides: { author_history: true  } }, weight: 50 },
+  ],
+};
+
 export const AB_TESTS: ABTest[] = [
   BOT_TEST,
   SIMPLE_BOT_SEARCH_TEST,
@@ -399,4 +416,5 @@ export const AB_TESTS: ABTest[] = [
   MISINFO_MONITORING_TEST,
   MISINFO_TOPIC_TEST,
   EVAL_SUBMIT_THRESHOLD_TEST,
+  AUTHOR_HISTORY_TEST,
 ];

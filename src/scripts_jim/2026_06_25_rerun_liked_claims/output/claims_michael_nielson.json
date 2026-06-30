@@ -1,0 +1,22 @@
+{
+  "video": {
+    "url": "https://www.youtube.com/watch?v=myP8UjAM1pk",
+    "id": "michael_nielson",
+    "title": "michael_nielson",
+    "uploadDate": "2026-04-07"
+  },
+  "range": {
+    "beginMin": 0,
+    "endMin": null
+  },
+  "claims": [
+    {
+      "claim": "Aristarchus proposed heliocentrism in the second century BC.",
+      "judgement": "likely false",
+      "context": "Maybe the clearest example is Aristarchus in the second century BC comes up with the idea of heliocentrism. The ancient Athenians dismiss it on the grounds that we should see as the Earth is moving around the Sun, if really the Sun is the center of the solar system, the stars move relative to the Earth.",
+      "timestampSeconds": 913,
+      "videoLink": "https://www.youtube.com/watch?v=myP8UjAM1pk&t=913s",
+      "endTimestampSeconds": 928
+    }
+  ]
+}

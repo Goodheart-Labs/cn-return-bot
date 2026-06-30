@@ -14,16 +14,21 @@
  * 2. Navigate to your notewriter page and log in
  *
  * 3. Run this script:
- *    bun run scrape [maxNotes] [--fresh] [--start-from <noteId>] [--stop-at <noteId>]
+ *    bun run scrape [maxNotes] [--fresh] [--start-from <noteId>] [--stop-at <noteId>] [--incremental]
  *
  *    --fresh: Open a new tab and start from top (otherwise reuses existing tab)
  *    --start-from <noteId>: Scroll to this note ID before scraping
  *    --stop-at <noteId>: Stop scraping when reaching this note ID (instead of BOTTOM_NOTE_ID)
+ *    --incremental: Scrape from the top and auto-stop ~1 week before the newest note
+ *                   already observed by this scraper, re-sampling recent notes for
+ *                   fresh view counts and catching any unsynced backlog.
+ *                   This is the mode for the unattended daily run. Implies --fresh.
  */
 
 import "dotenv/config";
 import puppeteer, { type Browser, type Page } from "puppeteer-core";
 import { SupabaseLogger } from "../api/supabaseClient";
+import { snowflakeToMillis, snowflakeToDate, millisToSnowflakeFloor } from "../pipeline/utils/snowflake";
 
 const DEFAULT_USERNAME = "wholesome-raspberry-stilt";
 const SCROLL_PX = 600;
@@ -980,18 +985,19 @@ async function scrapeTab(
       foundNewNote = true;
       if (modalData.submittedDate) lastNoteDate = modalData.submittedDate;
 
-      // Early exit if we've reached the stop point or the very bottom of the list
+      // Save before honoring stop-at/bottom. Otherwise the boundary note is
+      // counted in-memory but never gets a snapshot.
       const effectiveBottom = stopAtNoteId ?? BOTTOM_NOTE_ID;
-      if (noteIdBigInt <= effectiveBottom) {
-        const label = stopAtNoteId ? 'stop-at target' : 'bottom note';
-        console.log(`\n   ${prefix} 🎉 Reached the ${label} (${modalData.noteId})! Scrape complete.`);
-        break recoveryLoop;
-      }
+      const reachedStopPoint = noteIdBigInt <= effectiveBottom;
 
       console.log(`   ${prefix} ✓ Total ${collectedNotes.size}: ${modalData.noteId} (${modalData.status})`);
 
       // Save to DB immediately so data isn't lost if process is killed
       await saveNoteIncrementally(note);
+      if (reachedStopPoint) {
+        const label = stopAtNoteId ? 'stop-at target' : 'bottom note';
+        console.log(`\n   ${prefix} 🎉 Reached the ${label} (${modalData.noteId})! Scrape complete.`);
+      }
 
       // Close the modal
       const closed = await page.evaluate(() => {
@@ -1041,6 +1047,11 @@ async function scrapeTab(
 
       // Cooldown after modal close — reduces burst failures on next click
       await randomDelay(160, 320);
+
+      // Early exit if we've reached the stop point or the very bottom of the list
+      if (reachedStopPoint) {
+        break recoveryLoop;
+      }
     }
 
     if (!foundNewNote) {
@@ -1163,7 +1174,7 @@ async function scrapeTab(
 async function main() {
   // Parse args
   const args = process.argv.slice(2);
-  const freshStart = args.includes('--fresh');
+  let freshStart = args.includes('--fresh');
 
   // Parse --start-from <noteId> to resume from a previous run's last position
   const startFromIdx = args.indexOf('--start-from');
@@ -1173,7 +1184,7 @@ async function main() {
 
   // Parse --stop-at <noteId> to stop scraping at a specific note instead of BOTTOM_NOTE_ID
   const stopAtIdx = args.indexOf('--stop-at');
-  const stopAtNoteId = stopAtIdx !== -1 && args[stopAtIdx + 1]
+  let stopAtNoteId = stopAtIdx !== -1 && args[stopAtIdx + 1]
     ? BigInt(args[stopAtIdx + 1]!)
     : null;
 
@@ -1199,6 +1210,26 @@ async function main() {
     maxNotes = parseInt(nonFlagArgs[1] || "500", 10);
   }
   const notewriterUrl = `https://x.com/i/communitynotes/u/${username}`;
+
+  // --incremental: unattended daily mode. Scrape from the top and stop ~1 week
+  // before the newest note that already has a scraper snapshot. This catches
+  // any notes known from submission/public data but not yet scraped, while also
+  // re-sampling recent notes for fresh view counts.
+  if (args.includes('--incremental')) {
+    const RESAMPLE_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
+    const INCREMENTAL_MAX_NOTES = 100_000;
+    freshStart = true;
+    maxNotes = INCREMENTAL_MAX_NOTES;
+    const newestNoteId = await supabase.getNewestScrapedNoteId();
+    if (newestNoteId) {
+      const cutoffMillis = snowflakeToMillis(newestNoteId) - RESAMPLE_WINDOW_MS;
+      stopAtNoteId = millisToSnowflakeFloor(cutoffMillis);
+      console.log(`🔁 Incremental: newest note with a scraper snapshot ${newestNoteId} (${snowflakeToDate(newestNoteId).toISOString().slice(0, 10)}).`);
+      console.log(`   Scraping from top, stopping ~1 week back at note <= ${stopAtNoteId} (${new Date(cutoffMillis).toISOString().slice(0, 10)}).\n`);
+    } else {
+      console.log(`🔁 Incremental: DB has no scraper snapshots yet — doing a full pass to BOTTOM_NOTE_ID.\n`);
+    }
+  }
 
   console.log("🔌 Connecting to Chrome on port 9222...\n");
 

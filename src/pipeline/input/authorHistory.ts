@@ -2,8 +2,8 @@
  * Author Note History
  *
  * Queries Supabase for past helpful community notes on a given author's posts.
- * Uses pipeline_runs (which stores author_id) joined with notes
- * and competing_notes to find relevant notes.
+ * Looks up the author's tweets (tweets.author_id) and joins notes and
+ * competing_notes to find relevant notes.
  */
 
 import { getSupabaseClient } from "../../api/supabaseClient";
@@ -18,32 +18,28 @@ const EMPTY: AuthorNoteHistory = { helpfulNotes: [], totalHelpful: 0 };
 export async function getAuthorNoteHistory(authorId: string): Promise<AuthorNoteHistory> {
   const supabase = getSupabaseClient();
 
-  // Find tweet_ids for this author from pipeline_runs
-  const { data: runs, error: runsError } = await supabase
-    .from("pipeline_runs")
-    .select("tweet_id")
+  // Find this author's past tweets (+ their text). author_id moved from
+  // pipeline_runs to the tweets table in migration 033 (indexed via
+  // idx_tweets_author_id).
+  const { data: authorTweets, error: tweetsError } = await supabase
+    .from("tweets")
+    .select("tweet_id, text")
     .eq("author_id", authorId)
     .limit(500);
 
-  if (runsError || !runs?.length) return EMPTY;
+  if (tweetsError || !authorTweets?.length) return EMPTY;
 
-  const tweetIds = [...new Set(runs.map((r) => r.tweet_id))];
+  const tweetTextById = new Map(authorTweets.map((t) => [t.tweet_id, t.text]));
+  const tweetIds = [...tweetTextById.keys()];
 
-  // Our notes on this author's tweets. tweet_text now lives on the tweets
-  // table (post-merge); join it manually.
-  // Use cn_status (overall) per CLAUDE.md — current_core_status misses notes
-  // rated helpful by the expansion or group submodels.
+  // Our notes on this author's tweets. Use cn_status (overall) per CLAUDE.md —
+  // current_core_status misses notes rated helpful by the expansion or group
+  // submodels.
   const { data: ourNotesRaw } = await supabase
     .from("notes")
-    .select("note_id, tweet_id, note_text, cn_status, first_seen_at")
+    .select("note_id, tweet_id, note_text, cn_status")
     .in("tweet_id", tweetIds)
     .not("note_text", "is", null);
-
-  const { data: tweetRows } = await supabase
-    .from("tweets")
-    .select("tweet_id, text")
-    .in("tweet_id", tweetIds);
-  const tweetTextById = new Map((tweetRows ?? []).map((t) => [t.tweet_id, t.text]));
 
   const ourNotes = (ourNotesRaw ?? [])
     .map((n) => ({
@@ -53,34 +49,29 @@ export async function getAuthorNoteHistory(authorId: string): Promise<AuthorNote
     }))
     .filter((n) => n.tweet_text);
 
-  // Competing helpful notes on this author's tweets — fetch competing_notes
-  // for our note_ids, then attach tweet_text via the same map.
-  const ourNoteIds = (ourNotesRaw ?? []).map((n) => n.note_id);
-  const ourNoteIdToTweetId = new Map((ourNotesRaw ?? []).map((n) => [n.note_id, n.tweet_id]));
+  // Competing notes on this author's tweets — query by tweet_id (not our_note_id)
+  // so we also surface helpful notes on tweets we never noted ourselves: the
+  // our_note_id=null "missed helpful" rows updateNoteFeedback records from the
+  // public CN dump. Joining by our_note_id would only see competing notes tied
+  // to our own notes, missing the rest of the author's helpful-note history.
+  const competingNotes: Array<{ tweet_text: string; note_text: string; current_status: string }> = [];
+  const chunkSize = 200;
+  for (let i = 0; i < tweetIds.length; i += chunkSize) {
+    const chunk = tweetIds.slice(i, i + chunkSize);
+    const { data: cn } = await supabase
+      .from("competing_notes")
+      .select("tweet_id, note_text, current_status")
+      .in("tweet_id", chunk)
+      .not("note_text", "is", null);
 
-  let competingNotes: Array<{ tweet_text: string; note_text: string; current_status: string }> = [];
-  if (ourNoteIds.length) {
-    const chunkSize = 200;
-    for (let i = 0; i < ourNoteIds.length; i += chunkSize) {
-      const chunk = ourNoteIds.slice(i, i + chunkSize);
-      const { data: cn } = await supabase
-        .from("competing_notes")
-        .select("our_note_id, note_text, current_status")
-        .in("our_note_id", chunk)
-        .not("note_text", "is", null);
-
-      if (cn) {
-        for (const c of cn) {
-          const tweetId = ourNoteIdToTweetId.get(c.our_note_id);
-          const tweetText = tweetId ? tweetTextById.get(tweetId) : undefined;
-          if (tweetText) {
-            competingNotes.push({
-              tweet_text: tweetText,
-              note_text: c.note_text,
-              current_status: c.current_status,
-            });
-          }
-        }
+    for (const c of cn ?? []) {
+      const tweetText = tweetTextById.get(c.tweet_id);
+      if (tweetText) {
+        competingNotes.push({
+          tweet_text: tweetText,
+          note_text: c.note_text,
+          current_status: c.current_status,
+        });
       }
     }
   }

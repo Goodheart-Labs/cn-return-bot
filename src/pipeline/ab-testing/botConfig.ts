@@ -121,6 +121,15 @@ export interface BotConfig {
    * prompt (detailed or `simple_prompts`).
    */
   writer_examples?: boolean;
+  /**
+   * When true, the writer's user message includes a block of the post author's
+   * past helpful community notes (ours + competing notes on tweets we've noted)
+   * as context — see getAuthorNoteHistory. The lookup was silently broken from
+   * migration 033 until June 2026 (it queried the dropped pipeline_runs.author_id
+   * column), so this input was effectively off the whole time. Now a 50/50 A/B
+   * test via AUTHOR_HISTORY_TEST. Not prereq-gated — runs for every bot. Defaults false.
+   */
+  author_history?: boolean;
   /** Feed size used for the eligible-posts fetch. Pseudo A/B test (large=100%). */
   feed_size: FeedSize;
   /**

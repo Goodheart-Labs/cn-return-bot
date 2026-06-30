@@ -1,0 +1,38 @@
+{
+  "video": {
+    "url": "https://www.youtube.com/watch?v=Hrbq66XqtCo",
+    "id": "jensen_huang",
+    "title": "jensen_huang",
+    "uploadDate": "2026-04-15"
+  },
+  "range": {
+    "beginMin": 0,
+    "endMin": null
+  },
+  "claims": [
+    {
+      "claim": "China represents approximately 40% of the world's technology industry.",
+      "judgement": "uncertain",
+      "context": "Can you also acknowledge that we used to have a very large share in that market, and we no longer have a large share in that market? We can also acknowledge that China is about 40% of the world's technology industry. To concede that market for the United States technology industry is a disservice to our country. It is a disservice to our national security. It is a disservice to our technology leadership, all for the benefit of one company. It makes no sense to me.",
+      "timestampSeconds": 5030,
+      "videoLink": "https://www.youtube.com/watch?v=Hrbq66XqtCo&t=5030s",
+      "endTimestampSeconds": 5057
+    },
+    {
+      "claim": "Nvidia has been more than tripling the amount of flops it provides to the world year over year.",
+      "judgement": "likely true",
+      "context": "For many years now, you guys have been 2x-ing revenue year over year. You've been more than tripling the amount of flops you're providing to the world year over year.\n\nJensen Huang\n\nAnd 2x-ing at this scale now is really incredible.",
+      "timestampSeconds": 517,
+      "videoLink": "https://www.youtube.com/watch?v=Hrbq66XqtCo&t=517s",
+      "endTimestampSeconds": 527
+    },
+    {
+      "claim": "Huawei shipped millions of AI chips in a recent year.",
+      "judgement": "likely true",
+      "context": "But they do. What's the evidence? Huawei just had the largest single year in the history of their company.\n\nDwarkesh Patel\n\nHow many chips did they ship?\n\nJensen Huang\n\nA ton. Millions. Millions is way more than Anthropic has.",
+      "timestampSeconds": 4101,
+      "videoLink": "https://www.youtube.com/watch?v=Hrbq66XqtCo&t=4101s",
+      "endTimestampSeconds": 4111
+    }
+  ]
+}
