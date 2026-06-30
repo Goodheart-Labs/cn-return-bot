@@ -2,6 +2,11 @@ import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { fetchAllRows as fetchAllRowsShared } from "./paging";
 import type { Post } from "./fetchEligiblePosts";
 
+// A note that an --incremental scrape scrolled past without capturing this many
+// times is "given up": excluded from the anchor so a permanently-deleted note
+// can't pin the daily window. The staged updates in markIncrementalMisses assume 2.
+const MISS_LIMIT = 2;
+
 // Database types
 export interface Notewriter {
   id: string;
@@ -337,12 +342,13 @@ export class SupabaseLogger {
   }
 
   /**
-   * Oldest known note that has never received a notewriter-scraper snapshot, used
-   * to anchor the --incremental scrape window. `first_snapshot_at` is stamped on a
-   * note's first snapshot (see markFirstSnapshot + migration 048) and backed by a
-   * partial index on `first_snapshot_at IS NULL`, so this is a cheap indexed read
-   * rather than a scan of the whole snapshots time-series. Returns null when every
-   * known note already has a snapshot.
+   * Oldest known note that is still eligible to anchor the --incremental scrape:
+   * no snapshot yet (`first_snapshot_at IS NULL`) and not given up after repeated
+   * misses (`scrape_misses < MISS_LIMIT`). `first_snapshot_at` is stamped on a
+   * note's first snapshot (see markFirstSnapshot + migration 048) and this exact
+   * predicate is backed by the partial index `idx_notes_incremental_anchor`, so
+   * it's a cheap indexed read rather than a scan of the snapshots time-series.
+   * Returns null when every known note has a snapshot or has been given up.
    */
   async getOldestUnscrapedNoteId(): Promise<string | null> {
     // note_id is text so .order() is lexicographic; take the smallest window and
@@ -352,6 +358,7 @@ export class SupabaseLogger {
       .from("notes")
       .select("note_id")
       .is("first_snapshot_at", null)
+      .lt("scrape_misses", MISS_LIMIT)
       .not("note_id", "like", "tweet_%")
       .not("note_id", "like", "unavailable_%")
       .order("note_id", { ascending: true })
@@ -368,6 +375,48 @@ export class SupabaseLogger {
     if (numericIds.length === 0) return null;
 
     return numericIds.reduce((min, id) => (BigInt(id) < BigInt(min) ? id : min));
+  }
+
+  /**
+   * After an --incremental run, account for notes the scrape scrolled past but
+   * failed to capture — still no snapshot and note_id >= the lowest captured id.
+   * Implements a MISS_LIMIT-miss give-up with two ordered literal-set updates (no
+   * column arithmetic, so no RPC needed): first promote already-missed notes to
+   * MISS_LIMIT (given up), then record a first miss for the rest. The order avoids
+   * giving up on a note in the same run it was first missed. A captured note has
+   * first_snapshot_at set and so drops out of this set, making misses effectively
+   * consecutive. Returns counts for logging.
+   */
+  async markIncrementalMisses(minCoveredNoteId: string): Promise<{ givenUp: number; firstMisses: number }> {
+    const coveredUnscraped = (q: any) =>
+      q.is("first_snapshot_at", null)
+        .gte("note_id", minCoveredNoteId)
+        .not("note_id", "like", "tweet_%")
+        .not("note_id", "like", "unavailable_%");
+
+    // 1. Missed before and missed again → give up.
+    const { data: givenUp, error: giveUpErr } = await coveredUnscraped(
+      this.client.from("notes").update({ scrape_misses: MISS_LIMIT }),
+    )
+      .eq("scrape_misses", MISS_LIMIT - 1)
+      .select("note_id");
+    if (giveUpErr) {
+      console.error("[SupabaseLogger] Error giving up on unscrapable notes:", giveUpErr);
+      throw giveUpErr;
+    }
+
+    // 2. First miss for notes never missed before.
+    const { data: firstMissed, error: firstMissErr } = await coveredUnscraped(
+      this.client.from("notes").update({ scrape_misses: 1 }),
+    )
+      .eq("scrape_misses", 0)
+      .select("note_id");
+    if (firstMissErr) {
+      console.error("[SupabaseLogger] Error recording first scrape misses:", firstMissErr);
+      throw firstMissErr;
+    }
+
+    return { givenUp: (givenUp || []).length, firstMisses: (firstMissed || []).length };
   }
 
   // ============================================

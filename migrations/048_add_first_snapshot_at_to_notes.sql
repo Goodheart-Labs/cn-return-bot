@@ -12,6 +12,13 @@
 ALTER TABLE notes
   ADD COLUMN IF NOT EXISTS first_snapshot_at TIMESTAMPTZ;
 
+-- How many --incremental runs scrolled past this note but failed to capture it
+-- while it still had no snapshot. 0 = fine, 1 = missed once, 2 = given up
+-- (excluded from the incremental anchor so a permanently-deleted note can't pin
+-- the daily window). A later capture stamps first_snapshot_at and retires it anyway.
+ALTER TABLE notes
+  ADD COLUMN IF NOT EXISTS scrape_misses INTEGER NOT NULL DEFAULT 0;
+
 -- Backfill: any note that already has at least one snapshot gets its earliest
 -- snapshot time. Uses the existing idx_scraped_notewriter_snapshots_note_id index.
 UPDATE notes n
@@ -24,10 +31,14 @@ FROM (
 WHERE s.note_id = n.note_id
   AND n.first_snapshot_at IS NULL;
 
--- Partial index makes "oldest note with no snapshot" a fast lookup.
-CREATE INDEX IF NOT EXISTS idx_notes_first_snapshot_at_null
+-- Partial index makes "oldest note still eligible to anchor the incremental
+-- scrape" a fast lookup; it shrinks as notes are captured or given up.
+CREATE INDEX IF NOT EXISTS idx_notes_incremental_anchor
   ON notes (note_id)
-  WHERE first_snapshot_at IS NULL;
+  WHERE first_snapshot_at IS NULL AND scrape_misses < 2;
 
 COMMENT ON COLUMN notes.first_snapshot_at IS
   'When the notewriter scraper first captured a snapshot of this note (NULL = never scraped). Anchors --incremental scrape.';
+
+COMMENT ON COLUMN notes.scrape_misses IS
+  'Incremental runs that scrolled past this note without capturing it (0/1); 2 = given up, excluded from the incremental anchor.';

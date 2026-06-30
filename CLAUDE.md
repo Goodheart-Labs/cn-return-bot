@@ -110,6 +110,12 @@ same pass re-samples every note above the cutoff, so recent notes accumulate
 multiple view-count datapoints over time. If every known note already has a
 snapshot there is nothing to catch up and the script exits without scraping.
 
+A note the scrape scrolls past but never captures (deleted, never shown, etc.)
+accrues a miss; after 2 misses it's given up (`notes.scrape_misses = 2`) and no
+longer anchors the window, so a permanently-dead note can't pin the daily scrape
+to its date. A later capture (e.g. a full `--fresh` pass) stamps its snapshot and
+drops it from the candidate set, healing the give-up.
+
 Scheduled on this Mac via a LaunchAgent (source of truth checked in at
 `scripts/com.cnreturnbot.dailyscrape.plist`, wrapper at `scripts/run-daily-scrape.sh`):
 

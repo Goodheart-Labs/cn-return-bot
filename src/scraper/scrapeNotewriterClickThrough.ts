@@ -1428,6 +1428,18 @@ async function main() {
     process.exit(0);
   }
 
+  // --incremental: notes the scrape scrolled past but never captured (still no
+  // snapshot, id >= the oldest captured this run) accrue a "miss"; after the miss
+  // limit they're given up so a permanently-deleted note can't pin the anchor.
+  if (args.includes('--incremental')) {
+    const capturedIds = [...collectedNotes.keys()].filter(id => /^\d+$/.test(id)).map(id => BigInt(id));
+    if (capturedIds.length > 0) {
+      const oldestCaptured = capturedIds.reduce((a, b) => (a < b ? a : b));
+      const { givenUp, firstMisses } = await supabase.markIncrementalMisses(oldestCaptured.toString());
+      console.log(`🧮 Miss accounting (covered >= ${oldestCaptured}): ${givenUp} given up, ${firstMisses} first-miss.\n`);
+    }
+  }
+
   // Notes were already saved incrementally during scraping
   console.log("\n" + "=".repeat(60));
   console.log("✅ Scrape & import complete!");
