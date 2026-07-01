@@ -49,7 +49,7 @@ const BROADEN_FEED_ESTIMATE_THRESHOLD = BROADEN_FEED_ESTIMATE_CAP_MULTIPLE * MAX
 // constrained. Until X actually rejects with a daily-limit error, writing_limit
 // is just a probe (count+1), so remainingSlots ≈ 1 and the estimate is
 // artificially tiny — that must not starve us into small-only. Gate the narrowing
-// on a real limit hit in the last 24h; otherwise always use the full ladder.
+// on a real limit hit in the last 6h; otherwise always use the full ladder.
 function selectFeedLadder(estimate: number, hitLimitRecently: boolean): FeedSize[] {
   if (!hitLimitRecently) return FULL_FEED_LADDER;
   return estimate >= BROADEN_FEED_ESTIMATE_THRESHOLD ? FULL_FEED_LADDER : SMALL_ONLY_LADDER;

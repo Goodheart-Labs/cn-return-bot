@@ -268,7 +268,7 @@ Used by feedSizeStrategy and the rate-limit detection in `submitNoteForTweet`.
 | `value` | TEXT |
 | `updated_at` | TIMESTAMPTZ |
 
-Common keys: `feed_size`, `writing_limit`, `limit_hit_at`,
+Common keys: `feed_size`, `writing_limit`, `limit_hit_at`, `limit_hit_value`,
 `days_without_limit_hit`, `days_with_limit_hit`, `limit_hit_today`,
 `last_limit_check_date`.
 
