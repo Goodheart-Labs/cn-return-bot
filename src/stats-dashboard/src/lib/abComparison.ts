@@ -10,14 +10,24 @@
 
 import type { AbOutcomeAggregate, NoteRecord } from "./types";
 import { matchesAbFilters, type ABFilters } from "../../../dashboard-shared/abFilters";
+import { humanizeTagName, isNegativeRatingReason } from "../../../dashboard-shared/ratingReasons";
 import { costPerCountCI, proportionCI, proportionDiffCI, type Interval } from "./confidenceIntervals";
 
-export type AbComparisonStat =
+// The five flat, un-parameterized metrics.
+export type BaseStatKind =
   | "pct_helpful"
   | "pct_unhelpful"
   | "pct_helpful_minus_unhelpful"
   | "pct_candidate"
   | "cost_per_helpful";
+
+// The metric driving the comparison. Two are parameterized: a failure-mode tag
+// (fraction of reviewed notes carrying it) or a rating reason (fraction of that
+// polarity's ratings citing it).
+export type AbComparisonStat =
+  | { kind: BaseStatKind }
+  | { kind: "failure_mode"; tag: string }
+  | { kind: "rating_type"; reason: string };
 
 // How a stat's values read on the axis: a 0–100% proportion, a signed
 // difference around 0, or a currency ratio.
@@ -30,6 +40,13 @@ export interface AbComboCounts {
   candidate: number; // from run aggregates
   total: number; // terminal runs, from run aggregates
   cost: number; // summed cost over terminal runs, from run aggregates
+  // Rating-reason metric: reason count over its polarity's total ratings.
+  positiveRatings: number; // helpful + somewhat-helpful rating totals
+  negativeRatings: number; // not-helpful rating totals
+  ratingReasonCounts: Record<string, number>; // merged helpful + not-helpful tag counts
+  // Failure-mode metric: notes carrying a tag over reviewed ("seen") notes.
+  reviewedNotes: number;
+  failureModeCounts: Record<string, number>;
 }
 
 export interface AbCombo {
@@ -67,7 +84,25 @@ function comboLabel(projected: Record<string, string>, dims: string[]): string {
 }
 
 function emptyCounts(): AbComboCounts {
-  return { helpful: 0, unhelpful: 0, nmr: 0, candidate: 0, total: 0, cost: 0 };
+  return {
+    helpful: 0,
+    unhelpful: 0,
+    nmr: 0,
+    candidate: 0,
+    total: 0,
+    cost: 0,
+    positiveRatings: 0,
+    negativeRatings: 0,
+    ratingReasonCounts: {},
+    reviewedNotes: 0,
+    failureModeCounts: {},
+  };
+}
+
+function accumulateReasonCounts(into: Record<string, number>, from: Record<string, number>): void {
+  for (const [reason, count] of Object.entries(from)) {
+    into[reason] = (into[reason] ?? 0) + count;
+  }
 }
 
 /**
@@ -105,6 +140,23 @@ export function buildAbCombos(
     if (note.cn_status === "CURRENTLY_RATED_HELPFUL") counts.helpful++;
     else if (note.cn_status === "CURRENTLY_RATED_NOT_HELPFUL") counts.unhelpful++;
     else counts.nmr++;
+
+    const rating = note.public_dump_ratings;
+    if (rating) {
+      counts.positiveRatings += rating.helpful_count + rating.somewhat_helpful_count;
+      counts.negativeRatings += rating.not_helpful_count;
+      accumulateReasonCounts(counts.ratingReasonCounts, rating.helpful_tag_counts);
+      accumulateReasonCounts(counts.ratingReasonCounts, rating.not_helpful_tag_counts);
+    }
+
+    // failure_modes is null for un-reviewed notes; only "seen" notes count
+    // toward the failure-mode denominator.
+    if (note.failure_modes !== null) {
+      counts.reviewedNotes++;
+      for (const tag of note.failure_modes) {
+        counts.failureModeCounts[tag] = (counts.failureModeCounts[tag] ?? 0) + 1;
+      }
+    }
   }
 
   // Run-aggregates pass — candidate / total denominators.
@@ -128,7 +180,9 @@ export function buildAbCombos(
  *
  * Denominator: submitted notes by default, all terminal runs when
  * includeNonCandidate is set. pct_candidate always uses all runs;
- * cost_per_helpful always uses all-run cost over the helpful-note count.
+ * cost_per_helpful always uses all-run cost over the helpful-note count. The
+ * failure-mode / rating-type metrics use their own denominators (reviewed notes
+ * / polarity rating totals) and ignore includeNonCandidate.
  * `n` is the sample size driving the interval (helpful count for cost).
  */
 export function statInterval(
@@ -140,49 +194,115 @@ export function statInterval(
   const nSubmitted = counts.helpful + counts.unhelpful + counts.nmr;
   const nAll = counts.total;
 
-  if (stat === "pct_candidate") {
-    if (nAll === 0) return null;
-    return { interval: proportionCI(counts.candidate, nAll, z), n: nAll };
+  switch (stat.kind) {
+    case "pct_candidate": {
+      if (nAll === 0) return null;
+      return { interval: proportionCI(counts.candidate, nAll, z), n: nAll };
+    }
+    case "cost_per_helpful": {
+      if (counts.helpful === 0 || counts.cost <= 0) return null;
+      return { interval: costPerCountCI(counts.cost, counts.helpful, z), n: counts.helpful };
+    }
+    case "failure_mode": {
+      const n = counts.reviewedNotes;
+      if (n === 0) return null;
+      return { interval: proportionCI(counts.failureModeCounts[stat.tag] ?? 0, n, z), n };
+    }
+    case "rating_type": {
+      const n = isNegativeRatingReason(stat.reason) ? counts.negativeRatings : counts.positiveRatings;
+      if (n === 0) return null;
+      return { interval: proportionCI(counts.ratingReasonCounts[stat.reason] ?? 0, n, z), n };
+    }
+    default: {
+      const n = includeNonCandidate ? nAll : nSubmitted;
+      if (n === 0) return null;
+      if (stat.kind === "pct_helpful") return { interval: proportionCI(counts.helpful, n, z), n };
+      if (stat.kind === "pct_unhelpful") return { interval: proportionCI(counts.unhelpful, n, z), n };
+      // pct_helpful_minus_unhelpful
+      return { interval: proportionDiffCI(counts.helpful, counts.unhelpful, n, z), n };
+    }
   }
-
-  if (stat === "cost_per_helpful") {
-    if (counts.helpful === 0 || counts.cost <= 0) return null;
-    return { interval: costPerCountCI(counts.cost, counts.helpful, z), n: counts.helpful };
-  }
-
-  const n = includeNonCandidate ? nAll : nSubmitted;
-  if (n === 0) return null;
-  if (stat === "pct_helpful") return { interval: proportionCI(counts.helpful, n, z), n };
-  if (stat === "pct_unhelpful") return { interval: proportionCI(counts.unhelpful, n, z), n };
-  // pct_helpful_minus_unhelpful
-  return { interval: proportionDiffCI(counts.helpful, counts.unhelpful, n, z), n };
 }
 
 export function statKind(stat: AbComparisonStat): AbStatKind {
-  if (stat === "pct_helpful_minus_unhelpful") return "diff";
-  if (stat === "cost_per_helpful") return "cost";
+  if (stat.kind === "pct_helpful_minus_unhelpful") return "diff";
+  if (stat.kind === "cost_per_helpful") return "cost";
   return "percent";
 }
 
 // These stats inherently span all runs, so the "include non-candidate runs"
 // toggle is forced on and disabled for them.
 export function forcesAllRuns(stat: AbComparisonStat): boolean {
-  return stat === "pct_candidate" || stat === "cost_per_helpful";
+  return stat.kind === "pct_candidate" || stat.kind === "cost_per_helpful";
 }
 
-// Cost is better when lower; the proportion stats are better when higher. Used
-// only to order rows (best on top).
+// Lower is better for cost, for failure modes (fewer flaws), and for negative
+// rating reasons (fewer complaints). Used only to order rows (best on top).
 export function lowerIsBetter(stat: AbComparisonStat): boolean {
-  return stat === "cost_per_helpful";
+  if (stat.kind === "cost_per_helpful") return true;
+  if (stat.kind === "failure_mode") return true;
+  if (stat.kind === "rating_type") return isNegativeRatingReason(stat.reason);
+  return false;
 }
 
-export const STAT_LABELS: Record<AbComparisonStat, string> = {
+const BASE_STAT_LABELS: Record<BaseStatKind, string> = {
   pct_helpful: "Percent Helpful",
   pct_unhelpful: "Percent Unhelpful",
   pct_helpful_minus_unhelpful: "Percent Helpful − Unhelpful",
   pct_candidate: "Percent of Candidate Runs out of all runs",
   cost_per_helpful: "Cost per Helpful Note",
 };
+
+// The flat metrics, in menu order.
+export const BASE_STAT_OPTIONS = Object.keys(BASE_STAT_LABELS) as BaseStatKind[];
+
+export function statLabel(stat: AbComparisonStat): string {
+  if (stat.kind === "failure_mode") return `Failure mode: ${stat.tag}`;
+  if (stat.kind === "rating_type") return `Rating type: ${humanizeTagName(stat.reason)}`;
+  return BASE_STAT_LABELS[stat.kind];
+}
+
+// A failure-mode tag or rating reason with its observed frequency, most-common
+// first. Drives the metric submenus.
+export interface ReasonUsage {
+  name: string;
+  count: number;
+}
+
+function sortByCountDesc(counts: Map<string, number>): ReasonUsage[] {
+  return [...counts.entries()]
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+}
+
+// Failure-mode tags seen across reviewed notes, most-common first. A tag absent
+// here would read as 0% everywhere, so we only surface tags that actually occur.
+export function buildFailureModeCatalog(notes: NoteRecord[]): ReasonUsage[] {
+  const counts = new Map<string, number>();
+  for (const note of notes) {
+    if (!note.failure_modes) continue;
+    for (const tag of note.failure_modes) counts.set(tag, (counts.get(tag) ?? 0) + 1);
+  }
+  return sortByCountDesc(counts);
+}
+
+// Rating reasons seen across notes' public-dump tag counts, split by polarity
+// and most-common first. Derived from the data so the submenu matches the
+// Ratings table exactly.
+export function buildRatingReasonCatalog(notes: NoteRecord[]): { positive: ReasonUsage[]; negative: ReasonUsage[] } {
+  const counts = new Map<string, number>();
+  for (const note of notes) {
+    const rating = note.public_dump_ratings;
+    if (!rating) continue;
+    for (const [reason, c] of Object.entries(rating.helpful_tag_counts)) counts.set(reason, (counts.get(reason) ?? 0) + c);
+    for (const [reason, c] of Object.entries(rating.not_helpful_tag_counts)) counts.set(reason, (counts.get(reason) ?? 0) + c);
+  }
+  const all = sortByCountDesc(counts);
+  return {
+    positive: all.filter((r) => !isNegativeRatingReason(r.name)),
+    negative: all.filter((r) => isNegativeRatingReason(r.name)),
+  };
+}
 
 // "Last N days" window options for the comparison panel; null = all time.
 export const WINDOW_DAY_OPTIONS: (number | null)[] = [null, 7, 14, 30, 90];

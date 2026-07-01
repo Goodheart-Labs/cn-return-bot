@@ -31,6 +31,10 @@ export interface NoteRecord {
   cost: number | null;
   tweet: NoteTweetData | null;
   public_dump_ratings: PublicDumpRatings | null;
+  // Review-dashboard failure-mode tags for this note: string[] when the note was
+  // reviewed ("seen"), null when it was never reviewed. Empty array = reviewed,
+  // no flaws. Only reviewed notes count toward the failure-mode denominator.
+  failure_modes: string[] | null;
 }
 
 export interface PipelineRunAggregate {

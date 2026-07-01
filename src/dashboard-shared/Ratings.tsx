@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { PublicDumpRatings } from "./types";
+import { humanizeTagName } from "./ratingReasons";
 
 type TagBucket = "helpful" | "not_helpful";
 
@@ -130,10 +131,4 @@ function TagPills({ ratings, bucket }: { ratings: PublicDumpRatings; bucket: Tag
       ))}
     </div>
   );
-}
-
-// e.g. "notHelpfulSourcesMissingOrUnreliable" -> "Sources Missing Or Unreliable"
-function humanizeTagName(raw: string): string {
-  const trimmed = raw.replace(/^helpful|^notHelpful/, "");
-  return trimmed.replace(/([A-Z])/g, " $1").trim();
 }

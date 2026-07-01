@@ -5,22 +5,23 @@ import {
   lowerIsBetter,
   statInterval,
   statKind,
-  STAT_LABELS,
+  statLabel,
   WINDOW_DAY_OPTIONS,
   windowLabel,
   type AbCombo,
   type AbComparisonStat,
   type AbStatKind,
+  type ReasonUsage,
 } from "../lib/abComparison";
 import { Z_BY_LEVEL, type ConfidenceLevel } from "../lib/confidenceIntervals";
 import { CiAxis, CiBar, computeDomain } from "./CiBar";
+import { MetricMenu } from "./MetricMenu";
 import { useResizeWidth } from "../lib/useResizeWidth";
 
 // Grid template shared by the axis row and every data row so the CI blocks line
 // up under the axis: [label gutter] [chart column] [hide button].
 const GRID_COLUMNS = "minmax(11rem, 18rem) 1fr 1.25rem";
 
-const STAT_OPTIONS = Object.keys(STAT_LABELS) as AbComparisonStat[];
 const LEVEL_OPTIONS: ConfidenceLevel[] = [90, 95, 99];
 
 function formatValue(point: number, kind: AbStatKind): string {
@@ -37,6 +38,8 @@ export function AbComparisonPanel({
   onDimsChange,
   stat,
   onStatChange,
+  failureModeCatalog,
+  ratingReasonCatalog,
   windowDays,
   onWindowDaysChange,
   includeNonCandidate,
@@ -52,6 +55,8 @@ export function AbComparisonPanel({
   onDimsChange: (dims: string[]) => void;
   stat: AbComparisonStat;
   onStatChange: (stat: AbComparisonStat) => void;
+  failureModeCatalog: ReasonUsage[];
+  ratingReasonCatalog: { positive: ReasonUsage[]; negative: ReasonUsage[] };
   windowDays: number | null;
   onWindowDaysChange: (days: number | null) => void;
   includeNonCandidate: boolean;
@@ -105,18 +110,15 @@ export function AbComparisonPanel({
       <DimensionPicker slots={slots} dims={dims} onDimsChange={onDimsChange} />
 
       <div className="flex flex-wrap items-center gap-4">
-        <label className="flex items-center gap-2 text-sm text-gray-700">
+        <div className="flex items-center gap-2 text-sm text-gray-700">
           <span className="text-xs uppercase tracking-wide text-gray-500">Metric</span>
-          <select
-            value={stat}
-            onChange={(e) => onStatChange(e.target.value as AbComparisonStat)}
-            className="border border-gray-300 rounded px-2 py-1 bg-white text-sm"
-          >
-            {STAT_OPTIONS.map((s) => (
-              <option key={s} value={s}>{STAT_LABELS[s]}</option>
-            ))}
-          </select>
-        </label>
+          <MetricMenu
+            stat={stat}
+            onStatChange={onStatChange}
+            failureModeCatalog={failureModeCatalog}
+            ratingReasonCatalog={ratingReasonCatalog}
+          />
+        </div>
 
         <label className="flex items-center gap-2 text-sm text-gray-700">
           <span className="text-xs uppercase tracking-wide text-gray-500">Window</span>
@@ -166,7 +168,7 @@ export function AbComparisonPanel({
         <div className="space-y-1">
           {/* shared x-axis (the metric) */}
           <div className="grid items-center gap-x-3" style={{ gridTemplateColumns: GRID_COLUMNS }}>
-            <div className="text-xs uppercase tracking-wide text-gray-500 truncate">{STAT_LABELS[stat]}</div>
+            <div className="text-xs uppercase tracking-wide text-gray-500 truncate">{statLabel(stat)}</div>
             <div ref={chartRef}>
               <CiAxis domain={domain} width={chartWidth} kind={kind} />
             </div>
