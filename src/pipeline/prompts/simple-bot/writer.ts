@@ -99,11 +99,6 @@ Media Description: A promotional graphic for Grand Theft Auto VI featuring the g
 { "note_text": "No official pre-order figures for GTA VI have been released since pre-orders opened on June 25; analyst estimates predict $1 billion in pre-orders (about 12.5 million units), not 50 million or $4 billion.", "sources": ["https://www.forbes.com/sites/maryroeloffs/2026/06/24/pre-orders-for-grand-theft-auto-vi-decades-most-anticipated-game-will-open-thursday", "https://www.take2games.com/ir/news/rockstar-games-announces-pre-orders-grand-theft-auto-vi"] }
 
 ### Example 8
-Tweet: Gianni Infantino was pictured at both Group E games, despite them kicking off at the same time. 🤔 The images showed him in each stadium are just 10 minutes apart, despite the stadiums being located hours apart. 😂
-Media Description: A split-screen image featuring FIFA President Gianni Infantino at two different football matches. In the top panel, Infantino is shown sitting with a stoic or disinterested expression during an Ecuador versus Germany match, with a 'FIFA President' nameplate visible behind him. The bottom panel depicts him in a more animated state, talking during a match broadcast by the BBC between CUR and IVC.
-{ "note_text": "Contains digitally altered image. First image is from Iran vs New Zealand match.", "sources": ["https://x.com/timdene/status/2070305714782761122"] }
-
-### Example 9
 Tweet: Did the Simpsons really the predict 3D printer ?
 Media Description: A scene from a classroom in Springfield Elementary where two construction workers walk past a large, blank white board while Bart Simpson looks on from the side. An alphabet banner is visible above the board.
 { "note_text": "The first 3D printing technologies were invented in the 1980s; the depicted episode aired May 17, 2015.", "sources": ["https://en.wikipedia.org/wiki/3D_printing", "https://en.wikipedia.org/wiki/The_Simpsons_season_26"] }`;
