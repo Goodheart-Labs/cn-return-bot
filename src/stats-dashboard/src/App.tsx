@@ -22,7 +22,13 @@ import { BarChart } from "./components/BarChart";
 import { NoteList } from "./components/NoteList";
 import { AbFilterPanel } from "../../dashboard-shared/AbFilterPanel";
 import { AbComparisonPanel } from "./components/AbComparisonPanel";
-import { buildAbCombos, windowStartDate, type AbComparisonStat } from "./lib/abComparison";
+import {
+  buildAbCombos,
+  buildFailureModeCatalog,
+  buildRatingReasonCatalog,
+  windowStartDate,
+  type AbComparisonStat,
+} from "./lib/abComparison";
 import type { ConfidenceLevel } from "./lib/confidenceIntervals";
 import { WritingLimitPanel } from "./components/WritingLimitPanel";
 import { useResizeWidth } from "./lib/useResizeWidth";
@@ -41,7 +47,7 @@ export function App() {
   const [showNonCandidate, setShowNonCandidate] = useState(false);
   const [abFilters, setAbFilters] = useState<ABFilters>({});
   const [cmpDims, setCmpDims] = useState<string[]>([]);
-  const [cmpStat, setCmpStat] = useState<AbComparisonStat>("pct_helpful");
+  const [cmpStat, setCmpStat] = useState<AbComparisonStat>({ kind: "pct_helpful" });
   const [cmpWindowDays, setCmpWindowDays] = useState<number | null>(null);
   const [cmpIncludeNonCandidate, setCmpIncludeNonCandidate] = useState(false);
   const [cmpLevel, setCmpLevel] = useState<ConfidenceLevel>(95);
@@ -89,6 +95,16 @@ export function App() {
         ? buildAbCombos(snapshot.notes, snapshot.ab_outcome_aggregates, cmpDims, filtersForData, windowStartDate(cmpWindowDays))
         : [],
     [devMode, snapshot, cmpDims, filtersForData, cmpWindowDays],
+  );
+  // Metric-submenu catalogs come from the full snapshot (not the windowed
+  // combos), so the tag/reason lists are stable as filters change.
+  const failureModeCatalog = useMemo(
+    () => (snapshot ? buildFailureModeCatalog(snapshot.notes) : []),
+    [snapshot],
+  );
+  const ratingReasonCatalog = useMemo(
+    () => (snapshot ? buildRatingReasonCatalog(snapshot.notes) : { positive: [], negative: [] }),
+    [snapshot],
   );
   const sortedNotes = useMemo(() => sortNotesForList(filteredNotes, sort), [filteredNotes, sort]);
   const writingLimitMetrics = useMemo(
@@ -142,6 +158,8 @@ export function App() {
           onDimsChange={setCmpDims}
           stat={cmpStat}
           onStatChange={setCmpStat}
+          failureModeCatalog={failureModeCatalog}
+          ratingReasonCatalog={ratingReasonCatalog}
           windowDays={cmpWindowDays}
           onWindowDaysChange={setCmpWindowDays}
           includeNonCandidate={cmpIncludeNonCandidate}

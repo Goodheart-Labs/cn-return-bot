@@ -96,6 +96,12 @@ interface RawPipelineRunRow {
   created_at: string;
 }
 
+interface RawAnnotationRow {
+  target_id: string; // raw note_id for note annotations (other kinds are prefixed)
+  failure_modes: string[] | null;
+  seen: boolean;
+}
+
 interface RawTweetRow {
   tweet_id: string;
   text: string | null;
@@ -193,6 +199,7 @@ function joinNotes(
   runs: RawPipelineRunRow[],
   tweets: RawTweetRow[],
   publicRatings: RawPublicDumpRatingRow[],
+  annotations: RawAnnotationRow[],
 ): NoteRecord[] {
   const submittedRunByNoteId = new Map<string, RawPipelineRunRow>();
   for (const run of runs) {
@@ -202,6 +209,12 @@ function joinNotes(
   for (const t of tweets) tweetById.set(t.tweet_id, t);
   const publicRatingByNoteId = new Map<string, RawPublicDumpRatingRow>();
   for (const r of publicRatings) publicRatingByNoteId.set(r.note_id, r);
+  // For note annotations, target_id is the raw note_id; missed_/lowEval_ targets
+  // simply never match a note_id below. seen === false → not reviewed (null).
+  const failureModesByNoteId = new Map<string, string[] | null>();
+  for (const a of annotations) {
+    failureModesByNoteId.set(a.target_id, a.seen ? (a.failure_modes ?? []) : null);
+  }
 
   const records: NoteRecord[] = [];
   for (const note of notes) {
@@ -243,6 +256,7 @@ function joinNotes(
             dump_date: publicRating.dump_date,
           }
         : null,
+      failure_modes: failureModesByNoteId.get(note.note_id) ?? null,
     });
   }
   records.sort((a, b) => a.submitted_at.localeCompare(b.submitted_at));
@@ -298,6 +312,16 @@ async function loadPublicRatings(): Promise<RawPublicDumpRatingRow[]> {
   );
 }
 
+async function loadAnnotations(): Promise<RawAnnotationRow[]> {
+  return fetchAllRows<RawAnnotationRow>(
+    supabase
+      .from("review_dashboard_annotations")
+      .select("target_id, failure_modes, seen")
+      .eq("source", "production"),
+    "review_dashboard_annotations",
+  );
+}
+
 async function loadDailyOriginCounts(): Promise<DailyOriginCount[]> {
   return fetchAllRows<DailyOriginCount>(
     supabase
@@ -309,16 +333,17 @@ async function loadDailyOriginCounts(): Promise<DailyOriginCount[]> {
 }
 
 async function buildSnapshot(): Promise<StatsSnapshot> {
-  const [notes, pipelineRuns, publicRatings, dailyOriginCounts] = await Promise.all([
+  const [notes, pipelineRuns, publicRatings, annotations, dailyOriginCounts] = await Promise.all([
     loadNotes(),
     loadAllPipelineRuns(),
     loadPublicRatings(),
+    loadAnnotations(),
     loadDailyOriginCounts(),
   ]);
   const tweetIds = [...new Set(notes.map((n) => n.tweet_id).filter(Boolean))];
   const tweets = tweetIds.length ? await loadTweets(tweetIds) : [];
 
-  const noteRecords = joinNotes(notes, pipelineRuns, tweets, publicRatings);
+  const noteRecords = joinNotes(notes, pipelineRuns, tweets, publicRatings, annotations);
   const pipelineRunAggregates = buildPipelineAggregates(pipelineRuns);
   const abOutcomeAggregates = buildAbOutcomeAggregates(pipelineRuns);
   const pipelineRunsByDay = buildPipelineRunsByDay(pipelineRuns);
