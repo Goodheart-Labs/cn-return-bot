@@ -269,6 +269,12 @@ export interface ReasonUsage {
   count: number;
 }
 
+// Rating reasons split by polarity for the Rating Type submenu.
+export interface RatingReasonCatalog {
+  positive: ReasonUsage[];
+  negative: ReasonUsage[];
+}
+
 function sortByCountDesc(counts: Map<string, number>): ReasonUsage[] {
   return [...counts.entries()]
     .map(([name, count]) => ({ name, count }))
@@ -289,7 +295,7 @@ export function buildFailureModeCatalog(notes: NoteRecord[]): ReasonUsage[] {
 // Rating reasons seen across notes' public-dump tag counts, split by polarity
 // and most-common first. Derived from the data so the submenu matches the
 // Ratings table exactly.
-export function buildRatingReasonCatalog(notes: NoteRecord[]): { positive: ReasonUsage[]; negative: ReasonUsage[] } {
+export function buildRatingReasonCatalog(notes: NoteRecord[]): RatingReasonCatalog {
   const counts = new Map<string, number>();
   for (const note of notes) {
     const rating = note.public_dump_ratings;

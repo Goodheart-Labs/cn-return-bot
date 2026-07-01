@@ -3,6 +3,7 @@ import {
   BASE_STAT_OPTIONS,
   statLabel,
   type AbComparisonStat,
+  type RatingReasonCatalog,
   type ReasonUsage,
 } from "../lib/abComparison";
 import { humanizeTagName } from "../../../dashboard-shared/ratingReasons";
@@ -22,7 +23,7 @@ export function MetricMenu({
   stat: AbComparisonStat;
   onStatChange: (stat: AbComparisonStat) => void;
   failureModeCatalog: ReasonUsage[];
-  ratingReasonCatalog: { positive: ReasonUsage[]; negative: ReasonUsage[] };
+  ratingReasonCatalog: RatingReasonCatalog;
 }) {
   const [open, setOpen] = useState(false);
   const [openSub, setOpenSub] = useState<SubKey | null>(null);
@@ -36,7 +37,6 @@ export function MetricMenu({
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // Collapse any open submenu whenever the whole menu closes.
   useEffect(() => {
     if (!open) setOpenSub(null);
   }, [open]);

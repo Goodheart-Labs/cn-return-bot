@@ -11,6 +11,7 @@ import {
   type AbCombo,
   type AbComparisonStat,
   type AbStatKind,
+  type RatingReasonCatalog,
   type ReasonUsage,
 } from "../lib/abComparison";
 import { Z_BY_LEVEL, type ConfidenceLevel } from "../lib/confidenceIntervals";
@@ -56,7 +57,7 @@ export function AbComparisonPanel({
   stat: AbComparisonStat;
   onStatChange: (stat: AbComparisonStat) => void;
   failureModeCatalog: ReasonUsage[];
-  ratingReasonCatalog: { positive: ReasonUsage[]; negative: ReasonUsage[] };
+  ratingReasonCatalog: RatingReasonCatalog;
   windowDays: number | null;
   onWindowDaysChange: (days: number | null) => void;
   includeNonCandidate: boolean;
