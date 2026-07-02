@@ -521,17 +521,23 @@ export function App() {
 
   const handleHighValueToggle = async (id: string, highValue: boolean) => {
     const source = dataset.type === "production" ? "production" : "dataset_run";
-    try {
-      await upsertAnnotation(source as "production" | "dataset_run", id, { highValue });
+    // Optimistic: flip the star immediately so the click has instant feedback,
+    // then persist. If the write fails, revert and tell the user.
+    const setHV = (hv: boolean) =>
       setItems((prev) =>
         prev.map((item) =>
           item.id === id
-            ? { ...item, annotation: { ...item.annotation, highValue, seen: item.annotation?.seen ?? false, failureModes: item.annotation?.failureModes ?? [] } }
+            ? { ...item, annotation: { ...item.annotation, highValue: hv, seen: item.annotation?.seen ?? false, failureModes: item.annotation?.failureModes ?? [] } }
             : item,
         ),
       );
+    setHV(highValue);
+    try {
+      await upsertAnnotation(source as "production" | "dataset_run", id, { highValue });
     } catch (err: any) {
       console.error("Failed to update high_value:", err);
+      setHV(!highValue); // revert
+      alert(`Couldn't save high-value: ${err?.message ?? JSON.stringify(err)}`);
     }
   };
 

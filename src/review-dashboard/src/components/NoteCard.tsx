@@ -102,6 +102,7 @@ export function NoteCard({
   failureModeUsage,
   showFixed,
   onSeenToggle,
+  onHighValueToggle,
   onFailureModesChange,
   onCreateFailureMode,
   onCommentChange,
