@@ -32,6 +32,9 @@ const CN_DATA_BASE_URL = "https://ton.twimg.com/birdwatch-public-data";
 const DATA_DIR = "./cn-data";
 const OUR_AUTHOR = "813EB394B10809EBA8D09BCFA8E2E1C25A2DA0085186867F9E9C00696951C447";
 const PAGE_SIZE = 1000;
+// public_data_snapshots is large (400k+ rows); smaller upsert batches keep each
+// statement under the DB timeout.
+const SNAPSHOT_PAGE_SIZE = 500;
 const MAX_DAYS_BACK_FOR_CN_DATA = 7;
 // The dump splits each file across an unknown, growing number of zero-padded
 // partitions (notes-00000.zip, -00001.zip, …). We discover them dynamically —
@@ -134,11 +137,18 @@ async function downloadFile(url: string, outputPath: string): Promise<void> {
   writeFileSync(outputPath, Buffer.from(await response.arrayBuffer()));
 }
 
+/** Postgres text columns can't hold NUL bytes — a single one rejects the whole
+ *  upsert batch ("unsupported Unicode escape sequence"), taking 999 good rows
+ *  with it. Strip them from any dump/API text before it reaches the DB. */
+function stripNulBytes(s: string): string {
+  return s.replace(/\u0000/g, "");
+}
+
 function readTsvLines(paths: string[]): { header: string; lines: string[] } {
   let header = "";
   const lines: string[] = [];
   for (const p of paths) {
-    const fileLines = readFileSync(p, "utf-8").split("\n");
+    const fileLines = stripNulBytes(readFileSync(p, "utf-8")).split("\n");
     if (!header && fileLines[0]) header = fileLines[0];
     for (let i = 1; i < fileLines.length; i++) {
       if (fileLines[i]) lines.push(fileLines[i]!);
@@ -441,7 +451,9 @@ async function upsertOurNotes(
     const wasHelpful = existing.existingStatuses.get(noteId) === STATUS_HELPFUL;
     if (cn_status === STATUS_HELPFUL && !wasHelpful) newlyHelpful++;
 
-    const noteText = api?.info?.text ?? dump?.summary ?? null;
+    // dump.summary is already NUL-stripped in readTsvLines; the API text isn't.
+    const rawNoteText = api?.info?.text ?? dump?.summary ?? null;
+    const noteText = rawNoteText === null ? null : stripNulBytes(rawNoteText);
     const submittedAt = dump?.createdAtMillis
       ? new Date(parseInt(dump.createdAtMillis)).toISOString()
       : (existing.existingSubmittedAt.get(noteId) ?? null);
@@ -606,8 +618,8 @@ async function snapshotPublicData(
   }
 
   let upserted = 0;
-  for (let i = 0; i < rows.length; i += PAGE_SIZE) {
-    const batch = rows.slice(i, i + PAGE_SIZE);
+  for (let i = 0; i < rows.length; i += SNAPSHOT_PAGE_SIZE) {
+    const batch = rows.slice(i, i + SNAPSHOT_PAGE_SIZE);
     const { error } = await client.from("public_data_snapshots").upsert(batch, {
       onConflict: "note_id,snapshot_date",
       ignoreDuplicates: false,

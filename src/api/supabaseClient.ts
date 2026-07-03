@@ -1066,47 +1066,55 @@ export class SupabaseLogger {
     }
   }
 
-  /** Count notes submitted in the last N hours (rolling window) */
-  async countRecentSubmissions(hours: number): Promise<number> {
-    const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
-    const { count, error } = await this.client
-      .from("notes")
-      .select("*", { count: "exact", head: true })
-      .gte("submitted_at", since);
+  /**
+   * Run a head-only exact count, returning 0 (and logging) on error.
+   * head:true responses have empty bodies, so on an error status PostgREST
+   * returns no JSON and supabase-js leaves error.message blank — the HTTP
+   * status is then the only diagnostic, so surface it.
+   */
+  private async runExactCount(
+    query: PromiseLike<{ count: number | null; error: { message?: string } | null; status: number }>,
+    label: string,
+  ): Promise<number> {
+    const { count, error, status } = await query;
     if (error) {
-      console.warn("[SupabaseLogger] Failed to count recent submissions:", error.message);
+      console.warn(
+        `[SupabaseLogger] Failed to count ${label} (HTTP ${status}): ${error.message || JSON.stringify(error)}`,
+      );
       return 0;
     }
     return count ?? 0;
+  }
+
+  /** Count notes submitted in the last N hours (rolling window) */
+  async countRecentSubmissions(hours: number): Promise<number> {
+    const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
+    return this.runExactCount(
+      this.client.from("notes").select("*", { count: "exact", head: true }).gte("submitted_at", since),
+      "recent submissions",
+    );
   }
 
   /** Count pipeline_runs created in the last N hours */
   async countRecentPipelineRuns(hours: number): Promise<number> {
     const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
-    const { count, error } = await this.client
-      .from("pipeline_runs")
-      .select("*", { count: "exact", head: true })
-      .gte("created_at", since);
-    if (error) {
-      console.warn("[SupabaseLogger] Failed to count recent pipeline runs:", error.message);
-      return 0;
-    }
-    return count ?? 0;
+    return this.runExactCount(
+      this.client.from("pipeline_runs").select("*", { count: "exact", head: true }).gte("created_at", since),
+      "recent pipeline runs",
+    );
   }
 
   /** Count pipeline_runs created in the last N hours whose outcome is in `outcomes` */
   async countRecentPipelineRunsByOutcomes(hours: number, outcomes: string[]): Promise<number> {
     const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
-    const { count, error } = await this.client
-      .from("pipeline_runs")
-      .select("*", { count: "exact", head: true })
-      .gte("created_at", since)
-      .in("outcome", outcomes);
-    if (error) {
-      console.warn("[SupabaseLogger] Failed to count recent pipeline runs by outcome:", error.message);
-      return 0;
-    }
-    return count ?? 0;
+    return this.runExactCount(
+      this.client
+        .from("pipeline_runs")
+        .select("*", { count: "exact", head: true })
+        .gte("created_at", since)
+        .in("outcome", outcomes),
+      "recent pipeline runs by outcome",
+    );
   }
 
   /** Check if any notes have been submitted since a given ISO timestamp */
