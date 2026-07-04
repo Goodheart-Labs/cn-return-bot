@@ -68,6 +68,32 @@ export type NoteInsert = {
 
 let supabaseInstance: SupabaseClient | null = null;
 
+type CountError = {
+  message?: string;
+  details?: string;
+  hint?: string;
+  code?: string;
+};
+
+type ExactCountResponse = {
+  count: number | null;
+  error: CountError | null;
+  status: number;
+};
+
+// Builds the count query. head:true is the normal body-less request; head:false
+// is the diagnostic GET fallback (error bodies only survive on GET). Builders
+// should append .limit(1) — a no-op on HEAD — so the fallback fetches one row.
+type ExactCountQuery = (head: boolean) => PromiseLike<ExactCountResponse>;
+
+const COUNT_RETRY_DELAYS_MS = [250, 1000] as const;
+// status 0 = network-level failure (supabase-js resolves with no HTTP status)
+const RETRYABLE_COUNT_STATUSES = new Set([0, 408, 425, 429]);
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 /**
  * Returns the singleton supabase-js client.
  *
@@ -1066,31 +1092,97 @@ export class SupabaseLogger {
     }
   }
 
-  /**
-   * Run a head-only exact count, returning 0 (and logging) on error.
-   * head:true responses have empty bodies, so on an error status PostgREST
-   * returns no JSON and supabase-js leaves error.message blank — the HTTP
-   * status is then the only diagnostic, so surface it.
-   */
-  private async runExactCount(
-    query: PromiseLike<{ count: number | null; error: { message?: string } | null; status: number }>,
-    label: string,
-  ): Promise<number> {
-    const { count, error, status } = await query;
-    if (error) {
-      console.warn(
-        `[SupabaseLogger] Failed to count ${label} (HTTP ${status}): ${error.message || JSON.stringify(error)}`,
-      );
-      return 0;
+  private isRetryableCountError(status: number, error: CountError | null): boolean {
+    const code = error?.code ?? "";
+    return RETRYABLE_COUNT_STATUSES.has(status) || status >= 500 || code.startsWith("08") || code === "57014";
+  }
+
+  private formatCountError(status: number, error: CountError | null): string {
+    if (!error) return `HTTP ${status}: unknown error`;
+
+    const parts = [`HTTP ${status}`];
+    if (error.code) parts.push(error.code);
+    if (error.message) parts.push(error.message);
+    if (error.details) parts.push(`details=${error.details}`);
+    if (error.hint) parts.push(`hint=${error.hint}`);
+
+    if (parts.length > 1) return parts.join(": ");
+    return `HTTP ${status}: ${JSON.stringify(error)}`;
+  }
+
+  private errorToCountResponse(err: unknown): ExactCountResponse {
+    const anyErr = err as any;
+    return {
+      count: null,
+      error: {
+        message: anyErr?.message ?? String(err),
+        code: anyErr?.code,
+        details: anyErr?.details,
+        hint: anyErr?.hint,
+      },
+      status: anyErr?.status ?? anyErr?.statusCode ?? 0,
+    };
+  }
+
+  private async settleCountQuery(query: PromiseLike<ExactCountResponse>): Promise<ExactCountResponse> {
+    try {
+      return await query;
+    } catch (err) {
+      return this.errorToCountResponse(err);
     }
-    return count ?? 0;
+  }
+
+  /**
+   * Run a head-only exact count with retries, returning 0 (and logging) on error.
+   *
+   * HEAD responses have no body, so on failure the HTTP status is the only
+   * diagnostic. Transient failures (network, 5xx, timeouts) are retried; once
+   * retries are exhausted a one-row GET runs the same count, which either
+   * recovers it or surfaces the real PostgREST error body.
+   */
+  private async runExactCount(makeQuery: ExactCountQuery, label: string): Promise<number> {
+    const maxAttempts = COUNT_RETRY_DELAYS_MS.length + 1;
+    let lastFailure: ExactCountResponse | null = null;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      const result = await this.settleCountQuery(makeQuery(true));
+      if (!result.error) {
+        if (attempt > 1) {
+          console.warn(`[SupabaseLogger] Count ${label} succeeded on attempt ${attempt}/${maxAttempts}`);
+        }
+        return result.count ?? 0;
+      }
+
+      lastFailure = result;
+      const retryDelay = COUNT_RETRY_DELAYS_MS[attempt - 1];
+      if (!retryDelay || !this.isRetryableCountError(result.status, result.error)) break;
+
+      console.warn(
+        `[SupabaseLogger] Failed to count ${label} (${this.formatCountError(result.status, result.error)}), ` +
+          `retrying in ${retryDelay}ms (attempt ${attempt}/${maxAttempts})`,
+      );
+      await sleep(retryDelay);
+    }
+
+    const headFailure = this.formatCountError(lastFailure!.status, lastFailure!.error);
+    const fallback = await this.settleCountQuery(makeQuery(false));
+    if (!fallback.error) {
+      console.warn(`[SupabaseLogger] Count ${label} recovered via GET fallback after HEAD failure: ${headFailure}`);
+      return fallback.count ?? 0;
+    }
+
+    console.warn(
+      `[SupabaseLogger] Failed to count ${label}: HEAD ${headFailure}; ` +
+        `GET fallback ${this.formatCountError(fallback.status, fallback.error)}`,
+    );
+    return 0;
   }
 
   /** Count notes submitted in the last N hours (rolling window) */
   async countRecentSubmissions(hours: number): Promise<number> {
     const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
     return this.runExactCount(
-      this.client.from("notes").select("*", { count: "exact", head: true }).gte("submitted_at", since),
+      (head) => this.client.from("notes").select("id", { count: "exact", head }).gte("submitted_at", since).limit(1),
       "recent submissions",
     );
   }
@@ -1099,7 +1191,8 @@ export class SupabaseLogger {
   async countRecentPipelineRuns(hours: number): Promise<number> {
     const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
     return this.runExactCount(
-      this.client.from("pipeline_runs").select("*", { count: "exact", head: true }).gte("created_at", since),
+      (head) =>
+        this.client.from("pipeline_runs").select("id", { count: "exact", head }).gte("created_at", since).limit(1),
       "recent pipeline runs",
     );
   }
@@ -1108,26 +1201,14 @@ export class SupabaseLogger {
   async countRecentPipelineRunsByOutcomes(hours: number, outcomes: string[]): Promise<number> {
     const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
     return this.runExactCount(
-      this.client
-        .from("pipeline_runs")
-        .select("*", { count: "exact", head: true })
-        .gte("created_at", since)
-        .in("outcome", outcomes),
+      (head) =>
+        this.client
+          .from("pipeline_runs")
+          .select("id", { count: "exact", head })
+          .gte("created_at", since)
+          .in("outcome", outcomes)
+          .limit(1),
       "recent pipeline runs by outcome",
     );
   }
-
-  /** Check if any notes have been submitted since a given ISO timestamp */
-  async hasSubmissionsSince(since: string): Promise<boolean> {
-    const { count, error } = await this.client
-      .from("notes")
-      .select("*", { count: "exact", head: true })
-      .gte("submitted_at", since);
-    if (error) {
-      console.warn("[SupabaseLogger] Failed to check submissions since:", error.message);
-      return true; // assume reset on error so we don't get stuck in cautious mode
-    }
-    return (count ?? 0) > 0;
-  }
-
 }
