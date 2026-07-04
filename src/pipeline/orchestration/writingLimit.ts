@@ -39,23 +39,28 @@ export async function recordDailyLimitHit(logger: SupabaseLogger): Promise<void>
 }
 
 /**
- * True while we should still treat ourselves as capped and narrow the feed:
- * X rejected a submission with its daily limit within the last
- * RECENTLY_HIT_WINDOW_HOURS AND submissions haven't since climbed above the cap
- * proven at that hit (X).
+ * True while we should still treat ourselves as capped: X rejected a submission
+ * with its daily limit within the last `windowHours` AND submissions haven't
+ * since climbed above the cap proven at that hit (X).
  *
  * Once submissions exceed X the cap has risen — a submission only succeeds above
  * X if X let it — so we're no longer capped. Submissions merely refilling a slot
  * freed as an old note ages out (count == X) leave us capped. We compare the live
  * count to X rather than writing_limit, which probes to count+1 on every success
  * (including refills) and so can't distinguish a real cap-rise from a refill.
+ *
+ * `windowHours` defaults to the feed-narrowing window; callers needing a
+ * different confidence horizon (e.g. per-run post budgeting) pass their own.
  */
-export async function hitWritingLimitRecently(logger: SupabaseLogger): Promise<boolean> {
+export async function hitWritingLimitRecently(
+  logger: SupabaseLogger,
+  windowHours: number = RECENTLY_HIT_WINDOW_HOURS,
+): Promise<boolean> {
   const raw = await logger.getPipelineState(LIMIT_HIT_AT_KEY);
   if (!raw) return false;
   const hitAt = Date.parse(raw);
   if (!Number.isFinite(hitAt)) return false;
-  if (Date.now() - hitAt >= RECENTLY_HIT_WINDOW_HOURS * 60 * 60 * 1000) return false;
+  if (Date.now() - hitAt >= windowHours * 60 * 60 * 1000) return false;
 
   const capAtHit = Number(await logger.getPipelineState(LIMIT_HIT_VALUE_KEY));
   if (!Number.isFinite(capAtHit)) return true; // no proven cap to compare — stay capped
