@@ -29,13 +29,22 @@ export interface MaxPostsResult {
 }
 
 export async function computeMaxPosts(logger: SupabaseLogger): Promise<MaxPostsResult> {
+  const budget = await estimateWritingBudget(logger);
+
+  // Past the confidence window the stored limit is stale, so stop rationing and
+  // process the full per-run max — but still surface the estimate we'd otherwise
+  // have used, so the logs show what the rate-based budget looked like.
   if (!(await hitWritingLimitRecently(logger, CONFIDENT_LIMIT_WINDOW_HOURS))) {
     console.log(
-      `[max-posts] no binding writing-limit hit in last ${CONFIDENT_LIMIT_WINDOW_HOURS}h — maxPosts=${MAX_POSTS_CAP}`,
+      `[max-posts] no binding writing-limit hit in last ${CONFIDENT_LIMIT_WINDOW_HOURS}h` +
+        ` — estimate=${budget.estimate} overridden → maxPosts=${MAX_POSTS_CAP}`,
     );
-    return { maxPosts: MAX_POSTS_CAP, estimate: MAX_POSTS_CAP };
+    return { maxPosts: MAX_POSTS_CAP, estimate: budget.estimate };
   }
+  return budget;
+}
 
+async function estimateWritingBudget(logger: SupabaseLogger): Promise<MaxPostsResult> {
   const writingLimit = await readWritingLimit(logger);
   if (writingLimit === null) {
     console.log(`[max-posts] writing_limit unknown — using fallback ${FALLBACK_MAX_POSTS}`);
