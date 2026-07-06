@@ -71,11 +71,22 @@ function cnStatusToFailureType(
   return "uncategorized";
 }
 
-// "Underwater": net-negative ratings. Uses the exact resolution rule the card's
-// rating badge uses (public-dump counts first, scraped note counts as fallback)
-// so the filter never disagrees with what the card displays.
+// "Underwater": a NEEDS_MORE_RATINGS note that, once it has enough ratings,
+// scores below Community Notes' own display bar. CN encodes each rating
+// Helpful=1 / Somewhat=0.5 / Not=0 and publishes a note when its
+// leniency-adjusted intercept clears 0.4. We can't see that adjusted intercept
+// (it needs the full rater matrix), so we approximate it with the raw weighted
+// average of the public rating counts against the same 0.4 threshold. Notes with
+// fewer than UNDERWATER_MIN_RATINGS ratings stay "Needs More Ratings" — genuinely
+// undecided, not sunk. Helpful/not-helpful use the card badge's resolution rule
+// (public-dump first, scraped fallback); somewhat comes from the public dump only.
+const UNDERWATER_RATIO_THRESHOLD = 0.4;
+const UNDERWATER_MIN_RATINGS = 5;
 function isUnderwaterNote(
-  publicDumpRatings: { helpful_count?: number | null; not_helpful_count?: number | null } | null | undefined,
+  publicDumpRatings:
+    | { helpful_count?: number | null; somewhat_helpful_count?: number | null; not_helpful_count?: number | null }
+    | null
+    | undefined,
   helpfulCount: number | null | undefined,
   notHelpfulCount: number | null | undefined,
 ): boolean {
@@ -84,7 +95,10 @@ function isUnderwaterNote(
     helpfulCount,
     notHelpfulCount,
   );
-  return notHelpful > helpful;
+  const somewhat = publicDumpRatings?.somewhat_helpful_count ?? 0;
+  const total = helpful + somewhat + notHelpful;
+  if (total < UNDERWATER_MIN_RATINGS) return false;
+  return (helpful + 0.5 * somewhat) / total < UNDERWATER_RATIO_THRESHOLD;
 }
 
 const ONE_HOUR_MS = 60 * 60 * 1000;
@@ -628,7 +642,7 @@ export async function fetchProductionPillData(): Promise<ProductionPillData> {
     // the same public-dump-first resolution as the loaded cards. Counts-only
     // columns (no tag JSONBs) keep the scan cheap.
     fetchAllRowsParallel<any>(
-      () => supabase.from("note_ratings_from_public_dump").select("note_id, helpful_count, not_helpful_count").order("note_id", { ascending: true }),
+      () => supabase.from("note_ratings_from_public_dump").select("note_id, helpful_count, somewhat_helpful_count, not_helpful_count").order("note_id", { ascending: true }),
       "count_public_ratings",
     ),
     fetchAllRows<any>(
