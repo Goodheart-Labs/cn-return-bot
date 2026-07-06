@@ -8,6 +8,7 @@ import type {
   FailureModeInfo,
 } from "./types";
 import { resultToFailureType, FAILURE_TYPE_CONFIG } from "./types";
+import { resolveRatingCounts } from "../../../dashboard-shared/Ratings";
 import { fetchAllRows, fetchInBatches } from "../../../dashboard-shared/supabasePaging";
 import { CANONICAL_LIST_COLS, TWEET_LIST_COLS, PUBLIC_DUMP_RATING_COLS, DEFAULT_VIEW_STATUSES, DEFAULT_VIEW_LIMIT } from "../../../dashboard-shared/productionView";
 import { csvRowToReviewItemInsert } from "../../../dashboard-shared/reviewUpload";
@@ -61,12 +62,29 @@ function isMissedOppCompetingNote(cn: any): boolean {
 function cnStatusToFailureType(
   cnStatus: string | null,
   hasHelpfulCompetitor: boolean,
+  isUnderwater: boolean,
 ): FailureType {
   if (cnStatus === "CURRENTLY_RATED_HELPFUL") return "rated_helpful";
   if (cnStatus === "CURRENTLY_RATED_NOT_HELPFUL") return "rated_unhelpful";
   if (hasHelpfulCompetitor) return "lost_to_competitor";
-  if (cnStatus === "NEEDS_MORE_RATINGS") return "needs_more_ratings";
+  if (cnStatus === "NEEDS_MORE_RATINGS") return isUnderwater ? "underwater" : "needs_more_ratings";
   return "uncategorized";
+}
+
+// "Underwater": net-negative ratings. Uses the exact resolution rule the card's
+// rating badge uses (public-dump counts first, scraped note counts as fallback)
+// so the filter never disagrees with what the card displays.
+function isUnderwaterNote(
+  publicDumpRatings: { helpful_count?: number | null; not_helpful_count?: number | null } | null | undefined,
+  helpfulCount: number | null | undefined,
+  notHelpfulCount: number | null | undefined,
+): boolean {
+  const { helpful, notHelpful } = resolveRatingCounts(
+    publicDumpRatings as any,
+    helpfulCount,
+    notHelpfulCount,
+  );
+  return notHelpful > helpful;
 }
 
 const ONE_HOUR_MS = 60 * 60 * 1000;
@@ -427,7 +445,12 @@ export function buildDashboardItems(data: DashboardData): ReviewItem[] {
     const tweet = tweetsById.get(note.tweet_id);
     const hasHelpfulCompetitor = helpfulCompetitorNoteIds.has(note.note_id);
     const compNotes = competingByOurNote.get(note.note_id) ?? [];
-    const failureType = cnStatusToFailureType(note.cn_status, hasHelpfulCompetitor);
+    const publicDump = publicRatingsByNoteId.get(note.note_id);
+    const failureType = cnStatusToFailureType(
+      note.cn_status,
+      hasHelpfulCompetitor,
+      isUnderwaterNote(publicDump, note.helpful_count, note.not_helpful_count),
+    );
     items.push({
       id: note.note_id,
       source: "production" as const,
@@ -447,7 +470,7 @@ export function buildDashboardItems(data: DashboardData): ReviewItem[] {
       ratingCount: note.rating_count,
       helpfulCount: note.helpful_count,
       notHelpfulCount: note.not_helpful_count,
-      publicDumpRatings: publicRatingsByNoteId.get(note.note_id),
+      publicDumpRatings: publicDump,
       outcome: pipeline?.outcome,
       outcomeReason: pipeline?.outcome_reason,
       pipelineRunId: pipeline?.id,
@@ -592,13 +615,21 @@ export interface ProductionPillData {
  * `cnStatusToFailureType`.
  */
 export async function fetchProductionPillData(): Promise<ProductionPillData> {
-  const [notes, helpfulCompeting, missed, lowEval, annotationRows, abRuns] = await Promise.all([
+  const [notes, publicRatings, helpfulCompeting, missed, lowEval, annotationRows, abRuns] = await Promise.all([
     // The notes scan is the bottleneck of this once-per-session load (~4 pages);
     // paginate it in parallel. The others are single-page, so they stay serial.
     // Stable ORDER BY note_id so the concurrent page ranges partition cleanly.
+    // helpful/not_helpful counts feed the underwater classification.
     fetchAllRowsParallel<any>(
-      () => supabase.from("notes").select("note_id, cn_status, tweet_id").order("note_id", { ascending: true }),
+      () => supabase.from("notes").select("note_id, cn_status, tweet_id, helpful_count, not_helpful_count").order("note_id", { ascending: true }),
       "count_notes",
+    ),
+    // Public-dump rating counts for every note, so the underwater pill count uses
+    // the same public-dump-first resolution as the loaded cards. Counts-only
+    // columns (no tag JSONBs) keep the scan cheap.
+    fetchAllRowsParallel<any>(
+      () => supabase.from("note_ratings_from_public_dump").select("note_id, helpful_count, not_helpful_count").order("note_id", { ascending: true }),
+      "count_public_ratings",
     ),
     fetchAllRows<any>(
       supabase
@@ -639,6 +670,8 @@ export async function fetchProductionPillData(): Promise<ProductionPillData> {
   ]);
 
   const helpfulCompetitorNoteIds = new Set(helpfulCompeting.map((c: any) => c.our_note_id));
+  const publicRatingsByNoteId = new Map<string, any>();
+  for (const r of publicRatings) publicRatingsByNoteId.set(r.note_id, r);
   const seenByTargetId = new Map<string, boolean>();
   for (const a of annotationRows) seenByTargetId.set(a.target_id, !!a.seen);
   const abPicksByTweet = new Map<string, AbPicks>();
@@ -652,7 +685,11 @@ export async function fetchProductionPillData(): Promise<ProductionPillData> {
   ) as Record<FailureType, number>;
   const notesSeen: ProductionPillData["notesSeen"] = [];
   for (const note of notes) {
-    const failureType = cnStatusToFailureType(note.cn_status, helpfulCompetitorNoteIds.has(note.note_id));
+    const failureType = cnStatusToFailureType(
+      note.cn_status,
+      helpfulCompetitorNoteIds.has(note.note_id),
+      isUnderwaterNote(publicRatingsByNoteId.get(note.note_id), note.helpful_count, note.not_helpful_count),
+    );
     counts[failureType]++;
     notesSeen.push({
       noteId: note.note_id,
