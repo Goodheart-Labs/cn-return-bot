@@ -47,6 +47,7 @@ const SEEN_AWARE_FAILURE_TYPES: FailureType[] = ["rated_helpful", "rated_unhelpf
 const FULLY_LOADED = new Set<FailureType>(FULLY_LOADED_FAILURE_TYPES);
 
 import { NoteCard } from "./components/NoteCard";
+import { SimilarityPanel } from "./components/SimilarityPanel";
 import { FilterBar } from "./components/FilterBar";
 import { DatasetSelector } from "./components/DatasetSelector";
 import { UploadDialog } from "./components/UploadDialog";
@@ -129,6 +130,9 @@ export function App() {
   const [abFilters, setAbFilters] = useState<ABFilters>({});
   // A/B filter section is collapsed by default (its slots stream in as data loads).
   const [abOpen, setAbOpen] = useState(false);
+  const [view, setView] = useState<"review" | "similarity">(() =>
+    new URLSearchParams(window.location.search).get("view") === "similarity" ? "similarity" : "review",
+  );
   const [counts, setCounts] = useState<Record<FailureType, number>>({} as any);
   // All-time tag usage for production pills, fetched once per production
   // session and adjusted optimistically on tag edits. Dataset runs derive
@@ -638,7 +642,26 @@ export function App() {
     setDataset({ type: "dataset_run", id, name });
   };
 
+  const tabClass = (active: boolean) =>
+    `text-sm px-3 py-1 rounded-md border ${
+      active ? "bg-indigo-600 text-white border-indigo-600" : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+    }`;
+
   return (
+    <>
+      {/* Top nav */}
+      <div className="max-w-6xl mx-auto px-4 pt-4 flex items-center gap-2">
+        <button onClick={() => setView("review")} className={tabClass(view === "review")}>
+          Note Review
+        </button>
+        <button onClick={() => setView("similarity")} className={tabClass(view === "similarity")}>
+          Similarity (derisk)
+        </button>
+      </div>
+
+      {view === "similarity" ? (
+        <SimilarityPanel />
+      ) : (
     <div className="max-w-4xl mx-auto px-4 py-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
@@ -821,5 +844,7 @@ export function App() {
         onUploaded={handleUploaded}
       />
     </div>
+      )}
+    </>
   );
 }

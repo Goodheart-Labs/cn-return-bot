@@ -65,6 +65,7 @@
     "ignoreBinaries": ["lsof", "open", "sleep"],
     "ignoreFiles": [
       "src/dashboard-shared/media.ts",
+      "src/dashboard-shared/CompetingNoteCard.tsx",
       "src/stats-dashboard/vite.config.ts",
       "src/stats-dashboard/src/lib/**"
     ]

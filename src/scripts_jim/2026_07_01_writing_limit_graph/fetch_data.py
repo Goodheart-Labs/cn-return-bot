@@ -67,13 +67,21 @@ def fetch_limit_hits():
     return hits
 
 
-print("Fetching submissions (notes.submitted_at)...")
-submissions = fetch_all_submissions()
-print(f"  {len(submissions)} submissions")
+def refresh() -> dict:
+    """Fetch both data sources, write data.json, and return the payload."""
+    print("Fetching submissions (notes.submitted_at)...")
+    submissions = fetch_all_submissions()
+    print(f"  {len(submissions)} submissions")
 
-print("Fetching daily_limit_reached events (pipeline_runs)...")
-limit_hits = fetch_limit_hits()
-print(f"  {len(limit_hits)} skipped-candidate rows")
+    print("Fetching daily_limit_reached events (pipeline_runs)...")
+    limit_hits = fetch_limit_hits()
+    print(f"  {len(limit_hits)} skipped-candidate rows")
 
-OUT.write_text(json.dumps({"submissions": submissions, "limit_hits": limit_hits}))
-print(f"Wrote {OUT}")
+    data = {"submissions": submissions, "limit_hits": limit_hits}
+    OUT.write_text(json.dumps(data))
+    print(f"Wrote {OUT}")
+    return data
+
+
+if __name__ == "__main__":
+    refresh()

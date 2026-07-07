@@ -18,6 +18,8 @@ Run:  uv run src/scripts_jim/2026_07_01_writing_limit_graph/app.py
       (fetch_data.py must have been run first to produce data.json)
 """
 import json
+import subprocess
+import time
 from pathlib import Path
 
 import numpy as np
@@ -25,8 +27,36 @@ import pandas as pd
 import plotly.graph_objects as go
 from dash import Dash, dcc, html, Input, Output
 
+import fetch_data
+
 HERE = Path(__file__).resolve().parent
-DATA = json.loads((HERE / "data.json").read_text())
+DATA_FILE = HERE / "data.json"
+
+PORT = 8055
+MAX_CACHE_AGE_SECONDS = 3600  # refresh from Supabase if data.json is older than this
+
+
+def load_data() -> dict:
+    """Use the cached data.json unless it's missing or stale, else re-fetch."""
+    fresh = DATA_FILE.exists() and time.time() - DATA_FILE.stat().st_mtime < MAX_CACHE_AGE_SECONDS
+    if fresh:
+        return json.loads(DATA_FILE.read_text())
+    print("data.json missing or stale — refreshing from Supabase...")
+    return fetch_data.refresh()
+
+
+DATA = load_data()
+
+
+def free_port(port: int) -> None:
+    """Kill whatever is bound to `port` so a stale server doesn't block startup."""
+    pids = subprocess.run(
+        ["lsof", "-ti", f"tcp:{port}"], capture_output=True, text=True
+    ).stdout.split()
+    for pid in pids:
+        subprocess.run(["kill", "-9", pid])
+    if pids:
+        print(f"Freed port {port} (killed pid {', '.join(pids)})")
 
 HOUR_NS = 3_600_000_000_000
 CAP_WINDOW_HOURS = 24            # X's real cap window
@@ -165,5 +195,6 @@ def update(window_hours, range_key):
 
 
 if __name__ == "__main__":
-    print("Writing-limit graph → http://127.0.0.1:8055")
-    app.run(debug=False, port=8055)
+    free_port(PORT)
+    print(f"Writing-limit graph → http://127.0.0.1:{PORT}")
+    app.run(debug=False, port=PORT)

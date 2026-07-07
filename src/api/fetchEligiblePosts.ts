@@ -86,6 +86,22 @@ export const POST_API_FIELD_PARAMS: Record<string, string> = {
     "article.cover_media,article.media_entities,attachments.media_keys,attachments.media_source_tweet,attachments.poll_ids,author_id,edit_history_tweet_ids,entities.mentions.username,geo.place_id,in_reply_to_user_id,referenced_tweets.id,referenced_tweets.id.attachments.media_keys,referenced_tweets.id.author_id",
 };
 
+// tweet.fields that X only accepts on the note-writing eligibility endpoint
+// (API_URL). The generic /2/tweets/{id} lookup 400s on them ("not one of ..."),
+// so fetchTweetById strips them via singleTweetFieldParams().
+const ELIGIBILITY_ONLY_TWEET_FIELDS = ["matched_media_notes", "note_request_suggestions"];
+
+/** POST_API_FIELD_PARAMS with the eligibility-only tweet.fields removed, for the
+ *  single-tweet /2/tweets/{id} endpoint (fetchTweetById). */
+export function singleTweetFieldParams(): Record<string, string> {
+  const drop = new Set(ELIGIBILITY_ONLY_TWEET_FIELDS);
+  const tweetFields = POST_API_FIELD_PARAMS["tweet.fields"]!
+    .split(",")
+    .filter((field) => !drop.has(field))
+    .join(",");
+  return { ...POST_API_FIELD_PARAMS, "tweet.fields": tweetFields };
+}
+
 async function fetchPage(
   maxResults: number,
   postSelection: string | undefined,

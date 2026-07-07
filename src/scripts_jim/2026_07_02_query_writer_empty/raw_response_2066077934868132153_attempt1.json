@@ -1,0 +1,54 @@
+{
+  "id": "gen-1782986034-djPXzqeLnHHA0k942ger",
+  "object": "chat.completion",
+  "created": 1782986034,
+  "model": "deepseek/deepseek-v4-flash-20260423",
+  "provider": "AtlasCloud",
+  "system_fingerprint": null,
+  "service_tier": null,
+  "choices": [
+    {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "stop",
+      "message": {
+        "role": "assistant",
+        "content": "{\n  \"queries\": []\n}",
+        "refusal": null,
+        "reasoning": "We need to analyze the tweet. The post is from \"Troll Football\" with a photo of three soccer players: two tall Australian players (numbers 19 and 15) on either side of a shorter Turkish player (number 7). The caption is \"Two and a Half Men\" — a reference to the sitcom. This is clearly a joke/visual pun about the height comparison. No factual claims are made about events, identities, or statistics. The image shows actual players, but the tweet itself is a humorous observation, not a factual claim. The author is a troll account. No checkable factual claim: it's a meme about player heights. Therefore, no queries needed. Return empty list.",
+        "reasoning_details": [
+          {
+            "type": "reasoning.text",
+            "text": "We need to analyze the tweet. The post is from \"Troll Football\" with a photo of three soccer players: two tall Australian players (numbers 19 and 15) on either side of a shorter Turkish player (number 7). The caption is \"Two and a Half Men\" — a reference to the sitcom. This is clearly a joke/visual pun about the height comparison. No factual claims are made about events, identities, or statistics. The image shows actual players, but the tweet itself is a humorous observation, not a factual claim. The author is a troll account. No checkable factual claim: it's a meme about player heights. Therefore, no queries needed. Return empty list.",
+            "format": "unknown",
+            "index": 0
+          }
+        ]
+      }
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 1285,
+    "completion_tokens": 154,
+    "total_tokens": 1439,
+    "cost": 0.000093996,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 1152,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0.000093996,
+      "upstream_inference_prompt_cost": 0.000050876,
+      "upstream_inference_completions_cost": 0.00004312
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 144,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  }
+}
