@@ -113,7 +113,11 @@ serve({
     // request still serves the snapshot already in hand (instant).
     fetchDefaultView().then((dv) => { if (dv) defaultView = dv; });
     const html = injectCredentials(readFileSync(join(import.meta.dir, "dist/index.html"), "utf-8"));
-    return new Response(html, { headers: { "Content-Type": "text/html" } });
+    // Never cache the HTML: it references content-hashed JS/CSS, so a plain
+    // refresh must always re-read index.html to pick up a new build's hashes.
+    return new Response(html, {
+      headers: { "Content-Type": "text/html", "Cache-Control": "no-store, must-revalidate" },
+    });
   },
 });
 

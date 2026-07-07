@@ -9,9 +9,11 @@ import { fetchEligiblePosts } from "../../api/fetchEligiblePosts";
 import { SupabaseLogger } from "../../api/supabaseClient";
 import { getBotById } from "../../bots/index";
 import { processSingleTweet, type ProcessTweetResult } from "./processTweet";
+import { MAX_POSTS_CAP } from "./computeMaxPosts";
 import type { Candidate } from "./submitCandidates";
 import { createTweetLog, withTweetLog, formatTweetLogSummary, formatTweetLogFull, formatRunSummary, getLoggedBotId, type TweetLogMap } from "../utils/tweetLog";
 import { buildPostSelection } from "./utils/feedSizeStrategy";
+import { hitWritingLimitRecently } from "./writingLimit";
 import { ageInHours, formatCount, sortByRecencyAndImpressions } from "./utils/tweetSorting";
 import { runABTests, getBotProbabilities, getForcedPicks, withForcedPicks } from "../ab-testing/abTests";
 import { AB_TESTS } from "../ab-testing/abTestsData";
@@ -31,7 +33,27 @@ const BACKLOG_LIMIT = 1000;
 // then `xxl`, deduping against tiers already taken. Each post is tagged with the
 // tier it came from (recorded per-post in ab_test_picks.feed_size). Deeper tiers
 // are only fetched when shallower ones don't fill maxPosts.
-const FEED_SIZE_LADDER: FeedSize[] = ["small", "large", "xl", "xxl"];
+const FULL_FEED_LADDER: FeedSize[] = ["small", "large", "xl", "xxl"];
+const SMALL_ONLY_LADDER: FeedSize[] = ["small"];
+
+// Only broaden past the curated small feed when we estimate we need to process
+// a lot of tweets to hit the writing limit. When the estimate is low the small
+// feed alone supplies enough fresh, higher-quality posts, so we skip the larger
+// tiers entirely. Pinned to 2× the per-run cap so the two move together: we dig
+// into the larger/lower-quality tiers only once demand exceeds roughly two full
+// runs' worth. The estimate is uncapped (unlike maxPosts), so this exceeds it.
+const BROADEN_FEED_ESTIMATE_CAP_MULTIPLE = 2;
+const BROADEN_FEED_ESTIMATE_THRESHOLD = BROADEN_FEED_ESTIMATE_CAP_MULTIPLE * MAX_POSTS_CAP;
+
+// Narrowing to small-only only makes sense when we're genuinely submission-
+// constrained. Until X actually rejects with a daily-limit error, writing_limit
+// is just a probe (count+1), so remainingSlots ≈ 1 and the estimate is
+// artificially tiny — that must not starve us into small-only. Gate the narrowing
+// on a real limit hit in the last 6h; otherwise always use the full ladder.
+function selectFeedLadder(estimate: number, hitLimitRecently: boolean): FeedSize[] {
+  if (!hitLimitRecently) return FULL_FEED_LADDER;
+  return estimate >= BROADEN_FEED_ESTIMATE_THRESHOLD ? FULL_FEED_LADDER : SMALL_ONLY_LADDER;
+}
 
 /** A post plus the feed tier it was sourced from (recorded as its feed_size pick). */
 interface SourcedPost {
@@ -46,6 +68,7 @@ interface SourcedPost {
 async function fetchPosts(
   supabaseLogger: SupabaseLogger | null,
   maxPosts: number,
+  estimate: number,
   prefetchedSkipPostIds?: Set<string>,
   prefetchedKnownTweetIds?: Set<string>,
 ): Promise<{ posts: SourcedPost[] }> {
@@ -81,7 +104,10 @@ async function fetchPosts(
   const takenIds = new Set<string>();
   const allNew: Post[] = [];
 
-  for (const feedSize of FEED_SIZE_LADDER) {
+  const hitLimitRecently = supabaseLogger ? await hitWritingLimitRecently(supabaseLogger) : false;
+  const feedLadder = selectFeedLadder(estimate, hitLimitRecently);
+  console.log(`[generate] estimate=${estimate} limitHitRecently=${hitLimitRecently} → feed ladder [${feedLadder.join(", ")}]`);
+  for (const feedSize of feedLadder) {
     if (selected.length >= maxPosts) break;
     let posts: Post[];
     try {
@@ -188,7 +214,12 @@ export async function processPosts(
   for (const [idx, item] of items.entries()) {
     // Force the feed_size pick to the feed THIS post came from (small vs large
     // fill); falls back to the run-level size for callers that don't tag posts.
-    const feedSizePick = { ...outerForcedPicks, feed_size: item.feedSize ?? feedSize };
+    // Misinfo pre-pass posts carry a MonitoringContext — record that they came
+    // from monitoring and which topic; regular posts sample the default no/none.
+    const monitoringPicks: Record<string, string> = item.monitoring
+      ? { misinfo_monitoring: "yes", misinfo_topic: item.monitoring.topicId }
+      : {};
+    const feedSizePick = { ...outerForcedPicks, feed_size: item.feedSize ?? feedSize, ...monitoringPicks };
     queue.add(() => withForcedPicks(feedSizePick, () => withMonitoringContext(item.monitoring, async () => {
       // Forced picks (if any) are already in ALS — set up by runPipeline.ts
       // via withForcedPicks. runABTests honours them for whichever tests fire.
@@ -250,6 +281,9 @@ export async function processPosts(
 
 export interface GenerateCandidatesOptions {
   maxPosts: number;
+  /** Uncapped estimate of posts needed to hit the writing limit; selects feed
+   *  breadth (full ladder when high, small-only otherwise). */
+  estimate: number;
   /** Pre-fetched by runPipeline and shared with the misinfo pre-pass to avoid
    *  double-scanning notes/pipeline_runs/tweets. Omitted callers fetch them. */
   skipPostIds?: Set<string>;
@@ -259,7 +293,7 @@ export interface GenerateCandidatesOptions {
 
 export async function generateCandidates(
   supabaseLogger: SupabaseLogger | null,
-  { maxPosts, skipPostIds, knownTweetIds, onTweetProcessed }: GenerateCandidatesOptions,
+  { maxPosts, estimate, skipPostIds, knownTweetIds, onTweetProcessed }: GenerateCandidatesOptions,
 ): Promise<Candidate[]> {
   const outerForcedPicks = getForcedPicks();
   if (Object.keys(outerForcedPicks).length > 0) {
@@ -269,7 +303,7 @@ export async function generateCandidates(
   const activeBots = botProbs.filter((b) => b.probability > 0);
   console.log(`[generate] Bots: ${activeBots.map((b) => `${b.id} ${b.probability.toFixed(1)}%`).join(", ")}`);
 
-  const { posts } = await fetchPosts(supabaseLogger, maxPosts, skipPostIds, knownTweetIds);
+  const { posts } = await fetchPosts(supabaseLogger, maxPosts, estimate, skipPostIds, knownTweetIds);
   if (!posts.length) {
     console.log("[generate] No eligible posts found.");
     return [];

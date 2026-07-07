@@ -8,6 +8,7 @@ import type {
   FailureModeInfo,
 } from "./types";
 import { resultToFailureType, FAILURE_TYPE_CONFIG } from "./types";
+import { resolveRatingCounts } from "../../../dashboard-shared/Ratings";
 import { fetchAllRows, fetchInBatches } from "../../../dashboard-shared/supabasePaging";
 import { CANONICAL_LIST_COLS, TWEET_LIST_COLS, PUBLIC_DUMP_RATING_COLS, DEFAULT_VIEW_STATUSES, DEFAULT_VIEW_LIMIT } from "../../../dashboard-shared/productionView";
 import { csvRowToReviewItemInsert } from "../../../dashboard-shared/reviewUpload";
@@ -61,12 +62,43 @@ function isMissedOppCompetingNote(cn: any): boolean {
 function cnStatusToFailureType(
   cnStatus: string | null,
   hasHelpfulCompetitor: boolean,
+  isUnderwater: boolean,
 ): FailureType {
   if (cnStatus === "CURRENTLY_RATED_HELPFUL") return "rated_helpful";
   if (cnStatus === "CURRENTLY_RATED_NOT_HELPFUL") return "rated_unhelpful";
   if (hasHelpfulCompetitor) return "lost_to_competitor";
-  if (cnStatus === "NEEDS_MORE_RATINGS") return "needs_more_ratings";
+  if (cnStatus === "NEEDS_MORE_RATINGS") return isUnderwater ? "underwater" : "needs_more_ratings";
   return "uncategorized";
+}
+
+// "Underwater": a NEEDS_MORE_RATINGS note that, once it has enough ratings,
+// scores below Community Notes' own display bar. CN encodes each rating
+// Helpful=1 / Somewhat=0.5 / Not=0 and publishes a note when its
+// leniency-adjusted intercept clears 0.4. We can't see that adjusted intercept
+// (it needs the full rater matrix), so we approximate it with the raw weighted
+// average of the public rating counts against the same 0.4 threshold. Notes with
+// fewer than UNDERWATER_MIN_RATINGS ratings stay "Needs More Ratings" — genuinely
+// undecided, not sunk. Helpful/not-helpful use the card badge's resolution rule
+// (public-dump first, scraped fallback); somewhat comes from the public dump only.
+const UNDERWATER_RATIO_THRESHOLD = 0.4;
+const UNDERWATER_MIN_RATINGS = 5;
+function isUnderwaterNote(
+  publicDumpRatings:
+    | { helpful_count?: number | null; somewhat_helpful_count?: number | null; not_helpful_count?: number | null }
+    | null
+    | undefined,
+  helpfulCount: number | null | undefined,
+  notHelpfulCount: number | null | undefined,
+): boolean {
+  const { helpful, notHelpful } = resolveRatingCounts(
+    publicDumpRatings as any,
+    helpfulCount,
+    notHelpfulCount,
+  );
+  const somewhat = publicDumpRatings?.somewhat_helpful_count ?? 0;
+  const total = helpful + somewhat + notHelpful;
+  if (total < UNDERWATER_MIN_RATINGS) return false;
+  return (helpful + 0.5 * somewhat) / total < UNDERWATER_RATIO_THRESHOLD;
 }
 
 const ONE_HOUR_MS = 60 * 60 * 1000;
@@ -417,6 +449,7 @@ export function buildDashboardItems(data: DashboardData): ReviewItem[] {
       seen: a.seen,
       failureModes: a.failure_modes ?? [],
       comment: a.comment,
+      highValue: a.high_value ?? false,
     });
   }
 
@@ -427,7 +460,12 @@ export function buildDashboardItems(data: DashboardData): ReviewItem[] {
     const tweet = tweetsById.get(note.tweet_id);
     const hasHelpfulCompetitor = helpfulCompetitorNoteIds.has(note.note_id);
     const compNotes = competingByOurNote.get(note.note_id) ?? [];
-    const failureType = cnStatusToFailureType(note.cn_status, hasHelpfulCompetitor);
+    const publicDump = publicRatingsByNoteId.get(note.note_id);
+    const failureType = cnStatusToFailureType(
+      note.cn_status,
+      hasHelpfulCompetitor,
+      isUnderwaterNote(publicDump, note.helpful_count, note.not_helpful_count),
+    );
     items.push({
       id: note.note_id,
       source: "production" as const,
@@ -447,7 +485,7 @@ export function buildDashboardItems(data: DashboardData): ReviewItem[] {
       ratingCount: note.rating_count,
       helpfulCount: note.helpful_count,
       notHelpfulCount: note.not_helpful_count,
-      publicDumpRatings: publicRatingsByNoteId.get(note.note_id),
+      publicDumpRatings: publicDump,
       outcome: pipeline?.outcome,
       outcomeReason: pipeline?.outcome_reason,
       pipelineRunId: pipeline?.id,
@@ -592,13 +630,21 @@ export interface ProductionPillData {
  * `cnStatusToFailureType`.
  */
 export async function fetchProductionPillData(): Promise<ProductionPillData> {
-  const [notes, helpfulCompeting, missed, lowEval, annotationRows, abRuns] = await Promise.all([
+  const [notes, publicRatings, helpfulCompeting, missed, lowEval, annotationRows, abRuns] = await Promise.all([
     // The notes scan is the bottleneck of this once-per-session load (~4 pages);
     // paginate it in parallel. The others are single-page, so they stay serial.
     // Stable ORDER BY note_id so the concurrent page ranges partition cleanly.
+    // helpful/not_helpful counts feed the underwater classification.
     fetchAllRowsParallel<any>(
-      () => supabase.from("notes").select("note_id, cn_status, tweet_id").order("note_id", { ascending: true }),
+      () => supabase.from("notes").select("note_id, cn_status, tweet_id, helpful_count, not_helpful_count").order("note_id", { ascending: true }),
       "count_notes",
+    ),
+    // Public-dump rating counts for every note, so the underwater pill count uses
+    // the same public-dump-first resolution as the loaded cards. Counts-only
+    // columns (no tag JSONBs) keep the scan cheap.
+    fetchAllRowsParallel<any>(
+      () => supabase.from("note_ratings_from_public_dump").select("note_id, helpful_count, somewhat_helpful_count, not_helpful_count").order("note_id", { ascending: true }),
+      "count_public_ratings",
     ),
     fetchAllRows<any>(
       supabase
@@ -639,6 +685,8 @@ export async function fetchProductionPillData(): Promise<ProductionPillData> {
   ]);
 
   const helpfulCompetitorNoteIds = new Set(helpfulCompeting.map((c: any) => c.our_note_id));
+  const publicRatingsByNoteId = new Map<string, any>();
+  for (const r of publicRatings) publicRatingsByNoteId.set(r.note_id, r);
   const seenByTargetId = new Map<string, boolean>();
   for (const a of annotationRows) seenByTargetId.set(a.target_id, !!a.seen);
   const abPicksByTweet = new Map<string, AbPicks>();
@@ -652,7 +700,11 @@ export async function fetchProductionPillData(): Promise<ProductionPillData> {
   ) as Record<FailureType, number>;
   const notesSeen: ProductionPillData["notesSeen"] = [];
   for (const note of notes) {
-    const failureType = cnStatusToFailureType(note.cn_status, helpfulCompetitorNoteIds.has(note.note_id));
+    const failureType = cnStatusToFailureType(
+      note.cn_status,
+      helpfulCompetitorNoteIds.has(note.note_id),
+      isUnderwaterNote(publicRatingsByNoteId.get(note.note_id), note.helpful_count, note.not_helpful_count),
+    );
     counts[failureType]++;
     notesSeen.push({
       noteId: note.note_id,
@@ -720,6 +772,7 @@ export async function fetchDatasetRunItems(uploadId: string): Promise<ReviewItem
       seen: a.seen,
       failureModes: a.failure_modes ?? [],
       comment: a.comment,
+      highValue: a.high_value ?? false,
     });
   }
 
@@ -753,40 +806,28 @@ export async function fetchDatasetRunItems(uploadId: string): Promise<ReviewItem
 export async function upsertAnnotation(
   source: "production" | "dataset_run",
   targetId: string,
-  update: Partial<{ seen: boolean; failureModes: string[]; comment: string }>,
+  update: Partial<{ seen: boolean; failureModes: string[]; comment: string; highValue: boolean }>,
 ): Promise<void> {
-  // Try update first (preserves fields not being changed)
-  const { data: existing } = await supabase
+  // One atomic upsert keyed on (source, target_id). Only the fields present in
+  // `update` are written; the rest fall back to their column defaults on first
+  // insert and are left untouched on a conflict-merge. Replaces an older
+  // select-then-insert/update dance that could silently throw (e.g. when a
+  // duplicate row made `.single()` error, then the fresh insert hit the unique
+  // constraint) — which surfaced as a star click that "did nothing".
+  const row: Record<string, unknown> = {
+    source,
+    target_id: targetId,
+    updated_at: new Date().toISOString(),
+  };
+  if (update.seen !== undefined) row.seen = update.seen;
+  if (update.failureModes !== undefined) row.failure_modes = update.failureModes;
+  if (update.comment !== undefined) row.comment = update.comment;
+  if (update.highValue !== undefined) row.high_value = update.highValue;
+
+  const { error } = await supabase
     .from("review_dashboard_annotations")
-    .select("id")
-    .eq("source", source)
-    .eq("target_id", targetId)
-    .single();
-
-  if (existing) {
-    const changes: Record<string, unknown> = { updated_at: new Date().toISOString() };
-    if (update.seen !== undefined) changes.seen = update.seen;
-    if (update.failureModes !== undefined) changes.failure_modes = update.failureModes;
-    if (update.comment !== undefined) changes.comment = update.comment;
-
-    const { error } = await supabase
-      .from("review_dashboard_annotations")
-      .update(changes)
-      .eq("id", existing.id);
-    if (error) throw error;
-  } else {
-    const { error } = await supabase
-      .from("review_dashboard_annotations")
-      .insert({
-        source,
-        target_id: targetId,
-        seen: update.seen ?? false,
-        failure_modes: update.failureModes ?? [],
-        comment: update.comment ?? null,
-        updated_at: new Date().toISOString(),
-      });
-    if (error) throw error;
-  }
+    .upsert(row, { onConflict: "source,target_id" });
+  if (error) throw error;
 }
 
 // ─── Failure modes catalog ───────────────────────────────────────────────────

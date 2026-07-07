@@ -8,6 +8,7 @@
  */
 
 import type { BotConfig } from "./botConfig";
+import { MISINFO_TOPIC_IDS } from "../misinfo-monitoring/topicIds";
 
 // --- Types ---
 
@@ -85,6 +86,7 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     // weights, with the weaker/redundant variants pinned to 0 (still declared so
     // their historical picks resolve).
     { variant: { name: "sonnet46-native",         overrides: { search_model: "anthropic/claude-sonnet-4.6",       web_search: "native" }},        weight: 5 },
+    { variant: { name: "sonnet5-native",          overrides: { search_model: "anthropic/claude-sonnet-5",         web_search: "native" }},        weight: 5 },
     { variant: { name: "opus48-native",           overrides: { search_model: "anthropic/claude-opus-4.8",         web_search: "native" }},        weight: 5 },
     { variant: { name: "opus47-native",           overrides: { search_model: "anthropic/claude-opus-4.7",         web_search: "native" }},        weight: 0 },
     { variant: { name: "haiku45-native",          overrides: { search_model: "anthropic/claude-haiku-4.5",        web_search: "native" }},        weight: 0 },
@@ -98,6 +100,7 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     { variant: { name: "deepseek-v4pro-searxng",  overrides: { search_model: "deepseek/deepseek-v4-pro",          web_search: "searxng" }},       weight: 0 },
     { variant: { name: "deepseek-v4flash-searxng",overrides: { search_model: "deepseek/deepseek-v4-flash",        web_search: "searxng" }},       weight: 0 },
     { variant: { name: "glm5-searxng",            overrides: { search_model: "z-ai/glm-5",                        web_search: "searxng" }},       weight: 0 },
+    { variant: { name: "glm52-searxng",           overrides: { search_model: "z-ai/glm-5.2",                      web_search: "searxng" }},       weight: 5 },
     { variant: { name: "deepseek-v32exp-searxng", overrides: { search_model: "deepseek/deepseek-v3.2-exp",        web_search: "searxng" }},       weight: 0 },
     { variant: { name: "qwen3max-searxng",        overrides: { search_model: "qwen/qwen3-max",                    web_search: "searxng" }},       weight: 0 },
     { variant: { name: "gpt5_4mini-native",       overrides: { search_model: "openai/gpt-5.4-mini",               web_search: "native_openai" }}, weight: 0 },
@@ -110,8 +113,8 @@ const SIMPLE_BOT_WRITER_TEST: ABTest = {
   name: "simple_bot_writer",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 0 },
-    { variant: { name: "gemini-flash",     overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 100 },
+    { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 50 },
+    { variant: { name: "gemini-flash",     overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 50 },
     { variant: { name: "deepseek-v4flash", overrides: { writer_model: "deepseek/deepseek-v4-flash"    }}, weight: 0 },
   ],
 };
@@ -212,6 +215,23 @@ const SIMPLE_BOT_WRITER_EXAMPLES_TEST: ABTest = {
   variants: [
     { variant: { name: "off", overrides: { writer_examples: false } }, weight: 50 },
     { variant: { name: "on",  overrides: { writer_examples: true  } }, weight: 50 },
+  ],
+};
+
+// Insert an LLM step between simple-bot's search and writer that extracts atomic
+// corrections from the search findings, grades each (clear_error / minor_error /
+// critical_context / useful_context / not_useful), and feeds the writer only the
+// high-value ones (clear_error + critical_context) instead of the raw findings —
+// early-exiting no_correction when none grade high. `off` = today's full-findings
+// writer. Trials Gemini 3 Flash vs Sonnet 5 as the extractor. Prereq-gated to
+// simple-bot, so no defaultVariant.
+const SIMPLE_BOT_CORRECTION_EXTRACTION_TEST: ABTest = {
+  name: "simple_bot_correction_extraction",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off",          overrides: { correction_extraction: false } }, weight: 34 },
+    { variant: { name: "gemini3flash", overrides: { correction_extraction: true, correction_extraction_model: "google/gemini-3-flash-preview" } }, weight: 33 },
+    { variant: { name: "sonnet5",      overrides: { correction_extraction: true, correction_extraction_model: "anthropic/claude-sonnet-5" } }, weight: 33 },
   ],
 };
 
@@ -339,6 +359,32 @@ const FEED_SIZE_TEST: ABTest = {
   ],
 };
 
+// Pseudo A/B tests: record whether a run came from the XXL-feed misinfo
+// pre-pass and, if so, which topic it matched. `processPosts` forces both picks
+// from the item's MonitoringContext; regular runs carry no monitoring, so they
+// sample the default arm (`no` / `none`). Empty overrides — these record only,
+// they drive no behaviour (the reference document is injected via
+// MonitoringContext, independent of BotConfig).
+const MISINFO_MONITORING_TEST: ABTest = {
+  name: "misinfo_monitoring",
+  defaultVariant: "no",
+  variants: [
+    { variant: { name: "no",  overrides: {} }, weight: 100 },
+    { variant: { name: "yes", overrides: {} }, weight: 0 },
+  ],
+};
+
+// One variant per topic id (kept in sync with topics.ts via MISINFO_TOPIC_IDS),
+// so a forced topic pick always resolves in findVariantByName.
+const MISINFO_TOPIC_TEST: ABTest = {
+  name: "misinfo_topic",
+  defaultVariant: "none",
+  variants: [
+    { variant: { name: "none", overrides: {} }, weight: 100 },
+    ...MISINFO_TOPIC_IDS.map((id) => ({ variant: { name: id, overrides: {} }, weight: 0 })),
+  ],
+};
+
 const SEARCH_ANALYZER_TEST: ABTest = {
   name: "search_analyzer",
   prerequisites: { botId: "cheap-bot" },
@@ -392,6 +438,23 @@ const EVAL_SUBMIT_THRESHOLD_TEST: ABTest = {
   ],
 };
 
+// Inject the post author's past helpful community notes (ours + competing notes
+// on tweets we've noted) into the writer's user message — see
+// getAuthorNoteHistory. The lookup was silently broken from migration 033 until
+// June 2026 (queried the dropped pipeline_runs.author_id), so this input has been
+// effectively off the whole time. Now a clean 50/50 to measure whether the
+// author-history context helps. Not prereq-gated (the input is gathered for every
+// bot in createBotInput); defaultVariant "off" so historical rows resolve to the
+// no-context behaviour they actually had.
+const AUTHOR_HISTORY_TEST: ABTest = {
+  name: "author_history",
+  defaultVariant: "off",
+  variants: [
+    { variant: { name: "off", overrides: { author_history: false } }, weight: 50 },
+    { variant: { name: "on",  overrides: { author_history: true  } }, weight: 50 },
+  ],
+};
+
 export const AB_TESTS: ABTest[] = [
   BOT_TEST,
   SIMPLE_BOT_SEARCH_TEST,
@@ -403,6 +466,7 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_PODCAST_TEST,
   SIMPLE_BOT_WRITER_EXAMPLES_TEST,
   SIMPLE_BOT_POLITICAL_SOURCES_TEST,
+  SIMPLE_BOT_CORRECTION_EXTRACTION_TEST,
   NOTE_PREFILTER_TEST,
   CHEAP_BOT_JUDGE_MODEL_TEST,
   CHEAP_BOT_GEMINI_STEPS_TEST,
@@ -414,5 +478,8 @@ export const AB_TESTS: ABTest[] = [
   SATIRE_DETECTOR_TEST,
   CHEAP_BOT_TEMPERATURE_TEST,
   FEED_SIZE_TEST,
+  MISINFO_MONITORING_TEST,
+  MISINFO_TOPIC_TEST,
   EVAL_SUBMIT_THRESHOLD_TEST,
+  AUTHOR_HISTORY_TEST,
 ];

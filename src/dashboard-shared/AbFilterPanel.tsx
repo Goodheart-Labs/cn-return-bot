@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { ABFilters, ABTestSlotInfo } from "./abFilters";
 
 export function AbFilterPanel({
@@ -13,7 +14,10 @@ export function AbFilterPanel({
   // (e.g. a collapsible <summary>). Defaults to showing it.
   hideHeader?: boolean;
 }) {
+  // Older (not recently-varied) tests are hidden behind a toggle to cut clutter.
+  const [showOlder, setShowOlder] = useState(false);
   if (!slots.length) return null;
+
   const handleSet = (slot: string, variant: string) => {
     const next = { ...filters };
     if (variant === "") delete next[slot];
@@ -21,6 +25,13 @@ export function AbFilterPanel({
     onChange(next);
   };
   const hasAny = Object.values(filters).some(Boolean);
+
+  // Show recently-varied tests by default; a test with an active filter always
+  // stays visible so it can be cleared even when it's no longer "recent".
+  const olderCount = slots.filter((s) => !s.recentlyVaried).length;
+  const visibleSlots = slots.filter(
+    (s) => showOlder || s.recentlyVaried || filters[s.name],
+  );
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
@@ -38,7 +49,7 @@ export function AbFilterPanel({
         </div>
       )}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {slots.map((slot) => (
+        {visibleSlots.map((slot) => (
           <label key={slot.name} className="flex flex-col gap-1 text-sm">
             <span className="text-xs uppercase tracking-wide text-gray-500">{slot.name}</span>
             <select
@@ -54,6 +65,14 @@ export function AbFilterPanel({
           </label>
         ))}
       </div>
+      {olderCount > 0 && (
+        <button
+          onClick={() => setShowOlder((o) => !o)}
+          className="mt-3 text-xs text-blue-600 hover:text-blue-800"
+        >
+          {showOlder ? "Hide older tests" : `Show older tests (${olderCount})`}
+        </button>
+      )}
     </div>
   );
 }

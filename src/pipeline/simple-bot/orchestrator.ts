@@ -12,11 +12,17 @@ import type { Post } from "../../api/fetchEligiblePosts";
 import type { PipelineOutcome } from "../../bots/types";
 import type { BotInput } from "../input/createBotInput";
 import { buildUserMessageFromInput } from "../prompts/input/userMessage";
+import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP } from "../utils/noteWriterSteps";
 import { verifySources } from "../verify/sourceVerifier";
 import { withWriterCache, type WriterStageResult } from "../replay/writerCache";
+import {
+  HIGH_VALUE_CATEGORIES,
+  formatCorrectionsForWriter,
+} from "../prompts/simple-bot/correctionExtractor";
 import { runSearch } from "./search";
+import { runCorrectionExtractor } from "./correctionExtractor";
 import { runWriter } from "./writer";
 
 export async function runSimpleBotPipeline(
@@ -42,11 +48,29 @@ async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterS
     return { kind: "early_exit", outcome: { type: "no_correction", reason: search.findings } };
   }
 
-  const note = await runWriter(userMessage, search.findings);
+  let writerFindings = search.findings;
+  if (getBotConfig().correction_extraction) {
+    const corrections = await runCorrectionExtractor(search.findings);
+    const highValue = corrections.filter((c) => HIGH_VALUE_CATEGORIES.includes(c.category));
+    if (highValue.length === 0) {
+      return {
+        kind: "early_exit",
+        outcome: {
+          type: "no_correction",
+          reason: `correction extractor found no clear_error / critical_context items (${corrections.length} lower-value dropped)`,
+        },
+      };
+    }
+    writerFindings = formatCorrectionsForWriter(highValue);
+  }
+
+  const note = await runWriter(userMessage, writerFindings);
   return {
     kind: "writer_done",
     userMessage,
-    findings: search.findings,
+    // Filtered corrections (or raw findings when extraction is off) — the writer AND
+    // the source verifier both read this via stage.findings; also what's logged.
+    findings: writerFindings,
     queries: [],
     noteText: note.noteText,
     sources: note.sources,

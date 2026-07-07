@@ -51,15 +51,11 @@ import { DatasetSelector } from "./components/DatasetSelector";
 import { UploadDialog } from "./components/UploadDialog";
 import { AbFilterPanel } from "../../dashboard-shared/AbFilterPanel";
 import {
-  abTestOrdering,
   buildAbTestSlots,
   matchesAbFilters,
   type ABFilters,
 } from "../../dashboard-shared/abFilters";
 import { AB_TESTS } from "../../pipeline/ab-testing/abTestsData";
-
-const { slotOrder: AB_TEST_SLOT_ORDER, variantOrder: AB_TEST_VARIANT_ORDER } =
-  abTestOrdering(AB_TESTS);
 
 function defaultFilters(source: "production" | "dataset_run"): FilterState {
   const failureTypes = new Set<FailureType>();
@@ -148,7 +144,10 @@ export function App() {
   const [failureModeCatalog, setFailureModeCatalog] = useState<FailureModeInfo[]>([]);
   const [showFixedTags, setShowFixedTags] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [loadingLogs, setLoadingLogs] = useState(false);
+  // Gate the A/B filter panel on the full recent-notes fetch finishing, so its
+  // "recently varied" detection sees every pick from the window — not just the
+  // injected first-paint subset.
+  const [recentNotesLoaded, setRecentNotesLoaded] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Production: all items in the current date window are loaded up-front
@@ -198,6 +197,7 @@ export function App() {
   const loadData = useCallback(async () => {
     const seq = ++loadSeq.current;
     setLoading(true);
+    setRecentNotesLoaded(false);
     setError(null);
     try {
       if (dataset.type === "production") {
@@ -207,6 +207,7 @@ export function App() {
           if (seq !== loadSeq.current) return;
           setItems(buildDashboardItems(data));
           setLogsByRunId(new Map());
+          setRecentNotesLoaded(true);
           return;
         }
         // Instant first paint: the server injects the FULL default set as
@@ -231,12 +232,14 @@ export function App() {
         const merged = mergeItemsById(buildDashboardItems(defaultData), buildDashboardItems(windowData));
         setItems((prev) => preserveAnnotations(prev, merged));
         setLogsByRunId(new Map());
+        setRecentNotesLoaded(true);
       } else {
         const loaded = await fetchDatasetRunItems(dataset.id!);
         if (seq !== loadSeq.current) return;
         setItems(loaded);
         // Pill counts are derived from the fully-loaded items (itemCategoryCounts),
         // so no separate count query is needed for dataset runs.
+        setRecentNotesLoaded(true);
       }
     } catch (err: any) {
       console.error("Failed to load data:", err);
@@ -342,14 +345,14 @@ export function App() {
     return derived;
   }, [dataset.type, productionTagCounts, annotationsSeen, items, filters.seen, abFilters, abActive]);
 
-  // Derive A/B slots from observed ab_test_picks; sort by AB_TESTS
-  // declaration order so dropdowns match the stats dashboard layout.
+  // Derive A/B slots from observed ab_test_picks; sort by AB_TESTS declaration
+  // order so dropdowns match the stats dashboard layout. createdAt drives the
+  // "recently varied" flag the panel uses to hide dormant tests by default.
   const abSlots = useMemo(
     () =>
       buildAbTestSlots(
-        items.map((i) => i.abTestPicks),
-        AB_TEST_SLOT_ORDER,
-        AB_TEST_VARIANT_ORDER,
+        items.map((i) => ({ picks: i.abTestPicks, at: i.createdAt })),
+        AB_TESTS,
       ),
     [items],
   );
@@ -488,37 +491,21 @@ export function App() {
     align();
   }, [visible, firstRatedIndex]);
 
-  // Lazy-load logs for visible production items that don't have them yet.
-  // Dataset runs already carry logs inline (they're small & come from uploads),
-  // so this only fires for production.
-  const visibleRunIdsKey = useMemo(
-    () => visible.map((i) => i.pipelineRunId ?? "").join(","),
-    [visible],
-  );
-  useEffect(() => {
-    if (dataset.type !== "production") return;
-    const needIds = Array.from(
-      new Set(
-        visible
-          .map((i) => i.pipelineRunId)
-          .filter((id): id is string => !!id && !logsByRunId.has(id)),
-      ),
-    );
-    if (needIds.length === 0) return;
-    setLoadingLogs(true);
-    fetchLogsForRuns(needIds)
-      .then((newLogs) => {
-        if (newLogs.size === 0) return;
-        setLogsByRunId((prev) => {
-          const merged = new Map(prev);
-          for (const [k, v] of newLogs) merged.set(k, v);
-          return merged;
-        });
-      })
-      .finally(() => setLoadingLogs(false));
-    // visibleRunIdsKey guards against re-running when only object identity
-    // changes but the actual set of visible items hasn't.
-  }, [dataset.type, visibleRunIdsKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Fetch one run's logs on demand — when a card's log panel is expanded. The
+  // log panel is collapsed by default, so eager-loading every visible card meant
+  // pulling tens of MB of TOASTed JSONB up front (one slow/failed batch wiped
+  // logs for the whole page). Now we pay the TOAST cost only for the card the
+  // user actually opens. Dataset-run items carry logs inline, so they never call
+  // this. Cached in logsByRunId so re-expanding is instant.
+  const requestLogs = useCallback(async (runId: string) => {
+    try {
+      const fetched = await fetchLogsForRuns([runId]);
+      const logs = fetched.get(runId);
+      if (logs) setLogsByRunId((prev) => new Map(prev).set(runId, logs));
+    } catch (e) {
+      console.warn(`Failed to load logs for run ${runId}:`, e);
+    }
+  }, []);
 
   const handleLoadMore = useCallback(() => {
     setWindowDays((prev) => prev + WINDOW_DAYS_STEP);
@@ -539,6 +526,28 @@ export function App() {
       );
     } catch (err: any) {
       console.error("Failed to update seen:", err);
+    }
+  };
+
+  const handleHighValueToggle = async (id: string, highValue: boolean) => {
+    const source = dataset.type === "production" ? "production" : "dataset_run";
+    // Optimistic: flip the star immediately so the click has instant feedback,
+    // then persist. If the write fails, revert and tell the user.
+    const setHV = (hv: boolean) =>
+      setItems((prev) =>
+        prev.map((item) =>
+          item.id === id
+            ? { ...item, annotation: { ...item.annotation, highValue: hv, seen: item.annotation?.seen ?? false, failureModes: item.annotation?.failureModes ?? [] } }
+            : item,
+        ),
+      );
+    setHV(highValue);
+    try {
+      await upsertAnnotation(source as "production" | "dataset_run", id, { highValue });
+    } catch (err: any) {
+      console.error("Failed to update high_value:", err);
+      setHV(!highValue); // revert
+      alert(`Couldn't save high-value: ${err?.message ?? JSON.stringify(err)}`);
     }
   };
 
@@ -704,7 +713,7 @@ export function App() {
           </div>
           {abOpen && (
             <div className="mt-2">
-              {abSlots.length > 0 ? (
+              {recentNotesLoaded && abSlots.length > 0 ? (
                 <AbFilterPanel slots={abSlots} filters={abFilters} onChange={setAbFilters} hideHeader />
               ) : (
                 <div className="text-sm text-gray-400 px-3 py-2">Loading…</div>
@@ -779,8 +788,8 @@ export function App() {
             ? "Loading..."
             : dataset.type === "production"
               ? tagFilterActive
-                ? `${visible.length} notes · all time, tagged${loadingLogs ? " · loading logs…" : ""}`
-                : `${visible.length} notes${loadingLogs ? " · loading logs…" : ""}`
+                ? `${visible.length} notes · all time, tagged`
+                : `${visible.length} notes`
               : `${filtered.length} items shown`}
         </div>
         {firstRatedIndex > 0 && (
@@ -803,9 +812,11 @@ export function App() {
               failureModeUsage={tagCounts}
               showFixed={showFixedTags}
               onSeenToggle={handleSeenToggle}
+              onHighValueToggle={handleHighValueToggle}
               onFailureModesChange={handleFailureModesChange}
               onCreateFailureMode={handleCreateFailureMode}
               onCommentChange={handleCommentChange}
+              onRequestLogs={requestLogs}
             />
           </div>
         ))}

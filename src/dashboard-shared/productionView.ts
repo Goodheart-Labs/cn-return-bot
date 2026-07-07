@@ -11,8 +11,9 @@ export const DEFAULT_VIEW_CN_STATUS = "CURRENTLY_RATED_NOT_HELPFUL";
 
 // cn_status per note-backed production failure type — the inverse of
 // cnStatusToFailureType (data.ts). Types needing satellite data
-// (lost_to_competitor / missed / low-eval) are intentionally absent: they can't be
-// a plain status filter and are never part of the fully-loaded default set.
+// (lost_to_competitor / missed / low-eval / underwater) are intentionally absent:
+// they can't be a plain status filter and are never part of the fully-loaded
+// default set.
 export const CN_STATUS_BY_FAILURE_TYPE: Partial<Record<FailureType, string>> = {
   rated_helpful: "CURRENTLY_RATED_HELPFUL",
   rated_unhelpful: "CURRENTLY_RATED_NOT_HELPFUL",

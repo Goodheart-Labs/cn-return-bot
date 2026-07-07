@@ -10,9 +10,10 @@
  */
 
 import { AsyncLocalStorage } from "node:async_hooks";
+import type { MisinfoTopicId } from "./topicIds";
 
 export interface MonitoringContext {
-  topicId: string;
+  topicId: MisinfoTopicId;
   topicTitle: string;
   /** Canonical source URL of the reference article — leads the injected block
    *  so the bot can cite it directly in the note. */

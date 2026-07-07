@@ -49,6 +49,17 @@ export interface BotConfig {
   /** Model for the note-needed-judge step. Defaults to `model` when unset. */
   note_judge_model?: string;
   /**
+   * When true (simple-bot only), an LLM step between search and writer extracts
+   * atomic corrections from the search findings, grades each (clear_error /
+   * minor_error / critical_context / useful_context / not_useful), and passes the
+   * writer only the high-value ones (clear_error + critical_context) instead of
+   * the raw findings. If none grade high, the run early-exits as no_correction.
+   * Set by SIMPLE_BOT_CORRECTION_EXTRACTION_TEST; defaults false.
+   */
+  correction_extraction?: boolean;
+  /** Model for the correction-extractor step. Defaults to `model` when unset. */
+  correction_extraction_model?: string;
+  /**
    * When true, a cheap deepseek-v4-flash "note-needed prefilter" runs BEFORE the
    * bot (query writer → SearXNG → analyzer → reframed note-needed judge). If it
    * decides no note is needed, the bot is skipped and the run is recorded as
@@ -145,6 +156,15 @@ export interface BotConfig {
    * prompt (detailed or `simple_prompts`).
    */
   writer_examples?: boolean;
+  /**
+   * When true, the writer's user message includes a block of the post author's
+   * past helpful community notes (ours + competing notes on tweets we've noted)
+   * as context — see getAuthorNoteHistory. The lookup was silently broken from
+   * migration 033 until June 2026 (it queried the dropped pipeline_runs.author_id
+   * column), so this input was effectively off the whole time. Now a 50/50 A/B
+   * test via AUTHOR_HISTORY_TEST. Not prereq-gated — runs for every bot. Defaults false.
+   */
+  author_history?: boolean;
   /** Feed size used for the eligible-posts fetch. Pseudo A/B test (large=100%). */
   feed_size: FeedSize;
   /**

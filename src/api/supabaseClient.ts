@@ -1,6 +1,12 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { fetchAllRows as fetchAllRowsShared } from "./paging";
 import type { Post } from "./fetchEligiblePosts";
+import { stripNullChars } from "../utils/stripNullChars";
+
+// A note that an --incremental scrape scrolled past without capturing this many
+// times is "given up": excluded from the anchor so a permanently-deleted note
+// can't pin the daily window. The staged updates in markIncrementalMisses assume 2.
+const MISS_LIMIT = 2;
 
 // Database types
 export interface Notewriter {
@@ -62,6 +68,32 @@ export type NoteInsert = {
 };
 
 let supabaseInstance: SupabaseClient | null = null;
+
+type CountError = {
+  message?: string;
+  details?: string;
+  hint?: string;
+  code?: string;
+};
+
+type ExactCountResponse = {
+  count: number | null;
+  error: CountError | null;
+  status: number;
+};
+
+// Builds the count query. head:true is the normal body-less request; head:false
+// is the diagnostic GET fallback (error bodies only survive on GET). Builders
+// should append .limit(1) — a no-op on HEAD — so the fallback fetches one row.
+type ExactCountQuery = (head: boolean) => PromiseLike<ExactCountResponse>;
+
+const COUNT_RETRY_DELAYS_MS = [250, 1000] as const;
+// status 0 = network-level failure (supabase-js resolves with no HTTP status)
+const RETRYABLE_COUNT_STATUSES = new Set([0, 408, 425, 429]);
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 /**
  * Returns the singleton supabase-js client.
@@ -298,6 +330,122 @@ export class SupabaseLogger {
     return (data || []).map((n: { note_id: string }) => n.note_id);
   }
 
+  /**
+   * Existence + first-snapshot state for a note in a single read. Lets the
+   * scraper decide whether to create the note row and whether it still needs its
+   * `first_snapshot_at` stamped, without an extra round-trip.
+   */
+  async getNoteSnapshotState(noteId: string): Promise<{ exists: boolean; hasFirstSnapshot: boolean }> {
+    const { data, error } = await this.client
+      .from("notes")
+      .select("note_id, first_snapshot_at")
+      .eq("note_id", noteId)
+      .single();
+
+    if (error && error.code !== "PGRST116") {
+      console.error("[SupabaseLogger] Error reading note snapshot state:", error);
+      throw error;
+    }
+
+    return { exists: !!data, hasFirstSnapshot: !!data?.first_snapshot_at };
+  }
+
+  /**
+   * Stamp when a note first received a scraper snapshot. Idempotent — only sets
+   * the value while it is still null. This is what makes getOldestUnscrapedNoteId
+   * a cheap indexed lookup instead of a scan of the whole snapshots time-series.
+   */
+  async markFirstSnapshot(noteId: string): Promise<void> {
+    const { error } = await this.client
+      .from("notes")
+      .update({ first_snapshot_at: new Date().toISOString() })
+      .eq("note_id", noteId)
+      .is("first_snapshot_at", null);
+
+    if (error) {
+      console.error("[SupabaseLogger] Error stamping first_snapshot_at:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Oldest known note that is still eligible to anchor the --incremental scrape:
+   * no snapshot yet (`first_snapshot_at IS NULL`) and not given up after repeated
+   * misses (`scrape_misses < MISS_LIMIT`). `first_snapshot_at` is stamped on a
+   * note's first snapshot (see markFirstSnapshot + migration 048) and this exact
+   * predicate is backed by the partial index `idx_notes_incremental_anchor`, so
+   * it's a cheap indexed read rather than a scan of the snapshots time-series.
+   * Returns null when every known note has a snapshot or has been given up.
+   */
+  async getOldestUnscrapedNoteId(): Promise<string | null> {
+    // note_id is text so .order() is lexicographic; take the smallest window and
+    // pick the true min as a BigInt to guard against any mixed-length ids.
+    const TOP_CANDIDATES = 50;
+    const { data, error } = await this.client
+      .from("notes")
+      .select("note_id")
+      .is("first_snapshot_at", null)
+      .lt("scrape_misses", MISS_LIMIT)
+      .not("note_id", "like", "tweet_%")
+      .not("note_id", "like", "unavailable_%")
+      .order("note_id", { ascending: true })
+      .limit(TOP_CANDIDATES);
+
+    if (error) {
+      console.error("[SupabaseLogger] Error fetching oldest unscraped note id:", error);
+      throw error;
+    }
+
+    const numericIds = (data || [])
+      .map((n: { note_id: string }) => n.note_id)
+      .filter((id: string) => /^\d+$/.test(id));
+    if (numericIds.length === 0) return null;
+
+    return numericIds.reduce((min, id) => (BigInt(id) < BigInt(min) ? id : min));
+  }
+
+  /**
+   * After an --incremental run, account for notes the scrape scrolled past but
+   * failed to capture — still no snapshot and note_id >= the lowest captured id.
+   * Implements a MISS_LIMIT-miss give-up with two ordered literal-set updates (no
+   * column arithmetic, so no RPC needed): first promote already-missed notes to
+   * MISS_LIMIT (given up), then record a first miss for the rest. The order avoids
+   * giving up on a note in the same run it was first missed. A captured note has
+   * first_snapshot_at set and so drops out of this set, making misses effectively
+   * consecutive. Returns counts for logging.
+   */
+  async markIncrementalMisses(minCoveredNoteId: string): Promise<{ givenUp: number; firstMisses: number }> {
+    const coveredUnscraped = (q: any) =>
+      q.is("first_snapshot_at", null)
+        .gte("note_id", minCoveredNoteId)
+        .not("note_id", "like", "tweet_%")
+        .not("note_id", "like", "unavailable_%");
+
+    // 1. Missed before and missed again → give up.
+    const { data: givenUp, error: giveUpErr } = await coveredUnscraped(
+      this.client.from("notes").update({ scrape_misses: MISS_LIMIT }),
+    )
+      .eq("scrape_misses", MISS_LIMIT - 1)
+      .select("note_id");
+    if (giveUpErr) {
+      console.error("[SupabaseLogger] Error giving up on unscrapable notes:", giveUpErr);
+      throw giveUpErr;
+    }
+
+    // 2. First miss for notes never missed before.
+    const { data: firstMissed, error: firstMissErr } = await coveredUnscraped(
+      this.client.from("notes").update({ scrape_misses: 1 }),
+    )
+      .eq("scrape_misses", 0)
+      .select("note_id");
+    if (firstMissErr) {
+      console.error("[SupabaseLogger] Error recording first scrape misses:", firstMissErr);
+      throw firstMissErr;
+    }
+
+    return { givenUp: (givenUp || []).length, firstMisses: (firstMissed || []).length };
+  }
+
   // ============================================
   // Tweets
   // ============================================
@@ -410,7 +558,10 @@ export class SupabaseLogger {
   ): Promise<void> {
     const { error } = await this.client
       .from("pipeline_runs")
-      .update({
+      // Scrub NUL chars from every free-text / JSONB field — model output (e.g.
+      // Gemini media OCR) can emit U+0000, which Postgres rejects with 22P05 and
+      // would otherwise drop the whole run's row (logs + outcome).
+      .update(stripNullChars({
         outcome: data.outcome,
         outcome_reason: data.outcome_reason,
         error_message: data.error_message,
@@ -427,7 +578,7 @@ export class SupabaseLogger {
         check_reasoning: data.check_reasoning,
         logs: data.logs,
         cost: data.cost,
-      })
+      }))
       .eq("id", runId);
 
     if (error) {
@@ -945,60 +1096,123 @@ export class SupabaseLogger {
     }
   }
 
+  private isRetryableCountError(status: number, error: CountError | null): boolean {
+    const code = error?.code ?? "";
+    return RETRYABLE_COUNT_STATUSES.has(status) || status >= 500 || code.startsWith("08") || code === "57014";
+  }
+
+  private formatCountError(status: number, error: CountError | null): string {
+    if (!error) return `HTTP ${status}: unknown error`;
+
+    const parts = [`HTTP ${status}`];
+    if (error.code) parts.push(error.code);
+    if (error.message) parts.push(error.message);
+    if (error.details) parts.push(`details=${error.details}`);
+    if (error.hint) parts.push(`hint=${error.hint}`);
+
+    if (parts.length > 1) return parts.join(": ");
+    return `HTTP ${status}: ${JSON.stringify(error)}`;
+  }
+
+  private errorToCountResponse(err: unknown): ExactCountResponse {
+    const anyErr = err as any;
+    return {
+      count: null,
+      error: {
+        message: anyErr?.message ?? String(err),
+        code: anyErr?.code,
+        details: anyErr?.details,
+        hint: anyErr?.hint,
+      },
+      status: anyErr?.status ?? anyErr?.statusCode ?? 0,
+    };
+  }
+
+  private async settleCountQuery(query: PromiseLike<ExactCountResponse>): Promise<ExactCountResponse> {
+    try {
+      return await query;
+    } catch (err) {
+      return this.errorToCountResponse(err);
+    }
+  }
+
+  /**
+   * Run a head-only exact count with retries, returning 0 (and logging) on error.
+   *
+   * HEAD responses have no body, so on failure the HTTP status is the only
+   * diagnostic. Transient failures (network, 5xx, timeouts) are retried; once
+   * retries are exhausted a one-row GET runs the same count, which either
+   * recovers it or surfaces the real PostgREST error body.
+   */
+  private async runExactCount(makeQuery: ExactCountQuery, label: string): Promise<number> {
+    const maxAttempts = COUNT_RETRY_DELAYS_MS.length + 1;
+    let lastFailure: ExactCountResponse | null = null;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      const result = await this.settleCountQuery(makeQuery(true));
+      if (!result.error) {
+        if (attempt > 1) {
+          console.warn(`[SupabaseLogger] Count ${label} succeeded on attempt ${attempt}/${maxAttempts}`);
+        }
+        return result.count ?? 0;
+      }
+
+      lastFailure = result;
+      const retryDelay = COUNT_RETRY_DELAYS_MS[attempt - 1];
+      if (!retryDelay || !this.isRetryableCountError(result.status, result.error)) break;
+
+      console.warn(
+        `[SupabaseLogger] Failed to count ${label} (${this.formatCountError(result.status, result.error)}), ` +
+          `retrying in ${retryDelay}ms (attempt ${attempt}/${maxAttempts})`,
+      );
+      await sleep(retryDelay);
+    }
+
+    const headFailure = this.formatCountError(lastFailure!.status, lastFailure!.error);
+    const fallback = await this.settleCountQuery(makeQuery(false));
+    if (!fallback.error) {
+      console.warn(`[SupabaseLogger] Count ${label} recovered via GET fallback after HEAD failure: ${headFailure}`);
+      return fallback.count ?? 0;
+    }
+
+    console.warn(
+      `[SupabaseLogger] Failed to count ${label}: HEAD ${headFailure}; ` +
+        `GET fallback ${this.formatCountError(fallback.status, fallback.error)}`,
+    );
+    return 0;
+  }
+
   /** Count notes submitted in the last N hours (rolling window) */
   async countRecentSubmissions(hours: number): Promise<number> {
     const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
-    const { count, error } = await this.client
-      .from("notes")
-      .select("*", { count: "exact", head: true })
-      .gte("submitted_at", since);
-    if (error) {
-      console.warn("[SupabaseLogger] Failed to count recent submissions:", error.message);
-      return 0;
-    }
-    return count ?? 0;
+    return this.runExactCount(
+      (head) => this.client.from("notes").select("id", { count: "exact", head }).gte("submitted_at", since).limit(1),
+      "recent submissions",
+    );
   }
 
   /** Count pipeline_runs created in the last N hours */
   async countRecentPipelineRuns(hours: number): Promise<number> {
     const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
-    const { count, error } = await this.client
-      .from("pipeline_runs")
-      .select("*", { count: "exact", head: true })
-      .gte("created_at", since);
-    if (error) {
-      console.warn("[SupabaseLogger] Failed to count recent pipeline runs:", error.message);
-      return 0;
-    }
-    return count ?? 0;
+    return this.runExactCount(
+      (head) =>
+        this.client.from("pipeline_runs").select("id", { count: "exact", head }).gte("created_at", since).limit(1),
+      "recent pipeline runs",
+    );
   }
 
   /** Count pipeline_runs created in the last N hours whose outcome is in `outcomes` */
   async countRecentPipelineRunsByOutcomes(hours: number, outcomes: string[]): Promise<number> {
     const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
-    const { count, error } = await this.client
-      .from("pipeline_runs")
-      .select("*", { count: "exact", head: true })
-      .gte("created_at", since)
-      .in("outcome", outcomes);
-    if (error) {
-      console.warn("[SupabaseLogger] Failed to count recent pipeline runs by outcome:", error.message);
-      return 0;
-    }
-    return count ?? 0;
+    return this.runExactCount(
+      (head) =>
+        this.client
+          .from("pipeline_runs")
+          .select("id", { count: "exact", head })
+          .gte("created_at", since)
+          .in("outcome", outcomes)
+          .limit(1),
+      "recent pipeline runs by outcome",
+    );
   }
-
-  /** Check if any notes have been submitted since a given ISO timestamp */
-  async hasSubmissionsSince(since: string): Promise<boolean> {
-    const { count, error } = await this.client
-      .from("notes")
-      .select("*", { count: "exact", head: true })
-      .gte("submitted_at", since);
-    if (error) {
-      console.warn("[SupabaseLogger] Failed to check submissions since:", error.message);
-      return true; // assume reset on error so we don't get stuck in cautious mode
-    }
-    return (count ?? 0) > 0;
-  }
-
 }

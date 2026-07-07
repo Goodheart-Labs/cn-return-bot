@@ -91,7 +91,17 @@ Tweet: Nintendo LOST the palworld lawsuit lets GOOOOOOOOOOOOOO
 ### Example 6
 Tweet: Knicks fans beat a 17-year old into a coma for saying "Spurs in 7". What a pathetic-ass fanbase.
 Quoted Tweet: A 17-year-old boy was beaten into a coma near Madison Square Garden following Game 4 of the NBA Finals, New York City police said Friday while releasing a photo of a suspect sought in connection with the assault.
-{ "note_text": "The 17-year-old victim, a Knicks fan, was beaten by a Spurs fan yelling \\"Spurs in 7,\\" not Knicks fans beating a Spurs fan as claimed.", "sources": ["https://nypost.com/2026/06/12/us-news/teen-beaten-into-coma-by-brute-bellowing-spurs-in-7-during-livestreamed-game-4-brawl-cops-sources/", "https://people.com/teen-beaten-into-coma-on-livestream-following-nba-finals-11996743"] }`;
+{ "note_text": "The 17-year-old victim, a Knicks fan, was beaten by a Spurs fan yelling \\"Spurs in 7,\\" not Knicks fans beating a Spurs fan as claimed.", "sources": ["https://nypost.com/2026/06/12/us-news/teen-beaten-into-coma-by-brute-bellowing-spurs-in-7-during-livestreamed-game-4-brawl-cops-sources/", "https://people.com/teen-beaten-into-coma-on-livestream-following-nba-finals-11996743"] }
+
+### Example 7
+Tweet: GTA 6 has reportedly surpassed 50 million pre-orders, generating an estimated $4+ billion in revenue before launch Rockstar might be the only company capable of turning a game that isn't even out yet into a multi billion dollar success Gaming history is being rewritten before release.
+Media Description: A promotional graphic for Grand Theft Auto VI featuring the game's logo over a synthwave-inspired sunset cityscape. The background shows a coastal city with palm trees, neon-lit buildings, and a sports car. Text on the image highlights a milestone of over 50 million copies sold and more than $4 billion in revenue.
+{ "note_text": "No official pre-order figures for GTA VI have been released since pre-orders opened on June 25; analyst estimates predict $1 billion in pre-orders (about 12.5 million units), not 50 million or $4 billion.", "sources": ["https://www.forbes.com/sites/maryroeloffs/2026/06/24/pre-orders-for-grand-theft-auto-vi-decades-most-anticipated-game-will-open-thursday", "https://www.take2games.com/ir/news/rockstar-games-announces-pre-orders-grand-theft-auto-vi"] }
+
+### Example 8
+Tweet: Did the Simpsons really the predict 3D printer ?
+Media Description: A scene from a classroom in Springfield Elementary where two construction workers walk past a large, blank white board while Bart Simpson looks on from the side. An alphabet banner is visible above the board.
+{ "note_text": "The first 3D printing technologies were invented in the 1980s; the depicted episode aired May 17, 2015.", "sources": ["https://en.wikipedia.org/wiki/3D_printing", "https://en.wikipedia.org/wiki/The_Simpsons_season_26"] }`;
 
 export const WRITER_RESPONSE_FORMAT = jsonSchemaResponseFormat("simple_bot_note", {
   type: "object",

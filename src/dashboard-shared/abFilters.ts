@@ -7,7 +7,29 @@ export type ABFilters = Record<string, string | undefined>;
 export interface ABTestSlotInfo {
   name: string;
   variants: string[];
+  // True when some pick within the recency window differed from the test's
+  // default — i.e. the test was actively varied lately. Dashboards show these
+  // by default and hide the rest behind a "show older tests" toggle.
+  recentlyVaried: boolean;
 }
+
+// A pick record paired with when it was produced, so slot derivation can tell
+// which tests were varied recently. `at` is an ISO timestamp; records without
+// one never count toward recency.
+export interface AbPickRecord {
+  picks: Record<string, string> | null | undefined;
+  at?: string | null;
+}
+
+// Duck-typed AB_TESTS shape so the dashboards don't import pipeline-side types.
+interface AbTestLike {
+  name: string;
+  defaultVariant?: string;
+  variants: readonly { variant: { name: string }; weight: number }[];
+}
+
+const RECENT_NON_DEFAULT_WINDOW_DAYS = 3;
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 /**
  * Returns true iff every set filter slot matches the corresponding entry in
@@ -26,55 +48,57 @@ export function matchesAbFilters(
 }
 
 /**
- * Derive the slots-and-variants list to display in the filter UI from a
- * stream of observed `ab_test_picks` dicts. Optional ordering hints let
- * callers with access to AB_TESTS metadata (server-side build) match the
- * declaration order; browser callers can omit them and fall back to
- * alphabetical.
+ * The variant a test sits at when it isn't being actively varied: its declared
+ * defaultVariant, or — for prereq-gated tests that declare none — the
+ * highest-weight arm (the de-facto control).
+ */
+function defaultVariantByTest(tests: readonly AbTestLike[]): Map<string, string> {
+  return new Map(
+    tests.map((t) => [
+      t.name,
+      t.defaultVariant ??
+        t.variants.reduce((top, v) => (v.weight > top.weight ? v : top)).variant.name,
+    ]),
+  );
+}
+
+/**
+ * Derive the slots-and-variants list for the filter UI from a stream of
+ * observed pick records. Slots and variants are ordered to match the AB_TESTS
+ * declaration; any that exist in historical picks but no longer in AB_TESTS are
+ * appended alphabetically. Each slot is flagged `recentlyVaried` when some
+ * record within the trailing window picked a non-default arm.
  */
 export function buildAbTestSlots(
-  pickRecords: Iterable<Record<string, string> | null | undefined>,
-  slotOrder: readonly string[] = [],
-  variantOrder: Readonly<Record<string, readonly string[]>> = {},
+  records: Iterable<AbPickRecord>,
+  tests: readonly AbTestLike[],
+  windowDays: number = RECENT_NON_DEFAULT_WINDOW_DAYS,
 ): ABTestSlotInfo[] {
+  const slotIndex = new Map(tests.map((t, i) => [t.name, i]));
+  const variantIndexBySlot = new Map(
+    tests.map((t) => [t.name, new Map(t.variants.map((v, i) => [v.variant.name, i]))]),
+  );
+  const defaults = defaultVariantByTest(tests);
+  const cutoff = Date.now() - windowDays * MS_PER_DAY;
+
   const variantsBySlot = new Map<string, Set<string>>();
-  for (const picks of pickRecords) {
+  const recentlyVaried = new Set<string>();
+  for (const { picks, at } of records) {
     if (!picks) continue;
+    const recent = !!at && new Date(at).getTime() >= cutoff;
     for (const [slot, variant] of Object.entries(picks)) {
       if (!variantsBySlot.has(slot)) variantsBySlot.set(slot, new Set());
       variantsBySlot.get(slot)!.add(variant);
+      if (recent && variant !== defaults.get(slot)) recentlyVaried.add(slot);
     }
   }
-  const slotIndex = new Map(slotOrder.map((n, i) => [n, i]));
-  const variantIndexBySlot = new Map(
-    Object.entries(variantOrder).map(
-      ([slot, vs]) => [slot, new Map(vs.map((v, i) => [v, i]))],
-    ),
-  );
   return [...variantsBySlot.entries()]
     .map(([name, variants]) => {
       const variantIndex = variantIndexBySlot.get(name) ?? new Map<string, number>();
       const ordered = [...variants].sort((a, b) => compareByMaybeIndex(a, b, variantIndex));
-      return { name, variants: ordered };
+      return { name, variants: ordered, recentlyVaried: recentlyVaried.has(name) };
     })
     .sort((a, b) => compareByMaybeIndex(a.name, b.name, slotIndex));
-}
-
-/**
- * Pull slot-order and variant-order arrays out of an AB_TESTS-shaped list,
- * for callers that have access to the declaration order and want to thread
- * it into `buildAbTestSlots`. Duck-typed so the dashboards don't need to
- * import any pipeline-side types.
- */
-export function abTestOrdering(
-  tests: readonly { name: string; variants: readonly { variant: { name: string } }[] }[],
-): { slotOrder: string[]; variantOrder: Record<string, string[]> } {
-  return {
-    slotOrder: tests.map((t) => t.name),
-    variantOrder: Object.fromEntries(
-      tests.map((t) => [t.name, t.variants.map((v) => v.variant.name)]),
-    ),
-  };
 }
 
 function compareByMaybeIndex(a: string, b: string, index: Map<string, number>): number {

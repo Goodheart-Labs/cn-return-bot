@@ -31,6 +31,10 @@ export interface NoteRecord {
   cost: number | null;
   tweet: NoteTweetData | null;
   public_dump_ratings: PublicDumpRatings | null;
+  // Review-dashboard failure-mode tags for this note: string[] when the note was
+  // reviewed ("seen"), null when it was never reviewed. Empty array = reviewed,
+  // no flaws. Only reviewed notes count toward the failure-mode denominator.
+  failure_modes: string[] | null;
 }
 
 export interface PipelineRunAggregate {
@@ -38,6 +42,21 @@ export interface PipelineRunAggregate {
   ab_test_picks: Record<string, string> | null;
   total_cost: number;
   run_count: number;
+}
+
+// Per-(UTC-day, full-pick-combination) run outcome counts, used by the A/B
+// comparison panel to compute candidate-share and "all runs" denominators, and
+// to scope the comparison to a "last N days" window. Keyed by the full
+// ab_test_picks dict (default-filled via resolvePicks); the client filters by
+// date, projects onto whichever tests it is splitting by, and sums.
+export interface AbOutcomeAggregate {
+  date: string;                              // YYYY-MM-DD (created_at, UTC)
+  ab_test_picks_key: string;
+  ab_test_picks: Record<string, string> | null;
+  total: number; // terminal runs: outcome !== "in_progress"
+  candidate: number; // outcome in {candidate, submitted}
+  submitted: number; // outcome === "submitted"
+  cost: number; // summed LLM cost (USD) over terminal runs; null costs count as 0
 }
 
 // Per-day rollup of pipeline_runs so the dashboard can compute
@@ -63,6 +82,7 @@ export interface StatsSnapshot {
   generated_at: string;
   notes: NoteRecord[];
   pipeline_run_aggregates: PipelineRunAggregate[];
+  ab_outcome_aggregates: AbOutcomeAggregate[];
   pipeline_runs_by_day: PipelineRunDayBucket[];
   ab_test_slots: ABTestSlotInfo[];
   daily_note_origin_counts: DailyOriginCount[];

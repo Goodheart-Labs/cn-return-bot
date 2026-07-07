@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  LaunchAgent for the once-a-day notewriter scrape.
+
+  Install:
+    cp scripts/com.cnreturnbot.dailyscrape.plist ~/Library/LaunchAgents/
+    launchctl load -w ~/Library/LaunchAgents/com.cnreturnbot.dailyscrape.plist
+
+  Run now (one-off):   launchctl start com.cnreturnbot.dailyscrape
+  Stop scheduling:     launchctl unload -w ~/Library/LaunchAgents/com.cnreturnbot.dailyscrape.plist
+  Change the time:     edit StartCalendarInterval below, then unload + load again.
+
+  If the Mac is asleep at the scheduled time, launchd runs the job the next
+  time the Mac wakes (no auto-wake configured).
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.cnreturnbot.dailyscrape</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>-lc</string>
+    <string>/Users/jimmaar/Github/cn-return-bot/scripts/run-daily-scrape.sh</string>
+  </array>
+
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>13</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+
+  <key>RunAtLoad</key>
+  <false/>
+
+  <key>StandardOutPath</key>
+  <string>/Users/jimmaar/Library/Logs/cn-dailyscrape.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/jimmaar/Library/Logs/cn-dailyscrape.err.log</string>
+</dict>
+</plist>
