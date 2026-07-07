@@ -80,6 +80,7 @@ export type ProductionFailureType =
   | "lost_to_competitor"
   | "missed_opportunity"
   | "needs_more_ratings"
+  | "underwater"
   | "filtered_low_eval_score";
 
 // V2 dataset run categories (from evaluateResults categorizeRowV2)
@@ -127,6 +128,10 @@ export const FAILURE_TYPE_CONFIG: Record<FailureType, FailureTypeConfig> = {
   lost_to_competitor: { label: "Lost to competitor", defaultOn: false, production: true, datasetRun: false, color: "bg-orange-100 text-orange-800" },
   missed_opportunity: { label: "Missed opportunity", defaultOn: false, production: true, datasetRun: false, color: "bg-yellow-100 text-yellow-800" },
   needs_more_ratings: { label: "Needs More Ratings", defaultOn: false, production: true, datasetRun: false, color: "bg-blue-100 text-blue-800" },
+  // NEEDS_MORE_RATINGS notes whose rating counts run net negative (not-helpful >
+  // helpful) — still undecided by CN, but sinking. Split out of needs_more_ratings
+  // the same way lost_to_competitor is, so the two pills stay disjoint.
+  underwater: { label: "Underwater", defaultOn: false, production: true, datasetRun: false, color: "bg-indigo-100 text-indigo-800" },
   filtered_low_eval_score: { label: "Filtered (low eval score)", defaultOn: false, production: true, datasetRun: false, color: "bg-teal-100 text-teal-800" },
 
   // --- V2 dataset categories: noteworthy ---
