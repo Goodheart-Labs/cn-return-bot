@@ -16,6 +16,7 @@ interface NoteCardProps {
   failureModeUsage: Map<string, number>;
   showFixed: boolean;
   onSeenToggle: (id: string, seen: boolean) => void;
+  onHighValueToggle: (id: string, highValue: boolean) => void;
   onFailureModesChange: (id: string, modes: string[]) => void;
   onCreateFailureMode: (name: string) => void;
   onCommentChange: (id: string, comment: string | null) => void;
@@ -104,6 +105,7 @@ export function NoteCard({
   failureModeUsage,
   showFixed,
   onSeenToggle,
+  onHighValueToggle,
   onFailureModesChange,
   onCreateFailureMode,
   onCommentChange,
@@ -119,6 +121,7 @@ export function NoteCard({
   const seen = item.annotation?.seen ?? false;
   const failureModes = item.annotation?.failureModes ?? [];
   const comment = item.annotation?.comment ?? null;
+  const highValue = item.annotation?.highValue ?? false;
 
   return (
     <CardErrorBoundary>
@@ -129,6 +132,11 @@ export function NoteCard({
           <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${ftConfig.color}`}>
             {ftConfig.label}
           </span>
+          {highValue && (
+            <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-amber-100 text-amber-800">
+              ★ High-value
+            </span>
+          )}
           {item.competitorLeadTag && (
             <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-amber-100 text-amber-800">
               {item.competitorLeadTag}
@@ -151,6 +159,18 @@ export function NoteCard({
           )}
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => onHighValueToggle(item.id, !highValue)}
+            title={highValue ? "High-value note — click to unmark" : "Mark as high-value"}
+            className={`text-sm px-2 py-1 rounded border flex items-center gap-1 ${
+              highValue
+                ? "border-amber-300 bg-amber-50 text-amber-700"
+                : "border-gray-300 bg-white text-gray-400 hover:bg-gray-50"
+            }`}
+          >
+            <span>{highValue ? "★" : "☆"}</span>
+            <span>High-value</span>
+          </button>
           <FailureModeSelector
             selected={failureModes}
             catalog={failureModeCatalog}

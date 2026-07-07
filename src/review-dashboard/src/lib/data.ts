@@ -449,6 +449,7 @@ export function buildDashboardItems(data: DashboardData): ReviewItem[] {
       seen: a.seen,
       failureModes: a.failure_modes ?? [],
       comment: a.comment,
+      highValue: a.high_value ?? false,
     });
   }
 
@@ -771,6 +772,7 @@ export async function fetchDatasetRunItems(uploadId: string): Promise<ReviewItem
       seen: a.seen,
       failureModes: a.failure_modes ?? [],
       comment: a.comment,
+      highValue: a.high_value ?? false,
     });
   }
 
@@ -821,40 +823,28 @@ export async function fetchDatasetRunCounts(uploadId: string): Promise<Record<Fa
 export async function upsertAnnotation(
   source: "production" | "dataset_run",
   targetId: string,
-  update: Partial<{ seen: boolean; failureModes: string[]; comment: string }>,
+  update: Partial<{ seen: boolean; failureModes: string[]; comment: string; highValue: boolean }>,
 ): Promise<void> {
-  // Try update first (preserves fields not being changed)
-  const { data: existing } = await supabase
+  // One atomic upsert keyed on (source, target_id). Only the fields present in
+  // `update` are written; the rest fall back to their column defaults on first
+  // insert and are left untouched on a conflict-merge. Replaces an older
+  // select-then-insert/update dance that could silently throw (e.g. when a
+  // duplicate row made `.single()` error, then the fresh insert hit the unique
+  // constraint) — which surfaced as a star click that "did nothing".
+  const row: Record<string, unknown> = {
+    source,
+    target_id: targetId,
+    updated_at: new Date().toISOString(),
+  };
+  if (update.seen !== undefined) row.seen = update.seen;
+  if (update.failureModes !== undefined) row.failure_modes = update.failureModes;
+  if (update.comment !== undefined) row.comment = update.comment;
+  if (update.highValue !== undefined) row.high_value = update.highValue;
+
+  const { error } = await supabase
     .from("review_dashboard_annotations")
-    .select("id")
-    .eq("source", source)
-    .eq("target_id", targetId)
-    .single();
-
-  if (existing) {
-    const changes: Record<string, unknown> = { updated_at: new Date().toISOString() };
-    if (update.seen !== undefined) changes.seen = update.seen;
-    if (update.failureModes !== undefined) changes.failure_modes = update.failureModes;
-    if (update.comment !== undefined) changes.comment = update.comment;
-
-    const { error } = await supabase
-      .from("review_dashboard_annotations")
-      .update(changes)
-      .eq("id", existing.id);
-    if (error) throw error;
-  } else {
-    const { error } = await supabase
-      .from("review_dashboard_annotations")
-      .insert({
-        source,
-        target_id: targetId,
-        seen: update.seen ?? false,
-        failure_modes: update.failureModes ?? [],
-        comment: update.comment ?? null,
-        updated_at: new Date().toISOString(),
-      });
-    if (error) throw error;
-  }
+    .upsert(row, { onConflict: "source,target_id" });
+  if (error) throw error;
 }
 
 // ─── Failure modes catalog ───────────────────────────────────────────────────
