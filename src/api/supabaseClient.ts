@@ -1,6 +1,7 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { fetchAllRows as fetchAllRowsShared } from "./paging";
 import type { Post } from "./fetchEligiblePosts";
+import { stripNullChars } from "../utils/stripNullChars";
 
 // A note that an --incremental scrape scrolled past without capturing this many
 // times is "given up": excluded from the anchor so a permanently-deleted note
@@ -557,7 +558,10 @@ export class SupabaseLogger {
   ): Promise<void> {
     const { error } = await this.client
       .from("pipeline_runs")
-      .update({
+      // Scrub NUL chars from every free-text / JSONB field — model output (e.g.
+      // Gemini media OCR) can emit U+0000, which Postgres rejects with 22P05 and
+      // would otherwise drop the whole run's row (logs + outcome).
+      .update(stripNullChars({
         outcome: data.outcome,
         outcome_reason: data.outcome_reason,
         error_message: data.error_message,
@@ -574,7 +578,7 @@ export class SupabaseLogger {
         check_reasoning: data.check_reasoning,
         logs: data.logs,
         cost: data.cost,
-      })
+      }))
       .eq("id", runId);
 
     if (error) {

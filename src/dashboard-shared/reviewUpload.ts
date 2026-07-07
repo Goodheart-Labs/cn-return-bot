@@ -6,6 +6,8 @@
  * auto-opened runs.
  */
 
+import { stripNullChars } from "../utils/stripNullChars";
+
 function nullIfEmpty(v: unknown): string | null {
   return v === undefined || v === null || v === "" ? null : (v as string);
 }
@@ -43,7 +45,10 @@ export function csvRowToReviewItemInsert(
   uploadId: string,
   r: Record<string, any>,
 ): ReviewItemInsert {
-  return {
+  // Scrub NUL chars from every free-text / JSONB field before the insert —
+  // model output (e.g. Gemini media OCR) can emit U+0000, which Postgres rejects
+  // with 22P05 and would fail the whole upload batch.
+  return stripNullChars({
     upload_id: uploadId,
     url: r.url ?? "",
     tweet_text: nullIfEmpty(r.text),
@@ -60,5 +65,5 @@ export function csvRowToReviewItemInsert(
     judge_guidance: nullIfEmpty(r.judge_guidance),
     original_note_text: nullIfEmpty(r.original_note_text),
     failure_reason: nullIfEmpty(r.failure_reason),
-  };
+  });
 }
