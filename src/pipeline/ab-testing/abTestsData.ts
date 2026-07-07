@@ -190,6 +190,23 @@ const SIMPLE_BOT_WRITER_EXAMPLES_TEST: ABTest = {
   ],
 };
 
+// Insert an LLM step between simple-bot's search and writer that extracts atomic
+// corrections from the search findings, grades each (clear_error / minor_error /
+// critical_context / useful_context / not_useful), and feeds the writer only the
+// high-value ones (clear_error + critical_context) instead of the raw findings —
+// early-exiting no_correction when none grade high. `off` = today's full-findings
+// writer. Trials Gemini 3 Flash vs Sonnet 5 as the extractor. Prereq-gated to
+// simple-bot, so no defaultVariant.
+const SIMPLE_BOT_CORRECTION_EXTRACTION_TEST: ABTest = {
+  name: "simple_bot_correction_extraction",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off",          overrides: { correction_extraction: false } }, weight: 34 },
+    { variant: { name: "gemini3flash", overrides: { correction_extraction: true, correction_extraction_model: "google/gemini-3-flash-preview" } }, weight: 33 },
+    { variant: { name: "sonnet5",      overrides: { correction_extraction: true, correction_extraction_model: "anthropic/claude-sonnet-5" } }, weight: 33 },
+  ],
+};
+
 // Cheap deepseek-v4-flash note-needed prefilter that runs BEFORE the bot and
 // skips it when no note is warranted (recorded as rejected / prefilter_no_note).
 // This is what makes the large feed affordable. Mostly-on, with a 20% "off"
@@ -405,6 +422,7 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_ANTI_PEDANTIC_TEST,
   SIMPLE_BOT_WRITER_EXAMPLES_TEST,
   SIMPLE_BOT_POLITICAL_SOURCES_TEST,
+  SIMPLE_BOT_CORRECTION_EXTRACTION_TEST,
   NOTE_PREFILTER_TEST,
   CHEAP_BOT_JUDGE_MODEL_TEST,
   CHEAP_BOT_GEMINI_STEPS_TEST,
