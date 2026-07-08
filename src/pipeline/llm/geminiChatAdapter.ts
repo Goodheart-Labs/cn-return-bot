@@ -2,7 +2,7 @@
  * Free-key routing for any non-tooling Gemini call that goes through
  * `trackedLlmCreate` (the OpenRouter chokepoint).
  *
- * Why: cheap-bot/simple-bot text steps call OpenRouter, which has no free tier.
+ * Why: simple-bot and prefilter text steps call OpenRouter, which has no free tier.
  * The same gemini-3-flash model is reachable via Google's native API with a free
  * AI Studio key. This adapter translates the OpenAI-style request into a
  * free-only native call and the native result back into the OpenAI response

@@ -2,7 +2,7 @@
  * Disk-backed writer-output cache for pipeline replay. Saves everything the
  * gates (note-needed judge + source verifier) need, keyed by tweet id, so a run
  * can replay just the gates without re-running search and the note writer.
- * Shared by simple-bot, cheap-bot, and the seedReplayFromDb tooling.
+ * Shared by simple-bot and the seedReplayFromDb tooling.
  *
  * Gated by the WRITER_CACHE env var (path to a directory). Unset = no caching
  * (full pipeline, no read/write). On a populated cache, a run starts "from the

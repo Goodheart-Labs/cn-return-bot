@@ -181,7 +181,7 @@ const notes = scrapedNotes.map((n) => {
 });
 
 // Define active vs legacy bots
-const activeBots = ["multi-agent", "simple-bot", "agent", "cheap-bot"];
+const activeBots = ["multi-agent", "simple-bot", "agent"];
 const legacyBots = [
   "claude-simple",  // renamed to "simple-bot" in commit 1; historical rows keep the old name until migration 038
   "opus-main", "opus-main-v2", "opus-direct", "opus-direct-grok",
@@ -189,6 +189,7 @@ const legacyBots = [
   "opus-bridging", "opus-4.6", "sonar-pro", "kimi-k2", "opus-research",
   "opus-verified", "opus-concise", "opus-scored", "opus-strict",
   "gemini-flash", "multi-search", "gemini-3-flash", "deepseek", "pre-tracking",
+  "cheap-bot",  // DeepSeek 5-stage hill-climb target; retired mid-2026
 ];
 
 // Check for notes from unknown bots

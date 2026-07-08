@@ -34,7 +34,7 @@ export function getMonitoringContext(): MonitoringContext | undefined {
 
 /** The reference-document block injected into the research step. Leads with the
  *  source URL so the bot can cite the article directly. Shared by simple-bot's
- *  search prompt and cheap-bot's search analyzer so the format stays identical. */
+ *  search prompt and the prefilter's search analyzer so the format stays identical. */
 export function buildReferenceBlock(ctx: MonitoringContext): string {
   return `## Reference document (ground truth on "${ctx.topicTitle}")
 Source URL: ${ctx.documentUrl}

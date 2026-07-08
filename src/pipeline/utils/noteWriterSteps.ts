@@ -1,11 +1,11 @@
 /**
  * Note-writer step log keys
  *
- * Both note-writing pipelines (simple-bot and cheap-bot) record their per-step
- * logs under a single `note_writer_steps` namespace so the review dashboard can
- * render one foldable tree with the same step names regardless of which bot ran.
- * Steps shared by both bots (note_writer, note_needed_judge, source_verifier)
- * log under the same key from one shared module.
+ * simple-bot and the note-needed prefilter record their per-step logs under a
+ * single `note_writer_steps` namespace so the review dashboard can render one
+ * foldable tree with the same step names. Steps shared across them (note_writer,
+ * note_needed_judge, source_verifier) log under the same key from one shared
+ * module.
  *
  * The same leaf keys drive cost tracking: each LLM call's cost name starts with
  * its step leaf (COST below), so `costs.groups` (grouped by the first name

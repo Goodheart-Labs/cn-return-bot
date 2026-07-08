@@ -90,8 +90,8 @@ function rankLevel(level: ReplayLevel): number {
 /** Seed the replay caches from prod logs up to `level`, defaulting to simple-bot.
  *  Each level reuses more from the logged run (post → input → note); the
  *  existing cache-read paths short-circuit the corresponding pipeline stages.
- *  Both simple-bot and cheap-bot support the writer cache, so either may be
- *  forced via --bot; with none given we default to simple-bot (production). */
+ *  simple-bot supports the writer cache; override the bot via --bot, or default
+ *  to simple-bot (production) when none is given. */
 async function seedFromDb(
   inputs: InputRow[],
   forcedPicks: Record<string, string>,

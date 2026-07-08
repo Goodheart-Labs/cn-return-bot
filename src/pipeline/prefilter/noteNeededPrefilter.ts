@@ -1,7 +1,7 @@
 /**
  * Note-needed prefilter — a cheap deepseek-v4-flash gate that decides whether a
- * post is worth running the full (expensive) bot on. Reuses the cheap-bot steps
- * — query writer → SearXNG → search analyzer — then a reframed note-needed judge
+ * post is worth running the full (expensive) bot on. Runs the prefilter's own
+ * steps — query writer → SearXNG → search analyzer — then a reframed note-needed judge
  * (no proposed note: post + research brief → needs a note?). No note-writing, no
  * source verification.
  *
@@ -24,8 +24,8 @@ import {
   PREFILTER_JUDGE_RESPONSE_FORMAT,
   buildPrefilterJudgeUserMessage,
 } from "../prompts/prefilter/noteNeededJudge";
-import { runQueryWriter } from "../cheap-bot/queryWriter";
-import { runSearchAnalyzer } from "../cheap-bot/searchAnalyzer";
+import { runQueryWriter } from "./queryWriter";
+import { runSearchAnalyzer } from "./searchAnalyzer";
 import { fetchSearxngResults, formatSearxngResults, type SearxngResult } from "../tool-calling/tools";
 import { runJsonLlmCall } from "../utils/jsonLlmCall";
 import { createTweetLog, withTweetLog, getTweetLog, type TweetLogMap } from "../utils/tweetLog";
@@ -37,19 +37,17 @@ const MAX_RESULTS_PER_QUERY = 6;
 const QUERY_WRITER_MAX_ATTEMPTS = 3;
 
 /** Self-contained config for the prefilter's own steps — every call on
- *  deepseek-v4-flash, SearXNG, reasoning high + temp 0 (matches cheap-bot's
- *  deterministic settings). Entered with withBotConfig so the picked bot's
- *  config is untouched. */
+ *  deepseek-v4-flash, SearXNG, reasoning high + temp 0 for deterministic
+ *  decisions. Entered with withBotConfig so the picked bot's config is
+ *  untouched. */
 const PREFILTER_CONFIG: BotConfig = {
   botId: "note-needed-prefilter",
   model: DEEPSEEK,
   search_model: DEEPSEEK,
   search_analyzer_model: DEEPSEEK,
-  note_judge_model: DEEPSEEK,
   web_search: "searxng",
   video_description_strategy: "frames",
   parallel_research: false,
-  search_analyzer: true,
   reasoning_effort: "high",
   temperature: 0,
   feed_size: "small",

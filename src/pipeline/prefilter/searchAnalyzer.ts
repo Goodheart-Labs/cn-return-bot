@@ -1,10 +1,10 @@
 /**
- * cheap-bot — Stage 2b: Search analyzer
+ * Prefilter — search analyzer.
  *
- * Sits between the raw SearXNG fetch and the writer. DeepSeek reads the post
- * context + messy search results, thinks about what's going on, and produces
- * a clean free-text research brief with source URLs inline. The writer then
- * works from this brief instead of raw search snippets.
+ * Sits between the raw SearXNG fetch and the note-needed judge. DeepSeek reads
+ * the post context + messy search results, thinks about what's going on, and
+ * produces a clean free-text research brief with source URLs inline. The judge
+ * then decides from this brief instead of raw search snippets.
  *
  * Output is free text (not JSON) so the model can reason before concluding.
  */
@@ -14,7 +14,7 @@ import { trackedLlmCreate, trackLlmCall } from "../cost-tracking/costTracker";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP, COST, ANALYSIS_LOG_MAX_CHARS } from "../utils/noteWriterSteps";
 import { getMonitoringContext, buildReferenceBlock } from "../misinfo-monitoring/monitoringContext";
-import { SEARCH_ANALYZER_SYSTEM_PROMPT, buildSearchAnalyzerUserMessage } from "../prompts/cheap-bot/searchAnalyzer";
+import { SEARCH_ANALYZER_SYSTEM_PROMPT, buildSearchAnalyzerUserMessage } from "../prompts/prefilter/searchAnalyzer";
 
 export async function runSearchAnalyzer(
   postContext: string,

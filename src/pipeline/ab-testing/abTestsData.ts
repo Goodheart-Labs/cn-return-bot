@@ -51,27 +51,6 @@ export const BOT_TEST: ABTest = {
   name: "bot",
   variants: [
     { variant: { name: "simple-bot",  overrides: { botId: "simple-bot" }}, weight: 100 },
-    { variant: { name: "cheap-bot", overrides: {
-      botId: "cheap-bot",
-      model: "deepseek/deepseek-v4-flash",
-      search_model: "deepseek/deepseek-v4-flash",
-      writer_model: "deepseek/deepseek-v4-flash",
-      note_needed_judge: true,
-      // gemini-3-flash judge: big_eval val swap from deepseek-v4-flash roughly
-      // halved the hard-FP rate (35%→14%) while gaining coverage (57%→68% PASS).
-      note_judge_model: "google/gemini-3-flash-preview",
-      verifier_model: "deepseek/deepseek-v4-flash",
-      // Source verifier runs Gemini media analysis on TikTok / Instagram /
-      // YouTube / image URLs and treats the analysis as the source's content.
-      // Text-LLM verifier stays on DeepSeek; only the media-description sub-
-      // system uses Gemini (since DeepSeek has no vision).
-      verifier_accepts_media_sources: true,
-      web_search: "searxng",
-      // Enable test-time reasoning on deepseek-v4-flash. Cheap, and improves
-      // the judge's "is this dispute substantive" classification + the writer's
-      // "find a dispute or return nothing" decision-making.
-      reasoning_effort: "high",
-    }}, weight: 0 },
   ],
 };
 
@@ -222,65 +201,6 @@ const NOTE_PREFILTER_TEST: ABTest = {
   ],
 };
 
-// Model used for cheap-bot's note-needed judge (the primary FP guard). The
-// BOT_TEST cheap-bot variant sets the baseline (gemini-3-flash); this test
-// swaps just the judge model, holding writer/verifier/search constant so a
-// cached writer-output replay isolates the judge model as the only variable.
-// gemini3flash won the big_eval val A/B (lowest hard-FP at 14%, 68% PASS) over
-// deepseek-v4flash (35% FP), deepseek-v4pro (16% FP, over-rejects good notes),
-// and sonnet46 (18% FP). Prereq-gated to cheap-bot, so no defaultVariant
-// (resolvePicks can't evaluate prereqs; a missing pick already falls back to
-// BOT_TEST's note_judge_model).
-const CHEAP_BOT_JUDGE_MODEL_TEST: ABTest = {
-  name: "cheap_bot_judge_model",
-  prerequisites: { botId: "cheap-bot" },
-  variants: [
-    { variant: { name: "gemini3flash",     overrides: { note_judge_model: "google/gemini-3-flash-preview" } }, weight: 100 },
-    { variant: { name: "deepseek-v4flash", overrides: { note_judge_model: "deepseek/deepseek-v4-flash"   } }, weight: 0 },
-    { variant: { name: "deepseek-v4pro",   overrides: { note_judge_model: "deepseek/deepseek-v4-pro"     } }, weight: 0 },
-    { variant: { name: "sonnet46",         overrides: { note_judge_model: "anthropic/claude-sonnet-4.6"  } }, weight: 0 },
-  ],
-};
-
-// Run gemini-3-flash for exactly the two steps where it most improved the
-// big_eval val — the search analyzer (evidence synthesis) and the note-needed
-// judge (the FP guard) — and keep deepseek-v4-flash everywhere else (query
-// writer, satire detector, writer, verifier). note_judge_model is already
-// gemini via CHEAP_BOT_JUDGE_MODEL_TEST, so this test routes the analyzer to
-// gemini (search_analyzer_model) and pins the satire detector back to deepseek
-// (satire_model) — which otherwise shares note_judge_model. Placed after
-// CHEAP_BOT_JUDGE_MODEL_TEST so its overrides win. Prereq-gated to cheap-bot,
-// so no defaultVariant.
-const CHEAP_BOT_GEMINI_STEPS_TEST: ABTest = {
-  name: "cheap_bot_gemini_steps",
-  prerequisites: { botId: "cheap-bot" },
-  variants: [
-    { variant: { name: "deepseek-baseline", overrides: {} }, weight: 0 },
-    { variant: { name: "gemini-analyzer-judge", overrides: {
-      search_analyzer_model: "google/gemini-3-flash-preview",
-      satire_model: "deepseek/deepseek-v4-flash",
-    } }, weight: 100 },
-  ],
-};
-
-// Replace the query-writer → SearXNG → analyzer chain with a single Gemini
-// native-search call (googleSearch): Gemini issues its own queries and returns
-// a findings brief directly. The writer/judge/verifier gates are unchanged. The
-// cheap-bot orchestrator branches on web_search="native_gemini"; search_model
-// is set to gemini here because the native variant's search call must hit
-// Gemini. Prereq-gated to cheap-bot, so no defaultVariant.
-const CHEAP_BOT_NATIVE_SEARCH_TEST: ABTest = {
-  name: "cheap_bot_native_search",
-  prerequisites: { botId: "cheap-bot" },
-  variants: [
-    { variant: { name: "searxng", overrides: {} }, weight: 50 },
-    { variant: { name: "native-gemini", overrides: {
-      web_search: "native_gemini",
-      search_model: "google/gemini-3-flash-preview",
-    } }, weight: 50 },
-  ],
-};
-
 const VERIFIER_MEDIA_SOURCES_TEST: ABTest = {
   name: "verifier_media_sources",
   variants: [
@@ -292,8 +212,8 @@ const VERIFIER_MEDIA_SOURCES_TEST: ABTest = {
 // Two-call claim-based source verifier vs the single-call accept/reject flow.
 // claim-based: extract the note's distinct claims, then map each to its
 // supporting cited sources; submit the good sources iff every claim has one.
-// Not prereq-gated (verifySources runs in both simple- and cheap-bot), so
-// defaultVariant "classic" lets historical rows resolve to the old flow.
+// Not prereq-gated, so defaultVariant "classic" lets historical rows resolve to
+// the old flow.
 const VERIFIER_CLAIM_BASED_TEST: ABTest = {
   name: "verifier_claim_based",
   defaultVariant: "classic",
@@ -369,40 +289,6 @@ export const PANGRAM_NOTE_TEST: ABTest = {
   ],
 };
 
-const SEARCH_ANALYZER_TEST: ABTest = {
-  name: "search_analyzer",
-  prerequisites: { botId: "cheap-bot" },
-  variants: [
-    { variant: { name: "off", overrides: { search_analyzer: false } }, weight: 0 },
-    { variant: { name: "on",  overrides: { search_analyzer: true  } }, weight: 100 },
-  ],
-};
-
-// Pre-search satire gate: reads post + comments + profile (no note), early-exits
-// before the query writer when the post is overt satire the audience is in on.
-// High-precision; the note-needed judge keeps a lighter satire backstop.
-const SATIRE_DETECTOR_TEST: ABTest = {
-  name: "satire_detector",
-  prerequisites: { botId: "cheap-bot" },
-  variants: [
-    { variant: { name: "off", overrides: { satire_detector: false } }, weight: 0 },
-    { variant: { name: "on",  overrides: { satire_detector: true  } }, weight: 100 },
-  ],
-};
-
-// Pin every cheap-bot LLM call to temperature 0. At the model's default
-// temperature the judge/verifier are so non-deterministic that ~58% of eval
-// rows flipped run-to-run, swamping any prompt-change signal. Prereq-gated to
-// cheap-bot so the other bots keep their default sampling.
-const CHEAP_BOT_TEMPERATURE_TEST: ABTest = {
-  name: "cheap_bot_temperature",
-  prerequisites: { botId: "cheap-bot" },
-  variants: [
-    { variant: { name: "default", overrides: {} },               weight: 0 },
-    { variant: { name: "zero",    overrides: { temperature: 0 } }, weight: 100 },
-  ],
-};
-
 // Inject the post author's past helpful community notes (ours + competing notes
 // on tweets we've noted) into the writer's user message — see
 // getAuthorNoteHistory. The lookup was silently broken from migration 033 until
@@ -431,14 +317,8 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_POLITICAL_SOURCES_TEST,
   SIMPLE_BOT_CORRECTION_EXTRACTION_TEST,
   NOTE_PREFILTER_TEST,
-  CHEAP_BOT_JUDGE_MODEL_TEST,
-  CHEAP_BOT_GEMINI_STEPS_TEST,
-  CHEAP_BOT_NATIVE_SEARCH_TEST,
   VERIFIER_MEDIA_SOURCES_TEST,
   VERIFIER_CLAIM_BASED_TEST,
-  SEARCH_ANALYZER_TEST,
-  SATIRE_DETECTOR_TEST,
-  CHEAP_BOT_TEMPERATURE_TEST,
   FEED_SIZE_TEST,
   MISINFO_MONITORING_TEST,
   MISINFO_TOPIC_TEST,

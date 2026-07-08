@@ -1,8 +1,8 @@
 /**
- * Prompt — cheap-bot query writer (Stage 1).
+ * Prompt — prefilter query writer.
  *
  * One call that emits 2-5 Google search queries from a post's factual claims.
- * See runQueryWriter in src/pipeline/cheap-bot/queryWriter.ts.
+ * See runQueryWriter in src/pipeline/prefilter/queryWriter.ts.
  */
 
 import { jsonSchemaResponseFormat } from "../responseFormat";
@@ -39,7 +39,7 @@ If the post is pure opinion / joke / satire with no checkable factual claim, ret
 
 Return JSON only: {"queries": ["...", "..."]}`;
 
-export const QUERY_WRITER_RESPONSE_FORMAT = jsonSchemaResponseFormat("cheap_bot_queries", {
+export const QUERY_WRITER_RESPONSE_FORMAT = jsonSchemaResponseFormat("prefilter_queries", {
   type: "object",
   properties: {
     queries: {

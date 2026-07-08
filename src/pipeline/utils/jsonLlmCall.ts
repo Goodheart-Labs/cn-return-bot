@@ -1,6 +1,6 @@
 /**
- * Shared JSON LLM call for the cheap-bot pipeline (and the simple-bot stages it
- * reuses). Wraps trackedLlmCreate with the provider-quirk tolerance every JSON
+ * Shared JSON LLM call used by the note-needed prefilter and simple-bot's JSON
+ * stages. Wraps trackedLlmCreate with the provider-quirk tolerance every JSON
  * stage needs: strip ```json fences, parse, and — because loosely-enforcing
  * providers (DeepSeek v4 Flash) occasionally answer in prose/markdown despite a
  * json_schema response_format — re-ask for JSON rather than crashing the row.

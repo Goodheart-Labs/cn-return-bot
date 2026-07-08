@@ -13,7 +13,7 @@ export interface BotConfig {
   model: string;
   /** Step-specific model overrides. Each defaults to `model` when unset. */
   search_model?: string;
-  /** Model for the cheap-bot search analyzer. Defaults to `search_model` then
+  /** Model for the prefilter search analyzer. Defaults to `search_model` then
    *  `model`. Decouples the analyzer from the query writer (which also reads
    *  `search_model`) so they can run on different models. */
   search_analyzer_model?: string;
@@ -30,15 +30,6 @@ export interface BotConfig {
    * false (the single-call accept/reject flow). Set by VERIFIER_CLAIM_BASED_TEST.
    */
   verifier_claim_based?: boolean;
-  /**
-   * When true, the pipeline runs an extra LLM step between writer and source
-   * verifier that judges whether a note is actually warranted for the post.
-   * cheap-bot's primary FP guard (always on there via BOT_TEST). Defaults to
-   * false (no judge step).
-   */
-  note_needed_judge?: boolean;
-  /** Model for the note-needed-judge step. Defaults to `model` when unset. */
-  note_judge_model?: string;
   /**
    * When true (simple-bot only), an LLM step between search and writer extracts
    * atomic corrections from the search findings, grades each (clear_error /
@@ -58,10 +49,6 @@ export interface BotConfig {
    * NOTE_PREFILTER_TEST; defaults false.
    */
   note_prefilter?: boolean;
-  /** Model for the cheap-bot satire detector. Defaults to `note_judge_model`
-   *  then `model`. Decouples the satire detector from the note-needed judge
-   *  (which also reads `note_judge_model`) so they can run on different models. */
-  satire_model?: string;
   /**
    * If set, passed through to OpenRouter as `reasoning_effort` for every LLM
    * call made by this bot. Useful when the configured model supports test-time
@@ -70,10 +57,9 @@ export interface BotConfig {
   reasoning_effort?: "low" | "medium" | "high";
   /**
    * If set, passed through to OpenRouter as `temperature` for every LLM call
-   * made by this bot. cheap-bot pins this to 0 (via the `cheap_bot_temperature`
-   * A/B test) so its judge/verifier/writer decisions are deterministic enough
-   * to hill-climb — at default temperature ~58% of eval rows flipped run-to-run.
-   * Unset = model default.
+   * made by this bot. The note-needed prefilter pins this to 0 so its
+   * query-writer / analyzer / judge decisions are deterministic. Unset = model
+   * default.
    */
   temperature?: number;
   web_search:
@@ -87,20 +73,6 @@ export interface BotConfig {
     | "searxng_summarized";// tool-calling loop: model calls google_search (SearXNG → Gemini summary)
   video_description_strategy: VideoDescriptionStrategy;
   parallel_research: boolean;
-  /** When true, an LLM step between search and writer distills raw search
-   *  snippets into a structured research brief. Defaults to false. */
-  search_analyzer?: boolean;
-  /**
-   * When true (cheap-bot only), a pre-search LLM gate reads the post + comments
-   * + author profile — WITHOUT the proposed note — and decides whether the post
-   * is overt satire that the audience is in on. A positive verdict early-exits
-   * the pipeline with no_correction, skipping search + writer + judge. The
-   * detector is high-precision by design (it fires only when the room is in on
-   * the joke, not on fabricated content imitating real media), so the
-   * note-needed judge keeps a lighter satire backstop for the cases it misses.
-   * Defaults to false.
-   */
-  satire_detector?: boolean;
   /**
    * When true (simple-bot only), the search and writer steps use maximally-terse
    * "simple" prompt variants instead of the detailed defaults — tests whether the

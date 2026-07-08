@@ -1,9 +1,9 @@
 /**
- * Prompt — cheap-bot search analyzer (Stage 2b).
+ * Prompt — prefilter search analyzer.
  *
  * Distills raw search results into a free-text research brief (no JSON, so the
  * model can reason before concluding). See runSearchAnalyzer in
- * src/pipeline/cheap-bot/searchAnalyzer.ts.
+ * src/pipeline/prefilter/searchAnalyzer.ts.
  */
 
 export const SEARCH_ANALYZER_SYSTEM_PROMPT = `You receive a social-media post and raw search results. Distill them into a research brief.

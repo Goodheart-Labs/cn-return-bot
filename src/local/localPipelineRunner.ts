@@ -155,7 +155,7 @@ export function parseCliArgs(
     console.error("  --name <label>          name for dashboard upload (default: derived)");
     console.error("  --search-cache <dir>    cache/replay SearXNG results to/from this directory");
     console.error("  --input-cache <dir>     cache/replay bot inputs (media, comments, author history)");
-    console.error("  --writer-cache <dir>    cache/replay cheap-bot writer output (replay starts from the two judges)");
+    console.error("  --writer-cache <dir>    cache/replay writer output (replay starts from the two judges)");
     console.error("\nAvailable bots:", getEnabledBots().map((b) => b.id).join(", "));
     process.exit(1);
   }

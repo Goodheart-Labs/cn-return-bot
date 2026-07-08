@@ -1,5 +1,5 @@
 /**
- * Seed the cheap-bot replay caches from a historical pipeline_runs row.
+ * Seed the replay caches from a historical pipeline_runs row.
  *
  * Lets tryoutNotes re-run a past run locally while reusing data from its prod
  * logs, choosing how deep to replay via nested levels (each includes the

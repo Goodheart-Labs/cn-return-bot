@@ -1,17 +1,16 @@
 /**
- * cheap-bot — Stage 1: Query writer
+ * Prefilter — query writer.
  *
- * One DeepSeek call that emits 1-3 search queries from the tweet context.
- * No iteration, no follow-up — single shot. This is the most hill-climbable
- * surface in cheap-bot; the later "query-writing teacher" idea targets this
- * stage with a separate sub-task dataset.
+ * One DeepSeek call that emits 2-5 search queries from the post context, so the
+ * note-needed prefilter can gather evidence cheaply. No iteration — single shot.
+ * See runNoteNeededPrefilter in ./noteNeededPrefilter.ts.
  */
 
 import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP, COST } from "../utils/noteWriterSteps";
 import { runJsonLlmCall } from "../utils/jsonLlmCall";
-import { QUERY_WRITER_SYSTEM_PROMPT, QUERY_WRITER_RESPONSE_FORMAT } from "../prompts/cheap-bot/queryWriter";
+import { QUERY_WRITER_SYSTEM_PROMPT, QUERY_WRITER_RESPONSE_FORMAT } from "../prompts/prefilter/queryWriter";
 
 export interface QueryWriterResult {
   queries: string[];

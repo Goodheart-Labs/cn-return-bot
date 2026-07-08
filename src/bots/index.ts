@@ -7,12 +7,13 @@
 
 import { Bot } from "./types";
 import { simpleBot } from "./simple-bot";
-import { cheapBot } from "./cheap-bot";
 
 // =============================================================================
 // RETIRED BOTS — recoverable via `git show <commit>:src/bots/<file>.ts`.
 //
 //   bot-id         file                 last commit  notes
+//   cheap-bot      cheap-bot.ts         2885cc0      DeepSeek 5-stage hill-climb target; retired. Its query
+//                                                    writer + search analyzer live on under pipeline/prefilter/.
 //   opus-4.6       opus-4.6.ts          a698e34      Opus 4.6 baseline, superseded
 //   kimi-k2        kimi-k2.ts           a698e34      Kimi K2 variant
 //   sonar-pro      sonar-pro.ts         a698e34      legacy Perplexity Sonar bot
@@ -33,7 +34,7 @@ import { cheapBot } from "./cheap-bot";
 //   schemas + buildToolList).
 // =============================================================================
 
-const ALL_BOTS: Bot[] = [simpleBot, cheapBot];
+const ALL_BOTS: Bot[] = [simpleBot];
 
 export function getEnabledBots(): Bot[] {
   return ALL_BOTS;
