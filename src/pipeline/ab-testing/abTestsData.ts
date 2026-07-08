@@ -343,6 +343,19 @@ const MISINFO_TOPIC_TEST: ABTest = {
   ],
 };
 
+// Pseudo A/B test: record whether a run came from the XXL-feed Pangram
+// AI-detection pre-pass. generatePangramCandidates forces `yes` on the runs it
+// creates; every other run carries no pick and resolves to the default `no`.
+// Empty overrides — this records only, it drives no behaviour.
+const PANGRAM_MONITORING_TEST: ABTest = {
+  name: "pangram_monitoring",
+  defaultVariant: "no",
+  variants: [
+    { variant: { name: "no",  overrides: {} }, weight: 100 },
+    { variant: { name: "yes", overrides: {} }, weight: 0 },
+  ],
+};
+
 const SEARCH_ANALYZER_TEST: ABTest = {
   name: "search_analyzer",
   prerequisites: { botId: "cheap-bot" },
@@ -416,5 +429,6 @@ export const AB_TESTS: ABTest[] = [
   FEED_SIZE_TEST,
   MISINFO_MONITORING_TEST,
   MISINFO_TOPIC_TEST,
+  PANGRAM_MONITORING_TEST,
   AUTHOR_HISTORY_TEST,
 ];

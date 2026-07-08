@@ -14,6 +14,13 @@ export interface Candidate {
   post: Post;
   tweetResult: ProcessTweetResult;
   botId: string;
+  /** Note classification tags. Defaults to ["disputed_claim_as_fact"] (the
+   *  regular fact-check pipeline); the Pangram pre-pass sets
+   *  ["missing_important_context"] since X has no AI-generated tag. */
+  misleadingTags?: string[];
+  /** notes.source_url when the candidate has no bot pipelineResult to read it
+   *  from (the Pangram pre-pass sets the report link here). */
+  sourceUrl?: string;
 }
 
 export async function submitCandidates(
