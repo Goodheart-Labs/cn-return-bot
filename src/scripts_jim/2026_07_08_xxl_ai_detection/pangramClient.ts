@@ -25,6 +25,9 @@ export type PangramVerdict =
       fractionAiAssisted: number;
       fractionHuman: number;
       headline: string;
+      // Public Pangram report (pangram.com/history/<id>) — a shareable "source"
+      // link for the verdict. Populated because we submit public_dashboard_link.
+      dashboardLink: string;
       raw: unknown;
     }
   | { type: "error"; error: string };
@@ -50,6 +53,7 @@ function parseSuccess(data: any): PangramVerdict {
     fractionAiAssisted: data?.fraction_ai_assisted ?? 0,
     fractionHuman: data?.fraction_human ?? 0,
     headline: data?.headline ?? "",
+    dashboardLink: data?.dashboard_link ?? "",
     raw: data,
   };
 }
@@ -57,7 +61,8 @@ function parseSuccess(data: any): PangramVerdict {
 async function submitTask(text: string, headers: Record<string, string>): Promise<string> {
   for (let attempt = 0; attempt <= SUBMIT_RETRIES; attempt++) {
     try {
-      const res = await axios.post(PANGRAM_URL, { text, public_dashboard_link: false }, { headers, timeout: 30_000 });
+      // public_dashboard_link → response carries a shareable pangram.com/history/<id> report URL.
+      const res = await axios.post(PANGRAM_URL, { text, public_dashboard_link: true }, { headers, timeout: 30_000 });
       const taskId = res.data?.task_id;
       if (!taskId) throw new Error(`no task_id in response: ${JSON.stringify(res.data)}`);
       return taskId;

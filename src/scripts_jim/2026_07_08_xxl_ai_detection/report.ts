@@ -19,7 +19,7 @@ type AiRow = {
   created_at: string;
   age_hours: number;
   fraction_ai: number;
-  headline: string;
+  pangram_link: string;
 };
 
 type Stats = {
@@ -40,7 +40,7 @@ function toAiRow({ post, verdict }: AnalyzedPost): AiRow {
     created_at: post.created_at,
     age_hours: Math.round(ageInHours(post) * 10) / 10,
     fraction_ai: verdict.type === "classified" ? verdict.fractionAi : 0,
-    headline: verdict.type === "classified" ? verdict.headline : "",
+    pangram_link: verdict.type === "classified" ? verdict.dashboardLink : "",
   };
 }
 
@@ -91,11 +91,11 @@ function renderMarkdown(s: Stats, aiRows: AiRow[]): string {
     ``,
     `## AI-generated posts (${aiRows.length})`,
     ``,
-    `| # | Link | Views | Age (h) | Posted | fraction_ai |`,
-    `| - | ---- | ----: | ------: | ------ | ----------: |`,
+    `| # | Link | Views | Age (h) | Posted | fraction_ai | Pangram report |`,
+    `| - | ---- | ----: | ------: | ------ | ----------: | -------------- |`,
     ...aiRows.map(
       (r, i) =>
-        `| ${i + 1} | ${r.url} | ${formatCount(r.views)} | ${r.age_hours} | ${r.created_at ?? "?"} | ${r.fraction_ai.toFixed(2)} |`
+        `| ${i + 1} | ${r.url} | ${formatCount(r.views)} | ${r.age_hours} | ${r.created_at ?? "?"} | ${r.fraction_ai.toFixed(2)} | ${r.pangram_link} |`
     ),
   ];
   return lines.join("\n") + "\n";
