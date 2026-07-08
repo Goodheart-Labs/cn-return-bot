@@ -25,7 +25,7 @@ import type { LlmCallCost, ToolCallCost } from "../cost-tracking/costTracker";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP } from "../utils/noteWriterSteps";
 import { ModelOutputInvalidError } from "../utils/errors";
-import { stripJsonFences } from "../utils/jsonOutput";
+import { stripJsonFences, extractJsonObject } from "../utils/jsonOutput";
 
 const linkify = new LinkifyIt();
 
@@ -119,7 +119,13 @@ async function searchWithAnthropicNative(
   const log = getTweetLog();
   const config = getBotConfig();
   const model = config.search_model ?? config.model;
-  const systemPrompt = getSearchSystemPrompt();
+  // Opus 4.8 garbles its output when a server-side web_search tool and a strict
+  // json_schema response_format are attached together (Opus-specific collision;
+  // Sonnet is unaffected). Drop response_format and ask for JSON in the prompt,
+  // then parse it — same workaround as searchWithOpenaiNative / Sonar. Opus emits
+  // a reasoning preamble before the JSON, so extract the JSON object rather than
+  // parsing the whole message.
+  const systemPrompt = `${getSearchSystemPrompt()}\n\n${SEARCH_PROMPTED_JSON_INSTRUCTION}`;
   log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage });
 
   const response = await llm.create({
@@ -137,10 +143,9 @@ async function searchWithAnthropicNative(
       { role: "user" as const, content: userMessage },
     ],
     tools: [WEB_SEARCH_TOOL],
-    response_format: SEARCH_RESPONSE_FORMAT,
   } as any);
 
-  const content = response.choices?.[0]?.message?.content ?? "";
+  const content = extractJsonObject(response.choices?.[0]?.message?.content ?? "");
   const parsed = parseSearchJson(content, "searchWithAnthropicNative");
   log?.set(`${STEP.search}.messages.1`, { content: parsed });
 
