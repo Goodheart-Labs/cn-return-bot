@@ -62,6 +62,7 @@ if (isLocal) {
 import { SupabaseLogger } from "../api/supabaseClient";
 import { closeBrowser } from "../pipeline/utils/browserManager";
 import { generateCandidates, type TweetProcessedEvent } from "../pipeline/orchestration/generateCandidates";
+import { generatePangramCandidates } from "../pipeline/pangram-monitoring/generatePangramCandidates";
 import { submitCandidates } from "../pipeline/orchestration/submitCandidates";
 import { computeMaxPosts } from "../pipeline/orchestration/computeMaxPosts";
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
@@ -161,7 +162,15 @@ async function main() {
       }
     }
 
-    const candidates = await generateCandidates(supabaseLogger, {
+    // XXL-feed Pangram AI-detection pre-pass runs first (fail-soft to [] when the
+    // XXL crawl can't run, e.g. local creds are small-feed-only). Its candidates
+    // and the regular pipeline's share one submit call under the daily cap.
+    const pangramCandidates = await generatePangramCandidates(supabaseLogger, {
+      skipPostIds: skipPostIds ?? new Set<string>(),
+      onTweetProcessed,
+    });
+
+    const regularCandidates = await generateCandidates(supabaseLogger, {
       maxPosts,
       estimate,
       skipPostIds,
@@ -169,9 +178,10 @@ async function main() {
       onTweetProcessed,
     });
 
+    const candidates = [...pangramCandidates, ...regularCandidates];
     if (candidates.length > 0 && supabaseLogger) {
       const submitted = await submitCandidates(candidates, supabaseLogger, isLocal);
-      console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates`);
+      console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates (${pangramCandidates.length} pangram, ${regularCandidates.length} regular)`);
     } else {
       console.log(`[pipeline] No candidates to submit`);
     }

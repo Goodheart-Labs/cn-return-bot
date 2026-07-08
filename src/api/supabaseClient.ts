@@ -766,6 +766,47 @@ export class SupabaseLogger {
   // ============================================
 
   /**
+   * Tweet IDs already run through Pangram (any verdict). One read per run so the
+   * Pangram pre-pass checks each long-form post exactly once instead of
+   * re-classifying the same viral post every run. Fail-soft to an empty set so
+   * the pre-pass still runs before migration 049 is applied (it just re-checks).
+   */
+  async getPangramCheckedTweetIds(): Promise<Set<string>> {
+    try {
+      const rows = await this.fetchAllRows<{ tweet_id: string }>(
+        (client) => client.from("pangram_monitoring_sightings").select("tweet_id"),
+        "tweet_id",
+        "getPangramCheckedTweetIds",
+      );
+      return new Set(rows.map((r) => r.tweet_id));
+    } catch (err) {
+      console.warn("[SupabaseLogger] getPangramCheckedTweetIds failed (table missing?):", err);
+      return new Set();
+    }
+  }
+
+  /** Record Pangram verdicts (insert-only; the first verdict per tweet wins). */
+  async recordPangramChecks(rows: Array<{
+    tweet_id: string;
+    feed_size?: string;
+    impression_count?: number;
+    author_name?: string;
+    prediction_short: string;
+    fraction_ai?: number;
+    is_ai: boolean;
+    processed_run_id?: string;
+  }>): Promise<void> {
+    if (!rows.length) return;
+    const { error } = await this.client
+      .from("pangram_monitoring_sightings")
+      .upsert(rows, { onConflict: "tweet_id", ignoreDuplicates: true });
+    if (error) {
+      console.error("[SupabaseLogger] Error recording pangram checks:", error);
+      throw error;
+    }
+  }
+
+  /**
    * All sightings recorded so far, keyed "<tweetId>:<topicId>". One read per
    * run so the pre-pass can tell which keyword-matched posts are *new* (worth
    * upserting + evaluating with the selection LLM) versus already-seen.

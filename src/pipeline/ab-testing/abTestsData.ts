@@ -343,6 +343,32 @@ const MISINFO_TOPIC_TEST: ABTest = {
   ],
 };
 
+// Pseudo A/B test: record whether a run came from the XXL-feed Pangram
+// AI-detection pre-pass. generatePangramCandidates forces `yes` on the runs it
+// creates; every other run carries no pick and resolves to the default `no`.
+// Empty overrides — this records only, it drives no behaviour.
+const PANGRAM_MONITORING_TEST: ABTest = {
+  name: "pangram_monitoring",
+  defaultVariant: "no",
+  variants: [
+    { variant: { name: "no",  overrides: {} }, weight: 100 },
+    { variant: { name: "yes", overrides: {} }, weight: 0 },
+  ],
+};
+
+// 50/50: does adding a false-positive-rate reassurance (+ two supporting sources)
+// to the Pangram AI-detection note change how it's rated? Read directly by
+// generatePangramCandidates (buildPangramNote) via pickVariantName, not through
+// BotConfig, so overrides are empty.
+export const PANGRAM_NOTE_TEST: ABTest = {
+  name: "pangram_note",
+  defaultVariant: "plain",
+  variants: [
+    { variant: { name: "plain",      overrides: {} }, weight: 50 },
+    { variant: { name: "fp_context", overrides: {} }, weight: 50 },
+  ],
+};
+
 const SEARCH_ANALYZER_TEST: ABTest = {
   name: "search_analyzer",
   prerequisites: { botId: "cheap-bot" },
@@ -416,5 +442,7 @@ export const AB_TESTS: ABTest[] = [
   FEED_SIZE_TEST,
   MISINFO_MONITORING_TEST,
   MISINFO_TOPIC_TEST,
+  PANGRAM_MONITORING_TEST,
+  PANGRAM_NOTE_TEST,
   AUTHOR_HISTORY_TEST,
 ];

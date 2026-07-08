@@ -20,13 +20,13 @@ export async function submitNoteForTweet(
   const tweetId = post.id;
   const pipelineRunId = tweetResult.pipelineRunId!;
   const noteText = tweetResult.noteText ?? "";
-  const sourceUrl = tweetResult.pipelineResult?.noteResult?.url ?? "";
+  const sourceUrl = tweetResult.pipelineResult?.noteResult?.url ?? candidate.sourceUrl ?? "";
 
   try {
     const { submitNote } = await import("../../api/submitNote");
     const response = await submitNote(tweetId, {
       classification: "misinformed_or_potentially_misleading",
-      misleading_tags: ["disputed_claim_as_fact"],
+      misleading_tags: candidate.misleadingTags ?? ["disputed_claim_as_fact"],
       text: noteText,
       trustworthy_sources: true,
     });
