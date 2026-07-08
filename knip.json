@@ -1,7 +1,7 @@
 {
   "entry": ["src/production/*.ts", "src/local/*.ts", "src/scraper/*.ts", "src/reports/*.ts", "src/stats-dashboard/src/main.tsx"],
   "project": ["src/**/*.{ts,tsx}"],
-  "ignore": ["src/elo-rating-web/**", "src/scripts_jim/**", "src/scripts_nathan/**", "src/pipeline/orchestration/updateWritingLimit.ts"],
+  "ignore": ["src/elo-rating-web/**", "src/scripts_jim/**", "src/scripts_nathan/**", "src/pipeline/orchestration/updateWritingLimit.ts", "src/pipeline/misinfo-monitoring/**", "src/pipeline/prompts/misinfo-monitoring/**"],
   "ignoreDependencies": ["@types/p-queue", "papaparse", "@types/papaparse", "react", "@types/react", "react-dom", "@types/react-dom", "react-json-view-lite", "@vitejs/plugin-react", "exa-js"],
   "ignoreExportsUsedInFile": true,
   "exclude": ["types"],

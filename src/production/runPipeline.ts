@@ -7,11 +7,6 @@
  *
  * Flags:
  *   --local              route Supabase to LOCAL_SUPABASE_URL/KEY; write CSV + auto-open dashboard
- *   --misinfo-only       run ONLY the XXL-feed misinfo pre-pass (skip the regular pipeline).
- *                        Pair with --local to test it: keeps prod X creds for the read-only XXL
- *                        crawl (local creds are small-feed-only) while submission stays a dry run.
- *   --misinfo-dump PATH  source the pre-pass from a JSONL feed dump instead of the live XXL feed
- *                        (which 403s outside GitHub Actions). Lets you test it on real data locally.
  *   --pick test=variant  force a specific A/B test variant (repeatable). The bot itself
  *                        is picked by the "bot" test, so use --pick bot=<id> to force it.
  */
@@ -37,14 +32,7 @@ function takeAllPicks(): Record<string, string> {
   return picks;
 }
 
-function takeFlagValue(flag: string): string | undefined {
-  const i = process.argv.indexOf(flag);
-  return i >= 0 ? process.argv[i + 1] : undefined;
-}
-
 const isLocal = process.argv.includes("--local");
-const misinfoOnly = process.argv.includes("--misinfo-only");
-const misinfoDumpPath = takeFlagValue("--misinfo-dump");
 const forcedPicks = takeAllPicks();
 if (isLocal) {
   captureProdSupabaseCreds();
@@ -60,27 +48,20 @@ if (isLocal) {
   }
 
   // Route X API calls to the local test account (must happen before any X API
-  // imports read these). EXCEPTION: --misinfo-only needs prod *read* access to
-  // crawl the XXL feed (local creds are small-feed-only). Submission is a dry
-  // run under --local, so the prod keys are only ever used for reads here.
-  if (misinfoOnly) {
-    console.log("[pipeline] --misinfo-only: keeping prod X creds for the read-only XXL crawl (submission is dry-run under --local)");
-  } else {
-    for (const [src, dest] of Object.entries({
-      LOCAL_X_API_KEY: "X_API_KEY",
-      LOCAL_X_API_KEY_SECRET: "X_API_KEY_SECRET",
-      LOCAL_X_ACCESS_TOKEN: "X_ACCESS_TOKEN",
-      LOCAL_X_ACCESS_TOKEN_SECRET: "X_ACCESS_TOKEN_SECRET",
-    })) {
-      if (process.env[src]) process.env[dest] = process.env[src];
-    }
+  // imports read these).
+  for (const [src, dest] of Object.entries({
+    LOCAL_X_API_KEY: "X_API_KEY",
+    LOCAL_X_API_KEY_SECRET: "X_API_KEY_SECRET",
+    LOCAL_X_ACCESS_TOKEN: "X_ACCESS_TOKEN",
+    LOCAL_X_ACCESS_TOKEN_SECRET: "X_ACCESS_TOKEN_SECRET",
+  })) {
+    if (process.env[src]) process.env[dest] = process.env[src];
   }
 }
 
 import { SupabaseLogger } from "../api/supabaseClient";
 import { closeBrowser } from "../pipeline/utils/browserManager";
 import { generateCandidates, type TweetProcessedEvent } from "../pipeline/orchestration/generateCandidates";
-import { generateMisinfoCandidates } from "../pipeline/misinfo-monitoring/generateMisinfoCandidates";
 import { submitCandidates } from "../pipeline/orchestration/submitCandidates";
 import { computeMaxPosts } from "../pipeline/orchestration/computeMaxPosts";
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
@@ -103,11 +84,10 @@ function writePipelineRowToCsv(output: OutputFolder, event: TweetProcessedEvent)
   output.appendRow(row);
 }
 
-// 27 min: the serial misinfo pre-pass runs before the regular pipeline, so the
-// same deadline has to cover both. The 30-min cron gives each run this much wall
-// clock without overlapping the next tick. The GH Actions job timeout (35 min)
-// sits above this — plus multi-minute setup — so the watchdog (clean exit), not
-// the runner kill, is the normal stop.
+// 27 min: the 30-min cron gives each run this much wall clock without overlapping
+// the next tick. The GH Actions job timeout (35 min) sits above this — plus
+// multi-minute setup — so the watchdog (clean exit), not the runner kill, is the
+// normal stop.
 const MAX_RUNTIME_MS = 27 * 60 * 1000;
 const MAX_POSTS_LOCAL = 5;
 const MAX_POSTS_FALLBACK = 5;
@@ -145,17 +125,13 @@ async function main() {
       }
     }
 
-    // --misinfo-only skips the regular pipeline, so the daily-writing-limit
-    // gate (which only governs that pass) doesn't apply.
-    const { maxPosts, estimate } = misinfoOnly
-      ? { maxPosts: 0, estimate: 0 }
-      : isLocal
-        ? { maxPosts: MAX_POSTS_LOCAL, estimate: MAX_POSTS_LOCAL }
-        : supabaseLogger
-          ? await computeMaxPosts(supabaseLogger)
-          : { maxPosts: MAX_POSTS_FALLBACK, estimate: MAX_POSTS_FALLBACK };
+    const { maxPosts, estimate } = isLocal
+      ? { maxPosts: MAX_POSTS_LOCAL, estimate: MAX_POSTS_LOCAL }
+      : supabaseLogger
+        ? await computeMaxPosts(supabaseLogger)
+        : { maxPosts: MAX_POSTS_FALLBACK, estimate: MAX_POSTS_FALLBACK };
 
-    if (!misinfoOnly && maxPosts === 0) {
+    if (maxPosts === 0) {
       console.log("[pipeline] Skipping — writing limit reached for the current 24h window");
       clearTimeout(globalTimeout);
       await closeBrowser();
@@ -170,49 +146,32 @@ async function main() {
       ? (event: TweetProcessedEvent) => writePipelineRowToCsv(localOutput, event)
       : undefined;
 
-    // Pre-fetch the skip/known sets ONCE and share them with both passes so
-    // notes/pipeline_runs/tweets aren't scanned twice per run. knownTweetIds is
-    // only used by the regular pass, so --misinfo-only skips that read.
+    // Pre-fetch the skip/known sets ONCE so notes/pipeline_runs/tweets aren't
+    // scanned twice per run.
     let skipPostIds: Set<string> | undefined;
     let knownTweetIds: Set<string> | undefined;
     if (supabaseLogger) {
       try {
-        if (misinfoOnly) {
-          skipPostIds = await supabaseLogger.getSkipTweetIds();
-        } else {
-          [skipPostIds, knownTweetIds] = await Promise.all([
-            supabaseLogger.getSkipTweetIds(),
-            supabaseLogger.getKnownTweetIds(),
-          ]);
-        }
+        [skipPostIds, knownTweetIds] = await Promise.all([
+          supabaseLogger.getSkipTweetIds(),
+          supabaseLogger.getKnownTweetIds(),
+        ]);
       } catch (err) {
-        console.warn("[pipeline] Failed to pre-fetch skip/known sets (each pass will fetch its own):", err);
+        console.warn("[pipeline] Failed to pre-fetch skip/known sets (the pipeline will fetch its own):", err);
       }
     }
 
-    // Misinfo pre-pass runs first so its candidates are submitted ahead of the
-    // regular pipeline's under the daily cap. Fail-soft to [] when the XXL crawl
-    // can't run (e.g. local creds are small-feed-only).
-    const misinfoCandidates = await generateMisinfoCandidates(supabaseLogger, {
-      skipPostIds: skipPostIds ?? new Set<string>(),
+    const candidates = await generateCandidates(supabaseLogger, {
+      maxPosts,
+      estimate,
+      skipPostIds,
+      knownTweetIds,
       onTweetProcessed,
-      dumpPath: misinfoDumpPath,
     });
 
-    const regularCandidates = misinfoOnly
-      ? []
-      : await generateCandidates(supabaseLogger, {
-          maxPosts,
-          estimate,
-          skipPostIds,
-          knownTweetIds,
-          onTweetProcessed,
-        });
-
-    const candidates = [...misinfoCandidates, ...regularCandidates];
     if (candidates.length > 0 && supabaseLogger) {
       const submitted = await submitCandidates(candidates, supabaseLogger, isLocal);
-      console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates (${misinfoCandidates.length} misinfo, ${regularCandidates.length} regular)`);
+      console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates`);
     } else {
       console.log(`[pipeline] No candidates to submit`);
     }
