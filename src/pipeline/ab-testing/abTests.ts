@@ -59,6 +59,16 @@ function findVariantByName(test: ABTest, name: string): ABVariant {
 }
 
 /**
+ * Pick one test's variant name in isolation (honouring a forced pick), for
+ * callers outside the bot pipeline that need a single A/B decision — e.g. the
+ * Pangram pre-pass choosing its note wording per candidate.
+ */
+export function pickVariantName(test: ABTest): string {
+  const forced = getForcedPicks()[test.name];
+  return forced ? findVariantByName(test, forced).name : sampleVariantByWeight(test.variants).name;
+}
+
+/**
  * Run all A/B tests in order against a fresh DEFAULT_CONFIG. Returns the
  * resolved config plus a picks dictionary mapping testName → variantName for
  * every test that fired.

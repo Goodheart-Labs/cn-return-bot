@@ -2,19 +2,19 @@
  * XXL-feed Pangram AI-detection pre-pass.
  *
  * Runs before the regular pipeline. Crawls the big feed (XXL → XL → large),
- * keeps only long-form (paid/premium) posts, ranks them by the normal 80/20
- * recency+views sort, takes the top N, and runs each through Pangram. Posts
- * Pangram calls fully AI-generated become candidates whose fixed note cites the
- * Pangram report link as its source; the rest are recorded as rejected runs.
+ * keeps only long-form (paid/premium) posts we haven't checked yet, ranks them
+ * by the normal 80/20 recency+views sort, takes the top N, and runs each through
+ * Pangram. Posts Pangram calls fully AI-generated become candidates whose note
+ * cites the Pangram report link as its source (wording is a 50/50 A/B test,
+ * PANGRAM_NOTE_TEST). Candidates flow through the same submitCandidates path as
+ * the regular pipeline (shared daily cap, dashboards); each candidate run is
+ * tagged pangram_monitoring=yes.
  *
- * Candidates flow through the same submitCandidates path as the regular pipeline
- * (shared daily cap, dashboards). Each run is tagged pangram_monitoring=yes so
- * the dashboards can isolate this pass.
- *
- * Dedup: the crawl is passed the shared skipPostIds (already-noted + cooling-down
- * tweets), and every checked post gets a pipeline_run — AI ones get noted (→
- * skipped next run), non-AI ones get a rejected run (→ standard 1h/24h cooldown).
- * So a viral long-form post is Pangram-checked at most a few times, not every run.
+ * Dedup (exactly-once): every checked post is recorded in
+ * pangram_monitoring_sightings and excluded from future crawls — so a viral
+ * long-form post is Pangram-classified once, not every run. That ledger is
+ * disjoint from the regular skip logic, so a Pangram check never makes the
+ * regular pipeline skip a post. Errors are NOT recorded, so they retry.
  */
 import PQueue from "p-queue";
 import { fetchEligiblePosts, type Post } from "../../api/fetchEligiblePosts";
@@ -22,12 +22,14 @@ import type { SupabaseLogger } from "../../api/supabaseClient";
 import { buildPostSelection } from "../orchestration/utils/feedSizeStrategy";
 import { sortByRecencyAndImpressions } from "../orchestration/utils/tweetSorting";
 import type { FeedSize } from "../ab-testing/botConfig";
+import { pickVariantName } from "../ab-testing/abTests";
+import { PANGRAM_NOTE_TEST } from "../ab-testing/abTestsData";
 import type { Candidate } from "../orchestration/submitCandidates";
 import type { ProcessTweetResult } from "../orchestration/processTweet";
 import type { TweetProcessedEvent } from "../orchestration/generateCandidates";
-import { classifyText, isFullyAiGenerated, type PangramVerdict } from "./pangramClient";
+import { classifyText } from "./pangramClient";
 import { isLongForm } from "./longFormFilter";
-import { buildPangramNote } from "./pangramNote";
+import { buildPangramNote, type PangramNoteVariant } from "./pangramNote";
 
 const PANGRAM_FEED_SIZES: FeedSize[] = ["xxl", "xl", "large"];
 const PANGRAM_MAX_RESULTS = 5000;
@@ -39,11 +41,22 @@ const PANGRAM_BOT_ID = "pangram-monitoring";
 // X has no AI-generated tag; missing context is the closest fit (the post
 // doesn't disclose it's AI-written). See buildPangramNote for the wording.
 const PANGRAM_MISLEADING_TAGS = ["missing_important_context"];
-const PANGRAM_PICKS = { pangram_monitoring: "yes" };
+
+type PangramSighting = {
+  tweet_id: string;
+  feed_size: string;
+  impression_count?: number;
+  author_name?: string;
+  prediction_short: string;
+  fraction_ai: number;
+  is_ai: boolean;
+  processed_run_id?: string;
+};
 
 export interface PangramCandidatesOptions {
   /** Shared with generateCandidates so already-noted / cooling-down tweets are
-   *  not re-crawled (and, for the rest, dedupes re-checks across runs). */
+   *  not re-crawled. (Exactly-once dedup is handled separately via the
+   *  pangram_monitoring_sightings ledger.) */
   skipPostIds: Set<string>;
   onTweetProcessed?: (event: TweetProcessedEvent) => void | Promise<void>;
 }
@@ -64,10 +77,10 @@ async function crawlFeed(skipPostIds: Set<string>): Promise<{ feedSize: FeedSize
   return null;
 }
 
-function selectTopLongForm(posts: Post[]): Post[] {
-  const longForm = posts.filter(isLongForm);
+function selectTopLongForm(posts: Post[], checkedIds: Set<string>): Post[] {
+  const longForm = posts.filter((p) => isLongForm(p) && !checkedIds.has(p.id));
   const top = sortByRecencyAndImpressions(longForm).slice(0, PANGRAM_TOP_N);
-  console.log(`[pangram] ${posts.length} crawled → ${longForm.length} long-form → checking top ${top.length}`);
+  console.log(`[pangram] ${posts.length} crawled → ${longForm.length} long-form & unchecked → checking top ${top.length}`);
   return top;
 }
 
@@ -85,16 +98,17 @@ function candidateResult(pipelineRunId: string, noteText: string): ProcessTweetR
   };
 }
 
-function rejectedResult(pipelineRunId: string, outcome: "rejected" | "failed", reason: string): ProcessTweetResult {
-  return { pipelineResult: null, outcome, outcomeReason: reason, finalStage: "pangram", scores: [], pipelineRunId };
+/** A non-candidate result, only used for the onTweetProcessed hook (no run created). */
+function syntheticResult(outcome: "rejected" | "failed", reason: string): ProcessTweetResult {
+  return { pipelineResult: null, outcome, outcomeReason: reason, finalStage: "pangram", scores: [], pipelineRunId: null };
 }
 
-async function createRun(logger: SupabaseLogger, post: Post): Promise<string | null> {
+async function createRun(logger: SupabaseLogger, post: Post, picks: Record<string, string>): Promise<string | null> {
   try {
     return await logger.createPipelineRun({
       tweet_id: post.id,
       bot_name: PANGRAM_BOT_ID,
-      ab_test_picks: PANGRAM_PICKS,
+      ab_test_picks: picks,
       commit_sha: process.env.GITHUB_SHA,
     });
   } catch (err) {
@@ -103,55 +117,59 @@ async function createRun(logger: SupabaseLogger, post: Post): Promise<string | n
   }
 }
 
-async function completeRun(logger: SupabaseLogger, runId: string, data: Parameters<SupabaseLogger["completePipelineRun"]>[1]) {
-  try {
-    await logger.completePipelineRun(runId, { bot_name: PANGRAM_BOT_ID, ab_test_picks: PANGRAM_PICKS, ...data });
-  } catch (err) {
-    console.warn(`[pangram] completePipelineRun failed for ${runId}:`, err);
-  }
-}
+type PostOutcome = { candidate: Candidate | null; tweetResult: ProcessTweetResult; sighting: PangramSighting | null };
 
-/** Classify one post, record its run, and return a Candidate iff Pangram says
- *  fully AI-generated (and the note fits). Non-AI → rejected run (cooldown);
- *  Pangram error → failed run (retried next run). The tweetResult is returned
- *  for the onTweetProcessed hook regardless of outcome. */
-async function processPost(logger: SupabaseLogger, post: Post): Promise<{ candidate: Candidate | null; tweetResult: ProcessTweetResult }> {
-  const runId = await createRun(logger, post);
-  if (!runId) return { candidate: null, tweetResult: rejectedResult("", "failed", "no_pipeline_run") };
-
+/** Classify one post; return a Candidate iff Pangram says fully AI-generated
+ *  (and the note fits). Records a sighting for every classified post (AI or
+ *  not); errors return no sighting so they're retried next run. */
+async function processPost(logger: SupabaseLogger, post: Post, feedSize: FeedSize): Promise<PostOutcome> {
   const verdict = await classifyText(post.text);
-  // Narrowing on the fields (not isFullyAiGenerated) so `dashboardLink` is typed.
-  const note = verdict.type === "classified" && verdict.predictionShort === "AI" ? buildPangramNote(verdict.dashboardLink) : null;
+  if (verdict.type === "error") {
+    console.warn(`[pangram] classify failed for ${post.id}: ${verdict.error}`);
+    return { candidate: null, tweetResult: syntheticResult("failed", "pangram_error"), sighting: null };
+  }
 
-  if (note) {
-    const tweetResult = candidateResult(runId, note.noteText);
-    await completeRun(logger, runId, {
+  const isAi = verdict.predictionShort === "AI";
+  const sighting: PangramSighting = {
+    tweet_id: post.id,
+    feed_size: feedSize,
+    impression_count: post.public_metrics?.impression_count,
+    author_name: post.author_name,
+    prediction_short: verdict.predictionShort,
+    fraction_ai: verdict.fractionAi,
+    is_ai: isAi,
+  };
+  if (!isAi) return { candidate: null, tweetResult: syntheticResult("rejected", "not_ai_generated"), sighting };
+
+  const variant = pickVariantName(PANGRAM_NOTE_TEST) as PangramNoteVariant;
+  const note = buildPangramNote(verdict.dashboardLink, variant);
+  if (!note) return { candidate: null, tweetResult: syntheticResult("rejected", "no_pangram_note"), sighting };
+
+  const picks = { pangram_monitoring: "yes", pangram_note: variant };
+  const runId = await createRun(logger, post, picks);
+  if (!runId) return { candidate: null, tweetResult: syntheticResult("failed", "no_pipeline_run"), sighting };
+
+  try {
+    await logger.completePipelineRun(runId, {
       outcome: "candidate",
       final_stage: "candidate",
+      bot_name: PANGRAM_BOT_ID,
+      ab_test_picks: picks,
       note_text: note.noteText,
       source_url: note.sourceUrl,
       note_status: "AI_GENERATED",
     });
-    return {
-      candidate: { post, tweetResult, botId: PANGRAM_BOT_ID, misleadingTags: PANGRAM_MISLEADING_TAGS, sourceUrl: note.sourceUrl },
-      tweetResult,
-    };
+  } catch (err) {
+    console.warn(`[pangram] completePipelineRun failed for ${runId}:`, err);
   }
 
-  const [outcome, reason] = describeRejection(verdict);
-  const tweetResult = rejectedResult(runId, outcome, reason);
-  await completeRun(logger, runId, { outcome, outcome_reason: reason, final_stage: "pangram", error_message: rejectionError(verdict) });
-  return { candidate: null, tweetResult };
-}
-
-function describeRejection(verdict: PangramVerdict): ["rejected" | "failed", string] {
-  if (verdict.type === "error") return ["failed", "pangram_error"];
-  if (isFullyAiGenerated(verdict)) return ["rejected", "no_pangram_link"]; // AI but link missing / note too long
-  return ["rejected", "not_ai_generated"];
-}
-
-function rejectionError(verdict: PangramVerdict): string | undefined {
-  return verdict.type === "error" ? verdict.error.slice(0, 500) : undefined;
+  sighting.processed_run_id = runId;
+  const tweetResult = candidateResult(runId, note.noteText);
+  return {
+    candidate: { post, tweetResult, botId: PANGRAM_BOT_ID, misleadingTags: PANGRAM_MISLEADING_TAGS, sourceUrl: note.sourceUrl },
+    tweetResult,
+    sighting,
+  };
 }
 
 export async function generatePangramCandidates(
@@ -163,13 +181,14 @@ export async function generatePangramCandidates(
     return [];
   }
 
+  const checkedIds = await logger.getPangramCheckedTweetIds();
   const crawl = await crawlFeed(skipPostIds);
   if (!crawl) return [];
 
-  const top = selectTopLongForm(crawl.posts);
+  const top = selectTopLongForm(crawl.posts, checkedIds);
   if (!top.length) return [];
 
-  // Populate the tweets table for the runs we're about to create (insert-only).
+  // Populate the tweets table for the runs we may create (insert-only).
   try {
     await logger.bulkInsertNewTweets(top);
   } catch (err) {
@@ -178,11 +197,13 @@ export async function generatePangramCandidates(
 
   const queue = new PQueue({ concurrency: PANGRAM_CONCURRENCY });
   const candidates: Candidate[] = [];
+  const sightings: PangramSighting[] = [];
   await Promise.all(
     top.map((post) =>
       queue.add(async () => {
-        const { candidate, tweetResult } = await processPost(logger, post);
+        const { candidate, tweetResult, sighting } = await processPost(logger, post, crawl.feedSize);
         if (candidate) candidates.push(candidate);
+        if (sighting) sightings.push(sighting);
         if (onTweetProcessed) {
           try {
             await onTweetProcessed({ post, tweetResult, log: new Map(), botId: PANGRAM_BOT_ID });
@@ -194,6 +215,15 @@ export async function generatePangramCandidates(
     ),
   );
 
-  console.log(`[pangram] ${candidates.length} AI-generated candidate(s) of ${top.length} checked`);
+  // Record checks so these posts are never re-classified (exactly-once).
+  try {
+    await logger.recordPangramChecks(sightings);
+  } catch (err) {
+    console.warn("[pangram] recordPangramChecks failed:", err);
+  }
+
+  console.log(
+    `[pangram] ${candidates.length} AI candidate(s) of ${top.length} checked (${top.length - sightings.length} errors)`,
+  );
   return candidates;
 }

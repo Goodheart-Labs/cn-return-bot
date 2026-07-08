@@ -356,6 +356,19 @@ const PANGRAM_MONITORING_TEST: ABTest = {
   ],
 };
 
+// 50/50: does adding a false-positive-rate reassurance (+ two supporting sources)
+// to the Pangram AI-detection note change how it's rated? Read directly by
+// generatePangramCandidates (buildPangramNote) via pickVariantName, not through
+// BotConfig, so overrides are empty.
+export const PANGRAM_NOTE_TEST: ABTest = {
+  name: "pangram_note",
+  defaultVariant: "plain",
+  variants: [
+    { variant: { name: "plain",      overrides: {} }, weight: 50 },
+    { variant: { name: "fp_context", overrides: {} }, weight: 50 },
+  ],
+};
+
 const SEARCH_ANALYZER_TEST: ABTest = {
   name: "search_analyzer",
   prerequisites: { botId: "cheap-bot" },
@@ -430,5 +443,6 @@ export const AB_TESTS: ABTest[] = [
   MISINFO_MONITORING_TEST,
   MISINFO_TOPIC_TEST,
   PANGRAM_MONITORING_TEST,
+  PANGRAM_NOTE_TEST,
   AUTHOR_HISTORY_TEST,
 ];

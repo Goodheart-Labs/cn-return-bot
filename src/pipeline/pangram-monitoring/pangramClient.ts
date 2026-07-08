@@ -31,11 +31,6 @@ export type PangramVerdict =
     }
   | { type: "error"; error: string };
 
-/** Pangram's confident "fully AI-generated" verdict (as opposed to AI-Assisted / Mixed / Human). */
-export function isFullyAiGenerated(verdict: PangramVerdict): boolean {
-  return verdict.type === "classified" && verdict.predictionShort === "AI";
-}
-
 function getApiKey(): string {
   const key = process.env.PANGRAM_API_KEY;
   if (!key) throw new Error("Missing required environment variable: PANGRAM_API_KEY");
