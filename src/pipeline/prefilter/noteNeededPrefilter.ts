@@ -1,9 +1,10 @@
 /**
  * Note-needed prefilter — a cheap deepseek-v4-flash gate that decides whether a
  * post is worth running the full (expensive) bot on. Runs the prefilter's own
- * steps — query writer → SearXNG → search analyzer — then a reframed note-needed judge
- * (no proposed note: post + research brief → needs a note?). No note-writing, no
- * source verification.
+ * steps — satire gate → query writer → SearXNG → search analyzer — then a reframed
+ * note-needed judge (no proposed note: post + research brief → needs a note?). No
+ * note-writing, no source verification. An overt-satire verdict early-exits before
+ * the query writer, so we never search/analyze/judge a joke.
  *
  * Runs on a large feed (see generateCandidates): the prefilter screens many
  * posts cheaply and only the ones it flags reach the bot. Validated offline at
@@ -24,6 +25,7 @@ import {
   PREFILTER_JUDGE_RESPONSE_FORMAT,
   buildPrefilterJudgeUserMessage,
 } from "../prompts/prefilter/noteNeededJudge";
+import { runSatireDetector } from "./satireDetector";
 import { runQueryWriter } from "./queryWriter";
 import { runSearchAnalyzer } from "./searchAnalyzer";
 import { fetchSearxngResults, formatSearxngResults, type SearxngResult } from "../tool-calling/tools";
@@ -121,6 +123,11 @@ async function runPrefilterJudge(postContext: string, findings: string): Promise
 async function runPrefilterSteps(post: Post): Promise<PrefilterVerdict> {
   const input = await createBotInput(post, `prefilter:${post.id}`);
   const userMessage = buildUserMessageFromInput(post, input);
+
+  const satire = await runSatireDetector(userMessage);
+  if (satire.isSatire) {
+    return { needsNote: false, reasoning: `overt satire — ${satire.reasoning}` };
+  }
 
   const { queries } = await runQueryWriterRetryOnEmpty(userMessage);
   if (queries.length === 0) {
