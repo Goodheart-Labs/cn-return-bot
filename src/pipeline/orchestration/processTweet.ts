@@ -4,8 +4,8 @@
  * Core per-tweet pipeline logic extracted from generateCandidates.ts.
  * Split into three layers:
  *   1. runBotPipeline()    — runs the bot, returns raw output
- *   2. scorePipelineResult() — records observational scores + runs the X eval gate
- *   3. determineOutcome()  — pure function, decides outcome from result + scores
+ *   2. scorePipelineResult() — records observational scores (incl. the X eval score)
+ *   3. determineOutcome()  — pure function, decides outcome from the result
  *
  * processSingleTweet() is the thin orchestrator that glues them together.
  */
@@ -14,7 +14,7 @@ import type { Post } from "../../api/fetchEligiblePosts";
 import type { SupabaseLogger } from "../../api/supabaseClient";
 import type { Bot, PipelineResult, PostContent } from "../../bots/types";
 import { getOriginalTweetContent } from "../../utils/retweetUtils";
-import { shouldSubmitNote } from "../score/noteEvaluationFilter";
+import { getEvaluationScore } from "../score/noteEvaluationFilter";
 import { getTweetLog, getLoggedBotIdentity, nestDotKeys } from "../utils/tweetLog";
 import { getWarnings } from "../utils/warnings";
 import { PipelineError } from "../utils/errors";
@@ -111,8 +111,6 @@ function collectWarnings(): string[] | undefined {
 interface ScoringOutput {
   scores: ScoreEntry[];
   evaluationScore?: number;
-  /** Whether eval says we should submit (undefined if eval failed/skipped) */
-  evalShouldSubmit?: boolean;
 }
 
 function extractSourceVerificationScore(result: PipelineResult): ScoreEntry | null {
@@ -149,23 +147,6 @@ function extractBotScoringFilterScores(result: PipelineResult): ScoreEntry[] {
   return entries;
 }
 
-async function computeEvaluationScore(
-  postId: string,
-  noteText: string
-): Promise<{ score?: number; shouldSubmit?: boolean; error?: string }> {
-  try {
-    const result = await shouldSubmitNote(postId, noteText, getBotConfig().eval_submit_threshold);
-    return {
-      score: result.score,
-      shouldSubmit: result.error ? undefined : result.shouldSubmit,
-      error: result.error,
-    };
-  } catch (err: any) {
-    console.warn(`[processTweet] Eval API failed for ${postId}:`, err?.message);
-    return { error: err?.message };
-  }
-}
-
 async function scorePipelineResult(
   result: PipelineResult
 ): Promise<ScoringOutput> {
@@ -179,21 +160,15 @@ async function scorePipelineResult(
   // Bot scoring filter results
   scores.push(...extractBotScoringFilterScores(result));
 
-  // Evaluation score
+  // Evaluation score (observational — recorded for ranking, no longer gates)
   let evaluationScore: number | undefined;
-  let evalShouldSubmit: boolean | undefined;
-  const evalResult = await computeEvaluationScore(result.post.id, noteText);
+  const evalResult = await getEvaluationScore(result.post.id, noteText);
   if (evalResult.score !== undefined) {
     evaluationScore = evalResult.score;
-    evalShouldSubmit = evalResult.shouldSubmit;
-    scores.push({
-      type: "evaluation",
-      value: evalResult.score,
-      metadata: evalResult.error ? { error: evalResult.error } : undefined,
-    });
+    scores.push({ type: "evaluation", value: evalResult.score });
   }
 
-  return { scores, evaluationScore, evalShouldSubmit };
+  return { scores, evaluationScore };
 }
 
 // ---------------------------------------------------------------------------
@@ -207,11 +182,7 @@ const STATUS_REJECTION_MAP: Record<string, { reason: string; stage: string }> = 
 
 const CORRECTION_STATUS = "CORRECTION WITH TRUSTWORTHY CITATION";
 
-function determineOutcome(
-  result: PipelineResult,
-  scores: ScoreEntry[],
-  evalShouldSubmit?: boolean
-): Outcome {
+function determineOutcome(result: PipelineResult): Outcome {
   // Status-based rejections
   const statusRejection = STATUS_REJECTION_MAP[result.noteResult.status];
   if (statusRejection) {
@@ -235,17 +206,6 @@ function determineOutcome(
       outcomeReason: checkErrored ? "check_error" : "check_failed",
       finalStage: "check",
       errorMessage: checkRaw ? `check: ${checkRaw}` : undefined,
-    };
-  }
-
-  // Evaluation score rejection
-  if (evalShouldSubmit === false) {
-    const evalScore = scores.find((s) => s.type === "evaluation");
-    return {
-      outcome: "rejected",
-      outcomeReason: "low_evaluation_score",
-      finalStage: "evaluation",
-      errorMessage: evalScore?.value !== undefined ? `score ${evalScore.value} below threshold` : undefined,
     };
   }
 
@@ -458,7 +418,7 @@ export async function processSingleTweet(
     const scoring = await scorePipelineResult(result);
     await logScoresToDb(logger, pipelineRunId, scoring.scores);
 
-    const outcome = determineOutcome(result, scoring.scores, scoring.evalShouldSubmit);
+    const outcome = determineOutcome(result);
 
     const log = getTweetLog();
     log?.set("outcome.result", outcome.outcome);

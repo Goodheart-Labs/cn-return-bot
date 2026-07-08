@@ -143,12 +143,6 @@ export interface BotConfig {
   author_history?: boolean;
   /** Feed size used for the eligible-posts fetch. Pseudo A/B test (large=100%). */
   feed_size: FeedSize;
-  /**
-   * Minimum X eval-score (`claim_opinion_score`) at which a note is submitted.
-   * The note is gated out when `score < eval_submit_threshold`. Defaults to 0
-   * (the historical hardcoded cutoff). Set by EVAL_SUBMIT_THRESHOLD_TEST.
-   */
-  eval_submit_threshold: number;
 }
 
 // --- Default config ---
@@ -161,7 +155,6 @@ export const DEFAULT_CONFIG: BotConfig = {
   video_description_strategy: "frames",
   parallel_research: false,
   feed_size: "small",
-  eval_submit_threshold: 0,
 };
 
 // --- AsyncLocalStorage ---

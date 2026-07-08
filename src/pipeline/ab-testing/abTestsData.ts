@@ -377,25 +377,6 @@ const CHEAP_BOT_TEMPERATURE_TEST: ABTest = {
   ],
 };
 
-// Eval-score cutoff for submission. The X eval gate keeps a note iff
-// `claim_opinion_score >= eval_submit_threshold`. Baseline is 0 (the historical
-// hardcoded cutoff) at 50%; the five lower cutoffs each get 10% to measure how
-// many extra notes submit — and how they perform — as we relax the gate. Not
-// prereq-gated (the eval gate runs for every bot in processTweet), so
-// defaultVariant "0" lets pre-existing rows resolve to the old cutoff.
-const EVAL_SUBMIT_THRESHOLD_TEST: ABTest = {
-  name: "eval_submit_threshold",
-  defaultVariant: "0",
-  variants: [
-    { variant: { name: "0",    overrides: { eval_submit_threshold: 0    } }, weight: 50 },
-    { variant: { name: "-0.5", overrides: { eval_submit_threshold: -0.5 } }, weight: 10 },
-    { variant: { name: "-1.0", overrides: { eval_submit_threshold: -1.0 } }, weight: 10 },
-    { variant: { name: "-1.5", overrides: { eval_submit_threshold: -1.5 } }, weight: 10 },
-    { variant: { name: "-2.0", overrides: { eval_submit_threshold: -2.0 } }, weight: 10 },
-    { variant: { name: "-2.5", overrides: { eval_submit_threshold: -2.5 } }, weight: 10 },
-  ],
-};
-
 // Inject the post author's past helpful community notes (ours + competing notes
 // on tweets we've noted) into the writer's user message — see
 // getAuthorNoteHistory. The lookup was silently broken from migration 033 until
@@ -435,6 +416,5 @@ export const AB_TESTS: ABTest[] = [
   FEED_SIZE_TEST,
   MISINFO_MONITORING_TEST,
   MISINFO_TOPIC_TEST,
-  EVAL_SUBMIT_THRESHOLD_TEST,
   AUTHOR_HISTORY_TEST,
 ];
