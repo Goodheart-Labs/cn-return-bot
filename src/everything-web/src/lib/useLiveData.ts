@@ -41,8 +41,10 @@ export function useLiveData() {
     }
     load();
 
+    // Unique per mount: StrictMode double-mounts effects, and re-subscribing a
+    // just-removed channel of the same name can silently fail.
     const channel = supabase
-      .channel("everything")
+      .channel(`everything-${crypto.randomUUID()}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "everything_items" }, upsertHandler(setItems))
       .on("postgres_changes", { event: "*", schema: "public", table: "everything_claims" }, upsertHandler(setClaims))
       .on("postgres_changes", { event: "*", schema: "public", table: "everything_notes" }, upsertHandler(setNotes))
