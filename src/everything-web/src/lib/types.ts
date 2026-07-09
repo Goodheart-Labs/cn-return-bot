@@ -26,6 +26,7 @@ export interface ClaimRef {
   context_quote: string;
   context_url: string | null;
   start_seconds: number | null;
+  end_seconds: number | null;
 }
 
 export interface NoteRow {

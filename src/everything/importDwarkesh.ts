@@ -30,6 +30,26 @@ interface RunResult {
   videoLink?: string;
 }
 
+// dwarkeshTimestamps.json: guest → 1-based results index → { videoId, startSeconds }.
+// Snapshotted from prod review_dashboard_items, where the (now-superseded)
+// backfill matcher located each quote in the YouTube auto-captions and manual
+// corrections were applied. The runs themselves were timestamp-less
+// (--transcript-file), so this snapshot is the only timestamp source.
+const TIMESTAMPS: Record<string, Record<string, { videoId: string; startSeconds: number }>> = JSON.parse(
+  fs.readFileSync(path.join(import.meta.dir, "dwarkeshTimestamps.json"), "utf8"),
+);
+
+// No end timestamps were ever stored, so estimate the clip end from the quote
+// length at conversational pace, padded, and never shorter than a watchable clip.
+const SPOKEN_WORDS_PER_SECOND = 2.4;
+const CLIP_PAD_SECONDS = 4;
+const MIN_CLIP_SECONDS = 12;
+
+function estimateEndSeconds(startSeconds: number, quote: string): number {
+  const spokenSeconds = quote.trim().split(/\s+/).length / SPOKEN_WORDS_PER_SECOND + CLIP_PAD_SECONDS;
+  return startSeconds + Math.ceil(Math.max(MIN_CLIP_SECONDS, spokenSeconds));
+}
+
 function titleCase(slug: string): string {
   return slug.split(/[_-]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 }
@@ -53,7 +73,13 @@ async function importEpisode(dir: string, resultsPath: string, project: string):
   const db = getSupabaseClient();
   const guest = guestFromDir(dir);
   const title = titleCase(guest);
-  const url = `imported:dwarkesh/${guest}`;
+  // The episode's video id (shared by all its claim timestamps) makes the item
+  // link to the real episode; sentinel fallback if a run has no timestamps.
+  const episodeVideoId = Object.values(TIMESTAMPS[guest] ?? {})[0]?.videoId;
+  const url = episodeVideoId ? `https://www.youtube.com/watch?v=${episodeVideoId}` : `imported:dwarkesh/${guest}`;
+
+  // Drop the pre-timestamp sentinel row from earlier imports (claims cascade).
+  await db.from("everything_items").delete().eq("url", `imported:dwarkesh/${guest}`).neq("url", url);
 
   const { data: item, error: itemErr } = await db
     .from("everything_items")
@@ -66,9 +92,15 @@ async function importEpisode(dir: string, resultsPath: string, project: string):
   await db.from("everything_claims").delete().eq("item_id", item.id);
 
   const results: RunResult[] = JSON.parse(fs.readFileSync(resultsPath, "utf8")).results;
-  const notes = results.filter((r) => r.needsCorrection && r.correction);
+  const timestamps = TIMESTAMPS[guest] ?? {};
 
-  for (const r of notes) {
+  let imported = 0;
+  for (const [i, r] of results.entries()) {
+    if (!r.needsCorrection || !r.correction) continue;
+    const ts = timestamps[String(i + 1)]; // snapshot is keyed by 1-based results index
+    const contextUrl = ts
+      ? `https://www.youtube.com/watch?v=${ts.videoId}&t=${ts.startSeconds}s`
+      : (r.videoLink ?? null);
     const { data: claim, error: claimErr } = await db
       .from("everything_claims")
       .insert({
@@ -76,7 +108,9 @@ async function importEpisode(dir: string, resultsPath: string, project: string):
         claim: r.claim,
         judgement: r.judgement,
         context_quote: r.quote,
-        context_url: r.videoLink ?? null,
+        context_url: contextUrl,
+        start_seconds: ts?.startSeconds ?? null,
+        end_seconds: ts ? estimateEndSeconds(ts.startSeconds, r.quote) : null,
         status: "note",
       })
       .select("id")
@@ -86,8 +120,9 @@ async function importEpisode(dir: string, resultsPath: string, project: string):
       .from("everything_notes")
       .insert({ claim_id: claim.id, note: r.correction, sources: r.sources ?? [] });
     if (noteErr) throw new Error(`Insert note: ${noteErr.message}`);
+    imported++;
   }
-  return notes.length;
+  return imported;
 }
 
 async function main() {

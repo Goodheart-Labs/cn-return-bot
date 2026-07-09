@@ -1,20 +1,27 @@
 import type { Session } from "@supabase/supabase-js";
-import type { ItemRow, NoteRow, SuggestionRow } from "../lib/types";
+import { ContentCard } from "../../../dashboard-shared/TweetCard";
+import type { NotedContent } from "../../../dashboard-shared/types";
+import type { ClaimRef, NoteRow, SuggestionRow } from "../lib/types";
 import type { Vote } from "../lib/votes";
 import { VoteButtons } from "./VoteButtons";
 import { ImproveNote } from "./ImproveNote";
 
-function YouTubeEmbed({ url, start }: { url: string; start: number | null }) {
-  const videoId = url.match(/[?&]v=([\w-]{6,})/)?.[1];
-  if (!videoId) return null;
-  return (
-    <iframe
-      className="w-full aspect-video rounded-lg"
-      src={`https://www.youtube.com/embed/${videoId}?start=${start ?? 0}`}
-      allowFullScreen
-      title="Video context"
-    />
-  );
+/** Map a claim's context to the shared ContentCard shape: a YouTube clip when
+ *  the context URL is a video (embedded at its timestamp span), else an
+ *  article citation. Decided by URL, not item.source — a podcast item with a
+ *  YouTube deep-link renders as a clip. */
+function claimContent(claim: ClaimRef): NotedContent {
+  const url = claim.context_url;
+  if (url && /youtube\.com|youtu\.be/.test(url)) {
+    return {
+      kind: "youtube",
+      url,
+      quote: claim.context_quote,
+      startSeconds: claim.start_seconds,
+      endSeconds: claim.end_seconds,
+    };
+  }
+  return { kind: "article", url, quote: claim.context_quote };
 }
 
 function SourceLinks({ sources }: { sources: string[] }) {
@@ -38,8 +45,7 @@ function hostname(url: string): string {
   }
 }
 
-export function NoteCard({ item, note, suggestions, myVote, onVote, session, onNeedLogin }: {
-  item: ItemRow;
+export function NoteCard({ note, suggestions, myVote, onVote, session, onNeedLogin }: {
   note: NoteRow;
   suggestions: SuggestionRow[];
   myVote: Vote | undefined;
@@ -52,20 +58,7 @@ export function NoteCard({ item, note, suggestions, myVote, onVote, session, onN
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
-      {item.source === "youtube" && claim?.context_url && <YouTubeEmbed url={claim.context_url} start={claim.start_seconds} />}
-      {claim && (
-        <blockquote className="border-l-4 border-gray-300 pl-3 text-gray-600 italic text-sm">
-          “{claim.context_quote}”
-          {claim.context_url?.startsWith("http") && (
-            <>
-              {" "}
-              <a href={claim.context_url} target="_blank" rel="noreferrer" className="text-blue-600 not-italic hover:underline">
-                {item.source === "youtube" ? "watch ↗" : "source ↗"}
-              </a>
-            </>
-          )}
-        </blockquote>
-      )}
+      {claim && <ContentCard content={claimContent(claim)} />}
       {claim && (
         <p className="text-sm text-gray-500">
           <span className="font-semibold text-gray-700">Claim:</span> {claim.claim}

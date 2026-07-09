@@ -51,7 +51,6 @@ export function ItemCard({ item, notes, suggestionsByNote, myVotes, onVote, sess
             {notes.map((note) => (
               <NoteCard
                 key={note.id}
-                item={item}
                 note={note}
                 suggestions={suggestionsByNote.get(note.id) ?? []}
                 myVote={myVotes.get(note.id)}

@@ -14,7 +14,7 @@ page.on("websocket", (ws) => {
     }
   });
 });
-await page.goto("http://localhost:8003/", { waitUntil: "networkidle" });
+await page.goto("http://localhost:8003/", { waitUntil: "domcontentloaded" });
 await page.waitForSelector("text=Community Note");
 await page.waitForTimeout(3000);
 console.log("BUTTONS BEFORE:", await page.locator("button").allInnerTexts());

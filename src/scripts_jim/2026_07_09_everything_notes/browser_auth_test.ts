@@ -25,7 +25,7 @@ page.on("pageerror", (e) => errors.push(String(e)));
 
 // Land exactly like a magic-link click: Supabase (detectSessionInUrl) consumes the hash.
 const hash = `#access_token=${s.access_token}&refresh_token=${s.refresh_token}&expires_in=3600&token_type=bearer&type=magiclink`;
-await page.goto(`${APP}/${hash}`, { waitUntil: "networkidle" });
+await page.goto(`${APP}/${hash}`, { waitUntil: "domcontentloaded" });
 
 await page.waitForSelector(`text=Signed in as ${email}`, { timeout: 10000 });
 console.log("✅ signed in (magic-link hash consumed)");
