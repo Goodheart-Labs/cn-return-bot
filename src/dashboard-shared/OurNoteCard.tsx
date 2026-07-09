@@ -3,17 +3,18 @@ import { communityNoteUrl } from "./communityNoteUrl";
 
 // The note block shared by the review/stats dashboards and the Common Notes
 // site: the note text (with clickable URLs) plus a permalink. Renders nothing
-// without note text.
+// without note text. `showHeader` (default on) draws the "Our note" label +
+// permalink row; the Common Notes site turns it off for a bare note box.
 export function OurNoteCard({
   noteId,
   noteText,
   className,
-  label = "Our note",
+  showHeader = true,
 }: {
   noteId?: string;
   noteText?: string;
   className?: string;
-  label?: string;
+  showHeader?: boolean;
 }) {
   if (!noteText) return null;
 
@@ -23,19 +24,21 @@ export function OurNoteCard({
 
   return (
     <div className={containerClasses}>
-      <div className="flex items-center justify-between mb-1">
-        <span className="text-xs text-blue-600 font-medium">{label}</span>
-        {noteId && (
-          <a
-            href={communityNoteUrl(noteId)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-blue-500 hover:underline"
-          >
-            View note ↗
-          </a>
-        )}
-      </div>
+      {showHeader && (
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-xs text-blue-600 font-medium">Our note</span>
+          {noteId && (
+            <a
+              href={communityNoteUrl(noteId)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-blue-500 hover:underline"
+            >
+              View note ↗
+            </a>
+          )}
+        </div>
+      )}
       <LinkifiedText className="text-sm text-gray-800 whitespace-pre-wrap" text={noteText} />
     </div>
   );

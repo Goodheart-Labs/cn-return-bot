@@ -86,9 +86,9 @@ export function VoteRatings({ helpful, notHelpful, myVote, onVote }: {
 }) {
   return (
     <span className="text-xs text-gray-500 inline-flex items-center gap-1">
-      <RatingButton bucket="helpful" count={helpful} active={myVote === 1} disabled={false} onClick={() => onVote(1)} />
+      <RatingButton variant="vote" bucket="helpful" count={helpful} active={myVote === 1} disabled={false} onClick={() => onVote(1)} />
       <span aria-hidden>·</span>
-      <RatingButton bucket="not_helpful" count={notHelpful} active={myVote === -1} disabled={false} onClick={() => onVote(-1)} />
+      <RatingButton variant="vote" bucket="not_helpful" count={notHelpful} active={myVote === -1} disabled={false} onClick={() => onVote(-1)} />
     </span>
   );
 }
@@ -99,21 +99,26 @@ function RatingButton({
   active,
   disabled,
   onClick,
+  variant = "tag",
 }: {
   bucket: TagBucket;
   count: number;
   active: boolean;
   disabled: boolean;
   onClick: () => void;
+  // "tag" (dashboards): triangle always colored, active = expanded tag pills.
+  // "vote" (Common Notes): bigger triangle, colored only when it's your vote,
+  // muted grey otherwise.
+  variant?: "tag" | "vote";
 }) {
   const base = "px-1.5 py-0.5 rounded transition-colors inline-flex items-center gap-1";
   const interactive = disabled
     ? "cursor-default text-gray-500"
     : "cursor-pointer hover:bg-gray-100 text-gray-700";
-  const activeClass = active ? "bg-gray-200 text-gray-900" : "";
-  const triangle = bucket === "helpful"
-    ? <span className="text-green-600 leading-none">▲</span>
-    : <span className="text-red-600 leading-none">▼</span>;
+  const activeClass = variant === "tag" && active ? "bg-gray-200 text-gray-900" : "";
+  const color = bucket === "helpful" ? "text-green-600" : "text-red-600";
+  const triangleColor = variant === "vote" && !active ? "text-gray-300" : color;
+  const triangleSize = variant === "vote" ? "text-base" : "";
   return (
     <button
       type="button"
@@ -123,7 +128,7 @@ function RatingButton({
       onClick={onClick}
       className={`${base} ${interactive} ${activeClass}`.trim()}
     >
-      {triangle}
+      <span className={`${triangleColor} ${triangleSize} leading-none`.trim()}>{bucket === "helpful" ? "▲" : "▼"}</span>
       {count.toLocaleString("en-US")}
     </button>
   );
