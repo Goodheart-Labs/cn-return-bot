@@ -117,7 +117,9 @@ function RatingButton({
     : "cursor-pointer hover:bg-gray-100 text-gray-700";
   const activeClass = variant === "tag" && active ? "bg-gray-200 text-gray-900" : "";
   const color = bucket === "helpful" ? "text-green-600" : "text-red-600";
-  const triangleColor = variant === "vote" && !active ? "text-gray-300" : color;
+  // Vote variant: muted colour until it's your vote, saturated once it is.
+  const mutedColor = bucket === "helpful" ? "text-green-300" : "text-red-300";
+  const triangleColor = variant === "vote" && !active ? mutedColor : color;
   const triangleSize = variant === "vote" ? "text-base" : "";
   return (
     <button
