@@ -40,6 +40,8 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       # Brave Search API key — paid fallback provider in the SearXNG cycle
       BRAVE_API_KEY: ${{ secrets.BRAVE_API_KEY }}
+      # Pangram AI-text-detection key for the XXL-feed pre-pass
+      PANGRAM_API_KEY: ${{ secrets.PANGRAM_API_KEY }}
       # SearXNG instance running as a Docker container (see "Start SearXNG" step)
       SEARXNG_URL: http://localhost:8080
     steps:
