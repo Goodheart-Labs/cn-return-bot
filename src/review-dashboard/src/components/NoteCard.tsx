@@ -197,7 +197,7 @@ export function NoteCard({
       </div>
 
       {/* Our note */}
-      <OurNoteCard noteText={item.noteText} className="mb-3" />
+      <OurNoteCard noteId={item.noteId} noteText={item.noteText} className="mb-3" />
 
       {/* Stats row */}
       <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500 mb-3">
