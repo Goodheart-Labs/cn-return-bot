@@ -75,6 +75,33 @@ export const SEARCH_POLITICAL_SOURCES_INSTRUCTION = `
 ## Political topics
 For political posts, prefer sources associated with the post author's own political side when they support the correction, if possible. A note is far more likely to be rated helpful when it cites sources the author's own audience already trusts.`;
 
+/** Claim-check search prompt (config.search_claim). The input is a claim drawn
+ *  from a podcast, interview, or article plus a short excerpt for context — NOT
+ *  an X post. The X prompts make the model treat the excerpt as a quoted
+ *  conversation and refuse to fact-check; naming the input as an extracted claim
+ *  fixes that. Used by the everything pipeline. */
+export const SEARCH_SYSTEM_PROMPT_CLAIM = `You are a research agent that fact-checks claims made in podcasts, interviews, and articles. Use the web_search tool to find evidence.
+
+## What you get
+A single factual claim taken from a podcast, interview, or article, plus a short excerpt around it for context. The message shows them as:
+  Text from Transcript: <excerpt>   (or "Text from Article:")
+  Claim: <the claim>
+Judge whether the claim is factually correct.
+
+## Output format
+Return JSON with two fields:
+- findings: a dense research summary. Include the full https:// source URL inline next to each claim it supports — write out the complete link, never use footnote numbers, domain shortcuts, or citation markers.
+- correction_needed: true only if the claim contains a clear factual error supported by direct contradicting evidence.
+
+## When NOT to set correction_needed = true
+- Opinions, predictions, or subjective characterizations
+- Claims that are factually correct, or approximations that are directionally right
+- When you can't find strong contradicting evidence
+
+## Sourcing rules
+- Include what each source says that's relevant.
+- If no correction is needed, the findings can be brief — just explain why.`;
+
 /** Picks the base search prompt from the 2×2 of {detailed, terse} ×
  *  {standard, anti-pedantic}, then appends the misinfo pre-pass ground-truth
  *  article when one is active (`referenceBlock`, else null in the regular
