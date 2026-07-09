@@ -22,11 +22,15 @@ function MediaBlock({ images, videos }: { images: MediaImage[]; videos: MediaVid
         </div>
       )}
       {videos.length > 0 && (
-        <div className="flex flex-col gap-1 mb-2">
+        <div className="flex flex-wrap gap-2 mb-2">
           {videos.map((vid, i) => vid.url && (
-            <a key={i} href={vid.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline">
-              {vid.url}
-            </a>
+            <video
+              key={i}
+              src={vid.url}
+              controls
+              preload="metadata"
+              className="max-w-[300px] max-h-[250px] rounded border border-gray-200 object-contain bg-black"
+            />
           ))}
         </div>
       )}
@@ -65,14 +69,6 @@ export function TweetCard({ tweet }: { tweet: Tweet }) {
         <div className="flex items-center gap-2">
           {tweet.handle && (
             <span className="text-sm font-medium text-gray-800">@{tweet.handle}</span>
-          )}
-          {tweet.hasPhoto && (
-            <span className="text-xs bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded">
-              {tweet.mediaCount && tweet.mediaCount > 1 ? `${tweet.mediaCount} images` : "image"}
-            </span>
-          )}
-          {tweet.hasVideo && (
-            <span className="text-xs bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded">video</span>
           )}
         </div>
         {sourceUrl && (
