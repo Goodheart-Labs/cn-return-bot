@@ -1,14 +1,19 @@
 /**
  * Tweet Sorting
  *
- * Sorts tweets by a weighted combination of recency (80%) and impressions (20%).
+ * Ranks tweets by a weighted blend of recency, text length, and impressions.
+ * Each component is normalized to [0, 1] across the batch before weighting, so
+ * callers just pick the weights that fit their goal.
  */
 
 import type { Post } from "../../../api/fetchEligiblePosts";
 
-const RECENCY_WEIGHT = 0.8;
-const IMPRESSION_WEIGHT = 0.2;
 const MAX_AGE_HOURS = 48;
+
+/** Relative importance of each ranking signal; the weights need not sum to 1. */
+export type SortWeights = { recency: number; length: number; impressions: number };
+
+const RECENCY_AND_IMPRESSIONS: SortWeights = { recency: 0.8, length: 0, impressions: 0.2 };
 
 export function ageInHours(post: Post): number {
   if (!post.created_at) return MAX_AGE_HOURS;
@@ -29,21 +34,32 @@ function recencyScore(post: Post): number {
   return 1 - ageInHours(post) / MAX_AGE_HOURS;
 }
 
+function lengthScore(post: Post, maxLength: number): number {
+  if (maxLength <= 0) return 0;
+  return (post.text?.length ?? 0) / maxLength;
+}
+
 function impressionScore(post: Post, maxLogImp: number): number {
   if (maxLogImp <= 0) return 0;
   const imp = post.public_metrics?.impression_count ?? 0;
   return Math.log10(imp + 1) / maxLogImp;
 }
 
-function combinedScore(post: Post, maxLogImp: number): number {
-  return RECENCY_WEIGHT * recencyScore(post) + IMPRESSION_WEIGHT * impressionScore(post, maxLogImp);
+export function sortByWeightedScore(posts: Post[], weights: SortWeights): Post[] {
+  const maxLength = posts.reduce((max, p) => Math.max(max, p.text?.length ?? 0), 0);
+  const maxLogImp = posts.reduce(
+    (max, p) => Math.max(max, Math.log10((p.public_metrics?.impression_count ?? 0) + 1)),
+    0,
+  );
+
+  const score = (post: Post) =>
+    weights.recency * recencyScore(post) +
+    weights.length * lengthScore(post, maxLength) +
+    weights.impressions * impressionScore(post, maxLogImp);
+
+  return [...posts].sort((a, b) => score(b) - score(a));
 }
 
 export function sortByRecencyAndImpressions(posts: Post[]): Post[] {
-  const maxLogImp = posts.reduce((max, p) => {
-    const val = Math.log10((p.public_metrics?.impression_count ?? 0) + 1);
-    return val > max ? val : max;
-  }, 0);
-
-  return [...posts].sort((a, b) => combinedScore(b, maxLogImp) - combinedScore(a, maxLogImp));
+  return sortByWeightedScore(posts, RECENCY_AND_IMPRESSIONS);
 }

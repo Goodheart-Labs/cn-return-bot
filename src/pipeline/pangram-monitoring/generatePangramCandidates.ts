@@ -3,8 +3,8 @@
  *
  * Runs before the regular pipeline. Crawls the big feed (XXL → XL → large),
  * keeps only long-form (paid/premium) posts we haven't checked yet, ranks them
- * by the normal 80/20 recency+views sort, takes the top N, and runs each through
- * Pangram. Posts Pangram calls fully AI-generated become candidates whose note
+ * by a views-weighted blend (70% views, 20% length, 10% recency), takes the top
+ * N, and runs each through Pangram. Posts Pangram calls fully AI-generated become candidates whose note
  * cites the Pangram report link as its source (wording is a 50/50 A/B test,
  * PANGRAM_NOTE_TEST). Candidates flow through the same submitCandidates path as
  * the regular pipeline (shared daily cap, dashboards); each candidate run is
@@ -20,7 +20,7 @@ import PQueue from "p-queue";
 import { fetchEligiblePosts, type Post } from "../../api/fetchEligiblePosts";
 import type { SupabaseLogger } from "../../api/supabaseClient";
 import { buildPostSelection } from "../orchestration/utils/feedSizeStrategy";
-import { sortByRecencyAndImpressions } from "../orchestration/utils/tweetSorting";
+import { ageInHours, formatCount, sortByWeightedScore, type SortWeights } from "../orchestration/utils/tweetSorting";
 import type { FeedSize } from "../ab-testing/botConfig";
 import { pickVariantName } from "../ab-testing/abTests";
 import { PANGRAM_NOTE_TEST } from "../ab-testing/abTestsData";
@@ -36,6 +36,8 @@ const PANGRAM_MAX_RESULTS = 5000;
 const PANGRAM_MAX_PAGES = 100;
 const PANGRAM_TOP_N = 10;
 const PANGRAM_CONCURRENCY = 4;
+// Prioritize reach: rank long-form posts mostly by views, then length, then recency.
+const PANGRAM_SORT_WEIGHTS: SortWeights = { recency: 0.1, length: 0.2, impressions: 0.7 };
 
 const PANGRAM_BOT_ID = "pangram-monitoring";
 // X has no AI-generated tag; missing context is the closest fit (the post
@@ -77,10 +79,20 @@ async function crawlFeed(skipPostIds: Set<string>): Promise<{ feedSize: FeedSize
   return null;
 }
 
+function logSelectedPosts(posts: Post[]): void {
+  for (const [i, post] of posts.entries()) {
+    const imp = post.public_metrics?.impression_count ?? 0;
+    const chars = post.text?.length ?? 0;
+    const age = ageInHours(post);
+    console.log(`[pangram]   #${i + 1}: ${post.id} | ${formatCount(imp)} imp | ${chars} chars | ${age.toFixed(1)}h ago`);
+  }
+}
+
 function selectTopLongForm(posts: Post[], checkedIds: Set<string>): Post[] {
   const longForm = posts.filter((p) => isLongForm(p) && !checkedIds.has(p.id));
-  const top = sortByRecencyAndImpressions(longForm).slice(0, PANGRAM_TOP_N);
+  const top = sortByWeightedScore(longForm, PANGRAM_SORT_WEIGHTS).slice(0, PANGRAM_TOP_N);
   console.log(`[pangram] ${posts.length} crawled → ${longForm.length} long-form & unchecked → checking top ${top.length}`);
+  logSelectedPosts(top);
   return top;
 }
 
