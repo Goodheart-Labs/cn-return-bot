@@ -85,8 +85,8 @@ async function pollTask(taskId: string, headers: Record<string, string>): Promis
 }
 
 export async function classifyText(text: string): Promise<PangramVerdict> {
-  const headers = { "x-api-key": getApiKey(), "Content-Type": "application/json" };
   try {
+    const headers = { "x-api-key": getApiKey(), "Content-Type": "application/json" };
     const taskId = await submitTask(text, headers);
     return await pollTask(taskId, headers);
   } catch (err: any) {

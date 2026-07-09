@@ -63,7 +63,7 @@ import { SupabaseLogger } from "../api/supabaseClient";
 import { closeBrowser } from "../pipeline/utils/browserManager";
 import { generateCandidates, type TweetProcessedEvent } from "../pipeline/orchestration/generateCandidates";
 import { generatePangramCandidates } from "../pipeline/pangram-monitoring/generatePangramCandidates";
-import { submitCandidates } from "../pipeline/orchestration/submitCandidates";
+import { submitCandidates, type Candidate } from "../pipeline/orchestration/submitCandidates";
 import { computeMaxPosts } from "../pipeline/orchestration/computeMaxPosts";
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
 import { autoOpenInDashboard } from "../local/dashboardAutoOpen";
@@ -162,13 +162,19 @@ async function main() {
       }
     }
 
-    // XXL-feed Pangram AI-detection pre-pass runs first (fail-soft to [] when the
-    // XXL crawl can't run, e.g. local creds are small-feed-only). Its candidates
-    // and the regular pipeline's share one submit call under the daily cap.
-    const pangramCandidates = await generatePangramCandidates(supabaseLogger, {
-      skipPostIds: skipPostIds ?? new Set<string>(),
-      onTweetProcessed,
-    });
+    // XXL-feed Pangram AI-detection pre-pass runs first. Fail-soft to []: a
+    // pre-pass failure (crawl error, missing Pangram key, etc.) must never take
+    // down regular note-writing. Its candidates and the regular pipeline's share
+    // one submit call under the daily cap.
+    let pangramCandidates: Candidate[] = [];
+    try {
+      pangramCandidates = await generatePangramCandidates(supabaseLogger, {
+        skipPostIds: skipPostIds ?? new Set<string>(),
+        onTweetProcessed,
+      });
+    } catch (err) {
+      console.warn("[pipeline] Pangram pre-pass failed; continuing with regular pipeline only:", err);
+    }
 
     const regularCandidates = await generateCandidates(supabaseLogger, {
       maxPosts,
