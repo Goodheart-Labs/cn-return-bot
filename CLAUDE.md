@@ -60,17 +60,27 @@ There are some ranked strategic cruxes (Mar 2026) in Claude's auto-memory coveri
 - `src/scripts_nathan/` - Nathan's investigation scripts (by date)
 - `migrations/` - Supabase SQL migrations
 
-## Community Notes on Everything
+## Common Notes ("Community Notes on Everything")
 
-Queue-driven pipeline that writes notes on non-X content (YouTube videos, Substack posts) into the `everything_*` tables, displayed live on a public GitHub Pages SPA (`/cn-return-bot/notes/`) with anonymous voting (device-UUID + `cast_everything_vote` RPC; counters via trigger). Migration 050 also locks the anon role out of every other table — the anon key is baked into the public site.
+Queue-driven pipeline that writes notes on non-X content (YouTube, Substack) into the `everything_*` tables, displayed on a public GitHub Pages SPA (`/cn-return-bot/notes/`) grouped by **project** (a newsletter/podcast). Product name is "Common Notes"; internal names stay `everything_*` / `src/everything*`.
 
 ```bash
-bun run everything-enqueue <url...>   # YouTube video, Substack post, or Substack profile (--latest N)
-bun run everything-worker             # drain the queue and exit
-bun run dev-everything                # local FE on port 8003 (VITE_SUPABASE_* in root .env)
+bun run everything-enqueue <url...>       # YouTube video, Substack post, or Substack profile (--latest N)
+bun run everything-worker                 # drain the queue and exit
+bun run everything-import-dwarkesh        # import podcast_results.zip Dwarkesh notes
+bun run dev-everything                    # local FE on port 8003 (VITE_SUPABASE_* in root .env)
 ```
 
-Per claim it forces picks `bot=simple-bot, note_prefilter=deepseek, search_claim=on`; other A/B dimensions roll randomly. Claims Opus judges confident-true are skipped (`shouldFactCheck`).
+Pipeline: per claim it forces `bot=simple-bot, note_prefilter=deepseek, search_claim=on`; confident-true claims skipped (`shouldFactCheck`).
+
+Data model (migration 050): `everything_projects → items → claims → notes`, plus `everything_votes` and `everything_note_suggestions`. Migration 050 also locks the anon role out of every other table (anon key is baked into the public site).
+
+Auth & interaction:
+- **Reading** is anonymous. **Voting** and **improving notes** require login (magic link or X) — votes key on `auth.uid()` via RLS; counters via trigger.
+- **Improve a note**: user proposes a rewrite → `supabase/functions/judge-suggestion` edge function (LLM, earnest-vs-trolling) → accepted ones shown as "Community improvement". Needs `OPENROUTER_API_KEY`; `verify_jwt=false` (function self-authorizes via `getUser`, works with local ES256 keys). Local: `supabase functions serve judge-suggestion --env-file .env`.
+- X sign-in needs `TWITTER_CLIENT_ID` + `SUPABASE_AUTH_EXTERNAL_TWITTER_SECRET`. Magic-link redirect URLs (localhost:8003, `*.github.io`) are in `supabase/config.toml`.
+
+Prod prerequisites (manual): run migration 050; `supabase functions deploy judge-suggestion` + `supabase secrets set OPENROUTER_API_KEY=…`; repo secret `SUPABASE_ANON_KEY`; add the deployed notes URL to `additional_redirect_urls`.
 
 ## Review dashboard
 
