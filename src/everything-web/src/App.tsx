@@ -1,37 +1,110 @@
+import { useEffect, useMemo, useState } from "react";
 import { useLiveData } from "./lib/useLiveData";
+import { useSession, signOut } from "./lib/auth";
+import { castVote, clearVote, fetchMyVotes, type Vote } from "./lib/votes";
+import { Sidebar } from "./components/Sidebar";
+import { LoginModal } from "./components/LoginModal";
 import { ItemCard } from "./components/ItemCard";
-import type { ClaimRow } from "./lib/types";
+import type { NoteRow, SuggestionRow } from "./lib/types";
 
 export function App() {
-  const { items, claims, notes, loaded } = useLiveData();
+  const { projects, items, notes, suggestions, loaded } = useLiveData();
+  const { session } = useSession();
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [myVotes, setMyVotes] = useState<Map<string, Vote>>(new Map());
+  const [loginOpen, setLoginOpen] = useState(false);
 
-  const claimsByItem = new Map<string, ClaimRow[]>();
-  for (const claim of claims.values()) {
-    const list = claimsByItem.get(claim.item_id) ?? [];
-    list.push(claim);
-    claimsByItem.set(claim.item_id, list);
-  }
-  const notesByClaim = new Map([...notes.values()].map((n) => [n.claim_id, n]));
+  useEffect(() => {
+    if (session) fetchMyVotes().then(setMyVotes);
+    else setMyVotes(new Map());
+  }, [session?.user.id]);
 
-  const sortedItems = [...items.values()].sort((a, b) =>
-    (b.published_at ?? b.created_at).localeCompare(a.published_at ?? a.created_at),
-  );
+  const notesByItem = useMemo(() => {
+    const map = new Map<string, NoteRow[]>();
+    for (const note of notes.values()) {
+      const itemId = note.claim?.item_id;
+      if (!itemId) continue;
+      const list = map.get(itemId) ?? [];
+      list.push(note);
+      map.set(itemId, list);
+    }
+    return map;
+  }, [notes]);
+
+  const suggestionsByNote = useMemo(() => {
+    const map = new Map<string, SuggestionRow[]>();
+    for (const s of suggestions.values()) {
+      const list = map.get(s.note_id) ?? [];
+      list.push(s);
+      map.set(s.note_id, list);
+    }
+    return map;
+  }, [suggestions]);
+
+  // Default to the first project (by sort order) that actually has content.
+  useEffect(() => {
+    if (selectedId || projects.length === 0) return;
+    const withItems = new Set([...items.values()].map((i) => i.project_id));
+    setSelectedId(projects.find((p) => withItems.has(p.id))?.id ?? projects[0]!.id);
+  }, [projects, items, selectedId]);
+
+  const handleVote = async (note: NoteRow, vote: Vote) => {
+    if (!session) {
+      setLoginOpen(true);
+      return;
+    }
+    const current = myVotes.get(note.id);
+    const next = new Map(myVotes);
+    if (current === vote) {
+      next.delete(note.id);
+      setMyVotes(next);
+      await clearVote(note.id);
+    } else {
+      next.set(note.id, vote);
+      setMyVotes(next);
+      await castVote(note.id, session.user.id, vote);
+    }
+  };
+
+  const selected = projects.find((p) => p.id === selectedId) ?? null;
+  const projectItems = [...items.values()]
+    .filter((i) => i.project_id === selectedId)
+    .sort((a, b) => (b.published_at ?? b.created_at).localeCompare(a.published_at ?? a.created_at));
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold">Community Notes on Everything</h1>
-        <p className="text-gray-500">
-          AI-generated community notes on podcasts, articles, and more — vote on whether they're helpful.
-        </p>
-      </header>
-      {!loaded && <p className="text-gray-400">Loading…</p>}
-      {loaded && sortedItems.length === 0 && <p className="text-gray-400">Nothing here yet.</p>}
-      <div className="space-y-10">
-        {sortedItems.map((item) => (
-          <ItemCard key={item.id} item={item} claims={claimsByItem.get(item.id) ?? []} notesByClaim={notesByClaim} />
-        ))}
-      </div>
+    <div className="md:flex">
+      <Sidebar
+        projects={projects}
+        selectedId={selectedId}
+        onSelect={setSelectedId}
+        session={session}
+        onSignIn={() => setLoginOpen(true)}
+        onSignOut={() => signOut()}
+      />
+
+      <main className="flex-1 max-w-3xl mx-auto px-4 md:px-8 py-8 w-full">
+        {selected && <h2 className="text-2xl font-bold mb-6">{selected.name}</h2>}
+        {!loaded && <p className="text-gray-400">Loading…</p>}
+        {loaded && projectItems.length === 0 && (
+          <p className="text-gray-400">No notes yet for this project.</p>
+        )}
+        <div className="space-y-10">
+          {projectItems.map((item) => (
+            <ItemCard
+              key={item.id}
+              item={item}
+              notes={notesByItem.get(item.id) ?? []}
+              suggestionsByNote={suggestionsByNote}
+              myVotes={myVotes}
+              onVote={handleVote}
+              session={session}
+              onNeedLogin={() => setLoginOpen(true)}
+            />
+          ))}
+        </div>
+      </main>
+
+      <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
     </div>
   );
 }
