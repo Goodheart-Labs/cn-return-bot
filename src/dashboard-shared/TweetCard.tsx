@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import type { NotedContent, Tweet } from "./types";
 import { extractMedia, type MediaImage, type MediaVideo } from "./media";
 
@@ -127,6 +128,55 @@ function CitationBlock({ quote, url, linkText }: { quote: string; url: string | 
   );
 }
 
+interface YouTubePlayer {
+  getCurrentTime(): number;
+  seekTo(seconds: number, allowSeekAhead: boolean): void;
+  pauseVideo(): void;
+  destroy(): void;
+}
+
+interface YouTubeNamespace {
+  Player: new (
+    el: HTMLElement,
+    opts: {
+      videoId: string;
+      playerVars?: Record<string, number | string>;
+      events?: { onStateChange?: (e: { data: number }) => void };
+    },
+  ) => YouTubePlayer;
+  PlayerState: { PLAYING: number };
+}
+
+declare global {
+  interface Window {
+    YT?: YouTubeNamespace;
+    onYouTubeIframeAPIReady?: () => void;
+  }
+}
+
+// Load the IFrame Player API once for the whole app; resolves when YT is ready.
+let youtubeApiReady: Promise<void> | null = null;
+function loadYouTubeApi(): Promise<void> {
+  if (youtubeApiReady) return youtubeApiReady;
+  youtubeApiReady = new Promise((resolve) => {
+    if (window.YT?.Player) return resolve();
+    const previous = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = () => {
+      previous?.();
+      resolve();
+    };
+    const script = document.createElement("script");
+    script.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(script);
+  });
+  return youtubeApiReady;
+}
+
+const CLIP_END_POLL_MS = 200;
+
+/** Embed a YouTube clip via the IFrame Player API so that reaching the clip's
+ *  end rewinds to its start and pauses — instead of YouTube's native end screen,
+ *  whose replay button restarts the whole video from 0:00. */
 function YouTubeClip({ url, quote, startSeconds, endSeconds }: {
   url: string;
   quote?: string;
@@ -134,19 +184,47 @@ function YouTubeClip({ url, quote, startSeconds, endSeconds }: {
   endSeconds?: number | null;
 }) {
   const videoId = youtubeVideoId(url);
-  const params = new URLSearchParams();
-  if (startSeconds != null) params.set("start", String(Math.max(0, Math.floor(startSeconds))));
-  if (endSeconds != null) params.set("end", String(Math.ceil(endSeconds)));
+  const hostRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!videoId) return;
+    const start = startSeconds != null ? Math.max(0, Math.floor(startSeconds)) : 0;
+    const end = endSeconds != null ? Math.ceil(endSeconds) : null;
+    let player: YouTubePlayer | undefined;
+    let endPoll: ReturnType<typeof setInterval> | undefined;
+    let cancelled = false;
+
+    loadYouTubeApi().then(() => {
+      if (cancelled || !hostRef.current) return;
+      player = new window.YT!.Player(hostRef.current, {
+        videoId,
+        playerVars: { start }, // no `end` param — we stop precisely, ourselves
+        events: {
+          onStateChange: (e) => {
+            clearInterval(endPoll);
+            if (e.data === window.YT!.PlayerState.PLAYING && end != null) {
+              endPoll = setInterval(() => {
+                if (player!.getCurrentTime() >= end) {
+                  player!.seekTo(start, true);
+                  player!.pauseVideo();
+                }
+              }, CLIP_END_POLL_MS);
+            }
+          },
+        },
+      });
+    });
+
+    return () => {
+      cancelled = true;
+      clearInterval(endPoll);
+      player?.destroy();
+    };
+  }, [videoId, startSeconds, endSeconds]);
+
   return (
     <div className="space-y-2">
-      {videoId && (
-        <iframe
-          className="w-full aspect-video rounded-lg"
-          src={`https://www.youtube.com/embed/${videoId}?${params}`}
-          allowFullScreen
-          title="Video clip"
-        />
-      )}
+      {videoId && <div ref={hostRef} className="w-full aspect-video rounded-lg overflow-hidden" />}
       {quote && <CitationBlock quote={quote} url={url} linkText="watch" />}
       {!videoId && !quote && (
         <a href={url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline">

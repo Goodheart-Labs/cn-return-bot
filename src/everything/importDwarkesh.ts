@@ -1,62 +1,45 @@
 /**
- * One-off import of the Dwarkesh Podcast fact-check runs bundled in
- * podcast_results.zip into the Common Notes tables, under the "dwarkesh" project.
+ * Import the curated Dwarkesh Podcast clip-notes into the Common Notes tables,
+ * under the "dwarkesh" project. Source: the note_clips_output run (vendored as
+ * src/everything/dwarkesh_clips/*.json), one JSON per clip with the note text
+ * (sources inline), the claim, the verbatim context, and the exact YouTube
+ * [start, end] clip span.
  *
- * Each run's results.json holds every extracted claim; we import only the ones
- * that produced a note (needsCorrection) — 35 across 5 episodes — so the public
- * feed stays well under PostgREST's 1000-row cap. Re-running is idempotent
- * (each episode's claims are replaced).
+ * Replaces any existing Dwarkesh items on each run (idempotent).
  *
- *   bun run src/everything/importDwarkesh.ts [path/to/podcast_results.zip]
+ *   bun run src/everything/importDwarkesh.ts [clips-dir]
  */
 
 import "dotenv/config";
-import { execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
-import { tmpdir } from "os";
 import { getSupabaseClient } from "../api/supabaseClient";
 
-const DEFAULT_ZIP = path.resolve("podcast_results.zip");
+const DEFAULT_CLIPS_DIR = path.join(import.meta.dir, "dwarkesh_clips");
 const PROJECT_SLUG = "dwarkesh";
 
-interface RunResult {
+// Dwarkesh episode video id → guest (for the item title). The clip filenames
+// carry the video id; this names the episodes we cover.
+const EPISODE_TITLES: Record<string, string> = {
+  Hrbq66XqtCo: "Jensen Huang",
+  mDG_Hx3BSUE: "Dylan Patel",
+  "Jj-kBHzUohs": "Phil Trammell",
+  myP8UjAM1pk: "Michael Nielsen",
+  U1FrhkLQnCI: "Ada Palmer",
+};
+
+interface ClipNote {
+  note_text: string;
   claim: string;
-  judgement: string;
-  quote: string;
-  needsCorrection: boolean;
-  correction: string;
-  sources: string[];
-  videoLink?: string;
+  context: string;
+  video_url: string;
+  clip: { start_s: number; end_s: number; file: string };
 }
 
-// dwarkeshTimestamps.json: guest → 1-based results index → { videoId, startSeconds }.
-// Snapshotted from prod review_dashboard_items, where the (now-superseded)
-// backfill matcher located each quote in the YouTube auto-captions and manual
-// corrections were applied. The runs themselves were timestamp-less
-// (--transcript-file), so this snapshot is the only timestamp source.
-const TIMESTAMPS: Record<string, Record<string, { videoId: string; startSeconds: number }>> = JSON.parse(
-  fs.readFileSync(path.join(import.meta.dir, "dwarkeshTimestamps.json"), "utf8"),
-);
-
-// No end timestamps were ever stored, so estimate the clip end from the quote
-// length at conversational pace, padded, and never shorter than a watchable clip.
-const SPOKEN_WORDS_PER_SECOND = 2.4;
-const CLIP_PAD_SECONDS = 4;
-const MIN_CLIP_SECONDS = 12;
-
-function estimateEndSeconds(startSeconds: number, quote: string): number {
-  const spokenSeconds = quote.trim().split(/\s+/).length / SPOKEN_WORDS_PER_SECOND + CLIP_PAD_SECONDS;
-  return startSeconds + Math.ceil(Math.max(MIN_CLIP_SECONDS, spokenSeconds));
-}
-
-function titleCase(slug: string): string {
-  return slug.split(/[_-]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
-}
-
-/** "youtube-claims-ada_palmer-2026-06-18-1814" → "ada_palmer". */
-function guestFromDir(dir: string): string {
-  return dir.replace(/^youtube-claims-/, "").replace(/-\d{4}-\d{2}-\d{2}-\d{4}$/, "");
+/** Video id is the filename prefix up to the first "_" — but "Jj-kBHzUohs"
+ *  contains no "_", so read it from the video_url instead (robust). */
+function videoIdFromUrl(url: string): string {
+  return url.match(/[?&]v=([\w-]{6,})/)?.[1] ?? "unknown";
 }
 
 async function projectId(): Promise<string> {
@@ -69,90 +52,66 @@ async function projectId(): Promise<string> {
   return data.id;
 }
 
-async function importEpisode(dir: string, resultsPath: string, project: string): Promise<number> {
+async function ensureEpisodeItem(project: string, videoId: string): Promise<string> {
   const db = getSupabaseClient();
-  const guest = guestFromDir(dir);
-  const title = titleCase(guest);
-  // The episode's video id (shared by all its claim timestamps) makes the item
-  // link to the real episode; sentinel fallback if a run has no timestamps.
-  const episodeVideoId = Object.values(TIMESTAMPS[guest] ?? {})[0]?.videoId;
-  const url = episodeVideoId ? `https://www.youtube.com/watch?v=${episodeVideoId}` : `imported:dwarkesh/${guest}`;
-
-  // Drop the pre-timestamp sentinel row from earlier imports (claims cascade).
-  await db.from("everything_items").delete().eq("url", `imported:dwarkesh/${guest}`).neq("url", url);
-
-  const { data: item, error: itemErr } = await db
+  const url = `https://www.youtube.com/watch?v=${videoId}`;
+  const title = EPISODE_TITLES[videoId] ?? videoId;
+  const { data, error } = await db
     .from("everything_items")
     .upsert({ project_id: project, source: "podcast", url, title, status: "done" }, { onConflict: "url" })
     .select("id")
     .single();
-  if (itemErr || !item) throw new Error(`Upsert item ${url}: ${itemErr?.message}`);
+  if (error || !data) throw new Error(`Upsert item ${url}: ${error?.message}`);
+  return data.id;
+}
 
-  // Idempotent re-run: drop this episode's claims (notes cascade) and re-import.
-  await db.from("everything_claims").delete().eq("item_id", item.id);
+async function main() {
+  const clipsDir = process.argv[2] ?? DEFAULT_CLIPS_DIR;
+  const files = fs.readdirSync(clipsDir).filter((f) => f.endsWith(".json"));
+  if (files.length === 0) throw new Error(`No clip JSONs in ${clipsDir}`);
 
-  const results: RunResult[] = JSON.parse(fs.readFileSync(resultsPath, "utf8")).results;
-  const timestamps = TIMESTAMPS[guest] ?? {};
+  const db = getSupabaseClient();
+  const project = await projectId();
 
+  // Clean slate: drop every existing Dwarkesh item (claims + notes cascade).
+  const { data: existing } = await db.from("everything_items").select("id").eq("project_id", project);
+  for (const row of existing ?? []) await db.from("everything_items").delete().eq("id", row.id);
+
+  const itemIdByVideo = new Map<string, string>();
   let imported = 0;
-  for (const [i, r] of results.entries()) {
-    if (!r.needsCorrection || !r.correction) continue;
-    const ts = timestamps[String(i + 1)]; // snapshot is keyed by 1-based results index
-    const contextUrl = ts
-      ? `https://www.youtube.com/watch?v=${ts.videoId}&t=${ts.startSeconds}s`
-      : (r.videoLink ?? null);
-    const { data: claim, error: claimErr } = await db
+  for (const file of files.sort()) {
+    const clip: ClipNote = JSON.parse(fs.readFileSync(path.join(clipsDir, file), "utf8"));
+    const videoId = videoIdFromUrl(clip.video_url);
+
+    let itemId = itemIdByVideo.get(videoId);
+    if (!itemId) {
+      itemId = await ensureEpisodeItem(project, videoId);
+      itemIdByVideo.set(videoId, itemId);
+    }
+
+    const { data: claimRow, error: claimErr } = await db
       .from("everything_claims")
       .insert({
-        item_id: item.id,
-        claim: r.claim,
-        judgement: r.judgement,
-        context_quote: r.quote,
-        context_url: contextUrl,
-        start_seconds: ts?.startSeconds ?? null,
-        end_seconds: ts ? estimateEndSeconds(ts.startSeconds, r.quote) : null,
+        item_id: itemId,
+        claim: clip.claim,
+        judgement: "uncertain",
+        context_quote: clip.context,
+        context_url: clip.video_url,
+        start_seconds: clip.clip.start_s,
+        end_seconds: clip.clip.end_s,
         status: "note",
       })
       .select("id")
       .single();
-    if (claimErr || !claim) throw new Error(`Insert claim: ${claimErr?.message}`);
-    // Sources go inline at the end of the note text, like a normal community
-    // note (the writer already does this for live notes; these runs kept them
-    // in a separate list). LinkifiedText renders them clickable.
-    const sources = r.sources ?? [];
-    const noteText = sources.length ? `${r.correction} ${sources.join(" ")}` : r.correction;
+    if (claimErr || !claimRow) throw new Error(`Insert claim (${file}): ${claimErr?.message}`);
+
     const { error: noteErr } = await db
       .from("everything_notes")
-      .insert({ claim_id: claim.id, note: noteText });
-    if (noteErr) throw new Error(`Insert note: ${noteErr.message}`);
+      .insert({ claim_id: claimRow.id, note: clip.note_text });
+    if (noteErr) throw new Error(`Insert note (${file}): ${noteErr.message}`);
     imported++;
   }
-  return imported;
-}
-
-async function main() {
-  const zip = process.argv[2] ?? DEFAULT_ZIP;
-  if (!fs.existsSync(zip)) throw new Error(`Zip not found: ${zip}`);
-
-  const work = fs.mkdtempSync(path.join(tmpdir(), "dwarkesh-"));
-  try {
-    execSync(`unzip -q -o "${zip}" -d "${work}"`);
-    const root = path.join(work, "podcast_results");
-    const dirs = fs.readdirSync(root).filter((d) => d.startsWith("youtube-claims-"));
-    const project = await projectId();
-
-    let total = 0;
-    for (const dir of dirs) {
-      const resultsPath = path.join(root, dir, "results.json");
-      if (!fs.existsSync(resultsPath)) continue;
-      const n = await importEpisode(dir, resultsPath, project);
-      console.log(`  ${titleCase(guestFromDir(dir))}: ${n} notes`);
-      total += n;
-    }
-    console.log(`Imported ${total} Dwarkesh notes across ${dirs.length} episodes`);
-  } finally {
-    fs.rmSync(work, { recursive: true, force: true });
-  }
+  console.log(`Imported ${imported} Dwarkesh clip-notes across ${itemIdByVideo.size} episodes`);
 }
 
 main().catch((err) => {
