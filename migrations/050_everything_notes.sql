@@ -1,8 +1,12 @@
--- Community Notes on Everything: queue + claims + notes + anonymous votes,
--- served to a PUBLIC frontend (GitHub Pages) straight from Supabase with the
--- anon key baked into the site. The anon key is public by design, so this
--- migration also locks the anon role out of every other table in the schema —
--- until now the repo had no RLS at all and the anon key could read anything.
+-- Common Notes: projects → items → claims → notes, with authenticated voting
+-- and AI-judged note improvements, served to a PUBLIC frontend (GitHub Pages)
+-- straight from Supabase with the anon key baked into the site.
+--
+-- Anyone may READ notes anonymously (anon key, public by design). VOTING and
+-- suggesting improvements require a logged-in user (magic link or X), so those
+-- tables are keyed on auth.uid() and closed to anon. This migration also locks
+-- the anon role out of every other table in the schema — before it the repo had
+-- no RLS at all and the anon key could read anything.
 --
 -- Run as postgres (SQL editor / psql), on local and prod. Section 1 is safe to
 -- re-run; sections 2+ are create-once like every other migration here.
@@ -34,10 +38,21 @@ end $$;
 -- 2. Tables
 -- ---------------------------------------------------------------------------
 
+-- A source we cover: a newsletter, a podcast, etc. The sidebar lists these.
+create table everything_projects (
+  id          uuid primary key default gen_random_uuid(),
+  slug        text not null unique,
+  name        text not null,
+  description text,
+  sort_order  int not null default 0,
+  created_at  timestamptz not null default now()
+);
+
 -- One row per piece of content (queue + display header).
 create table everything_items (
   id           uuid primary key default gen_random_uuid(),
-  source       text not null check (source in ('youtube', 'substack')),
+  project_id   uuid references everything_projects(id) on delete set null,
+  source       text not null check (source in ('youtube', 'substack', 'podcast')),
   url          text not null unique,
   title        text,
   published_at date,                     -- when the content was published (feeds the claim's "posted" date)
@@ -47,6 +62,7 @@ create table everything_items (
   created_at   timestamptz not null default now(),   -- when enqueued
   processed_at timestamptz
 );
+create index everything_items_project_id_idx on everything_items(project_id);
 
 -- One row per extracted claim — the full audit trail, including claims that
 -- were skipped as confident-true or checked but needed no note.
@@ -77,44 +93,62 @@ create table everything_notes (
   created_at        timestamptz not null default now()
 );
 
--- One row per (note, anonymous voter). voter_id is a random UUID minted in the
--- voter's browser (localStorage); the PK makes re-votes an update, not a dupe.
+-- One row per (note, logged-in voter). voter_id is the Supabase auth user id;
+-- the PK makes re-votes an update, not a dupe. RLS ties every row to auth.uid().
 create table everything_votes (
   note_id    uuid not null references everything_notes(id) on delete cascade,
-  voter_id   text not null,
+  voter_id   uuid not null references auth.users(id) on delete cascade,
   vote       smallint not null check (vote in (1, -1)),
   created_at timestamptz not null default now(),
   primary key (note_id, voter_id)
 );
 
+-- A user-proposed better note. The judge-suggestion edge function decides
+-- earnest vs trolling and stamps status; only 'accepted' rows are shown publicly.
+create table everything_note_suggestions (
+  id             uuid primary key default gen_random_uuid(),
+  note_id        uuid not null references everything_notes(id) on delete cascade,
+  author_id      uuid not null references auth.users(id) on delete cascade,
+  suggested_text text not null,
+  status         text not null default 'pending'
+                 check (status in ('pending', 'accepted', 'rejected')),
+  judge_reason   text,
+  created_at     timestamptz not null default now()
+);
+create index everything_note_suggestions_note_id_idx on everything_note_suggestions(note_id);
+
 -- ---------------------------------------------------------------------------
--- 3. Anon access: read items/claims/notes; vote only through the RPC below
+-- 3. Access
+--    Public (anon + authenticated): read projects/items/claims/notes and any
+--    ACCEPTED improvement. Logged-in only: cast votes (tied to auth.uid()).
+--    Suggestions are inserted server-side by the edge function (service role).
 -- ---------------------------------------------------------------------------
 
-grant select on everything_items, everything_claims, everything_notes to anon;
+grant select on everything_projects, everything_items, everything_claims, everything_notes,
+                everything_note_suggestions to anon, authenticated;
+grant select, insert, update, delete on everything_votes to authenticated;
 
-alter table everything_items  enable row level security;
-alter table everything_claims enable row level security;
-alter table everything_notes  enable row level security;
-alter table everything_votes  enable row level security;
+alter table everything_projects         enable row level security;
+alter table everything_items            enable row level security;
+alter table everything_claims           enable row level security;
+alter table everything_notes            enable row level security;
+alter table everything_votes            enable row level security;
+alter table everything_note_suggestions enable row level security;
 
-create policy anon_read_items  on everything_items  for select to anon using (true);
-create policy anon_read_claims on everything_claims for select to anon using (true);
-create policy anon_read_notes  on everything_notes  for select to anon using (true);
--- everything_votes: no grants, no policies. Voter ids stay unreadable, so the
--- only vote anyone can change is the one whose random id their browser holds.
+create policy anon_read_projects on everything_projects for select to anon, authenticated using (true);
+create policy anon_read_items    on everything_items    for select to anon, authenticated using (true);
+create policy anon_read_claims   on everything_claims   for select to anon, authenticated using (true);
+create policy anon_read_notes    on everything_notes    for select to anon, authenticated using (true);
 
--- Insert-or-update a vote as a definer function instead of table grants: anon
--- gets exactly this one operation on votes and nothing else.
-create or replace function cast_everything_vote(p_note_id uuid, p_voter_id text, p_vote smallint)
-returns void
-language sql security definer set search_path = public as $$
-  insert into everything_votes (note_id, voter_id, vote)
-  values (p_note_id, p_voter_id, p_vote)
-  on conflict (note_id, voter_id) do update set vote = excluded.vote;
-$$;
-revoke execute on function cast_everything_vote(uuid, text, smallint) from public;
-grant execute on function cast_everything_vote(uuid, text, smallint) to anon;
+-- Everyone sees accepted improvements; authors additionally see their own pending/rejected ones.
+create policy read_accepted_suggestions on everything_note_suggestions
+  for select to anon, authenticated using (status = 'accepted' or author_id = auth.uid());
+
+-- A logged-in user sees and manages only their own votes.
+create policy own_votes_select on everything_votes for select to authenticated using (voter_id = auth.uid());
+create policy own_votes_insert on everything_votes for insert to authenticated with check (voter_id = auth.uid());
+create policy own_votes_update on everything_votes for update to authenticated using (voter_id = auth.uid()) with check (voter_id = auth.uid());
+create policy own_votes_delete on everything_votes for delete to authenticated using (voter_id = auth.uid());
 
 -- ---------------------------------------------------------------------------
 -- 4. Vote counters on the note row, maintained by trigger. Folds every vote
@@ -146,8 +180,19 @@ create trigger everything_votes_counter
   for each row execute function everything_apply_vote();
 
 -- ---------------------------------------------------------------------------
--- 5. Realtime: stream item/claim/note changes to the frontend. Anon realtime
---    delivers nothing without the select policies above — both are needed.
+-- 5. Seed the initial projects (notes only exist for Dwarkesh so far).
 -- ---------------------------------------------------------------------------
 
-alter publication supabase_realtime add table everything_items, everything_claims, everything_notes;
+insert into everything_projects (slug, name, description, sort_order) values
+  ('zvi',      'Zvi Mowshowitz''s newsletter', null, 1),
+  ('arb',      'Arb''s Research Journal',      null, 2),
+  ('dwarkesh', 'The Dwarkesh Podcast',         null, 3)
+on conflict (slug) do nothing;
+
+-- ---------------------------------------------------------------------------
+-- 6. Realtime: stream content + accepted improvements to the frontend. Anon
+--    realtime delivers nothing without the select policies above — both needed.
+-- ---------------------------------------------------------------------------
+
+alter publication supabase_realtime add table
+  everything_items, everything_claims, everything_notes, everything_note_suggestions;
