@@ -93,6 +93,9 @@ const MAX_RUNTIME_MS = 27 * 60 * 1000;
 const MAX_POSTS_LOCAL = 5;
 const MAX_POSTS_FALLBACK = 5;
 
+// Flip to true to re-enable the XXL-feed Pangram AI-detection pre-pass.
+const PANGRAM_PIPELINE_ENABLED = false;
+
 const globalTimeout = setTimeout(async () => {
   console.log("[pipeline] Maximum runtime reached (27 minutes), forcing exit");
   await closeBrowser();
@@ -167,13 +170,17 @@ async function main() {
     // down regular note-writing. Its candidates and the regular pipeline's share
     // one submit call under the daily cap.
     let pangramCandidates: Candidate[] = [];
-    try {
-      pangramCandidates = await generatePangramCandidates(supabaseLogger, {
-        skipPostIds: skipPostIds ?? new Set<string>(),
-        onTweetProcessed,
-      });
-    } catch (err) {
-      console.warn("[pipeline] Pangram pre-pass failed; continuing with regular pipeline only:", err);
+    if (PANGRAM_PIPELINE_ENABLED) {
+      try {
+        pangramCandidates = await generatePangramCandidates(supabaseLogger, {
+          skipPostIds: skipPostIds ?? new Set<string>(),
+          onTweetProcessed,
+        });
+      } catch (err) {
+        console.warn("[pipeline] Pangram pre-pass failed; continuing with regular pipeline only:", err);
+      }
+    } else {
+      console.log("[pipeline] Pangram pre-pass disabled (PANGRAM_PIPELINE_ENABLED=false)");
     }
 
     const regularCandidates = await generateCandidates(supabaseLogger, {
