@@ -45,11 +45,6 @@ export function NoteCard({ note, suggestions, myVote, onVote, session, onNeedLog
           <ContentCard content={claimContent(claim)} />
         </div>
       )}
-      {claim && (
-        <p className="text-sm text-gray-500 mb-3">
-          <span className="font-medium text-gray-700">Claim:</span> {claim.claim}
-        </p>
-      )}
 
       <OurNoteCard noteText={note.note} label="Community note" className="mb-3" />
 
