@@ -17,6 +17,8 @@ import { getSupabaseClient } from "../api/supabaseClient";
 
 const DEFAULT_CLIPS_DIR = path.join(import.meta.dir, "dwarkesh_clips");
 const PROJECT_SLUG = "dwarkesh";
+// Pad each clip so it starts a touch before, and ends a touch after, the exact span.
+const CLIP_PAD_SECONDS = 1;
 
 // Dwarkesh episode video id → guest (for the item title). The clip filenames
 // carry the video id; this names the episodes we cover.
@@ -89,6 +91,8 @@ async function main() {
       itemIdByVideo.set(videoId, itemId);
     }
 
+    const startSeconds = Math.max(0, clip.clip.start_s - CLIP_PAD_SECONDS);
+    const endSeconds = clip.clip.end_s + CLIP_PAD_SECONDS;
     const { data: claimRow, error: claimErr } = await db
       .from("everything_claims")
       .insert({
@@ -96,9 +100,9 @@ async function main() {
         claim: clip.claim,
         judgement: "uncertain",
         context_quote: clip.context,
-        context_url: clip.video_url,
-        start_seconds: clip.clip.start_s,
-        end_seconds: clip.clip.end_s,
+        context_url: `https://www.youtube.com/watch?v=${videoId}&t=${startSeconds}s`,
+        start_seconds: startSeconds,
+        end_seconds: endSeconds,
         status: "note",
       })
       .select("id")
