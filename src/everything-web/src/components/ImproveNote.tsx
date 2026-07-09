@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Session } from "@supabase/supabase-js";
-import { submitImprovement, type JudgeResult } from "../lib/suggestions";
+import { submitImprovement } from "../lib/suggestions";
 
 export function ImproveNote({ noteId, session, onNeedLogin }: {
   noteId: string;
@@ -10,7 +10,7 @@ export function ImproveNote({ noteId, session, onNeedLogin }: {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
-  const [result, setResult] = useState<JudgeResult | null>(null);
+  const [outcome, setOutcome] = useState<"accepted" | "rejected" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   if (!session) {
@@ -21,28 +21,37 @@ export function ImproveNote({ noteId, session, onNeedLogin }: {
     );
   }
 
-  if (!open) {
-    return (
-      <button onClick={() => setOpen(true)} className="text-sm text-gray-500 hover:text-blue-600 hover:underline">
-        Suggest an improvement
-      </button>
-    );
-  }
-
   const submit = async () => {
     setBusy(true);
     setError(null);
-    setResult(null);
+    setOutcome(null);
     try {
-      const r = await submitImprovement(noteId, text.trim());
-      setResult(r);
-      if (r.status === "accepted") setText("");
+      const accepted = await submitImprovement(noteId, text.trim());
+      setOutcome(accepted ? "accepted" : "rejected");
+      // Accepted edits replace the note above (via realtime), so close the editor.
+      if (accepted) {
+        setText("");
+        setOpen(false);
+      }
     } catch (err) {
       setError((err as Error).message);
     } finally {
       setBusy(false);
     }
   };
+
+  // Collapsed: a link, plus a one-line result after a submit.
+  if (!open) {
+    return (
+      <span className="inline-flex items-center gap-2">
+        <button onClick={() => setOpen(true)} className="text-sm text-gray-500 hover:text-blue-600 hover:underline">
+          Suggest an improvement
+        </button>
+        {outcome === "accepted" && <span className="text-sm text-green-700">Thanks — your version is now shown.</span>}
+        {outcome === "rejected" && <span className="text-sm text-amber-700">That didn't look like a genuine improvement.</span>}
+      </span>
+    );
+  }
 
   return (
     <div className="space-y-2 w-full">
@@ -63,9 +72,9 @@ export function ImproveNote({ noteId, session, onNeedLogin }: {
         </button>
         <button onClick={() => setOpen(false)} className="text-sm text-gray-500 hover:underline">Cancel</button>
       </div>
-      {result && (
-        <p className={`text-sm rounded-lg p-2 ${result.status === "accepted" ? "bg-green-50 text-green-700 border border-green-200" : "bg-amber-50 text-amber-800 border border-amber-200"}`}>
-          {result.status === "accepted" ? "Accepted — thanks!" : "Not accepted."} {result.reason}
+      {outcome === "rejected" && (
+        <p className="text-sm rounded-lg p-2 bg-amber-50 text-amber-800 border border-amber-200">
+          That didn't look like a genuine improvement — try again.
         </p>
       )}
       {error && <p className="text-sm text-red-600">{error}</p>}

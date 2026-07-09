@@ -23,12 +23,7 @@ const cors = {
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
 
-interface Verdict {
-  earnest: boolean;
-  reason: string;
-}
-
-async function judge(claim: string, context: string, currentNote: string, proposal: string): Promise<Verdict> {
+async function isEarnest(claim: string, context: string, currentNote: string, proposal: string): Promise<boolean> {
   const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -42,7 +37,7 @@ async function judge(claim: string, context: string, currentNote: string, propos
         {
           role: "system",
           content:
-            "A user proposed a rewrite of a community note that fact-checks a claim. Your ONLY job is to decide whether the proposal is a sincere, good-faith attempt to improve the note versus trolling. It does NOT need to be correct, complete, or better than the original — sincerity is the bar. Set earnest=true for any genuine on-topic edit (rewording, adding detail or a source, disagreeing, questioning). Set earnest=false only for clear bad faith: insults, spam, jokes, gibberish, vandalism, or text unrelated to the note's topic. When unsure, lean earnest. Reply JSON: {\"earnest\": boolean, \"reason\": string} where reason is one short sentence.",
+            "A user proposed a rewrite of a community note that fact-checks a claim. Your ONLY job is to decide whether the proposal is a sincere, good-faith attempt to improve the note versus trolling. It does NOT need to be correct, complete, or better than the original — sincerity is the bar. earnest=true for any genuine on-topic edit (rewording, adding detail or a source, disagreeing, questioning). earnest=false only for clear bad faith: insults, spam, jokes, gibberish, vandalism, or text unrelated to the note's topic. When unsure, lean earnest. Reply with JSON: {\"earnest\": boolean}.",
         },
         {
           role: "user",
@@ -53,10 +48,12 @@ async function judge(claim: string, context: string, currentNote: string, propos
   });
   if (!res.ok) throw new Error(`OpenRouter ${res.status}: ${await res.text()}`);
   const data = await res.json();
-  // Strip ```json fences some models add despite response_format.
-  const raw = (data.choices?.[0]?.message?.content ?? "{}").replace(/^```(?:json)?\s*|\s*```$/g, "").trim();
-  const parsed = JSON.parse(raw);
-  return { earnest: !!parsed.earnest, reason: String(parsed.reason ?? "") };
+  // We only need the boolean, so pull it out directly — robust to code fences,
+  // trailing prose, or duplicated objects that break strict JSON.parse.
+  const content: string = data.choices?.[0]?.message?.content ?? "";
+  const match = content.match(/"earnest"\s*:\s*(true|false)/i);
+  if (!match) throw new Error(`no earnest verdict in model output: ${content.slice(0, 120)}`);
+  return match[1].toLowerCase() === "true";
 }
 
 Deno.serve(async (req) => {
@@ -88,22 +85,21 @@ Deno.serve(async (req) => {
   if (!note) return json({ error: "Unknown note" }, 404);
   const claimRow = (note as any).everything_claims;
 
-  let verdict: Verdict;
+  let earnest: boolean;
   try {
-    verdict = await judge(claimRow?.claim ?? "", claimRow?.context_quote ?? "", (note as any).note, text);
+    earnest = await isEarnest(claimRow?.claim ?? "", claimRow?.context_quote ?? "", (note as any).note, text);
   } catch (err) {
     return json({ error: `Judge failed: ${(err as Error).message}` }, 502);
   }
 
-  const status = verdict.earnest ? "accepted" : "rejected";
+  const status = earnest ? "accepted" : "rejected";
   const { error } = await admin.from("everything_note_suggestions").insert({
     note_id,
     author_id: user.id,
     suggested_text: text,
     status,
-    judge_reason: verdict.reason,
   });
   if (error) return json({ error: error.message }, 500);
 
-  return json({ status, reason: verdict.reason });
+  return json({ status });
 });

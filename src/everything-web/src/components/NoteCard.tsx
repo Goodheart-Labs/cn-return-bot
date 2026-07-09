@@ -36,7 +36,12 @@ export function NoteCard({ note, suggestions, myVote, onVote, session, onNeedLog
   onNeedLogin: () => void;
 }) {
   const claim = note.claim;
-  const accepted = suggestions.filter((s) => s.status === "accepted");
+  // An accepted community improvement replaces the note text in the UI only
+  // (the DB note is untouched). Newest accepted edit wins.
+  const latestImprovement = suggestions
+    .filter((s) => s.status === "accepted")
+    .sort((a, b) => b.created_at.localeCompare(a.created_at))[0];
+  const noteText = latestImprovement?.suggested_text ?? note.note;
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4">
@@ -46,14 +51,7 @@ export function NoteCard({ note, suggestions, myVote, onVote, session, onNeedLog
         </div>
       )}
 
-      <OurNoteCard noteText={note.note} label="Community note" className="mb-3" />
-
-      {accepted.map((s) => (
-        <div key={s.id} className="bg-green-50 rounded p-3 border border-green-100 mb-3">
-          <div className="text-xs text-green-700 font-medium mb-1">Community improvement</div>
-          <p className="text-sm text-gray-800 whitespace-pre-wrap">{s.suggested_text}</p>
-        </div>
-      ))}
+      <OurNoteCard noteText={noteText} showHeader={false} className="mb-3" />
 
       <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
         <VoteRatings
