@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLiveData } from "./lib/useLiveData";
 import { useSession, signOut } from "./lib/auth";
 import { castVote, clearVote, fetchMyVotes, type Vote } from "./lib/votes";
+import { readRoute, pushProject } from "./lib/routing";
 import { Sidebar } from "./components/Sidebar";
 import { LoginModal } from "./components/LoginModal";
 import { NoteCard } from "./components/NoteCard";
@@ -41,12 +42,47 @@ export function App() {
     return map;
   }, [suggestions]);
 
-  // Default to the first project (by sort order) that actually has content.
+  // Initial project: the ?project= slug from the URL, else the first project
+  // (by sort order) that actually has content.
   useEffect(() => {
     if (selectedId || projects.length === 0) return;
+    const fromUrl = projects.find((p) => p.slug === readRoute().project);
+    if (fromUrl) return setSelectedId(fromUrl.id);
     const withItems = new Set([...items.values()].map((i) => i.project_id));
     setSelectedId(projects.find((p) => withItems.has(p.id))?.id ?? projects[0]!.id);
   }, [projects, items, selectedId]);
+
+  // Selecting a project updates the URL; Back/Forward restores the selection.
+  const selectProject = (id: string) => {
+    setSelectedId(id);
+    const slug = projects.find((p) => p.id === id)?.slug;
+    if (slug) pushProject(slug);
+  };
+  useEffect(() => {
+    const onPop = () => {
+      const p = projects.find((pp) => pp.slug === readRoute().project);
+      if (p) setSelectedId(p.id);
+    };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, [projects]);
+
+  // On a shared ?note= link, scroll to that note once its card has rendered.
+  // Re-fire a few times as the YouTube iframes load and shift layout beneath it.
+  const scrolledRef = useRef(false);
+  useEffect(() => {
+    if (scrolledRef.current || !loaded) return;
+    const { note } = readRoute();
+    if (!note) {
+      scrolledRef.current = true;
+      return;
+    }
+    if (!document.getElementById(`note-${note}`)) return; // wait for its card
+    scrolledRef.current = true;
+    for (const ms of [0, 400, 1000, 1800]) {
+      setTimeout(() => document.getElementById(`note-${note}`)?.scrollIntoView({ block: "start" }), ms);
+    }
+  }, [loaded, notes, selectedId]);
 
   const handleVote = async (note: NoteRow, vote: Vote) => {
     if (!session) {
@@ -83,7 +119,7 @@ export function App() {
       <Sidebar
         projects={projects}
         selectedId={selectedId}
-        onSelect={setSelectedId}
+        onSelect={selectProject}
         session={session}
         onSignIn={() => setLoginOpen(true)}
         onSignOut={() => signOut()}
@@ -100,6 +136,7 @@ export function App() {
             <NoteCard
               key={note.id}
               note={note}
+              projectSlug={selected?.slug ?? ""}
               suggestions={suggestionsByNote.get(note.id) ?? []}
               myVote={myVotes.get(note.id)}
               onVote={handleVote}
