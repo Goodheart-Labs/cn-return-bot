@@ -53,10 +53,24 @@ There are some ranked strategic cruxes (Mar 2026) in Claude's auto-memory coveri
 - `src/production/` - GitHub Actions entry points (runPipeline, updateNoteFeedback)
 - `src/local/` - Local testing tools (tryoutNotes, runOnVideos, evaluateResults)
 - `src/scraper/` - Notewriter page scraper
+- `src/everything/` - "Community Notes on Everything" pipeline (see below)
+- `src/everything-web/` - Public React SPA for everything-notes (GitHub Pages, realtime + anon voting)
 - `src/review-dashboard/` - React dashboard for reviewing note failures
 - `src/scripts_jim/` - Jim's investigation journal (Python, by date)
 - `src/scripts_nathan/` - Nathan's investigation scripts (by date)
 - `migrations/` - Supabase SQL migrations
+
+## Community Notes on Everything
+
+Queue-driven pipeline that writes notes on non-X content (YouTube videos, Substack posts) into the `everything_*` tables, displayed live on a public GitHub Pages SPA (`/cn-return-bot/notes/`) with anonymous voting (device-UUID + `cast_everything_vote` RPC; counters via trigger). Migration 050 also locks the anon role out of every other table — the anon key is baked into the public site.
+
+```bash
+bun run everything-enqueue <url...>   # YouTube video, Substack post, or Substack profile (--latest N)
+bun run everything-worker             # drain the queue and exit
+bun run dev-everything                # local FE on port 8003 (VITE_SUPABASE_* in root .env)
+```
+
+Per claim it forces picks `bot=simple-bot, note_prefilter=deepseek, search_claim=on`; other A/B dimensions roll randomly. Claims Opus judges confident-true are skipped (`shouldFactCheck`).
 
 ## Review dashboard
 
