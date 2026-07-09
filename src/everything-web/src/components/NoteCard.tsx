@@ -25,27 +25,6 @@ function claimContent(claim: ClaimRef): NotedContent {
   return { kind: "article", url, quote: claim.context_quote };
 }
 
-function SourceLinks({ sources }: { sources: string[] }) {
-  if (!sources?.length) return null;
-  return (
-    <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm mb-3">
-      {sources.map((url) => (
-        <a key={url} href={url} target="_blank" rel="noreferrer" className="text-blue-500 hover:underline break-all">
-          {hostname(url)}
-        </a>
-      ))}
-    </div>
-  );
-}
-
-function hostname(url: string): string {
-  try {
-    return new URL(url).hostname.replace(/^www\./, "");
-  } catch {
-    return url;
-  }
-}
-
 // Mirrors the review-dashboard card composition: content → note → stats row,
 // with voting live and an improve-note affordance.
 export function NoteCard({ note, suggestions, myVote, onVote, session, onNeedLogin }: {
@@ -73,7 +52,6 @@ export function NoteCard({ note, suggestions, myVote, onVote, session, onNeedLog
       )}
 
       <OurNoteCard noteText={note.note} label="Community note" className="mb-3" />
-      <SourceLinks sources={note.sources} />
 
       {accepted.map((s) => (
         <div key={s.id} className="bg-green-50 rounded p-3 border border-green-100 mb-3">

@@ -32,8 +32,7 @@ export interface ClaimRef {
 export interface NoteRow {
   id: string;
   claim_id: string;
-  note: string;
-  sources: string[];
+  note: string; // sources are inline in the text (like a normal community note)
   helpful_count: number;
   not_helpful_count: number;
   created_at: string;

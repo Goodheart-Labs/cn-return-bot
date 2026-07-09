@@ -116,9 +116,14 @@ async function importEpisode(dir: string, resultsPath: string, project: string):
       .select("id")
       .single();
     if (claimErr || !claim) throw new Error(`Insert claim: ${claimErr?.message}`);
+    // Sources go inline at the end of the note text, like a normal community
+    // note (the writer already does this for live notes; these runs kept them
+    // in a separate list). LinkifiedText renders them clickable.
+    const sources = r.sources ?? [];
+    const noteText = sources.length ? `${r.correction} ${sources.join(" ")}` : r.correction;
     const { error: noteErr } = await db
       .from("everything_notes")
-      .insert({ claim_id: claim.id, note: r.correction, sources: r.sources ?? [] });
+      .insert({ claim_id: claim.id, note: noteText });
     if (noteErr) throw new Error(`Insert note: ${noteErr.message}`);
     imported++;
   }
