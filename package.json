@@ -62,6 +62,7 @@
     "scrape": "(curl -sf http://127.0.0.1:9222/json/version > /dev/null 2>&1 || (echo '🌐 Starting Chrome with remote debugging...' && open -na 'Google Chrome' --args --remote-debugging-port=9222 --user-data-dir=$HOME/.chrome-debug-profile --disable-backgrounding-occluded-windows --disable-renderer-backgrounding --disable-background-timer-throttling && until curl -sf http://127.0.0.1:9222/json/version > /dev/null 2>&1; do sleep 0.5; done)) && bun run src/scraper/scrapeNotewriterClickThrough.ts",
     "everything-enqueue": "bun run src/everything/enqueue.ts",
     "everything-worker": "bun run src/everything/worker.ts",
+    "everything-import-dwarkesh": "bun run src/everything/importDwarkesh.ts",
     "dev-everything": "cd src/everything-web && bunx vite --port 8003",
     "build-everything-web": "cd src/everything-web && bunx vite build"
   },
