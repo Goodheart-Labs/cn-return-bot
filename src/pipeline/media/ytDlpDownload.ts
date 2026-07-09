@@ -11,6 +11,7 @@
 import { execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
+import { decodeHtmlEntities } from "../utils/html";
 
 export interface YtDlpMetadata {
   id: string;
@@ -152,6 +153,28 @@ export function fetchAutoSubs(url: string, outputDir: string, lang: string = "en
   return parseSubtitleToText(raw);
 }
 
+/**
+ * Like fetchAutoSubs but keeps per-cue timestamps. Prefers human-authored subs
+ * and falls back to auto-generated. Returns null when no subs are available.
+ * Used to attribute extracted claims to a point in the video.
+ */
+export function fetchTimedTranscript(url: string, outputDir: string, lang: string = "en"): SubtitleCue[] | null {
+  const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
+  try {
+    execSync(
+      `yt-dlp --write-subs --write-auto-subs --sub-lang ${quote(lang)} --skip-download -o "${quote(outputTemplate)}" "${quote(url)}"`,
+      { timeout: YT_DLP_TIMEOUT_MS, stdio: ["pipe", "pipe", "pipe"] },
+    );
+  } catch {
+    return null;
+  }
+  const matches = fs.readdirSync(outputDir).filter((f) => f.endsWith(".vtt") || f.endsWith(".ttml") || f.endsWith(".srt"));
+  if (!matches.length) return null;
+  const raw = fs.readFileSync(path.join(outputDir, matches[0]!), "utf-8");
+  const cues = parseSubtitleToCues(raw);
+  return cues.length ? cues : null;
+}
+
 function resolveDownloadedFile(meta: YtDlpMetadata, outputDir: string): { filePath: string | null; kind: YtDlpKind | null } {
   const expected = meta.filename ?? meta._filename ?? path.join(outputDir, `${meta.id}.${meta.ext ?? "mp4"}`);
   if (fs.existsSync(expected)) {
@@ -166,25 +189,56 @@ function resolveDownloadedFile(meta: YtDlpMetadata, outputDir: string): { filePa
   return { filePath: null, kind: null };
 }
 
-function parseSubtitleToText(content: string): string {
-  const lines: string[] = [];
+export interface SubtitleCue {
+  /** Start time in seconds (float). */
+  start: number;
+  /** End time in seconds (float). */
+  end: number;
+  text: string;
+}
+
+/** "00:01:23.456" / "01:23,456" / "83.4" → seconds. */
+function parseTimecode(tc: string): number {
+  return tc.replace(",", ".").split(":").reduce((acc, part) => acc * 60 + Number(part), 0);
+}
+
+/**
+ * Parse a WEBVTT/SRT subtitle file into timestamped cues. Applies the same
+ * cleaning + consecutive-duplicate dedup the plain-text path needs for
+ * YouTube's rolling auto-subs, but tags each surviving line with the start/end
+ * of its enclosing cue.
+ */
+export function parseSubtitleToCues(content: string): SubtitleCue[] {
+  const cues: SubtitleCue[] = [];
   let prev = "";
+  let curStart = 0;
+  let curEnd = 0;
   for (const rawLine of content.split(/\r?\n/)) {
     const line = rawLine.trim();
     if (!line) continue;
     if (line === "WEBVTT") continue;
     if (line.startsWith("Kind:") || line.startsWith("Language:")) continue;
     if (line.startsWith("NOTE ")) continue;
-    if (line.includes("-->")) continue;
-    if (/^\d+$/.test(line)) continue;
-    // Strip cue tags / HTML
-    const cleaned = line.replace(/<[^>]+>/g, "").trim();
+    const arrow = line.indexOf("-->");
+    if (arrow !== -1) {
+      // "00:00:00.000 --> 00:00:02.000 align:start position:0%"
+      curStart = parseTimecode(line.slice(0, arrow).trim().split(/\s+/).pop() ?? "0");
+      curEnd = parseTimecode(line.slice(arrow + 3).trim().split(/\s+/)[0] ?? "0");
+      continue;
+    }
+    if (/^\d+$/.test(line)) continue; // SRT sequence numbers
+    // Strip cue tags, decode HTML entities, collapse the resulting whitespace.
+    const cleaned = decodeHtmlEntities(line.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ").trim();
     if (!cleaned) continue;
     // YouTube auto-subs duplicate every line as they build up word-by-word.
     // Skip a line if it's identical to the immediately preceding one.
     if (cleaned === prev) continue;
-    lines.push(cleaned);
+    cues.push({ start: curStart, end: curEnd, text: cleaned });
     prev = cleaned;
   }
-  return lines.join(" ").replace(/\s+/g, " ").trim();
+  return cues;
+}
+
+function parseSubtitleToText(content: string): string {
+  return parseSubtitleToCues(content).map((c) => c.text).join(" ").replace(/\s+/g, " ").trim();
 }
