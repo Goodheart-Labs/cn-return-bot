@@ -31,8 +31,8 @@ await page.waitForSelector(`text=Signed in as ${email}`, { timeout: 10000 });
 console.log("✅ signed in (magic-link hash consumed)");
 
 // Vote on the first note.
-await page.locator("button:has-text('Helpful')").first().click();
-await page.waitForSelector("button:has-text('👍 Helpful 1')", { timeout: 8000 });
+await page.locator("button[aria-label^='Helpful ratings']").first().click();
+await page.waitForSelector("button[aria-label='Helpful ratings: 1']", { timeout: 8000 });
 console.log("✅ vote registered with live count");
 
 // Suggest an earnest improvement on the first note.

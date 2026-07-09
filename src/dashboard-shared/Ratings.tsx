@@ -74,6 +74,25 @@ export function Ratings({
   );
 }
 
+/** Interactive twin of Ratings: the same ▲/▼ count pills, but clicking casts a
+ *  vote (active = the viewer's own vote). The dashboards keep the display-only
+ *  Ratings; this is used where visitors vote (Common Notes site). Unlike
+ *  Ratings it renders at zero counts — you must be able to cast the first vote. */
+export function VoteRatings({ helpful, notHelpful, myVote, onVote }: {
+  helpful: number;
+  notHelpful: number;
+  myVote?: 1 | -1;
+  onVote: (vote: 1 | -1) => void;
+}) {
+  return (
+    <span className="text-xs text-gray-500 inline-flex items-center gap-1">
+      <RatingButton bucket="helpful" count={helpful} active={myVote === 1} disabled={false} onClick={() => onVote(1)} />
+      <span aria-hidden>·</span>
+      <RatingButton bucket="not_helpful" count={notHelpful} active={myVote === -1} disabled={false} onClick={() => onVote(-1)} />
+    </span>
+  );
+}
+
 function RatingButton({
   bucket,
   count,

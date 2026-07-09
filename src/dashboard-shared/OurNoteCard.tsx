@@ -1,16 +1,19 @@
 import { LinkifiedText } from "./LinkifiedText";
 import { communityNoteUrl } from "./communityNoteUrl";
 
-// The "Our note" block shared by the review and stats dashboards: the note text
-// (with clickable URLs) plus a permalink. Renders nothing without note text.
+// The note block shared by the review/stats dashboards and the Common Notes
+// site: the note text (with clickable URLs) plus a permalink. Renders nothing
+// without note text.
 export function OurNoteCard({
   noteId,
   noteText,
   className,
+  label = "Our note",
 }: {
   noteId?: string;
   noteText?: string;
   className?: string;
+  label?: string;
 }) {
   if (!noteText) return null;
 
@@ -21,7 +24,7 @@ export function OurNoteCard({
   return (
     <div className={containerClasses}>
       <div className="flex items-center justify-between mb-1">
-        <span className="text-xs text-blue-600 font-medium">Our note</span>
+        <span className="text-xs text-blue-600 font-medium">{label}</span>
         {noteId && (
           <a
             href={communityNoteUrl(noteId)}

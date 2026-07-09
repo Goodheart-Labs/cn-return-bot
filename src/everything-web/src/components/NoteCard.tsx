@@ -1,9 +1,10 @@
 import type { Session } from "@supabase/supabase-js";
 import { ContentCard } from "../../../dashboard-shared/TweetCard";
+import { OurNoteCard } from "../../../dashboard-shared/OurNoteCard";
+import { VoteRatings } from "../../../dashboard-shared/Ratings";
 import type { NotedContent } from "../../../dashboard-shared/types";
 import type { ClaimRef, NoteRow, SuggestionRow } from "../lib/types";
 import type { Vote } from "../lib/votes";
-import { VoteButtons } from "./VoteButtons";
 import { ImproveNote } from "./ImproveNote";
 
 /** Map a claim's context to the shared ContentCard shape: a YouTube clip when
@@ -27,9 +28,9 @@ function claimContent(claim: ClaimRef): NotedContent {
 function SourceLinks({ sources }: { sources: string[] }) {
   if (!sources?.length) return null;
   return (
-    <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm">
+    <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm mb-3">
       {sources.map((url) => (
-        <a key={url} href={url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline break-all">
+        <a key={url} href={url} target="_blank" rel="noreferrer" className="text-blue-500 hover:underline break-all">
           {hostname(url)}
         </a>
       ))}
@@ -45,6 +46,8 @@ function hostname(url: string): string {
   }
 }
 
+// Mirrors the review-dashboard card composition: content → note → stats row,
+// with voting live and an improve-note affordance.
 export function NoteCard({ note, suggestions, myVote, onVote, session, onNeedLogin }: {
   note: NoteRow;
   suggestions: SuggestionRow[];
@@ -57,28 +60,35 @@ export function NoteCard({ note, suggestions, myVote, onVote, session, onNeedLog
   const accepted = suggestions.filter((s) => s.status === "accepted");
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
-      {claim && <ContentCard content={claimContent(claim)} />}
+    <div className="bg-white rounded-lg border border-gray-200 p-4">
       {claim && (
-        <p className="text-sm text-gray-500">
-          <span className="font-semibold text-gray-700">Claim:</span> {claim.claim}
+        <div className="mb-3">
+          <ContentCard content={claimContent(claim)} />
+        </div>
+      )}
+      {claim && (
+        <p className="text-sm text-gray-500 mb-3">
+          <span className="font-medium text-gray-700">Claim:</span> {claim.claim}
         </p>
       )}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-        <p className="text-xs font-semibold text-blue-800 mb-1">Community Note</p>
-        <p className="text-gray-900 whitespace-pre-wrap">{note.note}</p>
-      </div>
+
+      <OurNoteCard noteText={note.note} label="Community note" className="mb-3" />
       <SourceLinks sources={note.sources} />
 
       {accepted.map((s) => (
-        <div key={s.id} className="bg-green-50 border border-green-200 rounded-lg p-3">
-          <p className="text-xs font-semibold text-green-800 mb-1">Community improvement</p>
-          <p className="text-gray-900 whitespace-pre-wrap">{s.suggested_text}</p>
+        <div key={s.id} className="bg-green-50 rounded p-3 border border-green-100 mb-3">
+          <div className="text-xs text-green-700 font-medium mb-1">Community improvement</div>
+          <p className="text-sm text-gray-800 whitespace-pre-wrap">{s.suggested_text}</p>
         </div>
       ))}
 
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1">
-        <VoteButtons note={note} myVote={myVote} onVote={onVote} />
+      <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
+        <VoteRatings
+          helpful={note.helpful_count}
+          notHelpful={note.not_helpful_count}
+          myVote={myVote}
+          onVote={(vote) => onVote(note, vote)}
+        />
         <ImproveNote noteId={note.id} session={session} onNeedLogin={onNeedLogin} />
       </div>
     </div>
