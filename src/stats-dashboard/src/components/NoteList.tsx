@@ -105,7 +105,7 @@ function StatsNoteCard({ note }: { note: NoteRecord }) {
         </div>
       )}
 
-      <OurNoteCard noteId={note.note_id} noteText={note.note_text} />
+      <OurNoteCard noteText={note.note_text} />
     </article>
   );
 }
