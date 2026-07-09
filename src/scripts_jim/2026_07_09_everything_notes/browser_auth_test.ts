@@ -35,14 +35,18 @@ await page.locator("button[aria-label^='Helpful ratings']").first().click();
 await page.waitForSelector("button[aria-label='Helpful ratings: 1']", { timeout: 8000 });
 console.log("✅ vote registered with live count");
 
-// Suggest an earnest improvement on the first note.
+// Suggest an earnest improvement on the first note; on accept it REPLACES the
+// note text in the UI (no separate block).
+const marker = `CLARIFYING EDIT ${Date.now().toString(36)}`;
 await page.locator("button:has-text('Suggest an improvement')").first().click();
 await page.locator("textarea").first().fill(
-  "This note is accurate; it would be even clearer to add a one-line explanation of why the dating matters and cite the Stanford Encyclopedia of Philosophy.",
+  `${marker}: this note is accurate; adding a one-line note on why the dating matters would make it clearer.`,
 );
 await page.locator("button:has-text('Submit')").first().click();
-await page.waitForSelector("text=Community improvement", { timeout: 20000 });
-console.log("✅ earnest improvement accepted and shown live");
+// On accept the editor closes and the marker appears inside the note box
+// (the blue OurNoteCard), replacing the original text — not just in the textarea.
+await page.waitForSelector(`.bg-blue-50:has-text("${marker}")`, { timeout: 20000 });
+console.log("✅ earnest improvement accepted and replaced the note text live");
 
 await page.screenshot({ path: OUT, fullPage: false });
 console.log(errors.length ? `console errors:\n${errors.join("\n")}` : "no console errors");
