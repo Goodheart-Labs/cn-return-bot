@@ -41,6 +41,38 @@ function claimContent(claim: ClaimRef): NotedContent {
   return { kind: "article", url, quote: claim.context_quote };
 }
 
+/** The claim's surrounding paragraph, with the quoted excerpt bolded. Shown
+ *  beside the note card so the correction can be read in its original context. */
+function ContextParagraph({ paragraph, quote }: { paragraph: string; quote: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const clampable = paragraph.length > 700;
+  const idx = paragraph.toLowerCase().indexOf(quote.toLowerCase());
+  return (
+    <div className="text-sm text-gray-600 leading-relaxed border-l-4 border-gray-200 pl-3">
+      <div
+        style={clampable && !expanded
+          ? { display: "-webkit-box", WebkitLineClamp: 14, WebkitBoxOrient: "vertical", overflow: "hidden" }
+          : undefined}
+      >
+        {idx < 0 ? (
+          paragraph
+        ) : (
+          <>
+            {paragraph.slice(0, idx)}
+            <strong className="font-semibold text-gray-900">{paragraph.slice(idx, idx + quote.length)}</strong>
+            {paragraph.slice(idx + quote.length)}
+          </>
+        )}
+      </div>
+      {clampable && (
+        <button onClick={() => setExpanded((e) => !e)} className="mt-1 text-xs text-blue-600 hover:underline">
+          {expanded ? "Show less" : "Show more"}
+        </button>
+      )}
+    </div>
+  );
+}
+
 // Mirrors the review-dashboard card composition: content → note → stats row,
 // with voting live and an improve-note affordance.
 export function NoteCard({ note, projectSlug, suggestions, myVote, onVote, session, onNeedLogin }: {
@@ -64,8 +96,15 @@ export function NoteCard({ note, projectSlug, suggestions, myVote, onVote, sessi
   const noteBody = latestImprovement?.suggested_text ?? note.note;
   const noteText = note.sources.length > 0 ? `${noteBody} ${note.sources.join(" ")}` : noteBody;
 
+  const paragraph = claim?.context_paragraph;
   return (
-    <div id={`note-${note.id}`} className="bg-white rounded-lg border border-gray-200 p-4 scroll-mt-4">
+    <div id={`note-${note.id}`} className="scroll-mt-4 grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,36rem)_minmax(0,1fr)] gap-3 md:gap-5 items-start">
+      {paragraph && claim && (
+        <div className="order-2 md:order-1 md:col-start-1 md:row-start-1">
+          <ContextParagraph paragraph={paragraph} quote={claim.context_quote} />
+        </div>
+      )}
+      <div className="bg-white rounded-lg border border-gray-200 p-4 order-1 md:order-2 md:col-start-2 md:row-start-1 w-full">
       {claim && (
         <div className="mb-3">
           <ContentCard content={claimContent(claim)} />
@@ -84,6 +123,7 @@ export function NoteCard({ note, projectSlug, suggestions, myVote, onVote, sessi
         />
         <ImproveNote noteId={note.id} session={session} onNeedLogin={onNeedLogin} />
         <ShareButton projectSlug={projectSlug} noteId={note.id} />
+      </div>
       </div>
     </div>
   );

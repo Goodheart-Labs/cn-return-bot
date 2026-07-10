@@ -24,6 +24,7 @@ export interface ClaimRef {
   item_id: string;
   claim: string;
   context_quote: string;
+  context_paragraph: string | null;
   context_url: string | null;
   start_seconds: number | null;
   end_seconds: number | null;
