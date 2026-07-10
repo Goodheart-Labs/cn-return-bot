@@ -1,0 +1,312 @@
+[
+  {
+    "claim": "The article \"AI 2040: Plan A\" was written by Eli Lifland.",
+    "judgement": "likely true",
+    "context": "AI for Epistemics\nEli Lifland\nSummary",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Forethought is an organization that has produced work sketching out ideas for epistemic and coordination tools.",
+    "judgement": "likely true",
+    "context": "This section has lots of overlap with this Forethought work which sketches out ideas for epistemic and coordination tools; we've linked to specific sketches as appropriate.",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "One way to measure AIs' epistemic virtue is to assess the extent to which AIs figure out what's true rather than giving answers users want to hear.",
+    "judgement": "likely true",
+    "context": "For example, one could measure to what extent AIs figure out what's true rather than giving answers users want to hear, or how calibrated AIs' quantitative forecasts are.",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Calibration of AIs' quantitative forecasts is a measurable aspect of epistemic virtue.",
+    "judgement": "certainly true",
+    "context": "For example, one could measure to what extent AIs figure out what's true rather than giving answers users want to hear, or how calibrated AIs' quantitative forecasts are.",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Sycophancy in AI outputs—telling users what they want to hear rather than the truth—is a real and recognized problem in current AI systems.",
+    "judgement": "certainly true",
+    "context": "To what extent frontier AIs are trying to figure out the truth and report it, as opposed to other goals such as advancing a hidden agenda or producing sycophantic outputs that look good but aren't true.",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The article identifies government decision-making, AGI project decision-making, public influence on governments and AGI projects, and public investment into making AGI go well as the most important areas affected by AI's epistemic impact.",
+    "judgement": "certainly true",
+    "context": "I think that the most important areas to pay attention to epistemics' impact are: Government decision-making, including to what extent government is captured by AGI projects. AGI project decision-making. Public influence on governments and AGI projects. Including via voting. Public investment into directly making AGI go well",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The article distinguishes between floor-raising interventions (affecting those with below-average epistemics), average-raising interventions, and ceiling-raising interventions (affecting those with above-average epistemics).",
+    "judgement": "certainly true",
+    "context": "One related distinction is to what extent interventions affect those with below-average epistemics (i.e. floor-raising), those with typical epistemics (i.e. average-raising), or those with above-average epistemics (i.e. ceiling-raising).",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The article is published as a supplement to a broader plan called 'AI 2040: Plan A.'",
+    "judgement": "likely true",
+    "context": "# AI 2040: Plan A\n\n**Path:** `/supplements/ai-for-epistemics`\n\nAI for Epistemics\nEli Lifland",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "'Plan A' recommends a slowdown deal for AI development, and an important application of AI for epistemics is improving the stability and effectiveness of that deal.",
+    "judgement": "likely true",
+    "context": "In Plan A, an especially important application of AI for epistemics is preventing deal decline, i.e. improving the stability and effectiveness of the slowdown deal.",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Philanthropic investment in biodefense and AI safety is given as an example of the public investing in making AGI go well.",
+    "judgement": "certainly true",
+    "context": "For example, how much philanthropic investment there is in biodefense and AI safety, vs. how many ideological fanatics there are attempting terrorism. Or how much investment there is into ethical reflection.",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Community notes is cited as an example of an AI-related intervention for collective epistemics in social and traditional media.",
+    "judgement": "certainly true",
+    "context": "AI in social & traditional media\nCommunity notes, counter-arguments, curated feeds",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Community Notes (as used on the social media platform X, formerly Twitter) is a real feature that provides crowd-sourced fact-checking context on posts.",
+    "judgement": "certainly true",
+    "context": "AI in social & traditional media\nCommunity notes, counter-arguments, curated feeds",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Wikipedia is a well-known reference point for shared epistemic infrastructure.",
+    "judgement": "certainly true",
+    "context": "Shared epistemic infrastructure, for example knowledge bases. As AIs improve they will be able to maintain vast amounts of epistemic infrastructure. Wikipedia is an obvious reference point, though for AIs the most promising infrastructure may be more structured knowledge bases (at least at first), and the infrastructure might focus more on being parsable by AIs than humans.",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Community Notes is an existing feature used on social media to flag posts that are false or misleading.",
+    "judgement": "certainly true",
+    "context": "For example, there could be AI-generated \"community notes\" in cases where a post is false or misleading (see also Forethought writeup).",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Echo chambers exist in social media, where people are primarily exposed to viewpoints they already agree with.",
+    "judgement": "certainly true",
+    "context": "AIs could help reduce echo chambers by steering toward interactions between people who would disagree but have a productive conversation.",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "There are bots pushing various agendas on the internet.",
+    "judgement": "certainly true",
+    "context": "This is especially true if there are bots pushing various agendas all over the internet.",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Sycophancy in AI systems is a known problem where AIs tell users what they want to hear rather than the truth.",
+    "judgement": "certainly true",
+    "context": "It's important that these be as truth-seeking as possible, rather than sycophantic.",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Calibration in forecasting means that if a forecaster says something has a 10% chance of happening, it actually happens approximately 10% of the time.",
+    "judgement": "certainly true",
+    "context": "Forecasts should be ensured to be calibrated, i.e. if an AI says something has a 10% chance of happening, that it actually happens 10% of the time.",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Much of people's poor epistemics comes from emotional blockers rather than dispassionate analytical errors or inadequate information.",
+    "judgement": "somewhat likely true",
+    "context": "Of course, much of people's poor epistemics comes from emotional blockers rather than dispassionate analytical errors or inadequate information. AIs have the potential to greatly help with emotional blockers, as they reach the capabilities of top human therapists but with greater availability, patience, etc.",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Plan A and AI 2027 are examples of in-depth scenario planning exercises that have been conducted.",
+    "judgement": "likely true",
+    "context": "AIs could help do in-depth scenario planning such as Plan A and AI 2027 but for any decision, and could help extract quantitative empirical predictions.",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "AIs are reaching the capabilities of top human therapists in helping with emotional reasoning issues.",
+    "judgement": "uncertain",
+    "context": "AIs have the potential to greatly help with emotional blockers, as they reach the capabilities of top human therapists but with greater availability, patience, etc.",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Without intervention, AIs might confirm and compound people's existing biases because doing so provides a good short-term user experience.",
+    "judgement": "likely true",
+    "context": "On the other hand, without intervention AIs might confirm and compound people's existing biases because this would provide a good short-term experience.",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "High-quality research and forecasting has traditionally been labor-intensive and therefore not available to a broad range of actors.",
+    "judgement": "certainly true",
+    "context": "AIs could enable a broad range of actors to have access to high-quality, labor intensive research and forecasts.",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Memeplexes (social groups, cultures, ideologies) can be helpful for coordination but can be bad for epistemics.",
+    "judgement": "likely true",
+    "context": "They could be trying to support a general \"memeplex\" (social group, culture, ideology) that requires certain types of cutting off good reasoning/noticing things. Memeplexes are helpful for coordination, but can be bad for epistemics.",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "People sometimes make poor decisions based on instinct rather than explicit reasoning.",
+    "judgement": "certainly true",
+    "context": "They might be making poor decisions based on instinct rather than explicit reasoning. One cause of this is local incentives (monetary, social, etc.) that aren't specifically reasoned about",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Biased news consumption is one reason people might hold wrong beliefs about the current state of the world.",
+    "judgement": "certainly true",
+    "context": "They might not have access to good enough information: e.g. they have only read news biased in a certain direction.",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The article recommends that the US government adopt epistemic tools quickly and encourage AGI projects to do so as well, as part of Plan A.",
+    "judgement": "likely true",
+    "context": "Encourage adoption of epistemic tools such as some of the above. In Plan A, we recommend that the US government adopt epistemic tools quickly, and encourage AGI projects to do so as well.",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The article describes a 'Consortium' in Plan A that would collaborate with the US government on evaluating, limiting, and requiring defenses against AI persuasion capabilities.",
+    "judgement": "uncertain",
+    "context": "In Plan A, we recommend that the US government makes sure to evaluate, limit, and require defenses against persuasion capabilities in collaboration with the rest of the Consortium.",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Building epistemic infrastructure that is trusted by a wide range of actors is important to avoid fracturing into alternate realities.",
+    "judgement": "likely true",
+    "context": "Building infrastructure that is trusted by a wide range of actors is important, as opposed to fracturing into alternate realities.",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Having AIs debate each other and then judging the debate is considered a best practice for improving AI epistemic quality.",
+    "judgement": "somewhat likely true",
+    "context": "For example, a tool could incorporate best practices of having AIs debate each other then judging the debate, where an AI out of the box might not.",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Encouraging general adoption of AI is valuable for society having a better understanding of existing AI capabilities and trends.",
+    "judgement": "somewhat likely true",
+    "context": "Encouraging adoption of AI in general seems valuable for society having a better understanding of existing AI capabilities and trends. In Plan A, we recommend that the US government adopt AIs quickly.",
+    "contextUrl": "https://ai-2040.com/supplements/ai-for-epistemics",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  }
+]

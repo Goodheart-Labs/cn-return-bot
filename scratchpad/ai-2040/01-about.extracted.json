@@ -1,0 +1,282 @@
+[
+  {
+    "claim": "The AI 2040: Plan A scenario is the third major release from the AI Futures Project.",
+    "judgement": "likely true",
+    "context": "The AI 2040: Plan A scenario is the third major release from the AI Futures Project, alongside AI 2027 and the AI Futures Model.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "The AI Futures Project's previous major releases were AI 2027 and the AI Futures Model.",
+    "judgement": "likely true",
+    "context": "The AI 2040: Plan A scenario is the third major release from the AI Futures Project, alongside AI 2027 and the AI Futures Model.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "The AI Futures Project is a research nonprofit.",
+    "judgement": "likely true",
+    "context": "We're a research nonprofit working to forecast the future of advanced AI and (now) offer recommendations for navigating it.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "The AI 2040 website was created in collaboration with Lightcone Infrastructure.",
+    "judgement": "likely true",
+    "context": "We created this website in collaboration with Lightcone Infrastructure.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "Thomas Larsen started the AI 2040 project and had final say on its content.",
+    "judgement": "likely true",
+    "context": "Thomas Larsen started the project and had final say on its content. He helped shape many of the core ideas and did a large fraction of the writing, including many of the supplements.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "Romeo Dean led the verification research and the compute and economics modeling for AI 2040.",
+    "judgement": "likely true",
+    "context": "Romeo Dean led the verification research and the compute and economics modeling, and wrote the corresponding supplements along with helping to shape many related ideas.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "Daniel Kokotajlo contributed many of the core ideas and did a large fraction of the writing for the main scenario and perspectives of AI 2040.",
+    "judgement": "likely true",
+    "context": "Daniel Kokotajlo came up with many of the core ideas and did a large fraction of the writing for the main scenario and perspectives.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "Ryan Greenblatt came up with many of the core ideas behind Plan A in AI 2040.",
+    "judgement": "likely true",
+    "context": "Ryan Greenblatt came up with many of the core ideas behind Plan A and gave extensive feedback.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "Eli Lifland did project management, helped edit the main scenario, and wrote several supplements for AI 2040.",
+    "judgement": "likely true",
+    "context": "Eli Lifland did project management, helped edit the main scenario, and wrote several supplements.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "Brendan Halstead led the covert project modeling for AI 2040 and wrote the corresponding supplement and the takeoff supplement.",
+    "judgement": "likely true",
+    "context": "Brendan Halstead led the covert project modeling and wrote the corresponding supplement, as well as the takeoff supplement.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "Raymond Arnold, Oliver Habryka, and Joanna Bregan are affiliated with Lightcone Infrastructure.",
+    "judgement": "likely true",
+    "context": "Raymond Arnold, Oliver Habryka, and Joanna Bregan of Lightcone Infrastructure built and designed the website and provided thoughtful feedback on the content.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "Scott Alexander rewrote various sections of the AI 2040 plan and provided extensive feedback.",
+    "judgement": "likely true",
+    "context": "Scott Alexander rewrote various sections of the plan and provided extensive feedback.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "Miles Kodama rewrote the insider's perspective and researched legal authorities and other near-term helpful actions for AI 2040.",
+    "judgement": "likely true",
+    "context": "Miles Kodama rewrote the insider's perspective, triaged feedback, and researched legal authorities and other near-term helpful actions.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "Mia Taylor and Fin Moorhouse of Forethought wrote the space governance supplement for AI 2040.",
+    "judgement": "likely true",
+    "context": "Mia Taylor and Fin Moorhouse of Forethought wrote the space governance supplement.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "Mia Taylor and Fin Moorhouse are affiliated with Forethought.",
+    "judgement": "likely true",
+    "context": "Mia Taylor and Fin Moorhouse of Forethought wrote the space governance supplement.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "Human authors wrote nearly all text in the final AI 2040 publication.",
+    "judgement": "likely true",
+    "context": "We used AI to help with many parts of the creation of Plan A, including for: programming, brainstorming pieces of text, and giving and summarizing feedback. Human authors wrote nearly all text in the final publication, and reviewed/edited the small amount of AI-written text.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "AI tools were used in the creation of Plan A for tasks including programming, brainstorming pieces of text, and giving and summarizing feedback.",
+    "judgement": "likely true",
+    "context": "We used AI to help with many parts of the creation of Plan A, including for: programming, brainstorming pieces of text, and giving and summarizing feedback.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "Helen Toner provided feedback on the AI 2040 project in a personal capacity.",
+    "judgement": "likely true",
+    "context": "Finally, our warm thanks to everyone who gave helpful feedback in their personal capacity: Aalok Mehta, Aaron Scher, Ajeya Cotra, Alex Kastner, Alex Mallen, Alexandra Bates, Andrey Fradkin, Andy Masley, Aniket Chakravorty, Anjay Friedman, Anson Ho, Ben Chang, Ben Goldhaber, Ben Harack, Brendan Steinhauser, Daan Juijn, Damon Binder, Daniel Filan, Daniel Reuter, David Rein, David Udell, Douw Marx, Edouard Harris, Eric Gan, Finn Hambly, Fynn Heide, Grant Demaree, Halfdan Holm, Helen Toner, Holden Karnofsky...",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "Holden Karnofsky provided feedback on the AI 2040 project in a personal capacity.",
+    "judgement": "likely true",
+    "context": "Finally, our warm thanks to everyone who gave helpful feedback in their personal capacity: ...Halfdan Holm, Helen Toner, Holden Karnofsky, Ida Caspary, Jaime Sevilla...",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "Will MacAskill provided feedback on the AI 2040 project in a personal capacity.",
+    "judgement": "likely true",
+    "context": "Finally, our warm thanks to everyone who gave helpful feedback in their personal capacity: ...Trevor Levin, Varun Gandhi, Will MacAskill, Yafah Edelman, and Yannick Mühlhäuser.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "Nate Soares provided feedback on the AI 2040 project in a personal capacity.",
+    "judgement": "likely true",
+    "context": "Finally, our warm thanks to everyone who gave helpful feedback in their personal capacity: ...Michael Trazzi, Nate Soares, Nick Gabrieli, Nicky Case...",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "The team at UK AISI provided feedback on the AI 2040 project.",
+    "judgement": "likely true",
+    "context": "Finally, our warm thanks to everyone who gave helpful feedback in their personal capacity: ...the team at UK AISI, Tim Hua, Timothy Kokotajlo...",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "The AI Futures Project can be contacted at info@aifutures.org.",
+    "judgement": "likely true",
+    "context": "You can reach us at info@aifutures.org. We look forward to hearing from you.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "The AI Futures Project has a Substack.",
+    "judgement": "likely true",
+    "context": "If you're interested in more of our work, you can subscribe to our Substack here.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "The AI Futures Project accepts donations online or through major DAF providers.",
+    "judgement": "likely true",
+    "context": "We accept donations online or through major DAF providers.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "Jaime Sevilla provided feedback on the AI 2040 project in a personal capacity.",
+    "judgement": "likely true",
+    "context": "Finally, our warm thanks to everyone who gave helpful feedback in their personal capacity: ...Ida Caspary, Jaime Sevilla, James Sanders...",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "Ajeya Cotra provided feedback on the AI 2040 project in a personal capacity.",
+    "judgement": "likely true",
+    "context": "Finally, our warm thanks to everyone who gave helpful feedback in their personal capacity: Aalok Mehta, Aaron Scher, Ajeya Cotra, Alex Kastner...",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  },
+  {
+    "claim": "Tom Davidson provided feedback on the AI 2040 project in a personal capacity.",
+    "judgement": "likely true",
+    "context": "Finally, our warm thanks to everyone who gave helpful feedback in their personal capacity: ...Tim Hua, Timothy Kokotajlo, Tom Davidson, Tom Milton, Trevor Levin...",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/01-about.md"
+    }
+  }
+]

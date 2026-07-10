@@ -1,0 +1,2377 @@
+[
+  {
+    "claim": "The Nvidia RTX 4090 has 64 Gb/s NIC networking.",
+    "judgement": "uncertain",
+    "context": "networking (NIC)\t100 Gb/s\t200\t400\t64",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "note",
+    "statusReason": null,
+    "note": "The Nvidia RTX 4090 is a consumer GPU that does not have a built-in Network Interface Card (NIC). The figure of 64 refers to its PCIe 4.0 x16 bidirectional interface bandwidth of 64 GB/s, not a networking speed.",
+    "sources": [
+      "https://www.techpowerup.com/review/nvidia-geforce-rtx-4090-pci-express-scaling/",
+      "https://ai-infrastructure.net/gpu-rtx-workstation/"
+    ]
+  },
+  {
+    "claim": "The primary metric used in the supplement is H100-equivalents (H100e), which are multiples of one Nvidia H100 GPU measured in Total Processing Performance (TPP).",
+    "judgement": "likely true",
+    "context": "The primary metric used in this supplement is H100-equivalents (H100e) multiples of one Nvidia H100 GPU measured in Total Processing Performance (TPP).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Nvidia H100 GPU has memory bandwidth of 3,350 GB/s (HBM).",
+    "judgement": "likely true",
+    "context": "Memory bandwidth\tfeeds data to the compute (HBM)\t3,350 GB/s",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Nvidia H100 GPU has a memory capacity of 80 GB (HBM).",
+    "judgement": "certainly true",
+    "context": "Memory capacity\tstores data near the compute (HBM)\t80 GB",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Nvidia H100 GPU has NVLink scale-up bandwidth of 900 GB/s.",
+    "judgement": "certainly true",
+    "context": "Scale-up\tlinks chips within a server (NVLink)\t900 GB/s",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The H20 is an example of an export-compliant chip that was historically legally imported into China.",
+    "judgement": "likely true",
+    "context": "Three come from the global supply chain (already in the §1.1 world total): legal imports (export-compliant chips: e.g., H20s historically, H200 under the current licensing policy), smuggled chips, and loopholes",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Nvidia RTX 4090 has a TPP of 5,285.",
+    "judgement": "uncertain",
+    "context": "metric\tcutoff\tA100\tH100\tRTX 4090\ncompute\t4,000 TPP\t4,992\t15,800\t5,285",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Nvidia A100 GPU has memory bandwidth of 2.0 TB/s.",
+    "judgement": "certainly true",
+    "context": "memory bandwidth\t1.0 TB/s\t2.0\t3.35\t1.01",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Nvidia A100 GPU has a memory capacity of 80 GB.",
+    "judgement": "likely true",
+    "context": "memory capacity\t32 GB\t80\t80\t24",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Nvidia RTX 4090 has a memory capacity of 24 GB.",
+    "judgement": "certainly true",
+    "context": "memory capacity\t32 GB\t80\t80\t24",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Nvidia RTX 4090 has memory bandwidth of approximately 1.01 TB/s.",
+    "judgement": "certainly true",
+    "context": "memory bandwidth\t1.0 TB/s\t2.0\t3.35\t1.01",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Nvidia A100 GPU has 200 Gb/s NIC networking.",
+    "judgement": "likely true",
+    "context": "networking (NIC)\t100 Gb/s\t200\t400\t64",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Nvidia H100 GPU has 400 Gb/s NIC networking.",
+    "judgement": "likely true",
+    "context": "networking (NIC)\t100 Gb/s\t200\t400\t64",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "TSMC's N4 process node requires approximately 14 EUV lithography layers.",
+    "judgement": "likely true",
+    "context": "At N4's ~14 EUV layers that is ~5M passes.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In 2024, 5.09 million H100e were added based on $260 billion in AI spending, according to Epoch AI data.",
+    "judgement": "uncertain",
+    "context": "2024/25 are actual Epoch data (AI Chip Sales: 5.09M H100e added on $260B spending in 2024, 13.6M from $448B in 2025).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "44 EUV tools were added to the global fleet in 2024.",
+    "judgement": "uncertain",
+    "context": "Year\tEUV fleet (start of year)\tEUV added / yr\n2024\t220\t+44",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Through 2025, the AI compute buildout was paid for almost entirely out of big-tech's operating cash flow.",
+    "judgement": "likely true",
+    "context": "Through 2025 the buildout was paid for almost entirely out of big-tech's operating cashflow. However, if this trend continues capital expenditures are on track to overtake operating cash flow of hyperscalers around Q3 2026.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Hyperscalers account for approximately 60-90% of global AI spending.",
+    "judgement": "likely true",
+    "context": "(We use hyperscaler Broad CapEx as the proxy for total AI capex: hyperscalers are ~60-90% of global AI spend, and ~60-90% of their capex is AI, and we assume the two gaps roughly cancel.)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Approximately 60-90% of hyperscaler capital expenditure is AI-related.",
+    "judgement": "likely true",
+    "context": "hyperscalers are ~60-90% of global AI spend, and ~60-90% of their capex is AI, and we assume the two gaps roughly cancel.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The US owned approximately 71% of AI compute in 2024.",
+    "judgement": "uncertain",
+    "context": "US\tChina\tRoW\n71%\t16%\t13%\t2024\n75%\t12%\t13%\t2025",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "China owned approximately 16% of AI compute in 2024.",
+    "judgement": "uncertain",
+    "context": "US\tChina\tRoW\n71%\t16%\t13%\t2024",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "AI-relevant compute represented 26% of all global compute in 2024.",
+    "judgement": "uncertain",
+    "context": "26%\t2024\n48%\t2025\n67%\t2026\nprojected →\n82%\t2027\n90%\t2028\n94%\t2029",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "AI-relevant compute represented 48% of all global compute in 2025.",
+    "judgement": "uncertain",
+    "context": "26%\t2024\n48%\t2025\n67%\t2026",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "For the non-China AI compute, the supplement splits ownership 85% US and 15% rest of world.",
+    "judgement": "uncertain",
+    "context": "Owner = the nation of the company that owns or leases the compute. World compute is from §1.1; China is the §1.3.1 bottom-up forecast; the non-China remainder is split 85/15 US/RoW.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Epoch AI ML hardware price-performance dataset is the source for the cost-efficiency improvement trend cited in the supplement.",
+    "judgement": "likely true",
+    "context": "Cost-efficiency (~1.4×/yr)\nSource: Epoch AI — ML hardware price-performance",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Total AI capex in 2024 was approximately $260 billion, according to Epoch AI's Broad CapEx measure.",
+    "judgement": "uncertain",
+    "context": "With 2024-25 pinned to Epoch's Broad CapEx ($260B / $448B), this carries total AI capex to ~$2.4T in 2028",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "unfetchable_sources",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Total AI capex in 2025 was approximately $448 billion, according to Epoch AI's Broad CapEx measure.",
+    "judgement": "uncertain",
+    "context": "With 2024-25 pinned to Epoch's Broad CapEx ($260B / $448B), this carries total AI capex to ~$2.4T in 2028",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Hyperscalers account for approximately 60-90% of global AI-related capital expenditure.",
+    "judgement": "likely true",
+    "context": "We think hyperscalers are ~60–90% of global spend and ~60–90% of their capex is AI, so we assume the two roughly cancel as a simplifying assumption.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Approximately 60-90% of hyperscaler capital expenditure is related to AI.",
+    "judgement": "somewhat likely true",
+    "context": "We think hyperscalers are ~60–90% of global spend and ~60–90% of their capex is AI, so we assume the two roughly cancel as a simplifying assumption.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "EUV (extreme ultraviolet) lithography is required for manufacturing leading-edge logic chips.",
+    "judgement": "certainly true",
+    "context": "EUV is needed for leading-edge logic, and the leading HBM DRAM nodes now use it too (DRAM was manufactured entirely without EUV until recently, e.g., Micron only adopted it in 2025, so this is a cost-optimality choice rather than a strict requirement; avoiding EUV just shifts the same demand onto the shared DUV pool).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Leading HBM DRAM nodes now use EUV lithography.",
+    "judgement": "likely true",
+    "context": "EUV is needed for leading-edge logic, and the leading HBM DRAM nodes now use it too (DRAM was manufactured entirely without EUV until recently, e.g., Micron only adopted it in 2025, so this is a cost-optimality choice rather than a strict requirement",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "DRAM was manufactured entirely without EUV lithography until recently.",
+    "judgement": "likely true",
+    "context": "DRAM was manufactured entirely without EUV until recently, e.g., Micron only adopted it in 2025, so this is a cost-optimality choice rather than a strict requirement; avoiding EUV just shifts the same demand onto the shared DUV pool",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Micron adopted EUV lithography in 2025.",
+    "judgement": "likely true",
+    "context": "DRAM was manufactured entirely without EUV until recently, e.g., Micron only adopted it in 2025, so this is a cost-optimality choice rather than a strict requirement",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The use of EUV for DRAM is a cost-optimality choice rather than a strict technical requirement.",
+    "judgement": "likely true",
+    "context": "Micron only adopted it in 2025, so this is a cost-optimality choice rather than a strict requirement; avoiding EUV just shifts the same demand onto the shared DUV pool",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "ASML had approximately 127 EUV tools in use at the end of 2021.",
+    "judgement": "uncertain",
+    "context": "The fleet starts at 220 operating tools in 2024 (we estimate ASML had ~127 EUV tools in use at end-2021, then shipped 54/42 in 2022/23, per ASML's annual reports",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "ASML shipped 42 EUV tools in 2023.",
+    "judgement": "uncertain",
+    "context": "we estimate ASML had ~127 EUV tools in use at end-2021, then shipped 54/42 in 2022/23, per ASML's annual reports; the full build-up with sources is in the details box below",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The global EUV fleet consisted of approximately 220 operating tools at the start of 2024.",
+    "judgement": "uncertain",
+    "context": "EUV fleet over time and AI's usage share. The fleet starts at 220 operating tools in 2024 (we estimate ASML had ~127 EUV tools in use at end-2021, then shipped 54/42 in 2022/23, per ASML's annual reports",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "ASML guided for 60 or more EUV shipments for 2026.",
+    "judgement": "uncertain",
+    "context": "The EUV added column is ASML's shipments during the year (ASML guides \"60+\" for 2026 and ~80 for 2027).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "ASML guided for approximately 80 EUV shipments for 2027.",
+    "judgement": "uncertain",
+    "context": "The EUV added column is ASML's shipments during the year (ASML guides \"60+\" for 2026 and ~80 for 2027).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Each EUV tool performs approximately 360,000 passes per year.",
+    "judgement": "uncertain",
+    "context": "Fleet passes/yr is the during-year average fleet x ~360k passes/tool.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Leading-edge logic wafers require approximately 12-24 EUV layers per wafer, depending on the node (N4 to N2).",
+    "judgement": "likely true",
+    "context": "AI's draw sums its logic wafers (x ~12-24 EUV layers per logic wafer, N4→N2) and its HBM-DRAM wafers (x ~4-7 EUV layers per HBM wafer, accounting for stacking and packaging yields).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "HBM wafers require approximately 4-7 EUV layers per wafer.",
+    "judgement": "uncertain",
+    "context": "AI's draw sums its logic wafers (x ~12-24 EUV layers per logic wafer, N4→N2) and its HBM-DRAM wafers (x ~4-7 EUV layers per HBM wafer, accounting for stacking and packaging yields).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "AI's share of EUV fleet usage was approximately 7% in 2024.",
+    "judgement": "uncertain",
+    "context": "AI's share of the EUV fleet grows from ~7% in 2024 toward ~64% by 2028 (and ~77% by 2029, near saturation).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "AI's share of EUV fleet usage was approximately 15% in 2025.",
+    "judgement": "uncertain",
+    "context": "AI's share climbs ~15% (2025) to ~77% (2029, no Plan A).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Approximately 1 billion smartphones were shipped per year from 2015 to 2024.",
+    "judgement": "likely true",
+    "context": "Shipments (M units/yr)\t2015\t2018\t2020\t2022\t2024\nphones\t1K\t1K\t1K\t1K\t1K",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Approximately 263 million PCs were shipped in 2024.",
+    "judgement": "likely true",
+    "context": "Shipments (M units/yr)\t2015\t2018\t2020\t2022\t2024\n...\npcs\t276\t259\t304\t292\t263",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Approximately 304 million PCs were shipped in 2020.",
+    "judgement": "likely true",
+    "context": "Shipments (M units/yr)\t2015\t2018\t2020\t2022\t2024\n...\npcs\t276\t259\t304\t292\t263",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Approximately 7.5 million AI accelerator units were shipped in 2024.",
+    "judgement": "uncertain",
+    "context": "Shipments (M units/yr)\t2015\t2018\t2020\t2022\t2024\n...\nai\t0.1\t0.3\t0.6\t2.0\t7.5",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "model_output_invalid",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Approximately 36 million gaming GPUs were shipped in 2024.",
+    "judgement": "uncertain",
+    "context": "Shipments (M units/yr)\t2015\t2018\t2020\t2022\t2024\n...\ngaming\t44\t50\t40\t38\t36",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Approximately 13 million non-AI server units were shipped in 2024.",
+    "judgement": "uncertain",
+    "context": "Shipments (M units/yr)\t2015\t2018\t2020\t2022\t2024\n...\nnon-AI servers\t8.0\t11\t13\t14\t13",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "China's domestically manufactured AI compute does not draw on the EUV supply chain.",
+    "judgement": "likely true",
+    "context": "China's domestically manufactured compute (§1.3) does not draw on this EUV supply chain, so we forecast it separately and add it onto this total, bringing the world AI stock to ~287M.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "EUV utilization was approximately 52% in 2024.",
+    "judgement": "uncertain",
+    "context": "EUV utilization reaches ~100% by 2028 in our naive model, up from only 52% in 2024, as we expect it to become the binding constraint by then.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Approximately 5.09 million H100-equivalents of AI compute were added in 2024.",
+    "judgement": "uncertain",
+    "context": "H100e added is annual capex × cost-efficiency (anchored to the 2024/25 actuals 5.09M, 13.6M, then forecast)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "EUV lithography is extremely difficult to scale on short notice due to the complexity of the machines and extensive supply chain dependencies.",
+    "judgement": "certainly true",
+    "context": "EUV is extremely hard to scale on short notice given the complexity of the machines and extensive supply chain dependencies, so we expect it to be the most important and informative bottleneck.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "ASML is the sole manufacturer of EUV lithography machines.",
+    "judgement": "certainly true",
+    "context": "EUV is extremely hard to scale on short notice given the complexity of the machines and extensive supply chain dependencies, so we expect it to be the most important and informative bottleneck... The EUV added column is ASML's shipments during the year",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "48 EUV tools were added to the global fleet in 2025.",
+    "judgement": "uncertain",
+    "context": "Year\tEUV fleet (start of year)\tEUV added / yr\n...\n2025\t264\t+48",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Approximately 276 million PCs were shipped in 2015.",
+    "judgement": "likely true",
+    "context": "Shipments (M units/yr)\t2015\t2018\t2020\t2022\t2024\n...\npcs\t276\t259\t304\t292\t263",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Non-AI devices such as phones, PCs, and gaming compete with AI for EUV lithography capacity.",
+    "judgement": "certainly true",
+    "context": "We expect this to translate to higher prices as it requires outbidding other uses of the fleet (e.g., phones, PCs, etc.).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Non-AI server chips have a higher usefulness factor for AI workloads than dedicated AI accelerators in the model's 2024 estimates (1.38 vs 1.16).",
+    "judgement": "uncertain",
+    "context": "usefulness U\t2024\t2026\t2028\t2029\nphones\t0.21\t0.11\t0.07\t0.05\npcs\t0.35\t0.08\t0.04\t0.03\ngaming\t0.04\t0.05\t0.06\t0.04\nai\t1.16\t1.06\t1.04\t1.02\nnon-AI servers\t1.38\t1.40\t1.41\t1.40",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "check_failed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Gaming GPUs have a very low usefulness factor for AI workloads relative to their raw compute (0.04 in 2024).",
+    "judgement": "uncertain",
+    "context": "usefulness U\t2024\t2026\t2028\t2029\n...\ngaming\t0.04\t0.05\t0.06\t0.04\nai\t1.16\t1.06\t1.04\t1.02",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "AI-relevant compute is almost entirely in accelerators run in datacenters (AI-relevant clusters).",
+    "judgement": "likely true",
+    "context": "AI relevant compute is almost entirely in accelerators run in datacenters (AI-relevant clusters), but there is a small rising amount of AI-relevant single-device chips that is negligible today and grows later as datacenter-class GPUs reach desktop form factors (e.g., NVIDIA's DGX Station).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "NVIDIA's DGX Station is an example of datacenter-class GPUs reaching desktop form factors.",
+    "judgement": "likely true",
+    "context": "there is a small rising amount of AI-relevant single-device chips that is negligible today and grows later as datacenter-class GPUs reach desktop form factors (e.g., NVIDIA's DGX Station).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "China is cut off from the main global supply chain for AI chips by export controls.",
+    "judgement": "likely true",
+    "context": "We think it is most informative to focus on a separate Chinese compute forecast, because China is cut off from the main global supply chain by export controls, making it the hardest region to pin down with a crude percent-of-spending estimate.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "China's four sources of AI compute are legal imports, smuggled chips, loopholes (offshore datacenters or chip dies smuggled before packaging), and domestically manufactured chips.",
+    "judgement": "likely true",
+    "context": "We categorize China's AI compute into four sources: Three come from the global supply chain... legal imports... smuggled chips, and loopholes (chip dies smuggled in before packaging, or offshore datacenters Chinese firms own or lease from abroad). The fourth is domestically manufactured chips (SMIC 7nm logic / CXMT HBM / Ascend).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "SMIC manufactures 7nm logic chips for China's domestic AI compute supply.",
+    "judgement": "likely true",
+    "context": "The fourth is domestically manufactured chips (SMIC 7nm logic / CXMT HBM / Ascend).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Ascend is a domestically manufactured AI chip used in China.",
+    "judgement": "likely true",
+    "context": "The fourth is domestically manufactured chips (SMIC 7nm logic / CXMT HBM / Ascend).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The article uses an 85/15 split between US and Rest-of-World for the non-China remainder of global AI compute.",
+    "judgement": "uncertain",
+    "context": "Combining the world total (§1.1), the China forecast (§1.3.1), and an 85/15 US/RoW split of the remainder gives ownership by region: the US holds the great majority throughout, China ~15% → ~9%.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The article estimates the US holds about 71% of world AI compute stock in 2024.",
+    "judgement": "uncertain",
+    "context": "US China RoW 0% 25% 50% 75% 100% 71% 16% 13% 2024",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Jones (1995) is a model for R&D with diminishing returns as easy ideas get used up.",
+    "judgement": "likely true",
+    "context": "This is R&D, so we can model it with the labor spent on it, but with diminishing returns as the easy ideas get used up (Jones 1995, calibrated by Bloom et al. 2020)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Bloom et al. (2020) calibrated the diminishing returns in R&D productivity modeled by Jones (1995).",
+    "judgement": "likely true",
+    "context": "with diminishing returns as the easy ideas get used up (Jones 1995, calibrated by Bloom et al. 2020) and with diminishing returns to more parallel labor at a given time.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Roughly 2 million people work in the semiconductor industry today.",
+    "judgement": "uncertain",
+    "context": "Roughly 2 million people work in semiconductors today; by the early 2030s our forecast is that combined human, AI, and robot effort on chip and equipment R&D is on the order of 100x that.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Wright's law models production cost falling as a function of cumulative production volume.",
+    "judgement": "certainly true",
+    "context": "Production scaling (Wright). Pure manufacturing scale of units of compute can lead to 'learning by doing' efficiency improvements, e.g., with yield, throughput, uptime effects, and economies of scale.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The article models unit cost of compute falling about 15% per doubling of cumulative production, similar to long-run semiconductor and solar learning rates.",
+    "judgement": "likely true",
+    "context": "We model unit cost falling about 15% per doubling of cumulative production (similar to long-run semiconductor and solar rate).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The long-run learning rate for semiconductors and solar is approximately 15% cost reduction per doubling of cumulative production.",
+    "judgement": "uncertain",
+    "context": "We model unit cost falling about 15% per doubling of cumulative production (similar to long-run semiconductor and solar rate).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "note",
+    "statusReason": null,
+    "note": "Solar PV has a documented learning rate of 20–24% per doubling of cumulative production (Swanson's Law), and semiconductors typically show 20–30%. The 15% figure used here is below the established long-run rates for both technologies.",
+    "sources": [
+      "https://ourworldindata.org/learning-curve",
+      "https://en.wikipedia.org/wiki/Swanson%27s_law"
+    ]
+  },
+  {
+    "claim": "The article estimates the all-in cost markup over chip production cost (covering datacenter, power, networking, chip-maker margin) at roughly 7x to 8x in the 2025-2028 period.",
+    "judgement": "uncertain",
+    "context": "We calibrate the markup so that 2025 to 2028 reproduce Part 1's capex forecast exactly (~$2.4T in 2028) and 2029 the §2.1 deal year: this gives roughly 7x to 8x.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "China's domestic chip manufacturing does not use EUV-based lithography.",
+    "judgement": "likely true",
+    "context": "China's domestic manufacturing is treated as separate from the world compute total forecast in §1.1, because it does not come from the same (EUV-based) supply chain, so the §1.1 totals add it back on.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The forecast attributes approximately 0.48 million H100 equivalents per year in smuggled chips reaching China in 2025.",
+    "judgement": "uncertain",
+    "context": "Smuggled 0.16M 0.48M 1.26M 2.12M 2.99M",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The article estimates AI-relevant cluster compute stock at 3.6 million effective H100 equivalents as of January 1, 2024, representing 26% of all effective compute.",
+    "judgement": "uncertain",
+    "context": "AI-relevant · cluster (AI datacenters) 101K (4.1%) 3.6M (26%) 23.7M (67%) 140.8M (90%) 295.2M (94%)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "note",
+    "statusReason": null,
+    "note": "The 3.6M (26%) figure corresponds to January 1, 2026, not 2024. Epoch AI's estimate of ~26% AI-datacenter compute share aligns with early 2026, and actual H100e stock trajectories confirm the table starts at 2025, not 2024.",
+    "sources": [
+      "https://ai-2040.com/supplements/compute-supplement",
+      "https://epoch.ai/data-insights/largest-data-center-compute"
+    ]
+  },
+  {
+    "claim": "The article estimates non-AI single-device (consumer) compute at 8.7 million effective H100 equivalents as of January 1, 2024, making up 63% of total effective compute.",
+    "judgement": "uncertain",
+    "context": "non-AI · single-device (consumer) 2.1M (84%) 8.7M (63%) 9.1M (26%) 11.5M (7.3%) 12.6M (4.0%)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The article estimates China added approximately 0.9 million H100 equivalents of AI compute during 2024.",
+    "judgement": "uncertain",
+    "context": "Total added /yr 0.9M 1.7M 3.4M 6.8M 12.7M → China stock (end of year) 1.3M 2.9M 6.3M 13.2M 25.9M",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "An approximately 800mm² die yields about 42 good dies per 300mm wafer at roughly 70% yield.",
+    "judgement": "likely true",
+    "context": "An ~800mm² die yields ~42 good dies/wafer at ~70% yield, per Cerebras",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Historically, chip design improvements have been closely tied to power-efficiency improvements.",
+    "judgement": "likely true",
+    "context": "Historically, chip design improvements have been closely tied to power-efficiency improvements, so we model compute power efficiency on the same Jones design trend as the cost model above, using the same parameters (25%/yr base rate, stepping-on-toes λ=0.05)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Google DeepMind and OpenAI use similar amounts of compute, each around 10% of global compute in 2026.",
+    "judgement": "uncertain",
+    "context": "the AI company end-users are less concentrated, with the largest using around 10% of global compute in 2026 (GDM and OpenAI are similar).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In 2025, OpenAI spent around half of its compute on inference.",
+    "judgement": "uncertain",
+    "context": "In 2025 OpenAI spent around half of its compute on inference and more like one third on inference in 2024 and the rest on training and experiments (of which only around 10% on final frontier training runs).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In 2024, OpenAI spent approximately one third of its compute on inference.",
+    "judgement": "uncertain",
+    "context": "In 2025 OpenAI spent around half of its compute on inference and more like one third on inference in 2024 and the rest on training and experiments (of which only around 10% on final frontier training runs).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Only around 10% of OpenAI's training and experiment compute goes to final frontier training runs.",
+    "judgement": "uncertain",
+    "context": "the rest on training and experiments (of which only around 10% on final frontier training runs).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Simple Chinchilla-optimality implies a compute exponent of approximately 0.5 for the sensitivity of model-size scale-up to compute scale-up.",
+    "judgement": "likely true",
+    "context": "The compute exponent α is the sensitivity of model-size scale up to compute scale up. Simple Chinchilla-optimality implies ~0.5, but we have wide uncertainty",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Fitting their formula to Nesov's own compute and sparsity numbers gives a compute exponent α of approximately 0.8.",
+    "judgement": "uncertain",
+    "context": "there are reasons it might increase, e.g., due to data availability (fitting our formula to Nesov's own compute and sparsity numbers gives α≈0.8)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "GPT-4 used approximately 2e25 FLOP of training compute.",
+    "judgement": "likely true",
+    "context": "GPT-4 ~2e25",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Today's frontier model size is approximately 10 trillion parameters.",
+    "judgement": "uncertain",
+    "context": "Where P is total parameters (P_2026 ≈ 10T, today's level), C is frontier training compute, and σ is sparsity.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "note",
+    "statusReason": null,
+    "note": "As of 2026, the trend of frontier models becoming larger has reversed. Current models like GPT-4o and Claude 3.5 are estimated to be significantly smaller than previous iterations, and even the largest estimated models remain well below 10 trillion parameters.",
+    "sources": [
+      "https://epoch.ai/gradient-updates/frontier-language-models-have-become-much-smaller",
+      "https://www.gradually.ai/en/llm-statistics/"
+    ]
+  },
+  {
+    "claim": "A full set of frontier model weights is approximately 5 TB today at 4-bit precision.",
+    "judgement": "uncertain",
+    "context": "Each copy needs its share of the model weights (a full set of weights is ~5 TB today at 4-bit, and ~15 PB by 2040 at our central model size, shared across the copies served in the same batch) plus its own context.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "There are approximately 30 million concurrent copies of the frontier model being served today (2026).",
+    "judgement": "uncertain",
+    "context": "This gives about 30 million copies today. The count dips slightly at first, because the jump in sparsity grows the model faster than the inference fleet",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Sardana and Frankle have argued for more overtraining for serving as a reason the compute exponent for model size might decrease.",
+    "judgement": "likely true",
+    "context": "There are also reasons it might decrease, e.g., more overtraining for serving (Sardana and Frankle), reinforcement learning, and other unknown unknowns about paradigm changes.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The sparsity exponent β = 0.74 is used in the model size formula relating sparsity to total parameters.",
+    "judgement": "uncertain",
+    "context": "The sparsity exponent β=0.74 is tentatively better pinned (though the sparsity MoE paradigm might change).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Memory bandwidth on the inference fleet is about 31 times its memory capacity, giving approximately 31 full read-throughs per second.",
+    "judgement": "uncertain",
+    "context": "Memory bandwidth on the inference fleet is about 31x its memory capacity, giving ~31 full read-throughs per second, or ~57 tok/s per copy after a ~2x speculative-decoding gain and ~90% utilization.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Speculative decoding provides approximately a 2x speed gain for inference.",
+    "judgement": "somewhat likely true",
+    "context": "~57 tok/s per copy after a ~2x speculative-decoding gain and ~90% utilization.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Current inference utilization is approximately 90%.",
+    "judgement": "uncertain",
+    "context": "~57 tok/s per copy after a ~2x speculative-decoding gain and ~90% utilization.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The share of compute used by AI companies has been growing over time.",
+    "judgement": "likely true",
+    "context": "The share used by AI companies has been growing over time, and we project this trend forwards until Plan A is implemented.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Epoch has estimated a CMOS transistor theoretical limit for compute power efficiency at approximately 200 times the H100.",
+    "judgement": "uncertain",
+    "context": "notably not breaking past the CMOS transistor theoretical limit that Epoch estimates... still several× above the CMOS practical limit Epoch estimates (~200× a current H100e).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "check_failed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Human working pace is approximately 10 tokens per second.",
+    "judgement": "uncertain",
+    "context": "human working pace (~10 tok/s)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Wright's law learning-curve model is relevant to chip production cost dynamics.",
+    "judgement": "likely true",
+    "context": "We think the stacked Jones and Wright's-law learning-curve dynamics are a reasonable naive approximation of what this might look like.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Cerebras and Groq are examples of inference-specialized chips that hold model weights in on-chip SRAM.",
+    "judgement": "likely true",
+    "context": "The biggest wildcard is chips specialized for serving specific models, with weights held in on-chip SRAM (à la Cerebras, Groq) or baked directly into the die (à la Etched, Taalas).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Etched and Taalas are examples of inference-specialized chips that bake model weights directly into the die.",
+    "judgement": "somewhat likely true",
+    "context": "The biggest wildcard is chips specialized for serving specific models, with weights held in on-chip SRAM (à la Cerebras, Groq) or baked directly into the die (à la Etched, Taalas).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Cerebras has a measured inference speed of 969 tokens per second on the Llama-405B model.",
+    "judgement": "likely true",
+    "context": "we hand-set how fast they serve each copy (~1,000 tok/s today, anchored to Cerebras' measured 969 tok/s on Llama-405B, rising to ~25,000 tok/s by 2040",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Running each copy of a model faster on inference-specialized chips directly reduces the number of simultaneous copies that can be served, because copies equal total token throughput divided by speed of each copy.",
+    "judgement": "certainly true",
+    "context": "Running each copy faster directly costs copies (copies = total token throughput / speed of each copy), so these chips add relatively few copies, but under these assumptions they end up producing almost all tokens by 2040",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The H100-SXM GPU has a memory bandwidth of 3.35 TB/s.",
+    "judgement": "likely true",
+    "context": "We use a 2024-style H100-SXM cluster as the anchor for raw=effective: ... memory bandwidth B₀: 3.35 TB/s",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The H100-SXM GPU has a memory capacity of 80 GB.",
+    "judgement": "certainly true",
+    "context": "We use a 2024-style H100-SXM cluster as the anchor for raw=effective: ... memory capacity M₀: 80 GB",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The H100-SXM GPU has a scale-up (NVLink) bandwidth of 0.9 TB/s per chip.",
+    "judgement": "certainly true",
+    "context": "We use a 2024-style H100-SXM cluster as the anchor for raw=effective: ... scale-up bandwidth SU₀: 0.9 TB/s",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The H100-SXM GPU has a scale-out bandwidth of 0.05 TB/s per chip.",
+    "judgement": "likely true",
+    "context": "We use a 2024-style H100-SXM cluster as the anchor for raw=effective: ... scale-out bandwidth SO₀: 0.05 TB/s",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The standard H100 scale-up world size is 8 chips in an HGX-8 configuration.",
+    "judgement": "certainly true",
+    "context": "We use a 2024-style H100-SXM cluster as the anchor for raw=effective: ... scale-up world W₀: 8 chips (HGX-8)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In a ring all-reduce, the amount of data each chip moves is approximately constant (about twice the model size) regardless of whether the job runs on 100 or 100,000 chips.",
+    "judgement": "likely true",
+    "context": "in a ring all-reduce the data each chip moves is constant (about twice the model size) whether the job runs on 100 chips or 100,000, since the per-chip chunks shrink as fast as the step count grows.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "NVL72 has a scale-up domain of 72 GPUs.",
+    "judgement": "certainly true",
+    "context": "W: scale-up world size, in chips (the scale up domain GPU count, e.g. NVL72 = 72).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "General-purpose chips are bandwidth-bound for decode in 2026, with bandwidth utilization at 90% and compute utilization at only 9.4%.",
+    "judgement": "likely true",
+    "context": "Year Gen: bandwidth Gen: compute ... 2026 90% (binds) 9.4%",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The default memory-footprint elasticity parameter used in the effective-H100e model is 0.5.",
+    "judgement": "certainly true",
+    "context": "where δ ∈ [0,1] is the memory-footprint elasticity explained above (δ=0: capacity does not change the chip count; δ=1: footprint scales inversely with capacity; we assume δ=0.5 by default).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The networking penalty span elasticity parameter γ is set to 0.15 in the model.",
+    "judgement": "certainly true",
+    "context": "With elasticity γ=0.15 on the span: τ_{N,j} = (n_j / n_{0,j})^γ (C/C_0) R_j / R_{0,j}",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In CES (Constant Elasticity of Substitution) terms, a power mean parameter q=1.5 corresponds to an elasticity of substitution σ = 1/(1+q) = 0.4.",
+    "judgement": "certainly true",
+    "context": "q=1.5, the default, makes large bottlenecks bite harder. In CES terms 1.5 corresponds to an elasticity of substitution σ=1/(1+q)=0.4 between the resources",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "When q=1 in the power mean formulation, the result is equivalent to an Amdahl-style weighted average.",
+    "judgement": "likely true",
+    "context": "q=1 is a simple Amdahl-style weighted average; q=1.5, the default, makes large bottlenecks bite harder.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "When all chip parameters equal the anchor values (C=C0, B=B0, etc.), the slowdown factor Dj equals 1 because αC + αB + αN = 1.",
+    "judgement": "certainly true",
+    "context": "In the anchor C=C0, B=B0, M=M0, SU=SU0, SO=SO0, W=W0 and nj=n0,j, so τB=1 and τN,j=1. Hence Dj=(αC+αB+αN)^(1/q)=1 and effective H100e = C_cluster exactly.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Nvidia H100 GPU has Ethernet scale-out bandwidth of 50 GB/s.",
+    "judgement": "uncertain",
+    "context": "Scale-out\tlinks servers across the cluster (Ethernet)\t50 GB/s",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In the model, increasing memory M lowers the chip footprint nj, which in turn lowers the networking penalty τN,j.",
+    "judgement": "likely true",
+    "context": "Increasing M lowers the footprint nj, hence τN,j. Increasing SU or SO lowers Rj.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "When a cluster is rebuilt from chips that are k× weaker on every per-chip metric but k× more numerous (keeping cluster totals unchanged), the chip footprint per job rises superlinearly by a factor of k^(1+δ) where δ>0.",
+    "judgement": "likely true",
+    "context": "each chip holds only 1/k of the job, needing k× more chips, and smaller memory inflates that by a further k^δ (by the memory elasticity δ), so the chip count rises by k^(1+δ), more than k since δ>0",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "With the default parameters (αC=0.55, αB=0.20, αN=0.25, q=1.5, δ=0.5, γ=0.15), the usefulness adjustment formula simplifies to U = (0.75 + 0.25·k^0.3375)^(-2/3).",
+    "judgement": "likely true",
+    "context": "U = 1/D(k) ≈ (αC + αB + αN·k^((1+δ)γq))^(-1/q) = (0.75 + 0.25·k^0.3375)^(-2/3)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "With default parameters, the exponent (1+δ)γq evaluates to 0.3375 when δ=0.5, γ=0.15, and q=1.5.",
+    "judgement": "certainly true",
+    "context": "(0.75+0.25k^0.3375)^(-2/3), which gives the following values for these values of k",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "At k=100 (chips 100× weaker but 100× more numerous), the usefulness adjustment U is approximately 0.64.",
+    "judgement": "likely true",
+    "context": "k=100, usefulness adjustment U = 0.64x, D(k)=1/U = 1.55x",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "At k=1000, the usefulness adjustment U is approximately 0.45.",
+    "judgement": "likely true",
+    "context": "k=1000, usefulness adjustment U = 0.45x, D(k)=1/U = 2.23x",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "For k<1 (fewer but stronger chips), the usefulness adjustment U exceeds 1, meaning stronger chips get a bonus.",
+    "judgement": "likely true",
+    "context": "For k<1 (fewer but stronger chips, e.g. the k=0.1 row) the opposite holds and U>1.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The default value for the irreducible compute-bound share (αC) in the model is 0.55.",
+    "judgement": "likely true",
+    "context": "parameter αC 0.55 irreducible compute-bound share",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The default value for the memory-bandwidth-sensitive share (αB) is 0.20.",
+    "judgement": "likely true",
+    "context": "parameter αB 0.20 memory-bandwidth-sensitive share",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The default value for the networking-sensitive share (αN) is 0.25.",
+    "judgement": "likely true",
+    "context": "parameter αN 0.25 networking-sensitive share",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The default value for δ (how much low capacity inflates the footprint) is 0.5.",
+    "judgement": "likely true",
+    "context": "parameter δ 0.5 how much low capacity inflates the footprint",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The default value for γ (how much footprint size raises communications pressure) is 0.15.",
+    "judgement": "likely true",
+    "context": "parameter γ 0.15 how much footprint size raises comms pressure",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "A CPU server carries very little compute per chip but has generous memory, bandwidth, and datacenter networking, which is why each of its H100-equivalents scores a high usefulness adjustment.",
+    "judgement": "likely true",
+    "context": "a CPU server carries very little compute per chip but wraps it in generous memory, bandwidth, and datacenter networking, so each of its (few) H100e is unusually well fed.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "PCs have a usefulness adjustment of approximately 0.35 in 2024, dropping to 0.03 by 2029 in the model's projections.",
+    "judgement": "uncertain",
+    "context": "effective per raw (U) PCs: 2024 0.35, 2026 0.08, 2028 0.04, 2029 0.03",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Phones have a usefulness adjustment of approximately 0.21 in 2024, dropping to 0.05 by 2029.",
+    "judgement": "uncertain",
+    "context": "effective per raw (U) phones: 2024 0.21, 2026 0.11, 2028 0.07, 2029 0.05",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Gaming GPUs have a usefulness adjustment of approximately 0.04–0.06 across 2024–2029 in the model.",
+    "judgement": "uncertain",
+    "context": "effective per raw (U) gaming GPUs: 2024 0.04, 2026 0.05, 2028 0.06, 2029 0.04",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Single consumer devices (PCs, phones, gaming GPUs) score far below 1 on the usefulness adjustment primarily because they fail on networking, not compute.",
+    "judgement": "likely true",
+    "context": "the AI fleet starts slightly above 1 (memory-rich H100s versus the anchor) and drifts toward 1 as the memory wall bites, while single-devices score far below 1 because they fail on networking, not compute.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In the model, the AI fleet's usefulness starts slightly above 1 due to memory-rich H100s and drifts toward 1 as the memory wall becomes a constraint.",
+    "judgement": "uncertain",
+    "context": "The AI fleet starts slightly above 1 (memory-rich H100s versus the anchor) and drifts toward 1 as the memory wall bites",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The H100e unit is defined as TPP (throughput) divided by 15,800.",
+    "judgement": "uncertain",
+    "context": "Compute in H100e (= TPP / 15,800)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In the model, a chip with no real scale-up fabric is assigned W=1 (scale-up world of 1 chip).",
+    "judgement": "likely true",
+    "context": "a chip with no real scale-up fabric is W = 1.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The model produces an inversion where a budget phone outscores a flagship GPU per unit of compute in usefulness, because more compute behind the same thin network link results in more stranded compute.",
+    "judgement": "likely true",
+    "context": "It also produces the model's signature inversion: a budget phone outscores a flagship GPU per unit of compute, because more compute behind the same thin link is more stranded.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Consumer device networking in the model's presets is set to deployment-realistic sustained links (such as shared WiFi or home ethernet) rather than port peak speeds.",
+    "judgement": "likely true",
+    "context": "the consumer devices and Rubin Ultra are rough public-spec estimates, with networking set to deployment-realistic sustained links (shared WiFi, home ethernet) rather than port peaks, which is what pulls consumer U down to the appendix table's ~0.05-0.2 range.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The default model parameters are described as uncertain and hand-picked rather than empirically fitted.",
+    "judgement": "certainly true",
+    "context": "Default parameters (uncertain, hand-picked):",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Increasing the scale-up world size W shifts traffic from slow scale-out to fast scale-up networking, which helps when scale-up bandwidth exceeds scale-out bandwidth.",
+    "judgement": "likely true",
+    "context": "Increasing W raises p_SU, shifting traffic from slow scale-out to fast scale-up (which helps when SU>SO); the effect saturates once W≥C_job, i.e. once the workload already fits inside the scale-up world.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The benefit of increasing scale-up world size W saturates once W is large enough that the workload already fits entirely within the scale-up domain (W ≥ C_job).",
+    "judgement": "likely true",
+    "context": "the effect saturates once W≥C_job, i.e. once the workload already fits inside the scale-up world.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "When rebuilding a cluster with k× weaker chips but k× more of them (keeping totals constant), the bandwidth balance τB remains unchanged at 1 because both per-chip compute and per-chip bandwidth scale down by the same factor.",
+    "judgement": "certainly true",
+    "context": "Bandwidth balance is unchanged... τ'_B = (C'/C_0)/(B'/B_0) = (1/k)/(1/k) = 1",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "At k=0.1 (fewer but 10× stronger chips), the usefulness adjustment U is approximately 1.10.",
+    "judgement": "likely true",
+    "context": "k=0.1, usefulness adjustment U = 1.10x, D(k)=1/U = 0.91x",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "At k=2 (chips 2× weaker but 2× more numerous), the usefulness adjustment U is approximately 0.96.",
+    "judgement": "likely true",
+    "context": "k=2, usefulness adjustment U = 0.96x, D(k)=1/U = 1.04x",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "ASML had approximately 127 EUV lithography tools in use at the end of 2021.",
+    "judgement": "likely true",
+    "context": "Starting from ~220 operating tools at the start of 2024 (ASML had ~127 EUV in use at end-2021, then shipped ~54 and ~42 in 2022-23; TSMC alone runs ~56% of capacity)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "ASML shipped approximately 54 EUV lithography tools in 2022.",
+    "judgement": "likely true",
+    "context": "Starting from ~220 operating tools at the start of 2024 (ASML had ~127 EUV in use at end-2021, then shipped ~54 and ~42 in 2022-23; TSMC alone runs ~56% of capacity)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "ASML shipped approximately 42 EUV lithography tools in 2023.",
+    "judgement": "likely true",
+    "context": "Starting from ~220 operating tools at the start of 2024 (ASML had ~127 EUV in use at end-2021, then shipped ~54 and ~42 in 2022-23; TSMC alone runs ~56% of capacity)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "TSMC operates approximately 56% of global EUV lithography capacity.",
+    "judgement": "somewhat likely true",
+    "context": "Starting from ~220 operating tools at the start of 2024 (ASML had ~127 EUV in use at end-2021, then shipped ~54 and ~42 in 2022-23; TSMC alone runs ~56% of capacity)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "An EUV lithography tool achieves roughly 40-50 wafers per hour effective throughput, versus a nameplate specification of approximately 160 wafers per hour.",
+    "judgement": "likely true",
+    "context": "Each scanner runs only ~40-50 wph-equivalent in practice, versus a ~160 wafers-per-hour nameplate: real patterns need longer exposures than the spec assumes (higher dose, limited by the light source's power), tools are only up ~75-82% of the time, and time is lost stepping between exposure fields (reticle overhead).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "EUV lithography tools have an uptime of approximately 75-82%.",
+    "judgement": "likely true",
+    "context": "real patterns need longer exposures than the spec assumes (higher dose, limited by the light source's power), tools are only up ~75-82% of the time, and time is lost stepping between exposure fields (reticle overhead).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "TSMC produces approximately 3 million wafers at 5nm or smaller process nodes.",
+    "judgement": "uncertain",
+    "context": "AI accelerators take ~0.4M leading-edge wafers in 2025, roughly ~12% of TSMC's ~3M ≤5nm wafers (Epoch's direct estimate; Blackwell on N4, Nvidia only now ramping into N3).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Nvidia's Blackwell GPU is manufactured on TSMC's N4 process node.",
+    "judgement": "likely true",
+    "context": "AI accelerators take ~0.4M leading-edge wafers in 2025, roughly ~12% of TSMC's ~3M ≤5nm wafers (Epoch's direct estimate; Blackwell on N4, Nvidia only now ramping into N3).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Essentially all HBM (High Bandwidth Memory) production goes to AI applications.",
+    "judgement": "likely true",
+    "context": "AI's memory draw (the larger half). Essentially all HBM goes to AI, and HBM uses a lot of wafers per GB.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Samsung has approximately 165,000 wafers per month of HBM TSV/back-end capacity in 2025.",
+    "judgement": "uncertain",
+    "context": "Reported 2025 HBM TSV/back-end capacity is ~400k wafers/month (SK Hynix ~170k + Samsung ~165k + Micron ~60k, TrendForce)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Micron has approximately 60,000 wafers per month of HBM TSV/back-end capacity in 2025.",
+    "judgement": "uncertain",
+    "context": "Reported 2025 HBM TSV/back-end capacity is ~400k wafers/month (SK Hynix ~170k + Samsung ~165k + Micron ~60k, TrendForce)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "HBM core and stacking yield (KGSD/TSV) is approximately 57%.",
+    "judgement": "uncertain",
+    "context": "after ~57% core+stacking (KGSD/TSV) yield and ~88% CoWoS-assembly yield only ~700 net GB ship per started wafer",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "CoWoS assembly yield is approximately 88%.",
+    "judgement": "uncertain",
+    "context": "after ~57% core+stacking (KGSD/TSV) yield and ~88% CoWoS-assembly yield only ~700 net GB ship per started wafer",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The HBM industry totaled approximately $35 billion and 2 billion GB in 2025.",
+    "judgement": "uncertain",
+    "context": "while the 2025 fleet needs ~1.8B GB of HBM (bottom-up: ~11.7M accelerators x ~150 GB, cross-checking the ~$35B / ~2B-GB industry total).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "SK Hynix's 1b DRAM node uses approximately 4 EUV lithography layers.",
+    "judgement": "likely true",
+    "context": "The leading HBM nodes use real EUV (SK Hynix 1b ~4 layers, 1c ~6), so at ~4 layers that is ~10M passes",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "SK Hynix's 1c DRAM node uses approximately 6 EUV lithography layers.",
+    "judgement": "likely true",
+    "context": "The leading HBM nodes use real EUV (SK Hynix 1b ~4 layers, 1c ~6), so at ~4 layers that is ~10M passes",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "HBM consumes approximately 3 times more wafer area per GB than DDR5 memory.",
+    "judgement": "likely true",
+    "context": "(Per GB, HBM burns ~3x a DDR5 wafer.)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The five largest hyperscalers issued approximately $121 billion in bonds in 2025.",
+    "judgement": "uncertain",
+    "context": "the five hyperscalers issued ~$121B of bonds in 2025 (vs a ~$28B/yr 2020-24 norm), with BofA/JPMorgan projecting ~$175-300B in 2026",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The average annual bond issuance by the five largest hyperscalers was approximately $28 billion per year from 2020 to 2024.",
+    "judgement": "uncertain",
+    "context": "the five hyperscalers issued ~$121B of bonds in 2025 (vs a ~$28B/yr 2020-24 norm), with BofA/JPMorgan projecting ~$175-300B in 2026",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "BofA and JPMorgan projected approximately $175-300 billion in hyperscaler bond issuance for 2026.",
+    "judgement": "uncertain",
+    "context": "with BofA/JPMorgan projecting ~$175-300B in 2026",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "check_failed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "CoreWeave carries approximately 4x revenue in debt, with roughly $21 billion in debt on approximately $5 billion in revenue.",
+    "judgement": "uncertain",
+    "context": "debt-funded neoclouds like CoreWeave carry ~4x revenue in debt ($21B on ~$5B revenue)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Morgan Stanley estimated approximately $1.15 trillion of an approximately $2.9 trillion 2025-2028 AI buildout would be debt-financed.",
+    "judgement": "uncertain",
+    "context": "this Morgan Stanley podcast sees ~$1.15T of the ~$2.9T 2025-28 buildout as debt-financed",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "model_output_invalid",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Total US investment-grade bond issuance is approximately $1.5 trillion per year.",
+    "judgement": "likely true",
+    "context": "Total US investment-grade issuance is ~$1.5T/yr.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "GPT-4 has approximately 1.8 trillion parameters.",
+    "judgement": "uncertain",
+    "context": "GPT-4 ~1.8T",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "TSMC's N2 process node is priced at approximately $30,000 per wafer, representing a 10-20% increase over N3.",
+    "judgement": "uncertain",
+    "context": "TSMC ASP +5-10%/yr (N2 ~$30K, +10-20% over N3)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "TSMC's wafer average selling prices increase approximately 5-10% per year.",
+    "judgement": "likely true",
+    "context": "TSMC ASP +5-10%/yr (N2 ~$30K, +10-20% over N3), CoWoS +15-20%/yr",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "CoWoS advanced packaging costs are increasing approximately 15-20% per year.",
+    "judgement": "uncertain",
+    "context": "TSMC ASP +5-10%/yr (N2 ~$30K, +10-20% over N3), CoWoS +15-20%/yr, datacenter $/MW rising",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "ByteDance has confirmed rental of at least approximately 520,000 H100-equivalent GPU capacity abroad.",
+    "judgement": "uncertain",
+    "context": "the cumulative 2024+2025 total here (~0.7M by end-2025) sits just above the ≥~670K confirmed-rental floor (ByteDance ~520K)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Global broad logic-wafer output was approximately 30 million wafers in 2024.",
+    "judgement": "uncertain",
+    "context": "set against our estimated lithography pool (broad global logic-wafer output, ~30M wafers in 2024, a scale consistent with SEMI's 300mm capacity)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "note",
+    "statusReason": null,
+    "note": "SEMI's figure of ~30 million wafers refers to monthly capacity across ALL chip types (logic, memory, analog, etc.), not annual logic-wafer output. Annualized, 30M wafers/month equals roughly 360M wafers/year — about 12× larger than the claim implies.",
+    "sources": [
+      "https://www.semi.org/en/news-media-press-releases/semi-press-releases/global-semiconductor-capacity-projected-to-reach-record-high-30-million-wafers-per-month-in-2024-semi-reports"
+    ]
+  },
+  {
+    "claim": "ASML shipped approximately 129 ArF immersion (DUV) lithography tools at some point, about 70% of which went to China.",
+    "judgement": "uncertain",
+    "context": "~200 base + ~90 ArFi bought in 2024 (mostly NXT:1980Fi-class, 275-330 wph; 70% of ASML's 129, $5-7B)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The long-run semiconductor learning rate is approximately 16% cost reduction per doubling of cumulative production, similar to Swanson's law for solar.",
+    "judgement": "likely true",
+    "context": "We use b=0.25, about 16% per doubling, similar to the long-run semiconductor learning rate (close to Swanson's law for solar).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "ASML ships approximately 125 EUV lithography machines per year as of the current period.",
+    "judgement": "uncertain",
+    "context": "We anchor at 2029 (about 0.7 EUV passes per H100e, from §1.1) and compare against the lithography fleet on its historical path (about 620 operating machines in 2029, growing roughly 20%/yr; ASML ships about 125/yr today).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "note",
+    "statusReason": null,
+    "note": "ASML shipped ~48 EUV machines in 2025 and targets ~60 in 2026, not 125. The 125 figure matches neither EUV-only (~48–60) nor total lithography shipments (~300 including DUV) for the current period.",
+    "sources": [
+      "https://www.techpowerup.com/348239/asml-targets-60-euv-shipments-in-2026-as-memory-demand-surges",
+      "https://itdaily.com/news/business/asml-wil-60-euv-machines-produceren/"
+    ]
+  },
+  {
+    "claim": "EUV lithography machine throughput (wafers per hour) increased from roughly 125 to 220 over the period 2019 to 2024.",
+    "judgement": "likely true",
+    "context": "We also let machine throughput rise about 10%/yr, matching the historical climb in wafers-per-hour (roughly 125 to 220 over 2019 to 2024).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "TSMC had a die bank of approximately 2.9 million dies available for Chinese AI chips, as reported by SemiAnalysis.",
+    "judgement": "uncertain",
+    "context": "and a ~2.9M-die TSMC \"die bank\" (SemiAnalysis)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Nvidia shipped approximately 1 million H20 GPUs (throttled for China export) in 2024.",
+    "judgement": "uncertain",
+    "context": "~1M throttled H20s in 2024 (~0.2 H100e each); 2025 nets only ~0.15M: Q1 shipments before the April ban, a partial re-licensing from July, and Beijing discouraging purchases",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Nvidia H20 GPU has approximately 0.2 H100-equivalent performance.",
+    "judgement": "uncertain",
+    "context": "~1M throttled H20s in 2024 (~0.2 H100e each)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "note",
+    "statusReason": null,
+    "note": "The H20 performance figure of 0.2 H100-equivalent applies only to compute-bound training. In memory-bound LLM inference, the H20 can actually outperform the H100 due to its higher memory bandwidth (4.0 TB/s vs 3.4 TB/s) and larger memory capacity.",
+    "sources": [
+      "https://news.futunn.com/en/post/34012455/compared-to-the-h100-how-are-nvidia-s-h20-l20"
+    ]
+  },
+  {
+    "claim": "The Huawei Ascend 910C has approximately 0.8 H100-equivalent raw performance.",
+    "judgement": "uncertain",
+    "context": "~0.8 raw H100e/910C",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Groq and Cerebras inference chips achieve approximately 60-80x the HBM bandwidth of standard AI accelerators.",
+    "judgement": "uncertain",
+    "context": "spec bandwidth: 60x HBM (2026) → ~500x (2040). measured Groq/Cerebras ~60-80x; bandwidth binds until ~2034, then compute",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "check_failed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Volume EUV lithography production began around 2019.",
+    "judgement": "certainly true",
+    "context": "EUV exposure-passes drawn per year (the absolute view the share hides). Volume EUV begins ~2019; it's ~all phones/PCs early, AI invisible until ~2022.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "AI was essentially invisible as a consumer of EUV lithography capacity until approximately 2022.",
+    "judgement": "likely true",
+    "context": "Volume EUV begins ~2019; it's ~all phones/PCs early, AI invisible until ~2022.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Each H100-equivalent AI accelerator uses approximately 150 GB of HBM in 2025.",
+    "judgement": "likely true",
+    "context": "the 2025 fleet needs ~1.8B GB of HBM (bottom-up: ~11.7M accelerators x ~150 GB, cross-checking the ~$35B / ~2B-GB industry total).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The 2025 AI accelerator fleet consists of approximately 11.7 million accelerators.",
+    "judgement": "uncertain",
+    "context": "the 2025 fleet needs ~1.8B GB of HBM (bottom-up: ~11.7M accelerators x ~150 GB, cross-checking the ~$35B / ~2B-GB industry total).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The compute-efficiency trend in AI chip design has been approximately 1.35x per year.",
+    "judgement": "likely true",
+    "context": "The base rate (25%/yr) tracks the ~1.35x/yr compute-efficiency trend",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Bloom et al. 2020 paper introduced the 'stepping on toes' concept of diminishing returns to R&D labor.",
+    "judgement": "likely true",
+    "context": "λ is the \"stepping on toes\" adjustment (Bloom et al. 2020): a 100x research force buys far less than 100x the progress.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "SMIC produces chips at 7nm or smaller process nodes for Huawei Ascend AI accelerators using ArF immersion (DUV) lithography.",
+    "judgement": "likely true",
+    "context": "Ascend logic and CXMT memory both print on China's ArF-immersion (DUV) fleet... Ascend logic: ~5M (~1%) passes in 2026, from ~8 → 28 kwspm SMIC ≤7nm starts x ~40-60 passes/wafer (SAQP quad-patterning)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "SMIC's 7nm-class DUV process requires approximately 40-60 lithography exposure passes per wafer due to SAQP quad-patterning.",
+    "judgement": "likely true",
+    "context": "Ascend logic: ~8 → 28 kwspm SMIC ≤7nm starts x ~40-60 passes/wafer (SAQP quad-patterning)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "CXMT is the Chinese memory manufacturer ramping HBM production capacity for domestic AI chips.",
+    "judgement": "likely true",
+    "context": "Domestic is HBM-bound; see the recent SemiAnalysis CXMT piece... CXMT HBM capacity (kwspm starts)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The SemiAnalysis report projects CXMT to reach approximately 12% of global HBM wafer supply by 2028.",
+    "judgement": "uncertain",
+    "context": "This is optimistic: we take CXMT's HBM ramp at face value (the SemiAnalysis CXMT piece projects it to ~12% of global HBM wafer supply by 2028)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Anthropic has recently experienced approximately 10x year-over-year annualized revenue run-rate growth.",
+    "judgement": "likely true",
+    "context": "Broadly speaking we expect Anthropic's recent ~10x/yr ARR trend to slow down as they become the leading AI company in terms of revenue",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Nvidia A100 GPU has a TPP of 4,992.",
+    "judgement": "uncertain",
+    "context": "metric\tcutoff\tA100\tH100\tRTX 4090\ncompute\t4,000 TPP\t4,992\t15,800\t5,285",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In 2024, annual capital expenditure per H100-equivalent of AI compute added was approximately $51,000.",
+    "judgement": "uncertain",
+    "context": "2024/25 are observed (annual capex / H100e added: ~$51K, ~$33K). For 2026-28 we take the ~1.4x/yr price-performance trend",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "bot_error",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In 2025, annual capital expenditure per H100-equivalent of AI compute added was approximately $33,000.",
+    "judgement": "uncertain",
+    "context": "2024/25 are observed (annual capex / H100e added: ~$51K, ~$33K).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "An 800mm² reticle-limit die yields approximately 64-72 gross dies per 300mm wafer.",
+    "judgement": "likely true",
+    "context": "H100e per wafer (known, ~28 → ~98). An ~800mm² reticle-limit die yields ~64-72 gross dies per 300mm wafer, ~42 good at ~70% yield",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Nesov forecast assumes approximately 200 trillion tokens of unique training data exist.",
+    "judgement": "uncertain",
+    "context": "But he assumes only ~200T tokens of unique data exist, an 8.5x shortfall",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "ASML shipped approximately 48 EUV tools in 2025.",
+    "judgement": "uncertain",
+    "context": "the fleet does ~100M passes/yr in 2025, growing to ~220M by 2029 as ASML's EUV shipments accelerate (~48 in 2025 toward ~120/yr by 2029).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The foundry cost of a leading-edge wafer is approximately $25,000-$30,000.",
+    "judgement": "likely true",
+    "context": "the level also checks against a bottom-up build-up (foundry ~$25-30K + HBM ~$50-70K + CoWoS ~$10-15K, with a ~4-5x chip-designer markup giving a ~$400-500K accelerator",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The HBM memory component cost per AI accelerator package is approximately $50,000-$70,000.",
+    "judgement": "uncertain",
+    "context": "foundry ~$25-30K + HBM ~$50-70K + CoWoS ~$10-15K, with a ~4-5x chip-designer markup giving a ~$400-500K accelerator",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "CoWoS advanced packaging cost per AI accelerator is approximately $10,000-$15,000.",
+    "judgement": "uncertain",
+    "context": "foundry ~$25-30K + HBM ~$50-70K + CoWoS ~$10-15K, with a ~4-5x chip-designer markup giving a ~$400-500K accelerator",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "AI chip designers apply approximately a 4-5x markup on manufacturing costs, resulting in an approximately $400,000-$500,000 accelerator.",
+    "judgement": "uncertain",
+    "context": "with a ~4-5x chip-designer markup giving a ~$400-500K accelerator, and the remaining ~$0.7-1.1M being the non-chip buildout: datacenters, power, land, networking",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Non-chip buildout costs (datacenters, power, land, networking) add approximately $700,000-$1,100,000 per AI accelerator in the all-in cost.",
+    "judgement": "uncertain",
+    "context": "the remaining ~$0.7-1.1M being the non-chip buildout: datacenters, power, land, networking",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "note",
+    "statusReason": null,
+    "note": "At hyperscale, non-chip buildout cost per GPU is roughly $10K–$18K for facilities (at ~$20M/MW and 0.7 kW/GPU). Even small 100-GPU clusters show ~$56K non-chip cost per accelerator — far below the $700K–$1.1M claimed here.",
+    "sources": [
+      "https://www.coradvisors.net/2026/06/ai-data-center-development-costs-2026.html",
+      "https://introl.com/blog/gpu-infrastructure-tco-5-year-cost-model"
+    ]
+  },
+  {
+    "claim": "China had a base of approximately 200 ArF immersion DUV lithography tools before 2024 purchases.",
+    "judgement": "uncertain",
+    "context": "DUV immersion fleet... Fleet (tools): ~290 (2026), ~400 (2028). Basis: ~200 base + ~90 ArFi bought in 2024",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "model_output_invalid",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "China purchased approximately 90 ArF immersion DUV lithography tools in 2024, mostly NXT:1980Fi-class with 275-330 wafers per hour throughput.",
+    "judgement": "uncertain",
+    "context": "~200 base + ~90 ArFi bought in 2024 (mostly NXT:1980Fi-class, 275-330 wph; 70% of ASML's 129, $5-7B)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "China spent approximately $5-7 billion on ArF immersion DUV lithography tool purchases in 2024.",
+    "judgement": "uncertain",
+    "context": "~90 ArFi bought in 2024 (mostly NXT:1980Fi-class, 275-330 wph; 70% of ASML's 129, $5-7B)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Non-AI CPU servers score approximately 1.4 on the usefulness factor U, because they carry lots of memory and networking relative to their compute.",
+    "judgement": "uncertain",
+    "context": "Hardware that is memory-rich and well-networked for its FLOP/s can score above 1 (non-AI CPU servers, which carry lots of memory and networking around relatively little compute, score ~1.4), and e.g., compute with poor networking abilities (like gaming GPUs and phones) scores below one.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Nvidia H100 GPU has a Total Processing Performance (TPP) of 15,800.",
+    "judgement": "uncertain",
+    "context": "Resource\tWhat it does\tH100 (per H100e)\nCompute (TPP)\tthe math throughput itself (defines the unit)\t15,800 TPP",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "check_failed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "AI hardware cost-efficiency (H100e per dollar) has been improving at around 1.4x per year.",
+    "judgement": "uncertain",
+    "context": "The AI capital expenditure trend has been ~1.72x/yr through Q3 2023 to Q4 2025, while cost-efficiency (H100e per dollar) has been improving around 1.4x/yr.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The AI capital expenditure trend was approximately 1.72x per year from Q3 2023 to Q4 2025.",
+    "judgement": "uncertain",
+    "context": "The AI capital expenditure trend has been ~1.72x/yr through Q3 2023 to Q4 2025, while cost-efficiency (H100e per dollar) has been improving around 1.4x/yr.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In 2025, 13.6 million H100e were added based on $448 billion in AI spending, according to Epoch AI data.",
+    "judgement": "uncertain",
+    "context": "2024/25 are actual Epoch data (AI Chip Sales: 5.09M H100e added on $260B spending in 2024, 13.6M from $448B in 2025).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Total annual revenue (ARR) across frontier AI companies was approximately $30 billion at the start of 2026.",
+    "judgement": "uncertain",
+    "context": "AI cash flow to follow a total ARR (across frontier AI companies) of $30B (start-2026) → $180B → $500B → $1T (start-2029), with 80% of the recognized revenue counted as additional compute spend.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Epoch's hyperscaler Broad CapEx figures are $260 billion for 2024 and $448 billion for 2025.",
+    "judgement": "uncertain",
+    "context": "Total AI capex = Epoch's hyperscaler Broad CapEx directly ($260B / $448B for 2024/25). We think hyperscalers are ~60–90% of global spend and ~60–90% of their capex is AI, so we assume the two roughly cancel as a simplifying assumption.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "ASML shipped 54 EUV tools in 2022.",
+    "judgement": "uncertain",
+    "context": "we estimate ASML had ~127 EUV tools in use at end-2021, then shipped 54/42 in 2022/23, per ASML's annual reports; the full build-up with sources is in the details box below",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The historical rate of compute cost-efficiency improvement has been approximately 1.4x per year.",
+    "judgement": "uncertain",
+    "context": "Applying this surcharge to the naive price-performance trend gives an updated compute cost-efficiency trend that averages ~1.25x/yr from 2025-2028 (and slows to just ~1.1x/yr by 2028 as the surcharge bites) instead of the historical ~1.4x/yr.",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Immersion (DUV) lithography utilization was approximately 20% in 2024.",
+    "judgement": "uncertain",
+    "context": "EUV pass pool (M/yr)\t2024\t2028\n...\nEUV utilization\t52%\t100%\nimmersion (DUV) utilization\t20%\t25%",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Approximately 13.6 million H100-equivalents of AI compute were added in 2025.",
+    "judgement": "uncertain",
+    "context": "H100e added is annual capex × cost-efficiency (anchored to the 2024/25 actuals 5.09M, 13.6M, then forecast)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The H200 is available for export to China under the current licensing policy as of the time of writing.",
+    "judgement": "uncertain",
+    "context": "legal imports (export-compliant chips: e.g., H20s historically, H200 under the current licensing policy)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "CXMT manufactures HBM (High Bandwidth Memory) for China's domestic AI compute supply.",
+    "judgement": "uncertain",
+    "context": "The fourth is domestically manufactured chips (SMIC 7nm logic / CXMT HBM / Ascend).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Approximately 30 billion microcontrollers, automotive, and edge devices were shipped in 2024.",
+    "judgement": "uncertain",
+    "context": "Shipments (M units/yr)\t2015\t2018\t2020\t2022\t2024\n...\nother\t12K\t20K\t24K\t28K\t30K",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The article estimates China's AI compute stock at the end of 2024 at 1.3 million H100 equivalents.",
+    "judgement": "uncertain",
+    "context": "→ China stock (end of year) 1.3M 2.9M 6.3M 13.2M 25.9M → China % of world 14.7% 13.1% 11.1% 9.7% 9.0%",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Google owns approximately 25% of global AI compute.",
+    "judgement": "uncertain",
+    "context": "Early on most compute is owned by hyperscalers in a concentrated way (Google owns ~25% of compute) but the AI company end-users are less concentrated, with the largest using around 10% of global compute in 2026",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The model projects that the AI fleet's usefulness adjustment per unit of raw compute is 1.16 in 2024 and drifts down to 1.02 by 2029.",
+    "judgement": "uncertain",
+    "context": "effective per raw (U) 2024: AI 1.16, 2026: 1.06, 2028: 1.04, 2029: 1.02",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Jones model for R&D uses a base rate of 25% per year for chip design improvement.",
+    "judgement": "uncertain",
+    "context": "so we model compute power efficiency on the same Jones design trend as the cost model above, using the same parameters (25%/yr base rate, stepping-on-toes λ=0.05)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Non-AI servers have the highest usefulness adjustment U in the model's projections, scoring approximately 1.38–1.41 from 2024 to 2029.",
+    "judgement": "uncertain",
+    "context": "effective per raw (U) non-AI servers: 2024 1.38, 2026 1.40, 2028 1.41, 2029 1.40. Note that U is measured per unit of raw compute, which is why non-AI servers score highest",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "AI accelerators consumed approximately 0.4 million leading-edge wafers in 2025.",
+    "judgement": "uncertain",
+    "context": "AI accelerators take ~0.4M leading-edge wafers in 2025, roughly ~12% of TSMC's ~3M ≤5nm wafers (Epoch's direct estimate; Blackwell on N4, Nvidia only now ramping into N3).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "SK Hynix has approximately 170,000 wafers per month of HBM TSV/back-end capacity in 2025.",
+    "judgement": "uncertain",
+    "context": "Reported 2025 HBM TSV/back-end capacity is ~400k wafers/month (SK Hynix ~170k + Samsung ~165k + Micron ~60k, TrendForce)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "note",
+    "statusReason": null,
+    "note": "TrendForce reports clarify that Samsung reached 170k HBM TSV capacity by the end of 2025, while SK hynix peaked at 150k. The 170k target was attributed to Samsung in TrendForce analysis, while SK hynix was leading with 150k capacity in late 2025.",
+    "sources": [
+      "https://www.trendforce.com/research/download/RP251029MY",
+      "https://www.trendforce.com/presscenter/news/20240930-12319.html"
+    ]
+  },
+  {
+    "claim": "An EUV lithography tool produces approximately 360,000 effective exposure passes per year.",
+    "judgement": "uncertain",
+    "context": "Netting these out gives ~360,000 effective passes/tool/yr (the naive 160 wph x 8,760 h ≈ 1.1-1.4M is 3-4x too high). Two back-calculations agree: Frederick Chen (<50 wph effective) and SemiAnalysis (~1,500 wafers/mo x ~20 exposures).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "A 24Gb-die DRAM wafer holds approximately 1,400 GB gross.",
+    "judgement": "uncertain",
+    "context": "a 24Gb-die DRAM wafer holds ~1,400 GB gross, and after ~57% core+stacking (KGSD/TSV) yield and ~88% CoWoS-assembly yield only ~700 net GB ship per started wafer",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Samsung supplied approximately 11.4 million HBM stacks to Chinese firms from a foreign HBM stockpile, enough for approximately 1.6 million Ascend 910C equivalents.",
+    "judgement": "uncertain",
+    "context": "drawing a one-time foreign-HBM stockpile (~13M stacks, mostly Samsung ~11.4M ≈ 1.6M 910C)",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Epoch AI's observed dataset of largest tracked AI datacenter sites covers approximately 15% of global AI compute as of late 2025.",
+    "judgement": "uncertain",
+    "context": "These concentration shares are hand-picked and uncertain, adjusted up from Epoch's observed current dataset on the assumption that it does not have full coverage of frontier clusters (its largest tracked sites cover ~15% of global AI compute as of late 2025).",
+    "contextUrl": "https://ai-2040.com/supplements/compute-supplement",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  }
+]
