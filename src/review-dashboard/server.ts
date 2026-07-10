@@ -9,7 +9,6 @@ import {
   TWEET_LIST_COLS,
   PUBLIC_DUMP_RATING_COLS,
 } from "../dashboard-shared/productionView";
-import { VIDEO_PROXY_PATH, fetchProxiedVideo } from "../dashboard-shared/videoProxy";
 
 dotenv.config({ path: join(process.cwd(), ".env") });
 
@@ -97,10 +96,6 @@ serve({
   port: PORT,
   async fetch(req) {
     const url = new URL(req.url);
-
-    if (url.pathname === VIDEO_PROXY_PATH) {
-      return fetchProxiedVideo(url.searchParams.get("url"), req.headers.get("range"));
-    }
 
     // Serve static files from dist
     if (url.pathname !== "/" && url.pathname !== "/index.html") {
