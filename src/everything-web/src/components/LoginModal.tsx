@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { signInWithEmail, signInWithTwitter } from "../lib/auth";
 
-// Prod has no X OAuth secrets yet — clicking would just error. Flip when
-// TWITTER_CLIENT_ID / SUPABASE_AUTH_EXTERNAL_TWITTER_SECRET are set on prod.
-const X_SIGNIN_ENABLED = false;
+const X_SIGNIN_ENABLED = true;
 
 export function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [email, setEmail] = useState("");
