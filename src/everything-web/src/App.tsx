@@ -42,16 +42,25 @@ export function App() {
     else setMyVotes(new Map());
   }, [session?.user.id]);
 
-  const notesByItem = useMemo(() => {
-    const map = new Map<string, NoteRow[]>();
+  // AI notes drive the cards; user drafts hang off their claim.
+  const { notesByItem, draftsByClaim } = useMemo(() => {
+    const byItem = new Map<string, NoteRow[]>();
+    const drafts = new Map<string, NoteRow[]>();
     for (const note of notes.values()) {
+      if (note.author_id) {
+        const list = drafts.get(note.claim_id) ?? [];
+        list.push(note);
+        list.sort((a, b) => a.created_at.localeCompare(b.created_at));
+        drafts.set(note.claim_id, list);
+        continue;
+      }
       const itemId = note.claim?.item_id;
       if (!itemId) continue;
-      const list = map.get(itemId) ?? [];
+      const list = byItem.get(itemId) ?? [];
       list.push(note);
-      map.set(itemId, list);
+      byItem.set(itemId, list);
     }
-    return map;
+    return { notesByItem: byItem, draftsByClaim: drafts };
   }, [notes]);
 
   const suggestionsByNote = useMemo(() => {
@@ -158,9 +167,10 @@ export function App() {
             <NoteCard
               key={note.id}
               note={note}
+              draftNotes={draftsByClaim.get(note.claim_id) ?? []}
               projectSlug={selected?.slug ?? ""}
               suggestions={suggestionsByNote.get(note.id) ?? []}
-              myVote={myVotes.get(note.id)}
+              myVotes={myVotes}
               onVote={handleVote}
               session={session}
               onNeedLogin={() => setLoginOpen(true)}
