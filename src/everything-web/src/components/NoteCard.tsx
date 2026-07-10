@@ -1,14 +1,13 @@
 import { useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { ContentCard } from "../../../dashboard-shared/TweetCard";
-import { OurNoteCard } from "../../../dashboard-shared/OurNoteCard";
+import { LinkifiedText } from "../../../dashboard-shared/LinkifiedText";
 import { VoteRatings } from "../../../dashboard-shared/Ratings";
 import type { NotedContent } from "../../../dashboard-shared/types";
 import type { ClaimRef, NoteRow, SuggestionRow } from "../lib/types";
 import type { Vote } from "../lib/votes";
 import { noteUrl } from "../lib/routing";
 import { ImproveNote } from "./ImproveNote";
-import { WriteNote } from "./WriteNote";
 import { supabase } from "../lib/supabase";
 
 /** Six-second draining circle shown right after a vote: the note holds its
@@ -59,12 +58,12 @@ function claimContent(claim: ClaimRef): NotedContent {
 
 /** The claim's surrounding paragraph, with the quoted excerpt bolded. Shown
  *  beside the note card so the correction can be read in its original context. */
-function ContextParagraph({ paragraph, quote }: { paragraph: string; quote: string }) {
+function ContextParagraph({ paragraph, quote, bare }: { paragraph: string; quote: string; bare?: boolean }) {
   const [expanded, setExpanded] = useState(false);
   const clampable = paragraph.length > 700;
   const idx = paragraph.toLowerCase().indexOf(quote.toLowerCase());
   return (
-    <div className="text-sm text-gray-600 leading-relaxed border-l-4 border-gray-200 pl-3">
+    <div className={`text-sm text-gray-600 leading-relaxed ${bare ? "" : "border-l-4 border-gray-200 pl-3"}`}>
       <div
         style={clampable && !expanded
           ? { display: "-webkit-box", WebkitLineClamp: 14, WebkitBoxOrient: "vertical", overflow: "hidden" }
@@ -89,26 +88,26 @@ function ContextParagraph({ paragraph, quote }: { paragraph: string; quote: stri
   );
 }
 
-/** CN-style status derived live from the vote counts (no stored status):
- *  under 5 ratings a note is still collecting; past that the weighted score
- *  (somewhat = 0.5) decides. */
-function RatingStatusBadge({ note }: { note: NoteRow }) {
-  const total = note.helpful_count + note.somewhat_helpful_count + note.not_helpful_count;
-  let label = "Draft · collecting ratings";
-  let cls = "bg-gray-100 text-gray-600 border-gray-200";
-  if (total >= 5) {
-    const score = (note.helpful_count + 0.5 * note.somewhat_helpful_count) / total;
-    if (score >= 0.6) {
-      label = "Rated helpful";
-      cls = "bg-green-100 text-green-800 border-green-200";
-    } else if (score < 0.4) {
-      label = "Rated not helpful";
-      cls = "bg-red-100 text-red-800 border-red-200";
-    } else {
-      label = "Needs more ratings";
-    }
-  }
-  return <span className={`text-xs px-2 py-0.5 rounded-full border ${cls}`}>{label}</span>;
+/** The note as one self-contained unit, X-CN style: a status header on top,
+ *  the note text, and the rating pills inside the same box. Blue = locked
+ *  ("real") note, transparent purple = draft still collecting ratings. */
+function NoteBox({ noteText, locked, header, children }: {
+  noteText: string;
+  locked: boolean;
+  header: string;
+  children?: React.ReactNode;
+}) {
+  const boxCls = locked ? "bg-blue-50 border-blue-100" : "bg-purple-100/40 border-purple-200";
+  return (
+    <div className={`rounded-lg p-3 border ${boxCls}`}>
+      <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 mb-2">
+        <span aria-hidden>👥</span>
+        <span>{header}</span>
+      </div>
+      <LinkifiedText className="text-sm text-gray-800 whitespace-pre-wrap" text={noteText} />
+      {children && <div className="mt-3 flex items-center flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">{children}</div>}
+    </div>
+  );
 }
 
 /** A user-written draft note: attributed, votable, deletable by its author. */
@@ -124,30 +123,25 @@ function DraftNote({ note, myVote, onVote, session, holdActive }: {
     await supabase.from("everything_notes").delete().eq("id", note.id);
   };
   return (
-    <div className="border border-dashed border-gray-300 rounded-lg p-3 space-y-2">
-      <div className="flex items-center justify-between gap-2 text-xs text-gray-500">
-        <span>
-          Draft note by <span className="font-medium text-gray-700">{note.author_name ?? "anonymous"}</span>
-        </span>
-        <RatingStatusBadge note={note} />
-      </div>
-      <OurNoteCard noteText={note.note} className="bg-white border-gray-200" />
-      <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
-        <VoteRatings
-          helpful={note.helpful_count}
-          somewhatHelpful={note.somewhat_helpful_count}
-          notHelpful={note.not_helpful_count}
-          myVote={myVote}
-          onVote={(vote) => onVote(note, vote)}
-        />
-        {holdActive && <ResortCountdown />}
-        {mine && (
-          <button onClick={remove} className="text-xs text-gray-400 hover:text-red-600 hover:underline">
-            Delete
-          </button>
-        )}
-      </div>
-    </div>
+    <NoteBox
+      noteText={note.note}
+      locked={false}
+      header={`Draft note by ${note.author_name ?? "anonymous"} · collecting ratings`}
+    >
+      <VoteRatings
+        helpful={note.helpful_count}
+        somewhatHelpful={note.somewhat_helpful_count}
+        notHelpful={note.not_helpful_count}
+        myVote={myVote}
+        onVote={(vote) => onVote(note, vote)}
+      />
+      {holdActive && <ResortCountdown />}
+      {mine && (
+        <button onClick={remove} className="text-xs text-gray-400 hover:text-red-600 hover:underline">
+          Delete
+        </button>
+      )}
+    </NoteBox>
   );
 }
 
@@ -166,6 +160,7 @@ export function NoteCard({ note, locked, draftNotes, projectSlug, suggestions, m
   onNeedLogin: () => void;
 }) {
   const myVote = myVotes.get(note.id);
+  const [ctxOpen, setCtxOpen] = useState(false);
   const claim = note.claim;
   // An accepted community improvement replaces the note text in the UI only
   // (the DB note is untouched). Newest accepted edit wins.
@@ -179,6 +174,9 @@ export function NoteCard({ note, locked, draftNotes, projectSlug, suggestions, m
   const noteText = note.sources.length > 0 ? `${noteBody} ${note.sources.join(" ")}` : noteBody;
 
   const paragraph = claim?.context_paragraph;
+  const header = locked
+    ? "Common Notes users thought this was something you wanted to see"
+    : "Draft note · collecting ratings";
   return (
     <div id={`note-${note.id}`} className="scroll-mt-4 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,36rem)_minmax(0,1fr)] xl:gap-5 items-start">
       {paragraph && claim && (
@@ -186,33 +184,48 @@ export function NoteCard({ note, locked, draftNotes, projectSlug, suggestions, m
           <ContextParagraph paragraph={paragraph} quote={claim.context_quote} />
         </div>
       )}
+      {paragraph && claim && (
+        <div
+          className="xl:hidden w-full max-w-xl mx-auto"
+          style={{ display: "grid", gridTemplateRows: ctxOpen ? "1fr" : "0fr", transition: "grid-template-rows 300ms ease" }}
+          aria-hidden={!ctxOpen}
+        >
+          <div className="overflow-hidden min-h-0">
+            <div className="mb-2">
+              <ContextParagraph paragraph={paragraph} quote={claim.context_quote} bare />
+            </div>
+          </div>
+        </div>
+      )}
       <div className="bg-white rounded-lg border border-gray-200 p-4 w-full max-w-xl mx-auto xl:max-w-none xl:mx-0 xl:col-start-2 xl:row-start-1">
       {claim && (
         <div className="mb-3">
-          <ContentCard content={claimContent(claim)} />
           {paragraph && (
-            <details className="xl:hidden mt-2">
-              <summary className="text-xs text-blue-600 cursor-pointer select-none">Show surrounding context</summary>
-              <div className="mt-2">
-                <ContextParagraph paragraph={paragraph} quote={claim.context_quote} />
-              </div>
-            </details>
+            <button
+              onClick={() => setCtxOpen((o) => !o)}
+              className="xl:hidden text-xs text-blue-600 hover:underline mb-2"
+            >
+              {ctxOpen ? "Hide surrounding context" : "Show surrounding context"}
+            </button>
           )}
+          <ContentCard content={claimContent(claim)} />
         </div>
       )}
 
-      <OurNoteCard noteText={noteText} className={locked ? "mb-3" : "!bg-purple-100/40 !border-purple-200 mb-3"} />
+      <div className="mb-2">
+        <NoteBox noteText={noteText} locked={locked} header={header}>
+          <VoteRatings
+            helpful={note.helpful_count}
+            somewhatHelpful={note.somewhat_helpful_count}
+            notHelpful={note.not_helpful_count}
+            myVote={myVote}
+            onVote={(vote) => onVote(note, vote)}
+          />
+          {voteHolds.has(note.id) && <ResortCountdown key={`${note.helpful_count}-${note.somewhat_helpful_count}-${note.not_helpful_count}`} />}
+        </NoteBox>
+      </div>
 
       <div className="mb-2 flex items-center flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
-        <RatingStatusBadge note={note} />
-        <VoteRatings
-          helpful={note.helpful_count}
-          somewhatHelpful={note.somewhat_helpful_count}
-          notHelpful={note.not_helpful_count}
-          myVote={myVote}
-          onVote={(vote) => onVote(note, vote)}
-        />
-        {voteHolds.has(note.id) && <ResortCountdown key={`${note.helpful_count}-${note.somewhat_helpful_count}-${note.not_helpful_count}`} />}
         <ImproveNote noteId={note.id} session={session} onNeedLogin={onNeedLogin} />
         <ShareButton projectSlug={projectSlug} noteId={note.id} />
       </div>
@@ -224,7 +237,6 @@ export function NoteCard({ note, locked, draftNotes, projectSlug, suggestions, m
           ))}
         </div>
       )}
-      {claim && <WriteNote claimId={claim.id} session={session} onNeedLogin={onNeedLogin} />}
       </div>
     </div>
   );

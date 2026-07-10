@@ -27,13 +27,14 @@ function AuthCorner({ session, onSignIn, onSignOut }: {
   );
 }
 import { LoginModal } from "./components/LoginModal";
+import { WriteNoteModal } from "./components/WriteNoteModal";
 import { NoteCard } from "./components/NoteCard";
 import type { NoteRow, SuggestionRow } from "./lib/types";
 
 // Alpha gate: Nathan doesn't want people looking yet. Client-side only —
 // keeps casual visitors and crawlers out, not a security boundary. Remove
 // (or flip GATE_ENABLED) at launch.
-const GATE_ENABLED = true;
+const GATE_ENABLED = window.location.hostname !== "localhost";
 const GATE_PHRASE = "goodheart";
 
 function AlphaGate({ onPass }: { onPass: () => void }) {
@@ -74,6 +75,7 @@ export function App() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [myVotes, setMyVotes] = useState<Map<string, Vote>>(new Map());
   const [loginOpen, setLoginOpen] = useState(false);
+  const [writeOpen, setWriteOpen] = useState(false);
   // After a vote, hold the note's list position briefly (misclick grace) —
   // maps note id → its fold side at vote time. Cleared by a timer, then the
   // live counts decide again.
@@ -253,7 +255,15 @@ export function App() {
       <main className="flex-1 max-w-3xl md:max-w-[96rem] mx-auto px-4 md:px-8 py-8 w-full">
         <div className="flex items-center justify-between gap-4 mb-6">
           <h2 className="text-2xl font-bold">{selected?.name ?? ""}</h2>
-          <AuthCorner session={session} onSignIn={() => setLoginOpen(true)} onSignOut={() => signOut()} />
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => (session ? setWriteOpen(true) : setLoginOpen(true))}
+              className="bg-blue-600 text-white rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-blue-700 shrink-0"
+            >
+              Write a note
+            </button>
+            <AuthCorner session={session} onSignIn={() => setLoginOpen(true)} onSignOut={() => signOut()} />
+          </div>
         </div>
         {!loaded && <p className="text-gray-400">Loading…</p>}
         {loaded && projectNotes.length === 0 && (
@@ -327,6 +337,14 @@ export function App() {
       </main>
 
       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
+      {session && (
+        <WriteNoteModal
+          open={writeOpen}
+          onClose={() => setWriteOpen(false)}
+          claims={orderedNotes.map((n) => n.claim).filter((c): c is NonNullable<typeof c> => !!c)}
+          session={session}
+        />
+      )}
     </div>
   );
 }
