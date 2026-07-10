@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { NotedContent, Tweet } from "./types";
 import { extractMedia, type MediaImage, type MediaVideo } from "./media";
-import { sourceLinkLabel } from "./sourceLabel";
 
 function MediaBlock({ images, videos }: { images: MediaImage[]; videos: MediaVideo[] }) {
   if (images.length === 0 && videos.length === 0) return null;
@@ -33,6 +32,20 @@ function MediaBlock({ images, videos }: { images: MediaImage[]; videos: MediaVid
       )}
     </>
   );
+}
+
+// "View on <domain>" label: nicer names for the common hosts, bare hostname
+// otherwise.
+function sourceLinkLabel(url: string): string {
+  let host: string;
+  try {
+    host = new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return "source";
+  }
+  if (host === "x.com" || host === "twitter.com") return "X";
+  if (host === "youtube.com" || host === "youtu.be") return "YouTube";
+  return host;
 }
 
 export function TweetCard({ tweet }: { tweet: Tweet }) {

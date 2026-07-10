@@ -58,7 +58,11 @@ export function NoteCard({ note, projectSlug, suggestions, myVote, onVote, sessi
   const latestImprovement = suggestions
     .filter((s) => s.status === "accepted")
     .sort((a, b) => b.created_at.localeCompare(a.created_at))[0];
-  const noteText = latestImprovement?.suggested_text ?? note.note;
+  // Common Notes stores citations in a separate column; the X pipeline keeps
+  // them inline in the note text. Append them so they render as linkified URLs
+  // exactly like the review/stats dashboards.
+  const noteBody = latestImprovement?.suggested_text ?? note.note;
+  const noteText = note.sources.length > 0 ? `${noteBody} ${note.sources.join(" ")}` : noteBody;
 
   return (
     <div id={`note-${note.id}`} className="bg-white rounded-lg border border-gray-200 p-4 scroll-mt-4">
@@ -68,7 +72,7 @@ export function NoteCard({ note, projectSlug, suggestions, myVote, onVote, sessi
         </div>
       )}
 
-      <OurNoteCard noteText={noteText} sources={note.sources} className="mb-3" />
+      <OurNoteCard noteText={noteText} className="mb-3" />
 
       <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
         <VoteRatings
