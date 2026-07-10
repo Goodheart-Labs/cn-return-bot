@@ -77,6 +77,7 @@ export function NoteCard({ note, projectSlug, suggestions, myVote, onVote, sessi
       <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
         <VoteRatings
           helpful={note.helpful_count}
+          somewhatHelpful={note.somewhat_helpful_count}
           notHelpful={note.not_helpful_count}
           myVote={myVote}
           onVote={(vote) => onVote(note, vote)}

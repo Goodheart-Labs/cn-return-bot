@@ -1,6 +1,7 @@
+import type { VoteValue } from "../../../dashboard-shared/Ratings";
 import { supabase } from "./supabase";
 
-export type Vote = 1 | -1;
+export type Vote = VoteValue;
 
 /** The signed-in user's own votes (RLS returns only their rows). */
 export async function fetchMyVotes(): Promise<Map<string, Vote>> {
