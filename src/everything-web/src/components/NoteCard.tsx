@@ -201,7 +201,7 @@ export function NoteCard({ note, locked, draftNotes, projectSlug, suggestions, m
         </div>
       )}
 
-      <OurNoteCard noteText={noteText} className={locked ? "mb-3" : "!bg-amber-50 !border-amber-100 mb-3"} />
+      <OurNoteCard noteText={noteText} className={locked ? "mb-3" : "!bg-purple-100/40 !border-purple-200 mb-3"} />
 
       <div className="mb-2 flex items-center flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
         <RatingStatusBadge note={note} />
