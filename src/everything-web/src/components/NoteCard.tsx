@@ -68,7 +68,7 @@ export function NoteCard({ note, projectSlug, suggestions, myVote, onVote, sessi
         </div>
       )}
 
-      <OurNoteCard noteText={noteText} className="mb-3" />
+      <OurNoteCard noteText={noteText} sources={note.sources} className="mb-3" />
 
       <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
         <VoteRatings
