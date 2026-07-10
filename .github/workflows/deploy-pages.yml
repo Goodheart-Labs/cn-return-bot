@@ -70,6 +70,19 @@ jobs:
           cp -r src/stats-dashboard/dist/. site/
           cp -r src/everything-web/dist/. site/notes/
 
+      - name: Build everything SPA at root path (commonnotes.net)
+        run: cd src/everything-web && bunx vite build
+        env:
+          BASE_PATH: /
+          VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
+      - name: Deploy commonnotes.net (Cloudflare Pages)
+        run: bunx wrangler pages deploy src/everything-web/dist --project-name=commonnotes --branch=main --commit-dirty=true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
