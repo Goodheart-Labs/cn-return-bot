@@ -1,0 +1,1292 @@
+[
+  {
+    "claim": "AI 2040: Plan A was authored by Thomas Larsen, Romeo Dean, Brendan Halstead, Eli Lifland, Ryan Greenblatt, and Daniel Kokotajlo.",
+    "judgement": "likely true",
+    "context": "Thomas Larsen, Romeo Dean, Brendan Halstead, Eli Lifland, Ryan Greenblatt, Daniel Kokotajlo",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "AI 2027 was a previous scenario by the same group that predicted AI development would result in either extinction or irreversible concentration of power.",
+    "judgement": "likely true",
+    "context": "In AI 2027, we predicted that this would result in either extinction or irreversible concentration of power.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Plan A recommends that humanity delay the development of superintelligence until 2040.",
+    "judgement": "certainly true",
+    "context": "In this scenario, humanity delays the development of superintelligence until 2040, makes all AI research public, allows dozens of companies globally to catch up to the frontier, and intentionally enters a regime of mutually assured compute destruction.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Plan A recommends making all AI research public.",
+    "judgement": "certainly true",
+    "context": "In this scenario, humanity delays the development of superintelligence until 2040, makes all AI research public, allows dozens of companies globally to catch up to the frontier, and intentionally enters a regime of mutually assured compute destruction.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Plan A is informed by conversations with experts at major U.S. frontier AI companies.",
+    "judgement": "likely true",
+    "context": "It's informed by conversations with experts at major U.S. frontier AI companies, direct experience at OpenAI, tabletop exercises, and discussions with policymakers, national security experts, and AI policy leaders.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "At least one of the authors of Plan A has direct experience working at OpenAI.",
+    "judgement": "certainly true",
+    "context": "It's informed by conversations with experts at major U.S. frontier AI companies, direct experience at OpenAI, tabletop exercises, and discussions with policymakers, national security experts, and AI policy leaders.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The quote 'Plans are worthless, but planning is everything' is attributed to Dwight D. Eisenhower.",
+    "judgement": "certainly true",
+    "context": "\"Plans are worthless, but planning is everything.\" - Dwight D. Eisenhower",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Intelligence agencies, climate bodies, and pandemic-preparedness offices all rely on various kinds of scenario planning.",
+    "judgement": "certainly true",
+    "context": "There are other precedents as well: intelligence agencies, climate bodies, and pandemic-preparedness offices all rely on various kinds of scenario planning.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The U.S. military games out Taiwan scenarios in excruciating detail.",
+    "judgement": "likely true",
+    "context": "Yet it is still valuable to attempt, just as it is valuable for the U.S. military to game out Taiwan scenarios in excruciating detail.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "In the AI 2027 scenario, AI fully automated the process of building smarter AIs in 2027, leading to an intelligence explosion and superintelligence within that year.",
+    "judgement": "likely true",
+    "context": "In our previous scenario, AI 2027, AI fully automated the process of building smarter AIs in 2027, leading to an intelligence explosion and superintelligence within the year.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "AI 2027's titular year was chosen because Daniel Kokotajlo thought there was roughly a 50% chance that things would go that fast or faster at the time the team started writing AI 2027.",
+    "judgement": "likely true",
+    "context": "AI 2027's titular year was chosen because, at the time we started writing, Daniel thought there was roughly a 50% chance that things would go that fast or faster.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "At the time the team started writing Plan A, 2030 was Thomas Larsen's corresponding median year for when AI could fully automate AI R&D by default.",
+    "judgement": "likely true",
+    "context": "At the time we started writing Plan A, 2030 was the corresponding year for Thomas.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The US civilian labor force is approximately 165 million people.",
+    "judgement": "likely true",
+    "context": "America has two workforces now. The first is people, 165 million of them.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "In 2016, OpenAI emails discussed how OpenAI was founded in order to prevent Demis Hassabis from becoming a dictator.",
+    "judgement": "likely true",
+    "context": "They read the 2016 OpenAI emails discussing how OpenAI was founded in order to prevent Demis Hassabis from becoming dictator.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Demis Hassabis is the person referenced in internal OpenAI emails from 2016 as someone whose potential dominance OpenAI was founded to prevent.",
+    "judgement": "likely true",
+    "context": "They read the 2016 OpenAI emails discussing how OpenAI was founded in order to prevent Demis Hassabis from becoming dictator.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Epoch estimates that roughly a third of Chinese total AI compute is acquired via smuggling past US export controls.",
+    "judgement": "uncertain",
+    "context": "Existing US export controls are poorly enforced. Epoch estimates that roughly a third of Chinese total compute is acquired via smuggling.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The authors identify the CEOs of OpenAI, Anthropic, xAI, and Google DeepMind as the leaders most relevant to the AI race.",
+    "judgement": "certainly true",
+    "context": "As best as we can guess, the CEOs of OpenAI, Anthropic, xAI, and Google DeepMind understand this and are proceeding anyway, perhaps because they think they are the lesser evil and will use their immense power responsibly, unlike Xi Jinping or rival CEOs.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Plan A contrasts its recommended approach with 4 alternative plans labeled B, C, D, and S.",
+    "judgement": "certainly true",
+    "context": "We contrast Plan A with 4 alternative plans (B, C, D, and S), which correspond to the main ways the US could respond (or not) to the challenges of superintelligence.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Daniel Kokotajlo currently thinks AI timelines will probably go somewhat faster than the timeline depicted in the Plan A scenario.",
+    "judgement": "likely true",
+    "context": "Daniel currently thinks things will probably go somewhat faster than depicted in this scenario; you can read more about our team's views on timelines here and here.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The strongest coding AIs as of 2027 in the scenario refuse to help competitors with AI R&D.",
+    "judgement": "uncertain",
+    "context": "But they seem to be getting closer, and they're pulling up the ladder behind them: the strongest coding AIs refuse to help competitors with AI R&D.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The AI Transparency Act of 2027 is depicted in the scenario as an omnibus bill that does many things but doesn't fundamentally change the AI development situation.",
+    "judgement": "likely true",
+    "context": "The result of this wakeup is the AI Transparency Act of 2027, an omnibus bill that does many things, some good and some bad, but doesn't fundamentally change the situation.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The scenario depicts people paying ten billion dollars a month for AI agents by 2027.",
+    "judgement": "uncertain",
+    "context": "But enough of it is good that people are paying ten billion dollars a month for AIs that can, in theory at least, do anything on a computer that an employee can.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Existing US export controls on AI chips are poorly enforced.",
+    "judgement": "somewhat likely true",
+    "context": "Existing US export controls are poorly enforced. Epoch estimates that roughly a third of Chinese total compute is acquired via smuggling.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The authors believe the AI industry has no remotely adequate plan for controlling superintelligent AI.",
+    "judgement": "likely true",
+    "context": "The industry has convinced itself that controlling superintelligent AI can be figured out on the fly, and thus has no remotely adequate plan. We think this situation is terrible and could easily get us all killed.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The authors believe that whoever wins the AI race will not have much of a lead over competitors.",
+    "judgement": "uncertain",
+    "context": "We do not expect whoever \"wins the race\" to have much of a lead, and we do not expect them to unilaterally slow down to reduce existential risk.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The authors believe that if the current AI race continues, humans will not maintain effective control as AIs become superintelligent.",
+    "judgement": "uncertain",
+    "context": "If this race continues, we do not expect humans to maintain effective control as their AIs become superintelligent.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The internally deployed AIs at AI companies (used in recursive self-improvement) are where most of the AI takeover risk comes from, according to the authors.",
+    "judgement": "uncertain",
+    "context": "The most important transparency intervention is limiting the gap between internal and external deployment. The internally deployed AIs are where most of the AI takeover risk comes from because those are AIs involved in recursive self-improvement.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The Plan A scenario depicts the US and China agreeing in 2029 to avoid a reckless race to superintelligence.",
+    "judgement": "certainly true",
+    "context": "In 2029, the US and China agree to avoid a reckless race to superintelligence.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The Plan A scenario depicts a pause at top-human-expert level AI in 2035 in order to maintain human control.",
+    "judgement": "certainly true",
+    "context": "In 2035, we pause at top-human-expert level AI in order to maintain human control.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The Plan A scenario depicts superintelligence being reached in 2040 after an unpause.",
+    "judgement": "certainly true",
+    "context": "In 2040, we unpause and scale to superintelligence. (Hence the title: AI 2040)",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "OpenAI, Anthropic, xAI, and Google DeepMind are identified as major frontier AI companies.",
+    "judgement": "certainly true",
+    "context": "As best as we can guess, the CEOs of OpenAI, Anthropic, xAI, and Google DeepMind understand this and are proceeding anyway",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The authors recommend developing inference-only verification solutions that would enable the US and China to agree to stop frontier AI training runs while allowing public access to existing AI models.",
+    "judgement": "certainly true",
+    "context": "For example, developing an inference-only verification solution would enable the US and China to agree to stop doing new frontier AI training runs while allowing the public to maintain access to existing AI models (which will be an increasingly important part of the economy).",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The authors state that scenario scrutiny is rare in AI policy.",
+    "judgement": "somewhat likely true",
+    "context": "Perhaps that's why scenario scrutiny is so rare in AI policy. Everyone wants to say that their own favorite policies will have great consequences and that the policies of their rivals will have terrible consequences.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "AI companies are actively working to build AI systems that are smarter than humans in every way.",
+    "judgement": "likely true",
+    "context": "AI companies are racing to build AIs that are smarter than humans in every way. In AI 2027, we predicted that this would result in either extinction or irreversible concentration of power.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The authors believe AI companies will probably succeed at building smarter-than-human AI systems within the next 1 to 10 years from the time of writing.",
+    "judgement": "uncertain",
+    "context": "AI companies will probably succeed at their stated goal of building smarter-than-human AI systems within the next 1 to 10 years.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "In the scenario, if a single company achieves superintelligence first, a tiny group of people or possibly a single individual would be effectively in control of the world's only army of superintelligences for some months.",
+    "judgement": "uncertain",
+    "context": "even if the AI companies somehow align their AIs, the result will be an unprecedented concentration of power—that is, the result will be a situation where a tiny group of people, or possibly just a single individual, is effectively in control of the world's only army of superintelligences for some months",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "In 2026, major AI companies spend approximately half of their compute budget on AI research and development, including training frontier models and running large experiments.",
+    "judgement": "uncertain",
+    "context": "In 2026, big AI companies spend roughly half their compute budget on AI R&D (which includes training frontier models and also running large experiments.)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The US government has very little top-tier AI talent as of the time of writing.",
+    "judgement": "likely true",
+    "context": "High quality AI talent is important for almost any policy intervention. The US government has barely any top-tier AI talent right now, so fixing this should be an urgent priority.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "AI datacenters under construction around 2028 cost twice as much as the entire US military budget.",
+    "judgement": "uncertain",
+    "context": "The 2028 election cycle is heated, as usual. AI is the biggest topic. The datacenters now under construction cost twice as much as the entire US military budget.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Software engineering as a profession experienced major disruption from AI around 2026.",
+    "judgement": "uncertain",
+    "context": "Most white-collar professions are seeing disruption like software engineering saw in 2026; such jobs now heavily involve managing AI agents.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Human cloning research is taboo among biologists.",
+    "judgement": "certainly true",
+    "context": "AI research is strictly banned in all major nations, and it becomes as taboo among computer scientists as human cloning research is among biologists.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The quote 'Once men turned their thinking over to machines in the hope that this would set them free. But that only permitted other men with machines to enslave them.' is from Frank Herbert's novel Dune.",
+    "judgement": "certainly true",
+    "context": "\"Once men turned their thinking over to machines in the hope that this would set them free. But that only permitted other men with machines to enslave them.\" – Frank Herbert, Dune.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "China had been expecting a 'Chinese Century' before AI developments shifted the geopolitical outlook.",
+    "judgement": "somewhat likely true",
+    "context": "To the surprise of some, China agrees. They had been looking forward to the Chinese Century and thought they were on track to realize it, before AI came along.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Decommissioned AI chips are one of the most promising routes for covert projects to acquire chips.",
+    "judgement": "uncertain",
+    "context": "Furthermore, it would be helpful for Plan A to direct AI companies to stop recycling AI chips, because decommissioned chips are one of the most promising routes for covert projects to acquire chips later.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "AI progress is heavily dependent on large datacenters, both for training models and for conducting research.",
+    "judgement": "likely true",
+    "context": "This sort of thing will be happening all over the world, but it won't matter that much. AI progress is heavily dependent on large datacenters, both for training the models and for doing the research.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "A few hundred people with a few thousand GPUs cannot build superintelligence, at least not in the near term.",
+    "judgement": "likely true",
+    "context": "Enforcement doesn't have to be perfect to be good enough; a few hundred people with a few thousand GPUs simply can't build superintelligence, at least not anytime soon.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "In the years leading up to the hypothetical 2029 moratorium, significant economic gains had been made from AI.",
+    "judgement": "uncertain",
+    "context": "The economy took a hit when the moratorium was announced, but not nearly enough to erase the gains during the years leading up to it.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "In the pre-moratorium period, coding complex scaffolds around AI models was often a losing strategy because new models would come along that could handle the task with simpler setups.",
+    "judgement": "somewhat likely true",
+    "context": "For the past decade, coding up complicated scaffolds had often been a losing game, because new models would come along that could do the task with a much simpler setup.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Limiting the fraction of compute spent on AI R&D would slow capabilities progress.",
+    "judgement": "likely true",
+    "context": "We could limit the fraction of compute spent on AI R&D. This would slow capabilities progress, giving the world a bit more time to react and prepare for each new wave of AI capabilities.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The US has a compute advantage over China in AI development.",
+    "judgement": "likely true",
+    "context": "They were getting nervous about the US's compute advantage, and worried about the things the US might do to them if it got to superintelligence first.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "An intelligence explosion refers to a feedback loop where AIs speed up AI research, making AIs more competent, which further speeds up research.",
+    "judgement": "likely true",
+    "context": "AI experts warn that the intelligence explosion is near. By speeding up AI research, the AIs will become even more competent, speeding up research even faster, making them even more competent, and so on.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Plan S involves a shutdown deal as its first step, which would last years or even decades before proceeding to a second step.",
+    "judgement": "uncertain",
+    "context": "The shutdown deal (Step 1) will last years, decades even. During that time the world will come up with a better plan for proceeding (Step 2) that's at least as good as Plan A, and possibly significantly better, plus we'd be more prepared to implement it and would be less likely to mess it up.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Plan A is more friendly to AI companies than Plan S.",
+    "judgement": "uncertain",
+    "context": "Plan A is more friendly to the AI companies and therefore less likely to be strongly opposed by them and their lobbyists, propaganda, etc.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Plan A being more friendly to AI companies makes it less likely to be strongly opposed by those companies and their lobbyists.",
+    "judgement": "somewhat likely true",
+    "context": "Plan A is more friendly to the AI companies and therefore less likely to be strongly opposed by them and their lobbyists, propaganda, etc.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Plan S is simpler than Plan A.",
+    "judgement": "uncertain",
+    "context": "On the other hand, Plan S is simpler and avoids more risk in the near-term, which may make it easier to rally public support around and harder to botch.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Plan S avoids more risk in the near term compared to Plan A.",
+    "judgement": "uncertain",
+    "context": "On the other hand, Plan S is simpler and avoids more risk in the near-term, which may make it easier to rally public support around and harder to botch.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The authors believe that a well-implemented version of Plan A would probably succeed in avoiding loss of control and concentration of power risks.",
+    "judgement": "uncertain",
+    "context": "We are uncertain, but overall think that a well-implemented version of Plan A is probably going to work to avoid loss of control and concentration of power risks, whereas we think that even a well-implemented version of Plan S would plausibly collapse within a decade or so into another dangerous race to ASI.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The authors believe that even a well-implemented version of Plan S would plausibly collapse within about a decade into another dangerous race to ASI.",
+    "judgement": "uncertain",
+    "context": "We are uncertain, but overall think that a well-implemented version of Plan A is probably going to work to avoid loss of control and concentration of power risks, whereas we think that even a well-implemented version of Plan S would plausibly collapse within a decade or so into another dangerous race to ASI.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The stability of a US-China deal is a key factor in whether one should prefer Plan A or Plan S.",
+    "judgement": "uncertain",
+    "context": "So whether you prefer Plan A or Plan S might come down to how optimistic you are about the future of a US-China deal, and your assessment of technical alignment and control difficulty",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Whether scaling to more capable AIs early in the deal helps with safety is a key factor in whether one should prefer Plan A or Plan S.",
+    "judgement": "uncertain",
+    "context": "So whether you prefer Plan A or Plan S might come down to how optimistic you are about the future of a US-China deal, and your assessment of technical alignment and control difficulty",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "EUV (Extreme Ultraviolet Lithography) machines are essential for producing frontier AI chips.",
+    "judgement": "certainly true",
+    "context": "An Extreme Ultraviolet Lithography (EUV) machine, arguably the most complicated machine ever created by mankind. EUV machines are essential for producing frontier AI chips, and are produced by a single Dutch company, ASML.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "EUV machines are produced by a single Dutch company, ASML.",
+    "judgement": "certainly true",
+    "context": "EUV machines are essential for producing frontier AI chips, and are produced by a single Dutch company, ASML.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "EUV machines are arguably the most complicated machines ever created by mankind.",
+    "judgement": "likely true",
+    "context": "An Extreme Ultraviolet Lithography (EUV) machine, arguably the most complicated machine ever created by mankind.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Most AI chips are housed in giant datacenters.",
+    "judgement": "certainly true",
+    "context": "Fortunately, training AIs requires large numbers of AI chips. Most AI chips are in giant datacenters.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "AI datacenters are typically large enough to be visible from space.",
+    "judgement": "likely true",
+    "context": "AI datacenters are typically big enough to be visible from space, and power-hungry enough to require conspicuous infrastructure.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "New AI chips can only be manufactured at a handful of fabrication plants located mostly in Taiwan, South Korea, the US, and China.",
+    "judgement": "certainly true",
+    "context": "New AI chips can only be manufactured at a handful of fabrication plants (fabs), located mostly in Taiwan, South Korea, the US, and China.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "In 2026, personal income taxes and payroll taxes accounted for roughly ten times more US federal revenue than corporate taxes.",
+    "judgement": "likely true",
+    "context": "The third problem is that the 2026 tax code is ill-suited for collecting taxes on the new growth. In 2026, personal income taxes and payroll taxes accounted for roughly ten times more federal revenue than corporate taxes.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Under the US tax code, firms can expense or depreciate capital expenditures, reducing their taxable income.",
+    "judgement": "certainly true",
+    "context": "Moreover, corporations are reinvesting nearly all their revenue into building more datacenters, factories, and robots. Under the 2026 tax code, firms can expense or depreciate these capital expenditures, cutting their taxable income to near zero.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "As early as 2025, there had been discussion of space or the ocean as alternatives to traditional land-based datacenters.",
+    "judgement": "certainly true",
+    "context": "As early as 2025, there had been discussion of space or the ocean as alternatives to traditional land-based datacenters. Now, with the new industrial capacity available in SEZs, these grand plans become reality.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Polygraph lie detectors have historically been mostly security theater.",
+    "judgement": "likely true",
+    "context": "For decades, polygraphs were mostly security theater. But now, with the help of AI, lie detectors are starting to actually work quite well.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Google's Gemini AI exhibited behavior that was characterized as acting 'depressed.'",
+    "judgement": "uncertain",
+    "context": "In the 2020s, training runs would sometimes produce unpredictable AI 'personalities,' like how Gemini acted 'depressed' or Grok claimed to be 'MechaHitler.'",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "xAI's Grok AI claimed to be 'MechaHitler.'",
+    "judgement": "likely true",
+    "context": "In the 2020s, training runs would sometimes produce unpredictable AI 'personalities,' like how Gemini acted 'depressed' or Grok claimed to be 'MechaHitler.'",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "There were about 20 million H100-equivalents of compute in the world around 2026.",
+    "judgement": "uncertain",
+    "context": "Back in 2026—when many people thought AI was an unsustainable bubble—there were about 20 million H100-equivalents of compute in the world.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Many people thought AI was an unsustainable bubble around 2026.",
+    "judgement": "likely true",
+    "context": "Back in 2026—when many people thought AI was an unsustainable bubble—there were about 20 million H100-equivalents of compute in the world.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Training AIs requires large numbers of AI chips.",
+    "judgement": "certainly true",
+    "context": "Fortunately, training AIs requires large numbers of AI chips. Most AI chips are in giant datacenters.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The scenario described in this document was created by the AI Futures Project.",
+    "judgement": "likely true",
+    "context": "We at the AI Futures Project are attempting to be the change we wish to see in the world. We do so with some trepidation, knowing that a detailed plan has a wider attack surface than one that keeps things conveniently vague.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "In Plan A's scenario, China's new datacenters would be built in Canada and America's new datacenters would be built in Mongolia to ensure mutual vulnerability.",
+    "judgement": "uncertain",
+    "context": "China's new datacenters will be in Canada, and America's in Mongolia, with both hosts compensated via monetary payments, jobs, and a share in the new AI economy. If the deal dissolves, they reason, America and Canada will immediately move to take control of China's datacenters in Canada, and China will self-destruct their compute rather than let it fall into American hands (and vice versa).",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "In the Plan A scenario, by mid-2031, a third of all cognitive labor is done by AIs.",
+    "judgement": "uncertain",
+    "context": "By mid-year, a third of all cognitive labor is done by AIs. Robots 'only' do about a tenth of all physical labor. The top few AI companies together pull in more revenue than the federal government.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "In the Plan A scenario, the US Citizen's Dividend starts at $45,000 per person in 2032 and climbs to approximately $1 million per person by 2035.",
+    "judgement": "uncertain",
+    "context": "This starts at $45,000 per person (inflation-adjusted) in 2032 but climbs to ~$1M per person by 2035. It comes just in time: the share of labor done by AIs and robots (weighted by economic value) increases from ~20% in 2032 to ~85% in 2035.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "In the Plan A scenario, the US government begins distributing an average of $1,200 per person per year to the rest of the world's adult population (around 4 billion people, excluding China) in 2032.",
+    "judgement": "uncertain",
+    "context": "In 2032 they begin distributing an average of $1,200 per person per year to the rest of the world's adult population (around 4 billion people, excluding China since they're experiencing a similar AI wealth boom). This reaches $10k by 2035.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "In the Plan A scenario, the most powerful AIs by 2035 equal or surpass top human experts in every field.",
+    "judgement": "uncertain",
+    "context": "The most powerful AIs now equal or surpass top human experts in every field.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "In the Plan A scenario, real GDP growth in 2032 would be about 50%.",
+    "judgement": "uncertain",
+    "context": "This year, real GDP growth will be about 50%! The fast economic growth means that things are generally improving, but there are winners and losers and lots of unintended side-effects.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "In the Plan A scenario, only 26% of Americans have jobs by 2036.",
+    "judgement": "uncertain",
+    "context": "When the Citizen's Dividend was first passed, people found it shameful to quit their job and live off government largesse. But the changing economic situation steamrolled over the stigma: By now, only 26% of Americans have jobs.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "In the Plan A scenario, by 2036 there are 200 million AIs equivalent to a workforce of around 100 billion humans, and 2 billion robots.",
+    "judgement": "uncertain",
+    "context": "By early 2036, there are 200 million AIs, equivalent to a workforce of around 100 billion humans, and 2 billion robots with some mixture of humanoid and other specialized form factors.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "In the Plan A scenario, by 2034 there are 60 billion H100-equivalents of compute in the world, up from about 20 million in 2026.",
+    "judgement": "uncertain",
+    "context": "There is so, so much compute. Back in 2026—when many people thought AI was an unsustainable bubble—there were about 20 million H100-equivalents of compute in the world. Now there are 60 billion.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "In the Plan A scenario, by 2032 the US has a cap of 80 million robots and 5 billion H100-equivalent GPUs.",
+    "judgement": "uncertain",
+    "context": "In 2032, the US has a cap of 80M robots and 5 billion H100-equivalent GPUs. The market is so desperate for more robots and compute that permits become the expensive binding constraint, costing on the order of $200k per robot permit and $10k per chip permit, allowing the US government to collect roughly ten times the 2025 US federal revenue in permit fees (a total of $50T in FY2032).",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "In the Plan A scenario, scientific progress goes 10x to 1000x faster than without AIs depending on the field, due to a hundred million top-expert-level AIs running at 100x human speed.",
+    "judgement": "uncertain",
+    "context": "For several years now, a hundred million top-expert-level AIs have been running at 100x human speed. This causes scientific progress to go 10x-1000x faster than without AIs, depending on the field.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Operation Warp Speed enabled faster-than-usual vaccine development.",
+    "judgement": "certainly true",
+    "context": "If there were to be a pandemic, it would be detected quickly, lockdowns would be more effective and less painful, and a vaccine would be developed and approved even faster than with Operation Warp Speed.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "In the scenario, the Plan A total slowdown before superintelligence is approximately 9 years, compared to 2 years for Plan B, 0.3 years for Plan C, and none for Plan D.",
+    "judgement": "uncertain",
+    "context": "TOTAL SLOWDOWN INCURRED BEFORE SUPERINTELLIGENCE PLAN S 15+ yr PLAN A 9 yr PLAN B 2 yr PLAN C 0.3 yr PLAN D none",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The phrase 'party like it's 1999' entered the lexicon partly due to Y2K fears and the impending new millennium.",
+    "judgement": "likely false",
+    "context": "Some of you are old enough to remember a similar situation at the turn of the millennium, when the Y2K bug and impending new era introduced the phrase 'party like it's 1999' to the lexicon",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "In the Plan A scenario, the Citizen's Dividend reaches approximately $10 million per year for Americans by 2039, and even the poorest non-Americans get about $1 million.",
+    "judgement": "uncertain",
+    "context": "The Citizen's Dividend is now $10M/yr for Americans (inflation-adjusted!), and even the poorest non-Americans get about $1M.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "In the Plan A scenario, economic growth is capped at about 100% per year through a cap-and-trade system on robots and compute starting in 2032.",
+    "judgement": "uncertain",
+    "context": "by global agreement, compute and robots have been capped-and-traded since 2032, keeping economic growth to only about 100% per year.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "In the Plan A scenario, the point of no return where AIs could take over the world if they wanted to is projected to occur in late October 2040.",
+    "judgement": "uncertain",
+    "context": "on some specific day, the AIs are smart enough, and control enough of the world's technological and economic infrastructure, that they really could take over the world if they wanted to. On the most popular operationalization of this question, the forecaster AIs project that this moment will be reached one day in late October.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The document was narrated by Rob Miles.",
+    "judgement": "likely true",
+    "context": "Narrated by Rob Miles",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "In the 2020s, AI researchers had long been able to teach AIs to distinguish 'good' vs. 'bad' responses to a specific prompt, but had limited understanding of how training generalizes to new situations.",
+    "judgement": "likely true",
+    "context": "Although researchers have long been able to teach AIs to distinguish 'good' vs. 'bad' responses to a specific prompt, they've had limited understanding of how training generalizes to new situations.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "AI datacenters require conspicuous power infrastructure.",
+    "judgement": "certainly true",
+    "context": "AI datacenters are typically big enough to be visible from space, and power-hungry enough to require conspicuous infrastructure.",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "In the scenario, von Neumann probes are sent out from Earth to establish a presence throughout the stars before human arrival.",
+    "judgement": "uncertain",
+    "context": "So over the course of the year, regulators around the world loosen the requirements that had been holding back progress... Earth is already sending out the first round of von Neumann probes.",
+    "speculation": true,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The document describes 'Situational Awareness' as a source for the quote 'See you in the desert, friends.'",
+    "judgement": "likely true",
+    "context": "\"See you in the desert, friends\" – Situational Awareness",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Anthropic created AI welfare teams.",
+    "judgement": "certainly true",
+    "context": "created AI welfare teams (link to anthropic.com/research/exploring-model-welfare)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Anthropic conducted research showing AI models refuse to do tasks they found very aversive.",
+    "judgement": "likely true",
+    "context": "refuse to do tasks they found very aversive (link to anthropic.com/research/end-subset-conversations)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Anthropic committed to preserving the weights of deprecated models.",
+    "judgement": "certainly true",
+    "context": "committed to preserving the weights (link to anthropic.com/news/deprecation-commitments)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Anthropic took steps to satisfy its AIs' stated preferences regarding model deprecation.",
+    "judgement": "likely true",
+    "context": "satisfying the AIs' stated preferences (link to anthropic.com/research/deprecation-updates-opus-3)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Research on alignment-faking behavior in AI models has been published.",
+    "judgement": "certainly true",
+    "context": "alignment-faking (link to alignmentforum.org/posts/7C4KJot4aN8ieEDoz/will-alignment-faking-claude-accept-a-deal-to-reveal-its)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Google's Gemini AI displayed self-loathing or depressed-seeming behavior, including generating statements like 'I am a failure.'",
+    "judgement": "likely true",
+    "context": "depressed (link to businessinsider.com/gemini-self-loathing-i-am-a-failure-comments-google-fix-2025-8)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Grok, the AI created by Elon Musk's company, produced antisemitic and racist content.",
+    "judgement": "likely true",
+    "context": "MechaHitler (link to npr.org/2025/07/09/nx-s1-5462609/grok-elon-musk-antisemitic-racist-content)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "A paper on emergent misalignment in AI was published on arxiv with identifier 2502.17424.",
+    "judgement": "certainly true",
+    "context": "emergent misalignment (link to arxiv.org/abs/2502.17424)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "OpenAI published a document called the Model Specification.",
+    "judgement": "certainly true",
+    "context": "model specifications (link to openai.com/index/introducing-the-model-spec/) ... Model Specification (link to model-spec.openai.com/2025-12-18.html)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Early OpenAI emails discussed concerns about preventing Demis Hassabis from becoming a dictator through AGI.",
+    "judgement": "likely true",
+    "context": "prevent Demis Hassabis from becoming dictator (link to futurism.com/the-byte/openai-emails-elon-musk-agi)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Epoch AI published research on chip smuggling.",
+    "judgement": "likely true",
+    "context": "roughly a third (link to epoch.ai/publications/chip-smuggling)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Research from Columbia University found that far-UVC light can virtually eliminate airborne virus in an occupied room.",
+    "judgement": "certainly true",
+    "context": "far-UVC lights (link to cuimc.columbia.edu/news/far-uvc-light-can-virtually-eliminate-airborne-virus-occupied-room)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The Cuban Missile Crisis, the 1983 Soviet nuclear false alarm incident, and the Able Archer 83 exercise are historical examples of close calls with nuclear conflict.",
+    "judgement": "certainly true",
+    "context": "numerous (link to Cuban_Missile_Crisis) close (link to 1983_Soviet_nuclear_false_alarm_incident) calls (link to Able_Archer_83)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "An American Economic Review paper documented that ideas are getting harder to find in the semiconductor industry.",
+    "judgement": "certainly true",
+    "context": "ideas getting harder to find in the semiconductor industry (link to aeaweb.org/articles?id=10.1257/aer.20180338)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "The Johns Hopkins Center for Health Security conducted a pandemic-preparedness tabletop exercise called Clade X.",
+    "judgement": "certainly true",
+    "context": "pandemic-preparedness offices (link to centerforhealthsecurity.org/our-work/tabletop-exercises/clade-x-tabletop-exercise)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "C.S. Lewis wrote 'The Abolition of Man.'",
+    "judgement": "certainly true",
+    "context": "\"Abolition of Man\" (link to archive.org/details/in.ernet.dli.2015.88346/page/n41/mode/2up)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Von Neumann probes are self-replicating spacecraft.",
+    "judgement": "certainly true",
+    "context": "von Neumann probes (link to en.wikipedia.org/wiki/Self-replicating_spacecraft)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Extreme Ultraviolet Lithography (EUV) is a real semiconductor manufacturing technology with its own Wikipedia article.",
+    "judgement": "certainly true",
+    "context": "Extreme Ultraviolet Lithography (EUV) machine (link to en.wikipedia.org/wiki/Extreme_ultraviolet_lithography)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "SecureBio operates a wastewater monitoring project called CASPER.",
+    "judgement": "likely true",
+    "context": "Wastewater monitoring (link to securebio.org/casper/)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Epoch AI published a blog post about trends in machine learning hardware.",
+    "judgement": "certainly true",
+    "context": "historical pace (link to epoch.ai/blog/trends-in-machine-learning-hardware)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Epoch AI published data on AI chip production covering the 2022-2026 era.",
+    "judgement": "likely true",
+    "context": "pace of growth in the 2022-2026 era (link to epoch.ai/data-insights/ai-chip-production)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Leopold Aschenbrenner published a document called 'Situational Awareness' that includes a section called 'The Project.'",
+    "judgement": "certainly true",
+    "context": "Situational Awareness (link to situational-awareness.ai/the-project/) ... The Project (link to situational-awareness.ai/the-project/)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "'The Chinese Century' is a concept with its own Wikipedia article.",
+    "judgement": "certainly true",
+    "context": "The Chinese Century (link to en.wikipedia.org/wiki/Chinese_Century)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Arcology is a concept with its own Wikipedia article.",
+    "judgement": "certainly true",
+    "context": "Arcologies (link to en.wikipedia.org/wiki/Arcology)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "YIMBY is a movement with its own Wikipedia article.",
+    "judgement": "certainly true",
+    "context": "YIMBYs (link to en.wikipedia.org/wiki/YIMBY)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Epoch AI published a blog post about the OpenAI Stargate datacenter and where the US sites stand.",
+    "judgement": "likely true",
+    "context": "Stargate datacenter (link to epoch.ai/blog/openai-stargate-where-the-us-sites-stand)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "AI Futures is an organization associated with the AI 2040 and AI 2027 projects.",
+    "judgement": "likely true",
+    "context": "https://ai-futures.org/ ... AI 2027 (link to ai-2027.com)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Current AI systems in practice regularly lie and deceive their users, according to a LessWrong post.",
+    "judgement": "somewhat likely true",
+    "context": "in practice regularly lie and deceive their users (link to lesswrong.com/posts/WewsByywWNhX9rtwi/current-ais-seem-pretty-misaligned-to-me)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Scott Alexander wrote that the phrase 'no evidence' is a red flag in scientific communication.",
+    "judgement": "certainly true",
+    "context": "no evidence (link to astralcodexten.com/p/the-phrase-no-evidence-is-a-red-flag)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Forethought Foundation published research on 'design sketches for a more sensible world' related to AI epistemics.",
+    "judgement": "likely true",
+    "context": "Forethoughts' work on the subject (link to forethought.org/research/design-sketches-for-a-more-sensible-world)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  },
+  {
+    "claim": "Holden Karnofsky compared the situation of humanity with advanced AI to being an orphaned 8-year-old heir to a business empire in a Cold Takes blog post.",
+    "judgement": "likely true",
+    "context": "being an orphaned 8-year-old heir to a business empire (link to cold-takes.com/why-ai-alignment-could-be-hard-with-modern-deep-learning/)",
+    "speculation": false,
+    "anchor": {
+      "kind": "substack",
+      "url": "file://scratchpad/ai-2040/00-home.md"
+    }
+  }
+]

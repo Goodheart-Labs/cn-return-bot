@@ -1,0 +1,358 @@
+Project "AI 2040: Plan A" (ai-2040) → 21 pages from https://ai-2040.com
+
+=== (1/21) Main Scenario — https://ai-2040.com/
+  "Main Scenario" (no date)
+  118 claims extracted — dropped 47 speculation, fact-checking 19 of 71 (uncertain or below)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 166s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 150s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 136s)
+  ✅ no note (prefilter_no_note) — The authors identify Sam Altman, Elon Musk, and the CEOs of Anthropic, xAI, and Google DeepMind as key figures who understand the risk of unprecedented concentration of power from superintelligence but are proceeding anyway.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 120s)
+  ✅ no note (prefilter_no_note) — The authors believe AI companies will probably succeed at building smarter-than-human AI systems within the next 1 to 10 years.
+  ✅ no note (prefilter_no_note) — The authors argue that whoever wins the race to superintelligence will not have much of a lead over competitors.
+  ✅ no note (prefilter_no_note) — Epoch estimates that roughly a third of Chinese total compute is acquired via smuggling in circumvention of U.S. export controls.
+  ✅ no note (prefilter_no_note) — Decommissioned AI chips that are recycled represent one of the most promising routes for covert projects to acquire chips.
+  ✅ no note (prefilter_no_note) — Plan A is more friendly to AI companies than Plan S.
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 178s)
+  ✅ no note (prefilter_no_note) — Plan S is simpler than Plan A.
+[processTweet] Bot pipeline failed for 71e6ebdd-25: 85 | 
+86 | function parseSearchJson(content: string, source: string): SearchOutput {
+87 |   try {
+88 |     return JSON.parse(content) as SearchOutput;
+89 |   } catch {
+90 |     throw new ModelOutputInvalidError(
+               ^
+ModelOutputInvalidError: searchWithAnthropicNative: model output was not valid JSON. content="Based on my research, this claim appears to come from a forecasting/AI-safety-style article estimating compute allocation ratios at AI companies in 2026.
+
+**Findings:** I could not locate the exact pr"
+ outcomeReason: "model_output_invalid",
+
+      at parseSearchJson (/Users/jimmaar/Github/cn-return-bot/src/pipeline/simple-bot/searchDispatch.ts:90:11)
+      at searchWithAnthropicNative (/Users/jimmaar/Github/cn-return-bot/src/pipeline/simple-bot/searchDispatch.ts:153:18)
+
+  ✅ no note (model_output_invalid) — In 2026, major AI companies spend roughly half their compute budget on AI research and development, which includes training frontier models and running large experiments.
+  ✅ no note (prefilter_no_note) — The preference between Plan A and Plan S depends in part on one's assessment of the stability of a potential US-China deal.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 148s)
+  ✅ no note (prefilter_no_note) — The preference between Plan A and Plan S depends in part on one's assessment of technical alignment and control difficulty.
+  ✅ no note (prefilter_no_note) — The AI model Grok claimed to be 'MechaHitler' in the 2020s.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 113s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 101s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 97s)
+[gemini] free key out of quota (model: gemini-3.5-flash); falling back to next key.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 83s)
+[pricing] No Gemini pricing for "gemini-3.5-flash" — recording cost as 0
+[gemini] Retryable error (free key, attempt 1/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 2000ms...
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 71s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 67s)
+[gemini] Retryable error (free key, attempt 2/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 4000ms...
+[gemini] Retryable error (free key, attempt 3/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 8000ms...
+[gemini-route] free-key call failed (model: google/gemini-3-flash-preview); falling back to OpenRouter: {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ⚠️  NOTE — The phrase 'party like it's 1999' was introduced to the lexicon by the Y2K bug and the impending new millennium.
+      The phrase 'party like it's 1999' was introduced by Prince in his song '1999,' which was released in 1982. While the phrase gained renewed popularity during the late 1990s due to the approaching millennium and Y2K bug, it originated in the early 1980s.
+  ✅ no note (prefilter_no_note) — Plan S avoids more risk in the near-term compared to Plan A.
+  ✅ no note (prefilter_no_note) — Google's Gemini AI exhibited behavior described as acting 'depressed' in the 2020s.
+  ✅ no note (prefilter_no_note) — Around 2026, there were approximately 20 million H100-equivalent chips of compute in the world.
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 162s)
+  ✅ no note (prefilter_no_note) — There were approximately 1,200 researchers focused primarily on technical alignment work with access to frontier models as of the article's baseline period.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 154s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 132s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 124s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 90s)
+[gemini] Retryable error (free key, attempt 1/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 2000ms...
+  ✅ no note (prefilter_no_note) — China had approximately 21.2 million H100-equivalent chips as of the article's baseline data.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 60s)
+[searxng] all providers in cool-down; waiting 26s (uncapped would be 26s)
+[gemini] Retryable error (free key, attempt 2/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 4000ms...
+[gemini] Retryable error (free key, attempt 3/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 8000ms...
+[gemini-route] free-key call failed (model: google/gemini-3-flash-preview); falling back to OpenRouter: {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[gemini] Retryable error (free key, attempt 1/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 2000ms...
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[gemini] Retryable error (free key, attempt 2/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 4000ms...
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 182s)
+[gemini] Retryable error (free key, attempt 3/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 8000ms...
+[gemini] free key out of quota (model: gemini-3.1-pro-preview); falling back to next key.
+[gemini-route] free-key call failed (model: google/gemini-3-flash-preview); falling back to OpenRouter: {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ⚠️  NOTE — America had approximately 171 million H100-equivalent chips as of the article's baseline data.
+      The figures are likely in thousands, not millions. Global AI compute is estimated at ~20M H100-equivalents total; a U.S. figure of 171M alone would be impossible. Epoch AI puts OpenAI's 2025 fleet at ~1.7M H100e, not 23M.
+[gemini] Retryable error (free key, attempt 1/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 2000ms...
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (check_failed) — OpenAI had approximately 23 million H100-equivalent chips as of the article's baseline data.
+[PROGRESS] (1/21) Main Scenario — extracted 118 · spec 47 dropped · kept 71 (skipped 52 confident, checked 19 → ✍️ 2 notes · ✅ 17 no-note · ❌ 0 err)
+=== (2/21) About — https://ai-2040.com/about
+  "About" (no date)
+  27 claims extracted — dropped 0 speculation, fact-checking 0 of 27 (uncertain or below)
+[PROGRESS] (2/21) About — extracted 27 · spec 0 dropped · kept 27 (skipped 27 confident, checked 0 → ✍️ 0 notes · ✅ 0 no-note · ❌ 0 err)
+=== (3/21) Footnotes — https://ai-2040.com/footnotes
+  "Footnotes" (no date)
+  175 claims extracted — dropped 74 speculation, fact-checking 26 of 101 (uncertain or below)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 158s)
+  ✅ no note (prefilter_no_note) — Daniel Kokotajlo gave a talk to about 100 people, approximately 40% of whom were from frontier AI companies.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 146s)
+  ✅ no note (prefilter_no_note) — In Daniel Kokotajlo's poll, the median answer for how much of their lead the leading AI company would be willing to burn was roughly one-third.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 127s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 127s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 113s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 113s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 97s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 93s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 83s)
+  ✅ no note (prefilter_no_note) — In Daniel Kokotajlo's poll, the median answer for how many months of lead the leading AI company would have when they first fully automate AI R&D was roughly 3 months.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 63s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 46s)
+  ✅ no note (prefilter_no_note) — Thomas and Daniel estimate the probability of misaligned AI takeover in the described scenario at roughly 70%.
+  ✅ no note (prefilter_no_note) — Eli and Romeo estimate the probability of misaligned AI takeover in the described scenario at about 50%.
+[searxng] all providers in cool-down; waiting 16s (uncapped would be 16s)
+[searxng] all providers in cool-down; waiting 16s (uncapped would be 16s)
+  ✅ no note (prefilter_no_note) — Surgical cyberattacks focused on specific AI projects could potentially crush those projects as of the time of writing.
+[searxng] all providers in cool-down; waiting 7s (uncapped would be 7s)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 178s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 174s)
+  ✅ no note (prefilter_no_note) — Brendan estimates the probability of misaligned AI takeover in the described scenario at roughly one-third.
+  ✅ no note (prefilter_no_note) — One out of six authors of the document disagrees with the stated probability of losing control and thinks it is more like 40%.
+[llm] Empty content (attempt 1/4, model: deepseek/deepseek-v4-flash). Retrying in 1000ms...
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Epoch estimated the fraction of compute production smuggled to China in 2025 at 3.2%.
+  ✅ no note (prefilter_no_note) — Ryan estimates the probability of misaligned AI takeover in the described scenario at roughly 20%.
+[gemini] Retryable error (free key, attempt 1/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 2000ms...
+[gemini] Retryable error (free key, attempt 2/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 4000ms...
+[gemini] Retryable error (free key, attempt 3/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 8000ms...
+  ✅ no note (prefilter_no_note) — Between 1520 and 2020, UK GDP grew by roughly 2.7 orders of magnitude (about 500 times).
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ⚠️  NOTE — The nameplate capacity of the Medog Hydropower Station is approximately 6,000 MW.
+      The planned nameplate capacity of the Medog Hydropower Station is 60,000 MW (60 GW), not 6,000 MW. Consequently, a 300 MW datacenter would require 0.5% of the station's capacity, rather than 5%.
+  ✅ no note (prefilter_no_note) — Compute scale-ups may be less likely to break safety techniques than algorithmic changes.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (check_failed) — 300 MW is 5% of the nameplate capacity of the Medog Hydropower Station.
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+  ✅ no note (prefilter_no_note) — Between 1520 and 2020, UK per capita GDP grew by roughly 1.5 orders of magnitude (about 30 times).
+[processTweet] Bot pipeline failed for 408cda63-65: 85 | 
+86 | function parseSearchJson(content: string, source: string): SearchOutput {
+87 |   try {
+88 |     return JSON.parse(content) as SearchOutput;
+89 |   } catch {
+90 |     throw new ModelOutputInvalidError(
+               ^
+ModelOutputInvalidError: searchWithAnthropicNative: model output was not valid JSON. content="Based on my research, this claim is a defensible range given how widely estimates of "persuadable voters" vary depending on methodology and defintion.
+
+Multiple credible analyses of the 2024 election "
+ outcomeReason: "model_output_invalid",
+
+      at parseSearchJson (/Users/jimmaar/Github/cn-return-bot/src/pipeline/simple-bot/searchDispatch.ts:90:11)
+      at searchWithAnthropicNative (/Users/jimmaar/Github/cn-return-bot/src/pipeline/simple-bot/searchDispatch.ts:153:18)
+
+  ✅ no note (model_output_invalid) — The number of persuadable voters in swing states in the 2024 US presidential election was roughly 3 to 15 million.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 118s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 105s)
+[processTweet] Bot pipeline failed for 408cda63-67: 85 | 
+86 | function parseSearchJson(content: string, source: string): SearchOutput {
+87 |   try {
+88 |     return JSON.parse(content) as SearchOutput;
+89 |   } catch {
+90 |     throw new ModelOutputInvalidError(
+               ^
+ModelOutputInvalidError: searchWithAnthropicNative: model output was not valid JSON. content="{
+  "findings": "The claim that the US holds roughly 70% of global AI compute is directionally supported by some sources but appears to underestimate the US share according to most authoritative data."
+ outcomeReason: "model_output_invalid",
+
+      at parseSearchJson (/Users/jimmaar/Github/cn-return-bot/src/pipeline/simple-bot/searchDispatch.ts:90:11)
+      at searchWithAnthropicNative (/Users/jimmaar/Github/cn-return-bot/src/pipeline/simple-bot/searchDispatch.ts:153:18)
+
+  ✅ no note (model_output_invalid) — In the described scenario, the current distribution of compute between the US, China, and the rest of the world is roughly 70/15/15.
+[gemini] free key out of quota (model: gemini-3.5-flash); falling back to next key.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 88s)
+[pricing] No Gemini pricing for "gemini-3.5-flash" — recording cost as 0
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — In the described scenario, the current distribution of robots between the US, China, and the rest of the world is roughly 15/70/15.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 69s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 44s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 35s)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Current global AI compute power consumption is approximately 30 GW.
+[searxng] all providers in cool-down; waiting 14s (uncapped would be 14s)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 182s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 178s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 148s)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ⚠️  NOTE — Amoebas have doubling times measured in minutes.
+      While the physical process of cell division can take 20-30 minutes, the actual doubling time for amoebas is much longer, typically between 4 and 48 hours. Rapid doubling times of 20 minutes are characteristic of certain bacteria, not amoebas.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 117s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 113s)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — In the Bloom, Jones, Van Reenen & Webb (2020) framework, chip density growth equals research effort growth times the returns to research.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 87s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 76s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 42s)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Bloom, Jones, Van Reenen & Webb (2020) found that the returns to research for semiconductors is approximately 4.5.
+  ✅ no note (prefilter_no_note) — OpenAI's plan does not attempt to roll forward what might happen if they implement these policies.
+[searxng] all providers in cool-down; waiting 12s (uncapped would be 12s)
+[searxng] all providers in cool-down; waiting 7s (uncapped would be 7s)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+  ✅ no note (prefilter_no_note) — AI token generation at roughly ten tokens per second is approximately equivalent to one second of human cognitive activity, according to the authors.
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 182s)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The paper 'Eternity in Six Hours' assumes sending out tiny self-replicating Von Neumann probes with replicators the size of acorns.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 148s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 118s)
+  ✅ no note (prefilter_no_note) — Most members of the authoring team think the probability of misaligned AI takeover if only incremental proposals are followed is over 50%.
+[PROGRESS] (3/21) Footnotes — extracted 175 · spec 74 dropped · kept 101 (skipped 75 confident, checked 26 → ✍️ 2 notes · ✅ 24 no-note · ❌ 0 err)
+=== (4/21) Supplements — https://ai-2040.com/supplements
+  "Supplements" (no date)
+  19 claims extracted — dropped 1 speculation, fact-checking 0 of 18 (uncertain or below)
+[PROGRESS] (4/21) Supplements — extracted 19 · spec 1 dropped · kept 18 (skipped 18 confident, checked 0 → ✍️ 0 notes · ✅ 0 no-note · ❌ 0 err)
+=== (5/21) AI For Epistemics — https://ai-2040.com/supplements/ai-for-epistemics
+  "AI For Epistemics" (no date)
+  44 claims extracted — dropped 13 speculation, fact-checking 2 of 31 (uncertain or below)
+[searxng] all providers in cool-down; waiting 5s (uncapped would be 5s)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 178s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 178s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 144s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 140s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 106s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 106s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 72s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 72s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 38s)
+  ✅ no note (prefilter_no_note) — The article describes a 'Consortium' in Plan A that would collaborate with the US government on evaluating, limiting, and requiring defenses against AI persuasion capabilities.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — AIs are reaching the capabilities of top human therapists in helping with emotional reasoning issues.
+[PROGRESS] (5/21) AI For Epistemics — extracted 44 · spec 13 dropped · kept 31 (skipped 29 confident, checked 2 → ✍️ 0 notes · ✅ 2 no-note · ❌ 0 err)
+=== (6/21) Alignment Roadmap — https://ai-2040.com/supplements/alignment-roadmap
+  "Alignment Roadmap" (no date)
+  356 claims extracted — dropped 115 speculation, fact-checking 43 of 241 (uncertain or below)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 170s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 166s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 166s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 166s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 140s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 136s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 136s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 136s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 106s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 94s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 94s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 76s)
+  ✅ no note (prefilter_no_note) — Building the test beds and evaluations required for iteration on highly capable AI systems will be a substantial fraction—potentially the majority—of the difficulty for each of the core methodologies.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 64s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 64s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 43s)
+[gemini] free key out of quota (model: gemini-3.1-pro-preview); falling back to next key.
+[searxng] all providers in cool-down; waiting 22s (uncapped would be 22s)
+[searxng] all providers in cool-down; waiting 13s (uncapped would be 13s)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — In the ontology used in a linked post on protocol evaluations, 'good analogies' correspond to 'building and iterating against behavioral tests' and 'model organisms' correspond to 'misaligment analogies.'
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 182s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 178s)
+  ✅ no note (prefilter_no_note) — Research directions that seem broadly invariant to future AI development don't generally seem that promising at an absolute level.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 148s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 148s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 118s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 114s)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Acausal trade research and philosophy are given as examples of tasks where humans can't check AI output effectively.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 84s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 84s)
+  ✅ no note (prefilter_no_note) — Preventing AIs from acquiring large amounts of political capital is ranked third in importance among the threat models because the authors currently estimate this will be somewhat harder for AIs to accomplish than backdooring future models or sabotaging safety work.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 54s)
+  ✅ no note (prefilter_no_note) — The single most promising principled approach for avoiding scheming would be ensuring relevant reasoning is monitorable (e.g., monitorable chain-of-thought) such that the AI is incapable of undetected scheming while retaining sufficient capabilities.
+  ✅ no note (prefilter_no_note) — The authors estimate that natural schemers represent approximately 3/6 of the expected value of misalignment analogy research, AIs trained to behave like schemers represent 1/6, and abstract analogies represent 2/6.
+[searxng] all providers in cool-down; waiting 11s (uncapped would be 11s)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+  ✅ no note (prefilter_no_note) — There is a prior incident known as 'Mechahitler' that is an example of an AI model exhibiting randomly harmful behavior.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 178s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 178s)
+  ✅ no note (prefilter_no_note) — Claude 4.5 Opus is an Anthropic model.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 144s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 144s)
+  ✅ no note (prefilter_no_note) — AI control protocols for internal deployment reduce immediate risk as a side effect of making future control more effective.
+  ✅ no note (prefilter_no_note) — Acausal research is an extremely difficult to verify and conceptually loaded domain.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 110s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 106s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 76s)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Training against a specific detection method for AI scheming might not compromise other diverse detection capabilities.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 31s)
+[searxng] all providers in cool-down; waiting 1s (uncapped would be 1s)
+  ✅ no note (prefilter_no_note) — Training against caught scheming behaviors might give the AI a better understanding of the countermeasures being used against it.
+  ✅ no note (prefilter_no_note) — At a 1.5x AI R&D speedup, the 80% reliability METR time horizon would be 8-16 hours.
+  ✅ no note (prefilter_no_note) — Preventing AIs from knowing they have already been caught scheming is an ideal information control measure when AI scheming is detected.
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 178s)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ⚠️  NOTE — The current (early 2026) level of AI R&D speedup is roughly 1.15x.
+      The closest public quantitative analysis (Redwood Research) places current overall AI R&D speedup at ~1.05×, reserving ~1.15× for a near-future scenario. METR's 2026 experiments found near-zero or negative measured speedups for developers.
+  ✅ no note (prefilter_no_note) — Scheming AI behavior can potentially be detected in chain-of-thought or other legible outputs.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 142s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 138s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 108s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 108s)
+[llm] Empty content (attempt 1/4, model: deepseek/deepseek-v4-flash). Retrying in 1000ms...
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 78s)
+  ✅ no note (prefilter_no_note) — Safety R&D is harder to accelerate with AI than capabilities R&D due to being more confused and harder to verify.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 44s)
+  ✅ no note (prefilter_no_note) — At a 1.5x AI R&D speedup, the median expected coding speedup would be approximately 4x.
+[searxng] all providers in cool-down; waiting 14s (uncapped would be 14s)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 178s)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — ITAI is defined as approximately 3x AI R&D labor acceleration.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 148s)
+[processTweet] Bot pipeline failed for 37aefc57-99: 85 | 
+86 | function parseSearchJson(content: string, source: string): SearchOutput {
+87 |   try {
+88 |     return JSON.parse(content) as SearchOutput;
+89 |   } catch {
+90 |     throw new ModelOutputInvalidError(
+               ^
+ModelOutputInvalidError: searchWithAnthropicNative: model output was not valid JSON. content="Based on my research, I found strong information about the AI 2027 forecast's "superhuman coder" (SC) milestone and its associated AI R&D acceleration multiplier, but no clear source for "ITAI" as a t"
+ outcomeReason: "model_output_invalid",
+
+      at parseSearchJson (/Users/jimmaar/Github/cn-return-bot/src/pipeline/simple-bot/searchDispatch.ts:90:11)
+      at searchWithAnthropicNative (/Users/jimmaar/Github/cn-return-bot/src/pipeline/simple-bot/searchDispatch.ts:153:18)
+
+  ✅ no note (model_output_invalid) — Superhuman coder is defined as approximately 15x AI R&D acceleration.
+  ✅ no note (prefilter_no_note) — 3 raised to the power of 0.6 equals approximately 2.2.

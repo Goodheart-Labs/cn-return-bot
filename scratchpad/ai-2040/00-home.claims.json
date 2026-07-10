@@ -1,0 +1,718 @@
+[
+  {
+    "claim": "AI 2040: Plan A was authored by Thomas Larsen, Romeo Dean, Brendan Halstead, Eli Lifland, Ryan Greenblatt, and Daniel Kokotajlo.",
+    "judgement": "likely true",
+    "context": "Thomas Larsen, Romeo Dean, Brendan Halstead, Eli Lifland, Ryan Greenblatt, Daniel Kokotajlo",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The authors previously published a scenario called AI 2027 that predicted the development of smarter-than-human AI would result in either extinction or irreversible concentration of power.",
+    "judgement": "likely true",
+    "context": "In AI 2027, we predicted that this would result in either extinction or irreversible concentration of power.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Plan A was informed by conversations with experts at major U.S. frontier AI companies.",
+    "judgement": "likely true",
+    "context": "It's informed by conversations with experts at major U.S. frontier AI companies, direct experience at OpenAI, tabletop exercises, and discussions with policymakers, national security experts, and AI policy leaders.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Some of the authors of Plan A have direct experience at OpenAI.",
+    "judgement": "likely true",
+    "context": "It's informed by conversations with experts at major U.S. frontier AI companies, direct experience at OpenAI, tabletop exercises, and discussions with policymakers, national security experts, and AI policy leaders.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Plan A recommends an international deal to avoid a dangerous race to superintelligence.",
+    "judgement": "certainly true",
+    "context": "We recommend an international deal to avoid a dangerous race to superintelligence. The deal involves total research transparency for AI R&D, which allows the nations of the world to understand what's happening and enforce guardrails.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Plan A is contrasted with 4 alternative plans labeled B, C, D, and S.",
+    "judgement": "certainly true",
+    "context": "We contrast Plan A with 4 alternative plans (B, C, D, and S), which correspond to the main ways the US could respond (or not) to the challenges of superintelligence.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The quote 'Plans are worthless, but planning is everything' is attributed to Dwight D. Eisenhower.",
+    "judgement": "certainly true",
+    "context": "\"Plans are worthless, but planning is everything.\" - Dwight D. Eisenhower",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Intelligence agencies, climate bodies, and pandemic-preparedness offices all rely on various kinds of scenario planning.",
+    "judgement": "certainly true",
+    "context": "There are other precedents as well: intelligence agencies, climate bodies, and pandemic-preparedness offices all rely on various kinds of scenario planning.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The U.S. military games out Taiwan scenarios in excruciating detail.",
+    "judgement": "likely true",
+    "context": "Yet it is still valuable to attempt, just as it is valuable for the U.S. military to game out Taiwan scenarios in excruciating detail.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In the AI 2027 scenario, AI fully automated the process of building smarter AIs in 2027, leading to an intelligence explosion and superintelligence within the year.",
+    "judgement": "likely true",
+    "context": "In our previous scenario, AI 2027, AI fully automated the process of building smarter AIs in 2027, leading to an intelligence explosion and superintelligence within the year.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The United States has a compute advantage over China in AI development.",
+    "judgement": "likely true",
+    "context": "They were getting nervous about the US's compute advantage, and worried about the things the US might do to them if it got to superintelligence first.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Daniel Kokotajlo thought there was roughly a 50% chance that AI development would go as fast or faster than depicted in AI 2027 when they started writing that scenario.",
+    "judgement": "likely true",
+    "context": "AI 2027's titular year was chosen because, at the time we started writing, Daniel thought there was roughly a 50% chance that things would go that fast or faster.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The year 2030 was chosen as the default timeline in Plan A because it was the corresponding 50% probability year for Thomas Larsen at the time they started writing.",
+    "judgement": "likely true",
+    "context": "At the time we started writing Plan A, 2030 was the corresponding year for Thomas.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The U.S. civilian labor force is approximately 165 million people.",
+    "judgement": "likely true",
+    "context": "America has two workforces now. The first is people, 165 million of them.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "OpenAI was founded in part to prevent Demis Hassabis from becoming a dictator-like figure through AI, as discussed in 2016 OpenAI emails.",
+    "judgement": "likely true",
+    "context": "They read the 2016 OpenAI emails discussing how OpenAI was founded in order to prevent Demis Hassabis from becoming dictator.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Epoch estimates that roughly a third of Chinese total compute is acquired via smuggling in circumvention of U.S. export controls.",
+    "judgement": "uncertain",
+    "context": "Existing US export controls are poorly enforced. Epoch estimates that roughly a third of Chinese total compute is acquired via smuggling.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Existing U.S. export controls on AI chips are poorly enforced.",
+    "judgement": "likely true",
+    "context": "Existing US export controls are poorly enforced. Epoch estimates that roughly a third of Chinese total compute is acquired via smuggling.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The authors believe AI companies will probably succeed at building smarter-than-human AI systems within the next 1 to 10 years.",
+    "judgement": "uncertain",
+    "context": "AI companies will probably succeed at their stated goal of building smarter-than-human AI systems within the next 1 to 10 years.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The AI industry has stated its goal of building smarter-than-human AI systems.",
+    "judgement": "certainly true",
+    "context": "AI companies will probably succeed at their stated goal of building smarter-than-human AI systems within the next 1 to 10 years.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Daniel Kokotajlo currently thinks AI development will probably go somewhat faster than the Plan A default timeline depicts.",
+    "judgement": "likely true",
+    "context": "Daniel currently thinks things will probably go somewhat faster than depicted in this scenario; you can read more about our team's views on timelines here and here.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The internally deployed AIs at AI companies are the ones involved in recursive self-improvement efforts.",
+    "judgement": "likely true",
+    "context": "The internally deployed AIs are where most of the AI takeover risk comes from because those are AIs involved in recursive self-improvement.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The authors argue that whoever wins the race to superintelligence will not have much of a lead over competitors.",
+    "judgement": "uncertain",
+    "context": "We do not expect whoever \"wins the race\" to have much of a lead, and we do not expect them to unilaterally slow down to reduce existential risk.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Demis Hassabis is associated with Google DeepMind.",
+    "judgement": "certainly true",
+    "context": "They read the 2016 OpenAI emails discussing how OpenAI was founded in order to prevent Demis Hassabis from becoming dictator. But who is preventing Sam or Elon from becoming dictator?",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "There have been reports of AI chatbots encouraging suicide.",
+    "judgement": "certainly true",
+    "context": "They've long been hearing about AI: datacenters using too much water, chatbots encouraging suicide, Mythos hacking NSA systems",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "There have been concerns about datacenters using too much water.",
+    "judgement": "certainly true",
+    "context": "They've long been hearing about AI: datacenters using too much water, chatbots encouraging suicide, Mythos hacking NSA systems",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In 2026, major AI companies spend roughly half their compute budget on AI research and development, which includes training frontier models and running large experiments.",
+    "judgement": "uncertain",
+    "context": "In 2026, big AI companies spend roughly half their compute budget on AI R&D (which includes training frontier models and also running large experiments.)21 We could limit the fraction of compute spent on AI R&D.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "no_note",
+    "statusReason": "model_output_invalid",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The US government has very little top-tier AI talent as of the time of writing.",
+    "judgement": "likely true",
+    "context": "High quality AI talent is important for almost any policy intervention. The US government has barely any top-tier AI talent right now, so fixing this should be an urgent priority.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Decommissioned AI chips that are recycled represent one of the most promising routes for covert projects to acquire chips.",
+    "judgement": "uncertain",
+    "context": "Furthermore, it would be helpful for Plan A to direct AI companies to stop recycling AI chips, because decommissioned chips are one of the most promising routes for covert projects to acquire chips later.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Human cloning research is taboo among biologists.",
+    "judgement": "likely true",
+    "context": "AI research is strictly banned in all major nations, and it becomes as taboo among computer scientists as human cloning research is among biologists.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "AI progress is heavily dependent on large datacenters, both for training models and for conducting research.",
+    "judgement": "likely true",
+    "context": "This sort of thing will be happening all over the world, but it won't matter that much. AI progress is heavily dependent on large datacenters, both for training the models and for doing the research.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Frank Herbert wrote the novel Dune.",
+    "judgement": "certainly true",
+    "context": "\"Once men turned their thinking over to machines in the hope that this would set them free. But that only permitted other men with machines to enslave them.\" – Frank Herbert, Dune.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The quote 'Once men turned their thinking over to machines in the hope that this would set them free. But that only permitted other men with machines to enslave them' is from Frank Herbert's Dune.",
+    "judgement": "certainly true",
+    "context": "\"Once men turned their thinking over to machines in the hope that this would set them free. But that only permitted other men with machines to enslave them.\" – Frank Herbert, Dune.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The article identifies Plan A (Verified Slowdown), Plan B (Fight China), Plan C (Burn the Lead), Plan D (Race to ASI), and Plan S (Shut it all down) as possible policy paths.",
+    "judgement": "certainly true",
+    "context": "PLAN D Race to ASI PLAN C Burn the Lead PLAN B Fight China PLAN A Verified Slowdown PLAN S Shut it all down",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Advanced chip fabrication capacity is highly concentrated geographically and among a small number of producers.",
+    "judgement": "certainly true",
+    "context": "By the end of 2030, the Consortium covers 99% of global AI compute and 100% of advanced chip fabrication capacity.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The authors recommend Plan A over Plan S.",
+    "judgement": "certainly true",
+    "context": "We are sympathetic to Plan S and think that it might be better than Plan A.33 However, we recommend Plan A instead. Here's our thinking:",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "A key downside of Plan S according to the authors is that the shutdown deal would probably break down eventually.",
+    "judgement": "certainly true",
+    "context": "The main downside of Plan S is that the shutdown deal will probably break down eventually. Because of this, it's important to make as much progress as fast as possible to reduce the risks of AI.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In Plan A, AI safety research can proceed with highly capable AIs and with massive compute budgets, whereas in Plan S the relevant type of AI research is banned.",
+    "judgement": "certainly true",
+    "context": "In Plan A, we continue scaling AI capabilities, but slowly and safely. AI safety research can proceed with highly capable AIs and with massive compute budgets. In Plan S, since the relevant type of AI research is banned, no such progress can be made.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Plan A is more friendly to AI companies than Plan S.",
+    "judgement": "uncertain",
+    "context": "Plan A is more friendly to the AI companies and therefore less likely to be strongly opposed by them and their lobbyists, propaganda, etc.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Plan S is simpler than Plan A.",
+    "judgement": "uncertain",
+    "context": "On the other hand, Plan S is simpler and avoids more risk in the near-term, which may make it easier to rally public support around and harder to botch.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Plan S avoids more risk in the near-term compared to Plan A.",
+    "judgement": "uncertain",
+    "context": "On the other hand, Plan S is simpler and avoids more risk in the near-term, which may make it easier to rally public support around and harder to botch.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The preference between Plan A and Plan S depends in part on one's assessment of technical alignment and control difficulty.",
+    "judgement": "uncertain",
+    "context": "So whether you prefer Plan A or Plan S might come down to how optimistic you are about the future of a US-China deal, and your assessment of technical alignment and control difficulty",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Most AI chips are located in giant datacenters.",
+    "judgement": "likely true",
+    "context": "Fortunately, training AIs requires large numbers of AI chips. Most AI chips are in giant datacenters.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "AI datacenters are typically large enough to be visible from space.",
+    "judgement": "likely true",
+    "context": "AI datacenters are typically big enough to be visible from space, and power-hungry enough to require conspicuous infrastructure.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "AI datacenters are power-hungry enough to require conspicuous infrastructure.",
+    "judgement": "certainly true",
+    "context": "AI datacenters are typically big enough to be visible from space, and power-hungry enough to require conspicuous infrastructure.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "New AI chips can only be manufactured at a handful of fabrication plants (fabs).",
+    "judgement": "certainly true",
+    "context": "New AI chips can only be manufactured at a handful of fabrication plants (fabs), located mostly in Taiwan, South Korea, the US, and China.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "AI chip fabrication plants are located mostly in Taiwan, South Korea, the US, and China.",
+    "judgement": "certainly true",
+    "context": "New AI chips can only be manufactured at a handful of fabrication plants (fabs), located mostly in Taiwan, South Korea, the US, and China.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Extreme Ultraviolet Lithography (EUV) machines are essential for producing frontier AI chips.",
+    "judgement": "certainly true",
+    "context": "An Extreme Ultraviolet Lithography (EUV) machine, arguably the most complicated machine ever created by mankind. EUV machines are essential for producing frontier AI chips, and are produced by a single Dutch company, ASML.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "EUV lithography machines are produced by a single Dutch company, ASML.",
+    "judgement": "certainly true",
+    "context": "EUV machines are essential for producing frontier AI chips, and are produced by a single Dutch company, ASML.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "EUV lithography machines are arguably the most complicated machines ever created by mankind.",
+    "judgement": "likely true",
+    "context": "An Extreme Ultraviolet Lithography (EUV) machine, arguably the most complicated machine ever created by mankind.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In the United States around 2026, personal income taxes and payroll taxes accounted for roughly ten times more federal revenue than corporate taxes.",
+    "judgement": "somewhat likely true",
+    "context": "In 2026, personal income taxes and payroll taxes accounted for roughly ten times more federal revenue than corporate taxes. This revenue source is collapsing as more and more humans are put out of a job.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Under the US tax code as of 2026, firms can expense or depreciate capital expenditures, reducing their taxable income.",
+    "judgement": "certainly true",
+    "context": "Moreover, corporations are reinvesting nearly all their revenue into building more datacenters, factories, and robots. Under the 2026 tax code, firms can expense or depreciate these capital expenditures, cutting their taxable income to near zero.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Polygraph lie detectors have been mostly security theater for decades.",
+    "judgement": "likely true",
+    "context": "For decades, polygraphs were mostly security theater. But now, with the help of AI, lie detectors are starting to actually work quite well.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Google's Gemini AI exhibited behavior described as acting 'depressed' in the 2020s.",
+    "judgement": "uncertain",
+    "context": "In the 2020s, training runs would sometimes produce unpredictable AI 'personalities,' like how Gemini acted 'depressed' or Grok claimed to be 'MechaHitler.'",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The AI model Grok claimed to be 'MechaHitler' in the 2020s.",
+    "judgement": "uncertain",
+    "context": "In the 2020s, training runs would sometimes produce unpredictable AI 'personalities,' like how Gemini acted 'depressed' or Grok claimed to be 'MechaHitler.'",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "As early as 2025, there had been discussion of using space or the ocean as alternatives to traditional land-based datacenters.",
+    "judgement": "certainly true",
+    "context": "As early as 2025, there had been discussion of space or the ocean as alternatives to traditional land-based datacenters. Now, with the new industrial capacity available in SEZs, these grand plans become reality.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Around 2026, there were approximately 20 million H100-equivalent chips of compute in the world.",
+    "judgement": "uncertain",
+    "context": "Back in 2026—when many people thought AI was an unsustainable bubble—there were about 20 million H100-equivalents of compute in the world. Now there are 60 billion.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "OpenAI has a datacenter called Stargate.",
+    "judgement": "likely true",
+    "context": "Left: OpenAI's Stargate datacenter. Right: An Extreme Ultraviolet Lithography (EUV) machine",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Many people in 2026 thought AI was an unsustainable bubble.",
+    "judgement": "likely true",
+    "context": "Back in 2026—when many people thought AI was an unsustainable bubble—there were about 20 million H100-equivalents of compute in the world.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The US employment rate was approximately 62% around 2026.",
+    "judgement": "likely true",
+    "context": "Employment Rate 62% Percentage of Americans who have jobs.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "There were approximately 1,200 researchers focused primarily on technical alignment work with access to frontier models as of the article's baseline period.",
+    "judgement": "uncertain",
+    "context": "1.2K Estimated researchers focused primarily on technical alignment work with access to frontier models. The binding constraint is access, not talent: only researchers who can run experiments on frontier models count.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Prince song '1999' from 1982 is the actual origin of the phrase 'party like it's 1999,' not the Y2K bug.",
+    "judgement": "certainly true",
+    "context": "when the Y2K bug and impending new era introduced the phrase 'party like it's 1999' to the lexicon",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "AI companies, lobbyists, and think tankers often offer incremental proposals to decrease AI risk but only rarely offer ambitious plans aimed at actually solving the big problems.",
+    "judgement": "likely true",
+    "context": "AI companies, lobbyists, and think tankers often offer incremental proposals to decrease risk around the edges, but only rarely offer ambitious plans aimed at actually solving the big problems.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "America had approximately 171 million H100-equivalent chips as of the article's baseline data.",
+    "judgement": "uncertain",
+    "context": "America 171M OpenAI 23M Google DeepMind Anthropic Rest of US 83.6M Meta AI 7.68M xAI 5.06M",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "note",
+    "statusReason": null,
+    "note": "The figures are likely in thousands, not millions. Global AI compute is estimated at ~20M H100-equivalents total; a U.S. figure of 171M alone would be impossible. Epoch AI puts OpenAI's 2025 fleet at ~1.7M H100e, not 23M.",
+    "sources": [
+      "https://epochai.substack.com/p/frontier-labs-dont-use-most-ai-compute",
+      "https://arxiv.org/html/2504.16026v1",
+      "https://epoch.ai/data-insights/computing-capacity"
+    ]
+  },
+  {
+    "claim": "China had approximately 21.2 million H100-equivalent chips as of the article's baseline data.",
+    "judgement": "uncertain",
+    "context": "China 21.2M Rest of China 8.82M Alibaba Qwen 5.2M ByteDance 3.76M Tencent Hunyuan 1.92M DeepSeek 1.53M",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "OpenAI had approximately 23 million H100-equivalent chips as of the article's baseline data.",
+    "judgement": "uncertain",
+    "context": "America 171M OpenAI 23M Google DeepMind Anthropic Rest of US 83.6M",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "no_note",
+    "statusReason": "check_failed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "There are approximately 4 billion adults in the world outside the US and China.",
+    "judgement": "likely true",
+    "context": "distributing an average of $1,200 per person per year to the rest of the world's adult population (around 4 billion people, excluding China since they're experiencing a similar AI wealth boom)",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The FDA approved an expedited vaccine approval pipeline called Operation Warp Speed that achieved fast turnaround times.",
+    "judgement": "somewhat likely true",
+    "context": "The FDA approves an expedited vaccine approval pipeline that will allow for a turnover time of weeks in the case of emergency... a vaccine would be developed and approved even faster than with Operation Warp Speed.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In the 2020s, there were only a handful of frontier AI companies.",
+    "judgement": "certainly true",
+    "context": "Three years ago there were only a handful of frontier AI companies; now, thanks to the deal, there are dozens.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The authors identify Sam Altman, Elon Musk, and the CEOs of Anthropic, xAI, and Google DeepMind as key figures who understand the risk of unprecedented concentration of power from superintelligence but are proceeding anyway.",
+    "judgement": "uncertain",
+    "context": "As best as we can guess, the CEOs of OpenAI, Anthropic, xAI, and Google DeepMind understand this and are proceeding anyway, perhaps because they think they are the lesser evil and will use their immense power responsibly, unlike Xi Jinping or rival CEOs.",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The preference between Plan A and Plan S depends in part on one's assessment of the stability of a potential US-China deal.",
+    "judgement": "uncertain",
+    "context": "So whether you prefer Plan A or Plan S might come down to how optimistic you are about the future of a US-China deal, and your assessment of technical alignment and control difficulty",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The phrase 'party like it's 1999' was introduced to the lexicon by the Y2K bug and the impending new millennium.",
+    "judgement": "certainly false",
+    "context": "Some of you are old enough to remember a similar situation at the turn of the millennium, when the Y2K bug and impending new era introduced the phrase 'party like it's 1999' to the lexicon",
+    "contextUrl": "https://ai-2040.com/",
+    "status": "note",
+    "statusReason": null,
+    "note": "The phrase 'party like it's 1999' was introduced by Prince in his song '1999,' which was released in 1982. While the phrase gained renewed popularity during the late 1990s due to the approaching millennium and Y2K bug, it originated in the early 1980s.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/1999_(Prince_song)"
+    ]
+  }
+]

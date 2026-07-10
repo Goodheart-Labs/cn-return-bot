@@ -1,0 +1,1020 @@
+[
+  {
+    "claim": "Other authors of AI 2027 had median AGI estimates between 2031 and 2035.",
+    "judgement": "likely true",
+    "context": "By the time we finished writing AI 2027, Daniel's AGI median was 2028. Other authors' medians were between 2031 and 2035.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The AI 2027 scenario posited 2027 as the modal year for certain AI developments, not the median year.",
+    "judgement": "likely true",
+    "context": "The AI 2027 scenario is still roughly what we expect the future to look like: a mad scramble to superintelligence leading to either AI takeover or extreme concentration of power. So far reality is tracking closer to AI 2027 than even we expected. (2027 was our modal year at time of publication, not our median.)",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Opinions within the AI 2040 team on the likelihood of literal AI-driven human extinction vary between 10% and 30%.",
+    "judgement": "likely true",
+    "context": "Of course, we're not sure exactly how likely literal AI-driven human extinction is, but opinions within our team vary between 10% and 30%. This is primarily because there are a bunch of other things misaligned ASIs might do with us after they take over, besides kill us all.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In Daniel Kokotajlo's poll, the median answer for how many months of lead the leading AI company would have when they first fully automate AI R&D was roughly 3 months.",
+    "judgement": "uncertain",
+    "context": "I (Daniel Kokotajlo) recently gave a talk to about 100 people, ~40% of whom were from frontier AI companies, and did a show-of-hands poll about (a) how many months of lead the leading AI company would have at the time they first fully automate AI R&D, and (b) how much of their lead they would be willing to burn. The median answers were roughly 3 months and 1/3rd, respectively.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In Daniel Kokotajlo's poll, the median answer for how much of their lead the leading AI company would be willing to burn was roughly one-third.",
+    "judgement": "uncertain",
+    "context": "I (Daniel Kokotajlo) recently gave a talk to about 100 people, ~40% of whom were from frontier AI companies, and did a show-of-hands poll about (a) how many months of lead the leading AI company would have at the time they first fully automate AI R&D, and (b) how much of their lead they would be willing to burn. The median answers were roughly 3 months and 1/3rd, respectively.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "OpenAI was founded in significant part because of fear that Demis Hassabis, DeepMind CEO, would use AGI to become a dictator.",
+    "judgement": "somewhat likely true",
+    "context": "For example, these old OpenAI emails reveal that OpenAI was founded in significant part because of fear that Demis Hassabis, DeepMind CEO, would use AGI to become dictator. See also related reporting in Empire of AI.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Demis Hassabis is the CEO of DeepMind.",
+    "judgement": "certainly true",
+    "context": "these old OpenAI emails reveal that OpenAI was founded in significant part because of fear that Demis Hassabis, DeepMind CEO, would use AGI to become dictator.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The quote attributed to Ilya Sutskever and Greg Brockman states that OpenAI's goal is to make the future good and avoid an AGI dictatorship.",
+    "judgement": "likely true",
+    "context": "From Ilya and Greg: \"The goal of OpenAI is to make the future good and to avoid an AGI dictatorship. You are concerned that Demis could create an AGI dictatorship. So do we. So it is a bad idea to create a structure where you could become a dictator if you chose to, especially given that we can create some other structure that avoids this possibility.\"",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The US military budget in 2025 was about $1 trillion.",
+    "judgement": "likely true",
+    "context": "The US military budget in 2025 was about $1T. The biggest AI company has $360B ARR at the beginning of 2028 and is still growing at a roughly 150% annualized growth rate.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "By the time the AI 2027 document was finished, Daniel Kokotajlo's median estimate for AGI was 2028.",
+    "judgement": "likely true",
+    "context": "By the time we finished writing AI 2027, Daniel's AGI median was 2028. Other authors' medians were between 2031 and 2035.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Experiment and training compute are major inputs to AI research progress historically.",
+    "judgement": "certainly true",
+    "context": "Experiment and training compute are major inputs to AI research progress historically and will probably continue to be so for the foreseeable future.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Solar power has been on decades-long trends of incremental improvements and economies of scale.",
+    "judgement": "certainly true",
+    "context": "In the 2030s, the price of energy should be starting to drop as solar power continues decades-long trends of incremental improvements and economies of scale.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Some fraction of Chinese AI progress comes from distilling US models.",
+    "judgement": "likely true",
+    "context": "Moreover, Chinese AI progress would slow down too since some fraction of it these days comes from distilling US models.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The AI 2040 authors created a supplement called 'Covert AI Projects Supplement' that analyzes covert AI project dynamics from a Plan A perspective.",
+    "judgement": "likely true",
+    "context": "We analyze these dynamics much more in our Covert AI Projects Supplement. The supplement analyzes things from a Plan A perspective.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The CEOs of frontier AI companies are trying hard to build smarter and smarter AI systems before their competitors do.",
+    "judgement": "certainly true",
+    "context": "Many people, including the CEOs of frontier AI companies, are trying hard to build smarter and smarter AI systems before their competitors do.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The definition of superintelligence used in this document is AI systems that are significantly better than the best humans at everything, while also being faster and cheaper.",
+    "judgement": "likely true",
+    "context": "Superintelligence means AI systems that are significantly better than the best humans at everything, while also being faster and cheaper.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "There is a book or report called 'Empire of AI' that contains reporting related to OpenAI's founding motivations and concerns about DeepMind.",
+    "judgement": "likely true",
+    "context": "For example, these old OpenAI emails reveal that OpenAI was founded in significant part because of fear that Demis Hassabis, DeepMind CEO, would use AGI to become dictator. See also related reporting in Empire of AI.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Being overly paranoid about competitors is a well-known cognitive bias.",
+    "judgement": "likely true",
+    "context": "However, being overly paranoid about competitors is a well-known bias. Assuming that we're in a winner-takes-all race rules out many possible avenues for cooperation, creating a self-fulfilling trap.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "General Groves was in charge of the Manhattan Project.",
+    "judgement": "certainly true",
+    "context": "Perhaps one CEO will end up effectively in charge, the power behind the throne, the General Groves of the Manhattan project.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "General Groves could not have used nuclear weapons to take over the United States.",
+    "judgement": "certainly true",
+    "context": "(Except Groves couldn't turn around and use the nukes to take over the USA, whereas whoever is in charge of The Project plausibly could use the giant army of superintelligences to subvert and puppet the US government.)",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Surgical cyberattacks focused on specific AI projects could potentially crush those projects as of the time of writing.",
+    "judgement": "uncertain",
+    "context": "Our non-expert opinion, based on attempts to look into this, is roughly that surgical cyberattacks focused on specific AI projects could potentially crush them today but by 2029 or so security will have been improved enough that effects on the order of 10% seem more likely.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Eli and Romeo estimate the probability of misaligned AI takeover in the described scenario at about 50%.",
+    "judgement": "uncertain",
+    "context": "Note: our opinions vary about exactly how likely misaligned AI takeover is in this scenario. Thomas and Daniel think it's roughly 70%, Eli and Romeo think it's about 50/50, Brendan roughly 1/3rd, Ryan roughly 20%.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Brendan estimates the probability of misaligned AI takeover in the described scenario at roughly one-third.",
+    "judgement": "uncertain",
+    "context": "Note: our opinions vary about exactly how likely misaligned AI takeover is in this scenario. Thomas and Daniel think it's roughly 70%, Eli and Romeo think it's about 50/50, Brendan roughly 1/3rd, Ryan roughly 20%.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Ryan estimates the probability of misaligned AI takeover in the described scenario at roughly 20%.",
+    "judgement": "uncertain",
+    "context": "Note: our opinions vary about exactly how likely misaligned AI takeover is in this scenario. Thomas and Daniel think it's roughly 70%, Eli and Romeo think it's about 50/50, Brendan roughly 1/3rd, Ryan roughly 20%.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "One out of six authors of the document disagrees with the stated probability of losing control and thinks it is more like 40%.",
+    "judgement": "uncertain",
+    "context": "Note of dissent: 1/6 authors disagree with this as stated, and think that the probability of losing control in those circumstances is more like 40%.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "An intelligence explosion happening without new training runs or major experiments would require an extreme paradigm shift.",
+    "judgement": "likely true",
+    "context": "While it's theoretically possible for an intelligence explosion to happen without new training runs or major experiments, it seems unlikely because it would require an extreme paradigm shift.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Cryptographic proof-of-work schemes for verifying inference workloads are more speculative from a performance perspective than the network tap recomputation approach.",
+    "judgement": "likely true",
+    "context": "Other solutions to this inference-only proposal may be possible and preferable, such as cryptographic proof of work schemes, but these are currently more speculative from a performance perspective.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "300 MW is 5% of the nameplate capacity of the Medog Hydropower Station.",
+    "judgement": "uncertain",
+    "context": "We estimate that the datacenter would require 300 MW, or 5% of the nameplate capacity of the Medog Hydropower Station.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "no_note",
+    "statusReason": "check_failed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The nameplate capacity of the Medog Hydropower Station is approximately 6,000 MW.",
+    "judgement": "uncertain",
+    "context": "We estimate that the datacenter would require 300 MW, or 5% of the nameplate capacity of the Medog Hydropower Station.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "note",
+    "statusReason": null,
+    "note": "The planned nameplate capacity of the Medog Hydropower Station is 60,000 MW (60 GW), not 6,000 MW. Consequently, a 300 MW datacenter would require 0.5% of the station's capacity, rather than 5%.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Medog_Hydropower_Station",
+      "https://thediplomat.com/2026/02/whats-driving-chinas-mega-medog-hydropower-project/",
+      "https://www.power-technology.com/data-insights/power-plant-profile-medog-project-china/"
+    ]
+  },
+  {
+    "claim": "The Politburo Standing Committee has 7 members.",
+    "judgement": "certainly true",
+    "context": "7 Politburo Standing Committee members.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Distillation is a technique that uses the outputs from more intelligent models as a training signal for a new model.",
+    "judgement": "certainly true",
+    "context": "Specifically, you can use the outputs from more intelligent models as a training signal for a new model. This is called distillation, and is often used to build smaller, cheaper models that are more capable than would otherwise be possible.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Distillation is often used to build smaller, cheaper AI models that are more capable than would otherwise be possible.",
+    "judgement": "certainly true",
+    "context": "This is called distillation, and is often used to build smaller, cheaper models that are more capable than would otherwise be possible.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The power efficiency of domestically produced Chinese AI chips is much worse than that of Western chips.",
+    "judgement": "likely true",
+    "context": "Why then, didn't China use chips from their own supply chains? Several reasons: (i) it would be very hard to pull off and require massive coordinated deception across many layers of the supply chain, and probably be caught, (ii) the power efficiency of domestically produced Chinese chips is much worse than the Western chips, and so the covert heat dissipation problem would become much worse.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Supporting a credible deterrence posture with a spectrum of offensive options is a standard part of military planning.",
+    "judgement": "certainly true",
+    "context": "Supporting a credible deterrence posture with a spectrum of offensive options is just part of what militaries do, and it contributes leverage in negotiations.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Daniel has a current parameterization of the AI Futures Model.",
+    "judgement": "likely true",
+    "context": "we took Daniel's current parameterization of the AI Futures Model, narrowed the 80% CI on each parameter by a factor of 2 (in log space for lognormals, in linear space for normals and betas), and recentered the medians on their true values in the AI 2040 capabilities trajectory.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The AI Futures Model uses lognormal, normal, and beta distributions as parameter types.",
+    "judgement": "likely true",
+    "context": "narrowed the 80% CI on each parameter by a factor of 2 (in log space for lognormals, in linear space for normals and betas)",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The detection forecasting for covert projects is described as more speculative than the capabilities forecasting.",
+    "judgement": "likely true",
+    "context": "Our detection forecasting is more speculative than our capabilities forecasting, and is mostly based on intuition and qualitative reasoning.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "BYD performs teardowns of Tesla vehicles, but only after they are sold, not while they are prototypes.",
+    "judgement": "likely true",
+    "context": "That said, total research transparency is somewhat more extreme than either of these examples, because of the speed at which information propagates. BYD doesn't get to teardown Teslas when they are still prototypes, they have to wait until some are actually sold.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Compute scale-ups may be less likely to break safety techniques than algorithmic changes.",
+    "judgement": "uncertain",
+    "context": "Another reason to prefer AI progress to come from compute instead of from algorithms is that compute scale-ups may be less likely to break safety techniques than algorithmic changes.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Some types of algorithmic progress are easily communicated (e.g., new architectures, better optimization algorithms), while others cannot easily diffuse (e.g., huge libraries of RL environments, hardware-software codesign, scale or compute dependent algorithms).",
+    "judgement": "likely true",
+    "context": "Some algorithmic progress is easily communicated (e.g., new architectures, better optimization algorithms), while other types cannot easily diffuse (e.g., huge libraries of RL environments, hardware-software codesign, scale or compute dependent algorithms).",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The scenario references a 10x speedup number that refers to the AI Software R&D uplift from the AI Futures Model, defined as the speedup in software progress achieved if frontier AI systems at a given time were deployed within a leading AI company.",
+    "judgement": "likely true",
+    "context": "Specifically, this 10x speedup number refers to the same thing as AI Software R&D uplift from the AI Futures Model: the speedup in software progress that would be achieved if the frontier AI systems at a given time were deployed within today's leading AI company.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "US federal revenue in 2025 was around $5 trillion.",
+    "judgement": "likely true",
+    "context": "Federal revenue in 2025 was around $5T. AI investment in 2031 is $8T, and the top three companies in the chip supply chain capture around half of this.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The history of European colonialism involved colonial powers that constantly fought each other yet still managed to conquer many regions much wealthier than themselves.",
+    "judgement": "somewhat likely true",
+    "context": "We think a useful analogy here is the history of European colonialism: The colonial powers were constantly fighting each other, and yet still managed to conquer many regions much wealthier than themselves.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "US GDP growth is usually about 3% per year.",
+    "judgement": "likely true",
+    "context": "This is historically unprecedented; for comparison US GDP growth is usually about 3%/yr.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "GDP calculation relies on the selection of a basket of goods.",
+    "judgement": "certainly true",
+    "context": "GDP calculation relies on the selection of a basket of goods. In this scenario, the consumption profile of a typical American shifts substantially from things like food/cars/gas/health care towards land/travel/positional goods between 2026 and 2034, because of the relative price differences.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The US government already has significant affordances for pressuring AI companies.",
+    "judgement": "likely true",
+    "context": "Keep in mind that the US government already has lots of affordances for bullying AI companies!",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Corporate income tax is levied on profit rather than revenue.",
+    "judgement": "certainly true",
+    "context": "Corporate income tax is levied on profit, not revenue, so firms deduct their costs before paying.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Operating expenses like wages and electricity are deducted in the year they are paid for corporate tax purposes.",
+    "judgement": "likely true",
+    "context": "Operating expenses like wages and electricity are deducted the year they're paid and capital expenditures (factories, GPUs, robots) are deducted over the asset's useful life (depending on a chosen depreciation schedule).",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Capital expenditures such as factories, GPUs, and robots are deducted over the asset's useful life for corporate tax purposes, depending on a chosen depreciation schedule.",
+    "judgement": "certainly true",
+    "context": "capital expenditures (factories, GPUs, robots) are deducted over the asset's useful life (depending on a chosen depreciation schedule).",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Tesla has never paid a dividend to shareholders.",
+    "judgement": "certainly true",
+    "context": "Shareholders would accept this for the same reason Tesla shareholders are fine with Tesla never having paid a dividend.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "When a firm's rate of return on capital expenditure is higher than the cost of capital, it is in investors' interest for the firm to reinvest its profits rather than paying them out to investors.",
+    "judgement": "certainly true",
+    "context": "When a firm's rate of return on capex is higher than the cost of capital, it's in investors' interest for the firm to reinvest its profits instead of paying them out to investors now.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Between 1520 and 2020, world GDP grew roughly 200 times.",
+    "judgement": "likely true",
+    "context": "For comparison, between 1520 and 2020, world GDP grew roughly 200x as well, and per capita GDP grew roughly 20x.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Between 1520 and 2020, world per capita GDP grew roughly 20 times.",
+    "judgement": "likely true",
+    "context": "For comparison, between 1520 and 2020, world GDP grew roughly 200x as well, and per capita GDP grew roughly 20x.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Between 1520 and 2020, UK per capita GDP grew by roughly 1.5 orders of magnitude (about 30 times).",
+    "judgement": "uncertain",
+    "context": "In the UK specifically, GDP grew 2.7 orders of magnitude, and per capita GDP grew roughly 1.5 orders of magnitude.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Alaska Permanent Fund distributes dividends to Alaskan citizens.",
+    "judgement": "certainly true",
+    "context": "This is similar to the setup of the Alaska Permanent Fund, except at a much larger scale. Each US citizen owns one share of this corporation, and profits are paid out as dividends, equally divided among citizens.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Wages currently account for around 55% of the economy.",
+    "judgement": "likely true",
+    "context": "the wage bill is now only around 10% of the economy, down from around 55%, with the owners of AI and robots now accruing the difference.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "There are around 300 million people over 16 in the United States.",
+    "judgement": "likely true",
+    "context": "In the US there are around 300M people over 16, leading to $44K and $1M annual dividends per person in 2032 and 2035, respectively.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "There are around 5 billion people over 16 in the rest of the world outside the United States.",
+    "judgement": "likely true",
+    "context": "For the foreign aid dividends, there are around 5B people over 16 in the rest of the world to distribute to, leading to the $1.2k and $9K per person averages for each of those years.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "A positive pressure building is one where the air pressure inside is higher than the outside, for example because air is constantly being pumped in through a filter.",
+    "judgement": "certainly true",
+    "context": "A positive pressure building is one where the air pressure inside is higher than the outside (e.g., because air is constantly being pumped in through a filter). This means that air (along with airborne diseases) only travels out of the building, not inside.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In a positive pressure building, air (along with airborne diseases) only travels out of the building, not inside.",
+    "judgement": "certainly true",
+    "context": "This means that air (along with airborne diseases) only travels out of the building, not inside.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Total spending on the 2024 US presidential race was around $5.5 billion.",
+    "judgement": "likely true",
+    "context": "For scale: total spending on the 2024 US presidential race was around $5.5 billion, much of it aimed at the roughly 3-15 million persuadable voters in swing states.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The number of persuadable voters in swing states in the 2024 US presidential election was roughly 3 to 15 million.",
+    "judgement": "uncertain",
+    "context": "much of it aimed at the roughly 3-15 million persuadable voters in swing states: at least a few hundred dollars per target voter.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "no_note",
+    "statusReason": "model_output_invalid",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Campaign spending per persuadable voter in swing states in the 2024 US presidential election amounted to at least a few hundred dollars.",
+    "judgement": "likely true",
+    "context": "much of it aimed at the roughly 3-15 million persuadable voters in swing states: at least a few hundred dollars per target voter.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In the described scenario, the current distribution of robots between the US, China, and the rest of the world is roughly 15/70/15.",
+    "judgement": "uncertain",
+    "context": "the distribution of compute between the US, China, and the rest of the world (ROW) is roughly 70/15/15, whereas the distribution of robots is roughly 15/70/15.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The UK, France, Germany, Israel, Russia, India, Pakistan, South Korea, and Taiwan are all either nuclear powers or countries with datacenters or semiconductor manufacturing.",
+    "judgement": "certainly true",
+    "context": "The rest of the world's allocation primarily goes to nuclear powers and countries with datacenters or semiconductor manufacturing, e.g., the UK, France, Germany, Israel, Russia, India, Pakistan, South Korea, and Taiwan.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Measuring robot and compute production is somewhat less straightforward than measuring carbon emissions.",
+    "judgement": "likely true",
+    "context": "Unfortunately, measuring robot and compute production is somewhat less straightforward than carbon emissions.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The NVIDIA H100 GPU has a computational performance of 1e15 operations per second at fp16 precision.",
+    "judgement": "likely true",
+    "context": "A H100-equivalent is the computational performance of a H100 GPU at fp16 precision, which is 1e15 operations per second.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Bloom, Jones, Van Reenen & Webb (2020) found that the returns to research for semiconductors is approximately 4.5.",
+    "judgement": "uncertain",
+    "context": "Following Bloom, Jones, Van Reenen & Webb (2020), chip density growth equals research effort growth times the returns to research (~4.5 for semiconductors).",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Both the US and China have enough conventional missiles to destroy older semiconductor fabrication facilities located in the US, China, and Taiwan.",
+    "judgement": "likely true",
+    "context": "Both major powers also have enough conventional missiles to destroy the older fabs, which are still in the US, China and Taiwan.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Etched and Taalas are existing startups working on hardcoding AI model weights into chips so that the chips can only perform inference on specific models.",
+    "judgement": "likely true",
+    "context": "One that seems particularly promising is hardcoding AI model weights into chips, such that they physically aren't able to do any other computations except for inference on the model that is hardcoded into them. Existing startups (e.g., Etched, Taalas) have early efforts in this direction.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Global electricity demand in 2025 was 31,779 TWh, which corresponds to an average power consumption of around 3.6 TW.",
+    "judgement": "likely true",
+    "context": "Global electricity demand in 2025 was 31,779 TWh, which is an average of around 3.6TW.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "31,779 TWh of annual electricity demand corresponds to approximately 3.6 TW of average power.",
+    "judgement": "certainly true",
+    "context": "Global electricity demand in 2025 was 31,779 TWh, which is an average of around 3.6TW.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Ukraine and Russia continued to cooperate on piping gas to Europe for three years despite being at war.",
+    "judgement": "likely true",
+    "context": "Though it's not completely out of the question for the deal to continue despite overt conflict—Ukraine and Russia cooperated to pipe gas to Europe for three years despite being locked in a desperate war.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In the Bloom, Jones, Van Reenen & Webb (2020) framework, chip density growth equals research effort growth times the returns to research.",
+    "judgement": "uncertain",
+    "context": "Following Bloom, Jones, Van Reenen & Webb (2020), chip density growth equals research effort growth times the returns to research (~4.5 for semiconductors).",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Current global AI compute power consumption is approximately 30 GW.",
+    "judgement": "uncertain",
+    "context": "With continued improvements in power efficiency (totalling around 10x efficiency over today's levels) it is around 100x more AI compute power than exists today (~30 GW).",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The recent doubling time of the human economy is around 20 years.",
+    "judgement": "likely true",
+    "context": "it seems like the recent doubling time of the human economy of around 20 years would be an extremely conservative lower bound",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Producing a new 18-year-old human takes 18 years.",
+    "judgement": "certainly true",
+    "context": "at the very least, one naive reason to expect this is that AIs and robots can work 24/7, and both cost less to produce and take less time to produce than a new 18-year-old human",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The phrase 'It feels like alchemy' was said to the author Daniel by an Anthropic researcher.",
+    "judgement": "likely true",
+    "context": "\"It feels like alchemy\" was said to me (Daniel) by an Anthropic researcher recently.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The text references a Nature Neuroscience paper from 2023 (https://www.nature.com/articles/s41593-023-01304-9) as an example of technology relevant to lie detection.",
+    "judgement": "likely true",
+    "context": "Specifically we are imagining something like a much better version of this: https://www.nature.com/articles/s41593-023-01304-9",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "AI token generation at roughly ten tokens per second is approximately equivalent to one second of human cognitive activity, according to the authors.",
+    "judgement": "uncertain",
+    "context": "How many tokens per second for an AI is equivalent to one second of human activity, holding fixed other variables like skill level? We think it's roughly about ten, but that's a bit subjective.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "There exists an article or document called 'The Intelligence Curse' that provides a lengthier articulation of an argument referenced in this text.",
+    "judgement": "likely true",
+    "context": "For a lengthier articulation of this argument, see The Intelligence Curse.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The lines between robot, vehicle, appliance, and machine tool are already blurry in the present day.",
+    "judgement": "likely true",
+    "context": "The lines between robot, vehicle, appliance, and machine tool are already blurry but become much blurrier during the 2030s in this scenario.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Nature paper referenced (s41593-023-01304-9) was published in Nature Neuroscience.",
+    "judgement": "likely true",
+    "context": "Specifically we are imagining something like a much better version of this: https://www.nature.com/articles/s41593-023-01304-9",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Historically, it has been rare for scrupulously honest or genuinely altruistic people to be widely recognized as such during their lifetimes.",
+    "judgement": "likely true",
+    "context": "The reason we make the analogy to saints and angels is that historically, while there have been scrupulously honest people, and genuinely altruistic people, etc. it's rare for them to be widely recognized as such in their lifetimes, and never before has there been an entire large subpopulation that is near-universally recognized to be extremely virtuous.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In economics, safety methods are classified as public goods, meaning they are non-rival and non-excludable.",
+    "judgement": "somewhat likely true",
+    "context": "In economics jargon: safety methods are public goods (goods that are non-rival and non-excludable).",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Patents do not work well for software or for most research.",
+    "judgement": "somewhat likely true",
+    "context": "Patents don't seem to work well for software or for most research. They also might not work that well in general.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Around 0.3% of US GDP goes to foreign aid as of the status quo.",
+    "judgement": "likely true",
+    "context": "This is a large departure from the status quo where around 0.3% of US GDP goes to foreign aid.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Burkina Faso has experienced regular recent coup attempts.",
+    "judgement": "certainly true",
+    "context": "This starts in countries where the political leaders don't trust their militaries due to regular recent coup attempts (e.g., Burkina Faso and Guinea-Bissau).",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Guinea-Bissau has experienced regular recent coup attempts.",
+    "judgement": "certainly true",
+    "context": "This starts in countries where the political leaders don't trust their militaries due to regular recent coup attempts (e.g., Burkina Faso and Guinea-Bissau).",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "OpenAI's plan contains policy prescriptions such as improving bioresilience, information sharing, and international safety standards.",
+    "judgement": "likely true",
+    "context": "For example, OpenAI's plan contains some similar policy prescriptions as us, such as improving bioresilience, information sharing, and international safety standards. But the solutions it proposes do not seem to substantially reduce loss of control or concentration of power risks.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "OpenAI's plan does not attempt to roll forward what might happen if they implement these policies.",
+    "judgement": "uncertain",
+    "context": "The document doesn't attempt to roll forward what might happen if they implement these policies.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The paper 'Eternity in Six Hours: Intergalactic Spreading of Intelligent Life and Sharpening the Fermi Paradox' argues it is physically possible to send colonizing probes to the entire reachable universe in approximately six hours.",
+    "judgement": "likely true",
+    "context": "Our best guess is that it is physically possible to send out colonizing probes to the entire reachable universe in a short amount of time (e.g., 6 hours), see: Eternity in six hours: Intergalactic spreading of intelligent life and sharpening the Fermi paradox.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Most members of the authoring team think the probability of misaligned AI takeover if only incremental proposals are followed is over 50%.",
+    "judgement": "uncertain",
+    "context": "To clarify: We are not saying that following only incremental proposals will definitely result in misaligned AI takeover. Opinions on our team differ; most of us think the probability is over 50%, some think it is lower but still unacceptably high.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The cosmic resources outside the solar system constitute the vast majority of cosmic resources.",
+    "judgement": "certainly true",
+    "context": "In this Epilogue, we'll focus on cosmic resources outside of the solar system, as this is the vast majority of cosmic resources. Property in the solar system should also be distributed to humanity, but it likely should be governed differently than distant resources.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Daniel Kokotajlo gave a talk to about 100 people, approximately 40% of whom were from frontier AI companies.",
+    "judgement": "uncertain",
+    "context": "I (Daniel Kokotajlo) recently gave a talk to about 100 people, ~40% of whom were from frontier AI companies, and did a show-of-hands poll about (a) how many months of lead the leading AI company would have at the time they first fully automate AI R&D, and (b) how much of their lead they would be willing to burn.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Thomas and Daniel estimate the probability of misaligned AI takeover in the described scenario at roughly 70%.",
+    "judgement": "uncertain",
+    "context": "Note: our opinions vary about exactly how likely misaligned AI takeover is in this scenario. Thomas and Daniel think it's roughly 70%, Eli and Romeo think it's about 50/50, Brendan roughly 1/3rd, Ryan roughly 20%.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Epoch estimated the fraction of compute production smuggled to China in 2025 at 3.2%.",
+    "judgement": "uncertain",
+    "context": "This forecast is based on Epoch's estimate of the fraction of compute production which was smuggled to China in 2025 (3.2%), adjusted downward to account for improved US enforcement.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Between 1520 and 2020, UK GDP grew by roughly 2.7 orders of magnitude (about 500 times).",
+    "judgement": "uncertain",
+    "context": "In the UK specifically, GDP grew 2.7 orders of magnitude, and per capita GDP grew roughly 1.5 orders of magnitude.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In the described scenario, the current distribution of compute between the US, China, and the rest of the world is roughly 70/15/15.",
+    "judgement": "uncertain",
+    "context": "the distribution of compute between the US, China, and the rest of the world (ROW) is roughly 70/15/15, whereas the distribution of robots is roughly 15/70/15.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "no_note",
+    "statusReason": "model_output_invalid",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Amoebas have doubling times measured in minutes.",
+    "judgement": "likely false",
+    "context": "nanobots with amoeba-like doubling times of minutes devouring the earth in half a day",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "note",
+    "statusReason": null,
+    "note": "While the physical process of cell division can take 20-30 minutes, the actual doubling time for amoebas is much longer, typically between 4 and 48 hours. Rapid doubling times of 20 minutes are characteristic of certain bacteria, not amoebas.",
+    "sources": [
+      "https://grokipedia.com/page/Amoeba_proteus",
+      "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9511172/",
+      "https://en.wikipedia.org/wiki/Fission_(biology)"
+    ]
+  },
+  {
+    "claim": "The paper 'Eternity in Six Hours' assumes sending out tiny self-replicating Von Neumann probes with replicators the size of acorns.",
+    "judgement": "uncertain",
+    "context": "However, this paper assumes sending out tiny self-replicating Von-Neumann probes, with replicators the size of acorns: if you want to go out in the initial wave, you need to accept transportation on a tiny flashdrive, and robots to physically construct a new body at the destination galaxy.",
+    "contextUrl": "https://ai-2040.com/footnotes",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  }
+]

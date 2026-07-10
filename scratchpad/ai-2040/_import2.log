@@ -1,0 +1,392 @@
+Project "AI 2040: Plan A" (ai-2040) → 21 pages from https://ai-2040.com (resuming — skipping 5 already done)
+
+=== (1/21) Main Scenario — already done, skipping
+=== (2/21) About — already done, skipping
+=== (3/21) Footnotes — already done, skipping
+=== (4/21) Supplements — already done, skipping
+=== (5/21) AI For Epistemics — already done, skipping
+=== (6/21) Alignment Roadmap — https://ai-2040.com/supplements/alignment-roadmap
+  "Alignment Roadmap" (no date)
+  362 claims extracted — dropped 161 speculation, fact-checking 31 of 201 (uncertain or below)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 178s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 174s)
+  ✅ no note (prefilter_no_note) — The plan aims to use a relatively iterative and empirical approach, which the authors believe is probably doable once powerful AIs are available.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 149s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 148s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 144s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 133s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 119s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 114s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 110s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 103s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 84s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 80s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 69s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 50s)
+  ✅ no note (prefilter_no_note) — Control evaluations are described as relatively easy to evaluate because they primarily require estimating capabilities.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 39s)
+  ✅ no note (prefilter_no_note) — The document identifies acausal trade research and philosophy as examples of high-stakes, difficult, open-ended, and conceptually loaded tasks where humans can't check the AI's output effectively.
+[searxng] all providers in cool-down; waiting 20s (uncapped would be 20s)
+[searxng] all providers in cool-down; waiting 6s (uncapped would be 6s)
+[searxng] all providers in cool-down; waiting 2s (uncapped would be 2s)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 182s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 182s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 174s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 174s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 144s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 144s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 144s)
+  ✅ no note (prefilter_no_note) — A large fraction of AI safety work in the miscellaneous science/interventions category relies on ad hoc evaluation methodologies rather than core methodologies like control evaluations, misalignment analogies, or behavioral tests.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 114s)
+  ✅ no note (prefilter_no_note) — The authors estimate that natural schemers account for approximately 3/6 of the expected value of misalignment analogy work, AIs trained to behave like schemers are 1/6 of the value, and abstract analogies are 2/6 of the value.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 110s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 93s)
+  ✅ no note (prefilter_no_note) — Research directions that are broadly invariant to future AI development don't generally seem that promising at an absolute level.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 76s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 76s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 63s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 59s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 42s)
+[searxng] all providers in cool-down; waiting 29s (uncapped would be 29s)
+[searxng] all providers in cool-down; waiting 29s (uncapped would be 29s)
+  ✅ no note (prefilter_no_note) — According to the author, the single most promising principled approach for avoiding scheming is ensuring relevant reasoning is monitorable (e.g., monitorable chain-of-thought) such that the AI is incapable of undetected scheming while retaining sufficient capabilities.
+[searxng] all providers in cool-down; waiting 3s (uncapped would be 3s)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 182s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 178s)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — In the linked post's ontology, 'good analogies' correspond to 'building and iterating against behavioral tests' and 'model organisms' correspond to 'misaligment analogies.'
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 148s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 144s)
+  ✅ no note (prefilter_no_note) — Model internals interventions and some moonshot-style approaches are examples of work expected to be broadly invariant to future AI development.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 129s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 118s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 114s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 99s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 80s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 73s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 65s)
+  ✅ no note (prefilter_no_note) — Preventing AIs from acquiring large amounts of political capital is ranked third in importance because it is estimated to be somewhat harder for AIs to accomplish than backdooring future models or sabotaging safety work.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 50s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 43s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 35s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 30s)
+  ✅ no note (prefilter_no_note) — During Phase 1, AIs are not transformatively useful for accelerating safety work.
+[searxng] all providers in cool-down; waiting 9s (uncapped would be 9s)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 182s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 178s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 178s)
+[gemini] free key out of quota (model: gemini-3.1-pro-preview); falling back to next key.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The roughly current (early 2026) level of AI R&D speedup is approximately 1.15x.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 148s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 144s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 144s)
+  ✅ no note (prefilter_no_note) — Safety research and implementation output can be modeled as a production function of labor, compute, and wisdom/judgement/taste as inputs.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 118s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 110s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 110s)
+  ✅ no note (prefilter_no_note) — Safety R&D is harder to accelerate with AI than capabilities R&D due to being more confused and harder to verify.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 84s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 76s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 72s)
+  ✅ no note (prefilter_no_note) — The term 'slopolis' refers to a default outcome where AI safety research looks good on the surface but is actually poor quality.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 54s)
+  ✅ no note (prefilter_no_note) — Waiting until a 10x AI R&D uplift to implement AI control incurs a 7% chance of existential risk according to the author's model.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 39s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 39s)
+  ✅ no note (prefilter_no_note) — The estimated probability of scheming at a 1.15x AI R&D speedup is less than 1%.
+[searxng] all providers in cool-down; waiting 7s (uncapped would be 7s)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 174s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 174s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 174s)
+[gemini] free key out of quota (model: gemini-3.1-pro-preview); falling back to next key.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 144s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 144s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 144s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 110s)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The current compute gap between the US and China is approximately 7x more compute for the US.
+[gemini] free key out of quota (model: gemini-3.5-flash); falling back to next key.
+[pricing] No Gemini pricing for "gemini-3.5-flash" — recording cost as 0
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Superhuman coder corresponds to roughly 15x AI R&D acceleration.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — ITAI corresponds to roughly 3x AI R&D labor acceleration.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 83s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 80s)
+  ✅ no note (prefilter_no_note) — The author considers it very unlikely that OpenAI will actually trigger the merge-and-assist provision in its charter.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 53s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 46s)
+[searxng] all providers in cool-down; waiting 15s (uncapped would be 15s)
+[searxng] all providers in cool-down; waiting 15s (uncapped would be 15s)
+  ✅ no note (prefilter_no_note) — Current AI systems have some amount of unreliable introspective access.
+  ✅ no note (prefilter_no_note) — Anthropic has a Responsible Scaling Policy (RSP) that includes an AI R&D-4 capability bar.
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+  ✅ no note (prefilter_no_note) — Having a large lead as the leading AI project is described as pretty unlikely in the Plan C scenario.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 186s)
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 154s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 154s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 146s)
+  ✅ no note (prefilter_no_note) — The strategy for AI handoff is extremely similar to the strategy for elicitation during Phase 2 and Phase 3 of the plan, because both are solving the problem of trying to ensure that AIs are doing useful work.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 124s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 124s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 116s)
+  ✅ no note (prefilter_no_note) — Prior AI alignment plans tend to present a class of approaches without overall discussions of how to adapt the plan based on evidence.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 74s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 70s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 70s)
+  ✅ no note (prefilter_no_note) — The authors of this plan believe that current interpretability techniques are not very useful for AI safety outcomes.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 44s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 40s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 40s)
+[searxng] all providers in cool-down; waiting 6s (uncapped would be 6s)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+  ✅ no note (prefilter_no_note) — The plan described in the article focuses on handoff as the central exit strategy, which is similar to Clymer's plan but distinct from Bowman's and Karnofsky's plans.
+[searxng] all providers in cool-down; waiting 8s (uncapped would be 8s)
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+  ✅ no note (prefilter_no_note) — The authors state that current AI models likely do produce low-quality work while thinking their outputs are good (the Slopolis condition).
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 170s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 166s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 140s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 136s)
+  ✅ no note (prefilter_no_note) — In an AI control framework, security work against human adversaries is roughly as helpful as control measures.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 102s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 72s)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The document's author expects that something much less reasonable than the proposed plan will happen in practice.
+[PROGRESS] (6/21) Alignment Roadmap — extracted 362 · spec 161 dropped · kept 201 (skipped 170 confident, checked 31 → ✍️ 0 notes · ✅ 31 no-note · ❌ 0 err)
+=== (7/21) Capability Scaling Strategy — https://ai-2040.com/supplements/capability-scaling-strategy
+  "Capability Scaling Strategy" (no date)
+  80 claims extracted — dropped 51 speculation, fact-checking 4 of 29 (uncertain or below)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+  ✅ no note (prefilter_no_note) — Covert project risk is identified as the main other contender besides deal decline risk for a substantial reason to hand off faster.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 178s)
+  ✅ no note (prefilter_no_note) — The formula used to calculate the benefit of handing off instead of delaying is: deal decline probability × alignment probability × deal decline badness minus alignment gain per year.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 161s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 148s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 131s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 114s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 97s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 84s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 67s)
+  ✅ no note (prefilter_no_note) — In the simulations described, the Consortium's alignment research during Stage 2 incurs capabilities externalities at a rate of 0.25 software OOMs per year.
+  ✅ no note (prefilter_no_note) — In the simulations described, the Consortium is required to make 0.2 OOM of software progress for each OOM of training FLOP/s gained.
+[PROGRESS] (7/21) Capability Scaling Strategy — extracted 80 · spec 51 dropped · kept 29 (skipped 25 confident, checked 4 → ✍️ 0 notes · ✅ 4 no-note · ❌ 0 err)
+=== (8/21) Comparing Possible Plans — https://ai-2040.com/supplements/comparing-possible-plans
+  "Comparing Possible Plans" (no date)
+  90 claims extracted — dropped 24 speculation, fact-checking 6 of 66 (uncertain or below)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+  ✅ no note (prefilter_no_note) — In the described classification, more intense plans select for more competent people.
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+  ✅ no note (prefilter_no_note) — The default Plan A AI Futures Model trajectory has a minimum-length takeoff from AC to TED-AI of slightly less than a year.
+  ✅ no note (prefilter_no_note) — Chinese AI capabilities are currently behind the US by about 8 months.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 95s)
+  ✅ no note (prefilter_no_note) — Much of Chinese AI progress is plausibly coming from distillation and/or algorithmic leakage from US models.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — GPU arms control is simpler to enforce than other proposed AI governance plans (such as compute caps combined with verification).
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 65s)
+  ✅ no note (prefilter_no_note) — China's original compute total for AI is about 10% of the total of the leading US AI project.
+[PROGRESS] (8/21) Comparing Possible Plans — extracted 90 · spec 24 dropped · kept 66 (skipped 60 confident, checked 6 → ✍️ 0 notes · ✅ 6 no-note · ❌ 0 err)
+=== (9/21) Compute in Plan A — https://ai-2040.com/supplements/compute-supplement
+  "Compute in Plan A" (no date)
+  250 claims extracted — dropped 42 speculation, fact-checking 109 of 208 (uncertain or below)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+  ✅ no note (prefilter_no_note) — The A100 GPU has a compute TPP of 4,992.
+  ✅ no note (prefilter_no_note) — Non-AI CPU servers score approximately 1.4 on the usefulness factor because they carry lots of memory and networking around relatively little compute.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 101s)
+  ✅ no note (prefilter_no_note) — The Nvidia H100 GPU has a Total Processing Performance (TPP) of 15,800.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 71s)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The Nvidia H100 GPU has Ethernet scale-out bandwidth of 50 GB/s.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 37s)
+  ✅ no note (prefilter_no_note) — AI compute cost-efficiency (H100e per dollar) has been improving at approximately 1.4x per year.
+[searxng] all providers in cool-down; waiting 7s (uncapped would be 7s)
+  ✅ no note (prefilter_no_note) — The AI capital expenditure trend has been approximately 1.72x per year through Q3 2023 to Q4 2025.
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+  ✅ no note (prefilter_no_note) — The RTX 4090 has a compute TPP of 5,285.
+[gemini] Retryable error (free key, attempt 1/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 2000ms...
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 153s)
+[llm] Empty content (attempt 1/4, model: deepseek/deepseek-v4-flash). Retrying in 1000ms...
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — 5.09 million H100e were added on $260 billion in AI spending in 2024, based on Epoch AI data.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 126s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 123s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 96s)
+  ✅ no note (prefilter_no_note) — China owned approximately 16% of AI compute in 2024.
+[gemini] free key out of quota (model: gemini-3.1-pro-preview); falling back to next key.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — 13.6 million H100e were added from $448 billion in AI spending in 2025, based on Epoch AI data.
+[searxng] all providers in cool-down; waiting 18s (uncapped would be 18s)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ⚠️  NOTE — The RTX 4090 has NIC networking of 64 Gb/s.
+      The GeForce RTX 4090 is a graphics processing unit (GPU) and does not include a network interface controller (NIC). It features only DisplayPort, HDMI, and power connectors, with no built-in networking capabilities.
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 178s)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The US owned approximately 71% of AI compute in 2024.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — AI-relevant compute was approximately 26% of all compute globally in 2024.
+  ✅ no note (prefilter_no_note) — AI-relevant compute was approximately 48% of all compute globally in 2025.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The total frontier AI company annual recurring revenue was approximately $30 billion at the start of 2026.
+  ✅ no note (prefilter_no_note) — AI compute stock grew approximately 2.5x year-over-year in 2024.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 100s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 96s)
+  ✅ no note (prefilter_no_note) — ASML had approximately 127 EUV tools in use at the end of 2021.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 70s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 59s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 51s)
+[searxng] all providers in cool-down; waiting 25s (uncapped would be 25s)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (check_failed) — ASML shipped 54 EUV tools in 2022 and 42 EUV tools in 2023, according to ASML's annual reports.
+[searxng] all providers in cool-down; waiting 21s (uncapped would be 21s)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 182s)
+  ✅ no note (prefilter_no_note) — ASML guided for 60+ EUV tool shipments in 2026 and approximately 80 for 2027.
+  ✅ no note (prefilter_no_note) — The global EUV lithography tool fleet was approximately 220 operating tools at the start of 2024.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Epoch's hyperscaler Broad CapEx figures are $260 billion for 2024 and $448 billion for 2025.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 142s)
+  ✅ no note (prefilter_no_note) — The article splits non-China AI compute ownership between the US and the rest of the world at an 85/15 ratio.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 118s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 106s)
+  ✅ no note (prefilter_no_note) — HBM DRAM wafers require approximately 4–7 EUV layers per wafer.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 82s)
+  ✅ no note (prefilter_no_note) — Approximately 13.6 million H100-equivalents were added in 2025.
+  ✅ no note (prefilter_no_note) — Each EUV tool performs approximately 360,000 exposure passes per year.
+  ✅ no note (prefilter_no_note) — Approximately 5.09 million H100-equivalents were added in 2024.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 34s)
+  ✅ no note (prefilter_no_note) — Historical compute cost-efficiency improvement has been approximately 1.4x per year.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 30s)
+[searxng] all providers in cool-down; waiting 4s (uncapped would be 4s)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 0s (uncapped would be 0s)
+  ✅ no note (prefilter_no_note) — AI's share of the global EUV fleet was approximately 7% in 2024.
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+  ✅ no note (prefilter_no_note) — EUV utilization was approximately 52% of effective capacity in 2024.
+  ✅ no note (prefilter_no_note) — Approximately 7.5 million AI accelerator units were shipped in 2024.
+  ✅ no note (prefilter_no_note) — Approximately 36 million gaming GPUs were shipped in 2024.
+  ✅ no note (prefilter_no_note) — AI's share of the global EUV fleet was approximately 15% in 2025.
+  ✅ no note (prefilter_no_note) — Approximately 44 EUV tools were added to the global fleet in 2024.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 72s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 68s)
+  ✅ no note (prefilter_no_note) — Immersion (DUV) lithography utilization was approximately 20% in 2024.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 42s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 38s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 38s)
+[searxng] all providers in cool-down; waiting 4s (uncapped would be 4s)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ⚠️  NOTE — Approximately 13 million non-AI server units were shipped in 2024.
+      According to TrendForce, total global server shipments in 2024 were ~13.7 million units, but AI servers accounted for ~1.65–1.67 million of those. Non-AI server shipments were approximately 12 million units, not 13 million.
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 178s)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Approximately 30 billion 'other' devices (microcontrollers, automotive, edge) were shipped in 2024.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 148s)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Phones have a low and declining usefulness factor for AI workloads, going from 0.21 in 2024 to 0.05 by 2029.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 128s)
+  ✅ no note (prefilter_no_note) — Non-AI servers have a higher usefulness factor for AI workloads than dedicated AI accelerators (1.38 vs 1.16 in 2024).
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 97s)
+  ✅ no note (prefilter_no_note) — The usefulness factor U for AI accelerators is greater than 1 (approximately 1.16 in 2024 and 1.04 in 2028), meaning raw H100-equivalent compute slightly understates their effective contribution to AI workloads.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 63s)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The H200 is available to China under the current US licensing policy as of the time of writing.
+  ✅ no note (prefilter_no_note) — China's AI compute stock at the end of 2024 was estimated at 1.3 million H100 equivalents.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 37s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 33s)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — China's share of world AI compute at end of 2024 was estimated at 14.7%.
+[searxng] all providers in cool-down; waiting 5s (uncapped would be 5s)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Gaming GPUs have a very low usefulness factor for AI workloads (0.04 in 2024).
+  ✅ no note (prefilter_no_note) — The non-China AI compute remainder is estimated to be split 85/15 between the US and the Rest of the World.
+  ✅ no note (prefilter_no_note) — The article's calibration of all-in cost markup over production cost per H100e gives roughly 7x to 8x for 2025-2028.
+  ✅ no note (prefilter_no_note) — The US held approximately 71% of world AI compute ownership in 2024.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 120s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 101s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 97s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 90s)
+  ✅ no note (prefilter_no_note) — In 2020, non-AI single-device (consumer) compute constituted 84% of the effective H100e stock.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 71s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 67s)
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 51s)
+[searxng] all providers in cool-down; waiting 29s (uncapped would be 29s)
+[searxng] all providers in cool-down; waiting 21s (uncapped would be 21s)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 4s (uncapped would be 4s)
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 178s)
+  ✅ no note (prefilter_no_note) — In 2024, approximately 0.16 million H100 equivalents of compute were smuggled into China.
+  ✅ no note (prefilter_no_note) — By 2024, AI-relevant cluster compute had grown to 26% of the effective H100e stock, up from 4.1% in 2020.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 148s)
+[gemini] free key out of quota (model: gemini-3.5-flash); falling back to next key.
+  ✅ no note (prefilter_no_note) — China's loopholes channel (offshore datacenters / rental) accounted for an estimated 0.25 million H100 equivalents in 2024.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — China domestically manufactured approximately 0.25 million raw H100 equivalents of AI compute in 2024.
+  ✅ no note (prefilter_no_note) — Epoch has estimated a CMOS transistor theoretical limit for compute power efficiency at approximately 200× the efficiency of a current H100.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — China's legal western chip imports in 2024 were estimated at 0.2 million H100 equivalents.
+[pricing] No Gemini pricing for "gemini-3.5-flash" — recording cost as 0
+[processTweet] Bot pipeline failed for a7a8ba14-90: 178 |     enableGoogleSearch: true,
+179 |     responseSchema: SEARCH_INLINE_RESPONSE_SCHEMA,
+180 |   });
+181 | 
+182 |   if (!result.parsed) {
+183 |     throw new Error(
+                    ^
+error: Gemini did not return parseable JSON. text=
+      at searchWithGeminiNative (/Users/jimmaar/Github/cn-return-bot/src/pipeline/simple-bot/searchDispatch.ts:183:15)
+
+  ✅ no note (bot_error) — The article estimates China added a total of 0.9 million H100 equivalents of AI compute in 2024.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 40s)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 178s)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Google DeepMind and OpenAI each use around 10% of global compute as end-users in 2026, making them roughly similar in usage.
+  ✅ no note (prefilter_no_note) — In 2024, OpenAI spent approximately one third of its compute on inference.

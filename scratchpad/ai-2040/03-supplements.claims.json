@@ -1,0 +1,182 @@
+[
+  {
+    "claim": "The AI 2040 project published supplementary materials to accompany a scenario they wrote.",
+    "judgement": "likely true",
+    "context": "We thought about many things in order to write this scenario. We believe in transparency, so we're publishing our thinking here in the form of various supplements, even though some of them are unpolished, scrappy, and/or guesswork.",
+    "contextUrl": "https://ai-2040.com/supplements",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The AI 2040 project published a total of 17 supplements.",
+    "judgement": "likely true",
+    "context": "3 of 17 supplements · Speculative Analysis ... 17 of 17 supplements",
+    "contextUrl": "https://ai-2040.com/supplements",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Brendan Halstead and Thomas Larsen authored the supplement on Covert AI Projects.",
+    "judgement": "likely true",
+    "context": "Covert AI Projects\n\nHow much do hidden AI projects threaten the deal, and how we can prevent, detect, and deter them?\n\nBrendan Halstead, Thomas Larsen",
+    "contextUrl": "https://ai-2040.com/supplements",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Eli Lifland authored the supplement on AI for Epistemics.",
+    "judgement": "likely true",
+    "context": "AI for Epistemics\n\nHow we can use AI to improve human judgment and collective decision-making.\n\nEli Lifland",
+    "contextUrl": "https://ai-2040.com/supplements",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Ryan Greenblatt and Thomas Larsen authored the Alignment Roadmap supplement.",
+    "judgement": "likely true",
+    "context": "Alignment Roadmap\n\nOur best-guess roadmap of the alignment objectives needed to avoid AI takeover.\n\nRyan Greenblatt, Thomas Larsen",
+    "contextUrl": "https://ai-2040.com/supplements",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Space Governance Plan supplement was co-authored by Mia Taylor (Forethought), Fin Moorhouse (Forethought), Max Dalton (Forethought), and Thomas Larsen (AI Futures Project).",
+    "judgement": "likely true",
+    "context": "Space Governance Plan\n\nHow the resources of space could be allocated in the longer term future.\n\nMia Taylor (Forethought), Fin Moorhouse (Forethought), Max Dalton (Forethought), Thomas Larsen (AI Futures Project)",
+    "contextUrl": "https://ai-2040.com/supplements",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The supplements are categorized into five groups: Plan A Basics, Plan A Policies, Analysis of Plan A Policies, Economics, and Speculative Analysis.",
+    "judgement": "likely true",
+    "context": "All\nPlan A Basics\nPlan A Policies\nAnalysis of Plan A Policies\nEconomics\nSpeculative Analysis",
+    "contextUrl": "https://ai-2040.com/supplements",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "There are 2 supplements in the Plan A Basics category.",
+    "judgement": "likely true",
+    "context": "2 of 17 supplements · Plan A Basics",
+    "contextUrl": "https://ai-2040.com/supplements",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "There are 5 supplements in the Plan A Policies category.",
+    "judgement": "likely true",
+    "context": "5 of 17 supplements · Plan A Policies",
+    "contextUrl": "https://ai-2040.com/supplements",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "There are 4 supplements in the Analysis of Plan A Policies category.",
+    "judgement": "likely true",
+    "context": "4 of 17 supplements · Analysis of Plan A Policies",
+    "contextUrl": "https://ai-2040.com/supplements",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "There are 3 supplements in the Economics category.",
+    "judgement": "likely true",
+    "context": "3 of 17 supplements · Economics",
+    "contextUrl": "https://ai-2040.com/supplements",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "There are 3 supplements in the Speculative Analysis category.",
+    "judgement": "likely true",
+    "context": "3 of 17 supplements · Speculative Analysis",
+    "contextUrl": "https://ai-2040.com/supplements",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Takeoff Supplement uses a modified AI Futures Model with an interactive explorer.",
+    "judgement": "likely true",
+    "context": "Takeoff Supplement\n\nThe modified AI Futures Model behind Plan A's trajectories, with an interactive explorer.\n\nBrendan Halstead",
+    "contextUrl": "https://ai-2040.com/supplements",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Romeo Dean and Thomas Larsen authored the Security in Plan A supplement.",
+    "judgement": "likely true",
+    "context": "Security in Plan A\n\nWhat security is needed for Plan A in model weights, verification integrity, and algorithmic secrets.\n\nRomeo Dean, Thomas Larsen",
+    "contextUrl": "https://ai-2040.com/supplements",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Verification Plan supplement addresses how the US and China can enforce an AI slowdown without having to trust each other.",
+    "judgement": "likely true",
+    "context": "Verification Plan\n\nHow can the US and China enforce an AI slowdown without having to trust each other?",
+    "contextUrl": "https://ai-2040.com/supplements",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The AI 2040 scenario involves a deal between the US and China regarding AI development.",
+    "judgement": "likely true",
+    "context": "Covert AI Projects\n\nHow much do hidden AI projects threaten the deal, and how we can prevent, detect, and deter them? ... Verification Plan\n\nHow can the US and China enforce an AI slowdown without having to trust each other?",
+    "contextUrl": "https://ai-2040.com/supplements",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Economics of Plan A supplement argues that full automation and explosive economic growth from AI are expected.",
+    "judgement": "likely true",
+    "context": "Economics of Plan A\n\nWhy we expect full automation and explosive growth from AI and summaries of our economic model.",
+    "contextUrl": "https://ai-2040.com/supplements",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Economic Growth Explorer is an interactive tool for exploring the AI 2040 project's economic model.",
+    "judgement": "likely true",
+    "context": "Economic Growth Explorer\n\nAn interactive explorer of our economic model.",
+    "contextUrl": "https://ai-2040.com/supplements",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  }
+]

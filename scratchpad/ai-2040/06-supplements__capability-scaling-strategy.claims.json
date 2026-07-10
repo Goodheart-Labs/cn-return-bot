@@ -1,0 +1,292 @@
+[
+  {
+    "claim": "The supplement was authored by Eli Lifland.",
+    "judgement": "likely true",
+    "context": "Capability Scaling Strategy\nEli Lifland\nOverview",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Top-Expert-Dominating AI (TED-AI) refers to AIs that are at least as good as top humans at every cognitive task.",
+    "judgement": "likely true",
+    "context": "We think that this level will be approximately Top-Expert-Dominating AI (TED-AI), i.e. AIs that are at least as good as top humans at every cognitive task.",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Max-controllable-AI is defined as the maximum capability level at which there is confidence that control over the AIs is maintained, meaning the AIs couldn't cause catastrophic harm even if they wanted to.",
+    "judgement": "likely true",
+    "context": "Max-controllable-AI is the maximum capability level at which we are confident that we maintain control over the AIs, i.e. the property that the AIs couldn't cause catastrophic harm even if they wanted to.",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Software progress and training compute scaling are the two sources of AI capability progress.",
+    "judgement": "likely true",
+    "context": "Software progress and training compute scaling are the two sources of progress. Software progress is mostly made public, meaning it diffuses to covert projects.",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Deal decline encompasses both deal dissolution (the deal is officially dissolved) and deal impairment (the deal becomes substantially less effective).",
+    "judgement": "likely true",
+    "context": "We call this deal decline, and it encompasses both of:\nDeal dissolution. The deal is officially dissolved.\nDeal impairment. The deal becomes substantially less effective than if it were implemented well and adhered to, but isn't dissolved.",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Deal impairment can take the forms of deal non-enforcement, deal misexecution, or deal revision.",
+    "judgement": "likely true",
+    "context": "Ways the deal could be impaired:\nDeal non-enforcement. The deal is not enforced as strongly as before, e.g. a country blatantly not complying is not punished.\nDeal misexecution. The letter of the deal is followed but is executed poorly.\nDeal revision. The deal is explicitly edited to be worse.",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The training compute safety tax is defined as the difference between the amount of compute actually used on a training run and the minimum compute required to reach that capability level.",
+    "judgement": "likely true",
+    "context": "We also need to decide the training compute safety tax that we'd like to pay, i.e. the difference between the amount of compute actually used on a training run to reach a given capability level, and the minimum amount of compute required to reach that capability.",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Some software improvements may be required to utilize increased amounts of compute.",
+    "judgement": "likely true",
+    "context": "it might not be possible to avoid discovering software improvements, for 2 reasons: (a) some software improvements might be required to utilize increased amounts of compute, (b) doing lots of safety R&D likely inevitably leads to some capabilities externalities in the form of software progress.",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Doing safety R&D on AI systems likely leads to some capabilities improvements as an externality.",
+    "judgement": "likely true",
+    "context": "(b) doing lots of safety R&D likely inevitably leads to some capabilities externalities in the form of software progress.",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Covert project risk is identified as the main other contender besides deal decline risk for a substantial reason to hand off faster.",
+    "judgement": "uncertain",
+    "context": "Cost: Deal decline risk. Covert project risk is the main other contender for a substantial reason to hand off faster.",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In the simulations described, the Consortium's alignment research during Stage 2 incurs capabilities externalities at a rate of 0.25 software OOMs per year.",
+    "judgement": "uncertain",
+    "context": "In our simulations, we require that the Consortium make 0.2 OOM of software progress for each OOM of training FLOP/s they gain, and that during Stage 2, the Consortium's alignment research incurs capabilities externalities at a rate of 0.25 software OOMs/year.",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Paying a safety tax means training a model with more compute than required to reach a given capability level in order to use a safer training process.",
+    "judgement": "likely true",
+    "context": "paying 'safety taxes' such as training a model with more compute than is required to reach a given capability level, in order to use a safer training process.",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The formula used to calculate the benefit of handing off instead of delaying is: deal decline probability × alignment probability × deal decline badness minus alignment gain per year.",
+    "judgement": "uncertain",
+    "context": "u_handoff_minus_u_delay = d_prob·a_prob·d_loss − a_change = (3% × 99.5% × 20%) − 0.1%",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Under the 'High confidence alignment solution' scenario with default parameters (a_prob 99.5%, a_change 0.1%/yr, d_prob 3%/yr, d_loss 20%), the benefit of handing off is 0.60% and the cost is 0.10%.",
+    "judgement": "certainly true",
+    "context": "u_handoff_minus_u_delay = d_prob·a_prob·d_loss − a_change = (3% × 99.5% × 20%) − 0.1% Benefit of handing off: 0.60% Cost of handing off: 0.10%",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Under the 'High confidence alignment solution' and 'Low risk' deal decline scenario (d_prob 0.5%/yr, d_loss 10%, a_prob 99.5%, a_change 0.1%/yr), the recommendation is to delay, with a net value of −0.05%.",
+    "judgement": "certainly true",
+    "context": "High confidence alignment solution a_prob 99.5% · a_change 0.1%/yr Delay −0.05% Hand off +0.50% Hand off +3.38%",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Under the 'Alignment probably solved' scenario with medium deal decline risk (a_prob 95%, a_change 1%/yr, d_prob 3%/yr, d_loss 20%), the recommendation is to delay, with a net value of −0.43%.",
+    "judgement": "certainly true",
+    "context": "Alignment probably solved a_prob 95% · a_change 1%/yr Delay −0.95% Delay −0.43% Hand off +2.33%",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Under the 'Alignment likely solved' scenario (a_prob 80%, a_change 3%/yr), the recommendation is to delay in all three deal decline risk scenarios.",
+    "judgement": "certainly true",
+    "context": "Alignment likely solved a_prob 80% · a_change 3%/yr Delay −2.96% Delay −2.52% Delay −0.20%",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Under the 'Alignment clearly unsolved' scenario (a_prob 10%, a_change 2%/yr), the recommendation is to delay in all three deal decline risk scenarios.",
+    "judgement": "certainly true",
+    "context": "Alignment clearly unsolved a_prob 10% · a_change 2%/yr Delay −2.00% Delay −1.94% Delay −1.65%",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The 'High confidence alignment solution' scenario with 'High risk' deal decline parameters (d_prob 10%/yr, d_loss 35%) yields a net handoff benefit of +3.38%.",
+    "judgement": "certainly true",
+    "context": "High confidence alignment solution a_prob 99.5% · a_change 0.1%/yr Delay −0.05% Hand off +0.50% Hand off +3.38%",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The calculator presented on ai-2040.com only weighs the single most important factor on each side — the alignment probability gained by delaying vs. the deal decline risk avoided by handing off.",
+    "judgement": "certainly true",
+    "context": "Caveat: this calculator only weighs the single most important factor on each side — the alignment probability gained by delaying vs. the deal decline risk avoided by handing off.",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The 'Low risk' deal decline scenario uses parameters of d_prob 0.5%/yr and d_loss 10%.",
+    "judgement": "certainly true",
+    "context": "Low risk d_prob 0.5%/yr · d_loss 10%",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The 'Medium risk' deal decline scenario uses parameters of d_prob 3%/yr and d_loss 20%.",
+    "judgement": "certainly true",
+    "context": "Medium risk d_prob 3%/yr · d_loss 20%",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The 'High risk' deal decline scenario uses parameters of d_prob 10%/yr and d_loss 35%.",
+    "judgement": "certainly true",
+    "context": "High risk d_prob 10%/yr · d_loss 35%",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "3% × 95% × 20% equals 0.57%.",
+    "judgement": "certainly true",
+    "context": "= (3% × 95% × 20%) − 1% Benefit of handing off: 0.57% Cost of handing off: 1.00%",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "3% × 80% × 20% equals 0.48%.",
+    "judgement": "certainly true",
+    "context": "= (3% × 80% × 20%) − 3% Benefit of handing off: 0.48% Cost of handing off: 3.00%",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "3% × 10% × 20% equals 0.06%.",
+    "judgement": "certainly true",
+    "context": "= (3% × 10% × 20%) − 2% Benefit of handing off: 0.06% Cost of handing off: 2.00%",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "10% × 99.5% × 35% equals 3.4825%, reported as 3.48%.",
+    "judgement": "certainly true",
+    "context": "= (10% × 99.5% × 35%) − 0.1% Benefit of handing off: 3.48%",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "0.5% × 99.5% × 10% equals 0.0498%, reported as 0.05%.",
+    "judgement": "certainly true",
+    "context": "= (0.5% × 99.5% × 10%) − 0.1% Benefit of handing off: 0.05%",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In the simulations described, the Consortium is required to make 0.2 OOM of software progress for each OOM of training FLOP/s gained.",
+    "judgement": "uncertain",
+    "context": "In our simulations, we require that the Consortium make 0.2 OOM of software progress for each OOM of training FLOP/s they gain, and that during Stage 2, the Consortium's alignment research incurs capabilities externalities at a rate of 0.25 software OOMs/year.",
+    "contextUrl": "https://ai-2040.com/supplements/capability-scaling-strategy",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  }
+]

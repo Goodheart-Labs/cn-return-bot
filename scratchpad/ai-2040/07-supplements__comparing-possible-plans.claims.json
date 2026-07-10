@@ -1,0 +1,662 @@
+[
+  {
+    "claim": "The article 'AI 2040: Plan A' was authored by Eli Lifland.",
+    "judgement": "likely true",
+    "context": "Comparing Possible Plans\nEli Lifland\nIntroduction",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Eli Lifland estimates the probability of Plan B at 25%.",
+    "judgement": "likely true",
+    "context": "Eli · 25%\nRomeo · 20%\nThomas · 19%\nRyan · 18%\nDaniel · 15%",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Daniel's estimate of p(alignment) for Plan D is 35%.",
+    "judgement": "likely true",
+    "context": "Eli · 55%\nRomeo · 50%\nRyan · 50%\nDaniel · 35%\nThomas · 30%",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Eli Lifland's median expected takeoff length is approximately twice as long as the default Plan A trajectory.",
+    "judgement": "likely true",
+    "context": "My median takeoff is ~2x longer than the one described in (a), but I have significantly probability on faster takeoffs.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Thomas's estimate of p(alignment) for Plan D is 30%.",
+    "judgement": "likely true",
+    "context": "Eli · 55%\nRomeo · 50%\nRyan · 50%\nDaniel · 35%\nThomas · 30%",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "GPU arms control would involve international agreements for countries to limit their GPU stock or flow, analogous to historical arms reduction agreements.",
+    "judgement": "likely true",
+    "context": "GPU arms control. International agreements for countries to limit their GPU stock or flow, analogous to historical arms reduction agreements.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Plan A in the scenario involves a verified international slowdown deal coupled with complete transparency of AI research.",
+    "judgement": "likely true",
+    "context": "Plan A (as implemented specifically in the scenario): Verified slowdown + total research transparency. A verified international slowdown deal coupled with complete transparency of AI research. AI capabilities are scaled up while maintaining high confidence in safety but balancing risks from deal decline and covert projects.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Plan B-kinetic involves sabotaging China with willingness to escalate to large-scale kinetic attacks such as by drones or conventional missile strikes.",
+    "judgement": "likely true",
+    "context": "Plan B-kinetic: Sabotage China kinetically and burn some lead. Sabotaging China in order to get more of a lead to burn on safety, with the willingness to escalate to large-scale kinetic attacks such as by drones or conventional missile strikes.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The minimum-length takeoff from Automated Coder (AC) to Top-Expert-Dominating-AI (TED-AI) is assumed to be slightly less than a year, from the start of 2030 to the end of 2030.",
+    "judgement": "likely true",
+    "context": "The minimum-length takeoff from Automated Coder (AC) to Top-Expert-Dominating-AI (TED-AI) is slightly less than a year, from the start of 2030 to the end of 2030. This matches the default Plan A AI Futures Model trajectory.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Under Plan A, the estimated median takeoff length from AC to takeover-capable AI is 9 years.",
+    "judgement": "likely true",
+    "context": "Metric ↓ / Plan →\tPlan A\tPlan B\tPlan C+\tPlan C\tPlan D\nKinetic\tCyber\n...\nTakeoff length (AC to takeover-capable AI)\t9 yrs\t5 yrs\t3 yrs\t2 yrs\t1.22 yrs\t1.05 yrs",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Under Plan D, the estimated median takeoff length from AC to takeover-capable AI is 1.05 years.",
+    "judgement": "likely true",
+    "context": "Takeoff length (AC to takeover-capable AI)\t9 yrs\t5 yrs\t3 yrs\t2 yrs\t1.22 yrs\t1.05 yrs",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Under Plan A, the estimated training compute safety tax is 3.5 orders of magnitude.",
+    "judgement": "likely true",
+    "context": "Training compute safety tax (OOMs)\t3.5\t1.6\t1.25\t1.02\t0.44\t0.19",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Under Plan A, the estimated safety compute is 500 billion H100-equivalent GPU-years.",
+    "judgement": "likely true",
+    "context": "Safety compute (H100e-yrs)\t500B\t2B\t500M\t100M\t20M\t4M",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Under Plan A, the estimated safety-researcher-years is 2 million.",
+    "judgement": "likely true",
+    "context": "Safety-researcher-years\t2M\t20,000\t10,000\t4,000\t1,800\t1,000",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Under Plan D, the estimated safety-researcher-years is 1,000.",
+    "judgement": "likely true",
+    "context": "Safety-researcher-years\t2M\t20,000\t10,000\t4,000\t1,800\t1,000",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Plan A is rated 5 out of 5 on public transparency in the assessment table.",
+    "judgement": "likely true",
+    "context": "Public transparency\t5\t3\t4\t4\t4",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Plan A is rated 5 out of 5 on distribution of power in the assessment table.",
+    "judgement": "likely true",
+    "context": "Distribution of power\t5\t3\t4\t4\t3",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The estimated probability of alignment (avoiding misaligned takeover) under Plan A is 80%.",
+    "judgement": "likely true",
+    "context": "p(alignment); i.e., 1 - p(misaligned takeover)\t80%\t70%\t60%\t55%\t40%",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The estimated probability of a great future under Plan A is 50%.",
+    "judgement": "likely true",
+    "context": "p(great future)\t50%\t39%\t36%\t30%\t18%",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The estimated probability of a great future under Plan D is 18%.",
+    "judgement": "likely true",
+    "context": "p(great future)\t50%\t39%\t36%\t30%\t18%",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Plans C+ and C beat out Plan B on some subjective metrics in the assessment.",
+    "judgement": "likely true",
+    "context": "Plans are alphabetically ranked in terms of their objective metrics, with a big jump between Plan A and Plan B. However, plans C+ and C beat out Plan B on some subjective metrics. Plan B's focus on security and its wartime vibe could degrade epistemics, and its likely implementation of nationalization or pseudo-nationalization would decrease public transparency and concentrate power.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Eli Lifland estimates the probability of Plan A at approximately 5%.",
+    "judgement": "likely true",
+    "context": "This gives Plan A is ~5%, other deals are ~10%.\nLet's say Plan B is 15% and other intense non-deal things are 5%, given that Plan B is quite broad.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Daniel estimates the probability of Plan A at 15%.",
+    "judgement": "likely true",
+    "context": "Daniel · 15%\nRomeo · 8%\nEli · 5%\nRyan · 4%\nThomas · 3%",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Romeo estimates the probability of Plan A at 8%.",
+    "judgement": "likely true",
+    "context": "Daniel · 15%\nRomeo · 8%\nEli · 5%\nRyan · 4%\nThomas · 3%",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Ryan estimates the probability of Plan A at 4%.",
+    "judgement": "likely true",
+    "context": "Daniel · 15%\nRomeo · 8%\nEli · 5%\nRyan · 4%\nThomas · 3%",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Thomas estimates the probability of Plan A at 3%.",
+    "judgement": "likely true",
+    "context": "Daniel · 15%\nRomeo · 8%\nEli · 5%\nRyan · 4%\nThomas · 3%",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Eli Lifland estimates the probability of the government doing something at least as intense as Plan B at 35%.",
+    "judgement": "likely true",
+    "context": "p(govt does something at least as intense as Plan B): 35%; seems like govt wakeup has been increasing and also the importance of ASI will get more and more obvious.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Eli Lifland estimates the probability of a deal given at least Plan-B-intensity government action at 50%.",
+    "judgement": "likely true",
+    "context": "p(deal | at least as intense on Plan B): 50%; deal is clearly rational but there are various blockers in practice.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Eli Lifland estimates the probability of Plan A given a deal at 30%.",
+    "judgement": "likely true",
+    "context": "p(Plan A | deal): 30%; Plan S, a verified slowdown with less transparency, or just a somewhat weaker deal are all plausible.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Ryan estimates that Plan A as described in the specific scenario has roughly 3/5 as much risk as Plan A as classified more broadly by the supplement.",
+    "judgement": "likely true",
+    "context": "These numbers are very sensitive to how you classify plans. E.g., I think Plan A as described in the scenario has maybe 3/5 as much risk as Plan A as classifed by the supplement.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Eli Lifland's adjusted probability of alignment under Plan A is 70%, down from 72% in the conditional assessment.",
+    "judgement": "likely true",
+    "context": "With the above in mind, I make the following adjustments:\nA: 72->70\nB: 50->55\nC+: 45->50\nC: 40->45\nD: 25->32",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Eli Lifland rates the 'Other' category for probability of alignment the same as Plan B at 55%.",
+    "judgement": "likely true",
+    "context": "For Other, I think a bunch of this is random pretty good plans that aren't covered, including Plan S. E.g. there's ~40% that this is a non-Plan-A deal. Though it also includes Plan E. Overall I rate it the same as B, 55.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Plan S is described as an indefinite halt on all frontier AI capabilities progress, intended to last at least a few years.",
+    "judgement": "likely true",
+    "context": "Plan S: Indefinite halt. A halt on all frontier AI capabilities progress, intended to last at least a few years. Different variants of Plan S have different conditions for resumption of AI progress; for example it could be alignment progress, lie detectors, human uploads, or intelligence enhancement.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "A stated advantage of Plan S relative to Plan A is a longer expected slowdown and more margin for error regarding scaling too fast.",
+    "judgement": "likely true",
+    "context": "Advantages (relative to A)\nA longer expected slowdown and more margin for error regarding scaling too fast. Potentially simpler.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "A stated disadvantage of Plan S relative to Plan A is that scaling to controllable AIs within the human range is helpful for accelerating alignment/control, epistemics, verification, and general understanding of AI.",
+    "judgement": "likely true",
+    "context": "Disadvantages (relative to A)\nScaling to controllable AIs within the human range is helpful for accelerating alignment/control, epistemics, verification, and general understanding of AI.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Domestic-first Plan A involves regulating AI domestically enough to reduce AI takeover risk to acceptable levels, which would require a long slowdown.",
+    "judgement": "likely true",
+    "context": "Domestic-first Plan A. Regulate AI domestically enough to reduce AI takeover risk to acceptable levels, which will require a long slowdown. It's possible other countries will also regulate domestically and something like Plan A won't be needed; otherwise, transition to Plan A later.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "There are five named authors contributing views in this analysis: Daniel, Romeo, Eli, Ryan, and Thomas.",
+    "judgement": "likely true",
+    "context": "Daniel · 15%\nRomeo · 8%\nEli · 5%\nRyan · 4%\nThomas · 3%",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Plan C requires at least a 1 month slowdown.",
+    "judgement": "likely true",
+    "context": "Plan C: Leading project burns some lead. The leading AI project burns some of its lead on safety, and potentially coordinates with other frontier projects for a further slowdown without domestic regulation. Requires at least a 1 month slowdown.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Plan C+ requires at least a 2 month slowdown.",
+    "judgement": "likely true",
+    "context": "Plan C+: Domestic regulation and slow China without sabotage. The US buys substantial time via domestic regulation, without sabotaging China. They instead aim to slow down China via non-sabotage measures such as export controls and giving green cards to Chinese talent. Requires at least a 2 month slowdown.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Plan D requires at least 1% of resources devoted to safety, with lower than 1% counting as Plan E.",
+    "judgement": "likely true",
+    "context": "Plan D: Race. Frontier AI projects race through the intelligence explosion at nearly max speed, devoting a nonzero but small percentage of resources to safety (at least 1%; lower would count as Plan E).",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Plan B requires the US to have the intention to use their lead over China for safety purposes and must in practice slow takeoff by at least 3 months.",
+    "judgement": "likely true",
+    "context": "To be classified as Plan B the US must have the intention to use their lead over China for safety purposes, and must in practice slow takeoff by at least 3 months.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The estimated probability of alignment under Plan D is 40% in the plan assessment table.",
+    "judgement": "likely true",
+    "context": "p(alignment); i.e., 1 - p(misaligned takeover)\t80%\t70%\t60%\t55%\t40%",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The estimated probability of a great future given alignment under Plan A is 62%.",
+    "judgement": "likely true",
+    "context": "p(great future | alignment)\t62%\t55%\t60%\t55%\t45%",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Ryan's estimate of p(alignment) for Plan A is 81%.",
+    "judgement": "likely true",
+    "context": "Ryan · 81%\nDaniel · 80%\nThomas · 80%\nRomeo · 80%\nEli · 70%",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "There is historical precedent for international arms reduction agreements.",
+    "judgement": "certainly true",
+    "context": "GPU arms control. International agreements for countries to limit their GPU stock or flow, analogous to historical arms reduction agreements. Much simpler to enforce, and more historical precedent.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "GPU arms control is simpler to enforce than other proposed AI governance plans (such as compute caps combined with verification).",
+    "judgement": "uncertain",
+    "context": "Much simpler to enforce, and more historical precedent. Can achieve substantial slowdown.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "A CERN-for-AI model would involve an international project to develop frontier AI, with all other projects regulated to be substantially behind in capabilities.",
+    "judgement": "likely true",
+    "context": "CERN for AI. An international project to develop frontier AI, with all other projects regulated to be substantially behind in capabilities.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "A CERN-for-AI model would be easier to defend against algorithmic leakage and distillation to covert projects compared to other plans.",
+    "judgement": "somewhat likely true",
+    "context": "CERN for AI. An international project to develop frontier AI, with all other projects regulated to be substantially behind in capabilities. Easier to defend against algorithmic leakage and distillation to covert projects. Less actors at the frontier might make it easier to enforce.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Having fewer actors at the AI frontier might make enforcement of international AI agreements easier.",
+    "judgement": "somewhat likely true",
+    "context": "Easier to defend against algorithmic leakage and distillation to covert projects. Less actors at the frontier might make it easier to enforce.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "A CERN-for-AI model would involve less transparency and less broad deployment compared to alternative plans.",
+    "judgement": "somewhat likely true",
+    "context": "Worse decisions (including worse decisions on technical safety) due to less transparency and less broad deployment. More concentration of power risk.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "A CERN-for-AI model carries a greater risk of concentration of power compared to alternative plans.",
+    "judgement": "somewhat likely true",
+    "context": "Worse decisions (including worse decisions on technical safety) due to less transparency and less broad deployment. More concentration of power risk.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The 'Repurpose the GPUs' plan is described as less reversible and harder to enforce than GPU arms reduction.",
+    "judgement": "somewhat likely true",
+    "context": "Repurpose the GPUs: Like GPU arms control, except they are now required to be used for existentially useful applications rather than being destroyed... In theory this plan should be better than GPU arms reduction, but it's less reversible and harder to enforce.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The text defines an 'Automated Coder' (AC) as a collective of AIs that fully automates an AGI project's coding work, autonomously replacing the project's entire coding staff.",
+    "judgement": "likely true",
+    "context": "Start: 1 year before Automated Coder (AC) would be reached if scaling at maximum speed. An AC is a collective of AIs that fully automates an AGI project's coding work, autonomously replacing the project's entire coding staff. That is, you'd rather fire all of the humans than stop using AIs.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The implementation window starts 1 year before Automated Coder would be reached if scaling at maximum speed.",
+    "judgement": "likely true",
+    "context": "Define the implementation window as the period between: Start: 1 year before Automated Coder (AC) would be reached if scaling at maximum speed.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The implementation window ends when takeover-capable AI is reached, defined as the point when it is practically very unlikely that humans could stop AI takeover conditional on the AIs being adversarially misaligned.",
+    "judgement": "likely true",
+    "context": "End: Takeover-capable AI. Takeover-capable AI is reached when it is practically very unlikely that humans could stop AI takeover, conditional on the AIs being adversarially misaligned.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Under the described classification system, if multiple plans are attempted during the implementation window, the trajectory is classified as the most intense plan attempted.",
+    "judgement": "likely true",
+    "context": "If multiple plans are attempted during the implementation window, the trajectory is classified as the most intense plan that was attempted.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In the described classification, more intense plans select for more competent people.",
+    "judgement": "uncertain",
+    "context": "The following selection effect is a consequence of this classification: In more intense plans, people are selected for being more competent.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The training compute safety tax is defined as the difference between the amount of compute actually used on a training run to reach a given capability level and the minimum amount of compute required to reach that capability.",
+    "judgement": "likely true",
+    "context": "The training compute safety tax is the difference between the amount of compute actually used on a training run to reach a given capability level, and the minimum amount of compute required to reach that capability.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Examples of ways to productively use unnecessary training compute include training in a more safe but less compute-efficient paradigm, or spending compute on AI-driven scalable oversight to improve training incentives.",
+    "judgement": "somewhat likely true",
+    "context": "Examples of ways to productively use that unnecessary compute might be to train in a more safe but less compute-efficient paradigm, or to spend lots of compute on AI-driven scalable oversight to improve incentives during the training process.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "There is likely large variance among capability-equivalent improvements in how useful it is for safety to forego that improvement.",
+    "judgement": "somewhat likely true",
+    "context": "Measuring the safety tax by this method is an imperfect proxy for what we actually care about. There is likely large variance among improvements which provide the same amount of capability in how useful it is for safety to forego that improvement.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Chinese AI capabilities are currently behind the US by about 8 months.",
+    "judgement": "uncertain",
+    "context": "Currently Chinese capabilities are behind by about 8 months, but plausibly much of Chinese progress is coming from distillation and/or algorithmic leakage that could be mitigated with aggressive action.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Much of Chinese AI progress is plausibly coming from distillation and/or algorithmic leakage from US models.",
+    "judgement": "uncertain",
+    "context": "Currently Chinese capabilities are behind by about 8 months, but plausibly much of Chinese progress is coming from distillation and/or algorithmic leakage that could be mitigated with aggressive action.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "China's original compute total for AI is about 10% of the total of the leading US AI project.",
+    "judgement": "uncertain",
+    "context": "Since China's original compute total is about 10% of the total of the leading US project, their takeoff by default would take about 5x slower than the US's (as justified here), so about 5 years.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "A significant portion of global advanced semiconductor chip production is located in Taiwanese fabs.",
+    "judgement": "certainly true",
+    "context": "In particular, they are able to destroy 90% of the US's chip flow within 6 months via blowing up Taiwanese fabs.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "AI 2027 is the name of a scenario or report describing a Plan D-like AI race.",
+    "judgement": "likely true",
+    "context": "Imagining something like AI 2027. 1.02 * 200 = 200.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The default Plan A AI Futures Model trajectory has a minimum-length takeoff from AC to TED-AI of slightly less than a year.",
+    "judgement": "uncertain",
+    "context": "The minimum-length takeoff from Automated Coder (AC) to Top-Expert-Dominating-AI (TED-AI) is slightly less than a year, from the start of 2030 to the end of 2030. This matches the default Plan A AI Futures Model trajectory.",
+    "contextUrl": "https://ai-2040.com/supplements/comparing-possible-plans",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  }
+]
