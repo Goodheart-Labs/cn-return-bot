@@ -30,7 +30,45 @@ import { LoginModal } from "./components/LoginModal";
 import { NoteCard } from "./components/NoteCard";
 import type { NoteRow, SuggestionRow } from "./lib/types";
 
+// Alpha gate: Nathan doesn't want people looking yet. Client-side only —
+// keeps casual visitors and crawlers out, not a security boundary. Remove
+// (or flip GATE_ENABLED) at launch.
+const GATE_ENABLED = true;
+const GATE_PHRASE = "goodheart";
+
+function AlphaGate({ onPass }: { onPass: () => void }) {
+  const [value, setValue] = useState("");
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (value.trim().toLowerCase() === GATE_PHRASE) {
+      localStorage.setItem("cn-alpha-ok", "1");
+      onPass();
+    }
+  };
+  return (
+    <div className="min-h-screen flex items-center justify-center p-6">
+      <form onSubmit={submit} className="w-full max-w-xs space-y-3 text-center">
+        <h1 className="text-xl font-bold">Common Notes</h1>
+        <p className="text-sm text-gray-500">Not open yet — check back soon.</p>
+        <input
+          type="password"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder="Alpha phrase"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+        />
+        <button type="submit" className="w-full bg-blue-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-blue-700">
+          Enter
+        </button>
+      </form>
+    </div>
+  );
+}
+
 export function App() {
+  const [gatePassed, setGatePassed] = useState(
+    () => !GATE_ENABLED || localStorage.getItem("cn-alpha-ok") === "1",
+  );
   const { projects, items, notes, suggestions, loaded } = useLiveData();
   const { session } = useSession();
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -155,6 +193,8 @@ export function App() {
       await castVote(note.id, session.user.id, vote);
     }
   };
+
+  if (!gatePassed) return <AlphaGate onPass={() => setGatePassed(true)} />;
 
   const selected = projects.find((p) => p.id === selectedId) ?? null;
   // A project is just its notes — no per-item headers. Newest content first,
