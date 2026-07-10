@@ -103,20 +103,22 @@ function youtubeVideoId(url: string): string | null {
   return url.match(/(?:[?&]v=|youtu\.be\/)([\w-]{6,})/)?.[1] ?? null;
 }
 
-/** Quote citation from an article/post, with a link to the source. */
+/** Quote citation from an article/post, with the source link pinned to the
+ *  upper right — mirroring TweetCard's "View on <host> ↗" header placement. */
 function CitationBlock({ quote, url, linkText }: { quote: string; url: string | null; linkText: string }) {
   return (
-    <blockquote className="border-l-4 border-gray-300 pl-3 text-gray-600 italic text-sm">
-      “{quote}”
+    <div>
       {url && (
-        <>
-          {" "}
-          <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-500 not-italic hover:underline">
+        <div className="flex justify-end mb-1">
+          <a href={url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline">
             {linkText} ↗
           </a>
-        </>
+        </div>
       )}
-    </blockquote>
+      <blockquote className="border-l-4 border-gray-300 pl-3 text-gray-600 italic text-sm">
+        “{quote}”
+      </blockquote>
+    </div>
   );
 }
 
