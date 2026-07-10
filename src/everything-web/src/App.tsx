@@ -220,8 +220,13 @@ export function App() {
       ? voteHolds.get(n.id)!
       : n.not_helpful_count > n.helpful_count + n.somewhat_helpful_count;
 
+  // Really unhelpful = enough ratings to be confident (>=5) and a weighted
+  // score under 0.4 — those collapse into a drawer at the bottom; mildly
+  // negative notes stay visible below the dotted line.
+  const isBuried = (n: NoteRow) => totalVotes(n) >= 5 && score(n) < 0.4;
   const aboveWater = orderedNotes.filter((n) => !isUnderwater(n));
-  const underwaterNotes = orderedNotes.filter(isUnderwater);
+  const underwaterNotes = orderedNotes.filter((n) => isUnderwater(n) && !isBuried(n));
+  const buriedNotes = orderedNotes.filter((n) => isUnderwater(n) && isBuried(n));
   // Rank by score, then vote volume, then keep content order stable.
   const contentIdx = new Map(orderedNotes.map((n, i) => [n.id, i]));
   const ranked = [...aboveWater].sort(
@@ -293,6 +298,30 @@ export function App() {
                 />
               ))}
             </>
+          )}
+          {buriedNotes.length > 0 && (
+            <details className="max-w-xl mx-auto w-full xl:max-w-none pt-2">
+              <summary className="text-xs text-gray-400 cursor-pointer select-none text-center">
+                {buriedNotes.length} {buriedNotes.length === 1 ? "note" : "notes"} rated unhelpful — show
+              </summary>
+              <div className="space-y-4 mt-4">
+                {buriedNotes.map((note) => (
+                  <NoteCard
+                    key={note.id}
+                    note={note}
+                    locked={isLocked(note)}
+                    draftNotes={draftsByClaim.get(note.claim_id) ?? []}
+                    projectSlug={selected?.slug ?? ""}
+                    suggestions={suggestionsByNote.get(note.id) ?? []}
+                    myVotes={myVotes}
+                    voteHolds={voteHolds}
+                    onVote={handleVote}
+                    session={session}
+                    onNeedLogin={() => setLoginOpen(true)}
+                  />
+                ))}
+              </div>
+            </details>
           )}
         </div>
       </main>
