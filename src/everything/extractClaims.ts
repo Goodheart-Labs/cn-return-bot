@@ -13,7 +13,7 @@ import { llm } from "../pipeline/llm/llm";
 import { jsonSchemaResponseFormat } from "../pipeline/prompts/responseFormat";
 import { stripJsonFences } from "../pipeline/utils/jsonOutput";
 import type { SubtitleCue } from "../pipeline/media/ytDlpDownload";
-import type { ExtractedClaim, FetchedContent } from "./types";
+import type { ClaimAnchor, ExtractedClaim, FetchedContent } from "./types";
 
 const CLAIM_EXTRACTION_MODEL = "anthropic/claude-opus-4.6";
 
@@ -40,6 +40,7 @@ function extractionSystemPrompt(): string {
     `- "claim": the neutral, self-contained statement.`,
     `- "context": a verbatim excerpt from the text around the claim — its sentence plus enough surrounding sentences that a reader with none of the rest of the text has all the context needed to evaluate it.`,
     `- "judgement": how true the claim is, using only your own knowledge — one of: ${JUDGEMENTS.join(", ")}.`,
+    `- "speculation": true if the claim describes a hypothetical or future scenario — something stated as happening in a future year (e.g. "in 2028...") as part of an imagined scenario; false if it is about the present or past (2026 or earlier) or the current state of the world (real events, statistics, and any other real-world claim).`,
   ];
   return `You extract checkable factual claims from a text (podcast transcript or article).
 
@@ -60,8 +61,9 @@ function claimsResponseFormat() {
     claim: { type: "string", description: "Neutral, self-contained restatement of the claim." },
     context: { type: "string", description: "Verbatim excerpt around the claim, with all the context needed to evaluate it." },
     judgement: { type: "string", enum: [...JUDGEMENTS], description: "How true the claim is, from your own knowledge." },
+    speculation: { type: "boolean", description: "True if the claim is about a hypothetical/future scenario; false if about the present or past." },
   };
-  const required = ["claim", "context", "judgement"];
+  const required = ["claim", "context", "judgement", "speculation"];
   return jsonSchemaResponseFormat("content_claims", {
     type: "object",
     properties: { claims: { type: "array", items: { type: "object", properties, required, additionalProperties: false } } },
@@ -74,6 +76,12 @@ interface RawClaim {
   claim: string;
   judgement: string;
   context: string;
+  speculation: boolean;
+}
+
+/** Carry the LLM's claim fields onto an ExtractedClaim, attaching its resolved anchor. */
+function toExtractedClaim(raw: RawClaim, anchor: ClaimAnchor): ExtractedClaim {
+  return { claim: raw.claim, judgement: raw.judgement, context: raw.context, speculation: raw.speculation, anchor };
 }
 
 /** One Opus extraction call over a rendered text chunk. */
@@ -180,17 +188,12 @@ async function extractFromCues(
     .map((c) => {
       // Resolve the context's span against the full cue list (chunk-edge safe).
       const { start, end } = contextTimeSpan(c.context, cues);
-      return {
-        claim: c.claim,
-        judgement: c.judgement,
-        context: c.context,
-        anchor: {
-          kind: "youtube" as const,
-          startSeconds: start,
-          endSeconds: end,
-          deepLinkUrl: start !== undefined ? buildVideoLink(videoId, start) : undefined,
-        },
-      };
+      return toExtractedClaim(c, {
+        kind: "youtube",
+        startSeconds: start,
+        endSeconds: end,
+        deepLinkUrl: start !== undefined ? buildVideoLink(videoId, start) : undefined,
+      });
     });
 }
 
@@ -203,11 +206,20 @@ async function extractFromText(text: string, url: string, concurrency: number): 
   return perChunk
     .flat()
     .filter((c): c is RawClaim => !!c)
-    .map((c) => ({ claim: c.claim, judgement: c.judgement, context: c.context, anchor: { kind: "substack" as const, url } }));
+    .map((c) => toExtractedClaim(c, { kind: "substack", url }));
 }
 
 export async function extractClaims(content: FetchedContent, concurrency: number): Promise<ExtractedClaim[]> {
   return content.kind === "youtube"
     ? extractFromCues(content.cues, content.videoId, concurrency)
     : extractFromText(content.text, content.url, concurrency);
+}
+
+/**
+ * Drop hypothetical/future-scenario claims: only real-world (present/past)
+ * claims are fact-checkable, so speculation never reaches the rest of the
+ * pipeline. Downstream works with the returned subset.
+ */
+export function dropSpeculation(claims: ExtractedClaim[]): ExtractedClaim[] {
+  return claims.filter((c) => !c.speculation);
 }
