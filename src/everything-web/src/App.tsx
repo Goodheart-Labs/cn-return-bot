@@ -36,22 +36,37 @@ export function App() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [myVotes, setMyVotes] = useState<Map<string, Vote>>(new Map());
   const [loginOpen, setLoginOpen] = useState(false);
+  // After a vote, hold the note's list position briefly (misclick grace) —
+  // maps note id → its fold side at vote time. Cleared by a timer, then the
+  // live counts decide again.
+  const RESORT_GRACE_MS = 6000;
+  const [voteHolds, setVoteHolds] = useState<Map<string, boolean>>(new Map());
+  const holdTimers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
 
   useEffect(() => {
     if (session) fetchMyVotes().then(setMyVotes);
     else setMyVotes(new Map());
   }, [session?.user.id]);
 
-  const notesByItem = useMemo(() => {
-    const map = new Map<string, NoteRow[]>();
+  // AI notes drive the cards; user drafts hang off their claim.
+  const { notesByItem, draftsByClaim } = useMemo(() => {
+    const byItem = new Map<string, NoteRow[]>();
+    const drafts = new Map<string, NoteRow[]>();
     for (const note of notes.values()) {
+      if (note.author_id) {
+        const list = drafts.get(note.claim_id) ?? [];
+        list.push(note);
+        list.sort((a, b) => a.created_at.localeCompare(b.created_at));
+        drafts.set(note.claim_id, list);
+        continue;
+      }
       const itemId = note.claim?.item_id;
       if (!itemId) continue;
-      const list = map.get(itemId) ?? [];
+      const list = byItem.get(itemId) ?? [];
       list.push(note);
-      map.set(itemId, list);
+      byItem.set(itemId, list);
     }
-    return map;
+    return { notesByItem: byItem, draftsByClaim: drafts };
   }, [notes]);
 
   const suggestionsByNote = useMemo(() => {
@@ -106,11 +121,28 @@ export function App() {
     }
   }, [loaded, notes, selectedId]);
 
+  const holdPosition = (note: NoteRow) => {
+    const wasUnderwater = note.not_helpful_count > note.helpful_count + note.somewhat_helpful_count;
+    setVoteHolds((m) => new Map(m).set(note.id, wasUnderwater));
+    clearTimeout(holdTimers.current.get(note.id));
+    holdTimers.current.set(
+      note.id,
+      setTimeout(() => {
+        setVoteHolds((m) => {
+          const next = new Map(m);
+          next.delete(note.id);
+          return next;
+        });
+      }, RESORT_GRACE_MS),
+    );
+  };
+
   const handleVote = async (note: NoteRow, vote: Vote) => {
     if (!session) {
       setLoginOpen(true);
       return;
     }
+    holdPosition(note);
     const current = myVotes.get(note.id);
     const next = new Map(myVotes);
     if (current === vote) {
@@ -127,7 +159,7 @@ export function App() {
   const selected = projects.find((p) => p.id === selectedId) ?? null;
   // A project is just its notes — no per-item headers. Newest content first,
   // then in content order (clip timestamp) within an item.
-  const projectNotes = [...items.values()]
+  const orderedNotes = [...items.values()]
     .filter((i) => i.project_id === selectedId)
     .sort((a, b) => (b.published_at ?? b.created_at).localeCompare(a.published_at ?? a.created_at))
     .flatMap((item) =>
@@ -135,6 +167,35 @@ export function App() {
         (a, b) => (a.claim?.start_seconds ?? 0) - (b.claim?.start_seconds ?? 0),
       ),
     );
+  // Nathan's ranking spec (prep doc, #7): a note "locks in" as a real note at
+  // >=5 ratings with net-positive score; under that it's a draft. Feed order:
+  // top 3 slots go to the best real notes, then real/draft interleave 1:1,
+  // then the draft long tail. Net-negative notes sink below a labeled divider.
+  const weight = (n: NoteRow) => n.helpful_count + 0.5 * n.somewhat_helpful_count;
+  const totalVotes = (n: NoteRow) => n.helpful_count + n.somewhat_helpful_count + n.not_helpful_count;
+  const score = (n: NoteRow) => (totalVotes(n) === 0 ? 0 : weight(n) / totalVotes(n));
+  const isLocked = (n: NoteRow) => totalVotes(n) >= 5 && weight(n) > n.not_helpful_count;
+  const isUnderwater = (n: NoteRow) =>
+    voteHolds.has(n.id)
+      ? voteHolds.get(n.id)!
+      : n.not_helpful_count > n.helpful_count + n.somewhat_helpful_count;
+
+  const aboveWater = orderedNotes.filter((n) => !isUnderwater(n));
+  const underwaterNotes = orderedNotes.filter(isUnderwater);
+  // Rank by score, then vote volume, then keep content order stable.
+  const contentIdx = new Map(orderedNotes.map((n, i) => [n.id, i]));
+  const ranked = [...aboveWater].sort(
+    (a, b) => score(b) - score(a) || totalVotes(b) - totalVotes(a) || contentIdx.get(a.id)! - contentIdx.get(b.id)!,
+  );
+  const realNotes = ranked.filter(isLocked);
+  const draftFeed = ranked.filter((n) => !isLocked(n));
+  const projectNotes: NoteRow[] = [...realNotes.slice(0, 3)];
+  const restReal = realNotes.slice(3);
+  for (let i = 0; restReal.length > i || draftFeed.length > i * 0; i++) {
+    if (i >= restReal.length && i >= draftFeed.length) break;
+    if (i < restReal.length) projectNotes.push(restReal[i]!);
+    if (i < draftFeed.length) projectNotes.push(draftFeed[i]!);
+  }
 
   return (
     <div className="md:flex">
@@ -158,14 +219,41 @@ export function App() {
             <NoteCard
               key={note.id}
               note={note}
+              locked={isLocked(note)}
+              draftNotes={draftsByClaim.get(note.claim_id) ?? []}
               projectSlug={selected?.slug ?? ""}
               suggestions={suggestionsByNote.get(note.id) ?? []}
-              myVote={myVotes.get(note.id)}
+              myVotes={myVotes}
+              voteHolds={voteHolds}
               onVote={handleVote}
               session={session}
               onNeedLogin={() => setLoginOpen(true)}
             />
           ))}
+          {underwaterNotes.length > 0 && (
+            <>
+              <div className="flex items-center gap-3 pt-4 max-w-xl mx-auto w-full xl:max-w-none" role="separator">
+                <span className="flex-1 border-t-2 border-dotted border-gray-300" />
+                <span className="text-xs text-gray-400">Notes with more negative votes than positive</span>
+                <span className="flex-1 border-t-2 border-dotted border-gray-300" />
+              </div>
+              {underwaterNotes.map((note) => (
+                <NoteCard
+                  key={note.id}
+                  note={note}
+                  locked={isLocked(note)}
+                  draftNotes={draftsByClaim.get(note.claim_id) ?? []}
+                  projectSlug={selected?.slug ?? ""}
+                  suggestions={suggestionsByNote.get(note.id) ?? []}
+                  myVotes={myVotes}
+                  voteHolds={voteHolds}
+                  onVote={handleVote}
+                  session={session}
+                  onNeedLogin={() => setLoginOpen(true)}
+                />
+              ))}
+            </>
+          )}
         </div>
       </main>
 

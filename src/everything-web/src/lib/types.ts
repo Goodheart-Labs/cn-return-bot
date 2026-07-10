@@ -38,6 +38,9 @@ export interface NoteRow {
   helpful_count: number;
   somewhat_helpful_count: number;
   not_helpful_count: number;
+  author_id: string | null;   // null = the AI-written note
+  author_name: string | null; // display name captured at submit time
+  status: "published" | "draft" | "hidden";
   created_at: string;
   claim: ClaimRef | null;
 }
