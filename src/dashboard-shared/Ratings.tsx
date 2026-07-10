@@ -74,21 +74,43 @@ export function Ratings({
   );
 }
 
-/** Interactive twin of Ratings: the same ▲/▼ count pills, but clicking casts a
- *  vote (active = the viewer's own vote). The dashboards keep the display-only
- *  Ratings; this is used where visitors vote (Common Notes site). Unlike
- *  Ratings it renders at zero counts — you must be able to cast the first vote. */
-export function VoteRatings({ helpful, notHelpful, myVote, onVote }: {
+/** Interactive twin of Ratings: labeled pills instead of ▲/▼ — Common Notes
+ *  uses X's three-way rating scale (helpful / somewhat helpful / not helpful;
+ *  somewhat carries 0.5 weight at scoring time). Clicking casts a vote, active
+ *  = the viewer's own vote. The dashboards keep the display-only Ratings;
+ *  unlike Ratings this renders at zero counts — you must be able to cast the
+ *  first vote. */
+export type VoteValue = 1 | 0 | -1;
+
+const VOTE_OPTIONS: { value: VoteValue; label: string; active: string; idle: string }[] = [
+  { value: 1, label: "Helpful", active: "bg-green-100 text-green-800 border-green-300", idle: "text-green-700 border-gray-200 hover:bg-green-50" },
+  { value: 0, label: "Somewhat helpful", active: "bg-amber-100 text-amber-800 border-amber-300", idle: "text-amber-700 border-gray-200 hover:bg-amber-50" },
+  { value: -1, label: "Not helpful", active: "bg-red-100 text-red-800 border-red-300", idle: "text-red-700 border-gray-200 hover:bg-red-50" },
+];
+
+export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVote }: {
   helpful: number;
+  somewhatHelpful: number;
   notHelpful: number;
-  myVote?: 1 | -1;
-  onVote: (vote: 1 | -1) => void;
+  myVote?: VoteValue;
+  onVote: (vote: VoteValue) => void;
 }) {
+  const counts: Record<VoteValue, number> = { 1: helpful, 0: somewhatHelpful, [-1]: notHelpful };
   return (
-    <span className="text-xs text-gray-500 inline-flex items-center gap-1">
-      <RatingButton variant="vote" bucket="helpful" count={helpful} active={myVote === 1} disabled={false} onClick={() => onVote(1)} />
-      <span aria-hidden>·</span>
-      <RatingButton variant="vote" bucket="not_helpful" count={notHelpful} active={myVote === -1} disabled={false} onClick={() => onVote(-1)} />
+    <span className="inline-flex items-center gap-1.5 flex-wrap">
+      {VOTE_OPTIONS.map(({ value, label, active, idle }) => (
+        <button
+          key={value}
+          type="button"
+          aria-pressed={myVote === value}
+          aria-label={`${label}: ${counts[value]} ratings`}
+          onClick={() => onVote(value)}
+          className={`text-xs px-2 py-0.5 rounded-full border cursor-pointer transition-colors ${myVote === value ? active : idle}`}
+        >
+          {label}
+          {counts[value] > 0 && <span className="ml-1 font-semibold">{counts[value].toLocaleString("en-US")}</span>}
+        </button>
+      ))}
     </span>
   );
 }
@@ -99,28 +121,19 @@ function RatingButton({
   active,
   disabled,
   onClick,
-  variant = "tag",
 }: {
   bucket: TagBucket;
   count: number;
   active: boolean;
   disabled: boolean;
   onClick: () => void;
-  // "tag" (dashboards): triangle always colored, active = expanded tag pills.
-  // "vote" (Common Notes): bigger triangle, colored only when it's your vote,
-  // muted grey otherwise.
-  variant?: "tag" | "vote";
 }) {
   const base = "px-1.5 py-0.5 rounded transition-colors inline-flex items-center gap-1";
   const interactive = disabled
     ? "cursor-default text-gray-500"
     : "cursor-pointer hover:bg-gray-100 text-gray-700";
-  const activeClass = variant === "tag" && active ? "bg-gray-200 text-gray-900" : "";
+  const activeClass = active ? "bg-gray-200 text-gray-900" : "";
   const color = bucket === "helpful" ? "text-green-600" : "text-red-600";
-  // Vote variant: muted colour until it's your vote, saturated once it is.
-  const mutedColor = bucket === "helpful" ? "text-green-400" : "text-red-400";
-  const triangleColor = variant === "vote" && !active ? mutedColor : color;
-  const triangleSize = variant === "vote" ? "text-base" : "";
   return (
     <button
       type="button"
@@ -130,7 +143,7 @@ function RatingButton({
       onClick={onClick}
       className={`${base} ${interactive} ${activeClass}`.trim()}
     >
-      <span className={`${triangleColor} ${triangleSize} leading-none`.trim()}>{bucket === "helpful" ? "▲" : "▼"}</span>
+      <span className={`${color} leading-none`.trim()}>{bucket === "helpful" ? "▲" : "▼"}</span>
       {count.toLocaleString("en-US")}
     </button>
   );

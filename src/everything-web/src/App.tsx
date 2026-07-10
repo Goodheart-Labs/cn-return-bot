@@ -1,9 +1,31 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { Session } from "@supabase/supabase-js";
 import { useLiveData } from "./lib/useLiveData";
 import { useSession, signOut } from "./lib/auth";
 import { castVote, clearVote, fetchMyVotes, type Vote } from "./lib/votes";
 import { readRoute, pushProject } from "./lib/routing";
 import { Sidebar } from "./components/Sidebar";
+
+function AuthCorner({ session, onSignIn, onSignOut }: {
+  session: Session | null;
+  onSignIn: () => void;
+  onSignOut: () => void;
+}) {
+  if (!session) {
+    return (
+      <button onClick={onSignIn} className="text-sm text-blue-600 hover:underline shrink-0">
+        Sign in to vote
+      </button>
+    );
+  }
+  const who = session.user.email ?? session.user.user_metadata?.user_name ?? "signed in";
+  return (
+    <div className="text-sm text-gray-500 flex items-center gap-3 shrink-0 min-w-0">
+      <span className="truncate max-w-[16rem]" title={who}>{who}</span>
+      <button onClick={onSignOut} className="text-blue-600 hover:underline">Sign out</button>
+    </div>
+  );
+}
 import { LoginModal } from "./components/LoginModal";
 import { NoteCard } from "./components/NoteCard";
 import type { NoteRow, SuggestionRow } from "./lib/types";
@@ -120,13 +142,13 @@ export function App() {
         projects={projects}
         selectedId={selectedId}
         onSelect={selectProject}
-        session={session}
-        onSignIn={() => setLoginOpen(true)}
-        onSignOut={() => signOut()}
       />
 
-      <main className="flex-1 max-w-3xl mx-auto px-4 md:px-8 py-8 w-full">
-        {selected && <h2 className="text-2xl font-bold mb-6">{selected.name}</h2>}
+      <main className="flex-1 max-w-3xl md:max-w-[96rem] mx-auto px-4 md:px-8 py-8 w-full">
+        <div className="flex items-center justify-between gap-4 mb-6">
+          <h2 className="text-2xl font-bold">{selected?.name ?? ""}</h2>
+          <AuthCorner session={session} onSignIn={() => setLoginOpen(true)} onSignOut={() => signOut()} />
+        </div>
         {!loaded && <p className="text-gray-400">Loading…</p>}
         {loaded && projectNotes.length === 0 && (
           <p className="text-gray-400">No notes yet for this project.</p>

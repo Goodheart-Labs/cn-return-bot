@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { signInWithEmail, signInWithTwitter } from "../lib/auth";
 
+// Prod has no X OAuth secrets yet — clicking would just error. Flip when
+// TWITTER_CLIENT_ID / SUPABASE_AUTH_EXTERNAL_TWITTER_SECRET are set on prod.
+const X_SIGNIN_ENABLED = false;
+
 export function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
@@ -47,15 +51,19 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
 
         {error && <p className="text-sm text-red-600">{error}</p>}
 
-        <div className="flex items-center gap-2 text-xs text-gray-400">
-          <span className="flex-1 border-t" /> or <span className="flex-1 border-t" />
-        </div>
-        <button
-          onClick={() => signInWithTwitter()}
-          className="w-full border border-gray-800 bg-black text-white rounded-lg py-2 text-sm font-medium hover:bg-gray-800"
-        >
-          Sign in with 𝕏
-        </button>
+        {X_SIGNIN_ENABLED && (
+          <>
+            <div className="flex items-center gap-2 text-xs text-gray-400">
+              <span className="flex-1 border-t" /> or <span className="flex-1 border-t" />
+            </div>
+            <button
+              onClick={() => signInWithTwitter()}
+              className="w-full border border-gray-800 bg-black text-white rounded-lg py-2 text-sm font-medium hover:bg-gray-800"
+            >
+              Sign in with 𝕏
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

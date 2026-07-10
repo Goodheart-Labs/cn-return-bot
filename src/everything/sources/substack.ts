@@ -44,7 +44,7 @@ export async function fetchLatestFreePostUrls(profileUrl: string, n: number): Pr
 }
 
 /** Strip body_html down to blank-line-separated plain-text blocks (chunking splits on those). */
-function htmlToText(html: string): string {
+export function htmlToText(html: string): string {
   const text = html
     .replace(/<(script|style)[\s\S]*?<\/\1>/gi, "")
     .replace(/<br\s*\/?>/gi, "\n")

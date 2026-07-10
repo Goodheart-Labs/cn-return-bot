@@ -24,6 +24,7 @@ export interface ClaimRef {
   item_id: string;
   claim: string;
   context_quote: string;
+  context_paragraph: string | null;
   context_url: string | null;
   start_seconds: number | null;
   end_seconds: number | null;
@@ -35,6 +36,7 @@ export interface NoteRow {
   note: string;
   sources: string[]; // citation URLs, stored in a separate column (not inline in the note text)
   helpful_count: number;
+  somewhat_helpful_count: number;
   not_helpful_count: number;
   created_at: string;
   claim: ClaimRef | null;
