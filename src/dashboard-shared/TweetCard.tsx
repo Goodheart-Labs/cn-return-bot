@@ -1,8 +1,57 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { NotedContent, Tweet } from "./types";
 import { extractMedia, type MediaImage, type MediaVideo } from "./media";
+import { proxiedVideoUrl } from "./videoProxy";
 
-function MediaBlock({ images, videos }: { images: MediaImage[]; videos: MediaVideo[] }) {
+const MEDIA_SIZE_CLASSES = "max-w-[300px] max-h-[250px] rounded border border-gray-200 object-contain";
+
+/** Tweet video, played through the dashboard server's same-origin /video-proxy
+ *  (video.twimg.com never delivers bytes to cross-origin <video> requests).
+ *  Where no proxy is running — e.g. the deployed GitHub Pages stats site — the
+ *  load errors immediately and we fall back to the poster thumbnail linking
+ *  out to the post. */
+function TweetVideo({ video, linkUrl }: { video: MediaVideo; linkUrl: string | null }) {
+  const [proxyUnavailable, setProxyUnavailable] = useState(false);
+
+  if (!proxyUnavailable) {
+    return (
+      <video
+        src={proxiedVideoUrl(video.url)}
+        poster={video.posterUrl}
+        controls
+        preload="metadata"
+        className={`${MEDIA_SIZE_CLASSES} bg-black`}
+        onError={() => setProxyUnavailable(true)}
+      />
+    );
+  }
+
+  if (!video.posterUrl) {
+    return linkUrl ? (
+      <a href={linkUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline">
+        Watch video ↗
+      </a>
+    ) : null;
+  }
+
+  const poster = (
+    <span className="relative inline-block">
+      <img src={video.posterUrl} alt="Video preview" className={MEDIA_SIZE_CLASSES} loading="lazy" />
+      <span className="absolute inset-0 flex items-center justify-center">
+        <span className="w-10 h-10 rounded-full bg-black/60 text-white flex items-center justify-center text-lg">▶</span>
+      </span>
+    </span>
+  );
+  return linkUrl ? (
+    <a href={linkUrl} target="_blank" rel="noopener noreferrer" className="hover:opacity-90">{poster}</a>
+  ) : poster;
+}
+
+function MediaBlock({ images, videos, videoLinkUrl }: {
+  images: MediaImage[];
+  videos: MediaVideo[];
+  videoLinkUrl: string | null;
+}) {
   if (images.length === 0 && videos.length === 0) return null;
   return (
     <>
@@ -13,7 +62,7 @@ function MediaBlock({ images, videos }: { images: MediaImage[]; videos: MediaVid
               <img
                 src={img.url}
                 alt={`Image ${i + 1}`}
-                className="max-w-[300px] max-h-[250px] rounded border border-gray-200 object-contain cursor-pointer hover:opacity-90"
+                className={`${MEDIA_SIZE_CLASSES} cursor-pointer hover:opacity-90`}
                 loading="lazy"
                 onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
               />
@@ -23,14 +72,8 @@ function MediaBlock({ images, videos }: { images: MediaImage[]; videos: MediaVid
       )}
       {videos.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-2">
-          {videos.map((vid, i) => vid.url && (
-            <video
-              key={i}
-              src={vid.url}
-              controls
-              preload="metadata"
-              className="max-w-[300px] max-h-[250px] rounded border border-gray-200 object-contain bg-black"
-            />
+          {videos.map((vid, i) => (
+            <TweetVideo key={i} video={vid} linkUrl={videoLinkUrl} />
           ))}
         </div>
       )}
@@ -87,7 +130,7 @@ export function TweetCard({ tweet }: { tweet: Tweet }) {
         <p className="text-sm text-gray-700 whitespace-pre-wrap mb-2">{tweet.text}</p>
       )}
 
-      <MediaBlock images={media.images} videos={media.videos} />
+      <MediaBlock images={media.images} videos={media.videos} videoLinkUrl={sourceUrl} />
 
       {(media.quotedPostContext || media.quotedImages.length > 0 || media.quotedVideos.length > 0) && (
         <div className="bg-white border border-gray-200 rounded p-2 mb-2 text-sm text-gray-600">
@@ -95,7 +138,7 @@ export function TweetCard({ tweet }: { tweet: Tweet }) {
           {media.quotedPostContext && (
             <p className="whitespace-pre-wrap mb-2">{media.quotedPostContext}</p>
           )}
-          <MediaBlock images={media.quotedImages} videos={media.quotedVideos} />
+          <MediaBlock images={media.quotedImages} videos={media.quotedVideos} videoLinkUrl={sourceUrl} />
         </div>
       )}
     </div>

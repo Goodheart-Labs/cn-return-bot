@@ -2,7 +2,7 @@ import type { ReferencedTweetData, TweetMediaItem } from "./types";
 import { getBestMediaUrl } from "../pipeline/media/bestMediaUrl";
 
 export interface MediaImage { url: string }
-export interface MediaVideo { url: string }
+export interface MediaVideo { url: string; posterUrl?: string }
 
 export interface ExtractedMedia {
   images: MediaImage[];
@@ -22,7 +22,8 @@ function pushMedia(
   const url = getBestMediaUrl(m);
   if (!url) return;
   if (m.type === "photo") imagesOut.push({ url });
-  else if (m.type === "video" || m.type === "animated_gif") videosOut.push({ url });
+  else if (m.type === "video" || m.type === "animated_gif")
+    videosOut.push({ url, posterUrl: m.preview_image_url });
 }
 
 export function extractMedia(
