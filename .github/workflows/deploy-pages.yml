@@ -78,6 +78,9 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
 
       - name: Deploy commonnotes.net (Cloudflare Pages)
+        # Manual only (Nathan 2026-07-10): merges must NOT silently update the
+        # public domain. Trigger via workflow_dispatch when he says deploy.
+        if: github.event_name == 'workflow_dispatch'
         run: bunx wrangler pages deploy src/everything-web/dist --project-name=commonnotes --branch=main --commit-dirty=true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
