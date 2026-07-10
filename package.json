@@ -63,6 +63,7 @@
     "everything-enqueue": "bun run src/everything/enqueue.ts",
     "everything-worker": "bun run src/everything/worker.ts",
     "everything-import-dwarkesh": "bun run src/everything/importDwarkesh.ts",
+    "everything-import-files": "bun run src/everything/importFiles.ts",
     "dev-everything": "cd src/everything-web && bunx vite --port 8003",
     "build-everything-web": "cd src/everything-web && bunx vite build"
   },

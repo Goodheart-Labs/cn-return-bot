@@ -31,6 +31,40 @@ function throwOnError<T>({ data, error }: { data: T; error: { message: string } 
   return data;
 }
 
+/** Create or update a project (keyed by slug); returns its id. */
+export async function upsertProject(project: {
+  slug: string;
+  name: string;
+  description?: string;
+  sort_order?: number;
+}): Promise<string> {
+  const row = throwOnError(
+    await getSupabaseClient().from("everything_projects").upsert(project, { onConflict: "slug" }).select("id").single(),
+  );
+  return (row as { id: string }).id;
+}
+
+/** Create or update an item (keyed by url) and put it in 'processing'; returns the row. */
+export async function upsertItem(item: {
+  project_id: string;
+  source: SourceKind;
+  url: string;
+  title: string;
+}): Promise<EverythingItem> {
+  return throwOnError(
+    await getSupabaseClient()
+      .from("everything_items")
+      .upsert({ ...item, status: "processing" }, { onConflict: "url" })
+      .select("id, source, url, title, published_at, status")
+      .single(),
+  ) as EverythingItem;
+}
+
+/** Delete an item's claims (notes cascade) so a re-import starts clean. */
+export async function deleteClaimsForItem(itemId: string): Promise<void> {
+  throwOnError(await getSupabaseClient().from("everything_claims").delete().eq("item_id", itemId));
+}
+
 /** Insert new URLs into the queue; already-known URLs are ignored. Returns the inserted count. */
 export async function enqueueItems(rows: { source: SourceKind; url: string }[]): Promise<number> {
   const inserted = throwOnError(
