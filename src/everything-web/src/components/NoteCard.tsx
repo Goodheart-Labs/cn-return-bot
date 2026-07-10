@@ -11,6 +11,20 @@ import { ImproveNote } from "./ImproveNote";
 import { WriteNote } from "./WriteNote";
 import { supabase } from "../lib/supabase";
 
+/** Six-second draining circle shown right after a vote: the note holds its
+ *  place until this empties, so a misclick can be fixed before it re-sorts. */
+function ResortCountdown() {
+  return (
+    <span className="inline-flex items-center" title="Hold — re-sorting shortly; click again to change your vote">
+      <svg width="14" height="14" viewBox="0 0 16 16" className="-rotate-90">
+        <circle cx="8" cy="8" r="7" fill="none" stroke="#e5e7eb" strokeWidth="2" />
+        <circle cx="8" cy="8" r="7" fill="none" stroke="#3b82f6" strokeWidth="2"
+          strokeDasharray="44" style={{ animation: "cn-countdown 6s linear forwards" }} />
+      </svg>
+    </span>
+  );
+}
+
 function ShareButton({ projectSlug, noteId }: { projectSlug: string; noteId: string }) {
   const [copied, setCopied] = useState(false);
   const copy = async () => {
@@ -80,7 +94,7 @@ function ContextParagraph({ paragraph, quote }: { paragraph: string; quote: stri
  *  (somewhat = 0.5) decides. */
 function RatingStatusBadge({ note }: { note: NoteRow }) {
   const total = note.helpful_count + note.somewhat_helpful_count + note.not_helpful_count;
-  let label = "Collecting ratings";
+  let label = "Draft · collecting ratings";
   let cls = "bg-gray-100 text-gray-600 border-gray-200";
   if (total >= 5) {
     const score = (note.helpful_count + 0.5 * note.somewhat_helpful_count) / total;
@@ -98,11 +112,12 @@ function RatingStatusBadge({ note }: { note: NoteRow }) {
 }
 
 /** A user-written draft note: attributed, votable, deletable by its author. */
-function DraftNote({ note, myVote, onVote, session }: {
+function DraftNote({ note, myVote, onVote, session, holdActive }: {
   note: NoteRow;
   myVote: Vote | undefined;
   onVote: (note: NoteRow, vote: Vote) => void;
   session: Session | null;
+  holdActive?: boolean;
 }) {
   const mine = session?.user.id === note.author_id;
   const remove = async () => {
@@ -125,6 +140,7 @@ function DraftNote({ note, myVote, onVote, session }: {
           myVote={myVote}
           onVote={(vote) => onVote(note, vote)}
         />
+        {holdActive && <ResortCountdown />}
         {mine && (
           <button onClick={remove} className="text-xs text-gray-400 hover:text-red-600 hover:underline">
             Delete
@@ -137,12 +153,14 @@ function DraftNote({ note, myVote, onVote, session }: {
 
 // Mirrors the review-dashboard card composition: content → note → stats row,
 // with voting live and an improve-note affordance.
-export function NoteCard({ note, draftNotes, projectSlug, suggestions, myVotes, onVote, session, onNeedLogin }: {
+export function NoteCard({ note, locked, draftNotes, projectSlug, suggestions, myVotes, voteHolds, onVote, session, onNeedLogin }: {
   note: NoteRow;
+  locked: boolean;
   draftNotes: NoteRow[];
   projectSlug: string;
   suggestions: SuggestionRow[];
   myVotes: Map<string, Vote>;
+  voteHolds: Map<string, boolean>;
   onVote: (note: NoteRow, vote: Vote) => void;
   session: Session | null;
   onNeedLogin: () => void;
@@ -162,20 +180,28 @@ export function NoteCard({ note, draftNotes, projectSlug, suggestions, myVotes, 
 
   const paragraph = claim?.context_paragraph;
   return (
-    <div id={`note-${note.id}`} className="scroll-mt-4 grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,36rem)_minmax(0,1fr)] gap-3 md:gap-5 items-start">
+    <div id={`note-${note.id}`} className="scroll-mt-4 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,36rem)_minmax(0,1fr)] xl:gap-5 items-start">
       {paragraph && claim && (
-        <div className="order-2 md:order-1 md:col-start-1 md:row-start-1">
+        <div className="hidden xl:block xl:col-start-1 xl:row-start-1">
           <ContextParagraph paragraph={paragraph} quote={claim.context_quote} />
         </div>
       )}
-      <div className="bg-white rounded-lg border border-gray-200 p-4 order-1 md:order-2 md:col-start-2 md:row-start-1 w-full">
+      <div className="bg-white rounded-lg border border-gray-200 p-4 w-full max-w-xl mx-auto xl:max-w-none xl:mx-0 xl:col-start-2 xl:row-start-1">
       {claim && (
         <div className="mb-3">
           <ContentCard content={claimContent(claim)} />
+          {paragraph && (
+            <details className="xl:hidden mt-2">
+              <summary className="text-xs text-blue-600 cursor-pointer select-none">Show surrounding context</summary>
+              <div className="mt-2">
+                <ContextParagraph paragraph={paragraph} quote={claim.context_quote} />
+              </div>
+            </details>
+          )}
         </div>
       )}
 
-      <OurNoteCard noteText={noteText} className="mb-3" />
+      <OurNoteCard noteText={noteText} className={locked ? "mb-3" : "!bg-amber-50 !border-amber-100 mb-3"} />
 
       <div className="mb-2 flex items-center flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
         <RatingStatusBadge note={note} />
@@ -186,6 +212,7 @@ export function NoteCard({ note, draftNotes, projectSlug, suggestions, myVotes, 
           myVote={myVote}
           onVote={(vote) => onVote(note, vote)}
         />
+        {voteHolds.has(note.id) && <ResortCountdown key={`${note.helpful_count}-${note.somewhat_helpful_count}-${note.not_helpful_count}`} />}
         <ImproveNote noteId={note.id} session={session} onNeedLogin={onNeedLogin} />
         <ShareButton projectSlug={projectSlug} noteId={note.id} />
       </div>
@@ -193,7 +220,7 @@ export function NoteCard({ note, draftNotes, projectSlug, suggestions, myVotes, 
       {draftNotes.length > 0 && (
         <div className="space-y-2 mb-2">
           {draftNotes.map((d) => (
-            <DraftNote key={d.id} note={d} myVote={myVotes.get(d.id)} onVote={onVote} session={session} />
+            <DraftNote key={d.id} note={d} myVote={myVotes.get(d.id)} onVote={onVote} session={session} holdActive={voteHolds.has(d.id)} />
           ))}
         </div>
       )}
