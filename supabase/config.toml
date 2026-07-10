@@ -227,10 +227,15 @@ otp_expiry = 3600
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
 
-# Uncomment to customize email template
-# [auth.email.template.invite]
-# subject = "You have been invited"
-# content_path = "./supabase/templates/invite.html"
+# Branded Common Notes auth emails. Mirror these in the prod project's
+# dashboard (Auth → Email Templates) — config.toml only applies to local dev.
+[auth.email.template.confirmation]
+subject = "Confirm your email for Common Notes"
+content_path = "./supabase/templates/confirmation.html"
+
+[auth.email.template.magic_link]
+subject = "Sign in to Common Notes"
+content_path = "./supabase/templates/magic_link.html"
 
 # Uncomment to customize notification email template
 # [auth.email.notification.password_changed]

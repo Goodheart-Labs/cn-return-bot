@@ -68,7 +68,8 @@ Queue-driven pipeline that writes notes on non-X content (YouTube, Substack) int
 bun run everything-enqueue <url...>       # YouTube video, Substack post, or Substack profile (--latest N)
 bun run everything-worker                 # drain the queue and exit
 bun run everything-import-dwarkesh        # import podcast_results.zip Dwarkesh notes
-bun run dev-everything                    # local FE on port 8003 (VITE_SUPABASE_* in root .env)
+bun run dev-everything                    # local FE on port 8003 against the PROD backend (.env.prod-backend, gitignored: prod URL + anon key)
+bun run dev-everything-local              # local FE against the local Supabase (VITE_SUPABASE_* in root .env)
 ```
 
 Pipeline: per claim it forces `bot=simple-bot, note_prefilter=deepseek, search_claim=on`; confident-true claims skipped (`shouldFactCheck`).
@@ -80,7 +81,7 @@ Auth & interaction:
 - **Improve a note**: user proposes a rewrite → `supabase/functions/judge-suggestion` edge function (LLM, earnest-vs-trolling) → accepted ones shown as "Community improvement". Needs `OPENROUTER_API_KEY`; `verify_jwt=false` (function self-authorizes via `getUser`, works with local ES256 keys). Local: `supabase functions serve judge-suggestion --env-file .env`.
 - X sign-in needs `TWITTER_CLIENT_ID` + `SUPABASE_AUTH_EXTERNAL_TWITTER_SECRET`. Magic-link redirect URLs (localhost:8003, `*.github.io`) are in `supabase/config.toml`.
 
-Prod prerequisites (manual): run migration 050; `supabase functions deploy judge-suggestion` + `supabase secrets set OPENROUTER_API_KEY=…`; repo secret `SUPABASE_ANON_KEY`; add the deployed notes URL to `additional_redirect_urls`.
+Prod prerequisites (manual): run migration 050; `supabase functions deploy judge-suggestion` + `supabase secrets set OPENROUTER_API_KEY=…`; repo secret `SUPABASE_ANON_KEY`. In the prod project's dashboard (Auth → URL Configuration): set **Site URL** to `https://goodheart-labs.github.io/cn-return-bot/notes/` and add it (plus `https://goodheart-labs.github.io/cn-return-bot/**`) to the redirect allow-list — otherwise confirmation/magic links fall back to Supabase's default `http://localhost:3000`. Mirror the branded email templates (`supabase/templates/confirmation.html`, `magic_link.html`) under Auth → Email Templates; config.toml only styles local dev.
 
 ## Review dashboard
 

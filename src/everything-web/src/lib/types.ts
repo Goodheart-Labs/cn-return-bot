@@ -32,7 +32,8 @@ export interface ClaimRef {
 export interface NoteRow {
   id: string;
   claim_id: string;
-  note: string; // sources are inline in the text (like a normal community note)
+  note: string;
+  sources: string[]; // citation URLs, stored in a separate column (not inline in the note text)
   helpful_count: number;
   not_helpful_count: number;
   created_at: string;
