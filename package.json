@@ -65,6 +65,7 @@
     "everything-import-dwarkesh": "bun run src/everything/importDwarkesh.ts",
     "everything-import-files": "bun run src/everything/importFiles.ts",
     "dev-everything": "cd src/everything-web && bunx vite --port 8003",
+    "dev-everything-prod": "cd src/everything-web && bunx vite --port 8003 --mode prod-backend",
     "build-everything-web": "cd src/everything-web && bunx vite build"
   },
   "knip": {

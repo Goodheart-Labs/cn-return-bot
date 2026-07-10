@@ -69,6 +69,7 @@ bun run everything-enqueue <url...>       # YouTube video, Substack post, or Sub
 bun run everything-worker                 # drain the queue and exit
 bun run everything-import-dwarkesh        # import podcast_results.zip Dwarkesh notes
 bun run dev-everything                    # local FE on port 8003 (VITE_SUPABASE_* in root .env)
+bun run dev-everything-prod               # local FE against the PROD backend (.env.prod-backend, gitignored: prod URL + anon key)
 ```
 
 Pipeline: per claim it forces `bot=simple-bot, note_prefilter=deepseek, search_claim=on`; confident-true claims skipped (`shouldFactCheck`).
