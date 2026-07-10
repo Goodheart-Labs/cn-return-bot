@@ -15,6 +15,7 @@ import { getBotConfig } from "../ab-testing/botConfig";
 import { getMonitoringContext, buildReferenceBlock } from "../misinfo-monitoring/monitoringContext";
 import {
   buildSearchSystemPrompt,
+  SEARCH_SYSTEM_PROMPT_CLAIM,
   SEARCH_POLITICAL_SOURCES_INSTRUCTION,
   SEARCH_RESPONSE_FORMAT,
   SEARCH_INLINE_RESPONSE_SCHEMA,
@@ -57,6 +58,9 @@ function appendSonarCitations(findings: string, annotations: any[] | undefined):
  *  search provider, since they all build their prompt from here). */
 export function getSearchSystemPrompt(): string {
   const config = getBotConfig();
+  // Everything-pipeline claims are an excerpt + a claim, not an X post — use
+  // the dedicated claim-check prompt and skip the X-only assembly below.
+  if (config.search_claim) return SEARCH_SYSTEM_PROMPT_CLAIM;
   const monitoring = getMonitoringContext();
   const base = buildSearchSystemPrompt({
     referenceBlock: monitoring ? buildReferenceBlock(monitoring) : null,

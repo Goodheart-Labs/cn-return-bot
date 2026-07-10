@@ -1,0 +1,53 @@
+{
+  "note_text": "Reciprocating engines use pistons that move back and forth in a linear motion, not in circles. This back-and-forth movement is converted into rotation by a crankshaft. Engines that spin internally to generate power are known as rotary or turbine engines. https://en.wikipedia.org/wiki/Reciprocating_engine https://www.collinsdictionary.com/dictionary/english/reciprocating-engine",
+  "claim": "Reciprocating engines are engines that spin in circles, similar to a diesel engine.",
+  "context": "There are also medium-speed reciprocating engines: engines that spin in circles, like a diesel engine.",
+  "video_url": "https://www.youtube.com/watch?v=mDG_Hx3BSUE&t=6304s",
+  "clip": {
+    "start_s": 6304,
+    "end_s": 6306,
+    "file": "mDG_Hx3BSUE_292_reciprocating_engines_are_engines_that_spin.mp4"
+  },
+  "source_verification": {
+    "accepted": true,
+    "reasoning": "Both cited sources directly support the note's claims: pistons move linearly (back and forth), this is converted to rotation by a crankshaft, and engines that spin internally are rotary/turbine engines. The Wikipedia article explicitly mentions rotary engines as those that set cylinders in motion around the shaft. All factual claims are covered.",
+    "source_evaluations": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Reciprocating_engine",
+        "verdict": "good",
+        "citations": [
+          {
+            "quote": "A **reciprocating engine**, more often known as a **piston engine**, is a [heat engine](/wiki/Heat_engine \"Heat engine\") that uses one or more [reciprocating](/wiki/Reciprocating_motion \"Reciprocating motion\") [pistons](/wiki/Piston \"Piston\") to convert high temperature and high [pressure](/wiki/Pressure \"Pressure\") into a [rotating motion](/wiki/Circular_motion \"Circular motion\").",
+            "explanation": "Supports that reciprocating engines use pistons (linear motion) converted to rotation, not engines that spin internally."
+          },
+          {
+            "quote": "In most types, the linear movement of the piston is converted to a rotating movement via a [connecting rod](/wiki/Connecting_rod \"Connecting rod\") and a [crankshaft](/wiki/Crankshaft \"Crankshaft\")",
+            "explanation": "Directly supports the note's claim that linear piston motion is converted to rotation by a crankshaft."
+          },
+          {
+            "quote": "Some designs have set the cylinders in motion around the shaft, such as the [rotary engine](/wiki/Rotary_engine \"Rotary engine\").",
+            "explanation": "Supports the note's distinction that engines which spin internally are rotary engines."
+          }
+        ]
+      },
+      {
+        "url": "https://www.collinsdictionary.com/dictionary/english/reciprocating-engine",
+        "verdict": "good",
+        "citations": [
+          {
+            "quote": "A [reciprocating](https://www.collinsdictionary.com/dictionary/english/reciprocate \"Definition of reciprocating\") engine is an engine in which a piston is moved up and down in a cylinder by a [mechanism](https://www.collinsdictionary.com/dictionary/english/mechanism \"Definition of mechanism\") such as a crankshaft and [connecting](https://www.collinsdictionary.com/dictionary/english/connect \"Definition of connecting\") [rod](https://www.collinsdictionary.com/dictionary/english/rod \"Definition of rod\").",
+            "explanation": "Supports that the piston moves back and forth and is connected via crankshaft."
+          },
+          {
+            "quote": "A reciprocating engine has pistons moving back and forth inside.",
+            "explanation": "Directly supports the note's claim about back-and-forth piston motion."
+          },
+          {
+            "quote": "An alternative to the reciprocating engine is the rotary piston engine.",
+            "explanation": "Supports distinction between reciprocating and rotary engines."
+          }
+        ]
+      }
+    ]
+  }
+}

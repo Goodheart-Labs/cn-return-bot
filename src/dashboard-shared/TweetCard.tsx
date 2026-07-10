@@ -1,4 +1,5 @@
-import type { Tweet } from "./types";
+import { useEffect, useRef } from "react";
+import type { NotedContent, Tweet } from "./types";
 import { extractMedia, type MediaImage, type MediaVideo } from "./media";
 
 function MediaBlock({ images, videos }: { images: MediaImage[]; videos: MediaVideo[] }) {
@@ -33,9 +34,30 @@ function MediaBlock({ images, videos }: { images: MediaImage[]; videos: MediaVid
   );
 }
 
+// "View on <domain>" label: nicer names for the common hosts, bare hostname
+// otherwise.
+function sourceLinkLabel(url: string): string {
+  let host: string;
+  try {
+    host = new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return "source";
+  }
+  if (host === "x.com" || host === "twitter.com") return "X";
+  if (host === "youtube.com" || host === "youtu.be") return "YouTube";
+  return host;
+}
+
 export function TweetCard({ tweet }: { tweet: Tweet }) {
   const media = extractMedia(tweet.media, tweet.referencedTweetData);
-  const tweetUrl = `https://x.com/i/status/${tweet.tweetId}`;
+  // Prefer an explicit source link (e.g. timestamped YouTube for podcast items);
+  // otherwise fall back to the X status URL. Hide the link entirely when neither
+  // is available (e.g. a podcast item whose link hasn't been backfilled yet).
+  const sourceUrl = tweet.sourceUrl?.trim()
+    ? tweet.sourceUrl
+    : tweet.tweetId
+      ? `https://x.com/i/status/${tweet.tweetId}`
+      : null;
 
   return (
     <div className="bg-gray-50 rounded-lg border border-gray-200 p-3">
@@ -44,23 +66,17 @@ export function TweetCard({ tweet }: { tweet: Tweet }) {
           {tweet.handle && (
             <span className="text-sm font-medium text-gray-800">@{tweet.handle}</span>
           )}
-          {tweet.hasPhoto && (
-            <span className="text-xs bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded">
-              {tweet.mediaCount && tweet.mediaCount > 1 ? `${tweet.mediaCount} images` : "image"}
-            </span>
-          )}
-          {tweet.hasVideo && (
-            <span className="text-xs bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded">video</span>
-          )}
         </div>
-        <a
-          href={tweetUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs text-blue-500 hover:underline"
-        >
-          View on X ↗
-        </a>
+        {sourceUrl && (
+          <a
+            href={sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-blue-500 hover:underline"
+          >
+            View on {sourceLinkLabel(sourceUrl)} ↗
+          </a>
+        )}
       </div>
 
       {tweet.text && (
@@ -80,4 +96,149 @@ export function TweetCard({ tweet }: { tweet: Tweet }) {
       )}
     </div>
   );
+}
+
+/** "https://www.youtube.com/watch?v=ID&t=42s" / "youtu.be/ID" → "ID". */
+function youtubeVideoId(url: string): string | null {
+  return url.match(/(?:[?&]v=|youtu\.be\/)([\w-]{6,})/)?.[1] ?? null;
+}
+
+/** Quote citation from an article/post, with a link to the source. */
+function CitationBlock({ quote, url, linkText }: { quote: string; url: string | null; linkText: string }) {
+  return (
+    <blockquote className="border-l-4 border-gray-300 pl-3 text-gray-600 italic text-sm">
+      “{quote}”
+      {url && (
+        <>
+          {" "}
+          <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-500 not-italic hover:underline">
+            {linkText} ↗
+          </a>
+        </>
+      )}
+    </blockquote>
+  );
+}
+
+interface YouTubePlayer {
+  getCurrentTime(): number;
+  seekTo(seconds: number, allowSeekAhead: boolean): void;
+  pauseVideo(): void;
+  destroy(): void;
+}
+
+interface YouTubeNamespace {
+  Player: new (
+    el: HTMLElement,
+    opts: {
+      videoId: string;
+      playerVars?: Record<string, number | string>;
+      events?: { onStateChange?: (e: { data: number }) => void };
+    },
+  ) => YouTubePlayer;
+  PlayerState: { PLAYING: number };
+}
+
+declare global {
+  interface Window {
+    YT?: YouTubeNamespace;
+    onYouTubeIframeAPIReady?: () => void;
+  }
+}
+
+// Load the IFrame Player API once for the whole app; resolves when YT is ready.
+let youtubeApiReady: Promise<void> | null = null;
+function loadYouTubeApi(): Promise<void> {
+  if (youtubeApiReady) return youtubeApiReady;
+  youtubeApiReady = new Promise((resolve) => {
+    if (window.YT?.Player) return resolve();
+    const previous = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = () => {
+      previous?.();
+      resolve();
+    };
+    const script = document.createElement("script");
+    script.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(script);
+  });
+  return youtubeApiReady;
+}
+
+const CLIP_END_POLL_MS = 200;
+
+/** Embed a YouTube clip via the IFrame Player API so that reaching the clip's
+ *  end rewinds to its start and pauses — instead of YouTube's native end screen,
+ *  whose replay button restarts the whole video from 0:00. */
+function YouTubeClip({ url, quote, startSeconds, endSeconds }: {
+  url: string;
+  quote?: string;
+  startSeconds?: number | null;
+  endSeconds?: number | null;
+}) {
+  const videoId = youtubeVideoId(url);
+  const hostRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!videoId) return;
+    const start = startSeconds != null ? Math.max(0, Math.floor(startSeconds)) : 0;
+    const end = endSeconds != null ? Math.ceil(endSeconds) : null;
+    let player: YouTubePlayer | undefined;
+    let endPoll: ReturnType<typeof setInterval> | undefined;
+    let cancelled = false;
+
+    loadYouTubeApi().then(() => {
+      if (cancelled || !hostRef.current) return;
+      player = new window.YT!.Player(hostRef.current, {
+        videoId,
+        playerVars: { start }, // no `end` param — we stop precisely, ourselves
+        events: {
+          onStateChange: (e) => {
+            clearInterval(endPoll);
+            if (e.data === window.YT!.PlayerState.PLAYING && end != null) {
+              endPoll = setInterval(() => {
+                if (player!.getCurrentTime() >= end) {
+                  player!.seekTo(start, true);
+                  player!.pauseVideo();
+                }
+              }, CLIP_END_POLL_MS);
+            }
+          },
+        },
+      });
+    });
+
+    return () => {
+      cancelled = true;
+      clearInterval(endPoll);
+      player?.destroy();
+    };
+  }, [videoId, startSeconds, endSeconds]);
+
+  return (
+    <div className="space-y-2">
+      {videoId && <div ref={hostRef} className="w-full aspect-video rounded-lg overflow-hidden" />}
+      {quote && <CitationBlock quote={quote} url={url} linkText="watch" />}
+      {!videoId && !quote && (
+        <a href={url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline">
+          View on {sourceLinkLabel(url)} ↗
+        </a>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Renders whatever piece of content a note is about: an X post (the classic
+ * TweetCard), a YouTube clip embedded at its [start, end] timestamp span, or a
+ * verbatim citation from an article/post linking back to the source.
+ */
+export function ContentCard({ content }: { content: NotedContent }) {
+  switch (content.kind) {
+    case "tweet":
+      return <TweetCard tweet={content.tweet} />;
+    case "youtube":
+      return <YouTubeClip url={content.url} quote={content.quote} startSeconds={content.startSeconds} endSeconds={content.endSeconds} />;
+    case "article":
+      return <CitationBlock quote={content.quote} url={content.url} linkText={content.url ? sourceLinkLabel(content.url) : ""} />;
+  }
 }

@@ -174,6 +174,19 @@ const SIMPLE_BOT_ANTI_PEDANTIC_TEST: ABTest = {
   ],
 };
 
+// Use the claim-check search prompt (input is a claim + excerpt from a podcast,
+// interview, or article, not an X post). Off in prod (weight 0 on); forced on by
+// the everything pipeline (src/everything/checkClaims.ts). Prereq-gated to
+// simple-bot, so no defaultVariant.
+const SIMPLE_BOT_CLAIM_TEST: ABTest = {
+  name: "search_claim",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off", overrides: { search_claim: false } }, weight: 100 },
+    { variant: { name: "on",  overrides: { search_claim: true  } }, weight: 0   },
+  ],
+};
+
 // Append a few-shot block of real, well-performing notes (all simple, direct,
 // and short) to simple-bot's writer system prompt, testing whether concrete
 // examples pull the writer toward that "simple and nice" style vs the
@@ -427,6 +440,7 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_VERIFIER_TEST,
   SIMPLE_BOT_PROMPTS_TEST,
   SIMPLE_BOT_ANTI_PEDANTIC_TEST,
+  SIMPLE_BOT_CLAIM_TEST,
   SIMPLE_BOT_WRITER_EXAMPLES_TEST,
   SIMPLE_BOT_POLITICAL_SOURCES_TEST,
   SIMPLE_BOT_CORRECTION_EXTRACTION_TEST,

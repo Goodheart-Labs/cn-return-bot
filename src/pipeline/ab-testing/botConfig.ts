@@ -125,6 +125,13 @@ export interface BotConfig {
    */
   search_anti_pedantic?: boolean;
   /**
+   * When true (simple-bot only), the search step uses the claim-check prompt —
+   * the input is a claim extracted from a podcast, interview, or article plus
+   * surrounding context, not an X post. Forced on by the everything pipeline.
+   * Set by SIMPLE_BOT_CLAIM_TEST; defaults false.
+   */
+  search_claim?: boolean;
+  /**
    * When true, the writer's system prompt is appended with a few-shot block of
    * real notes the community rated helpful — all simple, direct, and short — to
    * pull the writer toward that "simple and nice" style. Set by

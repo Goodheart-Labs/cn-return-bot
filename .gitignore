@@ -16,6 +16,9 @@ dataset_runs/
 /output/
 /podcast_results/
 /podcast_results.zip
+# Dwarkesh clip bundle (mp4s); the note JSONs are vendored in src/everything/dwarkesh_clips/
+/note_clips_output/
+/note_clips_output.zip
 
 # code coverage
 coverage

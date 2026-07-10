@@ -1,17 +1,23 @@
-name: Deploy Stats Dashboard
+name: Deploy Pages
+
+# One artifact, two SPAs: the stats dashboard at /cn-return-bot/ and the
+# "Community Notes on Everything" site at /cn-return-bot/notes/. The cron
+# refresh only matters for the stats snapshot — the notes site reads Supabase
+# live (anon key baked into the build, locked down by migration 050).
 
 on:
   schedule:
-    # Refresh the snapshot every 6 hours.
+    # Refresh the stats snapshot every 4 hours.
     - cron: "0 */4 * * *"
   push:
     branches: [main]
     paths:
       - "src/stats-dashboard/**"
+      - "src/everything-web/**"
       - "src/dashboard-shared/**"
       - "package.json"
       - "bun.lock"
-      - ".github/workflows/deploy-stats-dashboard.yml"
+      - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
 
 permissions:
@@ -30,7 +36,6 @@ jobs:
     env:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-      BASE_PATH: /cn-return-bot/
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -47,14 +52,29 @@ jobs:
       - name: Snapshot Supabase to stats-data.json
         run: bun run build-stats-data
 
-      - name: Build SPA
+      - name: Build stats SPA
         run: cd src/stats-dashboard && bunx vite build
+        env:
+          BASE_PATH: /cn-return-bot/
+
+      - name: Build everything SPA
+        run: cd src/everything-web && bunx vite build
+        env:
+          BASE_PATH: /cn-return-bot/notes/
+          VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
+      - name: Assemble site
+        run: |
+          mkdir -p site/notes
+          cp -r src/stats-dashboard/dist/. site/
+          cp -r src/everything-web/dist/. site/notes/
 
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: src/stats-dashboard/dist
+          path: site
 
       - id: deployment
         uses: actions/deploy-pages@v4

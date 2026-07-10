@@ -1,0 +1,49 @@
+export interface ProjectRow {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  sort_order: number;
+}
+
+export interface ItemRow {
+  id: string;
+  project_id: string | null;
+  source: "youtube" | "substack" | "podcast";
+  url: string;
+  title: string | null;
+  published_at: string | null;
+  status: "queued" | "processing" | "done" | "error";
+  error: string | null;
+  created_at: string;
+}
+
+/** The claim a note fact-checks, embedded on the note (PostgREST join). */
+export interface ClaimRef {
+  id: string;
+  item_id: string;
+  claim: string;
+  context_quote: string;
+  context_url: string | null;
+  start_seconds: number | null;
+  end_seconds: number | null;
+}
+
+export interface NoteRow {
+  id: string;
+  claim_id: string;
+  note: string; // sources are inline in the text (like a normal community note)
+  helpful_count: number;
+  not_helpful_count: number;
+  created_at: string;
+  claim: ClaimRef | null;
+}
+
+export interface SuggestionRow {
+  id: string;
+  note_id: string;
+  suggested_text: string;
+  status: "pending" | "accepted" | "rejected";
+  judge_reason: string | null;
+  created_at: string;
+}

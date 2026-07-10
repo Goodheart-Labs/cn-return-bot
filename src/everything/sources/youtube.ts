@@ -1,0 +1,50 @@
+import { execFileSync, execSync } from "child_process";
+import * as fs from "fs";
+import * as path from "path";
+import { tmpdir } from "os";
+import { fetchTimedTranscript } from "../../pipeline/media/ytDlpDownload";
+import type { FetchedContent } from "../types";
+
+export function ensureYtDlp(): void {
+  try {
+    execSync("yt-dlp --version", { stdio: "pipe" });
+  } catch {
+    console.error("yt-dlp is not installed. Install with: brew install yt-dlp");
+    process.exit(1);
+  }
+}
+
+/** yt-dlp's upload_date is YYYYMMDD; convert to ISO YYYY-MM-DD (undefined if absent). */
+function parseUploadDate(raw: string): string | undefined {
+  const m = raw.trim().match(/^(\d{4})(\d{2})(\d{2})$/);
+  return m ? `${m[1]}-${m[2]}-${m[3]}` : undefined;
+}
+
+/** Fetch id + title + upload date via --print (full -J metadata busts execSync's buffer on YouTube). */
+function fetchVideoMeta(url: string): { id: string; title: string; uploadDate?: string } {
+  // upload_date first, title last: a multi-line title is absorbed by titleParts
+  // without swallowing the other fields.
+  const out = execFileSync(
+    "yt-dlp",
+    ["--skip-download", "--no-warnings", "--print", "%(upload_date)s", "--print", "%(id)s", "--print", "%(title)s", url],
+    { encoding: "utf8", timeout: 120_000 },
+  );
+  const [uploadDate = "", id = "", ...titleParts] = out.trim().split("\n");
+  return { id, title: titleParts.join(" ").trim(), uploadDate: parseUploadDate(uploadDate) };
+}
+
+const TRANSCRIPT_LANG = "en";
+
+export function fetchYoutubeContent(url: string): FetchedContent {
+  const meta = fetchVideoMeta(url);
+  const dir = fs.mkdtempSync(path.join(tmpdir(), "cn-yt-subs-"));
+  try {
+    const cues = fetchTimedTranscript(url, dir, TRANSCRIPT_LANG);
+    if (!cues || cues.length === 0) {
+      throw new Error(`No ${TRANSCRIPT_LANG} transcript available for ${url}`);
+    }
+    return { kind: "youtube", url, videoId: meta.id, title: meta.title, publishedAt: meta.uploadDate, cues };
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+}
