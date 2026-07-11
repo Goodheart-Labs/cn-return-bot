@@ -26,6 +26,9 @@ export function useLiveData() {
   const [suggestions, setSuggestions] = useState<RowMap<SuggestionRow>>(new Map());
   const [loaded, setLoaded] = useState(false);
 
+  /** Inject a client-side-only note row (localhost write-note test mode). */
+  const injectNote = (note: NoteRow) => setNotes((prev) => new Map(prev).set(note.id, note));
+
   useEffect(() => {
     let cancelled = false;
 
@@ -81,5 +84,5 @@ export function useLiveData() {
     };
   }, []);
 
-  return { projects, items, notes, suggestions, loaded };
+  return { projects, items, notes, suggestions, loaded, injectNote };
 }

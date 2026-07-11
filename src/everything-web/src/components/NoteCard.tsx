@@ -176,7 +176,9 @@ export function NoteCard({ note, locked, draftNotes, projectSlug, suggestions, m
   const paragraph = claim?.context_paragraph;
   const header = locked
     ? "Common Notes users thought this was something you wanted to see"
-    : "Draft note · collecting ratings";
+    : note.author_id
+      ? `Draft note by ${note.author_name ?? "anonymous"} · collecting ratings`
+      : "Draft note · collecting ratings";
   return (
     <div id={`note-${note.id}`} className="scroll-mt-4 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,36rem)_minmax(0,1fr)] xl:gap-5 items-start">
       {paragraph && claim && (
