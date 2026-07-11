@@ -67,7 +67,8 @@
     "dev-everything": "cd src/everything-web && bunx vite --port 8003 --mode prod-backend",
     "dev-everything-local": "cd src/everything-web && bunx vite --port 8003",
     "build-everything-web": "cd src/everything-web && bunx vite build",
-    "everything-backfill-context": "bun run src/everything/backfillContextParagraph.ts"
+    "everything-backfill-context": "bun run src/everything/backfillContextParagraph.ts",
+    "everything-backfill-fulltext": "bun run src/everything/backfillFullText.ts"
   },
   "knip": {
     "ignoreBinaries": [

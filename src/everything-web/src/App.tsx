@@ -32,12 +32,14 @@ import { NoteCard } from "./components/NoteCard";
 import type { NoteRow, SuggestionRow } from "./lib/types";
 
 export function App() {
-  const { projects, items, notes, suggestions, loaded } = useLiveData();
+  const { projects, items, notes, suggestions, loaded, injectNote } = useLiveData();
   const { session } = useSession();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [myVotes, setMyVotes] = useState<Map<string, Vote>>(new Map());
   const [loginOpen, setLoginOpen] = useState(false);
   const [writeOpen, setWriteOpen] = useState(false);
+  // Localhost test mode: write-note works signed-out; drafts stay client-side.
+  const isLocalhost = window.location.hostname === "localhost";
   // After a vote, hold the note's list position briefly (misclick grace) —
   // maps note id → its fold side at vote time. Cleared by a timer, then the
   // live counts decide again.
@@ -50,23 +52,27 @@ export function App() {
     else setMyVotes(new Map());
   }, [session?.user.id]);
 
-  // AI notes drive the cards; user drafts hang off their claim.
+  // One card per claim: the AI note is primary when it exists, else the
+  // earliest user draft (user-anchored claims get their own card); the rest
+  // of the claim's notes hang underneath.
   const { notesByItem, draftsByClaim } = useMemo(() => {
+    const byClaim = new Map<string, NoteRow[]>();
+    for (const note of notes.values()) {
+      const list = byClaim.get(note.claim_id) ?? [];
+      list.push(note);
+      byClaim.set(note.claim_id, list);
+    }
     const byItem = new Map<string, NoteRow[]>();
     const drafts = new Map<string, NoteRow[]>();
-    for (const note of notes.values()) {
-      if (note.author_id) {
-        const list = drafts.get(note.claim_id) ?? [];
-        list.push(note);
-        list.sort((a, b) => a.created_at.localeCompare(b.created_at));
-        drafts.set(note.claim_id, list);
-        continue;
-      }
-      const itemId = note.claim?.item_id;
+    for (const list of byClaim.values()) {
+      list.sort((a, b) => a.created_at.localeCompare(b.created_at));
+      const primary = list.find((n) => !n.author_id) ?? list[0]!;
+      drafts.set(primary.claim_id, list.filter((n) => n !== primary));
+      const itemId = primary.claim?.item_id;
       if (!itemId) continue;
-      const list = byItem.get(itemId) ?? [];
-      list.push(note);
-      byItem.set(itemId, list);
+      const cards = byItem.get(itemId) ?? [];
+      cards.push(primary);
+      byItem.set(itemId, cards);
     }
     return { notesByItem: byItem, draftsByClaim: drafts };
   }, [notes]);
@@ -217,7 +223,7 @@ export function App() {
           <h2 className="text-2xl font-bold">{selected?.name ?? ""}</h2>
           <div className="flex items-center gap-4">
             <button
-              onClick={() => (session ? setWriteOpen(true) : setLoginOpen(true))}
+              onClick={() => (session || isLocalhost ? setWriteOpen(true) : setLoginOpen(true))}
               className="bg-blue-600 text-white rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-blue-700 shrink-0"
             >
               Write a note
@@ -297,12 +303,38 @@ export function App() {
       </main>
 
       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
-      {session && (
+      {(session || isLocalhost) && (
         <WriteNoteModal
           open={writeOpen}
           onClose={() => setWriteOpen(false)}
-          claims={orderedNotes.map((n) => n.claim).filter((c): c is NonNullable<typeof c> => !!c)}
+          projectId={selectedId}
           session={session}
+          onLocalDraft={(item, anchorText, noteText) => {
+            const claimId = `local-${crypto.randomUUID()}`;
+            injectNote({
+                id: `local-${crypto.randomUUID()}`,
+                claim_id: claimId,
+                note: noteText,
+                sources: [],
+                helpful_count: 0,
+                somewhat_helpful_count: 0,
+                not_helpful_count: 0,
+                author_id: "local-test",
+                author_name: "you (local test — not saved)",
+                status: "draft",
+                created_at: new Date().toISOString(),
+                claim: {
+                  id: claimId,
+                  item_id: item.id,
+                  claim: anchorText.slice(0, 300),
+                  context_quote: anchorText,
+                  context_paragraph: null,
+                  context_url: item.url,
+                  start_seconds: null,
+                  end_seconds: null,
+                },
+              });
+          }}
         />
       )}
     </div>
