@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import type { NotedContent, Tweet } from "./types";
 import { extractMedia, type MediaImage, type MediaVideo } from "./media";
+import { quoteFragmentUrl } from "./textFragment";
 
 function MediaBlock({ images, videos }: { images: MediaImage[]; videos: MediaVideo[] }) {
   if (images.length === 0 && videos.length === 0) return null;
@@ -110,7 +111,7 @@ function CitationBlock({ quote, url, linkText }: { quote: string; url: string | 
     <div>
       {url && (
         <div className="flex justify-end mb-1">
-          <a href={url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline">
+          <a href={quoteFragmentUrl(url, quote)} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline">
             {linkText} ↗
           </a>
         </div>
