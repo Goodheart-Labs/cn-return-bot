@@ -2,7 +2,7 @@
  * Generate Candidates
  *
  * Fetches new tweets from the feed, runs bot pipelines, scores them,
- * and returns candidates (eval >= 0) for submission.
+ * and returns candidates that pass the configured eval-score threshold.
  */
 
 import { fetchEligiblePosts } from "../../api/fetchEligiblePosts";

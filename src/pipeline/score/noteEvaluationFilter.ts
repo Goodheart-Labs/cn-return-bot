@@ -44,10 +44,10 @@ export async function evaluateNote(
 }
 
 /**
- * Fetches the X eval score (`claim_opinion_score`) for a note. Observational
- * only — it no longer gates submission; the score is recorded for ranking
- * candidates and for analysis. Returns the score, or an error string when the
- * eval API fails or returns an unexpected shape.
+ * Fetches the X eval score (`claim_opinion_score`) for a note. The score is
+ * recorded for ranking, analysis, and the submission threshold gate. Returns
+ * the score, or an error string when the eval API fails or returns an
+ * unexpected shape.
  */
 export async function getEvaluationScore(
   postId: string,

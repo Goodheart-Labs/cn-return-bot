@@ -4,8 +4,8 @@
  * Core per-tweet pipeline logic extracted from generateCandidates.ts.
  * Split into three layers:
  *   1. runBotPipeline()    — runs the bot, returns raw output
- *   2. scorePipelineResult() — records observational scores (incl. the X eval score)
- *   3. determineOutcome()  — pure function, decides outcome from the result
+ *   2. scorePipelineResult() — records scores (incl. the X eval score)
+ *   3. determineOutcome()  — pure function, decides outcome from result + scores
  *
  * processSingleTweet() is the thin orchestrator that glues them together.
  */
@@ -108,9 +108,16 @@ function collectWarnings(): string[] | undefined {
 // Layer 2: Score pipeline result (computes scores, no outcome decisions)
 // ---------------------------------------------------------------------------
 
+interface EvalGateDecision {
+  threshold: number;
+  score?: number;
+  shouldSubmit?: boolean;
+  error?: string;
+}
+
 interface ScoringOutput {
   scores: ScoreEntry[];
-  evaluationScore?: number;
+  evalGate: EvalGateDecision;
 }
 
 function extractSourceVerificationScore(result: PipelineResult): ScoreEntry | null {
@@ -152,6 +159,11 @@ async function scorePipelineResult(
 ): Promise<ScoringOutput> {
   const scores: ScoreEntry[] = [];
   const noteText = joinNoteAndUrl(result.noteResult.note, result.noteResult.url);
+  const evalGate: EvalGateDecision = {
+    threshold: getBotConfig().eval_submit_threshold ?? 0,
+  };
+  const log = getTweetLog();
+  log?.set("eval.threshold", evalGate.threshold);
 
   // Source verification
   const svScore = extractSourceVerificationScore(result);
@@ -160,15 +172,24 @@ async function scorePipelineResult(
   // Bot scoring filter results
   scores.push(...extractBotScoringFilterScores(result));
 
-  // Evaluation score (observational — recorded for ranking, no longer gates)
-  let evaluationScore: number | undefined;
+  // Evaluation score
   const evalResult = await getEvaluationScore(result.post.id, noteText);
+  if (evalResult.error) {
+    evalGate.error = evalResult.error;
+    log?.set("eval.error", evalResult.error);
+  }
   if (evalResult.score !== undefined) {
-    evaluationScore = evalResult.score;
-    scores.push({ type: "evaluation", value: evalResult.score });
+    evalGate.score = evalResult.score;
+    evalGate.shouldSubmit = evalResult.score >= evalGate.threshold;
+    log?.set("eval.shouldSubmit", evalGate.shouldSubmit);
+    scores.push({
+      type: "evaluation",
+      value: evalResult.score,
+      metadata: { threshold: evalGate.threshold, passed: evalGate.shouldSubmit },
+    });
   }
 
-  return { scores, evaluationScore };
+  return { scores, evalGate };
 }
 
 // ---------------------------------------------------------------------------
@@ -182,7 +203,7 @@ const STATUS_REJECTION_MAP: Record<string, { reason: string; stage: string }> = 
 
 const CORRECTION_STATUS = "CORRECTION WITH TRUSTWORTHY CITATION";
 
-function determineOutcome(result: PipelineResult): Outcome {
+function determineOutcome(result: PipelineResult, scoring: ScoringOutput): Outcome {
   // Status-based rejections
   const statusRejection = STATUS_REJECTION_MAP[result.noteResult.status];
   if (statusRejection) {
@@ -206,6 +227,18 @@ function determineOutcome(result: PipelineResult): Outcome {
       outcomeReason: checkErrored ? "check_error" : "check_failed",
       finalStage: "check",
       errorMessage: checkRaw ? `check: ${checkRaw}` : undefined,
+    };
+  }
+
+  // Evaluation score rejection. If the eval API failed or returned no numeric
+  // score, skip this gate rather than rejecting a potentially good note.
+  if (scoring.evalGate.shouldSubmit === false) {
+    const { score, threshold } = scoring.evalGate;
+    return {
+      outcome: "rejected",
+      outcomeReason: "low_evaluation_score",
+      finalStage: "evaluation",
+      errorMessage: score !== undefined ? `eval score ${score} below threshold ${threshold}` : undefined,
     };
   }
 
@@ -418,7 +451,7 @@ export async function processSingleTweet(
     const scoring = await scorePipelineResult(result);
     await logScoresToDb(logger, pipelineRunId, scoring.scores);
 
-    const outcome = determineOutcome(result);
+    const outcome = determineOutcome(result, scoring);
 
     const log = getTweetLog();
     log?.set("outcome.result", outcome.outcome);
@@ -453,7 +486,7 @@ export async function processSingleTweet(
       outcomeReason: outcome.outcomeReason,
       finalStage: outcome.finalStage,
       noteStatus: result.noteResult.status,
-      evaluationScore: scoring.evaluationScore,
+      evaluationScore: scoring.evalGate.score,
       noteText: joinNoteAndUrl(result.noteResult.note, result.noteResult.url),
       scores: scoring.scores,
       pipelineRunId,
