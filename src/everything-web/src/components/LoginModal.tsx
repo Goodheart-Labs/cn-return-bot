@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { signInWithEmail, signInWithTwitter } from "../lib/auth";
 
 const X_SIGNIN_ENABLED = true;
@@ -7,6 +7,7 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const backdropPress = useRef(false);
 
   if (!open) return null;
 
@@ -19,8 +20,12 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50" onClick={onClose}>
-      <div className="bg-white rounded-xl p-6 w-full max-w-sm space-y-4" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50"
+      onMouseDown={(e) => { backdropPress.current = e.target === e.currentTarget; }}
+      onClick={(e) => { if (backdropPress.current && e.target === e.currentTarget) onClose(); }}
+    >
+      <div className="bg-white rounded-xl p-6 w-full max-w-sm space-y-4">
         <div className="flex justify-between items-center">
           <h2 className="text-lg font-semibold">Sign in to vote</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-700 text-xl leading-none">×</button>
