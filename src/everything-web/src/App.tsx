@@ -13,7 +13,7 @@ function AuthCorner({ session, onSignIn, onSignOut }: {
 }) {
   if (!session) {
     return (
-      <button onClick={onSignIn} className="text-sm text-blue-600 hover:underline shrink-0">
+      <button onClick={onSignIn} className="bg-blue-600 text-white rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-blue-700 shrink-0">
         Sign in to vote
       </button>
     );
@@ -29,17 +29,17 @@ function AuthCorner({ session, onSignIn, onSignOut }: {
 import { LoginModal } from "./components/LoginModal";
 import { WriteNoteModal } from "./components/WriteNoteModal";
 import { NoteCard } from "./components/NoteCard";
-import type { NoteRow, SuggestionRow } from "./lib/types";
+import { DesignMenu } from "./components/DesignMenu";
+import type { NoteRow } from "./lib/types";
+import { byPromotion, isLocked, totalVotes, weight } from "./lib/noteScore";
 
 export function App() {
-  const { projects, items, notes, suggestions, loaded, injectNote } = useLiveData();
+  const { projects, items, notes, loaded } = useLiveData();
   const { session } = useSession();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [myVotes, setMyVotes] = useState<Map<string, Vote>>(new Map());
   const [loginOpen, setLoginOpen] = useState(false);
   const [writeOpen, setWriteOpen] = useState(false);
-  // Localhost test mode: write-note works signed-out; drafts stay client-side.
-  const isLocalhost = window.location.hostname === "localhost";
   // After a vote, hold the note's list position briefly (misclick grace) —
   // maps note id → its fold side at vote time. Cleared by a timer, then the
   // live counts decide again.
@@ -52,9 +52,9 @@ export function App() {
     else setMyVotes(new Map());
   }, [session?.user.id]);
 
-  // One card per claim: the AI note is primary when it exists, else the
-  // earliest user draft (user-anchored claims get their own card); the rest
-  // of the claim's notes hang underneath.
+  // One card per claim: the highest helpful−unhelpful note is promoted to the
+  // top (its improvements start below and swap up if they outscore it); the rest
+  // of the claim's notes rank beneath it, indented.
   const { notesByItem, draftsByClaim } = useMemo(() => {
     const byClaim = new Map<string, NoteRow[]>();
     for (const note of notes.values()) {
@@ -65,9 +65,9 @@ export function App() {
     const byItem = new Map<string, NoteRow[]>();
     const drafts = new Map<string, NoteRow[]>();
     for (const list of byClaim.values()) {
-      list.sort((a, b) => a.created_at.localeCompare(b.created_at));
-      const primary = list.find((n) => !n.author_id) ?? list[0]!;
-      drafts.set(primary.claim_id, list.filter((n) => n !== primary));
+      const ranked = [...list].sort(byPromotion);
+      const primary = ranked[0]!;
+      drafts.set(primary.claim_id, ranked.slice(1));
       const itemId = primary.claim?.item_id;
       if (!itemId) continue;
       const cards = byItem.get(itemId) ?? [];
@@ -76,16 +76,6 @@ export function App() {
     }
     return { notesByItem: byItem, draftsByClaim: drafts };
   }, [notes]);
-
-  const suggestionsByNote = useMemo(() => {
-    const map = new Map<string, SuggestionRow[]>();
-    for (const s of suggestions.values()) {
-      const list = map.get(s.note_id) ?? [];
-      list.push(s);
-      map.set(s.note_id, list);
-    }
-    return map;
-  }, [suggestions]);
 
   // Initial project: the ?project= slug from the URL, else the first project
   // (by sort order) that actually has content.
@@ -179,10 +169,7 @@ export function App() {
   // >=5 ratings with net-positive score; under that it's a draft. Feed order:
   // top 3 slots go to the best real notes, then real/draft interleave 1:1,
   // then the draft long tail. Net-negative notes sink below a labeled divider.
-  const weight = (n: NoteRow) => n.helpful_count + 0.5 * n.somewhat_helpful_count;
-  const totalVotes = (n: NoteRow) => n.helpful_count + n.somewhat_helpful_count + n.not_helpful_count;
   const score = (n: NoteRow) => (totalVotes(n) === 0 ? 0 : weight(n) / totalVotes(n));
-  const isLocked = (n: NoteRow) => totalVotes(n) >= 5 && weight(n) > n.not_helpful_count;
   const isUnderwater = (n: NoteRow) =>
     voteHolds.has(n.id)
       ? voteHolds.get(n.id)!
@@ -223,8 +210,8 @@ export function App() {
           <h2 className="text-2xl font-bold">{selected?.name ?? ""}</h2>
           <div className="flex items-center gap-4">
             <button
-              onClick={() => (session || isLocalhost ? setWriteOpen(true) : setLoginOpen(true))}
-              className="bg-blue-600 text-white rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-blue-700 shrink-0"
+              onClick={() => (session ? setWriteOpen(true) : setLoginOpen(true))}
+              className="text-sm font-medium text-blue-600 hover:underline shrink-0"
             >
               Write a note
             </button>
@@ -240,10 +227,8 @@ export function App() {
             <NoteCard
               key={note.id}
               note={note}
-              locked={isLocked(note)}
               draftNotes={draftsByClaim.get(note.claim_id) ?? []}
               projectSlug={selected?.slug ?? ""}
-              suggestions={suggestionsByNote.get(note.id) ?? []}
               myVotes={myVotes}
               voteHolds={voteHolds}
               onVote={handleVote}
@@ -262,10 +247,8 @@ export function App() {
                 <NoteCard
                   key={note.id}
                   note={note}
-                  locked={isLocked(note)}
                   draftNotes={draftsByClaim.get(note.claim_id) ?? []}
                   projectSlug={selected?.slug ?? ""}
-                  suggestions={suggestionsByNote.get(note.id) ?? []}
                   myVotes={myVotes}
                   voteHolds={voteHolds}
                   onVote={handleVote}
@@ -285,10 +268,8 @@ export function App() {
                   <NoteCard
                     key={note.id}
                     note={note}
-                    locked={isLocked(note)}
                     draftNotes={draftsByClaim.get(note.claim_id) ?? []}
                     projectSlug={selected?.slug ?? ""}
-                    suggestions={suggestionsByNote.get(note.id) ?? []}
                     myVotes={myVotes}
                     voteHolds={voteHolds}
                     onVote={handleVote}
@@ -302,39 +283,14 @@ export function App() {
         </div>
       </main>
 
+      <DesignMenu />
       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
-      {(session || isLocalhost) && (
+      {session && (
         <WriteNoteModal
           open={writeOpen}
           onClose={() => setWriteOpen(false)}
           projectId={selectedId}
           session={session}
-          onLocalDraft={(item, anchorText, noteText) => {
-            const claimId = `local-${crypto.randomUUID()}`;
-            injectNote({
-                id: `local-${crypto.randomUUID()}`,
-                claim_id: claimId,
-                note: noteText,
-                sources: [],
-                helpful_count: 0,
-                somewhat_helpful_count: 0,
-                not_helpful_count: 0,
-                author_id: "local-test",
-                author_name: "you (local test — not saved)",
-                status: "draft",
-                created_at: new Date().toISOString(),
-                claim: {
-                  id: claimId,
-                  item_id: item.id,
-                  claim: anchorText.slice(0, 300),
-                  context_quote: anchorText,
-                  context_paragraph: null,
-                  context_url: item.url,
-                  start_seconds: null,
-                  end_seconds: null,
-                },
-              });
-          }}
         />
       )}
     </div>

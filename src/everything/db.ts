@@ -19,6 +19,7 @@ export interface NewClaimRow {
   claim: string;
   judgement: string;
   context_quote: string;
+  context_paragraph: string | null;
   context_url: string | null;
   start_seconds: number | null;
   end_seconds: number | null;
@@ -63,6 +64,14 @@ export async function upsertItem(item: {
 /** Delete an item's claims (notes cascade) so a re-import starts clean. */
 export async function deleteClaimsForItem(itemId: string): Promise<void> {
   throwOnError(await getSupabaseClient().from("everything_claims").delete().eq("item_id", itemId));
+}
+
+/** URLs of a project's already-completed items — lets an interrupted import resume. */
+export async function fetchDoneItemUrls(projectId: string): Promise<Set<string>> {
+  const rows = throwOnError(
+    await getSupabaseClient().from("everything_items").select("url").eq("project_id", projectId).eq("status", "done"),
+  );
+  return new Set((rows ?? []).map((r: { url: string }) => r.url));
 }
 
 /** Insert new URLs into the queue; already-known URLs are ignored. Returns the inserted count. */

@@ -39,6 +39,7 @@ function extractionSystemPrompt(): string {
   const fields = [
     `- "claim": the neutral, self-contained statement.`,
     `- "context": a verbatim excerpt from the text around the claim — its sentence plus enough surrounding sentences that a reader with none of the rest of the text has all the context needed to evaluate it.`,
+    `- "context_paragraph": a wider verbatim excerpt — the full surrounding paragraph(s) the claim sits in — that contains the "context" excerpt above word-for-word. This is shown to readers as the broader passage around the highlighted claim.`,
     `- "judgement": how true the claim is, using only your own knowledge — one of: ${JUDGEMENTS.join(", ")}.`,
     `- "speculation": true if the claim describes a hypothetical or future scenario — something stated as happening in a future year (e.g. "in 2028...") as part of an imagined scenario; false if it is about the present or past (2026 or earlier) or the current state of the world (real events, statistics, and any other real-world claim).`,
   ];
@@ -60,10 +61,11 @@ function claimsResponseFormat() {
   const properties: Record<string, unknown> = {
     claim: { type: "string", description: "Neutral, self-contained restatement of the claim." },
     context: { type: "string", description: "Verbatim excerpt around the claim, with all the context needed to evaluate it." },
+    context_paragraph: { type: "string", description: "Wider verbatim excerpt (surrounding paragraph[s]) containing the context excerpt word-for-word." },
     judgement: { type: "string", enum: [...JUDGEMENTS], description: "How true the claim is, from your own knowledge." },
     speculation: { type: "boolean", description: "True if the claim is about a hypothetical/future scenario; false if about the present or past." },
   };
-  const required = ["claim", "context", "judgement", "speculation"];
+  const required = ["claim", "context", "context_paragraph", "judgement", "speculation"];
   return jsonSchemaResponseFormat("content_claims", {
     type: "object",
     properties: { claims: { type: "array", items: { type: "object", properties, required, additionalProperties: false } } },
@@ -76,12 +78,20 @@ interface RawClaim {
   claim: string;
   judgement: string;
   context: string;
+  context_paragraph: string;
   speculation: boolean;
 }
 
 /** Carry the LLM's claim fields onto an ExtractedClaim, attaching its resolved anchor. */
 function toExtractedClaim(raw: RawClaim, anchor: ClaimAnchor): ExtractedClaim {
-  return { claim: raw.claim, judgement: raw.judgement, context: raw.context, speculation: raw.speculation, anchor };
+  return {
+    claim: raw.claim,
+    judgement: raw.judgement,
+    context: raw.context,
+    contextParagraph: raw.context_paragraph,
+    speculation: raw.speculation,
+    anchor,
+  };
 }
 
 /** One Opus extraction call over a rendered text chunk. */

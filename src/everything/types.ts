@@ -19,6 +19,9 @@ export interface ExtractedClaim {
   judgement: string;
   /** Verbatim excerpt with all the context needed to evaluate the claim. */
   context: string;
+  /** Wider verbatim excerpt (surrounding paragraph[s]) containing `context`
+   *  word-for-word — shown to readers as the passage around the claim. */
+  contextParagraph: string;
   /** True when the claim describes a hypothetical/future scenario rather than
    *  the present or past — these are filtered out before fact-checking. */
   speculation: boolean;
