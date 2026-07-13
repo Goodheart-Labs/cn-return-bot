@@ -1,13 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
-
-/** Best public-facing name for the signed-in user (X handle, name, or email
- *  local part — never the full email). */
-function displayName(session: Session): string {
-  const meta = session.user.user_metadata ?? {};
-  return meta.user_name ?? meta.full_name ?? session.user.email?.split("@")[0] ?? "anonymous";
-}
+import { displayName } from "../lib/session";
+import { isEarnestNote } from "../lib/judgeNote";
 
 interface SourceItem {
   id: string;
@@ -27,13 +22,11 @@ const WINDOW = 1200;
 /** Write a note anchored to the source: search the transcript, pick the spot,
  *  select the text you're noting, write the correction. Freeform fallback
  *  carries a "Text not found in transcript" flag. */
-export function WriteNoteModal({ open, onClose, projectId, session, onLocalDraft }: {
+export function WriteNoteModal({ open, onClose, projectId, session }: {
   open: boolean;
   onClose: () => void;
   projectId: string | null;
-  session: Session | null;
-  /** Localhost test mode (no session): receive the draft instead of saving. */
-  onLocalDraft?: (item: SourceItem, anchorText: string, note: string) => void;
+  session: Session;
 }) {
   const [items, setItems] = useState<SourceItem[]>([]);
   const [query, setQuery] = useState("");
@@ -42,6 +35,7 @@ export function WriteNoteModal({ open, onClose, projectId, session, onLocalDraft
   const [freeform, setFreeform] = useState(false);
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
+  const [rejected, setRejected] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const markRef = useRef<HTMLElement>(null);
   // Close only when the PRESS started on the backdrop — a text-selection drag
@@ -80,7 +74,7 @@ export function WriteNoteModal({ open, onClose, projectId, session, onLocalDraft
     items[0];
 
   const reset = () => {
-    setQuery(""); setHit(null); setAnchorText(""); setFreeform(false); setNote(""); setError(null);
+    setQuery(""); setHit(null); setAnchorText(""); setFreeform(false); setNote(""); setError(null); setRejected(false);
   };
 
   const grabSelection = () => {
@@ -91,42 +85,43 @@ export function WriteNoteModal({ open, onClose, projectId, session, onLocalDraft
 
   const submit = async () => {
     if (!anchorItem) return;
-    if (!session) {
-      onLocalDraft?.(anchorItem, anchorText.trim(), note.trim());
-      reset();
-      onClose();
-      return;
-    }
     setBusy(true);
     setError(null);
-    const { data: claim, error: claimError } = await supabase
-      .from("everything_claims")
-      .insert({
-        item_id: anchorItem.id,
-        claim: anchorText.trim().slice(0, 300),
-        judgement: "user",
-        context_quote: anchorText.trim(),
-        context_url: anchorItem.url,
-        status: "note",
-        created_by: session.user.id,
-      })
-      .select("id")
-      .single();
-    if (claimError || !claim) {
+    setRejected(false);
+    try {
+      // Judge earnest-vs-trolling BEFORE creating anything, so a rejected note
+      // leaves no orphan claim behind.
+      const earnest = await isEarnestNote(note.trim(), anchorText.trim());
+      if (!earnest) return setRejected(true);
+      const { data: claim, error: claimError } = await supabase
+        .from("everything_claims")
+        .insert({
+          item_id: anchorItem.id,
+          claim: anchorText.trim().slice(0, 300),
+          judgement: "user",
+          context_quote: anchorText.trim(),
+          context_url: anchorItem.url,
+          status: "note",
+          created_by: session.user.id,
+        })
+        .select("id")
+        .single();
+      if (claimError || !claim) return setError(claimError?.message ?? "could not create the claim");
+      const { error: noteError } = await supabase.from("everything_notes").insert({
+        claim_id: claim.id,
+        note: note.trim(),
+        author_id: session.user.id,
+        author_name: displayName(session),
+        status: "draft",
+      });
+      if (noteError) return setError(noteError.message);
+      reset();
+      onClose();
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
       setBusy(false);
-      return setError(claimError?.message ?? "could not create the claim");
     }
-    const { error: noteError } = await supabase.from("everything_notes").insert({
-      claim_id: claim.id,
-      note: note.trim(),
-      author_id: session.user.id,
-      author_name: displayName(session),
-      status: "draft",
-    });
-    setBusy(false);
-    if (noteError) return setError(noteError.message);
-    reset();
-    onClose();
   };
 
   const windowStart = hit ? Math.max(0, hit.index - WINDOW / 2) : 0;
@@ -226,11 +221,16 @@ export function WriteNoteModal({ open, onClose, projectId, session, onLocalDraft
             )}
             <textarea
               value={note}
-              onChange={(e) => setNote(e.target.value)}
+              onChange={(e) => { setNote(e.target.value); setRejected(false); }}
               rows={4}
               placeholder="Write your correction — include sources as plain URLs…"
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
             />
+            {rejected && (
+              <p className="text-sm rounded-lg p-2 bg-amber-50 text-amber-800 border border-amber-200">
+                That didn't look like a genuine note — try again.
+              </p>
+            )}
             <div className="flex gap-2 items-center justify-end">
               <button onClick={() => { setAnchorText(""); setFreeform(false); }} className="text-sm text-gray-500 hover:underline">
                 Change text
@@ -240,7 +240,7 @@ export function WriteNoteModal({ open, onClose, projectId, session, onLocalDraft
                 disabled={busy || note.trim().length < 10}
                 className="bg-blue-600 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-blue-700 disabled:opacity-40"
               >
-                {busy ? "Posting…" : "Post draft note"}
+                {busy ? "Checking…" : "Post draft note"}
               </button>
             </div>
           </>

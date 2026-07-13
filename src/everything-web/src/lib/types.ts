@@ -44,12 +44,3 @@ export interface NoteRow {
   created_at: string;
   claim: ClaimRef | null;
 }
-
-export interface SuggestionRow {
-  id: string;
-  note_id: string;
-  suggested_text: string;
-  status: "pending" | "accepted" | "rejected";
-  judge_reason: string | null;
-  created_at: string;
-}

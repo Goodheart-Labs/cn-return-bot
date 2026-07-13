@@ -154,7 +154,7 @@ enabled = true
 site_url = "http://localhost:8003"
 # A list of URLs (globs allowed) auth providers may redirect to post authentication.
 # Add the deployed GitHub Pages notes URL here for prod magic-link / X sign-in.
-additional_redirect_urls = ["http://localhost:8003", "http://localhost:8003/**", "https://*.github.io/**"]
+additional_redirect_urls = ["http://localhost:8003", "http://localhost:8003/**", "http://localhost:8004", "http://localhost:8004/**", "https://*.github.io/**", "https://commonnotes.net/**"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
 # JWT issuer URL. If not set, defaults to the local API URL (http://127.0.0.1:<port>/auth/v1).
@@ -367,8 +367,9 @@ authorization_url_path = "/oauth/consent"
 # Allow dynamic client registration
 allow_dynamic_registration = false
 
-[functions.judge-suggestion]
-# Judges user-proposed note improvements (earnest vs trolling) with an LLM.
+[functions.judge-note]
+# Gates both note flows (write-a-note + suggest-an-improvement): an LLM decides
+# earnest vs trolling; the client posts the note only on an "accepted" verdict.
 # Needs OPENROUTER_API_KEY. verify_jwt is off because the function does its own
 # auth via getUser() (validates against the auth server, so it works with the
 # local ES256 signing keys that the gateway's verify_jwt can't handle); an

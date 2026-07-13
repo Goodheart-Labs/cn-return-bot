@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
-import type { ItemRow, NoteRow, ProjectRow, SuggestionRow } from "./types";
+import type { ItemRow, NoteRow, ProjectRow } from "./types";
 
 const NOTE_SELECT = "*, claim:everything_claims(id, item_id, claim, context_quote, context_paragraph, context_url, start_seconds, end_seconds)";
 
@@ -18,32 +18,26 @@ function upsertHandler<T extends { id: string }>(setter: React.Dispatch<React.Se
   };
 }
 
-/** Live projects, items, notes (with their claim), and accepted suggestions. */
+/** Live projects, items, and notes (with their claim). */
 export function useLiveData() {
   const [projects, setProjects] = useState<ProjectRow[]>([]);
   const [items, setItems] = useState<RowMap<ItemRow>>(new Map());
   const [notes, setNotes] = useState<RowMap<NoteRow>>(new Map());
-  const [suggestions, setSuggestions] = useState<RowMap<SuggestionRow>>(new Map());
   const [loaded, setLoaded] = useState(false);
-
-  /** Inject a client-side-only note row (localhost write-note test mode). */
-  const injectNote = (note: NoteRow) => setNotes((prev) => new Map(prev).set(note.id, note));
 
   useEffect(() => {
     let cancelled = false;
 
     async function load() {
-      const [p, i, n, s] = await Promise.all([
+      const [p, i, n] = await Promise.all([
         supabase.from("everything_projects").select("*").order("sort_order"),
         supabase.from("everything_items").select("*"),
         supabase.from("everything_notes").select(NOTE_SELECT),
-        supabase.from("everything_note_suggestions").select("*"),
       ]);
       if (cancelled) return;
       setProjects((p.data as ProjectRow[]) ?? []);
       setItems(new Map(((i.data as ItemRow[]) ?? []).map((r) => [r.id, r])));
       setNotes(new Map(((n.data as NoteRow[]) ?? []).map((r) => [r.id, r])));
-      setSuggestions(new Map(((s.data as SuggestionRow[]) ?? []).map((r) => [r.id, r])));
       setLoaded(true);
     }
     load();
@@ -58,7 +52,6 @@ export function useLiveData() {
     const channel = supabase
       .channel(`common-notes-${crypto.randomUUID()}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "everything_items" }, upsertHandler(setItems))
-      .on("postgres_changes", { event: "*", schema: "public", table: "everything_note_suggestions" }, upsertHandler(setSuggestions))
       .on("postgres_changes", { event: "*", schema: "public", table: "everything_notes" }, (payload) => {
         if (payload.eventType === "DELETE") {
           setNotes((prev) => {
@@ -84,5 +77,5 @@ export function useLiveData() {
     };
   }, []);
 
-  return { projects, items, notes, suggestions, loaded, injectNote };
+  return { projects, items, notes, loaded };
 }

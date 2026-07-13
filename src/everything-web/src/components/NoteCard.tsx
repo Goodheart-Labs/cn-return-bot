@@ -4,11 +4,45 @@ import { ContentCard } from "../../../dashboard-shared/TweetCard";
 import { LinkifiedText } from "../../../dashboard-shared/LinkifiedText";
 import { VoteRatings } from "../../../dashboard-shared/Ratings";
 import type { NotedContent } from "../../../dashboard-shared/types";
-import type { ClaimRef, NoteRow, SuggestionRow } from "../lib/types";
+import type { ClaimRef, NoteRow } from "../lib/types";
 import type { Vote } from "../lib/votes";
-import { noteUrl } from "../lib/routing";
-import { ImproveNote } from "./ImproveNote";
-import { supabase } from "../lib/supabase";
+import { noteStatus, type NoteStatus } from "../lib/noteScore";
+import { NoteMenu } from "./NoteMenu";
+
+/** Community-Notes rating states: icon, copy, and note-box tint. */
+const STATUS: Record<NoteStatus, { label: string; color: string; box: string }> = {
+  helpful: { label: "Currently rated helpful", color: "#22c55e", box: "bg-blue-50 border-blue-100" },
+  not_helpful: { label: "Currently rated not helpful", color: "#ef4444", box: "bg-gray-50 border-gray-200" },
+  needs_ratings: { label: "Needs more ratings", color: "#9ca3af", box: "bg-blue-50 border-blue-100" },
+};
+
+/** The status badge shown above a note: a filled circle (with a ✓/✕ glyph for
+ *  the decided states) and its Community-Notes copy. */
+function StatusBadge({ status }: { status: NoteStatus }) {
+  const { label, color } = STATUS[status];
+  return (
+    <div className="flex items-center gap-1.5 text-sm font-semibold text-gray-700">
+      {/* em-sized so the icon scales with the font-size experiment; the
+          cn-badge-* class lets color schemes restyle the inline fills */}
+      <svg viewBox="0 0 20 20" width="1.05em" height="1.05em" aria-hidden className={`shrink-0 cn-badge-${status}`}>
+        <circle cx="10" cy="10" r="10" fill={color} />
+        {status === "helpful" && (
+          <path d="M5.5 10.5l3 3 6-6.5" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        )}
+        {status === "not_helpful" && (
+          <path d="M6.5 6.5l7 7M13.5 6.5l-7 7" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+        )}
+      </svg>
+      <span>{label}</span>
+    </div>
+  );
+}
+
+/** Common Notes keeps citations in a separate column; append them so they
+ *  render as linkified URLs like the review/stats dashboards. */
+function noteText(note: NoteRow): string {
+  return note.sources.length > 0 ? `${note.note} ${note.sources.join(" ")}` : note.note;
+}
 
 /** Six-second draining circle shown right after a vote: the note holds its
  *  place until this empties, so a misclick can be fixed before it re-sorts. */
@@ -24,36 +58,26 @@ function ResortCountdown() {
   );
 }
 
-function ShareButton({ projectSlug, noteId }: { projectSlug: string; noteId: string }) {
-  const [copied, setCopied] = useState(false);
-  const copy = async () => {
-    await navigator.clipboard.writeText(noteUrl(projectSlug, noteId));
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  };
-  return (
-    <button onClick={copy} className="text-sm text-gray-500 hover:text-blue-600 hover:underline">
-      {copied ? "Link copied" : "Share"}
-    </button>
-  );
-}
-
 /** Map a claim's context to the shared ContentCard shape: a YouTube clip when
  *  the context URL is a video (embedded at its timestamp span), else an
  *  article citation. Decided by URL, not item.source — a podcast item with a
- *  YouTube deep-link renders as a clip. */
+ *  YouTube deep-link renders as a clip.
+ *
+ *  The citation shows the neutral `claim` (clean and self-contained), while the
+ *  source deep-link still points at the verbatim `context_quote` passage. */
 function claimContent(claim: ClaimRef): NotedContent {
   const url = claim.context_url;
   if (url && /youtube\.com|youtu\.be/.test(url)) {
     return {
       kind: "youtube",
       url,
-      quote: claim.context_quote,
+      quote: claim.claim,
+      fragmentText: claim.context_quote,
       startSeconds: claim.start_seconds,
       endSeconds: claim.end_seconds,
     };
   }
-  return { kind: "article", url, quote: claim.context_quote };
+  return { kind: "article", url, quote: claim.claim, fragmentText: claim.context_quote };
 }
 
 /** The claim's surrounding paragraph, with the quoted excerpt bolded. Shown
@@ -63,7 +87,7 @@ function ContextParagraph({ paragraph, quote, bare }: { paragraph: string; quote
   const clampable = paragraph.length > 700;
   const idx = paragraph.toLowerCase().indexOf(quote.toLowerCase());
   return (
-    <div className={`text-sm text-gray-600 leading-relaxed ${bare ? "" : "border-l-4 border-gray-200 pl-3"}`}>
+    <div className={`cn-context text-xs text-gray-400 leading-relaxed ${bare ? "" : "border-l-4 border-gray-200 pl-3"}`}>
       <div
         style={clampable && !expanded
           ? { display: "-webkit-box", WebkitLineClamp: 14, WebkitBoxOrient: "vertical", overflow: "hidden" }
@@ -74,7 +98,7 @@ function ContextParagraph({ paragraph, quote, bare }: { paragraph: string; quote
         ) : (
           <>
             {paragraph.slice(0, idx)}
-            <strong className="font-semibold text-gray-900">{paragraph.slice(idx, idx + quote.length)}</strong>
+            <strong className="font-semibold text-gray-500">{paragraph.slice(idx, idx + quote.length)}</strong>
             {paragraph.slice(idx + quote.length)}
           </>
         )}
@@ -88,71 +112,63 @@ function ContextParagraph({ paragraph, quote, bare }: { paragraph: string; quote
   );
 }
 
-/** The note as one self-contained unit, X-CN style: a status header on top,
- *  the note text, and the rating pills inside the same box. Blue = locked
- *  ("real") note, transparent purple = draft still collecting ratings. */
-function NoteBox({ noteText, locked, header, children }: {
-  noteText: string;
-  locked: boolean;
-  header: string;
+/** The note as one self-contained unit, X-CN style: a rating-status badge on
+ *  top, the note text, and the rating pills inside the same box; the box tint
+ *  follows the status (helpful/needs-ratings/not-helpful). */
+function NoteBox({ note, children }: {
+  note: NoteRow;
   children?: React.ReactNode;
 }) {
-  const boxCls = locked ? "bg-blue-50 border-blue-100" : "bg-purple-100/40 border-purple-200";
+  const status = noteStatus(note);
+  const by = note.author_id ? note.author_name ?? "anonymous" : null;
   return (
-    <div className={`rounded-lg p-3 border ${boxCls}`}>
-      <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 mb-2">
-        <span aria-hidden>👥</span>
-        <span>{header}</span>
+    <div className={`rounded-lg p-3 border ${STATUS[status].box}`}>
+      <div className="flex items-center justify-between gap-2 mb-2">
+        <StatusBadge status={status} />
+        {by && <span className="text-xs text-gray-500 shrink-0">by {by}</span>}
       </div>
-      <LinkifiedText className="text-sm text-gray-800 whitespace-pre-wrap" text={noteText} />
+      <LinkifiedText className="text-sm text-gray-800 whitespace-pre-wrap" text={noteText(note)} />
       {children && <div className="mt-3 flex items-center flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">{children}</div>}
     </div>
   );
 }
 
-/** A user-written draft note: attributed, votable, deletable by its author. */
-function DraftNote({ note, myVote, onVote, session, holdActive }: {
+/** An alternative note nested under the promoted one — a lower-scoring
+ *  improvement or the original AI note it outscored. Votable and carrying the
+ *  same ⋯ menu (delete shows only to its author); if it climbs above the
+ *  promoted note it swaps up to the top on the next render. */
+function AlternativeNote({ note, myVote, onVote, session, holdActive, projectSlug, onNeedLogin }: {
   note: NoteRow;
   myVote: Vote | undefined;
   onVote: (note: NoteRow, vote: Vote) => void;
   session: Session | null;
   holdActive?: boolean;
+  projectSlug: string;
+  onNeedLogin: () => void;
 }) {
-  const mine = session?.user.id === note.author_id;
-  const remove = async () => {
-    await supabase.from("everything_notes").delete().eq("id", note.id);
-  };
   return (
-    <NoteBox
-      noteText={note.note}
-      locked={false}
-      header={`Draft note by ${note.author_name ?? "anonymous"} · collecting ratings`}
-    >
-      <VoteRatings
-        helpful={note.helpful_count}
-        somewhatHelpful={note.somewhat_helpful_count}
-        notHelpful={note.not_helpful_count}
-        myVote={myVote}
-        onVote={(vote) => onVote(note, vote)}
-      />
-      {holdActive && <ResortCountdown />}
-      {mine && (
-        <button onClick={remove} className="text-xs text-gray-400 hover:text-red-600 hover:underline">
-          Delete
-        </button>
-      )}
-    </NoteBox>
+    <div>
+      <NoteBox note={note}>
+        <VoteRatings
+          helpful={note.helpful_count}
+          somewhatHelpful={note.somewhat_helpful_count}
+          notHelpful={note.not_helpful_count}
+          myVote={myVote}
+          onVote={(vote) => onVote(note, vote)}
+        />
+        {holdActive && <ResortCountdown />}
+      </NoteBox>
+      <NoteMenu note={note} projectSlug={projectSlug} session={session} onNeedLogin={onNeedLogin} />
+    </div>
   );
 }
 
 // Mirrors the review-dashboard card composition: content → note → stats row,
 // with voting live and an improve-note affordance.
-export function NoteCard({ note, locked, draftNotes, projectSlug, suggestions, myVotes, voteHolds, onVote, session, onNeedLogin }: {
+export function NoteCard({ note, draftNotes, projectSlug, myVotes, voteHolds, onVote, session, onNeedLogin }: {
   note: NoteRow;
-  locked: boolean;
   draftNotes: NoteRow[];
   projectSlug: string;
-  suggestions: SuggestionRow[];
   myVotes: Map<string, Vote>;
   voteHolds: Map<string, boolean>;
   onVote: (note: NoteRow, vote: Vote) => void;
@@ -162,23 +178,7 @@ export function NoteCard({ note, locked, draftNotes, projectSlug, suggestions, m
   const myVote = myVotes.get(note.id);
   const [ctxOpen, setCtxOpen] = useState(false);
   const claim = note.claim;
-  // An accepted community improvement replaces the note text in the UI only
-  // (the DB note is untouched). Newest accepted edit wins.
-  const latestImprovement = suggestions
-    .filter((s) => s.status === "accepted")
-    .sort((a, b) => b.created_at.localeCompare(a.created_at))[0];
-  // Common Notes stores citations in a separate column; the X pipeline keeps
-  // them inline in the note text. Append them so they render as linkified URLs
-  // exactly like the review/stats dashboards.
-  const noteBody = latestImprovement?.suggested_text ?? note.note;
-  const noteText = note.sources.length > 0 ? `${noteBody} ${note.sources.join(" ")}` : noteBody;
-
   const paragraph = claim?.context_paragraph;
-  const header = locked
-    ? "Common Notes users thought this was something you wanted to see"
-    : note.author_id
-      ? `Draft note by ${note.author_name ?? "anonymous"} · collecting ratings`
-      : "Draft note · collecting ratings";
   return (
     <div id={`note-${note.id}`} className="scroll-mt-4 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,36rem)_minmax(0,1fr)] xl:gap-5 items-start">
       {paragraph && claim && (
@@ -215,7 +215,7 @@ export function NoteCard({ note, locked, draftNotes, projectSlug, suggestions, m
       )}
 
       <div className="mb-2">
-        <NoteBox noteText={noteText} locked={locked} header={header}>
+        <NoteBox note={note}>
           <VoteRatings
             helpful={note.helpful_count}
             somewhatHelpful={note.somewhat_helpful_count}
@@ -227,15 +227,23 @@ export function NoteCard({ note, locked, draftNotes, projectSlug, suggestions, m
         </NoteBox>
       </div>
 
-      <div className="mb-2 flex items-center flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
-        <ImproveNote noteId={note.id} session={session} onNeedLogin={onNeedLogin} />
-        <ShareButton projectSlug={projectSlug} noteId={note.id} />
-      </div>
+      <NoteMenu note={note} projectSlug={projectSlug} session={session} onNeedLogin={onNeedLogin} />
 
+      {/* Alternatives (improvements + any note this one outscored) nest here,
+          Reddit-style: indented behind a rail, ranked, swapping in live. */}
       {draftNotes.length > 0 && (
-        <div className="space-y-2 mb-2">
+        <div className="mt-3 pl-3 sm:pl-4 border-l-[3px] border-gray-300 space-y-3">
           {draftNotes.map((d) => (
-            <DraftNote key={d.id} note={d} myVote={myVotes.get(d.id)} onVote={onVote} session={session} holdActive={voteHolds.has(d.id)} />
+            <AlternativeNote
+              key={d.id}
+              note={d}
+              myVote={myVotes.get(d.id)}
+              onVote={onVote}
+              session={session}
+              holdActive={voteHolds.has(d.id)}
+              projectSlug={projectSlug}
+              onNeedLogin={onNeedLogin}
+            />
           ))}
         </div>
       )}

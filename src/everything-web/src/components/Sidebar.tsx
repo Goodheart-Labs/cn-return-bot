@@ -1,7 +1,7 @@
 import type { ProjectRow } from "../lib/types";
 
 const DESCRIPTION =
-  "Common Notes is an attempt to bring Community Notes everywhere — podcasts, newsletters, and beyond. This is in alpha, but voting works.";
+  "Common Notes is an attempt to bring Community Notes everywhere: podcasts, newsletters, and beyond. This is in alpha, but voting works.";
 
 export function Sidebar({ projects, selectedId, onSelect }: {
   projects: ProjectRow[];
