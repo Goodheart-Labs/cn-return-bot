@@ -14,9 +14,10 @@ import { AB_TESTS } from "../pipeline/ab-testing/abTestsData";
 import { createTweetLog, withTweetLog } from "../pipeline/utils/tweetLog";
 import type { ClaimCheck, ExtractedClaim, SourceKind } from "./types";
 
-// simple-bot with the cheap note-needed prefilter and the claim-check search
-// prompt (every claim here is an excerpt from a transcript/article, not an X post).
-const FORCED_PICKS: Record<string, string> = { bot: "simple-bot", note_prefilter: "deepseek", search_claim: "on" };
+// simple-bot with the note-needed prefilter OFF (every checked claim goes through
+// full search + write; the prefilter was dropping too many checkable claims) and
+// the claim-check search prompt (each claim is a transcript/article excerpt, not an X post).
+const FORCED_PICKS: Record<string, string> = { bot: "simple-bot", note_prefilter: "off", search_claim: "on" };
 
 export interface ClaimPostParams {
   claim: ExtractedClaim;

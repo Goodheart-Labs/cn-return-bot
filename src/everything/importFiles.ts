@@ -19,7 +19,7 @@ import "dotenv/config";
 import * as fs from "fs";
 import * as path from "path";
 import { closeBrowser } from "../pipeline/utils/browserManager";
-import { deleteClaimsForItem, markItemDone, markItemError, upsertItem, upsertProject } from "./db";
+import { deleteClaimsForItem, fetchDoneItemUrls, markItemDone, markItemError, upsertItem, upsertProject } from "./db";
 import { processFetchedContent, type ItemTally } from "./processContent";
 import type { FetchedContent } from "./types";
 
@@ -80,22 +80,33 @@ function progressLine(n: number, total: number, title: string, t: ItemTally): st
 }
 
 async function main() {
-  const [dir, slug, ...nameParts] = process.argv.slice(2);
+  const argv = process.argv.slice(2);
+  const fresh = argv.includes("--fresh"); // reprocess every page, ignoring prior 'done' items
+  const [dir, slug, ...nameParts] = argv.filter((a) => !a.startsWith("--"));
   const name = nameParts.join(" ");
   if (!dir || !slug || !name) {
-    console.error('Usage: bun run src/everything/importFiles.ts <dir> <slug> <name...>');
+    console.error("Usage: bun run src/everything/importFiles.ts <dir> <slug> <name...> [--fresh]");
     process.exit(1);
   }
 
   const { baseUrl, pages } = parseManifest(dir);
   const projectId = await upsertProject({ slug, name, description: `Imported from ${baseUrl}` });
-  console.log(`Project "${name}" (${slug}) → ${pages.length} pages from ${baseUrl}\n`);
+  const doneUrls = fresh ? new Set<string>() : await fetchDoneItemUrls(projectId);
+  console.log(
+    `Project "${name}" (${slug}) → ${pages.length} pages from ${baseUrl}` +
+      (doneUrls.size ? ` (resuming — skipping ${doneUrls.size} already done)` : "") +
+      "\n",
+  );
 
   const totals: ItemTally = { extracted: 0, speculation: 0, skipped: 0, notes: 0, no_note: 0, errors: 0 };
   for (let i = 0; i < pages.length; i++) {
     const entry = pages[i]!;
     const title = displayTitle(entry);
     const url = `${baseUrl}${entry.pagePath}`;
+    if (doneUrls.has(url)) {
+      console.log(`=== (${i + 1}/${pages.length}) ${title} — already done, skipping`);
+      continue;
+    }
     console.log(`=== (${i + 1}/${pages.length}) ${title} — ${url}`);
     const item = await upsertItem({ project_id: projectId, source: "substack", url, title });
     try {

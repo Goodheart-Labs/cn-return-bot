@@ -41,6 +41,7 @@ function buildClaimRow(itemId: string, claim: ExtractedClaim): NewClaimRow {
     claim: claim.claim,
     judgement: claim.judgement,
     context_quote: claim.context,
+    context_paragraph: claim.contextParagraph || null,
     context_url: anchor.kind === "youtube" ? (anchor.deepLinkUrl ?? null) : anchor.url,
     start_seconds: anchor.kind === "youtube" && anchor.startSeconds !== undefined ? Math.floor(anchor.startSeconds) : null,
     end_seconds: anchor.kind === "youtube" && anchor.endSeconds !== undefined ? Math.ceil(anchor.endSeconds) : null,

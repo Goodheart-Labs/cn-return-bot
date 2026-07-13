@@ -184,9 +184,7 @@ create trigger everything_votes_counter
 -- ---------------------------------------------------------------------------
 
 insert into everything_projects (slug, name, description, sort_order) values
-  ('zvi',      'Zvi Mowshowitz''s newsletter', null, 1),
-  ('arb',      'Arb''s Research Journal',      null, 2),
-  ('dwarkesh', 'The Dwarkesh Podcast',         null, 3)
+  ('dwarkesh', 'The Dwarkesh Podcast', null, 3)
 on conflict (slug) do nothing;
 
 -- ---------------------------------------------------------------------------
