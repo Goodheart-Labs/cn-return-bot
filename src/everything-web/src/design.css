@@ -8,71 +8,233 @@
  * Scheme rules remap the utility classes the app actually uses; the
  * attribute+class selector outscores the bare utility without !important. */
 
-/* ---------- professional beige ---------- */
-[data-scheme="beige"] body { background: #f4efe4; color: #2f2a20; }
-[data-scheme="beige"] .bg-white { background: #fbf8f0; }
-[data-scheme="beige"] .bg-gray-50 { background: #f4efe4; }
-[data-scheme="beige"] .hover\:bg-gray-50:hover { background: #f1ead9; }
-[data-scheme="beige"] .hover\:bg-gray-100:hover { background: #ece3cd; }
-[data-scheme="beige"] .border-gray-200 { border-color: #e4dbc4; }
-[data-scheme="beige"] .border-gray-300 { border-color: #d5c8a8; }
-[data-scheme="beige"] .bg-blue-600 { background: #8a6d3b; }
-[data-scheme="beige"] .hover\:bg-blue-700:hover { background: #75592c; }
-[data-scheme="beige"] .text-blue-600 { color: #8a6d3b; }
-[data-scheme="beige"] .text-blue-500 { color: #9c7c46; }
-[data-scheme="beige"] .hover\:text-blue-600:hover { color: #75592c; }
-[data-scheme="beige"] .bg-blue-50 { background: #f1e8d2; }
-[data-scheme="beige"] .border-blue-100 { border-color: #e0d2ae; }
+/* ---------- beige = Flexoki (warm paper, LessWrong type, squared corners) ----
+ * Flexoki (stephango.com/flexoki), light theme. Base ramp is the warm mono
+ * paper/black blend; accents are the light-theme 600 values, mapped by
+ * Flexoki's own semantics (cy = links/active, gr = success, or = warning,
+ * re = error). Corners squared; type switches to LessWrong's Gill-Sans stack
+ * (font *sizes* left to the shared scale). The note surface is one warm yellow
+ * wash regardless of status — status reads from the badge + pills. */
+[data-scheme="beige"] body {
+  background: var(--cn-bg); /* base-50 by default; cards sit a shade brighter on paper */
+  color: #100F0F;           /* black (tx) */
+  font-family: GreekFallback, Calibri, gill-sans-nova, "Gill Sans", "Gill Sans MT",
+    "Myriad Pro", Myriad, "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva,
+    "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+[data-scheme="beige"] .bg-white { background: var(--cn-card); } /* paper by default */
+[data-scheme="beige"] .bg-gray-50 { background: var(--cn-bg); }/* tracks the page wash */
+[data-scheme="beige"] .hover\:bg-gray-50:hover { background: #E6E4D9; }   /* base-100 (ui) */
+[data-scheme="beige"] .hover\:bg-gray-100:hover { background: #DAD8CE; }  /* base-150 (ui-2) */
+[data-scheme="beige"] .border-gray-200 { border-color: #E6E4D9; }  /* ui */
+[data-scheme="beige"] .border-gray-300 { border-color: #DAD8CE; }  /* ui-2 */
+[data-scheme="beige"] .text-gray-500 { color: #6F6E69; }  /* base-600 (tx-2) */
+[data-scheme="beige"] .text-gray-400 { color: #B7B5AC; }  /* base-300 (tx-3) */
 
-/* ---------- light taupe (warm tan #b18f72 canvas, cream cards) ---------- */
-[data-scheme="taupe"] body { background: #b18f72; color: #362a1e; }
-[data-scheme="taupe"] .bg-white { background: #f7f1e8; }
-[data-scheme="taupe"] .bg-gray-50 { background: #efe6d8; }
-[data-scheme="taupe"] .hover\:bg-gray-50:hover { background: #efe6d8; }
-[data-scheme="taupe"] .hover\:bg-gray-100:hover { background: #e7dbc8; }
-[data-scheme="taupe"] .border-gray-200 { border-color: #ddcbb2; }
-[data-scheme="taupe"] .border-gray-300 { border-color: #c5ad8e; }
-[data-scheme="taupe"] .text-gray-700 { color: #4c3b28; }
-[data-scheme="taupe"] .text-gray-600 { color: #5a4732; }
-[data-scheme="taupe"] .text-gray-500 { color: #6b563d; }
-[data-scheme="taupe"] .text-gray-400 { color: #7d6749; }
-[data-scheme="taupe"] .bg-blue-600 { background: #7a5c3f; }
-[data-scheme="taupe"] .hover\:bg-blue-700:hover { background: #654a30; }
-[data-scheme="taupe"] .text-blue-600 { color: #7a5c3f; }
-[data-scheme="taupe"] .text-blue-500 { color: #8a6746; }
-[data-scheme="taupe"] .hover\:text-blue-600:hover { color: #654a30; }
-[data-scheme="taupe"] .bg-blue-50 { background: #efe4d0; }
-[data-scheme="taupe"] .border-blue-100 { border-color: #ddc9a8; }
+/* role → accent variables. Defaults are Flexoki's own semantic mapping
+ * (link=cyan, helpful=green, somewhat=orange, not-helpful=red, note=yellow);
+ * the DesignMenu (Flexoki panel) overrides these live via inline styles on
+ * <html>, letting any accent (re/or/ye/gr/cy/bl/pu/ma) map to any role. */
+[data-scheme="beige"] {
+  --cn-bg: #F2F0E5;   /* base-50; Background control sets this */
+  --cn-card: #FFFCF0; /* paper; Card control sets this */
+  --cn-link-50: #DDF1E4; --cn-link-100: #BFE8D9; --cn-link-500: #2F968D; --cn-link-600: #24837B; --cn-link-700: #1C6C66;
+  --cn-helpful-50: #EDEECF; --cn-helpful-100: #DDE2B2; --cn-helpful-150: #CDD597; --cn-helpful-200: #BEC97E; --cn-helpful-600: #66800B; --cn-helpful-700: #536907;
+  --cn-somewhat-50: #FFE7CE; --cn-somewhat-100: #FED3AF; --cn-somewhat-150: #FCC192; --cn-somewhat-200: #F9AE77; --cn-somewhat-600: #BC5215; --cn-somewhat-700: #9D4310;
+  --cn-nothelpful-50: #FFE1D5; --cn-nothelpful-100: #FFCABB; --cn-nothelpful-150: #FDB2A2; --cn-nothelpful-600: #AF3029; --cn-nothelpful-700: #942822; --cn-nothelpful-800: #6C201C;
+  --cn-note-bg: #FAEEC6; --cn-note-border: #F1D67E;
+}
 
-/* warm-scheme semantics (beige + taupe) — colors that sing on brown (teal =
- * positive, rust = negative, saffron = warning, warm stone = neutral). Covers
- * the status-badge symbols, vote pills, success/warning/error surfaces, and
- * search highlight. */
-[data-scheme="taupe"] .cn-badge-helpful circle, [data-scheme="beige"] .cn-badge-helpful circle { fill: #0f766e; }
-[data-scheme="taupe"] .cn-badge-not_helpful circle, [data-scheme="beige"] .cn-badge-not_helpful circle { fill: #b7410e; }
-[data-scheme="taupe"] .cn-badge-needs_ratings circle, [data-scheme="beige"] .cn-badge-needs_ratings circle { fill: #8a7358; }
-[data-scheme="taupe"] .text-green-700, [data-scheme="beige"] .text-green-700 { color: #0f766e; }
-[data-scheme="taupe"] .text-green-800, [data-scheme="beige"] .text-green-800 { color: #0b5d55; }
-[data-scheme="taupe"] .bg-green-50, [data-scheme="beige"] .bg-green-50 { background: #e3efec; }
-[data-scheme="taupe"] .bg-green-100, [data-scheme="beige"] .bg-green-100 { background: #cfe3dd; }
-[data-scheme="taupe"] .border-green-200, [data-scheme="beige"] .border-green-200 { border-color: #b5d5cd; }
-[data-scheme="taupe"] .border-green-300, [data-scheme="beige"] .border-green-300 { border-color: #8fc0b6; }
-[data-scheme="taupe"] .hover\:bg-green-50:hover, [data-scheme="beige"] .hover\:bg-green-50:hover { background: #e3efec; }
-[data-scheme="taupe"] .text-amber-700, [data-scheme="beige"] .text-amber-700 { color: #92670a; }
-[data-scheme="taupe"] .text-amber-800, [data-scheme="beige"] .text-amber-800 { color: #7c5806; }
-[data-scheme="taupe"] .bg-amber-50, [data-scheme="beige"] .bg-amber-50 { background: #f8eed6; }
-[data-scheme="taupe"] .bg-amber-100, [data-scheme="beige"] .bg-amber-100 { background: #f3e2b6; }
-[data-scheme="taupe"] .border-amber-200, [data-scheme="beige"] .border-amber-200 { border-color: #e6cf94; }
-[data-scheme="taupe"] .border-amber-300, [data-scheme="beige"] .border-amber-300 { border-color: #dcb964; }
-[data-scheme="taupe"] .hover\:bg-amber-50:hover, [data-scheme="beige"] .hover\:bg-amber-50:hover { background: #f8eed6; }
-[data-scheme="taupe"] .text-red-600, [data-scheme="beige"] .text-red-600 { color: #b7410e; }
-[data-scheme="taupe"] .text-red-700, [data-scheme="beige"] .text-red-700 { color: #a03a0c; }
-[data-scheme="taupe"] .text-red-800, [data-scheme="beige"] .text-red-800 { color: #8c3007; }
-[data-scheme="taupe"] .bg-red-100, [data-scheme="beige"] .bg-red-100 { background: #ecd0c2; }
-[data-scheme="taupe"] .border-red-300, [data-scheme="beige"] .border-red-300 { border-color: #d99a77; }
-[data-scheme="taupe"] .hover\:bg-red-50:hover, [data-scheme="beige"] .hover\:bg-red-50:hover { background: #f3e0d4; }
-[data-scheme="taupe"] .bg-yellow-100, [data-scheme="beige"] .bg-yellow-100 { background: #f0dfae; }
-[data-scheme="taupe"] .-rotate-90 circle:last-child, [data-scheme="beige"] .-rotate-90 circle:last-child { stroke: #0f766e; } /* resort-countdown ring */
+/* accent = links / active states */
+[data-scheme="beige"] .bg-blue-600 { background: var(--cn-link-600); }
+[data-scheme="beige"] .hover\:bg-blue-700:hover { background: var(--cn-link-700); }
+[data-scheme="beige"] .text-blue-600 { color: var(--cn-link-600); }
+[data-scheme="beige"] .text-blue-500 { color: var(--cn-link-500); }
+[data-scheme="beige"] .hover\:text-blue-600:hover { color: var(--cn-link-700); }
+[data-scheme="beige"] .bg-blue-50 { background: var(--cn-link-50); }
+[data-scheme="beige"] .border-blue-100 { border-color: var(--cn-link-100); }
+
+/* semantics: helpful / somewhat / not-helpful (needs-ratings stays neutral tx-2) */
+[data-scheme="beige"] .cn-badge-helpful circle { fill: var(--cn-helpful-600); }
+[data-scheme="beige"] .cn-badge-not_helpful circle { fill: var(--cn-nothelpful-600); }
+[data-scheme="beige"] .cn-badge-needs_ratings circle { fill: #6F6E69; }
+[data-scheme="beige"] .-rotate-90 circle:last-child { stroke: var(--cn-link-600); } /* resort ring = accent */
+[data-scheme="beige"] .text-green-700 { color: var(--cn-helpful-600); }
+[data-scheme="beige"] .text-green-800 { color: var(--cn-helpful-700); }
+[data-scheme="beige"] .bg-green-50 { background: var(--cn-helpful-50); }
+[data-scheme="beige"] .bg-green-100 { background: var(--cn-helpful-100); }
+[data-scheme="beige"] .border-green-200 { border-color: var(--cn-helpful-150); }
+[data-scheme="beige"] .border-green-300 { border-color: var(--cn-helpful-200); }
+[data-scheme="beige"] .hover\:bg-green-50:hover { background: var(--cn-helpful-50); }
+[data-scheme="beige"] .text-amber-700 { color: var(--cn-somewhat-600); }
+[data-scheme="beige"] .text-amber-800 { color: var(--cn-somewhat-700); }
+[data-scheme="beige"] .bg-amber-50 { background: var(--cn-somewhat-50); }
+[data-scheme="beige"] .bg-amber-100 { background: var(--cn-somewhat-100); }
+[data-scheme="beige"] .border-amber-200 { border-color: var(--cn-somewhat-150); }
+[data-scheme="beige"] .border-amber-300 { border-color: var(--cn-somewhat-200); }
+[data-scheme="beige"] .hover\:bg-amber-50:hover { background: var(--cn-somewhat-50); }
+[data-scheme="beige"] .text-red-600 { color: var(--cn-nothelpful-600); }
+[data-scheme="beige"] .text-red-700 { color: var(--cn-nothelpful-700); }
+[data-scheme="beige"] .text-red-800 { color: var(--cn-nothelpful-800); }
+[data-scheme="beige"] .bg-red-100 { background: var(--cn-nothelpful-100); }
+[data-scheme="beige"] .border-red-300 { border-color: var(--cn-nothelpful-150); }
+[data-scheme="beige"] .hover\:bg-red-50:hover { background: var(--cn-nothelpful-50); }
+[data-scheme="beige"] .bg-yellow-100 { background: #F6E2A0; }  /* text highlight, fixed yellow */
+
+/* the note surface: one warm wash (note-role accent), defined after the utility
+ * remaps so it wins the status box tint (bg-blue-50 / bg-gray-50 + their borders)
+ * on source order */
+[data-scheme="beige"] .cn-notebox { background: var(--cn-note-bg); border-color: var(--cn-note-border); }
+
+/* squared corners: strip all rounding in this theme */
+[data-scheme="beige"] [class*="rounded"] { border-radius: 0 !important; }
+
+/* inputs match the paper cards */
+[data-scheme="beige"] input, [data-scheme="beige"] textarea { background: #FFFCF0; }
+
+/* ---------- taupe = Warm-Neutral palette (squared corners, LessWrong type) ----
+ * From the "Warm-Neutral Color Palette" reference: page = beige, cards = cream,
+ * note surface = camel, votes = olive (helpful) / burnt-orange (somewhat) / rust
+ * (not-helpful), accent/links = denim. Corners squared; LessWrong Gill-Sans type
+ * (font sizes left to the shared scale). */
+[data-scheme="taupe"] body {
+  background: #E6D3A9; /* beige */
+  color: #3D3020;      /* chocolate brown */
+  font-family: GreekFallback, Calibri, gill-sans-nova, "Gill Sans", "Gill Sans MT",
+    "Myriad Pro", Myriad, "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva,
+    "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+[data-scheme="taupe"] .bg-white { background: #F5ECD9; }   /* cream cards */
+[data-scheme="taupe"] .bg-gray-50 { background: #E6D3A9; } /* beige, matches page */
+[data-scheme="taupe"] .hover\:bg-gray-50:hover { background: #DCC796; }
+[data-scheme="taupe"] .hover\:bg-gray-100:hover { background: #D3BC86; }
+[data-scheme="taupe"] .border-gray-200 { border-color: #D8C49A; }
+[data-scheme="taupe"] .border-gray-300 { border-color: #C9B080; }
+[data-scheme="taupe"] .text-gray-700 { color: #4A3D2A; }
+[data-scheme="taupe"] .text-gray-600 { color: #5A4B34; }
+[data-scheme="taupe"] .text-gray-500 { color: #6D5C45; } /* taupe */
+[data-scheme="taupe"] .text-gray-400 { color: #8A7A5F; }
+
+/* accent = links / active states = warm rose (denim is taken by the note, so the
+ * highlight moves to a warm, distinct hue that reads on the cream cards) */
+[data-scheme="taupe"] .bg-blue-600 { background: #BA6C63; }
+[data-scheme="taupe"] .hover\:bg-blue-700:hover { background: #A6584F; }
+[data-scheme="taupe"] .text-blue-600 { color: #9E5049; } /* darkened for legibility on cream */
+[data-scheme="taupe"] .text-blue-500 { color: #A6584F; }
+[data-scheme="taupe"] .hover\:text-blue-600:hover { color: #86423C; }
+[data-scheme="taupe"] .bg-blue-50 { background: #F3E1DC; }
+[data-scheme="taupe"] .border-blue-100 { border-color: #E7C7C0; }
+
+/* votes: helpful = olive, somewhat = burnt orange, not-helpful = rust
+ * (needs-ratings stays neutral taupe) */
+[data-scheme="taupe"] .cn-badge-helpful circle { fill: #606C3A; }
+[data-scheme="taupe"] .cn-badge-not_helpful circle { fill: #B36330; }
+[data-scheme="taupe"] .cn-badge-needs_ratings circle { fill: #6D5C45; }
+[data-scheme="taupe"] .-rotate-90 circle:last-child { stroke: #BA6C63; } /* resort ring = accent */
+[data-scheme="taupe"] .text-green-700 { color: #556227; }
+[data-scheme="taupe"] .text-green-800 { color: #444E1D; }
+[data-scheme="taupe"] .bg-green-50 { background: #E8EAD6; }
+[data-scheme="taupe"] .bg-green-100 { background: #D9DEBB; }
+[data-scheme="taupe"] .border-green-200 { border-color: #C6CE9E; }
+[data-scheme="taupe"] .border-green-300 { border-color: #ADB97A; }
+[data-scheme="taupe"] .hover\:bg-green-50:hover { background: #E8EAD6; }
+[data-scheme="taupe"] .text-amber-700 { color: #97731A; }
+[data-scheme="taupe"] .text-amber-800 { color: #7B5D12; }
+[data-scheme="taupe"] .bg-amber-50 { background: #F7ECCB; }
+[data-scheme="taupe"] .bg-amber-100 { background: #F0DCA0; }
+[data-scheme="taupe"] .border-amber-200 { border-color: #E4C877; }
+[data-scheme="taupe"] .border-amber-300 { border-color: #D3AE49; }
+[data-scheme="taupe"] .hover\:bg-amber-50:hover { background: #F7ECCB; }
+[data-scheme="taupe"] .text-red-600 { color: #A85A28; }
+[data-scheme="taupe"] .text-red-700 { color: #8F4A20; }
+[data-scheme="taupe"] .text-red-800 { color: #763C1A; }
+[data-scheme="taupe"] .bg-red-100 { background: #F0D6BE; }
+[data-scheme="taupe"] .border-red-300 { border-color: #DCA97D; }
+[data-scheme="taupe"] .hover\:bg-red-50:hover { background: #F6E6D6; }
+[data-scheme="taupe"] .bg-yellow-100 { background: #EFD79A; }
+
+/* the note surface: denim (defined after the utility remaps so it wins the
+ * status box tint on source order). Denim is dark, so the note reads as a cool
+ * callout — its interior text/links/idle-pill labels go light for contrast. */
+[data-scheme="taupe"] .cn-notebox { background: #4F7197; border-color: #3A5675; }
+[data-scheme="taupe"] .cn-notebox .text-gray-800 { color: #F7F0E2; } /* note body */
+[data-scheme="taupe"] .cn-notebox .text-gray-700 { color: #ECE3D2; } /* status label */
+[data-scheme="taupe"] .cn-notebox .text-gray-500 { color: #CAD6E1; } /* by / meta */
+[data-scheme="taupe"] .cn-notebox .text-blue-500 { color: #CFE1F2; } /* note source links */
+[data-scheme="taupe"] .cn-notebox .text-green-700 { color: #CDD597; } /* idle vote labels, lightened */
+[data-scheme="taupe"] .cn-notebox .text-amber-700 { color: #F1D67E; }
+[data-scheme="taupe"] .cn-notebox .text-red-700 { color: #E7B48C; }
+
+/* squared corners: strip all rounding in this theme */
+[data-scheme="taupe"] [class*="rounded"] { border-radius: 0 !important; }
+
+/* ---------- brown (classic "professional beige": brown accents, cream cards) -- */
+[data-scheme="brown"] body { background: #f4efe4; color: #2f2a20; }
+[data-scheme="brown"] .bg-white { background: #fbf8f0; }
+[data-scheme="brown"] .bg-gray-50 { background: #f4efe4; }
+[data-scheme="brown"] .hover\:bg-gray-50:hover { background: #f1ead9; }
+[data-scheme="brown"] .hover\:bg-gray-100:hover { background: #ece3cd; }
+[data-scheme="brown"] .border-gray-200 { border-color: #e4dbc4; }
+[data-scheme="brown"] .border-gray-300 { border-color: #d5c8a8; }
+[data-scheme="brown"] .bg-blue-600 { background: #8a6d3b; }
+[data-scheme="brown"] .hover\:bg-blue-700:hover { background: #75592c; }
+[data-scheme="brown"] .text-blue-600 { color: #8a6d3b; }
+[data-scheme="brown"] .text-blue-500 { color: #9c7c46; }
+[data-scheme="brown"] .hover\:text-blue-600:hover { color: #75592c; }
+[data-scheme="brown"] .bg-blue-50 { background: #f1e8d2; }
+[data-scheme="brown"] .border-blue-100 { border-color: #e0d2ae; }
+
+/* ---------- taupe-classic (original warm tan #b18f72 canvas, cream cards) ------ */
+[data-scheme="taupe-classic"] body { background: #b18f72; color: #362a1e; }
+[data-scheme="taupe-classic"] .bg-white { background: #f7f1e8; }
+[data-scheme="taupe-classic"] .bg-gray-50 { background: #efe6d8; }
+[data-scheme="taupe-classic"] .hover\:bg-gray-50:hover { background: #efe6d8; }
+[data-scheme="taupe-classic"] .hover\:bg-gray-100:hover { background: #e7dbc8; }
+[data-scheme="taupe-classic"] .border-gray-200 { border-color: #ddcbb2; }
+[data-scheme="taupe-classic"] .border-gray-300 { border-color: #c5ad8e; }
+[data-scheme="taupe-classic"] .text-gray-700 { color: #4c3b28; }
+[data-scheme="taupe-classic"] .text-gray-600 { color: #5a4732; }
+[data-scheme="taupe-classic"] .text-gray-500 { color: #6b563d; }
+[data-scheme="taupe-classic"] .text-gray-400 { color: #7d6749; }
+[data-scheme="taupe-classic"] .bg-blue-600 { background: #7a5c3f; }
+[data-scheme="taupe-classic"] .hover\:bg-blue-700:hover { background: #654a30; }
+[data-scheme="taupe-classic"] .text-blue-600 { color: #7a5c3f; }
+[data-scheme="taupe-classic"] .text-blue-500 { color: #8a6746; }
+[data-scheme="taupe-classic"] .hover\:text-blue-600:hover { color: #654a30; }
+[data-scheme="taupe-classic"] .bg-blue-50 { background: #efe4d0; }
+[data-scheme="taupe-classic"] .border-blue-100 { border-color: #ddc9a8; }
+
+/* shared classic warm semantics (brown + taupe-classic): teal = positive,
+ * rust = negative, saffron = warning, warm stone = neutral. */
+[data-scheme="brown"] .cn-badge-helpful circle, [data-scheme="taupe-classic"] .cn-badge-helpful circle { fill: #0f766e; }
+[data-scheme="brown"] .cn-badge-not_helpful circle, [data-scheme="taupe-classic"] .cn-badge-not_helpful circle { fill: #b7410e; }
+[data-scheme="brown"] .cn-badge-needs_ratings circle, [data-scheme="taupe-classic"] .cn-badge-needs_ratings circle { fill: #8a7358; }
+[data-scheme="brown"] .text-green-700, [data-scheme="taupe-classic"] .text-green-700 { color: #0f766e; }
+[data-scheme="brown"] .text-green-800, [data-scheme="taupe-classic"] .text-green-800 { color: #0b5d55; }
+[data-scheme="brown"] .bg-green-50, [data-scheme="taupe-classic"] .bg-green-50 { background: #e3efec; }
+[data-scheme="brown"] .bg-green-100, [data-scheme="taupe-classic"] .bg-green-100 { background: #cfe3dd; }
+[data-scheme="brown"] .border-green-200, [data-scheme="taupe-classic"] .border-green-200 { border-color: #b5d5cd; }
+[data-scheme="brown"] .border-green-300, [data-scheme="taupe-classic"] .border-green-300 { border-color: #8fc0b6; }
+[data-scheme="brown"] .hover\:bg-green-50:hover, [data-scheme="taupe-classic"] .hover\:bg-green-50:hover { background: #e3efec; }
+[data-scheme="brown"] .text-amber-700, [data-scheme="taupe-classic"] .text-amber-700 { color: #92670a; }
+[data-scheme="brown"] .text-amber-800, [data-scheme="taupe-classic"] .text-amber-800 { color: #7c5806; }
+[data-scheme="brown"] .bg-amber-50, [data-scheme="taupe-classic"] .bg-amber-50 { background: #f8eed6; }
+[data-scheme="brown"] .bg-amber-100, [data-scheme="taupe-classic"] .bg-amber-100 { background: #f3e2b6; }
+[data-scheme="brown"] .border-amber-200, [data-scheme="taupe-classic"] .border-amber-200 { border-color: #e6cf94; }
+[data-scheme="brown"] .border-amber-300, [data-scheme="taupe-classic"] .border-amber-300 { border-color: #dcb964; }
+[data-scheme="brown"] .hover\:bg-amber-50:hover, [data-scheme="taupe-classic"] .hover\:bg-amber-50:hover { background: #f8eed6; }
+[data-scheme="brown"] .text-red-600, [data-scheme="taupe-classic"] .text-red-600 { color: #b7410e; }
+[data-scheme="brown"] .text-red-700, [data-scheme="taupe-classic"] .text-red-700 { color: #a03a0c; }
+[data-scheme="brown"] .text-red-800, [data-scheme="taupe-classic"] .text-red-800 { color: #8c3007; }
+[data-scheme="brown"] .bg-red-100, [data-scheme="taupe-classic"] .bg-red-100 { background: #ecd0c2; }
+[data-scheme="brown"] .border-red-300, [data-scheme="taupe-classic"] .border-red-300 { border-color: #d99a77; }
+[data-scheme="brown"] .hover\:bg-red-50:hover, [data-scheme="taupe-classic"] .hover\:bg-red-50:hover { background: #f3e0d4; }
+[data-scheme="brown"] .bg-yellow-100, [data-scheme="taupe-classic"] .bg-yellow-100 { background: #f0dfae; }
+[data-scheme="brown"] .-rotate-90 circle:last-child, [data-scheme="taupe-classic"] .-rotate-90 circle:last-child { stroke: #0f766e; }
+
+[data-scheme="brown"] input, [data-scheme="brown"] textarea { background: #fffdf7; }
+[data-scheme="taupe-classic"] input, [data-scheme="taupe-classic"] textarea { background: #fffdf6; color: #362a1e; }
+[data-scheme="taupe-classic"] input::placeholder, [data-scheme="taupe-classic"] textarea::placeholder { color: #8a7358; }
 
 /* ---------- dark (shared base for blue + orange accent variants) ---------- */
 [data-scheme="dark"] body, [data-scheme="dark-orange"] body { background: #0f1216; color: #e7e9ee; }
@@ -152,7 +314,6 @@
 }
 [data-scheme="dark"] input::placeholder, [data-scheme="dark"] textarea::placeholder,
 [data-scheme="dark-orange"] input::placeholder, [data-scheme="dark-orange"] textarea::placeholder { color: #6a7181; }
-[data-scheme="beige"] input, [data-scheme="beige"] textarea { background: #fffdf7; }
 [data-scheme="taupe"] input, [data-scheme="taupe"] textarea { background: #fffdf6; color: #362a1e; }
 [data-scheme="taupe"] input::placeholder, [data-scheme="taupe"] textarea::placeholder { color: #8a7358; }
 
