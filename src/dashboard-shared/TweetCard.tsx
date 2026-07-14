@@ -132,7 +132,10 @@ function CitationBlock({ quote, url, linkText, fragmentText }: {
           “{quote}”
         </blockquote>
       ) : (
-        <p className="text-sm text-gray-800 whitespace-pre-wrap">{quote}</p>
+        <div>
+          <p className="text-sm text-gray-800 whitespace-pre-wrap">{quote}</p>
+          <p className="text-xs text-amber-600 mt-1">⚠ Not an exact quote — this wording isn’t found in the source</p>
+        </div>
       )}
     </div>
   );
