@@ -77,8 +77,8 @@ function cnStatusToFailureType(
 // leniency-adjusted intercept clears 0.4. We can't see that adjusted intercept
 // (it needs the full rater matrix), so we approximate it with the raw weighted
 // average of the public rating counts. The threshold sits well below CN's 0.4
-// bar: at 0.4 the pill flagged ~575 notes, more than Nathan can review; 0.2
-// keeps only the clearly-sinking ~170 (tuned by feel 2026-07-14). Tightening
+// bar: at 0.4 at the time there were ~575 notes; 0.2
+// keeps had only ~170 (tuned by feel 2026-07-14). Tightening
 // the threshold rather than the min-ratings floor keeps the pill
 // view-count-neutral (a floor skews it toward high-traffic notes). Notes with
 // fewer than UNDERWATER_MIN_RATINGS ratings stay "Needs More Ratings" —
