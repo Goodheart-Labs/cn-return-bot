@@ -7,7 +7,7 @@ import type {
   UploadInfo,
   FailureModeInfo,
 } from "./lib/types";
-import { FAILURE_TYPE_CONFIG } from "./lib/types";
+import { defaultFilters } from "./lib/types";
 import { resolveRatingCounts } from "../../dashboard-shared/Ratings";
 import { FULLY_LOADED_FAILURE_TYPES } from "../../dashboard-shared/productionView";
 import {
@@ -59,16 +59,6 @@ import {
 } from "../../dashboard-shared/abFilters";
 import { AB_TESTS } from "../../pipeline/ab-testing/abTestsData";
 
-function defaultFilters(source: "production" | "dataset_run"): FilterState {
-  const failureTypes = new Set<FailureType>();
-  for (const [ft, cfg] of Object.entries(FAILURE_TYPE_CONFIG) as [FailureType, typeof FAILURE_TYPE_CONFIG[FailureType]][]) {
-    if (cfg.defaultOn && (source === "production" ? cfg.production : cfg.datasetRun)) {
-      failureTypes.add(ft);
-    }
-  }
-  // Default to "Unseen" so you work through the notes you haven't reviewed yet.
-  return { seen: "unseen", failureTypes, failureModes: new Set(), highValueOnly: false };
-}
 
 // Union two production item lists by id. `winners` overwrite `base` on overlap:
 // the windowed fetch carries competing/missed/low-eval + in-window ab_test_picks,
@@ -98,10 +88,21 @@ function byCreatedDesc(a: ReviewItem, b: ReviewItem): number {
 
 function matchesFilters(filters: FilterState, abFilters: ABFilters) {
   return (item: ReviewItem) => {
-    // "Great notes" is the top lens: when on, show only starred items, all-time,
-    // ignoring failure-type / seen / tag filters (A/B narrowing still applies).
+    // High-value ★ lens: only starred items. The other filters still narrow
+    // within it — toggling ★ on resets them to non-restrictive (FilterBar), so
+    // any narrowing is one the user has visibly re-applied. An empty pill set
+    // means "all types" here (unlike the normal view, where the pills are the
+    // positive selection), so clearing the pills can't strand an empty list.
     if (filters.highValueOnly) {
       if (!item.annotation?.highValue) return false;
+      if (filters.failureModes.size > 0) {
+        const itemModes = item.annotation?.failureModes ?? [];
+        if (!itemModes.some((m) => filters.failureModes.has(m))) return false;
+      } else if (filters.failureTypes.size > 0 && !filters.failureTypes.has(item.failureType)) {
+        return false;
+      }
+      if (filters.seen === "seen" && !(item.annotation?.seen)) return false;
+      if (filters.seen === "unseen" && item.annotation?.seen) return false;
       return matchesAbFilters(item.abTestPicks ?? null, abFilters);
     }
     // When tags are selected they're the primary lens: show every item carrying

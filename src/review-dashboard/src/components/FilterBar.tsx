@@ -1,4 +1,4 @@
-import { type FailureType, FAILURE_TYPE_CONFIG, type FilterState, type FailureTypeConfig } from "../lib/types";
+import { type FailureType, FAILURE_TYPE_CONFIG, type FilterState, type FailureTypeConfig, defaultFilters } from "../lib/types";
 
 interface FilterBarProps {
   source: "production" | "dataset_run";
@@ -45,7 +45,15 @@ export function FilterBar({ source, filters, counts, onFiltersChange }: FilterBa
   };
 
   const toggleHighValue = () => {
-    onFiltersChange({ ...filters, highValueOnly: !filters.highValueOnly });
+    if (!filters.highValueOnly) {
+      // Entering the ★ lens: reset the other filters to non-restrictive so the
+      // list starts as ALL starred notes; narrowing back is opt-in and visible.
+      onFiltersChange({ seen: "all", failureTypes: new Set(), failureModes: new Set(), highValueOnly: true });
+    } else {
+      // Leaving: back to the standard default view rather than whatever
+      // narrowing was applied inside the lens.
+      onFiltersChange(defaultFilters(source));
+    }
   };
 
   const visibleTypes = (Object.entries(FAILURE_TYPE_CONFIG) as [FailureType, FailureTypeConfig][])
