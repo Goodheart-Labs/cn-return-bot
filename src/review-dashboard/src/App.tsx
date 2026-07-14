@@ -14,6 +14,7 @@ import {
   fetchDashboardData,
   fetchDefaultStatusData,
   fetchDashboardDataByTags,
+  fetchDashboardDataHighValue,
   buildDashboardItems,
   fetchLogsForRuns,
   fetchProductionPillData,
@@ -66,7 +67,7 @@ function defaultFilters(source: "production" | "dataset_run"): FilterState {
     }
   }
   // Default to "Unseen" so you work through the notes you haven't reviewed yet.
-  return { seen: "unseen", failureTypes, failureModes: new Set() };
+  return { seen: "unseen", failureTypes, failureModes: new Set(), highValueOnly: false };
 }
 
 // Union two production item lists by id. `winners` overwrite `base` on overlap:
@@ -97,6 +98,12 @@ function byCreatedDesc(a: ReviewItem, b: ReviewItem): number {
 
 function matchesFilters(filters: FilterState, abFilters: ABFilters) {
   return (item: ReviewItem) => {
+    // "Great notes" is the top lens: when on, show only starred items, all-time,
+    // ignoring failure-type / seen / tag filters (A/B narrowing still applies).
+    if (filters.highValueOnly) {
+      if (!item.annotation?.highValue) return false;
+      return matchesAbFilters(item.abTestPicks ?? null, abFilters);
+    }
     // When tags are selected they're the primary lens: show every item carrying
     // one, regardless of failure type or seen state. Tagged items are usually
     // already marked seen, and many failure types are off by default, so
@@ -199,6 +206,15 @@ export function App() {
     setError(null);
     try {
       if (dataset.type === "production") {
+        // "Great notes" is a standalone all-time lens — fetch every starred note
+        // regardless of window/status, mirroring the tag path. Takes precedence.
+        if (filters.highValueOnly) {
+          const data = await fetchDashboardDataHighValue();
+          if (seq !== loadSeq.current) return;
+          setItems(buildDashboardItems(data));
+          setLogsByRunId(new Map());
+          return;
+        }
         const tags = [...filters.failureModes];
         if (tags.length > 0) {
           const data = await fetchDashboardDataByTags(tags);
@@ -245,7 +261,7 @@ export function App() {
       if (seq === loadSeq.current) setLoading(false);
     }
     // productionTagKey is the stable proxy for filters.failureModes (read above).
-  }, [dataset, windowDays, productionTagKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [dataset, windowDays, productionTagKey, filters.highValueOnly]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Reset filters when the dataset changes (but not when only the window
   // extends — extending should preserve the user's filters). windowDays
@@ -395,6 +411,7 @@ export function App() {
   const windowedTypeSelected =
     dataset.type === "production" &&
     !tagFilterActive &&
+    !filters.highValueOnly &&
     [...filters.failureTypes].some((ft) => !FULLY_LOADED.has(ft));
 
   // The boundary: the OLDEST loaded windowed note. Below it (older) only the
@@ -764,9 +781,11 @@ export function App() {
           {loading && items.length === 0
             ? "Loading..."
             : dataset.type === "production"
-              ? tagFilterActive
-                ? `${visible.length} notes · all time, tagged`
-                : `${visible.length} notes`
+              ? filters.highValueOnly
+                ? `${visible.length} high-value notes · all time ★`
+                : tagFilterActive
+                  ? `${visible.length} notes · all time, tagged`
+                  : `${visible.length} notes`
               : `${filtered.length} items shown`}
         </div>
         {firstRatedIndex > 0 && (

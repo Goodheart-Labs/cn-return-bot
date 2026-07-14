@@ -111,6 +111,9 @@ export interface FilterState {
   seen: "all" | "seen" | "unseen";
   failureTypes: Set<FailureType>;
   failureModes: Set<string>;
+  // When on, the list becomes just the high-value (starred ★) notes, all-time —
+  // a standalone lens that overrides the failure-type / seen filters (like tags).
+  highValueOnly: boolean;
 }
 
 export interface FailureTypeConfig {

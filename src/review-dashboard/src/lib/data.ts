@@ -76,11 +76,16 @@ function cnStatusToFailureType(
 // Helpful=1 / Somewhat=0.5 / Not=0 and publishes a note when its
 // leniency-adjusted intercept clears 0.4. We can't see that adjusted intercept
 // (it needs the full rater matrix), so we approximate it with the raw weighted
-// average of the public rating counts against the same 0.4 threshold. Notes with
-// fewer than UNDERWATER_MIN_RATINGS ratings stay "Needs More Ratings" — genuinely
-// undecided, not sunk. Helpful/not-helpful use the card badge's resolution rule
-// (public-dump first, scraped fallback); somewhat comes from the public dump only.
-const UNDERWATER_RATIO_THRESHOLD = 0.4;
+// average of the public rating counts. The threshold sits well below CN's 0.4
+// bar: at 0.4 the pill flagged ~575 notes, more than Nathan can review; 0.2
+// keeps only the clearly-sinking ~170 (tuned by feel 2026-07-14). Tightening
+// the threshold rather than the min-ratings floor keeps the pill
+// view-count-neutral (a floor skews it toward high-traffic notes). Notes with
+// fewer than UNDERWATER_MIN_RATINGS ratings stay "Needs More Ratings" —
+// genuinely undecided, not sunk. Helpful/not-helpful use the card badge's
+// resolution rule (public-dump first, scraped fallback); somewhat comes from
+// the public dump only.
+const UNDERWATER_RATIO_THRESHOLD = 0.2;
 const UNDERWATER_MIN_RATINGS = 5;
 function isUnderwaterNote(
   publicDumpRatings:
@@ -382,6 +387,45 @@ export async function fetchDashboardDataByTags(tags: string[]): Promise<Dashboar
     fetchInBatches<any>(supabase, "notes", CANONICAL_LIST_COLUMNS, "note_id", noteIds, undefined, "tagged_canonical"),
     fetchInBatches<any>(supabase, "competing_notes", "*", "note_id", missedCompetingIds, undefined, "tagged_missed_competing"),
     fetchInBatches<any>(supabase, "pipeline_runs", LOW_EVAL_RUN_COLUMNS, "id", lowEvalRunIds, undefined, "tagged_low_eval_runs"),
+  ]);
+
+  return assembleDashboardData({ canonical, missedOppCompeting, lowEvalRuns });
+}
+
+/**
+ * High-value-anchored loader: every production item ever starred high-value,
+ * ignoring the date window. Same shape as fetchDashboardDataByTags — starts from
+ * the small annotations table (`high_value = true`) and pulls only the satellite
+ * rows for those targets — so the "Great notes" filter spans all time, not just
+ * the loaded window (a starred note can be any status/age, not only the fully-
+ * loaded rated-helpful set).
+ */
+export async function fetchDashboardDataHighValue(): Promise<DashboardData> {
+  console.log("[data] Loading all-time high-value (starred) items");
+
+  const starredAnnotations = await fetchAllRows<any>(
+    supabase
+      .from("review_dashboard_annotations")
+      .select("target_id")
+      .eq("source", "production")
+      .eq("high_value", true),
+    "high_value_annotations",
+  );
+
+  const noteIds: string[] = [];
+  const missedCompetingIds: string[] = [];
+  const lowEvalRunIds: string[] = [];
+  for (const a of starredAnnotations) {
+    const target = decodeTargetId(a.target_id);
+    if (target.kind === "note") noteIds.push(target.noteId);
+    else if (target.kind === "missed") missedCompetingIds.push(target.competingNoteId);
+    else lowEvalRunIds.push(target.runId);
+  }
+
+  const [canonical, missedOppCompeting, lowEvalRuns] = await Promise.all([
+    fetchInBatches<any>(supabase, "notes", CANONICAL_LIST_COLUMNS, "note_id", noteIds, undefined, "high_value_canonical"),
+    fetchInBatches<any>(supabase, "competing_notes", "*", "note_id", missedCompetingIds, undefined, "high_value_missed_competing"),
+    fetchInBatches<any>(supabase, "pipeline_runs", LOW_EVAL_RUN_COLUMNS, "id", lowEvalRunIds, undefined, "high_value_low_eval_runs"),
   ]);
 
   return assembleDashboardData({ canonical, missedOppCompeting, lowEvalRuns });
