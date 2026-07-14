@@ -69,6 +69,9 @@ function shift<T extends string>(list: T[], step: T, tone: number): T {
   return list[Math.max(0, Math.min(list.length - 1, i))]!;
 }
 
+/** Clamp an index into the neutral surface ramp. */
+const clampIdx = (i: number): number => Math.max(0, Math.min(BASE_STEPS.length - 1, i));
+
 export const ACCENTS: { id: AccentId; label: string }[] = [
   { id: "red", label: "Red" },
   { id: "orange", label: "Orange" },
@@ -135,6 +138,13 @@ export function applyFlexokiRoles(roles: RoleSelection, tone = 0): void {
   });
   style.setProperty("--cn-bg", BASE[shift(BASE_STEPS, roles.bg, tone)]);
   style.setProperty("--cn-card", BASE[shift(BASE_STEPS, roles.card, tone)]);
+  // Elevated surface (dropdowns/popovers): one step off the page toward the
+  // lighter end so it reads as raised — flips darker only when the page is
+  // already the lightest (white). Derived from the background, so it tracks it.
+  const bgIdx = BASE_STEPS.indexOf(shift(BASE_STEPS, roles.bg, tone));
+  const raiseDarker = bgIdx <= 0;
+  style.setProperty("--cn-elevated", BASE[BASE_STEPS[clampIdx(raiseDarker ? bgIdx + 2 : bgIdx - 1)]!]);
+  style.setProperty("--cn-elevated-border", BASE[BASE_STEPS[clampIdx(raiseDarker ? bgIdx + 3 : bgIdx + 1)]!]);
   if (roles.note === "bg") {
     // blend into the page background, with a hairline (one step darker) edge
     style.setProperty("--cn-note-bg", BASE[shift(BASE_STEPS, roles.bg, tone)]);
