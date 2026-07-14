@@ -122,7 +122,7 @@ function NoteBox({ note, children }: {
   const status = noteStatus(note);
   const by = note.author_id ? note.author_name ?? "anonymous" : null;
   return (
-    <div className={`rounded-lg p-3 border ${STATUS[status].box}`}>
+    <div className={`cn-notebox rounded-lg p-3 border ${STATUS[status].box}`}>
       <div className="flex items-center justify-between gap-2 mb-2">
         <StatusBadge status={status} />
         {by && <span className="text-xs text-gray-500 shrink-0">by {by}</span>}
