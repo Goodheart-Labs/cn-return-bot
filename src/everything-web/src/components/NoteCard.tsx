@@ -63,43 +63,60 @@ function ResortCountdown() {
  *  article citation. Decided by URL, not item.source — a podcast item with a
  *  YouTube deep-link renders as a clip.
  *
- *  The citation shows the neutral `claim` (clean and self-contained), while the
- *  source deep-link still points at the verbatim `context_quote` passage. */
+ *  The citation line is the verbatim `claim` (word-for-word source text, per
+ *  the #247 convention) and renders quoted; a claim that is NOT a substring of
+ *  its own context_quote (e.g. a table-derived or legacy paraphrased anchor)
+ *  falls back to the unquoted style, with the deep-link targeting the
+ *  verbatim `context_quote` passage instead. */
 function claimContent(claim: ClaimRef): NotedContent {
   const url = claim.context_url;
+  const verbatim = claim.context_quote.toLowerCase().includes(claim.claim.toLowerCase());
+  const fragmentText = verbatim ? undefined : claim.context_quote;
   if (url && /youtube\.com|youtu\.be/.test(url)) {
     return {
       kind: "youtube",
       url,
       quote: claim.claim,
-      fragmentText: claim.context_quote,
+      fragmentText,
       startSeconds: claim.start_seconds,
       endSeconds: claim.end_seconds,
     };
   }
-  return { kind: "article", url, quote: claim.claim, fragmentText: claim.context_quote };
+  return { kind: "article", url, quote: claim.claim, fragmentText };
 }
 
 /** The claim's surrounding paragraph, with the quoted excerpt bolded. Shown
  *  beside the note card so the correction can be read in its original context. */
 function ContextParagraph({ paragraph, quote, bare }: { paragraph: string; quote: string; bare?: boolean }) {
   const [expanded, setExpanded] = useState(false);
-  const clampable = paragraph.length > 700;
-  const idx = paragraph.toLowerCase().indexOf(quote.toLowerCase());
+  const clampable = paragraph.length > 350;
+  const fullIdx = paragraph.toLowerCase().indexOf(quote.toLowerCase());
+  // When clamped, open the window just before the quote so the bolded span is
+  // what the reader actually sees; expanding restores the full paragraph.
+  let text = paragraph;
+  let idx = fullIdx;
+  let ellipsis = false;
+  if (clampable && !expanded && fullIdx > 140) {
+    const start = paragraph.lastIndexOf(" ", fullIdx - 120) + 1;
+    text = paragraph.slice(start);
+    idx = fullIdx - start;
+    ellipsis = true;
+  }
   return (
     <div className={`cn-context text-xs text-gray-400 leading-relaxed ${bare ? "" : "border-l-4 border-gray-200 pl-3"}`}>
       <div
         style={clampable && !expanded
-          ? { display: "-webkit-box", WebkitLineClamp: 14, WebkitBoxOrient: "vertical", overflow: "hidden" }
+          ? { display: "-webkit-box", WebkitLineClamp: 7, WebkitBoxOrient: "vertical", overflow: "hidden" }
           : undefined}
       >
+        {ellipsis && "… "}
         {idx < 0 ? (
-          paragraph
+          text
         ) : (
           <>
-            {paragraph.slice(0, idx)}
-            <strong className="font-semibold text-gray-500">{paragraph.slice(idx, idx + quote.length)}</strong>
-            {paragraph.slice(idx + quote.length)}
+            {text.slice(0, idx)}
+            <strong className="font-semibold text-gray-800">{text.slice(idx, idx + quote.length)}</strong>
+            {text.slice(idx + quote.length)}
           </>
         )}
       </div>

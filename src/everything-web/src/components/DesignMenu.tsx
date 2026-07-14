@@ -35,9 +35,15 @@ type FontSizeId = (typeof FONT_SIZES)[number]["id"];
 const SCHEME_KEY = "cn-scheme";
 const FONTSIZE_KEY = "cn-fontsize";
 
+/** First visit follows the OS: blue for light systems, dark (black · blue
+ *  accent) for dark ones. A saved choice always wins. */
+function systemScheme(): SchemeId {
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "blue";
+}
+
 export function DesignMenu() {
   const [scheme, setScheme] = useState<SchemeId>(
-    () => (localStorage.getItem(SCHEME_KEY) as SchemeId) ?? "dark",
+    () => (localStorage.getItem(SCHEME_KEY) as SchemeId) ?? systemScheme(),
   );
   const [fontSize, setFontSize] = useState<FontSizeId>(
     () => (localStorage.getItem(FONTSIZE_KEY) as FontSizeId) ?? "large",
