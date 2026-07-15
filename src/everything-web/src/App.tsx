@@ -246,7 +246,7 @@ export function App() {
           />
         )}
         {!loaded && <p className="text-gray-400">Loading…</p>}
-        {loaded && projectNotes.length === 0 && (
+        {loaded && orderedNotes.length === 0 && (
           <p className="text-gray-400">No notes yet for this project.</p>
         )}
         <div className="space-y-4">
