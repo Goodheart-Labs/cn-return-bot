@@ -21,7 +21,9 @@ import type { ClaimCheck, ExtractedClaim, NoteSourceCitation, SourceKind } from 
 // Pinned models: search on Opus 4.8 (opus48-native), writer on Sonnet 5 (the
 // sonnet5 writer arm), verifier on Gemini 3 Flash. verifier_citations ON so
 // accepted sources carry a verbatim supporting quote + explanation (persisted
-// per source).
+// per source). verifier_claim_based "classic" pins the single-call accept/reject
+// flow (non-claim-based) — otherwise the 50/50 AB test would send half the claims
+// through the two-call claim-based verifier.
 const FORCED_PICKS: Record<string, string> = {
   bot: "simple-bot",
   note_prefilter: "off",
@@ -30,6 +32,7 @@ const FORCED_PICKS: Record<string, string> = {
   simple_bot_writer: "sonnet5",
   simple_bot_verifier: "gemini-flash",
   verifier_citations: "on",
+  verifier_claim_based: "classic",
 };
 
 export interface ClaimPostParams {
