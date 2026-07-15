@@ -32,8 +32,8 @@ export interface Tweet {
  *  clip (embedded at its timestamp span), or a citation from an article. */
 export type NotedContent =
   | { kind: "tweet"; tweet: Tweet }
-  | { kind: "youtube"; url: string; quote?: string; fragmentText?: string; updatedQuote?: string; startSeconds?: number | null; endSeconds?: number | null }
-  | { kind: "article"; url: string | null; quote: string; fragmentText?: string; updatedQuote?: string };
+  | { kind: "youtube"; url: string; quote?: string; fragmentText?: string; updatedQuote?: string; imageGrounded?: boolean; startSeconds?: number | null; endSeconds?: number | null }
+  | { kind: "article"; url: string | null; quote: string; fragmentText?: string; updatedQuote?: string; imageGrounded?: boolean };
 
 export interface PublicDumpRatings {
   helpful_count: number;

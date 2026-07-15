@@ -99,29 +99,29 @@ function ResortCountdown() {
  *  article citation. Decided by URL, not item.source — a podcast item with a
  *  YouTube deep-link renders as a clip.
  *
- *  The citation line is the verbatim `claim` (word-for-word source text, per
- *  the #247 convention) and renders quoted; a claim that is NOT a substring of
- *  its own context_quote (e.g. a table-derived or legacy paraphrased anchor)
- *  falls back to the unquoted style, with the deep-link targeting the
- *  verbatim `context_quote` passage instead. */
+ *  The citation line is the verbatim `context_quote` excerpt — the `claim`
+ *  column is a self-contained restatement written for isolated fact-checking,
+ *  not source text. An image-grounded claim has no excerpt and falls back to
+ *  the restated claim, rendered unquoted with an image-sourced caption. */
 function claimContent(claim: ClaimRef): NotedContent {
   const url = claim.context_url;
-  const quote = claim.context_quote ?? "";
-  const verbatim = quote.toLowerCase().includes(claim.claim.toLowerCase());
-  const fragmentText = verbatim || !quote ? undefined : quote;
+  const quote = claim.context_quote || claim.claim;
+  const fragmentText = claim.context_quote ? undefined : claim.claim;
+  const imageGrounded = !claim.context_quote && (claim.image_urls?.length ?? 0) > 0;
   const updatedQuote = claim.updated_quote ?? undefined;
   if (url && /youtube\.com|youtu\.be/.test(url)) {
     return {
       kind: "youtube",
       url,
-      quote: claim.claim,
+      quote,
       fragmentText,
       updatedQuote,
+      imageGrounded,
       startSeconds: claim.start_seconds,
       endSeconds: claim.end_seconds,
     };
   }
-  return { kind: "article", url, quote: claim.claim, fragmentText, updatedQuote };
+  return { kind: "article", url, quote, fragmentText, updatedQuote, imageGrounded };
 }
 
 /** Images a claim is grounded in (Substack charts / screenshots), shown above
@@ -305,15 +305,15 @@ export function NoteCard({ note, draftNotes, projectSlug, myVotes, voteHolds, on
   const cardColRef = useRef<HTMLDivElement>(null);
   const [sourcesOpen, setSourcesOpen] = useState(false);
   const claim = note.claim;
-  // Data invariant (enforced at import + by the audit sweep, NOT here): a
-  // stored context_paragraph always contains its claim, so the bold always
-  // lands. Paragraphs that can't situate the quote are deleted, not hidden.
+  // Data invariant (enforced at ingest, NOT here): a stored context_paragraph
+  // always contains its context_quote word-for-word, so the bold always lands.
   const paragraph = claim?.context_paragraph;
+  const quoteInParagraph = claim?.context_quote ?? claim?.claim ?? "";
   return (
     <div id={`note-${note.id}`} className="scroll-mt-4 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,36rem)_minmax(0,1fr)] xl:gap-5 items-start">
       {paragraph && claim && (
         <div className="hidden xl:block xl:col-start-1 xl:row-start-1">
-          <ContextParagraph paragraph={paragraph} quote={claim.claim} fitTo={cardColRef} />
+          <ContextParagraph paragraph={paragraph} quote={quoteInParagraph} fitTo={cardColRef} />
         </div>
       )}
       {paragraph && claim && (
@@ -324,7 +324,7 @@ export function NoteCard({ note, draftNotes, projectSlug, myVotes, voteHolds, on
         >
           <div className="overflow-hidden min-h-0">
             <div className="mb-2">
-              <ContextParagraph paragraph={paragraph} quote={claim.claim} bare />
+              <ContextParagraph paragraph={paragraph} quote={quoteInParagraph} bare />
             </div>
           </div>
         </div>

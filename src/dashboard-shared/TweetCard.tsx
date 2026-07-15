@@ -109,7 +109,7 @@ function youtubeVideoId(url: string): string | null {
  *  When `fragmentText` is set, the displayed text is a restatement (a claim),
  *  not verbatim source text — so it renders as regular body text, not as a
  *  quote block; the deep-link still targets the verbatim passage. */
-function CitationBlock({ quote, url, linkText, fragmentText, updatedQuote }: {
+function CitationBlock({ quote, url, linkText, fragmentText, updatedQuote, imageGrounded }: {
   quote: string;
   url: string | null;
   linkText: string;
@@ -120,13 +120,17 @@ function CitationBlock({ quote, url, linkText, fragmentText, updatedQuote }: {
    *  captured quote stays displayed; this renders as "source now reads" and
    *  becomes the deep-link target (it's what a click-through can find). */
   updatedQuote?: string;
+  /** The claim rests on an image, not source text — the restated wording is
+   *  expected to be absent from the text, so no "not found" warning; the link
+   *  goes to the page without a text fragment (there is nothing to target). */
+  imageGrounded?: boolean;
 }) {
   const verbatim = !fragmentText;
   return (
     <div>
       {url && (
         <div className="flex justify-end mb-1">
-          <a href={quoteFragmentUrl(url, updatedQuote ?? fragmentText ?? quote)} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline">
+          <a href={imageGrounded ? url : quoteFragmentUrl(url, updatedQuote ?? fragmentText ?? quote)} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline">
             {linkText} ↗
           </a>
         </div>
@@ -138,7 +142,11 @@ function CitationBlock({ quote, url, linkText, fragmentText, updatedQuote }: {
       ) : (
         <div>
           <p className="text-sm text-gray-800 whitespace-pre-wrap">{quote}</p>
-          <p className="text-xs text-amber-600 mt-1">⚠ Not an exact quote — this wording isn’t found in the source</p>
+          {imageGrounded ? (
+            <p className="text-xs text-gray-500 mt-1">Summarized from the image above — not a text quote</p>
+          ) : (
+            <p className="text-xs text-amber-600 mt-1">⚠ Not an exact quote — this wording isn’t found in the source</p>
+          )}
         </div>
       )}
       {updatedQuote && (
@@ -199,11 +207,12 @@ const CLIP_END_POLL_MS = 200;
 /** Embed a YouTube clip via the IFrame Player API so that reaching the clip's
  *  end rewinds to its start and pauses — instead of YouTube's native end screen,
  *  whose replay button restarts the whole video from 0:00. */
-function YouTubeClip({ url, quote, fragmentText, updatedQuote, startSeconds, endSeconds }: {
+function YouTubeClip({ url, quote, fragmentText, updatedQuote, imageGrounded, startSeconds, endSeconds }: {
   url: string;
   quote?: string;
   fragmentText?: string;
   updatedQuote?: string;
+  imageGrounded?: boolean;
   startSeconds?: number | null;
   endSeconds?: number | null;
 }) {
@@ -249,7 +258,7 @@ function YouTubeClip({ url, quote, fragmentText, updatedQuote, startSeconds, end
   return (
     <div className="space-y-2">
       {videoId && <div ref={hostRef} className="w-full aspect-video rounded-lg overflow-hidden" />}
-      {quote && <CitationBlock quote={quote} url={url} linkText="watch" fragmentText={fragmentText} updatedQuote={updatedQuote} />}
+      {quote && <CitationBlock quote={quote} url={url} linkText="watch" fragmentText={fragmentText} updatedQuote={updatedQuote} imageGrounded={imageGrounded} />}
       {!videoId && !quote && (
         <a href={url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline">
           View on {sourceLinkLabel(url)} ↗
@@ -269,8 +278,8 @@ export function ContentCard({ content }: { content: NotedContent }) {
     case "tweet":
       return <TweetCard tweet={content.tweet} />;
     case "youtube":
-      return <YouTubeClip url={content.url} quote={content.quote} fragmentText={content.fragmentText} updatedQuote={content.updatedQuote} startSeconds={content.startSeconds} endSeconds={content.endSeconds} />;
+      return <YouTubeClip url={content.url} quote={content.quote} fragmentText={content.fragmentText} updatedQuote={content.updatedQuote} imageGrounded={content.imageGrounded} startSeconds={content.startSeconds} endSeconds={content.endSeconds} />;
     case "article":
-      return <CitationBlock quote={content.quote} url={content.url} linkText={content.url ? sourceLinkLabel(content.url) : ""} fragmentText={content.fragmentText} updatedQuote={content.updatedQuote} />;
+      return <CitationBlock quote={content.quote} url={content.url} linkText={content.url ? sourceLinkLabel(content.url) : ""} fragmentText={content.fragmentText} updatedQuote={content.updatedQuote} imageGrounded={content.imageGrounded} />;
   }
 }
