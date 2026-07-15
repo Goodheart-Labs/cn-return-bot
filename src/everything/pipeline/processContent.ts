@@ -12,6 +12,7 @@ import { checkClaim } from "./checkClaims";
 import {
   insertClaims,
   insertNote,
+  isSyntheticDocUrl,
   setClaimStatus,
   updateItemMeta,
   type EverythingItem,
@@ -43,7 +44,8 @@ function buildClaimRow(itemId: string, claim: ExtractedClaim): NewClaimRow {
     context_quote: claim.context || null,
     context_paragraph: claim.contextParagraph || null,
     image_urls: claim.imageUrls,
-    context_url: anchor.kind === "youtube" ? (anchor.deepLinkUrl ?? null) : anchor.url,
+    context_url:
+      anchor.kind === "youtube" ? (anchor.deepLinkUrl ?? null) : isSyntheticDocUrl(anchor.url) ? null : anchor.url,
     start_seconds: anchor.kind === "youtube" && anchor.startSeconds !== undefined ? Math.floor(anchor.startSeconds) : null,
     end_seconds: anchor.kind === "youtube" && anchor.endSeconds !== undefined ? Math.ceil(anchor.endSeconds) : null,
     status: check ? "pending" : "skipped",

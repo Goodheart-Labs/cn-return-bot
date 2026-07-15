@@ -51,6 +51,13 @@ export async function resolveProjectId(slug: string): Promise<string> {
   }).id;
 }
 
+// A url-less local doc still needs a unique, non-null `url` (the column is NOT
+// NULL UNIQUE). We mint a synthetic key under this scheme; it is never shown as
+// a source link — buildClaimRow leaves such a claim's context_url null.
+const LOCAL_DOC_URL_PREFIX = "local:";
+export const syntheticDocUrl = (slug: string, basename: string) => `${LOCAL_DOC_URL_PREFIX}${slug}/${basename}`;
+export const isSyntheticDocUrl = (url: string | null): boolean => !!url?.startsWith(LOCAL_DOC_URL_PREFIX);
+
 /** A queued item: a live URL (worker fetches) or a local `--doc` (body supplied). */
 export interface EnqueueRow {
   project_id: string;

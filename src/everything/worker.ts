@@ -25,7 +25,7 @@ async function fetchContent(item: EverythingItem): Promise<FetchedContent> {
   if (item.full_text !== null) {
     return item.source === "youtube"
       ? fetchYoutubeTranscriptContent(item.url, item.full_text)
-      : { kind: "substack", url: item.url, title: item.title ?? item.url, text: item.full_text };
+      : { kind: "substack", url: item.url, title: item.title ?? "Untitled", text: item.full_text };
   }
   switch (item.source) {
     case "youtube":

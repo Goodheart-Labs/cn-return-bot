@@ -11,10 +11,12 @@
  * Args (mix freely):
  *   <url>                     live YouTube video, Substack post, or Substack
  *                             profile (expands to its --latest N free posts)
- *   --doc <url> <file>        a source <url> plus a local .md/.txt <file> whose
- *                             text is the extraction body. A YouTube <url> still
+ *   --doc [<url>] <file>      a local .md/.txt <file> whose text is the extraction
+ *                             body. With a source <url>: a YouTube url still
  *                             fetches the video's cues for timestamps; any other
- *                             url is treated as an article (text-anchored).
+ *                             url becomes the article's source link. Without a
+ *                             url (`--doc <file>`): a url-less document — no
+ *                             source link is shown.
  *   --manifest <dir>          expand a folder's README.md manifest into --doc
  *                             pairs (one item per page)
  *   --latest N                posts to pull from a Substack profile (default 5)
@@ -28,7 +30,7 @@
 import "dotenv/config";
 import * as fs from "fs";
 import * as path from "path";
-import { enqueueItems, resolveProjectId, type EnqueueRow } from "./db";
+import { enqueueItems, resolveProjectId, syntheticDocUrl, type EnqueueRow } from "./db";
 import { fetchLatestFreePostUrls, parseProfileHandle } from "./sources/substack";
 import type { SourceKind } from "./types";
 
@@ -102,21 +104,26 @@ async function main() {
   let manifestDir: string | undefined;
   let latest = DEFAULT_LATEST_POSTS;
   const liveUrls: string[] = [];
-  const docs: { url: string; file: string }[] = [];
+  const docs: { url: string | null; file: string }[] = [];
 
   for (let i = 0; i < args.length; i++) {
     const a = args[i]!;
     if (a === "--project") projectSlug = args[++i];
     else if (a === "--manifest") manifestDir = args[++i];
     else if (a === "--latest") latest = Number(args[++i]);
-    else if (a === "--doc") docs.push({ url: args[++i]!, file: args[++i]! });
-    else if (a.startsWith("--")) throw new Error(`Unknown flag: ${a}`);
+    // --doc takes a file, optionally preceded by its source url: `--doc <url> <file>`
+    // pairs the two; `--doc <file>` is a url-less local document.
+    else if (a === "--doc") {
+      const first = args[++i]!;
+      if (/^https?:\/\//.test(first)) docs.push({ url: first, file: args[++i]! });
+      else docs.push({ url: null, file: first });
+    } else if (a.startsWith("--")) throw new Error(`Unknown flag: ${a}`);
     else liveUrls.push(a);
   }
 
   if (!projectSlug || Number.isNaN(latest) || (liveUrls.length === 0 && docs.length === 0 && !manifestDir)) {
     console.error(
-      "Usage: bun run src/everything/enqueue.ts --project <slug> [<url>...] [--doc <url> <file>]... [--manifest <dir>] [--latest N]",
+      "Usage: bun run src/everything/enqueue.ts --project <slug> [<url>...] [--doc [<url>] <file>]... [--manifest <dir>] [--latest N]",
     );
     process.exit(1);
   }
@@ -129,7 +136,8 @@ async function main() {
   }
   for (const d of docs) {
     const text = fs.readFileSync(d.file, "utf8");
-    rows.push(docRow(projectId, d.url, text, titleFromDoc(text, d.file)));
+    const url = d.url ?? syntheticDocUrl(projectSlug, path.basename(d.file));
+    rows.push(docRow(projectId, url, text, titleFromDoc(text, d.file)));
   }
   if (manifestDir) rows.push(...manifestRows(projectId, manifestDir));
 
