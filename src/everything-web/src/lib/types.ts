@@ -25,6 +25,9 @@ export interface ClaimRef {
   claim: string;
   context_quote: string;
   context_paragraph: string | null;
+  /** Current live-source wording when it has drifted from the captured quote
+   *  (sources heal — sometimes because of the note). Null = still matches. */
+  updated_quote: string | null;
   context_url: string | null;
   start_seconds: number | null;
   end_seconds: number | null;

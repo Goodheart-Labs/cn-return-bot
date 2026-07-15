@@ -36,6 +36,8 @@ export function WriteNoteModal({ open, onClose, projectId, session }: {
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
   const [rejected, setRejected] = useState(false);
+  // Bylines are opt-in (Nathan, 2026-07-14): default anonymous, X-CN style.
+  const [signed, setSigned] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const markRef = useRef<HTMLElement>(null);
   // Close only when the PRESS started on the backdrop — a text-selection drag
@@ -111,7 +113,7 @@ export function WriteNoteModal({ open, onClose, projectId, session }: {
         claim_id: claim.id,
         note: note.trim(),
         author_id: session.user.id,
-        author_name: displayName(session),
+        author_name: signed ? displayName(session) : null,
         status: "draft",
       });
       if (noteError) return setError(noteError.message);
@@ -232,6 +234,10 @@ export function WriteNoteModal({ open, onClose, projectId, session }: {
               </p>
             )}
             <div className="flex gap-2 items-center justify-end">
+              <label className="mr-auto flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer">
+                <input type="checkbox" checked={signed} onChange={(e) => setSigned(e.target.checked)} />
+                Post as {displayName(session)}
+              </label>
               <button onClick={() => { setAnchorText(""); setFreeform(false); }} className="text-sm text-gray-500 hover:underline">
                 Change text
               </button>

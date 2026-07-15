@@ -109,20 +109,24 @@ function youtubeVideoId(url: string): string | null {
  *  When `fragmentText` is set, the displayed text is a restatement (a claim),
  *  not verbatim source text — so it renders as regular body text, not as a
  *  quote block; the deep-link still targets the verbatim passage. */
-function CitationBlock({ quote, url, linkText, fragmentText }: {
+function CitationBlock({ quote, url, linkText, fragmentText, updatedQuote }: {
   quote: string;
   url: string | null;
   linkText: string;
   /** Verbatim source passage for the #:~:text= deep-link, when the displayed
    *  `quote` isn't itself verbatim in the source. Defaults to `quote`. */
   fragmentText?: string;
+  /** Current live wording when the source has changed since capture — the
+   *  captured quote stays displayed; this renders as "source now reads" and
+   *  becomes the deep-link target (it's what a click-through can find). */
+  updatedQuote?: string;
 }) {
   const verbatim = !fragmentText;
   return (
     <div>
       {url && (
         <div className="flex justify-end mb-1">
-          <a href={quoteFragmentUrl(url, fragmentText ?? quote)} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline">
+          <a href={quoteFragmentUrl(url, updatedQuote ?? fragmentText ?? quote)} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline">
             {linkText} ↗
           </a>
         </div>
@@ -136,6 +140,11 @@ function CitationBlock({ quote, url, linkText, fragmentText }: {
           <p className="text-sm text-gray-800 whitespace-pre-wrap">{quote}</p>
           <p className="text-xs text-amber-600 mt-1">⚠ Not an exact quote — this wording isn’t found in the source</p>
         </div>
+      )}
+      {updatedQuote && (
+        <p className="mt-1.5 pl-3 text-xs text-emerald-700">
+          ✎ The source has since been updated and now reads: <em>“{updatedQuote}”</em>
+        </p>
       )}
     </div>
   );
@@ -190,10 +199,11 @@ const CLIP_END_POLL_MS = 200;
 /** Embed a YouTube clip via the IFrame Player API so that reaching the clip's
  *  end rewinds to its start and pauses — instead of YouTube's native end screen,
  *  whose replay button restarts the whole video from 0:00. */
-function YouTubeClip({ url, quote, fragmentText, startSeconds, endSeconds }: {
+function YouTubeClip({ url, quote, fragmentText, updatedQuote, startSeconds, endSeconds }: {
   url: string;
   quote?: string;
   fragmentText?: string;
+  updatedQuote?: string;
   startSeconds?: number | null;
   endSeconds?: number | null;
 }) {
@@ -239,7 +249,7 @@ function YouTubeClip({ url, quote, fragmentText, startSeconds, endSeconds }: {
   return (
     <div className="space-y-2">
       {videoId && <div ref={hostRef} className="w-full aspect-video rounded-lg overflow-hidden" />}
-      {quote && <CitationBlock quote={quote} url={url} linkText="watch" fragmentText={fragmentText} />}
+      {quote && <CitationBlock quote={quote} url={url} linkText="watch" fragmentText={fragmentText} updatedQuote={updatedQuote} />}
       {!videoId && !quote && (
         <a href={url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline">
           View on {sourceLinkLabel(url)} ↗
@@ -259,8 +269,8 @@ export function ContentCard({ content }: { content: NotedContent }) {
     case "tweet":
       return <TweetCard tweet={content.tweet} />;
     case "youtube":
-      return <YouTubeClip url={content.url} quote={content.quote} fragmentText={content.fragmentText} startSeconds={content.startSeconds} endSeconds={content.endSeconds} />;
+      return <YouTubeClip url={content.url} quote={content.quote} fragmentText={content.fragmentText} updatedQuote={content.updatedQuote} startSeconds={content.startSeconds} endSeconds={content.endSeconds} />;
     case "article":
-      return <CitationBlock quote={content.quote} url={content.url} linkText={content.url ? sourceLinkLabel(content.url) : ""} fragmentText={content.fragmentText} />;
+      return <CitationBlock quote={content.quote} url={content.url} linkText={content.url ? sourceLinkLabel(content.url) : ""} fragmentText={content.fragmentText} updatedQuote={content.updatedQuote} />;
   }
 }
