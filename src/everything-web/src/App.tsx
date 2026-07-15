@@ -30,6 +30,11 @@ import { LoginModal } from "./components/LoginModal";
 import { WriteNoteModal } from "./components/WriteNoteModal";
 import { NoteCard } from "./components/NoteCard";
 import { EpisodeChips } from "./components/EpisodeChips";
+
+// Projects that get episode filter tabs — an explicit product decision per
+// project (Nathan, 2026-07-14), not inferred from item types. Move to an
+// everything_projects column if/when per-project config grows.
+const EPISODE_TAB_PROJECTS = new Set(["dwarkesh"]);
 import { DesignMenu } from "./components/DesignMenu";
 import type { NoteRow } from "./lib/types";
 import { byPromotion, isLocked, totalVotes, weight } from "./lib/noteScore";
@@ -172,9 +177,7 @@ export function App() {
     .filter((i) => i.project_id === selectedId && (notesByItem.get(i.id)?.length ?? 0) > 0)
     .sort((a, b) => (b.published_at ?? b.created_at).localeCompare(a.published_at ?? a.created_at));
   const episodeNoteCounts = new Map(projectEpisodes.map((i) => [i.id, notesByItem.get(i.id)!.length]));
-  // Chips are for episodic media (podcast/YouTube). Article collections like
-  // AI 2040 read better as one feed (Nathan, 2026-07-14).
-  const chipsApply = projectEpisodes.every((i) => i.source === "podcast" || i.source === "youtube");
+  const chipsApply = !!selected && EPISODE_TAB_PROJECTS.has(selected.slug);
   // Ignore a stale/foreign ?episode= param rather than show an empty feed.
   const activeEpisode = projectEpisodes.some((i) => i.id === episodeFilter) ? episodeFilter : null;
   // A project is just its notes — no per-item headers. Newest content first,
