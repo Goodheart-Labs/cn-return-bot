@@ -41,12 +41,12 @@ function StatusBadge({ status }: { status: NoteStatus }) {
   );
 }
 
-function hostname(url: string): string {
-  try {
-    return new URL(url).hostname.replace(/^www\./, "");
-  } catch {
-    return url;
-  }
+/** Common Notes keeps citations in a separate column; append them so they
+ *  render as linkified URLs inline in the note text, like the review/stats
+ *  dashboards. */
+function noteText(note: NoteRow): string {
+  const urls = note.sources.map((s) => s.url);
+  return urls.length > 0 ? `${note.note} ${urls.join(" ")}` : note.note;
 }
 
 /** Does any source carry a supporting quote worth a details reveal? */
@@ -54,29 +54,8 @@ function hasSourceDetails(sources: NoteSourceRow[]): boolean {
   return sources.some((s) => s.quote);
 }
 
-/** The note's source links, always inline below the note text. Each deep-links
- *  to its supporting quote (#:~:text=) when one was extracted, else the URL. */
-function SourceLinks({ sources }: { sources: NoteSourceRow[] }) {
-  const ordered = [...sources].sort((a, b) => a.sort_order - b.sort_order);
-  return (
-    <div className="mt-3 pt-3 border-t border-gray-200/70 flex flex-wrap gap-x-3 gap-y-1">
-      {ordered.map((s, i) => (
-        <a
-          key={i}
-          href={s.quote ? quoteFragmentUrl(s.url, s.quote) : s.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs text-blue-500 hover:underline break-all"
-        >
-          {hostname(s.url)} ↗
-        </a>
-      ))}
-    </div>
-  );
-}
-
 /** Per-source supporting quote + explanation, revealed by "Show source
- *  details". The source links themselves already sit inline above, so this
+ *  details". The source URLs already sit inline in the note text, so this
  *  shows only the citation body (deep-linked quote + explanation). */
 function SourceDetails({ open, sources }: { open: boolean; sources: NoteSourceRow[] }) {
   const detailed = [...sources].sort((a, b) => a.sort_order - b.sort_order).filter((s) => s.quote);
@@ -259,8 +238,7 @@ function NoteBox({ note, sourcesOpen, children }: {
         <StatusBadge status={status} />
         {by && <span className="text-xs text-gray-500 shrink-0">by {by}</span>}
       </div>
-      <LinkifiedText className="text-sm text-gray-800 whitespace-pre-wrap" text={note.note} />
-      {note.sources.length > 0 && <SourceLinks sources={note.sources} />}
+      <LinkifiedText className="text-sm text-gray-800 whitespace-pre-wrap" text={noteText(note)} />
       {hasSourceDetails(note.sources) && <SourceDetails open={!!sourcesOpen} sources={note.sources} />}
       {children && (
         <div className="-mx-3 mt-3 px-3 pt-2.5 border-t border-gray-200/70 flex items-center justify-between flex-wrap gap-x-4 gap-y-1">
