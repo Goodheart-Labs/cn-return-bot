@@ -25,6 +25,8 @@ import { getSupabaseClient } from "../api/supabaseClient";
 
 const CLIP_PAD_SECONDS = 1;
 const PARAGRAPH_WINDOW_S = 40;
+const DEDUP_WINDOW_S = 10;
+const DEFAULT_CLIP_LENGTH_S = 15;
 
 interface ClaimResult {
   claim: string;
@@ -142,8 +144,8 @@ async function main() {
       .from("everything_claims")
       .select("id, start_seconds")
       .eq("item_id", item.id)
-      .gte("start_seconds", startSeconds - 10)
-      .lte("start_seconds", startSeconds + 10);
+      .gte("start_seconds", startSeconds - DEDUP_WINDOW_S)
+      .lte("start_seconds", startSeconds + DEDUP_WINDOW_S);
     if (nearbyErr) throw new Error(`nearby-claims lookup: ${nearbyErr.message}`);
     if (nearby && nearby.length > 0) {
       console.log(`skip (claim already exists at ~${startSeconds}s): ${excerpt.slice(0, 50)}…`);
@@ -161,7 +163,7 @@ async function main() {
       if (norm(windowText).includes(norm(excerpt))) paragraph = windowText;
     }
 
-    const endSeconds = Math.ceil(r.endTimestampSeconds ?? claimTs + 15) + CLIP_PAD_SECONDS;
+    const endSeconds = Math.ceil(r.endTimestampSeconds ?? claimTs + DEFAULT_CLIP_LENGTH_S) + CLIP_PAD_SECONDS;
     const { data: claimRow, error: claimErr } = await db
       .from("everything_claims")
       .insert({
