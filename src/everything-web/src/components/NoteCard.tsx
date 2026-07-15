@@ -101,12 +101,13 @@ function ResortCountdown() {
  *
  *  The citation line is the verbatim `context_quote` excerpt — the `claim`
  *  column is a self-contained restatement written for isolated fact-checking,
- *  not source text. An image-only claim has no excerpt and falls back to the
- *  restated claim, rendered unquoted (fragmentText marks it non-verbatim). */
+ *  not source text. An image-grounded claim has no excerpt and falls back to
+ *  the restated claim, rendered unquoted with an image-sourced caption. */
 function claimContent(claim: ClaimRef): NotedContent {
   const url = claim.context_url;
   const quote = claim.context_quote || claim.claim;
   const fragmentText = claim.context_quote ? undefined : claim.claim;
+  const imageGrounded = !claim.context_quote && (claim.image_urls?.length ?? 0) > 0;
   const updatedQuote = claim.updated_quote ?? undefined;
   if (url && /youtube\.com|youtu\.be/.test(url)) {
     return {
@@ -115,11 +116,12 @@ function claimContent(claim: ClaimRef): NotedContent {
       quote,
       fragmentText,
       updatedQuote,
+      imageGrounded,
       startSeconds: claim.start_seconds,
       endSeconds: claim.end_seconds,
     };
   }
-  return { kind: "article", url, quote, fragmentText, updatedQuote };
+  return { kind: "article", url, quote, fragmentText, updatedQuote, imageGrounded };
 }
 
 /** Images a claim is grounded in (Substack charts / screenshots), shown above
