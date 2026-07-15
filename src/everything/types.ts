@@ -5,7 +5,19 @@ export type SourceKind = "youtube" | "substack";
 /** Content fetched from a source, ready for claim extraction. */
 export type FetchedContent =
   | { kind: "youtube"; url: string; videoId: string; title: string; publishedAt?: string; cues: SubtitleCue[] }
-  | { kind: "substack"; url: string; title: string; publishedAt?: string; text: string };
+  | { kind: "substack"; url: string; title: string; publishedAt?: string; text: string }
+  // A YouTube video whose claims are extracted from a caller-supplied transcript
+  // (e.g. an author's clean published transcript) but whose timestamps are still
+  // snapped against the video's own cues. Same anchoring as `youtube`.
+  | {
+      kind: "youtube-transcript";
+      url: string;
+      videoId: string;
+      title: string;
+      publishedAt?: string;
+      text: string;
+      cues: SubtitleCue[];
+    };
 
 /** Where a claim's context lives in the original content. */
 export type ClaimAnchor =

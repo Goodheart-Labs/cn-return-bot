@@ -208,53 +208,63 @@ function chunkText(text: string): string[] {
   return chunks;
 }
 
-/** YouTube path: timestamped cues → claims with snapped timestamps + deep-links. */
-async function extractFromCues(
-  cues: SubtitleCue[],
-  videoId: string,
+/** Resolves each claim's context excerpt to where it lives in the source. */
+type AnchorResolver = (context: string) => ClaimAnchor;
+
+/** Snap the context against the video's cues → deep-linkable YouTube anchor.
+ *  Shared by live YouTube (extract from cues) and transcript imports (extract
+ *  from a supplied transcript, timestamps still from the video's own cues). */
+function youtubeAnchor(videoId: string, cues: SubtitleCue[]): AnchorResolver {
+  return (context) => {
+    const { start, end } = contextTimeSpan(context, cues);
+    return {
+      kind: "youtube",
+      startSeconds: start,
+      endSeconds: end,
+      deepLinkUrl: start !== undefined ? buildVideoLink(videoId, start) : undefined,
+    };
+  };
+}
+
+/** Extract from pre-rendered chunks, then attach each claim's resolved anchor. */
+async function extractChunks(
+  renderedChunks: (string | ContentPart[])[],
+  anchorFor: AnchorResolver,
   concurrency: number,
 ): Promise<ExtractedClaim[]> {
   const queue = new PQueue({ concurrency });
-  const perChunk = await Promise.all(
-    // Plain text for the LLM — timestamps are snapped from the cues afterwards,
-    // so no [seconds] markers to leak into the verbatim context.
-    chunkCues(cues).map((chunk) =>
-      queue.add(() => runExtraction(`Transcript segment:\n\n${chunk.map((c) => c.text).join("\n")}`)),
-    ),
-  );
+  const perChunk = await Promise.all(renderedChunks.map((chunk) => queue.add(() => runExtraction(chunk))));
   return perChunk
     .flat()
     .filter((c): c is RawClaim => !!c)
-    .map((c) => {
-      // Resolve the context's span against the full cue list (chunk-edge safe).
-      const { start, end } = contextTimeSpan(c.context, cues);
-      return toExtractedClaim(c, {
-        kind: "youtube",
-        startSeconds: start,
-        endSeconds: end,
-        deepLinkUrl: start !== undefined ? buildVideoLink(videoId, start) : undefined,
-      });
-    });
+    .map((c) => toExtractedClaim(c, anchorFor(c.context)));
 }
 
-/** Article path: plain text → claims anchored to the article URL. */
-async function extractFromText(text: string, url: string, concurrency: number): Promise<ExtractedClaim[]> {
-  const queue = new PQueue({ concurrency });
-  const perChunk = await Promise.all(
-    chunkText(text).map((chunk) =>
-      queue.add(() => runExtraction([{ type: "text", text: "Article excerpt:\n\n" }, ...toContentParts(chunk)])),
-    ),
-  );
-  return perChunk
-    .flat()
-    .filter((c): c is RawClaim => !!c)
-    .map((c) => toExtractedClaim(c, { kind: "substack", url }));
-}
+// Plain transcript text for the LLM — timestamps are snapped from cues
+// afterwards, so no [seconds] markers leak into the verbatim context.
+const transcriptChunk = (text: string) => `Transcript segment:\n\n${text}`;
 
 export async function extractClaims(content: FetchedContent, concurrency: number): Promise<ExtractedClaim[]> {
-  return content.kind === "youtube"
-    ? extractFromCues(content.cues, content.videoId, concurrency)
-    : extractFromText(content.text, content.url, concurrency);
+  switch (content.kind) {
+    case "youtube":
+      return extractChunks(
+        chunkCues(content.cues).map((chunk) => transcriptChunk(chunk.map((c) => c.text).join("\n"))),
+        youtubeAnchor(content.videoId, content.cues),
+        concurrency,
+      );
+    case "youtube-transcript":
+      return extractChunks(
+        chunkText(content.text).map(transcriptChunk),
+        youtubeAnchor(content.videoId, content.cues),
+        concurrency,
+      );
+    case "substack":
+      return extractChunks(
+        chunkText(content.text).map((chunk) => [{ type: "text", text: "Article excerpt:\n\n" }, ...toContentParts(chunk)]),
+        () => ({ kind: "substack", url: content.url }),
+        concurrency,
+      );
+  }
 }
 
 /**

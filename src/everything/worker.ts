@@ -16,10 +16,17 @@ import { closeBrowser } from "../pipeline/utils/browserManager";
 import { claimNextQueuedItem, markItemDone, markItemError, type EverythingItem } from "./db";
 import { processFetchedContent } from "./pipeline/processContent";
 import { fetchSubstackPost } from "./sources/substack";
-import { ensureYtDlp, fetchYoutubeContent } from "./sources/youtube";
+import { ensureYtDlp, fetchYoutubeContent, fetchYoutubeTranscriptContent } from "./sources/youtube";
 import type { FetchedContent } from "./types";
 
 async function fetchContent(item: EverythingItem): Promise<FetchedContent> {
+  // A local `--doc` item already carries its body (read from a file at enqueue).
+  // A YouTube doc still fetches the video's cues so its claims get timestamps.
+  if (item.full_text !== null) {
+    return item.source === "youtube"
+      ? fetchYoutubeTranscriptContent(item.url, item.full_text)
+      : { kind: "substack", url: item.url, title: item.title ?? item.url, text: item.full_text };
+  }
   switch (item.source) {
     case "youtube":
       return fetchYoutubeContent(item.url);

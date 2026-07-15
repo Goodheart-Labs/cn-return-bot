@@ -3,7 +3,7 @@ import type { Session } from "@supabase/supabase-js";
 import { useLiveData } from "./lib/useLiveData";
 import { useSession, signOut } from "./lib/auth";
 import { castVote, clearVote, fetchMyVotes, type Vote } from "./lib/votes";
-import { readRoute, pushProject, pushEpisode } from "./lib/routing";
+import { readRoute, pushProject, pushItem } from "./lib/routing";
 import { Sidebar } from "./components/Sidebar";
 
 function AuthCorner({ session, onSignIn, onSignOut }: {
@@ -29,12 +29,7 @@ function AuthCorner({ session, onSignIn, onSignOut }: {
 import { LoginModal } from "./components/LoginModal";
 import { WriteNoteModal } from "./components/WriteNoteModal";
 import { NoteCard } from "./components/NoteCard";
-import { EpisodeChips } from "./components/EpisodeChips";
-
-// Projects that get episode filter tabs — an explicit product decision per
-// project (Nathan, 2026-07-14), not inferred from item types. Move to an
-// everything_projects column if/when per-project config grows.
-const EPISODE_TAB_PROJECTS = new Set(["dwarkesh"]);
+import { ItemChips } from "./components/ItemChips";
 import { DesignMenu } from "./components/DesignMenu";
 import type { NoteRow } from "./lib/types";
 import { byPromotion, isLocked, totalVotes, weight } from "./lib/noteScore";
@@ -43,8 +38,8 @@ export function App() {
   const { projects, items, notes, loaded } = useLiveData();
   const { session } = useSession();
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  // Episode (item) filter within the project — null = all episodes.
-  const [episodeFilter, setEpisodeFilter] = useState<string | null>(() => readRoute().episode);
+  // Item filter within the project (episode / post / page) — null = all items.
+  const [itemFilter, setItemFilter] = useState<string | null>(() => readRoute().item);
   const [myVotes, setMyVotes] = useState<Map<string, Vote>>(new Map());
   const [loginOpen, setLoginOpen] = useState(false);
   const [writeOpen, setWriteOpen] = useState(false);
@@ -98,21 +93,21 @@ export function App() {
   // Selecting a project updates the URL; Back/Forward restores the selection.
   const selectProject = (id: string) => {
     setSelectedId(id);
-    setEpisodeFilter(null);
+    setItemFilter(null);
     const slug = projects.find((p) => p.id === id)?.slug;
     if (slug) pushProject(slug);
   };
-  const selectEpisode = (itemId: string | null) => {
-    setEpisodeFilter(itemId);
+  const selectItem = (itemId: string | null) => {
+    setItemFilter(itemId);
     const slug = projects.find((p) => p.id === selectedId)?.slug;
-    if (slug) pushEpisode(slug, itemId);
+    if (slug) pushItem(slug, itemId);
   };
   useEffect(() => {
     const onPop = () => {
       const route = readRoute();
       const p = projects.find((pp) => pp.slug === route.project);
       if (p) setSelectedId(p.id);
-      setEpisodeFilter(route.episode);
+      setItemFilter(route.item);
     };
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
@@ -171,20 +166,19 @@ export function App() {
   };
 
   const selected = projects.find((p) => p.id === selectedId) ?? null;
-  // The project's episodes that actually have notes, newest first — feeds both
-  // the chip row and the note feed.
-  const projectEpisodes = [...items.values()]
+  // The project's items that actually have notes, newest first — feeds both the
+  // chip row and the note feed.
+  const projectItems = [...items.values()]
     .filter((i) => i.project_id === selectedId && (notesByItem.get(i.id)?.length ?? 0) > 0)
     .sort((a, b) => (b.published_at ?? b.created_at).localeCompare(a.published_at ?? a.created_at));
-  const episodeNoteCounts = new Map(projectEpisodes.map((i) => [i.id, notesByItem.get(i.id)!.length]));
-  const chipsApply = !!selected && EPISODE_TAB_PROJECTS.has(selected.slug);
-  // Ignore a stale/foreign ?episode= param rather than show an empty feed.
-  const activeEpisode = projectEpisodes.some((i) => i.id === episodeFilter) ? episodeFilter : null;
+  const itemNoteCounts = new Map(projectItems.map((i) => [i.id, notesByItem.get(i.id)!.length]));
+  // Ignore a stale/foreign ?item= param rather than show an empty feed.
+  const activeItem = projectItems.some((i) => i.id === itemFilter) ? itemFilter : null;
   // A project is just its notes — no per-item headers. Newest content first,
-  // then in content order (clip timestamp) within an item. The episode chips
+  // then in content order (clip timestamp) within an item. The item chips
   // narrow this to one item; ranking below applies unchanged to the subset.
-  const orderedNotes = projectEpisodes
-    .filter((i) => !activeEpisode || i.id === activeEpisode)
+  const orderedNotes = projectItems
+    .filter((i) => !activeItem || i.id === activeItem)
     .flatMap((item) =>
       (notesByItem.get(item.id) ?? []).sort(
         (a, b) => (a.claim?.start_seconds ?? 0) - (b.claim?.start_seconds ?? 0),
@@ -243,12 +237,12 @@ export function App() {
             <AuthCorner session={session} onSignIn={() => setLoginOpen(true)} onSignOut={() => signOut()} />
           </div>
         </div>
-        {loaded && chipsApply && (
-          <EpisodeChips
-            episodes={projectEpisodes}
-            noteCounts={episodeNoteCounts}
-            selected={activeEpisode}
-            onSelect={selectEpisode}
+        {loaded && (
+          <ItemChips
+            items={projectItems}
+            noteCounts={itemNoteCounts}
+            selected={activeItem}
+            onSelect={selectItem}
           />
         )}
         {!loaded && <p className="text-gray-400">Loading…</p>}

@@ -77,8 +77,17 @@ async function checkAndRecordClaim(
   }
 }
 
+/** The item's searchable body text — what the public write-note flow searches. */
+function bodyText(content: FetchedContent): string {
+  return content.kind === "youtube" ? content.cues.map((c) => c.text).join("\n") : content.text;
+}
+
 export async function processFetchedContent(item: EverythingItem, content: FetchedContent): Promise<ItemTally> {
-  await updateItemMeta(item.id, { title: content.title, published_at: content.publishedAt?.slice(0, 10) ?? null });
+  await updateItemMeta(item.id, {
+    title: content.title,
+    published_at: content.publishedAt?.slice(0, 10) ?? null,
+    full_text: bodyText(content),
+  });
   console.log(`  "${content.title}" (${content.publishedAt?.slice(0, 10) ?? "no date"})`);
 
   const extracted = await extractClaims(content, EXTRACTION_CONCURRENCY);
