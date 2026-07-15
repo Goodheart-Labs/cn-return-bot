@@ -232,7 +232,7 @@ export function App() {
 
       <main className="flex-1 max-w-3xl md:max-w-[96rem] mx-auto px-4 md:px-8 py-8 w-full">
         <div className="flex items-center justify-between gap-4 mb-6">
-          <h2 className="text-2xl font-bold">{selected?.name ?? ""}</h2>
+          <h2 className="text-2xl font-extrabold">{selected?.name ?? ""}</h2>
           <div className="flex items-center gap-4">
             <button
               onClick={() => (session ? setWriteOpen(true) : setLoginOpen(true))}

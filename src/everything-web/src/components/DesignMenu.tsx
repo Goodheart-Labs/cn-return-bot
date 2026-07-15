@@ -35,13 +35,35 @@ type FontSizeId = (typeof FONT_SIZES)[number]["id"];
 const SCHEME_KEY = "cn-scheme";
 const FONTSIZE_KEY = "cn-fontsize";
 
-/** First visit follows the OS: blue for light systems, dark (black · blue
- *  accent) for dark ones. A saved choice always wins. */
+/** Kill switch for the experimental design menu. While false, the picker is
+ *  hidden, saved experiments in localStorage are ignored, and the site follows
+ *  the OS/browser theme live: blue for light systems, dark (blue accent) for
+ *  dark ones, at the standard large font size. */
+const SHOW_DESIGN_MENU = false;
+
+/** Blue for light systems, dark (black · blue accent) for dark ones. */
 function systemScheme(): SchemeId {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "blue";
 }
 
 export function DesignMenu() {
+  return SHOW_DESIGN_MENU ? <DesignMenuPanel /> : <SystemThemeSync />;
+}
+
+/** Applies the standard design and tracks OS theme changes live. */
+function SystemThemeSync() {
+  useEffect(() => {
+    document.documentElement.setAttribute("data-fontsize", "large");
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const apply = () => document.documentElement.setAttribute("data-scheme", systemScheme());
+    apply();
+    media.addEventListener("change", apply);
+    return () => media.removeEventListener("change", apply);
+  }, []);
+  return null;
+}
+
+function DesignMenuPanel() {
   const [scheme, setScheme] = useState<SchemeId>(
     () => (localStorage.getItem(SCHEME_KEY) as SchemeId) ?? systemScheme(),
   );
