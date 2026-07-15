@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { getSupabaseClient } from "../src/api/supabaseClient";
+import { getSupabaseClient } from "../../api/supabaseClient";
 const db = getSupabaseClient();
 const { data: claims } = await db.from("everything_claims").select("id, claim").ilike("claim", "%doubling times measured in minutes%");
 for (const c of claims ?? []) {

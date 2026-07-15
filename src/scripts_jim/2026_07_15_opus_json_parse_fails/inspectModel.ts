@@ -1,4 +1,4 @@
-import { getSupabaseClient } from "../src/api/supabaseClient";
+import { getSupabaseClient } from "../../api/supabaseClient";
 const db = getSupabaseClient();
 const { data } = await db.from("pipeline_runs")
   .select("id, bot_name, bot_config, ab_test_picks, outcome_reason, error_message")

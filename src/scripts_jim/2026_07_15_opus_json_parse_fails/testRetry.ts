@@ -1,5 +1,5 @@
-import { parseJsonWithRetry } from "../src/pipeline/utils/jsonLlmCall";
-import { ModelOutputInvalidError } from "../src/pipeline/utils/errors";
+import { parseJsonWithRetry } from "../../pipeline/utils/jsonLlmCall";
+import { ModelOutputInvalidError } from "../../pipeline/utils/errors";
 
 type Out = { findings: string; correction_needed: boolean };
 const HINT = `{ "findings": string, "correction_needed": boolean }`;

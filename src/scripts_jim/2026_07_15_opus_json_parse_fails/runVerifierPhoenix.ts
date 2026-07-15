@@ -3,10 +3,10 @@
  * and verifier_citations ON, matching the everything pipeline's config.
  */
 
-import { DEFAULT_CONFIG, withBotConfig, type BotConfig } from "../src/pipeline/ab-testing/botConfig";
-import { withCostTracker } from "../src/pipeline/cost-tracking/costTracker";
-import { createTweetLog, withTweetLog } from "../src/pipeline/utils/tweetLog";
-import { verifySources } from "../src/pipeline/verify/sourceVerifier";
+import { DEFAULT_CONFIG, withBotConfig, type BotConfig } from "../../pipeline/ab-testing/botConfig";
+import { withCostTracker } from "../../pipeline/cost-tracking/costTracker";
+import { createTweetLog, withTweetLog } from "../../pipeline/utils/tweetLog";
+import { verifySources } from "../../pipeline/verify/sourceVerifier";
 
 const noteText =
   "Phoenix is a real X algorithm update (the Grok-based transformer replacing the legacy Heavy Ranker), but it launched January 20, 2026, not around April 1. No source shows a Phoenix release near April 1.";

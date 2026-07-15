@@ -1,8 +1,8 @@
 import "dotenv/config";
 import Anthropic from "@anthropic-ai/sdk";
-import { getSupabaseClient } from "../src/api/supabaseClient";
-import { llm } from "../src/pipeline/llm/llm";
-import { extractJsonObject } from "../src/pipeline/utils/jsonOutput";
+import { getSupabaseClient } from "../../api/supabaseClient";
+import { llm } from "../../pipeline/llm/llm";
+import { extractJsonObject } from "../../pipeline/utils/jsonOutput";
 
 const db = getSupabaseClient();
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });

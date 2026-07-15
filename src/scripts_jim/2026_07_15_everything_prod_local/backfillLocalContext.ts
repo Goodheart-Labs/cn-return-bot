@@ -11,7 +11,7 @@
 import "dotenv/config";
 import * as fs from "fs";
 import * as path from "path";
-import { getSupabaseClient } from "../src/api/supabaseClient";
+import { getSupabaseClient } from "../../api/supabaseClient";
 
 const LOCAL_DIR = path.join(import.meta.dir, "ai-2040");
 

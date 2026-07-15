@@ -1,4 +1,4 @@
-import { getSupabaseClient } from "../src/api/supabaseClient";
+import { getSupabaseClient } from "../../api/supabaseClient";
 const db = getSupabaseClient();
 const SINCE = "2026-07-01T00:00:00Z";
 

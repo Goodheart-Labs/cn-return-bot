@@ -1,4 +1,4 @@
-import { getSupabaseClient } from "../src/api/supabaseClient";
+import { getSupabaseClient } from "../../api/supabaseClient";
 const db = getSupabaseClient();
 // one Opus-search failure run: find via error_message prefix + opus search_model
 const { data } = await db.from("pipeline_runs")

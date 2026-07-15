@@ -1,7 +1,7 @@
 import "dotenv/config";
-import { getSupabaseClient } from "../src/api/supabaseClient";
-import { withBotConfig } from "../src/pipeline/ab-testing/botConfig";
-import { dispatchSearch } from "../src/pipeline/simple-bot/searchDispatch";
+import { getSupabaseClient } from "../../api/supabaseClient";
+import { withBotConfig } from "../../pipeline/ab-testing/botConfig";
+import { dispatchSearch } from "../../pipeline/simple-bot/searchDispatch";
 
 const db = getSupabaseClient();
 // fetch a few recent prod-FAILED anthropic-native search inputs

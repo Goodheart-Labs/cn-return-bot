@@ -1,8 +1,8 @@
 import "dotenv/config";
 import Anthropic from "@anthropic-ai/sdk";
-import { llm } from "../src/pipeline/llm/llm";
-import { extractJsonObject } from "../src/pipeline/utils/jsonOutput";
-import { SIMPLE_SEARCH_SYSTEM_PROMPT, SEARCH_PROMPTED_JSON_INSTRUCTION } from "../src/pipeline/prompts/simple-bot/searchAgent";
+import { llm } from "../../pipeline/llm/llm";
+import { extractJsonObject } from "../../pipeline/utils/jsonOutput";
+import { SIMPLE_SEARCH_SYSTEM_PROMPT, SEARCH_PROMPTED_JSON_INSTRUCTION } from "../../pipeline/prompts/simple-bot/searchAgent";
 
 const OR_MODEL = "anthropic/claude-opus-4.8";   // OpenRouter id (dots)
 const DIRECT_MODEL = "claude-opus-4-8";          // Anthropic id (dashes)

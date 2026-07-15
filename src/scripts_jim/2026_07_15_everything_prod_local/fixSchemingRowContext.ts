@@ -9,7 +9,7 @@
  */
 
 import "dotenv/config";
-import { getSupabaseClient } from "../src/api/supabaseClient";
+import { getSupabaseClient } from "../../api/supabaseClient";
 
 const PARAGRAPH =
   "Table — AI R&D Speedup · Marginal Risk · P(Scheming) · Notes:\n\n" +
