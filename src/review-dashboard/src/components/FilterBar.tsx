@@ -1,4 +1,4 @@
-import { type FailureType, FAILURE_TYPE_CONFIG, type FilterState, type FailureTypeConfig } from "../lib/types";
+import { type FailureType, FAILURE_TYPE_CONFIG, type FilterState, type FailureTypeConfig, defaultFilters } from "../lib/types";
 
 interface FilterBarProps {
   source: "production" | "dataset_run";
@@ -44,6 +44,18 @@ export function FilterBar({ source, filters, counts, onFiltersChange }: FilterBa
     onFiltersChange({ ...filters, seen: order[(idx + 1) % order.length]! });
   };
 
+  const toggleHighValue = () => {
+    if (!filters.highValueOnly) {
+      // Entering the ★ lens: reset the other filters to non-restrictive so the
+      // list starts as ALL starred notes; narrowing back is opt-in and visible.
+      onFiltersChange({ seen: "all", failureTypes: new Set(), failureModes: new Set(), highValueOnly: true });
+    } else {
+      // Leaving: back to the standard default view rather than whatever
+      // narrowing was applied inside the lens.
+      onFiltersChange(defaultFilters(source));
+    }
+  };
+
   const visibleTypes = (Object.entries(FAILURE_TYPE_CONFIG) as [FailureType, FailureTypeConfig][])
     .filter(([, cfg]) => source === "production" ? cfg.production : cfg.datasetRun);
 
@@ -74,6 +86,20 @@ export function FilterBar({ source, filters, counts, onFiltersChange }: FilterBa
       >
         {filters.seen === "all" ? "All" : filters.seen === "unseen" ? "Unseen" : "Seen"}
       </button>
+
+      {source === "production" && (
+        <button
+          onClick={toggleHighValue}
+          title="Show only high-value (starred ★) notes, all-time"
+          className={`px-3 py-1 rounded-full text-sm font-medium border transition-colors ${
+            filters.highValueOnly
+              ? "bg-amber-100 text-amber-800 border-amber-400"
+              : "bg-white text-gray-400 border-gray-200 hover:border-gray-300"
+          }`}
+        >
+          {filters.highValueOnly ? "★" : "☆"} High-value notes
+        </button>
+      )}
 
       <div className="w-px h-6 bg-gray-300" />
 

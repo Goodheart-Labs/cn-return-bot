@@ -7,13 +7,14 @@ import type {
   UploadInfo,
   FailureModeInfo,
 } from "./lib/types";
-import { FAILURE_TYPE_CONFIG } from "./lib/types";
+import { defaultFilters } from "./lib/types";
 import { resolveRatingCounts } from "../../dashboard-shared/Ratings";
 import { FULLY_LOADED_FAILURE_TYPES } from "../../dashboard-shared/productionView";
 import {
   fetchDashboardData,
   fetchDefaultStatusData,
   fetchDashboardDataByTags,
+  fetchDashboardDataHighValue,
   buildDashboardItems,
   fetchLogsForRuns,
   fetchProductionPillData,
@@ -58,16 +59,6 @@ import {
 } from "../../dashboard-shared/abFilters";
 import { AB_TESTS } from "../../pipeline/ab-testing/abTestsData";
 
-function defaultFilters(source: "production" | "dataset_run"): FilterState {
-  const failureTypes = new Set<FailureType>();
-  for (const [ft, cfg] of Object.entries(FAILURE_TYPE_CONFIG) as [FailureType, typeof FAILURE_TYPE_CONFIG[FailureType]][]) {
-    if (cfg.defaultOn && (source === "production" ? cfg.production : cfg.datasetRun)) {
-      failureTypes.add(ft);
-    }
-  }
-  // Default to "Unseen" so you work through the notes you haven't reviewed yet.
-  return { seen: "unseen", failureTypes, failureModes: new Set() };
-}
 
 // Union two production item lists by id. `winners` overwrite `base` on overlap:
 // the windowed fetch carries competing/missed/low-eval + in-window ab_test_picks,
@@ -97,6 +88,23 @@ function byCreatedDesc(a: ReviewItem, b: ReviewItem): number {
 
 function matchesFilters(filters: FilterState, abFilters: ABFilters) {
   return (item: ReviewItem) => {
+    // High-value ★ lens: only starred items. The other filters still narrow
+    // within it — toggling ★ on resets them to non-restrictive (FilterBar), so
+    // any narrowing is one the user has visibly re-applied. An empty pill set
+    // means "all types" here (unlike the normal view, where the pills are the
+    // positive selection), so clearing the pills can't strand an empty list.
+    if (filters.highValueOnly) {
+      if (!item.annotation?.highValue) return false;
+      if (filters.failureModes.size > 0) {
+        const itemModes = item.annotation?.failureModes ?? [];
+        if (!itemModes.some((m) => filters.failureModes.has(m))) return false;
+      } else if (filters.failureTypes.size > 0 && !filters.failureTypes.has(item.failureType)) {
+        return false;
+      }
+      if (filters.seen === "seen" && !(item.annotation?.seen)) return false;
+      if (filters.seen === "unseen" && item.annotation?.seen) return false;
+      return matchesAbFilters(item.abTestPicks ?? null, abFilters);
+    }
     // When tags are selected they're the primary lens: show every item carrying
     // one, regardless of failure type or seen state. Tagged items are usually
     // already marked seen, and many failure types are off by default, so
@@ -199,6 +207,15 @@ export function App() {
     setError(null);
     try {
       if (dataset.type === "production") {
+        // "Great notes" is a standalone all-time lens — fetch every starred note
+        // regardless of window/status, mirroring the tag path. Takes precedence.
+        if (filters.highValueOnly) {
+          const data = await fetchDashboardDataHighValue();
+          if (seq !== loadSeq.current) return;
+          setItems(buildDashboardItems(data));
+          setLogsByRunId(new Map());
+          return;
+        }
         const tags = [...filters.failureModes];
         if (tags.length > 0) {
           const data = await fetchDashboardDataByTags(tags);
@@ -245,7 +262,7 @@ export function App() {
       if (seq === loadSeq.current) setLoading(false);
     }
     // productionTagKey is the stable proxy for filters.failureModes (read above).
-  }, [dataset, windowDays, productionTagKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [dataset, windowDays, productionTagKey, filters.highValueOnly]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Reset filters when the dataset changes (but not when only the window
   // extends — extending should preserve the user's filters). windowDays
@@ -395,6 +412,7 @@ export function App() {
   const windowedTypeSelected =
     dataset.type === "production" &&
     !tagFilterActive &&
+    !filters.highValueOnly &&
     [...filters.failureTypes].some((ft) => !FULLY_LOADED.has(ft));
 
   // The boundary: the OLDEST loaded windowed note. Below it (older) only the
@@ -764,9 +782,11 @@ export function App() {
           {loading && items.length === 0
             ? "Loading..."
             : dataset.type === "production"
-              ? tagFilterActive
-                ? `${visible.length} notes · all time, tagged`
-                : `${visible.length} notes`
+              ? filters.highValueOnly
+                ? `${visible.length} high-value notes · all time ★`
+                : tagFilterActive
+                  ? `${visible.length} notes · all time, tagged`
+                  : `${visible.length} notes`
               : `${filtered.length} items shown`}
         </div>
         {firstRatedIndex > 0 && (

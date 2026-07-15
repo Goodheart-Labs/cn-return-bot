@@ -111,6 +111,11 @@ export interface FilterState {
   seen: "all" | "seen" | "unseen";
   failureTypes: Set<FailureType>;
   failureModes: Set<string>;
+  // When on, the list is the high-value (starred ★) notes, all-time. The other
+  // filters still apply within it, but toggling ★ on resets them to
+  // non-restrictive (seen "all", no pills, no tags) so narrowing is opt-in and
+  // always visible in the filter bar — nothing is overridden behind the UI.
+  highValueOnly: boolean;
 }
 
 export interface FailureTypeConfig {
@@ -204,4 +209,15 @@ export interface UploadInfo {
 export interface FailureModeInfo {
   name: string;
   fixed: boolean;
+}
+
+export function defaultFilters(source: "production" | "dataset_run"): FilterState {
+  const failureTypes = new Set<FailureType>();
+  for (const [ft, cfg] of Object.entries(FAILURE_TYPE_CONFIG) as [FailureType, FailureTypeConfig][]) {
+    if (cfg.defaultOn && (source === "production" ? cfg.production : cfg.datasetRun)) {
+      failureTypes.add(ft);
+    }
+  }
+  // Default to "Unseen" so you work through the notes you haven't reviewed yet.
+  return { seen: "unseen", failureTypes, failureModes: new Set(), highValueOnly: false };
 }
