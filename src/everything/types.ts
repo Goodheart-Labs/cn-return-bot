@@ -17,15 +17,28 @@ export interface ExtractedClaim {
   claim: string;
   /** Opus's truth judgement from its own knowledge (7-point scale). */
   judgement: string;
-  /** Verbatim excerpt with all the context needed to evaluate the claim. */
+  /** Verbatim excerpt with all the context needed to evaluate the claim.
+   *  Empty for an image-only claim that carries no supporting text. */
   context: string;
   /** Wider verbatim excerpt (surrounding paragraph[s]) containing `context`
-   *  word-for-word — shown to readers as the passage around the claim. */
+   *  word-for-word — shown to readers as the passage around the claim. Empty
+   *  when the claim has no surrounding text (image-only). */
   contextParagraph: string;
+  /** Article images the claim is grounded in (Substack only). A claim can rest
+   *  on text, image(s), or both. */
+  imageUrls: string[];
   /** True when the claim describes a hypothetical/future scenario rather than
    *  the present or past — these are filtered out before fact-checking. */
   speculation: boolean;
   anchor: ClaimAnchor;
+}
+
+/** One cited source of a note, with the verbatim passage that supports it (when
+ *  the verifier extracted one) and a plain-language explanation. */
+export interface NoteSourceCitation {
+  url: string;
+  quote: string | null;
+  explanation: string | null;
 }
 
 /** Outcome of running one claim through the note pipeline. (Claims skipped as
@@ -33,4 +46,4 @@ export interface ExtractedClaim {
  *  those directly on the claim row.) */
 export type ClaimCheck =
   | { kind: "no_note"; outcome: string; reason: string | null }
-  | { kind: "note"; note: string; sources: string[] };
+  | { kind: "note"; note: string; sources: NoteSourceCitation[] };

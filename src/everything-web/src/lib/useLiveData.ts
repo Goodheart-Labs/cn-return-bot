@@ -3,7 +3,7 @@ import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
 import type { ItemRow, NoteRow, ProjectRow } from "./types";
 
-const NOTE_SELECT = "*, claim:everything_claims(id, item_id, claim, context_quote, context_paragraph, updated_quote, context_url, start_seconds, end_seconds)";
+const NOTE_SELECT = "*, claim:everything_claims(id, item_id, claim, context_quote, context_paragraph, image_urls, updated_quote, context_url, start_seconds, end_seconds), sources:everything_note_sources(url, quote, explanation, sort_order)";
 
 type RowMap<T> = Map<string, T>;
 

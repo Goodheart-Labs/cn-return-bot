@@ -1,7 +1,7 @@
 /** Typed read/write helpers for the everything_* tables (service key). */
 
 import { getSupabaseClient } from "../api/supabaseClient";
-import type { SourceKind } from "./types";
+import type { NoteSourceCitation, SourceKind } from "./types";
 
 export interface EverythingItem {
   id: string;
@@ -18,8 +18,9 @@ export interface NewClaimRow {
   item_id: string;
   claim: string;
   judgement: string;
-  context_quote: string;
+  context_quote: string | null;
   context_paragraph: string | null;
+  image_urls: string[];
   context_url: string | null;
   start_seconds: number | null;
   end_seconds: number | null;
@@ -139,8 +140,22 @@ export async function setClaimStatus(id: string, status: ClaimStatus, reason: st
   );
 }
 
-export async function insertNote(claimId: string, note: string, sources: string[]): Promise<void> {
+/** Insert an AI note plus one everything_note_sources row per cited snippet. */
+export async function insertNote(claimId: string, note: string, sources: NoteSourceCitation[]): Promise<void> {
+  const db = getSupabaseClient();
+  const inserted = throwOnError(
+    await db.from("everything_notes").insert({ claim_id: claimId, note }).select("id").single(),
+  ) as { id: string };
+  if (sources.length === 0) return;
   throwOnError(
-    await getSupabaseClient().from("everything_notes").insert({ claim_id: claimId, note, sources }),
+    await db.from("everything_note_sources").insert(
+      sources.map((s, i) => ({
+        note_id: inserted.id,
+        url: s.url,
+        quote: s.quote,
+        explanation: s.explanation,
+        sort_order: i,
+      })),
+    ),
   );
 }

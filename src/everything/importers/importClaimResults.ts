@@ -13,7 +13,7 @@
  *
  * Only results with needsCorrection are imported (a note needs a correction).
  *
- *   bun run src/everything/importClaimResults.ts \
+ *   bun run src/everything/importers/importClaimResults.ts \
  *     --results dataset_runs/<run>/results.json \
  *     --transcript dataset_runs/<run>/transcript.txt \
  *     --title "Adam Brown" [--project dwarkesh]
@@ -21,7 +21,7 @@
 
 import "dotenv/config";
 import * as fs from "fs";
-import { getSupabaseClient } from "../api/supabaseClient";
+import { getSupabaseClient } from "../../api/supabaseClient";
 
 const CLIP_PAD_SECONDS = 1;
 const PARAGRAPH_WINDOW_S = 40;

@@ -43,9 +43,26 @@ export async function fetchLatestFreePostUrls(profileUrl: string, n: number): Pr
     .map((p) => p.canonical_url as string);
 }
 
-/** Strip body_html down to blank-line-separated plain-text blocks (chunking splits on those). */
-export function htmlToText(html: string): string {
-  const text = html
+/** Inline image placeholder left in the plain text so the extractor can render
+ *  the image (and its URL) at the point it appears in the article. */
+export function imageMarker(url: string): string {
+  return `[[IMAGE:${url}]]`;
+}
+export const IMAGE_MARKER_RE = /\[\[IMAGE:(.*?)\]\]/g;
+
+/** Replace each <img>/<source> with an inline image marker carrying its URL. */
+function imagesToMarkers(html: string): string {
+  return html.replace(/<img\b[^>]*?\bsrc=["']([^"']+)["'][^>]*>/gi, (_m, src) =>
+    src.startsWith("data:") ? "" : `\n\n${imageMarker(src)}\n\n`,
+  );
+}
+
+/** Strip body_html down to blank-line-separated plain-text blocks (chunking
+ *  splits on those). With `keepImages`, inline `<img>` tags survive as
+ *  `[[IMAGE:url]]` markers instead of being dropped. */
+export function htmlToText(html: string, keepImages = false): string {
+  const withImages = keepImages ? imagesToMarkers(html) : html;
+  const text = withImages
     .replace(/<(script|style)[\s\S]*?<\/\1>/gi, "")
     .replace(/<br\s*\/?>/gi, "\n")
     .replace(/<\/(p|h[1-6]|li|blockquote|div|figcaption)>/gi, "\n\n")
@@ -64,7 +81,7 @@ export async function fetchSubstackPost(url: string): Promise<FetchedContent> {
   const [, subdomain, slug] = m;
   const post = await fetchJson(`https://${subdomain}.substack.com/api/v1/posts/${slug}`);
   if (!post.body_html) throw new Error(`No body_html for ${url} (paywalled or podcast-only?)`);
-  const text = htmlToText(post.body_html);
+  const text = htmlToText(post.body_html, true);
   if (!text) throw new Error(`Empty body for ${url}`);
   return {
     kind: "substack",

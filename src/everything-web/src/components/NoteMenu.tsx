@@ -62,14 +62,24 @@ function TrashIcon() {
   );
 }
 
+function QuoteIcon() {
+  return (
+    <svg {...ICON_PROPS}>
+      <path d="M6 17h3l2-4V7H5v6h3zM14 17h3l2-4V7h-6v6h3z" />
+    </svg>
+  );
+}
+
 /** Bottom-right ⋯ menu on every note: suggest an improvement (posts your own
  *  draft note on the same claim, shown alongside the original), share a deep
  *  link, and — on notes you wrote — delete. */
-export function NoteMenu({ note, projectSlug, session, onNeedLogin }: {
+export function NoteMenu({ note, projectSlug, session, onNeedLogin, sourcesOpen, onToggleSources }: {
   note: NoteRow;
   projectSlug: string;
   session: Session | null;
   onNeedLogin: () => void;
+  sourcesOpen?: boolean;
+  onToggleSources?: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const [improving, setImproving] = useState(false);
@@ -102,14 +112,22 @@ export function NoteMenu({ note, projectSlug, session, onNeedLogin }: {
     if (!session) return onNeedLogin();
     setImproving(true);
   };
+  // The source links sit inline on every card; this toggle only reveals the
+  // per-source quote + explanation, so it appears only when a quote exists.
+  const showSourcesButton = !!onToggleSources && note.sources.some((s) => s.quote);
 
   return (
     <div className="mt-1">
       <div ref={ref} className="relative flex justify-end items-center gap-3 text-xs text-gray-500">
         {copied && <span className="text-green-700">Link copied</span>}
-        {/* Improve + share ride visibly on every card; the ⋯ menu only exists
-            for delete on your own notes (Nathan, 2026-07-14 — the menu was
-            hiding the whole improve flow). */}
+        {/* Sources + improve + share ride visibly on every card; the ⋯ menu
+            only exists for delete on your own notes (Nathan, 2026-07-14 — the
+            menu was hiding the whole improve flow). */}
+        {showSourcesButton && (
+          <button onClick={onToggleSources} className="inline-flex items-center gap-1 text-blue-600 hover:underline">
+            <QuoteIcon /> {sourcesOpen ? "Hide source details" : "Show source details"}
+          </button>
+        )}
         <button onClick={startImprove} className="inline-flex items-center gap-1 text-blue-600 hover:underline">
           <PencilIcon /> Suggest an improvement
         </button>

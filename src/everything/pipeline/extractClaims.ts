@@ -9,11 +9,15 @@
  */
 
 import PQueue from "p-queue";
-import { llm } from "../pipeline/llm/llm";
-import { jsonSchemaResponseFormat } from "../pipeline/prompts/responseFormat";
-import { stripJsonFences } from "../pipeline/utils/jsonOutput";
-import type { SubtitleCue } from "../pipeline/media/ytDlpDownload";
-import type { ClaimAnchor, ExtractedClaim, FetchedContent } from "./types";
+import { llm } from "../../pipeline/llm/llm";
+import { jsonSchemaResponseFormat } from "../../pipeline/prompts/responseFormat";
+import { stripJsonFences } from "../../pipeline/utils/jsonOutput";
+import type { SubtitleCue } from "../../pipeline/media/ytDlpDownload";
+import { IMAGE_MARKER_RE } from "../sources/substack";
+import type { ClaimAnchor, ExtractedClaim, FetchedContent } from "../types";
+
+/** A multimodal message part: plain text or an image the model can see. */
+type ContentPart = { type: "text"; text: string } | { type: "image_url"; image_url: { url: string } };
 
 const CLAIM_EXTRACTION_MODEL = "anthropic/claude-opus-4.6";
 
@@ -38,14 +42,17 @@ export function shouldFactCheck(judgement: string): boolean {
 function extractionSystemPrompt(): string {
   const fields = [
     `- "claim": the neutral, self-contained statement.`,
-    `- "context": a verbatim excerpt from the text around the claim — its sentence plus enough surrounding sentences that a reader with none of the rest of the text has all the context needed to evaluate it.`,
-    `- "context_paragraph": a wider verbatim excerpt — the full surrounding paragraph(s) the claim sits in — that contains the "context" excerpt above word-for-word. This is shown to readers as the broader passage around the highlighted claim.`,
+    `- "context": a verbatim excerpt from the text around the claim — its sentence plus enough surrounding sentences that a reader with none of the rest of the text has all the context needed to evaluate it. Leave empty ("") for a claim grounded only in an image.`,
+    `- "context_paragraph": a wider verbatim excerpt — the full surrounding paragraph(s) the claim sits in — that contains the "context" excerpt above word-for-word. Shown to readers as the broader passage around the highlighted claim. Leave empty ("") when there is no surrounding text.`,
+    `- "image_urls": the URLs (from the "Image:" labels shown before each image) of any images the claim is based on — a chart, screenshot, photo, or diagram. Empty array for a text-only claim.`,
     `- "judgement": how true the claim is, using only your own knowledge — one of: ${JUDGEMENTS.join(", ")}.`,
     `- "speculation": true if the claim describes a hypothetical or future scenario — something stated as happening in a future year (e.g. "in 2028...") as part of an imagined scenario; false if it is about the present or past (2026 or earlier) or the current state of the world (real events, statistics, and any other real-world claim).`,
   ];
-  return `You extract checkable factual claims from a text (podcast transcript or article).
+  return `You extract checkable factual claims from a text (podcast transcript or article), which may include images.
 
-Extract EVERY distinct claim the text makes or relies on, including implicit ones — things presented as background fact or presupposed, not only what is stated outright. Split compound statements into separate claims.
+Extract EVERY distinct claim the text makes or relies on, including implicit ones — things presented as background fact or presupposed, not only what is stated outright. This includes claims made BY the images: data in a chart, a figure in a screenshot, what a photo depicts. Split compound statements into separate claims.
+
+A claim can rest on text, an image, or both. Ground each claim in what actually supports it: fill "context" from the text and/or "image_urls" from the images.
 
 Write each claim in NEUTRAL, SELF-CONTAINED language:
 - Strip the author's rhetoric, framing, hedging, and tone — state the underlying factual proposition plainly, as a neutral third party would.
@@ -60,12 +67,13 @@ ${fields.join("\n")}`;
 function claimsResponseFormat() {
   const properties: Record<string, unknown> = {
     claim: { type: "string", description: "Neutral, self-contained restatement of the claim." },
-    context: { type: "string", description: "Verbatim excerpt around the claim, with all the context needed to evaluate it." },
-    context_paragraph: { type: "string", description: "Wider verbatim excerpt (surrounding paragraph[s]) containing the context excerpt word-for-word." },
+    context: { type: "string", description: "Verbatim excerpt around the claim, or \"\" for an image-only claim." },
+    context_paragraph: { type: "string", description: "Wider verbatim excerpt containing the context excerpt word-for-word, or \"\" when there is no surrounding text." },
+    image_urls: { type: "array", items: { type: "string" }, description: "URLs of images the claim is based on; empty for a text-only claim." },
     judgement: { type: "string", enum: [...JUDGEMENTS], description: "How true the claim is, from your own knowledge." },
     speculation: { type: "boolean", description: "True if the claim is about a hypothetical/future scenario; false if about the present or past." },
   };
-  const required = ["claim", "context", "context_paragraph", "judgement", "speculation"];
+  const required = ["claim", "context", "context_paragraph", "image_urls", "judgement", "speculation"];
   return jsonSchemaResponseFormat("content_claims", {
     type: "object",
     properties: { claims: { type: "array", items: { type: "object", properties, required, additionalProperties: false } } },
@@ -79,6 +87,7 @@ interface RawClaim {
   judgement: string;
   context: string;
   context_paragraph: string;
+  image_urls?: string[];
   speculation: boolean;
 }
 
@@ -87,26 +96,47 @@ function toExtractedClaim(raw: RawClaim, anchor: ClaimAnchor): ExtractedClaim {
   return {
     claim: raw.claim,
     judgement: raw.judgement,
-    context: raw.context,
-    contextParagraph: raw.context_paragraph,
+    context: raw.context ?? "",
+    contextParagraph: raw.context_paragraph ?? "",
+    imageUrls: raw.image_urls ?? [],
     speculation: raw.speculation,
     anchor,
   };
 }
 
-/** One Opus extraction call over a rendered text chunk. */
-async function runExtraction(textForLlm: string): Promise<RawClaim[]> {
+/** Split a text chunk into multimodal parts: each `[[IMAGE:url]]` marker becomes
+ *  its URL as a text label (so the model can cite it) followed by the image. */
+function toContentParts(text: string): ContentPart[] {
+  const parts: ContentPart[] = [];
+  const re = new RegExp(IMAGE_MARKER_RE.source, "g");
+  let lastIndex = 0;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text)) !== null) {
+    const before = text.slice(lastIndex, m.index);
+    if (before.trim()) parts.push({ type: "text", text: before });
+    const url = m[1]!;
+    parts.push({ type: "text", text: `Image: ${url}` });
+    parts.push({ type: "image_url", image_url: { url } });
+    lastIndex = m.index + m[0].length;
+  }
+  const rest = text.slice(lastIndex);
+  if (rest.trim() || parts.length === 0) parts.push({ type: "text", text: rest });
+  return parts;
+}
+
+/** One Opus extraction call over a rendered chunk (plain text or multimodal). */
+async function runExtraction(content: string | ContentPart[]): Promise<RawClaim[]> {
   const response: any = await llm.create({
     model: CLAIM_EXTRACTION_MODEL,
     messages: [
       { role: "system", content: extractionSystemPrompt() },
-      { role: "user", content: textForLlm },
+      { role: "user", content },
     ],
     response_format: claimsResponseFormat(),
     reasoning_effort: "high",
   } as any);
-  const content = response.choices?.[0]?.message?.content ?? "{}";
-  return (JSON.parse(stripJsonFences(content)) as { claims: RawClaim[] }).claims ?? [];
+  const content2 = response.choices?.[0]?.message?.content ?? "{}";
+  return (JSON.parse(stripJsonFences(content2)) as { claims: RawClaim[] }).claims ?? [];
 }
 
 function buildVideoLink(videoId: string, seconds: number): string {
@@ -211,7 +241,9 @@ async function extractFromCues(
 async function extractFromText(text: string, url: string, concurrency: number): Promise<ExtractedClaim[]> {
   const queue = new PQueue({ concurrency });
   const perChunk = await Promise.all(
-    chunkText(text).map((chunk) => queue.add(() => runExtraction(`Article excerpt:\n\n${chunk}`))),
+    chunkText(text).map((chunk) =>
+      queue.add(() => runExtraction([{ type: "text", text: "Article excerpt:\n\n" }, ...toContentParts(chunk)])),
+    ),
   );
   return perChunk
     .flat()

@@ -11,17 +11,17 @@
  * Emits one [PROGRESS] line per page (claims per state) so a Monitor can stream
  * progress to the chat.
  *
- *   bun run src/everything/importFiles.ts <dir> <slug> <name...>
- *   bun run src/everything/importFiles.ts scratchpad/ai-2040 ai-2040 "AI 2040: Plan A"
+ *   bun run src/everything/importers/importFiles.ts <dir> <slug> <name...>
+ *   bun run src/everything/importers/importFiles.ts scratchpad/ai-2040 ai-2040 "AI 2040: Plan A"
  */
 
 import "dotenv/config";
 import * as fs from "fs";
 import * as path from "path";
-import { closeBrowser } from "../pipeline/utils/browserManager";
-import { deleteClaimsForItem, fetchDoneItemUrls, markItemDone, markItemError, upsertItem, upsertProject } from "./db";
-import { processFetchedContent, type ItemTally } from "./processContent";
-import type { FetchedContent } from "./types";
+import { closeBrowser } from "../../pipeline/utils/browserManager";
+import { deleteClaimsForItem, fetchDoneItemUrls, markItemDone, markItemError, upsertItem, upsertProject } from "../db";
+import { processFetchedContent, type ItemTally } from "../pipeline/processContent";
+import type { FetchedContent } from "../types";
 
 interface PageEntry {
   file: string;
@@ -85,7 +85,7 @@ async function main() {
   const [dir, slug, ...nameParts] = argv.filter((a) => !a.startsWith("--"));
   const name = nameParts.join(" ");
   if (!dir || !slug || !name) {
-    console.error("Usage: bun run src/everything/importFiles.ts <dir> <slug> <name...> [--fresh]");
+    console.error("Usage: bun run src/everything/importers/importFiles.ts <dir> <slug> <name...> [--fresh]");
     process.exit(1);
   }
 

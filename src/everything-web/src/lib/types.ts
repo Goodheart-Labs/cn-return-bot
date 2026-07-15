@@ -23,8 +23,10 @@ export interface ClaimRef {
   id: string;
   item_id: string;
   claim: string;
-  context_quote: string;
+  context_quote: string | null;
   context_paragraph: string | null;
+  /** Article images the claim is based on (Substack). Shown above the context. */
+  image_urls: string[];
   /** Current live-source wording when it has drifted from the captured quote
    *  (sources heal — sometimes because of the note). Null = still matches. */
   updated_quote: string | null;
@@ -33,11 +35,20 @@ export interface ClaimRef {
   end_seconds: number | null;
 }
 
+/** One cited source of a note (everything_note_sources row, embedded via join).
+ *  `quote` is the verbatim passage the verifier extracted; null = URL only. */
+export interface NoteSourceRow {
+  url: string;
+  quote: string | null;
+  explanation: string | null;
+  sort_order: number;
+}
+
 export interface NoteRow {
   id: string;
   claim_id: string;
   note: string;
-  sources: string[]; // citation URLs, stored in a separate column (not inline in the note text)
+  sources: NoteSourceRow[]; // citations, joined from everything_note_sources
   helpful_count: number;
   somewhat_helpful_count: number;
   not_helpful_count: number;

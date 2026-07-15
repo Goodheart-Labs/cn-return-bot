@@ -93,7 +93,15 @@ async function runGates(stage: Extract<WriterStageResult, { kind: "writer_done" 
   if (verification.accepted) {
     // Drop URLs the verifier classified as bad — they don't support any claim
     // (or failed to fetch), so we don't want them in the published note.
-    return { type: "note", noteText, sources: verification.good_sources, searchResults: findings };
+    const goodSet = new Set(verification.good_sources);
+    return {
+      type: "note",
+      noteText,
+      sources: verification.good_sources,
+      searchResults: findings,
+      // Keep only the evaluations for sources the published note carries.
+      sourceEvaluations: verification.source_evaluations?.filter((e) => goodSet.has(e.url)),
+    };
   }
   return {
     type: "verification_failed",

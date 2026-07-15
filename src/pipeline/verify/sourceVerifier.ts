@@ -22,9 +22,10 @@ import {
   type MediaSourceDescription,
 } from "../media/mediaAnalysisGemini";
 import { fetchTweetViaSyndication, type SyndicationTweet } from "./fetchTweet";
-import { buildVerifierSystemPrompt, VERIFY_RESPONSE_FORMAT } from "../prompts/verify/sourceVerification";
+import { buildVerifierSystemPrompt, VERIFY_RESPONSE_FORMAT, VERIFY_CITATIONS_RESPONSE_FORMAT } from "../prompts/verify/sourceVerification";
 import { CLAIM_EXTRACTION_SYSTEM_PROMPT, CLAIM_EXTRACTION_RESPONSE_FORMAT } from "../prompts/verify/claimExtraction";
-import { buildClaimSupportSystemPrompt, CLAIM_SUPPORT_RESPONSE_FORMAT } from "../prompts/verify/claimSupport";
+import { buildClaimSupportSystemPrompt, CLAIM_SUPPORT_RESPONSE_FORMAT, CLAIM_SUPPORT_CITATIONS_RESPONSE_FORMAT } from "../prompts/verify/claimSupport";
+import type { EvaluatedSource, SourceCitation } from "../prompts/verify/citations";
 
 export interface SourceVerification {
   /** Reasoning for the verification decision. */
@@ -35,6 +36,24 @@ export interface SourceVerification {
   bad_sources: string[];
   /** True iff good_sources together cover every factual claim. */
   accepted: boolean;
+  /** Per-source detail (snippets + explanation + verdict). Set only when the
+   *  verifier_citations flag is on; undefined otherwise. */
+  source_evaluations?: EvaluatedSource[];
+}
+
+/** Raw evaluated source as returned by the model in citations mode (both flows).
+ *  Normalized into an EvaluatedSource by normalizeEvaluatedSource. */
+interface RawEvaluatedSource {
+  url: string;
+  citations?: { quote: string; explanation?: string }[];
+  verdict?: string;
+}
+
+/** Clamp citations + apply the "good needs ≥1 snippet of evidence" demotion. */
+function normalizeEvaluatedSource(raw: RawEvaluatedSource): EvaluatedSource {
+  const citations: SourceCitation[] = (raw.citations ?? []).map((c) => ({ quote: c.quote, explanation: c.explanation ?? "" }));
+  const verdict = raw.verdict === "good" && citations.length > 0 ? "good" : "bad";
+  return { url: raw.url, citations, verdict };
 }
 
 function isTwitterUrl(url: string): boolean {
@@ -265,6 +284,26 @@ function clampToCited(urls: string[] | undefined, citedSet: Set<string>): string
 
 // --- Classic flow: single accept/reject call ---
 
+/** Citations-mode classic derive: clamp the model's evaluated sources to the
+ *  cited set, apply the good-needs-evidence demotion, and split into good/bad
+ *  URL lists. A cited URL the model didn't return is treated as bad. */
+function deriveClassicFromEvaluations(
+  rawSources: RawEvaluatedSource[],
+  cited: string[],
+): { good_sources: string[]; bad_sources: string[]; source_evaluations: EvaluatedSource[] } {
+  const citedSet = new Set(cited);
+  const evaluations = rawSources.filter((s) => citedSet.has(s.url)).map(normalizeEvaluatedSource);
+  const evaluatedUrls = new Set(evaluations.map((e) => e.url));
+  return {
+    good_sources: evaluations.filter((e) => e.verdict === "good").map((e) => e.url),
+    bad_sources: [
+      ...evaluations.filter((e) => e.verdict === "bad").map((e) => e.url),
+      ...cited.filter((u) => !evaluatedUrls.has(u)),
+    ],
+    source_evaluations: evaluations,
+  };
+}
+
 async function runClassicVerification(
   params: VerifySourcesParams,
   sections: string,
@@ -275,7 +314,8 @@ async function runClassicVerification(
   const log = getTweetLog();
   const config = getBotConfig();
   const messagesLogPrefix = `${logPrefix}.messages`;
-  const systemPrompt = buildVerifierSystemPrompt(acceptMediaSources);
+  const useCitations = config.verifier_citations ?? false;
+  const systemPrompt = buildVerifierSystemPrompt(acceptMediaSources, useCitations);
 
   const userMessage = [
     `## Context`,
@@ -289,24 +329,42 @@ async function runClassicVerification(
 
   log?.set(`${messagesLogPrefix}.0`, { systemPrompt, userMessage });
 
-  const parsed = await runJsonLlmCall<SourceVerification>({
-    costName: costPrefix,
-    model: config.verifier_model ?? config.model,
-    messages: [
-      { role: "system" as const, content: systemPrompt },
-      { role: "user" as const, content: userMessage },
-    ],
-    responseFormat: VERIFY_RESPONSE_FORMAT,
-    schemaHint: `{ "good_sources": string[], "bad_sources": string[], "accepted": boolean, "reasoning": string }`,
-  });
+  const model = config.verifier_model ?? config.model;
+  const messages = [
+    { role: "system" as const, content: systemPrompt },
+    { role: "user" as const, content: userMessage },
+  ];
 
-  const citedSet = new Set(params.sources);
-  const result: SourceVerification = {
-    good_sources: clampToCited(parsed.good_sources, citedSet),
-    bad_sources: clampToCited(parsed.bad_sources, citedSet),
-    accepted: !!parsed.accepted,
-    reasoning: parsed.reasoning ?? "",
-  };
+  let result: SourceVerification;
+  if (useCitations) {
+    const parsed = await runJsonLlmCall<{ sources?: RawEvaluatedSource[]; reasoning?: string; accepted?: boolean }>({
+      costName: costPrefix,
+      model,
+      messages,
+      responseFormat: VERIFY_CITATIONS_RESPONSE_FORMAT,
+      schemaHint: `{ "sources": [{ "url": string, "citations": [{ "quote": string, "explanation": string }], "verdict": "good"|"bad" }], "reasoning": string, "accepted": boolean }`,
+    });
+    result = {
+      ...deriveClassicFromEvaluations(parsed.sources ?? [], params.sources),
+      accepted: !!parsed.accepted,
+      reasoning: parsed.reasoning ?? "",
+    };
+  } else {
+    const parsed = await runJsonLlmCall<SourceVerification>({
+      costName: costPrefix,
+      model,
+      messages,
+      responseFormat: VERIFY_RESPONSE_FORMAT,
+      schemaHint: `{ "good_sources": string[], "bad_sources": string[], "accepted": boolean, "reasoning": string }`,
+    });
+    const citedSet = new Set(params.sources);
+    result = {
+      good_sources: clampToCited(parsed.good_sources, citedSet),
+      bad_sources: clampToCited(parsed.bad_sources, citedSet),
+      accepted: !!parsed.accepted,
+      reasoning: parsed.reasoning ?? "",
+    };
+  }
 
   log?.set(`${messagesLogPrefix}.1`, { content: result });
   return result;
@@ -339,6 +397,20 @@ interface ClaimSupport {
   claim_support: { claim: string; supporting_sources: string[] }[];
 }
 
+interface CitedClaimSupport {
+  reasoning?: string;
+  claim_support?: { claim: string; sources?: RawEvaluatedSource[] }[];
+}
+
+/** A claim plus the cited sources the model weighed against it. Off flow: every
+ *  listed URL is a supporter (verdict "good", no citations). Citations flow: the
+ *  verdict + snippets come from the model (a non-listed source = not supporting,
+ *  so it never appears here). */
+interface ClaimSourceMapping {
+  claim: string;
+  sources: EvaluatedSource[];
+}
+
 async function runClaimBasedVerification(
   params: VerifySourcesParams,
   sections: string,
@@ -349,11 +421,12 @@ async function runClaimBasedVerification(
   const config = getBotConfig();
   const messagesLogPrefix = `${logPrefix}.messages`;
   const acceptMediaSources = config.verifier_accepts_media_sources ?? false;
+  const useCitations = config.verifier_citations ?? false;
 
   const claims = await extractClaims(params.noteText, costPrefix);
   log?.set(`${logPrefix}.claims`, claims);
 
-  const systemPrompt = buildClaimSupportSystemPrompt(acceptMediaSources);
+  const systemPrompt = buildClaimSupportSystemPrompt(acceptMediaSources, useCitations);
   const userMessage = [
     `## Context`,
     `Current date (UTC): ${new Date().toISOString()}`,
@@ -366,18 +439,43 @@ async function runClaimBasedVerification(
 
   log?.set(`${messagesLogPrefix}.0`, { systemPrompt, userMessage });
 
-  const parsed = await runJsonLlmCall<ClaimSupport>({
-    costName: costPrefix,
-    model: config.verifier_model ?? config.model,
-    messages: [
-      { role: "system" as const, content: systemPrompt },
-      { role: "user" as const, content: userMessage },
-    ],
-    responseFormat: CLAIM_SUPPORT_RESPONSE_FORMAT,
-    schemaHint: `{ "reasoning": string, "claim_support": [{ "claim": string, "supporting_sources": string[] }] }`,
-  });
+  const model = config.verifier_model ?? config.model;
+  const messages = [
+    { role: "system" as const, content: systemPrompt },
+    { role: "user" as const, content: userMessage },
+  ];
 
-  const result = deriveVerificationFromClaims(claims, parsed, params.sources);
+  let reasoning: string;
+  let mappings: ClaimSourceMapping[];
+  if (useCitations) {
+    const parsed = await runJsonLlmCall<CitedClaimSupport>({
+      costName: costPrefix,
+      model,
+      messages,
+      responseFormat: CLAIM_SUPPORT_CITATIONS_RESPONSE_FORMAT,
+      schemaHint: `{ "reasoning": string, "claim_support": [{ "claim": string, "sources": [{ "url": string, "citations": [{ "quote": string, "explanation": string }], "verdict": "good"|"bad" }] }] }`,
+    });
+    reasoning = parsed.reasoning ?? "";
+    mappings = (parsed.claim_support ?? []).map((e) => ({
+      claim: e.claim,
+      sources: (e.sources ?? []).map(normalizeEvaluatedSource),
+    }));
+  } else {
+    const parsed = await runJsonLlmCall<ClaimSupport>({
+      costName: costPrefix,
+      model,
+      messages,
+      responseFormat: CLAIM_SUPPORT_RESPONSE_FORMAT,
+      schemaHint: `{ "reasoning": string, "claim_support": [{ "claim": string, "supporting_sources": string[] }] }`,
+    });
+    reasoning = parsed.reasoning ?? "";
+    mappings = (parsed.claim_support ?? []).map((e) => ({
+      claim: e.claim,
+      sources: (e.supporting_sources ?? []).map((url) => ({ url, citations: [], verdict: "good" as const })),
+    }));
+  }
+
+  const result = deriveVerificationFromClaims(claims, reasoning, mappings, params.sources, useCitations);
   log?.set(`${messagesLogPrefix}.1`, { content: result });
   return result;
 }
@@ -387,36 +485,63 @@ async function runClaimBasedVerification(
  *  has at least one cited supporting source. */
 function deriveVerificationFromClaims(
   claims: string[],
-  parsed: ClaimSupport,
+  reasoning: string,
+  mappings: ClaimSourceMapping[],
   cited: string[],
+  withEvaluations: boolean,
 ): SourceVerification {
   const citedSet = new Set(cited);
-  const support = parsed.claim_support ?? [];
 
   const goodSet = new Set<string>();
   const unsupportedClaims: string[] = [];
-  for (const entry of support) {
-    const supporters = clampToCited(entry.supporting_sources, citedSet);
-    supporters.forEach((u) => goodSet.add(u));
-    if (supporters.length === 0) unsupportedClaims.push(entry.claim);
+  for (const m of mappings) {
+    const supporters = m.sources.filter((s) => s.verdict === "good" && citedSet.has(s.url));
+    supporters.forEach((s) => goodSet.add(s.url));
+    if (supporters.length === 0) unsupportedClaims.push(m.claim);
   }
 
   // The model must return a support entry for every extracted claim. If it
   // dropped some, those claims went unevaluated — treat that as not-accepted
   // rather than silently submitting a note with an unverified claim.
-  const allClaimsCovered = support.length >= claims.length;
+  const allClaimsCovered = mappings.length >= claims.length;
   const accepted = claims.length > 0 && allClaimsCovered && unsupportedClaims.length === 0;
-  const reasonParts = [parsed.reasoning?.trim()].filter(Boolean) as string[];
+  const reasonParts = [reasoning.trim()].filter(Boolean) as string[];
   if (unsupportedClaims.length > 0) {
     reasonParts.push(`Unsupported claim(s): ${unsupportedClaims.map((c) => `"${c}"`).join("; ")}`);
   }
   if (claims.length === 0) reasonParts.push("Claim extraction returned no claims.");
-  else if (!allClaimsCovered) reasonParts.push(`Verifier mapped only ${support.length} of ${claims.length} claims.`);
+  else if (!allClaimsCovered) reasonParts.push(`Verifier mapped only ${mappings.length} of ${claims.length} claims.`);
 
   return {
     good_sources: [...goodSet],
     bad_sources: cited.filter((u) => !goodSet.has(u)),
     accepted,
     reasoning: reasonParts.join(" ") || (accepted ? "All claims supported." : "No claims supported."),
+    ...(withEvaluations ? { source_evaluations: aggregateClaimEvaluations(mappings, cited, goodSet) } : {}),
   };
+}
+
+/** Collapse the per-claim source lists into one EvaluatedSource per cited URL:
+ *  verdict good iff it supports ≥1 claim, citations deduped (by quote) across
+ *  the claims that listed it. */
+function aggregateClaimEvaluations(
+  mappings: ClaimSourceMapping[],
+  cited: string[],
+  goodSet: Set<string>,
+): EvaluatedSource[] {
+  const citationsByUrl = new Map<string, SourceCitation[]>();
+  for (const m of mappings) {
+    for (const s of m.sources) {
+      const list = citationsByUrl.get(s.url) ?? [];
+      for (const c of s.citations) {
+        if (!list.some((x) => x.quote === c.quote)) list.push(c);
+      }
+      citationsByUrl.set(s.url, list);
+    }
+  }
+  return cited.map((url) => ({
+    url,
+    citations: citationsByUrl.get(url) ?? [],
+    verdict: goodSet.has(url) ? "good" : "bad",
+  }));
 }

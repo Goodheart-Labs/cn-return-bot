@@ -16,9 +16,9 @@ import {
   updateItemMeta,
   type EverythingItem,
   type NewClaimRow,
-} from "./db";
+} from "../db";
 import { dropSpeculation, extractClaims, shouldFactCheck } from "./extractClaims";
-import type { ExtractedClaim, FetchedContent } from "./types";
+import type { ExtractedClaim, FetchedContent } from "../types";
 
 const EXTRACTION_CONCURRENCY = 3;
 const CHECK_CONCURRENCY = 4;
@@ -40,8 +40,9 @@ function buildClaimRow(itemId: string, claim: ExtractedClaim): NewClaimRow {
     item_id: itemId,
     claim: claim.claim,
     judgement: claim.judgement,
-    context_quote: claim.context,
+    context_quote: claim.context || null,
     context_paragraph: claim.contextParagraph || null,
+    image_urls: claim.imageUrls,
     context_url: anchor.kind === "youtube" ? (anchor.deepLinkUrl ?? null) : anchor.url,
     start_seconds: anchor.kind === "youtube" && anchor.startSeconds !== undefined ? Math.floor(anchor.startSeconds) : null,
     end_seconds: anchor.kind === "youtube" && anchor.endSeconds !== undefined ? Math.ceil(anchor.endSeconds) : null,

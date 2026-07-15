@@ -8,8 +8,8 @@
  */
 
 import "dotenv/config";
-import { getSupabaseClient } from "../api/supabaseClient";
-import { htmlToText } from "./sources/substack";
+import { getSupabaseClient } from "../../api/supabaseClient";
+import { htmlToText } from "../sources/substack";
 
 async function main() {
   const sb = getSupabaseClient();

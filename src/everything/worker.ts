@@ -14,7 +14,7 @@
 import "dotenv/config";
 import { closeBrowser } from "../pipeline/utils/browserManager";
 import { claimNextQueuedItem, markItemDone, markItemError, type EverythingItem } from "./db";
-import { processFetchedContent } from "./processContent";
+import { processFetchedContent } from "./pipeline/processContent";
 import { fetchSubstackPost } from "./sources/substack";
 import { ensureYtDlp, fetchYoutubeContent } from "./sources/youtube";
 import type { FetchedContent } from "./types";

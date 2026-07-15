@@ -16,9 +16,9 @@ import "dotenv/config";
 import * as fs from "fs";
 import * as path from "path";
 import { tmpdir } from "os";
-import { getSupabaseClient } from "../api/supabaseClient";
-import { fetchTimedTranscript, type SubtitleCue } from "../pipeline/media/ytDlpDownload";
-import { htmlToText } from "./sources/substack";
+import { getSupabaseClient } from "../../api/supabaseClient";
+import { fetchTimedTranscript, type SubtitleCue } from "../../pipeline/media/ytDlpDownload";
+import { htmlToText } from "../sources/substack";
 
 const PAD_SECONDS = 30;
 

@@ -13,7 +13,7 @@
 import "dotenv/config";
 import * as fs from "fs";
 import * as path from "path";
-import { getSupabaseClient } from "../api/supabaseClient";
+import { getSupabaseClient } from "../../api/supabaseClient";
 
 const DEFAULT_CLIPS_DIR = path.join(import.meta.dir, "dwarkesh_clips");
 const PROJECT_SLUG = "dwarkesh";
