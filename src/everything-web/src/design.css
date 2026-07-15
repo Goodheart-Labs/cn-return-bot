@@ -12,9 +12,10 @@
  * Flexoki (stephango.com/flexoki), light theme. Base ramp is the warm mono
  * paper/black blend; accents are the light-theme 600 values, mapped by
  * Flexoki's own semantics (cy = links/active, gr = success, or = warning,
- * re = error). Corners squared; type switches to LessWrong's Gill-Sans stack
- * (font *sizes* left to the shared scale). The note surface is one warm yellow
- * wash regardless of status — status reads from the badge + pills. */
+ * re = error). Corners squared; type switches to LessWrong's stacks (see the
+ * shared LessWrong type block below; font *sizes* left to the shared scale).
+ * The note surface is one warm yellow wash regardless of status — status reads
+ * from the badge + pills. */
 [data-scheme="beige"] body {
   background: var(--cn-bg); /* base-50 by default; cards sit a shade brighter on paper */
   color: #100F0F;           /* black (tx) */
@@ -104,8 +105,8 @@
 /* ---------- taupe = Warm-Neutral palette (squared corners, LessWrong type) ----
  * From the "Warm-Neutral Color Palette" reference: page = beige, cards = cream,
  * note surface = camel, votes = olive (helpful) / burnt-orange (somewhat) / rust
- * (not-helpful), accent/links = denim. Corners squared; LessWrong Gill-Sans type
- * (font sizes left to the shared scale). */
+ * (not-helpful), accent/links = denim. Corners squared; LessWrong type (shared
+ * block below; font sizes left to the shared scale). */
 [data-scheme="taupe"] body {
   background: #E6D3A9; /* beige */
   color: #3D3020;      /* chocolate brown */
@@ -179,6 +180,22 @@
 
 /* squared corners: strip all rounding in this theme */
 [data-scheme="taupe"] [class*="rounded"] { border-radius: 0 !important; }
+
+/* ---------- shared LessWrong type (beige + taupe) ----------
+ * lesswrong.com splits type by role: reading content — post title and headings —
+ * is serif Warnock Pro at weight 600, while UI chrome (nav, author names,
+ * metadata) is the Gill Sans stack the body rules above already use. Warnock Pro
+ * (and gill-sans-nova) are Adobe Typekit webfonts LessWrong loads and we don't,
+ * so we run the same stack from its fallbacks: Palatino (macOS) / Palatino
+ * Linotype (Windows) / Georgia. The attribute+element selector outscores the
+ * font-weight utilities headings carry in markup (the Twitter-style 800 of the
+ * default theme), pulling them back to LessWrong's 600. */
+[data-scheme="beige"] h1, [data-scheme="beige"] h2, [data-scheme="beige"] h3,
+[data-scheme="taupe"] h1, [data-scheme="taupe"] h2, [data-scheme="taupe"] h3 {
+  font-family: warnock-pro, Palatino, "Palatino Linotype", "Palatino LT STD",
+    "Book Antiqua", Georgia, serif;
+  font-weight: 600;
+}
 
 /* ---------- brown (classic "professional beige": brown accents, cream cards) -- */
 [data-scheme="brown"] body { background: #f4efe4; color: #2f2a20; }

@@ -138,7 +138,7 @@ export function WriteNoteModal({ open, onClose, projectId, session }: {
     >
       <div className="bg-white rounded-xl p-6 w-full max-w-2xl space-y-3 max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center">
-          <h2 className="text-lg font-semibold">Write a note</h2>
+          <h2 className="text-lg font-extrabold">Write a note</h2>
           <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600">✕</button>
         </div>
 

@@ -14,7 +14,12 @@
   <meta name="twitter:image" content="https://commonnotes.net/og.png" />
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    /* X/Twitter's stack verbatim. TwitterChirp is X's proprietary webfont, so in
+     * practice this resolves to the system font — same as what X shows anyone
+     * without Chirp installed. X differentiates headings from content by weight
+     * (800 vs 400) and size within this one family, never by switching family;
+     * headings carry font-extrabold in markup for that. */
+    body { font-family: TwitterChirp, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
     @keyframes cn-countdown { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 44; } }
   </style>
 </head>

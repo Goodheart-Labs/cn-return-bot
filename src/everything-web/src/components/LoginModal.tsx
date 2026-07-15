@@ -27,7 +27,7 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
     >
       <div className="bg-white rounded-xl p-6 w-full max-w-sm space-y-4">
         <div className="flex justify-between items-center">
-          <h2 className="text-lg font-semibold">Sign in to vote</h2>
+          <h2 className="text-lg font-extrabold">Sign in to vote</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-700 text-xl leading-none">×</button>
         </div>
         <p className="text-sm text-gray-500">Voting and suggesting improvements need a quick sign-in. Reading notes doesn't.</p>

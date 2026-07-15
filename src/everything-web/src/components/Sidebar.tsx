@@ -11,7 +11,7 @@ export function Sidebar({ projects, selectedId, onSelect }: {
   return (
     <aside className="w-full md:w-64 md:shrink-0 md:h-screen md:sticky md:top-0 border-b md:border-b-0 md:border-r border-gray-200 p-6 flex flex-col gap-6">
       <div className="space-y-3">
-        <h1 className="text-xl font-bold">Common Notes</h1>
+        <h1 className="text-xl font-extrabold">Common Notes</h1>
         <p className="text-sm text-gray-500 leading-relaxed">{DESCRIPTION}</p>
       </div>
 
