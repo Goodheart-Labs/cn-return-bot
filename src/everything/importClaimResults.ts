@@ -73,19 +73,27 @@ async function main() {
   const transcriptPath = arg("transcript");
 
   const parsed = JSON.parse(fs.readFileSync(resultsPath, "utf8"));
-  const results: ClaimResult[] = (Array.isArray(parsed) ? parsed : parsed.results).filter(
-    (r: ClaimResult) => r.needsCorrection,
-  );
+  const allResults = Array.isArray(parsed) ? parsed : parsed.results;
+  if (!Array.isArray(allResults)) throw new Error(`${resultsPath}: expected an array or an object with a results array`);
+  const results: ClaimResult[] = allResults.filter((r: ClaimResult) => r.needsCorrection);
+  if (results.length === 0) {
+    console.log("no needsCorrection results — nothing to import");
+    return;
+  }
   const video = (Array.isArray(parsed) ? undefined : parsed.video) as { url?: string; uploadDate?: string } | undefined;
-  const videoUrl = video?.url ?? results[0]?.videoLink?.replace(/&t=\d+s$/, "");
+  const videoUrl = video?.url ?? results[0]?.videoLink?.replace(/[?&]t=\d+s$/, "");
   if (!videoUrl) throw new Error("could not determine video URL from results");
 
   const cues = transcriptPath ? transcriptCues(transcriptPath) : null;
   const transcriptNorm = cues ? norm(cues.map((c) => c.text).join(" ")) : null;
 
   const db = getSupabaseClient();
-  const { data: project } = await db.from("everything_projects").select("id").eq("slug", projectSlug).single();
-  if (!project) throw new Error(`project '${projectSlug}' not found`);
+  const { data: project, error: projectErr } = await db
+    .from("everything_projects")
+    .select("id")
+    .eq("slug", projectSlug)
+    .single();
+  if (!project) throw new Error(`project '${projectSlug}': ${projectErr?.message ?? "not found"}`);
 
   const { data: item, error: itemErr } = await db
     .from("everything_items")
@@ -106,7 +114,11 @@ async function main() {
 
   let imported = 0;
   for (const r of results) {
-    const excerpt = r.context.trim();
+    const excerpt = r.context?.trim();
+    if (!excerpt) {
+      console.warn(`SKIP (missing/empty context excerpt): ${r.claim?.slice(0, 70) ?? "<no claim text>"}`);
+      continue;
+    }
 
     // The verbatim gate: the displayed line must exist word-for-word in the
     // transcript when we have one. No transcript → trust the pipeline excerpt
@@ -118,32 +130,38 @@ async function main() {
     if (!transcriptNorm) console.warn(`note: no transcript provided — excerpt unverified: ${excerpt.slice(0, 50)}…`);
 
     // Dedup by position, not text — an earlier import may have chosen a
-    // different display subspan for the same moment in the episode.
-    const newStart = Math.max(0, Math.floor(r.timestampSeconds ?? 0) - CLIP_PAD_SECONDS);
-    const { data: nearby } = await db
+    // different display subspan for the same moment in the episode. A missing
+    // timestamp would dedup everything at t=0, so it disqualifies the result.
+    if (r.timestampSeconds == null) {
+      console.warn(`SKIP (no timestamp — position-based dedup impossible): ${excerpt.slice(0, 70)}…`);
+      continue;
+    }
+    const claimTs = r.timestampSeconds;
+    const startSeconds = Math.max(0, Math.floor(claimTs) - CLIP_PAD_SECONDS);
+    const { data: nearby, error: nearbyErr } = await db
       .from("everything_claims")
       .select("id, start_seconds")
       .eq("item_id", item.id)
-      .gte("start_seconds", newStart - 10)
-      .lte("start_seconds", newStart + 10);
+      .gte("start_seconds", startSeconds - 10)
+      .lte("start_seconds", startSeconds + 10);
+    if (nearbyErr) throw new Error(`nearby-claims lookup: ${nearbyErr.message}`);
     if (nearby && nearby.length > 0) {
-      console.log(`skip (claim already exists at ~${newStart}s): ${excerpt.slice(0, 50)}…`);
+      console.log(`skip (claim already exists at ~${startSeconds}s): ${excerpt.slice(0, 50)}…`);
       continue;
     }
 
     // Paragraph: transcript window around the claim, guaranteed to contain the
     // excerpt (falls back to the excerpt itself).
     let paragraph = excerpt;
-    if (cues && r.timestampSeconds != null) {
+    if (cues) {
       const windowText = cues
-        .filter((c) => c.s >= r.timestampSeconds! - PARAGRAPH_WINDOW_S && c.s <= (r.endTimestampSeconds ?? r.timestampSeconds!) + PARAGRAPH_WINDOW_S / 2)
+        .filter((c) => c.s >= claimTs - PARAGRAPH_WINDOW_S && c.s <= (r.endTimestampSeconds ?? claimTs) + PARAGRAPH_WINDOW_S / 2)
         .map((c) => c.text)
         .join(" ");
       if (norm(windowText).includes(norm(excerpt))) paragraph = windowText;
     }
 
-    const startSeconds = newStart;
-    const endSeconds = Math.ceil(r.endTimestampSeconds ?? startSeconds + 15) + CLIP_PAD_SECONDS;
+    const endSeconds = Math.ceil(r.endTimestampSeconds ?? claimTs + 15) + CLIP_PAD_SECONDS;
     const { data: claimRow, error: claimErr } = await db
       .from("everything_claims")
       .insert({
@@ -152,7 +170,7 @@ async function main() {
         judgement: "uncertain",
         context_quote: excerpt,
         context_paragraph: paragraph,
-        context_url: `${videoUrl}&t=${startSeconds}s`,
+        context_url: `${videoUrl}${videoUrl.includes("?") ? "&" : "?"}t=${startSeconds}s`,
         start_seconds: startSeconds,
         end_seconds: endSeconds,
         status: "note",
