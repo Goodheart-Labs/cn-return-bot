@@ -105,25 +105,29 @@ export function NoteMenu({ note, projectSlug, session, onNeedLogin }: {
 
   return (
     <div className="mt-1">
-      <div ref={ref} className="relative flex justify-end items-center gap-2 text-xs text-gray-500">
+      <div ref={ref} className="relative flex justify-end items-center gap-3 text-xs text-gray-500">
         {copied && <span className="text-green-700">Link copied</span>}
-        <button
-          aria-label="Note actions"
-          onClick={() => setOpen((o) => !o)}
-          className="px-1.5 py-0.5 rounded text-base leading-none text-gray-400 hover:text-gray-700 hover:bg-gray-100"
-        >
-          ⋯
+        {/* Improve + share ride visibly on every card; the ⋯ menu only exists
+            for delete on your own notes (Nathan, 2026-07-14 — the menu was
+            hiding the whole improve flow). */}
+        <button onClick={startImprove} className="inline-flex items-center gap-1 text-blue-600 hover:underline">
+          <PencilIcon /> Suggest an improvement
         </button>
-        {open && (
+        <button onClick={share} className="inline-flex items-center gap-1 text-blue-600 hover:underline">
+          <ShareIcon /> Share
+        </button>
+        {mine && (
+          <button
+            aria-label="Note actions"
+            onClick={() => setOpen((o) => !o)}
+            className="px-1.5 py-0.5 rounded text-base leading-none text-gray-400 hover:text-gray-700 hover:bg-gray-100"
+          >
+            ⋯
+          </button>
+        )}
+        {open && mine && (
           <div className="cn-menu absolute right-0 top-8 z-20 w-56 bg-white border border-gray-200 rounded-xl shadow-xl p-1.5 text-sm">
-            <MenuItem onClick={startImprove} icon={<PencilIcon />} label="Suggest an improvement" />
-            <MenuItem onClick={share} icon={<ShareIcon />} label="Share" />
-            {mine && (
-              <>
-                <div className="my-1 border-t border-gray-100" aria-hidden />
-                <MenuItem onClick={del} icon={<TrashIcon />} label="Delete" danger />
-              </>
-            )}
+            <MenuItem onClick={del} icon={<TrashIcon />} label="Delete" danger />
           </div>
         )}
       </div>
