@@ -73,6 +73,7 @@
       "sleep"
     ],
     "ignoreFiles": [
+      "src/everything/debug/debugItem.ts",
       "src/dashboard-shared/media.ts",
       "src/stats-dashboard/vite.config.ts",
       "src/stats-dashboard/src/lib/**",
