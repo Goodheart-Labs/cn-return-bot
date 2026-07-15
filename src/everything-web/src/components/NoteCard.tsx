@@ -3,8 +3,9 @@ import type { Session } from "@supabase/supabase-js";
 import { ContentCard } from "../../../dashboard-shared/TweetCard";
 import { LinkifiedText } from "../../../dashboard-shared/LinkifiedText";
 import { VoteRatings } from "../../../dashboard-shared/Ratings";
+import { quoteFragmentUrl } from "../../../dashboard-shared/textFragment";
 import type { NotedContent } from "../../../dashboard-shared/types";
-import type { ClaimRef, NoteRow } from "../lib/types";
+import type { ClaimRef, NoteRow, NoteSourceRow } from "../lib/types";
 import type { Vote } from "../lib/votes";
 import { noteStatus, type NoteStatus } from "../lib/noteScore";
 import { NoteMenu } from "./NoteMenu";
@@ -41,9 +42,42 @@ function StatusBadge({ status }: { status: NoteStatus }) {
 }
 
 /** Common Notes keeps citations in a separate column; append them so they
- *  render as linkified URLs like the review/stats dashboards. */
+ *  render as linkified URLs inline in the note text, like the review/stats
+ *  dashboards. */
 function noteText(note: NoteRow): string {
-  return note.sources.length > 0 ? `${note.note} ${note.sources.join(" ")}` : note.note;
+  const urls = note.sources.map((s) => s.url);
+  return urls.length > 0 ? `${note.note} ${urls.join(" ")}` : note.note;
+}
+
+/** Does any source carry a supporting quote worth a details reveal? */
+function hasSourceDetails(sources: NoteSourceRow[]): boolean {
+  return sources.some((s) => s.quote);
+}
+
+/** Per-source supporting quote + explanation, revealed by "Show source
+ *  details". The source URLs already sit inline in the note text, so this
+ *  shows only the citation body (deep-linked quote + explanation). */
+function SourceDetails({ open, sources }: { open: boolean; sources: NoteSourceRow[] }) {
+  const detailed = [...sources].sort((a, b) => a.sort_order - b.sort_order).filter((s) => s.quote);
+  return (
+    <div
+      style={{ display: "grid", gridTemplateRows: open ? "1fr" : "0fr", transition: "grid-template-rows 300ms ease" }}
+      aria-hidden={!open}
+    >
+      <div className="overflow-hidden min-h-0">
+        <div className="mt-3 space-y-3">
+          {detailed.map((s, i) => (
+            <div key={i}>
+              <a href={quoteFragmentUrl(s.url, s.quote!)} target="_blank" rel="noopener noreferrer" className="block group">
+                <blockquote className="border-l-4 border-gray-300 group-hover:border-blue-400 pl-3 text-gray-600 italic text-sm">“{s.quote}”</blockquote>
+              </a>
+              {s.explanation && <p className="mt-1 text-xs text-gray-500">{s.explanation}</p>}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 /** Six-second draining circle shown right after a vote: the note holds its
@@ -72,8 +106,9 @@ function ResortCountdown() {
  *  verbatim `context_quote` passage instead. */
 function claimContent(claim: ClaimRef): NotedContent {
   const url = claim.context_url;
-  const verbatim = claim.context_quote.toLowerCase().includes(claim.claim.toLowerCase());
-  const fragmentText = verbatim ? undefined : claim.context_quote;
+  const quote = claim.context_quote ?? "";
+  const verbatim = quote.toLowerCase().includes(claim.claim.toLowerCase());
+  const fragmentText = verbatim || !quote ? undefined : quote;
   const updatedQuote = claim.updated_quote ?? undefined;
   if (url && /youtube\.com|youtu\.be/.test(url)) {
     return {
@@ -87,6 +122,25 @@ function claimContent(claim: ClaimRef): NotedContent {
     };
   }
   return { kind: "article", url, quote: claim.claim, fragmentText, updatedQuote };
+}
+
+/** Images a claim is grounded in (Substack charts / screenshots), shown above
+ *  its context. Each links out to the full-resolution source. */
+function ClaimImages({ urls }: { urls: string[] }) {
+  return (
+    <div className="flex flex-wrap gap-2 mb-2">
+      {urls.map((url) => (
+        <a key={url} href={url} target="_blank" rel="noreferrer" className="block">
+          <img
+            src={url}
+            alt="Claim source"
+            loading="lazy"
+            className="max-h-48 w-auto rounded-md border border-gray-200 object-contain"
+          />
+        </a>
+      ))}
+    </div>
+  );
 }
 
 /** The claim's surrounding paragraph, with the quoted excerpt bolded. Shown
@@ -171,8 +225,9 @@ function ContextParagraph({ paragraph, quote, bare, fitTo }: {
 /** The note as one self-contained unit, X-CN style: a rating-status badge on
  *  top, the note text, and the rating pills inside the same box; the box tint
  *  follows the status (helpful/needs-ratings/not-helpful). */
-function NoteBox({ note, children }: {
+function NoteBox({ note, sourcesOpen, children }: {
   note: NoteRow;
+  sourcesOpen?: boolean;
   children?: React.ReactNode;
 }) {
   const status = noteStatus(note);
@@ -184,6 +239,7 @@ function NoteBox({ note, children }: {
         {by && <span className="text-xs text-gray-500 shrink-0">by {by}</span>}
       </div>
       <LinkifiedText className="text-sm text-gray-800 whitespace-pre-wrap" text={noteText(note)} />
+      {hasSourceDetails(note.sources) && <SourceDetails open={!!sourcesOpen} sources={note.sources} />}
       {children && (
         <div className="-mx-3 mt-3 px-3 pt-2.5 border-t border-gray-200/70 flex items-center justify-between flex-wrap gap-x-4 gap-y-1">
           <span className="text-sm text-gray-700">{STATUS[status].ask}</span>
@@ -207,9 +263,10 @@ function AlternativeNote({ note, myVote, onVote, session, holdActive, projectSlu
   projectSlug: string;
   onNeedLogin: () => void;
 }) {
+  const [sourcesOpen, setSourcesOpen] = useState(false);
   return (
     <div>
-      <NoteBox note={note}>
+      <NoteBox note={note} sourcesOpen={sourcesOpen}>
         <VoteRatings
           helpful={note.helpful_count}
           somewhatHelpful={note.somewhat_helpful_count}
@@ -219,7 +276,14 @@ function AlternativeNote({ note, myVote, onVote, session, holdActive, projectSlu
         />
         {holdActive && <ResortCountdown />}
       </NoteBox>
-      <NoteMenu note={note} projectSlug={projectSlug} session={session} onNeedLogin={onNeedLogin} />
+      <NoteMenu
+        note={note}
+        projectSlug={projectSlug}
+        session={session}
+        onNeedLogin={onNeedLogin}
+        sourcesOpen={sourcesOpen}
+        onToggleSources={() => setSourcesOpen((o) => !o)}
+      />
     </div>
   );
 }
@@ -239,6 +303,7 @@ export function NoteCard({ note, draftNotes, projectSlug, myVotes, voteHolds, on
   const myVote = myVotes.get(note.id);
   const [ctxOpen, setCtxOpen] = useState(false);
   const cardColRef = useRef<HTMLDivElement>(null);
+  const [sourcesOpen, setSourcesOpen] = useState(false);
   const claim = note.claim;
   // Data invariant (enforced at import + by the audit sweep, NOT here): a
   // stored context_paragraph always contains its claim, so the bold always
@@ -267,6 +332,7 @@ export function NoteCard({ note, draftNotes, projectSlug, myVotes, voteHolds, on
       <div ref={cardColRef} className="bg-white rounded-lg border border-gray-200 p-4 w-full max-w-xl mx-auto xl:max-w-none xl:mx-0 xl:col-start-2 xl:row-start-1">
       {claim && (
         <div className="mb-3">
+          {claim.image_urls?.length > 0 && <ClaimImages urls={claim.image_urls} />}
           {paragraph && (
             <button
               onClick={() => setCtxOpen((o) => !o)}
@@ -280,7 +346,7 @@ export function NoteCard({ note, draftNotes, projectSlug, myVotes, voteHolds, on
       )}
 
       <div className="mb-2">
-        <NoteBox note={note}>
+        <NoteBox note={note} sourcesOpen={sourcesOpen}>
           <VoteRatings
             helpful={note.helpful_count}
             somewhatHelpful={note.somewhat_helpful_count}
@@ -292,7 +358,14 @@ export function NoteCard({ note, draftNotes, projectSlug, myVotes, voteHolds, on
         </NoteBox>
       </div>
 
-      <NoteMenu note={note} projectSlug={projectSlug} session={session} onNeedLogin={onNeedLogin} />
+      <NoteMenu
+        note={note}
+        projectSlug={projectSlug}
+        session={session}
+        onNeedLogin={onNeedLogin}
+        sourcesOpen={sourcesOpen}
+        onToggleSources={() => setSourcesOpen((o) => !o)}
+      />
 
       {/* Alternatives (improvements + any note this one outscored) nest here,
           Reddit-style: indented behind a rail, ranked, swapping in live. */}

@@ -27,6 +27,7 @@ import { getTweetLog } from "../utils/tweetLog";
 import { STEP } from "../utils/noteWriterSteps";
 import { ModelOutputInvalidError } from "../utils/errors";
 import { stripJsonFences, extractJsonObject } from "../utils/jsonOutput";
+import { parseJsonWithRetry } from "../utils/jsonLlmCall";
 
 const linkify = new LinkifyIt();
 
@@ -93,6 +94,51 @@ function parseSearchJson(content: string, source: string): SearchOutput {
   }
 }
 
+const SEARCH_SCHEMA_HINT = `{ "findings": string, "correction_needed": boolean }`;
+
+/**
+ * Shared driver for the prompted-JSON search providers (Anthropic-native,
+ * OpenAI-native, Sonar). They all: run one `llm.create` with the search tool,
+ * pull the raw text out, and parse `{ findings, correction_needed }` — but with
+ * no `response_format` to constrain decoding, the model sometimes answers in
+ * prose or doubled/empty JSON. Route the parse through `parseJsonWithRetry` so a
+ * bad reply is re-asked (up to 3×) instead of failing the run — the same
+ * corrective loop every `response_format` stage already gets via `runJsonLlmCall`.
+ * Cost is accumulated across attempts; the successful reply's `message` is
+ * returned so Sonar can harvest its `annotations`.
+ */
+async function dispatchPromptedJsonSearch(params: {
+  source: string;
+  messages: any[];
+  createOptions: Record<string, unknown>;
+  /** Raw text → JSON string: `extractJsonObject` for models that narrate a
+   *  preamble (Opus), `stripJsonFences` for models that emit bare JSON. */
+  extractJson: (raw: string) => string;
+}): Promise<{ findings: string; correctionNeeded: boolean; message: any; cost: TokenCost }> {
+  const cost = emptyTokenCost();
+  let message: any;
+  const parsed = await parseJsonWithRetry<SearchOutput>({
+    source: params.source,
+    messages: params.messages,
+    schemaHint: SEARCH_SCHEMA_HINT,
+    call: async (messages) => {
+      const response = await llm.create({ ...params.createOptions, messages } as any);
+      addTokenCost(cost, extractOpenRouterCost(response));
+      message = response.choices?.[0]?.message;
+      const raw = message?.content ?? "";
+      return { toParse: params.extractJson(raw), assistantEcho: raw };
+    },
+    parse: (toParse) => {
+      const output = JSON.parse(toParse) as SearchOutput;
+      if (typeof output.findings !== "string" || typeof output.correction_needed !== "boolean") {
+        throw new Error("search JSON missing findings/correction_needed");
+      }
+      return output;
+    },
+  });
+  return { findings: parsed.findings, correctionNeeded: parsed.correction_needed, message, cost };
+}
+
 // --- Dispatcher ---
 
 export async function dispatchSearch(
@@ -132,8 +178,8 @@ async function searchWithAnthropicNative(
   const systemPrompt = `${getSearchSystemPrompt()}\n\n${SEARCH_PROMPTED_JSON_INSTRUCTION}`;
   log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage });
 
-  const response = await llm.create({
-    model,
+  const { findings, correctionNeeded, cost } = await dispatchPromptedJsonSearch({
+    source: "searchWithAnthropicNative",
     messages: [
       // Mark the per-topic-stable system prompt as an Anthropic prefix-cache
       // breakpoint (passed through by OpenRouter). Anthropic doesn't cache
@@ -146,19 +192,12 @@ async function searchWithAnthropicNative(
       },
       { role: "user" as const, content: userMessage },
     ],
-    tools: [WEB_SEARCH_TOOL],
-  } as any);
+    createOptions: { model, tools: [WEB_SEARCH_TOOL] },
+    extractJson: extractJsonObject,
+  });
+  log?.set(`${STEP.search}.messages.1`, { content: { findings, correction_needed: correctionNeeded } });
 
-  const content = extractJsonObject(response.choices?.[0]?.message?.content ?? "");
-  const parsed = parseSearchJson(content, "searchWithAnthropicNative");
-  log?.set(`${STEP.search}.messages.1`, { content: parsed });
-
-  const cost = extractOpenRouterCost(response);
-  return {
-    findings: parsed.findings,
-    correctionNeeded: parsed.correction_needed,
-    costEntry: { name: costName, ...cost, tools: [] },
-  };
+  return { findings, correctionNeeded, costEntry: { name: costName, ...cost, tools: [] } };
 }
 
 export async function searchWithGeminiNative(
@@ -253,35 +292,20 @@ async function searchWithOpenaiNative(
   // OpenAI's web_search_preview tool via OpenRouter rejects
   // response_format=json_schema (returns 500 on production-sized prompts).
   // Ask for JSON in the prompt and parse the result; gpt-5.x reliably emits
-  // valid JSON when explicitly instructed.
-  const response = await llm.create({
-    model,
+  // valid JSON when explicitly instructed. When gpt-5 burns its budget on
+  // reasoning and returns empty content, the retry loop re-asks rather than
+  // failing the run outright.
+  const { findings, correctionNeeded, cost } = await dispatchPromptedJsonSearch({
+    source: "searchWithOpenaiNative",
     messages: [
       { role: "user" as const, content: `${systemPrompt}\n\n${userMessage}\n\n${SEARCH_PROMPTED_JSON_INSTRUCTION}` },
     ],
-    tools: [{ type: "web_search_preview" }] as any,
-    max_tokens: OPENAI_MAX_TOKENS,
-  } as any);
+    createOptions: { model, tools: [{ type: "web_search_preview" }], max_tokens: OPENAI_MAX_TOKENS },
+    extractJson: stripJsonFences,
+  });
+  log?.set(`${STEP.search}.messages.1`, { content: { findings, correction_needed: correctionNeeded } });
 
-  const choice = response.choices?.[0];
-  const rawContent = choice?.message?.content ?? "";
-  const cleaned = stripJsonFences(rawContent);
-  if (!cleaned) {
-    const finishReason = choice?.finish_reason ?? "unknown";
-    const usage = response.usage ? JSON.stringify(response.usage) : "(no usage)";
-    throw new ModelOutputInvalidError(
-      `searchWithOpenaiNative: empty content. finish_reason=${finishReason} usage=${usage}`,
-    );
-  }
-  const parsed = parseSearchJson(cleaned, "searchWithOpenaiNative");
-  log?.set(`${STEP.search}.messages.1`, { content: parsed });
-
-  const cost = extractOpenRouterCost(response);
-  return {
-    findings: parsed.findings,
-    correctionNeeded: parsed.correction_needed,
-    costEntry: { name: costName, ...cost, tools: [] },
-  };
+  return { findings, correctionNeeded, costEntry: { name: costName, ...cost, tools: [] } };
 }
 
 async function searchWithSonarBundled(
@@ -300,25 +324,22 @@ async function searchWithSonarBundled(
   log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage, model });
 
   // Sonar models ground the response in web search automatically; no tool needed.
-  const response = await llm.create({
-    model,
+  const result = await dispatchPromptedJsonSearch({
+    source: "searchWithSonarBundled",
     messages: [
       { role: "system" as const, content: systemPrompt },
       { role: "user" as const, content: userMessage },
     ],
-  } as any);
+    createOptions: { model },
+    extractJson: stripJsonFences,
+  });
+  const findings = appendSonarCitations(result.findings, result.message?.annotations);
+  log?.set(`${STEP.search}.messages.1`, { content: { findings, correction_needed: result.correctionNeeded } });
 
-  const message = response.choices?.[0]?.message;
-  const content = stripJsonFences(message?.content ?? "");
-  const parsed = parseSearchJson(content, "searchWithSonarBundled");
-  const findings = appendSonarCitations(parsed.findings, message?.annotations);
-  log?.set(`${STEP.search}.messages.1`, { content: { ...parsed, findings } });
-
-  const cost = extractOpenRouterCost(response);
   return {
     findings,
-    correctionNeeded: parsed.correction_needed,
-    costEntry: { name: costName, ...cost, tools: [] },
+    correctionNeeded: result.correctionNeeded,
+    costEntry: { name: costName, ...result.cost, tools: [] },
   };
 }
 

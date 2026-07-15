@@ -31,6 +31,15 @@ export interface BotConfig {
    */
   verifier_claim_based?: boolean;
   /**
+   * When true, the source verifier collects, per source, the most relevant
+   * verbatim snippets + a plain-language note on how each supports or fails to
+   * support the note BEFORE judging good/bad (reason-then-judge). Applies to both
+   * the classic and claim-based flows. Surfaced as `source_evaluations` on the
+   * result + tweet log; does not change which URLs the published note carries.
+   * Set by VERIFIER_CITATIONS_TEST; defaults false.
+   */
+  verifier_citations?: boolean;
+  /**
    * When true, the pipeline runs an extra LLM step between writer and source
    * verifier that judges whether a note is actually warranted for the post.
    * cheap-bot's primary FP guard (always on there via BOT_TEST). Defaults to

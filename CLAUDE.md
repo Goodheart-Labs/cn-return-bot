@@ -62,19 +62,23 @@ There are some ranked strategic cruxes (Mar 2026) in Claude's auto-memory coveri
 
 ## Common Notes ("Community Notes on Everything")
 
-Queue-driven pipeline that writes notes on non-X content (YouTube, Substack) into the `everything_*` tables, displayed on a public GitHub Pages SPA (`/cn-return-bot/notes/`) grouped by **project** (a newsletter/podcast). Product name is "Common Notes"; internal names stay `everything_*` / `src/everything*`.
+Queue-driven pipeline that writes notes on non-X content (YouTube, Substack) into the `everything_*` tables, displayed on a public GitHub Pages SPA (`/cn-return-bot/notes/`) grouped by **project** (a newsletter / podcast / site). Within a project each **item** — one episode / post / page — is the natural sub-group; the SPA's chip row filters by item (any project with ≥2 items-with-notes). Product name is "Common Notes"; internal names stay `everything_*` / `src/everything*`.
 
 ```bash
-bun run everything-enqueue <url...>       # YouTube video, Substack post, or Substack profile (--latest N)
-bun run everything-worker                 # drain the queue and exit
-bun run everything-import-dwarkesh        # import podcast_results.zip Dwarkesh notes
-bun run dev-everything                    # local FE on port 8003 against the PROD backend (.env.prod-backend, gitignored: prod URL + anon key)
-bun run dev-everything-local              # local FE against the local Supabase (VITE_SUPABASE_* in root .env)
+# One ingestion command. Everything lands under --project <slug> (created if new) as one item per document.
+bun run everything-enqueue --project <slug> <url...>              # live YouTube video / Substack post / Substack profile (--latest N)
+bun run everything-enqueue --project <slug> --doc [<url>] <file>  # local doc: <file> text is the body; optional <url> = source link (+ YouTube cues → timestamps)
+bun run everything-enqueue --project <slug> --manifest <dir>      # batch a folder's README.md manifest into one item per page
+bun run everything-worker                                         # drain the queue and exit
+bun run commonnotes                                              # local FE on port 8003 against the PROD backend (.env.prod-backend, gitignored: prod URL + anon key)
+bun run commonnotes-local                                       # local FE against the local Supabase (VITE_SUPABASE_* in root .env)
 ```
 
-Pipeline: per claim it forces `bot=simple-bot, note_prefilter=deepseek, search_claim=on`; confident-true claims skipped (`shouldFactCheck`).
+Ingestion is unified under `everything-enqueue` — the only front door. A **bare URL** is fetched by the worker. A **`--doc [<url>] <file>`** supplies the extraction body from a local `.md`/`.txt` file (the text is stored on the item at enqueue in `full_text`; the worker uses it instead of fetching). For a YouTube `<url>` the worker still fetches the video's cues so each claim's timestamp snaps onto them — this is how you fact-check from an author's clean published transcript rather than noisy auto-captions; any other `<url>` becomes the article's source link (text-anchored, no timestamps). With **no url** (`--doc <file>`) the item gets a synthetic `local:<slug>/<file>` key and renders no source link (`isSyntheticDocUrl` → `context_url` null). **`--manifest <dir>`** expands `README.md` rows (`Source: <base>` + `- [title](file.md) — \`/path\``) into a batch of `--doc` pairs. There is no separate importer — the old `import-files` / `import-dwarkesh` / `import-claims` scripts and the standalone `checkYoutubeClaims` podcast pipeline were removed; podcasts now go through `--doc <youtube-url> <transcript>`.
 
-Data model (migration 050): `everything_projects → items → claims → notes`, plus `everything_votes`. Migration 050 also locks the anon role out of every other table (anon key is baked into the public site). Migration 053 dropped the one-note-per-claim constraint (a claim can hold the AI note plus user drafts); migration 055 dropped the old `everything_note_suggestions` table. Each claim carries a `context_quote` (the highlighted span) and a wider `context_paragraph` (surrounding passage), both produced by the Opus extraction step.
+Pipeline: per claim it forces `bot=simple-bot, note_prefilter=off, search_claim=on`; search runs on Opus 4.8 (`simple_bot_search=opus48-native`), the writer on Sonnet 5 (`simple_bot_writer=sonnet5`), the source verifier on Gemini 3 Flash, non-claim-based (`verifier_claim_based=classic`, the single-call accept/reject flow) with `verifier_citations=on` (accepted sources carry a verbatim supporting quote + explanation). Confident-true claims skipped (`shouldFactCheck`). Substack images are fed inline to the Opus claim extractor, so a claim can rest on text, an image, or both (`context_quote` nullable, `image_urls` carries the images).
+
+Data model (migration 050): `everything_projects → items → claims → notes`, plus `everything_votes`. Migration 050 also locks the anon role out of every other table (anon key is baked into the public site). Migration 053 dropped the one-note-per-claim constraint (a claim can hold the AI note plus user drafts); migration 055 dropped the old `everything_note_suggestions` table. Migration 056 moved a note's citations out of the `everything_notes.sources` jsonb column into a dedicated `everything_note_sources` table (`url, quote, explanation`), one row per supporting snippet. Migration 057 added `everything_claims.image_urls` (images a claim is grounded in) and made `context_quote` nullable (image-only claims carry no text excerpt). Each claim carries a `context_quote` (the highlighted span) and a wider `context_paragraph` (surrounding passage), both produced by the Opus extraction step. `everything_items.full_text` (migration 054) is the item's body text and is now persisted on ingest for every source (what the public write-note flow searches) — no backfill needed.
 
 Auth & interaction:
 - **Reading** is anonymous. **Voting** and **writing/improving notes** require login (magic link or X) — votes key on `auth.uid()` via RLS; counters via trigger.

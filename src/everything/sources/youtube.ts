@@ -2,7 +2,7 @@ import { execFileSync, execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import { tmpdir } from "os";
-import { fetchTimedTranscript } from "../../pipeline/media/ytDlpDownload";
+import { fetchTimedTranscript, type SubtitleCue } from "../../pipeline/media/ytDlpDownload";
 import type { FetchedContent } from "../types";
 
 export function ensureYtDlp(): void {
@@ -35,16 +35,33 @@ function fetchVideoMeta(url: string): { id: string; title: string; uploadDate?: 
 
 const TRANSCRIPT_LANG = "en";
 
-export function fetchYoutubeContent(url: string): FetchedContent {
-  const meta = fetchVideoMeta(url);
+/** Fetch the video's timestamped cues (temp dir cleaned up); throws if none. */
+function fetchCues(url: string): SubtitleCue[] {
   const dir = fs.mkdtempSync(path.join(tmpdir(), "cn-yt-subs-"));
   try {
     const cues = fetchTimedTranscript(url, dir, TRANSCRIPT_LANG);
-    if (!cues || cues.length === 0) {
-      throw new Error(`No ${TRANSCRIPT_LANG} transcript available for ${url}`);
-    }
-    return { kind: "youtube", url, videoId: meta.id, title: meta.title, publishedAt: meta.uploadDate, cues };
+    if (!cues || cues.length === 0) throw new Error(`No ${TRANSCRIPT_LANG} transcript available for ${url}`);
+    return cues;
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }
+}
+
+export function fetchYoutubeContent(url: string): FetchedContent {
+  const meta = fetchVideoMeta(url);
+  return { kind: "youtube", url, videoId: meta.id, title: meta.title, publishedAt: meta.uploadDate, cues: fetchCues(url) };
+}
+
+/** Claims come from a caller-supplied transcript; timestamps snap to the video's own cues. */
+export function fetchYoutubeTranscriptContent(url: string, transcriptText: string): FetchedContent {
+  const meta = fetchVideoMeta(url);
+  return {
+    kind: "youtube-transcript",
+    url,
+    videoId: meta.id,
+    title: meta.title,
+    publishedAt: meta.uploadDate,
+    text: transcriptText,
+    cues: fetchCues(url),
+  };
 }

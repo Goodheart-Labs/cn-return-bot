@@ -12,13 +12,14 @@ import { checkClaim } from "./checkClaims";
 import {
   insertClaims,
   insertNote,
+  isSyntheticDocUrl,
   setClaimStatus,
   updateItemMeta,
   type EverythingItem,
   type NewClaimRow,
-} from "./db";
+} from "../db";
 import { dropSpeculation, extractClaims, shouldFactCheck } from "./extractClaims";
-import type { ExtractedClaim, FetchedContent } from "./types";
+import type { ExtractedClaim, FetchedContent } from "../types";
 
 const EXTRACTION_CONCURRENCY = 3;
 const CHECK_CONCURRENCY = 4;
@@ -40,9 +41,11 @@ function buildClaimRow(itemId: string, claim: ExtractedClaim): NewClaimRow {
     item_id: itemId,
     claim: claim.claim,
     judgement: claim.judgement,
-    context_quote: claim.context,
+    context_quote: claim.context || null,
     context_paragraph: claim.contextParagraph || null,
-    context_url: anchor.kind === "youtube" ? (anchor.deepLinkUrl ?? null) : anchor.url,
+    image_urls: claim.imageUrls,
+    context_url:
+      anchor.kind === "youtube" ? (anchor.deepLinkUrl ?? null) : isSyntheticDocUrl(anchor.url) ? null : anchor.url,
     start_seconds: anchor.kind === "youtube" && anchor.startSeconds !== undefined ? Math.floor(anchor.startSeconds) : null,
     end_seconds: anchor.kind === "youtube" && anchor.endSeconds !== undefined ? Math.ceil(anchor.endSeconds) : null,
     status: check ? "pending" : "skipped",
@@ -76,8 +79,17 @@ async function checkAndRecordClaim(
   }
 }
 
+/** The item's searchable body text — what the public write-note flow searches. */
+function bodyText(content: FetchedContent): string {
+  return content.kind === "youtube" ? content.cues.map((c) => c.text).join("\n") : content.text;
+}
+
 export async function processFetchedContent(item: EverythingItem, content: FetchedContent): Promise<ItemTally> {
-  await updateItemMeta(item.id, { title: content.title, published_at: content.publishedAt?.slice(0, 10) ?? null });
+  await updateItemMeta(item.id, {
+    title: content.title,
+    published_at: content.publishedAt?.slice(0, 10) ?? null,
+    full_text: bodyText(content),
+  });
   console.log(`  "${content.title}" (${content.publishedAt?.slice(0, 10) ?? "no date"})`);
 
   const extracted = await extractClaims(content, EXTRACTION_CONCURRENCY);

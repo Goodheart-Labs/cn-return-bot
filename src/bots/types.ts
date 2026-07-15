@@ -4,6 +4,8 @@
  * Defines the interface that all bots must implement.
  */
 
+import type { EvaluatedSource } from "../pipeline/prompts/verify/citations";
+
 export interface PipelineResult {
   post: any;
   botId: string;
@@ -18,11 +20,14 @@ export interface PipelineResult {
     url: string;
     status: string;
   };
+  /** Per-source snippets + explanation for the note's accepted sources. Set only
+   *  when the source verifier ran with verifier_citations on. */
+  sourceEvaluations?: EvaluatedSource[];
   checkResult?: string;
 }
 
 export type PipelineOutcome =
-  | { type: "note"; noteText: string; sources: string[]; evalScore?: number; searchResults?: string }
+  | { type: "note"; noteText: string; sources: string[]; evalScore?: number; searchResults?: string; sourceEvaluations?: EvaluatedSource[] }
   | { type: "no_correction"; reason: string }
   | { type: "verification_failed"; noteText: string; sources: string[]; reason: string; searchResults?: string };
 
@@ -47,6 +52,7 @@ export function outcomeToResult(
           searchResults: outcome.searchResults ?? "",
           citations: outcome.sources,
         },
+        sourceEvaluations: outcome.sourceEvaluations,
         checkResult: "YES",
       };
     case "verification_failed":

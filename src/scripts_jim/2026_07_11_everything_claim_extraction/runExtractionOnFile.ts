@@ -8,8 +8,8 @@
 
 import "dotenv/config";
 import * as fs from "fs";
-import { dropSpeculation, extractClaims } from "../src/everything/extractClaims";
-import type { FetchedContent } from "../src/everything/types";
+import { dropSpeculation, extractClaims } from "../../everything/pipeline/extractClaims";
+import type { FetchedContent } from "../../everything/types";
 
 const EXTRACTION_CONCURRENCY = 3;
 
