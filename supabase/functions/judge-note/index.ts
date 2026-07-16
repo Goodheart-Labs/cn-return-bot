@@ -2,8 +2,8 @@
 // at deploy on Supabase's Deno runtime, not under the repo's Node tsc.
 // judge-note: gates BOTH flows where a signed-in user writes a note on Common
 // Notes — writing a new note and suggesting an improvement (both post an
-// ordinary draft note). An LLM decides earnest good-faith vs trolling; only
-// earnest notes are posted (the client inserts on an "accepted" verdict). Runs
+// ordinary draft note). An LLM decides whether the note is spam; only non-spam
+// notes are posted (the client inserts on an "accepted" verdict). Runs
 // server-side so the OpenRouter key never touches the browser, and rejects
 // anonymous callers before any LLM cost is incurred. It writes nothing itself.
 //
@@ -24,7 +24,7 @@ const cors = {
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
 
-async function isEarnest(context: string, currentNote: string, proposal: string): Promise<boolean> {
+async function isSpam(context: string, currentNote: string, proposal: string): Promise<boolean> {
   const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -38,7 +38,7 @@ async function isEarnest(context: string, currentNote: string, proposal: string)
         {
           role: "system",
           content:
-            "Determine whether this is an earnest reply/comment/feedback/improved note or if its obvious spam / trolling. Reply with JSON: {\"earnest\": boolean}.",
+            "Is this spam? Judge only whether it is spam, an ad, or gibberish — not whether it is correct or well-argued. When unsure, spam=false. Reply with JSON: {\"spam\": boolean}.",
         },
         {
           role: "user",
@@ -54,8 +54,8 @@ async function isEarnest(context: string, currentNote: string, proposal: string)
   // We only need the boolean, so pull it out directly — robust to code fences,
   // trailing prose, or duplicated objects that break strict JSON.parse.
   const content: string = data.choices?.[0]?.message?.content ?? "";
-  const match = content.match(/"earnest"\s*:\s*(true|false)/i);
-  if (!match) throw new Error(`no earnest verdict in model output: ${content.slice(0, 120)}`);
+  const match = content.match(/"spam"\s*:\s*(true|false)/i);
+  if (!match) throw new Error(`no spam verdict in model output: ${content.slice(0, 120)}`);
   return match[1].toLowerCase() === "true";
 }
 
@@ -77,12 +77,12 @@ Deno.serve(async (req) => {
   if (!note) return json({ error: "note required" }, 400);
   if (note.length > MAX_NOTE_CHARS) return json({ error: "Note too long" }, 400);
 
-  let earnest: boolean;
+  let spam: boolean;
   try {
-    earnest = await isEarnest(context, currentNote, note);
+    spam = await isSpam(context, currentNote, note);
   } catch (err) {
     return json({ error: `Judge failed: ${(err as Error).message}` }, 502);
   }
 
-  return json({ status: earnest ? "accepted" : "rejected" });
+  return json({ status: spam ? "rejected" : "accepted" });
 });
