@@ -37,7 +37,8 @@ async function isSpam(context: string, currentNote: string, proposal: string): P
       messages: [
         {
           role: "system",
-          content: "Is this spam? Reply with JSON: {\"spam\": boolean}.",
+          content:
+            "Is this spam? Judge only whether it is spam, an ad, or gibberish — not whether it is correct or well-argued. When unsure, spam=false. Reply with JSON: {\"spam\": boolean}.",
         },
         {
           role: "user",
