@@ -3,6 +3,7 @@ import type { Session } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
 import { noteUrl } from "../lib/routing";
 import { displayName } from "../lib/session";
+import { isEarnestNote } from "../lib/judgeNote";
 import type { NoteRow } from "../lib/types";
 
 /** One row of the ⋯ dropdown: muted icon, medium-weight label, rounded hover;
@@ -156,7 +157,8 @@ export function NoteMenu({ note, projectSlug, session, onNeedLogin, sourcesOpen,
 }
 
 /** Post an improved version as your own draft note on the same claim. It shows
- *  next to the original (both are rated); it does not replace it. */
+ *  next to the original (both are rated); it does not replace it. The judge-note
+ *  edge function gates it earnest-vs-trolling before it posts. */
 function ImproveEditor({ note, session, onClose }: {
   note: NoteRow;
   session: Session;
@@ -164,6 +166,7 @@ function ImproveEditor({ note, session, onClose }: {
 }) {
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
+  const [rejected, setRejected] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Bylines are opt-in (Nathan, 2026-07-14): default anonymous, X-CN style —
   // note-writing is adversarial work and auto-bylines were a consent gap.
@@ -172,7 +175,10 @@ function ImproveEditor({ note, session, onClose }: {
   const submit = async () => {
     setBusy(true);
     setError(null);
+    setRejected(false);
     try {
+      const earnest = await isEarnestNote(text.trim(), note.claim?.context_quote ?? "", note.note);
+      if (!earnest) return setRejected(true);
       const { error } = await supabase.from("everything_notes").insert({
         claim_id: note.claim_id,
         note: text.trim(),
@@ -193,7 +199,7 @@ function ImproveEditor({ note, session, onClose }: {
     <div className="mt-2 space-y-2">
       <textarea
         value={text}
-        onChange={(e) => setText(e.target.value)}
+        onChange={(e) => { setText(e.target.value); setRejected(false); }}
         rows={3}
         autoFocus
         placeholder="Write a clearer or better-sourced version — it posts as your own note on this claim…"
@@ -205,7 +211,7 @@ function ImproveEditor({ note, session, onClose }: {
           disabled={busy || text.trim().length < 10}
           className="bg-blue-600 text-white rounded-lg px-3 py-1 text-sm font-medium hover:bg-blue-700 disabled:opacity-40"
         >
-          {busy ? "Posting…" : "Post note"}
+          {busy ? "Checking…" : "Post note"}
         </button>
         <button onClick={onClose} className="text-sm text-gray-500 hover:underline">Cancel</button>
         <label className="ml-auto flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer">
@@ -213,6 +219,11 @@ function ImproveEditor({ note, session, onClose }: {
           Post as {displayName(session)}
         </label>
       </div>
+      {rejected && (
+        <p className="text-sm rounded-lg p-2 bg-amber-50 text-amber-800 border border-amber-200">
+          That didn't look like a genuine note — try again.
+        </p>
+      )}
       {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
   );
