@@ -38,7 +38,7 @@ async function isEarnest(context: string, currentNote: string, proposal: string)
         {
           role: "system",
           content:
-            "A user wrote a community note fact-checking or adding context to a claim. Your ONLY job is to decide whether it's a sincere, good-faith note versus trolling. It does NOT need to be correct, complete, or well-written — sincerity is the bar. earnest=true for any genuine on-topic note (a correction, added context, a source, a disagreement, a question). earnest=false only for clear bad faith: insults, spam, jokes, gibberish, vandalism, or text unrelated to the claim's topic. When unsure, lean earnest. Reply with JSON: {\"earnest\": boolean}.",
+            "Determine whether this is an earnest reply/comment/feedback/improved note or if its obvious spam / trolling. Reply with JSON: {\"earnest\": boolean}.",
         },
         {
           role: "user",
