@@ -83,14 +83,21 @@ function SourceDetails({ open, sources }: { open: boolean; sources: NoteSourceRo
 }
 
 /** Six-second draining circle shown right after a vote: the note holds its
- *  place until this empties, so a misclick can be fixed before it re-sorts. */
-function ResortCountdown() {
+ *  place until this empties, so a misclick can be fixed before it re-sorts.
+ *  Rendered permanently (invisible while idle) so appearing never widens the
+ *  vote row and jolts the pills onto the next line. */
+function ResortCountdown({ active }: { active: boolean }) {
   return (
-    <span className="inline-flex items-center" title="Hold — re-sorting shortly; click again to change your vote">
+    <span
+      className={`inline-flex items-center ${active ? "" : "invisible"}`}
+      title="Hold — re-sorting shortly; click again to change your vote"
+    >
       <svg width="14" height="14" viewBox="0 0 16 16" className="-rotate-90">
         <circle cx="8" cy="8" r="7" fill="none" stroke="#e5e7eb" strokeWidth="2" />
-        <circle cx="8" cy="8" r="7" fill="none" stroke="#3b82f6" strokeWidth="2"
-          strokeDasharray="44" style={{ animation: "cn-countdown 6s linear forwards" }} />
+        {active && (
+          <circle cx="8" cy="8" r="7" fill="none" stroke="#3b82f6" strokeWidth="2"
+            strokeDasharray="44" style={{ animation: "cn-countdown 6s linear forwards" }} />
+        )}
       </svg>
     </span>
   );
@@ -401,7 +408,7 @@ export function NoteCard({ note, improvements, commentsByParent, commentsApi, pr
             myVote={myVote}
             onVote={(vote) => void onVote(note, vote).then(setReasoningVoteId)}
           />
-          {holdActive && <ResortCountdown key={`${note.helpful_count}-${note.somewhat_helpful_count}-${note.not_helpful_count}`} />}
+          <ResortCountdown active={holdActive} key={`${note.helpful_count}-${note.somewhat_helpful_count}-${note.not_helpful_count}`} />
         </NoteBox>
         {reasoningVoteId && myVote !== undefined && session && (
           <VoteReasoning
