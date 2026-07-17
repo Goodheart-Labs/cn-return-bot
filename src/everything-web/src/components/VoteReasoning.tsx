@@ -124,9 +124,11 @@ export function VoteReasoning({ note, voteId, pair, session, onCommentAuthored, 
     // — design.css remaps the exact class names per color scheme.
     <div className="mt-2 rounded-lg border border-blue-100 bg-blue-50 p-3 space-y-2">
       <p className="text-sm text-gray-700">
-        We'll donate <strong>${pair.ifHelpful.toFixed(2)}</strong> to{" "}
-        <CharityPicker charity={charity} onPick={pickCharity} /> if this note ends up rated
-        helpful — or <strong>${pair.ifNotHelpful.toFixed(2)}</strong> if not.
+        We will donate <strong>${pair.ifHelpful.toFixed(2)}</strong> to{" "}
+        <CharityPicker charity={charity} onPick={pickCharity} /> if this note ends up rated{" "}
+        <span className="font-medium text-green-700">helpful</span> and{" "}
+        <strong>${pair.ifNotHelpful.toFixed(2)}</strong> if it ends up rated{" "}
+        <span className="font-medium text-red-600">unhelpful</span>.
       </p>
       <AutoGrowTextarea
         value={text}
