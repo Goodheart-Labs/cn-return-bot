@@ -5,10 +5,11 @@ import { noteUrl } from "../lib/routing";
 import { displayName } from "../lib/session";
 import { isEarnestNote } from "../lib/judgeNote";
 import type { NoteRow } from "../lib/types";
+import { AutoGrowTextarea, PostAsCheckbox, RejectedNotice } from "./editorBits";
 
 /** One row of the ⋯ dropdown: muted icon, medium-weight label, rounded hover;
  *  danger rows go red with a red hover wash. */
-function MenuItem({ onClick, icon, label, danger }: {
+export function MenuItem({ onClick, icon, label, danger }: {
   onClick: () => void;
   icon: React.ReactNode;
   label: string;
@@ -52,7 +53,7 @@ function ShareIcon() {
   );
 }
 
-function TrashIcon() {
+export function TrashIcon() {
   return (
     <svg {...ICON_PROPS}>
       <path d="M3 6h18" />
@@ -73,13 +74,17 @@ function QuoteIcon() {
 /** Bottom-right ⋯ menu on every note: suggest an improvement (posts your own
  *  draft note on the same claim, shown alongside the original), share a deep
  *  link, and — on notes you wrote — delete. */
-export function NoteMenu({ note, projectSlug, session, onNeedLogin, sourcesOpen, onToggleSources }: {
+export function NoteMenu({ note, projectSlug, session, onNeedLogin, onAuthored, sourcesOpen, onToggleSources, children }: {
   note: NoteRow;
   projectSlug: string;
   session: Session | null;
   onNeedLogin: () => void;
+  /** A note was just posted by this user (mirror its auto-upvote locally). */
+  onAuthored: (noteId: string) => void;
   sourcesOpen?: boolean;
   onToggleSources?: () => void;
+  /** Extra actions slotted between Share and the ⋯ (e.g. improvement jump chips). */
+  children?: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const [improving, setImproving] = useState(false);
@@ -134,6 +139,7 @@ export function NoteMenu({ note, projectSlug, session, onNeedLogin, sourcesOpen,
         <button onClick={share} className="inline-flex items-center gap-1 text-blue-600 hover:underline">
           <ShareIcon /> Share
         </button>
+        {children}
         {mine && (
           <button
             aria-label="Note actions"
@@ -150,26 +156,26 @@ export function NoteMenu({ note, projectSlug, session, onNeedLogin, sourcesOpen,
         )}
       </div>
       {improving && session && (
-        <ImproveEditor note={note} session={session} onClose={() => setImproving(false)} />
+        <ImproveEditor note={note} session={session} onAuthored={onAuthored} onClose={() => setImproving(false)} />
       )}
     </div>
   );
 }
 
 /** Post an improved version as your own draft note on the same claim. It shows
- *  next to the original (both are rated); it does not replace it. The judge-note
- *  edge function gates it earnest-vs-trolling before it posts. */
-function ImproveEditor({ note, session, onClose }: {
+ *  as its own card, jump-linked to the original (both are rated); it does not
+ *  replace it. The judge-note edge function gates it earnest-vs-trolling
+ *  before it posts. */
+function ImproveEditor({ note, session, onAuthored, onClose }: {
   note: NoteRow;
   session: Session;
+  onAuthored: (noteId: string) => void;
   onClose: () => void;
 }) {
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [rejected, setRejected] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // Bylines are opt-in (Nathan, 2026-07-14): default anonymous, X-CN style —
-  // note-writing is adversarial work and auto-bylines were a consent gap.
   const [signed, setSigned] = useState(false);
 
   const submit = async () => {
@@ -179,14 +185,16 @@ function ImproveEditor({ note, session, onClose }: {
     try {
       const earnest = await isEarnestNote(text.trim(), note.claim?.context_quote ?? "", note.note);
       if (!earnest) return setRejected(true);
-      const { error } = await supabase.from("everything_notes").insert({
+      const { data, error } = await supabase.from("everything_notes").insert({
         claim_id: note.claim_id,
         note: text.trim(),
         author_id: session.user.id,
         author_name: signed ? displayName(session) : null,
+        improved_from_note_id: note.id,
         status: "draft",
-      });
+      }).select("id").single();
       if (error) return setError(error.message);
+      onAuthored((data as { id: string }).id);
       onClose();
     } catch (err) {
       setError((err as Error).message);
@@ -197,14 +205,12 @@ function ImproveEditor({ note, session, onClose }: {
 
   return (
     <div className="mt-2 space-y-2">
-      <textarea
-        ref={(el) => { if (el) { el.style.height = "auto"; el.style.height = `${el.scrollHeight}px`; } }}
+      <AutoGrowTextarea
         value={text}
         onChange={(e) => { setText(e.target.value); setRejected(false); }}
         rows={3}
         autoFocus
         placeholder="Write a clearer or better-sourced version — it posts as your own note on this claim…"
-        className="w-full resize-none overflow-hidden border border-gray-300 rounded-lg px-3 py-2 text-sm"
       />
       <div className="flex gap-2 items-center">
         <button
@@ -215,16 +221,9 @@ function ImproveEditor({ note, session, onClose }: {
           {busy ? "Checking…" : "Post note"}
         </button>
         <button onClick={onClose} className="text-sm text-gray-500 hover:underline">Cancel</button>
-        <label className="ml-auto flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer">
-          <input type="checkbox" checked={signed} onChange={(e) => setSigned(e.target.checked)} />
-          Post as {displayName(session)}
-        </label>
+        <PostAsCheckbox signed={signed} onChange={setSigned} session={session} className="ml-auto" />
       </div>
-      {rejected && (
-        <p className="text-sm rounded-lg p-2 bg-amber-50 text-amber-800 border border-amber-200">
-          That didn't look like a genuine note — try again.
-        </p>
-      )}
+      {rejected && <RejectedNotice />}
       {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
   );

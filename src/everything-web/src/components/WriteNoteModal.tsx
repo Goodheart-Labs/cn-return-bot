@@ -22,11 +22,13 @@ const WINDOW = 1200;
 /** Write a note anchored to the source: search the transcript, pick the spot,
  *  select the text you're noting, write the correction. Freeform fallback
  *  carries a "Text not found in transcript" flag. */
-export function WriteNoteModal({ open, onClose, projectId, session }: {
+export function WriteNoteModal({ open, onClose, projectId, session, onAuthored }: {
   open: boolean;
   onClose: () => void;
   projectId: string | null;
   session: Session;
+  /** A note was just posted by this user (mirror its auto-upvote locally). */
+  onAuthored: (noteId: string) => void;
 }) {
   const [items, setItems] = useState<SourceItem[]>([]);
   const [query, setQuery] = useState("");
@@ -109,14 +111,15 @@ export function WriteNoteModal({ open, onClose, projectId, session }: {
         .select("id")
         .single();
       if (claimError || !claim) return setError(claimError?.message ?? "could not create the claim");
-      const { error: noteError } = await supabase.from("everything_notes").insert({
+      const { data: newNote, error: noteError } = await supabase.from("everything_notes").insert({
         claim_id: claim.id,
         note: note.trim(),
         author_id: session.user.id,
         author_name: signed ? displayName(session) : null,
         status: "draft",
-      });
-      if (noteError) return setError(noteError.message);
+      }).select("id").single();
+      if (noteError || !newNote) return setError(noteError?.message ?? "could not create the note");
+      onAuthored((newNote as { id: string }).id);
       reset();
       onClose();
     } catch (err) {

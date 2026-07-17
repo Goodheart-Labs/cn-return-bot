@@ -5,10 +5,12 @@ import { LinkifiedText } from "../../../dashboard-shared/LinkifiedText";
 import { VoteRatings } from "../../../dashboard-shared/Ratings";
 import { quoteFragmentUrl } from "../../../dashboard-shared/textFragment";
 import type { NotedContent } from "../../../dashboard-shared/types";
-import type { ClaimRef, NoteRow, NoteSourceRow } from "../lib/types";
+import type { ClaimRef, CommentRow, NoteRow, NoteSourceRow } from "../lib/types";
 import type { Vote } from "../lib/votes";
 import { noteStatus, type NoteStatus } from "../lib/noteScore";
 import { NoteMenu } from "./NoteMenu";
+import { CommentThread, type CommentsApi } from "./CommentThread";
+import { VoteReasoning } from "./VoteReasoning";
 
 /** Community-Notes rating states: icon, copy, box tint, and the footer ask.
  *  Halfway to X-CN grammar (Nathan, 2026-07-14): our own badge + wording, but
@@ -250,58 +252,103 @@ function NoteBox({ note, sourcesOpen, children }: {
   );
 }
 
-/** An alternative note nested under the promoted one — a lower-scoring
- *  improvement or the original AI note it outscored. Votable and carrying the
- *  same ⋯ menu (delete shows only to its author); if it climbs above the
- *  promoted note it swaps up to the top on the next render. */
-function AlternativeNote({ note, myVote, onVote, session, holdActive, projectSlug, onNeedLogin }: {
-  note: NoteRow;
-  myVote: Vote | undefined;
-  onVote: (note: NoteRow, vote: Vote) => void;
-  session: Session | null;
-  holdActive?: boolean;
-  projectSlug: string;
-  onNeedLogin: () => void;
+/** Scroll to another note's card. The target may sit inside the collapsed
+ *  "rated unhelpful" <details> drawer, where scrollIntoView silently no-ops —
+ *  open it first. */
+function jumpToNote(noteId: string) {
+  const el = document.getElementById(`note-${noteId}`);
+  if (!el) return;
+  el.closest("details")?.setAttribute("open", "");
+  el.scrollIntoView({ block: "start", behavior: "smooth" });
+}
+
+const JUMP_ARROW_PROPS = {
+  width: 13, height: 13, viewBox: "0 0 16 16",
+  fill: "none", stroke: "currentColor", strokeWidth: 1.8,
+  strokeLinecap: "round", strokeLinejoin: "round",
+} as const;
+
+/** Icon chip that scrolls to a related note; the explanation lives in the
+ *  hover tooltip (title) + aria-label so the card stays quiet. */
+function JumpChip({ targetNoteId, explain, direction, count }: {
+  targetNoteId: string;
+  explain: string;
+  direction: "up" | "down";
+  count?: number;
 }) {
-  const [sourcesOpen, setSourcesOpen] = useState(false);
   return (
-    <div>
-      <NoteBox note={note} sourcesOpen={sourcesOpen}>
-        <VoteRatings
-          helpful={note.helpful_count}
-          somewhatHelpful={note.somewhat_helpful_count}
-          notHelpful={note.not_helpful_count}
-          myVote={myVote}
-          onVote={(vote) => onVote(note, vote)}
+    <button
+      onClick={() => jumpToNote(targetNoteId)}
+      title={explain}
+      aria-label={explain}
+      className="inline-flex items-center gap-1 h-6 px-1.5 rounded-full border border-gray-200 text-[11px] font-semibold text-blue-600 hover:bg-gray-100"
+    >
+      <svg {...JUMP_ARROW_PROPS} aria-hidden>
+        {direction === "up"
+          ? <><path d="M8 13V3" /><path d="M4 7l4-4 4 4" /></>
+          : <><path d="M8 3v10" /><path d="M4 9l4 4 4-4" /></>}
+      </svg>
+      <svg {...JUMP_ARROW_PROPS} width={11} height={11} viewBox="0 0 24 24" aria-hidden>
+        <path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+      </svg>
+      {count !== undefined && count > 1 && count}
+    </button>
+  );
+}
+
+/** Jump-links between an improvement and its original — the only remaining tie
+ *  between them now that every note is its own card. Icon-only; hover explains.
+ *  Rides in the note's action row (NoteMenu slot, between Share and ⋯). */
+function ImprovementLinks({ note, improvements }: { note: NoteRow; improvements: NoteRow[] }) {
+  if (!note.improved_from_note_id && improvements.length === 0) return null;
+  return (
+    <span className="inline-flex gap-1.5">
+      {note.improved_from_note_id && (
+        <JumpChip
+          targetNoteId={note.improved_from_note_id}
+          direction="up"
+          explain="This note is a suggested improvement of another note — jump to the original"
         />
-        {holdActive && <ResortCountdown />}
-      </NoteBox>
-      <NoteMenu
-        note={note}
-        projectSlug={projectSlug}
-        session={session}
-        onNeedLogin={onNeedLogin}
-        sourcesOpen={sourcesOpen}
-        onToggleSources={() => setSourcesOpen((o) => !o)}
-      />
-    </div>
+      )}
+      {improvements.length > 0 && (
+        <JumpChip
+          targetNoteId={improvements[0]!.id}
+          direction="down"
+          count={improvements.length}
+          explain={
+            improvements.length === 1
+              ? "Someone suggested an improved version of this note — jump to it"
+              : `${improvements.length} suggested improvements of this note — jump to the first`
+          }
+        />
+      )}
+    </span>
   );
 }
 
 // Mirrors the review-dashboard card composition: content → note → stats row,
 // with voting live and an improve-note affordance.
-export function NoteCard({ note, draftNotes, projectSlug, myVotes, voteHolds, onVote, session, onNeedLogin }: {
+export function NoteCard({ note, improvements, commentsByParent, commentsApi, projectSlug, myVote, holdActive, onVote, onAuthored, session, onNeedLogin }: {
   note: NoteRow;
-  draftNotes: NoteRow[];
+  /** Notes that improve this one (reverse of improved_from_note_id). */
+  improvements: NoteRow[];
+  /** This note's comment tree, keyed by parent comment id (null = top-level). */
+  commentsByParent: Map<string | null, CommentRow[]>;
+  commentsApi: CommentsApi;
   projectSlug: string;
-  myVotes: Map<string, Vote>;
-  voteHolds: Map<string, boolean>;
-  onVote: (note: NoteRow, vote: Vote) => void;
+  myVote: Vote | undefined;
+  holdActive: boolean;
+  /** Casts the vote; resolves to the vote row's id (null on retract/error). */
+  onVote: (note: NoteRow, vote: Vote) => Promise<string | null>;
+  /** A note was just posted by this user (mirror its auto-upvote locally). */
+  onAuthored: (noteId: string) => void;
   session: Session | null;
   onNeedLogin: () => void;
 }) {
-  const myVote = myVotes.get(note.id);
   const [ctxOpen, setCtxOpen] = useState(false);
+  // Set right after casting a vote — the id of the just-cast vote row, which
+  // opens the reasoning/donation box beneath the pills. Cleared on retract.
+  const [reasoningVoteId, setReasoningVoteId] = useState<string | null>(null);
   const cardColRef = useRef<HTMLDivElement>(null);
   const [sourcesOpen, setSourcesOpen] = useState(false);
   const claim = note.claim;
@@ -352,10 +399,19 @@ export function NoteCard({ note, draftNotes, projectSlug, myVotes, voteHolds, on
             somewhatHelpful={note.somewhat_helpful_count}
             notHelpful={note.not_helpful_count}
             myVote={myVote}
-            onVote={(vote) => onVote(note, vote)}
+            onVote={(vote) => void onVote(note, vote).then(setReasoningVoteId)}
           />
-          {voteHolds.has(note.id) && <ResortCountdown key={`${note.helpful_count}-${note.somewhat_helpful_count}-${note.not_helpful_count}`} />}
+          {holdActive && <ResortCountdown key={`${note.helpful_count}-${note.somewhat_helpful_count}-${note.not_helpful_count}`} />}
         </NoteBox>
+        {reasoningVoteId && myVote !== undefined && session && (
+          <VoteReasoning
+            note={note}
+            voteId={reasoningVoteId}
+            session={session}
+            onCommentAuthored={commentsApi.onAuthored}
+            onClose={() => setReasoningVoteId(null)}
+          />
+        )}
       </div>
 
       <NoteMenu
@@ -363,28 +419,20 @@ export function NoteCard({ note, draftNotes, projectSlug, myVotes, voteHolds, on
         projectSlug={projectSlug}
         session={session}
         onNeedLogin={onNeedLogin}
+        onAuthored={onAuthored}
         sourcesOpen={sourcesOpen}
         onToggleSources={() => setSourcesOpen((o) => !o)}
-      />
+      >
+        <ImprovementLinks note={note} improvements={improvements} />
+      </NoteMenu>
 
-      {/* Alternatives (improvements + any note this one outscored) nest here,
-          Reddit-style: indented behind a rail, ranked, swapping in live. */}
-      {draftNotes.length > 0 && (
-        <div className="mt-3 pl-3 sm:pl-4 border-l-[3px] border-gray-300 space-y-3">
-          {draftNotes.map((d) => (
-            <AlternativeNote
-              key={d.id}
-              note={d}
-              myVote={myVotes.get(d.id)}
-              onVote={onVote}
-              session={session}
-              holdActive={voteHolds.has(d.id)}
-              projectSlug={projectSlug}
-              onNeedLogin={onNeedLogin}
-            />
-          ))}
-        </div>
-      )}
+      <CommentThread
+        note={note}
+        byParent={commentsByParent}
+        api={commentsApi}
+        session={session}
+        onNeedLogin={onNeedLogin}
+      />
       </div>
     </div>
   );

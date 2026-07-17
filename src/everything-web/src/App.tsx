@@ -3,6 +3,7 @@ import type { Session } from "@supabase/supabase-js";
 import { useLiveData } from "./lib/useLiveData";
 import { useSession, signOut } from "./lib/auth";
 import { castVote, clearVote, fetchMyVotes, type Vote } from "./lib/votes";
+import { castCommentVote, clearCommentVote, fetchMyCommentVotes } from "./lib/comments";
 import { readRoute, pushProject, pushItem } from "./lib/routing";
 import { Sidebar } from "./components/Sidebar";
 
@@ -31,54 +32,78 @@ import { WriteNoteModal } from "./components/WriteNoteModal";
 import { NoteCard } from "./components/NoteCard";
 import { ItemChips } from "./components/ItemChips";
 import { DesignMenu } from "./components/DesignMenu";
-import type { NoteRow } from "./lib/types";
-import { byPromotion, isLocked, totalVotes, weight } from "./lib/noteScore";
+import type { CommentRow, NoteRow } from "./lib/types";
+import { isLocked, totalVotes, weight } from "./lib/noteScore";
+
+const EMPTY_COMMENT_TREE = new Map<string | null, CommentRow[]>();
 
 export function App() {
-  const { projects, items, notes, loaded } = useLiveData();
+  const { projects, items, notes, comments, loaded } = useLiveData();
   const { session } = useSession();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   // Item filter within the project (episode / post / page) — null = all items.
   const [itemFilter, setItemFilter] = useState<string | null>(() => readRoute().item);
   const [myVotes, setMyVotes] = useState<Map<string, Vote>>(new Map());
+  const [myCommentVotes, setMyCommentVotes] = useState<Map<string, Vote>>(new Map());
   const [loginOpen, setLoginOpen] = useState(false);
   const [writeOpen, setWriteOpen] = useState(false);
   // After a vote, hold the note's list position briefly (misclick grace) —
-  // maps note id → its fold side at vote time. Cleared by a timer, then the
-  // live counts decide again.
+  // maps note id → a snapshot of its vote counts at vote time. Ranking uses
+  // the snapshot while held, so the card keeps its exact slot instead of
+  // teleporting; re-votes re-arm the timer but keep the frozen slot. Cleared
+  // by the timer, then the live counts decide again.
   const RESORT_GRACE_MS = 6000;
-  const [voteHolds, setVoteHolds] = useState<Map<string, boolean>>(new Map());
+  type HeldCounts = Pick<NoteRow, "helpful_count" | "somewhat_helpful_count" | "not_helpful_count">;
+  const [voteHolds, setVoteHolds] = useState<Map<string, HeldCounts>>(new Map());
   const holdTimers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
 
   useEffect(() => {
-    if (session) fetchMyVotes().then(setMyVotes);
-    else setMyVotes(new Map());
+    if (session) {
+      fetchMyVotes().then(setMyVotes);
+      fetchMyCommentVotes().then(setMyCommentVotes);
+    } else {
+      setMyVotes(new Map());
+      setMyCommentVotes(new Map());
+    }
   }, [session?.user.id]);
 
-  // One card per claim: the highest helpful−unhelpful note is promoted to the
-  // top (its improvements start below and swap up if they outscore it); the rest
-  // of the claim's notes rank beneath it, indented.
-  const { notesByItem, draftsByClaim } = useMemo(() => {
-    const byClaim = new Map<string, NoteRow[]>();
-    for (const note of notes.values()) {
-      const list = byClaim.get(note.claim_id) ?? [];
-      list.push(note);
-      byClaim.set(note.claim_id, list);
-    }
+  // Every note is its own card — AI note, user note, improvement alike; the
+  // feed ranking below treats them uniformly. An improvement is tied to its
+  // original only by a jump-link (improvementsByOriginal is the reverse index
+  // of improved_from_note_id).
+  const { notesByItem, improvementsByOriginal } = useMemo(() => {
     const byItem = new Map<string, NoteRow[]>();
-    const drafts = new Map<string, NoteRow[]>();
-    for (const list of byClaim.values()) {
-      const ranked = [...list].sort(byPromotion);
-      const primary = ranked[0]!;
-      drafts.set(primary.claim_id, ranked.slice(1));
-      const itemId = primary.claim?.item_id;
-      if (!itemId) continue;
-      const cards = byItem.get(itemId) ?? [];
-      cards.push(primary);
-      byItem.set(itemId, cards);
+    const improvements = new Map<string, NoteRow[]>();
+    for (const note of notes.values()) {
+      const itemId = note.claim?.item_id;
+      if (itemId) {
+        const cards = byItem.get(itemId) ?? [];
+        cards.push(note);
+        byItem.set(itemId, cards);
+      }
+      if (note.improved_from_note_id) {
+        const list = improvements.get(note.improved_from_note_id) ?? [];
+        list.push(note);
+        improvements.set(note.improved_from_note_id, list);
+      }
     }
-    return { notesByItem: byItem, draftsByClaim: drafts };
+    return { notesByItem: byItem, improvementsByOriginal: improvements };
   }, [notes]);
+
+  // Per-note comment trees: note id → (parent comment id | null → children,
+  // oldest first). Comments rank by age, not votes — no teleporting threads.
+  const commentsByNote = useMemo(() => {
+    const byNote = new Map<string, Map<string | null, CommentRow[]>>();
+    const sorted = [...comments.values()].sort((a, b) => a.created_at.localeCompare(b.created_at));
+    for (const comment of sorted) {
+      const tree = byNote.get(comment.note_id) ?? new Map<string | null, CommentRow[]>();
+      const siblings = tree.get(comment.parent_comment_id) ?? [];
+      siblings.push(comment);
+      tree.set(comment.parent_comment_id, siblings);
+      byNote.set(comment.note_id, tree);
+    }
+    return byNote;
+  }, [comments]);
 
   // Initial project: the ?project= slug from the URL, else the first project
   // (by sort order) that actually has content.
@@ -131,8 +156,17 @@ export function App() {
   }, [loaded, notes, selectedId]);
 
   const holdPosition = (note: NoteRow) => {
-    const wasUnderwater = note.not_helpful_count > note.helpful_count + note.somewhat_helpful_count;
-    setVoteHolds((m) => new Map(m).set(note.id, wasUnderwater));
+    // Freeze the ranking inputs only on the first vote of the window — a
+    // re-vote keeps the frozen slot and just re-arms the timer.
+    setVoteHolds((m) =>
+      m.has(note.id)
+        ? m
+        : new Map(m).set(note.id, {
+            helpful_count: note.helpful_count,
+            somewhat_helpful_count: note.somewhat_helpful_count,
+            not_helpful_count: note.not_helpful_count,
+          }),
+    );
     clearTimeout(holdTimers.current.get(note.id));
     holdTimers.current.set(
       note.id,
@@ -146,10 +180,12 @@ export function App() {
     );
   };
 
-  const handleVote = async (note: NoteRow, vote: Vote) => {
+  // Returns the vote row's id (the key reasoning + donations hang off), or
+  // null on retract / signed-out.
+  const handleVote = async (note: NoteRow, vote: Vote): Promise<string | null> => {
     if (!session) {
       setLoginOpen(true);
-      return;
+      return null;
     }
     holdPosition(note);
     const current = myVotes.get(note.id);
@@ -158,12 +194,41 @@ export function App() {
       next.delete(note.id);
       setMyVotes(next);
       await clearVote(note.id);
+      return null;
+    }
+    next.set(note.id, vote);
+    setMyVotes(next);
+    return castVote(note.id, session.user.id, vote);
+  };
+
+  const handleCommentVote = async (comment: CommentRow, vote: Vote) => {
+    if (!session) {
+      setLoginOpen(true);
+      return;
+    }
+    const current = myCommentVotes.get(comment.id);
+    const next = new Map(myCommentVotes);
+    if (current === vote) {
+      next.delete(comment.id);
+      setMyCommentVotes(next);
+      await clearCommentVote(comment.id);
     } else {
-      next.set(note.id, vote);
-      setMyVotes(next);
-      await castVote(note.id, session.user.id, vote);
+      next.set(comment.id, vote);
+      setMyCommentVotes(next);
+      await castCommentVote(comment.id, session.user.id, vote);
     }
   };
+
+  // The DB self-vote triggers make a just-posted note/comment start with its
+  // author's helpful vote — mirror that into the local vote maps so the pills
+  // light up without a refetch.
+  const commentsApi = {
+    myVotes: myCommentVotes,
+    onVote: handleCommentVote,
+    onAuthored: (commentId: string) =>
+      setMyCommentVotes((m) => new Map(m).set(commentId, 1)),
+  };
+  const noteAuthored = (noteId: string) => setMyVotes((m) => new Map(m).set(noteId, 1));
 
   const selected = projects.find((p) => p.id === selectedId) ?? null;
   // The project's items that actually have notes, newest first — feeds both the
@@ -174,6 +239,20 @@ export function App() {
   const itemNoteCounts = new Map(projectItems.map((i) => [i.id, notesByItem.get(i.id)!.length]));
   // Ignore a stale/foreign ?item= param rather than show an empty feed.
   const activeItem = projectItems.some((i) => i.id === itemFilter) ? itemFilter : null;
+  // Keep an improvement chain grouped behind its root note in content order:
+  // co-claim notes share start_seconds, so tie-break on the chain root's age,
+  // originals before improvements, then own age — deterministic for contentIdx.
+  const rootCreatedAt = (n: NoteRow): string => {
+    let cur = n;
+    const seen = new Set<string>();
+    while (cur.improved_from_note_id && !seen.has(cur.id)) {
+      seen.add(cur.id);
+      const parent = notes.get(cur.improved_from_note_id);
+      if (!parent) break;
+      cur = parent;
+    }
+    return cur.created_at;
+  };
   // A project is just its notes — no per-item headers. Newest content first,
   // then in content order (clip timestamp) within an item. The item chips
   // narrow this to one item; ranking below applies unchanged to the subset.
@@ -181,33 +260,49 @@ export function App() {
     .filter((i) => !activeItem || i.id === activeItem)
     .flatMap((item) =>
       (notesByItem.get(item.id) ?? []).sort(
-        (a, b) => (a.claim?.start_seconds ?? 0) - (b.claim?.start_seconds ?? 0),
+        (a, b) =>
+          (a.claim?.start_seconds ?? 0) - (b.claim?.start_seconds ?? 0) ||
+          rootCreatedAt(a).localeCompare(rootCreatedAt(b)) ||
+          Number(!!a.improved_from_note_id) - Number(!!b.improved_from_note_id) ||
+          a.created_at.localeCompare(b.created_at),
       ),
     );
   // Nathan's ranking spec (prep doc, #7): a note "locks in" as a real note at
   // >=5 ratings with net-positive score; under that it's a draft. Feed order:
   // top 3 slots go to the best real notes, then real/draft interleave 1:1,
   // then the draft long tail. Net-negative notes sink below a labeled divider.
-  const score = (n: NoteRow) => (totalVotes(n) === 0 ? 0 : weight(n) / totalVotes(n));
-  const isUnderwater = (n: NoteRow) =>
-    voteHolds.has(n.id)
-      ? voteHolds.get(n.id)!
-      : n.not_helpful_count > n.helpful_count + n.somewhat_helpful_count;
+  // While a note is held (just-voted grace window), rank it by its frozen
+  // count snapshot so it keeps its exact slot; display still shows live counts.
+  const effective = (n: NoteRow): NoteRow => {
+    const held = voteHolds.get(n.id);
+    return held ? { ...n, ...held } : n;
+  };
+  const score = (n: NoteRow) => {
+    const e = effective(n);
+    return totalVotes(e) === 0 ? 0 : weight(e) / totalVotes(e);
+  };
+  const isUnderwater = (n: NoteRow) => {
+    const e = effective(n);
+    return e.not_helpful_count > e.helpful_count + e.somewhat_helpful_count;
+  };
 
   // Really unhelpful = enough ratings to be confident (>=5) and a weighted
   // score under 0.4 — those collapse into a drawer at the bottom; mildly
   // negative notes stay visible below the dotted line.
-  const isBuried = (n: NoteRow) => totalVotes(n) >= 5 && score(n) < 0.4;
+  const isBuried = (n: NoteRow) => totalVotes(effective(n)) >= 5 && score(n) < 0.4;
   const aboveWater = orderedNotes.filter((n) => !isUnderwater(n));
   const underwaterNotes = orderedNotes.filter((n) => isUnderwater(n) && !isBuried(n));
   const buriedNotes = orderedNotes.filter((n) => isUnderwater(n) && isBuried(n));
   // Rank by score, then vote volume, then keep content order stable.
   const contentIdx = new Map(orderedNotes.map((n, i) => [n.id, i]));
   const ranked = [...aboveWater].sort(
-    (a, b) => score(b) - score(a) || totalVotes(b) - totalVotes(a) || contentIdx.get(a.id)! - contentIdx.get(b.id)!,
+    (a, b) =>
+      score(b) - score(a) ||
+      totalVotes(effective(b)) - totalVotes(effective(a)) ||
+      contentIdx.get(a.id)! - contentIdx.get(b.id)!,
   );
-  const realNotes = ranked.filter(isLocked);
-  const draftFeed = ranked.filter((n) => !isLocked(n));
+  const realNotes = ranked.filter((n) => isLocked(effective(n)));
+  const draftFeed = ranked.filter((n) => !isLocked(effective(n)));
   const projectNotes: NoteRow[] = [...realNotes.slice(0, 3)];
   const restReal = realNotes.slice(3);
   for (let i = 0; restReal.length > i || draftFeed.length > i * 0; i++) {
@@ -215,6 +310,23 @@ export function App() {
     if (i < restReal.length) projectNotes.push(restReal[i]!);
     if (i < draftFeed.length) projectNotes.push(draftFeed[i]!);
   }
+
+  const renderCard = (note: NoteRow) => (
+    <NoteCard
+      key={note.id}
+      note={note}
+      improvements={improvementsByOriginal.get(note.id) ?? []}
+      commentsByParent={commentsByNote.get(note.id) ?? EMPTY_COMMENT_TREE}
+      commentsApi={commentsApi}
+      projectSlug={selected?.slug ?? ""}
+      myVote={myVotes.get(note.id)}
+      holdActive={voteHolds.has(note.id)}
+      onVote={handleVote}
+      onAuthored={noteAuthored}
+      session={session}
+      onNeedLogin={() => setLoginOpen(true)}
+    />
+  );
 
   return (
     <div className="md:flex">
@@ -250,19 +362,7 @@ export function App() {
           <p className="text-gray-400">No notes yet for this project.</p>
         )}
         <div className="space-y-4">
-          {projectNotes.map((note) => (
-            <NoteCard
-              key={note.id}
-              note={note}
-              draftNotes={draftsByClaim.get(note.claim_id) ?? []}
-              projectSlug={selected?.slug ?? ""}
-              myVotes={myVotes}
-              voteHolds={voteHolds}
-              onVote={handleVote}
-              session={session}
-              onNeedLogin={() => setLoginOpen(true)}
-            />
-          ))}
+          {projectNotes.map(renderCard)}
           {underwaterNotes.length > 0 && (
             <>
               <div className="flex items-center gap-3 pt-4 max-w-xl mx-auto w-full xl:max-w-none" role="separator">
@@ -270,19 +370,7 @@ export function App() {
                 <span className="text-xs text-gray-400">Notes with more negative votes than positive</span>
                 <span className="flex-1 border-t-2 border-dotted border-gray-300" />
               </div>
-              {underwaterNotes.map((note) => (
-                <NoteCard
-                  key={note.id}
-                  note={note}
-                  draftNotes={draftsByClaim.get(note.claim_id) ?? []}
-                  projectSlug={selected?.slug ?? ""}
-                  myVotes={myVotes}
-                  voteHolds={voteHolds}
-                  onVote={handleVote}
-                  session={session}
-                  onNeedLogin={() => setLoginOpen(true)}
-                />
-              ))}
+              {underwaterNotes.map(renderCard)}
             </>
           )}
           {buriedNotes.length > 0 && (
@@ -291,19 +379,7 @@ export function App() {
                 {buriedNotes.length} {buriedNotes.length === 1 ? "note" : "notes"} rated unhelpful — show
               </summary>
               <div className="space-y-4 mt-4">
-                {buriedNotes.map((note) => (
-                  <NoteCard
-                    key={note.id}
-                    note={note}
-                    draftNotes={draftsByClaim.get(note.claim_id) ?? []}
-                    projectSlug={selected?.slug ?? ""}
-                    myVotes={myVotes}
-                    voteHolds={voteHolds}
-                    onVote={handleVote}
-                    session={session}
-                    onNeedLogin={() => setLoginOpen(true)}
-                  />
-                ))}
+                {buriedNotes.map(renderCard)}
               </div>
             </details>
           )}
@@ -318,6 +394,7 @@ export function App() {
           onClose={() => setWriteOpen(false)}
           projectId={selectedId}
           session={session}
+          onAuthored={noteAuthored}
         />
       )}
     </div>
