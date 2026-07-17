@@ -10,9 +10,9 @@ export async function fetchMyVotes(): Promise<Map<string, Vote>> {
 }
 
 /** Cast or change a vote; the counter trigger updates the note live for
- *  everyone. Returns the vote row's id (059) — the key reasoning + donations
- *  hang off — as a separate read so the vote itself never depends on the new
- *  column (an older backend just returns null and the reasoning box stays shut). */
+ *  everyone. Returns the vote row's id (059) — the key the donation
+ *  hangs off — as a separate read so the vote itself never depends on the new
+ *  column (an older backend just returns null and the donation box stays shut). */
 export async function castVote(noteId: string, voterId: string, vote: Vote): Promise<string | null> {
   const { error } = await supabase
     .from("everything_votes")

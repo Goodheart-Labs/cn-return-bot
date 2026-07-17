@@ -44,9 +44,9 @@ export interface NoteSourceRow {
   sort_order: number;
 }
 
-/** A comment on a note. A top-level comment (parent_comment_id null) is a
- *  note-vote's reasoning made public and carries that vote's id; replies nest
- *  to any depth. */
+/** A comment on a note. A top-level comment (parent_comment_id null) is
+ *  written from its vote's donation box and carries that vote's id; replies
+ *  nest to any depth. */
 export interface CommentRow {
   id: string;
   note_id: string;

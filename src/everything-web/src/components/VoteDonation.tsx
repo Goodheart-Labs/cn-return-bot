@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import type { NoteRow } from "../lib/types";
-import { CHARITIES, setDonationCharity, setVoteReasoning, usePreferredCharity, type CharityId } from "../lib/donations";
+import { CHARITIES, setDonationCharity, usePreferredCharity, type CharityId } from "../lib/donations";
 import type { DonationPair } from "../lib/donationScoring";
 import { postComment } from "../lib/comments";
 import { displayName } from "../lib/session";
@@ -58,10 +58,10 @@ function CharityPicker({ charity, onPick }: { charity: CharityId; onPick: (c: Ch
 
 /** Shown right after casting a note vote: the donation this vote minted — an
  *  outcome-contingent pair frozen at vote time — with the charity switchable
- *  inline, plus an optional, ungated reasoning box (Jim, 2026-07-17: reasoning
- *  no longer earns or gates the donation). Private reasoning lives on the vote
- *  row; "post as a comment" makes it a public top-level comment instead. */
-export function VoteReasoning({ note, voteId, pair, session, onCommentAuthored, onClose }: {
+ *  inline, plus a button to write a public comment on the note (a top-level
+ *  comment tied to the vote, ungated). Private vote reasoning was dropped in
+ *  favor of just commenting (Jim, 2026-07-17). */
+export function VoteDonation({ note, voteId, pair, session, onCommentAuthored, onClose }: {
   note: NoteRow;
   voteId: string;
   pair: DonationPair;
@@ -69,9 +69,9 @@ export function VoteReasoning({ note, voteId, pair, session, onCommentAuthored, 
   onCommentAuthored: (commentId: string) => void;
   onClose: () => void;
 }) {
+  const [composing, setComposing] = useState(false);
   const [text, setText] = useState("");
   const [charity, setCharityPref] = usePreferredCharity();
-  const [asComment, setAsComment] = useState(false);
   const [signed, setSigned] = useSignedByline();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -84,24 +84,19 @@ export function VoteReasoning({ note, voteId, pair, session, onCommentAuthored, 
     void setDonationCharity(voteId, c);
   };
 
-  const submit = async () => {
+  const submitComment = async () => {
     setBusy(true);
     setError(null);
     try {
-      if (asComment) {
-        const commentId = await postComment({
-          noteId: note.id,
-          voteId,
-          body: text.trim(),
-          authorId: session.user.id,
-          authorName: signed ? displayName(session) : null,
-        });
-        if (!commentId) return setError("Could not post the comment — try again.");
-        onCommentAuthored(commentId);
-      } else {
-        const { error } = await setVoteReasoning(voteId, text.trim());
-        if (error) return setError(error.message);
-      }
+      const commentId = await postComment({
+        noteId: note.id,
+        voteId,
+        body: text.trim(),
+        authorId: session.user.id,
+        authorName: signed ? displayName(session) : null,
+      });
+      if (!commentId) return setError("Could not post the comment — try again.");
+      onCommentAuthored(commentId);
       setDone(true);
     } catch (err) {
       setError((err as Error).message);
@@ -113,7 +108,7 @@ export function VoteReasoning({ note, voteId, pair, session, onCommentAuthored, 
   if (done) {
     return (
       <div className="mt-2 text-sm rounded-lg p-2 bg-green-50 text-green-800 border border-green-200 flex items-center justify-between gap-2">
-        <span>Thank you! {asComment ? "Your reasoning is posted as a comment." : "Your reasoning was added."}</span>
+        <span>Thank you! Your comment is posted.</span>
         <button onClick={onClose} className="text-xs text-green-700 hover:underline shrink-0">Close</button>
       </div>
     );
@@ -130,29 +125,40 @@ export function VoteReasoning({ note, voteId, pair, session, onCommentAuthored, 
         <strong>${pair.ifNotHelpful.toFixed(2)}</strong> if it ends up rated{" "}
         <span className="font-medium text-red-600">unhelpful</span>.
       </p>
-      <AutoGrowTextarea
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        rows={2}
-        placeholder="Optional: why did you vote this way?"
-        className="bg-white"
-      />
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-        <label className="flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer">
-          <input type="checkbox" checked={asComment} onChange={(e) => setAsComment(e.target.checked)} />
-          Post this as a comment
-        </label>
-        {asComment && <PostAsCheckbox signed={signed} onChange={setSigned} session={session} />}
-      </div>
+      {composing && (
+        <AutoGrowTextarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          rows={2}
+          autoFocus
+          placeholder="Write a comment about this note…"
+          className="bg-white"
+        />
+      )}
       <div className="flex gap-2 items-center">
-        <button
-          onClick={submit}
-          disabled={busy || text.trim().length < 10}
-          className="bg-blue-600 text-white rounded-lg px-3 py-1 text-sm font-medium hover:bg-blue-700 disabled:opacity-40"
-        >
-          {busy ? "Posting…" : asComment ? "Post comment" : "Add reasoning"}
-        </button>
-        <button onClick={onClose} className="text-sm text-gray-500 hover:underline">Close</button>
+        {composing ? (
+          <>
+            <button
+              onClick={submitComment}
+              disabled={busy || text.trim().length < 10}
+              className="bg-blue-600 text-white rounded-lg px-3 py-1 text-sm font-medium hover:bg-blue-700 disabled:opacity-40"
+            >
+              {busy ? "Posting…" : "Post comment"}
+            </button>
+            <button onClick={() => setComposing(false)} className="text-sm text-gray-500 hover:underline">Cancel</button>
+            <PostAsCheckbox signed={signed} onChange={setSigned} session={session} className="ml-auto" />
+          </>
+        ) : (
+          <>
+            <button
+              onClick={() => setComposing(true)}
+              className="bg-blue-600 text-white rounded-lg px-3 py-1 text-sm font-medium hover:bg-blue-700"
+            >
+              Write a comment
+            </button>
+            <button onClick={onClose} className="text-sm text-gray-500 hover:underline">Close</button>
+          </>
+        )}
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
     </div>

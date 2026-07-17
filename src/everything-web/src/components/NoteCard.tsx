@@ -11,7 +11,7 @@ import type { Vote } from "../lib/votes";
 import { noteStatus, type NoteStatus } from "../lib/noteScore";
 import { NoteMenu } from "./NoteMenu";
 import { CommentThread, type CommentsApi } from "./CommentThread";
-import { VoteReasoning } from "./VoteReasoning";
+import { VoteDonation } from "./VoteDonation";
 
 /** Community-Notes rating states: icon, copy, box tint, and the footer ask.
  *  Halfway to X-CN grammar (Nathan, 2026-07-14): our own badge + wording, but
@@ -356,7 +356,7 @@ export function NoteCard({ note, improvements, commentsByParent, commentsApi, pr
 }) {
   const [ctxOpen, setCtxOpen] = useState(false);
   // Set right after casting a vote — the just-cast vote and its frozen
-  // donation pair, which open the donation/reasoning box beneath the pills.
+  // donation pair, which open the donation box beneath the pills.
   // Cleared on retract.
   const [cast, setCast] = useState<VoteCast | null>(null);
   const cardColRef = useRef<HTMLDivElement>(null);
@@ -414,7 +414,7 @@ export function NoteCard({ note, improvements, commentsByParent, commentsApi, pr
           <ResortCountdown active={holdActive} key={`${note.helpful_count}-${note.somewhat_helpful_count}-${note.not_helpful_count}`} />
         </NoteBox>
         {cast && myVote !== undefined && session && (
-          <VoteReasoning
+          <VoteDonation
             note={note}
             voteId={cast.voteId}
             pair={cast.pair}

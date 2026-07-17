@@ -1,9 +1,9 @@
 import { supabase } from "./supabase";
 import type { Vote } from "./votes";
 
-/** Insert a comment and return its id. Top-level comments carry the vote whose
- *  reasoning they publish; replies carry a parent instead. The DB trigger
- *  auto-casts the author's helpful vote. */
+/** Insert a comment and return its id. Top-level comments come from the
+ *  post-vote donation box and carry the vote they accompany; replies carry a
+ *  parent instead. The DB trigger auto-casts the author's helpful vote. */
 export async function postComment(params: {
   noteId: string;
   body: string;

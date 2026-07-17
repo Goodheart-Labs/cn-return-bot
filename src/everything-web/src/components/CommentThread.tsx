@@ -125,8 +125,9 @@ function OwnCommentMenu({ onDelete }: { onDelete: () => void }) {
   );
 }
 
-/** The note's comment thread: top-level comments are votes-with-reasoning made
- *  public; replies nest Reddit-style beneath them. Collapsed by default —
+/** The note's comment thread: top-level comments are written from the
+ *  post-vote donation box; replies nest Reddit-style beneath them. Collapsed
+ *  by default —
  *  the header row is the toggle. A cyclic parent chain (bad row) is simply
  *  unreachable from the top-level roots, so recursion is safe. */
 export function CommentThread({ note, byParent, api, session, onNeedLogin }: {

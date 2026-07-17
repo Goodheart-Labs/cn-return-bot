@@ -47,7 +47,7 @@ export function App() {
   const [itemFilter, setItemFilter] = useState<string | null>(() => readRoute().item);
   const [myVotes, setMyVotes] = useState<Map<string, Vote>>(new Map());
   const [myCommentVotes, setMyCommentVotes] = useState<Map<string, Vote>>(new Map());
-  // A fresh vote's donation starts at the remembered charity; the reasoning
+  // A fresh vote's donation starts at the remembered charity; the donation
   // box lets the voter redirect it afterwards.
   const [preferredCharity] = usePreferredCharity();
   const [loginOpen, setLoginOpen] = useState(false);

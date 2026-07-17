@@ -40,9 +40,3 @@ export function saveDonation(voteId: string, charity: CharityId, pair: DonationP
 export function setDonationCharity(voteId: string, charity: CharityId) {
   return supabase.from("everything_donations").update({ charity }).eq("vote_id", voteId);
 }
-
-/** Attach private reasoning to the caller's own vote row. (Reasoning posted as
- *  a comment lives on the comment instead.) */
-export function setVoteReasoning(voteId: string, reasoning: string) {
-  return supabase.from("everything_votes").update({ reasoning }).eq("id", voteId);
-}
