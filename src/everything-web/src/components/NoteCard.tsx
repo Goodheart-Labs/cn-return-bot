@@ -364,7 +364,7 @@ export function NoteCard({ note, improvements, commentsByParent, commentsApi, pr
   const paragraph = claim?.context_paragraph;
   const quoteInParagraph = claim?.context_quote ?? claim?.claim ?? "";
   return (
-    <div id={`note-${note.id}`} className="scroll-mt-4 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,36rem)_minmax(0,1fr)] xl:gap-5 items-start">
+    <div id={`note-${note.id}`} className="scroll-mt-4 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,40rem)_minmax(0,1fr)] xl:gap-5 items-start">
       {paragraph && claim && (
         <div className="hidden xl:block xl:col-start-1 xl:row-start-1">
           <ContextParagraph paragraph={paragraph} quote={quoteInParagraph} fitTo={cardColRef} />
@@ -372,7 +372,7 @@ export function NoteCard({ note, improvements, commentsByParent, commentsApi, pr
       )}
       {paragraph && claim && (
         <div
-          className="xl:hidden w-full max-w-xl mx-auto"
+          className="xl:hidden w-full max-w-[40rem] mx-auto"
           style={{ display: "grid", gridTemplateRows: ctxOpen ? "1fr" : "0fr", transition: "grid-template-rows 300ms ease" }}
           aria-hidden={!ctxOpen}
         >
@@ -383,7 +383,7 @@ export function NoteCard({ note, improvements, commentsByParent, commentsApi, pr
           </div>
         </div>
       )}
-      <div ref={cardColRef} className="bg-white rounded-lg border border-gray-200 p-4 w-full max-w-xl mx-auto xl:max-w-none xl:mx-0 xl:col-start-2 xl:row-start-1">
+      <div ref={cardColRef} className="bg-white rounded-lg border border-gray-200 p-4 w-full max-w-[40rem] mx-auto xl:max-w-none xl:mx-0 xl:col-start-2 xl:row-start-1">
       {claim && (
         <div className="mb-3">
           {claim.image_urls?.length > 0 && <ClaimImages urls={claim.image_urls} />}

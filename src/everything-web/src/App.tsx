@@ -365,7 +365,7 @@ export function App() {
           {projectNotes.map(renderCard)}
           {underwaterNotes.length > 0 && (
             <>
-              <div className="flex items-center gap-3 pt-4 max-w-xl mx-auto w-full xl:max-w-none" role="separator">
+              <div className="flex items-center gap-3 pt-4 max-w-[40rem] mx-auto w-full xl:max-w-none" role="separator">
                 <span className="flex-1 border-t-2 border-dotted border-gray-300" />
                 <span className="text-xs text-gray-400">Notes with more negative votes than positive</span>
                 <span className="flex-1 border-t-2 border-dotted border-gray-300" />
@@ -374,7 +374,7 @@ export function App() {
             </>
           )}
           {buriedNotes.length > 0 && (
-            <details className="max-w-xl mx-auto w-full xl:max-w-none pt-2">
+            <details className="max-w-[40rem] mx-auto w-full xl:max-w-none pt-2">
               <summary className="text-xs text-gray-400 cursor-pointer select-none text-center">
                 {buriedNotes.length} {buriedNotes.length === 1 ? "note" : "notes"} rated unhelpful — show
               </summary>
