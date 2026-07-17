@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import type { NoteRow } from "../lib/types";
-import { CHARITIES, saveDonation, setVoteReasoning, type CharityId } from "../lib/donations";
+import { CHARITIES, saveDonation, setVoteReasoning, usePreferredCharity, type CharityId } from "../lib/donations";
 import { postComment } from "../lib/comments";
 import { isEarnestNote } from "../lib/judgeNote";
 import { displayName } from "../lib/session";
@@ -68,7 +68,7 @@ export function VoteReasoning({ note, voteId, session, onCommentAuthored, onClos
   onClose: () => void;
 }) {
   const [text, setText] = useState("");
-  const [charity, setCharity] = useState<CharityId>(CHARITIES[0].id);
+  const [charity, setCharity] = usePreferredCharity();
   const [asComment, setAsComment] = useState(false);
   const [signed, setSigned] = useState(false);
   const [busy, setBusy] = useState(false);
