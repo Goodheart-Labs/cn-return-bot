@@ -8,7 +8,8 @@
     "src/everything-web/src/main.tsx",
     "src/everything-extension/entrypoints/**/*.{ts,tsx}",
     "src/everything-extension/wxt.config.ts",
-    "src/everything-extension/tailwind.config.ts"
+    "src/everything-extension/tailwind.config.ts",
+    "src/everything-extension/**/*.test.ts"
   ],
   "project": [
     "src/**/*.{ts,tsx}"

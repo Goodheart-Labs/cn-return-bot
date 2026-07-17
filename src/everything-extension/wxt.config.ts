@@ -29,7 +29,7 @@ export default defineConfig({
       // origins, so WXT can't know its CSS's matches — it emits an empty list,
       // which would block the shadow-root UI from fetching the stylesheet.
       for (const resource of manifest.web_accessible_resources ?? []) {
-        if ("resources" in resource && resource.resources.includes("content-scripts/generic.css")) {
+        if (typeof resource === "object" && "resources" in resource && resource.resources.includes("content-scripts/generic.css")) {
           resource.matches = ["<all_urls>"];
         }
       }

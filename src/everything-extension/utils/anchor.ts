@@ -22,18 +22,21 @@ export interface TextIndex {
 
 const SKIPPED_TAGS = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "TEMPLATE"]);
 
+// NodeFilter.SHOW_TEXT inlined: the global isn't defined outside real
+// browsers (e.g. under bun test with linkedom).
+const SHOW_TEXT = 0x4;
+
+// The skip check runs inside the walk loop, not as a TreeWalker filter —
+// linkedom (the test environment) ignores filter callbacks.
+function isSkipped(node: Text): boolean {
+  const parent = node.parentElement;
+  return !parent || SKIPPED_TAGS.has(parent.tagName) || !!parent.closest("[hidden]");
+}
+
 /** Walk the container's text nodes into one searchable normalized string. */
 export function indexContainer(container: Element): TextIndex {
   const doc = container.ownerDocument;
-  const walker = doc.createTreeWalker(container, NodeFilter.SHOW_TEXT, {
-    acceptNode(node) {
-      const parent = (node as Text).parentElement;
-      if (!parent || SKIPPED_TAGS.has(parent.tagName) || parent.closest("[hidden]")) {
-        return NodeFilter.FILTER_REJECT;
-      }
-      return NodeFilter.FILTER_ACCEPT;
-    },
-  });
+  const walker = doc.createTreeWalker(container, SHOW_TEXT);
 
   const segments: { node: Text; start: number }[] = [];
   let norm = "";
@@ -44,6 +47,7 @@ export function indexContainer(container: Element): TextIndex {
   let gapStart = -1;
 
   for (let node = walker.nextNode() as Text | null; node; node = walker.nextNode() as Text | null) {
+    if (isSkipped(node)) continue;
     segments.push({ node, start: rawLength });
     const text = node.data;
     for (let i = 0; i < text.length; i++) {
@@ -104,9 +108,15 @@ function locate(segments: TextIndex["segments"], rawOffset: number): { node: Tex
   return { node: seg.node, offset: Math.min(rawOffset - seg.start, seg.node.data.length) };
 }
 
+export interface QuoteMatch {
+  start: { node: Text; offset: number };
+  /** Position of the match's LAST character (inclusive). */
+  end: { node: Text; offset: number };
+}
+
 /** Find a quote in the indexed container. Exact normalized match first, then
  *  the edge-words fallback. Null when the quote can't be located. */
-export function findQuoteRange(index: TextIndex, quote: string): Range | null {
+export function findQuoteMatch(index: TextIndex, quote: string): QuoteMatch | null {
   if (index.segments.length === 0) return null;
   const normQuote = normalizeText(quote);
   if (normQuote.length < MIN_MATCH_CHARS) return null;
@@ -119,13 +129,18 @@ export function findQuoteRange(index: TextIndex, quote: string): Range | null {
     ({ start, length } = edge);
   }
 
-  const rawStart = index.normToRaw[start]!;
-  const rawLast = index.normToRaw[start + length - 1]!;
-  const doc = index.segments[0]!.node.ownerDocument;
-  const range = doc.createRange();
-  const s = locate(index.segments, rawStart);
-  const e = locate(index.segments, rawLast);
-  range.setStart(s.node, s.offset);
-  range.setEnd(e.node, Math.min(e.offset + 1, e.node.data.length));
+  return {
+    start: locate(index.segments, index.normToRaw[start]!),
+    end: locate(index.segments, index.normToRaw[start + length - 1]!),
+  };
+}
+
+/** findQuoteMatch as a live DOM Range. */
+export function findQuoteRange(index: TextIndex, quote: string): Range | null {
+  const match = findQuoteMatch(index, quote);
+  if (!match) return null;
+  const range = match.start.node.ownerDocument.createRange();
+  range.setStart(match.start.node, match.start.offset);
+  range.setEnd(match.end.node, Math.min(match.end.offset + 1, match.end.node.data.length));
   return range;
 }
