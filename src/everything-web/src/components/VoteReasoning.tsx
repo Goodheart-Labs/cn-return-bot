@@ -56,11 +56,6 @@ function CharityPicker({ charity, onPick }: { charity: CharityId; onPick: (c: Ch
   );
 }
 
-const HOW_AMOUNTS_WORK =
-  "The donation equals the information your vote adds about how the note will end up rated: " +
-  "early votes that shift the consensus earn more than late pile-ons, and correcting a wrong " +
-  "consensus earns most. The amounts were fixed the moment you voted — later votes never change them.";
-
 /** Shown right after casting a note vote: the donation this vote minted — an
  *  outcome-contingent pair frozen at vote time — with the charity switchable
  *  inline, plus an optional, ungated reasoning box (Jim, 2026-07-17: reasoning
@@ -131,10 +126,7 @@ export function VoteReasoning({ note, voteId, pair, session, onCommentAuthored, 
       <p className="text-sm text-gray-700">
         We'll donate <strong>${pair.ifHelpful.toFixed(2)}</strong> to{" "}
         <CharityPicker charity={charity} onPick={pickCharity} /> if this note ends up rated
-        helpful — or <strong>${pair.ifNotHelpful.toFixed(2)}</strong> if not.{" "}
-        <span className="text-gray-400 cursor-help underline decoration-dotted" title={HOW_AMOUNTS_WORK}>
-          why these amounts?
-        </span>
+        helpful — or <strong>${pair.ifNotHelpful.toFixed(2)}</strong> if not.
       </p>
       <AutoGrowTextarea
         value={text}
