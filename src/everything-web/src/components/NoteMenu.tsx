@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
-import { supabase } from "../lib/supabase";
-import { noteUrl } from "../lib/routing";
-import { displayName } from "../lib/session";
-import { isEarnestNote } from "../lib/judgeNote";
-import type { NoteRow } from "../lib/types";
+import { supabase } from "../../../everything-shared/supabase";
+import { displayName } from "../../../everything-shared/session";
+import { postImprovement } from "../../../everything-shared/postNote";
+import type { NoteRow } from "../../../everything-shared/types";
 
 /** One row of the ⋯ dropdown: muted icon, medium-weight label, rounded hover;
  *  danger rows go red with a red hover wash. */
@@ -73,9 +72,9 @@ function QuoteIcon() {
 /** Bottom-right ⋯ menu on every note: suggest an improvement (posts your own
  *  draft note on the same claim, shown alongside the original), share a deep
  *  link, and — on notes you wrote — delete. */
-export function NoteMenu({ note, projectSlug, session, onNeedLogin, sourcesOpen, onToggleSources }: {
+export function NoteMenu({ note, shareUrl, session, onNeedLogin, sourcesOpen, onToggleSources }: {
   note: NoteRow;
-  projectSlug: string;
+  shareUrl: string;
   session: Session | null;
   onNeedLogin: () => void;
   sourcesOpen?: boolean;
@@ -99,7 +98,7 @@ export function NoteMenu({ note, projectSlug, session, onNeedLogin, sourcesOpen,
 
   const share = async () => {
     setOpen(false);
-    await navigator.clipboard.writeText(noteUrl(projectSlug, note.id));
+    await navigator.clipboard.writeText(shareUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
@@ -176,23 +175,11 @@ function ImproveEditor({ note, session, onClose }: {
     setBusy(true);
     setError(null);
     setRejected(false);
-    try {
-      const earnest = await isEarnestNote(text.trim(), note.claim?.context_quote ?? "", note.note);
-      if (!earnest) return setRejected(true);
-      const { error } = await supabase.from("everything_notes").insert({
-        claim_id: note.claim_id,
-        note: text.trim(),
-        author_id: session.user.id,
-        author_name: signed ? displayName(session) : null,
-        status: "draft",
-      });
-      if (error) return setError(error.message);
-      onClose();
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setBusy(false);
-    }
+    const outcome = await postImprovement({ note, text, session, signed });
+    setBusy(false);
+    if (outcome.type === "rejected") return setRejected(true);
+    if (outcome.type === "error") return setError(outcome.message);
+    onClose();
   };
 
   return (

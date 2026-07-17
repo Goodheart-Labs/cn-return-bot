@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { useLiveData } from "./lib/useLiveData";
-import { useSession, signOut } from "./lib/auth";
-import { castVote, clearVote, fetchMyVotes, type Vote } from "./lib/votes";
+import { useSession, signOut } from "../../everything-shared/auth";
+import { castVote, clearVote, fetchMyVotes, type Vote } from "../../everything-shared/votes";
 import { readRoute, pushProject, pushItem } from "./lib/routing";
 import { Sidebar } from "./components/Sidebar";
 
@@ -31,8 +31,8 @@ import { WriteNoteModal } from "./components/WriteNoteModal";
 import { NoteCard } from "./components/NoteCard";
 import { ItemChips } from "./components/ItemChips";
 import { DesignMenu } from "./components/DesignMenu";
-import type { NoteRow } from "./lib/types";
-import { byPromotion, isLocked, totalVotes, weight } from "./lib/noteScore";
+import type { NoteRow } from "../../everything-shared/types";
+import { byPromotion, isLocked, totalVotes, weight } from "../../everything-shared/noteScore";
 
 export function App() {
   const { projects, items, notes, loaded } = useLiveData();

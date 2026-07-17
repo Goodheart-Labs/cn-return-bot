@@ -5,9 +5,10 @@ import { LinkifiedText } from "../../../dashboard-shared/LinkifiedText";
 import { VoteRatings } from "../../../dashboard-shared/Ratings";
 import { quoteFragmentUrl } from "../../../dashboard-shared/textFragment";
 import type { NotedContent } from "../../../dashboard-shared/types";
-import type { ClaimRef, NoteRow, NoteSourceRow } from "../lib/types";
-import type { Vote } from "../lib/votes";
-import { noteStatus, type NoteStatus } from "../lib/noteScore";
+import type { ClaimRef, NoteRow, NoteSourceRow } from "../../../everything-shared/types";
+import type { Vote } from "../../../everything-shared/votes";
+import { noteStatus, type NoteStatus } from "../../../everything-shared/noteScore";
+import { noteUrl } from "../lib/routing";
 import { NoteMenu } from "./NoteMenu";
 
 /** Community-Notes rating states: icon, copy, box tint, and the footer ask.
@@ -21,7 +22,7 @@ const STATUS: Record<NoteStatus, { label: string; color: string; box: string; as
 
 /** The status badge shown above a note: a filled circle (with a ✓/✕ glyph for
  *  the decided states) and its Community-Notes copy. */
-function StatusBadge({ status }: { status: NoteStatus }) {
+export function StatusBadge({ status }: { status: NoteStatus }) {
   const { label, color } = STATUS[status];
   return (
     <div className="flex items-center gap-1.5 text-sm font-semibold text-gray-700">
@@ -225,7 +226,7 @@ function ContextParagraph({ paragraph, quote, bare, fitTo }: {
 /** The note as one self-contained unit, X-CN style: a rating-status badge on
  *  top, the note text, and the rating pills inside the same box; the box tint
  *  follows the status (helpful/needs-ratings/not-helpful). */
-function NoteBox({ note, sourcesOpen, children }: {
+export function NoteBox({ note, sourcesOpen, children }: {
   note: NoteRow;
   sourcesOpen?: boolean;
   children?: React.ReactNode;
@@ -254,13 +255,13 @@ function NoteBox({ note, sourcesOpen, children }: {
  *  improvement or the original AI note it outscored. Votable and carrying the
  *  same ⋯ menu (delete shows only to its author); if it climbs above the
  *  promoted note it swaps up to the top on the next render. */
-function AlternativeNote({ note, myVote, onVote, session, holdActive, projectSlug, onNeedLogin }: {
+export function AlternativeNote({ note, myVote, onVote, session, holdActive, shareUrl, onNeedLogin }: {
   note: NoteRow;
   myVote: Vote | undefined;
   onVote: (note: NoteRow, vote: Vote) => void;
   session: Session | null;
   holdActive?: boolean;
-  projectSlug: string;
+  shareUrl: string;
   onNeedLogin: () => void;
 }) {
   const [sourcesOpen, setSourcesOpen] = useState(false);
@@ -278,7 +279,7 @@ function AlternativeNote({ note, myVote, onVote, session, holdActive, projectSlu
       </NoteBox>
       <NoteMenu
         note={note}
-        projectSlug={projectSlug}
+        shareUrl={shareUrl}
         session={session}
         onNeedLogin={onNeedLogin}
         sourcesOpen={sourcesOpen}
@@ -360,7 +361,7 @@ export function NoteCard({ note, draftNotes, projectSlug, myVotes, voteHolds, on
 
       <NoteMenu
         note={note}
-        projectSlug={projectSlug}
+        shareUrl={noteUrl(projectSlug, note.id)}
         session={session}
         onNeedLogin={onNeedLogin}
         sourcesOpen={sourcesOpen}
@@ -379,7 +380,7 @@ export function NoteCard({ note, draftNotes, projectSlug, myVotes, voteHolds, on
               onVote={onVote}
               session={session}
               holdActive={voteHolds.has(d.id)}
-              projectSlug={projectSlug}
+              shareUrl={noteUrl(projectSlug, d.id)}
               onNeedLogin={onNeedLogin}
             />
           ))}

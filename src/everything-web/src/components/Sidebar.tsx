@@ -1,4 +1,4 @@
-import type { ProjectRow } from "../lib/types";
+import type { ProjectRow } from "../../../everything-shared/types";
 
 const DESCRIPTION =
   "Common Notes is an attempt to bring Community Notes everywhere: podcasts, newsletters, and beyond. This is in alpha, but voting works.";

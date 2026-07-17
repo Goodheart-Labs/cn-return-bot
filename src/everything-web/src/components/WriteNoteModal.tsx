@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
-import { supabase } from "../lib/supabase";
-import { displayName } from "../lib/session";
-import { isEarnestNote } from "../lib/judgeNote";
+import { supabase } from "../../../everything-shared/supabase";
+import { displayName } from "../../../everything-shared/session";
+import { postClaimWithNote } from "../../../everything-shared/postNote";
 
 interface SourceItem {
   id: string;
@@ -90,40 +90,19 @@ export function WriteNoteModal({ open, onClose, projectId, session }: {
     setBusy(true);
     setError(null);
     setRejected(false);
-    try {
-      // Judge earnest-vs-trolling BEFORE creating anything, so a rejected note
-      // leaves no orphan claim behind.
-      const earnest = await isEarnestNote(note.trim(), anchorText.trim());
-      if (!earnest) return setRejected(true);
-      const { data: claim, error: claimError } = await supabase
-        .from("everything_claims")
-        .insert({
-          item_id: anchorItem.id,
-          claim: anchorText.trim().slice(0, 300),
-          judgement: "user",
-          context_quote: anchorText.trim(),
-          context_url: anchorItem.url,
-          status: "note",
-          created_by: session.user.id,
-        })
-        .select("id")
-        .single();
-      if (claimError || !claim) return setError(claimError?.message ?? "could not create the claim");
-      const { error: noteError } = await supabase.from("everything_notes").insert({
-        claim_id: claim.id,
-        note: note.trim(),
-        author_id: session.user.id,
-        author_name: signed ? displayName(session) : null,
-        status: "draft",
-      });
-      if (noteError) return setError(noteError.message);
-      reset();
-      onClose();
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setBusy(false);
-    }
+    const outcome = await postClaimWithNote({
+      itemId: anchorItem.id,
+      itemUrl: anchorItem.url,
+      anchorText,
+      note,
+      session,
+      signed,
+    });
+    setBusy(false);
+    if (outcome.type === "rejected") return setRejected(true);
+    if (outcome.type === "error") return setError(outcome.message);
+    reset();
+    onClose();
   };
 
   const windowStart = hit ? Math.max(0, hit.index - WINDOW / 2) : 0;

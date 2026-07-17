@@ -15,6 +15,7 @@ import { stripJsonFences } from "../../pipeline/utils/jsonOutput";
 import type { SubtitleCue } from "../../pipeline/media/ytDlpDownload";
 import { IMAGE_MARKER_RE } from "../sources/substack";
 import type { ClaimAnchor, ExtractedClaim, FetchedContent } from "../types";
+import { normalizeText } from "../../everything-shared/normalizeText";
 
 /** A multimodal message part: plain text or an image the model can see. */
 type ContentPart = { type: "text"; text: string } | { type: "image_url"; image_url: { url: string } };
@@ -143,10 +144,6 @@ function buildVideoLink(videoId: string, seconds: number): string {
   return `https://www.youtube.com/watch?v=${videoId}&t=${Math.max(0, Math.floor(seconds))}s`;
 }
 
-function normalize(s: string): string {
-  return s.toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
-}
-
 /**
  * Time span of a context excerpt: the earliest start and latest end among the
  * cues whose text falls inside the (verbatim) context. start → deep-link,
@@ -154,12 +151,12 @@ function normalize(s: string): string {
  */
 const MIN_SNAP_MATCH_CHARS = 12;
 function contextTimeSpan(context: string, cues: SubtitleCue[]): { start?: number; end?: number } {
-  const ctx = normalize(context);
+  const ctx = normalizeText(context);
   if (!ctx) return {};
   let start: number | undefined;
   let end: number | undefined;
   for (const cue of cues) {
-    const t = normalize(cue.text);
+    const t = normalizeText(cue.text);
     if (t.length >= MIN_SNAP_MATCH_CHARS && ctx.includes(t)) {
       if (start === undefined || cue.start < start) start = cue.start;
       if (end === undefined || cue.end > end) end = cue.end;
