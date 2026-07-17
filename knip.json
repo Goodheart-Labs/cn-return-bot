@@ -1,9 +1,47 @@
 {
-  "entry": ["src/production/*.ts", "src/local/*.ts", "src/scraper/*.ts", "src/reports/*.ts", "src/stats-dashboard/src/main.tsx", "src/everything-web/src/main.tsx"],
-  "project": ["src/**/*.{ts,tsx}"],
-  "ignore": ["src/elo-rating-web/**", "src/scripts_jim/**", "src/scripts_nathan/**", "src/pipeline/orchestration/updateWritingLimit.ts", "src/pipeline/misinfo-monitoring/**", "src/pipeline/prompts/misinfo-monitoring/**"],
-  "ignoreDependencies": ["@types/p-queue", "papaparse", "@types/papaparse", "react", "@types/react", "react-dom", "@types/react-dom", "react-json-view-lite", "@vitejs/plugin-react", "exa-js"],
+  "entry": [
+    "src/production/*.ts",
+    "src/local/*.ts",
+    "src/scraper/*.ts",
+    "src/reports/*.ts",
+    "src/stats-dashboard/src/main.tsx",
+    "src/everything-web/src/main.tsx",
+    "src/everything-extension/entrypoints/**/*.{ts,tsx}",
+    "src/everything-extension/wxt.config.ts",
+    "src/everything-extension/tailwind.config.ts"
+  ],
+  "project": [
+    "src/**/*.{ts,tsx}"
+  ],
+  "ignore": [
+    "src/elo-rating-web/**",
+    "src/scripts_jim/**",
+    "src/scripts_nathan/**",
+    "src/pipeline/orchestration/updateWritingLimit.ts",
+    "src/pipeline/misinfo-monitoring/**",
+    "src/pipeline/prompts/misinfo-monitoring/**"
+  ],
+  "ignoreDependencies": [
+    "@types/p-queue",
+    "papaparse",
+    "@types/papaparse",
+    "react",
+    "@types/react",
+    "react-dom",
+    "@types/react-dom",
+    "react-json-view-lite",
+    "@vitejs/plugin-react",
+    "exa-js",
+    "@wxt-dev/module-react"
+  ],
   "ignoreExportsUsedInFile": true,
-  "exclude": ["types"],
-  "ignoreWorkspaces": ["src/review-dashboard"]
+  "exclude": [
+    "types"
+  ],
+  "ignoreWorkspaces": [
+    "src/review-dashboard"
+  ],
+  "ignoreUnresolved": [
+    "#imports"
+  ]
 }

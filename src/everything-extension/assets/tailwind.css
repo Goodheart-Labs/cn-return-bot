@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Mirrors everything-web/index.html: system font stack (deliberately no
+ * TwitterChirp) and the vote-hold countdown keyframes. Scoped to the shadow
+ * root this sheet is injected into. */
+:host {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #111827;
+}
+
+@keyframes cn-countdown {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: 44; }
+}
