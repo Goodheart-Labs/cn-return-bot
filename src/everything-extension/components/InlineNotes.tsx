@@ -3,11 +3,10 @@ import type { Session } from "@supabase/supabase-js";
 import { VoteRatings } from "../../dashboard-shared/Ratings";
 import { NoteBox, AlternativeNote } from "../../everything-web/src/components/NoteCard";
 import { NoteMenu } from "../../everything-web/src/components/NoteMenu";
-import { useSession } from "../../everything-shared/auth";
-import { castVote, clearVote, fetchMyVotes, type Vote } from "../../everything-shared/votes";
-import { fetchNote } from "../../everything-shared/notesQuery";
+import type { Vote } from "../../everything-shared/votes";
 import type { NoteRow } from "../../everything-shared/types";
 import { noteShareUrl } from "../utils/share";
+import { useNoteVoting, replaceNoteInGroup } from "./useNoteVoting";
 
 /** One anchored claim: its notes (promoted order) and where it sits on the page. */
 export interface AnchoredGroup {
@@ -100,21 +99,15 @@ export function InlineNotesApp({ groups: initialGroups, projectSlug }: {
   groups: AnchoredGroup[];
   projectSlug: string | null;
 }) {
-  const { session } = useSession();
   const [groups, setGroups] = useState(initialGroups);
   const [openClaim, setOpenClaim] = useState<string | null>(null);
-  const [signInHint, setSignInHint] = useState(false);
-  const [myVotes, setMyVotes] = useState<Map<string, Vote>>(new Map());
-  const onNeedLogin = () => setSignInHint(true);
+  const { session, myVotes, handleVote, onNeedLogin, signInHint, dismissSignInHint } = useNoteVoting(
+    (updated) => setGroups((prev) => prev.map((g) => replaceNoteInGroup(g, updated))),
+  );
   // Bumped on resize so positions derived from ranges recompute.
   const [, setLayoutTick] = useState(0);
 
   useEffect(() => setGroups(initialGroups), [initialGroups]);
-
-  useEffect(() => {
-    if (!session) return setMyVotes(new Map());
-    fetchMyVotes().then(setMyVotes);
-  }, [session]);
 
   useEffect(() => {
     let raf = 0;
@@ -147,31 +140,6 @@ export function InlineNotesApp({ groups: initialGroups, projectSlug }: {
     return () => runtime?.onMessage.removeListener(listener);
   }, [groups]);
 
-  const replaceNote = (updated: NoteRow) => {
-    setGroups((prev) => prev.map((g) => ({
-      ...g,
-      primary: g.primary.id === updated.id ? { ...updated, claim: g.primary.claim } : g.primary,
-      alternatives: g.alternatives.map((a) => (a.id === updated.id ? { ...updated, claim: a.claim } : a)),
-    })));
-  };
-
-  const handleVote = async (note: NoteRow, vote: Vote) => {
-    if (!session) return onNeedLogin();
-    const current = myVotes.get(note.id);
-    const next = new Map(myVotes);
-    if (current === vote) {
-      next.delete(note.id);
-      setMyVotes(next);
-      await clearVote(note.id);
-    } else {
-      next.set(note.id, vote);
-      setMyVotes(next);
-      await castVote(note.id, session.user.id, vote);
-    }
-    const fresh = await fetchNote(note.id); // trigger-computed counts
-    if (fresh) replaceNote(fresh);
-  };
-
   const positioned = useMemo(() => groups.map((group) => {
     const rect = pageRect(group.range);
     // Clamp the popover into the viewport width; drop below the passage.
@@ -199,7 +167,7 @@ export function InlineNotesApp({ groups: initialGroups, projectSlug }: {
       {signInHint && (
         <div className="fixed top-4 right-4 z-50 bg-white border border-gray-200 rounded-xl shadow-xl p-3 text-sm text-gray-700 flex items-center gap-3">
           Sign in from the Common Notes toolbar icon to vote or write notes.
-          <button onClick={() => setSignInHint(false)} className="text-gray-400 hover:text-gray-600">✕</button>
+          <button onClick={dismissSignInHint} className="text-gray-400 hover:text-gray-600">✕</button>
         </div>
       )}
       {positioned.map(({ group, badgeStyle, popoverStyle }) => (
