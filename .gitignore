@@ -129,3 +129,6 @@ datasets/query_writer_eval/runs/
 # WXT browser-extension build output
 src/everything-extension/.wxt/
 src/everything-extension/.output/
+
+# Chrome extension private key (public half is pinned in wxt.config.ts)
+src/everything-extension/chrome-signing-key.pem

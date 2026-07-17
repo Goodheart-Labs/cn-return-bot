@@ -1,0 +1,35 @@
+# Common Notes browser extension
+
+Community notes inline on the pages you read — Substack, YouTube, and (opt-in per site) any text site, backed by the same Supabase database as [commonnotes.net](https://commonnotes.net).
+
+## Install without a store (self-distribution)
+
+Download the latest build from the repo's **[extension-latest release](../../../../releases/tag/extension-latest)** (updated automatically from `main`).
+
+### Chrome / Edge / Brave
+
+1. Download `common-notes-<version>-chrome.zip` and unzip it.
+2. Open `chrome://extensions`, turn on **Developer mode** (top right).
+3. Click **Load unpacked** and pick the unzipped folder.
+
+Because the manifest pins a public key, every install gets the same extension ID (`jodkhmefbcmgldokmeicpdogkepmcnij`), so sign-in with X works the same for everyone. Chrome shows a "developer mode extensions" reminder on startup — that's expected for non-store installs.
+
+### Firefox
+
+Release Firefox only runs **signed** extensions, so the raw zip can't be installed permanently:
+
+- **Temporary (works today):** open `about:debugging#/runtime/this-firefox` → **Load Temporary Add-on…** → pick the `-firefox.zip`. Gone after a restart.
+- **Permanent:** the zip must be signed once through Mozilla's *unlisted* (self-distribution) channel — automated, usually minutes, no store review. The signed `.xpi` can then be attached to the release and installs like any file. Not set up yet.
+
+## Development
+
+```bash
+bun run dev-ext     # WXT dev mode; load .output/chrome-mv3 unpacked once
+bun run build-ext   # chrome + firefox production builds (--mode prod-backend)
+bun run zip-ext     # store-ready zips into .output/
+bun test src/everything-extension   # anchor-engine tests
+```
+
+`chrome-signing-key.pem` (gitignored) is the private half of the pinned manifest key — only needed to claim the same extension ID when publishing to the Chrome Web Store later. Back it up; don't commit it.
+
+See the "Browser extension" section of the repo's `CLAUDE.md` for architecture, auth flows, and the Supabase dashboard prerequisites.

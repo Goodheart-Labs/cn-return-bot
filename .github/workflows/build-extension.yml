@@ -1,7 +1,8 @@
 name: Build Extension
 
-# Zips the Common Notes browser extension (Chrome MV3 + Firefox) as workflow
-# artifacts. Store publishing stays manual — download the zips from the run.
+# Zips the Common Notes browser extension (Chrome MV3 + Firefox) and keeps the
+# rolling "extension-latest" GitHub release updated so people can install it
+# without waiting for store approval (see src/everything-extension/README.md).
 
 on:
   push:
@@ -17,7 +18,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write # rolling release upload
 
 jobs:
   build:
@@ -46,3 +47,12 @@ jobs:
         with:
           name: common-notes-extension
           path: src/everything-extension/.output/*.zip
+
+      - name: Update rolling release (extension-latest)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view extension-latest > /dev/null 2>&1 || gh release create extension-latest \
+            --title "Common Notes extension (latest)" \
+            --notes "Latest build from main. Install instructions: src/everything-extension/README.md"
+          gh release upload extension-latest src/everything-extension/.output/*.zip --clobber
