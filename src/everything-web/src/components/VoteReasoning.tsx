@@ -1,16 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import type { NoteRow } from "../lib/types";
-import { CHARITIES, saveDonation, setVoteReasoning, usePreferredCharity, type CharityId } from "../lib/donations";
+import { CHARITIES, setDonationCharity, setVoteReasoning, usePreferredCharity, type CharityId } from "../lib/donations";
+import type { DonationPair } from "../lib/donationScoring";
 import { postComment } from "../lib/comments";
-import { isEarnestNote } from "../lib/judgeNote";
 import { displayName } from "../lib/session";
-import { AutoGrowTextarea, PostAsCheckbox, RejectedNotice, useSignedByline } from "./editorBits";
+import { AutoGrowTextarea, PostAsCheckbox, useSignedByline } from "./editorBits";
 
 const charityLabel = (id: CharityId) => CHARITIES.find((c) => c.id === id)!.label;
 
 /** The charity name inline in the donation copy — clickable, opening a small
- *  popover to redirect the $2 to one of the other charities. */
+ *  popover to redirect the donation to one of the other charities. */
 function CharityPicker({ charity, onPick }: { charity: CharityId; onPick: (c: CharityId) => void }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLSpanElement>(null);
@@ -56,33 +56,43 @@ function CharityPicker({ charity, onPick }: { charity: CharityId; onPick: (c: Ch
   );
 }
 
-/** Shown right after casting a note vote: explain the vote and we donate $2 to
- *  a charity of the voter's choice. The reasoning stays private on the vote
- *  row unless "post as a comment" makes it a public top-level comment — either
- *  way it's the same single $2, keyed to the vote. */
-export function VoteReasoning({ note, voteId, session, onCommentAuthored, onClose }: {
+const HOW_AMOUNTS_WORK =
+  "The donation equals the information your vote adds about how the note will end up rated: " +
+  "early votes that shift the consensus earn more than late pile-ons, and correcting a wrong " +
+  "consensus earns most. The amounts were fixed the moment you voted — later votes never change them.";
+
+/** Shown right after casting a note vote: the donation this vote minted — an
+ *  outcome-contingent pair frozen at vote time — with the charity switchable
+ *  inline, plus an optional, ungated reasoning box (Jim, 2026-07-17: reasoning
+ *  no longer earns or gates the donation). Private reasoning lives on the vote
+ *  row; "post as a comment" makes it a public top-level comment instead. */
+export function VoteReasoning({ note, voteId, pair, session, onCommentAuthored, onClose }: {
   note: NoteRow;
   voteId: string;
+  pair: DonationPair;
   session: Session;
   onCommentAuthored: (commentId: string) => void;
   onClose: () => void;
 }) {
   const [text, setText] = useState("");
-  const [charity, setCharity] = usePreferredCharity();
+  const [charity, setCharityPref] = usePreferredCharity();
   const [asComment, setAsComment] = useState(false);
   const [signed, setSigned] = useSignedByline();
   const [busy, setBusy] = useState(false);
-  const [rejected, setRejected] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+
+  // The donation row already exists (minted with the vote); a pick updates it
+  // and becomes the remembered default for future votes.
+  const pickCharity = (c: CharityId) => {
+    setCharityPref(c);
+    void setDonationCharity(voteId, c);
+  };
 
   const submit = async () => {
     setBusy(true);
     setError(null);
-    setRejected(false);
     try {
-      const earnest = await isEarnestNote(text.trim(), note.claim?.context_quote ?? "", note.note);
-      if (!earnest) return setRejected(true);
       if (asComment) {
         const commentId = await postComment({
           noteId: note.id,
@@ -97,8 +107,6 @@ export function VoteReasoning({ note, voteId, session, onCommentAuthored, onClos
         const { error } = await setVoteReasoning(voteId, text.trim());
         if (error) return setError(error.message);
       }
-      const { error: donationError } = await saveDonation(voteId, charity);
-      if (donationError) return setError(donationError.message);
       setDone(true);
     } catch (err) {
       setError((err as Error).message);
@@ -110,7 +118,7 @@ export function VoteReasoning({ note, voteId, session, onCommentAuthored, onClos
   if (done) {
     return (
       <div className="mt-2 text-sm rounded-lg p-2 bg-green-50 text-green-800 border border-green-200 flex items-center justify-between gap-2">
-        <span>Thank you! We'll donate $2 to {charityLabel(charity)}.</span>
+        <span>Thank you! {asComment ? "Your reasoning is posted as a comment." : "Your reasoning was added."}</span>
         <button onClick={onClose} className="text-xs text-green-700 hover:underline shrink-0">Close</button>
       </div>
     );
@@ -121,17 +129,18 @@ export function VoteReasoning({ note, voteId, session, onCommentAuthored, onClos
     // — design.css remaps the exact class names per color scheme.
     <div className="mt-2 rounded-lg border border-blue-100 bg-blue-50 p-3 space-y-2">
       <p className="text-sm text-gray-700">
-        If you explain your reasoning, we'll donate <strong>$2</strong> to{" "}
-        <CharityPicker charity={charity} onPick={setCharity} />
+        We'll donate <strong>${pair.ifHelpful.toFixed(2)}</strong> to{" "}
+        <CharityPicker charity={charity} onPick={pickCharity} /> if this note ends up rated
+        helpful — or <strong>${pair.ifNotHelpful.toFixed(2)}</strong> if not.{" "}
+        <span className="text-gray-400 cursor-help underline decoration-dotted" title={HOW_AMOUNTS_WORK}>
+          why these amounts?
+        </span>
       </p>
       <AutoGrowTextarea
         value={text}
-        onChange={(e) => {
-          setText(e.target.value);
-          setRejected(false);
-        }}
+        onChange={(e) => setText(e.target.value)}
         rows={2}
-        placeholder="Why did you vote this way?"
+        placeholder="Optional: why did you vote this way?"
         className="bg-white"
       />
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
@@ -147,11 +156,10 @@ export function VoteReasoning({ note, voteId, session, onCommentAuthored, onClos
           disabled={busy || text.trim().length < 10}
           className="bg-blue-600 text-white rounded-lg px-3 py-1 text-sm font-medium hover:bg-blue-700 disabled:opacity-40"
         >
-          {busy ? "Checking…" : asComment ? "Post comment" : "Submit"}
+          {busy ? "Posting…" : asComment ? "Post comment" : "Add reasoning"}
         </button>
-        <button onClick={onClose} className="text-sm text-gray-500 hover:underline">No thanks</button>
+        <button onClick={onClose} className="text-sm text-gray-500 hover:underline">Close</button>
       </div>
-      {rejected && <RejectedNotice>That didn't look like genuine reasoning — try again.</RejectedNotice>}
       {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
   );

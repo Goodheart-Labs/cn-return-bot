@@ -1,7 +1,8 @@
+import type { DonationPair } from "./donationScoring";
 import { createLocalPreference } from "./preference";
 import { supabase } from "./supabase";
 
-/** The charities a voter can direct their $2 to. First entry is the default. */
+/** The charities a voter can direct their donation to. First entry is the default. */
 export const CHARITIES = [
   { id: "give_directly", label: "GiveDirectly" },
   { id: "givewell", label: "GiveWell Recommended Charities" },
@@ -20,12 +21,24 @@ export const usePreferredCharity = createLocalPreference<CharityId>("cn-preferre
   serialize: (charity) => charity,
 });
 
-/** Record the $2 earned by a vote-with-reasoning. unique(vote_id) makes this
- *  an update on resubmit — one vote can never mint two donations. */
-export function saveDonation(voteId: string, charity: CharityId) {
-  return supabase
-    .from("everything_donations")
-    .upsert({ vote_id: voteId, charity }, { onConflict: "vote_id" });
+/** Mint the donation a vote earns: the outcome-contingent pair frozen at vote
+ *  time. unique(vote_id) makes this an update on a re-vote — one vote can
+ *  never mint two donations. */
+export function saveDonation(voteId: string, charity: CharityId, pair: DonationPair) {
+  return supabase.from("everything_donations").upsert(
+    {
+      vote_id: voteId,
+      charity,
+      amount_if_helpful: pair.ifHelpful,
+      amount_if_not_helpful: pair.ifNotHelpful,
+    },
+    { onConflict: "vote_id" },
+  );
+}
+
+/** Redirect an already-minted donation to a different charity. */
+export function setDonationCharity(voteId: string, charity: CharityId) {
+  return supabase.from("everything_donations").update({ charity }).eq("vote_id", voteId);
 }
 
 /** Attach private reasoning to the caller's own vote row. (Reasoning posted as

@@ -4,6 +4,8 @@ import { useLiveData } from "./lib/useLiveData";
 import { useSession, signOut } from "./lib/auth";
 import { castVote, clearVote, fetchMyVotes, type Vote } from "./lib/votes";
 import { castCommentVote, clearCommentVote, fetchMyCommentVotes } from "./lib/comments";
+import { donationPair, priorTally, type VoteCast } from "./lib/donationScoring";
+import { saveDonation, usePreferredCharity } from "./lib/donations";
 import { readRoute, pushProject, pushItem } from "./lib/routing";
 import { Sidebar } from "./components/Sidebar";
 
@@ -45,6 +47,9 @@ export function App() {
   const [itemFilter, setItemFilter] = useState<string | null>(() => readRoute().item);
   const [myVotes, setMyVotes] = useState<Map<string, Vote>>(new Map());
   const [myCommentVotes, setMyCommentVotes] = useState<Map<string, Vote>>(new Map());
+  // A fresh vote's donation starts at the remembered charity; the reasoning
+  // box lets the voter redirect it afterwards.
+  const [preferredCharity] = usePreferredCharity();
   const [loginOpen, setLoginOpen] = useState(false);
   const [writeOpen, setWriteOpen] = useState(false);
   // After a vote, hold the note's list position briefly (misclick grace) —
@@ -180,9 +185,11 @@ export function App() {
     );
   };
 
-  // Returns the vote row's id (the key reasoning + donations hang off), or
-  // null on retract / signed-out.
-  const handleVote = async (note: NoteRow, vote: Vote): Promise<string | null> => {
+  // Casts the vote and mints its donation: the outcome-contingent pair is
+  // computed from the pre-vote tally (frozen at vote time) and upserted keyed
+  // to the vote row. Returns the cast (null on retract / signed-out / own
+  // note — retracting cascades the donation away, own-note votes mint none).
+  const handleVote = async (note: NoteRow, vote: Vote): Promise<VoteCast | null> => {
     if (!session) {
       setLoginOpen(true);
       return null;
@@ -198,7 +205,13 @@ export function App() {
     }
     next.set(note.id, vote);
     setMyVotes(next);
-    return castVote(note.id, session.user.id, vote);
+    const voteId = await castVote(note.id, session.user.id, vote);
+    if (!voteId || note.author_id === session.user.id) return null;
+    const pair = donationPair(priorTally(note, current), vote);
+    // A backend without migration 061 rejects the pair columns — keep the vote,
+    // just don't promise a donation the ledger didn't record.
+    const { error } = await saveDonation(voteId, preferredCharity, pair);
+    return error ? null : { voteId, pair };
   };
 
   const handleCommentVote = async (comment: CommentRow, vote: Vote) => {

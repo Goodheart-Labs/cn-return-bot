@@ -6,6 +6,7 @@ import { VoteRatings } from "../../../dashboard-shared/Ratings";
 import { quoteFragmentUrl } from "../../../dashboard-shared/textFragment";
 import type { NotedContent } from "../../../dashboard-shared/types";
 import type { ClaimRef, CommentRow, NoteRow, NoteSourceRow } from "../lib/types";
+import type { VoteCast } from "../lib/donationScoring";
 import type { Vote } from "../lib/votes";
 import { noteStatus, type NoteStatus } from "../lib/noteScore";
 import { NoteMenu } from "./NoteMenu";
@@ -345,17 +346,19 @@ export function NoteCard({ note, improvements, commentsByParent, commentsApi, pr
   projectSlug: string;
   myVote: Vote | undefined;
   holdActive: boolean;
-  /** Casts the vote; resolves to the vote row's id (null on retract/error). */
-  onVote: (note: NoteRow, vote: Vote) => Promise<string | null>;
+  /** Casts the vote and mints its donation; resolves to the cast (vote id +
+   *  frozen donation pair), or null on retract / own note / error. */
+  onVote: (note: NoteRow, vote: Vote) => Promise<VoteCast | null>;
   /** A note was just posted by this user (mirror its auto-upvote locally). */
   onAuthored: (noteId: string) => void;
   session: Session | null;
   onNeedLogin: () => void;
 }) {
   const [ctxOpen, setCtxOpen] = useState(false);
-  // Set right after casting a vote — the id of the just-cast vote row, which
-  // opens the reasoning/donation box beneath the pills. Cleared on retract.
-  const [reasoningVoteId, setReasoningVoteId] = useState<string | null>(null);
+  // Set right after casting a vote — the just-cast vote and its frozen
+  // donation pair, which open the donation/reasoning box beneath the pills.
+  // Cleared on retract.
+  const [cast, setCast] = useState<VoteCast | null>(null);
   const cardColRef = useRef<HTMLDivElement>(null);
   const [sourcesOpen, setSourcesOpen] = useState(false);
   const claim = note.claim;
@@ -406,17 +409,18 @@ export function NoteCard({ note, improvements, commentsByParent, commentsApi, pr
             somewhatHelpful={note.somewhat_helpful_count}
             notHelpful={note.not_helpful_count}
             myVote={myVote}
-            onVote={(vote) => void onVote(note, vote).then(setReasoningVoteId)}
+            onVote={(vote) => void onVote(note, vote).then(setCast)}
           />
           <ResortCountdown active={holdActive} key={`${note.helpful_count}-${note.somewhat_helpful_count}-${note.not_helpful_count}`} />
         </NoteBox>
-        {reasoningVoteId && myVote !== undefined && session && (
+        {cast && myVote !== undefined && session && (
           <VoteReasoning
             note={note}
-            voteId={reasoningVoteId}
+            voteId={cast.voteId}
+            pair={cast.pair}
             session={session}
             onCommentAuthored={commentsApi.onAuthored}
-            onClose={() => setReasoningVoteId(null)}
+            onClose={() => setCast(null)}
           />
         )}
       </div>
