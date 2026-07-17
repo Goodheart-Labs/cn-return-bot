@@ -5,8 +5,10 @@ import { NoteBox, AlternativeNote } from "../../everything-web/src/components/No
 import { NoteMenu } from "../../everything-web/src/components/NoteMenu";
 import type { Vote } from "../../everything-shared/votes";
 import type { NoteRow } from "../../everything-shared/types";
+import type { PageItem } from "../../everything-shared/notesQuery";
 import { noteShareUrl } from "../utils/share";
 import { useNoteVoting, replaceNoteInGroup } from "./useNoteVoting";
+import { WriteNoteOverlay } from "./WriteNoteOverlay";
 
 /** One anchored claim: its notes (promoted order) and where it sits on the page. */
 export interface AnchoredGroup {
@@ -95,12 +97,15 @@ function NotePopover({ group, projectSlug, session, myVotes, onVote, onNeedLogin
 
 /** All badges + popovers for one page, absolutely positioned in page
  *  coordinates inside the extension's shadow-root overlay. */
-export function InlineNotesApp({ groups: initialGroups, projectSlug }: {
+export function InlineNotesApp({ groups: initialGroups, item, onPosted }: {
   groups: AnchoredGroup[];
-  projectSlug: string | null;
+  item: PageItem;
+  onPosted: () => void;
 }) {
+  const projectSlug = item.projectSlug;
   const [groups, setGroups] = useState(initialGroups);
   const [openClaim, setOpenClaim] = useState<string | null>(null);
+  const [writeSelection, setWriteSelection] = useState<string | null>(null);
   const { session, myVotes, handleVote, onNeedLogin, signInHint, dismissSignInHint } = useNoteVoting(
     (updated) => setGroups((prev) => prev.map((g) => replaceNoteInGroup(g, updated))),
   );
@@ -126,14 +131,17 @@ export function InlineNotesApp({ groups: initialGroups, projectSlug }: {
     };
   }, []);
 
-  // Scroll-to-first-note request from the popup.
+  // Requests from the popup (scroll to the first note) and the background's
+  // context menu (write a note on the current selection).
   useEffect(() => {
     const first = groups[0];
     const listener = (message: unknown) => {
-      if ((message as { type?: string })?.type === "cn-scroll-to-notes" && first) {
+      const { type, selection } = (message as { type?: string; selection?: string }) ?? {};
+      if (type === "cn-scroll-to-notes" && first) {
         first.range.startContainer.parentElement?.scrollIntoView({ behavior: "smooth", block: "center" });
         setOpenClaim(first.claimId);
       }
+      if (type === "cn-write-note" && selection?.trim()) setWriteSelection(selection.trim());
     };
     const runtime = (globalThis as any).browser?.runtime ?? (globalThis as any).chrome?.runtime;
     runtime?.onMessage.addListener(listener);
@@ -169,6 +177,15 @@ export function InlineNotesApp({ groups: initialGroups, projectSlug }: {
           Sign in from the Common Notes toolbar icon to vote or write notes.
           <button onClick={dismissSignInHint} className="text-gray-400 hover:text-gray-600">✕</button>
         </div>
+      )}
+      {writeSelection && (
+        <WriteNoteOverlay
+          item={item}
+          selection={writeSelection}
+          session={session}
+          onClose={() => setWriteSelection(null)}
+          onPosted={onPosted}
+        />
       )}
       {positioned.map(({ group, badgeStyle, popoverStyle }) => (
         <div key={group.claimId}>

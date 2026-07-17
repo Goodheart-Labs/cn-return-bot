@@ -74,9 +74,9 @@ export async function mountInlineNotes(ctx: ContentScriptContext): Promise<void>
   const pageUrl = normalizePageUrl(location.href, document);
   const item = await fetchItemForUrl(pageUrl);
   if (!item) return;
-  const notes = await fetchNotesForItem(item.id);
-  const groups = groupByClaim(notes);
-  if (groups.length === 0) return;
+  // Mount even with zero notes: the write-from-selection flow works on any
+  // ingested page, and its first note appears via refresh().
+  let groups = groupByClaim(await fetchNotesForItem(item.id));
 
   const container = findContainer();
   let reactRoot: Root | null = null;
@@ -84,7 +84,12 @@ export async function mountInlineNotes(ctx: ContentScriptContext): Promise<void>
   const render = () => {
     const anchored = anchorGroups(container, groups);
     applyHighlights(anchored.map((g) => g.range));
-    reactRoot?.render(<InlineNotesApp groups={anchored} projectSlug={item.projectSlug} />);
+    reactRoot?.render(<InlineNotesApp groups={anchored} item={item} onPosted={refresh} />);
+  };
+
+  const refresh = async () => {
+    groups = groupByClaim(await fetchNotesForItem(item.id));
+    render();
   };
 
   const ui = await createShadowRootUi(ctx, {

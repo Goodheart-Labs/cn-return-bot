@@ -4,9 +4,9 @@ import { useSession, signOut } from "../../../everything-shared/auth";
 import { displayName } from "../../../everything-shared/session";
 import { fetchItemForUrl, fetchNotesForItem, normalizePageUrl, type PageItem } from "../../../everything-shared/notesQuery";
 import { COMMONNOTES_ORIGIN } from "../../utils/share";
+import { updateEnabledOrigins } from "../../utils/settings";
 import { LoginPanel } from "../../components/LoginPanel";
 
-const ENABLED_ORIGINS_KEY = "cn:enabledOrigins";
 // Sites injected by the static manifest scripts — no opt-in needed.
 const DEFAULT_SITE = /(^|\.)substack\.com$|(^|\.)youtube\.com$|(^|\.)youtu\.be$/;
 
@@ -53,11 +53,6 @@ function SiteToggle({ origin }: { origin: string }) {
       .catch(() => setEnabled(false));
   }, [scriptId]);
 
-  const rememberOrigins = async (mutate: (origins: string[]) => string[]) => {
-    const stored = (await browser.storage.sync.get(ENABLED_ORIGINS_KEY))[ENABLED_ORIGINS_KEY] as string[] | undefined;
-    await browser.storage.sync.set({ [ENABLED_ORIGINS_KEY]: mutate(stored ?? []) });
-  };
-
   const enable = async () => {
     const granted = await browser.permissions.request({ origins: [originPattern] });
     if (!granted) return;
@@ -68,7 +63,7 @@ function SiteToggle({ origin }: { origin: string }) {
       runAt: "document_idle",
       persistAcrossSessions: true,
     }]);
-    await rememberOrigins((origins) => [...new Set([...origins, origin])]);
+    await updateEnabledOrigins((origins) => [...new Set([...origins, origin])]);
     // Inject into the current tab right away instead of asking for a reload.
     const tab = await activeTab();
     if (tab?.id != null) {
@@ -80,7 +75,7 @@ function SiteToggle({ origin }: { origin: string }) {
   const disable = async () => {
     await browser.scripting.unregisterContentScripts({ ids: [scriptId] }).catch(() => {});
     await browser.permissions.remove({ origins: [originPattern] }).catch(() => {});
-    await rememberOrigins((origins) => origins.filter((o) => o !== origin));
+    await updateEnabledOrigins((origins) => origins.filter((o) => o !== origin));
     setEnabled(false);
   };
 
