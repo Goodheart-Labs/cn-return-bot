@@ -19,7 +19,10 @@ export interface AnchoredGroup {
 }
 
 const BADGE_SIZE = 20;
+const BADGE_GAP = 4; // px between the passage's end and the badge
 const POPOVER_WIDTH = 400;
+const POPOVER_GAP = 8; // px between the passage and the opened popover
+const VIEWPORT_MARGIN = 8; // keep the popover this far from the viewport edges
 
 function pageRect(range: Range) {
   const rect = range.getBoundingClientRect();
@@ -110,7 +113,7 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted }: {
     (updated) => setGroups((prev) => prev.map((g) => replaceNoteInGroup(g, updated))),
   );
   // Bumped on resize so positions derived from ranges recompute.
-  const [, setLayoutTick] = useState(0);
+  const [layoutTick, setLayoutTick] = useState(0);
 
   useEffect(() => setGroups(initialGroups), [initialGroups]);
 
@@ -151,24 +154,27 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted }: {
   const positioned = useMemo(() => groups.map((group) => {
     const rect = pageRect(group.range);
     // Clamp the popover into the viewport width; drop below the passage.
-    const popLeft = Math.max(8 + window.scrollX, Math.min(rect.left, window.scrollX + window.innerWidth - POPOVER_WIDTH - 8));
+    const popLeft = Math.max(
+      VIEWPORT_MARGIN + window.scrollX,
+      Math.min(rect.left, window.scrollX + window.innerWidth - POPOVER_WIDTH - VIEWPORT_MARGIN),
+    );
     return {
       group,
       badgeStyle: {
         top: rect.top - BADGE_SIZE / 2,
-        left: rect.right + 4,
+        left: rect.right + BADGE_GAP,
         width: BADGE_SIZE,
         height: BADGE_SIZE,
       } satisfies React.CSSProperties,
       popoverStyle: {
-        top: rect.bottom + 8,
+        top: rect.bottom + POPOVER_GAP,
         left: popLeft,
-        width: Math.min(POPOVER_WIDTH, window.innerWidth - 16),
+        width: Math.min(POPOVER_WIDTH, window.innerWidth - VIEWPORT_MARGIN * 2),
         zIndex: 2,
       } satisfies React.CSSProperties,
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [groups, openClaim]);
+  }), [groups, layoutTick]);
 
   return (
     <div onMouseDown={(e) => e.stopPropagation()}>
