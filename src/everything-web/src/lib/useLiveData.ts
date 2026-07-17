@@ -1,27 +1,29 @@
 import { useEffect, useState } from "react";
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
-import type { ItemRow, NoteRow, NoteSourceRow, ProjectRow } from "./types";
+import type { CommentRow, ItemRow, NoteRow, NoteSourceRow, ProjectRow } from "./types";
 
 // The public site reads whichever backend is deployed, which may be BEHIND the
-// migrations this build assumes. Two columns/tables can be missing:
+// migrations this build assumes. Columns/tables that can be missing:
 //   - migration 056: `everything_note_sources` table (old notes keep a `sources`
 //     jsonb array of URLs on the note row instead)
 //   - migration 057: `everything_claims.image_urls`
-// Probe both once and shape the query + normalize rows so the SPA renders
+//   - migration 060: `everything_comments` (comments simply stay empty)
+// Probe once and shape the query + normalize rows so the SPA renders
 // identically against the old or the new schema.
 const CLAIM_COLS = "id, item_id, claim, context_quote, context_paragraph, updated_quote, context_url, start_seconds, end_seconds";
 
-type Schema = { hasImageUrls: boolean; hasNoteSources: boolean };
+type Schema = { hasImageUrls: boolean; hasNoteSources: boolean; hasComments: boolean };
 let schemaProbe: Promise<Schema> | null = null;
 
 function detectSchema(): Promise<Schema> {
   schemaProbe ??= (async () => {
-    const [img, ns] = await Promise.all([
+    const [img, ns, c] = await Promise.all([
       supabase.from("everything_claims").select("image_urls").limit(1),
       supabase.from("everything_note_sources").select("url").limit(1),
+      supabase.from("everything_comments").select("id").limit(1),
     ]);
-    return { hasImageUrls: !img.error, hasNoteSources: !ns.error };
+    return { hasImageUrls: !img.error, hasNoteSources: !ns.error, hasComments: !c.error };
   })();
   return schemaProbe;
 }
@@ -58,11 +60,12 @@ function upsertHandler<T extends { id: string }>(setter: React.Dispatch<React.Se
   };
 }
 
-/** Live projects, items, and notes (with their claim). */
+/** Live projects, items, notes (with their claim), and comments. */
 export function useLiveData() {
   const [projects, setProjects] = useState<ProjectRow[]>([]);
   const [items, setItems] = useState<RowMap<ItemRow>>(new Map());
   const [notes, setNotes] = useState<RowMap<NoteRow>>(new Map());
+  const [comments, setComments] = useState<RowMap<CommentRow>>(new Map());
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -70,15 +73,19 @@ export function useLiveData() {
 
     async function load() {
       const schema = await detectSchema();
-      const [p, i, n] = await Promise.all([
+      const [p, i, n, c] = await Promise.all([
         supabase.from("everything_projects").select("*").order("sort_order"),
         supabase.from("everything_items").select("*"),
         supabase.from("everything_notes").select(noteSelect(schema)),
+        schema.hasComments
+          ? supabase.from("everything_comments").select("*")
+          : Promise.resolve({ data: [] as CommentRow[] }),
       ]);
       if (cancelled) return;
       setProjects((p.data as ProjectRow[]) ?? []);
       setItems(new Map(((i.data as ItemRow[]) ?? []).map((r) => [r.id, r])));
       setNotes(new Map(((n.data ?? []) as any[]).map((r) => [r.id, normalizeNote(r, schema)])));
+      setComments(new Map(((c.data as CommentRow[]) ?? []).map((r) => [r.id, r])));
       setLoaded(true);
     }
     load();
@@ -94,6 +101,9 @@ export function useLiveData() {
     const channel = supabase
       .channel(`common-notes-${crypto.randomUUID()}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "everything_items" }, upsertHandler(setItems))
+      // Comments have no joins, so the generic handler covers all events
+      // (vote-count UPDATEs arrive as full rows via the counter trigger).
+      .on("postgres_changes", { event: "*", schema: "public", table: "everything_comments" }, upsertHandler(setComments))
       .on("postgres_changes", { event: "*", schema: "public", table: "everything_notes" }, (payload) => {
         if (payload.eventType === "DELETE") {
           setNotes((prev) => {
@@ -126,5 +136,5 @@ export function useLiveData() {
     };
   }, []);
 
-  return { projects, items, notes, loaded };
+  return { projects, items, notes, comments, loaded };
 }

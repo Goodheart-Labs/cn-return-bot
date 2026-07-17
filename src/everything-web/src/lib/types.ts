@@ -44,6 +44,24 @@ export interface NoteSourceRow {
   sort_order: number;
 }
 
+/** A comment on a note. A top-level comment (parent_comment_id null) is a
+ *  note-vote's reasoning made public and carries that vote's id; replies nest
+ *  to any depth. */
+export interface CommentRow {
+  id: string;
+  note_id: string;
+  parent_comment_id: string | null;
+  vote_id: string | null;
+  author_id: string | null;
+  author_name: string | null; // opt-in byline, captured at submit time
+  body: string;
+  helpful_count: number;
+  somewhat_helpful_count: number;
+  not_helpful_count: number;
+  status: "published" | "hidden";
+  created_at: string;
+}
+
 export interface NoteRow {
   id: string;
   claim_id: string;
@@ -54,6 +72,9 @@ export interface NoteRow {
   not_helpful_count: number;
   author_id: string | null;   // null = the AI-written note
   author_name: string | null; // display name captured at submit time
+  /** The note this one improves — set on notes posted via "Suggest an
+   *  improvement". Renders as a jump-link between the two cards. */
+  improved_from_note_id: string | null;
   status: "published" | "draft" | "hidden";
   created_at: string;
   claim: ClaimRef | null;
