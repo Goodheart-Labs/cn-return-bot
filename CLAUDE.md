@@ -89,6 +89,21 @@ Auth & interaction:
 
 Prod prerequisites (manual): run migrations (incl. 055); `supabase functions deploy judge-note` + `supabase secrets set OPENROUTER_API_KEY=…`; repo secret `SUPABASE_ANON_KEY`. In the prod project's dashboard (Auth → URL Configuration): set **Site URL** to `https://goodheart-labs.github.io/cn-return-bot/notes/` and add it (plus `https://goodheart-labs.github.io/cn-return-bot/**`) to the redirect allow-list — otherwise confirmation/magic links fall back to Supabase's default `http://localhost:3000`. Mirror the branded email templates (`supabase/templates/confirmation.html`, `magic_link.html`) under Auth → Email Templates; config.toml only styles local dev.
 
+## Browser extension (Common Notes)
+
+`src/everything-extension/` — WXT (Vite) extension, Chrome MV3 + Firefox, showing Common Notes inline on the pages themselves. Shares all Supabase/domain logic via `src/everything-shared/` (moved out of `everything-web/src/lib`; both apps import it — no copies) and reuses `NoteBox`/`NoteMenu`/`AlternativeNote` from `everything-web` plus `VoteRatings` from `dashboard-shared`, with Tailwind v3 compiled into a shadow-root stylesheet (host pages untouched; passage tint via the CSS Custom Highlight API, no DOM mutation).
+
+```bash
+bun run dev-ext     # WXT dev mode (chrome; load .output/chrome-mv3 unpacked)
+bun run build-ext   # chrome + firefox production builds (--mode prod-backend)
+bun run zip-ext     # store-ready zips (also built by .github/workflows/build-extension.yml)
+bun test src/everything-extension   # anchor-engine tests (linkedom)
+```
+
+How it works: a content script resolves the page URL to an `everything_items` row (`notesQuery.ts: normalizePageUrl`/`fetchItemForUrl` — canonical-link aware; YouTube matched by video ID), fetches that item's notes, and anchors each claim's `updated_quote → context_quote → context_paragraph` to a DOM Range by normalized fuzzy matching (`utils/anchor.ts`, same `normalizeText` the pipeline's timestamp-snapping uses; first/last-6-words fallback for drifted quotes). Substack + YouTube are injected by default; any other site is opt-in per origin from the popup (`optional_host_permissions` + `scripting.registerContentScripts` — no `<all_urls>` injection). YouTube gets a timestamp-triggered overlay in `#movie_player` (pill ↔ expanded votable card, driven by `start_seconds`/`end_seconds`). Right-click a selection → "Write a Common Note on this" (judge-gated `postClaimWithNote`, shared with the website's WriteNoteModal).
+
+Auth: one Supabase session in `chrome.storage.local` (adapter branch in `everything-shared/supabase.ts`; content-script localStorage belongs to the host page, hence the adapter; `autoRefreshToken` off — MV3 workers lose timers, `getSession()` refreshes on demand). Email sign-in is a 6-digit OTP code typed into the popup (`{{ .Token }}` added to the magic-link template — mirror in the prod dashboard's template). X sign-in runs `launchWebAuthFlow` in the background; the extension redirect URLs (`https://<ext-id>.chromiumapp.org/*`, `https://<ff-id>.extensions.allizom.org/*`) must be on the redirect allow-list (config.toml has local wildcards; add the real IDs in the prod dashboard). No realtime — notes refetch after votes.
+
 ## Review dashboard
 
 Dashboard listens on port 8001 — free it first in case a previous run is still bound.
