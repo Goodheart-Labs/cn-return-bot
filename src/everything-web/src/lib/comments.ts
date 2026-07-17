@@ -2,14 +2,13 @@ import { supabase } from "./supabase";
 import type { Vote } from "./votes";
 
 /** Insert a comment and return its id. Top-level comments come from the
- *  post-vote donation box and carry the vote they accompany; replies carry a
- *  parent instead. The DB trigger auto-casts the author's helpful vote. */
+ *  note's Write-a-comment action; replies carry a parent instead. The DB
+ *  trigger auto-casts the author's helpful vote. */
 export async function postComment(params: {
   noteId: string;
   body: string;
   authorId: string;
   authorName: string | null;
-  voteId?: string;
   parentCommentId?: string;
 }): Promise<string | null> {
   const { data, error } = await supabase
@@ -17,7 +16,6 @@ export async function postComment(params: {
     .insert({
       note_id: params.noteId,
       parent_comment_id: params.parentCommentId ?? null,
-      vote_id: params.voteId ?? null,
       author_id: params.authorId,
       author_name: params.authorName,
       body: params.body,

@@ -44,13 +44,14 @@ export interface NoteSourceRow {
   sort_order: number;
 }
 
-/** A comment on a note. A top-level comment (parent_comment_id null) is
- *  written from its vote's donation box and carries that vote's id; replies
- *  nest to any depth. */
+/** A comment on a note, written via the note's Write-a-comment action;
+ *  replies nest to any depth. */
 export interface CommentRow {
   id: string;
   note_id: string;
   parent_comment_id: string | null;
+  /** Legacy tie to the vote whose reasoning this published — new comments
+   *  don't set it (comments are plain discussion now). */
   vote_id: string | null;
   author_id: string | null;
   author_name: string | null; // opt-in byline, captured at submit time

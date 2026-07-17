@@ -356,7 +356,7 @@ export function NoteCard({ note, improvements, commentsByParent, commentsApi, pr
 }) {
   const [ctxOpen, setCtxOpen] = useState(false);
   // Set right after casting a vote — the just-cast vote and its frozen
-  // donation pair, which open the donation box beneath the pills.
+  // donation pair, which show the donation notice beneath the pills.
   // Cleared on retract.
   const [cast, setCast] = useState<VoteCast | null>(null);
   const cardColRef = useRef<HTMLDivElement>(null);
@@ -414,14 +414,7 @@ export function NoteCard({ note, improvements, commentsByParent, commentsApi, pr
           <ResortCountdown active={holdActive} key={`${note.helpful_count}-${note.somewhat_helpful_count}-${note.not_helpful_count}`} />
         </NoteBox>
         {cast && myVote !== undefined && session && (
-          <VoteDonation
-            note={note}
-            voteId={cast.voteId}
-            pair={cast.pair}
-            session={session}
-            onCommentAuthored={commentsApi.onAuthored}
-            onClose={() => setCast(null)}
-          />
+          <VoteDonation voteId={cast.voteId} pair={cast.pair} onClose={() => setCast(null)} />
         )}
       </div>
 
@@ -431,6 +424,7 @@ export function NoteCard({ note, improvements, commentsByParent, commentsApi, pr
         session={session}
         onNeedLogin={onNeedLogin}
         onAuthored={onAuthored}
+        onCommentAuthored={commentsApi.onAuthored}
         sourcesOpen={sourcesOpen}
         onToggleSources={() => setSourcesOpen((o) => !o)}
       >

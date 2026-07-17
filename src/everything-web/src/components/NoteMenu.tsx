@@ -4,6 +4,7 @@ import { supabase } from "../lib/supabase";
 import { noteUrl } from "../lib/routing";
 import { displayName } from "../lib/session";
 import { isEarnestNote } from "../lib/judgeNote";
+import { postComment } from "../lib/comments";
 import type { NoteRow } from "../lib/types";
 import { AutoGrowTextarea, PostAsCheckbox, RejectedNotice, useSignedByline } from "./editorBits";
 
@@ -71,16 +72,26 @@ function QuoteIcon() {
   );
 }
 
-/** Bottom-right ⋯ menu on every note: suggest an improvement (posts your own
- *  draft note on the same claim, shown alongside the original), share a deep
- *  link, and — on notes you wrote — delete. */
-export function NoteMenu({ note, projectSlug, session, onNeedLogin, onAuthored, sourcesOpen, onToggleSources, children }: {
+function CommentIcon() {
+  return (
+    <svg {...ICON_PROPS}>
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+    </svg>
+  );
+}
+
+/** The note's action row: write a comment, suggest an improvement (posts your
+ *  own draft note on the same claim, shown alongside the original), share a
+ *  deep link, and — on notes you wrote — a ⋯ menu with delete. */
+export function NoteMenu({ note, projectSlug, session, onNeedLogin, onAuthored, onCommentAuthored, sourcesOpen, onToggleSources, children }: {
   note: NoteRow;
   projectSlug: string;
   session: Session | null;
   onNeedLogin: () => void;
   /** A note was just posted by this user (mirror its auto-upvote locally). */
   onAuthored: (noteId: string) => void;
+  /** A comment was just posted by this user (mirror its auto-upvote locally). */
+  onCommentAuthored: (commentId: string) => void;
   sourcesOpen?: boolean;
   onToggleSources?: () => void;
   /** Extra actions slotted between Share and the ⋯ (e.g. improvement jump chips). */
@@ -88,6 +99,7 @@ export function NoteMenu({ note, projectSlug, session, onNeedLogin, onAuthored, 
 }) {
   const [open, setOpen] = useState(false);
   const [improving, setImproving] = useState(false);
+  const [commenting, setCommenting] = useState(false);
   const [copied, setCopied] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const mine = !!session && session.user.id === note.author_id;
@@ -117,13 +129,18 @@ export function NoteMenu({ note, projectSlug, session, onNeedLogin, onAuthored, 
     if (!session) return onNeedLogin();
     setImproving(true);
   };
+  const startComment = () => {
+    setOpen(false);
+    if (!session) return onNeedLogin();
+    setCommenting(true);
+  };
   // The source links sit inline on every card; this toggle only reveals the
   // per-source quote + explanation, so it appears only when a quote exists.
   const showSourcesButton = !!onToggleSources && note.sources.some((s) => s.quote);
 
   return (
     <div className="mt-1">
-      <div ref={ref} className="relative flex justify-end items-center gap-3 text-xs text-gray-500">
+      <div ref={ref} className="relative flex flex-wrap justify-end items-center gap-x-3 gap-y-1 text-xs text-gray-500">
         {copied && <span className="text-green-700">Link copied</span>}
         {/* Sources + improve + share ride visibly on every card; the ⋯ menu
             only exists for delete on your own notes (Nathan, 2026-07-14 — the
@@ -133,6 +150,9 @@ export function NoteMenu({ note, projectSlug, session, onNeedLogin, onAuthored, 
             <QuoteIcon /> {sourcesOpen ? "Hide source details" : "Show source details"}
           </button>
         )}
+        <button onClick={startComment} className="inline-flex items-center gap-1 text-blue-600 hover:underline">
+          <CommentIcon /> Write a comment
+        </button>
         <button onClick={startImprove} className="inline-flex items-center gap-1 text-blue-600 hover:underline">
           <PencilIcon /> Suggest an improvement
         </button>
@@ -158,6 +178,67 @@ export function NoteMenu({ note, projectSlug, session, onNeedLogin, onAuthored, 
       {improving && session && (
         <ImproveEditor note={note} session={session} onAuthored={onAuthored} onClose={() => setImproving(false)} />
       )}
+      {commenting && session && (
+        <CommentEditor note={note} session={session} onAuthored={onCommentAuthored} onClose={() => setCommenting(false)} />
+      )}
+    </div>
+  );
+}
+
+/** Post a public top-level comment on the note (ungated — comments stopped
+ *  being donation-bearing vote reasoning, they're just discussion). */
+function CommentEditor({ note, session, onAuthored, onClose }: {
+  note: NoteRow;
+  session: Session;
+  onAuthored: (commentId: string) => void;
+  onClose: () => void;
+}) {
+  const [text, setText] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [signed, setSigned] = useSignedByline();
+
+  const submit = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      const commentId = await postComment({
+        noteId: note.id,
+        body: text.trim(),
+        authorId: session.user.id,
+        authorName: signed ? displayName(session) : null,
+      });
+      if (!commentId) return setError("Could not post the comment — try again.");
+      onAuthored(commentId);
+      onClose();
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="mt-2 space-y-2">
+      <AutoGrowTextarea
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        rows={2}
+        autoFocus
+        placeholder="Write a comment about this note…"
+      />
+      <div className="flex gap-2 items-center">
+        <button
+          onClick={submit}
+          disabled={busy || text.trim().length < 10}
+          className="bg-blue-600 text-white rounded-lg px-3 py-1 text-sm font-medium hover:bg-blue-700 disabled:opacity-40"
+        >
+          {busy ? "Posting…" : "Post comment"}
+        </button>
+        <button onClick={onClose} className="text-sm text-gray-500 hover:underline">Cancel</button>
+        <PostAsCheckbox signed={signed} onChange={setSigned} session={session} className="ml-auto" />
+      </div>
+      {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
   );
 }
