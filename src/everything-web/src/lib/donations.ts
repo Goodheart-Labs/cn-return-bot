@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { createLocalPreference } from "./preference";
 import { supabase } from "./supabase";
 
 /** The charities a voter can direct their $2 to. First entry is the default. */
@@ -11,34 +11,14 @@ export const CHARITIES = [
 
 export type CharityId = (typeof CHARITIES)[number]["id"];
 
-// The charity choice is one preference shared by every reasoning box on the
-// page (and remembered across reloads) — pick once, it's picked everywhere.
-const CHARITY_KEY = "cn-preferred-charity";
 const isCharityId = (v: unknown): v is CharityId => CHARITIES.some((c) => c.id === v);
-
-const charityListeners = new Set<() => void>();
-function readPreferredCharity(): CharityId {
-  const stored = localStorage.getItem(CHARITY_KEY);
-  return isCharityId(stored) ? stored : CHARITIES[0].id;
-}
 
 /** Shared, persisted charity preference. All mounted pickers read + write this,
  *  so selecting one updates every box live and future ones open pre-selected. */
-export function usePreferredCharity(): [CharityId, (c: CharityId) => void] {
-  const charity = useSyncExternalStore(
-    (onChange) => {
-      charityListeners.add(onChange);
-      return () => charityListeners.delete(onChange);
-    },
-    readPreferredCharity,
-    () => CHARITIES[0].id, // server snapshot (no localStorage during SSR/build)
-  );
-  const setCharity = (c: CharityId) => {
-    localStorage.setItem(CHARITY_KEY, c);
-    charityListeners.forEach((fn) => fn());
-  };
-  return [charity, setCharity];
-}
+export const usePreferredCharity = createLocalPreference<CharityId>("cn-preferred-charity", {
+  parse: (raw) => (isCharityId(raw) ? raw : CHARITIES[0].id),
+  serialize: (charity) => charity,
+});
 
 /** Record the $2 earned by a vote-with-reasoning. unique(vote_id) makes this
  *  an update on resubmit — one vote can never mint two donations. */

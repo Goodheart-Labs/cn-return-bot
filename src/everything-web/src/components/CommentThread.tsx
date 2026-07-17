@@ -5,7 +5,7 @@ import type { Vote } from "../lib/votes";
 import { deleteComment, postComment } from "../lib/comments";
 import { isEarnestNote } from "../lib/judgeNote";
 import { displayName } from "../lib/session";
-import { AutoGrowTextarea, PostAsCheckbox, RejectedNotice } from "./editorBits";
+import { AutoGrowTextarea, PostAsCheckbox, RejectedNotice, useSignedByline } from "./editorBits";
 import { MenuItem, TrashIcon } from "./NoteMenu";
 
 /** Comment voting + authored-comment bookkeeping, owned by App and shared by
@@ -230,7 +230,7 @@ function ReplyComposer({ parent, note, session, onAuthored, onClose }: {
   const [busy, setBusy] = useState(false);
   const [rejected, setRejected] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [signed, setSigned] = useState(false);
+  const [signed, setSigned] = useSignedByline();
 
   const submit = async () => {
     setBusy(true);

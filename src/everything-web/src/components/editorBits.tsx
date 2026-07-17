@@ -1,4 +1,5 @@
 import type { Session } from "@supabase/supabase-js";
+import { createLocalPreference } from "../lib/preference";
 import { displayName } from "../lib/session";
 
 /** Shared pieces of the small inline editors (improve a note, reply to a
@@ -22,7 +23,14 @@ export function AutoGrowTextarea(props: React.TextareaHTMLAttributes<HTMLTextAre
 }
 
 /** Bylines are opt-in (Nathan, 2026-07-14): default anonymous, X-CN style —
- *  note-writing is adversarial work and auto-bylines were a consent gap. */
+ *  note-writing is adversarial work and auto-bylines were a consent gap.
+ *  The choice persists (Jim, 2026-07-17): tick it once and every later editor
+ *  opens pre-ticked; untick and they open unticked. */
+export const useSignedByline = createLocalPreference<boolean>("cn-signed-byline", {
+  parse: (raw) => raw === "1",
+  serialize: (signed) => (signed ? "1" : "0"),
+});
+
 export function PostAsCheckbox({ signed, onChange, session, className }: {
   signed: boolean;
   onChange: (signed: boolean) => void;

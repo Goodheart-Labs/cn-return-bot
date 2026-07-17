@@ -5,7 +5,7 @@ import { CHARITIES, saveDonation, setVoteReasoning, usePreferredCharity, type Ch
 import { postComment } from "../lib/comments";
 import { isEarnestNote } from "../lib/judgeNote";
 import { displayName } from "../lib/session";
-import { AutoGrowTextarea, PostAsCheckbox, RejectedNotice } from "./editorBits";
+import { AutoGrowTextarea, PostAsCheckbox, RejectedNotice, useSignedByline } from "./editorBits";
 
 const charityLabel = (id: CharityId) => CHARITIES.find((c) => c.id === id)!.label;
 
@@ -70,7 +70,7 @@ export function VoteReasoning({ note, voteId, session, onCommentAuthored, onClos
   const [text, setText] = useState("");
   const [charity, setCharity] = usePreferredCharity();
   const [asComment, setAsComment] = useState(false);
-  const [signed, setSigned] = useState(false);
+  const [signed, setSigned] = useSignedByline();
   const [busy, setBusy] = useState(false);
   const [rejected, setRejected] = useState(false);
   const [error, setError] = useState<string | null>(null);
