@@ -21,7 +21,11 @@ import type { MisinfoTopicId } from "./topicIds";
 export interface MisinfoTopic {
   id: MisinfoTopicId;
   title: string;
-  documentUrl: string;
+  /** Canonical public URL of the reference article, when the document is a copy
+   *  of one. Omit for hand-authored documents that carry their own per-claim
+   *  sources (e.g. trump_election_security) — the note-writer then cites from
+   *  within the document instead of one blanket URL. */
+  documentUrl?: string;
   matches: (blob: string) => boolean;
   document: string;
   brief: string;
@@ -53,7 +57,7 @@ const ENERGY =
 interface TopicSpec {
   id: MisinfoTopicId;
   title: string;
-  documentUrl: string;
+  documentUrl?: string;
   matches: (t: string) => boolean;
 }
 
@@ -130,12 +134,10 @@ const SPECS: TopicSpec[] = [
     // fraud, SAVE Act). Loose high-recall net — Stage-2 selection is the
     // precision gate. Structure mirrors the old capture predicate: an
     // election/voting term AND (a fraud/machine/speech signal OR a China signal).
-    // documentUrl follows the document's sourcing rule (in-group/primary sources
-    // only — a CBS link would tank the note with the raters it must convince):
-    // Trump's own FBI+CISA on voter data not affecting election integrity.
+    // No documentUrl: the document is hand-authored and carries its own
+    // per-claim in-group sources — the note-writer cites from within it.
     id: "trump_election_security",
     title: "Trump election-security speech",
-    documentUrl: "https://www.ic3.gov/PSA/2020/PSA200928",
     matches: (t) =>
       /\b(elections?|voters?|voting|votes?|ballots?)\b/.test(t) &&
       (/(rigged|stolen|\bstole\b|\bsteal\b|fraud|cheat|hacked|compromised|noncitizen|non-citizen|dominion|smartmatic|maduro|venezuela|decertif|declassif|deep state|mail-?in|voter (roll|file|data)|voting machine|dead voter|illegal (vote|ballot)|220 ?million|278,?000|save america act|\bsave act\b|proof of citizenship|election (security|integrity))/.test(

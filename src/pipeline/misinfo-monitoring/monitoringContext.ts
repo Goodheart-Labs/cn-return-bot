@@ -16,8 +16,9 @@ export interface MonitoringContext {
   topicId: MisinfoTopicId;
   topicTitle: string;
   /** Canonical source URL of the reference article — leads the injected block
-   *  so the bot can cite it directly in the note. */
-  documentUrl: string;
+   *  so the bot can cite it directly in the note. Absent for hand-authored
+   *  documents that carry their own per-claim sources. */
+  documentUrl?: string;
   /** Full undistilled article, injected into the bot's research step. */
   document: string;
 }
@@ -33,10 +34,12 @@ export function getMonitoringContext(): MonitoringContext | undefined {
 }
 
 /** The reference-document block injected into the research step. Leads with the
- *  source URL so the bot can cite the article directly. Shared by simple-bot's
- *  search prompt and cheap-bot's search analyzer so the format stays identical. */
+ *  source URL (when the document has one canonical source) so the bot can cite
+ *  the article directly; documents carrying their own per-claim sources render
+ *  without it. Shared by simple-bot's search prompt and cheap-bot's search
+ *  analyzer so the format stays identical. */
 export function buildReferenceBlock(ctx: MonitoringContext): string {
+  const sourceLine = ctx.documentUrl ? `Source URL: ${ctx.documentUrl}\n` : "";
   return `## Reference document (ground truth on "${ctx.topicTitle}")
-Source URL: ${ctx.documentUrl}
-${ctx.document}`;
+${sourceLine}${ctx.document}`;
 }
