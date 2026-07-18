@@ -63,6 +63,8 @@ import { SupabaseLogger } from "../api/supabaseClient";
 import { closeBrowser } from "../pipeline/utils/browserManager";
 import { generateCandidates, type TweetProcessedEvent } from "../pipeline/orchestration/generateCandidates";
 import { generatePangramCandidates } from "../pipeline/pangram-monitoring/generatePangramCandidates";
+import { generateMisinfoCandidates } from "../pipeline/misinfo-monitoring/generateMisinfoCandidates";
+import type { MisinfoTopicId } from "../pipeline/misinfo-monitoring/topicIds";
 import { submitCandidates, type Candidate } from "../pipeline/orchestration/submitCandidates";
 import { computeMaxPosts } from "../pipeline/orchestration/computeMaxPosts";
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
@@ -95,6 +97,12 @@ const MAX_POSTS_FALLBACK = 5;
 
 // Flip to true to re-enable the XXL-feed Pangram AI-detection pre-pass.
 const PANGRAM_PIPELINE_ENABLED = false;
+
+// Flip to true to activate the misinfo-monitoring pre-pass for the topics below
+// ONLY (not the evergreen topics). A live run writes AND submits real notes to X,
+// so review the filter output (scripts_jim/2026_07_18_trump_speech_filter) first.
+const MISINFO_PIPELINE_ENABLED = false;
+const MISINFO_ACTIVE_TOPIC_IDS: MisinfoTopicId[] = ["trump_election_security"];
 
 const globalTimeout = setTimeout(async () => {
   console.log("[pipeline] Maximum runtime reached (27 minutes), forcing exit");
@@ -183,6 +191,24 @@ async function main() {
       console.log("[pipeline] Pangram pre-pass disabled (PANGRAM_PIPELINE_ENABLED=false)");
     }
 
+    // Misinfo-monitoring pre-pass, scoped to MISINFO_ACTIVE_TOPIC_IDS. Same
+    // fail-soft contract as Pangram: a pre-pass failure must never take down
+    // regular note-writing; its candidates share the one submit call / daily cap.
+    let misinfoCandidates: Candidate[] = [];
+    if (MISINFO_PIPELINE_ENABLED) {
+      try {
+        misinfoCandidates = await generateMisinfoCandidates(supabaseLogger, {
+          skipPostIds: skipPostIds ?? new Set<string>(),
+          onTweetProcessed,
+          topicIds: MISINFO_ACTIVE_TOPIC_IDS,
+        });
+      } catch (err) {
+        console.warn("[pipeline] Misinfo pre-pass failed; continuing with regular pipeline only:", err);
+      }
+    } else {
+      console.log("[pipeline] Misinfo pre-pass disabled (MISINFO_PIPELINE_ENABLED=false)");
+    }
+
     const regularCandidates = await generateCandidates(supabaseLogger, {
       maxPosts,
       estimate,
@@ -191,10 +217,10 @@ async function main() {
       onTweetProcessed,
     });
 
-    const candidates = [...pangramCandidates, ...regularCandidates];
+    const candidates = [...pangramCandidates, ...misinfoCandidates, ...regularCandidates];
     if (candidates.length > 0 && supabaseLogger) {
       const submitted = await submitCandidates(candidates, supabaseLogger, isLocal);
-      console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates (${pangramCandidates.length} pangram, ${regularCandidates.length} regular)`);
+      console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates (${pangramCandidates.length} pangram, ${misinfoCandidates.length} misinfo, ${regularCandidates.length} regular)`);
     } else {
       console.log(`[pipeline] No candidates to submit`);
     }

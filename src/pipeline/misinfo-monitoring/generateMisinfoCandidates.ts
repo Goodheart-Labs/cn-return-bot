@@ -20,6 +20,7 @@ import type { FeedSize } from "../ab-testing/botConfig";
 import type { Candidate } from "../orchestration/submitCandidates";
 import { processPosts, type ProcessPostItem, type TweetProcessedEvent } from "../orchestration/generateCandidates";
 import { MISINFO_TOPICS, type MisinfoTopic } from "./topics";
+import type { MisinfoTopicId } from "./topicIds";
 import { matchPostsByTopic } from "./keywordFilter";
 import { selectPostsNeedingNote } from "./selectPostsNeedingNote";
 import { loadDumpFeed } from "./loadDumpFeed";
@@ -39,6 +40,10 @@ export interface MisinfoCandidatesOptions {
   /** Local-testing only: read posts from this JSONL dump instead of crawling
    *  the live XXL feed (which is GH-Actions-only). See loadDumpFeed. */
   dumpPath?: string;
+  /** Restrict the pre-pass to these topics only; omit for all MISINFO_TOPICS.
+   *  Lets us activate a single campaign (e.g. trump_election_security) without
+   *  running the evergreen topics. */
+  topicIds?: MisinfoTopicId[];
 }
 
 /** Try each feed size in turn; on any error fall through to the next. Returns
@@ -70,10 +75,11 @@ async function evaluateNewMatches(
   supabaseLogger: SupabaseLogger,
   feedSize: FeedSize,
   matched: Map<string, Post[]>,
+  topics: MisinfoTopic[],
 ): Promise<void> {
   const sightingKeys = await supabaseLogger.getMisinfoSightingKeys();
 
-  for (const topic of MISINFO_TOPICS) {
+  for (const topic of topics) {
     const topicPosts = matched.get(topic.id) ?? [];
     const newPosts = topicPosts.filter((p) => !sightingKeys.has(`${p.id}:${topic.id}`));
     if (!newPosts.length) continue;
@@ -113,10 +119,12 @@ async function evaluateNewMatches(
 function buildWorkList(
   pending: Array<{ tweet_id: string; topic_id: string }>,
   postById: Map<string, Post>,
+  topics: MisinfoTopic[],
 ): Array<{ item: ProcessPostItem; topicId: string }> {
   // Keyed by the raw (untrusted) DB topic_id string, so a stale/unknown id from
-  // the sightings ledger just misses and is skipped below.
-  const topicById = new Map<string, MisinfoTopic>(MISINFO_TOPICS.map((t) => [t.id, t]));
+  // the sightings ledger just misses and is skipped below. Only the active
+  // topics are in the map, so pending rows for other topics are skipped too.
+  const topicById = new Map<string, MisinfoTopic>(topics.map((t) => [t.id, t]));
   const seen = new Set<string>();
   const work: Array<{ item: ProcessPostItem; topicId: string }> = [];
 
@@ -147,12 +155,20 @@ function buildWorkList(
 
 export async function generateMisinfoCandidates(
   supabaseLogger: SupabaseLogger | null,
-  { skipPostIds, onTweetProcessed, dumpPath }: MisinfoCandidatesOptions,
+  { skipPostIds, onTweetProcessed, dumpPath, topicIds }: MisinfoCandidatesOptions,
 ): Promise<Candidate[]> {
   // The sightings table is the dedupe ledger; without it we can't run the
   // pre-pass without re-evaluating the whole crawl every time.
   if (!supabaseLogger) {
     console.log("[misinfo] No Supabase logger; skipping misinfo pre-pass");
+    return [];
+  }
+
+  const topics = topicIds
+    ? MISINFO_TOPICS.filter((t) => topicIds.includes(t.id))
+    : MISINFO_TOPICS;
+  if (!topics.length) {
+    console.log(`[misinfo] No matching topics for ${JSON.stringify(topicIds)}; skipping pre-pass`);
     return [];
   }
 
@@ -168,11 +184,11 @@ export async function generateMisinfoCandidates(
   const { feedSize, posts } = crawl;
 
   const matched = matchPostsByTopic(posts);
-  await evaluateNewMatches(supabaseLogger, feedSize, matched);
+  await evaluateNewMatches(supabaseLogger, feedSize, matched, topics);
 
   const pending = await supabaseLogger.getPendingMisinfoSightings();
   const postById = new Map(posts.map((p) => [p.id, p]));
-  const work = buildWorkList(pending, postById);
+  const work = buildWorkList(pending, postById, topics);
 
   if (!work.length) {
     console.log("[misinfo] No posts to process this run");
