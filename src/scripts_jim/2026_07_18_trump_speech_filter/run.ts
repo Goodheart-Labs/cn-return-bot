@@ -10,10 +10,14 @@
  * run (reusing the existing NoteCard/TweetCard render path) and the dashboard
  * auto-opens on the fresh upload.
  *
- *   bun run src/scripts_jim/2026_07_18_trump_speech_filter/run.ts
+ *   bun run src/scripts_jim/2026_07_18_trump_speech_filter/run.ts [--top N]
+ *
+ * --top N: rank the keyword matches by recency+impressions and send only the
+ * top N to Stage 2 — focuses LLM cost and review effort on the tweets whose
+ * notes would matter most.
  *
  * Needs prod SUPABASE_URL/SUPABASE_SERVICE_KEY (feed_tweets + the dashboard live
- * on prod) and OPENROUTER_API_KEY (the Opus selector), all auto-loaded from .env.
+ * on prod) and OPENROUTER_API_KEY (the selection LLM), all auto-loaded from .env.
  */
 
 import { createClient } from "@supabase/supabase-js";
@@ -112,11 +116,19 @@ async function main() {
   const posts = rows.map(toPost);
 
   // Stage 1 — keyword cut.
-  const matched = posts.filter((p) => topic.matches(blob(p)));
+  let matched = posts.filter((p) => topic.matches(blob(p)));
   console.log(`[filter] pool=${posts.length} keyword_matched=${matched.length}`);
   if (!matched.length) {
     console.log("[filter] nothing matched the keyword predicate — done");
     return;
+  }
+
+  // --top N: keep only the highest-impact matches (recency+impressions blend).
+  const topArgIdx = process.argv.indexOf("--top");
+  const topN = topArgIdx >= 0 ? Number(process.argv[topArgIdx + 1]) : undefined;
+  if (topN) {
+    matched = sortByRecencyAndImpressions(matched).slice(0, topN);
+    console.log(`[filter] --top ${topN}: kept the ${matched.length} highest recency+impressions matches`);
   }
 
   // Stage 2 — Opus selection against the transcript, chunked.
