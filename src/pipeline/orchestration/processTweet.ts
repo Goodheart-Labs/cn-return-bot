@@ -113,6 +113,10 @@ interface EvalGateDecision {
   score?: number;
   shouldSubmit?: boolean;
   error?: string;
+  /** When true the score is recorded but never vetoes submission. Set for
+   *  misinfo-monitoring posts: we hand-curate those topics, so we keep the eval
+   *  signal for visibility but let our note through regardless. */
+  advisory?: boolean;
 }
 
 interface ScoringOutput {
@@ -161,9 +165,11 @@ async function scorePipelineResult(
   const noteText = joinNoteAndUrl(result.noteResult.note, result.noteResult.url);
   const evalGate: EvalGateDecision = {
     threshold: getBotConfig().eval_submit_threshold ?? 0,
+    advisory: getMonitoringContext() !== undefined,
   };
   const log = getTweetLog();
   log?.set("eval.threshold", evalGate.threshold);
+  log?.set("eval.advisory", evalGate.advisory);
 
   // Source verification
   const svScore = extractSourceVerificationScore(result);
@@ -231,8 +237,9 @@ function determineOutcome(result: PipelineResult, scoring: ScoringOutput): Outco
   }
 
   // Evaluation score rejection. If the eval API failed or returned no numeric
-  // score, skip this gate rather than rejecting a potentially good note.
-  if (scoring.evalGate.shouldSubmit === false) {
+  // score, skip this gate rather than rejecting a potentially good note. For
+  // advisory (misinfo) posts the score is recorded but never vetoes.
+  if (scoring.evalGate.shouldSubmit === false && !scoring.evalGate.advisory) {
     const { score, threshold } = scoring.evalGate;
     return {
       outcome: "rejected",

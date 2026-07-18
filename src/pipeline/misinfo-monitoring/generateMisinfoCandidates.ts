@@ -28,9 +28,11 @@ import { loadDumpFeed } from "./loadDumpFeed";
 const MISINFO_MAX_RESULTS = 5000;
 const MISINFO_MAX_PAGES = 100;
 const MISINFO_FEED_SIZES: FeedSize[] = ["xxl", "xl", "large"];
-// Cap selected posts processed per run so a heavy misinfo day can't starve the
-// regular pipeline; the rest carry over via their needs_note=true sightings.
-const MISINFO_MAX_PROCESS = 15;
+// Ceiling on misinfo posts processed (and thus notes written/submitted) per run,
+// so a heavy misinfo day can't starve the regular pipeline or eat the shared
+// daily submission cap. Posts beyond it stay pending (needs_note=true, not marked
+// processed) and carry over to the next run.
+const MISINFO_MAX_PROCESS = 10;
 
 export interface MisinfoCandidatesOptions {
   /** Shared with generateCandidates so already-noted / cooling-down tweets are
