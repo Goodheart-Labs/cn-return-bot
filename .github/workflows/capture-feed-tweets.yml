@@ -1,0 +1,46 @@
+name: Capture Feed Tweets
+
+# Manual run only. Reads the entire eligible-posts feed with the prod X secrets
+# (xxl access) and saves every post to the feed_tweets table in Supabase —
+# first-seen tweets as full rows incl. the raw X-API object, re-seen tweets get
+# their engagement metrics and last_seen_at refreshed. Read + save only; nothing
+# is drafted or posted. Requires migration 058 to be applied.
+on:
+  workflow_dispatch:
+    inputs:
+      feed_size:
+        description: "Feed size"
+        type: choice
+        default: xxl
+        options: [xxl, xl, large, small]
+      max_pages:
+        description: "Max pages (100 posts/page; 300 exhausts the feed)"
+        type: string
+        default: "300"
+
+# Never run two captures at once — they'd race on the feed_tweets upserts.
+concurrency:
+  group: capture-feed-tweets
+  cancel-in-progress: false
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      X_API_KEY: ${{ secrets.X_API_KEY }}
+      X_API_KEY_SECRET: ${{ secrets.X_API_KEY_SECRET }}
+      X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+      X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      FEED_SIZE: ${{ inputs.feed_size }}
+      MAX_PAGES: ${{ inputs.max_pages }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - run: bun install
+      - name: Capture feed into feed_tweets
+        run: bun run src/production/captureFeedTweets.ts
