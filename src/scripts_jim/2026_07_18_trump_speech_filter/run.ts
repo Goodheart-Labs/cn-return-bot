@@ -37,8 +37,10 @@ import { escapeCsvField } from "../../utils/csv";
 const TOPIC_ID = "trump_election_security";
 // The speech aired 2026-07-16; only look at tweets from the event onward.
 const POSTED_SINCE = "2026-07-16";
-const SELECT_CHUNK = 100; // posts per selection call (the transcript is the
-// fixed per-call cost, so bigger chunks amortize it; output stays small).
+// Posts per selection call. The transcript is the fixed per-call cost, so bigger
+// chunks amortize it — but a chunk with many selections + verbose reasons can
+// exceed the model's output budget and truncate the JSON, so keep it moderate.
+const SELECT_CHUNK = 50;
 
 interface FeedTweetRow {
   tweet_id: string;
@@ -131,13 +133,18 @@ async function main() {
     console.log(`[filter] --top ${topN}: kept the ${matched.length} highest recency+impressions matches`);
   }
 
-  // Stage 2 — Opus selection against the transcript, chunked.
+  // Stage 2 — LLM selection against the transcript, chunked. A chunk whose
+  // JSON stays invalid after retries is skipped (logged), not fatal.
   const selected: SelectedPost[] = [];
   for (let i = 0; i < matched.length; i += SELECT_CHUNK) {
     const chunk = matched.slice(i, i + SELECT_CHUNK);
-    const picked = await selectPostsNeedingNote(topic, chunk);
-    selected.push(...picked);
-    console.log(`[filter] selection ${i}-${i + chunk.length}: ${picked.length}/${chunk.length} selected`);
+    try {
+      const picked = await selectPostsNeedingNote(topic, chunk);
+      selected.push(...picked);
+      console.log(`[filter] selection ${i}-${i + chunk.length}: ${picked.length}/${chunk.length} selected`);
+    } catch (err) {
+      console.warn(`[filter] selection ${i}-${i + chunk.length} FAILED (skipping chunk): ${(err as Error)?.message}`);
+    }
   }
   console.log(`[filter] pool=${posts.length} keyword_matched=${matched.length} llm_selected=${selected.length}`);
 
