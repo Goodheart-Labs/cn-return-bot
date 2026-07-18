@@ -24,6 +24,7 @@ import { fetchAllRows } from "../../api/paging";
 import { MISINFO_TOPICS } from "../../pipeline/misinfo-monitoring/topics";
 import { blob } from "../../pipeline/misinfo-monitoring/keywordFilter";
 import { selectPostsNeedingNote, type SelectedPost } from "../../pipeline/misinfo-monitoring/selectPostsNeedingNote";
+import { sortByRecencyAndImpressions, ageInHours, formatCount } from "../../pipeline/orchestration/utils/tweetSorting";
 import { captureProdSupabaseCreds } from "../../local/prodSupabaseCreds";
 import { autoOpenInDashboard } from "../../local/dashboardAutoOpen";
 import { initOutputFolder, buildRunName, OUTPUT_HEADERS } from "../../local/outputWriter";
@@ -32,32 +33,63 @@ import { escapeCsvField } from "../../utils/csv";
 const TOPIC_ID = "trump_election_security";
 // The speech aired 2026-07-16; only look at tweets from the event onward.
 const POSTED_SINCE = "2026-07-16";
-const SELECT_CHUNK = 100; // posts per Opus selection call (transcript is the
+const SELECT_CHUNK = 100; // posts per selection call (the transcript is the
 // fixed per-call cost, so bigger chunks amortize it; output stays small).
 
 interface FeedTweetRow {
   tweet_id: string;
   text: string | null;
   referenced_tweet_data: Post["referenced_tweet_data"] | null;
+  posted_at: string | null;
+  impressions: number | null;
 }
 
 /** Read the whole event-window slice of feed_tweets (keyset-paged past the 1000
- *  cap). Only the columns Stage 1/2 need — skips the big raw_tweet/media blobs. */
+ *  cap). Only the columns the filter and ranking need — skips the big
+ *  raw_tweet/media blobs. */
 function readFeedTweets(client: ReturnType<typeof createClient>): Promise<FeedTweetRow[]> {
   return fetchAllRows<FeedTweetRow>(
     () =>
       client
         .from("feed_tweets")
-        .select("tweet_id, text, referenced_tweet_data")
+        .select("tweet_id, text, referenced_tweet_data, posted_at, impressions")
         .gte("posted_at", POSTED_SINCE),
     "tweet_id",
     { label: "trump-filter feed_tweets" },
   );
 }
 
-/** feed_tweets row → the minimal Post shape blob()/selection read. */
+/** feed_tweets row → the minimal Post shape blob()/selection/ranking read. */
 function toPost(row: FeedTweetRow): Post {
-  return { id: row.tweet_id, text: row.text ?? "", referenced_tweet_data: row.referenced_tweet_data ?? undefined } as Post;
+  return {
+    id: row.tweet_id,
+    text: row.text ?? "",
+    referenced_tweet_data: row.referenced_tweet_data ?? undefined,
+    created_at: row.posted_at ?? undefined,
+    public_metrics: { impression_count: row.impressions ?? 0 },
+  } as Post;
+}
+
+/**
+ * The dashboard lists dataset items newest-created_at-first, and bulk inserts
+ * land in same-timestamp chunks — insertion order alone can't express a ranking.
+ * Re-stamp each item's created_at so rank 0 is newest → renders on top.
+ */
+export async function applyRankOrder(client: ReturnType<typeof createClient>, uploadId: string, rankedTweetIds: string[]): Promise<void> {
+  const { data, error } = await client.from("review_dashboard_items").select("id, url").eq("upload_id", uploadId);
+  if (error) throw error;
+  const rankByTweetId = new Map(rankedTweetIds.map((id, i) => [id, i]));
+  const base = Date.now();
+  for (const item of data ?? []) {
+    const tweetId = (item.url as string).match(/status\/(\d+)/)?.[1];
+    const rank = tweetId !== undefined ? rankByTweetId.get(tweetId) : undefined;
+    if (rank === undefined) continue;
+    const { error: updErr } = await client
+      .from("review_dashboard_items")
+      .update({ created_at: new Date(base - rank * 1000).toISOString() })
+      .eq("id", item.id);
+    if (updErr) throw updErr;
+  }
 }
 
 function csvRow(fields: Partial<Record<(typeof OUTPUT_HEADERS)[number], string>>): string {
@@ -114,24 +146,36 @@ async function main() {
   }
 
   // Upload only the selected candidates to the dashboard (the "might be misinfo"
-  // set). csvRowToReviewItemInsert maps text→tweet_text, judge_guidance→shown.
-  const textById = new Map(matched.map((p) => [p.id, p.text ?? ""]));
-  for (const s of selected) {
+  // set), ranked by the pipeline's recency+impressions blend so the most
+  // impactful tweets render first. csvRowToReviewItemInsert maps text→tweet_text,
+  // judge_guidance→shown.
+  const postById = new Map(matched.map((p) => [p.id, p]));
+  const rankedPosts = sortByRecencyAndImpressions(
+    selected.map((s) => postById.get(s.postId)!).filter(Boolean),
+  );
+  for (const post of rankedPosts) {
+    const imp = post.public_metrics?.impression_count ?? 0;
     output.appendRow(
       csvRow({
-        url: `https://x.com/i/status/${s.postId}`,
-        text: textById.get(s.postId) ?? "",
+        url: `https://x.com/i/status/${post.id}`,
+        text: post.text ?? "",
         needs_note: "true",
-        judge_guidance: s.reason,
+        judge_guidance: `[${formatCount(imp)} imp, ${ageInHours(post).toFixed(0)}h old] ${reasonById.get(post.id) ?? ""}`,
       }),
     );
   }
 
-  await autoOpenInDashboard(output.csvPath, buildRunName("trump-filter", "run"));
+  const uploadId = await autoOpenInDashboard(output.csvPath, buildRunName("trump-filter", "run"));
+  if (uploadId) {
+    await applyRankOrder(client, uploadId, rankedPosts.map((p) => p.id));
+    console.log(`[filter] rank order applied to upload ${uploadId}`);
+  }
   console.log(`[filter] uploaded ${selected.length} candidate(s); details in ${output.folderPath}/matched.jsonl`);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+if (import.meta.main) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}
