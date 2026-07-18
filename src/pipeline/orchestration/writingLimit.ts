@@ -15,6 +15,10 @@ const SUBMISSION_WINDOW_HOURS = 24;
 // the feed). Shorter than the submission window: the cap can lift mid-window, so
 // we re-broaden sooner rather than staying pessimistic for a full day.
 const RECENTLY_HIT_WINDOW_HOURS = 6;
+// After the limit's been binding this long, probe X once by nudging the stored
+// limit up by 1 (see probeWritingLimitAfterCooldown). Long enough that X has
+// plausibly aged a note out of the rolling window and freed a slot.
+const PROBE_COOLDOWN_MINUTES = 95;
 const STATE_KEY = "writing_limit";
 const LIMIT_HIT_AT_KEY = "limit_hit_at";
 // The cap proven at the last hit (X). Frozen at hit time — unlike writing_limit,
@@ -66,6 +70,29 @@ export async function hitWritingLimitRecently(
   if (!Number.isFinite(capAtHit)) return true; // no proven cap to compare — stay capped
   const submissions = await logger.countRecentSubmissions(SUBMISSION_WINDOW_HOURS);
   return submissions <= capAtHit;
+}
+
+/**
+ * Caller has already determined this run would skip (writing limit reached). If
+ * X last rejected us more than the cooldown ago, nudge the stored limit up by 1
+ * so we attempt one note instead of skipping — X may have freed a slot as an old
+ * note aged out. If the probe note lands, bumpWritingLimitFromSuccess takes over
+ * and keeps climbing; if X still rejects, recordDailyLimitHit resets the cooldown
+ * and we back off another window. Returns whether it bumped (caller re-budgets).
+ */
+export async function probeWritingLimitAfterCooldown(logger: SupabaseLogger): Promise<boolean> {
+  const raw = await logger.getPipelineState(LIMIT_HIT_AT_KEY);
+  if (!raw) return false;
+  const hitAt = Date.parse(raw);
+  if (!Number.isFinite(hitAt)) return false;
+  if (Date.now() - hitAt < PROBE_COOLDOWN_MINUTES * 60 * 1000) return false;
+
+  const current = await readWritingLimit(logger);
+  if (current === null) return false;
+  const probe = current + 1;
+  await logger.setPipelineState(STATE_KEY, String(probe));
+  console.log(`[writing-limit] Cooldown elapsed while capped → probing writing_limit=${probe} (was ${current})`);
+  return true;
 }
 
 /**

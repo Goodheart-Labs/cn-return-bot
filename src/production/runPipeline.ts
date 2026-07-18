@@ -67,6 +67,7 @@ import { generateMisinfoCandidates } from "../pipeline/misinfo-monitoring/genera
 import type { MisinfoTopicId } from "../pipeline/misinfo-monitoring/topicIds";
 import { submitCandidates, type Candidate } from "../pipeline/orchestration/submitCandidates";
 import { computeMaxPosts } from "../pipeline/orchestration/computeMaxPosts";
+import { probeWritingLimitAfterCooldown } from "../pipeline/orchestration/writingLimit";
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
 import { autoOpenInDashboard } from "../local/dashboardAutoOpen";
 import { withForcedPicks } from "../pipeline/ab-testing/abTests";
@@ -137,11 +138,19 @@ async function main() {
       }
     }
 
-    const { maxPosts, estimate } = isLocal
+    let { maxPosts, estimate } = isLocal
       ? { maxPosts: MAX_POSTS_LOCAL, estimate: MAX_POSTS_LOCAL }
       : supabaseLogger
         ? await computeMaxPosts(supabaseLogger)
         : { maxPosts: MAX_POSTS_FALLBACK, estimate: MAX_POSTS_FALLBACK };
+
+    // We'd skip (writing limit reached), but X may have freed a slot since it
+    // last rejected us. If the cooldown has elapsed, probe by nudging the limit
+    // up 1 and re-budgeting, so we attempt a note instead of skipping outright.
+    if (maxPosts === 0 && supabaseLogger) {
+      const probed = await probeWritingLimitAfterCooldown(supabaseLogger);
+      if (probed) ({ maxPosts, estimate } = await computeMaxPosts(supabaseLogger));
+    }
 
     if (maxPosts === 0) {
       console.log("[pipeline] Skipping — writing limit reached for the current 24h window");
