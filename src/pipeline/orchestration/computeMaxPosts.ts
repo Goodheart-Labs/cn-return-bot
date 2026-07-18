@@ -19,18 +19,21 @@ const FALLBACK_MAX_POSTS = 5;
 const MIN_RUNS_FOR_RATE = 20;
 const CONVERTED_OUTCOMES = ["candidate", "submitted"];
 
-// ── Half-step posting policy — DELIBERATE, do not "fix" this to post the max ──
-// We compute a predicted writing limit, then post only HALFWAY from where we are
-// now up to that prediction, leaving the rest of the day's headroom unused on
-// purpose. Why on purpose:
-//   1. The prediction is a reconstruction of X's formula — half-stepping means a
-//      wrong-HIGH prediction can't overshoot hard, it just probes gently.
-//   2. Posting marginal notes dilutes our helpful-note hit rate, which *lowers*
-//      the future cap — so restraint is self-protecting.
-// This 0.5 is a conservative starting value; dial toward 1.0 as the predictor
-// earns trust (predicted-vs-observed is logged every run + on each 403, see
-// writingLimit.ts). Nathan, 2026-07-18 — rationale in docs/note-ranking-plan.md.
-const HALF_STEP_FRACTION = 0.5;
+// ── Reserve margin — DELIBERATE, do not "fix" this to post the full predicted cap ──
+// We compute a predicted writing limit but cap 24h submissions at only
+// POST_FRACTION_OF_PREDICTED of it, holding the rest (~15%) in reserve. Why:
+//   1. The prediction is a reconstruction of X's (ambiguous, n=1-validated) formula
+//      — a fixed under-shoot means a wrong-HIGH prediction still can't get us 403'd.
+//   2. Posting marginal notes dilutes our helpful-note hit rate, which *lowers* the
+//      future cap — so restraint is self-protecting.
+// NOTE this is a STABLE CEILING, not a per-run "half-step": a half-step re-counts
+// submissions each run and geometrically converges to the *full* cap over a few runs
+// (12→16→18→19→20), leaving no reserve. Capping at floor(fraction × predicted) instead
+// means submissions never exceed the target in the 24h window, so the reserve persists.
+// 0.85 is a conservative start; dial toward 1.0 as the predictor earns trust
+// (predicted-vs-observed logged every run + on each 403, see writingLimit.ts).
+// Nathan, 2026-07-18 — rationale in docs/note-ranking-plan.md.
+const POST_FRACTION_OF_PREDICTED = 0.85;
 
 // After X actually refuses a submission, cool off briefly before probing again so
 // we don't hammer the 403. Deliberately SHORT (not a multi-hour wait) so that a
@@ -59,16 +62,19 @@ export async function computeMaxPosts(logger: SupabaseLogger): Promise<MaxPostsR
   // recordDailyLimitHit can log the miss when X refuses (calibration).
   await logger.setPipelineState("predicted_writing_limit", String(prediction.wl));
 
-  const headroom = prediction.wl - submitted;
-  let remainingSlots = Math.max(0, Math.floor(HALF_STEP_FRACTION * headroom));
+  // Stable ceiling: post up to a fixed fraction of the predicted cap, keeping the
+  // rest in reserve (see POST_FRACTION_OF_PREDICTED). Because it's an absolute cap on
+  // 24h submissions (not a re-counted step), the reserve persists across runs.
+  const targetCap = Math.floor(POST_FRACTION_OF_PREDICTED * prediction.wl);
+  let remainingSlots = Math.max(0, targetCap - submitted);
 
   const coolingOff = await hitWritingLimitRecently(logger, POST_403_COOLDOWN_HOURS);
   if (coolingOff) remainingSlots = 0;
 
   console.log(
     `[posting-strategy] predicted_WL=${prediction.wl} (${prediction.branch}) ` +
-      `submitted_24h=${submitted} headroom=${headroom} half-step=${HALF_STEP_FRACTION} ` +
-      `remaining=${remainingSlots}${coolingOff ? " (cooling off post-403)" : ""} | ` +
+      `target=${targetCap} (${POST_FRACTION_OF_PREDICTED}×predicted → ~15% reserve) ` +
+      `submitted_24h=${submitted} remaining=${remainingSlots}${coolingOff ? " (cooling off post-403)" : ""} | ` +
       `HR_L=${pct(prediction.HR_L)} HR_100=${pct(prediction.HR_100)} HR_14d=${pct(prediction.HR_14d)} ` +
       `DN30=${prediction.DN_30.toFixed(1)} NH5=${prediction.NH_5} NH10=${prediction.NH_10} T=${prediction.T}`,
   );
