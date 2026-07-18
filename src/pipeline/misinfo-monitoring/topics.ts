@@ -25,11 +25,24 @@ export interface MisinfoTopic {
   matches: (blob: string) => boolean;
   document: string;
   brief: string;
+  /** Optional reference the selection LLM matches posts against instead of the
+   *  brief — e.g. a speech transcript for a time-boxed news event (see
+   *  trump_election_security). Loaded from transcripts/<id>.md when present. */
+  transcript?: string;
 }
 
 const HERE = import.meta.dir;
 const read = (folder: string, id: string): string =>
   readFileSync(join(HERE, folder, `${id}.md`), "utf8");
+/** Like read(), but returns undefined when the file is absent — most topics have
+ *  no transcript, so a missing transcripts/<id>.md must not crash the import. */
+const readOptional = (folder: string, id: string): string | undefined => {
+  try {
+    return read(folder, id);
+  } catch {
+    return undefined;
+  }
+};
 
 // Shared sub-patterns (ported from findClaims.py).
 const AI =
@@ -111,6 +124,25 @@ const SPECS: TopicSpec[] = [
         t,
       ),
   },
+  {
+    // Trump's July 2026 primetime election-security speech (China stole voter
+    // files, machines "easily compromised", noncitizen/dead voters, mail-in
+    // fraud, SAVE Act). Loose high-recall net — Stage-2 selection is the
+    // precision gate. Structure mirrors the old capture predicate: an
+    // election/voting term AND (a fraud/machine/speech signal OR a China signal).
+    // documentUrl follows the document's sourcing rule (in-group/primary sources
+    // only — a CBS link would tank the note with the raters it must convince):
+    // Trump's own FBI+CISA on voter data not affecting election integrity.
+    id: "trump_election_security",
+    title: "Trump election-security speech",
+    documentUrl: "https://www.ic3.gov/PSA/2020/PSA200928",
+    matches: (t) =>
+      /\b(elections?|voters?|voting|votes?|ballots?)\b/.test(t) &&
+      (/(rigged|stolen|\bstole\b|\bsteal\b|fraud|cheat|hacked|compromised|noncitizen|non-citizen|dominion|smartmatic|maduro|venezuela|decertif|declassif|deep state|mail-?in|voter (roll|file|data)|voting machine|dead voter|illegal (vote|ballot)|220 ?million|278,?000|save america act|\bsave act\b|proof of citizenship|election (security|integrity))/.test(
+        t,
+      ) ||
+        /(china|chinese|\bccp\b|people's republic)/.test(t)),
+  },
 ];
 
 export const MISINFO_TOPICS: MisinfoTopic[] = SPECS.map((spec) => ({
@@ -120,4 +152,5 @@ export const MISINFO_TOPICS: MisinfoTopic[] = SPECS.map((spec) => ({
   matches: spec.matches,
   document: read("documents", spec.id),
   brief: read("briefs", spec.id),
+  transcript: readOptional("transcripts", spec.id),
 }));
