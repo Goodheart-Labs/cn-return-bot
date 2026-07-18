@@ -432,16 +432,17 @@ const CHEAP_BOT_TEMPERATURE_TEST: ABTest = {
 };
 
 // Eval-score cutoff for submission. The X eval gate keeps a note iff
-// `claim_opinion_score >= eval_submit_threshold`. This 50/50 split tests the
-// historical 0 cutoff against a much looser -6 cutoff. Not prereq-gated (the
-// eval gate runs for every bot in processTweet), so defaultVariant "0" lets
-// pre-existing rows resolve to the old cutoff.
+// `claim_opinion_score >= eval_submit_threshold`. Fixed at the 0 cutoff so every
+// note scoring below zero is filtered out; the looser -6 arm is pinned to 0
+// (still declared so its historical picks resolve). Not prereq-gated (the eval
+// gate runs for every bot in processTweet), so defaultVariant "0" lets
+// pre-existing rows resolve to the same cutoff.
 const EVAL_SUBMIT_THRESHOLD_TEST: ABTest = {
   name: "eval_submit_threshold",
   defaultVariant: "0",
   variants: [
-    { variant: { name: "0",  overrides: { eval_submit_threshold: 0  } }, weight: 50 },
-    { variant: { name: "-6", overrides: { eval_submit_threshold: -6 } }, weight: 50 },
+    { variant: { name: "0",  overrides: { eval_submit_threshold: 0  } }, weight: 100 },
+    { variant: { name: "-6", overrides: { eval_submit_threshold: -6 } }, weight: 0   },
   ],
 };
 
