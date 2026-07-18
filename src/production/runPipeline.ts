@@ -144,9 +144,9 @@ async function main() {
         ? await computeMaxPosts(supabaseLogger)
         : { maxPosts: MAX_POSTS_FALLBACK, estimate: MAX_POSTS_FALLBACK };
 
-    // We'd skip (writing limit reached), but X may have freed a slot since it
-    // last rejected us. If the cooldown has elapsed, probe by nudging the limit
-    // up 1 and re-budgeting, so we attempt a note instead of skipping outright.
+    // We'd skip (writing limit reached), but X's cap may have risen since it last
+    // rejected us. If the cooldown has elapsed, probe by nudging the limit up 1
+    // and re-budgeting, so we attempt a note instead of skipping outright.
     if (maxPosts === 0 && supabaseLogger) {
       const probed = await probeWritingLimitAfterCooldown(supabaseLogger);
       if (probed) ({ maxPosts, estimate } = await computeMaxPosts(supabaseLogger));

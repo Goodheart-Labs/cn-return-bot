@@ -16,8 +16,8 @@ const SUBMISSION_WINDOW_HOURS = 24;
 // we re-broaden sooner rather than staying pessimistic for a full day.
 const RECENTLY_HIT_WINDOW_HOURS = 6;
 // After the limit's been binding this long, probe X once by nudging the stored
-// limit up by 1 (see probeWritingLimitAfterCooldown). Long enough that X has
-// plausibly aged a note out of the rolling window and freed a slot.
+// limit up by 1 (see probeWritingLimitAfterCooldown). Long enough that X's cap
+// may plausibly have risen since it last rejected us.
 const PROBE_COOLDOWN_MINUTES = 95;
 const STATE_KEY = "writing_limit";
 const LIMIT_HIT_AT_KEY = "limit_hit_at";
@@ -75,10 +75,13 @@ export async function hitWritingLimitRecently(
 /**
  * Caller has already determined this run would skip (writing limit reached). If
  * X last rejected us more than the cooldown ago, nudge the stored limit up by 1
- * so we attempt one note instead of skipping — X may have freed a slot as an old
- * note aged out. If the probe note lands, bumpWritingLimitFromSuccess takes over
- * and keeps climbing; if X still rejects, recordDailyLimitHit resets the cooldown
- * and we back off another window. Returns whether it bumped (caller re-budgets).
+ * so we attempt one note instead of skipping — testing whether X's cap has risen
+ * above the count it last rejected us at. (An old note aging out already lifts us
+ * off the cap on its own, via a lower submission count, so that needs no probe;
+ * this is only for when submissions still equal the stored limit.) If the probe
+ * note lands, bumpWritingLimitFromSuccess takes over and keeps climbing; if X
+ * still rejects, recordDailyLimitHit resets the cooldown and we back off another
+ * window. Returns whether it bumped (caller re-budgets).
  */
 export async function probeWritingLimitAfterCooldown(logger: SupabaseLogger): Promise<boolean> {
   const raw = await logger.getPipelineState(LIMIT_HIT_AT_KEY);
