@@ -35,6 +35,18 @@ export async function recordDailyLimitHit(logger: SupabaseLogger): Promise<void>
   await logger.setPipelineState(LIMIT_HIT_AT_KEY, new Date().toISOString());
   await logger.setPipelineState(LIMIT_HIT_VALUE_KEY, String(count));
   await logger.setPipelineState(STATE_KEY, String(count));
+
+  // Calibration: X's real refusal point vs what we predicted this run. A positive
+  // "over_predicted_by" means the predictor guessed too high (we probed above the
+  // real cap and got refused) — the signal that tells us the formula is drifting.
+  const predictedRaw = await logger.getPipelineState("predicted_writing_limit");
+  const predicted = predictedRaw != null ? Number(predictedRaw) : NaN;
+  if (Number.isFinite(predicted)) {
+    console.log(
+      `[posting-strategy] MISS predicted_WL=${predicted} actual_refused_at=${count} over_predicted_by=${predicted - count}`,
+    );
+  }
+
   console.log(`[writing-limit] Daily limit hit → writing_limit=${count}`);
 }
 
