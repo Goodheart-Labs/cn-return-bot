@@ -888,22 +888,6 @@ export class SupabaseLogger {
     return new Set(rows.map((r) => `${r.tweet_id}:${r.topic_id}`));
   }
 
-  /**
-   * Sightings that need a note (needs_note=true) but haven't been processed
-   * yet (processed_run_id is null) — the carry-over backlog the pre-pass works
-   * through, oldest first.
-   */
-  async getPendingMisinfoSightings(): Promise<Array<{ tweet_id: string; topic_id: string }>> {
-    return this.fetchAllRows<{ tweet_id: string; topic_id: string }>(
-      (client) => client.from("misinfo_monitoring_sightings")
-        .select("id, tweet_id, topic_id")
-        .eq("needs_note", true)
-        .is("processed_run_id", null),
-      "id",
-      "getPendingMisinfoSightings",
-    );
-  }
-
   /** Insert newly-matched sightings; existing (tweet, topic) pairs are ignored. */
   async upsertMisinfoSightings(rows: Array<{
     tweet_id: string;
