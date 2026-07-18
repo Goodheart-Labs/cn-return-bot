@@ -98,10 +98,10 @@ const MAX_POSTS_FALLBACK = 5;
 // Flip to true to re-enable the XXL-feed Pangram AI-detection pre-pass.
 const PANGRAM_PIPELINE_ENABLED = false;
 
-// Flip to true to activate the misinfo-monitoring pre-pass for the topics below
-// ONLY (not the evergreen topics). A live run writes AND submits real notes to X,
-// so review the filter output (scripts_jim/2026_07_18_trump_speech_filter) first.
-const MISINFO_PIPELINE_ENABLED = false;
+// Activates the misinfo-monitoring pre-pass for the topics below ONLY (not the
+// evergreen topics). A live run writes AND submits real notes to X; flip to
+// false to kill-switch it.
+const MISINFO_PIPELINE_ENABLED = true;
 const MISINFO_ACTIVE_TOPIC_IDS: MisinfoTopicId[] = ["trump_election_security"];
 
 const globalTimeout = setTimeout(async () => {
