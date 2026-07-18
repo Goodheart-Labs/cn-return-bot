@@ -5,8 +5,7 @@ import { blob } from "../../pipeline/misinfo-monitoring/keywordFilter";
 
 const topic = MISINFO_TOPICS.find((t) => t.id === "trump_election_security")!;
 console.log("topic loaded:", topic.title);
-console.log("transcript chars:", topic.transcript?.length ?? "MISSING");
-console.log("other topic (ai_water) transcript:", MISINFO_TOPICS.find((t) => t.id === "ai_water")!.transcript ?? "undefined (correct)");
+console.log("brief (the speech transcript) chars:", topic.brief.length);
 
 const cases: Array<[boolean, string]> = [
   [true, "The 2020 election was STOLEN! China hacked 220 million voter files and Dominion flipped votes."],

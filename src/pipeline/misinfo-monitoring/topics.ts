@@ -28,25 +28,15 @@ export interface MisinfoTopic {
   documentUrl?: string;
   matches: (blob: string) => boolean;
   document: string;
+  /** The reference the selection LLM matches posts against: a distilled debunk
+   *  for evergreen topics, or — for a time-boxed news event like
+   *  trump_election_security — the source's transcript itself. */
   brief: string;
-  /** Optional reference the selection LLM matches posts against instead of the
-   *  brief — e.g. a speech transcript for a time-boxed news event (see
-   *  trump_election_security). Loaded from transcripts/<id>.md when present. */
-  transcript?: string;
 }
 
 const HERE = import.meta.dir;
 const read = (folder: string, id: string): string =>
   readFileSync(join(HERE, folder, `${id}.md`), "utf8");
-/** Like read(), but returns undefined when the file is absent — most topics have
- *  no transcript, so a missing transcripts/<id>.md must not crash the import. */
-const readOptional = (folder: string, id: string): string | undefined => {
-  try {
-    return read(folder, id);
-  } catch {
-    return undefined;
-  }
-};
 
 // Shared sub-patterns (ported from findClaims.py).
 const AI =
@@ -154,5 +144,4 @@ export const MISINFO_TOPICS: MisinfoTopic[] = SPECS.map((spec) => ({
   matches: spec.matches,
   document: read("documents", spec.id),
   brief: read("briefs", spec.id),
-  transcript: readOptional("transcripts", spec.id),
 }));

@@ -28,9 +28,5 @@ function numberPosts(posts: Post[]): string {
 }
 
 export function buildSelectPostsUserMessage(topic: MisinfoTopic, posts: Post[]): string {
-  // A time-boxed topic (e.g. a speech) supplies a transcript to match posts
-  // against; evergreen topics fall back to their distilled debunking brief.
-  const reference = topic.transcript ?? topic.brief;
-  const heading = topic.transcript ? "Source transcript" : "Ground-truth brief";
-  return `## ${heading}: ${topic.title}\n${reference}\n\n## Posts\n${numberPosts(posts)}`;
+  return `## Reference: ${topic.title}\n${topic.brief}\n\n## Posts\n${numberPosts(posts)}`;
 }

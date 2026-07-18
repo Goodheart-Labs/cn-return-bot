@@ -111,7 +111,6 @@ async function main() {
 
   const topic = MISINFO_TOPICS.find((t) => t.id === TOPIC_ID);
   if (!topic) throw new Error(`topic ${TOPIC_ID} not registered in topics.ts`);
-  if (!topic.transcript) throw new Error(`transcripts/${TOPIC_ID}.md missing — Stage 2 needs the transcript`);
 
   const client = createClient(url, key);
   const rows = await readFeedTweets(client);
