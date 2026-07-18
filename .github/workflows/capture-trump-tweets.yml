@@ -1,12 +1,14 @@
 name: Capture Trump Election-Fraud Tweets
 
-# Standalone CAPTURE ONLY. Reads the eligible feed with the prod X secrets,
-# saves tweets matching the trump_election_fraud predicate as an artifact.
-# It does NOT register a topic in the note-writer, so nothing is drafted or
-# posted — read + save only. Safe on main.
+# Standalone CAPTURE ONLY. Reads the eligible feed with the prod X secrets and
+# appends tweets matching the self-contained trump_election_fraud predicate to
+# a deduped store (capture-data/trump-election-fraud.jsonl),
+# committing the grown store back to the repo (git-scraping) so it accumulates
+# an analyzable dataset. It does NOT register a topic in the note-writer, so
+# nothing is drafted or posted — read + save only. Safe on main.
 #
-# Manual (workflow_dispatch) for verification; hourly schedule for ongoing
-# capture (schedule fires only on the default branch).
+# Full-feed pull, every 4h. workflow_dispatch for verification (schedule only
+# fires on the default branch).
 on:
   workflow_dispatch:
     inputs:
@@ -16,41 +18,55 @@ on:
         default: xxl
         options: [xxl, xl, large, small]
       max_pages:
-        description: "Max pages (100 posts/page)"
+        description: "Max pages (100 posts/page; 300 exhausts the feed)"
         type: string
-        default: "100"
+        default: "300"
   schedule:
-    - cron: "0 * * * *" # hourly
+    - cron: "0 */4 * * *" # every 4 hours
+
+# Needed so the run can commit the grown store back to the repo.
+permissions:
+  contents: write
+
+# Never run two captures at once (they'd race on the store push); let an
+# in-flight run finish rather than cancel it.
+concurrency:
+  group: capture-trump-tweets
+  cancel-in-progress: false
 
 jobs:
   capture:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     env:
       X_API_KEY: ${{ secrets.X_API_KEY }}
       X_API_KEY_SECRET: ${{ secrets.X_API_KEY_SECRET }}
       X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
       X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
-      OUT_DIR: capture-out
       FEED_SIZE: ${{ inputs.feed_size || 'xxl' }}
-      MAX_PAGES: ${{ inputs.max_pages || '100' }}
+      MAX_PAGES: ${{ inputs.max_pages || '300' }}
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
       - run: bun install
-      - name: Capture
+      - name: Capture (append new matches to the deduped store)
         run: |
           export RUN_STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
           bun run src/scripts_jim/2026_07_18_trump_capture/capture.ts
-      - name: Show summary
-        if: always()
-        run: cat capture-out/*.summary.json || echo "no summary"
-      - name: Upload capture
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: trump-capture
-          path: capture-out/
-          if-no-files-found: warn
+      - name: Commit grown store
+        run: |
+          STORE="capture-data/trump-election-fraud.jsonl"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- "$STORE"; then
+            echo "No new tweets this run — nothing to commit."
+            exit 0
+          fi
+          NEW=$(git diff --numstat -- "$STORE" | awk '{print $1}')
+          git add "$STORE"
+          git commit -m "capture: +${NEW} Trump election-fraud tweets [skip ci]"
+          # Rebase onto any intervening change before pushing, then push.
+          git pull --rebase origin "${GITHUB_REF_NAME}" || true
+          git push origin "HEAD:${GITHUB_REF_NAME}"
