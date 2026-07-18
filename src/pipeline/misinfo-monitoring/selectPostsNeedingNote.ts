@@ -1,10 +1,11 @@
 /**
  * Selection LLM for the misinfo pre-pass.
  *
- * Given a topic's distilled debunking brief and the keyword-matched posts, the
- * LLM returns the IDs of posts that contain a misleading claim the brief can
- * correct — filtering out posts that are merely on-topic, accurate, opinion, or
- * satire. One cheap call per topic, JSON output.
+ * Given a topic's reference (its debunking brief, or a transcript for a
+ * time-boxed event) and the keyword-matched posts, the LLM returns the IDs of
+ * posts that contain a misleading claim the reference can correct — filtering
+ * out posts that are merely on-topic, accurate, opinion, or satire. One cheap
+ * call per topic, JSON output.
  */
 
 import { llm } from "../llm/llm";
