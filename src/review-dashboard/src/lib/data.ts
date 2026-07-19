@@ -621,8 +621,10 @@ export function buildDashboardItems(data: DashboardData): ReviewItem[] {
 
   // Attach each item's misinfo fact-check topic + derived set (one pass; covers
   // all item sources). Regular notes have no sighting → topic stays undefined.
+  // `sightings` may be absent on the server-injected first-paint bundle (which
+  // predates this field), so default to [] rather than crash.
   const topicByTweet = new Map<string, string>();
-  for (const s of sightings) {
+  for (const s of sightings ?? []) {
     if (s.tweet_id && s.topic_id) topicByTweet.set(String(s.tweet_id), String(s.topic_id));
   }
   for (const item of items) {
