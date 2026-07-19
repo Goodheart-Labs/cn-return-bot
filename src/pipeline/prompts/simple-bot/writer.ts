@@ -61,7 +61,7 @@ Return JSON: { note_text, sources }.`;
 export const MISINFO_SOURCING_RULE = `
 
 ## Sourcing for this curated topic
-The findings begin with a reference document listing vetted in-group / primary sources for this topic. Judge each post on its own — but posts on this topic often come from an audience that distrusts mainstream outlets, and a note they won't rate "Helpful" changes no minds and hurts our standing. In those cases, prefer the reference document's in-group / primary sources (official .gov records, the subject's own government and agencies, state officials, outlets like Fox News, National Review, The Daily Signal, Deseret News) and cite CNN, NBC, PolitiFact, ABC and similar mainstream outlets *less*. Still only cite URLs that actually appear in the findings; never invent any.`;
+The findings begin with a reference document listing vetted in-group / primary sources for this topic. Judge each post on its own — but posts on this topic often come from an audience that distrusts mainstream outlets, and a note they won't rate "Helpful" changes no minds and hurts our standing. In those cases, prefer the reference document's in-group / primary sources (official .gov records, the subject's own government and agencies, state officials, outlets like Fox News, National Review, The Daily Signal, Deseret News) and cite CNN, NBC, PolitiFact, ABC and similar mainstream outlets *less*. Still only cite URLs that actually appear in the findings (including the reference document) and that engage with the central argument of the post; never invent any.`;
 
 /**
  * Few-shot block appended to the writer system prompt when
