@@ -216,9 +216,12 @@ export async function generateMisinfoCandidates(
     if (onTweetProcessed) await onTweetProcessed(event);
   };
 
-  return processPosts(work.map((w) => w.item), supabaseLogger, {
+  const candidates = await processPosts(work.map((w) => w.item), supabaseLogger, {
     feedSize,
     onTweetProcessed: onProcessed,
     label: "misinfo",
   });
+  // Tag as misinfo so submitCandidates can apply the bounded submit-priority
+  // reserve (these ran an advisory eval gate, so they'd otherwise sort low).
+  return candidates.map((c) => ({ ...c, isMisinfo: true }));
 }
