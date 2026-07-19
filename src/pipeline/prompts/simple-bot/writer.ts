@@ -50,6 +50,20 @@ Lead with the true fact. Max 280 non-URL characters. Neutral, non-partisan tone.
 Return JSON: { note_text, sources }.`;
 
 /**
+ * Appended to the writer system prompt for curated misinfo-monitoring topics
+ * (when a MonitoringContext is present). The topic's reference document — with
+ * its vetted in-group / primary sources — is also prepended to the findings so
+ * those URLs are actually citable. Soft, per-tweet preference (not a hard block):
+ * a correction the post's audience won't rate "Helpful" changes no minds and
+ * dents our writing reputation, so lean in-group when the audience distrusts the
+ * mainstream press. Nathan, 2026-07-19.
+ */
+export const MISINFO_SOURCING_RULE = `
+
+## Sourcing for this curated topic
+The findings begin with a reference document listing vetted in-group / primary sources for this topic. Judge each post on its own — but posts on this topic often come from an audience that distrusts mainstream outlets, and a note they won't rate "Helpful" changes no minds and hurts our standing. In those cases, prefer the reference document's in-group / primary sources (official .gov records, the subject's own government and agencies, state officials, outlets like Fox News, National Review, The Daily Signal, Deseret News) and cite CNN, NBC, PolitiFact, ABC and similar mainstream outlets *less*. Still only cite URLs that actually appear in the findings; never invent any.`;
+
+/**
  * Few-shot block appended to the writer system prompt when
  * `config.writer_examples` is on (SIMPLE_BOT_WRITER_EXAMPLES_TEST). Real notes
  * that performed well — picked because they are simple, direct, and far shorter

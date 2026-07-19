@@ -16,9 +16,11 @@ import {
   SIMPLE_WRITER_SYSTEM_PROMPT,
   WRITER_FEWSHOT_EXAMPLES,
   WRITER_RESPONSE_FORMAT,
+  MISINFO_SOURCING_RULE,
   buildWriterUserMessage,
   buildWriterRetryMessage,
 } from "../prompts/simple-bot/writer";
+import { getMonitoringContext, buildReferenceBlock } from "../misinfo-monitoring/monitoringContext";
 
 export interface WriterResult {
   noteText: string;
@@ -31,12 +33,23 @@ const MAX_NOTE_CHARS = 280;
 export async function runWriter(userMessage: string, findings: string): Promise<WriterResult> {
   const log = getTweetLog();
   const config = getBotConfig();
+  const monitoring = getMonitoringContext();
   const basePrompt = config.simple_prompts ? SIMPLE_WRITER_SYSTEM_PROMPT : WRITER_SYSTEM_PROMPT;
-  const systemPrompt = config.writer_examples ? basePrompt + WRITER_FEWSHOT_EXAMPLES : basePrompt;
+  let systemPrompt = config.writer_examples ? basePrompt + WRITER_FEWSHOT_EXAMPLES : basePrompt;
+
+  // Curated misinfo topic: prepend the topic's vetted in-group / primary sources
+  // to the findings (so the writer can actually cite them) and steer it to prefer
+  // them over mainstream outlets this audience distrusts. Regular notes: untouched.
+  let effectiveFindings = findings;
+  if (monitoring) {
+    systemPrompt += MISINFO_SOURCING_RULE;
+    effectiveFindings = `${buildReferenceBlock(monitoring)}\n\n${findings}`;
+    log?.set("writer.misinfoSourcing", true);
+  }
 
   const messages: ChatMessage[] = [
     { role: "system", content: systemPrompt },
-    { role: "user", content: buildWriterUserMessage(userMessage, findings) },
+    { role: "user", content: buildWriterUserMessage(userMessage, effectiveFindings) },
   ];
 
   // The helper owns the JSON parse + re-ask loop; this loop layers the note's
