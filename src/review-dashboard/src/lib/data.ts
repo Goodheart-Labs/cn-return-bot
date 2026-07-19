@@ -12,6 +12,7 @@ import { resolveRatingCounts } from "../../../dashboard-shared/Ratings";
 import { fetchAllRows, fetchInBatches } from "../../../dashboard-shared/supabasePaging";
 import { CANONICAL_LIST_COLS, TWEET_LIST_COLS, PUBLIC_DUMP_RATING_COLS, DEFAULT_VIEW_STATUSES, DEFAULT_VIEW_LIMIT } from "../../../dashboard-shared/productionView";
 import { csvRowToReviewItemInsert } from "../../../dashboard-shared/reviewUpload";
+import { topicSetFor } from "../../../dashboard-shared/topicSets";
 
 // ─── Production data ─────────────────────────────────────────────────────────
 
@@ -167,6 +168,9 @@ export interface DashboardData {
   annotations: any[];
   tweets: any[];
   publicDumpRatings: any[];
+  // Misinfo-monitoring sightings (tweet_id → topic_id) for the visible tweets,
+  // so items can carry their fact-check topic + derived set.
+  sightings: any[];
 }
 
 /**
@@ -273,7 +277,14 @@ async function assembleDashboardData(primary: {
       )
     : [];
 
-  return { canonical, competing, submittedRuns, missedRuns, lowEvalRuns, lowEvalScores, annotations, tweets, publicDumpRatings };
+  // Misinfo-monitoring sightings for these tweets → each item's fact-check topic.
+  const sightings = tweetIds.length
+    ? await fetchInBatches<any>(
+        supabase, "misinfo_monitoring_sightings", "tweet_id, topic_id", "tweet_id", tweetIds, undefined, "misinfo_sightings",
+      ).catch(() => [] as any[])
+    : [];
+
+  return { canonical, competing, submittedRuns, missedRuns, lowEvalRuns, lowEvalScores, annotations, tweets, publicDumpRatings, sightings };
 }
 
 /**
@@ -458,7 +469,7 @@ export async function fetchLogsForRuns(runIds: string[]): Promise<Map<string, Re
  * `logs` is filled in later by the caller using fetchLogsForRuns.
  */
 export function buildDashboardItems(data: DashboardData): ReviewItem[] {
-  const { canonical, competing, submittedRuns, missedRuns, lowEvalRuns, lowEvalScores, annotations, tweets, publicDumpRatings } = data;
+  const { canonical, competing, submittedRuns, missedRuns, lowEvalRuns, lowEvalScores, annotations, tweets, publicDumpRatings, sightings } = data;
   const publicRatingsByNoteId = new Map<string, any>();
   for (const r of publicDumpRatings) publicRatingsByNoteId.set(r.note_id, r);
 
@@ -606,6 +617,20 @@ export function buildDashboardItems(data: DashboardData): ReviewItem[] {
       annotation: annotationByTarget.get(id),
       failureType: "filtered_low_eval_score" as const,
     });
+  }
+
+  // Attach each item's misinfo fact-check topic + derived set (one pass; covers
+  // all item sources). Regular notes have no sighting → topic stays undefined.
+  const topicByTweet = new Map<string, string>();
+  for (const s of sightings) {
+    if (s.tweet_id && s.topic_id) topicByTweet.set(String(s.tweet_id), String(s.topic_id));
+  }
+  for (const item of items) {
+    const topic = topicByTweet.get(String(item.tweetId));
+    if (topic) {
+      item.topic = topic;
+      item.topicSet = topicSetFor(topic);
+    }
   }
 
   return items;
