@@ -88,9 +88,16 @@ function byCreatedDesc(a: ReviewItem, b: ReviewItem): number {
 
 function matchesFilters(filters: FilterState, abFilters: ABFilters) {
   return (item: ReviewItem) => {
-    // Topic-set narrowing ANDs with everything else: when any set is selected,
-    // only items in that set survive (regular notes have no set → excluded).
-    if (filters.topicSets.size > 0 && (!item.topicSet || !filters.topicSets.has(item.topicSet))) return false;
+    // Topic-set LENS: when any set is selected it's the PRIMARY filter — show
+    // every note in that set regardless of status/failure-type (like the ★ lens),
+    // so picking a topic just lists all its notes to page through. The seen
+    // filter still narrows within it (default "unseen" = notes you've not reviewed).
+    if (filters.topicSets.size > 0) {
+      if (!item.topicSet || !filters.topicSets.has(item.topicSet)) return false;
+      if (filters.seen === "seen" && !(item.annotation?.seen)) return false;
+      if (filters.seen === "unseen" && item.annotation?.seen) return false;
+      return matchesAbFilters(item.abTestPicks ?? null, abFilters);
+    }
     // High-value ★ lens: only starred items. The other filters still narrow
     // within it — toggling ★ on resets them to non-restrictive (FilterBar), so
     // any narrowing is one the user has visibly re-applied. An empty pill set
