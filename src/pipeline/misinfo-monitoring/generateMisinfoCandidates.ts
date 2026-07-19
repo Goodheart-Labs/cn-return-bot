@@ -203,6 +203,17 @@ export async function generateMisinfoCandidates(
   }
   console.log(`[misinfo] Processing ${work.length} selected post(s)`);
 
+  // Persist the tweets we're about to note so the review dashboard (and any
+  // tweet-joined view) has their content — generateCandidates and the pangram
+  // pre-pass both do this; the misinfo pre-pass previously skipped it, so misinfo
+  // notes showed blank tweet cards. Fail-soft: a store failure must not stop
+  // note-writing.
+  try {
+    await supabaseLogger.bulkInsertNewTweets(work.map((w) => w.item.post));
+  } catch (err) {
+    console.warn("[misinfo] bulkInsertNewTweets failed:", err);
+  }
+
   const topicByTweetId = new Map(work.map((w) => [w.item.post.id, w.topicId]));
   const onProcessed = async (event: TweetProcessedEvent) => {
     const topicId = topicByTweetId.get(event.post.id);
