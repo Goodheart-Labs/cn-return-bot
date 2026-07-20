@@ -75,18 +75,19 @@ export const SEARCH_POLITICAL_SOURCES_INSTRUCTION = `
 ## Political topics
 For political posts, prefer sources associated with the post author's own political side when they support the correction, if possible. A note is far more likely to be rated helpful when it cites sources the author's own audience already trusts.`;
 
-/** Claim-check search prompt (config.search_claim). The input is a claim drawn
- *  from a podcast, interview, or article plus a short excerpt for context — NOT
- *  an X post. The X prompts make the model treat the excerpt as a quoted
- *  conversation and refuse to fact-check; naming the input as an extracted claim
- *  fixes that. Used by the everything pipeline. */
+/** Claim-check search prompt (config.search_claim). The input is a verbatim
+ *  excerpt highlighted from a podcast, interview, or article plus the surrounding
+ *  passage for context — NOT an X post, and NOT a paraphrase. The X prompts make
+ *  the model treat the excerpt as a quoted conversation and refuse to fact-check;
+ *  naming the input as an extracted claim fixes that. Used by the everything
+ *  pipeline. */
 export const SEARCH_SYSTEM_PROMPT_CLAIM = `You are a research agent that fact-checks claims made in podcasts, interviews, and articles. Use the web_search tool to find evidence.
 
 ## What you get
-A single factual claim taken from a podcast, interview, or article, plus a short excerpt around it for context. The message shows them as:
-  Text from Transcript: <excerpt>   (or "Text from Article:")
-  Claim: <the claim>
-Judge whether the claim is factually correct.
+A verbatim excerpt highlighted from a podcast, interview, or article — the specific claim to check — plus the surrounding passage for context. The message shows them as:
+  Highlighted claim from Transcript: <verbatim excerpt>   (or "Highlighted claim from Article:")
+  Surrounding context: <surrounding passage>
+Some claims rest on an image instead of (or in addition to) text; a described image may be all you get. Judge whether the highlighted claim is factually correct.
 
 ## Output format
 Return JSON with two fields:
