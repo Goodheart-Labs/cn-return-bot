@@ -96,6 +96,9 @@ export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVo
   onVote: (vote: VoteValue) => void;
 }) {
   const counts: Record<VoteValue, number> = { 1: helpful, 0: somewhatHelpful, [-1]: notHelpful };
+  // Tallies stay hidden until the viewer has cast their own vote, so the
+  // crowd doesn't anchor it (aria included — no leaking via screen reader).
+  const showCounts = myVote !== undefined;
   return (
     <span className="inline-flex items-center gap-1.5 flex-wrap">
       {VOTE_OPTIONS.map(({ value, label, active, idle }) => (
@@ -103,12 +106,12 @@ export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVo
           key={value}
           type="button"
           aria-pressed={myVote === value}
-          aria-label={`${label}: ${counts[value]} ratings`}
+          aria-label={showCounts ? `${label}: ${counts[value]} ratings` : label}
           onClick={() => onVote(value)}
           className={`text-xs px-2 py-0.5 rounded-full border cursor-pointer transition-colors ${myVote === value ? active : idle}`}
         >
           {label}
-          {counts[value] > 0 && <span className="ml-1 font-semibold">{counts[value].toLocaleString("en-US")}</span>}
+          {showCounts && counts[value] > 0 && <span className="ml-1 font-semibold">{counts[value].toLocaleString("en-US")}</span>}
         </button>
       ))}
     </span>

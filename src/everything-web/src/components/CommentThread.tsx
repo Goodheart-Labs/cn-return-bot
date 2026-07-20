@@ -72,6 +72,8 @@ function CompactVoteRatings({ comment, myVote, onVote }: {
     0: comment.somewhat_helpful_count,
     [-1]: comment.not_helpful_count,
   };
+  // Same rule as the note pills: tallies show only after you've voted.
+  const showCounts = myVote !== undefined;
   return (
     <span className="inline-flex items-center gap-0.5">
       {COMPACT_VOTES.map(({ value, label, active, hover, icon }) => (
@@ -80,14 +82,14 @@ function CompactVoteRatings({ comment, myVote, onVote }: {
           type="button"
           title={label}
           aria-pressed={myVote === value}
-          aria-label={`${label}: ${counts[value]} ratings`}
+          aria-label={showCounts ? `${label}: ${counts[value]} ratings` : label}
           onClick={() => onVote(value)}
           className={`inline-flex items-center gap-1 h-6 px-1.5 rounded-full border text-[11px] font-semibold transition-colors ${
             myVote === value ? active : `border-transparent text-gray-400 ${hover}`
           }`}
         >
           {icon}
-          {counts[value] > 0 && counts[value].toLocaleString("en-US")}
+          {showCounts && counts[value] > 0 && counts[value].toLocaleString("en-US")}
         </button>
       ))}
     </span>
