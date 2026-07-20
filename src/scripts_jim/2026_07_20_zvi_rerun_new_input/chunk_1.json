@@ -1,0 +1,38 @@
+[
+  {
+    "claimId": "e73c22bb-4ce9-4df6-a469-dbb36eab9bf6",
+    "highlighted": "2/3rds of gametime went to >6 year old games!",
+    "oldNote": "The 67% figure is PC-specific, not overall gametime: Newzoo found 67% of PC playtime went to games 6+ years old, with console platforms differing. It also comes from an earlier Newzoo report on 2024 data, not the same 2026 report cited for the ~13% new-release stat.",
+    "newNote": "The two-thirds (67%) figure comes from Newzoo's PC-only data in an earlier report, not the 2026 global report. Newzoo's global figures for games 6+ years old were 55% (2023) and 57% (2024) of playtime, short of two-thirds."
+  },
+  {
+    "claimId": "fa6d0aa4-f3f9-4933-8b6c-7e6908dd3ed1",
+    "highlighted": "",
+    "oldNote": "This dataset was actually compiled by Stat Significant, which built it by pulling track data directly from \"karaoke\" playlists on Spotify and Apple Music, not from Chartmetric.",
+    "newNote": "This chart's data comes from a Stat Significant analysis by Daniel Parris, not Chartmetric. Parris compiled the data himself from Spotify and Apple Music \"karaoke\" playlists, tallying song and artist appearances across the combined catalog."
+  },
+  {
+    "claimId": "8df5a762-c56d-4bec-b0a6-6566b9759820",
+    "highlighted": "I saw a number of complaints around Sol's inability to select appropriate subagents, which presumably is one of the main reasons OpenAI created Terra and Luna",
+    "oldNote": "Sol, Terra, and Luna are three separate capability tiers of GPT-5.6 (flagship, balanced, and fastest/cheapest), not subagents Sol selects from. Sol's subagent feature is its exclusive 'ultra mode,' which spawns internal subagent processes unrelated to Terra or Luna.",
+    "newNote": "Sol, Terra, and Luna are not subagent models selected by Sol. They are the three independent capability tiers of OpenAI's GPT-5.6 family, each separately selectable with its own pricing. Sol's actual subagent feature is called \"ultra mode,\" unrelated to Terra/Luna."
+  },
+  {
+    "claimId": "250ad97c-86a2-4544-9b9c-1d43512dbf7d",
+    "highlighted": "At UC Berkeley, the number of As is up by 30%, so GPAs are dangerously close to meaningless for measuring student quality.",
+    "oldNote": "This 30% figure comes from a UC Berkeley researcher's study, but it measured grades at an unnamed Texas university's AI-exposed courses, not UC Berkeley's own grades. Actual UC Berkeley data shows A rates stayed stable at 30-35% from 2019 to 2026.",
+    "newNote": "The '30%' figure is from a UC Berkeley-authored study of a Texas university, not UC Berkeley itself. It found a 13-point (~30% relative) rise in A's only in AI-exposed courses since 2022, not a campus-wide increase. Berkeley's own A-grade rates have stayed 30-35% since 2019."
+  },
+  {
+    "claimId": "ca9ad223-11db-4f3a-863a-0de512b775c9",
+    "highlighted": "The paper's blog post asserts that LLMs have 'access consciousness' in functional terms, while denying the ability to evaluate potential phenomenal consciousness. The paper itself does not take this step.",
+    "oldNote": "The paper itself makes this distinction, contrary to the claim. It calls the phenomenon 'access consciousness,' a 'purely functional notion,' and explicitly states 'we take no position' on phenomenal consciousness, focusing only on functional access.",
+    "newNote": "This gets it backwards. The paper itself explicitly addresses phenomenal consciousness, stating \"we take no position on this issue\" while calling access consciousness \"a purely functional notion.\" It's the paper, not just the blog post, that makes this distinction."
+  },
+  {
+    "claimId": "973b4314-e41d-4ba4-9fd9-72ae6cbec42a",
+    "highlighted": "AI agents respond to nudges in similar ways to humans. The paper presents this as falsifying an assumption of many agent uses, in the standard 'any suboptimal behavior means you fail' standard to which we often hold AIs.",
+    "oldNote": "The paper's core finding is the opposite: AI agents are hypersensitive to nudges, responding far more strongly than humans, even when nudges are neutral or counterproductive. This exposes \"a critical behavioral gap between human and model decision-making,\" not similarity.",
+    "newNote": "The underlying research actually found AI agents are far more responsive to nudges than humans, not similarly responsive. LLM agents were described as 'substantially more susceptible' and 'behaviorally brittle' compared to human decision-making."
+  }
+]
