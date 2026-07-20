@@ -17,6 +17,10 @@ const DOLLARS_PER_NAT = 5;
 const BASE_DONATION_USD = 1.5;
 /** Floor on the score term — caps how far below base a wrong vote can end. */
 const SCORE_DROP_CLIP = 0.24;
+/** Global scale on every minted amount, applied after the S2 formula (so the
+ *  preset's parameters keep their fitted meaning). Frozen pairs on existing
+ *  donation rows are untouched. */
+const DONATION_SCALE = 0.8;
 
 export interface DonationPair {
   ifHelpful: number;
@@ -71,7 +75,7 @@ export function donationPair(tally: VoteTally, vote: Vote): DonationPair {
   const scoreIfHelpful = softplus(-before) - softplus(-after); // Δ ln p
   const scoreIfNotHelpful = softplus(before) - softplus(after); // Δ ln (1−p)
   return {
-    ifHelpful: roundCents(BASE_DONATION_USD + DOLLARS_PER_NAT * Math.max(scoreIfHelpful, -SCORE_DROP_CLIP)),
-    ifNotHelpful: roundCents(BASE_DONATION_USD + DOLLARS_PER_NAT * Math.max(scoreIfNotHelpful, -SCORE_DROP_CLIP)),
+    ifHelpful: roundCents(DONATION_SCALE * (BASE_DONATION_USD + DOLLARS_PER_NAT * Math.max(scoreIfHelpful, -SCORE_DROP_CLIP))),
+    ifNotHelpful: roundCents(DONATION_SCALE * (BASE_DONATION_USD + DOLLARS_PER_NAT * Math.max(scoreIfNotHelpful, -SCORE_DROP_CLIP))),
   };
 }
