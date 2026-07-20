@@ -94,7 +94,8 @@ Prod prerequisites (manual): run migrations (incl. 055); `supabase functions dep
 `src/everything-extension/` — WXT (Vite) extension, Chrome MV3 + Firefox, showing Common Notes inline on the pages themselves. Shares all Supabase/domain logic via `src/everything-shared/` (moved out of `everything-web/src/lib`; both apps import it — no copies) and reuses `NoteBox`/`NoteMenu`/`AlternativeNote` from `everything-web` plus `VoteRatings` from `dashboard-shared`, with Tailwind v3 compiled into a shadow-root stylesheet (host pages untouched; passage tint via the CSS Custom Highlight API, no DOM mutation).
 
 ```bash
-bun run dev-ext     # WXT dev mode (chrome; load .output/chrome-mv3 unpacked)
+bun run dev-ext     # WXT dev mode vs PROD backend (load .output/chrome-mv3-prod-backend unpacked — WXT suffixes the output dir with the mode)
+bun run dev-ext-local # dev mode vs local Supabase (outputs .output/chrome-mv3)
 bun run build-ext   # chrome + firefox production builds (--mode prod-backend)
 bun run zip-ext     # store-ready zips (also built by .github/workflows/build-extension.yml)
 bun test src/everything-extension   # anchor-engine tests (linkedom)

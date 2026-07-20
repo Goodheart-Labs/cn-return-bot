@@ -24,11 +24,14 @@ Release Firefox only runs **signed** extensions, so the raw zip can't be install
 ## Development
 
 ```bash
-bun run dev-ext     # WXT dev mode; load .output/chrome-mv3 unpacked once
-bun run build-ext   # chrome + firefox production builds (--mode prod-backend)
-bun run zip-ext     # store-ready zips into .output/
+bun run dev-ext        # dev mode against PROD backend; load .output/chrome-mv3-prod-backend unpacked once
+bun run dev-ext-local  # dev mode against the local Supabase (root .env)
+bun run build-ext      # chrome + firefox production builds
+bun run zip-ext        # store-ready zips into .output/
 bun test src/everything-extension   # anchor-engine tests
 ```
+
+NOTE: WXT suffixes the output directory with the mode — prod-backend builds land in `.output/chrome-mv3-prod-backend/`, NOT `.output/chrome-mv3/` (that folder, if present, is a local-backend build). Load the suffixed folder.
 
 `chrome-signing-key.pem` (gitignored) is the private half of the pinned manifest key — only needed to claim the same extension ID when publishing to the Chrome Web Store later. Back it up; don't commit it.
 

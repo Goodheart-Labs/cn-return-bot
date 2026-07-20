@@ -68,7 +68,8 @@
     "commonnotes": "cd src/everything-web && bunx vite --port 8003 --mode prod-backend",
     "commonnotes-local": "cd src/everything-web && bunx vite --port 8003",
     "build-everything-web": "cd src/everything-web && bunx vite build --mode prod-backend",
-    "dev-ext": "cd src/everything-extension && bunx wxt",
+    "dev-ext": "cd src/everything-extension && bunx wxt --mode prod-backend",
+    "dev-ext-local": "cd src/everything-extension && bunx wxt",
     "build-ext": "cd src/everything-extension && bunx wxt build --mode prod-backend && bunx wxt build -b firefox --mode prod-backend",
     "zip-ext": "cd src/everything-extension && bunx wxt zip --mode prod-backend && bunx wxt zip -b firefox --mode prod-backend"
   },
