@@ -8,7 +8,7 @@ import type { NotedContent } from "../../../dashboard-shared/types";
 import type { ClaimRef, CommentRow, NoteRow, NoteSourceRow } from "../lib/types";
 import type { VoteCast } from "../lib/donationScoring";
 import type { Vote } from "../lib/votes";
-import { noteStatus, type NoteStatus } from "../lib/noteScore";
+import { noteStatus, tallyVisible, type NoteStatus } from "../lib/noteScore";
 import { NoteMenu } from "./NoteMenu";
 import { CommentThread, type CommentsApi } from "./CommentThread";
 import { VoteDonation } from "./VoteDonation";
@@ -409,6 +409,7 @@ export function NoteCard({ note, improvements, commentsByParent, commentsApi, pr
             somewhatHelpful={note.somewhat_helpful_count}
             notHelpful={note.not_helpful_count}
             myVote={myVote}
+            showCounts={tallyVisible(myVote, note.created_at)}
             onVote={(vote) => void onVote(note, vote).then(setCast)}
           />
           <ResortCountdown active={holdActive} key={`${note.helpful_count}-${note.somewhat_helpful_count}-${note.not_helpful_count}`} />

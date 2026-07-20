@@ -4,6 +4,7 @@ import type { CommentRow, NoteRow } from "../lib/types";
 import type { Vote } from "../lib/votes";
 import { deleteComment, postComment } from "../lib/comments";
 import { isEarnestNote } from "../lib/judgeNote";
+import { tallyVisible } from "../lib/noteScore";
 import { displayName } from "../lib/session";
 import { AutoGrowTextarea, PostAsCheckbox, RejectedNotice, useSignedByline } from "./editorBits";
 import { MenuItem, TrashIcon } from "./NoteMenu";
@@ -72,8 +73,9 @@ function CompactVoteRatings({ comment, myVote, onVote }: {
     0: comment.somewhat_helpful_count,
     [-1]: comment.not_helpful_count,
   };
-  // Same rule as the note pills: tallies show only after you've voted.
-  const showCounts = myVote !== undefined;
+  // Same rule as the note pills: tallies show once you've voted or the
+  // comment has aged past the reveal window.
+  const showCounts = tallyVisible(myVote, comment.created_at);
   return (
     <span className="inline-flex items-center gap-0.5">
       {COMPACT_VOTES.map(({ value, label, active, hover, icon }) => (

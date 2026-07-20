@@ -1,4 +1,14 @@
 import type { NoteRow } from "./types";
+import type { Vote } from "./votes";
+
+/** Vote tallies are hidden until the viewer has voted (no anchoring on the
+ *  crowd) — but once an item has been up this long, the tally is public
+ *  record and shows to everyone. */
+export const TALLY_REVEAL_AFTER_DAYS = 7;
+
+export const tallyVisible = (myVote: Vote | undefined, createdAt: string) =>
+  myVote !== undefined ||
+  Date.now() - new Date(createdAt).getTime() > TALLY_REVEAL_AFTER_DAYS * 86_400_000;
 
 export const totalVotes = (n: NoteRow) =>
   n.helpful_count + n.somewhat_helpful_count + n.not_helpful_count;

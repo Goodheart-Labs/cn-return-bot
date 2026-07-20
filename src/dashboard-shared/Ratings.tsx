@@ -88,17 +88,18 @@ const VOTE_OPTIONS: { value: VoteValue; label: string; active: string; idle: str
   { value: -1, label: "Not helpful", active: "bg-red-100 text-red-800 border-red-300", idle: "text-red-700 border-gray-200 hover:bg-red-50" },
 ];
 
-export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVote }: {
+export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVote, showCounts = myVote !== undefined }: {
   helpful: number;
   somewhatHelpful: number;
   notHelpful: number;
   myVote?: VoteValue;
   onVote: (vote: VoteValue) => void;
+  /** Tallies stay hidden until the viewer has cast their own vote, so the
+   *  crowd doesn't anchor it (aria included — no leaking via screen reader).
+   *  Callers can widen the rule (e.g. reveal on old notes). */
+  showCounts?: boolean;
 }) {
   const counts: Record<VoteValue, number> = { 1: helpful, 0: somewhatHelpful, [-1]: notHelpful };
-  // Tallies stay hidden until the viewer has cast their own vote, so the
-  // crowd doesn't anchor it (aria included — no leaking via screen reader).
-  const showCounts = myVote !== undefined;
   return (
     <span className="inline-flex items-center gap-1.5 flex-wrap">
       {VOTE_OPTIONS.map(({ value, label, active, idle }) => (
