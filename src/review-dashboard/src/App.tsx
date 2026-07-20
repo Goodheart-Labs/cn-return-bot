@@ -180,7 +180,13 @@ function matchesFilters(filters: FilterState, abFilters: ABFilters) {
       const itemModes = item.annotation?.failureModes ?? [];
       if (!itemModes.some((m) => filters.failureModes.has(m))) return false;
     } else {
-      if (!filters.failureTypes.has(item.failureType)) return false;
+      // Failure-type pills are an allow-list, but an EMPTY set means "all types"
+      // (mirroring the ★ lens) — so clearing the pills and leaving just "unseen"
+      // shows EVERY unseen note instead of nothing. Drafts stay opt-in: hidden
+      // unless their own draft pill is explicitly selected.
+      const typeOk = filters.failureTypes.size === 0 || filters.failureTypes.has(item.failureType);
+      if (!typeOk) return false;
+      if (item.isDraft && !filters.failureTypes.has(item.failureType)) return false;
       if (filters.seen === "seen" && !(item.annotation?.seen)) return false;
       if (filters.seen === "unseen" && item.annotation?.seen) return false;
     }
