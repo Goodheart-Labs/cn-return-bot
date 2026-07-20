@@ -39,7 +39,3 @@ export function topicSetFor(topicId: string | null | undefined): TopicSet | unde
   if (!topicId) return undefined;
   return TOPIC_TO_SET[topicId];
 }
-
-export function topicSetLabel(id: TopicSet): string {
-  return TOPIC_SETS.find((s) => s.id === id)?.label ?? id;
-}
