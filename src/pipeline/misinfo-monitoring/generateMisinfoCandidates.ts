@@ -11,6 +11,11 @@
  * from the skip logic, so merely *seeing* a post here never makes the regular
  * pipeline skip it later when it enters the small feed. Selection-LLM cost is
  * bounded to genuinely new keyword matches; processing is capped per run.
+ *
+ * Each run processes only posts newly selected in that run — there is no
+ * carry-over queue. The sightings ledger is a dedupe record ("already judged"),
+ * not a backlog: a selected post that misses the per-run cap is dropped, not
+ * saved for later.
  */
 
 import { fetchEligiblePosts, type Post } from "../../api/fetchEligiblePosts";
@@ -20,6 +25,7 @@ import type { FeedSize } from "../ab-testing/botConfig";
 import type { Candidate } from "../orchestration/submitCandidates";
 import { processPosts, type ProcessPostItem, type TweetProcessedEvent } from "../orchestration/generateCandidates";
 import { MISINFO_TOPICS, type MisinfoTopic } from "./topics";
+import type { MisinfoTopicId } from "./topicIds";
 import { matchPostsByTopic } from "./keywordFilter";
 import { selectPostsNeedingNote } from "./selectPostsNeedingNote";
 import { loadDumpFeed } from "./loadDumpFeed";
@@ -27,9 +33,11 @@ import { loadDumpFeed } from "./loadDumpFeed";
 const MISINFO_MAX_RESULTS = 5000;
 const MISINFO_MAX_PAGES = 100;
 const MISINFO_FEED_SIZES: FeedSize[] = ["xxl", "xl", "large"];
-// Cap selected posts processed per run so a heavy misinfo day can't starve the
-// regular pipeline; the rest carry over via their needs_note=true sightings.
-const MISINFO_MAX_PROCESS = 15;
+// Ceiling on misinfo posts processed (and thus notes written/submitted) per run,
+// so a heavy misinfo day can't starve the regular pipeline or eat the shared
+// daily submission cap. Selected posts beyond it are dropped (highest-impression
+// posts win the cap), not queued for later.
+const MISINFO_MAX_PROCESS = 10;
 
 export interface MisinfoCandidatesOptions {
   /** Shared with generateCandidates so already-noted / cooling-down tweets are
@@ -39,6 +47,10 @@ export interface MisinfoCandidatesOptions {
   /** Local-testing only: read posts from this JSONL dump instead of crawling
    *  the live XXL feed (which is GH-Actions-only). See loadDumpFeed. */
   dumpPath?: string;
+  /** Restrict the pre-pass to these topics only; omit for all MISINFO_TOPICS.
+   *  Lets us activate a single campaign (e.g. trump_election_security) without
+   *  running the evergreen topics. */
+  topicIds?: MisinfoTopicId[];
 }
 
 /** Try each feed size in turn; on any error fall through to the next. Returns
@@ -64,16 +76,19 @@ async function crawlFeed(
   return null;
 }
 
-/** Sight new keyword matches, run the selection LLM per topic, and write back
- *  each post's needs_note verdict. Bounds LLM cost to genuinely new matches. */
+/** Sight new keyword matches, run the selection LLM per topic, write back each
+ *  post's needs_note verdict, and return the posts selected for a note. Bounds
+ *  LLM cost to genuinely new matches: a post is judged once, ever. */
 async function evaluateNewMatches(
   supabaseLogger: SupabaseLogger,
   feedSize: FeedSize,
   matched: Map<string, Post[]>,
-): Promise<void> {
+  topics: MisinfoTopic[],
+): Promise<Array<{ post: Post; topic: MisinfoTopic }>> {
   const sightingKeys = await supabaseLogger.getMisinfoSightingKeys();
+  const selectedWork: Array<{ post: Post; topic: MisinfoTopic }> = [];
 
-  for (const topic of MISINFO_TOPICS) {
+  for (const topic of topics) {
     const topicPosts = matched.get(topic.id) ?? [];
     const newPosts = topicPosts.filter((p) => !sightingKeys.has(`${p.id}:${topic.id}`));
     if (!newPosts.length) continue;
@@ -101,45 +116,48 @@ async function evaluateNewMatches(
       })),
     );
     console.log(`[misinfo] ${topic.id}: ${newPosts.length} new matches, ${selected.length} need a note`);
+
+    for (const p of newPosts) {
+      if (reasonById.has(p.id)) selectedWork.push({ post: p, topic });
+    }
   }
+  return selectedWork;
 }
 
 /**
- * Build the work list: posts that need a note and aren't processed yet, that we
- * have a Post object for in the current crawl. Deduped across topics (a post
- * matching two topics is processed once under its first-sighted topic — pending
- * rows come back id-ascending, i.e. first-sighted first) and capped.
+ * Build the work list from this run's freshly-selected posts. Deduped across
+ * topics (a post matching two topics is processed once under its first topic),
+ * highest-impression first so the cap keeps the highest-impact posts.
  */
 function buildWorkList(
-  pending: Array<{ tweet_id: string; topic_id: string }>,
-  postById: Map<string, Post>,
+  selectedNew: Array<{ post: Post; topic: MisinfoTopic }>,
 ): Array<{ item: ProcessPostItem; topicId: string }> {
-  // Keyed by the raw (untrusted) DB topic_id string, so a stale/unknown id from
-  // the sightings ledger just misses and is skipped below.
-  const topicById = new Map<string, MisinfoTopic>(MISINFO_TOPICS.map((t) => [t.id, t]));
   const seen = new Set<string>();
-  const work: Array<{ item: ProcessPostItem; topicId: string }> = [];
+  const deduped = selectedNew.filter(({ post }) => {
+    if (seen.has(post.id)) return false;
+    seen.add(post.id);
+    return true;
+  });
 
-  for (const s of pending) {
-    if (seen.has(s.tweet_id)) continue;
-    const post = postById.get(s.tweet_id);
-    const topic = topicById.get(s.topic_id);
-    if (!post || !topic) continue; // not in this crawl, or unknown topic
-    seen.add(s.tweet_id);
-    work.push({
-      topicId: topic.id,
-      item: {
-        post,
-        monitoring: {
-          topicId: topic.id,
-          topicTitle: topic.title,
-          documentUrl: topic.documentUrl,
-          document: topic.document,
-        },
-      },
-    });
-    if (work.length >= MISINFO_MAX_PROCESS) break;
+  const capped = deduped
+    .sort((a, b) => (b.post.public_metrics?.impression_count ?? 0) - (a.post.public_metrics?.impression_count ?? 0))
+    .slice(0, MISINFO_MAX_PROCESS);
+  if (deduped.length > capped.length) {
+    console.log(`[misinfo] Cap: processing ${capped.length} of ${deduped.length} selected posts (rest dropped, not queued)`);
   }
+
+  const work = capped.map(({ post, topic }) => ({
+    topicId: topic.id,
+    item: {
+      post,
+      monitoring: {
+        topicId: topic.id,
+        topicTitle: topic.title,
+        documentUrl: topic.documentUrl,
+        document: topic.document,
+      },
+    },
+  }));
   // Run same-topic posts consecutively so the injected reference document forms
   // a stable prompt prefix across calls, maximizing provider prefix-cache hits.
   return work.sort((a, b) => a.topicId.localeCompare(b.topicId));
@@ -147,12 +165,20 @@ function buildWorkList(
 
 export async function generateMisinfoCandidates(
   supabaseLogger: SupabaseLogger | null,
-  { skipPostIds, onTweetProcessed, dumpPath }: MisinfoCandidatesOptions,
+  { skipPostIds, onTweetProcessed, dumpPath, topicIds }: MisinfoCandidatesOptions,
 ): Promise<Candidate[]> {
   // The sightings table is the dedupe ledger; without it we can't run the
   // pre-pass without re-evaluating the whole crawl every time.
   if (!supabaseLogger) {
     console.log("[misinfo] No Supabase logger; skipping misinfo pre-pass");
+    return [];
+  }
+
+  const topics = topicIds
+    ? MISINFO_TOPICS.filter((t) => topicIds.includes(t.id))
+    : MISINFO_TOPICS;
+  if (!topics.length) {
+    console.log(`[misinfo] No matching topics for ${JSON.stringify(topicIds)}; skipping pre-pass`);
     return [];
   }
 
@@ -168,17 +194,25 @@ export async function generateMisinfoCandidates(
   const { feedSize, posts } = crawl;
 
   const matched = matchPostsByTopic(posts);
-  await evaluateNewMatches(supabaseLogger, feedSize, matched);
-
-  const pending = await supabaseLogger.getPendingMisinfoSightings();
-  const postById = new Map(posts.map((p) => [p.id, p]));
-  const work = buildWorkList(pending, postById);
+  const selectedNew = await evaluateNewMatches(supabaseLogger, feedSize, matched, topics);
+  const work = buildWorkList(selectedNew);
 
   if (!work.length) {
     console.log("[misinfo] No posts to process this run");
     return [];
   }
   console.log(`[misinfo] Processing ${work.length} selected post(s)`);
+
+  // Persist the tweets we're about to note so the review dashboard (and any
+  // tweet-joined view) has their content — generateCandidates and the pangram
+  // pre-pass both do this; the misinfo pre-pass previously skipped it, so misinfo
+  // notes showed blank tweet cards. Fail-soft: a store failure must not stop
+  // note-writing.
+  try {
+    await supabaseLogger.bulkInsertNewTweets(work.map((w) => w.item.post));
+  } catch (err) {
+    console.warn("[misinfo] bulkInsertNewTweets failed:", err);
+  }
 
   const topicByTweetId = new Map(work.map((w) => [w.item.post.id, w.topicId]));
   const onProcessed = async (event: TweetProcessedEvent) => {
@@ -193,9 +227,12 @@ export async function generateMisinfoCandidates(
     if (onTweetProcessed) await onTweetProcessed(event);
   };
 
-  return processPosts(work.map((w) => w.item), supabaseLogger, {
+  const candidates = await processPosts(work.map((w) => w.item), supabaseLogger, {
     feedSize,
     onTweetProcessed: onProcessed,
     label: "misinfo",
   });
+  // Tag as misinfo so submitCandidates can apply the bounded submit-priority
+  // reserve (these ran an advisory eval gate, so they'd otherwise sort low).
+  return candidates.map((c) => ({ ...c, isMisinfo: true }));
 }

@@ -81,29 +81,27 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
   name: "simple_bot_search",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    // Non-uniform weights: sonnet46-native, opus48-native and grok43-native each
-    // carry weight 5 as the primary arm; the rest carry smaller exploratory
-    // weights, with the weaker/redundant variants pinned to 0 (still declared so
-    // their historical picks resolve).
-    { variant: { name: "sonnet46-native",         overrides: { search_model: "anthropic/claude-sonnet-4.6",       web_search: "native" }},        weight: 5 },
-    { variant: { name: "sonnet5-native",          overrides: { search_model: "anthropic/claude-sonnet-5",         web_search: "native" }},        weight: 5 },
-    { variant: { name: "opus48-native",           overrides: { search_model: "anthropic/claude-opus-4.8",         web_search: "native" }},        weight: 5 },
+    // Only sonnet5-native is active — every other arm is pinned to 0 (still
+    // declared so their historical picks resolve).
+    { variant: { name: "sonnet46-native",         overrides: { search_model: "anthropic/claude-sonnet-4.6",       web_search: "native" }},        weight: 0 },
+    { variant: { name: "sonnet5-native",          overrides: { search_model: "anthropic/claude-sonnet-5",         web_search: "native" }},        weight: 100 },
+    { variant: { name: "opus48-native",           overrides: { search_model: "anthropic/claude-opus-4.8",         web_search: "native" }},        weight: 0 },
     { variant: { name: "haiku45-native",          overrides: { search_model: "anthropic/claude-haiku-4.5",        web_search: "native" }},        weight: 0 },
-    { variant: { name: "grok43-native",           overrides: { search_model: "x-ai/grok-4.3",                     web_search: "native_grok" }},   weight: 5 },
+    { variant: { name: "grok43-native",           overrides: { search_model: "x-ai/grok-4.3",                     web_search: "native_grok" }},   weight: 0 },
     { variant: { name: "gemini3flash-native",     overrides: { search_model: "google/gemini-3-flash-preview",     web_search: "native_gemini" }}, weight: 0 },
-    { variant: { name: "gemini35flash-native",    overrides: { search_model: "google/gemini-3.5-flash",           web_search: "native_gemini" }}, weight: 2 },
-    { variant: { name: "gemini31pro-native",      overrides: { search_model: "google/gemini-3.1-pro-preview",      web_search: "native_gemini" }}, weight: 2 },
+    { variant: { name: "gemini35flash-native",    overrides: { search_model: "google/gemini-3.5-flash",           web_search: "native_gemini" }}, weight: 0 },
+    { variant: { name: "gemini31pro-native",      overrides: { search_model: "google/gemini-3.1-pro-preview",      web_search: "native_gemini" }}, weight: 0 },
     { variant: { name: "sonar-reasoning-pro",     overrides: { search_model: "perplexity/sonar-reasoning-pro",    web_search: "bundled" }},       weight: 0 },
     { variant: { name: "sonar-pro",               overrides: { search_model: "perplexity/sonar-pro",              web_search: "bundled" }},       weight: 0 },
     { variant: { name: "kimi-k26-searxng",        overrides: { search_model: "moonshotai/kimi-k2.6",              web_search: "searxng" }},       weight: 0 },
     { variant: { name: "deepseek-v4pro-searxng",  overrides: { search_model: "deepseek/deepseek-v4-pro",          web_search: "searxng" }},       weight: 0 },
     { variant: { name: "deepseek-v4flash-searxng",overrides: { search_model: "deepseek/deepseek-v4-flash",        web_search: "searxng" }},       weight: 0 },
     { variant: { name: "glm5-searxng",            overrides: { search_model: "z-ai/glm-5",                        web_search: "searxng" }},       weight: 0 },
-    { variant: { name: "glm52-searxng",           overrides: { search_model: "z-ai/glm-5.2",                      web_search: "searxng" }},       weight: 5 },
+    { variant: { name: "glm52-searxng",           overrides: { search_model: "z-ai/glm-5.2",                      web_search: "searxng" }},       weight: 0 },
     { variant: { name: "deepseek-v32exp-searxng", overrides: { search_model: "deepseek/deepseek-v3.2-exp",        web_search: "searxng" }},       weight: 0 },
     { variant: { name: "qwen3max-searxng",        overrides: { search_model: "qwen/qwen3-max",                    web_search: "searxng" }},       weight: 0 },
     { variant: { name: "gpt5_4mini-native",       overrides: { search_model: "openai/gpt-5.4-mini",               web_search: "native_openai" }}, weight: 0 },
-    { variant: { name: "gpt5-native",             overrides: { search_model: "openai/gpt-5",                      web_search: "native_openai" }}, weight: 1 },
+    { variant: { name: "gpt5-native",             overrides: { search_model: "openai/gpt-5",                      web_search: "native_openai" }}, weight: 0 },
     { variant: { name: "mistral-large-3-searxng", overrides: { search_model: "mistralai/mistral-large-2512",      web_search: "searxng" }},       weight: 0 },
   ],
 };
@@ -432,16 +430,17 @@ const CHEAP_BOT_TEMPERATURE_TEST: ABTest = {
 };
 
 // Eval-score cutoff for submission. The X eval gate keeps a note iff
-// `claim_opinion_score >= eval_submit_threshold`. This 50/50 split tests the
-// historical 0 cutoff against a much looser -6 cutoff. Not prereq-gated (the
-// eval gate runs for every bot in processTweet), so defaultVariant "0" lets
-// pre-existing rows resolve to the old cutoff.
+// `claim_opinion_score >= eval_submit_threshold`. Fixed at the 0 cutoff so every
+// note scoring below zero is filtered out; the looser -6 arm is pinned to 0
+// (still declared so its historical picks resolve). Not prereq-gated (the eval
+// gate runs for every bot in processTweet), so defaultVariant "0" lets
+// pre-existing rows resolve to the same cutoff.
 const EVAL_SUBMIT_THRESHOLD_TEST: ABTest = {
   name: "eval_submit_threshold",
   defaultVariant: "0",
   variants: [
-    { variant: { name: "0",  overrides: { eval_submit_threshold: 0  } }, weight: 50 },
-    { variant: { name: "-6", overrides: { eval_submit_threshold: -6 } }, weight: 50 },
+    { variant: { name: "0",  overrides: { eval_submit_threshold: 0  } }, weight: 100 },
+    { variant: { name: "-6", overrides: { eval_submit_threshold: -6 } }, weight: 0   },
   ],
 };
 

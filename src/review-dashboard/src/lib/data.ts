@@ -12,6 +12,7 @@ import { resolveRatingCounts } from "../../../dashboard-shared/Ratings";
 import { fetchAllRows, fetchInBatches } from "../../../dashboard-shared/supabasePaging";
 import { CANONICAL_LIST_COLS, TWEET_LIST_COLS, PUBLIC_DUMP_RATING_COLS, DEFAULT_VIEW_STATUSES, DEFAULT_VIEW_LIMIT } from "../../../dashboard-shared/productionView";
 import { csvRowToReviewItemInsert } from "../../../dashboard-shared/reviewUpload";
+import { topicSetFor } from "../../../dashboard-shared/topicSets";
 
 // ─── Production data ─────────────────────────────────────────────────────────
 
@@ -167,6 +168,9 @@ export interface DashboardData {
   annotations: any[];
   tweets: any[];
   publicDumpRatings: any[];
+  // Misinfo-monitoring sightings (tweet_id → topic_id) for the visible tweets,
+  // so items can carry their fact-check topic + derived set.
+  sightings: any[];
 }
 
 /**
@@ -273,7 +277,14 @@ async function assembleDashboardData(primary: {
       )
     : [];
 
-  return { canonical, competing, submittedRuns, missedRuns, lowEvalRuns, lowEvalScores, annotations, tweets, publicDumpRatings };
+  // Misinfo-monitoring sightings for these tweets → each item's fact-check topic.
+  const sightings = tweetIds.length
+    ? await fetchInBatches<any>(
+        supabase, "misinfo_monitoring_sightings", "tweet_id, topic_id", "tweet_id", tweetIds, undefined, "misinfo_sightings",
+      ).catch(() => [] as any[])
+    : [];
+
+  return { canonical, competing, submittedRuns, missedRuns, lowEvalRuns, lowEvalScores, annotations, tweets, publicDumpRatings, sightings };
 }
 
 /**
@@ -300,16 +311,22 @@ export async function fetchDashboardData(sinceIso: string): Promise<DashboardDat
     // Anchored by the competitor's creation time as a window proxy (the exact
     // item date is the pipeline_run.created_at); a recent rejection of an older
     // competitor can fall outside the window, acceptable for this secondary type.
+    // Narrow columns (a select-* scan here can exceed the DB statement timeout
+    // under the initial load's parallel queries) and fail-soft: a missing
+    // secondary item type must degrade the view, not reject the whole load.
     fetchAllRows<any>(
       supabase
         .from("competing_notes")
-        .select("*")
+        .select("note_id, our_note_id, current_status, pipeline_run_id, tweet_id, note_text, author_participant_id, created_at_millis")
         .is("our_note_id", null)
         .eq("current_status", "CURRENTLY_RATED_HELPFUL")
         .not("pipeline_run_id", "is", null)
         .gte("created_at_millis", sinceMillis),
       "missed_opp_competing",
-    ),
+    ).catch((err) => {
+      console.warn("[data] missed_opp_competing failed; continuing without missed opps:", err);
+      return [] as any[];
+    }),
     // Notes rejected by the X eval gate — never submitted, so they aren't in
     // `notes`. Windowed on the run's own created_at.
     fetchAllRows<any>(
@@ -458,7 +475,7 @@ export async function fetchLogsForRuns(runIds: string[]): Promise<Map<string, Re
  * `logs` is filled in later by the caller using fetchLogsForRuns.
  */
 export function buildDashboardItems(data: DashboardData): ReviewItem[] {
-  const { canonical, competing, submittedRuns, missedRuns, lowEvalRuns, lowEvalScores, annotations, tweets, publicDumpRatings } = data;
+  const { canonical, competing, submittedRuns, missedRuns, lowEvalRuns, lowEvalScores, annotations, tweets, publicDumpRatings, sightings } = data;
   const publicRatingsByNoteId = new Map<string, any>();
   for (const r of publicDumpRatings) publicRatingsByNoteId.set(r.note_id, r);
 
@@ -608,6 +625,22 @@ export function buildDashboardItems(data: DashboardData): ReviewItem[] {
     });
   }
 
+  // Attach each item's misinfo fact-check topic + derived set (one pass; covers
+  // all item sources). Regular notes have no sighting → topic stays undefined.
+  // `sightings` may be absent on the server-injected first-paint bundle (which
+  // predates this field), so default to [] rather than crash.
+  const topicByTweet = new Map<string, string>();
+  for (const s of sightings ?? []) {
+    if (s.tweet_id && s.topic_id) topicByTweet.set(String(s.tweet_id), String(s.topic_id));
+  }
+  for (const item of items) {
+    const topic = topicByTweet.get(String(item.tweetId));
+    if (topic) {
+      item.topic = topic;
+      item.topicSet = topicSetFor(topic);
+    }
+  }
+
   return items;
 }
 
@@ -704,9 +737,12 @@ export async function fetchProductionPillData(): Promise<ProductionPillData> {
       .is("our_note_id", null)
       .eq("current_status", "CURRENTLY_RATED_HELPFUL")
       .not("pipeline_run_id", "is", null),
+    // Estimated, not exact: an exact count is an un-indexed scan over all of
+    // pipeline_runs and reliably exceeds the DB statement timeout (the pill
+    // then silently shows 0). The planner estimate is close enough for a pill.
     supabase
       .from("pipeline_runs")
-      .select("id", { count: "exact", head: true })
+      .select("id", { count: "estimated", head: true })
       .eq("outcome_reason", "low_evaluation_score"),
     fetchAllRows<any>(
       supabase

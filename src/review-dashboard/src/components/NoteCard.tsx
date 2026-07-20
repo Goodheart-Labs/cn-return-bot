@@ -15,6 +15,9 @@ interface NoteCardProps {
   failureModeCatalog: FailureModeInfo[];
   failureModeUsage: Map<string, number>;
   showFixed: boolean;
+  // When false, the per-note failure-mode tag chips are hidden (the editor
+  // dropdown still shows/edits them). Global toggle in the header.
+  showTags: boolean;
   onSeenToggle: (id: string, seen: boolean) => void;
   onHighValueToggle: (id: string, highValue: boolean) => void;
   onFailureModesChange: (id: string, modes: string[]) => void;
@@ -104,6 +107,7 @@ export function NoteCard({
   failureModeCatalog,
   failureModeUsage,
   showFixed,
+  showTags,
   onSeenToggle,
   onHighValueToggle,
   onFailureModesChange,
@@ -211,7 +215,7 @@ export function NoteCard({
       </div>
 
       {/* Failure mode tags */}
-      {failureModes.length > 0 && (
+      {showTags && failureModes.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-3">
           {failureModes.map((m) => (
             <span key={m} className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">

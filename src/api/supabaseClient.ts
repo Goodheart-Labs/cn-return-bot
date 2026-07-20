@@ -123,6 +123,50 @@ export function getSupabaseClient(): SupabaseClient {
   return supabaseInstance;
 }
 
+// Rows with raw_tweet blobs are large — keep write batches small enough that a
+// single PostgREST request stays well under body-size/time limits.
+const FEED_TWEETS_WRITE_CHUNK = 500;
+
+function chunked<T>(items: T[], size: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < items.length; i += size) chunks.push(items.slice(i, i + size));
+  return chunks;
+}
+
+/**
+ * Map an eligibility-endpoint Post to the shared column shape of the `tweets`
+ * and `feed_tweets` tables. Derives has_video / has_photo / media_count /
+ * video_duration_ms from post.media and carries the complete raw X-API object
+ * in raw_tweet. Table-specific timestamps are added by the callers.
+ */
+function postToTweetRow(post: Post) {
+  const videoMedia = post.media?.find((m) => m.type === "video");
+  return {
+    tweet_id: post.id,
+    author_id: post.author_id,
+    author_name: post.author_name,
+    author_description: post.author_description,
+    author_followers: post.author_followers,
+    author_tweet_count: post.author_tweet_count,
+    text: post.text,
+    posted_at: post.created_at,
+    impressions: post.public_metrics?.impression_count,
+    likes: post.public_metrics?.like_count,
+    retweets: post.public_metrics?.retweet_count,
+    replies: post.public_metrics?.reply_count,
+    quotes: post.public_metrics?.quote_count,
+    bookmarks: post.public_metrics?.bookmark_count,
+    media: post.media ?? null,
+    referenced_tweets: post.referenced_tweets ?? null,
+    referenced_tweet_data: post.referenced_tweet_data ?? null,
+    raw_tweet: post.raw ?? null,
+    has_video: !!videoMedia,
+    has_photo: post.media?.some((m) => m.type === "photo") ?? false,
+    media_count: post.media?.length ?? 0,
+    video_duration_ms: videoMedia?.duration_ms,
+  };
+}
+
 export class SupabaseLogger {
   private client: SupabaseClient;
 
@@ -451,48 +495,72 @@ export class SupabaseLogger {
   // ============================================
 
   /**
-   * Bulk insert tweets from fetched eligibility-endpoint posts. Derives
-   * has_video / has_photo / media_count / video_duration_ms from post.media,
-   * and stores the complete raw X-API object in raw_tweet.
+   * Bulk insert tweets from fetched eligibility-endpoint posts.
    * Insert-only: rows whose tweet_id already exists are skipped, so engagement
    * metrics remain frozen at first sight.
    */
   async bulkInsertNewTweets(posts: Post[]): Promise<void> {
     if (!posts.length) return;
     const now = new Date().toISOString();
-    const rows = posts.map((post) => {
-      const videoMedia = post.media?.find((m) => m.type === "video");
-      return {
+    const rows = posts.map((post) => ({ ...postToTweetRow(post), last_updated_at: now }));
+    const { error } = await this.client.from("tweets").upsert(rows, { onConflict: "tweet_id", ignoreDuplicates: true });
+    if (error) {
+      console.error(`[SupabaseLogger] Error bulk-inserting ${rows.length} tweets:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Save every post from a full eligible-feed pull into feed_tweets.
+   * First-seen tweets get a full row (incl. the large raw_tweet blob);
+   * already-known tweets get only their engagement metrics, author counts and
+   * last_seen_at refreshed — the big JSONB/text columns are never rewritten.
+   * Returns { inserted, updated } for run logging.
+   */
+  async bulkSaveFeedTweets(posts: Post[]): Promise<{ inserted: number; updated: number }> {
+    if (!posts.length) return { inserted: 0, updated: 0 };
+    const now = new Date().toISOString();
+
+    // Pass 1: insert full rows for tweets not seen before (DO NOTHING on
+    // conflict); .select() returns only the actually-inserted rows.
+    const insertedIds = new Set<string>();
+    const fullRows = posts.map((post) => ({ ...postToTweetRow(post), first_seen_at: now, last_seen_at: now }));
+    for (const chunk of chunked(fullRows, FEED_TWEETS_WRITE_CHUNK)) {
+      const { data, error } = await this.client
+        .from("feed_tweets")
+        .upsert(chunk, { onConflict: "tweet_id", ignoreDuplicates: true })
+        .select("tweet_id");
+      if (error) {
+        console.error(`[SupabaseLogger] Error inserting ${chunk.length} feed tweets:`, error);
+        throw error;
+      }
+      for (const row of data ?? []) insertedIds.add(row.tweet_id);
+    }
+
+    // Pass 2: for the pre-existing rest, refresh only the volatile columns.
+    const metricRows = posts
+      .filter((post) => !insertedIds.has(post.id))
+      .map((post) => ({
         tweet_id: post.id,
-        author_id: post.author_id,
-        author_name: post.author_name,
-        author_description: post.author_description,
         author_followers: post.author_followers,
         author_tweet_count: post.author_tweet_count,
-        text: post.text,
-        posted_at: post.created_at,
         impressions: post.public_metrics?.impression_count,
         likes: post.public_metrics?.like_count,
         retweets: post.public_metrics?.retweet_count,
         replies: post.public_metrics?.reply_count,
         quotes: post.public_metrics?.quote_count,
         bookmarks: post.public_metrics?.bookmark_count,
-        media: post.media ?? null,
-        referenced_tweets: post.referenced_tweets ?? null,
-        referenced_tweet_data: post.referenced_tweet_data ?? null,
-        raw_tweet: post.raw ?? null,
-        has_video: !!videoMedia,
-        has_photo: post.media?.some((m) => m.type === "photo") ?? false,
-        media_count: post.media?.length ?? 0,
-        video_duration_ms: videoMedia?.duration_ms,
-        last_updated_at: now,
-      };
-    });
-    const { error } = await this.client.from("tweets").upsert(rows, { onConflict: "tweet_id", ignoreDuplicates: true });
-    if (error) {
-      console.error(`[SupabaseLogger] Error bulk-inserting ${rows.length} tweets:`, error);
-      throw error;
+        last_seen_at: now,
+      }));
+    for (const chunk of chunked(metricRows, FEED_TWEETS_WRITE_CHUNK)) {
+      const { error } = await this.client.from("feed_tweets").upsert(chunk, { onConflict: "tweet_id" });
+      if (error) {
+        console.error(`[SupabaseLogger] Error refreshing ${chunk.length} feed tweet metrics:`, error);
+        throw error;
+      }
     }
+
+    return { inserted: insertedIds.size, updated: metricRows.length };
   }
 
   // ============================================
@@ -818,22 +886,6 @@ export class SupabaseLogger {
       "getMisinfoSightingKeys",
     );
     return new Set(rows.map((r) => `${r.tweet_id}:${r.topic_id}`));
-  }
-
-  /**
-   * Sightings that need a note (needs_note=true) but haven't been processed
-   * yet (processed_run_id is null) — the carry-over backlog the pre-pass works
-   * through, oldest first.
-   */
-  async getPendingMisinfoSightings(): Promise<Array<{ tweet_id: string; topic_id: string }>> {
-    return this.fetchAllRows<{ tweet_id: string; topic_id: string }>(
-      (client) => client.from("misinfo_monitoring_sightings")
-        .select("id, tweet_id, topic_id")
-        .eq("needs_note", true)
-        .is("processed_run_id", null),
-      "id",
-      "getPendingMisinfoSightings",
-    );
   }
 
   /** Insert newly-matched sightings; existing (tweet, topic) pairs are ignored. */
@@ -1230,6 +1282,39 @@ export class SupabaseLogger {
       (head) => this.client.from("notes").select("id", { count: "exact", head }).gte("submitted_at", since).limit(1),
       "recent submissions",
     );
+  }
+
+  /**
+   * Count misinfo-monitoring notes we've SUBMITTED in the last `hours`. Bounds
+   * the misinfo submit-priority reserve to ~10% of the daily cap. Misinfo notes
+   * are identified via their processed sightings (processed_at within a slightly
+   * wider window) joined to notes we actually submitted. Throws on a query error
+   * so the caller falls back to no-boost (the safe direction).
+   */
+  async countRecentMisinfoSubmissions(hours: number): Promise<number> {
+    const submitSince = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
+    // A note submitted in the window was processed at ~the same time; widen the
+    // processed-at window a little so a just-submitted note is never missed.
+    const processedSince = new Date(Date.now() - (hours + 2) * 60 * 60 * 1000).toISOString();
+    const { data: sightings, error: sErr } = await this.client
+      .from("misinfo_monitoring_sightings")
+      .select("tweet_id")
+      .not("processed_run_id", "is", null)
+      .gte("processed_at", processedSince);
+    if (sErr) throw sErr;
+    const tweetIds = [...new Set((sightings ?? []).map((s) => String((s as { tweet_id: string }).tweet_id)))];
+    if (tweetIds.length === 0) return 0;
+    let total = 0;
+    for (let i = 0; i < tweetIds.length; i += 200) {
+      const { count, error } = await this.client
+        .from("notes")
+        .select("id", { count: "exact", head: true })
+        .in("tweet_id", tweetIds.slice(i, i + 200))
+        .gte("submitted_at", submitSince);
+      if (error) throw error;
+      total += count ?? 0;
+    }
+    return total;
   }
 
   /** Count pipeline_runs created in the last N hours */
