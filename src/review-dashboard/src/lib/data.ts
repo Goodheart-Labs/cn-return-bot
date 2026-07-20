@@ -154,6 +154,15 @@ const PIPELINE_METADATA_COLUMNS =
 const LOW_EVAL_RUN_COLUMNS =
   "id, tweet_id, note_text, note_status, outcome, outcome_reason, bot_name, created_at, ab_test_picks";
 
+// Notes the bot WROTE but never submitted — the cap was hit, or a pre-submit
+// check failed. Their text lives on the pipeline_run (no notes row), exactly like
+// low-eval rejections, so they ride the same recovery path and get tagged
+// isDraft + failureType "draft_not_posted" in buildDashboardItems.
+const DRAFT_OUTCOME_REASONS = ["daily_limit_reached", "check_failed"];
+// Every never-submitted reason whose note_text we surface in the list: low-eval
+// (already shown) plus the drafts above. One `.in()` fetch covers all three.
+const REJECTION_OUTCOME_REASONS = ["low_evaluation_score", ...DRAFT_OUTCOME_REASONS];
+
 const TWEETS_LIST_COLUMNS = TWEET_LIST_COLS.join(", ");
 
 const PUBLIC_DUMP_RATING_COLUMNS = PUBLIC_DUMP_RATING_COLS.join(", ");
@@ -327,16 +336,17 @@ export async function fetchDashboardData(sinceIso: string): Promise<DashboardDat
       console.warn("[data] missed_opp_competing failed; continuing without missed opps:", err);
       return [] as any[];
     }),
-    // Notes rejected by the X eval gate — never submitted, so they aren't in
-    // `notes`. Windowed on the run's own created_at.
+    // Notes written but never submitted — low-eval rejections PLUS drafts (cap
+    // hit / check failed). Not in `notes`; text lives on the run. Windowed on the
+    // run's own created_at. buildDashboardItems splits them by outcome_reason.
     fetchAllRows<any>(
       supabase
         .from("pipeline_runs")
         .select(LOW_EVAL_RUN_COLUMNS)
-        .eq("outcome_reason", "low_evaluation_score")
+        .in("outcome_reason", REJECTION_OUTCOME_REASONS)
         .gte("created_at", sinceIso)
         .order("created_at", { ascending: false }),
-      "low_eval_runs",
+      "rejection_runs",
     ),
   ]);
 
@@ -366,6 +376,27 @@ export async function fetchDefaultStatusData(
       .order("submitted_at", { ascending: false, nullsFirst: false })
       .limit(limit),
     "default_status_canonical",
+  );
+  return assembleDashboardData({ canonical, missedOppCompeting: [], lowEvalRuns: [] });
+}
+
+/**
+ * Load EVERY note, ALL statuses, NO date window — so the reviewer sees the full
+ * picture (~6k notes, incl. the ~85% freshly-submitted NEEDS_MORE_RATINGS ones the
+ * status-default view hides), topic/status filters are authoritative, and "0 of a
+ * thing" genuinely means zero. Small enough to load whole in one pass; the
+ * satellite fetches are batched by assembleDashboardData, so no single query
+ * exceeds the DB statement timeout (the old windowed load's failure mode).
+ */
+export async function fetchAllNotesData(limit: number = 20000): Promise<DashboardData> {
+  console.log("[data] Loading ALL notes (every status, no window)…");
+  const canonical = await fetchAllRows<any>(
+    supabase
+      .from("notes")
+      .select(CANONICAL_LIST_COLUMNS)
+      .order("submitted_at", { ascending: false, nullsFirst: false })
+      .limit(limit),
+    "all_notes_canonical",
   );
   return assembleDashboardData({ canonical, missedOppCompeting: [], lowEvalRuns: [] });
 }
@@ -601,6 +632,12 @@ export function buildDashboardItems(data: DashboardData): ReviewItem[] {
   for (const run of lowEvalRuns) {
     const tweet = tweetsById.get(run.tweet_id);
     const id = lowEvalTargetId(run.id);
+    // Split the never-submitted reasons: cap-hit (a good note that lost the slot)
+    // and check-failed both render as drafts; low-eval keeps its own category.
+    const draftType: FailureType | null =
+      run.outcome_reason === "daily_limit_reached" ? "filtered_no_slot"
+        : run.outcome_reason === "check_failed" ? "draft_check_failed"
+          : null;
     items.push({
       id,
       source: "production" as const,
@@ -621,7 +658,8 @@ export function buildDashboardItems(data: DashboardData): ReviewItem[] {
       abTestPicks: run.ab_test_picks ?? undefined,
       evaluationScore: evalScoreByRunId.get(run.id),
       annotation: annotationByTarget.get(id),
-      failureType: "filtered_low_eval_score" as const,
+      isDraft: draftType != null || undefined,
+      failureType: draftType ?? ("filtered_low_eval_score" as const),
     });
   }
 
@@ -707,7 +745,7 @@ export interface ProductionPillData {
  * `cnStatusToFailureType`.
  */
 export async function fetchProductionPillData(): Promise<ProductionPillData> {
-  const [notes, publicRatings, helpfulCompeting, missed, lowEval, annotationRows, abRuns] = await Promise.all([
+  const [notes, publicRatings, helpfulCompeting, missed, lowEval, noSlot, checkFailed, annotationRows, abRuns] = await Promise.all([
     // The notes scan is the bottleneck of this once-per-session load (~4 pages);
     // paginate it in parallel. The others are single-page, so they stay serial.
     // Stable ORDER BY note_id so the concurrent page ranges partition cleanly.
@@ -744,6 +782,15 @@ export async function fetchProductionPillData(): Promise<ProductionPillData> {
       .from("pipeline_runs")
       .select("id", { count: "estimated", head: true })
       .eq("outcome_reason", "low_evaluation_score"),
+    // Estimated counts for the two draft pills, split by reason (cap-hit vs check-failed).
+    supabase
+      .from("pipeline_runs")
+      .select("id", { count: "estimated", head: true })
+      .eq("outcome_reason", "daily_limit_reached"),
+    supabase
+      .from("pipeline_runs")
+      .select("id", { count: "estimated", head: true })
+      .eq("outcome_reason", "check_failed"),
     fetchAllRows<any>(
       supabase
         .from("review_dashboard_annotations")
@@ -795,6 +842,8 @@ export async function fetchProductionPillData(): Promise<ProductionPillData> {
   }
   counts.missed_opportunity = missed.count ?? 0;
   counts.filtered_low_eval_score = lowEval.count ?? 0;
+  counts.filtered_no_slot = noSlot.count ?? 0;
+  counts.draft_check_failed = checkFailed.count ?? 0;
 
   const tagCounts = new Map<string, number>();
   const annotationsSeen: ProductionPillData["annotationsSeen"] = [];

@@ -9,10 +9,9 @@ import type {
 } from "./lib/types";
 import { defaultFilters } from "./lib/types";
 import { resolveRatingCounts } from "../../dashboard-shared/Ratings";
-import { FULLY_LOADED_FAILURE_TYPES } from "../../dashboard-shared/productionView";
 import {
   fetchDashboardData,
-  fetchDefaultStatusData,
+  fetchAllNotesData,
   fetchDashboardDataByTags,
   fetchDashboardDataHighValue,
   buildDashboardItems,
@@ -29,11 +28,11 @@ import {
   pruneUnusedFailureModes,
 } from "./lib/data";
 
-// The WINDOWED (non-default) types are bounded by a date window on
-// notes.submitted_at: the initial load covers the last WINDOW_DAYS_STEP days; the
-// "Load next N days" footer extends it by another step. The standard selection is
-// loaded in full (no window) — see fetchDefaultStatusData.
-const WINDOW_DAYS_STEP = 7;
+// The list now loads EVERY note (all statuses, no window) via fetchAllNotesData, so
+// there's no "load more" button. Secondary items that DON'T live in `notes` —
+// low-eval rejections, missed opps, drafts — can be large all-time, so they stay
+// bounded to this recent window (loaded in the background, no button).
+const SECONDARY_WINDOW_DAYS = 14;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 // Failure types whose pills show a seen-aware count (how many are left to review
@@ -42,10 +41,65 @@ const MS_PER_DAY = 24 * 60 * 60 * 1000;
 // the rest (needs-more-ratings, missed, low-eval) keep their all-time totals.
 const SEEN_AWARE_FAILURE_TYPES: FailureType[] = ["rated_helpful", "rated_unhelpful", "lost_to_competitor"];
 
-// The "standard selection" we load in full (no window); everything else is
-// windowed. Used to decide whether the "Load next N days" footer has anything
-// more to load. See productionView.FULLY_LOADED_FAILURE_TYPES.
-const FULLY_LOADED = new Set<FailureType>(FULLY_LOADED_FAILURE_TYPES);
+// Burn-down: the review backlog you're clearing to zero — unseen rated + underwater
+// notes (deliberately NOT the fresh NEEDS_MORE_RATINGS ones: "I couldn't do all").
+// Fixed target date so hitting the daily quota is a real "done for today". Edit the
+// date to re-aim.
+const BURNDOWN_TYPES = new Set<FailureType>(["rated_helpful", "rated_unhelpful", "underwater"]);
+const BURNDOWN_TARGET_ISO = "2026-10-18";
+
+function daysUntil(iso: string): number {
+  const ms = new Date(iso + "T23:59:59").getTime() - Date.now();
+  return Math.max(1, Math.ceil(ms / MS_PER_DAY));
+}
+
+// Top-of-page pace bar: how many of the review backlog to clear today to stay on
+// track for BURNDOWN_TARGET_ISO, going green when you've done enough. The daily
+// quota is anchored to the day's STARTING unseen count (persisted per-day in
+// localStorage) so it doesn't shrink out from under you as you rate — that's what
+// makes "done today" a fixed, hittable bar.
+function BurndownBar({ unseen, ready }: { unseen: number; ready: boolean }) {
+  const todayKey = new Date().toISOString().slice(0, 10);
+  const [dayStart, setDayStart] = useState<number | null>(null);
+  useEffect(() => {
+    if (!ready) return;
+    const k = `reviewDashboard.burndown.dayStart.${todayKey}`;
+    try {
+      const saved = localStorage.getItem(k);
+      if (saved != null) { setDayStart(Number(saved)); return; }
+      localStorage.setItem(k, String(unseen));
+    } catch { /* ignore */ }
+    setDayStart(unseen);
+    // Capture the day's baseline once, when data is first ready — not on every
+    // unseen change (that would reset the bar each time you rate a note).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, todayKey]);
+
+  if (!ready || dayStart == null) return null;
+  const daysLeft = daysUntil(BURNDOWN_TARGET_ISO);
+  const quota = Math.max(1, Math.ceil(dayStart / daysLeft));
+  const progress = Math.max(0, dayStart - unseen);
+  const done = progress >= quota;
+  const remainingToday = Math.max(0, quota - progress);
+  const pct = Math.min(100, Math.round((progress / quota) * 100));
+  const targetLabel = new Date(BURNDOWN_TARGET_ISO + "T00:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" });
+
+  return (
+    <div className={`mb-4 rounded-lg border p-3 ${done ? "border-green-300 bg-green-50" : "border-gray-200 bg-gray-50"}`}>
+      <div className="flex items-center justify-between text-sm">
+        <span className={done ? "text-green-800 font-medium" : "text-gray-700 font-medium"}>
+          {done
+            ? `✓ You've done enough today — ${progress}/${quota} reviewed`
+            : `Review ${remainingToday} more today (${progress}/${quota})`}
+        </span>
+        <span className="text-xs text-gray-500">{unseen} unseen · clear by {targetLabel}</span>
+      </div>
+      <div className="mt-2 h-1.5 w-full rounded-full bg-gray-200 overflow-hidden">
+        <div className={`h-full ${done ? "bg-green-500" : "bg-blue-500"}`} style={{ width: `${pct}%` }} />
+      </div>
+    </div>
+  );
+}
 
 import { NoteCard } from "./components/NoteCard";
 import { FilterBar } from "./components/FilterBar";
@@ -94,6 +148,9 @@ function matchesFilters(filters: FilterState, abFilters: ABFilters) {
     // filter still narrows within it (default "unseen" = notes you've not reviewed).
     if (filters.topicSets.size > 0) {
       if (!item.topicSet || !filters.topicSets.has(item.topicSet)) return false;
+      // Drafts (written, not posted) stay hidden even under a topic lens unless
+      // their own draft pill is explicitly on — you filter them out most of the time.
+      if (item.isDraft && !filters.failureTypes.has(item.failureType)) return false;
       if (filters.seen === "seen" && !(item.annotation?.seen)) return false;
       if (filters.seen === "unseen" && item.annotation?.seen) return false;
       return matchesAbFilters(item.abTestPicks ?? null, abFilters);
@@ -226,11 +283,6 @@ export function App() {
   // (metadata only, no TOAST). Logs are lazy-loaded per visible card and cached
   // here keyed by pipeline_run id.
   const [logsByRunId, setLogsByRunId] = useState<Map<string, Record<string, unknown>>>(new Map());
-  // Date-window size for the WINDOWED (non-default) types, in days. Extends in
-  // WINDOW_DAYS_STEP increments via the "Load next N days" footer. The standard
-  // selection ignores this (loaded in full). Dataset runs ignore it too.
-  const [windowDays, setWindowDays] = useState(WINDOW_DAYS_STEP);
-
   // Load uploads and failure mode catalog on mount
   useEffect(() => {
     fetchUploads().then((all) => {
@@ -300,17 +352,25 @@ export function App() {
           setItems(buildDashboardItems(injected));
           setLoading(false);
         }
-        // The standard selection in full (no window, carries ab_test_picks via
-        // submitted runs) UNIONed with the windowed everything-else. Windowed rows
-        // win on id overlap (competing/missed/low-eval + in-window ab data);
-        // out-of-window default notes survive; in-session annotation edits preserved.
-        const windowSince = new Date(Date.now() - windowDays * MS_PER_DAY).toISOString();
-        const [defaultData, windowData] = await Promise.all([
-          fetchDefaultStatusData(),
-          fetchDashboardData(windowSince),
+        // ALL notes (every status, no window) as the list — so fresh
+        // NEEDS_MORE_RATINGS notes and every topic are visible and "0 means 0" —
+        // UNIONed with the recent secondary items that don't live in `notes`
+        // (low-eval rejections, missed opps, drafts). Secondary rows win on id
+        // overlap; in-session annotation edits are preserved across the reload.
+        const secondarySince = new Date(Date.now() - SECONDARY_WINDOW_DAYS * MS_PER_DAY).toISOString();
+        const [allNotes, secondary] = await Promise.all([
+          fetchAllNotesData(),
+          // Fail-soft: the secondary items (low-eval / drafts) are a heavy fetch and
+          // can hit the DB statement timeout. If they fail, still show ALL the notes
+          // (the main content) rather than blanking the page with an error.
+          fetchDashboardData(secondarySince).catch((e) => {
+            console.warn("[dashboard] secondary items (low-eval / drafts) failed — showing notes only:", e);
+            return null;
+          }),
         ]);
         if (seq !== loadSeq.current) return;
-        const merged = mergeItemsById(buildDashboardItems(defaultData), buildDashboardItems(windowData));
+        const noteItems = buildDashboardItems(allNotes);
+        const merged = secondary ? mergeItemsById(noteItems, buildDashboardItems(secondary)) : noteItems;
         setItems((prev) => preserveAnnotations(prev, merged));
         setLogsByRunId(new Map());
         setRecentNotesLoaded(true);
@@ -328,7 +388,7 @@ export function App() {
       if (seq === loadSeq.current) setLoading(false);
     }
     // productionTagKey is the stable proxy for filters.failureModes (read above).
-  }, [dataset, windowDays, productionTagKey, filters.highValueOnly]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [dataset, productionTagKey, filters.highValueOnly]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Reset filters when the dataset changes (but not when only the window
   // extends — extending should preserve the user's filters). windowDays
@@ -400,6 +460,20 @@ export function App() {
   // in-session seen/tag change is in here, which keeps the counts live without a
   // refetch (mark a note seen and the "left to review" count drops immediately).
   const itemById = useMemo(() => new Map(items.map((i) => [i.id, i])), [items]);
+
+  // Burn-down backlog: unseen rated + underwater notes, all-time (from the pill
+  // scan, so it's the true total, not just what's loaded), with loaded notes
+  // overridden by live seen-state — so marking one seen ticks the counter down.
+  const burndownUnseen = useMemo(() => {
+    let n = 0;
+    for (const ns of notesSeen) {
+      if (!BURNDOWN_TYPES.has(ns.failureType)) continue;
+      const live = itemById.get(ns.noteId);
+      const seen = live ? !!live.annotation?.seen : ns.seen;
+      if (!seen) n++;
+    }
+    return n;
+  }, [notesSeen, itemById]);
 
   // True when any A/B slot is filtered. An empty A/B filter matches everything,
   // so the seen-aware counts already double as A/B-aware ones — we only need the
@@ -502,48 +576,6 @@ export function App() {
     [filtered, logsByRunId],
   );
   const tagFilterActive = dataset.type === "production" && filters.failureModes.size > 0;
-  // The "Load next N days" footer is relevant only when a WINDOWED (non-default)
-  // type is selected — the standard selection is loaded in full, so there's nothing
-  // more to load for it. Hidden under a tag filter (all-time) and for dataset runs.
-  const windowedTypeSelected =
-    dataset.type === "production" &&
-    !tagFilterActive &&
-    !filters.highValueOnly &&
-    [...filters.failureTypes].some((ft) => !FULLY_LOADED.has(ft));
-
-  // The boundary: the OLDEST loaded windowed note. Below it (older) only the
-  // fully-loaded standard notes remain — that's where loading the next window
-  // helps. Newest-first order means windowed notes (recent) cluster near the top.
-  const lastWindowedId = useMemo(() => {
-    for (let i = visible.length - 1; i >= 0; i--) {
-      if (!FULLY_LOADED.has(visible[i].failureType)) return visible[i].id;
-    }
-    return null;
-  }, [visible]);
-
-  // Only surface the footer once you've scrolled PAST that boundary — the last
-  // windowed note has left the top of the viewport, so only the fully-loaded
-  // standard notes remain on screen (the user's "you're at week 2" case). Or
-  // immediately if no windowed notes are loaded at all. A scroll listener (rAF-
-  // throttled) rather than IntersectionObserver, which doesn't fire when you jump
-  // straight past the boundary.
-  const [scrolledPastWindow, setScrolledPastWindow] = useState(false);
-  useEffect(() => {
-    if (!windowedTypeSelected) { setScrolledPastWindow(false); return; }
-    if (!lastWindowedId) { setScrolledPastWindow(true); return; }
-    let raf = 0;
-    const check = () => {
-      raf = 0;
-      const el = document.getElementById(`note-${lastWindowedId}`);
-      setScrolledPastWindow(!!el && el.getBoundingClientRect().bottom < 0);
-    };
-    const onScroll = () => { if (!raf) raf = requestAnimationFrame(check); };
-    check();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => { window.removeEventListener("scroll", onScroll); if (raf) cancelAnimationFrame(raf); };
-  }, [windowedTypeSelected, lastWindowedId]);
-
-  const showLoadMore = windowedTypeSelected && scrolledPastWindow;
 
   // The list is newest-first, so the top is often freshly-submitted notes with
   // no ratings yet. Offer a jump to the first note that actually has ratings —
@@ -596,10 +628,6 @@ export function App() {
     } catch (e) {
       console.warn(`Failed to load logs for run ${runId}:`, e);
     }
-  }, []);
-
-  const handleLoadMore = useCallback(() => {
-    setWindowDays((prev) => prev + WINDOW_DAYS_STEP);
   }, []);
 
   // Annotation handlers
@@ -766,6 +794,11 @@ export function App() {
         />
       </div>
 
+      {/* Burn-down pace bar — how much of the review backlog to clear today. */}
+      {dataset.type === "production" && (
+        <BurndownBar unseen={burndownUnseen} ready={notesSeen.length > 0} />
+      )}
+
       {/* Filters */}
       <div className="mb-4">
         <FilterBar
@@ -922,6 +955,9 @@ export function App() {
                   : `${visible.length} notes`
               : `${filtered.length} items shown`}
         </div>
+        {loading && items.length > 0 && (
+          <span className="text-xs text-gray-400">· loading all notes…</span>
+        )}
         {firstRatedIndex > 0 && (
           <button
             onClick={scrollToFirstRated}
@@ -952,21 +988,6 @@ export function App() {
           </div>
         ))}
       </div>
-
-      {/* "Load next window" footer — pinned to the viewport bottom, shown once you
-          scroll past the windowed notes into the standard-only region (only the
-          fully-loaded default notes remain there). */}
-      {showLoadMore && (
-        <div className="fixed bottom-0 left-0 right-0 z-20 px-4 py-3 bg-white/95 backdrop-blur border-t border-gray-200 flex justify-center">
-          <button
-            onClick={handleLoadMore}
-            disabled={loading}
-            className="px-4 py-2 text-sm rounded-md border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50"
-          >
-            {loading ? "Loading…" : `Load next ${WINDOW_DAYS_STEP} days (currently last ${windowDays} days)`}
-          </button>
-        </div>
-      )}
 
       {/* Upload dialog */}
       <UploadDialog
