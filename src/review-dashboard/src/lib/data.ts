@@ -311,16 +311,22 @@ export async function fetchDashboardData(sinceIso: string): Promise<DashboardDat
     // Anchored by the competitor's creation time as a window proxy (the exact
     // item date is the pipeline_run.created_at); a recent rejection of an older
     // competitor can fall outside the window, acceptable for this secondary type.
+    // Narrow columns (a select-* scan here can exceed the DB statement timeout
+    // under the initial load's parallel queries) and fail-soft: a missing
+    // secondary item type must degrade the view, not reject the whole load.
     fetchAllRows<any>(
       supabase
         .from("competing_notes")
-        .select("*")
+        .select("note_id, our_note_id, current_status, pipeline_run_id, tweet_id, note_text, author_participant_id, created_at_millis")
         .is("our_note_id", null)
         .eq("current_status", "CURRENTLY_RATED_HELPFUL")
         .not("pipeline_run_id", "is", null)
         .gte("created_at_millis", sinceMillis),
       "missed_opp_competing",
-    ),
+    ).catch((err) => {
+      console.warn("[data] missed_opp_competing failed; continuing without missed opps:", err);
+      return [] as any[];
+    }),
     // Notes rejected by the X eval gate — never submitted, so they aren't in
     // `notes`. Windowed on the run's own created_at.
     fetchAllRows<any>(
@@ -731,9 +737,12 @@ export async function fetchProductionPillData(): Promise<ProductionPillData> {
       .is("our_note_id", null)
       .eq("current_status", "CURRENTLY_RATED_HELPFUL")
       .not("pipeline_run_id", "is", null),
+    // Estimated, not exact: an exact count is an un-indexed scan over all of
+    // pipeline_runs and reliably exceeds the DB statement timeout (the pill
+    // then silently shows 0). The planner estimate is close enough for a pill.
     supabase
       .from("pipeline_runs")
-      .select("id", { count: "exact", head: true })
+      .select("id", { count: "estimated", head: true })
       .eq("outcome_reason", "low_evaluation_score"),
     fetchAllRows<any>(
       supabase
