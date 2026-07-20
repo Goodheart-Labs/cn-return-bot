@@ -212,7 +212,7 @@ async function describeImage(
   return { type: "image", url, description };
 }
 
-async function describeImageFromUrl(imageUrl: string, costName: string, entities?: string[]): Promise<GeminiMediaItem> {
+export async function describeImageFromUrl(imageUrl: string, costName: string, entities?: string[]): Promise<GeminiMediaItem> {
   return describeImage(await fetchImageInlineData(imageUrl), imageUrl, costName, entities);
 }
 

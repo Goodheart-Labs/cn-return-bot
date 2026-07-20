@@ -45,20 +45,30 @@ export interface ClaimPostParams {
   publishedAt?: string;
 }
 
-// Fact-check the claim WITH its surrounding passage (and any images it rests
-// on), not in isolation: the wider context carries nuance the neutral
-// restatement drops. Image-only claims carry no text excerpt — just the claim
-// and the image(s), which the pipeline's media analysis describes.
-function buildClaimPost(params: ClaimPostParams): Post {
+// Fact-check the verbatim highlighted span plus its surrounding passage (and any
+// images the claim rests on) — NOT Opus's neutral restatement. The paraphrase is
+// useful during extraction (it forces Opus to state the claim) but it can drift
+// from the source, so we keep it out of the fact-check input and let the search
+// model read the author's actual words. The paragraph contains the highlighted
+// span verbatim; labelling the span separately tells the model which part to
+// check. Exception: a claim with no highlighted span is grounded in an image,
+// and one image (say, an infographic) can carry several claims — there the
+// paraphrase is the only thing naming which one to check, so it goes back in.
+// The image(s) themselves reach the model via the pipeline's media analysis.
+export function buildClaimPost(params: ClaimPostParams): Post {
   const { claim, source, itemId, index, publishedAt } = params;
   const origin = source === "youtube" ? "Transcript" : "Article";
-  const passage = (claim.contextParagraph || claim.context).trim();
-  const textLine = passage ? `Text from ${origin}: ${passage}\n` : "";
+  const highlighted = claim.context.trim();
+  const paragraph = claim.contextParagraph.trim();
+  const lines: string[] = [];
+  if (highlighted) lines.push(`Highlighted claim from ${origin}: ${highlighted}`);
+  else lines.push(`Claim: ${claim.claim}`);
+  if (paragraph) lines.push(`Surrounding context: ${paragraph}`);
   return {
     id: `${itemId.slice(0, 8)}-${index}`,
     author_id: "unknown",
     created_at: publishedAt ?? new Date().toISOString(),
-    text: `${textLine}Claim: ${claim.claim}`,
+    text: lines.join("\n"),
     media: claim.imageUrls.map((url) => ({ type: "photo", url })),
   };
 }
