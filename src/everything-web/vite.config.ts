@@ -21,6 +21,15 @@ export default defineConfig(({ command, mode }) => {
         "the app would be dead-code-eliminated. Use --mode prod-backend or set the env vars.",
     );
   }
+  // prod-backend mode without .env.prod-backend silently falls back to the root
+  // .env — i.e. the LOCAL backend while you think you're testing prod. Fail
+  // loudly instead (dev included: the fallback is invisible in the browser).
+  if (mode === "prod-backend" && (!env.VITE_SUPABASE_URL || /127\.0\.0\.1|localhost/.test(env.VITE_SUPABASE_URL))) {
+    throw new Error(
+      "prod-backend mode resolved a missing/local VITE_SUPABASE_URL — " +
+        ".env.prod-backend is probably absent in this worktree (it's gitignored; copy it from the main checkout).",
+    );
+  }
   return {
     plugins: [react()],
     base: process.env.BASE_PATH ?? "/",
