@@ -54,18 +54,37 @@ export function formatVelocity(v: number | null): string {
 // above-floor posts and the ladder broadens until maxPosts of them are pooled,
 // so a slow post never costs a pipeline run in the first place. submitCandidates
 // re-checks it as a backstop for candidates that skip selection (the Pangram
-// pre-pass; misinfo has its own floor at stage-3 selection). Set 0 to disable.
+// pre-pass; topic posts answer to MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR below,
+// enforced at both topic selection points). Set 0 to disable.
 export const REGULAR_VELOCITY_FLOOR_PER_HOUR = 30_000;
+
+// ── Topic velocity floor ────────────────────────────────────────────────────
+// Experiment (week of 2026-07-20; analysis in
+// src/scripts_rob/2026_07_20_rating_velocity): the chance a post's note is
+// ever rated collapses at low velocity (impressions/hour at sighting), and
+// topic notes are expensive (full pipeline + injected reference doc) — so the
+// slots reserved for topic posts should go to fast posts only. One floor, one
+// policy, enforced at BOTH topic discovery routes: the pre-pass work list
+// (generateMisinfoCandidates.buildWorkList) and the regular-pool curation fill
+// (regularFeedTopicCuration.fillWithTopicPriority). Below-floor posts are
+// dropped and logged, not queued; their stored sighting verdict makes retries
+// free, and a post that accelerates in a later fetch clears the floor then.
+// Unknown velocity fails OPEN. Set 0 to disable. If fewer than ~5 qualifying
+// posts/day survive the full note-writing funnel for two consecutive days,
+// lower this to 2_000 (the display-collapse threshold from the analysis).
+export const MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR = 4_000;
 
 /**
  * Floor test over an already-computed velocity. Unknown velocity (null) is
  * ABOVE the floor: a feed-shape change that drops impression counts must never
- * silently zero the pipeline.
+ * silently zero the pipeline. A floor of 0 (or less) disables the check.
  */
+export function isAboveFloor(velocity: number | null, floor: number): boolean {
+  return floor <= 0 || velocity === null || velocity >= floor;
+}
+
+/** isAboveFloor against the REGULAR feed floor. Topic-path callers should use
+ *  isAboveFloor with MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR instead. */
 export function isAboveVelocityFloor(velocity: number | null): boolean {
-  return (
-    REGULAR_VELOCITY_FLOOR_PER_HOUR <= 0
-    || velocity === null
-    || velocity >= REGULAR_VELOCITY_FLOOR_PER_HOUR
-  );
+  return isAboveFloor(velocity, REGULAR_VELOCITY_FLOOR_PER_HOUR);
 }

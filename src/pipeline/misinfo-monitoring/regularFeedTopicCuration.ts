@@ -14,8 +14,11 @@
  * Sightings semantics are shared with the pre-pass (one ledger, one
  * judged-once rule): a pair already judged needs_note=false or already
  * processed is left alone; a pair judged needs_note=true but never processed
- * (e.g. the pre-pass selected it, then dropped it at its cap) reuses the
- * stored verdict here without a second LLM call.
+ * (e.g. the pre-pass selected it, then dropped it at its cap or floor) reuses
+ * the stored verdict here without a second LLM call. The rescue is
+ * floor-gated: fillWithTopicPriority applies the same topic velocity floor as
+ * the pre-pass work list, so a floor-dropped post cannot re-enter through
+ * this route until a later fetch shows it accelerating past the floor.
  */
 
 import type { Post } from "../../api/fetchEligiblePosts";
@@ -25,6 +28,7 @@ import { matchPostsByTopic } from "./keywordFilter";
 import { selectPostsNeedingNote } from "./selectPostsNeedingNote";
 import { MISINFO_TOPICS, type MisinfoTopic } from "./topics";
 import type { MisinfoTopicId } from "./topicIds";
+import { isAboveFloor, MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR } from "../utils/velocity";
 
 /** Confirmed topic matches are guaranteed up to this many of the run's
  *  maxPosts slots (fastest first). They displace the slowest regular picks —
@@ -149,6 +153,12 @@ export async function curateRegularFeedPosts(opts: {
  * velocity-ranked selection, displacing its slowest picks when full. The
  * returned list is velocity-sorted descending (unknown last), matching the
  * regular selection's ordering.
+ *
+ * Confirmed posts below the topic velocity floor are returned in
+ * `floorDropped` (for the caller's log) and never prioritized — the same
+ * policy the pre-pass work list applies, so the two discovery routes cannot
+ * disagree about the same tweet. Their sightings stay pending and are
+ * re-offered when a later fetch shows the post above the floor.
  */
 export function fillWithTopicPriority<T extends { post: Post; velocity: number | null }>(
   selected: T[],
@@ -156,19 +166,26 @@ export function fillWithTopicPriority<T extends { post: Post; velocity: number |
   pool: T[],
   maxPosts: number,
   slots: number = TOPIC_PRIORITY_SLOTS,
-): { final: T[]; prioritized: T[]; displacedCount: number } {
+): { final: T[]; prioritized: T[]; displacedCount: number; floorDropped: T[] } {
   // Rank by the velocity frozen at fetch time (same value selection used).
   const byVelocityDesc = (a: T, b: T) => (b.velocity ?? -Infinity) - (a.velocity ?? -Infinity);
 
-  if (slots <= 0 || !confirmedIds.size) return { final: selected, prioritized: [], displacedCount: 0 };
+  if (slots <= 0 || !confirmedIds.size) {
+    return { final: selected, prioritized: [], displacedCount: 0, floorDropped: [] };
+  }
+
+  // Topic floor over the velocity frozen at fetch time (NOT re-derived — see
+  // SourcedPost in generateCandidates: recomputing mid-run shrinks velocity).
+  const confirmedPool = pool.filter((s) => confirmedIds.has(s.post.id));
+  const aboveFloor = confirmedPool.filter((s) =>
+    isAboveFloor(s.velocity, MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR),
+  );
+  const floorDropped = confirmedPool.filter((s) => !aboveFloor.includes(s));
 
   // Never exceed the run budget: near writing-limit exhaustion computeMaxPosts
   // genuinely produces maxPosts of 1–2, below the slot count.
-  const prioritized = pool
-    .filter((s) => confirmedIds.has(s.post.id))
-    .sort(byVelocityDesc)
-    .slice(0, Math.min(slots, maxPosts));
-  if (!prioritized.length) return { final: selected, prioritized: [], displacedCount: 0 };
+  const prioritized = aboveFloor.sort(byVelocityDesc).slice(0, Math.min(slots, maxPosts));
+  if (!prioritized.length) return { final: selected, prioritized: [], displacedCount: 0, floorDropped };
 
   const prioritizedIds = new Set(prioritized.map((s) => s.post.id));
   const regulars = selected.filter((s) => !prioritizedIds.has(s.post.id));
@@ -179,5 +196,6 @@ export function fillWithTopicPriority<T extends { post: Post; velocity: number |
     final,
     prioritized,
     displacedCount: regulars.length - keepRegulars.length,
+    floorDropped,
   };
 }

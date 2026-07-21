@@ -74,8 +74,9 @@ export interface Candidate {
  * Split candidates at the regular velocity floor — a backstop, since the
  * regular feed now applies the same floor at selection (see collectFastPosts);
  * in practice this only bites candidates that skip selection, i.e. the Pangram
- * pre-pass. Misinfo candidates are never cut here (the topic has its own floor
- * at stage-3 selection); unknown velocity fails open. Pure — exported for the
+ * pre-pass. Misinfo candidates are never cut here (the topic has its own floor,
+ * enforced at both topic selection points — the pre-pass work list and the
+ * curation priority fill); unknown velocity fails open. Pure — exported for the
  * offline replay sim (scripts_rob/2026_07_20_velocity_floor_sim) and tests.
  */
 export function partitionByVelocityFloor(candidates: Candidate[]): {

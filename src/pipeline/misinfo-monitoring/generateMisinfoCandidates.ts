@@ -28,7 +28,12 @@ import type { MisinfoTopicId } from "./topicIds";
 import { matchPostsByTopic } from "./keywordFilter";
 import { selectPostsNeedingNote } from "./selectPostsNeedingNote";
 import { loadDumpFeed } from "./loadDumpFeed";
-import { velocityPerHour, formatVelocity } from "../utils/velocity";
+import {
+  velocityPerHour,
+  formatVelocity,
+  isAboveFloor,
+  MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR,
+} from "../utils/velocity";
 
 const MISINFO_MAX_RESULTS = 5000;
 const MISINFO_MAX_PAGES = 100;
@@ -39,19 +44,13 @@ const MISINFO_FEED_SIZES: FeedSize[] = ["xxl", "xl", "large"];
 // posts win the cap), not queued for later.
 const MISINFO_MAX_PROCESS = 10;
 
-// ── Topic velocity floor ────────────────────────────────────────────────────
-// Experiment (week of 2026-07-20; analysis in
-// src/scripts_rob/2026_07_20_rating_velocity): the chance a post's note is
-// ever rated collapses at low velocity (impressions/hour at sighting), and
-// topic notes are expensive (full pipeline + injected reference doc) — so the
-// per-run processing cap should go to fast posts only. Applied BEFORE the cap;
-// below-floor selected posts are dropped and logged, not queued (same
-// semantics as the cap-drop; their sighting verdict is already recorded, so
-// the selection LLM never re-judges them). Unknown velocity fails OPEN.
-// Set 0 to disable. If fewer than ~5 qualifying posts/day survive the full
-// note-writing funnel for two consecutive days, lower this to 2_000 (the
-// display-collapse threshold from the analysis).
-const MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR = 4_000;
+// Topic velocity floor: shared MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR (see
+// utils/velocity.ts for the rationale). Applied BEFORE the cap; below-floor
+// selected posts are dropped and logged, not queued (same semantics as the
+// cap-drop; their sighting verdict is already recorded, so the selection LLM
+// never re-judges them). The regular-pool curation route applies the SAME
+// floor in fillWithTopicPriority — a floor-dropped post here must not re-enter
+// through the stored-verdict rescue there.
 
 export interface MisinfoCandidatesOptions {
   /** Shared with generateCandidates so already-noted / cooling-down tweets are
@@ -155,12 +154,9 @@ function buildWorkList(
   });
 
   // Velocity floor: unknown velocity fails open (never drop on missing data).
-  const floored = MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR > 0
-    ? deduped.filter(({ post }) => {
-        const v = velocityPerHour(post);
-        return v === null || v >= MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR;
-      })
-    : deduped;
+  const floored = deduped.filter(({ post }) =>
+    isAboveFloor(velocityPerHour(post), MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR),
+  );
   if (floored.length < deduped.length) {
     const dropped = deduped.filter((w) => !floored.includes(w));
     console.log(

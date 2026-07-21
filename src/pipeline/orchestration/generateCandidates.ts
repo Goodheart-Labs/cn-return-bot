@@ -23,7 +23,13 @@ import { withMonitoringContext, type MonitoringContext } from "../misinfo-monito
 import { curateRegularFeedPosts, fillWithTopicPriority } from "../misinfo-monitoring/regularFeedTopicCuration";
 import type { MisinfoTopic } from "../misinfo-monitoring/topics";
 import type { MisinfoTopicId } from "../misinfo-monitoring/topicIds";
-import { velocityPerHour, formatVelocity, isAboveVelocityFloor, REGULAR_VELOCITY_FLOOR_PER_HOUR } from "../utils/velocity";
+import {
+  velocityPerHour,
+  formatVelocity,
+  isAboveVelocityFloor,
+  REGULAR_VELOCITY_FLOOR_PER_HOUR,
+  MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR,
+} from "../utils/velocity";
 import type { Post } from "../../api/fetchEligiblePosts";
 import PQueue from "p-queue";
 
@@ -57,8 +63,9 @@ type FeedFetcher = (feedSize: FeedSize) => Promise<Post[]>;
  * here rather than at submission means a slow post never costs a pipeline run.
  * `selected` is the fastest first; unknown velocity fails open but sorts last.
  * `fresh` is EVERY new post the walked tiers surfaced, below-floor included —
- * topic curation matches against it (a curated-topic post is exempt from the
- * floor, so it must be discoverable here even when too slow to be selected).
+ * topic curation matches against it (a curated-topic post answers to the lower
+ * topic floor, not this one, so it must be discoverable here even when too
+ * slow to be selected).
  *
  * Exported for deterministic tests of the broaden-until-full behavior.
  */
@@ -295,9 +302,9 @@ export interface GenerateCandidatesOptions {
   knownTweetIds?: Set<string>;
   onTweetProcessed?: (event: TweetProcessedEvent) => void | Promise<void>;
   /** Curated topics to match against the regular pool: confirmed posts get the
-   *  full monitoring treatment, are exempt from the selection velocity floor,
-   *  and take a bounded share of maxPosts (see regularFeedTopicCuration.ts).
-   *  Empty/omitted disables curation entirely. */
+   *  full monitoring treatment, answer to the topic velocity floor instead of
+   *  the regular one, and take a bounded share of maxPosts (see
+   *  regularFeedTopicCuration.ts). Empty/omitted disables curation entirely. */
   topicIds?: readonly MisinfoTopicId[];
 }
 
@@ -315,10 +322,11 @@ export async function generateCandidates(
 
   const { selected, fresh } = await fetchPosts(supabaseLogger, maxPosts, skipPostIds, knownTweetIds);
 
-  // Curated-topic matching over the whole fresh pool — below-floor posts
-  // included, because confirmed topic posts are exempt from the selection
-  // floor (they carry demonstrated rater attention the floor exists to
-  // predict). Fail-soft: curation (incl. the selection LLM, which throws on
+  // Curated-topic matching over the whole fresh pool — below-REGULAR-floor
+  // posts included, because confirmed topic posts answer to the lower topic
+  // floor (applied in fillWithTopicPriority), not the regular 30k one. A
+  // 4k–30k topic post is exactly the case the wider pool exists for.
+  // Fail-soft: curation (incl. the selection LLM, which throws on
   // unrecoverable output by design) must never take down the regular pass —
   // unjudged sightings are simply re-evaluated next run.
   let confirmedTopics = new Map<string, MisinfoTopic>();
@@ -329,12 +337,19 @@ export async function generateCandidates(
       console.warn("[generate] topic curation failed; continuing without it:", err);
     }
   }
-  const { final, prioritized, displacedCount } = fillWithTopicPriority(
+  const { final, prioritized, displacedCount, floorDropped } = fillWithTopicPriority(
     selected,
     new Set(confirmedTopics.keys()),
     fresh,
     maxPosts,
   );
+  if (floorDropped.length) {
+    console.log(
+      `[generate] topic curation: velocity floor: dropped ${floorDropped.length} confirmed post(s) below ` +
+        `${formatVelocity(MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR)} — ` +
+        floorDropped.map((s) => `${s.post.id} vel=${formatVelocity(s.velocity)}`).join(", "),
+    );
+  }
   if (prioritized.length) {
     console.log(
       `[generate] topic curation: +${prioritized.length} prioritized (${displacedCount} regular post(s) displaced) — ` +
