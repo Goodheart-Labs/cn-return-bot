@@ -6,7 +6,7 @@ import { VoteRatings } from "../../../dashboard-shared/Ratings";
 import { quoteFragmentUrl } from "../../../dashboard-shared/textFragment";
 import type { NotedContent } from "../../../dashboard-shared/types";
 import type { ClaimRef, NnnRow, NoteRow, NoteSourceRow } from "../lib/types";
-import type { VoteCast } from "../lib/donationScoring";
+import type { MintedDonation } from "../lib/donations";
 import type { Vote } from "../lib/votes";
 import { noteStatus, noteTallyVisible, type NoteStatus } from "../lib/noteScore";
 import { NoteMenu } from "./NoteMenu";
@@ -80,27 +80,6 @@ function SourceDetails({ open, sources }: { open: boolean; sources: NoteSourceRo
         </div>
       </div>
     </div>
-  );
-}
-
-/** Six-second draining circle shown right after a vote: the note holds its
- *  place until this empties, so a misclick can be fixed before it re-sorts.
- *  Rendered permanently (invisible while idle) so appearing never widens the
- *  vote row and jolts the pills onto the next line. */
-function ResortCountdown({ active }: { active: boolean }) {
-  return (
-    <span
-      className={`inline-flex items-center ${active ? "" : "invisible"}`}
-      title="Hold — re-sorting shortly; click again to change your vote"
-    >
-      <svg width="14" height="14" viewBox="0 0 16 16" className="-rotate-90">
-        <circle cx="8" cy="8" r="7" fill="none" stroke="#e5e7eb" strokeWidth="2" />
-        {active && (
-          <circle cx="8" cy="8" r="7" fill="none" stroke="#3b82f6" strokeWidth="2"
-            strokeDasharray="44" style={{ animation: "cn-countdown 6s linear forwards" }} />
-        )}
-      </svg>
-    </span>
   );
 }
 
@@ -336,7 +315,7 @@ function ImprovementLinks({ note, improvements }: { note: NoteRow; improvements:
 
 // Mirrors the review-dashboard card composition: content → note → stats row,
 // with voting live and an improve-note affordance.
-export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug, myVote, holdActive, onVote, onAuthored, session, onNeedLogin }: {
+export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug, myVote, onVote, onAuthored, session, onNeedLogin }: {
   note: NoteRow;
   /** Notes that improve this one (reverse of improved_from_note_id). */
   improvements: NoteRow[];
@@ -346,20 +325,19 @@ export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug, 
   nnnApi: NnnApi;
   projectSlug: string;
   myVote: Vote | undefined;
-  holdActive: boolean;
-  /** Casts the vote and mints its donation; resolves to the cast (vote id +
-   *  frozen donation pair), or null on retract / own note / error. */
-  onVote: (note: NoteRow, vote: Vote) => Promise<VoteCast | null>;
+  /** Casts the vote and mints its donation; resolves to the minted donation
+   *  (vote id + charity + frozen pair), or null on retract / own note / error. */
+  onVote: (note: NoteRow, vote: Vote) => Promise<MintedDonation | null>;
   /** A note was just posted by this user (mirror its auto-upvote locally). */
   onAuthored: (noteId: string) => void;
   session: Session | null;
   onNeedLogin: () => void;
 }) {
   const [ctxOpen, setCtxOpen] = useState(false);
-  // Set right after casting a vote — the just-cast vote and its frozen
-  // donation pair, which show the donation notice beneath the pills.
-  // Cleared on retract.
-  const [cast, setCast] = useState<VoteCast | null>(null);
+  // Set right after casting a vote — the just-minted donation, which shows the
+  // donation notice beneath the pills. Its charity is the ledger's value; a
+  // successful redirect updates it here. Cleared on retract.
+  const [cast, setCast] = useState<MintedDonation | null>(null);
   const cardColRef = useRef<HTMLDivElement>(null);
   const [sourcesOpen, setSourcesOpen] = useState(false);
   // One evaluation per card: the badge tint, the counts reveal and the donation
@@ -416,13 +394,14 @@ export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug, 
             showCounts={noteTallyVisible(status, myVote, note.created_at)}
             onVote={(vote) => void onVote(note, vote).then(setCast)}
           />
-          <ResortCountdown active={holdActive} key={`${note.helpful_count}-${note.somewhat_helpful_count}-${note.not_helpful_count}`} />
         </NoteBox>
         {cast && myVote !== undefined && session && (
           <VoteDonation
             voteId={cast.voteId}
             pair={cast.pair}
+            charity={cast.charity}
             status={status}
+            onCharityChange={(charity) => setCast((prev) => prev && { ...prev, charity })}
             onClose={() => setCast(null)}
           />
         )}
