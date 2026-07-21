@@ -4,9 +4,6 @@ import { AsyncLocalStorage } from "node:async_hooks";
 
 export type VideoDescriptionStrategy = "full_video" | "frames";
 
-/** Feed sizes accepted by X's eligible-posts API. */
-export type FeedSize = "small" | "large" | "xl" | "xxl";
-
 export interface BotConfig {
   /** Which bot to run. Set by the BOT_TEST A/B test (or forced via withForcedPicks). */
   botId: string;
@@ -157,8 +154,6 @@ export interface BotConfig {
    * test via AUTHOR_HISTORY_TEST. Not prereq-gated — runs for every bot. Defaults false.
    */
   author_history?: boolean;
-  /** Feed size used for the eligible-posts fetch. Pseudo A/B test (large=100%). */
-  feed_size: FeedSize;
   /**
    * Minimum X eval-score (`claim_opinion_score`) at which a note is submitted.
    * Missing values fall back to 0, preserving older ad-hoc script configs.
@@ -176,7 +171,6 @@ export const DEFAULT_CONFIG: BotConfig = {
   web_search: "perplexity",
   video_description_strategy: "frames",
   parallel_research: false,
-  feed_size: "small",
   eval_submit_threshold: 0,
 };
 

@@ -84,7 +84,7 @@ const rawPipelineRunsFull = await fetchAllRows<{
   { label: "report.allPipelineRuns" },
 );
 // Fill AB-test defaults so variant labels stay consistent across rows written
-// before vs. after a test was introduced (e.g. feed_size pre-2026-05-16).
+// before vs. after a test was introduced.
 for (const r of rawPipelineRunsFull) {
   r.ab_test_picks = resolvePicks(r.ab_test_picks);
 }
