@@ -1,0 +1,143 @@
+projects: dwarkesh, ai-2040, zvi
+→ using project "Zvi's Substack" (slug=zvi, id=6f7c7b86-8eb9-43fd-86ee-87be634c6388)
+items: 11
+claims with a note: 29
+
+rerunning 29 claims (concurrency 4)…
+
+[gemini] Retryable error (free key, attempt 1/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 2000ms...
+[gemini] Retryable error (free key, attempt 2/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 4000ms...
+[gemini] Retryable error (free key, attempt 1/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 2000ms...
+[gemini] Retryable error (free key, attempt 2/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 4000ms...
+[gemini] Retryable error (free key, attempt 1/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 2000ms...
+[gemini] Retryable error (free key, attempt 3/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 8000ms...
+[gemini] Retryable error (free key, attempt 3/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 8000ms...
+[gemini] Retryable error (free key, attempt 2/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 4000ms...
+[gemini-route] free-key call failed (model: google/gemini-3-flash-preview); falling back to OpenRouter: {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}
+[gemini-route] free-key call failed (model: google/gemini-3-flash-preview); falling back to OpenRouter: {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [1/29] NOTE — Max Ghenis estimated MacKenzie Scott's charitable giving produced approximately 
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [2/29] NOTE — According to a 2026 Newzoo report, two-thirds of gaming time went to games more 
+[simple-bot] "Made with AI" label check failed: forSelector: Timeout 15000ms exceeded.
+Call log:
+  - waiting for locator('article') to be visible
+ (assuming no label)
+[gemini] Retryable error (free key, attempt 3/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 8000ms...
+[simple-bot] "Made with AI" label check failed: forSelector: Timeout 15000ms exceeded.
+Call log:
+  - waiting for locator('article') to be visible
+ (assuming no label)
+[gemini-route] free-key call failed (model: google/gemini-3-flash-preview); falling back to OpenRouter: {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [3/29] NOTE — Nathan estimated that MacKenzie Scott's donations bought approximately 1,500 tim
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [4/29] no note (no_correction_needed) — The 2010s account for 17.9% of songs in karaoke playlists, according to Chartmet
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [5/29] NOTE — The karaoke playlist data in the chart is sourced from Chartmetric.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [6/29] NOTE — Twitter released an algorithm update called 'Phoenix' around April 1, 2026.
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[simple-bot] "Made with AI" label check failed: forSelector: Timeout 15000ms exceeded.
+Call log:
+  - waiting for locator('article') to be visible
+ (assuming no label)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [7/29] no note (no_correction_needed) — On Twitter, users can see interactions between people if and only if they follow
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[gemini] Retryable error (free key, attempt 1/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 2000ms...
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [8/29] NOTE — Sol assessed a 45% probability that its alarming destructive behavior is meaning
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [9/29] no note (no_correction_needed) — Claude Mythos 5 scored 61.7% on the Toolathlon benchmark, matching another Claud
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [10/29] no note (no_correction_needed) — GPT 5.6 Sol has a model called 'Sol Ultra' that is described as the best competi
+[gemini] Retryable error (free key, attempt 2/4, model: gemini-3-flash-preview): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 4000ms...
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [11/29] NOTE — Portugal has been stopping every package received from outside the EU with no ex
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [12/29] NOTE — OpenAI created Terra and Luna as subagent models for Sol to select from.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [13/29] NOTE — GPT models 4.8 and Fable (Claude) both outperformed GPT 5.5 in math capabilities
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [14/29] no note (no_correction_needed) — In GRAM testing, the ablated model version still shows improvement in the capabi
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [15/29] NOTE — Megan Herbst's Wired article based its claims that AI fact checking cannot be tr
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [16/29] NOTE — At UC Berkeley, the number of A grades is up by 30%.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [17/29] NOTE — Grok 4.5's API pricing is $2/$6, or $4/$18 for the fast version.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [18/29] NOTE — The board game Earthborne Rangers is out of print.
+[simple-bot] "Made with AI" label check failed: forSelector: Timeout 15000ms exceeded.
+Call log:
+  - waiting for locator('article') to be visible
+ (assuming no label)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [19/29] no note (no_correction_needed) — There is a White House ad hoc licensing regime for AI.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [20/29] NOTE — The paper's blog post asserts that LLMs have 'access consciousness' in functiona
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[simple-bot] "Made with AI" label check failed: forSelector: Timeout 15000ms exceeded.
+Call log:
+  - waiting for locator('article') to be visible
+ (assuming no label)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [21/29] no note (check_failed) — The Artificial Analysis Intelligence Index ranks 572 models in total.
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [22/29] NOTE — GLM-5.2 is substantially behind GPT-5.5 and Opus 4.8 in capabilities, including 
+[simple-bot] "Made with AI" label check failed: forSelector: Timeout 15000ms exceeded.
+Call log:
+  - waiting for locator('article') to be visible
+ (assuming no label)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [23/29] NOTE — On June 26, 2026, the US government eliminated the export controls on Mythos.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [24/29] no note (no_correction_needed) — According to a slide from Exponential View citing Graetz & Michaels (2018), auto
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [25/29] no note (no_correction_needed) — On GeneBench-Pro at max reasoning, GPT-5.6 Luna (max) achieved a 16.5% pass rate
+[simple-bot] "Made with AI" label check failed: forSelector: Timeout 15000ms exceeded.
+Call log:
+  - waiting for locator('article') to be visible
+ (assuming no label)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [26/29] NOTE — Research found that AI agents respond to nudges in similar ways to humans.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [27/29] NOTE — According to Exponential View's analysis, the AI economy (current sales to exter
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [28/29] no note (no_correction_needed) — Anthropic used Mythos as a trainer/judge during Claude Sonnet 5's development, a
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  [29/29] NOTE — Claude Mythos Preview achieved a 96.21% refusal rate for malicious requests in C
+
+done — 29 results (19 note, 10 no_note) → /Users/jimmaar/Github/cn-return-bot/src/scripts_jim/2026_07_20_zvi_rerun_new_input/results.json

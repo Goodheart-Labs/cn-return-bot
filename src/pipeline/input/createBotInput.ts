@@ -79,8 +79,12 @@ export async function createBotInput(post: Post, logTag: string): Promise<BotInp
 
   // Only posts with media can carry the "Made with AI" label, so gate the
   // (browser-based) check on media presence to keep the page-load off text-only
-  // posts. Fails open — never blocks note generation.
-  const mediaMadeWithAiLabel = hasMedia ? await detectMadeWithAiLabel(post.id, logTag) : false;
+  // posts. Everything-pipeline synthetic posts (hyphenated ids by design — see
+  // buildClaimPost) have no X status page to load, so skip the check instead of
+  // burning its 15s timeout per image-backed claim. Fails open — never blocks
+  // note generation.
+  const isRealTweetId = /^\d+$/.test(post.id);
+  const mediaMadeWithAiLabel = hasMedia && isRealTweetId ? await detectMadeWithAiLabel(post.id, logTag) : false;
 
   // Author history (best-effort; gated by the author_history A/B test). When
   // off, skip the lookup entirely so the writer gets no author-history block.

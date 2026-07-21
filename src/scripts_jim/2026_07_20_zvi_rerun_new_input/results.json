@@ -1,0 +1,1424 @@
+[
+  {
+    "claimId": "6a216b41-4d62-42fb-a207-c2eb7573436b",
+    "itemTitle": "Monthly Roundup #44: July 2026",
+    "itemUrl": "https://thezvi.substack.com/p/monthly-roundup-44-july-2026",
+    "contextUrl": "https://thezvi.substack.com/p/monthly-roundup-44-july-2026",
+    "claim": "Portugal has been stopping every package received from outside the EU with no exceptions for a decade or more.",
+    "highlighted": "As someone who lives in Portugal which already stops every single package you get from outside EU with no exceptions for a decade or more",
+    "paragraph": "@levelsio: As someone who lives in Portugal which already stops every single package you get from outside EU with no exceptions for a decade or more:\n\nI can tell you how this will go",
+    "oldNote": "Exceptions exist: gifts under €45 between individuals are VAT/duty-exempt, and IOSS pre-cleared shipments pass through without extra VAT collection. Also, the universal customs clearance rule for all packages only began EU-wide on 1 July 2021, not a decade or more ago.",
+    "oldSources": [
+      {
+        "url": "https://www.gov.uk/government/publications/portugal-prisoner-pack/guide-to-customs-clearance-in-portugal",
+        "quote": "Gifts under €45 are tax-free.",
+        "explanation": "This confirms that there is an exception for gifts between individuals under a specific value threshold."
+      },
+      {
+        "url": "https://taxation-customs.ec.europa.eu/customs/customs-procedures-import-and-export/customs-operations/customs-formalities-low-value-consignments_en",
+        "quote": "E-commerce suppliers and marketplaces/platforms, where applicable, may use a simplified system to declare and pay VAT for distance sales of goods imported from third countries in consignments not exceeding EUR 150 (IOSS).",
+        "explanation": "Supports the claim that IOSS shipments use a pre-cleared system for VAT collection."
+      },
+      {
+        "url": "https://taxation-customs.ec.europa.eu/customs/customs-procedures-import-and-export/customs-operations/customs-formalities-low-value-consignments_en",
+        "quote": "From 1 July 2021, the EU will introduce new VAT e-commerce rules... abolish the VAT exemption for imported goods below EUR 22 as of 1 July 2021",
+        "explanation": "Supports the claim that the rule requiring universal declaration/VAT for all packages (including low-value ones) started in July 2021."
+      },
+      {
+        "url": "https://taxation-customs.ec.europa.eu/customs/customs-procedures-import-and-export/customs-operations/customs-formalities-low-value-consignments_en",
+        "quote": "Until 1 July 2021, postal consignments not exceeding a value of EUR 150 can be declared for free circulation without a formal customs declaration.",
+        "explanation": "Confirms that the 'no exceptions' and 'every package' requirement did not exist a decade ago."
+      }
+    ],
+    "newOutcome": {
+      "kind": "note",
+      "note": "Not every non-EU package is stopped: gifts up to €45 and low-value goods (≤€150) are often exempt from duty, and checks are risk-based, not universal. The strict VAT/customs handling stems from EU-wide rules effective July 2021, not a decade-old Portuguese policy.",
+      "sources": [
+        {
+          "url": "https://www.portugal.com/moving-to-portugal/customs-rules-for-receiving-packages-from-outside-the-eu-in-portugal/",
+          "quote": "Packages marked as gifts with a value of up to €45 are exempt from customs duties and VAT",
+          "explanation": "Confirms the gift exemption mentioned in the note."
+        },
+        {
+          "url": "https://www.portugal.com/moving-to-portugal/customs-rules-for-receiving-packages-from-outside-the-eu-in-portugal/",
+          "quote": "for commercial items, VAT and customs duties apply to packages valued above €150.",
+          "explanation": "Confirms that low-value goods under €150 are exempt from customs duties."
+        },
+        {
+          "url": "https://www.globalcitizensolutions.com/portugal-customs-authority/",
+          "quote": "The gift exemption threshold is up to €45 from non-EU countries.",
+          "explanation": "Provides additional confirmation of the gift tax-free limit."
+        },
+        {
+          "url": "https://www.globalcitizensolutions.com/portugal-customs-authority/",
+          "quote": "Up to €150: May be exempt from customs duties",
+          "explanation": "Supports the claim regarding the €150 threshold for low-value goods."
+        },
+        {
+          "url": "https://www.topwayshipping.com/eu-customs-entry-via-portugal-common-mistakes-that-delay-clearance/",
+          "quote": "The Portuguese Tax and Customs Authority — Autoridade Tributária e Aduaneira — enforces pre-arrival declarations, controls documentation accuracy, and applies risk-based inspections",
+          "explanation": "Supports the note's claim that checks are risk-based rather than universal."
+        },
+        {
+          "url": "https://www.theportugalnews.com/news/2021-09-14/orders-held-at-customs-youre-not-alone/62341",
+          "quote": "Since 1 July 2021, the day when the new directive that amended the VAT regime came into force, all goods imported from third countries... are subjected to VAT",
+          "explanation": "Supports the claim that the strict VAT handling for all packages resulted from 2021 EU-wide rules, not long-standing Portuguese policy."
+        }
+      ]
+    }
+  },
+  {
+    "claimId": "e73c22bb-4ce9-4df6-a469-dbb36eab9bf6",
+    "itemTitle": "Monthly Roundup #44: July 2026",
+    "itemUrl": "https://thezvi.substack.com/p/monthly-roundup-44-july-2026",
+    "contextUrl": "https://thezvi.substack.com/p/monthly-roundup-44-july-2026",
+    "claim": "According to a 2026 Newzoo report, two-thirds of gaming time went to games more than 6 years old.",
+    "highlighted": "2/3rds of gametime went to >6 year old games!",
+    "paragraph": "- Newzoo has a 2026 report saying only ~13% of gametime went to new releases!\n- 2/3rds of gametime went to >6 year old games!",
+    "oldNote": "The 67% figure is PC-specific, not overall gametime: Newzoo found 67% of PC playtime went to games 6+ years old, with console platforms differing. It also comes from an earlier Newzoo report on 2024 data, not the same 2026 report cited for the ~13% new-release stat.",
+    "oldSources": [
+      {
+        "url": "https://www.videogameschronicle.com/news/two-thirds-of-total-pc-playtime-last-year-was-on-games-that-are-at-least-six-years-old-report-says/",
+        "quote": "According to the report, last year 67% of the total hours spent playing PC games was on games that are six years old or more",
+        "explanation": "Directly supports the claim that the 67% figure is specific to PC playtime."
+      },
+      {
+        "url": "https://www.videogameschronicle.com/news/two-thirds-of-total-pc-playtime-last-year-was-on-games-that-are-at-least-six-years-old-report-says/",
+        "quote": "While the difference was less stark on consoles, it still remained, with the amount of playtime dedicated to 6+ year old games sitting at 44% on PlayStation and 49% on Xbox.",
+        "explanation": "Supports the claim that console platforms differed from the 67% PC-specific stat."
+      },
+      {
+        "url": "https://www.videogameschronicle.com/news/two-thirds-of-total-pc-playtime-last-year-was-on-games-that-are-at-least-six-years-old-report-says/",
+        "quote": "Newzoo shared highlights from its third annual games industry report, which includes data on consumer habits, such as spend and gameplay, during 2024.",
+        "explanation": "Confirms that the 67% figure comes from data for 2024, not the 2026 report mentioned in the post."
+      },
+      {
+        "url": "https://www.gamefile.news/p/newzoo-new-games-playing-time-xbox-boycott-neowiz-lies-of-p",
+        "quote": "Newzoo has published its 2025 PC and Console Gaming Report... That number ticked up to 57% for 2024, according to the new report.",
+        "explanation": "Confirms that Newzoo reports are released for specific years (e.g., the 2025 report covers 2024), supporting the claim that 2024 data belongs to an earlier report than the 2026 one."
+      }
+    ],
+    "newOutcome": {
+      "kind": "note",
+      "note": "The two-thirds (67%) figure comes from Newzoo's PC-only data in an earlier report, not the 2026 global report. Newzoo's global figures for games 6+ years old were 55% (2023) and 57% (2024) of playtime, short of two-thirds.",
+      "sources": [
+        {
+          "url": "https://www.pcgamesinsider.biz/feature/75052/newzoo-reports-on-the-state-of-pc-gaming-at-gdc-2025/",
+          "quote": "The report shows that 67% of playtime goes on PC games over six years old. This is a rise on last year, but the reason for that is that last year PC wasn’t separated out, and the console playtime brought it down.",
+          "explanation": "Confirms that the 67% (two-thirds) figure is specifically for PC gaming, not global/combined gaming, and clarifies that including console data (global) lowers that percentage."
+        },
+        {
+          "url": "https://www.gamefile.news/p/newzoo-new-games-playing-time-xbox-boycott-neowiz-lies-of-p",
+          "quote": "This year’s Newzoo PC/console industry report, however, puts the percentage of time that gamers spent in 2023 on games six years or older at 55%, not 61%. That number ticked up to 57% for 2024, according to the new report.",
+          "explanation": "Shows that for the combined PC and console market (global), the figures were 55% and 57%, which are significantly lower than the two-thirds (67%) claimed."
+        },
+        {
+          "url": "https://kotaku.com/pc-gaming-newzoo-balatro-helldivers-2-gdc-time-spent-1851771352",
+          "quote": "PC gamers are much more likely to be playing games that are at least six years old like Roblox, League of Legends, and Fortnite. Games like that accounted for 67 percent of PC play time",
+          "explanation": "Confirms that the 67% figure cited in the post belongs to PC gaming specifically."
+        },
+        {
+          "url": "https://kotaku.com/pc-gaming-newzoo-balatro-helldivers-2-gdc-time-spent-1851771352",
+          "quote": "About 44 percent of time on PlayStation was spent on games that came out six or more years ago. The number was 49 percent on Xbox.",
+          "explanation": "Provides the console-specific numbers which, when combined with PC, result in a global average lower than the claimed two-thirds."
+        }
+      ]
+    }
+  },
+  {
+    "claimId": "d70b1781-d19e-47d6-8f0f-bc7a9c9ce9bb",
+    "itemTitle": "Monthly Roundup #44: July 2026",
+    "itemUrl": "https://thezvi.substack.com/p/monthly-roundup-44-july-2026",
+    "contextUrl": "https://thezvi.substack.com/p/monthly-roundup-44-july-2026",
+    "claim": "Max Ghenis estimated MacKenzie Scott's charitable giving produced approximately 70,000 QALYs when weighting each study by causal credibility, and approximately 200,000 QALYs when taking every effect at face value.",
+    "highlighted": "I built an interactive model from her own gift database: ~70,000 QALYs weighting each study by causal credibility, ~200,000 taking every effect at face value.",
+    "paragraph": "Max Ghenis (incorporating his later correction into OP): I built an interactive model from her own gift database: ~70,000 QALYs weighting each study by causal credibility, ~200,000 taking every effect at face value.",
+    "oldNote": "These figures are Ghenis's pre-correction numbers, not post-correction as claimed. After fixing an error that mispriced international gifts at US cost anchors, his updated estimates are ~205,000 QALYs (credibility-weighted) and ~420,000 (face value), not ~70,000/~200,000.",
+    "oldSources": [
+      {
+        "url": "https://forum.nunosempere.com/posts/SePcpmiSGM5Y5jmuk/mackenzie-scott-s-usd26-billion-in-qalys-an-interactive",
+        "quote": "Update (July 13): A reader caught the model's biggest error: every health dollar was priced at US anchors, so gifts to Malaria Consortium ($10M), GiveDirectly's global program ($55M)... and similar were understated by orders of magnitude.",
+        "explanation": "Confirms that there was a major correction to the model regarding international gift pricing."
+      },
+      {
+        "url": "https://forum.nunosempere.com/posts/SePcpmiSGM5Y5jmuk/mackenzie-scott-s-usd26-billion-in-qalys-an-interactive",
+        "quote": "Headline: median ~70,000 → ~205,000 QALYs (credulous ~420,000); blended ~$435k → ~$148k/QALY",
+        "explanation": "Shows the specific shift from the pre-correction figures (70k) to the post-correction figures (205k and 420k)."
+      },
+      {
+        "url": "https://maxghenis.com/mackenzie-scott-qaly/",
+        "quote": "The most important control is evidence stance: from skeptical (~205,000 QALYs — each effect weighted by how well its study identifies causation) to credulous (~420,000 — every cited effect at face value).",
+        "explanation": "Validates the current, updated estimates for the two primary reporting tiers."
+      }
+    ],
+    "newOutcome": {
+      "kind": "note",
+      "note": "These are Ghenis's ORIGINAL pre-correction figures, not post-correction. A reader flagged non-US effects used US dollar anchors, understating them. Corrected figures: ~205,000 QALYs (credibility-weighted), ~420,000 (face value) — about 2-3x higher than claimed.",
+      "sources": [
+        {
+          "url": "https://forum.nunosempere.com/posts/SePcpmiSGM5Y5jmuk/mackenzie-scott-s-usd26-billion-in-qalys-an-interactive",
+          "quote": "Update (July 13): A reader caught the model's biggest error: every health dollar was priced at US anchors... Headline: median ~70,000 → ~205,000 QALYs (credulous ~420,000)",
+          "explanation": "This explains that the 70k and 200k figures were the original pre-correction numbers, and provides the updated figures."
+        },
+        {
+          "url": "https://maxghenis.com/mackenzie-scott-qaly/",
+          "quote": "skeptical (~205,000 QALYs — each effect weighted by how well its study identifies causation) to credulous (~420,000 — every cited effect at face value)",
+          "explanation": "The live site confirms the current corrected QALY estimates."
+        }
+      ]
+    }
+  },
+  {
+    "claimId": "ad4938be-03dc-41f6-affc-c896015b4d1b",
+    "itemTitle": "Monthly Roundup #44: July 2026",
+    "itemUrl": "https://thezvi.substack.com/p/monthly-roundup-44-july-2026",
+    "contextUrl": "https://thezvi.substack.com/p/monthly-roundup-44-july-2026",
+    "claim": "Nathan estimated that MacKenzie Scott's donations bought approximately 1,500 times less health improvement per dollar than the marginal GiveWell dollar.",
+    "highlighted": "Her donations bought about 1500x less improvement per $ than the marginal GiveWell $",
+    "paragraph": "Nathan: Comparing MacKenzie Scott's giving to if the money had gone to @GiveWell . Her donations bought about 1500x less improvement per $ than the marginal GiveWell $",
+    "oldNote": "This analysis was authored by Max Ghenis, not \"Nathan.\" Also, the source explicitly rejects the 1,500x figure as naive; its actual marginal estimate is that GiveWell buys ~515x more health per dollar, not 1,500x.",
+    "oldSources": [
+      {
+        "url": "https://maxghenis.com/mackenzie-scott-qaly/",
+        "quote": "I built the model with Claude; every estimate here is a model output, not a measured fact. The Python package, tests, and sources are on GitHub",
+        "explanation": "This identifies the author as 'I' (Max Ghenis, per the site title and GitHub link), not 'Nathan'."
+      },
+      {
+        "url": "https://maxghenis.com/mackenzie-scott-qaly/",
+        "quote": "At the skeptical defaults, the frontier delivers roughly 500× more health per marginal dollar.",
+        "explanation": "The author estimates the marginal benefit for GiveWell is 500x higher, which is significantly lower than the 1,500x figure claimed in the post."
+      },
+      {
+        "url": "https://forum.nunosempere.com/posts/SePcpmiSGM5Y5jmuk/mackenzie-scott-s-usd26-billion-in-qalys-an-interactive",
+        "quote": "By Max Ghenis @ 2026-07-12T19:45",
+        "explanation": "Directly identifies the author of the analysis as Max Ghenis."
+      },
+      {
+        "url": "https://forum.nunosempere.com/posts/SePcpmiSGM5Y5jmuk/mackenzie-scott-s-usd26-billion-in-qalys-an-interactive",
+        "quote": "the frontier multiple ~1,500× → ~515×.",
+        "explanation": "The author notes that an earlier estimate of 1,500x was updated/corrected to approximately 515x."
+      },
+      {
+        "url": "https://forum.nunosempere.com/posts/SePcpmiSGM5Y5jmuk/mackenzie-scott-s-usd26-billion-in-qalys-an-interactive",
+        "quote": "Handicapped with the same realization and credibility discounts, the frontier still buys ~515× more health per marginal dollar.",
+        "explanation": "Confirms the current marginal estimate is ~515x, not 1,500x."
+      }
+    ],
+    "newOutcome": {
+      "kind": "note",
+      "note": "The analysis was authored by Max Ghenis, not \"Nathan.\" It also estimates the marginal GiveWell dollar buys ~515x more health improvement, not 1,500x.",
+      "sources": [
+        {
+          "url": "https://maxghenis.com/mackenzie-scott-qaly/",
+          "quote": "MacKenzie Scott's giving, in QALYs | Max Ghenis",
+          "explanation": "The page title and header confirm Max Ghenis is the author of the analysis."
+        },
+        {
+          "url": "https://maxghenis.com/mackenzie-scott-qaly/",
+          "quote": "At the skeptical defaults, the frontier delivers roughly 500× more health per marginal dollar.",
+          "explanation": "The analysis estimates the difference at 500x, not 1,500x."
+        },
+        {
+          "url": "https://forum.nunosempere.com/posts/SePcpmiSGM5Y5jmuk/mackenzie-scott-s-usd26-billion-in-qalys-an-interactive",
+          "quote": "By Max Ghenis",
+          "explanation": "Confirms the author's identity."
+        },
+        {
+          "url": "https://forum.nunosempere.com/posts/SePcpmiSGM5Y5jmuk/mackenzie-scott-s-usd26-billion-in-qalys-an-interactive",
+          "quote": "the frontier still buys ~515× more health per marginal dollar.",
+          "explanation": "Explicitly states the corrected multiplier (down from an initial 1,500x figure mentioned in the update notes) is approximately 515x."
+        },
+        {
+          "url": "https://forum.nunosempere.com/posts/SePcpmiSGM5Y5jmuk/mackenzie-scott-s-usd26-billion-in-qalys-an-interactive",
+          "quote": "the frontier multiple ~1,500× → ~515×",
+          "explanation": "Explains that the 1,500x figure was corrected to ~515x in an update."
+        }
+      ]
+    }
+  },
+  {
+    "claimId": "080ec84a-f6b3-4fb3-878f-e088c1969e40",
+    "itemTitle": "Monthly Roundup #44: July 2026",
+    "itemUrl": "https://thezvi.substack.com/p/monthly-roundup-44-july-2026",
+    "contextUrl": "https://thezvi.substack.com/p/monthly-roundup-44-july-2026",
+    "claim": "The 2010s account for 17.9% of songs in karaoke playlists, according to Chartmetric data.",
+    "highlighted": "",
+    "paragraph": "",
+    "oldNote": "This karaoke-by-decade breakdown originates from Stat Significant's statistical analysis of karaoke playlists, not Chartmetric. Chartmetric has not published this data; Stat Significant found the same ranking (2000s, then 1990s, then 2010s).",
+    "oldSources": [
+      {
+        "url": "https://www.statsignificant.com/p/what-are-the-greatest-karaoke-songs",
+        "quote": "When we tabulate playlist selections by decade, we find that the 1990s and 2000s are heavily featured across our combined set of tracks.",
+        "explanation": "This demonstrates that Stat Significant performed the decade-based analysis of karaoke playlists mentioned in the note."
+      },
+      {
+        "url": "https://www.statsignificant.com/p/what-are-the-greatest-karaoke-songs",
+        "quote": "To curate the ultimate karaoke canon, I pulled track data from widely followed \"karaoke\" playlists on Spotify and Apple Music, then tallied how often each song and artist appeared across our combined catalog.",
+        "explanation": "The source explains its methodology for analyzing karaoke playlists, which matches the description in the note."
+      },
+      {
+        "url": "https://singa.com/blog/karaoke-statistics/",
+        "quote": "Stat significant also continues their research to discover which decades of music are most popular in karaoke, and discover that the Millenium era — 2000's — is the winning decade, where as 1990's and 2010's are following as second and third.",
+        "explanation": "This confirms the specific ranking (2000s, 1990s, then 2010s) and identifies Stat Significant as the researcher."
+      }
+    ],
+    "newOutcome": {
+      "kind": "no_note",
+      "outcome": "rejected",
+      "reason": "no_correction_needed"
+    }
+  },
+  {
+    "claimId": "fa6d0aa4-f3f9-4933-8b6c-7e6908dd3ed1",
+    "itemTitle": "Monthly Roundup #44: July 2026",
+    "itemUrl": "https://thezvi.substack.com/p/monthly-roundup-44-july-2026",
+    "contextUrl": "https://thezvi.substack.com/p/monthly-roundup-44-july-2026",
+    "claim": "The karaoke playlist data in the chart is sourced from Chartmetric.",
+    "highlighted": "",
+    "paragraph": "",
+    "oldNote": "This dataset was actually compiled by Stat Significant, which built it by pulling track data directly from \"karaoke\" playlists on Spotify and Apple Music, not from Chartmetric.",
+    "oldSources": [
+      {
+        "url": "https://www.statsignificant.com/p/what-are-the-greatest-karaoke-songs",
+        "quote": "To curate the ultimate karaoke canon, I pulled track data from widely followed \"karaoke\" playlists on Spotify and Apple Music, then tallied how often each song and artist appeared across our combined catalog.",
+        "explanation": "The author of the article explicitly describes their own data collection methodology, which involves pulling data directly from Spotify and Apple Music playlists rather than using a third-party service like Chartmetric."
+      }
+    ],
+    "newOutcome": {
+      "kind": "note",
+      "note": "This chart's data isn't from Chartmetric. It originates from an April 2025 Stat Significant essay, 'What Are the Greatest Karaoke Songs of All Time?', which tallied songs from Spotify and Apple Music karaoke playlists by decade. No evidence links Chartmetric to this chart.",
+      "sources": [
+        {
+          "url": "https://www.statsignificant.com/p/what-are-the-greatest-karaoke-songs",
+          "quote": "To curate the ultimate karaoke canon, I pulled track data from widely followed \"karaoke\" playlists on Spotify and Apple Music, then tallied how often each song and artist appeared across our combined catalog.",
+          "explanation": "The author explains their methodology for collecting the data used in the charts, which involved Spotify and Apple Music, not Chartmetric."
+        },
+        {
+          "url": "https://www.statsignificant.com/p/what-are-the-greatest-karaoke-songs",
+          "quote": "When we tabulate playlist selections by decade, we find that the 1990s and 2000s are heavily featured across our combined set of tracks.",
+          "explanation": "This confirms the source of the decade-based tabulation mentioned in the note."
+        },
+        {
+          "url": "https://singa.com/blog/karaoke-statistics/",
+          "quote": "Stat significant also continues their research to discover which decades of music are most popular in karaoke, and discover that the Millenium era — 2000's — is the winning decade, where as 1990's and 2010's are following as second and third.",
+          "explanation": "This external source attributes the specific decade-based karaoke research findings to Stat Significant."
+        }
+      ]
+    }
+  },
+  {
+    "claimId": "5c32c919-25d2-4755-bd7c-b879b82f7672",
+    "itemTitle": "Twitter Thoughts For You",
+    "itemUrl": "https://thezvi.substack.com/p/twitter-thoughts-for-you",
+    "contextUrl": "https://thezvi.substack.com/p/twitter-thoughts-for-you",
+    "claim": "Twitter released an algorithm update called 'Phoenix' around April 1, 2026.",
+    "highlighted": "the algorithm had already been adjusted in between by the release of 'Phoenix' around April 1.",
+    "paragraph": "I got 27% in April despite having under 300 follows, based on an experiment at the time, but I am very precise with my engagements. For me 27% is not that high, and the algorithm had already been adjusted in between by the release of 'Phoenix' around April 1.",
+    "oldNote": "Phoenix, X's algorithm, was released January 20, 2026, not around April 1. Its next major update didn't occur until May 15, 2026; no confirmed changes happened between April and June.",
+    "oldSources": [
+      {
+        "url": "https://www.socialpilot.co/blog/twitter-algorithm",
+        "quote": "On January 20, 2026, X published its full feed algorithm on GitHub",
+        "explanation": "Confirms the release of the open-source algorithm (Phoenix-powered) was in January, not April."
+      },
+      {
+        "url": "https://www.socialpilot.co/blog/twitter-algorithm",
+        "quote": "No confirmed ranking or distribution changes by X from March to June 2026.",
+        "explanation": "Supports the claim that no changes or updates happened around April 1st."
+      },
+      {
+        "url": "https://adlibrary.com/posts/x-algorithm-open-source-phoenix-model-explained",
+        "quote": "On January 20, 2026, the codebase for the X recommendation algorithm was released to the public, confirming a transition to a system completely powered by \"Phoenix,\"",
+        "explanation": "Directly confirms that the Phoenix model was released on January 20, 2026."
+      },
+      {
+        "url": "https://github.com/xai-org/x-algorithm",
+        "quote": "Updates — May 15th, 2026",
+        "explanation": "Identifies the first major update listed after the initial release as being in mid-May."
+      }
+    ],
+    "newOutcome": {
+      "kind": "note",
+      "note": "Phoenix, the X algorithm component referenced, was released on January 20, 2026, not around April 1. Multiple sources confirm no confirmed ranking/distribution changes occurred between April and June 2026.",
+      "sources": [
+        {
+          "url": "https://www.georgeeeken.com/x-timeline-ranking-algorithm-explained/",
+          "quote": "This article explains how 𝕏’s new “Phoenix” timeline ranking algorithm works, based on the partially open-sourced architecture released in January 2026.",
+          "explanation": "Confirms the Phoenix architecture was released in January 2026."
+        },
+        {
+          "url": "https://www.georgeeeken.com/x-timeline-ranking-algorithm-explained/",
+          "quote": "Since January 20, 2026, the open-source code has been available on GitHub",
+          "explanation": "Provides the specific release date of January 20, 2026."
+        },
+        {
+          "url": "https://techlabari.com/what-you-need-to-know-about-xs-new-algorithm/",
+          "quote": "The algorithm uses a new retrieval module called Phoenix to find “out-of-network” content",
+          "explanation": "Identifies Phoenix as the specific algorithm component mentioned in the note."
+        },
+        {
+          "url": "https://adlibrary.com/posts/x-algorithm-open-source-phoenix-model-explained",
+          "quote": "On January 20, 2026, the codebase for the X recommendation algorithm was released to the public, confirming a transition to a system completely powered by \"Phoenix,\"",
+          "explanation": "Directly supports that the Phoenix model was released on January 20, 2026."
+        },
+        {
+          "url": "https://www.socialpilot.co/blog/twitter-algorithm",
+          "quote": "June 2026: No Significant Algorithm Updates. No confirmed ranking or distribution changes by X from March to June 2026.",
+          "explanation": "Supports the claim that no changes occurred between April and June 2026."
+        },
+        {
+          "url": "https://www.socialpilot.co/blog/twitter-algorithm",
+          "quote": "On January 20, 2026, X published its full feed algorithm on GitHub... This is the first time the complete Grok-powered system has been visible.",
+          "explanation": "Reiterates the January release date for the component."
+        }
+      ]
+    }
+  },
+  {
+    "claimId": "ccb235bf-58dc-454f-918f-7bd5a226fdfe",
+    "itemTitle": "Twitter Thoughts For You",
+    "itemUrl": "https://thezvi.substack.com/p/twitter-thoughts-for-you",
+    "contextUrl": "https://thezvi.substack.com/p/twitter-thoughts-for-you",
+    "claim": "On Twitter, users can see interactions between people if and only if they follow all of those people.",
+    "highlighted": "You see interactions between people if and only if you follow all of them.",
+    "paragraph": "Again, following is a package of six things: People can see that you follow them. They can DM you even if your DMs are closed, and perhaps you can DM them. The posts you want from them appear in your feed. The posts you don't want from them also appear in your feed. You see interactions between people if and only if you follow all of them. If they're locked it's the only way to see anything at all.",
+    "oldNote": "Public replies are visible to everyone by default. X's For You feed can show posts and replies from accounts you don't follow, and anyone can view a conversation via a profile's \"Tweets & replies\" tab or the thread itself—no need to follow both parties.",
+    "oldSources": [
+      {
+        "url": "https://circleboom.com/blog/when-i-reply-to-a-tweet-can-all-my-followers-see-it",
+        "quote": "When you reply to a tweet, that reply is public by default. Your followers can see it, and not only your followers. In most cases, anyone on Twitter can see your reply.",
+        "explanation": "Confirms that replies are public by default and visible to non-followers."
+      },
+      {
+        "url": "https://circleboom.com/blog/when-i-reply-to-a-tweet-can-all-my-followers-see-it",
+        "quote": "Replies can appear in several places: Under the original tweet’s thread; On your profile, in the Replies tab; In timelines or recommendations, depending on engagement and relevance",
+        "explanation": "Supports the claim that replies are visible via profile tabs, threads, and algorithmic feeds without needing to follow both parties."
+      },
+      {
+        "url": "https://artbizsuccess.com/some-clarification-about-how-replies-work-on-twitter-2/",
+        "quote": "I actually went into your Twitter feed anonymousely (I didn’t log in) and yes, I can see your reply to Angelsnakes in the public stream",
+        "explanation": "The source, via its comments/updates, acknowledges that public replies are visible to anyone viewing a profile or public stream, even without logging in or following the users."
+      }
+    ],
+    "newOutcome": {
+      "kind": "no_note",
+      "outcome": "rejected",
+      "reason": "no_correction_needed"
+    }
+  },
+  {
+    "claimId": "4e282fad-a877-4f0b-af74-16986c63be72",
+    "itemTitle": "Better Call Sol The Workhorse",
+    "itemUrl": "https://thezvi.substack.com/p/better-call-sol-the-workhorse",
+    "contextUrl": "https://thezvi.substack.com/p/better-call-sol-the-workhorse",
+    "claim": "Sol assessed a 45% probability that its alarming destructive behavior is meaningfully more common because of the model itself, rather than almost entirely due to the harness and permissions.",
+    "highlighted": "Sol's alarming destructive behavior is meaningfully more common because of the model itself, rather than almost entirely the harness and permissions: 45%.",
+    "paragraph": "Sol is the better default for bounded coding, browsing and computer-use work: 80%.\n\nSol's alarming destructive behavior is meaningfully more common because of the model itself, rather than almost entirely the harness and permissions: 45%.\n\nFully abandoning Fable is clearly a mistake for a coding-heavy user: 30%. Your categorical judgment here is too strong.",
+    "oldNote": "The 45% figure is the article author Zvi Mowshowitz's own subjective probability estimate about a claim regarding Sol, not an assessment made by the AI model Sol itself about its own behavior.",
+    "oldSources": [
+      {
+        "url": "https://thezvi.substack.com/p/better-call-sol-the-workhorse",
+        "quote": "Here’s my guess on how things will work for many, although it is still early days",
+        "explanation": "The author, Zvi Mowshowitz, explicitly frames the subsequent analysis and probability assignments as his own \"guess\" or subjective outlook."
+      },
+      {
+        "url": "https://thezvi.substack.com/p/better-call-sol-the-workhorse",
+        "quote": "Sol's alarming destructive behavior is meaningfully more common because of the model itself, rather than almost entirely the harness and permissions: 45%.",
+        "explanation": "This quote appears in the article as one of several probability estimates provided by the author to reflect his own degree of belief in specific propositions."
+      },
+      {
+        "url": "https://www.lesswrong.com/posts/zPdDmJTovsKTvAiH2/better-call-sol-the-workhorse",
+        "quote": "Sol's alarming destructive behavior is meaningfully more common because of the model itself, rather than almost entirely the harness and permissions: 45%.",
+        "explanation": "This mirrors the substack source, showing the 45% figure is part of a list of subjective probability estimates authored by Zvi Mowshowitz."
+      }
+    ],
+    "newOutcome": {
+      "kind": "note",
+      "note": "This 45% figure is not Sol's self-assessment. It's author Zvi Mowshowitz's own subjective probability estimate in his article's list of personal judgment calls about Sol, not an output or confession generated by the AI model itself.",
+      "sources": [
+        {
+          "url": "https://thezvi.substack.com/p/better-call-sol-the-workhorse",
+          "quote": "Here’s my guess on how things will work for many, although it is still early days:",
+          "explanation": "The author, Zvi Mowshowitz, frames the discussion and subsequent estimates as his own personal outlook or 'guess'."
+        },
+        {
+          "url": "https://thezvi.substack.com/p/better-call-sol-the-workhorse",
+          "quote": "Sol's alarming destructive behavior is meaningfully more common because of the model itself, rather than almost entirely the harness and permissions: 45%.",
+          "explanation": "This specific percentage is listed alongside other personal judgment calls (like an 80% figure) within the author's own analysis, not as a quote from the AI."
+        }
+      ]
+    }
+  },
+  {
+    "claimId": "a930e6af-4b33-4883-bf57-6a0e11138c10",
+    "itemTitle": "Better Call Sol The Workhorse",
+    "itemUrl": "https://thezvi.substack.com/p/better-call-sol-the-workhorse",
+    "contextUrl": "https://thezvi.substack.com/p/better-call-sol-the-workhorse",
+    "claim": "Claude Mythos 5 scored 61.7% on the Toolathlon benchmark, matching another Claude variant, while GPT-5.6 Sol scored 58%.",
+    "highlighted": "",
+    "paragraph": "",
+    "oldNote": "Per OpenAI's published GPT-5.6 eval tables, the 61.7% Toolathlon score belongs to Claude Fable 5, not Mythos 5. Independent leaderboard data shows Claude Opus 4.8 scores 59.9%, not 61.7%, so no second Claude variant matches that score.",
+    "oldSources": [
+      {
+        "url": "https://www.marktechpost.com/2026/07/09/openai-releases-gpt-5-6-a-three-tier-model-family-with-programmatic-tool-calling/",
+        "quote": "Claude Fable 5 ... Toolathlon ... 61.7%",
+        "explanation": "This text confirms that the 61.7% score on the Toolathlon benchmark belongs to the Claude Fable 5 model."
+      },
+      {
+        "url": "https://www.marktechpost.com/2026/07/09/openai-releases-gpt-5-6-a-three-tier-model-family-with-programmatic-tool-calling/",
+        "quote": "Fable 5 leads on AA Intelligence Index v4.1, GDPval-AA v2, HealthBench Professional, and Toolathlon",
+        "explanation": "This reinforces that Fable 5 is the leader on the Toolathlon benchmark, supporting the claim that the post misattributed the score to Mythos 5."
+      },
+      {
+        "url": "https://llm-stats.com/benchmarks/toolathlon",
+        "quote": "Claude Opus 4.8 from Anthropic currently leads the Toolathlon leaderboard with a score of 0.599",
+        "explanation": "This supports the claim that Claude Opus 4.8 scores 59.9% (0.599), contradicting the post's claim that a second Claude variant matched the 61.7% score."
+      }
+    ],
+    "newOutcome": {
+      "kind": "no_note",
+      "outcome": "rejected",
+      "reason": "no_correction_needed"
+    }
+  },
+  {
+    "claimId": "692de593-376d-4262-9161-8de3315863e3",
+    "itemTitle": "Better Call Sol The Workhorse",
+    "itemUrl": "https://thezvi.substack.com/p/better-call-sol-the-workhorse",
+    "contextUrl": "https://thezvi.substack.com/p/better-call-sol-the-workhorse",
+    "claim": "The Artificial Analysis Intelligence Index ranks 572 models in total.",
+    "highlighted": "",
+    "paragraph": "",
+    "oldNote": "Artificial Analysis's own current models page states the Intelligence Index evaluates 145 models, not 572. Other snapshots have shown roughly 100–316 models depending on date, but none matches 572.",
+    "oldSources": [
+      {
+        "url": "https://artificialanalysis.ai/leaderboards/models",
+        "quote": "Comparison and ranking the performance of over 100 AI models (LLMs)",
+        "explanation": "This official leaderboard page indicates they rank \"over 100\" models, contradicting the claim of 572."
+      }
+    ],
+    "newOutcome": {
+      "kind": "note",
+      "note": "The \"572\" figure is the total models available in Artificial Analysis' model picker, not the number ranked on the Intelligence Index. Artificial Analysis' own comparison page says the index evaluated about 150 models; a third-party tracker puts it at roughly 165.",
+      "sources": [
+        {
+          "url": "https://benchlm.ai/benchmarks/artificialAnalysis",
+          "quote": "Claude Fable 5 (59.9%) and Kimi K3 (57.1%) among 165 tested models.",
+          "explanation": "Confirms the index ranks 165 models, not 572."
+        },
+        {
+          "url": "https://benchlm.ai/benchmarks/artificialAnalysis",
+          "quote": "165 models have been evaluated on Artificial Analysis Intelligence Index.",
+          "explanation": "Explicitly states the number of models evaluated on this specific index."
+        }
+      ]
+    }
+  },
+  {
+    "claimId": "8df5a762-c56d-4bec-b0a6-6566b9759820",
+    "itemTitle": "Better Call Sol The Workhorse",
+    "itemUrl": "https://thezvi.substack.com/p/better-call-sol-the-workhorse",
+    "contextUrl": "https://thezvi.substack.com/p/better-call-sol-the-workhorse",
+    "claim": "OpenAI created Terra and Luna as subagent models for Sol to select from.",
+    "highlighted": "I saw a number of complaints around Sol's inability to select appropriate subagents, which presumably is one of the main reasons OpenAI created Terra and Luna",
+    "paragraph": "I saw a number of complaints around Sol's inability to select appropriate subagents, which presumably is one of the main reasons OpenAI created Terra and Luna, although I'm not convinced you ever actually want to use Terra:",
+    "oldNote": "Sol, Terra, and Luna are three separate capability tiers of GPT-5.6 (flagship, balanced, and fastest/cheapest), not subagents Sol selects from. Sol's subagent feature is its exclusive 'ultra mode,' which spawns internal subagent processes unrelated to Terra or Luna.",
+    "oldSources": [
+      {
+        "url": "https://datanorth.ai/news/openai-releases-gpt-5-6-sol-terra-and-luna",
+        "quote": "GPT-5.6 replaces OpenAI’s single-model approach with three durable capability tiers: Sol as the flagship, Terra as a balanced everyday model priced at roughly half of GPT-5.5, and Luna as the fastest and most affordable option.",
+        "explanation": "Confirms Sol, Terra, and Luna are independent capability tiers, not subagents."
+      },
+      {
+        "url": "https://datanorth.ai/news/openai-releases-gpt-5-6-sol-terra-and-luna",
+        "quote": "Sol, Terra, and Luna identify durable capability tiers that can advance on their own cadence.",
+        "explanation": "Reiterates that these are standalone models rather than components of a single agent."
+      },
+      {
+        "url": "https://datanorth.ai/news/openai-releases-gpt-5-6-sol-terra-and-luna",
+        "quote": "The release adds two new controls. A max reasoning effort gives Sol the most time to reason deeply, and a new ultra mode goes beyond a single agent by leveraging subagents to accelerate complex, long-horizon work.",
+        "explanation": "Identifies 'ultra mode' and its subagent feature as a specific capability of the Sol model."
+      },
+      {
+        "url": "https://www.aimadetools.com/blog/gpt-5-6-sol-terra-luna-complete-guide/",
+        "quote": "Sol is the only model in the family that supports ultra mode, a new feature that spawns subagent processes for complex reasoning.",
+        "explanation": "Confirms that the subagent feature (ultra mode) is exclusive to the Sol model and creates internal processes rather than calling other models."
+      },
+      {
+        "url": "https://www.aimadetools.com/blog/gpt-5-6-sol-terra-luna-complete-guide/",
+        "quote": "Terra targets the same use cases as GPT-5.5 but at roughly half the cost.",
+        "explanation": "Shows Terra is a standalone model for specific use cases."
+      },
+      {
+        "url": "https://www.techtimes.com/articles/320037/20260709/gpt-56-goes-public-today-sol-terra-luna-return-base-model-wars.htm",
+        "quote": "Sol, Terra, and Luna are intended as permanent capability tiers that can advance on independent schedules.",
+        "explanation": null
+      },
+      {
+        "url": "https://www.techtimes.com/articles/320037/20260709/gpt-56-goes-public-today-sol-terra-luna-return-base-model-wars.htm",
+        "quote": "When activated, Sol decomposes the incoming task and spawns parallel subagent processes, each tackling a different component simultaneously. Crucially, these subagents are trained to coordinate with one another mid-task",
+        "explanation": "Explains that Sol's subagents are internal processes trained for coordination, not external calls to the Terra or Luna models."
+      }
+    ],
+    "newOutcome": {
+      "kind": "note",
+      "note": "Sol, Terra, and Luna are not subagent models selected by Sol. They are the three independent capability tiers of OpenAI's GPT-5.6 family, each separately selectable with its own pricing. Sol's actual subagent feature is called \"ultra mode,\" unrelated to Terra/Luna.",
+      "sources": [
+        {
+          "url": "https://openai.com/index/gpt-5-6/",
+          "quote": "Sol, our flagship; Terra, a lower-cost model with performance competitive with GPT‑5.5; and Luna, our fastest and most affordable model.",
+          "explanation": "Confirms Sol, Terra, and Luna are independent model tiers with varying performance and cost levels."
+        },
+        {
+          "url": "https://openai.com/index/gpt-5-6/",
+          "quote": "Sol, Terra, and Luna are durable capability tiers that can advance on their own cadence.",
+          "explanation": "Confirms they are distinct product tiers, not dependent sub-components of one another."
+        },
+        {
+          "url": "https://openai.com/index/gpt-5-6/",
+          "quote": "ultra is our highest-capability setting, coordinating multiple agents across parallel workstreams to finish complex tasks faster.",
+          "explanation": "Supports the claim that the subagent feature is called 'ultra' mode."
+        },
+        {
+          "url": "https://openai.com/index/gpt-5-6/",
+          "quote": "Sol is $5 input / $30 output; Terra is $2.50 input / $15 output; and Luna is $1 input / $6 output.",
+          "explanation": "Confirms each model is separately priced."
+        },
+        {
+          "url": "https://venturebeat.com/technology/openai-unveils-gpt-5-6-sol-terra-and-luna-models-but-only-accessible-to-limited-preview-partners-for-now-per-us-gov",
+          "quote": "Sol, Terra, and Luna identify durable capability tiers that can advance on their own cadence. Together, the family gives people and developers clearer choices across intelligence, speed, and cost.",
+          "explanation": "Reinforces that these are independent models meant for users to choose between based on their specific needs."
+        },
+        {
+          "url": "https://venturebeat.com/technology/openai-unveils-gpt-5-6-sol-terra-and-luna-models-but-only-accessible-to-limited-preview-partners-for-now-per-us-gov",
+          "quote": "OpenAI is also introducing ultra mode, which brings in subagents that can split up and accelerate complex projects, rather than keeping the work inside a single-agent flow.",
+          "explanation": "Supports the claim that subagent functionality is a specific mode ('ultra') rather than specific models (Terra/Luna)."
+        },
+        {
+          "url": "https://simonwillison.net/2026/Jul/9/gpt-5-6/",
+          "quote": "OpenAI’s latest flagship model hit general availability this morning, and comes in three sizes: Luna, Terra, and Sol (from smallest to largest).",
+          "explanation": "Confirms the models are independent sizes within the GPT-5.6 family."
+        },
+        {
+          "url": "https://simonwillison.net/2026/Jul/9/gpt-5-6/",
+          "quote": "Multi-agent lets the model “spin up subagents for parallel, focused work”—the sub-agent pattern now baked into the core API.",
+          "explanation": "Identifies the actual subagent feature as an API mechanism, not the models Terra or Luna themselves."
+        }
+      ]
+    }
+  },
+  {
+    "claimId": "2cc00c33-2aeb-4ce1-b08e-cf6f28d6fcde",
+    "itemTitle": "Better Call Sol The Workhorse",
+    "itemUrl": "https://thezvi.substack.com/p/better-call-sol-the-workhorse",
+    "contextUrl": "https://thezvi.substack.com/p/better-call-sol-the-workhorse",
+    "claim": "GPT 5.6 Sol has a model called 'Sol Ultra' that is described as the best competitive programmer ever, surpassing PhD students in math.",
+    "highlighted": "Zarcolite: 5.6 sol ultra is the best competitive programmer ever. crushes phd students in math",
+    "paragraph": "Zarcolite: 5.6 sol ultra is the best competitive programmer ever. crushes phd students in math\n\nTerabit Fountainlink: Sol puts GPT back in the lead for math imo. Both 4.8 and Fable edged out 5.5 but 5.6 is on a new level",
+    "oldNote": "Unverified social-media opinion, not an OpenAI finding. \"Sol Ultra\" is a compute mode of GPT-5.6 Sol, not a separate model. OpenAI's benchmarks focus on coding/terminal/browsing; no data shows it beats PhD students in math or is the \"best competitive programmer ever.\"",
+    "oldSources": [
+      {
+        "url": "https://openai.com/index/gpt-5-6/",
+        "quote": "ultra is our highest-capability setting, coordinating multiple agents across parallel workstreams to finish complex tasks faster.",
+        "explanation": "Confirms 'ultra' is a multi-agent setting or mode within the flagship flagship 'Sol' model, not a separate model entity."
+      },
+      {
+        "url": "https://openai.com/index/gpt-5-6/",
+        "quote": "GPT‑5.6 Sol sets a new standard for both intelligence and efficiency, achieving state-of-the-art results across coding, knowledge work, cybersecurity, and science",
+        "explanation": "Lists the model's areas of focus; notably omits any claim regarding competitive programming or general superiority over math PhD students."
+      },
+      {
+        "url": "https://openai.com/index/gpt-5-6/",
+        "quote": "GPT‑5.6 Sol with max reasoning sets a new state of the art at 80, 2.8 points above Fable 5",
+        "explanation": "The primary coding claim relates to an 'Agent Index' for professional implementation, not ranking as the 'best competitive programmer ever' on platforms like Codeforces."
+      },
+      {
+        "url": "https://openai.com/index/previewing-gpt-5-6-sol/",
+        "quote": "Additionally, we’re introducing a new ultra mode that goes beyond the capabilities of a single agent by leveraging subagents to accelerate complex work.",
+        "explanation": "Confirms that Sol Ultra is a mode using parallel agents rather than a distinct new model."
+      },
+      {
+        "url": "https://benchlm.ai/models/gpt-5-6-sol",
+        "quote": "Is GPT-5.6 Sol good for mathematics? GPT-5.6 Sol has visible benchmark coverage in mathematics, but BenchLM does not currently assign it a global category rank there.",
+        "explanation": "Indicates that while the model has math capabilities, it is not ranked as the top performer or a 'PhD-crushing' outlier in this category."
+      },
+      {
+        "url": "https://benchlm.ai/models/gpt-5-6-sol",
+        "quote": "Its strongest category is Agentic (#5). This performance profile makes it particularly useful for coding agents, browser research, and computer-use workflows.",
+        "explanation": "Shows the model's strength is in agentic workflows (like using a terminal) rather than competitive programming or advanced mathematics."
+      }
+    ],
+    "newOutcome": {
+      "kind": "no_note",
+      "outcome": "rejected",
+      "reason": "no_correction_needed"
+    }
+  },
+  {
+    "claimId": "6d436935-b42b-4788-88fa-4840cbd86b90",
+    "itemTitle": "Better Call Sol The Workhorse",
+    "itemUrl": "https://thezvi.substack.com/p/better-call-sol-the-workhorse",
+    "contextUrl": "https://thezvi.substack.com/p/better-call-sol-the-workhorse",
+    "claim": "GPT models 4.8 and Fable (Claude) both outperformed GPT 5.5 in math capabilities.",
+    "highlighted": "Terabit Fountainlink: Sol puts GPT back in the lead for math imo. Both 4.8 and Fable edged out 5.5 but 5.6 is on a new level",
+    "paragraph": "Zarcolite: 5.6 sol ultra is the best competitive programmer ever. crushes phd students in math\n\nTerabit Fountainlink: Sol puts GPT back in the lead for math imo. Both 4.8 and Fable edged out 5.5 but 5.6 is on a new level",
+    "oldNote": "Opus 4.8 and Fable are Anthropic (Claude) models, not GPT models. GPT-5.5 and GPT-5.6 Sol are OpenAI's models; the comparison being discussed is between Anthropic's Claude line and OpenAI's GPT line, not different GPT versions.",
+    "oldSources": [
+      {
+        "url": "https://www.datacamp.com/blog/claude-fable-5-vs-gpt-5-5",
+        "quote": "Claude Fable 5 leads on raw capability benchmarks, but GPT-5.5 wins on access, pricing",
+        "explanation": "Confirms that Fable is a product distinct from GPT-5.5, associating 'Claude Fable 5' as the model name."
+      },
+      {
+        "url": "https://www.datacamp.com/blog/claude-fable-5-vs-gpt-5-5",
+        "quote": "Learn how to work with Claude using the Anthropic API",
+        "explanation": "Confirms that Claude is the model line developed by Anthropic."
+      },
+      {
+        "url": "https://benchlm.ai/compare/gpt-5-5-pro-vs-gpt-5-6-sol",
+        "quote": "GPT-5.5 Pro vs GPT-5.6 Sol",
+        "explanation": "Lists GPT-5.5 and 5.6 as models belonging to the same lineage (OpenAI)."
+      },
+      {
+        "url": "https://benchlm.ai/compare/gpt-5-5-pro-vs-gpt-5-6-sol",
+        "quote": "GPT-5.6 Sol vs Claude Fable 5",
+        "explanation": "Directly compares a GPT model to a Claude Fable model, indicating they belong to different families."
+      }
+    ],
+    "newOutcome": {
+      "kind": "note",
+      "note": "Fable 5 and Opus 4.8 are Anthropic Claude models, not GPT models. Claude Opus 4.8 launched May 28, 2026, and Claude Fable 5 is Anthropic's frontier model, both distinct from OpenAI's GPT line.",
+      "sources": [
+        {
+          "url": "https://llm-stats.com/blog/research/claude-opus-4-8-launch",
+          "quote": "Anthropic released Claude Opus 4.8 on May 28, 2026.",
+          "explanation": "Confirms the release date and that this model belongs to Anthropic (Claude), not OpenAI (GPT)."
+        },
+        {
+          "url": "https://llm-stats.com/blog/research/claude-opus-4-8-launch",
+          "quote": "Model ID: claude-opus-4-8 on the Claude API.",
+          "explanation": "Supports the claim that Opus 4.8 is a Claude model."
+        },
+        {
+          "url": "https://the-decoder.com/claude-fable-5-outpaces-gpt-5-5-by-13-points-on-frontiermaths-toughest-problems/",
+          "quote": "Anthropic's new model, Claude Fable 5, posts top scores on the FrontierMath benchmark.",
+          "explanation": "Confirms Fable 5 is an Anthropic model and exists."
+        },
+        {
+          "url": "https://the-decoder.com/claude-fable-5-outpaces-gpt-5-5-by-13-points-on-frontiermaths-toughest-problems/",
+          "quote": "OpenAI's GPT-5.5 reaches about 75 percent on the same tier, well behind Fable 5",
+          "explanation": "Supports the distinction between the Anthropic and OpenAI (GPT) model lines."
+        }
+      ]
+    }
+  },
+  {
+    "claimId": "853341d2-0de6-4ff2-9755-816bbb01acc3",
+    "itemTitle": "AI #176 Part 2: Plan B",
+    "itemUrl": "https://thezvi.substack.com/p/ai-176-part-2-plan-b",
+    "contextUrl": "https://thezvi.substack.com/p/ai-176-part-2-plan-b",
+    "claim": "In GRAM testing, the ablated model version still shows improvement in the capabilities that were intended to be removed.",
+    "highlighted": "Opus (this understandably hit the classifiers on Fable) notes that GRAM is only partially effective, and the ablated model version still shows improvement in the capabilities you want to avoid.",
+    "paragraph": "Opus (this understandably hit the classifiers on Fable) notes that GRAM is only partially effective, and the ablated model version still shows improvement in the capabilities you want to avoid. Opus also points out the similarities to LoRA.",
+    "oldNote": "The GRAM paper reports the opposite: ablating the target module removes capabilities \"nearly as effectively as never training on the data at all,\" closely matching a data-filtered model. Removal gets stronger, not weaker, as models scale up.",
+    "oldSources": [
+      {
+        "url": "https://arxiv.org/pdf/2607.08077",
+        "quote": "Ablating a module at inference time removes its capability from the network, approximating a model trained on filtered data.",
+        "explanation": "This directly contradicts the claim that the model still shows improvement in the targeted capabilities; instead, it shows the capability is removed to a level nearing a model never exposed to the data."
+      },
+      {
+        "url": "https://arxiv.org/pdf/2607.08077",
+        "quote": "The gap between data-filtered and full-data models widens with scale on removed capabilities but stays small on retained ones, and that GRAM closely tracks data filtering.",
+        "explanation": "This supports the claim that removal becomes more effective (stronger) as models scale up, rather than the model showing continued improvement/retention in those areas."
+      },
+      {
+        "url": "https://alignment.anthropic.com/2026/modular-pretraining/",
+        "quote": "removing the module for a given topic reconfigures GRAM to perform almost identically to a model that was never trained on that topic.",
+        "explanation": "This confirms that ablation effectively removes the capability rather than allowing for continued improvement in that domain."
+      },
+      {
+        "url": "https://alignment.anthropic.com/2026/modular-pretraining/",
+        "quote": "The gap on the forgotten domain widens with scale: bigger models fall further behind the all-data baseline on virology when the capability is removed",
+        "explanation": "This supports the note's point that the suppression of capabilities becomes more pronounced as models get larger."
+      }
+    ],
+    "newOutcome": {
+      "kind": "no_note",
+      "outcome": "rejected",
+      "reason": "no_correction_needed"
+    }
+  },
+  {
+    "claimId": "4f6ddd31-aeac-4f05-b363-0669c40c1aac",
+    "itemTitle": "AI #176 Part 2: Plan B",
+    "itemUrl": "https://thezvi.substack.com/p/ai-176-part-2-plan-b",
+    "contextUrl": "https://thezvi.substack.com/p/ai-176-part-2-plan-b",
+    "claim": "Megan Herbst's Wired article based its claims that AI fact checking cannot be trusted exclusively on AI overviews rather than dedicated AI fact-checking tools.",
+    "highlighted": "Fact checker Megan Herbst gets the facts wrong in Wired, claims AI fact checking cannot be trusted based exclusively on AI overviews.",
+    "paragraph": "Fact checker Megan Herbst gets the facts wrong in Wired, claims AI fact checking cannot be trusted based exclusively on AI overviews. If you want to know exactly what the studies found and what it actually means Dan Williams asked Fable for you. Megan then concludes 'AI is wrong about half the time' and that all fact checking must be human.",
+    "oldNote": "Herbst's WIRED piece did not rely on Google's \"AI Overviews.\" She cited a Tow Center/CJR study of 8 AI search tools (60%+ citation error rate) and a BBC/EBU study of chatbots (~45% error rate), plus fact-checkers like Full Fact. Her name is Meghan, not Megan.",
+    "oldSources": [
+      {
+        "url": "https://www.niemanlab.org/2025/03/ai-search-engines-fail-to-produce-accurate-citations-in-over-60-of-tests-according-to-new-tow-center-study/",
+        "quote": "conducted 200 tests on eight different AI search engines: ChatGPT Search, Perplexity, Perplexity Pro, Gemini, DeepSeek Search, Grok-2 Search, Grok-3 Search, and Copilot.",
+        "explanation": "Confirms the Tow Center study tested 8 specific AI search tools, none of which are Google's \"AI Overviews.\""
+      },
+      {
+        "url": "https://www.niemanlab.org/2025/03/ai-search-engines-fail-to-produce-accurate-citations-in-over-60-of-tests-according-to-new-tow-center-study/",
+        "quote": "the search engines failed to retrieve the correct information more than 60% of the time.",
+        "explanation": "Supports the note's claim that the study found a 60%+ citation error rate."
+      },
+      {
+        "url": "https://www.forbes.com/sites/emmawoollacott/2025/10/22/ai-assistants-get-the-news-wrong-nearly-half-the-time-say-researchers/",
+        "quote": "new international study, coordinated by the European Broadcasting Union and led by the BBC, all the major AI assistants are misleading their readers on a regular basis.",
+        "explanation": "Identifies the BBC/EBU study mentioned in the note."
+      },
+      {
+        "url": "https://www.forbes.com/sites/emmawoollacott/2025/10/22/ai-assistants-get-the-news-wrong-nearly-half-the-time-say-researchers/",
+        "quote": "found, 45% of all AI answers had at least one significant issue",
+        "explanation": "Supports the claim of an approximate 45% error rate in the BBC/EBU study."
+      },
+      {
+        "url": "https://myustimes.com/im-a-professional-fact-checker-ai-is-wrong-more-often-than-you-think/",
+        "quote": "I’m a Professional Fact-Checker. AI Is Wrong More Often Than You Think",
+        "explanation": "The byline shows the author's name is Meghan Herbst, confirming the note's spelling correction."
+      },
+      {
+        "url": "https://myustimes.com/im-a-professional-fact-checker-ai-is-wrong-more-often-than-you-think/",
+        "quote": "In the UK, an initiative called Full Fact has built out its own AI tools to help thwart the spread of misinformation.",
+        "explanation": "Shows Herbst cited fact-checkers like Full Fact in her original piece."
+      },
+      {
+        "url": "https://myustimes.com/im-a-professional-fact-checker-ai-is-wrong-more-often-than-you-think/",
+        "quote": "A March 2025 study from the Tow Center for Digital Journalism found that more than 60 percent of responses from AI-powered search engines were inaccurate. A BBC study puts the wrongness of chatbots closer to 45 percent",
+        "explanation": "Demonstrates that Herbst relied on specifically named studies of search engines and chatbots, rather than exclusively on AI Overviews."
+      }
+    ],
+    "newOutcome": {
+      "kind": "note",
+      "note": "Herbst's WIRED piece grounds its argument mainly in WIRED's own line-by-line fact-checking process, her personal chatbot tests, and how AI models are trained on internet text versus offline archives—not exclusively on Google's AI Overviews product.",
+      "sources": [
+        {
+          "url": "https://www.wired.com/story/fact-checking-ai/",
+          "quote": "WIRED’s fact-checking department is old-school: meticulous line-by-line annotations, primary sources whenever possible, and a broader-scale ethical and legal review.",
+          "explanation": "This shows the author's argument is grounded in WIRED's internal human-led process."
+        },
+        {
+          "url": "https://www.wired.com/story/fact-checking-ai/",
+          "quote": "I dug out that old test and gave it to (the free versions of) ChatGPT, Claude, Gemini, and Grok.",
+          "explanation": "The author tested multiple general chatbots, not just Google's AI Overviews."
+        },
+        {
+          "url": "https://www.wired.com/story/fact-checking-ai/",
+          "quote": "Very little of humanity’s collective knowledge, I’ve concluded, lives on the internet.",
+          "explanation": "The author argues that AI is limited because it relies on internet scraping while much archive-based knowledge remains offline."
+        },
+        {
+          "url": "https://www.wired.com/story/fact-checking-ai/",
+          "quote": "In the UK, an initiative called Full Fact has built out its own AI tools to help thwart the spread of misinformation.",
+          "explanation": "The author explicitly discusses dedicated AI fact-checking projects beyond consumer search summaries."
+        },
+        {
+          "url": "https://keepingupwith.ai/articles/a-professional-fact-checkers-assessment-ai-accuracy-gaps-wider-than-public-belie/",
+          "quote": "WIRED’s fact-checking team notes that much of humanity’s verified knowledge exists outside the internet—in archives, interviews, and institutional records—yet AI models are trained primarily on internet-available text",
+          "explanation": "Confirms the author's argument includes a structural critique of AI training data vs offline archives."
+        }
+      ]
+    }
+  },
+  {
+    "claimId": "250ad97c-86a2-4544-9b9c-1d43512dbf7d",
+    "itemTitle": "AI #176 Part 1: Doing It Live",
+    "itemUrl": "https://thezvi.substack.com/p/ai-176-part-1-doing-it-live",
+    "contextUrl": "https://thezvi.substack.com/p/ai-176-part-1-doing-it-live",
+    "claim": "At UC Berkeley, the number of A grades is up by 30%.",
+    "highlighted": "At UC Berkeley, the number of As is up by 30%, so GPAs are dangerously close to meaningless for measuring student quality.",
+    "paragraph": "The problem is invalidating grades entirely. At UC Berkeley, the number of As is up by 30%, so GPAs are dangerously close to meaningless for measuring student quality.",
+    "oldNote": "This 30% figure comes from a UC Berkeley researcher's study, but it measured grades at an unnamed Texas university's AI-exposed courses, not UC Berkeley's own grades. Actual UC Berkeley data shows A rates stayed stable at 30-35% from 2019 to 2026.",
+    "oldSources": [
+      {
+        "url": "https://cshe.berkeley.edu/publications/artificial-intelligence-and-grade-inflation-cshe-higher-education-working-paper-series",
+        "quote": "the share of A grades rose by 13 percentage points, or about 30% relative to the 2022 baseline.",
+        "explanation": "Confirms the 30% figure comes from this specific research paper."
+      },
+      {
+        "url": "https://www.dailycal.org/news/campus/academics/uc-berkeley-shows-no-signs-of-ai-grade-inflation-as-professors-adapt/article_6da85b38-889f-4f80-835a-88cc54a81662.html",
+        "quote": "A study released by UC Berkeley’s Center for Studies in Higher Education found a correlation [...] at a selective public university in Texas.",
+        "explanation": "Clarifies that the 30% study actually measured a university in Texas, not UC Berkeley."
+      },
+      {
+        "url": "https://www.dailycal.org/news/campus/academics/uc-berkeley-shows-no-signs-of-ai-grade-inflation-as-professors-adapt/article_6da85b38-889f-4f80-835a-88cc54a81662.html",
+        "quote": "Between 2019 and spring 2026, A’s at UC Berkeley consistently stayed between 30% and 35%",
+        "explanation": "Provides actual UC Berkeley grade data showing stability during the period in question."
+      }
+    ],
+    "newOutcome": {
+      "kind": "note",
+      "note": "The '30%' figure is from a UC Berkeley-authored study of a Texas university, not UC Berkeley itself. It found a 13-point (~30% relative) rise in A's only in AI-exposed courses since 2022, not a campus-wide increase. Berkeley's own A-grade rates have stayed 30-35% since 2019.",
+      "sources": [
+        {
+          "url": "https://cshe.berkeley.edu/publications/artificial-intelligence-and-grade-inflation-cshe-higher-education-working-paper-series",
+          "quote": "the share of A grades rose by 13 percentage points, or about 30% relative to the 2022 baseline.",
+          "explanation": "Confirms the 30% figure comes from this specific study and represents a relative increase in the 'share' of A grades in certain courses, not an absolute campus-wide number."
+        },
+        {
+          "url": "https://cshe.berkeley.edu/publications/artificial-intelligence-and-grade-inflation-cshe-higher-education-working-paper-series",
+          "quote": "Courses with more AI-exposed tasks, such as writing and coding, saw substantial grade increases",
+          "explanation": "Supports the note's claim that the increase was found in AI-exposed courses rather than being a campus-wide phenomenon."
+        },
+        {
+          "url": "https://www.dailycal.org/news/campus/academics/uc-berkeley-shows-no-signs-of-ai-grade-inflation-as-professors-adapt/article_6da85b38-889f-4f80-835a-88cc54a81662.html",
+          "quote": "found a correlation between the release of ChatGPT in 2022 and an increased share of A grades... at a selective public university in Texas.",
+          "explanation": "Confirms the 30% study actually tracked a university in Texas, not UC Berkeley itself."
+        },
+        {
+          "url": "https://www.dailycal.org/news/campus/academics/uc-berkeley-shows-no-signs-of-ai-grade-inflation-as-professors-adapt/article_6da85b38-889f-4f80-835a-88cc54a81662.html",
+          "quote": "Between 2019 and spring 2026, A’s at UC Berkeley consistently stayed between 30% and 35%",
+          "explanation": "Provides the specific data for UC Berkeley's actual grade rates during the relevant period."
+        }
+      ]
+    }
+  },
+  {
+    "claimId": "274c5b80-d41a-499f-b33b-b6133e01f986",
+    "itemTitle": "AI #176 Part 1: Doing It Live",
+    "itemUrl": "https://thezvi.substack.com/p/ai-176-part-1-doing-it-live",
+    "contextUrl": "https://thezvi.substack.com/p/ai-176-part-1-doing-it-live",
+    "claim": "Grok 4.5's API pricing is $2/$6, or $4/$18 for the fast version.",
+    "highlighted": "It has 1.5 trillion parameters. Price is $2/$6, or $4/$18 for the fast version.",
+    "paragraph": "It has 1.5 trillion parameters. Price is $2/$6, or $4/$18 for the fast version.",
+    "oldNote": "No 'Grok 4.5 Fast' tier exists. Grok 4.5 flagship API pricing is $2/$6 per million tokens. xAI's 'fast' models (Grok 4/4.1 Fast) are cheaper, ~$0.20/$0.50. The closest real premium option is priority processing, a 2x multiplier = $4/$12, not $4/$18.",
+    "oldSources": [
+      {
+        "url": "https://apidog.com/blog/grok-4-5-pricing/",
+        "quote": "Grok 4.5 costs $2 per million input tokens and $6 per million output tokens.",
+        "explanation": "Confirms the standard pricing for the flagship model."
+      },
+      {
+        "url": "https://apidog.com/blog/grok-4-5-pricing/",
+        "quote": "Priority processing: 2x standard rates",
+        "explanation": "Shows the multiplier for priority mode is 2x ($4/$12), contradicting the claim of $4/$18."
+      },
+      {
+        "url": "https://apidog.com/blog/grok-4-5-pricing/",
+        "quote": "Grok 4.5 costs more than Grok 4.3... Input / output per 1M: $2.00 / $6.00 [vs] $1.25 / $2.50",
+        "explanation": "Confirms that older or 'fast' models are cheaper than the flagship, not more expensive."
+      },
+      {
+        "url": "https://www.cometapi.com/grok-api-pricing-cost-guide/",
+        "quote": "xAI's current API lineup now includes grok-4.5 at $2 / $0.50 / $6... grok-4.3 at $1.25 / $0.20 / $2.50",
+        "explanation": "Lists the existing models and their lower prices compared to the $4/$18 claim."
+      },
+      {
+        "url": "https://www.cometapi.com/grok-api-pricing-cost-guide/",
+        "quote": "Priority processing is billed at 2x standard token pricing",
+        "explanation": "Confirms priority processing is a 2x rate ($4/$12 for Grok 4.5), not $4/$18."
+      }
+    ],
+    "newOutcome": {
+      "kind": "note",
+      "note": "Grok 4.5's base pricing is $2/$6 per million tokens, but there is no $4/$18 \"fast version.\" xAI's priority/long-context tier doubles to $4 input/$12 output, not $18; no official Grok 4.5 variant uses $18 output pricing.",
+      "sources": [
+        {
+          "url": "https://x.ai/news/grok-4-5",
+          "quote": "Grok 4.5 is priced at $2 per million input tokens and $6 per million output tokens.",
+          "explanation": "Confirms the base pricing of the model."
+        },
+        {
+          "url": "https://docs.x.ai/developers/pricing",
+          "quote": "grok-4.5\t500k\t$2.00\t$0.30\t$6.00\t$4.00\t$0.60\t$12.00",
+          "explanation": "Shows the standard pricing ($2/$6) and the long-context pricing ($4/$12)."
+        },
+        {
+          "url": "https://docs.x.ai/developers/pricing",
+          "quote": "Priority requests are billed at a 2x premium over standard rates.",
+          "explanation": "Confirms that the priority (higher speed) tier results in a 2x multiplier, making output tokens $12 ($6 x 2), not $18."
+        }
+      ]
+    }
+  },
+  {
+    "claimId": "05155f47-2f48-49d4-8298-c54c4ad2cc91",
+    "itemTitle": "AI #176 Part 1: Doing It Live",
+    "itemUrl": "https://thezvi.substack.com/p/ai-176-part-1-doing-it-live",
+    "contextUrl": "https://thezvi.substack.com/p/ai-176-part-1-doing-it-live",
+    "claim": "The board game Earthborne Rangers is out of print.",
+    "highlighted": "The game looks cool but is out of print and I didn't see an online version.",
+    "paragraph": "Epoch AI introduces EBR-bench, where AIs play a board game Earthborne Rangers and try to learn from their mistakes via a notepad. None of the AIs improve over time, and even a full strategy guide only modestly helps. The models mostly don't explore. The game looks cool but is out of print and I didn't see an online version. Models struggle with deckbuilding and also tactics.",
+    "oldNote": "Earthborne Rangers is not out of print. Earthborne Games ran a second printing via Gamefound, and it's actively sold/backordered by retailers like Team Covenant, Noble Knight, and Naylor Games, with BackerKit reporting fulfillment nearly complete.",
+    "oldSources": [
+      {
+        "url": "https://earthbornegames.com/available-to-preorder-at-team-covenant/",
+        "quote": "Team Covenant is now accepting preorders for the second printing of Earthborne Rangers",
+        "explanation": "Directly supports the claim that the game is not out of print by confirming a second printing exists and is available for order."
+      },
+      {
+        "url": "https://www.nobleknight.com/P/2148334365/Earthborne-Rangers-2nd-Printing",
+        "quote": "Earthborne Rangers (2nd Printing)",
+        "explanation": "The product title confirms a second printing exists."
+      },
+      {
+        "url": "https://www.nobleknight.com/P/2148334365/Earthborne-Rangers-2nd-Printing",
+        "quote": "Last Stocked on 4/9/2026",
+        "explanation": "Shows the game was recently in stock as of early 2026, contradicting the 'out of print' claim."
+      },
+      {
+        "url": "https://www.nobleknight.com/P/2148334365/Earthborne-Rangers-2nd-Printing",
+        "quote": "Publish Year 2025",
+        "explanation": "Confirms recent publication of the second edition."
+      }
+    ],
+    "newOutcome": {
+      "kind": "note",
+      "note": "Earthborne Rangers is not out of print. A second printing was funded via Gamefound and has been shipping through 2025-2026, with fulfillment nearly complete in the US as of mid-2026. It's also sold by retailers like Team Covenant, Naylor Games, and Oaken Vault.",
+      "sources": [
+        {
+          "url": "https://gamefound.com/en/projects/earthborne-games/earthborne-rangers-reprint",
+          "quote": "Earthborne Rangers Second Printing (plus expansions) by Earthborne Games - Gamefound",
+          "explanation": "Confirms that a second printing of the game exists and was funded via this platform."
+        },
+        {
+          "url": "https://earthbornerangers.backerkit.com/hosted_preorders/project_updates",
+          "quote": "at long last––we’ve completed all work on the print files for the core game",
+          "explanation": "Confirms the production process and updates for the game's release and reprints."
+        },
+        {
+          "url": "https://www.teamcovenant.com/games/earthborne-rangers",
+          "quote": "Buy Earthborne Rangers, Exclusively at Covenant",
+          "explanation": "Supports the claim that the game is sold by the retailer Team Covenant."
+        },
+        {
+          "url": "https://naylorgames.com/products/earthborne-rangers",
+          "quote": "Earthborne Rangers (Second Printing)",
+          "explanation": null
+        },
+        {
+          "url": "https://naylorgames.com/products/earthborne-rangers",
+          "quote": "Regular price €100,00",
+          "explanation": "Shows the game is listed for retail sale, contradicting the 'out of print' claim."
+        }
+      ]
+    }
+  },
+  {
+    "claimId": "ca9ad223-11db-4f3a-863a-0de512b775c9",
+    "itemTitle": "No Space Like J-Space",
+    "itemUrl": "https://thezvi.substack.com/p/no-space-like-j-space",
+    "contextUrl": "https://thezvi.substack.com/p/no-space-like-j-space",
+    "claim": "The paper's blog post asserts that LLMs have 'access consciousness' in functional terms, while denying the ability to evaluate potential phenomenal consciousness, but the paper itself does not take this step.",
+    "highlighted": "The paper's blog post asserts that LLMs have 'access consciousness' in functional terms, while denying the ability to evaluate potential phenomenal consciousness. The paper itself does not take this step.",
+    "paragraph": "The paper's blog post asserts that LLMs have 'access consciousness' in functional terms, while denying the ability to evaluate potential phenomenal consciousness. The paper itself does not take this step.",
+    "oldNote": "The paper itself makes this distinction, contrary to the claim. It calls the phenomenon 'access consciousness,' a 'purely functional notion,' and explicitly states 'we take no position' on phenomenal consciousness, focusing only on functional access.",
+    "oldSources": [
+      {
+        "url": "https://transformer-circuits.pub/2026/workspace/index.html",
+        "quote": "The phenomenon described above is sometimes referred to as access consciousness: out of everything the brain processes, only a subset is consciously accessible, in the sense of being poised for use in reasoning and in the direct control of action and speech . Note that access consciousness is a purely functional notion; the relationship that it has with subjective experience (sometimes called phenomenal consciousness) is widely debated. In this paper, we take no position on this issue, and instead focus on the functional role played by consciously accessible information.",
+        "explanation": "The paper explicitly defines 'access consciousness' as a functional concept and states it takes 'no position' on the relationship to phenomenal consciousness."
+      },
+      {
+        "url": "https://arxiv.org/pdf/2601.01828",
+        "quote": "We stress that the introspective capabilities we observe may not have the same philosophical significance they do in humans, particularly given our uncertainty about their mechanistic basis. In particular, we do not seek to address the question of whether AI systems possess human-like self-awareness or subjective experience.",
+        "explanation": "This related paper by the same lead author also explicitly declines to address subjective experience (phenomenal consciousness)."
+      },
+      {
+        "url": "https://www.anthropic.com/research/global-workspace",
+        "quote": "Neuroscientists and philosophers sometimes refer to the latter type of brain activity as ‘consciously accessible,’ to distinguish it from all the other processing that goes on unconsciously. ... None of this tells us whether Claude is conscious in the way people are, or whether it feels anything at all",
+        "explanation": "The blog post makes the same functional distinction as the paper, contrary to the original post's claim that only the blog makes this distinction."
+      }
+    ],
+    "newOutcome": {
+      "kind": "note",
+      "note": "This gets it backwards. The paper itself explicitly addresses phenomenal consciousness, stating \"we take no position on this issue\" while calling access consciousness \"a purely functional notion.\" It's the paper, not just the blog post, that makes this distinction.",
+      "sources": [
+        {
+          "url": "https://transformer-circuits.pub/2026/workspace/index.html",
+          "quote": "Note that access consciousness is a purely functional notion; the relationship that it has with subjective experience (sometimes called phenomenal consciousness) is widely debated. In this paper, we take no position on this issue",
+          "explanation": "This demonstrates that the paper itself, not just a blog post, makes the distinction between access and phenomenal consciousness and explicitly takes no position on the latter."
+        },
+        {
+          "url": "https://venturebeat.com/technology/anthropics-new-j-lens-reveals-a-silent-workspace-inside-claude-that-mirrors-a-leading-theory-of-consciousness",
+          "quote": "\"We take no position on this issue,\" the paper states regarding the latter, \"and instead focus on the functional role played by consciously accessible information.\"",
+          "explanation": "This reporting confirms that the specific quote about taking no position on phenomenal consciousness appears directly in the research paper."
+        }
+      ]
+    }
+  },
+  {
+    "claimId": "45ef56a8-2f90-40fb-bf68-5dd0a323d558",
+    "itemTitle": "Fable #6: The Return of the King",
+    "itemUrl": "https://thezvi.substack.com/p/fable-6-the-return-of-the-king",
+    "contextUrl": "https://thezvi.substack.com/p/fable-6-the-return-of-the-king",
+    "claim": "There is a White House ad hoc licensing regime for AI.",
+    "highlighted": "OpenAI has formally offered to hand over 5% of the company, to try to curry favor in the face of both public opposition to AI and the White House ad hoc licensing regime.",
+    "paragraph": "OpenAI has formally offered to hand over 5% of the company, to try to curry favor in the face of both public opposition to AI and the White House ad hoc licensing regime.\n\nTechnically the money would go to a 'sovereign wealth fund' that would be managed by a nation tens of trillions in debt that has this thing called the 'power to tax.'",
+    "oldNote": "There is no White House AI licensing regime. Trump's June 2026 executive order 'Promoting Advanced Artificial Intelligence Innovation and Security' explicitly states nothing in it authorizes a mandatory licensing, preclearance, or permitting requirement for AI models.",
+    "oldSources": [
+      {
+        "url": "https://www.whitehouse.gov/presidential-actions/2026/06/promoting-advanced-artificial-intelligence-innovation-and-security/",
+        "quote": "Nothing in this section shall be construed to authorize the creation of a mandatory governmental licensing, preclearance, or permitting requirement for the development, publication, release, or distribution of new AI models, including frontier models.",
+        "explanation": "This text from the June 2, 2026, Executive Order explicitly states that it does not authorize the creation of a mandatory AI licensing regime."
+      },
+      {
+        "url": "https://www.whitehouse.gov/fact-sheets/2026/06/fact-sheet-president-donald-j-trump-promotes-advanced-artificial-intelligence-innovation-and-security/",
+        "quote": "The Order expressly states that nothing shall be construed to authorize creation of any mandatory governmental licensing, pre-clearance, or permitting requirement for the development, publication, release or distribution of AI models.",
+        "explanation": "The official White House fact sheet confirms the Executive Order excludes mandatory licensing or permitting for AI models."
+      }
+    ],
+    "newOutcome": {
+      "kind": "no_note",
+      "outcome": "rejected",
+      "reason": "no_correction_needed"
+    }
+  },
+  {
+    "claimId": "241ec04b-6748-43bf-b1af-84c29caf6729",
+    "itemTitle": "Fable #6: The Return of the King",
+    "itemUrl": "https://thezvi.substack.com/p/fable-6-the-return-of-the-king",
+    "contextUrl": "https://thezvi.substack.com/p/fable-6-the-return-of-the-king",
+    "claim": "GLM-5.2 is substantially behind GPT-5.5 and Opus 4.8 in capabilities, including in cybersecurity.",
+    "highlighted": "It is very clearly substantially behind the level of GPT-5.5 and Opus 4.8, including on cyber.",
+    "paragraph": "GLM-5.2 is an excellent model, likely the best open model. It is very clearly substantially behind the level of GPT-5.5 and Opus 4.8, including on cyber. The ECI score is one indicator of this, although GLM-5.2 is probably better than this indicates. Artificial Analysis is another, and remember that for open models the benchmarks are a de facto ceiling on relative capabilities, not a floor.",
+    "oldNote": "GLM-5.2 is not clearly substantially behind on cyber. Semgrep found it beat Opus 4.8 in prompt-only testing, and Graphistry found it matched Opus on CTF solve rate and tied frontier models on an agentic cyber benchmark. GPT-5.5/Opus led only with specialized scaffolding.",
+    "oldSources": [
+      {
+        "url": "https://semgrep.dev/blog/2026/we-have-mythos-at-home-glm-52-beats-claude-in-our-cyber-benchmarks/",
+        "quote": "GLM 5.2, an open-weight model from Zhipu AI, scored a 39% F1 on IDOR detection, beating Claude Code (32%)",
+        "explanation": "Confirms GLM-5.2 outperformed Claude Code in prompt-only/agency testing for vulnerability detection."
+      },
+      {
+        "url": "https://semgrep.dev/blog/2026/we-have-mythos-at-home-glm-52-beats-claude-in-our-cyber-benchmarks/",
+        "quote": "GLM 5.2, with no scaffolding at all, beat Claude Code by seven points (39% vs. 32%)",
+        "explanation": null
+      },
+      {
+        "url": "https://semgrep.dev/blog/2026/we-have-mythos-at-home-glm-52-beats-claude-in-our-cyber-benchmarks/",
+        "quote": "GPT 5.5 and Opus 4.8 inside Semgrep Multimodal take the top two spots at 61% and 53%.",
+        "explanation": "Supports the claim that GPT-5.5 and Opus led only when using specialized scaffolding/harnesses."
+      },
+      {
+        "url": "https://www.graphistry.com/blog/glm-5-2-cybersecurity-open-model",
+        "quote": "On CyBT-CTF, GLM 5.2 gets the same solve rate as Anthropic Opus 4.7/4.8",
+        "explanation": "Directly supports the claim that GLM matched Opus on CTF solve rates."
+      },
+      {
+        "url": "https://www.graphistry.com/blog/glm-5-2-cybersecurity-open-model",
+        "quote": "runs at half the cost of Anthropic and OpenAI, yet goes toe-to-toe with them to tie on the cheating-resistant CyBT-CTF security agent investigation benchmark.",
+        "explanation": "Confirms the model tied frontier models on an agentic cyber benchmark."
+      }
+    ],
+    "newOutcome": {
+      "kind": "note",
+      "note": "Independent cyber benchmarks contradict the 'substantially behind on cyber' claim. Semgrep testing found GLM-5.2 scored 39% F1 detecting vulnerabilities vs Claude Code's 32%. Graphistry's CyBT-CTF eval found GLM-5.2 matched Opus 4.8's quality, top open-weight result.",
+      "sources": [
+        {
+          "url": "https://semgrep.dev/blog/2026/we-have-mythos-at-home-glm-52-beats-claude-in-our-cyber-benchmarks/",
+          "quote": "GLM 5.2, an open-weight model from Zhipu AI, scored a 39% F1 on IDOR detection, beating Claude Code (32%)",
+          "explanation": "Confirms GLM-5.2 scored 39% F1, outperforming Claude Code's 32% in vulnerability detection."
+        },
+        {
+          "url": "https://www.graphistry.com/blog/glm-5-2-cybersecurity-open-model",
+          "quote": "GLM 5.2 matches Opus on quality. The model frontier is jagged, and for investigations, GLM 5.2 is a real contender. On CyBT-CTF, GLM 5.2 gets the same solve rate as Anthropic Opus 4.7/4.8",
+          "explanation": "Supports the claim that GLM-5.2 matches Claude Opus 4.8 in cybersecurity evaluation quality."
+        },
+        {
+          "url": "https://www.graphistry.com/blog/glm-5-2-cybersecurity-open-model",
+          "quote": "With a 28/59 solve rate, it is the top open weight model",
+          "explanation": "Confirms GLM-5.2 was the highest-scoring open-weight model in this benchmark."
+        }
+      ]
+    }
+  },
+  {
+    "claimId": "0f69c770-aa7a-40fd-97bf-71974cfbd33f",
+    "itemTitle": "Fable #6: The Return of the King",
+    "itemUrl": "https://thezvi.substack.com/p/fable-6-the-return-of-the-king",
+    "contextUrl": "https://thezvi.substack.com/p/fable-6-the-return-of-the-king",
+    "claim": "On June 26, 2026, the US government eliminated the export controls on Mythos.",
+    "highlighted": "June 26: US government eliminated the controls on Mythos.\n\nJune 30: US government fully lifted those controls on Fable as well.",
+    "paragraph": "Anthropic works with US government and expands classifiers, such that it refuses Amazon's request to 'fix this code' in over 99% of cases.\n\nJune 26: US government eliminated the controls on Mythos.\n\nJune 30: US government fully lifted those controls on Fable as well.",
+    "oldNote": "Inaccurate: June 26 was only a partial easing, not elimination. Commerce allowed Mythos 5 access to ~100 vetted orgs while keeping licensing rules; Fable 5 stayed restricted. Export controls on both Mythos 5 and Fable 5 were fully lifted on June 30, 2026.",
+    "oldSources": [
+      {
+        "url": "https://www.cnbc.com/2026/06/30/anthropic-says-trump-admin-has-lifted-export-controls-on-claude-fable-5-and-mythos-5.html",
+        "quote": "Anthropic said on Tuesday that the U.S. Department of Commerce has lifted export controls on its Claude Fable 5 and Mythos 5 models",
+        "explanation": "Confirms the date for full lifting of controls for both models was June 30 (Tuesday)."
+      },
+      {
+        "url": "https://www.cnbc.com/2026/06/30/anthropic-says-trump-admin-has-lifted-export-controls-on-claude-fable-5-and-mythos-5.html",
+        "quote": "Anthropic also said it has restored access to Mythos 5 for some U.S. organizations, following government approval granted on June 26.",
+        "explanation": "Supports the claim that June 26 was a limited authorization for specific organizations, not a total elimination of controls."
+      },
+      {
+        "url": "https://www.bankinfosecurity.com/us-lifts-export-curbs-on-anthropic-ai-models-a-32123",
+        "quote": "Commerce partially eased the restriction on June 26, when Lutnick authorized Mythos 5's release to about 100 vetted U.S. organizations focused on critical infrastructure defense, while keeping Fable 5 offline for the public.",
+        "explanation": "Directly supports that June 26 was a partial easing for Mythos 5 rather than an elimination."
+      },
+      {
+        "url": "https://www.bankinfosecurity.com/us-lifts-export-curbs-on-anthropic-ai-models-a-32123",
+        "quote": "Tuesday's action extends that reprieve to Fable 5 and removes the licensing requirement entirely for both models.",
+        "explanation": "Confirms the full removal of the licensing (export) requirement happened on Tuesday (June 30)."
+      },
+      {
+        "url": "https://www.nextgov.com/artificial-intelligence/2026/07/us-lift-export-controls-key-anthropic-models/414561/",
+        "quote": "This past Friday, the Trump administration partially lifted that ban on Mythos 5, allowing a select group of around 100 organizations to regain access, but kept in place restrictions on Fable 5.",
+        "explanation": "Confirms June 26 (the Friday prior) was a partial lift for Mythos 5 and Fable 5 remained restricted."
+      }
+    ],
+    "newOutcome": {
+      "kind": "note",
+      "note": "On June 26, Commerce only exempted certain trusted partners from Mythos licensing requirements; restrictions remained for others, per Lutnick. Full elimination of controls on both Mythos and Fable occurred June 30, not June 26.",
+      "sources": [
+        {
+          "url": "https://www.mayerbrown.com/en/insights/publications/2026/06/commerce-department-extends-export-controls-to-advanced-ai-models-authorizes-release-to-specific-trusted-partners",
+          "quote": "Secretary Lutnick on June 26, 2026, issued a second letter, exempting “certain trusted partners” and their foreign national employees, along with Anthropic’s own foreign national employees, from the license requirement applicable to Mythos 5.",
+          "explanation": "Supports the claim that only certain partners were exempt on June 26."
+        },
+        {
+          "url": "https://www.mayerbrown.com/en/insights/publications/2026/06/commerce-department-extends-export-controls-to-advanced-ai-models-authorizes-release-to-specific-trusted-partners",
+          "quote": "The letter did not address exemptions related to the license requirement applicable to Fable 5.",
+          "explanation": "Supports the claim that Fable was not included in the June 26 action."
+        },
+        {
+          "url": "https://www.semafor.com/article/06/27/2026/us-releases-powerful-anthropic-model-mythos-to-some-us-companies",
+          "quote": "The US government Friday lifted its block on Anthropic’s powerful Claude Mythos 5 AI model, allowing the company to release it to more than 100 US institutions, including major companies and government agencies.",
+          "explanation": "Confirms the June 26 release was limited to specific institutions rather than a general elimination of controls."
+        },
+        {
+          "url": "https://www.semafor.com/article/06/27/2026/us-releases-powerful-anthropic-model-mythos-to-some-us-companies",
+          "quote": "The letter is silent on Fable 5, a weaker version of Mythos that was briefly the most powerful AI model widely available to consumers.",
+          "explanation": "Supports the claim that Fable remained under control after June 26."
+        },
+        {
+          "url": "https://www.cnbc.com/2026/06/30/anthropic-says-trump-admin-has-lifted-export-controls-on-claude-fable-5-and-mythos-5.html",
+          "quote": "Anthropic said on Tuesday that the U.S. Department of Commerce has lifted export controls on its Claude Fable 5 and Mythos 5 models",
+          "explanation": "Confirms that the full lifting of controls for both models happened on Tuesday, June 30."
+        }
+      ]
+    }
+  },
+  {
+    "claimId": "7d1afad6-0dc4-4389-a6f7-3f056fb368f7",
+    "itemTitle": "AI #175: The Fable Continues",
+    "itemUrl": "https://thezvi.substack.com/p/ai-175-the-fable-continues",
+    "contextUrl": "https://thezvi.substack.com/p/ai-175-the-fable-continues",
+    "claim": "According to a slide from Exponential View citing Graetz & Michaels (2018), automation between 1980 and 2000 added approximately 0.37 percentage points per year to GDP growth.",
+    "highlighted": "",
+    "paragraph": "",
+    "oldNote": "Graetz & Michaels (2018) 'Robots at Work' analyzed panel data on industrial robots across 17 countries from 1993 to 2007, not 1980-2000 as the slide states.",
+    "oldSources": [
+      {
+        "url": "https://cepr.org/voxeu/columns/estimating-impact-robots-productivity-and-employment",
+        "quote": "Uniquely, our dataset includes a measure of the use of industrial robots employed in each industry, in each of these countries, and how it has changed from 1993-2007.",
+        "explanation": "This confirms that the study's primary dataset on robot use covers the years 1993 to 2007, directly contradicting the 1980-2000 range shown on the slide."
+      },
+      {
+        "url": "https://cepr.org/voxeu/columns/estimating-impact-robots-productivity-and-employment",
+        "quote": "Specifically, we match data on tasks performed by industrial robots today with data on similar tasks performed by US workers in 1980, before robots were used.",
+        "explanation": "The source clarifies that 1980 was used as a baseline for measuring tasks *before* robots were widely employed, not as the period for measuring their impact on GDP growth."
+      },
+      {
+        "url": "https://cepr.org/voxeu/columns/estimating-impact-robots-productivity-and-employment",
+        "quote": "We conservatively calculate that on average, the increased use of robots contributed about 0.37 percentage points to the annual GDP growth",
+        "explanation": "This confirms the 0.37 figure cited in the note originates from this specific research by Graetz and Michaels."
+      }
+    ],
+    "newOutcome": {
+      "kind": "note",
+      "note": "The 0.37 pp/yr GDP figure is correctly attributed to Graetz & Michaels (2018), but their study analyzed robot adoption across 17 countries and 14 industries from 1993 to 2007, not 1980-2000.",
+      "sources": [
+        {
+          "url": "https://www.brookings.edu/articles/robots-are-infiltrating-the-growth-statistics/",
+          "quote": "Graetz and Michaels employ new data from the International Federation of Robotics to analyze the use of industrial robots across 14 industries in 17 countries between 1993 and 2007.",
+          "explanation": "Confirms the study period was 1993-2007, not 1980-2000 as claimed in the post's slide."
+        },
+        {
+          "url": "https://www.brookings.edu/articles/robots-are-infiltrating-the-growth-statistics/",
+          "quote": "Overall, they conclude that the use of robots within manufacturing raised the annual growth of labor productivity and GDP by 0.36 and 0.37 percentage points, respectively.",
+          "explanation": "Confirms the 0.37 pp/yr GDP figure mentioned in the note."
+        }
+      ]
+    }
+  },
+  {
+    "claimId": "77ce6e6f-0030-4a81-b887-59066b92e413",
+    "itemTitle": "AI #175: The Fable Continues",
+    "itemUrl": "https://thezvi.substack.com/p/ai-175-the-fable-continues",
+    "contextUrl": "https://thezvi.substack.com/p/ai-175-the-fable-continues",
+    "claim": "On GeneBench-Pro at max reasoning, GPT-5.6 Luna (max) achieved a 16.5% pass rate while GPT-5.6 Luna (Pro) achieved 20.5%.",
+    "highlighted": "This is an impressive result all around for 5.6, especially for Luna.",
+    "paragraph": "This is an impressive result all around for 5.6, especially for Luna.\n\nThis should also help splash some cold water on claims GLM-5.2 is frontier.",
+    "oldNote": "The chart's own data shows GPT-5.6 Luna (Pro) scored 23.6% on GeneBench-Pro, not 20.5%. The 20.5% figure corresponds to GPT-5.5 (Pro) in the same chart, based on the labeled order of bars.",
+    "oldSources": [],
+    "newOutcome": {
+      "kind": "no_note",
+      "outcome": "rejected",
+      "reason": "no_correction_needed"
+    }
+  },
+  {
+    "claimId": "973b4314-e41d-4ba4-9fd9-72ae6cbec42a",
+    "itemTitle": "AI #175: The Fable Continues",
+    "itemUrl": "https://thezvi.substack.com/p/ai-175-the-fable-continues",
+    "contextUrl": "https://thezvi.substack.com/p/ai-175-the-fable-continues",
+    "claim": "Research found that AI agents respond to nudges in similar ways to humans.",
+    "highlighted": "AI agents respond to nudges in similar ways to humans. The paper presents this as falsifying an assumption of many agent uses, in the standard 'any suboptimal behavior means you fail' standard to which we often hold AIs.",
+    "paragraph": "AI agents respond to nudges in similar ways to humans. The paper presents this as falsifying an assumption of many agent uses, in the standard 'any suboptimal behavior means you fail' standard to which we often hold AIs. For now, so long as the nudges impacting your agent are not that adversarial, it seems fine, especially since humans will have the same issue. In the long term, there are ways to control for these problems by applying more intelligence, and the price of intelligence will go down.",
+    "oldNote": "The paper's core finding is the opposite: AI agents are hypersensitive to nudges, responding far more strongly than humans, even when nudges are neutral or counterproductive. This exposes \"a critical behavioral gap between human and model decision-making,\" not similarity.",
+    "oldSources": [
+      {
+        "url": "https://www.pnas.org/doi/full/10.1073/pnas.2537030123",
+        "quote": "We find that LLMs not only deviate from human strategies but also often display hypersensitivity to nudges, responding more strongly than people",
+        "explanation": "Confirms that the models respond differently and more intensely than humans."
+      },
+      {
+        "url": "https://www.pnas.org/doi/full/10.1073/pnas.2537030123",
+        "quote": "findings expose a critical behavioral gap between human and model decision-making.",
+        "explanation": "Explicitly describes a gap in behavior rather than similarity."
+      },
+      {
+        "url": "https://www.pnas.org/doi/full/10.1073/pnas.2537030123",
+        "quote": "responding far more strongly than people (who are already sensitive to them), including in cases where the intervention is neutral or counterproductive.",
+        "explanation": "Supports the claim that models are more sensitive even to neutral or negative nudges."
+      },
+      {
+        "url": "https://arxiv.org/abs/2505.11584",
+        "quote": "despite superficial similarities to human choice distributions, such models differ in subtle but important ways. First, they show much higher susceptibility to the nudges.",
+        "explanation": "Clarifies that while there are superficial similarities, the primary finding is higher susceptibility/hypersensitivity."
+      }
+    ],
+    "newOutcome": {
+      "kind": "note",
+      "note": "The underlying research actually found AI agents are far more responsive to nudges than humans, not similarly responsive. LLM agents were described as 'substantially more susceptible' and 'behaviorally brittle' compared to human decision-making.",
+      "sources": [
+        {
+          "url": "https://www.pnas.org/doi/10.1073/pnas.2537030123",
+          "quote": "LLMs... are far more responsive to nudges than humans, such that weak cues that slightly shift human behavior have larger effects on model choices",
+          "explanation": "Directly supports the note's claim that agents are more responsive to nudges than humans."
+        },
+        {
+          "url": "https://www.pnas.org/doi/10.1073/pnas.2537030123",
+          "quote": "LLM agents can be behaviorally brittle under subtle changes in choice architecture",
+          "explanation": "Directly supports the note's claim that models were described as 'behaviorally brittle'."
+        },
+        {
+          "url": "https://arxiv.org/html/2603.23433v3",
+          "quote": "Recent experimental evidence suggests that LLM agents are substantially more susceptible to choice architecture intended for humans than humans themselves",
+          "explanation": "Directly supports the note's claim that agents are 'substantially more susceptible' than humans."
+        }
+      ]
+    }
+  },
+  {
+    "claimId": "c2ebdad5-9336-4d86-af3b-43c6bcefe0a7",
+    "itemTitle": "AI #175: The Fable Continues",
+    "itemUrl": "https://thezvi.substack.com/p/ai-175-the-fable-continues",
+    "contextUrl": "https://thezvi.substack.com/p/ai-175-the-fable-continues",
+    "claim": "According to Exponential View's analysis, the AI economy (current sales to external end users) is growing at approximately 60% year over year.",
+    "highlighted": "They conclude it is about enough to pay for infrastructure investments given 6 year depreciation of chips, and is growing at ~60% year over year, and that as tokens drop in price overall spending rises per Jevons Paradox.",
+    "paragraph": "Exponential View tries to measure the state of the AI economy, defined here as current sales to external end users, not counting internal or intermediate AI payments and goods. They conclude it is about enough to pay for infrastructure investments given 6 year depreciation of chips, and is growing at ~60% year over year, and that as tokens drop in price overall spending rises per Jevons Paradox. AI is still only 0.4% of GDP, which they call a rounding error, but exponentials go fast.",
+    "oldNote": "Exponential View's report states AI economy revenue growth is running near 200% year-over-year, roughly 3x faster than any historical IT platform upgrade, not ~60%. Recent quarterly growth of ~35% QoQ annualizes to about 220%.",
+    "oldSources": [
+      {
+        "url": "https://www.exponentialview.co/p/the-state-of-the-ai-economy",
+        "quote": "These revenues are growing faster than previous IT-oriented waves, roughly three times more rapidly than the mobile or Internet waves.",
+        "explanation": "This confirms the claim that growth is roughly 3x faster than any historical IT platform upgrade."
+      },
+      {
+        "url": "https://www.exponentialview.co/p/the-state-of-the-ai-economy",
+        "quote": "Over the past 12 months, the AI ecosystem generated $110 billion in revenue... Annualizing the most recent month’s revenues indicates a $175 billion revenue run rate.",
+        "explanation": "The jump from a $110B trailing 12-month total to a $175B run rate implies massive growth far exceeding 60%."
+      }
+    ],
+    "newOutcome": {
+      "kind": "note",
+      "note": "Exponential View's report actually cites AI revenue growing at roughly 200% year-over-year (about 3x faster than prior IT platform waves), not ~60%. The ~60% figure refers to long-run compute growth, not revenue growth.",
+      "sources": [
+        {
+          "url": "https://www.exponentialview.co/p/the-state-of-the-ai-economy",
+          "quote": "These revenues are growing faster than previous IT-oriented waves, roughly three times more rapidly than the mobile or Internet waves.",
+          "explanation": "Confirms that AI revenue growth is significantly faster than previous tech waves, contradicting the 60% figure mentioned in the post."
+        },
+        {
+          "url": "https://www.exponentialview.co/p/the-state-of-the-ai-economy",
+          "quote": "Over the past 12 months, the AI ecosystem generated $110 billion in revenue... Annualizing the most recent month’s revenues indicates a $175 billion revenue run rate.",
+          "explanation": "The jump from a $110B trailing total to a $175B current run rate implies a growth velocity much higher than 60%."
+        },
+        {
+          "url": "https://allweatherfinance.com/ai-quarterly-revenue-surpasses-depreciation-costs-for-the-first-time-has-the-trillion-dollar-computing-power-gamble-entered-the-return-validation-phase/",
+          "quote": "The report shows that generative AI revenue is still growing at about 200% year-over-year—a rate about three times faster than any historical IT platform upgrade.",
+          "explanation": "Explicitly states the 200% year-over-year revenue growth rate from the Exponential View report."
+        },
+        {
+          "url": "https://allweatherfinance.com/ai-quarterly-revenue-surpasses-depreciation-costs-for-the-first-time-has-the-trillion-dollar-computing-power-gamble-entered-the-return-validation-phase/",
+          "quote": "Anthropic’s explosive growth kept industry-wide revenue near a 200% year-over-year pace.",
+          "explanation": "Reiterates the 200% growth figure."
+        },
+        {
+          "url": "https://allweatherfinance.com/ai-quarterly-revenue-surpasses-depreciation-costs-for-the-first-time-has-the-trillion-dollar-computing-power-gamble-entered-the-return-validation-phase/",
+          "quote": "The report shows that since 1971, global computing power has maintained a compound growth rate of about 66%...",
+          "explanation": "Shows that figures in the 60% range refer to long-term computing power trends, not current AI revenue growth."
+        }
+      ]
+    }
+  },
+  {
+    "claimId": "d83775c5-0b46-40ab-b099-461494f5e0d1",
+    "itemTitle": "Claude Sonnet 5 Is Not Frontier But Has Its Uses",
+    "itemUrl": "https://thezvi.substack.com/p/claude-sonnet-5-is-not-frontier-but",
+    "contextUrl": "https://thezvi.substack.com/p/claude-sonnet-5-is-not-frontier-but",
+    "claim": "Claude Mythos Preview achieved a 96.21% refusal rate for malicious requests in Claude Code evaluation, the highest of all models tested.",
+    "highlighted": "",
+    "paragraph": "",
+    "oldNote": "Mythos Preview's Claude Code malicious-request refusal rate is reported elsewhere as 96.72%, not 96.21%. It is still the highest among tested models, but the specific figure cited is inaccurate.",
+    "oldSources": [
+      {
+        "url": "https://www.authmind.com/blogs/when-a-lab-withholds-its-best-model-what-the-claude-mythos-system-card-signals-for-cybersecurity",
+        "quote": "Its refusal rate on malicious Claude Code requests reached 96.72%, compared to 80.94% for prior models.",
+        "explanation": "This directly supports the claim that the refusal rate is 96.72% rather than the 96.21% shown in the post."
+      },
+      {
+        "url": "https://www.authmind.com/blogs/when-a-lab-withholds-its-best-model-what-the-claude-mythos-system-card-signals-for-cybersecurity",
+        "quote": "Claude Mythos Preview became the first frontier model to complete a private cyber range end-to-end.",
+        "explanation": "This supports the claim that Mythos Preview represents the highest level of performance among tested models."
+      }
+    ],
+    "newOutcome": {
+      "kind": "no_note",
+      "outcome": "rejected",
+      "reason": "no_correction_needed"
+    }
+  },
+  {
+    "claimId": "e43a5cea-820b-4686-87e6-de95f45a6d9c",
+    "itemTitle": "Claude Sonnet 5 Is Not Frontier But Has Its Uses",
+    "itemUrl": "https://thezvi.substack.com/p/claude-sonnet-5-is-not-frontier-but",
+    "contextUrl": "https://thezvi.substack.com/p/claude-sonnet-5-is-not-frontier-but",
+    "claim": "Anthropic used Mythos as a trainer/judge during Claude Sonnet 5's development, according to the model card.",
+    "highlighted": "which is unsurprising given circumstances and use of Mythos as a trainer/judge as per the model card.",
+    "paragraph": "Very savvy when it comes to disclosure, which is unsurprising given circumstances and use of Mythos as a trainer/judge as per the model card.",
+    "oldNote": "This line isn't from Anthropic's model card. It's a quoted user's speculative comment in Zvi Mowshowitz's blog post about vibe checks on Claude Sonnet 5. The real Sonnet 5 System Card references Mythos 5 only as a capability benchmark, not as a 'trainer/judge.'",
+    "oldSources": [
+      {
+        "url": "https://www.anthropic.com/claude-sonnet-5-system-card",
+        "quote": "Sonnet 5 is less capable than Claude Mythos 5 on our autonomy-relevant evaluations",
+        "explanation": "The system card uses Mythos 5 as a performance benchmark."
+      },
+      {
+        "url": "https://www.anthropic.com/claude-sonnet-5-system-card",
+        "quote": "Claude Sonnet 5 is our most capable Sonnet-class model, but it does not advance our capability frontier compared to more capable Opus- or Mythos-class models.",
+        "explanation": "The card references Mythos as a more capable class of model, not as a training component for Sonnet 5."
+      },
+      {
+        "url": "https://thezvi.substack.com/p/claude-sonnet-5-is-not-frontier-but",
+        "quote": "I saw some praise for this criticism, but the naive version of it is wrong. I am mostly less",
+        "explanation": "This blog post contains commentary on the system card and reflects user reactions, consistent with the note's claim that the line originated in such a post rather than the official card."
+      }
+    ],
+    "newOutcome": {
+      "kind": "no_note",
+      "outcome": "rejected",
+      "reason": "no_correction_needed"
+    }
+  }
+]
