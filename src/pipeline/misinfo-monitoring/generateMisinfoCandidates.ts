@@ -20,8 +20,7 @@
 
 import { fetchEligiblePosts, type Post } from "../../api/fetchEligiblePosts";
 import type { SupabaseLogger } from "../../api/supabaseClient";
-import { buildPostSelection } from "../orchestration/utils/feedSizeStrategy";
-import type { FeedSize } from "../ab-testing/botConfig";
+import { buildPostSelection, type FeedSize } from "../orchestration/utils/feedSizeStrategy";
 import type { Candidate } from "../orchestration/submitCandidates";
 import { processPosts, type ProcessPostItem, type TweetProcessedEvent } from "../orchestration/generateCandidates";
 import { MISINFO_TOPICS, type MisinfoTopic } from "./topics";
@@ -260,7 +259,6 @@ export async function generateMisinfoCandidates(
   };
 
   const candidates = await processPosts(work.map((w) => w.item), supabaseLogger, {
-    feedSize,
     onTweetProcessed: onProcessed,
     label: "misinfo",
   });
