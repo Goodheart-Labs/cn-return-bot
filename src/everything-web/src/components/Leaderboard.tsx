@@ -8,21 +8,21 @@ import {
 } from "../lib/leaderboard";
 import { displayName } from "../lib/session";
 
-/** Ranks people by how many notes they've rated. Anyone can hide themselves. */
+/** Ranks people by how many notes they've rated. Listed only if they opt in. */
 export function Leaderboard({ session, myVoteCount }: {
   session: Session | null;
   myVoteCount: number;
 }) {
   const [entries, setEntries] = useState<LeaderboardEntry[] | null>(null);
   const [failed, setFailed] = useState(false);
-  const [optIn, setOptIn] = useState(true);
+  const [optIn, setOptIn] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const load = () => fetchLeaderboard().then(setEntries).catch(() => setFailed(true));
   useEffect(() => { load(); }, []);
   useEffect(() => {
     if (session) fetchMyLeaderboardOptIn().then(setOptIn).catch(() => {});
-    else setOptIn(true);
+    else setOptIn(false);
   }, [session?.user.id]);
 
   const myName = session ? displayName(session) : null;
@@ -43,7 +43,7 @@ export function Leaderboard({ session, myVoteCount }: {
   return (
     <div className="max-w-xl mx-auto w-full">
       <p className="text-sm text-gray-500 mb-6">
-        People ranked by how many notes they've rated.
+        People who opted in, ranked by how many notes they've rated.
       </p>
 
       {session && (
@@ -54,7 +54,7 @@ export function Leaderboard({ session, myVoteCount }: {
           </label>
           {!optIn && (
             <span className="text-gray-400">
-              You're hidden — you've rated {myVoteCount} {myVoteCount === 1 ? "note" : "notes"}
+              You're not listed — you've rated {myVoteCount} {myVoteCount === 1 ? "note" : "notes"}
             </span>
           )}
         </div>
