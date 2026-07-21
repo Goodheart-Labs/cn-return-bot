@@ -288,10 +288,11 @@ export function App() {
           a.created_at.localeCompare(b.created_at),
       ),
     );
-  // Nathan's ranking spec (prep doc, #7): a note "locks in" as a real note at
-  // >=5 ratings with net-positive score; under that it's a draft. Feed order:
-  // top 3 slots go to the best real notes, then real/draft interleave 1:1,
-  // then the draft long tail. Net-negative notes sink below a labeled divider.
+  // Feed order: notes that still need ratings on top (oldest first — they need
+  // eyes), then locked-in helpful notes sorted least→most helpful so the
+  // best-rated sit lowest, just above the divider. Net-negative notes sink
+  // below a labeled divider. A note "locks in" as a real note at >=5 ratings
+  // with net-positive score; under that it's a draft.
   // While a note is held (just-voted grace window), rank it by its frozen
   // count snapshot so it keeps its exact slot; display still shows live counts.
   const effective = (n: NoteRow): NoteRow => {
@@ -314,23 +315,22 @@ export function App() {
   const aboveWater = orderedNotes.filter((n) => !isUnderwater(n));
   const underwaterNotes = orderedNotes.filter((n) => isUnderwater(n) && !isBuried(n));
   const buriedNotes = orderedNotes.filter((n) => isUnderwater(n) && isBuried(n));
-  // Rank by score, then vote volume, then keep content order stable.
   const contentIdx = new Map(orderedNotes.map((n, i) => [n.id, i]));
-  const ranked = [...aboveWater].sort(
+  const drafts = aboveWater.filter((n) => !isLocked(effective(n)));
+  const lockedIn = aboveWater.filter((n) => isLocked(effective(n)));
+  drafts.sort(
     (a, b) =>
-      score(b) - score(a) ||
-      totalVotes(effective(b)) - totalVotes(effective(a)) ||
+      a.created_at.localeCompare(b.created_at) ||
       contentIdx.get(a.id)! - contentIdx.get(b.id)!,
   );
-  const realNotes = ranked.filter((n) => isLocked(effective(n)));
-  const draftFeed = ranked.filter((n) => !isLocked(effective(n)));
-  const projectNotes: NoteRow[] = [...realNotes.slice(0, 3)];
-  const restReal = realNotes.slice(3);
-  for (let i = 0; restReal.length > i || draftFeed.length > i * 0; i++) {
-    if (i >= restReal.length && i >= draftFeed.length) break;
-    if (i < restReal.length) projectNotes.push(restReal[i]!);
-    if (i < draftFeed.length) projectNotes.push(draftFeed[i]!);
-  }
+  // Equal score → the more-voted (more confidently helpful) note sits lower.
+  lockedIn.sort(
+    (a, b) =>
+      score(a) - score(b) ||
+      totalVotes(effective(a)) - totalVotes(effective(b)) ||
+      contentIdx.get(a.id)! - contentIdx.get(b.id)!,
+  );
+  const projectNotes: NoteRow[] = [...drafts, ...lockedIn];
 
   const renderCard = (note: NoteRow) => (
     <NoteCard
