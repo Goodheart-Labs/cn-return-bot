@@ -1,8 +1,9 @@
 /**
  * Generate Candidates
  *
- * Fetches new tweets from the feed, runs bot pipelines, scores them,
- * and returns candidates that pass the configured eval-score threshold.
+ * Walks the feed ladder for posts moving fast enough to be worth a note, runs
+ * bot pipelines over them, scores them, and returns candidates that pass the
+ * configured eval-score threshold.
  */
 
 import { fetchEligiblePosts } from "../../api/fetchEligiblePosts";
@@ -19,35 +20,48 @@ import { withBotConfig } from "../ab-testing/botConfig";
 import { withCostTracker } from "../cost-tracking/costTracker";
 import { withWarnings } from "../utils/warnings";
 import { withMonitoringContext, type MonitoringContext } from "../misinfo-monitoring/monitoringContext";
-import { velocityPerHour, formatVelocity } from "../utils/velocity";
+import { velocityPerHour, formatVelocity, isAboveVelocityFloor, REGULAR_VELOCITY_FLOOR_PER_HOUR } from "../utils/velocity";
 import type { Post } from "../../api/fetchEligiblePosts";
 import PQueue from "p-queue";
 
 const CONCURRENCY_LIMIT = 5;
 const BACKLOG_LIMIT = 1000;
-// The large feed contains the small feed, so fetching small first only gives
-// its posts an artificial priority. Start at large; broaden to XL/XXL only when
-// needed, then fall back to small for accounts without broader-feed access.
-const REGULAR_FEED_LADDER: FeedSize[] = ["large", "xl", "xxl", "small"];
+// Each tier is a superset of the one before it. Start at the curated small
+// feed and broaden only when a tier fails or does not contain enough new posts
+// to fill this run's budget — so small-feed posts get priority, and the
+// lower-quality bulk of large/XL/XXL is only reached on demand.
+const REGULAR_FEED_LADDER: FeedSize[] = ["small", "large", "xl", "xxl"];
 
-/** A post plus the feed tier it was fetched from (kept for operational logs). */
+/**
+ * A post, the feed tier it was fetched from (kept for operational logs), and
+ * its velocity FROZEN at fetch time. Freezing matters: velocity is impressions
+ * over age, so re-deriving it after a pipeline run has elapsed would shrink it
+ * (the impression count stays at its fetch-time value while age grows) and drop
+ * posts we deliberately selected below the floor at submission.
+ */
 interface SourcedPost {
   post: Post;
   feedSize: FeedSize;
+  velocity: number | null;
 }
 
 type FeedFetcher = (feedSize: FeedSize) => Promise<Post[]>;
 
 /**
- * Fetch the preferred feed tiers in order, dedupe their overlapping contents,
- * and pick the globally fastest posts. Unknown velocity sorts last.
+ * Walk the feed ladder one tier at a time: fetch, drop posts already seen,
+ * compute velocity, keep only what clears the floor, and stop as soon as
+ * `maxPosts` of them are pooled — otherwise broaden to the next tier. Filtering
+ * here rather than at submission means a slow post never costs a pipeline run.
+ * Returns the fastest first; unknown velocity fails open but sorts last.
+ *
+ * Exported for deterministic tests of the broaden-until-full behavior.
  */
-async function collectVelocityRankedPosts(
+export async function collectFastPosts(
   maxPosts: number,
   knownTweetIds: Set<string>,
   fetchFeed: FeedFetcher,
   asOfMs: number = Date.now(),
-): Promise<{ selected: SourcedPost[]; allNew: Post[] }> {
+): Promise<SourcedPost[]> {
   const pool = new Map<string, SourcedPost>();
 
   for (const feedSize of REGULAR_FEED_LADDER) {
@@ -59,19 +73,25 @@ async function collectVelocityRankedPosts(
       continue;
     }
 
-    const newPosts = posts.filter((p) => !knownTweetIds.has(p.id) && !pool.has(p.id));
-    console.log(`[generate] Feed ${feedSize}: ${posts.length} posts, ${newPosts.length} new`);
-    for (const post of newPosts) pool.set(post.id, { post, feedSize });
+    const fresh = posts
+      .filter((p) => !knownTweetIds.has(p.id) && !pool.has(p.id))
+      .map((post) => ({ post, feedSize, velocity: velocityPerHour(post, asOfMs) }));
+    const fastEnough = fresh.filter((s) => isAboveVelocityFloor(s.velocity));
+    console.log(
+      `[generate] Feed ${feedSize}: ${posts.length} posts, ${fresh.length} new, ` +
+        `${fastEnough.length} above the ${formatVelocity(REGULAR_VELOCITY_FLOOR_PER_HOUR)} floor`,
+    );
+    for (const sourced of fastEnough) pool.set(sourced.post.id, sourced);
     if (pool.size >= maxPosts) break;
   }
 
-  const selected = [...pool.values()]
-    .sort((a, b) =>
-      (velocityPerHour(b.post, asOfMs) ?? -Infinity)
-      - (velocityPerHour(a.post, asOfMs) ?? -Infinity),
-    )
+  if (pool.size < maxPosts) {
+    console.log(`[generate] Ladder exhausted: only ${pool.size} of ${maxPosts} post(s) clear the floor`);
+  }
+
+  return [...pool.values()]
+    .sort((a, b) => (b.velocity ?? -Infinity) - (a.velocity ?? -Infinity))
     .slice(0, maxPosts);
-  return { selected, allNew: [...pool.values()].map(({ post }) => post) };
 }
 
 // ---------------------------------------------------------------------------
@@ -83,7 +103,7 @@ async function fetchPosts(
   maxPosts: number,
   prefetchedSkipPostIds?: Set<string>,
   prefetchedKnownTweetIds?: Set<string>,
-): Promise<{ posts: SourcedPost[] }> {
+): Promise<SourcedPost[]> {
   let skipPostIds = prefetchedSkipPostIds;
   let knownTweetIds = prefetchedKnownTweetIds;
 
@@ -106,16 +126,21 @@ async function fetchPosts(
   knownTweetIds = knownTweetIds ?? new Set<string>();
   console.log(`[generate] Skip: ${skipPostIds.size} cooldown, ${knownTweetIds.size} already in tweets table`);
 
-  const { selected, allNew } = await collectVelocityRankedPosts(
+  const selected = await collectFastPosts(
     maxPosts,
     knownTweetIds,
     (feedSize) => fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds!, 50, buildPostSelection(feedSize)),
   );
 
-  if (supabaseLogger && allNew.length) {
+  // Only the posts we're about to process are recorded. The tweets table is the
+  // "already handled, don't fetch again" ledger, so recording everything the
+  // ladder walked past would burn every below-floor post on first sight — and a
+  // post that is slow now may be worth a note once it takes off. (The full feed
+  // pull is archived separately, in feed_tweets.)
+  if (supabaseLogger && selected.length) {
     try {
-      await supabaseLogger.bulkInsertNewTweets(allNew);
-      console.log(`[generate] Inserted ${allNew.length} new tweets`);
+      await supabaseLogger.bulkInsertNewTweets(selected.map((s) => s.post));
+      console.log(`[generate] Inserted ${selected.length} new tweets`);
     } catch (err) {
       console.warn("[generate] Failed to bulk-insert tweets:", err);
     }
@@ -127,10 +152,10 @@ async function fetchPosts(
   for (const [i, s] of selected.entries()) {
     const imp = s.post.public_metrics?.impression_count ?? 0;
     const age = ageInHours(s.post);
-    console.log(`[generate]   #${i + 1}: ${s.post.id} | ${s.feedSize} | vel=${formatVelocity(velocityPerHour(s.post))} | ${formatCount(imp)} imp | ${age.toFixed(1)}h ago`);
+    console.log(`[generate]   #${i + 1}: ${s.post.id} | ${s.feedSize} | vel=${formatVelocity(s.velocity)} | ${formatCount(imp)} imp | ${age.toFixed(1)}h ago`);
   }
 
-  return { posts: selected };
+  return selected;
 }
 
 function logMediaBreakdown(posts: Post[]): void {
@@ -163,6 +188,10 @@ export interface TweetProcessedEvent {
 export interface ProcessPostItem {
   post: Post;
   monitoring?: MonitoringContext;
+  /** Velocity frozen when the post was fetched, carried onto the candidate so
+   *  the submission-time floor doesn't re-derive a decayed value. Omitted by
+   *  callers that select posts some other way (the pre-passes). */
+  velocity?: number | null;
 }
 
 export interface ProcessPostsOptions {
@@ -239,7 +268,7 @@ export async function processPosts(
       }
 
       if (tweetResult.outcome === "candidate" && tweetResult.pipelineRunId) {
-        candidates.push({ post: item.post, tweetResult, botId });
+        candidates.push({ post: item.post, tweetResult, botId, velocity: item.velocity });
       }
     })));
   }
@@ -278,7 +307,7 @@ export async function generateCandidates(
   const activeBots = botProbs.filter((b) => b.probability > 0);
   console.log(`[generate] Bots: ${activeBots.map((b) => `${b.id} ${b.probability.toFixed(1)}%`).join(", ")}`);
 
-  const { posts } = await fetchPosts(supabaseLogger, maxPosts, skipPostIds, knownTweetIds);
+  const posts = await fetchPosts(supabaseLogger, maxPosts, skipPostIds, knownTweetIds);
   if (!posts.length) {
     console.log("[generate] No eligible posts found.");
     return [];
@@ -286,7 +315,7 @@ export async function generateCandidates(
   logMediaBreakdown(posts.map((s) => s.post));
 
   return processPosts(
-    posts.map((s) => ({ post: s.post })),
+    posts.map((s) => ({ post: s.post, velocity: s.velocity })),
     supabaseLogger,
     { onTweetProcessed, label: "generate" },
   );
