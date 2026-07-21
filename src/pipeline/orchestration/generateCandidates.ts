@@ -25,10 +25,11 @@ import PQueue from "p-queue";
 
 const CONCURRENCY_LIMIT = 5;
 const BACKLOG_LIMIT = 1000;
-// The large feed contains the small feed, so fetching small first only gives
-// its posts an artificial priority. Start at large; broaden to XL/XXL only when
-// needed, then fall back to small for accounts without broader-feed access.
-const REGULAR_FEED_LADDER: FeedSize[] = ["large", "xl", "xxl", "small"];
+// Each tier is a superset of the one before it. Start at the curated small
+// feed and broaden only when a tier fails or does not contain enough new posts
+// to fill this run's budget — so small-feed posts get priority, and the
+// lower-quality bulk of large/XL/XXL is only reached on demand.
+const REGULAR_FEED_LADDER: FeedSize[] = ["small", "large", "xl", "xxl"];
 
 /** A post plus the feed tier it was fetched from (kept for operational logs). */
 interface SourcedPost {
