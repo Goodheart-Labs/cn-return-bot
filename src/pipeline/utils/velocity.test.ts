@@ -1,5 +1,12 @@
 import { test, expect } from "bun:test";
-import { velocityPerHour, formatVelocity, VELOCITY_MIN_AGE_HOURS, REGULAR_VELOCITY_FLOOR_PER_HOUR } from "./velocity";
+import {
+  velocityPerHour,
+  formatVelocity,
+  isAboveFloor,
+  isAboveVelocityFloor,
+  VELOCITY_MIN_AGE_HOURS,
+  REGULAR_VELOCITY_FLOOR_PER_HOUR,
+} from "./velocity";
 import { partitionByVelocityFloor, orderWithReserve, type Candidate } from "../orchestration/submitCandidates";
 import { collectFastPosts } from "../orchestration/generateCandidates";
 import type { FeedSize } from "../orchestration/utils/feedSizeStrategy";
@@ -42,6 +49,20 @@ test("missing impressions or timestamp returns null (callers fail open)", () => 
 test("formatVelocity", () => {
   expect(formatVelocity(12_340)).toBe("12.3K/h");
   expect(formatVelocity(null)).toBe("?");
+});
+
+test("isAboveFloor: boundary inclusive, null fails open, floor<=0 disables", () => {
+  expect(isAboveFloor(4_000, 4_000)).toBe(true);
+  expect(isAboveFloor(3_999, 4_000)).toBe(false);
+  expect(isAboveFloor(null, 4_000)).toBe(true);
+  expect(isAboveFloor(0, 0)).toBe(true);
+  expect(isAboveFloor(-5, -1)).toBe(true);
+});
+
+test("isAboveVelocityFloor delegates against the regular floor", () => {
+  expect(isAboveVelocityFloor(REGULAR_VELOCITY_FLOOR_PER_HOUR)).toBe(true);
+  expect(isAboveVelocityFloor(REGULAR_VELOCITY_FLOOR_PER_HOUR - 1)).toBe(false);
+  expect(isAboveVelocityFloor(null)).toBe(true);
 });
 
 // ── submission-layer pure functions ─────────────────────────────────────────
