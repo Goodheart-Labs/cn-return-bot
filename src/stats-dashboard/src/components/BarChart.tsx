@@ -28,6 +28,7 @@ interface BarChartProps {
   mode: ChartMode;
   width: number;
   showNonCandidate: boolean;
+  showNmr: boolean;
 }
 
 function niceStep(rough: number): number {
@@ -117,7 +118,7 @@ interface HoverState {
   stacked?: StackBucket;
 }
 
-export function BarChart({ buckets, shareBuckets, granularity, mode, width, showNonCandidate }: BarChartProps) {
+export function BarChart({ buckets, shareBuckets, granularity, mode, width, showNonCandidate, showNmr }: BarChartProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState<HoverState | null>(null);
   const [scrollLeft, setScrollLeft] = useState(0);
@@ -162,7 +163,7 @@ export function BarChart({ buckets, shareBuckets, granularity, mode, width, show
         onMouseLeave={() => setHovered(null)}
         onScroll={(e) => setScrollLeft(e.currentTarget.scrollLeft)}
       >
-        {mode === "absolute" ? (
+        {mode === "absolute" || mode === "posted" ? (
           <AbsoluteChart
             buckets={buckets}
             granularity={granularity}
@@ -170,6 +171,7 @@ export function BarChart({ buckets, shareBuckets, granularity, mode, width, show
             innerHeight={innerHeight}
             slotWidth={slotWidth}
             barWidth={barWidth}
+            showNmr={showNmr}
             onHover={(bucket, slotCenter) => setHovered({ absolute: bucket, slotCenter })}
           />
         ) : (
@@ -185,7 +187,7 @@ export function BarChart({ buckets, shareBuckets, granularity, mode, width, show
         )}
       </div>
       {hovered?.absolute && (
-        <AbsoluteTooltip bucket={hovered.absolute} slotCenter={hovered.slotCenter} scrollLeft={scrollLeft} containerWidth={width} />
+        <AbsoluteTooltip bucket={hovered.absolute} slotCenter={hovered.slotCenter} scrollLeft={scrollLeft} containerWidth={width} showNmr={showNmr} />
       )}
       {hovered?.stacked && (
         <StackedTooltip bucket={hovered.stacked} slotCenter={hovered.slotCenter} scrollLeft={scrollLeft} containerWidth={width} />
@@ -201,13 +203,18 @@ interface AbsoluteChartProps {
   innerHeight: number;
   slotWidth: number;
   barWidth: number;
+  showNmr: boolean;
   onHover: (bucket: ChartBucket, slotCenter: number) => void;
 }
 
-function AbsoluteChart({ buckets, granularity, width, innerHeight, slotWidth, barWidth, onHover }: AbsoluteChartProps) {
-  const maxHelpful = Math.max(0, ...buckets.map((b) => b.helpful));
+function AbsoluteChart({ buckets, granularity, width, innerHeight, slotWidth, barWidth, showNmr, onHover }: AbsoluteChartProps) {
+  // When "show needs more ratings" is on, NMR notes stack in gray above the
+  // green helpful bars, so the upward bar height becomes total posted (minus
+  // the not-helpful that hang below the zero line). The upper axis rescales to
+  // fit that taller stack.
+  const maxUpper = Math.max(0, ...buckets.map((b) => b.helpful + (showNmr ? b.nmr : 0)));
   const maxUnhelpful = Math.max(0, ...buckets.map((b) => b.unhelpful));
-  const upperTicks = niceTicks(Math.max(maxHelpful, 1));
+  const upperTicks = niceTicks(Math.max(maxUpper, 1));
   const lowerTicks = maxUnhelpful === 0 ? [0] : niceTicks(maxUnhelpful);
   const upperPlotMax = upperTicks[upperTicks.length - 1] ?? 1;
   const lowerPlotMax = lowerTicks[lowerTicks.length - 1] ?? 0;
@@ -247,6 +254,7 @@ function AbsoluteChart({ buckets, granularity, width, innerHeight, slotWidth, ba
         const xCenter = PAD_LEFT + slotWidth * (i + 0.5);
         const xBar = xCenter - barWidth / 2;
         const helpfulHeight = b.helpful * upperPxPerUnit;
+        const nmrHeight = showNmr ? b.nmr * upperPxPerUnit : 0;
         const unhelpfulHeight = b.unhelpful * lowerPxPerUnit;
         return (
           <g key={b.key} onMouseEnter={() => onHover(b, xCenter)}>
@@ -257,6 +265,9 @@ function AbsoluteChart({ buckets, granularity, width, innerHeight, slotWidth, ba
               height={innerHeight}
               fill="transparent"
             />
+            {showNmr && b.nmr > 0 && (
+              <rect x={xBar} y={zeroY - helpfulHeight - nmrHeight} width={barWidth} height={nmrHeight} fill={COLOR_NMR} />
+            )}
             {b.helpful > 0 && (
               <rect x={xBar} y={zeroY - helpfulHeight} width={barWidth} height={helpfulHeight} fill={COLOR_HELPFUL} />
             )}
@@ -377,16 +388,19 @@ function AbsoluteTooltip({
   slotCenter,
   scrollLeft,
   containerWidth,
+  showNmr,
 }: {
   bucket: ChartBucket;
   slotCenter: number;
   scrollLeft: number;
   containerWidth: number;
+  showNmr: boolean;
 }) {
   return (
     <TooltipShell left={tooltipLeft(slotCenter, scrollLeft, containerWidth)} label={bucket.label}>
       <TooltipRow color={COLOR_HELPFUL} label="Helpful" value={`${bucket.helpful}`} />
       <TooltipRow color={COLOR_UNHELPFUL} label="Not helpful" value={`${bucket.unhelpful}`} />
+      {showNmr && <TooltipRow color={COLOR_NMR} label="Needs more ratings" value={`${bucket.nmr}`} />}
     </TooltipShell>
   );
 }

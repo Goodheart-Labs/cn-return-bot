@@ -89,5 +89,5 @@ export interface StatsSnapshot {
 }
 
 export type ChartGranularity = "daily" | "weekly";
-export type ChartMode = "absolute" | "ratio" | "share";
+export type ChartMode = "absolute" | "posted" | "ratio" | "share";
 export type NoteSort = "latest_helpful" | "most_views_helpful" | "latest_unhelpful";
