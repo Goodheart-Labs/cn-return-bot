@@ -2,9 +2,9 @@ import type { Session } from "@supabase/supabase-js";
 import { createLocalPreference } from "../lib/preference";
 import { displayName } from "../lib/session";
 
-/** Shared pieces of the small inline editors (improve a note, reply to a
- *  comment, explain a vote): auto-growing textarea, the opt-in byline
- *  checkbox, and the judge-rejected notice. */
+/** Shared pieces of the small inline editors (improve a note, argue a note
+ *  isn't needed): auto-growing textarea, the opt-in byline checkbox, and the
+ *  judge-rejected notice. */
 
 export function AutoGrowTextarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   const { className, ...rest } = props;

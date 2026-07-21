@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { useLiveData } from "./lib/useLiveData";
 import { useSession, signOut } from "./lib/auth";
 import { castVote, clearVote, fetchMyVotes, type Vote } from "./lib/votes";
-import { castCommentVote, clearCommentVote, fetchMyCommentVotes } from "./lib/comments";
+import { castNnnVote, clearNnnVote, fetchMyNnnVotes } from "./lib/noteNotNeeded";
 import { donationPair, priorTally, type VoteCast } from "./lib/donationScoring";
+import { noteTally, probabilityHelpful, probabilityHelpfulAfter } from "./lib/noteBelief";
 import { saveDonation, usePreferredCharity } from "./lib/donations";
 import { readRoute, pushProject, pushItem, pushLeaderboard, type View } from "./lib/routing";
 import { Sidebar } from "./components/Sidebar";
@@ -35,13 +36,33 @@ import { NoteCard } from "./components/NoteCard";
 import { ItemChips } from "./components/ItemChips";
 import { Leaderboard } from "./components/Leaderboard";
 import { DesignMenu } from "./components/DesignMenu";
-import type { CommentRow, NoteRow } from "./lib/types";
-import { isLocked, totalVotes, weight } from "./lib/noteScore";
+import type { NnnRow, NoteRow } from "./lib/types";
+import { noteStatus, totalVotes } from "./lib/noteScore";
 
-const EMPTY_COMMENT_TREE = new Map<string | null, CommentRow[]>();
+const NO_NNN: NnnRow[] = [];
+
+/** A labelled band of the feed. Rendered only when it has notes, so a project
+ *  with nothing rated yet shows no dividers at all. */
+function NoteSection({ label, notes, render }: {
+  label: string;
+  notes: NoteRow[];
+  render: (note: NoteRow) => ReactNode;
+}) {
+  if (notes.length === 0) return null;
+  return (
+    <>
+      <div className="flex items-center gap-3 pt-4 max-w-[40rem] mx-auto w-full xl:max-w-none" role="separator">
+        <span className="flex-1 border-t-2 border-dotted border-gray-300" />
+        <span className="text-xs text-gray-400">{label}</span>
+        <span className="flex-1 border-t-2 border-dotted border-gray-300" />
+      </div>
+      {notes.map(render)}
+    </>
+  );
+}
 
 export function App() {
-  const { projects, items, notes, comments, loaded } = useLiveData();
+  const { projects, items, notes, nnn, loaded } = useLiveData();
   const { session } = useSession();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   // Which top-level view — the note feed or the rating leaderboard.
@@ -49,7 +70,7 @@ export function App() {
   // Item filter within the project (episode / post / page) — null = all items.
   const [itemFilter, setItemFilter] = useState<string | null>(() => readRoute().item);
   const [myVotes, setMyVotes] = useState<Map<string, Vote>>(new Map());
-  const [myCommentVotes, setMyCommentVotes] = useState<Map<string, Vote>>(new Map());
+  const [myNnnVotes, setMyNnnVotes] = useState<Map<string, Vote>>(new Map());
   // A fresh vote's donation starts at the remembered charity; the donation
   // box lets the voter redirect it afterwards.
   const [preferredCharity] = usePreferredCharity();
@@ -68,10 +89,10 @@ export function App() {
   useEffect(() => {
     if (session) {
       fetchMyVotes().then(setMyVotes);
-      fetchMyCommentVotes().then(setMyCommentVotes);
+      fetchMyNnnVotes().then(setMyNnnVotes);
     } else {
       setMyVotes(new Map());
-      setMyCommentVotes(new Map());
+      setMyNnnVotes(new Map());
     }
   }, [session?.user.id]);
 
@@ -98,20 +119,19 @@ export function App() {
     return { notesByItem: byItem, improvementsByOriginal: improvements };
   }, [notes]);
 
-  // Per-note comment trees: note id → (parent comment id | null → children,
-  // oldest first). Comments rank by age, not votes — no teleporting threads.
-  const commentsByNote = useMemo(() => {
-    const byNote = new Map<string, Map<string | null, CommentRow[]>>();
-    const sorted = [...comments.values()].sort((a, b) => a.created_at.localeCompare(b.created_at));
-    for (const comment of sorted) {
-      const tree = byNote.get(comment.note_id) ?? new Map<string | null, CommentRow[]>();
-      const siblings = tree.get(comment.parent_comment_id) ?? [];
-      siblings.push(comment);
-      tree.set(comment.parent_comment_id, siblings);
-      byNote.set(comment.note_id, tree);
+  // Claim id → its note-not-needed entries, oldest first (age order, not
+  // votes — no teleporting). The same list renders under every note card on
+  // that claim.
+  const nnnByClaim = useMemo(() => {
+    const byClaim = new Map<string, NnnRow[]>();
+    const sorted = [...nnn.values()].sort((a, b) => a.created_at.localeCompare(b.created_at));
+    for (const entry of sorted) {
+      const list = byClaim.get(entry.claim_id) ?? [];
+      list.push(entry);
+      byClaim.set(entry.claim_id, list);
     }
-    return byNote;
-  }, [comments]);
+    return byClaim;
+  }, [nnn]);
 
   // Initial project: the ?project= slug from the URL, else the first project
   // (by sort order) that actually has content.
@@ -223,32 +243,32 @@ export function App() {
     return error ? null : { voteId, pair };
   };
 
-  const handleCommentVote = async (comment: CommentRow, vote: Vote) => {
+  const handleNnnVote = async (entry: NnnRow, vote: Vote) => {
     if (!session) {
       setLoginOpen(true);
       return;
     }
-    const current = myCommentVotes.get(comment.id);
-    const next = new Map(myCommentVotes);
+    const current = myNnnVotes.get(entry.id);
+    const next = new Map(myNnnVotes);
     if (current === vote) {
-      next.delete(comment.id);
-      setMyCommentVotes(next);
-      await clearCommentVote(comment.id);
+      next.delete(entry.id);
+      setMyNnnVotes(next);
+      await clearNnnVote(entry.id);
     } else {
-      next.set(comment.id, vote);
-      setMyCommentVotes(next);
-      await castCommentVote(comment.id, session.user.id, vote);
+      next.set(entry.id, vote);
+      setMyNnnVotes(next);
+      await castNnnVote(entry.id, session.user.id, vote);
     }
   };
 
-  // The DB self-vote triggers make a just-posted note/comment start with its
+  // The DB self-vote triggers make a just-posted note/entry start with its
   // author's helpful vote — mirror that into the local vote maps so the pills
   // light up without a refetch.
-  const commentsApi = {
-    myVotes: myCommentVotes,
-    onVote: handleCommentVote,
-    onAuthored: (commentId: string) =>
-      setMyCommentVotes((m) => new Map(m).set(commentId, 1)),
+  const nnnApi = {
+    myVotes: myNnnVotes,
+    onVote: handleNnnVote,
+    onAuthored: (entryId: string) =>
+      setMyNnnVotes((m) => new Map(m).set(entryId, 1)),
   };
   const noteAuthored = (noteId: string) => setMyVotes((m) => new Map(m).set(noteId, 1));
 
@@ -289,57 +309,76 @@ export function App() {
           a.created_at.localeCompare(b.created_at),
       ),
     );
-  // Nathan's ranking spec (prep doc, #7): a note "locks in" as a real note at
-  // >=5 ratings with net-positive score; under that it's a draft. Feed order:
-  // top 3 slots go to the best real notes, then real/draft interleave 1:1,
-  // then the draft long tail. Net-negative notes sink below a labeled divider.
   // While a note is held (just-voted grace window), rank it by its frozen
   // count snapshot so it keeps its exact slot; display still shows live counts.
   const effective = (n: NoteRow): NoteRow => {
     const held = voteHolds.get(n.id);
     return held ? { ...n, ...held } : n;
   };
-  const score = (n: NoteRow) => {
-    const e = effective(n);
-    return totalVotes(e) === 0 ? 0 : weight(e) / totalVotes(e);
-  };
-  const isUnderwater = (n: NoteRow) => {
-    const e = effective(n);
-    return e.not_helpful_count > e.helpful_count + e.somewhat_helpful_count;
-  };
-
-  // Really unhelpful = enough ratings to be confident (>=5) and a weighted
-  // score under 0.4 — those collapse into a drawer at the bottom; mildly
-  // negative notes stay visible below the dotted line.
-  const isBuried = (n: NoteRow) => totalVotes(effective(n)) >= 5 && score(n) < 0.4;
-  const aboveWater = orderedNotes.filter((n) => !isUnderwater(n));
-  const underwaterNotes = orderedNotes.filter((n) => isUnderwater(n) && !isBuried(n));
-  const buriedNotes = orderedNotes.filter((n) => isUnderwater(n) && isBuried(n));
-  // Rank by score, then vote volume, then keep content order stable.
   const contentIdx = new Map(orderedNotes.map((n, i) => [n.id, i]));
-  const ranked = [...aboveWater].sort(
+  // p is a continued-fraction evaluation, so derive each note's ranking inputs
+  // once here rather than inside the comparators below — a comparator would
+  // re-evaluate it O(n log n) times on every render.
+  //
+  // One predicate decides the badge, the section and the donation payout:
+  // noteStatus (lib/noteScore.ts), the p-based rating rule.
+  const ranking = new Map(
+    orderedNotes.map((n) => {
+      const e = effective(n);
+      return [
+        n.id,
+        {
+          status: noteStatus(e),
+          p: probabilityHelpful(noteTally(e)),
+          pAfterOneHelpful: probabilityHelpfulAfter(e, 1),
+          votes: totalVotes(e),
+        },
+      ];
+    }),
+  );
+  const rankOf = (n: NoteRow) => ranking.get(n.id)!;
+  // A note written against source text the author has since edited may no longer
+  // apply, whatever its rating — so it drops below everything else rather than
+  // sitting among notes about the live text. Outranks the rating status.
+  const staleSource = (n: NoteRow) => n.claim?.updated_quote != null;
+  const current = orderedNotes.filter((n) => !staleSource(n));
+  const needRatings = current.filter((n) => rankOf(n).status === "needs_ratings");
+  const helpfulNotes = current.filter((n) => rankOf(n).status === "helpful");
+  const unhelpfulNotes = current.filter((n) => rankOf(n).status === "not_helpful");
+  const staleSourceNotes = orderedNotes.filter(staleSource);
+  // Every group is ordered by p, the latent-quality model's estimate that the
+  // note ends up rated helpful (see lib/noteBelief.ts) — so the whole feed reads
+  // as one gradient, most-uncertain at the top down to most-settled.
+  // Needs ratings: lead with the note a single Helpful vote would carry
+  // furthest — the closest to resolving — so attention lands where it settles
+  // something. Equal p (identical tallies) → oldest first, they've waited longest.
+  needRatings.sort(
     (a, b) =>
-      score(b) - score(a) ||
-      totalVotes(effective(b)) - totalVotes(effective(a)) ||
+      rankOf(b).pAfterOneHelpful - rankOf(a).pAfterOneHelpful ||
+      a.created_at.localeCompare(b.created_at) ||
       contentIdx.get(a.id)! - contentIdx.get(b.id)!,
   );
-  const realNotes = ranked.filter((n) => isLocked(effective(n)));
-  const draftFeed = ranked.filter((n) => !isLocked(effective(n)));
-  const projectNotes: NoteRow[] = [...realNotes.slice(0, 3)];
-  const restReal = realNotes.slice(3);
-  for (let i = 0; restReal.length > i || draftFeed.length > i * 0; i++) {
-    if (i >= restReal.length && i >= draftFeed.length) break;
-    if (i < restReal.length) projectNotes.push(restReal[i]!);
-    if (i < draftFeed.length) projectNotes.push(draftFeed[i]!);
-  }
+  // Rated helpful: ascending p, so the most confidently helpful sits lowest.
+  helpfulNotes.sort(
+    (a, b) =>
+      rankOf(a).p - rankOf(b).p ||
+      rankOf(a).votes - rankOf(b).votes ||
+      contentIdx.get(a.id)! - contentIdx.get(b.id)!,
+  );
+  // Rated unhelpful: descending p, so the least helpful sinks lowest — the
+  // mirror of the helpful group, continuing the same gradient.
+  const bestFirst = (a: NoteRow, b: NoteRow) =>
+    rankOf(b).p - rankOf(a).p || contentIdx.get(a.id)! - contentIdx.get(b.id)!;
+  unhelpfulNotes.sort(bestFirst);
+  staleSourceNotes.sort(bestFirst);
 
   const renderCard = (note: NoteRow) => (
     <NoteCard
       key={note.id}
       note={note}
       improvements={improvementsByOriginal.get(note.id) ?? []}
-      commentsByParent={commentsByNote.get(note.id) ?? EMPTY_COMMENT_TREE}
-      commentsApi={commentsApi}
+      nnnEntries={nnnByClaim.get(note.claim_id) ?? NO_NNN}
+      nnnApi={nnnApi}
       projectSlug={selected?.slug ?? ""}
       myVote={myVotes.get(note.id)}
       holdActive={voteHolds.has(note.id)}
@@ -390,27 +429,10 @@ export function App() {
         )}
         {view === "notes" && (
         <div className="space-y-4">
-          {projectNotes.map(renderCard)}
-          {underwaterNotes.length > 0 && (
-            <>
-              <div className="flex items-center gap-3 pt-4 max-w-[40rem] mx-auto w-full xl:max-w-none" role="separator">
-                <span className="flex-1 border-t-2 border-dotted border-gray-300" />
-                <span className="text-xs text-gray-400">Notes with more negative votes than positive</span>
-                <span className="flex-1 border-t-2 border-dotted border-gray-300" />
-              </div>
-              {underwaterNotes.map(renderCard)}
-            </>
-          )}
-          {buriedNotes.length > 0 && (
-            <details className="max-w-[40rem] mx-auto w-full xl:max-w-none pt-2">
-              <summary className="text-xs text-gray-400 cursor-pointer select-none text-center">
-                {buriedNotes.length} {buriedNotes.length === 1 ? "note" : "notes"} rated unhelpful — show
-              </summary>
-              <div className="space-y-4 mt-4">
-                {buriedNotes.map(renderCard)}
-              </div>
-            </details>
-          )}
+          {needRatings.map(renderCard)}
+          <NoteSection label="Helpful notes" notes={helpfulNotes} render={renderCard} />
+          <NoteSection label="Unhelpful notes" notes={unhelpfulNotes} render={renderCard} />
+          <NoteSection label="Source has since changed" notes={staleSourceNotes} render={renderCard} />
         </div>
         )}
       </main>

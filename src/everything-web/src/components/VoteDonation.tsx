@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { CHARITIES, setDonationCharity, usePreferredCharity, type CharityId } from "../lib/donations";
 import type { DonationPair } from "../lib/donationScoring";
+import type { NoteStatus } from "../lib/noteScore";
 
 const charityLabel = (id: CharityId) => CHARITIES.find((c) => c.id === id)!.label;
 
@@ -53,11 +54,12 @@ function CharityPicker({ charity, onPick }: { charity: CharityId; onPick: (c: Ch
 
 /** The donation notice shown right after casting a note vote: the
  *  outcome-contingent pair frozen at vote time, with the charity switchable
- *  inline. Donation only — commenting lives in the note's action row
+ *  inline. Donation only — discussion lives in the note's action row
  *  (Jim, 2026-07-17: separate widgets). */
-export function VoteDonation({ voteId, pair, onClose }: {
+export function VoteDonation({ voteId, pair, status, onClose }: {
   voteId: string;
   pair: DonationPair;
+  status: NoteStatus;
   onClose: () => void;
 }) {
   const [charity, setCharityPref] = usePreferredCharity();
@@ -73,13 +75,27 @@ export function VoteDonation({ voteId, pair, onClose }: {
     // Theme note: only unmodified utility classes (bg-blue-50, not bg-blue-50/50)
     // — design.css remaps the exact class names per color scheme.
     <div className="mt-2 rounded-lg border border-blue-100 bg-blue-50 p-3 flex items-start justify-between gap-3">
-      <p className="text-sm text-gray-700">
-        We will donate <strong>${pair.ifHelpful.toFixed(2)}</strong> to{" "}
-        <CharityPicker charity={charity} onPick={pickCharity} /> if this note ends up rated{" "}
-        <span className="font-medium text-green-700">helpful</span> and{" "}
-        <strong>${pair.ifNotHelpful.toFixed(2)}</strong> if it ends up rated{" "}
-        <span className="font-medium text-red-600">unhelpful</span>.
-      </p>
+      {status === "needs_ratings" ? (
+        <p className="text-sm text-gray-700">
+          We will donate <strong>${pair.ifHelpful.toFixed(2)}</strong> to{" "}
+          <CharityPicker charity={charity} onPick={pickCharity} /> if this note ends up rated{" "}
+          <span className="font-medium text-green-700">helpful</span> and{" "}
+          <strong>${pair.ifNotHelpful.toFixed(2)}</strong> if it ends up rated{" "}
+          <span className="font-medium text-red-600">unhelpful</span>.
+        </p>
+      ) : (
+        <p className="text-sm text-gray-700">
+          This note is rated{" "}
+          {status === "helpful" ? (
+            <span className="font-medium text-green-700">helpful</span>
+          ) : (
+            <span className="font-medium text-red-600">unhelpful</span>
+          )}
+          , so we will donate{" "}
+          <strong>${(status === "helpful" ? pair.ifHelpful : pair.ifNotHelpful).toFixed(2)}</strong> to{" "}
+          <CharityPicker charity={charity} onPick={pickCharity} />.
+        </p>
+      )}
       <button onClick={onClose} className="text-sm text-gray-500 hover:underline shrink-0">Close</button>
     </div>
   );

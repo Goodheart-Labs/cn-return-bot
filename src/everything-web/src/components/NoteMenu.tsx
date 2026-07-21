@@ -4,7 +4,7 @@ import { supabase } from "../lib/supabase";
 import { noteUrl } from "../lib/routing";
 import { displayName } from "../lib/session";
 import { isEarnestNote } from "../lib/judgeNote";
-import { postComment } from "../lib/comments";
+import { postNnn } from "../lib/noteNotNeeded";
 import type { NoteRow } from "../lib/types";
 import { AutoGrowTextarea, PostAsCheckbox, RejectedNotice, useSignedByline } from "./editorBits";
 
@@ -72,7 +72,7 @@ function QuoteIcon() {
   );
 }
 
-function CommentIcon() {
+function SpeechBubbleIcon() {
   return (
     <svg {...ICON_PROPS}>
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -80,18 +80,20 @@ function CommentIcon() {
   );
 }
 
-/** The note's action row: write a comment, suggest an improvement (posts your
- *  own draft note on the same claim, shown alongside the original), share a
- *  deep link, and — on notes you wrote — a ⋯ menu with delete. */
-export function NoteMenu({ note, projectSlug, session, onNeedLogin, onAuthored, onCommentAuthored, sourcesOpen, onToggleSources, children }: {
+/** The note's action row: argue the claim needs no note, suggest an
+ *  improvement (posts your own draft note on the same claim, shown alongside
+ *  the original), share a deep link, and — on notes you wrote — a ⋯ menu with
+ *  delete. */
+export function NoteMenu({ note, projectSlug, session, onNeedLogin, onAuthored, onNnnAuthored, sourcesOpen, onToggleSources, children }: {
   note: NoteRow;
   projectSlug: string;
   session: Session | null;
   onNeedLogin: () => void;
   /** A note was just posted by this user (mirror its auto-upvote locally). */
   onAuthored: (noteId: string) => void;
-  /** A comment was just posted by this user (mirror its auto-upvote locally). */
-  onCommentAuthored: (commentId: string) => void;
+  /** A note-not-needed entry was just posted by this user (mirror its
+   *  auto-upvote locally). */
+  onNnnAuthored: (entryId: string) => void;
   sourcesOpen?: boolean;
   onToggleSources?: () => void;
   /** Extra actions slotted between Share and the ⋯ (e.g. improvement jump chips). */
@@ -99,7 +101,7 @@ export function NoteMenu({ note, projectSlug, session, onNeedLogin, onAuthored, 
 }) {
   const [open, setOpen] = useState(false);
   const [improving, setImproving] = useState(false);
-  const [commenting, setCommenting] = useState(false);
+  const [composing, setComposing] = useState(false);
   const [copied, setCopied] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const mine = !!session && session.user.id === note.author_id;
@@ -129,10 +131,10 @@ export function NoteMenu({ note, projectSlug, session, onNeedLogin, onAuthored, 
     if (!session) return onNeedLogin();
     setImproving(true);
   };
-  const startComment = () => {
+  const startNnn = () => {
     setOpen(false);
     if (!session) return onNeedLogin();
-    setCommenting(true);
+    setComposing(true);
   };
   // The source links sit inline on every card; this toggle only reveals the
   // per-source quote + explanation, so it appears only when a quote exists.
@@ -150,8 +152,8 @@ export function NoteMenu({ note, projectSlug, session, onNeedLogin, onAuthored, 
             <QuoteIcon /> {sourcesOpen ? "Hide source details" : "Show source details"}
           </button>
         )}
-        <button onClick={startComment} className="inline-flex items-center gap-1 text-blue-600 hover:underline">
-          <CommentIcon /> Write a comment
+        <button onClick={startNnn} className="inline-flex items-center gap-1 text-blue-600 hover:underline">
+          <SpeechBubbleIcon /> Note not needed
         </button>
         <button onClick={startImprove} className="inline-flex items-center gap-1 text-blue-600 hover:underline">
           <PencilIcon /> Suggest an improvement
@@ -178,19 +180,20 @@ export function NoteMenu({ note, projectSlug, session, onNeedLogin, onAuthored, 
       {improving && session && (
         <ImproveEditor note={note} session={session} onAuthored={onAuthored} onClose={() => setImproving(false)} />
       )}
-      {commenting && session && (
-        <CommentEditor note={note} session={session} onAuthored={onCommentAuthored} onClose={() => setCommenting(false)} />
+      {composing && session && (
+        <NnnComposer note={note} session={session} onAuthored={onNnnAuthored} onClose={() => setComposing(false)} />
       )}
     </div>
   );
 }
 
-/** Post a public top-level comment on the note (ungated — comments stopped
- *  being donation-bearing vote reasoning, they're just discussion). */
-function CommentEditor({ note, session, onAuthored, onClose }: {
+/** Post a "note not needed" argument on the note's claim (ungated, like the
+ *  plain discussion it replaces). Claim-keyed, so it shows under every note
+ *  on the same text. */
+function NnnComposer({ note, session, onAuthored, onClose }: {
   note: NoteRow;
   session: Session;
-  onAuthored: (commentId: string) => void;
+  onAuthored: (entryId: string) => void;
   onClose: () => void;
 }) {
   const [text, setText] = useState("");
@@ -202,14 +205,14 @@ function CommentEditor({ note, session, onAuthored, onClose }: {
     setBusy(true);
     setError(null);
     try {
-      const commentId = await postComment({
-        noteId: note.id,
+      const entryId = await postNnn({
+        claimId: note.claim_id,
         body: text.trim(),
         authorId: session.user.id,
         authorName: signed ? displayName(session) : null,
       });
-      if (!commentId) return setError("Could not post the comment — try again.");
-      onAuthored(commentId);
+      if (!entryId) return setError("Could not post — try again.");
+      onAuthored(entryId);
       onClose();
     } catch (err) {
       setError((err as Error).message);
@@ -225,7 +228,7 @@ function CommentEditor({ note, session, onAuthored, onClose }: {
         onChange={(e) => setText(e.target.value)}
         rows={2}
         autoFocus
-        placeholder="Write a comment about this note…"
+        placeholder="Why does this claim need no note?"
       />
       <div className="flex gap-2 items-center">
         <button
@@ -233,7 +236,7 @@ function CommentEditor({ note, session, onAuthored, onClose }: {
           disabled={busy || text.trim().length < 10}
           className="bg-blue-600 text-white rounded-lg px-3 py-1 text-sm font-medium hover:bg-blue-700 disabled:opacity-40"
         >
-          {busy ? "Posting…" : "Post comment"}
+          {busy ? "Posting…" : "Post"}
         </button>
         <button onClick={onClose} className="text-sm text-gray-500 hover:underline">Cancel</button>
         <PostAsCheckbox signed={signed} onChange={setSigned} session={session} className="ml-auto" />

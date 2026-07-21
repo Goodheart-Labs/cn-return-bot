@@ -5,12 +5,12 @@ import { LinkifiedText } from "../../../dashboard-shared/LinkifiedText";
 import { VoteRatings } from "../../../dashboard-shared/Ratings";
 import { quoteFragmentUrl } from "../../../dashboard-shared/textFragment";
 import type { NotedContent } from "../../../dashboard-shared/types";
-import type { ClaimRef, CommentRow, NoteRow, NoteSourceRow } from "../lib/types";
+import type { ClaimRef, NnnRow, NoteRow, NoteSourceRow } from "../lib/types";
 import type { VoteCast } from "../lib/donationScoring";
 import type { Vote } from "../lib/votes";
-import { noteStatus, tallyVisible, type NoteStatus } from "../lib/noteScore";
+import { noteStatus, noteTallyVisible, type NoteStatus } from "../lib/noteScore";
 import { NoteMenu } from "./NoteMenu";
-import { CommentThread, type CommentsApi } from "./CommentThread";
+import { NoteNotNeeded, type NnnApi } from "./NoteNotNeeded";
 import { VoteDonation } from "./VoteDonation";
 
 /** Community-Notes rating states: icon, copy, box tint, and the footer ask.
@@ -235,12 +235,12 @@ function ContextParagraph({ paragraph, quote, bare, fitTo }: {
 /** The note as one self-contained unit, X-CN style: a rating-status badge on
  *  top, the note text, and the rating pills inside the same box; the box tint
  *  follows the status (helpful/needs-ratings/not-helpful). */
-function NoteBox({ note, sourcesOpen, children }: {
+function NoteBox({ note, status, sourcesOpen, children }: {
   note: NoteRow;
+  status: NoteStatus;
   sourcesOpen?: boolean;
   children?: React.ReactNode;
 }) {
-  const status = noteStatus(note);
   const by = note.author_id ? note.author_name ?? "anonymous" : null;
   return (
     <div className={`cn-notebox rounded-lg p-3 border ${STATUS[status].box}`}>
@@ -336,13 +336,14 @@ function ImprovementLinks({ note, improvements }: { note: NoteRow; improvements:
 
 // Mirrors the review-dashboard card composition: content → note → stats row,
 // with voting live and an improve-note affordance.
-export function NoteCard({ note, improvements, commentsByParent, commentsApi, projectSlug, myVote, holdActive, onVote, onAuthored, session, onNeedLogin }: {
+export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug, myVote, holdActive, onVote, onAuthored, session, onNeedLogin }: {
   note: NoteRow;
   /** Notes that improve this one (reverse of improved_from_note_id). */
   improvements: NoteRow[];
-  /** This note's comment tree, keyed by parent comment id (null = top-level). */
-  commentsByParent: Map<string | null, CommentRow[]>;
-  commentsApi: CommentsApi;
+  /** The claim's note-not-needed entries, oldest first — shared by every note
+   *  on the same text. */
+  nnnEntries: NnnRow[];
+  nnnApi: NnnApi;
   projectSlug: string;
   myVote: Vote | undefined;
   holdActive: boolean;
@@ -361,6 +362,9 @@ export function NoteCard({ note, improvements, commentsByParent, commentsApi, pr
   const [cast, setCast] = useState<VoteCast | null>(null);
   const cardColRef = useRef<HTMLDivElement>(null);
   const [sourcesOpen, setSourcesOpen] = useState(false);
+  // One evaluation per card: the badge tint, the counts reveal and the donation
+  // payout all read the same status.
+  const status = noteStatus(note);
   const claim = note.claim;
   // Data invariant (enforced at ingest, NOT here): a stored context_paragraph
   // always contains its context_quote word-for-word, so the bold always lands.
@@ -403,19 +407,24 @@ export function NoteCard({ note, improvements, commentsByParent, commentsApi, pr
       )}
 
       <div className="mb-2">
-        <NoteBox note={note} sourcesOpen={sourcesOpen}>
+        <NoteBox note={note} status={status} sourcesOpen={sourcesOpen}>
           <VoteRatings
             helpful={note.helpful_count}
             somewhatHelpful={note.somewhat_helpful_count}
             notHelpful={note.not_helpful_count}
             myVote={myVote}
-            showCounts={tallyVisible(myVote, note.created_at)}
+            showCounts={noteTallyVisible(status, myVote, note.created_at)}
             onVote={(vote) => void onVote(note, vote).then(setCast)}
           />
           <ResortCountdown active={holdActive} key={`${note.helpful_count}-${note.somewhat_helpful_count}-${note.not_helpful_count}`} />
         </NoteBox>
         {cast && myVote !== undefined && session && (
-          <VoteDonation voteId={cast.voteId} pair={cast.pair} onClose={() => setCast(null)} />
+          <VoteDonation
+            voteId={cast.voteId}
+            pair={cast.pair}
+            status={status}
+            onClose={() => setCast(null)}
+          />
         )}
       </div>
 
@@ -425,20 +434,14 @@ export function NoteCard({ note, improvements, commentsByParent, commentsApi, pr
         session={session}
         onNeedLogin={onNeedLogin}
         onAuthored={onAuthored}
-        onCommentAuthored={commentsApi.onAuthored}
+        onNnnAuthored={nnnApi.onAuthored}
         sourcesOpen={sourcesOpen}
         onToggleSources={() => setSourcesOpen((o) => !o)}
       >
         <ImprovementLinks note={note} improvements={improvements} />
       </NoteMenu>
 
-      <CommentThread
-        note={note}
-        byParent={commentsByParent}
-        api={commentsApi}
-        session={session}
-        onNeedLogin={onNeedLogin}
-      />
+      <NoteNotNeeded entries={nnnEntries} api={nnnApi} session={session} />
       </div>
     </div>
   );
