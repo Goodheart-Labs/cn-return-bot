@@ -27,11 +27,11 @@ const CONCURRENCY_LIMIT = 5;
 const BACKLOG_LIMIT = 1000;
 // The large feed contains the small feed, so fetching small first only gives
 // its posts an artificial priority. Start at large; broaden to XL/XXL only when
-// a tier fails or does not contain enough new posts to fill this run's budget.
-const REGULAR_FEED_LADDER: FeedSize[] = ["large", "xl", "xxl"];
+// needed, then fall back to small for accounts without broader-feed access.
+const REGULAR_FEED_LADDER: FeedSize[] = ["large", "xl", "xxl", "small"];
 
 /** A post plus the feed tier it was fetched from (kept for operational logs). */
-export interface SourcedPost {
+interface SourcedPost {
   post: Post;
   feedSize: FeedSize;
 }
@@ -39,11 +39,10 @@ export interface SourcedPost {
 type FeedFetcher = (feedSize: FeedSize) => Promise<Post[]>;
 
 /**
- * Fetch progressively broader feed tiers, dedupe their overlapping contents,
- * and pick the globally fastest posts. Unknown velocity sorts last. Exported
- * for deterministic tests of fallback and ranking behavior.
+ * Fetch the preferred feed tiers in order, dedupe their overlapping contents,
+ * and pick the globally fastest posts. Unknown velocity sorts last.
  */
-export async function collectVelocityRankedPosts(
+async function collectVelocityRankedPosts(
   maxPosts: number,
   knownTweetIds: Set<string>,
   fetchFeed: FeedFetcher,
