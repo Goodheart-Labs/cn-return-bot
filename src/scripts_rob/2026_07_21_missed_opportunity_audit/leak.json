@@ -1,0 +1,364 @@
+{
+  "generated_at": "2026-07-21T16:33:17.628Z",
+  "matched_by_stage1": 85,
+  "on_topic_missed": 71,
+  "true_recall_pct": 54.48717948717949,
+  "unclassified": 1,
+  "misses_on_topic": [
+    {
+      "tweetId": "2075611794895249542",
+      "text": "Trump’s DOJ monitoring elections is like a fox monitoring a henhouse. We cannot allow our right to vote to be undermined by political interference. Every state must administer their elections free from unlawful federal intrusion. https://t.co/hKD4KSTfFU",
+      "note": "DOJ election monitors have been routinely sent to Minnesota in past election cycles under both Democratic and Republican administrations. The Minnesota Secretary of State's office has described it as standard practice. https://www.startribune.com/justice-department-election-monitors-mn-primary/601866587"
+    },
+    {
+      "tweetId": "2076778037752869318",
+      "text": "🚨 HOLY CRAP! President Trump is set to announce that Democratic Senators Jon Ossoff and Raphael Warnock of Georgia were ILLEGITIMATELY ELECTED due to massive fraud, following an FBI investigation into Fulton County 2020 — @DC_Reporter The case has been built for MONTHS, and it's all coming out now! 🔥 Democrats are terrified. Trump was right all along.",
+      "note": "Claim Trump will announce Ossoff and Warnock were illegitimately elected is from @DC_Reporter citing anonymous source. White House says speech won't focus on GA 2020 elections. Ongoing FBI Fulton probe has no public findings invalidating them. https://x.com/DC_Reporter/status/2076770414144217203 https://x.com/DC_Reporter/status/2076827749952655787 https://abcnews.go.com/US/fbi-surging-personnel-priority-2020-election-investigation-georgia/story?id=134422870"
+    },
+    {
+      "tweetId": "2069587294953283618",
+      "text": "Donald: California's elections are transparent and fair. If you mess with our elections, you're going to pay the consequences.",
+      "note": "CA does not require photo ID for most voters and mails ballots to all registered voters. US Attorney announced multiple fraud investigations in 2026 citing vulnerabilities. https://ballotpedia.org/Voter_ID_in_California https://www.kcra.com/article/california-elections-los-angeles-vote-center-us-attorney/71510550"
+    },
+    {
+      "tweetId": "2070980723628990497",
+      "text": "Elon is being ordered to testify by a federal judge for cheating to help Trump win all 7 swing states falsely",
+      "note": "A federal magistrate judge ordered Elon Musk to give a deposition in civil lawsuits alleging America PAC's $1M giveaway misled voters about random selection for petition signers in swing states. No criminal charges or vote tampering claims. https://www.reuters.com/legal/government/elon-musk-ordered-testify-election-lottery-cases-one-lawsuit-may-be-narrowed-2026-06-25/ https://thehill.com/regulation/court-battles/5941842-musk-america-pac-lawsuit/"
+    },
+    {
+      "tweetId": "2071679795088277924",
+      "text": "#BREAKING: Sen Tammy Duckworth: “If you have a different name on your birth certificate than is on your drivers license, you CANNOT vote, and so for the 69 MILLION American WOMEN who took their husband’s names, you cannot vote. That birth certificate is not valid. By the way, military IDs will not be valid for you to be able to vote, neither will your REAL ID…So you have to go in with a passport that matches your current ID, and you know how hard it is to get a passport? Number one, it’s expensive and number two, theres such a backlog in the State Department, some people are waiting 3-6 months to get a passport. And so, think about the 69 million American women who married and took their husband’s name, you can no longer vote under the #SAVEAct…and in order to have housing for young people who…don’t see home ownership as being something that they can achieve, he’s going to hold women who are married and took their husband’s name hostage.” 🤦‍♀️",
+      "note": "SAVE Act not Senate-passed law. Requires citizenship proof for registration; accepts passports, some REAL/military IDs. States must accommodate name discrepancies with extra docs/affidavits. https://www.congress.gov/bill/119th-congress/house-bill/22/text"
+    },
+    {
+      "tweetId": "2075224939255246944",
+      "text": "Just so we are all on the same page: Illegals are voting. Illegals are getting free food. Illegals are getting free childcare. Illegals are getting free education. Illegals are getting free tax credits. Illegals are getting free healthcare. Illegals are getting free housing assistance. Illegals are getting free legal representation. Illegals are getting free mental health services. Illegals are getting free college tuition in over a dozen states. It is the most insane scam ever perpetrated on the American people.",
+      "note": "Noncitizen voting in federal elections is illegal and extremely rare per audits. Undocumented immigrants barred from most federal benefits like SNAP/Medicaid. https://bipartisanpolicy.org/article/four-things-to-know-about-noncitizen-voting/ https://www.nilc.org/resources/overview-immeligfedprograms/"
+    },
+    {
+      "tweetId": "2077838008057741597",
+      "text": "Hello. We found a homeless shelter in Pennsylvania that has 500+ voters registered to vote. The shelter only holds 100 beds. The PA Department of State has a lot of explaining to do. We’re finding this all over the state. Preserve your records. Game on.",
+      "note": "In PA, people experiencing homelessness can legally use a shelter as voter registration or mailing address even if not currently staying there. High turnover means more voters than beds is common. https://vote.gov/guide-to-voting/unhoused https://www.axios.com/local/philadelphia/2024/10/16/homelessness-voter-registration-shelters-nonprofits"
+    },
+    {
+      "tweetId": "2077934311571943565",
+      "text": "Isn’t it weird that Trump’s speech never mentioned Russia – probably the single biggest perpetrator of election influence?",
+      "note": "Trump’s speech quoted an intelligence assessment stating adversaries including Russia, China, Iran and North Korea have capability to compromise U.S. election infrastructure. https://www.whitehouse.gov/election-integrity/ https://rollcall.com/factbase/trump/transcript/donald-trump-speech-primetime-address-white-house-july-16-2026/"
+    },
+    {
+      "tweetId": "2076680910108246173",
+      "text": "So we’re passing seats in the senate to family members? No elections, no voter choice? 😂🤣 Quite the democracy. https://t.co/c6lSLE4Cgh",
+      "note": "SC Governor Henry McMaster appointed Graham’s sister Darline Graham Nordone as interim U.S. Senator until Jan. 3, 2027 per state law. A special election on August 11 is for his permanent replacement. Such interim appointments by governors are very common. Source: https://governor.sc.gov/news/2026-07/gov-mcmaster-appoints-darline-graham-us-senate"
+    },
+    {
+      "tweetId": "2071016535783604359",
+      "text": "NEVER! https://t.co/HuIO30VpSK",
+      "note": "ugh this never thing is so wrong late ballots sometimes favored reps like in past its frustrating https://politicalscience.byu.edu/2020/08/28/do-republicans-or-democrats-benefit-from-mail-in-voting-it-turns-out-neither-three-decades-of-voting-history-reveals-vote-by-mail-does-not-give-either-party-an-edge/"
+    },
+    {
+      "tweetId": "2076882208091214232",
+      "text": "republicans in 2024: “kamala can’t just take joe biden’s place in the election. nobody voted for her. that’s not democracy.” republicans now: “it’s totally fine that lindsey graham’s sister is taking his place.”",
+      "note": "The post creates a false equivalence. Harris replaced Biden mid-presidential primary cycle. Graham's sister received a temporary Senate appointment after his death, standard under SC law until a special election. https://apnews.com/article/lindsey-graham-dies-south-carolina-whats-next-5ba55574ce6f087d56999abe3a7f9fdc https://www.nbcnews.com/politics/2026-election/trump-lindsey-graham-sister-darline-mcmaster-appoint-senate-term-rcna587302"
+    },
+    {
+      "tweetId": "2077922799960596768",
+      "text": "Homeland Security found over 250 million illegal aliens registered to vote in just four states https://t.co/7ZFQIiWQL0",
+      "note": "The post repeats an erroneous headline claiming 250 million non-citizens registered to vote in four states. The article body and other reports state the DHS figure is over 250,000. https://justthenews.com/politics-policy/elections/hldhomeland-security-found-over-250-million-illegal-aliens-registered https://www.foxnews.com/politics/quarter-million-noncitizens-registered-vote-4-key-states-dhs-alleges"
+    },
+    {
+      "tweetId": "2069151778889699508",
+      "text": "ONLY Americans should decide American elections.",
+      "note": "Non-citizens already cannot vote https://www.usa.gov/who-can-vote"
+    },
+    {
+      "tweetId": "2077939685322584481",
+      "text": "LOL! We tried to tell you. We were right, again. 2020 was stolen and Joe Biden is illegitimate. Trump should get another term. 2028!",
+      "note": "The declassified documents released by the Trump administration confirm that Russia and China both ran influence campaigns interfering with Joe Biden’s 2020 election campaign at the benefit of Trump. No evidence any votes were impacted. https://www.thelondoneconomic.com/politics/trump-might-have-just-confirmed-foreign-interference-in-bidens-2020-presidential-run-407915/ https://www.newsweek.com/trump-election-documents-reveal-china-russia-targeted-joe-biden-12208460 https://www.ms.now/news/trump-speech-election-stolen https://x.com/mikenellis/status/2077936273843454141?s=46 https://x.com/themainewonk/status/2077930221248876579?s=46 https://www.cnn.com/2026/07/16/politics/what-trumps-newly-declassified-documents-do-and-dont-tell-us-about-threats-to-us-elections"
+    },
+    {
+      "tweetId": "2078055114045010204",
+      "text": "Actually insane how Donald Trump was never in elected office his entire life then literally said “fuck it” and won 3 straight presidential elections.",
+      "note": "Donald Trump has won 2 elections in total; the first being 2016, the second being 2024. Joe Biden won the 2020 presidential elections. https://www.archives.gov/electoral-college/2020"
+    },
+    {
+      "tweetId": "2077939610978541677",
+      "text": "Trump won the 2020 Election 👏 Trump won the 2020 Election 👏 Trump won the 2020 Election 👏 Trump won the 2020 Election 👏 Trump won the 2020 Election 👏 Trump won the 2020 Election 👏 Trump won the 2020 Election 👏 Trump won the 2020 Election 👏",
+      "note": "Trump did not win the 2020 Election https://www.fec.gov/resources/cms-content/documents/federalelections2020.pdf"
+    },
+    {
+      "tweetId": "2078225308503671116",
+      "text": "Putin Last night Donald Trump released a declassified document that says his own intelligence community identified Putin as personally running an operation to defeat my father in 2020, built around a fake Burisma corruption scandal centered around me and executed through prominent Americans. Trump tasked his personal lawyer, Rudy Giuliani, to fly to Kyiv and meet a known Russian agent. The Americans who ran, laundered, and legitimized the operation: Donald Trump. Rudy Giuliani. John Solomon. Joe DiGenova. Victoria Toensing. Lev Parnas. Igor Fruman. Chanel Rion. Sean Hannity. Steve Bannon. Miranda Devine. Ken Vogel. Ron Johnson. Chuck Grassley. James Comer. Jim Jordan. To name a few. An operation formally sanctioned by Trump's own Treasury Department on September 10, 2020, and expanded to include more named actors on January 11, 2021. Oh, and don't forget the Russian-linked FBI informant Alexander Smirnov, who later pleaded guilty to making the entire Burisma bribery story up. The record exists and we have all the receipts, and more.",
+      "note": "At no point does the declassified letter actually say any claims regarding Joe Boden or Burisma are false. https://www.whitehouse.gov/election-integrity/ (Document: NICA_ Foreign Threats to 2020 US election_19AUG2020 - DECLASS_REDACTED from &quot;Vulnerabilities in Electronic voting...&quot; Download)"
+    },
+    {
+      "tweetId": "2076781466445295858",
+      "text": "🔥HOLY SHIT🔥 The MSM are reporting that Trump’s address to the nation on Thursday is about FOREIGN INFLUENCE IN THE 2020 ELECTION! This is related to the raid in Fulton County!!! Trump will be joined by Ratcliffe of the CIA, Patel of the FBI, Pulte of the DNI, and Mullin of the DHS, and they are reportedly going to reveal a “foreign nation’s plan to interfere in the 2020 presidential election”, according to two unnamed White House officials. My fellow Americans, it is time. Things are about to get VERY interesting.",
+      "note": "This post was copied from the account Clandestine. https://x.com/i/status/2076765414890115241"
+    },
+    {
+      "tweetId": "2067979126305099780",
+      "text": "SAVE ACT: I have always been a fan of Senator Kennedy's folksy banter on the floor of the Senate as well as his grilling of judicial nominees. I didn't realize he was a Democrat until recently. News that he is one of the saboteurs blocking the Save America Act is disappointing. https://t.co/iaQWrQNCNx",
+      "note": "Senator John Kennedy is a cosponsor of the SAVE Act (S.128) and has publicly advocated for its passage. He recently forced a vote to include the bill's provisions via amendment in a reconciliation vehicle, which ultimately failed 48-50 without his opposition. https://www.kennedy.senate.gov/public/2026/4/kennedy-forces-save-act-vote-during-late-night-reconciliation-bill-debate https://www.foxnews.com/politics/republicans-fail-attach-save-america-act-party-line-funding-package-/ https://www.govinfo.gov/app/details/BILLS-119s128is"
+    },
+    {
+      "tweetId": "2069855893668192694",
+      "text": "@ReichlinMelnick Nah..it is legal . 39 U.S.C. § 3003 (Fictitious names/addresses) Allows the post office to demand identity of sender and / or recipient when fraud is reasonably suspected",
+      "note": "39 U.S.C. § 3003 applies specifically to individuals suspected of using fictitious names for mail fraud. It does not grant legal authority to demand voter identification from states or to withhold mail-in ballots from entire populations. https://www.law.cornell.edu/uscode/text/39/3003"
+    },
+    {
+      "tweetId": "2069966138046579184",
+      "text": "Imagine that. To all those who said there was “no evidence”…. https://t.co/RaeAKcxOPh",
+      "note": "A hand-count audit of all ballots in Antrim County confirmed the certified results, showing only a 12-vote difference. Multiple experts, including a court-appointed professor and the former head of CISA, found the cited ASOG report to be factually inaccurate. https://www.factcheck.org/2020/12/audit-in-michigan-county-refutes-dominion-conspiracy-theory/ https://www.govtech.com/elections/antrim-county-mich-tied-to-election-fraud-claim-strategy"
+    },
+    {
+      "tweetId": "2071669576417567196",
+      "text": "With the SCOTUS Watson ruling on requiring Postmarks for mail ballots, I think the days of Ballot Drop boxes have gone the way of the DoDo.",
+      "note": "The Supreme Court decision in Watson v. RNC upheld Mississippi’s law for counting mailed ballots; it did not impose a nationwide postmark requirement or address drop boxes. Drop boxes allow voters to return ballots directly to officials without using the postal service. https://www.law.cornell.edu/supremecourt/text/24-1260 https://www.jurist.org/news/2026/06/supreme-court-rules-mississippi-can-count-absentee-ballots-received-after-election-day/ https://www.eac.gov/how-do-drop-boxes-work"
+    },
+    {
+      "tweetId": "2076105676271554824",
+      "text": "🚨 BREAKING: Mitch McConnell just voted YES to move forward with the SAVE America Act, and Susan Collins is right there with him. Even if it comes down to a 50-50 split, JD Vance can step in and break the tie. Do you support the SAVE America Act? A. Yes B. No https://t.co/uYWi3gZDJm",
+      "note": "No Senate vote occurred on July 12. The Senate held a pro forma session on July 9 and was not scheduled to reconvene until 3:00 p.m. on July 13. McConnell could not have voted on this date. https://www.senate.gov/legislative/schedule/floor_schedule.htm"
+    },
+    {
+      "tweetId": "2078539328431497620",
+      "text": "Imagine announcing you’re going to vote against 80% of America and thinking it’s a good idea. https://t.co/4PsVwW66op",
+      "note": "Polling shows a majority of voters support ID to vote, but no poll shows 80% support for the SAVE Act. https://www.politico.com/news/2026/05/07/poll-trump-save-america-act-voters-uncertain-00908224"
+    },
+    {
+      "tweetId": "2073400224677069241",
+      "text": "36 year old son has not lived in Kansas for 14 years. 32 year old son for 8. Should I mail them in on their behalf? What would a Democrat do? https://t.co/y1ttuIMrrd",
+      "note": "These are not ballots, they are mailers sent to every registered voter in Johnson countly explaining both where to vote, and when election day is. https://johnsoncountypost.com/2026/06/22/johnson-county-august-2026-primary-election-289213/"
+    },
+    {
+      "tweetId": "2071037644704793016",
+      "text": "🚨 LMFAO! President Trump just dropped this hilarious post “I LOST TO TRUMP” 🤣💯 https://t.co/glGTMCYFCD",
+      "note": "Trump lost to Biden Election results, 2020 - Ballotpedia https://share.google/X7F61XYf7mhEgYUgp"
+    },
+    {
+      "tweetId": "2076397102251331670",
+      "text": "LOLOLOL!!! Trump just posted this EPIC photo! TRUMP IS 3-0! https://t.co/TsKzx7KTa3",
+      "note": "Donald Trump lost to Joe Biden in the 2020 election. Trump was not 3-0. https://www.fec.gov/resources/cms-content/documents/federalelections2020.pdf"
+    },
+    {
+      "tweetId": "2068000856323031311",
+      "text": "As Chairman @DePasqualePA and Vice Chairwoman @JamilaHWinder put it last weekend at our Summer State Committee Meeting – the work starts with those of us on the ground. When we win big this November, it’ll be because we spoke to every Democrat across the Commonwealth and made sure they were registered to vote. Start in your community! https://t.co/PHJjsD8m4a",
+      "note": "The iwillvote[dot]com website is a data mining site to collect your personal information and is not official. The official voter registration website is https://www.pavoterservices.pa.gov/pages/voterregistrationstatus.aspx All government websites end in .gov"
+    },
+    {
+      "tweetId": "2076627308127879269",
+      "text": "Happy Monday. The primary is over. @ByronDonalds will be our nominee. Supporters of @JayCollinsFL, @Paul_Renner, and @j_fishback have a decision to make: Support common sense conservatism or radical liberal policies. I believe they will make the right choice on August 19th. https://t.co/E0F2TBUGqo",
+      "note": "Civic integrity: The Florida Primary Election is being held August 18th, 2026. https://www.myfloridaelections.com/election-dates-deadlines"
+    },
+    {
+      "tweetId": "2078183814459703566",
+      "text": "To any illegal alien who attempts to vote in our elections: we will hunt you down, we will find you, and we will charge you. American elections belong to the AMERICAN PEOPLE. https://t.co/hee3OPYKpa",
+      "note": "Factual data shows that, overwhelmingly, only US citizens vote in American elections. https://fairelectionscenter.org/voting-by-noncitizens-is-a-non-issue/"
+    },
+    {
+      "tweetId": "2078157944617889840",
+      "text": "Sen. Mark Kelly (D-AZ) won by 78,806 votes. Arizona processed 112,693 duplicate registrations. https://t.co/rsmrYI7lKQ",
+      "note": "Arizona's 112,693 &quot;duplicate registrations&quot; in the 2020 EAVS report reflect routine NVRA list maintenance for updating existing voter records, not extra voters cast or fraud. https://www.eac.gov/sites/default/files/document_library/files/2020_EAVS_Report_Final_508c.pdf This does not change the certified 78,806-vote margin for Sen. Kelly."
+    },
+    {
+      "tweetId": "2075036220803993958",
+      "text": "I didn’t get cheated. You did. https://t.co/ihDoZeEh9J",
+      "note": "The Pratt campaign hired people to harvest ballots https://x.com/christopherrufo/status/2077100019161907527?s=46&amp;t=QuhGjgM5a9x7OqxCWiPPgw"
+    },
+    {
+      "tweetId": "2069842354450919462",
+      "text": "🚨HUGE: Dominion has DISMISSED their $1.3 BILLION dollar defamation lawsuit against Mike Lindell and MyPillow. Congratulations, @realMikeLindell! Follow: @BoLoudon https://t.co/H7SO4CWse7",
+      "note": "The note does not contradict the statement. The suit was dismissed and both sides bore their own costs. That is typical of dismissals. While confidentiality prevents us from knowing the exact terms, it does not indicate that Lindell is wrong. https://www.startribune.com/mike-lindell-election-machine-defamation-suit-dominion-liberty-vote-dismiss-billion/601861129"
+    },
+    {
+      "tweetId": "2069209616429322342",
+      "text": "Imagine having to explain to George Washington that America can’t prevent illegal aliens from voting in our elections because a foreign born judge called ‘Sparkle Sooknanan’ said so.",
+      "note": "In George Washington's time, noncitizens could vote in Virginia. They lost that right in 1818: https://en.wikipedia.org/wiki/Non-citizen_suffrage_in_the_United_States In addition, the judge's ruling is not that non-citizens can vote. It's that the government violated the privacy act when they gathered this particular data set: https://www.npr.org/2026/06/22/nx-s1-5866719/save-voter-data-trump-judge-unlawful"
+    },
+    {
+      "tweetId": "2069089988650606975",
+      "text": "\"We don't have the votes\" isn't a strategy. It's a white flag. If John Thune was the kind of leader he ought to be, he wouldn't just end the filibuster. He would LEAD and get his caucus on board. House Republicans have one of the slimmest majorities in history. There's almost always 3-4 of us who disagree on any bill. Yet, time and time again @SpeakerJohnson has found a way to get us all on the same page and get the job done.",
+      "note": "The House of Representatives has never voted on the &quot;full version&quot; of the SAVE America Act that Trump wants, which includes a restriction on mail-in-ballots. The Senate is the only chamber that has voted on the SAVE America Act that Trump wants passed and signed into law. https://www.congress.gov/bill/119th-congress/house-bill/22 https://x.com/AndrewDesiderio/status/2069074627435929906?s=20"
+    },
+    {
+      "tweetId": "2067928654554808815",
+      "text": "It’s time for everyone, including myself, to stop falling for the “folksy” charm of Sen. Kennedy. He’s not our worst RINO, but his track record leaves room for a lot of improvement. Eyes open. https://t.co/tjbJUHXOqU",
+      "note": "Sen. Kennedy is a cosponsor of the SAVE Act and has publicly supported it. https://www.congress.gov/bill/119th-congress/senate-bill/3752/cosponsors https://x.com/SenJohnKennedy/status/2066992293748388151"
+    },
+    {
+      "tweetId": "2078093461324988796",
+      "text": "MIKE PENCE CERTIFIED THE STEAL — AND HISTORY WON’T FORGET IT.",
+      "note": "The Vice President’s role is strictly ministerial: to open the states’ certified electoral certificates and announce the tally. The VP has no authority to reject or alter votes and should never be granted any, due to the inherent conflict of interest. https://www.senate.gov/about/origins-foundations/senate-and-constitution/constitution.htm"
+    },
+    {
+      "tweetId": "2078159955597914209",
+      "text": "California has free, fair, and secure elections and we will fight for them. Try us. https://t.co/apFpjuGWn3",
+      "note": "During a preliminary review, DHS found over 80,000 non-citizens registered to vote in California https://x.com/secmullindhs/status/2078224797356503395?s=46&amp;t=h2vrlGOGKJYnao7KjiHZ3A"
+    },
+    {
+      "tweetId": "2077927704448442376",
+      "text": "Do not laugh about this speech. It’s impossible to follow but he’s directly challenging our right to vote. The president of the United States is lying in order to wage war on our democracy and against the states. I don’t care your politics; everybody should be outraged.",
+      "note": "POTUS speech highlighted vulnerabilities with new evidence declassified by our Intelligence Community. This included DHS confirmation of 278,000+ noncitizens registered to vote in federal elections. Trump also urged Congress to pass Save America Act securing our democracy https://www.whitehouse.gov/election-integrity/"
+    },
+    {
+      "tweetId": "2068387908621394007",
+      "text": "🚨 GOOD OLD RINO: Senator John Kennedy (LA) will enthusiastically support FISA without warrants but the \"SAVE AMERICA ACT\" is a bridge too far. WHY DO SO MANY PEOPLE FALL FOR HIS \"OKIE DOKIE\" ROUTINE ON FOX NEWS? @SenJohnKennedy https://t.co/Xa7g9jGXBM",
+      "note": "This appears to be a smear campaign as Senator Kennedy is a strong proponent of the Save Act. https://www.kennedy.senate.gov/public/press-releases?ID=796BC4CB-16BD-4DC1-A977-B0A361D2598C"
+    },
+    {
+      "tweetId": "2072817623524323607",
+      "text": "Breaking News: The FBI is assigning analysts to review Georgia voting records, reflecting a push by President Trump to prove baseless 2020 election claims. https://t.co/wfUZQ2nlcq",
+      "note": "Fulton county election officials have admitted an outcome altering number of ballots are missing critical chain of custody, and thus unverifiable as authentic. https://www.atlantanewsfirst.com/2025/12/23/fulton-county-admits-verifying-315000-votes-2020-without-poll-worker-signatures/"
+    },
+    {
+      "tweetId": "2077929910190891401",
+      "text": "Now I can see why ABC and NBC didn't want to allow their viewers to see what President Trump had to say. This is why conservative media is here to stay. We are cutting through the crap. Let's pass the SAVE America act. 🇺🇸",
+      "note": "While ABC and NBC did not broadcast President Trump's July 16, 2026 speech on their linear TV networks, both networks made the address available to viewers by streaming it live and in full on their digital platforms. https://deadline.com/2026/07/trump-broadcast-networks-primetime-speech-1236984189/ https://www.hollywoodreporter.com/news/politics-news/nbc-and-abc-wont-carry-trump-primetime-election-speech-1236650492/"
+    },
+    {
+      "tweetId": "2077928585885589881",
+      "text": "This was before they “stopped the count” You should be in jail https://t.co/26pJzceFPm https://t.co/mNlqPvNT6m",
+      "note": "Election night screenshots show preliminary tallies. Counting did not stop; mail-in ballots (which favored Biden) were counted later, as allowed by state laws. Audits, recounts, and dozens of court challenges confirmed the results. https://apnews.com/article/2020-election-results-fact-check-trump-biden-5e9a2f9f7e3c4e8e9f0a1b2c3d4e5f6a https://www.pbs.org/newshour/politics/2020-election-was-not-stolen"
+    },
+    {
+      "tweetId": "2075352050314170503",
+      "text": "Translation: California made it illegal for Elon Musk to buy elections. And next, we’re going to make it a felony for Donald Trump to rig one. Watch out. https://t.co/s9ZJ466Jkc",
+      "note": "SB 398 (2025) generally bans offering payments/lotteries to induce voting or registration. It does not name Musk. Musk's post was about LA mail-in ballots. https://leginfo.legislature.ca.gov/faces/billTextClient.xhtml?bill_id=202520260SB398 https://www.forbes.com/sites/saradorn/2026/07/09/legalized-election-fraud-musk-boosts-spencer-pratts-claims-of-janky-voting-system-after-la-mayoral-loss/"
+    },
+    {
+      "tweetId": "2077931191278186935",
+      "text": "Well folks, as expected, Trump revealed essentially nothing new. His speech was just lies &amp; long-debunked conspiracies about the 2020 election. This is all just a prelude to interfere in our midterms — don’t fall for it.",
+      "note": "The supporting documents that were just declassified and released to the public indicate that these statements are indeed fact. https://www.whitehouse.gov/election-integrity/"
+    },
+    {
+      "tweetId": "2078255596793663866",
+      "text": "Sen. Elizabeth Warren (D-MA) won by 676,228 votes. Massachusetts processed 744,880 duplicate registrations. https://t.co/ldM512Xd10",
+      "note": "The 744,880 figure refers to duplicate voter registration applications received (mostly via automatic registration) and rejected, not duplicates on active rolls; only 46,361 duplicate registrants were removed. https://malegislature.gov/Bills/194/HD4458.pdf"
+    },
+    {
+      "tweetId": "2069568690723418199",
+      "text": "There was some noise when we disinvited Fishback. But let me say, these kind of stunts prove the point. Doxxing the cell phone of your opponent is a classless and pathetic sideshow https://t.co/x0HQAdMItK",
+      "note": "The phone number (239) 821-9084 is publicly listed as Byron Donalds' candidate contact in official Florida Division of Elections records, not private information. https://dos.elections.myflorida.com/candidates/CanDetail.asp?account=64617 https://vote-usa.org/Intro.aspx?Id=FLDonaldsByron&amp;State=FL"
+    },
+    {
+      "tweetId": "2070193436150427716",
+      "text": "Dominion NEVER was going to let this get to the “Discovery” stage. 2020 WAS RIGGED! https://t.co/p2NYDvb4G6",
+      "note": "The lawsuit was dropped after Dominion was acquired in 2025 by Liberty Vote, founded by former Republican election official Scott Leiendecker. https://abcnews.go.com/US/voting-machine-company-drops-1b-defamation-suit-mike/story?id=134219458 https://www.startribune.com/mike-lindell-election-machine-defamation-suit-dominion-liberty-vote-dismiss-billion/601861129/"
+    },
+    {
+      "tweetId": "2076799733239038021",
+      "text": "Jessica tarlov is upset that non citizens can't vote. What would you say to her? #TheSaveAct https://t.co/MyruorbWin",
+      "note": "Tarlov argued the SAVE Act's proof-of-citizenship requirement would disenfranchise U.S. citizens lacking documents, not that non-citizens should be allowed to vote. https://bsky.app/profile/jessicatarlov.bsky.social/post/3me34mxewss2d https://www.congress.gov/bill/118th-congress/house-bill/8281"
+    },
+    {
+      "tweetId": "2077934669815795784",
+      "text": "@Rep_Stansbury Isn’t suspicious that the dumocrats turned communists electives hide and buried the documents. People need to go to prison.",
+      "note": "The declassified documents on voting vulnerabilities were commissioned by the Trump administration's ODNI in 2025, including a contract with Mojave Research, and were not hidden or buried by Democrats. https://www.reuters.com/legal/government/trumps-stop-steal-lawyer-pushed-voter-fraud-evidence-us-intelligence-agency-2026-02-11 https://www.yahoo.com/news/politics/articles/trump-to-assert-voting-machine-vulnerabilities-in-thursday-speech-020735563.html"
+    },
+    {
+      "tweetId": "2078102886974652484",
+      "text": "Nothing to see here. Move along........ https://t.co/BQVjNiELK6",
+      "note": "The 1,823,148 figure refers to mail-in ballot requests for Pennsylvania's June 2020 primary election, not the general election where over 2.6 million mail ballots were requested and cast. https://apnews.com/article/fact-checking-9787630390 https://www.reuters.com/article/world/fact-check-post-mixes-pennsylvania-primary-and-general-election-data-to-suggest-idUSKBN28B5NM"
+    },
+    {
+      "tweetId": "2069186579139080697",
+      "text": "@marceelias Notice how Marc Elias ONLY wins in liberal democrat scum owned courts???? Pretty pathetic",
+      "note": "In the DOJ's nine losses seeking voter roll data, five were before Trump-appointed judges, including the latest in Maryland. https://www.democracydocket.com/news-alerts/judge-tosses-justice-department-maryland-voter-roll-lawsuit-0-9/"
+    },
+    {
+      "tweetId": "2074962434368880791",
+      "text": "They aren’t gonna call a special election 4 months before the midterms retard https://t.co/qRcKKovTi3",
+      "note": "Kentucky law requires the governor to call a special election for a U.S. Senate vacancy by issuing a proclamation at least 63 days before the election, unless the vacancy occurs within 56 days of the general election. https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=54597 https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=54653 https://www.wlky.com/article/kentucky-senate-vacancy-law/71857701"
+    },
+    {
+      "tweetId": "2078112283020959825",
+      "text": "Sooooooooooooo This was CORRECT! https://t.co/zOUYzuOcPJ",
+      "note": "The claim that US military-seized servers showed Trump won the 2020 election with 410 electoral votes is false; no such seizure occurred and Scytl did not tabulate US votes. https://apnews.com/article/fact-checking-9726835352 https://www.factcheck.org/2020/11/u-s-army-didnt-seize-election-servers-in-germany https://www.nytimes.com/2020/11/18/technology/scytl-trump.html"
+    },
+    {
+      "tweetId": "2067429122289139923",
+      "text": "Senator Kennedy is one of the biggest anti-Trump stooges in the Senate. People like his jokes. That’s nice. He hates you. He doesn’t want the Save America Act. He has an enormous ego. Get rid of him.",
+      "note": "Senator Kennedy is a cosponsor of the SAVE America Act and has stated unconditional support for it. https://www.facebook.com/SenatorJohnKennedy/posts/i-support-the-save-america-act-unconditionally-if-youre-voting-in-an-american-el/1508293340655603 https://thehenryettan.com/senator-kennedy-pushes-save-act-calls-for-common-sense-approach-to-voting-requirements"
+    },
+    {
+      "tweetId": "2074610491175960614",
+      "text": "NEW: The DOJ said it will send election monitors to three of Michigan's largest blue cities to assess voting procedures in the upcoming primaries. The announcement escalates fears about the Trump administration's ongoing efforts to interfere in the midterms, particularly in key battlegrounds.",
+      "note": "DOJ has sent election monitors to Detroit, Lansing, and East Lansing in past elections under previous administrations. https://www.detroitnews.com/story/news/politics/2026/07/06/justice-department-doj-send-election-monitors-3-michigan-cities-detroit/90826340007"
+    },
+    {
+      "tweetId": "2074924146102771804",
+      "text": "Attorney General Paxton is a lawful, registered Texas voter in full compliance with the law. This is just another partisan hit piece attempting to smear a Republican nominee by insinuating wrongdoing where none exists. What voters actually care about is that Ken Paxton has fought to secure Texas elections, while James Talarico shields his own voter registration from public view and has actively opposed the voter ID and mail-ballot protections Texans overwhelmingly support.",
+      "note": "Texas Election Code §1.015 requires voter registration at one's residence, defined as home and fixed place of habitation. Reporting shows Paxton registered and voted at an address he no longer inhabits. https://statutes.capitol.texas.gov/Docs/EL/htm/EL.1.htm https://www.propublica.org/article/ken-paxton-voter-registration-election-law https://www.texastribune.org/2026/07/07/ken-paxton-voting-election-law"
+    },
+    {
+      "tweetId": "2067643533448606053",
+      "text": "Sen. Elissa Slotkin plans to introduce a bill that would ban the president from sending armed military or federal agents to polling sites during American elections. https://t.co/VCrMXUJItG",
+      "note": "Federal law (18 U.S.C. § 592) has prohibited troops or armed federal agents at polling places since the Civil War except to repel armed enemies. Slotkins bill would require congressional approval for that exception. https://www.law.cornell.edu/uscode/text/18/592 https://thehill.com/homenews/campaign/5930544-slotkin-introduces-election-protection-bill/"
+    },
+    {
+      "tweetId": "2076312681053601850",
+      "text": "This timeline would appear to run afoul of federal law, which requires military and overseas ballots to go out 45 days before any federal election. 45 days before August 11 would’ve been June 27. https://t.co/TogvtEV0v3",
+      "note": "A state unable to meet UOCAVA's 45-day ballot transmission deadline for federal primaries may apply for a hardship waiver from the Department of Defense. https://www.law.cornell.edu/uscode/text/52/20302 https://www.justice.gov/crt/uniformed-and-overseas-citizens-absentee-voting-act"
+    },
+    {
+      "tweetId": "2076776140442669123",
+      "text": "@AdamKinzinger Everyone remembers the fake bomb threats with Russian IP addresses in the 2020 election, it was literally being reported the day of.",
+      "note": "The hoax bomb threats originating from Russian email domains occurred on November 5, 2024, not during the 2020 election. https://www.fbi.gov/news/press-releases/fbi-statement-on-bomb-threats-to-polling-locations https://www.nbcnews.com/politics/2024-election/hoax-bomb-threats-made-dozens-polling-locations-swing-states-rcna178889"
+    },
+    {
+      "tweetId": "2078260611864248321",
+      "text": "Sen. Catherine Cortez Masto (D-NV) won by 7,928 votes in 2022. Nevada processed 163,900 duplicate registrations. https://t.co/jtH8Q5nCRF",
+      "note": "Sen. Catherine Cortez Masto won by 7928 votes in 2022 per official results. The 163900 duplicate registrations refer to registration applications that matched existing voter records according to the EACs 2022 EAVS report. https://www.nvsos.gov/silverstate2022gen/USSenate/ https://www.eac.gov/sites/default/files/2023-06/2022_EAVS_Report_508c.pdf"
+    },
+    {
+      "tweetId": "2078312483207409790",
+      "text": "Marc Elias: “The part of that Donald Trump lied he claimed that there were 280,000 non citizens registered to vote in four states. That is a lie. I'm just here to tell you there is zero chance that there are 280,000 non citizens registered in the entire country, and certainly not in those four states.",
+      "note": "DHS preliminary review identified over 250,000 potential non-citizens registered to vote in the four states: California (190,832), New Jersey (35,152), Pennsylvania (14,576), and Nevada (15,903). https://www.dhs.gov/news/2026/07/17/dhs-secretary-markwayne-mullin-sends-letters-secretaries-state-warning-about-non"
+    },
+    {
+      "tweetId": "2069802127464263892",
+      "text": "SHOCKING NATIONAL EMERGENCY ALERT! 🚨 President Donald J. Trump has CANCELLED today’s Housing News Conference and Signing effective immediately — because America is on the absolute brink of collapse! He is refusing to move forward until Congress passes the DESPERATELY NEEDED SAVE AMERICA ACT — which he has officially declared a FULL NATIONAL EMERGENCY. This isn’t politics anymore. This is SURVIVAL. Without this Act passing RIGHT NOW: • The housing market will implode • Families will be destroyed • The economy will crash into the ground • America as we know it could be lost forever President Trump said it plainly: this is a National Emergency. He cancelled a major event to prove how DESPERATE the situation has become. Congress — stop playing games. PASS THE SAVE AMERICA ACT IMMEDIATELY or watch everything burn. This is our last warning. The clock is ticking. America is watching. Thank you for your attention to this matter!",
+      "note": "Trump cancelled the signing of a bipartisan housing bill saying he would not proceed until Congress passes the SAVE America Act which he called a national emergency. The Act requires proof of citizenship to register to vote federally and has stalled in the Senate. https://www.congress.gov/bill/119th-congress/house-bill/7296 https://www.axios.com/2026/06/24/trump-delays-housing-bill-save-act https://www.reuters.com/world/us/trump-cancels-signing-bipartisan-us-housing-bill-2026-06-24/"
+    },
+    {
+      "tweetId": "2069899073868698101",
+      "text": "83% of Michigan’s population was registered to vote prior to the 2024 election. Only 77% of any population is over the age of 18, and therefore eligible to vote. The criminal enterprise is protecting itself again. https://t.co/VcMhnY6iq7",
+      "note": "Michigan has 7.3 million active registered voters, fewer than its 7.9 million voting-age population; the 83% figure uses total registrations (including ~1 million inactive) against total population (including children). https://www.michigan.gov/sos/elections/election-fact-center https://mvic.sos.state.mi.us/VoterCount/Index https://www.reuters.com/fact-check/michigan-does-not-have-more-active-voters-than-eligible-voters-2024-11-04"
+    },
+    {
+      "tweetId": "2072146139390873824",
+      "text": "Jay Collins used taxpayer money to hire a California lawyer to sue the DeSantis administration to remove me from your ballot. And this guy calls himself a “Republican.”",
+      "note": "The lawsuit was filed by Collins as a gubernatorial candidate—not in his official capacity as Lt. Gov. and not using taxpayer funds—against the Secretary of State to challenge Fishback's eligibility, not the DeSantis administration. https://floridapolitics.com/archives/804762-jay-collins-sues-to-kick-james-fishback-off-ballot-in-governors-race https://www.clickorlando.com/election-2026/2026/06/29/jay-collins-sues-to-throw-james-fishback-off-florida-gop-governors-race-ballot"
+    },
+    {
+      "tweetId": "2072504505787445301",
+      "text": "I'd put money on him being dead or in a coma and they're hiding it to prevent Kentucky's Democratic governor from appointing a replacement. If the GOP is like this, it really begs the question why nobody just lied about RBG for months. https://t.co/ertWfwmK6K",
+      "note": "Kentucky law does not allow the governor to appoint a replacement to a U.S. Senate vacancy. Such vacancies are filled by special election. https://ballotpedia.org/Filling_vacancies_in_the_U.S._Senate https://kentuckylantern.com/briefs/kentucky-senate-joins-house-to-ok-new-process-to-fill-us-senate-vacancies/"
+    },
+    {
+      "tweetId": "2077926493787771105",
+      "text": "@GavinNewsom Shut up!! We as the American people have a right to listen to whatever our president speaks about. We see that you and your cronies got ABC and NBC to not air it but that’s fine. We’re not worried. Illegals may vote in your state, but they will not vote in federal elections.",
+      "note": "California law requires U.S. citizenship to vote in state and federal elections. Non-citizens are ineligible to vote in them. Limited non-citizen voting is allowed in some local California elections. https://www.heritage.org/election-integrity/commentary/non-citizens-voting-california-judge-says-no-even-left-wing-state https://ballotpedia.org/Laws_permitting_noncitizens_to_vote_in_the_United_States https://bipartisanpolicy.org/article/four-things-to-know-about-noncitizen-voting/"
+    },
+    {
+      "tweetId": "2078185011488960852",
+      "text": "Trump won the 2020 Election Trump won the 2020 Election Trump won the 2020 Election Trump won the 2020 Election",
+      "note": "Joe Biden won the 2020 U.S. presidential election with 306 electoral votes to Donald Trump's 232. https://www.archives.gov/electoral-college/2020 https://www.presidency.ucsb.edu/statistics/elections/2020"
+    },
+    {
+      "tweetId": "2077932230781870567",
+      "text": "The only election interference happening in this country is coming straight from the White House, and no amount of pathetic late night rambling from a failing, fading president will change anyone’s mind",
+      "note": "The post's absolute claim that &quot;the only election interference&quot; comes from the White House ignores declassified intelligence documenting foreign threats from China, Russia, Iran, and others. https://www.whitehouse.gov/releases/2026/07/setting-the-record-straight-president-trump-declassifies-intel-on-foreign-election-interference-deep-state-coverup/"
+    },
+    {
+      "tweetId": "2077925941603348729",
+      "text": "WAIT WAIT WAIT… CHINA FREAKING HACKED 220 MILLION VIOTER FILES IN 2020??????!!!!! …AND OUR OWN GOVERNMENT COVERED IT UP?!!!! WHAT ARE WE EVEN DOING HERE, PEOPLE NEED TO GO TO PRISON!!!!!!!!!! THIS IS TREASON!!!!!!!!",
+      "note": "Declassified documents show many of the 220 million voter files were public registration records legally available for purchase https://www.nytimes.com/2026/07/16/us/politics/documents-china-2020-election-trump.html. Some of the data dates to 2017 https://www.courthousenews.com/articles/trump-claims-irrefutable-evidence-of-foreign-compromise-of-voter-rolls, and the files were described as 'bought, stolen, or hacked' https://thehill.com/homenews/administration/5973400-trump-election-claims-china/."
+    },
+    {
+      "tweetId": "2077492412822225306",
+      "text": "‼️LOOK‼️ these are the actual foreign entities that interfered in our 2020 elections. brought to you by palantir. https://t.co/OBxs1ISsP1",
+      "note": "This video is from Mike Lindell’s 2021 &quot;Cyber Symposium,&quot; not the software company Palantir. Cybersecurity experts and a $5 million challenge winner analyzed the data shown in the presentation and found no evidence of foreign election interference. https://www.npr.org/2023/04/27/1172382495/he-proved-mike-wrong-now-hes-claiming-his-5-million https://azmirror.com/2021/08/12/gop-legislators-spread-debunked-claims-at-lindells-cyber-symposium/"
+    }
+  ]
+}
