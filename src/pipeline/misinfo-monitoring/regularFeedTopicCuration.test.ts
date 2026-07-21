@@ -74,6 +74,17 @@ test("confirmed posts already selected count toward the slot cap (no double budg
   expect(displacedCount).toBe(2);
 });
 
+test("maxPosts below the slot count → final never exceeds the budget", () => {
+  // Near writing-limit exhaustion computeMaxPosts produces maxPosts of 1-2.
+  const selected = [fast("r1")];
+  const pool = [...selected, sourced("t1", 4_000_000, 1), sourced("t2", 3_000_000, 1), sourced("t3", 2_000_000, 1)];
+  const { final, prioritized, displacedCount } = fillWithTopicPriority(selected, new Set(["t1", "t2", "t3"]), pool, 1);
+  expect(final).toHaveLength(1);
+  expect(final.map((s) => s.post.id)).toEqual(["t1"]); // fastest confirmed takes the only slot
+  expect(prioritized).toHaveLength(1);
+  expect(displacedCount).toBe(1); // r1
+});
+
 test("budget not full → no displacement", () => {
   const selected = [fast("r1")];
   const pool = [...selected, slow("t1")];

@@ -74,6 +74,13 @@ export async function curateRegularFeedPosts(opts: {
     supabaseLogger.getPendingMisinfoSightings(topics.map((t) => t.id)),
   ]);
 
+  // Multi-topic note: unlike the pre-pass (which dedupes its work list so a
+  // multi-topic post is judged once, under its first matching topic), curation
+  // judges such a post under EVERY matching topic; the confirmed map still
+  // dedupes first-topic-wins, so a secondary pair can sit needs_note=true/
+  // unprocessed indefinitely (returned by getPendingMisinfoSightings, inert).
+  // Moot with one active topic — align with the pre-pass's dedupe if a second
+  // topic ever activates.
   for (const topic of topics) {
     const topicPosts = matched.get(topic.id) ?? [];
     if (!topicPosts.length) continue;
@@ -108,18 +115,28 @@ export async function curateRegularFeedPosts(opts: {
 
     const selected = await selectPostsNeedingNote(topic, fresh);
     const reasonById = new Map(selected.map((s) => [s.postId, s.reason]));
-    await supabaseLogger.recordMisinfoVerdicts(
-      fresh.map((p) => ({
-        tweet_id: p.id,
-        topic_id: topic.id,
-        needs_note: reasonById.has(p.id),
-        selection_reason: reasonById.get(p.id),
-      })),
-    );
     console.log(`[generate] topic curation: ${topic.id}: ${fresh.length} new match(es), ${selected.length} need a note`);
 
+    // Confirm BEFORE writing verdicts, and keep the verdict write fail-soft:
+    // once the judge has spoken, a bookkeeping failure must not cost the post
+    // its topic treatment this run (it would be processed generically, then
+    // burned in the tweets ledger where the pending rescue can't reach it).
+    // On write failure the sightings stay needs_note=null and are re-judged
+    // next run — worst case a duplicate judge call, never a lost treatment.
     for (const p of fresh) {
       if (reasonById.has(p.id) && !confirmed.has(p.id)) confirmed.set(p.id, topic);
+    }
+    try {
+      await supabaseLogger.recordMisinfoVerdicts(
+        fresh.map((p) => ({
+          tweet_id: p.id,
+          topic_id: topic.id,
+          needs_note: reasonById.has(p.id),
+          selection_reason: reasonById.get(p.id),
+        })),
+      );
+    } catch (err) {
+      console.warn(`[generate] topic curation: verdict write failed for ${topic.id} (treatment unaffected):`, err);
     }
   }
   return confirmed;
@@ -145,10 +162,12 @@ export function fillWithTopicPriority<T extends { post: Post; velocity: number |
 
   if (slots <= 0 || !confirmedIds.size) return { final: selected, prioritized: [], displacedCount: 0 };
 
+  // Never exceed the run budget: near writing-limit exhaustion computeMaxPosts
+  // genuinely produces maxPosts of 1–2, below the slot count.
   const prioritized = pool
     .filter((s) => confirmedIds.has(s.post.id))
     .sort(byVelocityDesc)
-    .slice(0, slots);
+    .slice(0, Math.min(slots, maxPosts));
   if (!prioritized.length) return { final: selected, prioritized: [], displacedCount: 0 };
 
   const prioritizedIds = new Set(prioritized.map((s) => s.post.id));
