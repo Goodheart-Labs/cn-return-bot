@@ -52,7 +52,6 @@ const PREFILTER_CONFIG: BotConfig = {
   search_analyzer: true,
   reasoning_effort: "high",
   temperature: 0,
-  feed_size: "small",
 };
 
 export interface PrefilterVerdict {

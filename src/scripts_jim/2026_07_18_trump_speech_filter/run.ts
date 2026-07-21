@@ -28,7 +28,7 @@ import { fetchAllRows } from "../../api/paging";
 import { MISINFO_TOPICS } from "../../pipeline/misinfo-monitoring/topics";
 import { blob } from "../../pipeline/misinfo-monitoring/keywordFilter";
 import { selectPostsNeedingNote, type SelectedPost } from "../../pipeline/misinfo-monitoring/selectPostsNeedingNote";
-import { sortByRecencyAndImpressions, ageInHours, formatCount } from "../../pipeline/orchestration/utils/tweetSorting";
+import { sortByWeightedScore, ageInHours, formatCount, type SortWeights } from "../../pipeline/orchestration/utils/tweetSorting";
 import { captureProdSupabaseCreds } from "../../local/prodSupabaseCreds";
 import { autoOpenInDashboard } from "../../local/dashboardAutoOpen";
 import { initOutputFolder, buildRunName, OUTPUT_HEADERS } from "../../local/outputWriter";
@@ -41,6 +41,7 @@ const POSTED_SINCE = "2026-07-16";
 // chunks amortize it — but a chunk with many selections + verbose reasons can
 // exceed the model's output budget and truncate the JSON, so keep it moderate.
 const SELECT_CHUNK = 50;
+export const RECENCY_AND_IMPRESSIONS_WEIGHTS: SortWeights = { recency: 0.8, length: 0, impressions: 0.2 };
 
 interface FeedTweetRow {
   tweet_id: string;
@@ -128,7 +129,7 @@ async function main() {
   const topArgIdx = process.argv.indexOf("--top");
   const topN = topArgIdx >= 0 ? Number(process.argv[topArgIdx + 1]) : undefined;
   if (topN) {
-    matched = sortByRecencyAndImpressions(matched).slice(0, topN);
+    matched = sortByWeightedScore(matched, RECENCY_AND_IMPRESSIONS_WEIGHTS).slice(0, topN);
     console.log(`[filter] --top ${topN}: kept the ${matched.length} highest recency+impressions matches`);
   }
 
@@ -168,8 +169,9 @@ async function main() {
   // impactful tweets render first. csvRowToReviewItemInsert maps text→tweet_text,
   // judge_guidance→shown.
   const postById = new Map(matched.map((p) => [p.id, p]));
-  const rankedPosts = sortByRecencyAndImpressions(
+  const rankedPosts = sortByWeightedScore(
     selected.map((s) => postById.get(s.postId)!).filter(Boolean),
+    RECENCY_AND_IMPRESSIONS_WEIGHTS,
   );
   for (const post of rankedPosts) {
     const imp = post.public_metrics?.impression_count ?? 0;

@@ -19,8 +19,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fetchEligiblePosts, type Post } from "../../api/fetchEligiblePosts";
-import { buildPostSelection } from "../../pipeline/orchestration/utils/feedSizeStrategy";
-import type { FeedSize } from "../../pipeline/ab-testing/botConfig";
+import { buildPostSelection, type FeedSize } from "../../pipeline/orchestration/utils/feedSizeStrategy";
 
 // --- Predicate (copied from topics.ts trump_election_fraud; keep in sync) ---
 const FRAME =

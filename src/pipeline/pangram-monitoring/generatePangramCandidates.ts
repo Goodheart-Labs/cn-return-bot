@@ -19,9 +19,8 @@
 import PQueue from "p-queue";
 import { fetchEligiblePosts, type Post } from "../../api/fetchEligiblePosts";
 import type { SupabaseLogger } from "../../api/supabaseClient";
-import { buildPostSelection } from "../orchestration/utils/feedSizeStrategy";
+import { buildPostSelection, type FeedSize } from "../orchestration/utils/feedSizeStrategy";
 import { ageInHours, formatCount, sortByWeightedScore, type SortWeights } from "../orchestration/utils/tweetSorting";
-import type { FeedSize } from "../ab-testing/botConfig";
 import { pickVariantName } from "../ab-testing/abTests";
 import { PANGRAM_NOTE_TEST } from "../ab-testing/abTestsData";
 import type { Candidate } from "../orchestration/submitCandidates";
