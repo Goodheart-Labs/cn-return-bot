@@ -29,15 +29,30 @@ import type { MisinfoTopicId } from "./topicIds";
 import { matchPostsByTopic } from "./keywordFilter";
 import { selectPostsNeedingNote } from "./selectPostsNeedingNote";
 import { loadDumpFeed } from "./loadDumpFeed";
+import { velocityPerHour, formatVelocity } from "../utils/velocity";
 
 const MISINFO_MAX_RESULTS = 5000;
 const MISINFO_MAX_PAGES = 100;
 const MISINFO_FEED_SIZES: FeedSize[] = ["xxl", "xl", "large"];
 // Ceiling on misinfo posts processed (and thus notes written/submitted) per run,
 // so a heavy misinfo day can't starve the regular pipeline or eat the shared
-// daily submission cap. Selected posts beyond it are dropped (highest-impression
+// daily submission cap. Selected posts beyond it are dropped (highest-velocity
 // posts win the cap), not queued for later.
 const MISINFO_MAX_PROCESS = 10;
+
+// ── Topic velocity floor ────────────────────────────────────────────────────
+// Experiment (week of 2026-07-20; analysis in
+// src/scripts_rob/2026_07_20_rating_velocity): the chance a post's note is
+// ever rated collapses at low velocity (impressions/hour at sighting), and
+// topic notes are expensive (full pipeline + injected reference doc) — so the
+// per-run processing cap should go to fast posts only. Applied BEFORE the cap;
+// below-floor selected posts are dropped and logged, not queued (same
+// semantics as the cap-drop; their sighting verdict is already recorded, so
+// the selection LLM never re-judges them). Unknown velocity fails OPEN.
+// Set 0 to disable. If fewer than ~5 qualifying posts/day survive the full
+// note-writing funnel for two consecutive days, lower this to 2_000 (the
+// display-collapse threshold from the analysis).
+const MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR = 4_000;
 
 export interface MisinfoCandidatesOptions {
   /** Shared with generateCandidates so already-noted / cooling-down tweets are
@@ -127,7 +142,8 @@ async function evaluateNewMatches(
 /**
  * Build the work list from this run's freshly-selected posts. Deduped across
  * topics (a post matching two topics is processed once under its first topic),
- * highest-impression first so the cap keeps the highest-impact posts.
+ * then floored and ranked by velocity (impressions/hour — see the floor above)
+ * so the cap keeps the posts whose notes can actually get rated.
  */
 function buildWorkList(
   selectedNew: Array<{ post: Post; topic: MisinfoTopic }>,
@@ -139,11 +155,27 @@ function buildWorkList(
     return true;
   });
 
-  const capped = deduped
-    .sort((a, b) => (b.post.public_metrics?.impression_count ?? 0) - (a.post.public_metrics?.impression_count ?? 0))
+  // Velocity floor: unknown velocity fails open (never drop on missing data).
+  const floored = MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR > 0
+    ? deduped.filter(({ post }) => {
+        const v = velocityPerHour(post);
+        return v === null || v >= MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR;
+      })
+    : deduped;
+  if (floored.length < deduped.length) {
+    const dropped = deduped.filter((w) => !floored.includes(w));
+    console.log(
+      `[misinfo] velocity floor: dropped ${dropped.length} of ${deduped.length} selected post(s) below ` +
+        `${formatVelocity(MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR)} — ` +
+        dropped.map(({ post }) => `${post.id} vel=${formatVelocity(velocityPerHour(post))}`).join(", "),
+    );
+  }
+
+  const capped = floored
+    .sort((a, b) => (velocityPerHour(b.post) ?? -Infinity) - (velocityPerHour(a.post) ?? -Infinity))
     .slice(0, MISINFO_MAX_PROCESS);
-  if (deduped.length > capped.length) {
-    console.log(`[misinfo] Cap: processing ${capped.length} of ${deduped.length} selected posts (rest dropped, not queued)`);
+  if (floored.length > capped.length) {
+    console.log(`[misinfo] Cap: processing ${capped.length} of ${floored.length} selected posts (rest dropped, not queued)`);
   }
 
   const work = capped.map(({ post, topic }) => ({
