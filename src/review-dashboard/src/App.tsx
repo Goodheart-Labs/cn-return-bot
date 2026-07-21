@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { PostingLimitDrawer } from "./components/PostingLimitDrawer";
 import type {
   ReviewItem,
   DatasetOption,
@@ -866,6 +867,9 @@ export function App() {
           onDeleteUpload={handleDeleteUpload}
         />
       </div>
+
+      {/* Posting limit (writing cap) — collapsed by default, lazy-loads on open. */}
+      <PostingLimitDrawer />
 
       {/* Burn-down pace bar — how much of the review backlog to clear today. */}
       {dataset.type === "production" && (
