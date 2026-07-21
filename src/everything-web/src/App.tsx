@@ -6,7 +6,7 @@ import { castVote, clearVote, fetchMyVotes, type Vote } from "./lib/votes";
 import { castCommentVote, clearCommentVote, fetchMyCommentVotes } from "./lib/comments";
 import { donationPair, priorTally, type VoteCast } from "./lib/donationScoring";
 import { saveDonation, usePreferredCharity } from "./lib/donations";
-import { readRoute, pushProject, pushItem } from "./lib/routing";
+import { readRoute, pushProject, pushItem, pushLeaderboard, type View } from "./lib/routing";
 import { Sidebar } from "./components/Sidebar";
 
 function AuthCorner({ session, onSignIn, onSignOut }: {
@@ -33,6 +33,7 @@ import { LoginModal } from "./components/LoginModal";
 import { WriteNoteModal } from "./components/WriteNoteModal";
 import { NoteCard } from "./components/NoteCard";
 import { ItemChips } from "./components/ItemChips";
+import { Leaderboard } from "./components/Leaderboard";
 import { DesignMenu } from "./components/DesignMenu";
 import type { CommentRow, NoteRow } from "./lib/types";
 import { isLocked, totalVotes, weight } from "./lib/noteScore";
@@ -43,6 +44,8 @@ export function App() {
   const { projects, items, notes, comments, loaded } = useLiveData();
   const { session } = useSession();
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  // Which top-level view — the note feed or the rating leaderboard.
+  const [view, setView] = useState<View>(() => readRoute().view);
   // Item filter within the project (episode / post / page) — null = all items.
   const [itemFilter, setItemFilter] = useState<string | null>(() => readRoute().item);
   const [myVotes, setMyVotes] = useState<Map<string, Vote>>(new Map());
@@ -122,6 +125,7 @@ export function App() {
 
   // Selecting a project updates the URL; Back/Forward restores the selection.
   const selectProject = (id: string) => {
+    setView("notes");
     setSelectedId(id);
     setItemFilter(null);
     const slug = projects.find((p) => p.id === id)?.slug;
@@ -132,9 +136,14 @@ export function App() {
     const slug = projects.find((p) => p.id === selectedId)?.slug;
     if (slug) pushItem(slug, itemId);
   };
+  const selectLeaderboard = () => {
+    setView("leaderboard");
+    pushLeaderboard();
+  };
   useEffect(() => {
     const onPop = () => {
       const route = readRoute();
+      setView(route.view);
       const p = projects.find((pp) => pp.slug === route.project);
       if (p) setSelectedId(p.id);
       setItemFilter(route.item);
@@ -346,12 +355,16 @@ export function App() {
       <Sidebar
         projects={projects}
         selectedId={selectedId}
+        view={view}
         onSelect={selectProject}
+        onSelectLeaderboard={selectLeaderboard}
       />
 
       <main className="flex-1 max-w-3xl md:max-w-[96rem] mx-auto px-4 md:px-8 py-8 w-full">
         <div className="flex items-center justify-between gap-4 mb-6">
-          <h2 className="text-2xl font-extrabold">{selected?.name ?? ""}</h2>
+          <h2 className="text-2xl font-extrabold">
+            {view === "leaderboard" ? "Rating leaderboard" : selected?.name ?? ""}
+          </h2>
           <div className="flex items-center gap-4">
             <button
               onClick={() => (session ? setWriteOpen(true) : setLoginOpen(true))}
@@ -362,7 +375,8 @@ export function App() {
             <AuthCorner session={session} onSignIn={() => setLoginOpen(true)} onSignOut={() => signOut()} />
           </div>
         </div>
-        {loaded && (
+        {view === "leaderboard" && <Leaderboard session={session} myVoteCount={myVotes.size} />}
+        {view === "notes" && loaded && (
           <ItemChips
             items={projectItems}
             noteCounts={itemNoteCounts}
@@ -370,10 +384,11 @@ export function App() {
             onSelect={selectItem}
           />
         )}
-        {!loaded && <p className="text-gray-400">Loading…</p>}
-        {loaded && orderedNotes.length === 0 && (
+        {view === "notes" && !loaded && <p className="text-gray-400">Loading…</p>}
+        {view === "notes" && loaded && orderedNotes.length === 0 && (
           <p className="text-gray-400">No notes yet for this project.</p>
         )}
+        {view === "notes" && (
         <div className="space-y-4">
           {projectNotes.map(renderCard)}
           {underwaterNotes.length > 0 && (
@@ -397,6 +412,7 @@ export function App() {
             </details>
           )}
         </div>
+        )}
       </main>
 
       <DesignMenu />
