@@ -1,6 +1,8 @@
 import { test, expect } from "bun:test";
-import { velocityPerHour, formatVelocity, VELOCITY_MIN_AGE_HOURS } from "./velocity";
+import { velocityPerHour, formatVelocity, VELOCITY_MIN_AGE_HOURS, REGULAR_VELOCITY_FLOOR_PER_HOUR } from "./velocity";
 import { partitionByVelocityFloor, orderWithReserve, type Candidate } from "../orchestration/submitCandidates";
+import { collectFastPosts } from "../orchestration/generateCandidates";
+import type { FeedSize } from "../orchestration/utils/feedSizeStrategy";
 import type { Post } from "../../api/fetchEligiblePosts";
 import type { ProcessTweetResult } from "../orchestration/processTweet";
 
@@ -108,4 +110,81 @@ test("no reserve remaining → plain eval sort", () => {
   const m = candidate("m", { ...viral, misinfo: true, eval: -5 });
   const r = candidate("r", { ...viral, eval: 0.5 });
   expect(orderWithReserve([m, r], 0).map((c) => c.post.id)).toEqual(["r", "m"]);
+});
+
+// ── selection-layer: the feed ladder ────────────────────────────────────────
+// Tiers are filtered to above-floor posts, and the ladder broadens only while
+// the pool is short of maxPosts. Velocities are stated as multiples of the
+// floor so these keep passing if the floor is retuned.
+
+/** A post `id` whose velocity is `floorMultiple` × the floor, as of NOW. */
+function feedPost(id: string, floorMultiple: number): Post {
+  const ageHours = 2;
+  return { ...post(REGULAR_VELOCITY_FLOOR_PER_HOUR * floorMultiple * ageHours, ageHours), id };
+}
+
+/** Serves each tier's posts and records which tiers were actually fetched. */
+function fakeFeed(tiers: Partial<Record<FeedSize, Post[]>>) {
+  const fetched: FeedSize[] = [];
+  return {
+    fetched,
+    fetchFeed: async (feedSize: FeedSize) => {
+      fetched.push(feedSize);
+      return tiers[feedSize] ?? [];
+    },
+  };
+}
+
+test("stops at the first tier that supplies enough above-floor posts", async () => {
+  const { fetched, fetchFeed } = fakeFeed({
+    small: [feedPost("s1", 2), feedPost("s2", 3)],
+    large: [feedPost("l1", 9)],
+  });
+  const selected = await collectFastPosts(2, new Set(), fetchFeed, NOW);
+  expect(fetched).toEqual(["small"]);
+  expect(selected.map((s) => s.post.id)).toEqual(["s2", "s1"]); // fastest first
+});
+
+test("broadens to the next tier when a tier's above-floor posts fall short", async () => {
+  const { fetched, fetchFeed } = fakeFeed({
+    small: [feedPost("s1", 2), feedPost("slow", 0.5)],
+    large: [feedPost("l1", 3)],
+  });
+  const selected = await collectFastPosts(2, new Set(), fetchFeed, NOW);
+  expect(fetched).toEqual(["small", "large"]);
+  expect(selected.map((s) => s.post.id)).toEqual(["l1", "s1"]);
+});
+
+test("below-floor posts are dropped, not used to fill a short pool", async () => {
+  const { fetchFeed } = fakeFeed({
+    small: [feedPost("slow1", 0.9)],
+    large: [feedPost("slow2", 0.1), feedPost("fast", 4)],
+  });
+  const selected = await collectFastPosts(5, new Set(), fetchFeed, NOW);
+  expect(selected.map((s) => s.post.id)).toEqual(["fast"]);
+});
+
+test("already-known posts are skipped before the floor is applied", async () => {
+  const { fetchFeed } = fakeFeed({ small: [feedPost("seen", 5), feedPost("new", 2)] });
+  const selected = await collectFastPosts(5, new Set(["seen"]), fetchFeed, NOW);
+  expect(selected.map((s) => s.post.id)).toEqual(["new"]);
+});
+
+test("unknown velocity fails open but sorts last", async () => {
+  const unknown = { ...post(undefined, 2), id: "unknown" };
+  const { fetchFeed } = fakeFeed({ small: [unknown, feedPost("fast", 2)] });
+  const selected = await collectFastPosts(5, new Set(), fetchFeed, NOW);
+  expect(selected.map((s) => s.post.id)).toEqual(["fast", "unknown"]);
+  expect(selected.map((s) => s.velocity)).toEqual([REGULAR_VELOCITY_FLOOR_PER_HOUR * 2, null]);
+});
+
+test("a failing tier falls through to the next instead of aborting the run", async () => {
+  const { fetched, fetchFeed } = fakeFeed({ large: [feedPost("l1", 2)] });
+  const failingSmall = async (feedSize: FeedSize) => {
+    if (feedSize === "small") throw new Error("403");
+    return fetchFeed(feedSize);
+  };
+  const selected = await collectFastPosts(1, new Set(), failingSmall, NOW);
+  expect(fetched).toEqual(["large"]);
+  expect(selected.map((s) => s.post.id)).toEqual(["l1"]);
 });

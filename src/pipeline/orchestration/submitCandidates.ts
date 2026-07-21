@@ -2,8 +2,9 @@
  * Submit Candidates
  *
  * Submits candidates via the X API in priority order. Non-misinfo candidates
- * below the velocity floor are cut first (recorded, not submitted — see the
- * floor below). Base order is eval score descending. On top of that, a bounded
+ * below the velocity floor are cut first (recorded, not submitted) — a backstop
+ * for candidates that skipped the floor the regular feed already applies at
+ * selection. Base order is eval score descending. On top of that, a bounded
  * number of the *fastest* misinfo (curated-topic, e.g. Trump) notes are pushed
  * to the very front — see the reserve below. In dry-run mode, just logs what
  * would be submitted.
@@ -13,7 +14,7 @@ import { SupabaseLogger } from "../../api/supabaseClient";
 import { submitNoteForTweet } from "./submitNoteForTweet";
 import type { Post } from "../../api/fetchEligiblePosts";
 import type { ProcessTweetResult } from "./processTweet";
-import { velocityPerHour, formatVelocity } from "../utils/velocity";
+import { velocityPerHour, formatVelocity, isAboveVelocityFloor, REGULAR_VELOCITY_FLOOR_PER_HOUR } from "../utils/velocity";
 
 // ── Misinfo submit-priority reserve ─────────────────────────────────────────
 // Misinfo notes (curated topics like Trump election-security) run an *advisory*
@@ -40,25 +41,11 @@ const MISINFO_RESERVE_24H = 5;
 const MISINFO_RESERVE_EVAL_FLOOR = -Infinity;
 const SUBMISSION_WINDOW_HOURS = 24;
 
-// ── Regular-feed velocity floor ─────────────────────────────────────────────
-// Experiment (week of 2026-07-20). A post's velocity — impressions/hour at the
-// moment we fetched it — strongly predicts whether its note ever gets rated:
-// 56% of recent submissions were below the historical median velocity, where
-// notes mostly sit unread (analysis: src/scripts_rob/2026_07_20_rating_velocity).
-// With the daily cap binding, the goal is not keeping every possible winner
-// but maximizing the hit rate of the few submissions the cap allows — so
-// non-misinfo candidates on posts slower than this floor are not submitted.
-// Enforced HERE rather than at selection so the notes are still written and
-// recorded (outcome rejected/below_velocity_floor, same cooldown as a
-// cap-drop) and the two drop reasons stay comparable. Applies to every
-// non-misinfo candidate (incl. pangram if that pre-pass is re-enabled; misinfo
-// has its own floor at stage-3 selection). Unknown velocity fails OPEN —
-// a feed-shape change must never silently zero submissions. Set 0 to disable.
-const REGULAR_VELOCITY_FLOOR_PER_HOUR = 30_000;
-
 const evalOf = (c: Candidate) => c.tweetResult.evaluationScore ?? -Infinity;
 const byEvalDesc = (a: Candidate, b: Candidate) => evalOf(b) - evalOf(a);
-const velocityOf = (c: Candidate) => velocityPerHour(c.post);
+// Prefer the velocity frozen when the post was fetched (regular feed); fall
+// back to deriving it for candidates that arrive without one (the pre-passes).
+const velocityOf = (c: Candidate) => c.velocity ?? velocityPerHour(c.post);
 // Unknown velocity sorts LAST: the floor fails open for it, but being
 // uncuttable shouldn't also mean winning a scarce reserve slot.
 const byVelocityDesc = (a: Candidate, b: Candidate) =>
@@ -78,13 +65,18 @@ export interface Candidate {
   /** True for misinfo-monitoring (curated-topic) candidates. Drives the bounded
    *  submit-priority reserve above. Set in generateMisinfoCandidates. */
   isMisinfo?: boolean;
+  /** Velocity frozen when the post was fetched. Absent on candidates that never
+   *  went through feed selection — those derive it from the post instead. */
+  velocity?: number | null;
 }
 
 /**
- * Split candidates at the regular velocity floor. Misinfo candidates are never
- * cut here (the topic has its own floor at stage-3 selection); unknown
- * velocity fails open. Pure — exported for the offline replay sim
- * (scripts_rob/2026_07_20_velocity_floor_sim) and tests.
+ * Split candidates at the regular velocity floor — a backstop, since the
+ * regular feed now applies the same floor at selection (see collectFastPosts);
+ * in practice this only bites candidates that skip selection, i.e. the Pangram
+ * pre-pass. Misinfo candidates are never cut here (the topic has its own floor
+ * at stage-3 selection); unknown velocity fails open. Pure — exported for the
+ * offline replay sim (scripts_rob/2026_07_20_velocity_floor_sim) and tests.
  */
 export function partitionByVelocityFloor(candidates: Candidate[]): {
   kept: Candidate[];
@@ -94,10 +86,10 @@ export function partitionByVelocityFloor(candidates: Candidate[]): {
   const floorCut: { candidate: Candidate; velocity: number }[] = [];
   for (const c of candidates) {
     const v = velocityOf(c);
-    if (REGULAR_VELOCITY_FLOOR_PER_HOUR > 0 && !c.isMisinfo && v === null) {
+    if (v === null && !c.isMisinfo) {
       console.warn(`[submit] velocity unknown for ${c.post.id} (missing metrics) — failing open`);
     }
-    if (REGULAR_VELOCITY_FLOOR_PER_HOUR > 0 && !c.isMisinfo && v !== null && v < REGULAR_VELOCITY_FLOOR_PER_HOUR) {
+    if (!c.isMisinfo && v !== null && !isAboveVelocityFloor(v)) {
       floorCut.push({ candidate: c, velocity: v });
     } else {
       kept.push(c);
