@@ -11,7 +11,9 @@ import { defaultFilters } from "./lib/types";
 import { resolveRatingCounts } from "../../dashboard-shared/Ratings";
 import {
   fetchDashboardData,
-  fetchAllNotesData,
+  fetchAllNotesCanonical,
+  fetchAllNotesPhase1,
+  assembleAllNotes,
   fetchDashboardDataByTags,
   fetchDashboardDataHighValue,
   buildDashboardItems,
@@ -34,6 +36,11 @@ import {
 // bounded to this recent window (loaded in the background, no button).
 const SECONDARY_WINDOW_DAYS = 14;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
+// How many note cards to MOUNT at once. Filtering the all-notes load can match
+// thousands of notes; mounting thousands of NoteCards janks the browser. We cap
+// the mounted cards and grow the window as the user scrolls (infinite scroll) —
+// the list COUNT still reflects the true filtered total, so "0 means 0" holds.
+const RENDER_PAGE = 100;
 
 // Failure types whose pills show a seen-aware count (how many are left to review
 // under the current seen filter) instead of the all-time total. Limited to the
@@ -349,26 +356,26 @@ export function App() {
           setRecentNotesLoaded(true);
           return;
         }
-        // Instant first paint: the server injects the FULL default set as
-        // window.__DEFAULT_VIEW__. Paint it with zero round-trips, then reload.
-        // Consumed once, so window extends and later reloads fetch fresh.
-        const injected = (window as any).__DEFAULT_VIEW__;
+        // PHASE 1 — fast first paint: load the note rows (~2s) + their seen state and
+        // render immediately, so note text / status / the unseen filter all work
+        // right away. We skip the server-injected rated-only __DEFAULT_VIEW__ (the
+        // full canonical set is nearly as fast and avoids a rated-only flash).
         (window as any).__DEFAULT_VIEW__ = null;
-        if (injected?.canonical?.length) {
-          setItems(buildDashboardItems(injected));
-          setLoading(false);
-        }
-        // ALL notes (every status, no window) as the list — so fresh
-        // NEEDS_MORE_RATINGS notes and every topic are visible and "0 means 0" —
-        // UNIONed with the recent secondary items that don't live in `notes`
-        // (low-eval rejections, missed opps, drafts). Secondary rows win on id
-        // overlap; in-session annotation edits are preserved across the reload.
+        const canonical = await fetchAllNotesCanonical();
+        if (seq !== loadSeq.current) return;
+        const phase1 = await fetchAllNotesPhase1(canonical);
+        if (seq !== loadSeq.current) return;
+        setItems((prev) => preserveAnnotations(prev, buildDashboardItems(phase1)));
+
+        // PHASE 2 — background enrichment: attach tweets, topic (sightings), and
+        // competing + ratings (classification), UNIONed with the recent secondary
+        // items that don't live in `notes` (low-eval / missed opps / drafts). Both
+        // fail-soft, so a slow/failed enrichment can't blank the already-rendered
+        // list. `loading` stays true here so the "loading all notes…" hint shows
+        // while tweets/topic fill in; the finally clears it.
         const secondarySince = new Date(Date.now() - SECONDARY_WINDOW_DAYS * MS_PER_DAY).toISOString();
         const [allNotes, secondary] = await Promise.all([
-          fetchAllNotesData(),
-          // Fail-soft: the secondary items (low-eval / drafts) are a heavy fetch and
-          // can hit the DB statement timeout. If they fail, still show ALL the notes
-          // (the main content) rather than blanking the page with an error.
+          assembleAllNotes(canonical),
           fetchDashboardData(secondarySince).catch((e) => {
             console.warn("[dashboard] secondary items (low-eval / drafts) failed — showing notes only:", e);
             return null;
@@ -582,6 +589,22 @@ export function App() {
     [filtered, logsByRunId],
   );
   const tagFilterActive = dataset.type === "production" && filters.failureModes.size > 0;
+
+  // Infinite-scroll render window: mount only the first `renderLimit` filtered
+  // cards, growing as you near the bottom. Resets whenever the filtered set could
+  // change. The displayed count uses visible.length (the true total), not this.
+  const [renderLimit, setRenderLimit] = useState(RENDER_PAGE);
+  useEffect(() => { setRenderLimit(RENDER_PAGE); }, [filters, abFilters, dataset]);
+  const rendered = useMemo(() => visible.slice(0, renderLimit), [visible, renderLimit]);
+  useEffect(() => {
+    const onScroll = () => {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 1200) {
+        setRenderLimit((n) => (n < visible.length ? n + RENDER_PAGE : n));
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [visible.length]);
 
   // The list is newest-first, so the top is often freshly-submitted notes with
   // no ratings yet. Offer a jump to the first note that actually has ratings —
@@ -976,7 +999,7 @@ export function App() {
 
       {/* Items */}
       <div className="space-y-3">
-        {visible.map((item) => (
+        {rendered.map((item) => (
           <div key={item.id} id={`note-${item.id}`}>
             <NoteCard
               item={item}

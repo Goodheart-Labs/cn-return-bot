@@ -231,20 +231,27 @@ async function assembleDashboardData(primary: {
   // path fetches them by note_id without the qualifying filters, so re-check.
   const missedOpps = missedOppCompeting.filter(isMissedOppCompetingNote);
 
+  // Each satellite is fail-soft: on error it degrades to [] rather than throwing,
+  // so a single slow/failed enrichment query can't blank the whole note list —
+  // the notes always render (with reduced classification/comparison detail).
+  const softBatch = (p: Promise<any[]>, what: string) =>
+    p.catch((e) => { console.warn(`[data] ${what} failed — degrading:`, e); return [] as any[]; });
   const [comparisonCompeting, submittedRuns, publicDumpRatings, annotations] = await Promise.all([
     // Competing notes attached to our notes — drives the comparison list and the
     // lost-to-competitor classification.
-    fetchInBatches<any>(
-      supabase, "competing_notes", "*", "our_note_id", noteIds, undefined, "comparison_competing",
-    ),
-    fetchInBatches<any>(
+    softBatch(fetchInBatches<any>(
+      // Only the columns buildDashboardItems reads — "*" pulled every column
+      // (incl. big text) for ~8k rows and was the dominant cost of the all-notes load.
+      supabase, "competing_notes", "note_id, our_note_id, note_text, current_status, author_participant_id, created_at_millis", "our_note_id", noteIds, undefined, "comparison_competing",
+    ), "competing_notes"),
+    softBatch(fetchInBatches<any>(
       supabase, "pipeline_runs", PIPELINE_METADATA_COLUMNS, "tweet_id", noteTweetIds,
       (q) => q.eq("outcome", "submitted"), "submitted_runs",
-    ),
-    fetchInBatches<any>(
+    ), "submitted_runs"),
+    softBatch(fetchInBatches<any>(
       supabase, "note_ratings_from_public_dump", PUBLIC_DUMP_RATING_COLUMNS, "note_id", noteIds,
       undefined, "public_dump_ratings",
-    ),
+    ), "public_dump_ratings"),
     fetchAnnotationsForTargets(annotationTargetIds(canonical, missedOpps, lowEvalRuns)),
   ]);
 
@@ -281,9 +288,9 @@ async function assembleDashboardData(primary: {
     ]),
   ];
   const tweets = tweetIds.length
-    ? await fetchInBatches<any>(
+    ? await softBatch(fetchInBatches<any>(
         supabase, "tweets", TWEETS_LIST_COLUMNS, "tweet_id", tweetIds, undefined, "tweets",
-      )
+      ), "tweets")
     : [];
 
   // Misinfo-monitoring sightings for these tweets → each item's fact-check topic.
@@ -388,16 +395,38 @@ export async function fetchDefaultStatusData(
  * satellite fetches are batched by assembleDashboardData, so no single query
  * exceeds the DB statement timeout (the old windowed load's failure mode).
  */
-export async function fetchAllNotesData(limit: number = 20000): Promise<DashboardData> {
-  console.log("[data] Loading ALL notes (every status, no window)…");
-  const canonical = await fetchAllRows<any>(
-    supabase
-      .from("notes")
-      .select(CANONICAL_LIST_COLUMNS)
-      .order("submitted_at", { ascending: false, nullsFirst: false })
-      .limit(limit),
+export async function fetchAllNotesCanonical(): Promise<any[]> {
+  console.log("[data] Loading ALL notes (canonical, every status, no window)…");
+  // PostgREST caps every response at 1000 rows, so a single select silently
+  // truncates. Page it in PARALLEL (fetchAllRowsParallel: 8 concurrent .range()s)
+  // — gets all ~6k in ~2s, vs serial offset paging which re-sorts per page (~10s).
+  // Stable ORDER BY note_id so the concurrent page ranges partition cleanly; the
+  // client re-sorts by date (sortedItems).
+  return fetchAllRowsParallel<any>(
+    () => supabase.from("notes").select(CANONICAL_LIST_COLUMNS).order("note_id", { ascending: true }),
     "all_notes_canonical",
   );
+}
+
+/**
+ * Phase-1 render data: the note rows + all production seen-annotations — both a
+ * single fast query. Lets the list paint in ~2–3s (note text, status, correct
+ * seen/unseen) while the heavy per-note satellites (tweets, competing, ratings,
+ * sightings) load in the background via assembleAllNotes. Fetching every satellite
+ * for all ~6k notes up front took ~30s — this is the "quick load, slow background".
+ */
+export async function fetchAllNotesPhase1(canonical: any[]): Promise<DashboardData> {
+  // All production annotations in one shot (small table, ~hundreds of rows) — far
+  // faster than batching by note_id; buildDashboardItems matches them by target_id.
+  const annotations = await fetchAllRows<any>(
+    supabase.from("review_dashboard_annotations").select("*").eq("source", "production"),
+    "phase1_annotations",
+  ).catch(() => [] as any[]);
+  return { canonical, competing: [], submittedRuns: [], missedRuns: [], lowEvalRuns: [], lowEvalScores: [], annotations, tweets: [], publicDumpRatings: [], sightings: [] };
+}
+
+/** Phase-2 enrichment: attach every satellite (batched, fail-soft) to the notes. */
+export async function assembleAllNotes(canonical: any[]): Promise<DashboardData> {
   return assembleDashboardData({ canonical, missedOppCompeting: [], lowEvalRuns: [] });
 }
 
