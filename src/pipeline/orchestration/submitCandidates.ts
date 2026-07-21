@@ -1,16 +1,19 @@
 /**
  * Submit Candidates
  *
- * Submits candidates via the X API in priority order. Base order is eval score
- * descending. On top of that, a bounded number of the best *misinfo* (curated-
- * topic, e.g. Trump) notes are pushed to the very front — see the reserve below.
- * In dry-run mode, just logs what would be submitted.
+ * Submits candidates via the X API in priority order. Non-misinfo candidates
+ * below the velocity floor are cut first (recorded, not submitted — see the
+ * floor below). Base order is eval score descending. On top of that, a bounded
+ * number of the *fastest* misinfo (curated-topic, e.g. Trump) notes are pushed
+ * to the very front — see the reserve below. In dry-run mode, just logs what
+ * would be submitted.
  */
 
 import { SupabaseLogger } from "../../api/supabaseClient";
 import { submitNoteForTweet } from "./submitNoteForTweet";
 import type { Post } from "../../api/fetchEligiblePosts";
 import type { ProcessTweetResult } from "./processTweet";
+import { velocityPerHour, formatVelocity } from "../utils/velocity";
 
 // ── Misinfo submit-priority reserve ─────────────────────────────────────────
 // Misinfo notes (curated topics like Trump election-security) run an *advisory*
@@ -34,8 +37,29 @@ const MISINFO_RESERVE_24H = 2;
 const MISINFO_RESERVE_EVAL_FLOOR = -Infinity;
 const SUBMISSION_WINDOW_HOURS = 24;
 
+// ── Regular-feed velocity floor ─────────────────────────────────────────────
+// Experiment (week of 2026-07-20). A post's velocity — impressions/hour at the
+// moment we fetched it — strongly predicts whether its note ever gets rated:
+// 56% of recent submissions were below the historical median velocity, where
+// notes mostly sit unread (analysis: src/scripts_rob/2026_07_20_rating_velocity).
+// With the daily cap binding, the goal is not keeping every possible winner
+// but maximizing the hit rate of the few submissions the cap allows — so
+// non-misinfo candidates on posts slower than this floor are not submitted.
+// Enforced HERE rather than at selection so the notes are still written and
+// recorded (outcome rejected/below_velocity_floor, same cooldown as a
+// cap-drop) and the two drop reasons stay comparable. Applies to every
+// non-misinfo candidate (incl. pangram if that pre-pass is re-enabled; misinfo
+// has its own floor at stage-3 selection). Unknown velocity fails OPEN —
+// a feed-shape change must never silently zero submissions. Set 0 to disable.
+const REGULAR_VELOCITY_FLOOR_PER_HOUR = 30_000;
+
 const evalOf = (c: Candidate) => c.tweetResult.evaluationScore ?? -Infinity;
 const byEvalDesc = (a: Candidate, b: Candidate) => evalOf(b) - evalOf(a);
+const velocityOf = (c: Candidate) => velocityPerHour(c.post);
+// Unknown velocity sorts LAST: the floor fails open for it, but being
+// uncuttable shouldn't also mean winning a scarce reserve slot.
+const byVelocityDesc = (a: Candidate, b: Candidate) =>
+  (velocityOf(b) ?? -Infinity) - (velocityOf(a) ?? -Infinity);
 
 export interface Candidate {
   post: Post;
@@ -54,10 +78,60 @@ export interface Candidate {
 }
 
 /**
- * Order candidates for submission: base is eval descending, but push up to a
- * bounded number of the best misinfo notes to the front so a saturated cap
- * doesn't starve them (see the reserve constants above). Fail-soft — any error
- * reading the 24h misinfo count falls back to plain eval-sort (no boost).
+ * Split candidates at the regular velocity floor. Misinfo candidates are never
+ * cut here (the topic has its own floor at stage-3 selection); unknown
+ * velocity fails open. Pure — exported for the offline replay sim
+ * (scripts_rob/2026_07_20_velocity_floor_sim) and tests.
+ */
+export function partitionByVelocityFloor(candidates: Candidate[]): {
+  kept: Candidate[];
+  floorCut: { candidate: Candidate; velocity: number }[];
+} {
+  const kept: Candidate[] = [];
+  const floorCut: { candidate: Candidate; velocity: number }[] = [];
+  for (const c of candidates) {
+    const v = velocityOf(c);
+    if (REGULAR_VELOCITY_FLOOR_PER_HOUR > 0 && !c.isMisinfo && v === null) {
+      console.warn(`[submit] velocity unknown for ${c.post.id} (missing metrics) — failing open`);
+    }
+    if (REGULAR_VELOCITY_FLOOR_PER_HOUR > 0 && !c.isMisinfo && v !== null && v < REGULAR_VELOCITY_FLOOR_PER_HOUR) {
+      floorCut.push({ candidate: c, velocity: v });
+    } else {
+      kept.push(c);
+    }
+  }
+  return { kept, floorCut };
+}
+
+/**
+ * Pure ordering core: eval descending, with up to `reserveRemaining` of the
+ * FASTEST misinfo notes boosted to the front. The boost ranks by velocity, not
+ * eval: X's eval score systematically penalizes political notes, so it is the
+ * wrong signal for picking which misinfo notes ride the reserve; the regular
+ * (non-boosted) order stays eval-descending. Exported for the offline sim and
+ * tests.
+ */
+export function orderWithReserve(candidates: Candidate[], reserveRemaining: number): Candidate[] {
+  if (reserveRemaining <= 0) return [...candidates].sort(byEvalDesc);
+
+  const boosted = candidates
+    .filter((c) => c.isMisinfo && evalOf(c) >= MISINFO_RESERVE_EVAL_FLOOR)
+    .sort(byVelocityDesc)
+    .slice(0, reserveRemaining);
+  if (boosted.length === 0) return [...candidates].sort(byEvalDesc);
+
+  const boostedSet = new Set(boosted);
+  const rest = candidates.filter((c) => !boostedSet.has(c)).sort(byEvalDesc);
+  console.log(
+    `[submit] misinfo reserve: boosted ${boosted.length} note(s) to front (velocity-ranked) — ` +
+      boosted.map((c) => `vel=${formatVelocity(velocityOf(c))} eval=${evalOf(c).toFixed(2)}`).join(", "),
+  );
+  return [...boosted, ...rest];
+}
+
+/**
+ * Order candidates for submission (see orderWithReserve). Fail-soft — any
+ * error reading the 24h misinfo count falls back to plain eval-sort (no boost).
  */
 async function orderForSubmission(
   candidates: Candidate[],
@@ -69,26 +143,12 @@ async function orderForSubmission(
   try {
     const already = await supabaseLogger.countRecentMisinfoSubmissions(SUBMISSION_WINDOW_HOURS);
     reserveRemaining = Math.max(0, MISINFO_RESERVE_24H - already);
+    console.log(`[submit] misinfo reserve: ${already}/${MISINFO_RESERVE_24H} used in the last ${SUBMISSION_WINDOW_HOURS}h`);
   } catch (err) {
     console.warn("[submit] misinfo reserve count failed; no boost this run:", err);
     return [...candidates].sort(byEvalDesc);
   }
-  if (reserveRemaining === 0) return [...candidates].sort(byEvalDesc);
-
-  const boosted = candidates
-    .filter((c) => c.isMisinfo && evalOf(c) >= MISINFO_RESERVE_EVAL_FLOOR)
-    .sort(byEvalDesc)
-    .slice(0, reserveRemaining);
-  if (boosted.length === 0) return [...candidates].sort(byEvalDesc);
-
-  const boostedSet = new Set(boosted);
-  const rest = candidates.filter((c) => !boostedSet.has(c)).sort(byEvalDesc);
-  console.log(
-    `[submit] misinfo reserve: boosted ${boosted.length} note(s) to front ` +
-      `(24h reserve ${MISINFO_RESERVE_24H - reserveRemaining}/${MISINFO_RESERVE_24H} used) — ` +
-      `evals ${boosted.map((c) => evalOf(c).toFixed(2)).join(", ")}`,
-  );
-  return [...boosted, ...rest];
+  return orderWithReserve(candidates, reserveRemaining);
 }
 
 export async function submitCandidates(
@@ -103,15 +163,42 @@ export async function submitCandidates(
   }
 
   try {
-    const ordered = await orderForSubmission(candidates, supabaseLogger);
+    const { kept, floorCut } = partitionByVelocityFloor(candidates);
+    if (floorCut.length) {
+      console.log(
+        `[submit] velocity floor: cut ${floorCut.length} of ${candidates.length} candidate(s) below ` +
+          `${formatVelocity(REGULAR_VELOCITY_FLOOR_PER_HOUR)} — ` +
+          floorCut.map((f) => `${f.candidate.post.id} vel=${formatVelocity(f.velocity)}`).join(", "),
+      );
+    }
 
-    console.log(`[submit] ${ordered.length} candidates to submit (eval-sorted, misinfo reserve applied)`);
+    const ordered = await orderForSubmission(kept, supabaseLogger);
+
+    console.log(`[submit] ${ordered.length} candidates to submit (velocity floor applied, eval-sorted, misinfo reserve velocity-ranked)`);
 
     if (dryRun) {
+      for (const f of floorCut) {
+        console.log(`[submit]   (dry run) FLOOR-CUT vel=${formatVelocity(f.velocity)} | ${f.candidate.post.id}`);
+      }
       for (const c of ordered) {
-        console.log(`[submit]   (dry run) eval=${c.tweetResult.evaluationScore?.toFixed(2) ?? "?"}${c.isMisinfo ? " [misinfo]" : ""} | ${c.post.id}`);
+        console.log(`[submit]   (dry run) eval=${c.tweetResult.evaluationScore?.toFixed(2) ?? "?"} vel=${formatVelocity(velocityOf(c))}${c.isMisinfo ? " [misinfo]" : ""} | ${c.post.id}`);
       }
       return 0;
+    }
+
+    // Record floor-cuts before submitting: same rejected-with-reason pattern
+    // (and cooldown) as the daily-limit drops below. Fail-soft per candidate —
+    // a DB hiccup here must not block submitting the keepers.
+    for (const f of floorCut) {
+      if (f.candidate.tweetResult.pipelineRunId) {
+        try {
+          await supabaseLogger.completePipelineRun(f.candidate.tweetResult.pipelineRunId, {
+            outcome: "rejected",
+            outcome_reason: "below_velocity_floor",
+            final_stage: "submission",
+          });
+        } catch {}
+      }
     }
 
     let submitted = 0;
@@ -126,7 +213,7 @@ export async function submitCandidates(
 
       if (result.status === "submitted") {
         submitted++;
-        console.log(`[submit] submitted ${candidate.post.id} (eval=${evalStr}) → note ${result.noteId}`);
+        console.log(`[submit] submitted ${candidate.post.id} (eval=${evalStr}, vel=${formatVelocity(velocityOf(candidate))}) → note ${result.noteId}`);
       } else if (result.status === "daily_limit") {
         limitHit = true;
         console.log(`[submit] daily limit reached after ${submitted} submissions`);
@@ -155,6 +242,7 @@ export async function submitCandidates(
 
     const breakdown = [
       `${submitted} submitted`,
+      floorCut.length ? `${floorCut.length} floor-cut` : null,
       expired ? `${expired} expired` : null,
       errors ? `${errors} errors` : null,
       limitHit ? `${limitSkipped} skipped (daily limit)` : null,
