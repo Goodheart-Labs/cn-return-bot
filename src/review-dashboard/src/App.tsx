@@ -65,9 +65,13 @@ function daysUntil(iso: string): number {
 // quota is anchored to the day's STARTING unseen count (persisted per-day in
 // localStorage) so it doesn't shrink out from under you as you rate — that's what
 // makes "done today" a fixed, hittable bar.
-function BurndownBar({ unseen, ready }: { unseen: number; ready: boolean }) {
+function BurndownBar({ unseen, reviewedToday, ready }: { unseen: number; reviewedToday: number; ready: boolean }) {
   const todayKey = new Date().toISOString().slice(0, 10);
   const [dayStart, setDayStart] = useState<number | null>(null);
+  const [dismissed, setDismissed] = useState<boolean>(() => {
+    try { return localStorage.getItem(`reviewDashboard.burndown.dismissed.${new Date().toISOString().slice(0, 10)}`) === "true"; }
+    catch { return false; }
+  });
   useEffect(() => {
     if (!ready) return;
     const k = `reviewDashboard.burndown.dayStart.${todayKey}`;
@@ -77,32 +81,51 @@ function BurndownBar({ unseen, ready }: { unseen: number; ready: boolean }) {
       localStorage.setItem(k, String(unseen));
     } catch { /* ignore */ }
     setDayStart(unseen);
-    // Capture the day's baseline once, when data is first ready — not on every
-    // unseen change (that would reset the bar each time you rate a note).
+    // Capture the day's baseline once, when data is first ready — used only to set
+    // the day's quota. Progress is the reviewedToday COUNTER (below), not the drop
+    // in unseen — so notes the bot writes during the day can't mask your progress.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, todayKey]);
 
-  if (!ready || dayStart == null) return null;
+  const dismiss = () => {
+    setDismissed(true);
+    try { localStorage.setItem(`reviewDashboard.burndown.dismissed.${todayKey}`, "true"); } catch { /* ignore */ }
+  };
+
+  if (!ready || dayStart == null || dismissed) return null;
   const daysLeft = daysUntil(BURNDOWN_TARGET_ISO);
+  // Quota = the day's-start backlog spread over the days left. New notes that
+  // arrive today grow tomorrow's backlog → tomorrow's quota, so inflow is
+  // accounted for across days without making today's target a moving goalpost.
   const quota = Math.max(1, Math.ceil(dayStart / daysLeft));
-  const progress = Math.max(0, dayStart - unseen);
+  const progress = reviewedToday; // notes YOU marked seen today — inflow-proof
   const done = progress >= quota;
   const remainingToday = Math.max(0, quota - progress);
-  const pct = Math.min(100, Math.round((progress / quota) * 100));
+  // Full + green the moment the day's quota is met; the count keeps ticking up
+  // past it (progress rises) while the bar stays full.
+  const pct = done ? 100 : Math.min(100, Math.round((progress / quota) * 100));
   const targetLabel = new Date(BURNDOWN_TARGET_ISO + "T00:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" });
 
   return (
-    <div className={`mb-4 rounded-lg border p-3 ${done ? "border-green-300 bg-green-50" : "border-gray-200 bg-gray-50"}`}>
-      <div className="flex items-center justify-between text-sm">
+    <div className={`relative mb-4 rounded-lg border p-3 ${done ? "border-green-300 bg-green-50" : "border-gray-200 bg-gray-50"}`}>
+      <button
+        onClick={dismiss}
+        title="Dismiss for today"
+        aria-label="Dismiss for today"
+        className="absolute top-1 right-2 text-gray-400 hover:text-gray-600 text-base leading-none"
+      >
+        ×
+      </button>
+      <div className="flex items-center justify-between text-sm pr-5">
         <span className={done ? "text-green-800 font-medium" : "text-gray-700 font-medium"}>
           {done
-            ? `✓ You've done enough today — ${progress}/${quota} reviewed`
+            ? `✓ Done for today — ${progress} reviewed`
             : `Review ${remainingToday} more today (${progress}/${quota})`}
         </span>
         <span className="text-xs text-gray-500">{unseen} unseen · clear by {targetLabel}</span>
       </div>
       <div className="mt-2 h-1.5 w-full rounded-full bg-gray-200 overflow-hidden">
-        <div className={`h-full ${done ? "bg-green-500" : "bg-blue-500"}`} style={{ width: `${pct}%` }} />
+        <div className={`h-full transition-all duration-300 ${done ? "bg-green-500" : "bg-blue-500"}`} style={{ width: `${pct}%` }} />
       </div>
     </div>
   );
@@ -286,6 +309,19 @@ export function App() {
   const [failureModeCatalog, setFailureModeCatalog] = useState<FailureModeInfo[]>([]);
   const [showFixedTags, setShowFixedTags] = useState(false);
   const [loading, setLoading] = useState(true);
+  // Notes YOU marked seen today — the burn-down's progress counter, persisted per
+  // day so it survives refresh. Inflow-proof: notes the bot writes never reduce it.
+  const [reviewedToday, setReviewedToday] = useState<number>(() => {
+    try { return Number(localStorage.getItem(`reviewDashboard.burndown.reviewed.${new Date().toISOString().slice(0, 10)}`)) || 0; }
+    catch { return 0; }
+  });
+  const bumpReviewedToday = useCallback((delta: number) => {
+    setReviewedToday((n) => {
+      const next = Math.max(0, n + delta);
+      try { localStorage.setItem(`reviewDashboard.burndown.reviewed.${new Date().toISOString().slice(0, 10)}`, String(next)); } catch { /* ignore */ }
+      return next;
+    });
+  }, []);
   // Gate the A/B filter panel on the full recent-notes fetch finishing, so its
   // "recently varied" detection sees every pick from the window — not just the
   // injected first-paint subset.
@@ -668,6 +704,7 @@ export function App() {
   const handleSeenToggle = async (id: string, seen: boolean) => {
     const source = dataset.type === "production" ? "production" : "dataset_run";
     const targetId = dataset.type === "production" ? id : id;
+    const wasSeen = items.find((i) => i.id === id)?.annotation?.seen ?? false;
     try {
       await upsertAnnotation(source as "production" | "dataset_run", targetId, { seen });
       setItems((prev) =>
@@ -677,6 +714,8 @@ export function App() {
             : item,
         ),
       );
+      // Burn-down progress = notes newly marked seen today (production only).
+      if (dataset.type === "production" && seen !== wasSeen) bumpReviewedToday(seen ? 1 : -1);
     } catch (err: any) {
       console.error("Failed to update seen:", err);
     }
@@ -830,7 +869,7 @@ export function App() {
 
       {/* Burn-down pace bar — how much of the review backlog to clear today. */}
       {dataset.type === "production" && (
-        <BurndownBar unseen={burndownUnseen} ready={notesSeen.length > 0} />
+        <BurndownBar unseen={burndownUnseen} reviewedToday={reviewedToday} ready={notesSeen.length > 0} />
       )}
 
       {/* Filters */}
