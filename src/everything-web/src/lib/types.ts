@@ -44,15 +44,12 @@ export interface NoteSourceRow {
   sort_order: number;
 }
 
-/** A comment on a note, written via the note's Write-a-comment action;
- *  replies nest to any depth. */
-export interface CommentRow {
+/** A "note not needed" argument — a flat, claim-level case that the claim
+ *  needs no note at all. Keyed to the claim, so the same list renders under
+ *  every note on that exact text. No nesting. */
+export interface NnnRow {
   id: string;
-  note_id: string;
-  parent_comment_id: string | null;
-  /** Legacy tie to the vote whose reasoning this published — new comments
-   *  don't set it (comments are plain discussion now). */
-  vote_id: string | null;
+  claim_id: string;
   author_id: string | null;
   author_name: string | null; // opt-in byline, captured at submit time
   body: string;

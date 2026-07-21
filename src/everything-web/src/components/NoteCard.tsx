@@ -5,12 +5,12 @@ import { LinkifiedText } from "../../../dashboard-shared/LinkifiedText";
 import { VoteRatings } from "../../../dashboard-shared/Ratings";
 import { quoteFragmentUrl } from "../../../dashboard-shared/textFragment";
 import type { NotedContent } from "../../../dashboard-shared/types";
-import type { ClaimRef, CommentRow, NoteRow, NoteSourceRow } from "../lib/types";
+import type { ClaimRef, NnnRow, NoteRow, NoteSourceRow } from "../lib/types";
 import type { VoteCast } from "../lib/donationScoring";
 import type { Vote } from "../lib/votes";
 import { noteStatus, tallyVisible, type NoteStatus } from "../lib/noteScore";
 import { NoteMenu } from "./NoteMenu";
-import { CommentThread, type CommentsApi } from "./CommentThread";
+import { NoteNotNeeded, type NnnApi } from "./NoteNotNeeded";
 import { VoteDonation } from "./VoteDonation";
 
 /** Community-Notes rating states: icon, copy, box tint, and the footer ask.
@@ -336,13 +336,14 @@ function ImprovementLinks({ note, improvements }: { note: NoteRow; improvements:
 
 // Mirrors the review-dashboard card composition: content → note → stats row,
 // with voting live and an improve-note affordance.
-export function NoteCard({ note, improvements, commentsByParent, commentsApi, projectSlug, myVote, holdActive, onVote, onAuthored, session, onNeedLogin }: {
+export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug, myVote, holdActive, onVote, onAuthored, session, onNeedLogin }: {
   note: NoteRow;
   /** Notes that improve this one (reverse of improved_from_note_id). */
   improvements: NoteRow[];
-  /** This note's comment tree, keyed by parent comment id (null = top-level). */
-  commentsByParent: Map<string | null, CommentRow[]>;
-  commentsApi: CommentsApi;
+  /** The claim's note-not-needed entries, oldest first — shared by every note
+   *  on the same text. */
+  nnnEntries: NnnRow[];
+  nnnApi: NnnApi;
   projectSlug: string;
   myVote: Vote | undefined;
   holdActive: boolean;
@@ -425,20 +426,14 @@ export function NoteCard({ note, improvements, commentsByParent, commentsApi, pr
         session={session}
         onNeedLogin={onNeedLogin}
         onAuthored={onAuthored}
-        onCommentAuthored={commentsApi.onAuthored}
+        onNnnAuthored={nnnApi.onAuthored}
         sourcesOpen={sourcesOpen}
         onToggleSources={() => setSourcesOpen((o) => !o)}
       >
         <ImprovementLinks note={note} improvements={improvements} />
       </NoteMenu>
 
-      <CommentThread
-        note={note}
-        byParent={commentsByParent}
-        api={commentsApi}
-        session={session}
-        onNeedLogin={onNeedLogin}
-      />
+      <NoteNotNeeded entries={nnnEntries} api={nnnApi} session={session} />
       </div>
     </div>
   );

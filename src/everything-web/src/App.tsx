@@ -3,7 +3,7 @@ import type { Session } from "@supabase/supabase-js";
 import { useLiveData } from "./lib/useLiveData";
 import { useSession, signOut } from "./lib/auth";
 import { castVote, clearVote, fetchMyVotes, type Vote } from "./lib/votes";
-import { castCommentVote, clearCommentVote, fetchMyCommentVotes } from "./lib/comments";
+import { castNnnVote, clearNnnVote, fetchMyNnnVotes } from "./lib/noteNotNeeded";
 import { donationPair, priorTally, type VoteCast } from "./lib/donationScoring";
 import { saveDonation, usePreferredCharity } from "./lib/donations";
 import { readRoute, pushProject, pushItem, pushLeaderboard, type View } from "./lib/routing";
@@ -35,13 +35,13 @@ import { NoteCard } from "./components/NoteCard";
 import { ItemChips } from "./components/ItemChips";
 import { Leaderboard } from "./components/Leaderboard";
 import { DesignMenu } from "./components/DesignMenu";
-import type { CommentRow, NoteRow } from "./lib/types";
+import type { NnnRow, NoteRow } from "./lib/types";
 import { isLocked, totalVotes, weight } from "./lib/noteScore";
 
-const EMPTY_COMMENT_TREE = new Map<string | null, CommentRow[]>();
+const NO_NNN: NnnRow[] = [];
 
 export function App() {
-  const { projects, items, notes, comments, loaded } = useLiveData();
+  const { projects, items, notes, nnn, loaded } = useLiveData();
   const { session } = useSession();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   // Which top-level view — the note feed or the rating leaderboard.
@@ -49,7 +49,7 @@ export function App() {
   // Item filter within the project (episode / post / page) — null = all items.
   const [itemFilter, setItemFilter] = useState<string | null>(() => readRoute().item);
   const [myVotes, setMyVotes] = useState<Map<string, Vote>>(new Map());
-  const [myCommentVotes, setMyCommentVotes] = useState<Map<string, Vote>>(new Map());
+  const [myNnnVotes, setMyNnnVotes] = useState<Map<string, Vote>>(new Map());
   // A fresh vote's donation starts at the remembered charity; the donation
   // box lets the voter redirect it afterwards.
   const [preferredCharity] = usePreferredCharity();
@@ -68,10 +68,10 @@ export function App() {
   useEffect(() => {
     if (session) {
       fetchMyVotes().then(setMyVotes);
-      fetchMyCommentVotes().then(setMyCommentVotes);
+      fetchMyNnnVotes().then(setMyNnnVotes);
     } else {
       setMyVotes(new Map());
-      setMyCommentVotes(new Map());
+      setMyNnnVotes(new Map());
     }
   }, [session?.user.id]);
 
@@ -98,20 +98,19 @@ export function App() {
     return { notesByItem: byItem, improvementsByOriginal: improvements };
   }, [notes]);
 
-  // Per-note comment trees: note id → (parent comment id | null → children,
-  // oldest first). Comments rank by age, not votes — no teleporting threads.
-  const commentsByNote = useMemo(() => {
-    const byNote = new Map<string, Map<string | null, CommentRow[]>>();
-    const sorted = [...comments.values()].sort((a, b) => a.created_at.localeCompare(b.created_at));
-    for (const comment of sorted) {
-      const tree = byNote.get(comment.note_id) ?? new Map<string | null, CommentRow[]>();
-      const siblings = tree.get(comment.parent_comment_id) ?? [];
-      siblings.push(comment);
-      tree.set(comment.parent_comment_id, siblings);
-      byNote.set(comment.note_id, tree);
+  // Claim id → its note-not-needed entries, oldest first (age order, not
+  // votes — no teleporting). The same list renders under every note card on
+  // that claim.
+  const nnnByClaim = useMemo(() => {
+    const byClaim = new Map<string, NnnRow[]>();
+    const sorted = [...nnn.values()].sort((a, b) => a.created_at.localeCompare(b.created_at));
+    for (const entry of sorted) {
+      const list = byClaim.get(entry.claim_id) ?? [];
+      list.push(entry);
+      byClaim.set(entry.claim_id, list);
     }
-    return byNote;
-  }, [comments]);
+    return byClaim;
+  }, [nnn]);
 
   // Initial project: the ?project= slug from the URL, else the first project
   // (by sort order) that actually has content.
@@ -223,32 +222,32 @@ export function App() {
     return error ? null : { voteId, pair };
   };
 
-  const handleCommentVote = async (comment: CommentRow, vote: Vote) => {
+  const handleNnnVote = async (entry: NnnRow, vote: Vote) => {
     if (!session) {
       setLoginOpen(true);
       return;
     }
-    const current = myCommentVotes.get(comment.id);
-    const next = new Map(myCommentVotes);
+    const current = myNnnVotes.get(entry.id);
+    const next = new Map(myNnnVotes);
     if (current === vote) {
-      next.delete(comment.id);
-      setMyCommentVotes(next);
-      await clearCommentVote(comment.id);
+      next.delete(entry.id);
+      setMyNnnVotes(next);
+      await clearNnnVote(entry.id);
     } else {
-      next.set(comment.id, vote);
-      setMyCommentVotes(next);
-      await castCommentVote(comment.id, session.user.id, vote);
+      next.set(entry.id, vote);
+      setMyNnnVotes(next);
+      await castNnnVote(entry.id, session.user.id, vote);
     }
   };
 
-  // The DB self-vote triggers make a just-posted note/comment start with its
+  // The DB self-vote triggers make a just-posted note/entry start with its
   // author's helpful vote — mirror that into the local vote maps so the pills
   // light up without a refetch.
-  const commentsApi = {
-    myVotes: myCommentVotes,
-    onVote: handleCommentVote,
-    onAuthored: (commentId: string) =>
-      setMyCommentVotes((m) => new Map(m).set(commentId, 1)),
+  const nnnApi = {
+    myVotes: myNnnVotes,
+    onVote: handleNnnVote,
+    onAuthored: (entryId: string) =>
+      setMyNnnVotes((m) => new Map(m).set(entryId, 1)),
   };
   const noteAuthored = (noteId: string) => setMyVotes((m) => new Map(m).set(noteId, 1));
 
@@ -338,8 +337,8 @@ export function App() {
       key={note.id}
       note={note}
       improvements={improvementsByOriginal.get(note.id) ?? []}
-      commentsByParent={commentsByNote.get(note.id) ?? EMPTY_COMMENT_TREE}
-      commentsApi={commentsApi}
+      nnnEntries={nnnByClaim.get(note.claim_id) ?? NO_NNN}
+      nnnApi={nnnApi}
       projectSlug={selected?.slug ?? ""}
       myVote={myVotes.get(note.id)}
       holdActive={voteHolds.has(note.id)}

@@ -53,7 +53,7 @@ function CharityPicker({ charity, onPick }: { charity: CharityId; onPick: (c: Ch
 
 /** The donation notice shown right after casting a note vote: the
  *  outcome-contingent pair frozen at vote time, with the charity switchable
- *  inline. Donation only — commenting lives in the note's action row
+ *  inline. Donation only — discussion lives in the note's action row
  *  (Jim, 2026-07-17: separate widgets). */
 export function VoteDonation({ voteId, pair, onClose }: {
   voteId: string;
