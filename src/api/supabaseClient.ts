@@ -875,15 +875,46 @@ export class SupabaseLogger {
   }
 
   /**
-   * All sightings recorded so far, keyed "<tweetId>:<topicId>". One read per
-   * run so the pre-pass can tell which keyword-matched posts are *new* (worth
-   * upserting + evaluating with the selection LLM) versus already-seen.
+   * All JUDGED sightings, keyed "<tweetId>:<topicId>". One read per pass so
+   * callers can tell which keyword-matched posts are *new* (worth upserting +
+   * evaluating with the selection LLM) versus already-judged. Rows with a null
+   * needs_note are deliberately EXCLUDED: they were upserted but the selection
+   * LLM never returned a verdict (e.g. it crashed after the upsert), and
+   * treating them as "seen" would silently drop them forever — excluding them
+   * lets the next run re-evaluate, which is what the sightings-first ordering
+   * was designed for (and what migration 043's needs_note-IS-NULL partial
+   * index anticipated). The table grows unboundedly and this paginates the
+   * whole thing; fine at current scale, revisit if reads get slow.
    */
   async getMisinfoSightingKeys(): Promise<Set<string>> {
     const rows = await this.fetchAllRows<{ tweet_id: string; topic_id: string }>(
-      (client) => client.from("misinfo_monitoring_sightings").select("id, tweet_id, topic_id"),
+      (client) => client
+        .from("misinfo_monitoring_sightings")
+        .select("id, tweet_id, topic_id")
+        .not("needs_note", "is", null),
       "id",
       "getMisinfoSightingKeys",
+    );
+    return new Set(rows.map((r) => `${r.tweet_id}:${r.topic_id}`));
+  }
+
+  /**
+   * Sightings judged note-worthy but never processed (needs_note = true,
+   * processed_run_id IS NULL — served by migration 043's partial index), keyed
+   * "<tweetId>:<topicId>". When such a post re-surfaces in a later fetch, the
+   * stored verdict is reused instead of re-spending a selection-LLM call.
+   */
+  async getPendingMisinfoSightings(topicIds: string[]): Promise<Set<string>> {
+    if (!topicIds.length) return new Set();
+    const rows = await this.fetchAllRows<{ tweet_id: string; topic_id: string }>(
+      (client) => client
+        .from("misinfo_monitoring_sightings")
+        .select("id, tweet_id, topic_id")
+        .eq("needs_note", true)
+        .is("processed_run_id", null)
+        .in("topic_id", topicIds),
+      "id",
+      "getPendingMisinfoSightings",
     );
     return new Set(rows.map((r) => `${r.tweet_id}:${r.topic_id}`));
   }
