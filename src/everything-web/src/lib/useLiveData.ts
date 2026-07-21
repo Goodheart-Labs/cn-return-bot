@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
 import type { ItemRow, NnnRow, NoteRow, NoteSourceRow, ProjectRow } from "./types";
@@ -60,7 +60,10 @@ function upsertHandler<T extends { id: string }>(setter: React.Dispatch<React.Se
   };
 }
 
-/** Live projects, items, notes (with their claim), and note-not-needed entries. */
+/** Live projects, items, notes (with their claim), and note-not-needed entries.
+ *  `upsertNote` / `addNnn` are the write paths' local echo: a row you just
+ *  posted enters state from your own insert rather than waiting for the
+ *  realtime round trip, which a slept or reconnecting socket can drop. */
 export function useLiveData() {
   const [projects, setProjects] = useState<ProjectRow[]>([]);
   const [items, setItems] = useState<RowMap<ItemRow>>(new Map());
@@ -68,8 +71,26 @@ export function useLiveData() {
   const [nnn, setNnn] = useState<RowMap<NnnRow>>(new Map());
   const [loaded, setLoaded] = useState(false);
 
+  // Realtime deltas don't carry the joined claim, so a note is always taken in
+  // full by id — for the realtime INSERT and for the author's own local echo.
+  const upsertNote = useCallback(async (id: string) => {
+    const schema = await detectSchema();
+    const { data } = await supabase.from("everything_notes").select(noteSelect(schema)).eq("id", id).maybeSingle();
+    if (data) setNotes((prev) => new Map(prev).set(id, normalizeNote(data, schema)));
+  }, []);
+
+  // An entry has no joins, so the inserted row is the whole thing — but only
+  // fills a gap, never overwrites: the author's self-upvote trigger fires after
+  // the insert's RETURNING, so a realtime row that beat us here is the fresher
+  // of the two.
+  const addNnn = useCallback(
+    (row: NnnRow) => setNnn((prev) => (prev.has(row.id) ? prev : new Map(prev).set(row.id, row))),
+    [],
+  );
+
   useEffect(() => {
     let cancelled = false;
+    let resubscribed = false;
 
     async function load() {
       const schema = await detectSchema();
@@ -90,14 +111,6 @@ export function useLiveData() {
     }
     load();
 
-    // Realtime deltas don't carry the joined claim, so fetch a new note in full;
-    // for an UPDATE (vote counts) merge onto the existing row, keeping its claim.
-    async function fetchNote(id: string) {
-      const schema = await detectSchema();
-      const { data } = await supabase.from("everything_notes").select(noteSelect(schema)).eq("id", id).maybeSingle();
-      if (data) setNotes((prev) => new Map(prev).set(id, normalizeNote(data, schema)));
-    }
-
     const channel = supabase
       .channel(`common-notes-${crypto.randomUUID()}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "everything_items" }, upsertHandler(setItems))
@@ -116,7 +129,7 @@ export function useLiveData() {
           setNotes((prev) => {
             const existing = prev.get(row.id);
             if (!existing) {
-              fetchNote(row.id); // don't have it yet — fetch fresh + normalized
+              upsertNote(row.id); // don't have it yet — fetch fresh + normalized
               return prev;
             }
             // Vote-count update: take the scalar fields but keep the already
@@ -125,16 +138,23 @@ export function useLiveData() {
             return new Map(prev).set(row.id, { ...existing, ...row, sources: existing.sources, claim: existing.claim ?? row.claim });
           });
         } else {
-          fetchNote((payload.new as { id: string }).id);
+          upsertNote((payload.new as { id: string }).id);
         }
       })
-      .subscribe();
+      // A socket that drops (laptop sleep, network blip) misses every event
+      // until it comes back, and nothing replays them — so a re-subscribe
+      // refetches instead of leaving the page on a frozen snapshot.
+      .subscribe((status) => {
+        if (status !== "SUBSCRIBED") return;
+        if (resubscribed) load();
+        resubscribed = true;
+      });
 
     return () => {
       cancelled = true;
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [upsertNote]);
 
-  return { projects, items, notes, nnn, loaded };
+  return { projects, items, notes, nnn, loaded, upsertNote, addNnn };
 }

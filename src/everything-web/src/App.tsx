@@ -65,7 +65,7 @@ function NoteSection({ label, notes, render }: {
 }
 
 export function App() {
-  const { projects, items, notes, nnn, loaded } = useLiveData();
+  const { projects, items, notes, nnn, loaded, upsertNote, addNnn } = useLiveData();
   const { session } = useSession();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   // Which top-level view — the note feed or the rating leaderboard.
@@ -229,16 +229,22 @@ export function App() {
     }
   };
 
-  // The DB self-vote triggers make a just-posted note/entry start with its
-  // author's helpful vote — mirror that into the local vote maps so the pills
-  // light up without a refetch.
+  // What you just posted goes into live state from your own insert — waiting
+  // for the realtime echo means it never shows if the socket dropped. The DB
+  // self-vote triggers also start it with its author's helpful vote, mirrored
+  // into the local vote maps so the pills light up without a refetch.
   const nnnApi = {
     myVotes: myNnnVotes,
     onVote: handleNnnVote,
-    onAuthored: (entryId: string) =>
-      setMyNnnVotes((m) => new Map(m).set(entryId, 1)),
+    onAuthored: (entry: NnnRow) => {
+      addNnn(entry);
+      setMyNnnVotes((m) => new Map(m).set(entry.id, 1));
+    },
   };
-  const noteAuthored = (noteId: string) => setMyVotes((m) => new Map(m).set(noteId, 1));
+  const noteAuthored = (noteId: string) => {
+    void upsertNote(noteId);
+    setMyVotes((m) => new Map(m).set(noteId, 1));
+  };
 
   const selected = projects.find((p) => p.id === selectedId) ?? null;
   // The project's items that actually have notes, newest first — feeds both the

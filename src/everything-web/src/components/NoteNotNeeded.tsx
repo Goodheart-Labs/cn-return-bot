@@ -11,8 +11,8 @@ import { MenuItem, TrashIcon } from "./NoteMenu";
 export interface NnnApi {
   myVotes: Map<string, Vote>;
   onVote: (entry: NnnRow, vote: Vote) => void;
-  /** Mirror the DB self-upvote of a just-posted entry into local state. */
-  onAuthored: (entryId: string) => void;
+  /** Put a just-posted entry into live state and mirror its DB self-upvote. */
+  onAuthored: (entry: NnnRow) => void;
 }
 
 /** Compact relative timestamp for entry meta ("now", "5m", "3h", "2d", then
@@ -124,18 +124,20 @@ function OwnEntryMenu({ onDelete }: { onDelete: () => void }) {
 
 /** The claim's "note not needed" arguments — the same flat list renders under
  *  every note card on that claim. Collapsed by default; the header row is the
- *  toggle. */
-export function NoteNotNeeded({ entries, api, session }: {
+ *  toggle. Openness is the card's state, so posting an entry can reveal it
+ *  (into a collapsed list, a new entry reads as nothing having happened). */
+export function NoteNotNeeded({ entries, api, session, open, onToggle }: {
   entries: NnnRow[]; // this claim's entries, oldest first (App pre-sorts)
   api: NnnApi;
   session: Session | null;
+  open: boolean;
+  onToggle: () => void;
 }) {
-  const [open, setOpen] = useState(false);
   if (entries.length === 0) return null;
   return (
     <div className="mt-3 pt-2 border-t border-gray-200 space-y-4">
       <button
-        onClick={() => setOpen((o) => !o)}
+        onClick={onToggle}
         aria-expanded={open}
         className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 hover:text-gray-700 py-1"
       >

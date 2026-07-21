@@ -1,14 +1,17 @@
 import { supabase } from "./supabase";
+import type { NnnRow } from "./types";
 import type { Vote } from "./votes";
 
-/** Insert a "note not needed" entry on a claim and return its id. The DB
- *  trigger auto-casts the author's helpful vote. */
+/** Insert a "note not needed" entry on a claim and return the inserted row —
+ *  the caller echoes it straight into live state, so it renders without waiting
+ *  for the realtime event. The DB trigger auto-casts the author's helpful vote
+ *  (the returned row predates it; the count arrives with the realtime UPDATE). */
 export async function postNnn(params: {
   claimId: string;
   body: string;
   authorId: string;
   authorName: string | null;
-}): Promise<string | null> {
+}): Promise<NnnRow | null> {
   const { data, error } = await supabase
     .from("everything_note_not_needed")
     .insert({
@@ -17,9 +20,9 @@ export async function postNnn(params: {
       author_name: params.authorName,
       body: params.body,
     })
-    .select("id")
+    .select("*")
     .single();
-  return error ? null : (data as { id: string }).id;
+  return error ? null : (data as NnnRow);
 }
 
 /** Delete own entry (RLS-scoped). Awaits internally — a supabase-js query

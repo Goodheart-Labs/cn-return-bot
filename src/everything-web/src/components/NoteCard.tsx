@@ -340,6 +340,9 @@ export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug, 
   const [cast, setCast] = useState<MintedDonation | null>(null);
   const cardColRef = useRef<HTMLDivElement>(null);
   const [sourcesOpen, setSourcesOpen] = useState(false);
+  // Collapsed until asked for — or until you post an entry yourself, which
+  // opens the list onto your own argument.
+  const [nnnOpen, setNnnOpen] = useState(false);
   // One evaluation per card: the badge tint, the counts reveal and the donation
   // payout all read the same status.
   const status = noteStatus(note);
@@ -413,14 +416,20 @@ export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug, 
         session={session}
         onNeedLogin={onNeedLogin}
         onAuthored={onAuthored}
-        onNnnAuthored={nnnApi.onAuthored}
+        onNnnAuthored={(entry) => { nnnApi.onAuthored(entry); setNnnOpen(true); }}
         sourcesOpen={sourcesOpen}
         onToggleSources={() => setSourcesOpen((o) => !o)}
       >
         <ImprovementLinks note={note} improvements={improvements} />
       </NoteMenu>
 
-      <NoteNotNeeded entries={nnnEntries} api={nnnApi} session={session} />
+      <NoteNotNeeded
+        entries={nnnEntries}
+        api={nnnApi}
+        session={session}
+        open={nnnOpen}
+        onToggle={() => setNnnOpen((o) => !o)}
+      />
       </div>
     </div>
   );

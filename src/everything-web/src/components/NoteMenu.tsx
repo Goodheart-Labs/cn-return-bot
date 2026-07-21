@@ -5,7 +5,7 @@ import { noteUrl } from "../lib/routing";
 import { displayName } from "../lib/session";
 import { isEarnestNote } from "../lib/judgeNote";
 import { postNnn } from "../lib/noteNotNeeded";
-import type { NoteRow } from "../lib/types";
+import type { NnnRow, NoteRow } from "../lib/types";
 import { AutoGrowTextarea, PostAsCheckbox, RejectedNotice, useSignedByline } from "./editorBits";
 
 /** One row of the ⋯ dropdown: muted icon, medium-weight label, rounded hover;
@@ -93,7 +93,7 @@ export function NoteMenu({ note, projectSlug, session, onNeedLogin, onAuthored, 
   onAuthored: (noteId: string) => void;
   /** A note-not-needed entry was just posted by this user (mirror its
    *  auto-upvote locally). */
-  onNnnAuthored: (entryId: string) => void;
+  onNnnAuthored: (entry: NnnRow) => void;
   sourcesOpen?: boolean;
   onToggleSources?: () => void;
   /** Extra actions slotted between Share and the ⋯ (e.g. improvement jump chips). */
@@ -193,7 +193,7 @@ export function NoteMenu({ note, projectSlug, session, onNeedLogin, onAuthored, 
 function NnnComposer({ note, session, onAuthored, onClose }: {
   note: NoteRow;
   session: Session;
-  onAuthored: (entryId: string) => void;
+  onAuthored: (entry: NnnRow) => void;
   onClose: () => void;
 }) {
   const [text, setText] = useState("");
@@ -205,14 +205,14 @@ function NnnComposer({ note, session, onAuthored, onClose }: {
     setBusy(true);
     setError(null);
     try {
-      const entryId = await postNnn({
+      const entry = await postNnn({
         claimId: note.claim_id,
         body: text.trim(),
         authorId: session.user.id,
         authorName: signed ? displayName(session) : null,
       });
-      if (!entryId) return setError("Could not post — try again.");
-      onAuthored(entryId);
+      if (!entry) return setError("Could not post — try again.");
+      onAuthored(entry);
       onClose();
     } catch (err) {
       setError((err as Error).message);
