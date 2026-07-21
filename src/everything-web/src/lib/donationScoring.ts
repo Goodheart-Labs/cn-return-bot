@@ -1,26 +1,34 @@
+import { VOTE_VALUES } from "../../../dashboard-shared/Ratings";
+import { noteTally, probabilityHelpful, withVote, type VoteTally } from "./noteBelief";
 import type { NoteRow } from "./types";
 import type { Vote } from "./votes";
 
-/** Outcome-contingent vote donations via the log market scoring rule.
+/** Outcome-contingent vote donations.
  *
- *  Each note carries a running log-odds estimate of settling "rated helpful",
- *  derived from its vote tally. A vote moves the estimate, and its donation is
- *  the value of the information it added toward the realized outcome, plus a
- *  flat base — so early consensus-shifting votes earn more than late pile-ons,
- *  and the pair shown at vote time is frozen (later votes never change it).
+ *  What a vote is worth rests on the latent-quality model in `noteBelief.ts`:
+ *  because information genuinely runs out as θ is pinned down, a vote's donation
+ *  decays on its own. There is no decay parameter anywhere.
  *
- *  Parameters are preset S2 of the grid search in
- *  src/scripts_jim/2026_07_17_donation_scoring/RESULTS.md. */
-const PRIOR_P_HELPFUL = 0.35;
-const LOG_ODDS_PER_VOTE: Record<Vote, number> = { 1: 0.4, 0: 0, [-1]: -0.52 };
-const DOLLARS_PER_NAT = 5;
-const BASE_DONATION_USD = 1.5;
-/** Floor on the score term — caps how far below base a wrong vote can end. */
-const SCORE_DROP_CLIP = 0.24;
-/** Global scale on every minted amount, applied after the S2 formula (so the
- *  preset's parameters keep their fitted meaning). Frozen pairs on existing
- *  donation rows are untouched. */
-const DONATION_SCALE = 0.8;
+ *  Pricing — the Brier rule, which is proper (honesty maximises your expected
+ *  donation) and, unlike the log rule, *bounded*: once the crowd converges and p
+ *  stops moving, the payout goes to zero on BOTH sides, so a late vote is a
+ *  low-stakes click rather than a big bet at long odds.
+ *
+ *  The base is the stake still on the table — exactly the worst score drop any
+ *  vote could suffer from here — so the smallest number on the card is the tip
+ *  and the whole card shrinks as the crowd converges. It stays incentive-neutral
+ *  because it depends only on the tally you walked into, never on how you vote.
+ *
+ *  Derivation, tuning and the rejected alternatives:
+ *  src/scripts_jim/2026_07_21_donation_decay/RESULTS.md
+ */
+
+/** Raised 5 -> 6.25 (Jim, 2026-07-21): lifts every amount 25%. The tip is an
+ *  additive term, so scaling this alone leaves the $0.25 floor where it is. */
+const DOLLARS_PER_SCORE_UNIT = 6.25;
+/** Floor on every displayed amount, so a fully converged note still pays for the
+ *  click. Also what the whole card decays towards. */
+const PARTICIPATION_TIP = 0.25;
 
 export interface DonationPair {
   ifHelpful: number;
@@ -34,48 +42,45 @@ export interface VoteCast {
   pair: DonationPair;
 }
 
-interface VoteTally {
-  helpful: number;
-  somewhatHelpful: number;
-  notHelpful: number;
-}
-
-const softplus = (x: number) => Math.log1p(Math.exp(-Math.abs(x))) + Math.max(x, 0);
-const logit = (p: number) => Math.log(p / (1 - p));
 const roundCents = (x: number) => Math.round(x * 100) / 100;
 
-const tallyLogOdds = (tally: VoteTally) =>
-  logit(PRIOR_P_HELPFUL) +
-  LOG_ODDS_PER_VOTE[1] * tally.helpful +
-  LOG_ODDS_PER_VOTE[0] * tally.somewhatHelpful +
-  LOG_ODDS_PER_VOTE[-1] * tally.notHelpful;
+/** Brier scores as [if the note settles Helpful, if it settles Not helpful].
+ *  Proper, and bounded — which is what lets both sides decay to nothing. */
+const brierScores = (p: number): [number, number] => [1 - (1 - p) ** 2, 1 - p ** 2];
 
-/** The prior tally for a fresh vote on `note`: the live counters minus the
- *  voter's own standing vote (a re-vote replaces it) and minus the author's
- *  trigger-cast self-vote — it's predictable, so it carries no information.
- *  (Approximation: assumes the author's self-vote is still "helpful".) */
+/** The tally a fresh vote is priced against: the note's, minus the voter's own
+ *  standing vote (a re-vote replaces it rather than adding to it). */
 export function priorTally(note: NoteRow, myVote: Vote | undefined): VoteTally {
-  const tally = {
-    helpful: note.helpful_count - (myVote === 1 ? 1 : 0) - (note.author_id ? 1 : 0),
-    somewhatHelpful: note.somewhat_helpful_count - (myVote === 0 ? 1 : 0),
-    notHelpful: note.not_helpful_count - (myVote === -1 ? 1 : 0),
-  };
+  const tally = noteTally(note);
   return {
-    helpful: Math.max(0, tally.helpful),
-    somewhatHelpful: Math.max(0, tally.somewhatHelpful),
-    notHelpful: Math.max(0, tally.notHelpful),
+    helpful: Math.max(0, tally.helpful - (myVote === 1 ? 1 : 0)),
+    somewhatHelpful: Math.max(0, tally.somewhatHelpful - (myVote === 0 ? 1 : 0)),
+    notHelpful: Math.max(0, tally.notHelpful - (myVote === -1 ? 1 : 0)),
   };
+}
+
+/** The stake still on the table: the largest score drop anyone could suffer
+ *  voting from this position, and therefore the base every amount is lifted by.
+ *  Depends only on the tally, never on how you vote — which is what keeps the
+ *  base incentive-neutral. */
+function stakeOnTheTable(tally: VoteTally): number {
+  const before = brierScores(probabilityHelpful(tally));
+  let worst = 0;
+  for (const vote of VOTE_VALUES) {
+    const after = brierScores(probabilityHelpful(withVote(tally, vote)));
+    worst = Math.max(worst, before[0] - after[0], before[1] - after[1]);
+  }
+  return PARTICIPATION_TIP + DOLLARS_PER_SCORE_UNIT * worst;
 }
 
 /** The frozen donation pair for `vote` cast against the given prior tally:
  *  (donated if the note settles rated helpful, donated if not helpful). */
 export function donationPair(tally: VoteTally, vote: Vote): DonationPair {
-  const before = tallyLogOdds(tally);
-  const after = before + LOG_ODDS_PER_VOTE[vote];
-  const scoreIfHelpful = softplus(-before) - softplus(-after); // Δ ln p
-  const scoreIfNotHelpful = softplus(before) - softplus(after); // Δ ln (1−p)
+  const before = brierScores(probabilityHelpful(tally));
+  const after = brierScores(probabilityHelpful(withVote(tally, vote)));
+  const base = stakeOnTheTable(tally);
   return {
-    ifHelpful: roundCents(DONATION_SCALE * (BASE_DONATION_USD + DOLLARS_PER_NAT * Math.max(scoreIfHelpful, -SCORE_DROP_CLIP))),
-    ifNotHelpful: roundCents(DONATION_SCALE * (BASE_DONATION_USD + DOLLARS_PER_NAT * Math.max(scoreIfNotHelpful, -SCORE_DROP_CLIP))),
+    ifHelpful: roundCents(base + DOLLARS_PER_SCORE_UNIT * (after[0] - before[0])),
+    ifNotHelpful: roundCents(base + DOLLARS_PER_SCORE_UNIT * (after[1] - before[1])),
   };
 }

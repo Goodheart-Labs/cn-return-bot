@@ -88,6 +88,10 @@ const VOTE_OPTIONS: { value: VoteValue; label: string; active: string; idle: str
   { value: -1, label: "Not helpful", active: "bg-red-100 text-red-800 border-red-300", idle: "text-red-700 border-gray-200 hover:bg-red-50" },
 ];
 
+/** Every vote, in display order — so callers that need to enumerate the type
+ *  (scoring every option, ranking a feed) don't hand-write the literal. */
+export const VOTE_VALUES: readonly VoteValue[] = VOTE_OPTIONS.map((o) => o.value);
+
 export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVote, showCounts = myVote !== undefined }: {
   helpful: number;
   somewhatHelpful: number;

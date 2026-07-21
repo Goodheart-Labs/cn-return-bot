@@ -8,7 +8,7 @@ import type { NotedContent } from "../../../dashboard-shared/types";
 import type { ClaimRef, NnnRow, NoteRow, NoteSourceRow } from "../lib/types";
 import type { VoteCast } from "../lib/donationScoring";
 import type { Vote } from "../lib/votes";
-import { noteStatus, tallyVisible, type NoteStatus } from "../lib/noteScore";
+import { noteStatus, noteTallyVisible, type NoteStatus } from "../lib/noteScore";
 import { NoteMenu } from "./NoteMenu";
 import { NoteNotNeeded, type NnnApi } from "./NoteNotNeeded";
 import { VoteDonation } from "./VoteDonation";
@@ -235,12 +235,12 @@ function ContextParagraph({ paragraph, quote, bare, fitTo }: {
 /** The note as one self-contained unit, X-CN style: a rating-status badge on
  *  top, the note text, and the rating pills inside the same box; the box tint
  *  follows the status (helpful/needs-ratings/not-helpful). */
-function NoteBox({ note, sourcesOpen, children }: {
+function NoteBox({ note, status, sourcesOpen, children }: {
   note: NoteRow;
+  status: NoteStatus;
   sourcesOpen?: boolean;
   children?: React.ReactNode;
 }) {
-  const status = noteStatus(note);
   const by = note.author_id ? note.author_name ?? "anonymous" : null;
   return (
     <div className={`cn-notebox rounded-lg p-3 border ${STATUS[status].box}`}>
@@ -362,6 +362,9 @@ export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug, 
   const [cast, setCast] = useState<VoteCast | null>(null);
   const cardColRef = useRef<HTMLDivElement>(null);
   const [sourcesOpen, setSourcesOpen] = useState(false);
+  // One evaluation per card: the badge tint, the counts reveal and the donation
+  // payout all read the same status.
+  const status = noteStatus(note);
   const claim = note.claim;
   // Data invariant (enforced at ingest, NOT here): a stored context_paragraph
   // always contains its context_quote word-for-word, so the bold always lands.
@@ -404,19 +407,24 @@ export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug, 
       )}
 
       <div className="mb-2">
-        <NoteBox note={note} sourcesOpen={sourcesOpen}>
+        <NoteBox note={note} status={status} sourcesOpen={sourcesOpen}>
           <VoteRatings
             helpful={note.helpful_count}
             somewhatHelpful={note.somewhat_helpful_count}
             notHelpful={note.not_helpful_count}
             myVote={myVote}
-            showCounts={tallyVisible(myVote, note.created_at)}
+            showCounts={noteTallyVisible(status, myVote, note.created_at)}
             onVote={(vote) => void onVote(note, vote).then(setCast)}
           />
           <ResortCountdown active={holdActive} key={`${note.helpful_count}-${note.somewhat_helpful_count}-${note.not_helpful_count}`} />
         </NoteBox>
         {cast && myVote !== undefined && session && (
-          <VoteDonation voteId={cast.voteId} pair={cast.pair} onClose={() => setCast(null)} />
+          <VoteDonation
+            voteId={cast.voteId}
+            pair={cast.pair}
+            status={status}
+            onClose={() => setCast(null)}
+          />
         )}
       </div>
 

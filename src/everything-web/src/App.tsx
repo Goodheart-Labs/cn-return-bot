@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { useLiveData } from "./lib/useLiveData";
 import { useSession, signOut } from "./lib/auth";
 import { castVote, clearVote, fetchMyVotes, type Vote } from "./lib/votes";
 import { castNnnVote, clearNnnVote, fetchMyNnnVotes } from "./lib/noteNotNeeded";
 import { donationPair, priorTally, type VoteCast } from "./lib/donationScoring";
+import { noteTally, probabilityHelpful, probabilityHelpfulAfter } from "./lib/noteBelief";
 import { saveDonation, usePreferredCharity } from "./lib/donations";
 import { readRoute, pushProject, pushItem, pushLeaderboard, type View } from "./lib/routing";
 import { Sidebar } from "./components/Sidebar";
@@ -36,9 +37,29 @@ import { ItemChips } from "./components/ItemChips";
 import { Leaderboard } from "./components/Leaderboard";
 import { DesignMenu } from "./components/DesignMenu";
 import type { NnnRow, NoteRow } from "./lib/types";
-import { isLocked, totalVotes, weight } from "./lib/noteScore";
+import { noteStatus, totalVotes } from "./lib/noteScore";
 
 const NO_NNN: NnnRow[] = [];
+
+/** A labelled band of the feed. Rendered only when it has notes, so a project
+ *  with nothing rated yet shows no dividers at all. */
+function NoteSection({ label, notes, render }: {
+  label: string;
+  notes: NoteRow[];
+  render: (note: NoteRow) => ReactNode;
+}) {
+  if (notes.length === 0) return null;
+  return (
+    <>
+      <div className="flex items-center gap-3 pt-4 max-w-[40rem] mx-auto w-full xl:max-w-none" role="separator">
+        <span className="flex-1 border-t-2 border-dotted border-gray-300" />
+        <span className="text-xs text-gray-400">{label}</span>
+        <span className="flex-1 border-t-2 border-dotted border-gray-300" />
+      </div>
+      {notes.map(render)}
+    </>
+  );
+}
 
 export function App() {
   const { projects, items, notes, nnn, loaded } = useLiveData();
@@ -288,49 +309,68 @@ export function App() {
           a.created_at.localeCompare(b.created_at),
       ),
     );
-  // Feed order: notes that still need ratings on top (oldest first — they need
-  // eyes), then locked-in helpful notes sorted least→most helpful so the
-  // best-rated sit lowest, just above the divider. Net-negative notes sink
-  // below a labeled divider. A note "locks in" as a real note at >=5 ratings
-  // with net-positive score; under that it's a draft.
   // While a note is held (just-voted grace window), rank it by its frozen
   // count snapshot so it keeps its exact slot; display still shows live counts.
   const effective = (n: NoteRow): NoteRow => {
     const held = voteHolds.get(n.id);
     return held ? { ...n, ...held } : n;
   };
-  const score = (n: NoteRow) => {
-    const e = effective(n);
-    return totalVotes(e) === 0 ? 0 : weight(e) / totalVotes(e);
-  };
-  const isUnderwater = (n: NoteRow) => {
-    const e = effective(n);
-    return e.not_helpful_count > e.helpful_count + e.somewhat_helpful_count;
-  };
-
-  // Really unhelpful = enough ratings to be confident (>=5) and a weighted
-  // score under 0.4 — those collapse into a drawer at the bottom; mildly
-  // negative notes stay visible below the dotted line.
-  const isBuried = (n: NoteRow) => totalVotes(effective(n)) >= 5 && score(n) < 0.4;
-  const aboveWater = orderedNotes.filter((n) => !isUnderwater(n));
-  const underwaterNotes = orderedNotes.filter((n) => isUnderwater(n) && !isBuried(n));
-  const buriedNotes = orderedNotes.filter((n) => isUnderwater(n) && isBuried(n));
   const contentIdx = new Map(orderedNotes.map((n, i) => [n.id, i]));
-  const drafts = aboveWater.filter((n) => !isLocked(effective(n)));
-  const lockedIn = aboveWater.filter((n) => isLocked(effective(n)));
-  drafts.sort(
+  // p is a continued-fraction evaluation, so derive each note's ranking inputs
+  // once here rather than inside the comparators below — a comparator would
+  // re-evaluate it O(n log n) times on every render.
+  //
+  // One predicate decides the badge, the section and the donation payout:
+  // noteStatus (lib/noteScore.ts), the p-based rating rule.
+  const ranking = new Map(
+    orderedNotes.map((n) => {
+      const e = effective(n);
+      return [
+        n.id,
+        {
+          status: noteStatus(e),
+          p: probabilityHelpful(noteTally(e)),
+          pAfterOneHelpful: probabilityHelpfulAfter(e, 1),
+          votes: totalVotes(e),
+        },
+      ];
+    }),
+  );
+  const rankOf = (n: NoteRow) => ranking.get(n.id)!;
+  // A note written against source text the author has since edited may no longer
+  // apply, whatever its rating — so it drops below everything else rather than
+  // sitting among notes about the live text. Outranks the rating status.
+  const staleSource = (n: NoteRow) => n.claim?.updated_quote != null;
+  const current = orderedNotes.filter((n) => !staleSource(n));
+  const needRatings = current.filter((n) => rankOf(n).status === "needs_ratings");
+  const helpfulNotes = current.filter((n) => rankOf(n).status === "helpful");
+  const unhelpfulNotes = current.filter((n) => rankOf(n).status === "not_helpful");
+  const staleSourceNotes = orderedNotes.filter(staleSource);
+  // Every group is ordered by p, the latent-quality model's estimate that the
+  // note ends up rated helpful (see lib/noteBelief.ts) — so the whole feed reads
+  // as one gradient, most-uncertain at the top down to most-settled.
+  // Needs ratings: lead with the note a single Helpful vote would carry
+  // furthest — the closest to resolving — so attention lands where it settles
+  // something. Equal p (identical tallies) → oldest first, they've waited longest.
+  needRatings.sort(
     (a, b) =>
+      rankOf(b).pAfterOneHelpful - rankOf(a).pAfterOneHelpful ||
       a.created_at.localeCompare(b.created_at) ||
       contentIdx.get(a.id)! - contentIdx.get(b.id)!,
   );
-  // Equal score → the more-voted (more confidently helpful) note sits lower.
-  lockedIn.sort(
+  // Rated helpful: ascending p, so the most confidently helpful sits lowest.
+  helpfulNotes.sort(
     (a, b) =>
-      score(a) - score(b) ||
-      totalVotes(effective(a)) - totalVotes(effective(b)) ||
+      rankOf(a).p - rankOf(b).p ||
+      rankOf(a).votes - rankOf(b).votes ||
       contentIdx.get(a.id)! - contentIdx.get(b.id)!,
   );
-  const projectNotes: NoteRow[] = [...drafts, ...lockedIn];
+  // Rated unhelpful: descending p, so the least helpful sinks lowest — the
+  // mirror of the helpful group, continuing the same gradient.
+  const bestFirst = (a: NoteRow, b: NoteRow) =>
+    rankOf(b).p - rankOf(a).p || contentIdx.get(a.id)! - contentIdx.get(b.id)!;
+  unhelpfulNotes.sort(bestFirst);
+  staleSourceNotes.sort(bestFirst);
 
   const renderCard = (note: NoteRow) => (
     <NoteCard
@@ -389,27 +429,10 @@ export function App() {
         )}
         {view === "notes" && (
         <div className="space-y-4">
-          {projectNotes.map(renderCard)}
-          {underwaterNotes.length > 0 && (
-            <>
-              <div className="flex items-center gap-3 pt-4 max-w-[40rem] mx-auto w-full xl:max-w-none" role="separator">
-                <span className="flex-1 border-t-2 border-dotted border-gray-300" />
-                <span className="text-xs text-gray-400">Notes with more negative votes than positive</span>
-                <span className="flex-1 border-t-2 border-dotted border-gray-300" />
-              </div>
-              {underwaterNotes.map(renderCard)}
-            </>
-          )}
-          {buriedNotes.length > 0 && (
-            <details className="max-w-[40rem] mx-auto w-full xl:max-w-none pt-2">
-              <summary className="text-xs text-gray-400 cursor-pointer select-none text-center">
-                {buriedNotes.length} {buriedNotes.length === 1 ? "note" : "notes"} rated unhelpful — show
-              </summary>
-              <div className="space-y-4 mt-4">
-                {buriedNotes.map(renderCard)}
-              </div>
-            </details>
-          )}
+          {needRatings.map(renderCard)}
+          <NoteSection label="Helpful notes" notes={helpfulNotes} render={renderCard} />
+          <NoteSection label="Unhelpful notes" notes={unhelpfulNotes} render={renderCard} />
+          <NoteSection label="Source has since changed" notes={staleSourceNotes} render={renderCard} />
         </div>
         )}
       </main>
