@@ -560,16 +560,21 @@ export function App() {
   // Production items are only partially loaded (date window), so use the seen-aware
   // all-time counts there; deriving from items would undercount.
   const tagCounts = dataset.type === "production" ? displayTagCounts : itemTagCounts;
+  // Tag ORDER uses ALL-TIME usage, not the seen/filter-adjusted counts — so the
+  // tag list keeps a stable, meaningful order instead of reshuffling as you filter
+  // (Nathan, 2026-07-21). The little count shown on each chip still reflects the
+  // current view (tagCounts); only the sort key is all-time.
+  const tagOrderCounts = dataset.type === "production" ? productionTagCounts : itemTagCounts;
 
   const sortedFailureModes = useMemo(() => {
     const list = showFixedTags ? failureModeCatalog : failureModeCatalog.filter((m) => !m.fixed);
     return [...list].sort((a, b) => {
-      const ca = tagCounts.get(a.name) ?? 0;
-      const cb = tagCounts.get(b.name) ?? 0;
+      const ca = tagOrderCounts.get(a.name) ?? 0;
+      const cb = tagOrderCounts.get(b.name) ?? 0;
       if (cb !== ca) return cb - ca;
       return a.name.localeCompare(b.name);
     });
-  }, [failureModeCatalog, tagCounts, showFixedTags]);
+  }, [failureModeCatalog, tagOrderCounts, showFixedTags]);
 
   const activeFailureModes = useMemo(
     () => failureModeCatalog.filter((m) => !m.fixed),
