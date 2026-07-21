@@ -18,17 +18,20 @@ import { velocityPerHour, formatVelocity } from "../utils/velocity";
 // ── Misinfo submit-priority reserve ─────────────────────────────────────────
 // Misinfo notes (curated topics like Trump election-security) run an *advisory*
 // eval gate — they become candidates even when X scores them low. But the submit
-// order is eval-descending, so on a saturated day (submissions already at X's
-// ~20/24h cap) a low-eval misinfo note sorts to the bottom and gets cut. This
-// reserve pushes up to MISINFO_RESERVE_24H of the *best* misinfo notes to the
+// order is eval-descending, so on a saturated day (submissions already at the
+// daily cap) a low-eval misinfo note sorts to the bottom and gets cut. This
+// reserve pushes up to MISINFO_RESERVE_24H of the fastest misinfo notes to the
 // front so they get a slot despite saturation.
 //
-// It is DELIBERATELY BOUNDED to ~10% of the daily cap (2 of ~20) over a rolling
-// 24h window: misinfo is high-value (≈10× the views of a standard note) but
-// high-variance (may rate poorly → dilutes hit rate → *lowers* the future cap,
-// X's anti-spam lever). Bounding the boost keeps 90% of slots on the proven
-// regular flow. Set MISINFO_RESERVE_24H = 0 to disable the reserve entirely.
-const MISINFO_RESERVE_24H = 2;
+// Bounded over a rolling 24h window: misinfo is high-value (≈10× the views of
+// a standard note) but high-variance (may rate poorly → dilutes hit rate →
+// *lowers* the future cap, X's anti-spam lever). EXPERIMENT (through
+// 2026-07-24, agreed with maintainers): raised from the long-run value of 2 to
+// 5 — roughly a third of recent daily submissions — paired with the velocity
+// floors so the boosted notes are the fastest on offer. Revert to 2 at the
+// week-end review unless the topic notes are getting rated. Set
+// MISINFO_RESERVE_24H = 0 to disable the reserve entirely.
+const MISINFO_RESERVE_24H = 5;
 // Only misinfo notes with eval ≥ this floor ride the reserve. Default -Infinity
 // (no floor) for v1: a floor at/above the gate threshold (0) would exclude
 // exactly the low-eval misinfo notes the advisory gate is meant to rescue —
