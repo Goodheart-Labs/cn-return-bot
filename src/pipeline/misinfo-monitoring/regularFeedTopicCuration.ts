@@ -25,7 +25,6 @@ import { matchPostsByTopic } from "./keywordFilter";
 import { selectPostsNeedingNote } from "./selectPostsNeedingNote";
 import { MISINFO_TOPICS, type MisinfoTopic } from "./topics";
 import type { MisinfoTopicId } from "./topicIds";
-import { velocityPerHour } from "../utils/velocity";
 
 /** Confirmed topic matches are guaranteed up to this many of the run's
  *  maxPosts slots (fastest first). They displace the slowest regular picks —
@@ -34,10 +33,11 @@ import { velocityPerHour } from "../utils/velocity";
 export const TOPIC_PRIORITY_SLOTS = 3;
 
 /** Matches generateCandidates' SourcedPost without importing it (that module
- *  imports this one). */
+ *  imports this one). `velocity` is the value frozen at fetch time. */
 export interface PooledPost {
   post: Post;
   feedSize: FeedSize;
+  velocity: number | null;
 }
 
 /**
@@ -55,18 +55,19 @@ export interface PooledPost {
  * through from runPipeline is the future optimization.
  */
 export async function curateRegularFeedPosts(opts: {
-  allNew: PooledPost[];
+  /** Every new post the ladder surfaced this run, below-floor included. */
+  fresh: PooledPost[];
   supabaseLogger: SupabaseLogger;
   topicIds: readonly MisinfoTopicId[];
 }): Promise<Map<string, MisinfoTopic>> {
-  const { allNew, supabaseLogger } = opts;
+  const { fresh: pool, supabaseLogger } = opts;
   const confirmed = new Map<string, MisinfoTopic>();
   const topics = MISINFO_TOPICS.filter((t) => opts.topicIds.includes(t.id));
-  if (!topics.length || !allNew.length) return confirmed;
+  if (!topics.length || !pool.length) return confirmed;
 
-  const matched = matchPostsByTopic(allNew.map((s) => s.post));
+  const matched = matchPostsByTopic(pool.map((s) => s.post));
   if (![...matched.values()].some((posts) => posts.length)) return confirmed;
-  const tierById = new Map(allNew.map((s) => [s.post.id, s.feedSize]));
+  const tierById = new Map(pool.map((s) => [s.post.id, s.feedSize]));
 
   const [judgedKeys, pendingKeys] = await Promise.all([
     supabaseLogger.getMisinfoSightingKeys(),
@@ -132,15 +133,15 @@ export async function curateRegularFeedPosts(opts: {
  * returned list is velocity-sorted descending (unknown last), matching the
  * regular selection's ordering.
  */
-export function fillWithTopicPriority<T extends { post: Post }>(
+export function fillWithTopicPriority<T extends { post: Post; velocity: number | null }>(
   selected: T[],
   confirmedIds: Set<string>,
   pool: T[],
   maxPosts: number,
   slots: number = TOPIC_PRIORITY_SLOTS,
 ): { final: T[]; prioritized: T[]; displacedCount: number } {
-  const byVelocityDesc = (a: T, b: T) =>
-    (velocityPerHour(b.post) ?? -Infinity) - (velocityPerHour(a.post) ?? -Infinity);
+  // Rank by the velocity frozen at fetch time (same value selection used).
+  const byVelocityDesc = (a: T, b: T) => (b.velocity ?? -Infinity) - (a.velocity ?? -Infinity);
 
   if (slots <= 0 || !confirmedIds.size) return { final: selected, prioritized: [], displacedCount: 0 };
 

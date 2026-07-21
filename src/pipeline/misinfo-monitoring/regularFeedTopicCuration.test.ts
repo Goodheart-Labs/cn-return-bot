@@ -1,13 +1,13 @@
 import { test, expect } from "bun:test";
 import { fillWithTopicPriority, TOPIC_PRIORITY_SLOTS } from "./regularFeedTopicCuration";
+import { velocityPerHour } from "../utils/velocity";
 import type { Post } from "../../api/fetchEligiblePosts";
 import type { FeedSize } from "../orchestration/utils/feedSizeStrategy";
 
 const HOUR_MS = 3_600_000;
 
-// Fixtures age relative to REAL now — fillWithTopicPriority ranks with
-// velocityPerHour, which computes as-of Date.now(); a fixed timestamp would
-// let fixture velocities decay as calendar time passes.
+// Fixtures carry velocity frozen at construction, mirroring the fetch-time
+// freeze in collectFastPosts.
 function sourced(id: string, impressions: number | undefined, ageHours: number, feedSize: FeedSize = "large") {
   const post: Post = {
     id,
@@ -17,7 +17,7 @@ function sourced(id: string, impressions: number | undefined, ageHours: number, 
     media: [],
     public_metrics: impressions === undefined ? undefined : { impression_count: impressions },
   };
-  return { post, feedSize };
+  return { post, feedSize, velocity: velocityPerHour(post) };
 }
 
 // Extreme velocities so the tests survive any sane retuning elsewhere.
