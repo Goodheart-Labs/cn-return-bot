@@ -35,13 +35,6 @@ export interface DonationPair {
   ifNotHelpful: number;
 }
 
-/** A cast vote's id plus its frozen donation pair (null pair-carrier = retract
- *  or a vote that mints no donation, e.g. on your own note). */
-export interface VoteCast {
-  voteId: string;
-  pair: DonationPair;
-}
-
 const roundCents = (x: number) => Math.round(x * 100) / 100;
 
 /** Brier scores as [if the note settles Helpful, if it settles Not helpful].

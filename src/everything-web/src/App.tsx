@@ -4,9 +4,9 @@ import { useLiveData } from "./lib/useLiveData";
 import { useSession, signOut } from "./lib/auth";
 import { castVote, clearVote, fetchMyVotes, type Vote } from "./lib/votes";
 import { castNnnVote, clearNnnVote, fetchMyNnnVotes } from "./lib/noteNotNeeded";
-import { donationPair, priorTally, type VoteCast } from "./lib/donationScoring";
+import { donationPair, priorTally } from "./lib/donationScoring";
 import { noteTally, probabilityHelpful, probabilityHelpfulAfter } from "./lib/noteBelief";
-import { saveDonation, usePreferredCharity } from "./lib/donations";
+import { saveDonation, usePreferredCharity, type MintedDonation } from "./lib/donations";
 import { readRoute, pushProject, pushItem, pushLeaderboard, type View } from "./lib/routing";
 import { Sidebar } from "./components/Sidebar";
 
@@ -40,6 +40,9 @@ import type { NnnRow, NoteRow } from "./lib/types";
 import { noteStatus, totalVotes } from "./lib/noteScore";
 
 const NO_NNN: NnnRow[] = [];
+
+/** The three vote counts a note's feed position is derived from. */
+type RankTally = Pick<NoteRow, "helpful_count" | "somewhat_helpful_count" | "not_helpful_count">;
 
 /** A labelled band of the feed. Rendered only when it has notes, so a project
  *  with nothing rated yet shows no dividers at all. */
@@ -76,15 +79,6 @@ export function App() {
   const [preferredCharity] = usePreferredCharity();
   const [loginOpen, setLoginOpen] = useState(false);
   const [writeOpen, setWriteOpen] = useState(false);
-  // After a vote, hold the note's list position briefly (misclick grace) —
-  // maps note id → a snapshot of its vote counts at vote time. Ranking uses
-  // the snapshot while held, so the card keeps its exact slot instead of
-  // teleporting; re-votes re-arm the timer but keep the frozen slot. Cleared
-  // by the timer, then the live counts decide again.
-  const RESORT_GRACE_MS = 6000;
-  type HeldCounts = Pick<NoteRow, "helpful_count" | "somewhat_helpful_count" | "not_helpful_count">;
-  const [voteHolds, setVoteHolds] = useState<Map<string, HeldCounts>>(new Map());
-  const holdTimers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
 
   useEffect(() => {
     if (session) {
@@ -189,41 +183,15 @@ export function App() {
     }
   }, [loaded, notes, selectedId]);
 
-  const holdPosition = (note: NoteRow) => {
-    // Freeze the ranking inputs only on the first vote of the window — a
-    // re-vote keeps the frozen slot and just re-arms the timer.
-    setVoteHolds((m) =>
-      m.has(note.id)
-        ? m
-        : new Map(m).set(note.id, {
-            helpful_count: note.helpful_count,
-            somewhat_helpful_count: note.somewhat_helpful_count,
-            not_helpful_count: note.not_helpful_count,
-          }),
-    );
-    clearTimeout(holdTimers.current.get(note.id));
-    holdTimers.current.set(
-      note.id,
-      setTimeout(() => {
-        setVoteHolds((m) => {
-          const next = new Map(m);
-          next.delete(note.id);
-          return next;
-        });
-      }, RESORT_GRACE_MS),
-    );
-  };
-
   // Casts the vote and mints its donation: the outcome-contingent pair is
   // computed from the pre-vote tally (frozen at vote time) and upserted keyed
   // to the vote row. Returns the cast (null on retract / signed-out / own
   // note — retracting cascades the donation away, own-note votes mint none).
-  const handleVote = async (note: NoteRow, vote: Vote): Promise<VoteCast | null> => {
+  const handleVote = async (note: NoteRow, vote: Vote): Promise<MintedDonation | null> => {
     if (!session) {
       setLoginOpen(true);
       return null;
     }
-    holdPosition(note);
     const current = myVotes.get(note.id);
     const next = new Map(myVotes);
     if (current === vote) {
@@ -240,7 +208,7 @@ export function App() {
     // A backend without migration 061 rejects the pair columns — keep the vote,
     // just don't promise a donation the ledger didn't record.
     const { error } = await saveDonation(voteId, preferredCharity, pair);
-    return error ? null : { voteId, pair };
+    return error ? null : { voteId, charity: preferredCharity, pair };
   };
 
   const handleNnnVote = async (entry: NnnRow, vote: Vote) => {
@@ -309,11 +277,21 @@ export function App() {
           a.created_at.localeCompare(b.created_at),
       ),
     );
-  // While a note is held (just-voted grace window), rank it by its frozen
-  // count snapshot so it keeps its exact slot; display still shows live counts.
+  const rankTallies = useRef(new Map<string, RankTally>());
+  // Ranking is frozen per page load: a note is ranked by the vote tally it
+  // carried when it first appeared, so no card ever moves under the reader —
+  // least of all the one they just voted on. The card itself stays live (its
+  // badge, counts and donation all read the real tally); reloading drops the
+  // freeze and the feed re-sorts.
   const effective = (n: NoteRow): NoteRow => {
-    const held = voteHolds.get(n.id);
-    return held ? { ...n, ...held } : n;
+    const frozen = rankTallies.current.get(n.id);
+    if (frozen) return { ...n, ...frozen };
+    rankTallies.current.set(n.id, {
+      helpful_count: n.helpful_count,
+      somewhat_helpful_count: n.somewhat_helpful_count,
+      not_helpful_count: n.not_helpful_count,
+    });
+    return n;
   };
   const contentIdx = new Map(orderedNotes.map((n, i) => [n.id, i]));
   // p is a continued-fraction evaluation, so derive each note's ranking inputs
@@ -381,7 +359,6 @@ export function App() {
       nnnApi={nnnApi}
       projectSlug={selected?.slug ?? ""}
       myVote={myVotes.get(note.id)}
-      holdActive={voteHolds.has(note.id)}
       onVote={handleVote}
       onAuthored={noteAuthored}
       session={session}
