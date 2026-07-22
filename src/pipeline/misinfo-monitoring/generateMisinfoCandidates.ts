@@ -145,6 +145,7 @@ async function evaluateNewMatches(
  */
 function buildWorkList(
   selectedNew: Array<{ post: Post; topic: MisinfoTopic }>,
+  feedSize: FeedSize,
 ): Array<{ item: ProcessPostItem; topicId: string }> {
   const seen = new Set<string>();
   const deduped = selectedNew.filter(({ post }) => {
@@ -177,6 +178,7 @@ function buildWorkList(
     topicId: topic.id,
     item: {
       post,
+      feedSize,
       monitoring: {
         topicId: topic.id,
         topicTitle: topic.title,
@@ -222,7 +224,7 @@ export async function generateMisinfoCandidates(
 
   const matched = matchPostsByTopic(posts);
   const selectedNew = await evaluateNewMatches(supabaseLogger, feedSize, matched, topics);
-  const work = buildWorkList(selectedNew);
+  const work = buildWorkList(selectedNew, feedSize);
 
   if (!work.length) {
     console.log("[misinfo] No posts to process this run");

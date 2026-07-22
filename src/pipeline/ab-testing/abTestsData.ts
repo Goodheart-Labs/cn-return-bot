@@ -329,6 +329,27 @@ const VERIFIER_CITATIONS_TEST: ABTest = {
   ],
 };
 
+// Pseudo A/B test: records which feed tier the post came from, so note
+// outcomes can be sliced by tier (the small feed is X's curated subset; each
+// larger tier is a lower-quality superset). Not sampled — `processPosts`
+// forces the pick from the item's `feedSize`, which the ladder in
+// `collectFastPosts` (and the pre-passes' crawls) already tracks per post.
+// Empty overrides: this records only, the tier is decided at fetch time.
+// Historical rows with no pick resolve to `small` — true before the ladder
+// landed (2026-06-06), and the fallback for the 2026-07-21..22 window where
+// the pick was accidentally dropped (small dominates there too, since the
+// ladder only broadens when small can't fill the run).
+const FEED_SIZE_TEST: ABTest = {
+  name: "feed_size",
+  defaultVariant: "small",
+  variants: [
+    { variant: { name: "small", overrides: {} }, weight: 100 },
+    { variant: { name: "large", overrides: {} }, weight: 0 },
+    { variant: { name: "xl",    overrides: {} }, weight: 0 },
+    { variant: { name: "xxl",   overrides: {} }, weight: 0 },
+  ],
+};
+
 // Pseudo A/B tests: record whether a run came from the XXL-feed misinfo
 // pre-pass and, if so, which topic it matched. `processPosts` forces both picks
 // from the item's MonitoringContext; regular runs carry no monitoring, so they
@@ -469,6 +490,7 @@ export const AB_TESTS: ABTest[] = [
   SATIRE_DETECTOR_TEST,
   CHEAP_BOT_TEMPERATURE_TEST,
   EVAL_SUBMIT_THRESHOLD_TEST,
+  FEED_SIZE_TEST,
   MISINFO_MONITORING_TEST,
   MISINFO_TOPIC_TEST,
   PANGRAM_MONITORING_TEST,

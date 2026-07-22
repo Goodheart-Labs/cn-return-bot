@@ -156,7 +156,7 @@ async function processPost(logger: SupabaseLogger, post: Post, feedSize: FeedSiz
   const note = buildPangramNote(verdict.dashboardLink, variant);
   if (!note) return { candidate: null, tweetResult: syntheticResult("rejected", "no_pangram_note"), sighting };
 
-  const picks = { pangram_monitoring: "yes", pangram_note: variant };
+  const picks = { pangram_monitoring: "yes", pangram_note: variant, feed_size: feedSize };
   const runId = await createRun(logger, post, picks);
   if (!runId) return { candidate: null, tweetResult: syntheticResult("failed", "no_pipeline_run"), sighting };
 
