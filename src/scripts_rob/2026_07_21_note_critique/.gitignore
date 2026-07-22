@@ -1,0 +1,5 @@
+# Verbatim tweet/note text stays out of the public repo (same rule as the #294
+# synthetic fixtures). Only the scripts are committed.
+*
+!*.ts
+!.gitignore
