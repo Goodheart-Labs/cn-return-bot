@@ -32,7 +32,17 @@ function pageRect(range: Range) {
   };
 }
 
-/** Small blue "n" dot at the end of the anchored passage. */
+/** Group-of-people glyph (Material Symbols "groups"): the community marker. */
+function GroupIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden>
+      <path d="M0 18v-1.575q0-1.1 1.1-1.763T4 14q.325 0 .625.013t.575.062q-.35.525-.525 1.1T4.5 16.4V18Zm6 0v-1.6q0-.8.438-1.463t1.237-1.162Q8.475 13.275 9.55 13T12 12.725q1.375 0 2.45.275t1.875.775q.8.5 1.238 1.163T18 16.4V18Zm13.5 0v-1.6q0-.65-.163-1.225t-.487-1.075q.275-.05.563-.075T20 14q1.8 0 2.9.663t1.1 1.762V18ZM4 13q-.825 0-1.412-.588T2 11q0-.85.588-1.425T4 9q.85 0 1.425.575T6 11q0 .825-.575 1.413T4 13Zm16 0q-.825 0-1.413-.588T18 11q0-.85.588-1.425T20 9q.85 0 1.425.575T22 11q0 .825-.575 1.413T20 13Zm-8-1q-1.25 0-2.125-.875T9 9q0-1.275.875-2.138T12 6q1.275 0 2.138.863T15 9q0 1.25-.862 2.125T12 12Z" />
+    </svg>
+  );
+}
+
+/** Small badge at the end of the anchored passage: blue community glyph on a
+ *  light/dark surface following the system theme. */
 function Badge({ open, onClick, style }: { open: boolean; onClick: () => void; style: React.CSSProperties }) {
   return (
     <button
@@ -40,9 +50,9 @@ function Badge({ open, onClick, style }: { open: boolean; onClick: () => void; s
       title="Community note on this passage"
       aria-expanded={open}
       style={style}
-      className={`absolute flex items-center justify-center rounded-full text-white text-xs font-bold shadow transition-transform hover:scale-110 ${open ? "bg-blue-700" : "bg-blue-600"}`}
+      className={`absolute flex items-center justify-center rounded-full border shadow transition-transform hover:scale-110 bg-white border-gray-300 text-blue-600 dark:bg-gray-900 dark:border-gray-600 dark:text-blue-500 ${open ? "ring-2 ring-blue-500" : ""}`}
     >
-      n
+      <GroupIcon />
     </button>
   );
 }
@@ -67,7 +77,7 @@ function NotePopover({ group, projectSlug, session, myVotes, onVote, onNeedLogin
     onAuthored,
   });
   return (
-    <div style={style} className="absolute bg-white rounded-xl border border-gray-200 shadow-xl p-3 text-left">
+    <div style={style} className="absolute bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-xl p-3 text-left">
       <NoteWithActions {...noteProps(group.primary)} />
       {group.alternatives.length > 0 && (
         <div className="mt-3 pl-3 border-l-[3px] border-gray-300 space-y-3">
@@ -195,9 +205,9 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted }: {
   return (
     <div onMouseDown={(e) => e.stopPropagation()}>
       {signInHint && (
-        <div className="fixed top-4 right-4 z-50 bg-white border border-gray-200 rounded-xl shadow-xl p-3 text-sm text-gray-700 flex items-center gap-3">
+        <div className="fixed top-4 right-4 z-50 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-3 text-sm text-gray-700 dark:text-gray-300 flex items-center gap-3">
           Sign in from the Common Notes toolbar icon to vote or write notes.
-          <button onClick={dismissSignInHint} className="text-gray-400 hover:text-gray-600">✕</button>
+          <button onClick={dismissSignInHint} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">✕</button>
         </div>
       )}
       {writeSelection && (
