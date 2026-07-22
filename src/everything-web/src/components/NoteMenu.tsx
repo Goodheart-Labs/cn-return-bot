@@ -16,14 +16,14 @@ export function MenuItem({ onClick, icon, label, danger }: {
   danger?: boolean;
 }) {
   const tone = danger
-    ? "text-red-600 hover:bg-red-50"
-    : "text-gray-700 hover:bg-gray-100";
+    ? "text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40"
+    : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800";
   return (
     <button
       onClick={onClick}
       className={`flex w-full items-center gap-2.5 text-left px-2.5 py-2 rounded-lg font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${tone}`}
     >
-      <span className={`shrink-0 ${danger ? "text-red-500" : "text-gray-400"}`} aria-hidden>{icon}</span>
+      <span className={`shrink-0 ${danger ? "text-red-500" : "text-gray-400 dark:text-gray-500"}`} aria-hidden>{icon}</span>
       {label}
     </button>
   );
@@ -143,23 +143,23 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
 
   return (
     <div className="mt-1">
-      <div ref={ref} className="relative flex flex-wrap justify-end items-center gap-x-3 gap-y-1 text-xs text-gray-500">
-        {copied && <span className="text-green-700">Link copied</span>}
+      <div ref={ref} className="relative flex flex-wrap justify-end items-center gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
+        {copied && <span className="text-green-700 dark:text-green-400">Link copied</span>}
         {/* Sources + improve + share ride visibly on every card; the ⋯ menu
             only exists for delete on your own notes (Nathan, 2026-07-14 — the
             menu was hiding the whole improve flow). */}
         {showSourcesButton && (
-          <button onClick={onToggleSources} className="inline-flex items-center gap-1 text-blue-600 hover:underline">
+          <button onClick={onToggleSources} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
             <QuoteIcon /> {sourcesOpen ? "Hide source details" : "Show source details"}
           </button>
         )}
-        <button onClick={startNnn} className="inline-flex items-center gap-1 text-blue-600 hover:underline">
+        <button onClick={startNnn} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
           <SpeechBubbleIcon /> Note not needed
         </button>
-        <button onClick={startImprove} className="inline-flex items-center gap-1 text-blue-600 hover:underline">
+        <button onClick={startImprove} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
           <PencilIcon /> Suggest an improvement
         </button>
-        <button onClick={share} className="inline-flex items-center gap-1 text-blue-600 hover:underline">
+        <button onClick={share} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
           <ShareIcon /> Share
         </button>
         {children}
@@ -167,13 +167,13 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
           <button
             aria-label="Note actions"
             onClick={() => setOpen((o) => !o)}
-            className="px-1.5 py-0.5 rounded text-base leading-none text-gray-400 hover:text-gray-700 hover:bg-gray-100"
+            className="px-1.5 py-0.5 rounded text-base leading-none text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800"
           >
             ⋯
           </button>
         )}
         {open && mine && (
-          <div className="cn-menu absolute right-0 top-8 z-20 w-56 bg-white border border-gray-200 rounded-xl shadow-xl p-1.5 text-sm">
+          <div className="cn-menu absolute right-0 top-8 z-20 w-56 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-1.5 text-sm">
             <MenuItem onClick={del} icon={<TrashIcon />} label="Delete" danger />
           </div>
         )}
@@ -239,7 +239,7 @@ function NnnComposer({ note, session, onAuthored, onClose }: {
         >
           {busy ? "Posting…" : "Post"}
         </button>
-        <button onClick={onClose} className="text-sm text-gray-500 hover:underline">Cancel</button>
+        <button onClick={onClose} className="text-sm text-gray-500 dark:text-gray-400 hover:underline">Cancel</button>
         <PostAsCheckbox signed={signed} onChange={setSigned} session={session} className="ml-auto" />
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
@@ -292,7 +292,7 @@ function ImproveEditor({ note, session, onAuthored, onClose }: {
         >
           {busy ? "Checking…" : "Post note"}
         </button>
-        <button onClick={onClose} className="text-sm text-gray-500 hover:underline">Cancel</button>
+        <button onClick={onClose} className="text-sm text-gray-500 dark:text-gray-400 hover:underline">Cancel</button>
         <PostAsCheckbox signed={signed} onChange={setSigned} session={session} className="ml-auto" />
       </div>
       {rejected && <RejectedNotice />}

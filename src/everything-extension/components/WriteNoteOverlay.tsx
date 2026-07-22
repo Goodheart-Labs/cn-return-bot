@@ -46,19 +46,19 @@ export function WriteNoteOverlay({ item, selection, session, onClose, onPosted }
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="bg-white rounded-xl p-5 w-full max-w-xl space-y-3 max-h-[90vh] overflow-y-auto shadow-2xl">
+      <div className="bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-xl p-5 w-full max-w-xl space-y-3 max-h-[90vh] overflow-y-auto shadow-2xl">
         <div className="flex justify-between items-center">
-          <h2 className="text-lg font-extrabold text-gray-900">Write a note</h2>
-          <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600">✕</button>
+          <h2 className="text-lg font-extrabold text-gray-900 dark:text-gray-100">Write a note</h2>
+          <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">✕</button>
         </div>
-        <blockquote className="border-l-4 border-gray-300 pl-3 text-gray-600 italic text-sm">“{selection}”</blockquote>
+        <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 pl-3 text-gray-600 dark:text-gray-300 italic text-sm">“{selection}”</blockquote>
         {!anchorInText && (
-          <span className="inline-block text-xs px-2 py-0.5 rounded-full border bg-amber-100 text-amber-800 border-amber-200">
+          <span className="inline-block text-xs px-2 py-0.5 rounded-full border bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900">
             ⚠ Text not found in the article text we have on file
           </span>
         )}
         {!session ? (
-          <p className="text-sm rounded-lg p-2 bg-amber-50 text-amber-800 border border-amber-200">
+          <p className="text-sm rounded-lg p-2 bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900">
             Sign in from the Common Notes toolbar icon to write notes.
           </p>
         ) : (
@@ -69,15 +69,15 @@ export function WriteNoteOverlay({ item, selection, session, onClose, onPosted }
               rows={4}
               autoFocus
               placeholder="Write your correction — include sources as plain URLs…"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-3 py-2 text-sm"
             />
             {rejected && (
-              <p className="text-sm rounded-lg p-2 bg-amber-50 text-amber-800 border border-amber-200">
+              <p className="text-sm rounded-lg p-2 bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900">
                 That didn't look like a genuine note — try again.
               </p>
             )}
             <div className="flex gap-2 items-center justify-end">
-              <label className="mr-auto flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer">
+              <label className="mr-auto flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 cursor-pointer">
                 <input type="checkbox" checked={signed} onChange={(e) => setSigned(e.target.checked)} />
                 Post as {displayName(session)}
               </label>
@@ -91,7 +91,7 @@ export function WriteNoteOverlay({ item, selection, session, onClose, onPosted }
             </div>
           </>
         )}
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
       </div>
     </div>
   );

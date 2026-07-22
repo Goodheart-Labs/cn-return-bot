@@ -17,7 +17,7 @@ export function AutoGrowTextarea(props: React.TextareaHTMLAttributes<HTMLTextAre
           el.style.height = `${el.scrollHeight}px`;
         }
       }}
-      className={`w-full resize-none overflow-hidden border border-gray-300 rounded-lg px-3 py-2 text-sm ${className ?? ""}`}
+      className={`w-full resize-none overflow-hidden border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-3 py-2 text-sm ${className ?? ""}`}
     />
   );
 }
@@ -38,7 +38,7 @@ export function PostAsCheckbox({ signed, onChange, session, className }: {
   className?: string;
 }) {
   return (
-    <label className={`flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer ${className ?? ""}`}>
+    <label className={`flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 cursor-pointer ${className ?? ""}`}>
       <input type="checkbox" checked={signed} onChange={(e) => onChange(e.target.checked)} />
       Post as {displayName(session)}
     </label>
@@ -47,7 +47,7 @@ export function PostAsCheckbox({ signed, onChange, session, className }: {
 
 export function RejectedNotice({ children }: { children?: React.ReactNode }) {
   return (
-    <p className="text-sm rounded-lg p-2 bg-amber-50 text-amber-800 border border-amber-200">
+    <p className="text-sm rounded-lg p-2 bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900">
       {children ?? "That didn't look like a genuine note — try again."}
     </p>
   );

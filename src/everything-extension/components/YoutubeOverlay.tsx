@@ -83,29 +83,29 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video }:
   return (
     <div className="pointer-events-auto text-left">
       {signInHint && (
-        <div className="mb-2 bg-white border border-gray-200 rounded-xl shadow-xl p-3 text-sm text-gray-700 flex items-center gap-3">
+        <div className="mb-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-3 text-sm text-gray-700 dark:text-gray-300 flex items-center gap-3">
           Sign in from the Common Notes toolbar icon to vote or write notes.
-          <button onClick={dismissSignInHint} className="text-gray-400 hover:text-gray-600">✕</button>
+          <button onClick={dismissSignInHint} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">✕</button>
         </div>
       )}
       {!expanded ? (
         <button
           onClick={() => setExpanded(true)}
-          className="flex items-center gap-2 bg-white/95 border border-gray-200 rounded-full shadow-xl px-3 py-1.5 hover:bg-white"
+          className="flex items-center gap-2 bg-white/95 border border-gray-200 rounded-full shadow-xl px-3 py-1.5 hover:bg-white dark:bg-gray-900/95 dark:border-gray-700 dark:hover:bg-gray-900"
         >
           <StatusBadge status={noteStatus(note)} />
         </button>
       ) : (
-        <div className="w-[26rem] max-w-[80vw] max-h-[70vh] overflow-y-auto bg-white rounded-xl border border-gray-200 shadow-2xl p-3">
+        <div className="w-[26rem] max-w-[80vw] max-h-[70vh] overflow-y-auto bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-2xl p-3">
           <div className="flex items-start justify-between gap-2 mb-2">
-            <span className="text-xs font-semibold text-gray-500">Community note on this part of the video</span>
+            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Community note on this part of the video</span>
             <div className="flex items-center gap-1 shrink-0">
-              <button onClick={() => setExpanded(false)} title="Minimize" className="px-1.5 text-gray-400 hover:text-gray-700">–</button>
-              <button onClick={dismiss} title="Dismiss for this video" className="px-1.5 text-gray-400 hover:text-gray-700">✕</button>
+              <button onClick={() => setExpanded(false)} title="Minimize" className="px-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">–</button>
+              <button onClick={dismiss} title="Dismiss for this video" className="px-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">✕</button>
             </div>
           </div>
           {quote && (
-            <blockquote className="border-l-4 border-gray-300 pl-2 mb-2 text-xs text-gray-500 italic">“{quote}”</blockquote>
+            <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 pl-2 mb-2 text-xs text-gray-500 dark:text-gray-400 italic">“{quote}”</blockquote>
           )}
           <NoteWithActions
             note={note}
