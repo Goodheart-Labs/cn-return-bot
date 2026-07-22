@@ -24,6 +24,7 @@ import {
 import { runSearch } from "./search";
 import { runCorrectionExtractor } from "./correctionExtractor";
 import { runWriter } from "./writer";
+import { topicSourcelessRejection } from "../utils/noteLint";
 
 export async function runSimpleBotPipeline(
   post: Post,
@@ -91,6 +92,12 @@ async function runGates(stage: Extract<WriterStageResult, { kind: "writer_done" 
   });
 
   if (verification.accepted) {
+    // Curated-topic notes must keep ≥1 verified source (the classic verifier
+    // can accept while classifying every URL bad — see topicSourcelessRejection).
+    const sourceless = topicSourcelessRejection(verification.good_sources);
+    if (sourceless) {
+      return { type: "verification_failed", noteText, sources, reason: sourceless, searchResults: findings };
+    }
     // Drop URLs the verifier classified as bad — they don't support any claim
     // (or failed to fetch), so we don't want them in the published note.
     const goodSet = new Set(verification.good_sources);
