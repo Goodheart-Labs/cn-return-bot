@@ -83,7 +83,7 @@ function SpeechBubbleIcon() {
  *  improvement (posts your own draft note on the same claim, shown alongside
  *  the original), share a deep link, and — on notes you wrote — a ⋯ menu with
  *  delete. */
-export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onNnnAuthored, sourcesOpen, onToggleSources, children }: {
+export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onNnnAuthored, onDeleted, sourcesOpen, onToggleSources, children }: {
   note: NoteRow;
   /** Absolute deep link to this note (the website computes it from the project
    *  slug; the extension passes the public site's URL). */
@@ -95,6 +95,9 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
   /** A note-not-needed entry was just posted by this user (mirror its
    *  auto-upvote locally). */
   onNnnAuthored: (entryId: string) => void;
+  /** The note was deleted. The website's realtime channel already removes it
+   *  from state; the extension (no realtime) refreshes on this. */
+  onDeleted?: () => void;
   sourcesOpen?: boolean;
   onToggleSources?: () => void;
   /** Extra actions slotted between Share and the ⋯ (e.g. improvement jump chips). */
@@ -125,7 +128,14 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
   };
   const del = async () => {
     setOpen(false);
-    await supabase.from("everything_notes").delete().eq("id", note.id);
+    // The `.select()` echo distinguishes a real delete from an RLS
+    // silently-matched-zero-rows no-op (only own draft notes are deletable).
+    const { data, error } = await supabase.from("everything_notes").delete().eq("id", note.id).select("id");
+    if (error || (data ?? []).length === 0) {
+      console.error("[common-notes] note delete failed:", error?.message ?? "no row deleted (RLS: only your own draft notes)");
+      return;
+    }
+    onDeleted?.();
   };
   const startImprove = () => {
     setOpen(false);

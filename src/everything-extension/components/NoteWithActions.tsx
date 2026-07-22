@@ -13,7 +13,7 @@ import type { Vote } from "../../everything-shared/votes";
  *  the post-vote donation notice, and the action row (improve /
  *  note-not-needed / share) — the website's vote flow, popover-sized. Every
  *  note on a claim renders as its own peer box. */
-export function NoteWithActions({ note, myVote, onVote, session, shareUrl, onNeedLogin, onAuthored, onNnnAuthored }: {
+export function NoteWithActions({ note, myVote, onVote, session, shareUrl, onNeedLogin, onAuthored, onNnnAuthored, onDeleted }: {
   note: NoteRow;
   myVote: Vote | undefined;
   /** Casts the vote and mints its donation; resolves to the minted donation,
@@ -27,6 +27,8 @@ export function NoteWithActions({ note, myVote, onVote, session, shareUrl, onNee
   onAuthored: (noteId: string) => void;
   /** A note-not-needed entry was just posted on this note's claim. */
   onNnnAuthored?: (entryId: string) => void;
+  /** This note was deleted (refresh the group — no realtime here). */
+  onDeleted?: () => void;
 }) {
   const [sourcesOpen, setSourcesOpen] = useState(false);
   // The just-minted donation — shows the notice beneath the pills; cleared on
@@ -62,6 +64,7 @@ export function NoteWithActions({ note, myVote, onVote, session, shareUrl, onNee
         onNeedLogin={onNeedLogin}
         onAuthored={onAuthored}
         onNnnAuthored={onNnnAuthored ?? (() => {})}
+        onDeleted={onDeleted}
         sourcesOpen={sourcesOpen}
         onToggleSources={() => setSourcesOpen((o) => !o)}
       />

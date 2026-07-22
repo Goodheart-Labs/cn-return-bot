@@ -60,7 +60,7 @@ function Badge({ open, onClick, style }: { open: boolean; onClick: () => void; s
   );
 }
 
-function NotePopover({ group, projectSlug, session, myVotes, onVote, onNeedLogin, onAuthored, onNnnAuthored, nnnApi, style }: {
+function NotePopover({ group, projectSlug, session, myVotes, onVote, onNeedLogin, onAuthored, onNnnAuthored, onDeleted, nnnApi, style }: {
   group: AnchoredGroup;
   projectSlug: string | null;
   session: Session | null;
@@ -69,6 +69,7 @@ function NotePopover({ group, projectSlug, session, myVotes, onVote, onNeedLogin
   onNeedLogin: () => void;
   onAuthored: (noteId: string) => void;
   onNnnAuthored: (entryId: string) => void;
+  onDeleted: () => void;
   nnnApi: NnnApi;
   style: React.CSSProperties;
 }) {
@@ -81,6 +82,7 @@ function NotePopover({ group, projectSlug, session, myVotes, onVote, onNeedLogin
     onNeedLogin,
     onAuthored,
     onNnnAuthored,
+    onDeleted,
   });
   return (
     // max-h + inner scroll: a claim can stack several notes plus an open
@@ -131,7 +133,8 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted }: {
     recordNnnAuthored(entryId);
     onPosted();
   };
-  const nnnApi: NnnApi = { myVotes: myNnnVotes, onVote: handleNnnVote, onAuthored: recordNnnAuthored };
+  // No realtime in the extension: deletes refresh the item's groups explicitly.
+  const nnnApi: NnnApi = { myVotes: myNnnVotes, onVote: handleNnnVote, onAuthored: recordNnnAuthored, onDeleted: () => onPosted() };
   // Bumped on resize so positions derived from ranges recompute.
   const [layoutTick, setLayoutTick] = useState(0);
 
@@ -271,6 +274,7 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted }: {
               onNeedLogin={onNeedLogin}
               onAuthored={handleAuthored}
               onNnnAuthored={handleNnnAuthored}
+              onDeleted={onPosted}
               nnnApi={nnnApi}
               style={popoverStyle}
             />

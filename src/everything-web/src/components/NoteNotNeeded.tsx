@@ -13,6 +13,9 @@ export interface NnnApi {
   onVote: (entry: NnnRow, vote: Vote) => void;
   /** Mirror the DB self-upvote of a just-posted entry into local state. */
   onAuthored: (entryId: string) => void;
+  /** An entry was deleted. The website's realtime channel already removes it;
+   *  the extension (no realtime) refreshes on this. */
+  onDeleted?: (entryId: string) => void;
 }
 
 /** Compact relative timestamp for entry meta ("now", "5m", "3h", "2d", then
@@ -162,7 +165,7 @@ export function NoteNotNeeded({ entries, api, session }: {
               onVote={(vote) => api.onVote(entry, vote)}
             />
             {!!session && session.user.id === entry.author_id && (
-              <OwnEntryMenu onDelete={() => deleteNnn(entry.id)} />
+              <OwnEntryMenu onDelete={() => deleteNnn(entry.id).then(() => api.onDeleted?.(entry.id))} />
             )}
           </div>
         </div>
