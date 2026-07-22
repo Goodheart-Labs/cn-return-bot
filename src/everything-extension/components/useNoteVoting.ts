@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSession } from "../../everything-shared/auth";
+import { supabase } from "../../everything-shared/supabase";
 import { castVote, clearVote, fetchMyVotes, type Vote } from "../../everything-shared/votes";
 import { fetchNote } from "../../everything-shared/notesQuery";
 import type { NoteRow } from "../../everything-shared/types";
@@ -20,7 +21,11 @@ export function useNoteVoting(onNoteUpdated: (note: NoteRow) => void) {
   const onNeedLogin = () => setSignInHint(true);
 
   const handleVote = async (note: NoteRow, vote: Vote) => {
-    if (!session) return onNeedLogin();
+    // React state can lag the shared chrome.storage session (login happened in
+    // the popup after this overlay mounted) — re-check at click time before
+    // bouncing the user to the sign-in hint.
+    const user = session?.user ?? (await supabase.auth.getSession()).data.session?.user;
+    if (!user) return onNeedLogin();
     const current = myVotes.get(note.id);
     const next = new Map(myVotes);
     if (current === vote) {
@@ -30,13 +35,17 @@ export function useNoteVoting(onNoteUpdated: (note: NoteRow) => void) {
     } else {
       next.set(note.id, vote);
       setMyVotes(next);
-      await castVote(note.id, session.user.id, vote);
+      await castVote(note.id, user.id, vote);
     }
     const fresh = await fetchNote(note.id);
     if (fresh) onNoteUpdated(fresh);
   };
 
-  return { session, myVotes, handleVote, onNeedLogin, signInHint, dismissSignInHint: () => setSignInHint(false) };
+  // The DB self-vote trigger makes a just-posted note start with its author's
+  // helpful vote — mirror it locally so the pills light up without a refetch.
+  const recordAuthored = (noteId: string) => setMyVotes((m) => new Map(m).set(noteId, 1));
+
+  return { session, myVotes, handleVote, recordAuthored, onNeedLogin, signInHint, dismissSignInHint: () => setSignInHint(false) };
 }
 
 /** Swap a refetched note into a claim group, keeping the joined claim the

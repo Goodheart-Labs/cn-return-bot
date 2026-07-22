@@ -21,9 +21,16 @@ import type { MisinfoTopicId } from "./topicIds";
 export interface MisinfoTopic {
   id: MisinfoTopicId;
   title: string;
-  documentUrl: string;
+  /** Canonical public URL of the reference article, when the document is a copy
+   *  of one. Omit for hand-authored documents that carry their own per-claim
+   *  sources (e.g. trump_election_security) — the note-writer then cites from
+   *  within the document instead of one blanket URL. */
+  documentUrl?: string;
   matches: (blob: string) => boolean;
   document: string;
+  /** The reference the selection LLM matches posts against: a distilled debunk
+   *  for evergreen topics, or — for a time-boxed news event like
+   *  trump_election_security — the source's transcript itself. */
   brief: string;
 }
 
@@ -37,10 +44,33 @@ const AI =
 const ENERGY =
   /(energy|electricit|\bkwh\b|\bwatt|carbon|emission|\bco2\b|climate|power grid|fossil|environment|footprint|greenhouse)/;
 
+// ── trump_election_security sub-patterns ────────────────────────────────────
+// Split out of the inline predicate so each half can be read and changed on
+// its own. All three are applied to the lowercased blob (see keywordFilter).
+
+/** Does the post talk about voting at all? The context gate for ELECTION_SIGNAL. */
+const ELECTION_TERM =
+  /\b(elections?|elected|voters?|voting|votes?|voted|ballots?|registrations?|registered to vote|polling|poll watchers?|swing states?)\b/;
+
+/** Claims that read as election-integrity claims once ELECTION_TERM is present.
+ *  Every entry is a CLAIM marker, not merely a topic marker — "2020 election"
+ *  on its own is most of the feed's political commentary, so it is admitted
+ *  only in the false-victory form ("won the 2020 election"). */
+const ELECTION_SIGNAL =
+  /(rigged|stolen|\bstole\b|\bsteal\b|fraud|cheat|hacked|compromised|non-? ?citizens?|illegals? (are|can|can'?t|cannot|vot|regist)|illegal (aliens?|immigrants?|voters?) [a-z ]{0,20}(vot|regist)|illegal (vote|ballot)|dominion|smartmatic|maduro|venezuela|decertif|declassif|deep state|mail-?in|voter (roll|file|data|id)|voting machine|tabulator|dead voters?|duplicate registration|proof of citizenship|birth certificate|driver'?s licen[sc]e|election (security|integrity|monitors?|observers?)|monitoring elections|polling (site|place)|220 ?million|(won|winning) the 20(20|24) election|\b2[5-8]\d,?\d{3}\b|\b2[5-8]\d ?thousand\b|quarter[- ](of a )?million)/;
+
+/** Specific enough to need no election term — these phrases have one subject. */
+const ELECTION_STANDALONE =
+  /(save america act|\bsave act\b|dominion voting|smartmatic|220 ?million|278,?000)/;
+
+/** The speech's China-acquired-voter-files claim; paired with ELECTION_TERM
+ *  because these words alone are nowhere near specific enough. */
+const ELECTION_CHINA = /(china|chinese|\bccp\b|people's republic)/;
+
 interface TopicSpec {
   id: MisinfoTopicId;
   title: string;
-  documentUrl: string;
+  documentUrl?: string;
   matches: (t: string) => boolean;
 }
 
@@ -110,6 +140,24 @@ const SPECS: TopicSpec[] = [
       /(nothing|useless|pointless|\bwaste\b|scam|grift|fraud|\bfail(ed|ure|s)?\b|hasn'?t|haven'?t|discredit|overrated|never (done|helped|achieved|accomplished)|what (has|have))/.test(
         t,
       ),
+  },
+  {
+    // Trump's July 2026 primetime election-security speech (China stole voter
+    // files, machines "easily compromised", noncitizen/dead voters, mail-in
+    // fraud, SAVE Act). Loose high-recall net — Stage-2 selection is the
+    // precision gate. No documentUrl: the document is hand-authored and carries
+    // its own per-claim in-group sources — the note-writer cites from within it.
+    //
+    // Shape: an unambiguous standalone phrase, OR an election/voting term paired
+    // with a fraud/machine/speech signal or a China signal. The standalone
+    // branch exists because the pairing rule alone silently drops posts that
+    // name this subject without ever using a voting word ("...doesn't want the
+    // Save America Act") or that misspell the one voting word they have.
+    id: "trump_election_security",
+    title: "Trump election-security speech",
+    matches: (t) =>
+      ELECTION_STANDALONE.test(t) ||
+      (ELECTION_TERM.test(t) && (ELECTION_SIGNAL.test(t) || ELECTION_CHINA.test(t))),
   },
 ];
 

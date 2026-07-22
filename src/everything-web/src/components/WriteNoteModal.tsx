@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "../../../everything-shared/supabase";
-import { displayName } from "../../../everything-shared/session";
 import { postClaimWithNote } from "../../../everything-shared/postNote";
+import { PostAsCheckbox, useSignedByline } from "./editorBits";
 
 interface SourceItem {
   id: string;
@@ -22,11 +22,13 @@ const WINDOW = 1200;
 /** Write a note anchored to the source: search the transcript, pick the spot,
  *  select the text you're noting, write the correction. Freeform fallback
  *  carries a "Text not found in transcript" flag. */
-export function WriteNoteModal({ open, onClose, projectId, session }: {
+export function WriteNoteModal({ open, onClose, projectId, session, onAuthored }: {
   open: boolean;
   onClose: () => void;
   projectId: string | null;
   session: Session;
+  /** A note was just posted by this user (mirror its auto-upvote locally). */
+  onAuthored: (noteId: string) => void;
 }) {
   const [items, setItems] = useState<SourceItem[]>([]);
   const [query, setQuery] = useState("");
@@ -37,7 +39,7 @@ export function WriteNoteModal({ open, onClose, projectId, session }: {
   const [busy, setBusy] = useState(false);
   const [rejected, setRejected] = useState(false);
   // Bylines are opt-in (Nathan, 2026-07-14): default anonymous, X-CN style.
-  const [signed, setSigned] = useState(false);
+  const [signed, setSigned] = useSignedByline();
   const [error, setError] = useState<string | null>(null);
   const markRef = useRef<HTMLElement>(null);
   // Close only when the PRESS started on the backdrop — a text-selection drag
@@ -101,6 +103,7 @@ export function WriteNoteModal({ open, onClose, projectId, session }: {
     setBusy(false);
     if (outcome.type === "rejected") return setRejected(true);
     if (outcome.type === "error") return setError(outcome.message);
+    onAuthored(outcome.noteId);
     reset();
     onClose();
   };
@@ -213,10 +216,7 @@ export function WriteNoteModal({ open, onClose, projectId, session }: {
               </p>
             )}
             <div className="flex gap-2 items-center justify-end">
-              <label className="mr-auto flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer">
-                <input type="checkbox" checked={signed} onChange={(e) => setSigned(e.target.checked)} />
-                Post as {displayName(session)}
-              </label>
+              <PostAsCheckbox signed={signed} onChange={setSigned} session={session} className="mr-auto" />
               <button onClick={() => { setAnchorText(""); setFreeform(false); }} className="text-sm text-gray-500 hover:underline">
                 Change text
               </button>

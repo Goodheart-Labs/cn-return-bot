@@ -1,6 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { browser } from "#imports";
 import { signInWithEmailCode, verifyEmailCode } from "../../everything-shared/auth";
+
+// The popup CLOSES when the user switches to their mail client to fetch the
+// code, wiping React state — persist the awaiting-code email so reopening the
+// popup lands back on the code input. storage.session dies with the browser
+// (no stale pending logins); older Firefox lacks it, hence the local fallback.
+const PENDING_EMAIL_KEY = "cn-login-pending-email";
+const pendingStore = () => browser.storage.session ?? browser.storage.local;
 
 /** Popup sign-in: email → 6-digit code (no redirects), or X OAuth via the
  *  background's launchWebAuthFlow. Session lands in chrome.storage.local and
@@ -12,12 +19,29 @@ export function LoginPanel() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    pendingStore().get(PENDING_EMAIL_KEY).then((stored) => {
+      const pending = stored[PENDING_EMAIL_KEY] as string | undefined;
+      if (pending) {
+        setEmail(pending);
+        setStage("code");
+      }
+    });
+  }, []);
+
+  const backToEmail = async () => {
+    await pendingStore().remove(PENDING_EMAIL_KEY);
+    setStage("email");
+    setCode("");
+  };
+
   const sendCode = async () => {
     setBusy(true);
     setError(null);
     const { error } = await signInWithEmailCode(email.trim());
     setBusy(false);
     if (error) return setError(error.message);
+    await pendingStore().set({ [PENDING_EMAIL_KEY]: email.trim() });
     setStage("code");
   };
 
@@ -27,6 +51,7 @@ export function LoginPanel() {
     const { error } = await verifyEmailCode(email.trim(), code.trim());
     setBusy(false);
     if (error) return setError(error.message);
+    await pendingStore().remove(PENDING_EMAIL_KEY);
   };
 
   const signInWithX = async () => {
@@ -77,7 +102,7 @@ export function LoginPanel() {
               Verify
             </button>
           </div>
-          <button type="button" onClick={() => { setStage("email"); setCode(""); }} className="text-xs text-gray-500 hover:underline">
+          <button type="button" onClick={backToEmail} className="text-xs text-gray-500 hover:underline">
             Different email
           </button>
         </form>

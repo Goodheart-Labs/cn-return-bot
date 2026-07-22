@@ -17,7 +17,7 @@ export function ItemChips({ items, noteCounts, selected, onSelect }: {
         : "border-gray-300 text-gray-600 hover:border-blue-400 hover:text-blue-600"
     }`;
   return (
-    <div className="flex flex-wrap gap-2 mb-6">
+    <div className="flex gap-2 mb-6 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       <button className={chipClass(selected === null)} onClick={() => onSelect(null)}>
         All
       </button>

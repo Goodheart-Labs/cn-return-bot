@@ -1,10 +1,19 @@
 // Deep-linking via query params on the static Pages path (no server rewrites,
-// no clash with Supabase's auth hash): ?project=<slug>&note=<id>&item=<item-id>.
+// no clash with Supabase's auth hash):
+// ?project=<slug>&note=<id>&item=<item-id> for the note feed, or ?view=leaderboard.
 
-export function readRoute(): { project: string | null; note: string | null; item: string | null } {
+/** Which top-level view the app is showing. */
+export type View = "notes" | "leaderboard";
+
+export function readRoute(): { project: string | null; note: string | null; item: string | null; view: View } {
   const q = new URLSearchParams(window.location.search);
   // `episode` is the pre-generalization param name — still honored for old links.
-  return { project: q.get("project"), note: q.get("note"), item: q.get("item") ?? q.get("episode") };
+  return {
+    project: q.get("project"),
+    note: q.get("note"),
+    item: q.get("item") ?? q.get("episode"),
+    view: q.get("view") === "leaderboard" ? "leaderboard" : "notes",
+  };
 }
 
 /** Push a project selection into the URL (keeps the path, so Pages still serves index.html). */
@@ -16,6 +25,11 @@ export function pushProject(slug: string): void {
 export function pushItem(slug: string, itemId: string | null): void {
   const suffix = itemId ? `&item=${itemId}` : "";
   window.history.pushState(null, "", `${window.location.pathname}?project=${slug}${suffix}`);
+}
+
+/** Show the leaderboard (a global view — drops any project/item selection). */
+export function pushLeaderboard(): void {
+  window.history.pushState(null, "", `${window.location.pathname}?view=leaderboard`);
 }
 
 /** A shareable link straight to one note. */

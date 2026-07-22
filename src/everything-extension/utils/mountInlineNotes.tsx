@@ -1,8 +1,8 @@
 import { createRoot, type Root } from "react-dom/client";
 import { createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
-import { byPromotion } from "../../everything-shared/noteScore";
-import { fetchItemForUrl, fetchNotesForItem, normalizePageUrl } from "../../everything-shared/notesQuery";
+import { originalsFirst } from "../../everything-shared/noteScore";
+import { fetchItemForUrl, fetchNotesForItem, fetchReaderCanonical, isSubstackReaderUrl, normalizePageUrl } from "../../everything-shared/notesQuery";
 import type { NoteRow } from "../../everything-shared/types";
 import { indexContainer, findQuoteRange } from "./anchor";
 import { InlineNotesApp, type AnchoredGroup } from "../components/InlineNotes";
@@ -21,7 +21,7 @@ function findContainer(): Element {
   );
 }
 
-/** Group an item's notes per claim, promoted order (shared byPromotion). */
+/** Group an item's notes per claim, originals before improvements. */
 function groupByClaim(notes: NoteRow[]): { claimId: string; notes: NoteRow[] }[] {
   const byId = new Map<string, NoteRow[]>();
   for (const note of notes) {
@@ -30,7 +30,7 @@ function groupByClaim(notes: NoteRow[]): { claimId: string; notes: NoteRow[] }[]
     if (list) list.push(note);
     else byId.set(note.claim_id, [note]);
   }
-  return [...byId.entries()].map(([claimId, group]) => ({ claimId, notes: [...group].sort(byPromotion) }));
+  return [...byId.entries()].map(([claimId, group]) => ({ claimId, notes: [...group].sort(originalsFirst) }));
 }
 
 /** Anchor every claim group to a Range. Candidates in reliability order:
@@ -68,21 +68,26 @@ function applyHighlights(ranges: Range[]) {
   else highlights.set(HIGHLIGHT_NAME, new (globalThis as any).Highlight(...ranges));
 }
 
-/** Entry for both the Substack/static and the opt-in generic content scripts:
- *  resolve the page to an ingested item, anchor its claims, mount the overlay. */
-export async function mountInlineNotes(ctx: ContentScriptContext): Promise<void> {
-  const pageUrl = normalizePageUrl(location.href, document);
+/** Resolve `href` to an ingested item, anchor its claims, mount the overlay.
+ *  Returns a teardown for the mounted overlay, or null when the page isn't
+ *  ingested. */
+async function mountForUrl(ctx: ContentScriptContext, href: string): Promise<(() => void) | null> {
+  const readerCanonical = isSubstackReaderUrl(href) ? await fetchReaderCanonical(href) : null;
+  const pageUrl = readerCanonical ? normalizePageUrl(readerCanonical) : normalizePageUrl(href, document);
   const item = await fetchItemForUrl(pageUrl);
-  if (!item) return;
+  console.info(`[common-notes] ${pageUrl} → ${item ? `item "${item.title ?? item.id}"` : "no ingested item"}`);
+  if (!item) return null;
   // Mount even with zero notes: the write-from-selection flow works on any
   // ingested page, and its first note appears via refresh().
   let groups = groupByClaim(await fetchNotesForItem(item.id));
 
-  const container = findContainer();
   let reactRoot: Root | null = null;
 
+  // Re-query the container every render: SPA navigations can replace the
+  // article element after we mount, and anchoring against a detached node
+  // finds nothing forever.
   const render = () => {
-    const anchored = anchorGroups(container, groups);
+    const anchored = anchorGroups(findContainer(), groups);
     applyHighlights(anchored.map((g) => g.range));
     reactRoot?.render(<InlineNotesApp groups={anchored} item={item} onPosted={refresh} />);
   };
@@ -96,14 +101,10 @@ export async function mountInlineNotes(ctx: ContentScriptContext): Promise<void>
     name: "common-notes-ui",
     position: "inline",
     anchor: "body",
-    onMount(uiContainer, _shadow, shadowHost) {
-      // Zero-footprint overlay: children are positioned in page coordinates.
-      shadowHost.style.position = "absolute";
-      shadowHost.style.top = "0";
-      shadowHost.style.left = "0";
-      shadowHost.style.width = "0";
-      shadowHost.style.height = "0";
-      shadowHost.style.zIndex = "2147483000";
+    onMount(uiContainer, _shadow, _shadowHost) {
+      // Host geometry lives in assets/tailwind.css (`:host(common-notes-ui)`)
+      // — inline styles set here are dead on arrival, WXT's shadow reset
+      // (`:host{all:initial !important}`) overrides them.
       uiContainer.style.position = "relative";
       reactRoot = createRoot(uiContainer);
       render();
@@ -116,16 +117,45 @@ export async function mountInlineNotes(ctx: ContentScriptContext): Promise<void>
   });
   ui.mount();
 
-  // Host pages hydrate/lazy-load; re-anchor after the dust settles. Our own
-  // UI lives outside `container`, so observing it can't self-trigger.
+  // Host pages hydrate/lazy-load/swap the article; re-anchor after the dust
+  // settles. Observe documentElement, not body — SPAs can replace the body
+  // node, which would orphan the observer. Safe from self-triggering: our UI
+  // renders into a shadow root, which light-DOM observers don't see into.
   let timer: ReturnType<typeof setTimeout> | undefined;
   const observer = new MutationObserver(() => {
     clearTimeout(timer);
     timer = setTimeout(render, REANCHOR_DEBOUNCE_MS);
   });
-  observer.observe(container, { childList: true, subtree: true, characterData: true });
-  ctx.onInvalidated(() => {
+  observer.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+
+  return () => {
     observer.disconnect();
     clearTimeout(timer);
-  });
+    ui.remove();
+  };
+}
+
+/** Entry for both the Substack/static and the opt-in generic content scripts.
+ *  Substack and other Substack-like readers are SPAs: the content script is
+ *  injected once, but in-app navigation swaps the article via pushState with no
+ *  reload. Re-resolve the item + re-anchor on every URL change so notes appear
+ *  on posts reached by clicking through, not just on hard loads. */
+export async function mountInlineNotes(ctx: ContentScriptContext): Promise<void> {
+  let cleanup: (() => void) | null = null;
+  let seq = 0;
+  const remount = async (href: string) => {
+    const mine = ++seq;
+    cleanup?.();
+    cleanup = null;
+    const teardown = await mountForUrl(ctx, href);
+    // A newer navigation superseded this one mid-resolve: drop the stale mount.
+    if (mine !== seq) return teardown?.();
+    cleanup = teardown;
+  };
+  await remount(location.href);
+  // On Navigation-API browsers this event fires BEFORE the navigation commits
+  // — location.href may still be the PREVIOUS page — so resolve the item from
+  // the event's destination URL, never from location.
+  ctx.addEventListener(window, "wxt:locationchange", (event) => void remount(String(event.newUrl)));
+  ctx.onInvalidated(() => cleanup?.());
 }

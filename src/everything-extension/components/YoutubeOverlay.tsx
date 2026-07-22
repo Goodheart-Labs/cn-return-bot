@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { VoteRatings } from "../../dashboard-shared/Ratings";
-import { NoteBox, AlternativeNote, StatusBadge } from "../../everything-web/src/components/NoteCard";
-import { NoteMenu } from "../../everything-web/src/components/NoteMenu";
+import { StatusBadge } from "../../everything-web/src/components/NoteCard";
 import { noteStatus } from "../../everything-shared/noteScore";
 import type { NoteRow } from "../../everything-shared/types";
 import { noteShareUrl } from "../utils/share";
+import { NoteWithActions } from "./NoteWithActions";
 import { useNoteVoting, replaceNoteInGroup } from "./useNoteVoting";
 
 /** A claim pinned to a span of the video timeline. */
@@ -40,10 +39,9 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video }:
   const [groups, setGroups] = useState(initialGroups);
   const [activeClaim, setActiveClaim] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
-  const [sourcesOpen, setSourcesOpen] = useState(false);
   const dismissed = useRef(new Set<string>()); // per-video-session
   const lingerTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const { session, myVotes, handleVote, onNeedLogin, signInHint, dismissSignInHint } = useNoteVoting(
+  const { session, myVotes, handleVote, recordAuthored, onNeedLogin, signInHint, dismissSignInHint } = useNoteVoting(
     (updated) => setGroups((prev) => prev.map((g) => replaceNoteInGroup(g, updated))),
   );
   const expandedRef = useRef(expanded);
@@ -60,10 +58,7 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video }:
         // Leave the pill up briefly, then drop it; an expanded card stays.
         clearTimeout(lingerTimer.current);
         lingerTimer.current = setTimeout(() => {
-          if (!expandedRef.current) {
-            setActiveClaim(null);
-            setSourcesOpen(false);
-          }
+          if (!expandedRef.current) setActiveClaim(null);
         }, LINGER_MS);
       }
     };
@@ -83,7 +78,6 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video }:
     dismissed.current.add(group.claimId);
     setActiveClaim(null);
     setExpanded(false);
-    setSourcesOpen(false);
   };
 
   return (
@@ -113,27 +107,19 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video }:
           {quote && (
             <blockquote className="border-l-4 border-gray-300 pl-2 mb-2 text-xs text-gray-500 italic">“{quote}”</blockquote>
           )}
-          <NoteBox note={note} sourcesOpen={sourcesOpen}>
-            <VoteRatings
-              helpful={note.helpful_count}
-              somewhatHelpful={note.somewhat_helpful_count}
-              notHelpful={note.not_helpful_count}
-              myVote={myVotes.get(note.id)}
-              onVote={(vote) => handleVote(note, vote)}
-            />
-          </NoteBox>
-          <NoteMenu
+          <NoteWithActions
             note={note}
-            shareUrl={noteShareUrl(projectSlug, note.id)}
+            myVote={myVotes.get(note.id)}
+            onVote={handleVote}
             session={session}
+            shareUrl={noteShareUrl(projectSlug, note.id)}
             onNeedLogin={onNeedLogin}
-            sourcesOpen={sourcesOpen}
-            onToggleSources={() => setSourcesOpen((o) => !o)}
+            onAuthored={recordAuthored}
           />
           {group.alternatives.length > 0 && (
             <div className="mt-3 pl-3 border-l-[3px] border-gray-300 space-y-3">
               {group.alternatives.map((d) => (
-                <AlternativeNote
+                <NoteWithActions
                   key={d.id}
                   note={d}
                   myVote={myVotes.get(d.id)}
@@ -141,6 +127,7 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video }:
                   session={session}
                   shareUrl={noteShareUrl(projectSlug, d.id)}
                   onNeedLogin={onNeedLogin}
+                  onAuthored={recordAuthored}
                 />
               ))}
             </div>

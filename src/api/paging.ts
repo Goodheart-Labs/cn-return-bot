@@ -59,6 +59,16 @@ export async function fetchAllRows<T extends Record<string, any>>(
     const { data, error } = await q;
     if (error) throw enrichError(error, options.label, pageIdx, keyCol, lastKey);
     if (!data || data.length === 0) break;
+    // Guard the silent-truncation footgun (gotcha #2): if keyCol isn't in the
+    // selected columns, the cursor reads `undefined` and pagination stops after
+    // one page — quietly capping at pageSize. Turn that into a loud error.
+    if (pageIdx === 0 && !(keyCol in data[0])) {
+      const where = options.label ? `[paging:${options.label}]` : "[paging]";
+      throw new Error(
+        `${where} keyCol "${keyCol}" is missing from the selected columns, so keyset pagination ` +
+        `would silently truncate at ${pageSize} rows. Add "${keyCol}" to your select(...).`,
+      );
+    }
     all.push(...(data as T[]));
     if (data.length < pageSize) break;
     lastKey = data[data.length - 1][keyCol];

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { browser } from "#imports";
 import { useSession, signOut } from "../../../everything-shared/auth";
 import { displayName } from "../../../everything-shared/session";
-import { fetchItemForUrl, fetchNotesForItem, normalizePageUrl, type PageItem } from "../../../everything-shared/notesQuery";
+import { fetchItemForUrl, fetchNotesForItem, fetchReaderCanonical, isSubstackReaderUrl, normalizePageUrl, type PageItem } from "../../../everything-shared/notesQuery";
 import { COMMONNOTES_ORIGIN } from "../../utils/share";
 import { updateEnabledOrigins } from "../../utils/settings";
 import { LoginPanel } from "../../components/LoginPanel";
@@ -29,7 +29,8 @@ function usePageState(): PageState {
       const url = tab?.url;
       if (!url || !/^https?:/.test(url)) return setState({ kind: "unsupported" });
       const origin = new URL(url).origin;
-      const item = await fetchItemForUrl(normalizePageUrl(url));
+      const readerCanonical = isSubstackReaderUrl(url) ? await fetchReaderCanonical(url) : null;
+      const item = await fetchItemForUrl(normalizePageUrl(readerCanonical ?? url));
       if (!item) return setState({ kind: "no_item", origin });
       const notes = await fetchNotesForItem(item.id);
       setState({ kind: "item", origin, item, noteCount: notes.length });

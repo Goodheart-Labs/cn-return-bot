@@ -19,9 +19,8 @@
 import PQueue from "p-queue";
 import { fetchEligiblePosts, type Post } from "../../api/fetchEligiblePosts";
 import type { SupabaseLogger } from "../../api/supabaseClient";
-import { buildPostSelection } from "../orchestration/utils/feedSizeStrategy";
+import { buildPostSelection, type FeedSize } from "../orchestration/utils/feedSizeStrategy";
 import { ageInHours, formatCount, sortByWeightedScore, type SortWeights } from "../orchestration/utils/tweetSorting";
-import type { FeedSize } from "../ab-testing/botConfig";
 import { pickVariantName } from "../ab-testing/abTests";
 import { PANGRAM_NOTE_TEST } from "../ab-testing/abTestsData";
 import type { Candidate } from "../orchestration/submitCandidates";
@@ -157,7 +156,7 @@ async function processPost(logger: SupabaseLogger, post: Post, feedSize: FeedSiz
   const note = buildPangramNote(verdict.dashboardLink, variant);
   if (!note) return { candidate: null, tweetResult: syntheticResult("rejected", "no_pangram_note"), sighting };
 
-  const picks = { pangram_monitoring: "yes", pangram_note: variant };
+  const picks = { pangram_monitoring: "yes", pangram_note: variant, feed_size: feedSize };
   const runId = await createRun(logger, post, picks);
   if (!runId) return { candidate: null, tweetResult: syntheticResult("failed", "no_pipeline_run"), sighting };
 

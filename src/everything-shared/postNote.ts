@@ -5,7 +5,7 @@ import { isEarnestNote } from "./judgeNote";
 import type { NoteRow } from "./types";
 
 export type PostOutcome =
-  | { type: "posted"; claimId: string; noteId: string | null }
+  | { type: "posted"; claimId: string; noteId: string }
   | { type: "rejected" } // judge-note said not an earnest note
   | { type: "error"; message: string };
 
@@ -55,16 +55,16 @@ export async function postClaimWithNote(params: {
       })
       .select("id")
       .single();
-    if (noteError) return { type: "error", message: noteError.message };
-    return { type: "posted", claimId: claim.id, noteId: noteRow?.id ?? null };
+    if (noteError || !noteRow) return { type: "error", message: noteError?.message ?? "could not create the note" };
+    return { type: "posted", claimId: claim.id, noteId: noteRow.id };
   } catch (err) {
     return { type: "error", message: (err as Error).message };
   }
 }
 
 /** Post an improved version of an existing note as your own draft note on the
- *  same claim (it shows alongside the original, it does not replace it),
- *  judge-gated the same way. */
+ *  same claim, linked to the original via improved_from_note_id (it shows as
+ *  its own card, it does not replace it), judge-gated the same way. */
 export async function postImprovement(params: {
   note: NoteRow;
   text: string;
@@ -83,12 +83,13 @@ export async function postImprovement(params: {
         note: text,
         author_id: session.user.id,
         author_name: signed ? displayName(session) : null,
+        improved_from_note_id: note.id,
         status: "draft",
       })
       .select("id")
       .single();
-    if (error) return { type: "error", message: error.message };
-    return { type: "posted", claimId: note.claim_id, noteId: noteRow?.id ?? null };
+    if (error || !noteRow) return { type: "error", message: error?.message ?? "could not create the note" };
+    return { type: "posted", claimId: note.claim_id, noteId: noteRow.id };
   } catch (err) {
     return { type: "error", message: (err as Error).message };
   }

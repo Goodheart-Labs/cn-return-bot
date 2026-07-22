@@ -58,6 +58,7 @@ export function ChartControls({
         onChange={onModeChange}
         options={[
           { value: "absolute", label: "Helpful / unhelpful" },
+          { value: "posted", label: "Posted" },
           { value: "ratio", label: "Ratio" },
           { value: "share", label: "% of all" },
         ]}
@@ -92,7 +93,7 @@ export function ChartLegend({ mode, showNonCandidate }: { mode: ChartMode; showN
     <div className="flex flex-wrap gap-4 text-xs text-gray-600">
       <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-emerald-500" /> Helpful</span>
       <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-red-500" /> Not helpful</span>
-      {mode === "ratio" && (
+      {(mode === "ratio" || mode === "posted") && (
         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-gray-400" /> Needs more ratings / pending</span>
       )}
       {mode === "ratio" && showNonCandidate && (

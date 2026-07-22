@@ -5,7 +5,9 @@
  * a timestamped YouTube transcript or a plain article — in neutral,
  * self-contained language, each with a verbatim context excerpt and a 7-point
  * truth judgement from its own knowledge. YouTube claims get their context
- * snapped back to subtitle cues for a deep link into the video.
+ * snapped back to subtitle cues for a deep link into the video. Article images
+ * are pre-described by Gemini (description + OCR) and spliced inline as
+ * bracketed text blocks, so extraction runs on plain text.
  */
 
 import PQueue from "p-queue";
@@ -13,12 +15,10 @@ import { llm } from "../../pipeline/llm/llm";
 import { jsonSchemaResponseFormat } from "../../pipeline/prompts/responseFormat";
 import { stripJsonFences } from "../../pipeline/utils/jsonOutput";
 import type { SubtitleCue } from "../../pipeline/media/ytDlpDownload";
+import { describeImageFromUrl, type GeminiMediaDescription } from "../../pipeline/media/mediaAnalysisGemini";
 import { IMAGE_MARKER_RE } from "../sources/substack";
 import type { ClaimAnchor, ExtractedClaim, FetchedContent } from "../types";
 import { normalizeText } from "../../everything-shared/normalizeText";
-
-/** A multimodal message part: plain text or an image the model can see. */
-type ContentPart = { type: "text"; text: string } | { type: "image_url"; image_url: { url: string } };
 
 const CLAIM_EXTRACTION_MODEL = "anthropic/claude-opus-4.6";
 
@@ -43,17 +43,17 @@ export function shouldFactCheck(judgement: string): boolean {
 function extractionSystemPrompt(): string {
   const fields = [
     `- "claim": the neutral, self-contained statement.`,
-    `- "context": a verbatim excerpt from the text around the claim — its sentence plus enough surrounding sentences that a reader with none of the rest of the text has all the context needed to evaluate it. Leave empty ("") for a claim grounded only in an image.`,
-    `- "context_paragraph": a wider verbatim excerpt — the full surrounding paragraph(s) the claim sits in — that contains the "context" excerpt above word-for-word. Shown to readers as the broader passage around the highlighted claim. Leave empty ("") when there is no surrounding text.`,
-    `- "image_urls": the URLs (from the "Image:" labels shown before each image) of any images the claim is based on — a chart, screenshot, photo, or diagram. Empty array for a text-only claim.`,
+    `- "context": a verbatim excerpt from the text around the claim — its sentence plus enough surrounding sentences that a reader with none of the rest of the text has all the context needed to evaluate it. Verbatim source prose only — never quote an image block's Description/Visible text lines. Leave empty ("") for a claim grounded only in an image.`,
+    `- "context_paragraph": a wider verbatim excerpt — the full surrounding paragraph(s) the claim sits in — that contains the "context" excerpt above word-for-word. Shown to readers as the broader passage around the highlighted claim. Same rule: verbatim source prose only. Leave empty ("") when there is no surrounding text.`,
+    `- "image_urls": the URLs (from the "Image:" line of each image block) of any images the claim is based on — a chart, screenshot, photo, or diagram. Empty array for a text-only claim.`,
     `- "judgement": how true the claim is, using only your own knowledge — one of: ${JUDGEMENTS.join(", ")}.`,
     `- "speculation": true if the claim describes a hypothetical or future scenario — something stated as happening in a future year (e.g. "in 2028...") as part of an imagined scenario; false if it is about the present or past (2026 or earlier) or the current state of the world (real events, statistics, and any other real-world claim).`,
   ];
-  return `You extract checkable factual claims from a text (podcast transcript or article), which may include images.
+  return `You extract checkable factual claims from a text (podcast transcript or article). The text may contain bracketed image blocks — an "Image: <url>" line followed by "Description:" and/or "Visible text:" lines generated from that image. They are a text rendering of the image (you are not shown the image itself), not part of the article prose.
 
-Extract EVERY distinct claim the text makes or relies on, including implicit ones — things presented as background fact or presupposed, not only what is stated outright. This includes claims made BY the images: data in a chart, a figure in a screenshot, what a photo depicts. Split compound statements into separate claims.
+Extract EVERY distinct claim the text makes or relies on, including implicit ones — things presented as background fact or presupposed, not only what is stated outright. This includes claims carried by the images: data in a chart, a figure in a screenshot, what a photo depicts — read these from the image block's Description and Visible text. Split compound statements into separate claims.
 
-A claim can rest on text, an image, or both. Ground each claim in what actually supports it: fill "context" from the text and/or "image_urls" from the images.
+A claim can rest on text, an image, or both. Ground each claim in what actually supports it: fill "context" from the article text and/or "image_urls" from the image blocks.
 
 Write each claim in NEUTRAL, SELF-CONTAINED language:
 - Strip the author's rhetoric, framing, hedging, and tone — state the underlying factual proposition plainly, as a neutral third party would.
@@ -105,28 +105,43 @@ function toExtractedClaim(raw: RawClaim, anchor: ClaimAnchor): ExtractedClaim {
   };
 }
 
-/** Split a text chunk into multimodal parts: each `[[IMAGE:url]]` marker becomes
- *  its URL as a text label (so the model can cite it) followed by the image. */
-function toContentParts(text: string): ContentPart[] {
-  const parts: ContentPart[] = [];
-  const re = new RegExp(IMAGE_MARKER_RE.source, "g");
-  let lastIndex = 0;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(text)) !== null) {
-    const before = text.slice(lastIndex, m.index);
-    if (before.trim()) parts.push({ type: "text", text: before });
-    const url = m[1]!;
-    parts.push({ type: "text", text: `Image: ${url}` });
-    parts.push({ type: "image_url", image_url: { url } });
-    lastIndex = m.index + m[0].length;
-  }
-  const rest = text.slice(lastIndex);
-  if (rest.trim() || parts.length === 0) parts.push({ type: "text", text: rest });
-  return parts;
+// IMAGE_MARKER_RE is a shared stateful global regex — always scan with a fresh clone.
+const freshImageMarkerRe = () => new RegExp(IMAGE_MARKER_RE.source, "g");
+
+/** Gemini-describe every `[[IMAGE:url]]` in the article once (deduped, in
+ *  parallel), keyed by URL. A failed describe maps to empty fields — the
+ *  renderer still keeps the URL in the text. */
+async function describeArticleImages(text: string): Promise<Map<string, GeminiMediaDescription>> {
+  const urls = [...new Set([...text.matchAll(freshImageMarkerRe())].map((m) => m[1]!))];
+  const entries = await Promise.all(
+    urls.map((url, i) =>
+      describeImageFromUrl(url, `everything.extract.image.${i}`)
+        .then((item) => [url, item.description] as const)
+        .catch((err) => {
+          console.error(`[extractClaims] Image description failed (${url}):`, err.message);
+          return [url, { description: "", ocrText: "" }] as const;
+        }),
+    ),
+  );
+  return new Map(entries);
 }
 
-/** One Opus extraction call over a rendered chunk (plain text or multimodal). */
-async function runExtraction(content: string | ContentPart[]): Promise<RawClaim[]> {
+/** Replace each `[[IMAGE:url]]` marker with a bracketed text block: the URL (so
+ *  the model can cite it into image_urls) plus the Gemini description and OCR.
+ *  Bracketed so it reads as an aside, never as quotable article prose. */
+function renderImageDescriptions(text: string, descriptions: Map<string, GeminiMediaDescription>): string {
+  return text.replace(freshImageMarkerRe(), (_m, url) => {
+    const { description, ocrText } = descriptions.get(url) ?? { description: "", ocrText: "" };
+    const lines = [`Image: ${url}`];
+    if (description) lines.push(`Description: ${description}`);
+    if (ocrText) lines.push(`Visible text: ${ocrText}`);
+    if (lines.length === 1) lines.push("(image could not be analyzed)");
+    return `[${lines.join("\n")}]`;
+  });
+}
+
+/** One Opus extraction call over a rendered text chunk. */
+async function runExtraction(content: string): Promise<RawClaim[]> {
   const response: any = await llm.create({
     model: CLAIM_EXTRACTION_MODEL,
     messages: [
@@ -225,7 +240,7 @@ function youtubeAnchor(videoId: string, cues: SubtitleCue[]): AnchorResolver {
 
 /** Extract from pre-rendered chunks, then attach each claim's resolved anchor. */
 async function extractChunks(
-  renderedChunks: (string | ContentPart[])[],
+  renderedChunks: string[],
   anchorFor: AnchorResolver,
   concurrency: number,
 ): Promise<ExtractedClaim[]> {
@@ -255,12 +270,16 @@ export async function extractClaims(content: FetchedContent, concurrency: number
         youtubeAnchor(content.videoId, content.cues),
         concurrency,
       );
-    case "substack":
+    case "substack": {
+      // Describe images up front, then chunk the rendered text — so the chunk
+      // budget counts the actual description text, not the short markers.
+      const descriptions = await describeArticleImages(content.text);
       return extractChunks(
-        chunkText(content.text).map((chunk) => [{ type: "text", text: "Article excerpt:\n\n" }, ...toContentParts(chunk)]),
+        chunkText(renderImageDescriptions(content.text, descriptions)).map((chunk) => `Article excerpt:\n\n${chunk}`),
         () => ({ kind: "substack", url: content.url }),
         concurrency,
       );
+    }
   }
 }
 

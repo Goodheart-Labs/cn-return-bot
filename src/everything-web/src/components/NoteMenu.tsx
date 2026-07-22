@@ -3,11 +3,13 @@ import type { Session } from "@supabase/supabase-js";
 import { supabase } from "../../../everything-shared/supabase";
 import { displayName } from "../../../everything-shared/session";
 import { postImprovement } from "../../../everything-shared/postNote";
+import { postNnn } from "../../../everything-shared/noteNotNeeded";
 import type { NoteRow } from "../../../everything-shared/types";
+import { AutoGrowTextarea, PostAsCheckbox, RejectedNotice, useSignedByline } from "./editorBits";
 
 /** One row of the ⋯ dropdown: muted icon, medium-weight label, rounded hover;
  *  danger rows go red with a red hover wash. */
-function MenuItem({ onClick, icon, label, danger }: {
+export function MenuItem({ onClick, icon, label, danger }: {
   onClick: () => void;
   icon: React.ReactNode;
   label: string;
@@ -51,7 +53,7 @@ function ShareIcon() {
   );
 }
 
-function TrashIcon() {
+export function TrashIcon() {
   return (
     <svg {...ICON_PROPS}>
       <path d="M3 6h18" />
@@ -69,19 +71,38 @@ function QuoteIcon() {
   );
 }
 
-/** Bottom-right ⋯ menu on every note: suggest an improvement (posts your own
- *  draft note on the same claim, shown alongside the original), share a deep
- *  link, and — on notes you wrote — delete. */
-export function NoteMenu({ note, shareUrl, session, onNeedLogin, sourcesOpen, onToggleSources }: {
+function SpeechBubbleIcon() {
+  return (
+    <svg {...ICON_PROPS}>
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+    </svg>
+  );
+}
+
+/** The note's action row: argue the claim needs no note, suggest an
+ *  improvement (posts your own draft note on the same claim, shown alongside
+ *  the original), share a deep link, and — on notes you wrote — a ⋯ menu with
+ *  delete. */
+export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onNnnAuthored, sourcesOpen, onToggleSources, children }: {
   note: NoteRow;
+  /** Absolute deep link to this note (the website computes it from the project
+   *  slug; the extension passes the public site's URL). */
   shareUrl: string;
   session: Session | null;
   onNeedLogin: () => void;
+  /** A note was just posted by this user (mirror its auto-upvote locally). */
+  onAuthored: (noteId: string) => void;
+  /** A note-not-needed entry was just posted by this user (mirror its
+   *  auto-upvote locally). */
+  onNnnAuthored: (entryId: string) => void;
   sourcesOpen?: boolean;
   onToggleSources?: () => void;
+  /** Extra actions slotted between Share and the ⋯ (e.g. improvement jump chips). */
+  children?: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const [improving, setImproving] = useState(false);
+  const [composing, setComposing] = useState(false);
   const [copied, setCopied] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const mine = !!session && session.user.id === note.author_id;
@@ -111,13 +132,18 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, sourcesOpen, on
     if (!session) return onNeedLogin();
     setImproving(true);
   };
+  const startNnn = () => {
+    setOpen(false);
+    if (!session) return onNeedLogin();
+    setComposing(true);
+  };
   // The source links sit inline on every card; this toggle only reveals the
   // per-source quote + explanation, so it appears only when a quote exists.
   const showSourcesButton = !!onToggleSources && note.sources.some((s) => s.quote);
 
   return (
     <div className="mt-1">
-      <div ref={ref} className="relative flex justify-end items-center gap-3 text-xs text-gray-500">
+      <div ref={ref} className="relative flex flex-wrap justify-end items-center gap-x-3 gap-y-1 text-xs text-gray-500">
         {copied && <span className="text-green-700">Link copied</span>}
         {/* Sources + improve + share ride visibly on every card; the ⋯ menu
             only exists for delete on your own notes (Nathan, 2026-07-14 — the
@@ -127,12 +153,16 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, sourcesOpen, on
             <QuoteIcon /> {sourcesOpen ? "Hide source details" : "Show source details"}
           </button>
         )}
+        <button onClick={startNnn} className="inline-flex items-center gap-1 text-blue-600 hover:underline">
+          <SpeechBubbleIcon /> Note not needed
+        </button>
         <button onClick={startImprove} className="inline-flex items-center gap-1 text-blue-600 hover:underline">
           <PencilIcon /> Suggest an improvement
         </button>
         <button onClick={share} className="inline-flex items-center gap-1 text-blue-600 hover:underline">
           <ShareIcon /> Share
         </button>
+        {children}
         {mine && (
           <button
             aria-label="Note actions"
@@ -149,27 +179,89 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, sourcesOpen, on
         )}
       </div>
       {improving && session && (
-        <ImproveEditor note={note} session={session} onClose={() => setImproving(false)} />
+        <ImproveEditor note={note} session={session} onAuthored={onAuthored} onClose={() => setImproving(false)} />
+      )}
+      {composing && session && (
+        <NnnComposer note={note} session={session} onAuthored={onNnnAuthored} onClose={() => setComposing(false)} />
       )}
     </div>
   );
 }
 
-/** Post an improved version as your own draft note on the same claim. It shows
- *  next to the original (both are rated); it does not replace it. The judge-note
- *  edge function gates it earnest-vs-trolling before it posts. */
-function ImproveEditor({ note, session, onClose }: {
+/** Post a "note not needed" argument on the note's claim (ungated, like the
+ *  plain discussion it replaces). Claim-keyed, so it shows under every note
+ *  on the same text. */
+function NnnComposer({ note, session, onAuthored, onClose }: {
   note: NoteRow;
   session: Session;
+  onAuthored: (entryId: string) => void;
+  onClose: () => void;
+}) {
+  const [text, setText] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [signed, setSigned] = useSignedByline();
+
+  const submit = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      const entryId = await postNnn({
+        claimId: note.claim_id,
+        body: text.trim(),
+        authorId: session.user.id,
+        authorName: signed ? displayName(session) : null,
+      });
+      if (!entryId) return setError("Could not post — try again.");
+      onAuthored(entryId);
+      onClose();
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="mt-2 space-y-2">
+      <AutoGrowTextarea
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        rows={2}
+        autoFocus
+        placeholder="Why does this claim need no note?"
+      />
+      <div className="flex gap-2 items-center">
+        <button
+          onClick={submit}
+          disabled={busy || text.trim().length < 10}
+          className="bg-blue-600 text-white rounded-lg px-3 py-1 text-sm font-medium hover:bg-blue-700 disabled:opacity-40"
+        >
+          {busy ? "Posting…" : "Post"}
+        </button>
+        <button onClick={onClose} className="text-sm text-gray-500 hover:underline">Cancel</button>
+        <PostAsCheckbox signed={signed} onChange={setSigned} session={session} className="ml-auto" />
+      </div>
+      {error && <p className="text-sm text-red-600">{error}</p>}
+    </div>
+  );
+}
+
+/** Post an improved version as your own draft note on the same claim. It shows
+ *  as its own card, jump-linked to the original (both are rated); it does not
+ *  replace it. The judge-note edge function gates it earnest-vs-trolling
+ *  before it posts. */
+function ImproveEditor({ note, session, onAuthored, onClose }: {
+  note: NoteRow;
+  session: Session;
+  onAuthored: (noteId: string) => void;
   onClose: () => void;
 }) {
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [rejected, setRejected] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // Bylines are opt-in (Nathan, 2026-07-14): default anonymous, X-CN style —
-  // note-writing is adversarial work and auto-bylines were a consent gap.
-  const [signed, setSigned] = useState(false);
+  const [signed, setSigned] = useSignedByline();
 
   const submit = async () => {
     setBusy(true);
@@ -179,19 +271,18 @@ function ImproveEditor({ note, session, onClose }: {
     setBusy(false);
     if (outcome.type === "rejected") return setRejected(true);
     if (outcome.type === "error") return setError(outcome.message);
+    onAuthored(outcome.noteId);
     onClose();
   };
 
   return (
     <div className="mt-2 space-y-2">
-      <textarea
-        ref={(el) => { if (el) { el.style.height = "auto"; el.style.height = `${el.scrollHeight}px`; } }}
+      <AutoGrowTextarea
         value={text}
         onChange={(e) => { setText(e.target.value); setRejected(false); }}
         rows={3}
         autoFocus
         placeholder="Write a clearer or better-sourced version — it posts as your own note on this claim…"
-        className="w-full resize-none overflow-hidden border border-gray-300 rounded-lg px-3 py-2 text-sm"
       />
       <div className="flex gap-2 items-center">
         <button
@@ -202,16 +293,9 @@ function ImproveEditor({ note, session, onClose }: {
           {busy ? "Checking…" : "Post note"}
         </button>
         <button onClick={onClose} className="text-sm text-gray-500 hover:underline">Cancel</button>
-        <label className="ml-auto flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer">
-          <input type="checkbox" checked={signed} onChange={(e) => setSigned(e.target.checked)} />
-          Post as {displayName(session)}
-        </label>
+        <PostAsCheckbox signed={signed} onChange={setSigned} session={session} className="ml-auto" />
       </div>
-      {rejected && (
-        <p className="text-sm rounded-lg p-2 bg-amber-50 text-amber-800 border border-amber-200">
-          That didn't look like a genuine note — try again.
-        </p>
-      )}
+      {rejected && <RejectedNotice />}
       {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
   );

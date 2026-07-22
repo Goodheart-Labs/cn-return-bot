@@ -2,10 +2,11 @@ import "../assets/tailwind.css";
 import { createRoot } from "react-dom/client";
 import { defineContentScript, createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
-import { byPromotion } from "../../everything-shared/noteScore";
+import { originalsFirst } from "../../everything-shared/noteScore";
 import { fetchItemForUrl, fetchNotesForItem, extractYoutubeVideoId } from "../../everything-shared/notesQuery";
 import type { NoteRow } from "../../everything-shared/types";
 import { YoutubeOverlayApp, DEFAULT_CLIP_SECONDS, type TimedGroup } from "../components/YoutubeOverlay";
+import { registerDevReloadHook } from "../utils/devReload";
 
 // YouTube's DOM churns; every selector we depend on lives here.
 const PLAYER_SELECTOR = "#movie_player";
@@ -38,7 +39,7 @@ function timedGroups(notes: NoteRow[]): TimedGroup[] {
   }
   return [...byClaim.entries()]
     .map(([claimId, group]) => {
-      const sorted = [...group].sort(byPromotion);
+      const sorted = [...group].sort(originalsFirst);
       const claim = sorted[0]!.claim!;
       return {
         claimId,
@@ -67,13 +68,10 @@ async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | n
     name: "common-notes-yt",
     position: "inline",
     anchor: player,
-    onMount(container, _shadow, shadowHost) {
-      // Top-right inside the player, above the video but below nothing we
-      // need; fullscreen/theater keep working since we live inside it.
-      shadowHost.style.position = "absolute";
-      shadowHost.style.top = "12px";
-      shadowHost.style.right = "12px";
-      shadowHost.style.zIndex = "1000";
+    onMount(container, _shadow, _shadowHost) {
+      // Host geometry lives in assets/tailwind.css (`:host(common-notes-yt)`)
+      // — inline styles set here are dead on arrival, WXT's shadow reset
+      // (`:host{all:initial !important}`) overrides them.
       const root = createRoot(container);
       root.render(<YoutubeOverlayApp groups={groups} projectSlug={item.projectSlug} video={video} />);
       return root;
@@ -90,6 +88,7 @@ export default defineContentScript({
   matches: ["*://*.youtube.com/*"],
   cssInjectionMode: "ui",
   async main(ctx) {
+    registerDevReloadHook(ctx);
     let cleanup: (() => void) | null = null;
     const init = async () => {
       cleanup?.();

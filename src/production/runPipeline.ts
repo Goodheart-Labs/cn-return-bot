@@ -63,8 +63,11 @@ import { SupabaseLogger } from "../api/supabaseClient";
 import { closeBrowser } from "../pipeline/utils/browserManager";
 import { generateCandidates, type TweetProcessedEvent } from "../pipeline/orchestration/generateCandidates";
 import { generatePangramCandidates } from "../pipeline/pangram-monitoring/generatePangramCandidates";
+import { generateMisinfoCandidates } from "../pipeline/misinfo-monitoring/generateMisinfoCandidates";
+import type { MisinfoTopicId } from "../pipeline/misinfo-monitoring/topicIds";
 import { submitCandidates, type Candidate } from "../pipeline/orchestration/submitCandidates";
 import { computeMaxPosts } from "../pipeline/orchestration/computeMaxPosts";
+import { probeWritingLimitAfterCooldown } from "../pipeline/orchestration/writingLimit";
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
 import { autoOpenInDashboard } from "../local/dashboardAutoOpen";
 import { withForcedPicks } from "../pipeline/ab-testing/abTests";
@@ -95,6 +98,12 @@ const MAX_POSTS_FALLBACK = 5;
 
 // Flip to true to re-enable the XXL-feed Pangram AI-detection pre-pass.
 const PANGRAM_PIPELINE_ENABLED = false;
+
+// Activates the misinfo-monitoring pre-pass for the topics below ONLY (not the
+// evergreen topics). A live run writes AND submits real notes to X; flip to
+// false to kill-switch it.
+const MISINFO_PIPELINE_ENABLED = true;
+const MISINFO_ACTIVE_TOPIC_IDS: MisinfoTopicId[] = ["trump_election_security"];
 
 const globalTimeout = setTimeout(async () => {
   console.log("[pipeline] Maximum runtime reached (27 minutes), forcing exit");
@@ -129,11 +138,19 @@ async function main() {
       }
     }
 
-    const { maxPosts, estimate } = isLocal
-      ? { maxPosts: MAX_POSTS_LOCAL, estimate: MAX_POSTS_LOCAL }
+    let { maxPosts } = isLocal
+      ? { maxPosts: MAX_POSTS_LOCAL }
       : supabaseLogger
         ? await computeMaxPosts(supabaseLogger)
-        : { maxPosts: MAX_POSTS_FALLBACK, estimate: MAX_POSTS_FALLBACK };
+        : { maxPosts: MAX_POSTS_FALLBACK };
+
+    // We'd skip (writing limit reached), but X's cap may have risen since it last
+    // rejected us. If the cooldown has elapsed, probe by nudging the limit up 1
+    // and re-budgeting, so we attempt a note instead of skipping outright.
+    if (maxPosts === 0 && supabaseLogger) {
+      const probed = await probeWritingLimitAfterCooldown(supabaseLogger);
+      if (probed) ({ maxPosts } = await computeMaxPosts(supabaseLogger));
+    }
 
     if (maxPosts === 0) {
       console.log("[pipeline] Skipping — writing limit reached for the current 24h window");
@@ -165,6 +182,16 @@ async function main() {
       }
     }
 
+    // Track every tweet a pre-pass processes so the regular pass (whose
+    // known-set was snapshotted above, BEFORE the pre-passes ran) can never
+    // re-process the same tweet within this run. knownTweetIds can be
+    // undefined if the pre-fetch failed — that path self-heals (fetchPosts
+    // re-queries the DB after the pre-passes' bulkInsertNewTweets).
+    const trackPrePassProcessed = (event: TweetProcessedEvent) => {
+      knownTweetIds?.add(event.post.id);
+      return onTweetProcessed?.(event);
+    };
+
     // XXL-feed Pangram AI-detection pre-pass runs first. Fail-soft to []: a
     // pre-pass failure (crawl error, missing Pangram key, etc.) must never take
     // down regular note-writing. Its candidates and the regular pipeline's share
@@ -174,7 +201,7 @@ async function main() {
       try {
         pangramCandidates = await generatePangramCandidates(supabaseLogger, {
           skipPostIds: skipPostIds ?? new Set<string>(),
-          onTweetProcessed,
+          onTweetProcessed: trackPrePassProcessed,
         });
       } catch (err) {
         console.warn("[pipeline] Pangram pre-pass failed; continuing with regular pipeline only:", err);
@@ -183,18 +210,39 @@ async function main() {
       console.log("[pipeline] Pangram pre-pass disabled (PANGRAM_PIPELINE_ENABLED=false)");
     }
 
+    // Misinfo-monitoring pre-pass, scoped to MISINFO_ACTIVE_TOPIC_IDS. Same
+    // fail-soft contract as Pangram: a pre-pass failure must never take down
+    // regular note-writing; its candidates share the one submit call / daily cap.
+    let misinfoCandidates: Candidate[] = [];
+    if (MISINFO_PIPELINE_ENABLED) {
+      try {
+        misinfoCandidates = await generateMisinfoCandidates(supabaseLogger, {
+          skipPostIds: skipPostIds ?? new Set<string>(),
+          onTweetProcessed: trackPrePassProcessed,
+          topicIds: MISINFO_ACTIVE_TOPIC_IDS,
+        });
+      } catch (err) {
+        console.warn("[pipeline] Misinfo pre-pass failed; continuing with regular pipeline only:", err);
+      }
+    } else {
+      console.log("[pipeline] Misinfo pre-pass disabled (MISINFO_PIPELINE_ENABLED=false)");
+    }
+
     const regularCandidates = await generateCandidates(supabaseLogger, {
       maxPosts,
-      estimate,
       skipPostIds,
       knownTweetIds,
       onTweetProcessed,
+      // Curated-topic matching also runs on the regular pool: confirmed topic
+      // posts get the monitoring treatment + a bounded share of maxPosts
+      // (regularFeedTopicCuration.ts). Pass [] to disable.
+      topicIds: MISINFO_ACTIVE_TOPIC_IDS,
     });
 
-    const candidates = [...pangramCandidates, ...regularCandidates];
+    const candidates = [...pangramCandidates, ...misinfoCandidates, ...regularCandidates];
     if (candidates.length > 0 && supabaseLogger) {
       const submitted = await submitCandidates(candidates, supabaseLogger, isLocal);
-      console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates (${pangramCandidates.length} pangram, ${regularCandidates.length} regular)`);
+      console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates (${pangramCandidates.length} pangram, ${misinfoCandidates.length} misinfo, ${regularCandidates.length} regular)`);
     } else {
       console.log(`[pipeline] No candidates to submit`);
     }

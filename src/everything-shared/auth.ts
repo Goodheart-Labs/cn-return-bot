@@ -7,22 +7,40 @@ export function useSession(): { session: Session | null; ready: boolean } {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setReady(true);
-    });
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => setSession(s));
-
     // Extension contexts (popup, content scripts, background) each run their
     // own supabase-js instance over one chrome.storage.local session, and
     // onAuthStateChange only fires in the context that changed it — watch the
     // shared storage so a login in the popup reaches every open page.
     const ext = (globalThis as unknown as { browser?: any; chrome?: any }).browser?.storage
       ?? (globalThis as unknown as { chrome?: any }).chrome?.storage;
+    const logSession = (label: string, s: Session | null) => {
+      if (!ext) return; // extension-only diagnostics; keep the website console clean
+      console.debug(`[common-notes] session (${label}): ${s ? s.user.email ?? s.user.id : "none"}`);
+    };
+
+    supabase.auth.getSession().then(({ data, error }) => {
+      setSession(data.session);
+      setReady(true);
+      logSession("mount", data.session);
+      if (error) console.debug(`[common-notes] getSession error: ${error.message}`);
+    });
+    // What the shared storage itself holds, independent of supabase-js's view.
+    ext?.local?.get?.(null)?.then((all: Record<string, unknown>) => {
+      const key = Object.keys(all).find((k) => k.startsWith("sb-") && k.endsWith("-auth-token"));
+      console.debug(`[common-notes] auth storage: ${key ? "present" : "absent"}`);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
+      setSession(s);
+      logSession(`event ${event}`, s);
+    });
+
     const onStorageChanged = (changes: Record<string, unknown>, area: string) => {
       const authKeyChanged = Object.keys(changes).some((k) => k.startsWith("sb-") && k.endsWith("-auth-token"));
       if (area === "local" && authKeyChanged) {
-        supabase.auth.getSession().then(({ data }) => setSession(data.session));
+        supabase.auth.getSession().then(({ data }) => {
+          setSession(data.session);
+          logSession("storage change", data.session);
+        });
       }
     };
     ext?.onChanged?.addListener(onStorageChanged);

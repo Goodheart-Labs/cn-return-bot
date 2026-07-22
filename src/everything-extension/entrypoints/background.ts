@@ -30,6 +30,12 @@ export default defineBackground(() => {
   });
 
   browser.runtime.onMessage.addListener((message: unknown, _sender, sendResponse) => {
+    // Dev-only (compiled out of store builds): reload the unpacked extension
+    // from disk on request from a content script — see utils/devReload.ts.
+    if (import.meta.env.VITE_CN_DEV_RELOAD && (message as { type?: string })?.type === "cn-dev-reload") {
+      browser.runtime.reload();
+      return undefined;
+    }
     if ((message as { type?: string })?.type === "cn-signin-x") {
       // The OAuth window outlives the popup that asked for it, so the flow
       // runs here in the background.

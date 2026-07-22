@@ -21,5 +21,4 @@ export const FILTER_CONFIG: BotConfig = {
   satire_detector: false,
   reasoning_effort: "high",
   temperature: 0,
-  feed_size: "small",
 };

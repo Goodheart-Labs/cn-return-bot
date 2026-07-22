@@ -20,6 +20,10 @@ const CHROME_PUBLIC_KEY =
 
 export default defineConfig({
   modules: ["@wxt-dev/module-react"],
+  // Dev mode must not spawn its own Chrome — we load the dev output unpacked
+  // in the user's existing browser; WXT's dev client then hot-reloads the
+  // extension (and its tabs) on every rebuild.
+  webExt: { disabled: true },
   manifest: ({ browser }) => ({
     version: "0.1.0",
     name: "Common Notes",

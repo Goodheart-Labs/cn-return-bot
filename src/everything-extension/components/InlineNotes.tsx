@@ -1,16 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
-import { VoteRatings } from "../../dashboard-shared/Ratings";
-import { NoteBox, AlternativeNote } from "../../everything-web/src/components/NoteCard";
-import { NoteMenu } from "../../everything-web/src/components/NoteMenu";
 import type { Vote } from "../../everything-shared/votes";
 import type { NoteRow } from "../../everything-shared/types";
 import type { PageItem } from "../../everything-shared/notesQuery";
 import { noteShareUrl } from "../utils/share";
+import { NoteWithActions } from "./NoteWithActions";
 import { useNoteVoting, replaceNoteInGroup } from "./useNoteVoting";
 import { WriteNoteOverlay } from "./WriteNoteOverlay";
 
-/** One anchored claim: its notes (promoted order) and where it sits on the page. */
+/** One anchored claim: its notes (originals first) and where it sits on the page. */
 export interface AnchoredGroup {
   claimId: string;
   primary: NoteRow;
@@ -20,7 +18,7 @@ export interface AnchoredGroup {
 
 const BADGE_SIZE = 20;
 const BADGE_GAP = 4; // px between the passage's end and the badge
-const POPOVER_WIDTH = 400;
+const POPOVER_WIDTH = 520;
 const POPOVER_GAP = 8; // px between the passage and the opened popover
 const VIEWPORT_MARGIN = 8; // keep the popover this far from the viewport edges
 
@@ -49,48 +47,32 @@ function Badge({ open, onClick, style }: { open: boolean; onClick: () => void; s
   );
 }
 
-function NotePopover({ group, projectSlug, session, myVotes, onVote, onNeedLogin, style }: {
+function NotePopover({ group, projectSlug, session, myVotes, onVote, onNeedLogin, onAuthored, style }: {
   group: AnchoredGroup;
   projectSlug: string | null;
   session: Session | null;
   myVotes: Map<string, Vote>;
   onVote: (note: NoteRow, vote: Vote) => void;
   onNeedLogin: () => void;
+  onAuthored: (noteId: string) => void;
   style: React.CSSProperties;
 }) {
-  const [sourcesOpen, setSourcesOpen] = useState(false);
-  const note = group.primary;
+  const noteProps = (note: NoteRow) => ({
+    note,
+    myVote: myVotes.get(note.id),
+    onVote,
+    session,
+    shareUrl: noteShareUrl(projectSlug, note.id),
+    onNeedLogin,
+    onAuthored,
+  });
   return (
     <div style={style} className="absolute bg-white rounded-xl border border-gray-200 shadow-xl p-3 text-left">
-      <NoteBox note={note} sourcesOpen={sourcesOpen}>
-        <VoteRatings
-          helpful={note.helpful_count}
-          somewhatHelpful={note.somewhat_helpful_count}
-          notHelpful={note.not_helpful_count}
-          myVote={myVotes.get(note.id)}
-          onVote={(vote) => onVote(note, vote)}
-        />
-      </NoteBox>
-      <NoteMenu
-        note={note}
-        shareUrl={noteShareUrl(projectSlug, note.id)}
-        session={session}
-        onNeedLogin={onNeedLogin}
-        sourcesOpen={sourcesOpen}
-        onToggleSources={() => setSourcesOpen((o) => !o)}
-      />
+      <NoteWithActions {...noteProps(group.primary)} />
       {group.alternatives.length > 0 && (
         <div className="mt-3 pl-3 border-l-[3px] border-gray-300 space-y-3">
           {group.alternatives.map((d) => (
-            <AlternativeNote
-              key={d.id}
-              note={d}
-              myVote={myVotes.get(d.id)}
-              onVote={onVote}
-              session={session}
-              shareUrl={noteShareUrl(projectSlug, d.id)}
-              onNeedLogin={onNeedLogin}
-            />
+            <NoteWithActions key={d.id} {...noteProps(d)} />
           ))}
         </div>
       )}
@@ -109,9 +91,15 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted }: {
   const [groups, setGroups] = useState(initialGroups);
   const [openClaim, setOpenClaim] = useState<string | null>(null);
   const [writeSelection, setWriteSelection] = useState<string | null>(null);
-  const { session, myVotes, handleVote, onNeedLogin, signInHint, dismissSignInHint } = useNoteVoting(
+  const { session, myVotes, handleVote, recordAuthored, onNeedLogin, signInHint, dismissSignInHint } = useNoteVoting(
     (updated) => setGroups((prev) => prev.map((g) => replaceNoteInGroup(g, updated))),
   );
+  // A just-posted improvement: light up its self-vote and refetch the item's
+  // notes so the new note appears in its claim group.
+  const handleAuthored = (noteId: string) => {
+    recordAuthored(noteId);
+    onPosted();
+  };
   // Bumped on resize so positions derived from ranges recompute.
   const [layoutTick, setLayoutTick] = useState(0);
 
@@ -124,15 +112,43 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted }: {
       raf = requestAnimationFrame(() => setLayoutTick((t) => t + 1));
     };
     window.addEventListener("resize", relayout);
+    // Passages reflow as the host page's images/embeds finish loading — an
+    // <img> gaining height fires no DOM mutation, so badge positions (cached
+    // page coordinates) would go stale and drift far from their passage.
+    // Re-derive them whenever the document's height changes, not just on resize.
+    const resizeObserver = new ResizeObserver(relayout);
+    resizeObserver.observe(document.body);
     // A click on the host page (outside our shadow root) closes the popover.
     const onDown = () => setOpenClaim(null);
     document.addEventListener("mousedown", onDown);
     return () => {
       window.removeEventListener("resize", relayout);
+      resizeObserver.disconnect();
       document.removeEventListener("mousedown", onDown);
       cancelAnimationFrame(raf);
     };
   }, []);
+
+  // The tint itself is a CSS highlight — not an element, so it can't receive
+  // events. Hit-test host-page clicks against each claim's range instead, so
+  // clicking a tinted passage opens its note like clicking the badge does.
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      // A drag-selection (e.g. selecting text to write a note on) ends in a
+      // click too — don't hijack it.
+      if (!window.getSelection()?.isCollapsed) return;
+      for (const group of groups) {
+        for (const rect of group.range.getClientRects()) {
+          if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+            setOpenClaim(group.claimId);
+            return;
+          }
+        }
+      }
+    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
+  }, [groups]);
 
   // Requests from the popup (scroll to the first note) and the background's
   // context menu (write a note on the current selection).
@@ -208,6 +224,7 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted }: {
               myVotes={myVotes}
               onVote={handleVote}
               onNeedLogin={onNeedLogin}
+              onAuthored={handleAuthored}
               style={popoverStyle}
             />
           )}

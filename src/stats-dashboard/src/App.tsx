@@ -45,6 +45,9 @@ export function App() {
   const [sort, setSort] = useState<NoteSort>("latest_helpful");
   const [devMode, setDevMode] = useState(false);
   const [showNonCandidate, setShowNonCandidate] = useState(false);
+  // The "Posted" mode is the "Helpful / unhelpful" chart with the pending
+  // (needs-more-ratings) notes stacked in, so the bar shows total volume.
+  const showNmr = mode === "posted";
   const [abFilters, setAbFilters] = useState<ABFilters>({});
   const [cmpDims, setCmpDims] = useState<string[]>([]);
   const [cmpStat, setCmpStat] = useState<AbComparisonStat>({ kind: "pct_helpful" });
@@ -195,6 +198,7 @@ export function App() {
             mode={mode}
             width={chartWidth}
             showNonCandidate={useNonCandidate}
+            showNmr={showNmr}
           />
         </div>
       </section>

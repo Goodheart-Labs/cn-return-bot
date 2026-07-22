@@ -12,7 +12,7 @@ import type { MisinfoTopic } from "../../misinfo-monitoring/topics";
 
 export const SELECT_POSTS_SYSTEM_PROMPT = `You screen social-media posts for a Community Notes bot.
 
-Given a ground-truth brief on a misinformation topic and a numbered list of posts, return the posts that contain a misleading or false claim the brief can directly correct.
+Given a ground-truth reference on a misinformation topic and a numbered list of posts, return the posts that amplify a misleading or false claim the reference can directly correct.
 
 Exclude posts that are merely on-topic, factually accurate, pure opinion, jokes, or satire the audience is in on.
 
@@ -28,5 +28,5 @@ function numberPosts(posts: Post[]): string {
 }
 
 export function buildSelectPostsUserMessage(topic: MisinfoTopic, posts: Post[]): string {
-  return `## Ground-truth brief: ${topic.title}\n${topic.brief}\n\n## Posts\n${numberPosts(posts)}`;
+  return `## Reference: ${topic.title}\n${topic.brief}\n\n## Posts\n${numberPosts(posts)}`;
 }

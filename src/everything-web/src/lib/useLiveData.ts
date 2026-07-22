@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import { supabase } from "../../../everything-shared/supabase";
-import { detectSchema, fetchNote, noteSelect, normalizeNote } from "../../../everything-shared/notesQuery";
-import type { ItemRow, NoteRow, ProjectRow } from "../../../everything-shared/types";
+import { detectSchema, noteSelect, normalizeNote } from "../../../everything-shared/notesQuery";
+import type { ItemRow, NnnRow, NoteRow, ProjectRow } from "../../../everything-shared/types";
 
 type RowMap<T> = Map<string, T>;
 
@@ -17,11 +17,12 @@ function upsertHandler<T extends { id: string }>(setter: React.Dispatch<React.Se
   };
 }
 
-/** Live projects, items, and notes (with their claim). */
+/** Live projects, items, notes (with their claim), and note-not-needed entries. */
 export function useLiveData() {
   const [projects, setProjects] = useState<ProjectRow[]>([]);
   const [items, setItems] = useState<RowMap<ItemRow>>(new Map());
   const [notes, setNotes] = useState<RowMap<NoteRow>>(new Map());
+  const [nnn, setNnn] = useState<RowMap<NnnRow>>(new Map());
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -29,29 +30,37 @@ export function useLiveData() {
 
     async function load() {
       const schema = await detectSchema();
-      const [p, i, n] = await Promise.all([
+      const [p, i, n, e] = await Promise.all([
         supabase.from("everything_projects").select("*").order("sort_order"),
         supabase.from("everything_items").select("*"),
         supabase.from("everything_notes").select(noteSelect(schema)),
+        schema.hasNnn
+          ? supabase.from("everything_note_not_needed").select("*")
+          : Promise.resolve({ data: [] as NnnRow[] }),
       ]);
       if (cancelled) return;
       setProjects((p.data as ProjectRow[]) ?? []);
       setItems(new Map(((i.data as ItemRow[]) ?? []).map((r) => [r.id, r])));
       setNotes(new Map(((n.data ?? []) as any[]).map((r) => [r.id, normalizeNote(r, schema)])));
+      setNnn(new Map(((e.data as NnnRow[]) ?? []).map((r) => [r.id, r])));
       setLoaded(true);
     }
     load();
 
     // Realtime deltas don't carry the joined claim, so fetch a new note in full;
     // for an UPDATE (vote counts) merge onto the existing row, keeping its claim.
-    async function refetchNote(id: string) {
-      const note = await fetchNote(id);
-      if (note) setNotes((prev) => new Map(prev).set(id, note));
+    async function fetchNote(id: string) {
+      const schema = await detectSchema();
+      const { data } = await supabase.from("everything_notes").select(noteSelect(schema)).eq("id", id).maybeSingle();
+      if (data) setNotes((prev) => new Map(prev).set(id, normalizeNote(data, schema)));
     }
 
     const channel = supabase
       .channel(`common-notes-${crypto.randomUUID()}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "everything_items" }, upsertHandler(setItems))
+      // Note-not-needed entries have no joins, so the generic handler covers
+      // all events (vote-count UPDATEs arrive as full rows via the counter trigger).
+      .on("postgres_changes", { event: "*", schema: "public", table: "everything_note_not_needed" }, upsertHandler(setNnn))
       .on("postgres_changes", { event: "*", schema: "public", table: "everything_notes" }, (payload) => {
         if (payload.eventType === "DELETE") {
           setNotes((prev) => {
@@ -64,7 +73,7 @@ export function useLiveData() {
           setNotes((prev) => {
             const existing = prev.get(row.id);
             if (!existing) {
-              refetchNote(row.id); // don't have it yet — fetch fresh + normalized
+              fetchNote(row.id); // don't have it yet — fetch fresh + normalized
               return prev;
             }
             // Vote-count update: take the scalar fields but keep the already
@@ -73,7 +82,7 @@ export function useLiveData() {
             return new Map(prev).set(row.id, { ...existing, ...row, sources: existing.sources, claim: existing.claim ?? row.claim });
           });
         } else {
-          refetchNote((payload.new as { id: string }).id);
+          fetchNote((payload.new as { id: string }).id);
         }
       })
       .subscribe();
@@ -84,5 +93,5 @@ export function useLiveData() {
     };
   }, []);
 
-  return { projects, items, notes, loaded };
+  return { projects, items, notes, nnn, loaded };
 }

@@ -17,8 +17,7 @@
  */
 import PQueue from "p-queue";
 import { fetchEligiblePosts } from "../../api/fetchEligiblePosts";
-import { buildPostSelection } from "../../pipeline/orchestration/utils/feedSizeStrategy";
-import type { FeedSize } from "../../pipeline/ab-testing/botConfig";
+import { buildPostSelection, type FeedSize } from "../../pipeline/orchestration/utils/feedSizeStrategy";
 import { classifyText } from "./pangramClient";
 import { selectLongFormPosts } from "./selectPosts";
 import { buildReport, type AnalyzedPost } from "./report";

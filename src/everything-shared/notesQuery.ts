@@ -2,24 +2,26 @@ import { supabase } from "./supabase";
 import type { ItemRow, NoteRow, NoteSourceRow } from "./types";
 
 // Clients read whichever backend is deployed, which may be BEHIND the
-// migrations this build assumes. Two columns/tables can be missing:
+// migrations this build assumes. Columns/tables that can be missing:
 //   - migration 056: `everything_note_sources` table (old notes keep a `sources`
 //     jsonb array of URLs on the note row instead)
 //   - migration 057: `everything_claims.image_urls`
-// Probe both once and shape the query + normalize rows so callers render
+//   - migration 063: `everything_note_not_needed` (the list simply stays empty)
+// Probe once and shape the query + normalize rows so callers render
 // identically against the old or the new schema.
 const CLAIM_COLS = "id, item_id, claim, context_quote, context_paragraph, updated_quote, context_url, start_seconds, end_seconds";
 
-export type Schema = { hasImageUrls: boolean; hasNoteSources: boolean };
+export type Schema = { hasImageUrls: boolean; hasNoteSources: boolean; hasNnn: boolean };
 let schemaProbe: Promise<Schema> | null = null;
 
 export function detectSchema(): Promise<Schema> {
   schemaProbe ??= (async () => {
-    const [img, ns] = await Promise.all([
+    const [img, ns, nnn] = await Promise.all([
       supabase.from("everything_claims").select("image_urls").limit(1),
       supabase.from("everything_note_sources").select("url").limit(1),
+      supabase.from("everything_note_not_needed").select("id").limit(1),
     ]);
-    return { hasImageUrls: !img.error, hasNoteSources: !ns.error };
+    return { hasImageUrls: !img.error, hasNoteSources: !ns.error, hasNnn: !nnn.error };
   })();
   return schemaProbe;
 }
@@ -68,12 +70,52 @@ const TRACKING_PARAMS = ["fbclid", "gclid", "igshid", "si"];
  *  tracking params. */
 export function normalizePageUrl(href: string, doc?: Document): string {
   const canonical = doc?.querySelector('link[rel="canonical"]')?.getAttribute("href");
-  const url = new URL(canonical || href);
+  let url = new URL(href);
+  if (canonical) {
+    // SPAs (Substack) can leave the previous page's canonical tag in place
+    // after a client-side navigation — trusting it then resolves the wrong
+    // item (e.g. the homepage matching the last-read post). Only follow the
+    // canonical while it still points at the current path; custom-domain
+    // canonicals differ in host, not path, so they stay covered.
+    const canonicalUrl = new URL(canonical, url);
+    if (canonicalUrl.pathname.replace(/\/$/, "") === url.pathname.replace(/\/$/, "")) url = canonicalUrl;
+  }
   url.hash = "";
   for (const key of [...url.searchParams.keys()]) {
     if (key.startsWith("utm_") || TRACKING_PARAMS.includes(key)) url.searchParams.delete(key);
   }
   return url.toString();
+}
+
+/** Substack's reader app (substack.com/@author/p-<postid>) shows posts under
+ *  URLs the DB has never seen; its <link rel=canonical> is self-referential,
+ *  so the only mapping to the publication URL we store is the `canonical_url`
+ *  field in the page's embedded JSON. */
+export function isSubstackReaderUrl(href: string): boolean {
+  try {
+    const url = new URL(href);
+    return /^(www\.)?substack\.com$/.test(url.hostname) && /^\/@[^/]+\/p-\d+/.test(url.pathname);
+  } catch {
+    return false;
+  }
+}
+
+/** The embedded `canonical_url` appears raw or JSON-escaped depending on
+ *  where Substack serialized it; a URL contains neither `"` nor `\`. */
+export function extractEmbeddedCanonical(html: string): string | null {
+  return html.match(/canonical_url\\?"\s*:\s*\\?"(https?:[^"\\]+)/)?.[1] ?? null;
+}
+
+/** Resolve a reader URL to the publication post URL by fetching the page
+ *  fresh (the DOM's embedded JSON goes stale on reader SPA navigation).
+ *  Works from the popup too — host permission covers substack.com. */
+export async function fetchReaderCanonical(href: string): Promise<string | null> {
+  try {
+    const html = await (await fetch(href, { credentials: "omit" })).text();
+    return extractEmbeddedCanonical(html);
+  } catch {
+    return null;
+  }
 }
 
 export function extractYoutubeVideoId(url: string): string | null {

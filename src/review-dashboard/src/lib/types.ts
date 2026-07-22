@@ -54,6 +54,11 @@ export interface ReviewItem {
   // Auto-computed competitor lead time tag (not persisted)
   competitorLeadTag?: string;
 
+  // Misinfo fact-check topic (granular topic_id from misinfo_monitoring_sightings)
+  // and its derived review set. Undefined for regular (non-misinfo) notes.
+  topic?: string;
+  topicSet?: import("../../../dashboard-shared/topicSets").TopicSet;
+
   // For filter categorization
   failureType: FailureType;
 }
@@ -111,6 +116,9 @@ export interface FilterState {
   seen: "all" | "seen" | "unseen";
   failureTypes: Set<FailureType>;
   failureModes: Set<string>;
+  // Misinfo topic-set filter (AI / animal-welfare / EA / politics). Empty = no
+  // topic narrowing (show all). AND-combined with the other filters.
+  topicSets: Set<string>;
   // When on, the list is the high-value (starred ★) notes, all-time. The other
   // filters still apply within it, but toggling ★ on resets them to
   // non-restrictive (seen "all", no pills, no tags) so narrowing is opt-in and
@@ -137,7 +145,7 @@ export const FAILURE_TYPE_CONFIG: Record<FailureType, FailureTypeConfig> = {
   // NEEDS_MORE_RATINGS notes whose rating counts run net negative (not-helpful >
   // helpful) — still undecided by CN, but sinking. Split out of needs_more_ratings
   // the same way lost_to_competitor is, so the two pills stay disjoint.
-  underwater: { label: "Underwater", defaultOn: false, production: true, datasetRun: false, color: "bg-indigo-100 text-indigo-800" },
+  underwater: { label: "Underwater", defaultOn: true, production: true, datasetRun: false, color: "bg-indigo-100 text-indigo-800" },
   filtered_low_eval_score: { label: "Filtered (low eval score)", defaultOn: false, production: true, datasetRun: false, color: "bg-teal-100 text-teal-800" },
 
   // --- V2 dataset categories: noteworthy ---
@@ -219,5 +227,5 @@ export function defaultFilters(source: "production" | "dataset_run"): FilterStat
     }
   }
   // Default to "Unseen" so you work through the notes you haven't reviewed yet.
-  return { seen: "unseen", failureTypes, failureModes: new Set(), highValueOnly: false };
+  return { seen: "unseen", failureTypes, failureModes: new Set(), topicSets: new Set(), highValueOnly: false };
 }
