@@ -2,8 +2,9 @@ import { createRoot, type Root } from "react-dom/client";
 import { createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
 import { originalsFirst } from "../../everything-shared/noteScore";
+import { fetchNnnForClaims } from "../../everything-shared/noteNotNeeded";
 import { fetchItemForUrl, fetchNotesForItem, fetchReaderCanonical, isSubstackReaderUrl, normalizePageUrl } from "../../everything-shared/notesQuery";
-import type { NoteRow } from "../../everything-shared/types";
+import type { NnnRow, NoteRow } from "../../everything-shared/types";
 import { indexContainer, findQuoteRange } from "./anchor";
 import { InlineNotesApp, type AnchoredGroup } from "../components/InlineNotes";
 
@@ -21,8 +22,11 @@ function findContainer(): Element {
   );
 }
 
-/** Group an item's notes per claim, originals before improvements. */
-function groupByClaim(notes: NoteRow[]): { claimId: string; notes: NoteRow[] }[] {
+type ClaimGroup = { claimId: string; notes: NoteRow[]; nnn: NnnRow[] };
+
+/** Group an item's notes per claim (originals before improvements), each with
+ *  the claim's note-not-needed entries. */
+function groupByClaim(notes: NoteRow[], nnn: NnnRow[]): ClaimGroup[] {
   const byId = new Map<string, NoteRow[]>();
   for (const note of notes) {
     if (!note.claim) continue;
@@ -30,15 +34,26 @@ function groupByClaim(notes: NoteRow[]): { claimId: string; notes: NoteRow[] }[]
     if (list) list.push(note);
     else byId.set(note.claim_id, [note]);
   }
-  return [...byId.entries()].map(([claimId, group]) => ({ claimId, notes: [...group].sort(originalsFirst) }));
+  return [...byId.entries()].map(([claimId, group]) => ({
+    claimId,
+    notes: [...group].sort(originalsFirst),
+    nnn: nnn.filter((e) => e.claim_id === claimId),
+  }));
+}
+
+/** An item's notes + its claims' note-not-needed entries, grouped per claim. */
+async function fetchClaimGroups(itemId: string): Promise<ClaimGroup[]> {
+  const notes = await fetchNotesForItem(itemId);
+  const nnn = await fetchNnnForClaims([...new Set(notes.map((n) => n.claim_id))]);
+  return groupByClaim(notes, nnn);
 }
 
 /** Anchor every claim group to a Range. Candidates in reliability order:
  *  healed live wording, captured quote, wider paragraph. */
-function anchorGroups(container: Element, groups: { claimId: string; notes: NoteRow[] }[]): AnchoredGroup[] {
+function anchorGroups(container: Element, groups: ClaimGroup[]): AnchoredGroup[] {
   const index = indexContainer(container);
   const anchored: AnchoredGroup[] = [];
-  for (const { claimId, notes } of groups) {
+  for (const { claimId, notes, nnn } of groups) {
     const claim = notes[0]!.claim!;
     const candidates = [claim.updated_quote, claim.context_quote, claim.context_paragraph];
     let range: Range | null = null;
@@ -46,7 +61,7 @@ function anchorGroups(container: Element, groups: { claimId: string; notes: Note
       if (candidate) range = findQuoteRange(index, candidate);
       if (range) break;
     }
-    if (range) anchored.push({ claimId, primary: notes[0]!, alternatives: notes.slice(1), range });
+    if (range) anchored.push({ claimId, primary: notes[0]!, alternatives: notes.slice(1), nnn, range });
   }
   console.info(`[common-notes] anchored ${anchored.length}/${groups.length} claims on this page`);
   return anchored;
@@ -79,7 +94,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string): Promise<(()
   if (!item) return null;
   // Mount even with zero notes: the write-from-selection flow works on any
   // ingested page, and its first note appears via refresh().
-  let groups = groupByClaim(await fetchNotesForItem(item.id));
+  let groups = await fetchClaimGroups(item.id);
 
   let reactRoot: Root | null = null;
 
@@ -93,7 +108,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string): Promise<(()
   };
 
   const refresh = async () => {
-    groups = groupByClaim(await fetchNotesForItem(item.id));
+    groups = await fetchClaimGroups(item.id);
     render();
   };
 

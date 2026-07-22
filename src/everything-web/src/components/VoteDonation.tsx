@@ -36,13 +36,13 @@ function CharityPicker({ charity, onPick, open, setOpen }: {
     <span ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="text-blue-600 font-medium hover:underline"
+        className="text-blue-600 dark:text-blue-400 font-medium hover:underline"
         title="Choose a different charity"
       >
         {charityLabel(charity)}
       </button>
       {open && (
-        <div className="cn-menu absolute left-0 top-6 z-20 w-72 bg-white border border-gray-200 rounded-xl shadow-xl p-1.5 text-sm">
+        <div className="cn-menu absolute left-0 top-6 z-20 w-72 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-1.5 text-sm">
           {CHARITIES.map((c) => (
             <button
               key={c.id}
@@ -51,8 +51,8 @@ function CharityPicker({ charity, onPick, open, setOpen }: {
                 setOpen(false);
               }}
               aria-pressed={c.id === charity}
-              className={`flex w-full items-center text-left px-2.5 py-2 rounded-lg font-medium hover:bg-gray-100 ${
-                c.id === charity ? "text-blue-600" : "text-gray-700"
+              className={`flex w-full items-center text-left px-2.5 py-2 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-gray-800 ${
+                c.id === charity ? "text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-300"
               }`}
             >
               {c.label}
@@ -116,36 +116,36 @@ export function VoteDonation({ voteId, pair, charity, status, onCharityChange, o
     // Theme note: only unmodified utility classes (bg-blue-50, not bg-blue-50/50)
     // — design.css remaps the exact class names per color scheme.
     <div
-      className="mt-2 rounded-lg border border-blue-100 bg-blue-50 p-3 flex items-start justify-between gap-3"
+      className="mt-2 rounded-lg border border-blue-100 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/50 p-3 flex items-start justify-between gap-3"
       style={{ opacity: fading ? 0 : 1, transition: `opacity ${FADE_MS}ms ease` }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       <div className="min-w-0">
         {status === "needs_ratings" ? (
-          <p className="text-sm text-gray-700">
+          <p className="text-sm text-gray-700 dark:text-gray-300">
             We will donate <strong>${pair.ifHelpful.toFixed(2)}</strong> to{" "}
             <CharityPicker charity={charity} onPick={pickCharity} open={pickerOpen} setOpen={setPickerOpen} /> if this note ends up rated{" "}
-            <span className="font-medium text-green-700">helpful</span> and{" "}
+            <span className="font-medium text-green-700 dark:text-green-400">helpful</span> and{" "}
             <strong>${pair.ifNotHelpful.toFixed(2)}</strong> if it ends up rated{" "}
-            <span className="font-medium text-red-600">unhelpful</span>.
+            <span className="font-medium text-red-600 dark:text-red-400">unhelpful</span>.
           </p>
         ) : (
-          <p className="text-sm text-gray-700">
+          <p className="text-sm text-gray-700 dark:text-gray-300">
             This note is rated{" "}
             {status === "helpful" ? (
-              <span className="font-medium text-green-700">helpful</span>
+              <span className="font-medium text-green-700 dark:text-green-400">helpful</span>
             ) : (
-              <span className="font-medium text-red-600">unhelpful</span>
+              <span className="font-medium text-red-600 dark:text-red-400">unhelpful</span>
             )}
             , so we will donate{" "}
             <strong>${(status === "helpful" ? pair.ifHelpful : pair.ifNotHelpful).toFixed(2)}</strong> to{" "}
             <CharityPicker charity={charity} onPick={pickCharity} open={pickerOpen} setOpen={setPickerOpen} />.
           </p>
         )}
-        {failed && <p className="text-sm text-red-600 mt-1">Could not switch the charity — try again.</p>}
+        {failed && <p className="text-sm text-red-600 dark:text-red-400 mt-1">Could not switch the charity — try again.</p>}
       </div>
-      <button onClick={onClose} className="text-sm text-gray-500 hover:underline shrink-0">Close</button>
+      <button onClick={onClose} className="text-sm text-gray-500 dark:text-gray-400 hover:underline shrink-0">Close</button>
     </div>
   );
 }
