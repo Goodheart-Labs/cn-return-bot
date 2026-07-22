@@ -42,7 +42,8 @@ const BACKLOG_LIMIT = 1000;
 const REGULAR_FEED_LADDER: FeedSize[] = ["small", "large", "xl", "xxl"];
 
 /**
- * A post, the feed tier it was fetched from (kept for operational logs), and
+ * A post, the feed tier it was fetched from (logged, and recorded per-post in
+ * `ab_test_picks.feed_size` so outcomes can be sliced by tier), and
  * its velocity FROZEN at fetch time. Freezing matters: velocity is impressions
  * over age, so re-deriving it after a pipeline run has elapsed would shrink it
  * (the impression count stays at its fetch-time value while age grows) and drop
@@ -200,6 +201,9 @@ export interface ProcessPostItem {
    *  the submission-time floor doesn't re-derive a decayed value. Omitted by
    *  callers that select posts some other way (the pre-passes). */
   velocity?: number | null;
+  /** Feed tier this post was fetched from, recorded as its feed_size pick.
+   *  Omitted callers resolve to the default `small`. */
+  feedSize?: FeedSize;
 }
 
 export interface ProcessPostsOptions {
@@ -234,7 +238,10 @@ export async function processPosts(
     const monitoringPicks: Record<string, string> = item.monitoring
       ? { misinfo_monitoring: "yes", misinfo_topic: item.monitoring.topicId }
       : {};
-    const perPostPicks = { ...outerForcedPicks, ...monitoringPicks };
+    // The feed tier isn't sampled — it's decided at fetch time — so force
+    // feed_size to the tier THIS post actually came from.
+    const feedSizePick: Record<string, string> = item.feedSize ? { feed_size: item.feedSize } : {};
+    const perPostPicks = { ...outerForcedPicks, ...feedSizePick, ...monitoringPicks };
     queue.add(() => withForcedPicks(perPostPicks, () => withMonitoringContext(item.monitoring, async () => {
       // Forced picks (if any) are already in ALS — set up by runPipeline.ts
       // via withForcedPicks. runABTests honours them for whichever tests fire.
@@ -390,6 +397,7 @@ export async function generateCandidates(
     return {
       post: s.post,
       velocity: s.velocity,
+      feedSize: s.feedSize,
       monitoring: topic
         ? { topicId: topic.id, topicTitle: topic.title, documentUrl: topic.documentUrl, document: topic.document }
         : undefined,
