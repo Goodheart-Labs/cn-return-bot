@@ -32,6 +32,7 @@ import { runSatireDetector } from "./satireDetector";
 import { readSearchCache, writeSearchCache } from "./searchCache";
 import { runSearchAnalyzer } from "./searchAnalyzer";
 import { withWriterCache, type WriterStageResult, type Snippet } from "../replay/writerCache";
+import { topicSourcelessRejection } from "../utils/noteLint";
 
 const MAX_RESULTS_PER_QUERY = 6;
 const MIN_TWEET_TEXT_CHARS = 1; // guard against truncated/empty fetches
@@ -230,6 +231,18 @@ async function runGates(stage: Extract<WriterStageResult, { kind: "writer_done" 
   }
 
   if (verification.accepted) {
+    // Curated-topic notes must keep ≥1 verified source (the classic verifier
+    // can accept while classifying every URL bad — see topicSourcelessRejection).
+    const sourceless = topicSourcelessRejection(verification.good_sources);
+    if (sourceless) {
+      return {
+        type: "verification_failed",
+        noteText: note.noteText,
+        sources: note.sources,
+        reason: sourceless,
+        searchResults: findings,
+      };
+    }
     return { type: "note", noteText: note.noteText, sources: verification.good_sources, searchResults: findings };
   }
   return {
