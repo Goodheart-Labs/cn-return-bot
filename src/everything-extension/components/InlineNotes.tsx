@@ -45,7 +45,7 @@ function GroupIcon() {
 }
 
 /** Small badge at the end of the anchored passage: blue community glyph on a
- *  light/dark surface following the system theme. */
+ *  light/dark surface following the host page's theme. */
 function Badge({ open, onClick, style }: { open: boolean; onClick: () => void; style: React.CSSProperties }) {
   return (
     <button

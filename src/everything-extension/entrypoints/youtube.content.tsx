@@ -6,6 +6,7 @@ import { originalsFirst } from "../../everything-shared/noteScore";
 import { fetchItemForUrl, fetchNotesForItem, extractYoutubeVideoId } from "../../everything-shared/notesQuery";
 import type { NoteRow } from "../../everything-shared/types";
 import { YoutubeOverlayApp, DEFAULT_CLIP_SECONDS, type TimedGroup } from "../components/YoutubeOverlay";
+import { isPageDark, observePageTheme } from "../utils/pageTheme";
 import { registerDevReloadHook } from "../utils/devReload";
 
 // YouTube's DOM churns; every selector we depend on lives here.
@@ -64,6 +65,7 @@ async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | n
   const video = document.querySelector<HTMLVideoElement>(VIDEO_SELECTOR);
   if (!player || !video) return null;
 
+  let themeRoot: HTMLElement | null = null;
   const ui = await createShadowRootUi(ctx, {
     name: "common-notes-yt",
     position: "inline",
@@ -72,6 +74,11 @@ async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | n
       // Host geometry lives in assets/tailwind.css (`:host(common-notes-yt)`)
       // — inline styles set here are dead on arrival, WXT's shadow reset
       // (`:host{all:initial !important}`) overrides them.
+      // Theme follows the PAGE (YouTube's own theme), sampled from body — the
+      // #movie_player backdrop is black in both themes.
+      container.classList.add("cn-theme-root");
+      container.classList.toggle("dark", isPageDark());
+      themeRoot = container;
       const root = createRoot(container);
       root.render(<YoutubeOverlayApp groups={groups} projectSlug={item.projectSlug} video={video} />);
       return root;
@@ -81,7 +88,12 @@ async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | n
     },
   });
   ui.mount();
-  return () => ui.remove();
+  // YouTube's appearance toggle flips html[dark] without a reload.
+  const stopTheme = observePageTheme((dark) => themeRoot?.classList.toggle("dark", dark));
+  return () => {
+    stopTheme();
+    ui.remove();
+  };
 }
 
 export default defineContentScript({

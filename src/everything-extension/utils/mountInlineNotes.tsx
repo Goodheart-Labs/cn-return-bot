@@ -6,6 +6,7 @@ import { fetchNnnForClaims } from "../../everything-shared/noteNotNeeded";
 import { fetchItemForUrl, fetchNotesForItem, fetchReaderCanonical, isSubstackReaderUrl, normalizePageUrl } from "../../everything-shared/notesQuery";
 import type { NnnRow, NoteRow } from "../../everything-shared/types";
 import { indexContainer, findQuoteRange } from "./anchor";
+import { isPageDark, observePageTheme } from "./pageTheme";
 import { InlineNotesApp, type AnchoredGroup } from "../components/InlineNotes";
 
 const HIGHLIGHT_NAME = "common-note";
@@ -67,18 +68,28 @@ function anchorGroups(container: Element, groups: ClaimGroup[]): AnchoredGroup[]
   return anchored;
 }
 
+const HIGHLIGHT_TINT_LIGHT = "rgba(59, 130, 246, 0.16)";
+const HIGHLIGHT_TINT_DARK = "rgba(96, 165, 250, 0.25)"; // blue-400, stronger: reads on dark
+
+/** The ::highlight rule must live in the DOCUMENT (the highlighted text is
+ *  light DOM). Idempotent: one style element by id, tint updated in place on
+ *  theme flips. */
+function ensureHighlightStyle(dark: boolean) {
+  let style = document.getElementById("common-notes-highlight-style") as HTMLStyleElement | null;
+  if (!style) {
+    style = document.createElement("style");
+    style.id = "common-notes-highlight-style";
+    document.head.appendChild(style);
+  }
+  const text = `::highlight(${HIGHLIGHT_NAME}) { background-color: ${dark ? HIGHLIGHT_TINT_DARK : HIGHLIGHT_TINT_LIGHT}; }`;
+  if (style.textContent !== text) style.textContent = text;
+}
+
 /** Tint the anchored passages via the CSS Custom Highlight API — no host-DOM
- *  mutation, so host-page frameworks never notice us. The ::highlight rule
- *  must live in the DOCUMENT (the highlighted text is light DOM). */
+ *  mutation, so host-page frameworks never notice us. */
 function applyHighlights(ranges: Range[]) {
   const highlights = (CSS as any).highlights;
   if (!highlights) return; // old Firefox ESR: badges only, no tint
-  if (!document.getElementById("common-notes-highlight-style")) {
-    const style = document.createElement("style");
-    style.id = "common-notes-highlight-style";
-    style.textContent = `::highlight(${HIGHLIGHT_NAME}) { background-color: rgba(59, 130, 246, 0.16); }`;
-    document.head.appendChild(style);
-  }
   if (ranges.length === 0) highlights.delete(HIGHLIGHT_NAME);
   else highlights.set(HIGHLIGHT_NAME, new (globalThis as any).Highlight(...ranges));
 }
@@ -97,11 +108,23 @@ async function mountForUrl(ctx: ContentScriptContext, href: string): Promise<(()
   let groups = await fetchClaimGroups(item.id);
 
   let reactRoot: Root | null = null;
+  let themeRoot: HTMLElement | null = null;
+
+  // One sync point for both theme surfaces: the .dark class inside the shadow
+  // root (activates every dark: variant) and the ::highlight tint in the host
+  // document.
+  const syncTheme = () => {
+    const dark = isPageDark(findContainer());
+    themeRoot?.classList.toggle("dark", dark);
+    if ((CSS as any).highlights) ensureHighlightStyle(dark);
+  };
 
   // Re-query the container every render: SPA navigations can replace the
   // article element after we mount, and anchoring against a detached node
   // finds nothing forever.
   const render = () => {
+    syncTheme(); // piggybacks on the debounced re-anchor observer: catches
+    // theme repaints that arrive as DOM swaps rather than attribute flips
     const anchored = anchorGroups(findContainer(), groups);
     applyHighlights(anchored.map((g) => g.range));
     reactRoot?.render(<InlineNotesApp groups={anchored} item={item} onPosted={refresh} />);
@@ -121,8 +144,13 @@ async function mountForUrl(ctx: ContentScriptContext, href: string): Promise<(()
       // — inline styles set here are dead on arrival, WXT's shadow reset
       // (`:host{all:initial !important}`) overrides them.
       uiContainer.style.position = "relative";
+      // Theme root: base font/color + the `.dark` toggle live on this class.
+      // Tailwind's class strategy compiles dark:x to `x:is(.dark *)`, which
+      // excludes the .dark element itself — never put dark: classes here.
+      uiContainer.classList.add("cn-theme-root");
+      themeRoot = uiContainer;
       reactRoot = createRoot(uiContainer);
-      render();
+      render(); // syncTheme runs synchronously inside — no light-flash
       return reactRoot;
     },
     onRemove(root) {
@@ -131,6 +159,11 @@ async function mountForUrl(ctx: ContentScriptContext, href: string): Promise<(()
     },
   });
   ui.mount();
+
+  // Theme flips arrive as attribute changes on html/body (YouTube's html[dark],
+  // class-based togglers like Substack's reader) — the subtree observer below
+  // watches childList/characterData only, so they need their own watcher.
+  const stopTheme = observePageTheme(syncTheme, findContainer);
 
   // Host pages hydrate/lazy-load/swap the article; re-anchor after the dust
   // settles. Observe documentElement, not body — SPAs can replace the body
@@ -144,6 +177,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string): Promise<(()
   observer.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
 
   return () => {
+    stopTheme();
     observer.disconnect();
     clearTimeout(timer);
     ui.remove();

@@ -3,19 +3,21 @@
 @tailwind utilities;
 
 /* Mirrors everything-web/index.html: system font stack (deliberately no
- * TwitterChirp) and the vote-hold countdown keyframes. Scoped to the shadow
- * root this sheet is injected into. */
-:host {
+ * TwitterChirp). Lives on the React root container (the shadow tree's inner
+ * <body>), NOT on :host: WXT's prepended `:host{all:initial !important}`
+ * outranks non-important :host declarations, and :host can't react to the
+ * `.dark` class the mount code toggles on the container to follow the HOST
+ * PAGE's theme. (Never write a literal `:root` in this file — WXT rewrites
+ * it to `:host`.) */
+.cn-theme-root {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   font-size: 16px;
   line-height: 1.5;
   color: #111827;
 }
 
-@media (prefers-color-scheme: dark) {
-  :host {
-    color: #f3f4f6;
-  }
+.cn-theme-root.dark {
+  color: #f3f4f6;
 }
 
 /* Host geometry MUST live here, not in JS. WXT prepends
