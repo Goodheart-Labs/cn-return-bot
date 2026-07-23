@@ -13,6 +13,12 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://commonnotes.net/og.png" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    /* Shared components carry dark: variants for the browser extension (which
+     * follows the system theme); the site keeps its own DesignMenu theming, so
+     * dark: stays inert here unless a .dark class is ever set. */
+    tailwind.config = { darkMode: "class" };
+  </script>
   <style>
     /* System font stack. NOTE: we deliberately do NOT lead with X's proprietary
      * "TwitterChirp" webfont. The assumption that Chirp "resolves to the system

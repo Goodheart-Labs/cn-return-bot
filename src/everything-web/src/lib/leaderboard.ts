@@ -1,4 +1,4 @@
-import { supabase } from "./supabase";
+import { supabase } from "../../../everything-shared/supabase";
 
 /** One ranked rater: a public display name + how many notes they've rated. */
 export type LeaderboardEntry = { name: string; rating_count: number };

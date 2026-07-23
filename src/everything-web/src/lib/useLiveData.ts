@@ -1,51 +1,8 @@
 import { useEffect, useState } from "react";
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
-import { supabase } from "./supabase";
-import type { ItemRow, NnnRow, NoteRow, NoteSourceRow, ProjectRow } from "./types";
-
-// The public site reads whichever backend is deployed, which may be BEHIND the
-// migrations this build assumes. Columns/tables that can be missing:
-//   - migration 056: `everything_note_sources` table (old notes keep a `sources`
-//     jsonb array of URLs on the note row instead)
-//   - migration 057: `everything_claims.image_urls`
-//   - migration 063: `everything_note_not_needed` (the list simply stays empty)
-// Probe once and shape the query + normalize rows so the SPA renders
-// identically against the old or the new schema.
-const CLAIM_COLS = "id, item_id, claim, context_quote, context_paragraph, updated_quote, context_url, start_seconds, end_seconds";
-
-type Schema = { hasImageUrls: boolean; hasNoteSources: boolean; hasNnn: boolean };
-let schemaProbe: Promise<Schema> | null = null;
-
-function detectSchema(): Promise<Schema> {
-  schemaProbe ??= (async () => {
-    const [img, ns, nnn] = await Promise.all([
-      supabase.from("everything_claims").select("image_urls").limit(1),
-      supabase.from("everything_note_sources").select("url").limit(1),
-      supabase.from("everything_note_not_needed").select("id").limit(1),
-    ]);
-    return { hasImageUrls: !img.error, hasNoteSources: !ns.error, hasNnn: !nnn.error };
-  })();
-  return schemaProbe;
-}
-
-function noteSelect(s: Schema): string {
-  const claim = `claim:everything_claims(${CLAIM_COLS}${s.hasImageUrls ? ", image_urls" : ""})`;
-  const sources = s.hasNoteSources ? ", sources:everything_note_sources(url, quote, explanation, sort_order)" : "";
-  return `*, ${claim}${sources}`;
-}
-
-/** Coerce a raw note row from either schema into NoteRow: sources always a
- *  NoteSourceRow[] (old jsonb URL array → quote-less rows), claim.image_urls
- *  always an array. */
-function normalizeNote(row: any, s: Schema): NoteRow {
-  const sources: NoteSourceRow[] = s.hasNoteSources
-    ? (row.sources ?? [])
-    : (Array.isArray(row.sources) ? row.sources : []).map((url: string, i: number) => ({
-        url, quote: null, explanation: null, sort_order: i,
-      }));
-  const claim = row.claim ? { ...row.claim, image_urls: row.claim.image_urls ?? [] } : row.claim;
-  return { ...row, sources, claim };
-}
+import { supabase } from "../../../everything-shared/supabase";
+import { detectSchema, noteSelect, normalizeNote } from "../../../everything-shared/notesQuery";
+import type { ItemRow, NnnRow, NoteRow, ProjectRow } from "../../../everything-shared/types";
 
 type RowMap<T> = Map<string, T>;
 

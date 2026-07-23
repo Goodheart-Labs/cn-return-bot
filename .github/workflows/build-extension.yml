@@ -1,0 +1,58 @@
+name: Build Extension
+
+# Zips the Common Notes browser extension (Chrome MV3 + Firefox) and keeps the
+# rolling "extension-latest" GitHub release updated so people can install it
+# without waiting for store approval (see src/everything-extension/README.md).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/everything-extension/**"
+      - "src/everything-shared/**"
+      - "src/everything-web/src/components/**"
+      - "src/dashboard-shared/**"
+      - "package.json"
+      - "bun.lock"
+      - ".github/workflows/build-extension.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write # rolling release upload
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Test anchor engine
+        run: bun test src/everything-extension
+
+      - name: Zip Chrome + Firefox builds
+        run: cd src/everything-extension && bunx wxt zip && bunx wxt zip -b firefox
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: common-notes-extension
+          path: src/everything-extension/.output/*.zip
+
+      - name: Update rolling release (extension-latest)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view extension-latest > /dev/null 2>&1 || gh release create extension-latest \
+            --title "Common Notes extension (latest)" \
+            --notes "Latest build from main. Install instructions: src/everything-extension/README.md"
+          gh release upload extension-latest src/everything-extension/.output/*.zip --clobber

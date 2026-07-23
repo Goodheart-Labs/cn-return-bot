@@ -91,6 +91,31 @@ Auth & interaction:
 
 Prod prerequisites (manual): run migrations (incl. 058–061; 060's realtime-publication line included); `supabase functions deploy judge-note` + `supabase secrets set OPENROUTER_API_KEY=…`; repo secret `SUPABASE_ANON_KEY`. In the prod project's dashboard (Auth → URL Configuration): set **Site URL** to `https://goodheart-labs.github.io/cn-return-bot/notes/` and add it (plus `https://goodheart-labs.github.io/cn-return-bot/**`) to the redirect allow-list — otherwise confirmation/magic links fall back to Supabase's default `http://localhost:3000`. Mirror the branded email templates (`supabase/templates/confirmation.html`, `magic_link.html`) under Auth → Email Templates; config.toml only styles local dev.
 
+## Browser extension (Common Notes)
+
+`src/everything-extension/` — WXT (Vite) extension, Chrome MV3 + Firefox, showing Common Notes inline on the pages themselves. Shares all Supabase/domain logic via `src/everything-shared/` (moved out of `everything-web/src/lib`; both apps import it — no copies) and reuses `NoteBox`/`NoteMenu` from `everything-web` plus `VoteRatings` from `dashboard-shared` (wrapped in `NoteWithActions`; every note on a claim renders as its own peer box), follows the HOST PAGE's light/dark theme (`utils/pageTheme.ts`: `color-scheme` declaration else rendered-background luminance, Dark Reader's approach; a `.dark` class toggled on each shadow container drives Tailwind `darkMode: "class"` — the web apps pin the same strategy and never set `.dark`, staying inert), with Tailwind v3 compiled into a shadow-root stylesheet (host pages untouched; passage tint via the CSS Custom Highlight API, no DOM mutation).
+
+```bash
+bun run dev-ext     # WXT dev mode vs PROD backend (load .output/chrome-mv3-prod-backend unpacked — WXT suffixes the output dir with the mode)
+bun run dev-ext-local # dev mode vs local Supabase (outputs .output/chrome-mv3)
+bun run build-ext   # chrome + firefox production builds (--mode prod-backend)
+bun run zip-ext     # store-ready zips (also built by .github/workflows/build-extension.yml)
+bun test src/everything-extension   # anchor-engine tests (linkedom)
+```
+
+How it works: a content script resolves the page URL to an `everything_items` row (`notesQuery.ts: normalizePageUrl`/`fetchItemForUrl` — canonical-link aware; YouTube matched by video ID), fetches that item's notes, and anchors each claim's `updated_quote → context_quote → context_paragraph` to a DOM Range by normalized fuzzy matching (`utils/anchor.ts`, same `normalizeText` the pipeline's timestamp-snapping uses; first/last-6-words fallback for drifted quotes). Substack + YouTube are injected by default; any other site is opt-in per origin from the popup (`optional_host_permissions` + `scripting.registerContentScripts` — no `<all_urls>` injection). YouTube gets a timestamp-triggered overlay in `#movie_player` (pill ↔ expanded votable card, driven by `start_seconds`/`end_seconds`). Right-click a selection → "Write a Common Note on this" (judge-gated `postClaimWithNote`, shared with the website's WriteNoteModal).
+
+Auth: one Supabase session in `chrome.storage.local` (adapter branch in `everything-shared/supabase.ts`; content-script localStorage belongs to the host page, hence the adapter; `autoRefreshToken` off — MV3 workers lose timers, `getSession()` refreshes on demand). Email sign-in is a 6-digit OTP code typed into the popup (`{{ .Token }}` added to BOTH the magic-link and the signup-confirmation templates — new users get the confirmation template, so both matter; one template serves website + extension since Supabase has no per-client templates, so each is structured as two labeled sections; mirror both in the prod dashboard). X sign-in runs `launchWebAuthFlow` in the background; the extension redirect URLs must be on the redirect allow-list (config.toml has local wildcards; prod dashboard needs the concrete entries). Both extension IDs are pinned (Chrome: manifest `key` field, public half of a self-generated keypair, private half in gitignored `chrome-signing-key.pem` — needed only to claim the same ID on the Web Store later; Firefox: `gecko.id`), so the redirect URLs are known in advance. Paste-ready for the prod dashboard (Auth → URL Configuration → Redirect URLs):
+
+```
+https://jodkhmefbcmgldokmeicpdogkepmcnij.chromiumapp.org/**
+https://817870a63bcf42546873a59b63fd9e267d889c26.extensions.allizom.org/**
+```
+
+(The Firefox subdomain is SHA-1 of `common-notes@commonnotes.net`, computed offline — confirm once by logging `browser.identity.getRedirectURL()` in a Firefox-loaded build before relying on it.) Email/code login needs no allow-list entry; only the X button does. No realtime — notes refetch after votes.
+
+Distribution without stores: `.github/workflows/build-extension.yml` keeps a rolling `extension-latest` GitHub release updated with both zips; install steps in `src/everything-extension/README.md` (Chrome: load unpacked — pinned ID makes every install identical; Firefox: temporary load only until we run Mozilla's automated unlisted signing once).
+
 ## Review dashboard
 
 Dashboard listens on port 8001 — free it first in case a previous run is still bound.

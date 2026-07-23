@@ -154,7 +154,10 @@ enabled = true
 site_url = "http://localhost:8003"
 # A list of URLs (globs allowed) auth providers may redirect to post authentication.
 # Add the deployed GitHub Pages notes URL here for prod magic-link / X sign-in.
-additional_redirect_urls = ["http://localhost:8003", "http://localhost:8003/**", "http://localhost:8004", "http://localhost:8004/**", "https://*.github.io/**", "https://commonnotes.net/**"]
+# The chromiumapp.org / allizom.org wildcards are the browser-extension OAuth
+# redirect URLs (launchWebAuthFlow); mirror them in the prod dashboard's
+# allow-list, with the real extension IDs, for X sign-in from the extension.
+additional_redirect_urls = ["http://localhost:8003", "http://localhost:8003/**", "http://localhost:8004", "http://localhost:8004/**", "https://*.github.io/**", "https://commonnotes.net/**", "https://*.chromiumapp.org/**", "https://*.extensions.allizom.org/**"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
 # JWT issuer URL. If not set, defaults to the local API URL (http://127.0.0.1:<port>/auth/v1).

@@ -40,6 +40,13 @@ const RATED_NOT_HELPFUL_AT_P = 0.2;
  *  and (for donations) which side of every frozen pair pays out. */
 export type NoteStatus = "helpful" | "not_helpful" | "needs_ratings";
 
+/** Stable content order for the notes on one claim: originals before their
+ *  improvements, then oldest first — no vote-based reshuffling (main's feed
+ *  froze ranking per page load for the same reason). */
+export const originalsFirst = (a: NoteRow, b: NoteRow) =>
+  Number(!!a.improved_from_note_id) - Number(!!b.improved_from_note_id) ||
+  a.created_at.localeCompare(b.created_at);
+
 export function noteStatus(note: NoteRow): NoteStatus {
   // No explicit quorum: the thresholds above already sit outside the reach of any
   // single vote (1H = 0.577, 1S = 0.469, 1U = 0.235), so one voter cannot rate a

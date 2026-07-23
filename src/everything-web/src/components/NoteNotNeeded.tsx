@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
-import type { NnnRow } from "../lib/types";
-import type { Vote } from "../lib/votes";
-import { deleteNnn } from "../lib/noteNotNeeded";
-import { tallyVisible } from "../lib/noteScore";
+import type { NnnRow } from "../../../everything-shared/types";
+import type { Vote } from "../../../everything-shared/votes";
+import { deleteNnn } from "../../../everything-shared/noteNotNeeded";
+import { tallyVisible } from "../../../everything-shared/noteScore";
 import { MenuItem, TrashIcon } from "./NoteMenu";
 
 /** Entry voting + authored-entry bookkeeping, owned by App and shared by
@@ -13,6 +13,9 @@ export interface NnnApi {
   onVote: (entry: NnnRow, vote: Vote) => void;
   /** Mirror the DB self-upvote of a just-posted entry into local state. */
   onAuthored: (entryId: string) => void;
+  /** An entry was deleted. The website's realtime channel already removes it;
+   *  the extension (no realtime) refreshes on this. */
+  onDeleted?: (entryId: string) => void;
 }
 
 /** Compact relative timestamp for entry meta ("now", "5m", "3h", "2d", then
@@ -38,20 +41,20 @@ const VOTE_ICON_PROPS = {
 const COMPACT_VOTES: { value: Vote; label: string; active: string; hover: string; icon: React.ReactNode }[] = [
   {
     value: 1, label: "Helpful",
-    active: "bg-green-100 text-green-700 border-green-300",
-    hover: "hover:bg-green-50 hover:text-green-700",
+    active: "bg-green-100 text-green-700 border-green-300 dark:bg-green-900/50 dark:text-green-300 dark:border-green-700",
+    hover: "hover:bg-green-50 hover:text-green-700 dark:hover:bg-green-950/40 dark:hover:text-green-400",
     icon: <svg {...VOTE_ICON_PROPS} aria-hidden><path d="M3.5 8.5l3 3 6-7" /></svg>,
   },
   {
     value: 0, label: "Somewhat helpful",
-    active: "bg-amber-100 text-amber-700 border-amber-300",
-    hover: "hover:bg-amber-50 hover:text-amber-700",
+    active: "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-900/50 dark:text-amber-300 dark:border-amber-700",
+    hover: "hover:bg-amber-50 hover:text-amber-700 dark:hover:bg-amber-950/40 dark:hover:text-amber-400",
     icon: <svg {...VOTE_ICON_PROPS} aria-hidden><path d="M2.5 9c1.8-2.6 3.7-2.6 5.5 0s3.7 2.6 5.5 0" /></svg>,
   },
   {
     value: -1, label: "Not helpful",
-    active: "bg-red-100 text-red-700 border-red-300",
-    hover: "hover:bg-red-50 hover:text-red-700",
+    active: "bg-red-100 text-red-700 border-red-300 dark:bg-red-900/50 dark:text-red-300 dark:border-red-700",
+    hover: "hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950/40 dark:hover:text-red-400",
     icon: <svg {...VOTE_ICON_PROPS} aria-hidden><path d="M4.5 4.5l7 7M11.5 4.5l-7 7" /></svg>,
   },
 ];
@@ -109,12 +112,12 @@ function OwnEntryMenu({ onDelete }: { onDelete: () => void }) {
       <button
         aria-label="Entry actions"
         onClick={() => setOpen((o) => !o)}
-        className="inline-flex items-center justify-center h-6 w-6 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 leading-none"
+        className="inline-flex items-center justify-center h-6 w-6 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 leading-none"
       >
         ⋯
       </button>
       {open && (
-        <div className="cn-menu absolute left-0 top-7 z-20 w-44 bg-white border border-gray-200 rounded-xl shadow-xl p-1.5 text-sm">
+        <div className="cn-menu absolute left-0 top-7 z-20 w-44 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-1.5 text-sm">
           <MenuItem onClick={() => { setOpen(false); onDelete(); }} icon={<TrashIcon />} label="Delete" danger />
         </div>
       )}
@@ -133,11 +136,11 @@ export function NoteNotNeeded({ entries, api, session }: {
   const [open, setOpen] = useState(false);
   if (entries.length === 0) return null;
   return (
-    <div className="mt-3 pt-2 border-t border-gray-200 space-y-4">
+    <div className="mt-3 pt-2 border-t border-gray-200 dark:border-gray-700 space-y-4">
       <button
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
-        className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 hover:text-gray-700 py-1"
+        className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 py-1"
       >
         <svg
           {...VOTE_ICON_PROPS}
@@ -150,11 +153,11 @@ export function NoteNotNeeded({ entries, api, session }: {
       </button>
       {open && entries.map((entry) => (
         <div key={entry.id}>
-          <p className="text-xs text-gray-500">
-            <span className="font-semibold text-gray-600">{entry.author_name ?? "anonymous"}</span>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            <span className="font-semibold text-gray-600 dark:text-gray-300">{entry.author_name ?? "anonymous"}</span>
             <span className="text-gray-400"> · {timeAgo(entry.created_at)}</span>
           </p>
-          <p className="mt-0.5 text-sm text-gray-800 whitespace-pre-wrap">{entry.body}</p>
+          <p className="mt-0.5 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap">{entry.body}</p>
           <div className="mt-1 -ml-1.5 flex items-center gap-1">
             <CompactVoteRatings
               entry={entry}
@@ -162,7 +165,7 @@ export function NoteNotNeeded({ entries, api, session }: {
               onVote={(vote) => api.onVote(entry, vote)}
             />
             {!!session && session.user.id === entry.author_id && (
-              <OwnEntryMenu onDelete={() => deleteNnn(entry.id)} />
+              <OwnEntryMenu onDelete={() => deleteNnn(entry.id).then(() => api.onDeleted?.(entry.id))} />
             )}
           </div>
         </div>

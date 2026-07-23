@@ -1,4 +1,4 @@
-import type { ProjectRow } from "../lib/types";
+import type { ProjectRow } from "../../../everything-shared/types";
 import type { View } from "../lib/routing";
 
 const DESCRIPTION =

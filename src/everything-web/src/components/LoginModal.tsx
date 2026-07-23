@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { signInWithEmail, signInWithTwitter } from "../lib/auth";
+import { signInWithEmail, signInWithTwitter } from "../../../everything-shared/auth";
 
 const X_SIGNIN_ENABLED = true;
 

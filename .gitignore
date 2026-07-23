@@ -125,3 +125,10 @@ datasets/big_eval/splits/val_remaining_*.csv
 datasets/query_writer_eval/_search_cache/
 datasets/query_writer_eval/runs/
 .env.prod-backend
+
+# WXT browser-extension build output
+src/everything-extension/.wxt/
+src/everything-extension/.output/
+
+# Chrome extension private key (public half is pinned in wxt.config.ts)
+src/everything-extension/chrome-signing-key.pem

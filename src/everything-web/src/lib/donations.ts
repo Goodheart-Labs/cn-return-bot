@@ -1,6 +1,6 @@
 import type { DonationPair } from "./donationScoring";
 import { createLocalPreference } from "./preference";
-import { supabase } from "./supabase";
+import { supabase } from "../../../everything-shared/supabase";
 
 /** The charities a voter can direct their donation to. First entry is the default. */
 export const CHARITIES = [

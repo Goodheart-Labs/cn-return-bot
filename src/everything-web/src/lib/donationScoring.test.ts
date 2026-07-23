@@ -1,11 +1,11 @@
 import { test, expect } from "bun:test";
 import { donationPair } from "./donationScoring";
-import { noteStatus, noteTallyVisible, TALLY_REVEAL_AFTER_DAYS } from "./noteScore";
-import { noteTally, probabilityHelpful, probabilityHelpfulAfter } from "./noteBelief";
-import { regularizedIncompleteBeta } from "./incompleteBeta";
-import type { NoteRow } from "./types";
+import { noteStatus, noteTallyVisible, TALLY_REVEAL_AFTER_DAYS } from "../../../everything-shared/noteScore";
+import { noteTally, probabilityHelpful, probabilityHelpfulAfter } from "../../../everything-shared/noteBelief";
+import { regularizedIncompleteBeta } from "../../../everything-shared/incompleteBeta";
+import type { NoteRow } from "../../../everything-shared/types";
 import { VOTE_VALUES } from "../../../dashboard-shared/Ratings";
-import type { Vote } from "./votes";
+import type { Vote } from "../../../everything-shared/votes";
 
 /** Covers the p-model cluster that donations rest on — `noteBelief` (the
  *  latent-quality estimate), `noteScore` (the rating rule built on it) and

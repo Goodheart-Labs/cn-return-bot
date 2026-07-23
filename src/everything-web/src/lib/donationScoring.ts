@@ -1,7 +1,7 @@
 import { VOTE_VALUES } from "../../../dashboard-shared/Ratings";
-import { noteTally, probabilityHelpful, withVote, type VoteTally } from "./noteBelief";
-import type { NoteRow } from "./types";
-import type { Vote } from "./votes";
+import { noteTally, probabilityHelpful, withVote, type VoteTally } from "../../../everything-shared/noteBelief";
+import type { NoteRow } from "../../../everything-shared/types";
+import type { Vote } from "../../../everything-shared/votes";
 
 /** Outcome-contingent vote donations.
  *

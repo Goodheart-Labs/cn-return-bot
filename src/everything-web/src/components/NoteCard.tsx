@@ -5,10 +5,11 @@ import { LinkifiedText } from "../../../dashboard-shared/LinkifiedText";
 import { VoteRatings } from "../../../dashboard-shared/Ratings";
 import { quoteFragmentUrl } from "../../../dashboard-shared/textFragment";
 import type { NotedContent } from "../../../dashboard-shared/types";
-import type { ClaimRef, NnnRow, NoteRow, NoteSourceRow } from "../lib/types";
+import type { ClaimRef, NnnRow, NoteRow, NoteSourceRow } from "../../../everything-shared/types";
 import type { MintedDonation } from "../lib/donations";
-import type { Vote } from "../lib/votes";
-import { noteStatus, noteTallyVisible, type NoteStatus } from "../lib/noteScore";
+import type { Vote } from "../../../everything-shared/votes";
+import { noteStatus, noteTallyVisible, type NoteStatus } from "../../../everything-shared/noteScore";
+import { noteUrl } from "../lib/routing";
 import { NoteMenu } from "./NoteMenu";
 import { NoteNotNeeded, type NnnApi } from "./NoteNotNeeded";
 import { VoteDonation } from "./VoteDonation";
@@ -17,17 +18,17 @@ import { VoteDonation } from "./VoteDonation";
  *  Halfway to X-CN grammar (Nathan, 2026-07-14): our own badge + wording, but
  *  the vote row is a one-verb ask and shown notes carry a trust line. */
 const STATUS: Record<NoteStatus, { label: string; color: string; box: string; ask: string }> = {
-  helpful: { label: "Currently rated helpful", color: "#22c55e", box: "bg-blue-50 border-blue-100", ask: "Do you find this helpful?" },
-  not_helpful: { label: "Currently rated not helpful", color: "#ef4444", box: "bg-gray-50 border-gray-200", ask: "Do you find this helpful?" },
-  needs_ratings: { label: "Needs more ratings", color: "#9ca3af", box: "bg-blue-50 border-blue-100", ask: "Is this note helpful?" },
+  helpful: { label: "Currently rated helpful", color: "#22c55e", box: "bg-blue-50 border-blue-100 dark:bg-blue-950/50 dark:border-blue-900", ask: "Do you find this helpful?" },
+  not_helpful: { label: "Currently rated not helpful", color: "#ef4444", box: "bg-gray-50 border-gray-200 dark:bg-gray-800/60 dark:border-gray-700", ask: "Do you find this helpful?" },
+  needs_ratings: { label: "Needs more ratings", color: "#9ca3af", box: "bg-blue-50 border-blue-100 dark:bg-blue-950/50 dark:border-blue-900", ask: "Is this note helpful?" },
 };
 
 /** The status badge shown above a note: a filled circle (with a ✓/✕ glyph for
  *  the decided states) and its Community-Notes copy. */
-function StatusBadge({ status }: { status: NoteStatus }) {
+export function StatusBadge({ status }: { status: NoteStatus }) {
   const { label, color } = STATUS[status];
   return (
-    <div className="flex items-center gap-1.5 text-sm font-semibold text-gray-700">
+    <div className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 dark:text-gray-200">
       {/* em-sized so the icon scales with the font-size experiment; the
           cn-badge-* class lets color schemes restyle the inline fills */}
       <svg viewBox="0 0 20 20" width="1.05em" height="1.05em" aria-hidden className={`shrink-0 cn-badge-${status}`}>
@@ -72,9 +73,9 @@ function SourceDetails({ open, sources }: { open: boolean; sources: NoteSourceRo
           {detailed.map((s, i) => (
             <div key={i}>
               <a href={quoteFragmentUrl(s.url, s.quote!)} target="_blank" rel="noopener noreferrer" className="block group">
-                <blockquote className="border-l-4 border-gray-300 group-hover:border-blue-400 pl-3 text-gray-600 italic text-sm">“{s.quote}”</blockquote>
+                <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 group-hover:border-blue-400 pl-3 text-gray-600 dark:text-gray-300 italic text-sm">“{s.quote}”</blockquote>
               </a>
-              {s.explanation && <p className="mt-1 text-xs text-gray-500">{s.explanation}</p>}
+              {s.explanation && <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{s.explanation}</p>}
             </div>
           ))}
         </div>
@@ -214,7 +215,7 @@ function ContextParagraph({ paragraph, quote, bare, fitTo }: {
 /** The note as one self-contained unit, X-CN style: a rating-status badge on
  *  top, the note text, and the rating pills inside the same box; the box tint
  *  follows the status (helpful/needs-ratings/not-helpful). */
-function NoteBox({ note, status, sourcesOpen, children }: {
+export function NoteBox({ note, status, sourcesOpen, children }: {
   note: NoteRow;
   status: NoteStatus;
   sourcesOpen?: boolean;
@@ -223,16 +224,16 @@ function NoteBox({ note, status, sourcesOpen, children }: {
   const by = note.author_id ? note.author_name ?? "anonymous" : null;
   return (
     <div className={`cn-notebox rounded-lg p-3 border ${STATUS[status].box}`}>
-      <div className="-mx-3 px-3 pb-2 mb-3 border-b border-gray-200/70 flex items-center justify-between gap-2">
+      <div className="-mx-3 px-3 pb-2 mb-3 border-b border-gray-200/70 dark:border-gray-700/70 flex items-center justify-between gap-2">
         <StatusBadge status={status} />
-        {by && <span className="text-xs text-gray-500 shrink-0">by {by}</span>}
+        {by && <span className="text-xs text-gray-500 dark:text-gray-400 shrink-0">by {by}</span>}
       </div>
-      <LinkifiedText className="text-sm text-gray-800 whitespace-pre-wrap" text={noteText(note)} />
+      <LinkifiedText className="text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap" text={noteText(note)} />
       {hasSourceDetails(note.sources) && <SourceDetails open={!!sourcesOpen} sources={note.sources} />}
       {children && (
-        <div className="-mx-3 mt-3 px-3 pt-2.5 border-t border-gray-200/70 flex items-center justify-between flex-wrap gap-x-4 gap-y-1">
-          <span className="text-sm text-gray-700">{STATUS[status].ask}</span>
-          <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">{children}</div>
+        <div className="-mx-3 mt-3 px-3 pt-2.5 border-t border-gray-200/70 dark:border-gray-700/70 flex items-center justify-between flex-wrap gap-x-4 gap-y-1">
+          <span className="text-sm text-gray-700 dark:text-gray-300">{STATUS[status].ask}</span>
+          <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500 dark:text-gray-400">{children}</div>
         </div>
       )}
     </div>
@@ -409,7 +410,7 @@ export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug, 
 
       <NoteMenu
         note={note}
-        projectSlug={projectSlug}
+        shareUrl={noteUrl(projectSlug, note.id)}
         session={session}
         onNeedLogin={onNeedLogin}
         onAuthored={onAuthored}

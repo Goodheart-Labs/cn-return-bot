@@ -1,4 +1,4 @@
-import type { ItemRow } from "../lib/types";
+import type { ItemRow } from "../../../everything-shared/types";
 
 /** Filter chips for a project's items (episodes / posts / pages) — shown only
  *  when the project has more than one item with notes. "All" restores the

@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
-import { supabase } from "../lib/supabase";
-import { noteUrl } from "../lib/routing";
-import { displayName } from "../lib/session";
-import { isEarnestNote } from "../lib/judgeNote";
-import { postNnn } from "../lib/noteNotNeeded";
-import type { NoteRow } from "../lib/types";
+import { supabase } from "../../../everything-shared/supabase";
+import { displayName } from "../../../everything-shared/session";
+import { postImprovement } from "../../../everything-shared/postNote";
+import { postNnn } from "../../../everything-shared/noteNotNeeded";
+import type { NoteRow } from "../../../everything-shared/types";
 import { AutoGrowTextarea, PostAsCheckbox, RejectedNotice, useSignedByline } from "./editorBits";
 
 /** One row of the ⋯ dropdown: muted icon, medium-weight label, rounded hover;
@@ -17,14 +16,14 @@ export function MenuItem({ onClick, icon, label, danger }: {
   danger?: boolean;
 }) {
   const tone = danger
-    ? "text-red-600 hover:bg-red-50"
-    : "text-gray-700 hover:bg-gray-100";
+    ? "text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40"
+    : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800";
   return (
     <button
       onClick={onClick}
       className={`flex w-full items-center gap-2.5 text-left px-2.5 py-2 rounded-lg font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${tone}`}
     >
-      <span className={`shrink-0 ${danger ? "text-red-500" : "text-gray-400"}`} aria-hidden>{icon}</span>
+      <span className={`shrink-0 ${danger ? "text-red-500" : "text-gray-400 dark:text-gray-500"}`} aria-hidden>{icon}</span>
       {label}
     </button>
   );
@@ -84,9 +83,11 @@ function SpeechBubbleIcon() {
  *  improvement (posts your own draft note on the same claim, shown alongside
  *  the original), share a deep link, and — on notes you wrote — a ⋯ menu with
  *  delete. */
-export function NoteMenu({ note, projectSlug, session, onNeedLogin, onAuthored, onNnnAuthored, sourcesOpen, onToggleSources, children }: {
+export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onNnnAuthored, onDeleted, sourcesOpen, onToggleSources, children }: {
   note: NoteRow;
-  projectSlug: string;
+  /** Absolute deep link to this note (the website computes it from the project
+   *  slug; the extension passes the public site's URL). */
+  shareUrl: string;
   session: Session | null;
   onNeedLogin: () => void;
   /** A note was just posted by this user (mirror its auto-upvote locally). */
@@ -94,6 +95,9 @@ export function NoteMenu({ note, projectSlug, session, onNeedLogin, onAuthored, 
   /** A note-not-needed entry was just posted by this user (mirror its
    *  auto-upvote locally). */
   onNnnAuthored: (entryId: string) => void;
+  /** The note was deleted. The website's realtime channel already removes it
+   *  from state; the extension (no realtime) refreshes on this. */
+  onDeleted?: () => void;
   sourcesOpen?: boolean;
   onToggleSources?: () => void;
   /** Extra actions slotted between Share and the ⋯ (e.g. improvement jump chips). */
@@ -118,13 +122,20 @@ export function NoteMenu({ note, projectSlug, session, onNeedLogin, onAuthored, 
 
   const share = async () => {
     setOpen(false);
-    await navigator.clipboard.writeText(noteUrl(projectSlug, note.id));
+    await navigator.clipboard.writeText(shareUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
   const del = async () => {
     setOpen(false);
-    await supabase.from("everything_notes").delete().eq("id", note.id);
+    // The `.select()` echo distinguishes a real delete from an RLS
+    // silently-matched-zero-rows no-op (only own draft notes are deletable).
+    const { data, error } = await supabase.from("everything_notes").delete().eq("id", note.id).select("id");
+    if (error || (data ?? []).length === 0) {
+      console.error("[common-notes] note delete failed:", error?.message ?? "no row deleted (RLS: only your own draft notes)");
+      return;
+    }
+    onDeleted?.();
   };
   const startImprove = () => {
     setOpen(false);
@@ -142,23 +153,23 @@ export function NoteMenu({ note, projectSlug, session, onNeedLogin, onAuthored, 
 
   return (
     <div className="mt-1">
-      <div ref={ref} className="relative flex flex-wrap justify-end items-center gap-x-3 gap-y-1 text-xs text-gray-500">
-        {copied && <span className="text-green-700">Link copied</span>}
+      <div ref={ref} className="relative flex flex-wrap justify-end items-center gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
+        {copied && <span className="text-green-700 dark:text-green-400">Link copied</span>}
         {/* Sources + improve + share ride visibly on every card; the ⋯ menu
             only exists for delete on your own notes (Nathan, 2026-07-14 — the
             menu was hiding the whole improve flow). */}
         {showSourcesButton && (
-          <button onClick={onToggleSources} className="inline-flex items-center gap-1 text-blue-600 hover:underline">
+          <button onClick={onToggleSources} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
             <QuoteIcon /> {sourcesOpen ? "Hide source details" : "Show source details"}
           </button>
         )}
-        <button onClick={startNnn} className="inline-flex items-center gap-1 text-blue-600 hover:underline">
+        <button onClick={startNnn} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
           <SpeechBubbleIcon /> Note not needed
         </button>
-        <button onClick={startImprove} className="inline-flex items-center gap-1 text-blue-600 hover:underline">
+        <button onClick={startImprove} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
           <PencilIcon /> Suggest an improvement
         </button>
-        <button onClick={share} className="inline-flex items-center gap-1 text-blue-600 hover:underline">
+        <button onClick={share} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
           <ShareIcon /> Share
         </button>
         {children}
@@ -166,13 +177,13 @@ export function NoteMenu({ note, projectSlug, session, onNeedLogin, onAuthored, 
           <button
             aria-label="Note actions"
             onClick={() => setOpen((o) => !o)}
-            className="px-1.5 py-0.5 rounded text-base leading-none text-gray-400 hover:text-gray-700 hover:bg-gray-100"
+            className="px-1.5 py-0.5 rounded text-base leading-none text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800"
           >
             ⋯
           </button>
         )}
         {open && mine && (
-          <div className="cn-menu absolute right-0 top-8 z-20 w-56 bg-white border border-gray-200 rounded-xl shadow-xl p-1.5 text-sm">
+          <div className="cn-menu absolute right-0 top-8 z-20 w-56 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-1.5 text-sm">
             <MenuItem onClick={del} icon={<TrashIcon />} label="Delete" danger />
           </div>
         )}
@@ -238,7 +249,7 @@ function NnnComposer({ note, session, onAuthored, onClose }: {
         >
           {busy ? "Posting…" : "Post"}
         </button>
-        <button onClick={onClose} className="text-sm text-gray-500 hover:underline">Cancel</button>
+        <button onClick={onClose} className="text-sm text-gray-500 dark:text-gray-400 hover:underline">Cancel</button>
         <PostAsCheckbox signed={signed} onChange={setSigned} session={session} className="ml-auto" />
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
@@ -266,25 +277,12 @@ function ImproveEditor({ note, session, onAuthored, onClose }: {
     setBusy(true);
     setError(null);
     setRejected(false);
-    try {
-      const earnest = await isEarnestNote(text.trim(), note.claim?.context_quote ?? "", note.note);
-      if (!earnest) return setRejected(true);
-      const { data, error } = await supabase.from("everything_notes").insert({
-        claim_id: note.claim_id,
-        note: text.trim(),
-        author_id: session.user.id,
-        author_name: signed ? displayName(session) : null,
-        improved_from_note_id: note.id,
-        status: "draft",
-      }).select("id").single();
-      if (error) return setError(error.message);
-      onAuthored((data as { id: string }).id);
-      onClose();
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setBusy(false);
-    }
+    const outcome = await postImprovement({ note, text, session, signed });
+    setBusy(false);
+    if (outcome.type === "rejected") return setRejected(true);
+    if (outcome.type === "error") return setError(outcome.message);
+    onAuthored(outcome.noteId);
+    onClose();
   };
 
   return (
@@ -304,7 +302,7 @@ function ImproveEditor({ note, session, onAuthored, onClose }: {
         >
           {busy ? "Checking…" : "Post note"}
         </button>
-        <button onClick={onClose} className="text-sm text-gray-500 hover:underline">Cancel</button>
+        <button onClick={onClose} className="text-sm text-gray-500 dark:text-gray-400 hover:underline">Cancel</button>
         <PostAsCheckbox signed={signed} onChange={setSigned} session={session} className="ml-auto" />
       </div>
       {rejected && <RejectedNotice />}

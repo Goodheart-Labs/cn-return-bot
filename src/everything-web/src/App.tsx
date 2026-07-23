@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { useLiveData } from "./lib/useLiveData";
-import { useSession, signOut } from "./lib/auth";
-import { castVote, clearVote, fetchMyVotes, type Vote } from "./lib/votes";
-import { castNnnVote, clearNnnVote, fetchMyNnnVotes } from "./lib/noteNotNeeded";
+import { useSession, signOut } from "../../everything-shared/auth";
+import { castVote, clearVote, fetchMyVotes, type Vote } from "../../everything-shared/votes";
+import { castNnnVote, clearNnnVote, fetchMyNnnVotes } from "../../everything-shared/noteNotNeeded";
 import { donationPair, priorTally } from "./lib/donationScoring";
-import { noteTally, probabilityHelpful, probabilityHelpfulAfter } from "./lib/noteBelief";
+import { noteTally, probabilityHelpful, probabilityHelpfulAfter } from "../../everything-shared/noteBelief";
 import { saveDonation, usePreferredCharity, type MintedDonation } from "./lib/donations";
 import { readRoute, pushProject, pushItem, pushLeaderboard, type View } from "./lib/routing";
 import { Sidebar } from "./components/Sidebar";
@@ -36,8 +36,8 @@ import { NoteCard } from "./components/NoteCard";
 import { ItemChips } from "./components/ItemChips";
 import { Leaderboard } from "./components/Leaderboard";
 import { DesignMenu } from "./components/DesignMenu";
-import type { NnnRow, NoteRow } from "./lib/types";
-import { noteStatus, totalVotes } from "./lib/noteScore";
+import type { NnnRow, NoteRow } from "../../everything-shared/types";
+import { noteStatus, totalVotes } from "../../everything-shared/noteScore";
 
 const NO_NNN: NnnRow[] = [];
 

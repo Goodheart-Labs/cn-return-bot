@@ -1,0 +1,76 @@
+import path from "node:path";
+import { loadEnv } from "vite";
+import { defineConfig } from "wxt";
+import tailwindcss from "tailwindcss";
+
+// Root .env feeds VITE_SUPABASE_* to import.meta.env, same as the web app's
+// vite config. The anon key is public by design (RLS-locked, migration 050).
+const repoRoot = path.resolve(__dirname, "../..");
+
+// PUBLIC half of our self-generated keypair. Chrome derives the extension ID
+// from it, so every install — load-unpacked from a GitHub release zip on any
+// machine, or a future Web Store upload made with the same key — gets the
+// SAME ID: jodkhmefbcmgldokmeicpdogkepmcnij. That makes the OAuth redirect
+// URL (https://jodkhmefbcmgldokmeicpdogkepmcnij.chromiumapp.org/) known in
+// advance for the Supabase allow-list. The PRIVATE key stays out of git
+// (chrome-signing-key.pem, gitignored) — only needed to claim this ID on the
+// Web Store later.
+const CHROME_PUBLIC_KEY =
+  "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2qdIOMvZuGlFH1UrpRid5yNL/QhfTmU6E9B2jbE5aCs3TBkrTZP6YU8LGRnPZvUAgFLrD4jUFL5eNxqWgsfzgubcNXXvDXYDdbL/jazzIayocG4GH8ONBAKOTSQaQ8s1T2PZSImbuB0I4m2I3IlYtIZKsXqM80ky42+mv04SfBQZxRgP0slrO+4QqrD300uQtBhj8XhLremut05B8mtfgOJDC7S9CT73mae0vbXJEL1dC34mEt98hT1nDGEKeNXXcEIHO3L/c1d101oBsoXG2A+O/ze0OmDIi6xqnU31YSkvcWT20mVKKZXUqz4FUFkKyRaG/mHkSs0Dt/hKePdSEQIDAQAB";
+
+export default defineConfig({
+  modules: ["@wxt-dev/module-react"],
+  // Dev mode must not spawn its own Chrome — we load the dev output unpacked
+  // in the user's existing browser; WXT's dev client then hot-reloads the
+  // extension (and its tabs) on every rebuild.
+  webExt: { disabled: true },
+  manifest: ({ browser }) => ({
+    version: "0.1.0",
+    name: "Common Notes",
+    description: "Community notes inline on the pages you read — Substack, YouTube, and any text site.",
+    permissions: ["storage", "identity", "contextMenus", "activeTab", "tabs", "scripting"],
+    // Generic text sites are opt-in per site from the popup; only Substack and
+    // YouTube are injected by default.
+    optional_host_permissions: ["<all_urls>"],
+    ...(browser === "chrome" ? { key: CHROME_PUBLIC_KEY } : {}),
+    browser_specific_settings: {
+      // Stable add-on ID so the OAuth redirect URL (…extensions.allizom.org)
+      // stays constant across Firefox installs.
+      gecko: { id: "common-notes@commonnotes.net" },
+    },
+  }),
+  hooks: {
+    "build:manifestGenerated": (_wxt, manifest) => {
+      // The generic content script registers at runtime for user-chosen
+      // origins, so WXT can't know its CSS's matches — it emits an empty list,
+      // which would block the shadow-root UI from fetching the stylesheet.
+      for (const resource of manifest.web_accessible_resources ?? []) {
+        if (typeof resource === "object" && "resources" in resource && resource.resources.includes("content-scripts/generic.css")) {
+          resource.matches = ["<all_urls>"];
+        }
+      }
+    },
+  },
+  vite: () => ({
+    envDir: repoRoot,
+    css: {
+      postcss: { plugins: [tailwindcss(path.resolve(__dirname, "tailwind.config.ts"))] },
+    },
+    plugins: [
+      {
+        // Same guard as everything-web/vite.config.ts: a build without the
+        // Supabase env inlines `undefined`, turning the module-scope check in
+        // everything-shared/supabase.ts into an unconditional throw. Fail the
+        // build loudly instead; dev surfaces the throw at runtime.
+        name: "require-supabase-env",
+        config(_config, { command, mode }) {
+          if (command !== "build") return;
+          const env = loadEnv(mode, repoRoot, "");
+          if (!env.VITE_SUPABASE_URL || !env.VITE_SUPABASE_ANON_KEY) {
+            throw new Error("Refusing to build without VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY (root .env)");
+          }
+        },
+      },
+    ],
+  }),
+});

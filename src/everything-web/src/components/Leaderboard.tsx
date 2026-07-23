@@ -6,7 +6,7 @@ import {
   setMyLeaderboardOptIn,
   type LeaderboardEntry,
 } from "../lib/leaderboard";
-import { displayName } from "../lib/session";
+import { displayName } from "../../../everything-shared/session";
 
 /** Ranks people by how many notes they've rated. Listed only if they opt in. */
 export function Leaderboard({ session, myVoteCount }: {

@@ -1,4 +1,5 @@
 import { supabase } from "./supabase";
+import type { NnnRow } from "./types";
 import type { Vote } from "./votes";
 
 /** Insert a "note not needed" entry on a claim and return its id. The DB
@@ -20,6 +21,26 @@ export async function postNnn(params: {
     .select("id")
     .single();
   return error ? null : (data as { id: string }).id;
+}
+
+/** All entries on a set of claims, oldest first (page-scoped: the browser
+ *  extension fetches one item's claims at a time). Tolerates a backend
+ *  without migration 063 — the list just stays empty. */
+export async function fetchNnnForClaims(claimIds: string[]): Promise<NnnRow[]> {
+  if (claimIds.length === 0) return [];
+  const { data } = await supabase
+    .from("everything_note_not_needed")
+    .select("*")
+    .in("claim_id", claimIds)
+    .order("created_at");
+  return (data as NnnRow[]) ?? [];
+}
+
+/** One entry by id — refetch after a vote to pick up the trigger-computed
+ *  counts (the extension has no realtime channel). */
+export async function fetchNnnEntry(entryId: string): Promise<NnnRow | null> {
+  const { data } = await supabase.from("everything_note_not_needed").select("*").eq("id", entryId).maybeSingle();
+  return (data as NnnRow) ?? null;
 }
 
 /** Delete own entry (RLS-scoped). Awaits internally — a supabase-js query

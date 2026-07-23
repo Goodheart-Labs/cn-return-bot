@@ -1,4 +1,4 @@
-import type { VoteValue } from "../../../dashboard-shared/Ratings";
+import type { VoteValue } from "../dashboard-shared/Ratings";
 import { supabase } from "./supabase";
 
 export type Vote = VoteValue;
