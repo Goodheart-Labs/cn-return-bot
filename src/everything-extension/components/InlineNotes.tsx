@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import type { Session } from "@supabase/supabase-js";
 import { NoteNotNeeded, type NnnApi } from "../../everything-web/src/components/NoteNotNeeded";
 import type { Vote } from "../../everything-shared/votes";
@@ -25,13 +26,16 @@ const POPOVER_WIDTH = 560;
 const POPOVER_GAP = 8; // px between the passage and the opened popover
 const VIEWPORT_MARGIN = 8; // keep the popover this far from the viewport edges
 
-function pageRect(range: Range) {
+/** Range rect relative to the in-content annotation layer — both rects read
+ *  in the same layout pass, so the pair is scroll-invariant: the layer sits
+ *  inside the article and moves with the text under any scroll container. */
+function relRect(range: Range, origin: DOMRect) {
   const rect = range.getBoundingClientRect();
   return {
-    top: rect.top + window.scrollY,
-    right: rect.right + window.scrollX,
-    bottom: rect.bottom + window.scrollY,
-    left: rect.left + window.scrollX,
+    top: rect.top - origin.top,
+    right: rect.right - origin.left,
+    bottom: rect.bottom - origin.top,
+    left: rect.left - origin.left,
   };
 }
 
@@ -105,12 +109,19 @@ function NotePopover({ group, projectSlug, session, myVotes, onVote, onNeedLogin
 
 type NoteWithActionsVote = React.ComponentProps<typeof NoteWithActions>["onVote"];
 
-/** All badges + popovers for one page, absolutely positioned in page
- *  coordinates inside the extension's shadow-root overlay. */
-export function InlineNotesApp({ groups: initialGroups, item, onPosted }: {
+/** All badges + popovers for one page. They render (via portal) into the
+ *  in-content annotation layer and are absolutely positioned relative to it,
+ *  so scrolling moves them natively with the text — no per-frame JS. The
+ *  viewport-fixed pieces (sign-in hint, write modal) stay in the body-level
+ *  host, where position:fixed is safe from article-ancestor transforms. */
+export function InlineNotesApp({ groups: initialGroups, item, onPosted, container, inlineContainer }: {
   groups: AnchoredGroup[];
   item: PageItem;
   onPosted: () => void;
+  /** The article container the ranges live in (re-queried per render). */
+  container: Element;
+  /** The annotation layer's React-root element inside `container`. */
+  inlineContainer: HTMLElement;
 }) {
   const projectSlug = item.projectSlug;
   const [groups, setGroups] = useState(initialGroups);
@@ -147,18 +158,21 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted }: {
       raf = requestAnimationFrame(() => setLayoutTick((t) => t + 1));
     };
     window.addEventListener("resize", relayout);
-    // Substack's reader app scrolls an INNER container, not the document —
-    // window.scrollY never changes, so positions computed once would freeze in
-    // the viewport while the text moves underneath. Capture-phase scroll
-    // catches every scroll container and re-derives the coordinates.
+    // Fallback only: the annotation layer lives inside the article, so
+    // shared-scroller scrolls recompute to identical values (React diffs to
+    // zero DOM writes — no visible movement). This catches the rare range
+    // inside a NESTED scroller (scrollable code block / table) the layer
+    // doesn't share.
     document.addEventListener("scroll", relayout, { capture: true, passive: true });
     // Passages reflow as the host page's images/embeds finish loading — an
-    // <img> gaining height fires no DOM mutation, so badge positions (cached
-    // page coordinates) would go stale and drift far from their passage.
-    // Re-derive them whenever the document's height changes, not just on resize.
+    // <img> gaining height fires no DOM mutation, so cached positions would
+    // drift from their passage. body catches document-height changes; the
+    // article container must be observed too, because in inner-scroll layouts
+    // (the reader) body stays viewport-locked while the article grows.
     const resizeObserver = new ResizeObserver(relayout);
     resizeObserver.observe(document.body);
-    // A click on the host page (outside our shadow root) closes the popover.
+    resizeObserver.observe(container);
+    // A click on the host page (outside our shadow roots) closes the popover.
     const onDown = () => setOpenClaim(null);
     document.addEventListener("mousedown", onDown);
     return () => {
@@ -168,7 +182,7 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted }: {
       document.removeEventListener("mousedown", onDown);
       cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [container]);
 
   // The tint itself is a CSS highlight — not an element, so it can't receive
   // events. Hit-test host-page clicks against each claim's range instead, so
@@ -178,7 +192,10 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted }: {
       // Clicks inside our own overlay bubble out of the shadow root too — the
       // popover overlaps page text, so without this guard a vote click would
       // also hit-test the passage underneath and open ITS note.
-      if (e.composedPath().some((n) => (n as Element).tagName === "COMMON-NOTES-UI")) return;
+      if (e.composedPath().some((n) => {
+        const tag = (n as Element).tagName;
+        return tag === "COMMON-NOTES-UI" || tag === "COMMON-NOTES-INLINE";
+      })) return;
       // A drag-selection (e.g. selecting text to write a note on) ends in a
       // click too — don't hijack it.
       if (!window.getSelection()?.isCollapsed) return;
@@ -212,30 +229,38 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted }: {
     return () => runtime?.onMessage.removeListener(listener);
   }, [groups]);
 
-  const positioned = useMemo(() => groups.map((group) => {
-    const rect = pageRect(group.range);
-    // Clamp the popover into the viewport width; drop below the passage.
-    const popLeft = Math.max(
-      VIEWPORT_MARGIN + window.scrollX,
-      Math.min(rect.left, window.scrollX + window.innerWidth - POPOVER_WIDTH - VIEWPORT_MARGIN),
-    );
-    return {
-      group,
-      badgeStyle: {
-        top: rect.top - BADGE_SIZE / 2,
-        left: rect.right + BADGE_GAP,
-        width: BADGE_SIZE,
-        height: BADGE_SIZE,
-      } satisfies React.CSSProperties,
-      popoverStyle: {
-        top: rect.bottom + POPOVER_GAP,
-        left: popLeft,
-        width: Math.min(POPOVER_WIDTH, window.innerWidth - VIEWPORT_MARGIN * 2),
-        zIndex: 2,
-      } satisfies React.CSSProperties,
-    };
+  const positioned = useMemo(() => {
+    // Read the layer origin and every range rect in the same layout pass —
+    // never cache the origin across renders, or the pair loses its
+    // scroll-invariance.
+    const origin = inlineContainer.getBoundingClientRect();
+    return groups.map((group) => {
+      const rect = relRect(group.range, origin);
+      // Clamp the popover into the VIEWPORT, expressed in layer space:
+      // client x = layer x + origin.left, so viewport edge M maps to
+      // M - origin.left (same clamp as before, minus the scroll offsets).
+      const popLeft = Math.max(
+        VIEWPORT_MARGIN - origin.left,
+        Math.min(rect.left, window.innerWidth - POPOVER_WIDTH - VIEWPORT_MARGIN - origin.left),
+      );
+      return {
+        group,
+        badgeStyle: {
+          top: rect.top - BADGE_SIZE / 2,
+          left: rect.right + BADGE_GAP,
+          width: BADGE_SIZE,
+          height: BADGE_SIZE,
+        } satisfies React.CSSProperties,
+        popoverStyle: {
+          top: rect.bottom + POPOVER_GAP,
+          left: popLeft,
+          width: Math.min(POPOVER_WIDTH, window.innerWidth - VIEWPORT_MARGIN * 2),
+          zIndex: 2,
+        } satisfies React.CSSProperties,
+      };
+    });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [groups, layoutTick]);
+  }, [groups, layoutTick, inlineContainer]);
 
   return (
     // Absorb both event kinds: mousedown would close the popover via the
@@ -257,30 +282,39 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted }: {
           onPosted={onPosted}
         />
       )}
-      {positioned.map(({ group, badgeStyle, popoverStyle }) => (
-        <div key={group.claimId}>
-          <Badge
-            open={openClaim === group.claimId}
-            onClick={() => setOpenClaim((cur) => (cur === group.claimId ? null : group.claimId))}
-            style={badgeStyle}
-          />
-          {openClaim === group.claimId && (
-            <NotePopover
-              group={group}
-              projectSlug={projectSlug}
-              session={session}
-              myVotes={myVotes}
-              onVote={handleVote}
-              onNeedLogin={onNeedLogin}
-              onAuthored={handleAuthored}
-              onNnnAuthored={handleNnnAuthored}
-              onDeleted={onPosted}
-              nnnApi={nnnApi}
-              style={popoverStyle}
-            />
-          )}
-        </div>
-      ))}
+      {/* Badges/popovers portal into the in-content annotation layer so they
+          scroll natively with the text; the wrapper re-absorbs events there
+          (React attaches listeners to portal containers, so stopPropagation
+          halts the native event before the document-level listeners). */}
+      {createPortal(
+        <div onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
+          {positioned.map(({ group, badgeStyle, popoverStyle }) => (
+            <div key={group.claimId}>
+              <Badge
+                open={openClaim === group.claimId}
+                onClick={() => setOpenClaim((cur) => (cur === group.claimId ? null : group.claimId))}
+                style={badgeStyle}
+              />
+              {openClaim === group.claimId && (
+                <NotePopover
+                  group={group}
+                  projectSlug={projectSlug}
+                  session={session}
+                  myVotes={myVotes}
+                  onVote={handleVote}
+                  onNeedLogin={onNeedLogin}
+                  onAuthored={handleAuthored}
+                  onNnnAuthored={handleNnnAuthored}
+                  onDeleted={onPosted}
+                  nnnApi={nnnApi}
+                  style={popoverStyle}
+                />
+              )}
+            </div>
+          ))}
+        </div>,
+        inlineContainer,
+      )}
     </div>
   );
 }

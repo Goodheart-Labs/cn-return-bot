@@ -110,12 +110,34 @@ async function mountForUrl(ctx: ContentScriptContext, href: string): Promise<(()
   let reactRoot: Root | null = null;
   let themeRoot: HTMLElement | null = null;
 
-  // One sync point for both theme surfaces: the .dark class inside the shadow
-  // root (activates every dark: variant) and the ::highlight tint in the host
-  // document.
+  // Annotation layer: badges/popovers portal into this host, mounted INSIDE
+  // the article container so they move natively with the text under ANY
+  // scroll container (the reader scrolls an inner div, not the document — a
+  // body-anchored overlay there must chase the text with per-frame JS, always
+  // a frame behind the composited scroll). The host must be IN-FLOW
+  // (:host(common-notes-inline) is position:relative, 0×0): an absolute host
+  // only scrolls with its CONTAINING BLOCK's scrollers, which may sit outside
+  // the inner scroller. The function anchor is re-resolved on every mount(),
+  // so a re-append after an SPA article swap lands in the new article.
+  const inlineUi = await createShadowRootUi(ctx, {
+    name: "common-notes-inline",
+    position: "inline",
+    anchor: () => findContainer(),
+    onMount(container) {
+      // Idempotent — mount() re-runs this on SPA re-append.
+      container.style.position = "relative";
+      container.classList.add("cn-theme-root");
+    },
+  });
+  inlineUi.mount();
+
+  // One sync point for all theme surfaces: the .dark class in both shadow
+  // roots (activates every dark: variant) and the ::highlight tint in the
+  // host document.
   const syncTheme = () => {
     const dark = isPageDark(findContainer());
     themeRoot?.classList.toggle("dark", dark);
+    inlineUi.uiContainer.classList.toggle("dark", dark);
     if ((CSS as any).highlights) ensureHighlightStyle(dark);
   };
 
@@ -125,9 +147,22 @@ async function mountForUrl(ctx: ContentScriptContext, href: string): Promise<(()
   const render = () => {
     syncTheme(); // piggybacks on the debounced re-anchor observer: catches
     // theme repaints that arrive as DOM swaps rather than attribute flips
-    const anchored = anchorGroups(findContainer(), groups);
+    // The SPA swapped the article node out from under us (same URL): re-append
+    // the annotation host into the new container before anchoring against it.
+    // Can't loop — the append fires the debounced observer once, then settles.
+    if (!inlineUi.shadowHost.isConnected) inlineUi.mount();
+    const container = findContainer();
+    const anchored = anchorGroups(container, groups);
     applyHighlights(anchored.map((g) => g.range));
-    reactRoot?.render(<InlineNotesApp groups={anchored} item={item} onPosted={refresh} />);
+    reactRoot?.render(
+      <InlineNotesApp
+        groups={anchored}
+        item={item}
+        onPosted={refresh}
+        container={container}
+        inlineContainer={inlineUi.uiContainer}
+      />,
+    );
   };
 
   const refresh = async () => {
@@ -181,6 +216,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string): Promise<(()
     observer.disconnect();
     clearTimeout(timer);
     ui.remove();
+    inlineUi.remove();
   };
 }
 

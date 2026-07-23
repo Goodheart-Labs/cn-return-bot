@@ -38,6 +38,20 @@
   z-index: 2147483000 !important;
 }
 
+/* In-content annotation layer: in-flow zero-size last child of the article
+ * container, so badges/popovers scroll natively with the text in EVERY scroll
+ * mode (document scroll AND inner-container scroll, e.g. Substack's reader).
+ * Must be IN-FLOW, not absolute: an absolute host only scrolls with its
+ * containing block's scrollers, which may sit outside an inner scroller. */
+:host(common-notes-inline) {
+  position: relative !important;
+  display: block !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: visible !important;
+  z-index: 2147483000 !important;
+}
+
 /* YouTube overlay: top-right inside #movie_player (the anchor element);
  * fullscreen/theater keep working since it lives inside the player. */
 :host(common-notes-yt) {
