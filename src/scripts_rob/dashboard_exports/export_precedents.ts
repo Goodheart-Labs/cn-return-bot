@@ -174,7 +174,7 @@ const shownOnOurs = new Set([...notesOnOurTweets.entries()]
 const statusFiles = readdirSync(DUMP_DIR).filter((f) => f.startsWith("noteStatusHistory") && f.endsWith(".tsv"));
 const out = {
   generated_at: new Date().toISOString(),
-  topic: "Election-security address (2026-07-16) — curated topic",
+  topic: "Curated topic — the July 16, 2026 primetime address",
   window_start: new Date(WINDOW_START).toISOString().slice(0, 10),
   dump_as_of: statusFiles.length ? statSync(`${DUMP_DIR}/${statusFiles[0]}`).mtime.toISOString() : null,
   field_notes: {

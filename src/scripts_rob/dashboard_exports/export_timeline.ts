@@ -124,10 +124,29 @@ for (const n of notes) {
 
 // ── Emit ─────────────────────────────────────────────────────────────────────
 const days = [...rows.values()].filter((r) => r.date >= "2026-07-14").sort((a, b) => a.date.localeCompare(b.date));
+
+// What the partial feed snapshots already show was circulating before the
+// pipeline went live (7/19). A LOWER BOUND with known coverage gaps — the
+// snapshot capture ran ~7/17–7/18 only and buckets by posted day, so this is
+// never a clean before/after and must not be framed as one.
+const GO_LIVE = "2026-07-19";
+const preDays = days.filter((r) => r.date >= SPEECH_DAY && r.date < GO_LIVE);
+const preGolive = {
+  window: `${SPEECH_DAY} → ${GO_LIVE} (exclusive)`,
+  matched_posts: preDays.reduce((s, r) => s + (r.feed_matches ?? 0), 0),
+  impressions: preDays.reduce((s, r) => s + (r.feed_match_impressions ?? 0), 0),
+  caveat:
+    "a lower bound from partial feed snapshots (capture ran ~Jul 17–18 only, bucketed by posted day); " +
+    "actual pre-launch circulation was larger by an unknown factor — this is what the snapshots already show, " +
+    "not what full-coverage monitoring would have seen",
+};
+
 const out = {
   generated_at: new Date().toISOString(),
-  topic: "Election-security address (2026-07-16) — curated topic",
+  topic: "Curated topic — the July 16, 2026 primetime address",
   speech_day: SPEECH_DAY,
+  go_live_day: GO_LIVE,
+  pre_golive: preGolive,
   series_notes: {
     feed_matches: "full-feed snapshot replay by posted day; capture window ~7/14-7/18 only",
     posts_sighted: "live monitoring by first-seen day; starts at go-live 7/18",

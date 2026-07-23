@@ -147,7 +147,7 @@ const totals = {
 
 const out = {
   generated_at: new Date().toISOString(),
-  topic: "Election-security address (2026-07-16) — curated topic",
+  topic: "Curated topic — the July 16, 2026 primetime address",
   series_notes: {
     posts_sighted: "unique posts matching the topic that entered the ledger, by first-seen day",
     posts_selected: "of those, posts judged to carry a claim worth a context note",

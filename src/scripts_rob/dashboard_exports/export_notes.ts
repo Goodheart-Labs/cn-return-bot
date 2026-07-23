@@ -75,13 +75,17 @@ for (const ids of chunk(noteIds, 100)) {
 const ratingByNote = new Map(ratingRows.map((r) => [r.note_id, r]));
 
 const tweetIds = [...new Set(noteRows.map((n) => n.tweet_id))];
-const tweetRows: { tweet_id: string; posted_at: string | null }[] = [];
+const tweetRows: { tweet_id: string; posted_at: string | null; nrs: unknown }[] = [];
 for (const ids of chunk(tweetIds, 100)) {
   tweetRows.push(...await logger.fetchAllRows<(typeof tweetRows)[number]>(
-    (c) => c.from("tweets").select("tweet_id, posted_at").in("tweet_id", ids),
+    (c) => c.from("tweets").select("tweet_id, posted_at, nrs:raw_tweet->note_request_suggestions").in("tweet_id", ids),
     "tweet_id"));
 }
 const postedAtByTweet = new Map(tweetRows.map((t) => [t.tweet_id, t.posted_at]));
+// User note requests present on the post when we captured it — the targeting
+// signal (request-carrying posts attract rater attention; self-sought mostly
+// don't). Count at capture, point-in-time.
+const requestsByTweet = new Map(tweetRows.map((t) => [t.tweet_id, Array.isArray(t.nrs) ? t.nrs.length : 0]));
 
 // ── Status timing from the local public-dump copy ────────────────────────────
 interface StatusTiming {
@@ -158,6 +162,7 @@ const notes = noteRows
         first_seen_at: firstSeen,
         impressions_at_first_seen: impressions,
         impressions_per_hour_at_first_seen: velocity,
+        note_requests_at_capture: requestsByTweet.get(n.tweet_id) ?? 0,
       },
       note_text: n.note_text,
       submitted_at: n.submitted_at,
@@ -185,6 +190,11 @@ const notes = noteRows
   .sort((a, b) => (a.submitted_at ?? "").localeCompare(b.submitted_at ?? ""));
 
 const ratedNotes = notes.filter((n) => (n.ratings?.total ?? 0) > 0);
+const split = (subset: typeof notes) => ({
+  notes: subset.length,
+  rated: subset.filter((n) => (n.ratings?.total ?? 0) > 0).length,
+  ratings: subset.reduce((s, n) => s + (n.ratings?.total ?? 0), 0),
+});
 const summary = {
   notes_submitted: notes.length,
   notes_rated: ratedNotes.length,
@@ -192,13 +202,20 @@ const summary = {
   total_ratings: ratedNotes.reduce((s, n) => s + (n.ratings?.total ?? 0), 0),
   total_note_views: notes.reduce((s, n) => s + (n.view_count ?? 0), 0),
   noted_post_impressions_at_first_seen: notes.reduce((s, n) => s + (n.tweet.impressions_at_first_seen ?? 0), 0),
+  // The targeting split: request-carrying posts vs self-sought. Directional
+  // at this n — labeled so wherever it renders.
+  by_note_request_presence: {
+    post_had_requests: split(notes.filter((n) => n.tweet.note_requests_at_capture > 0)),
+    post_had_none: split(notes.filter((n) => n.tweet.note_requests_at_capture === 0)),
+  },
 };
 
 const out = {
   generated_at: new Date().toISOString(),
-  topic: "Election-security address (2026-07-16) — curated topic",
+  topic: "Curated topic — the July 16, 2026 primetime address",
   field_notes: {
     ratings: "from X's public Community Notes data (~48h lag); null = not yet present in the dump",
+    note_requests_at_capture: "user note requests present on the post when we captured it (point-in-time); the by_note_request_presence split is directional at this sample size",
     view_count: "note views from the contributor page; null = not yet observed",
     time_to_display_hours_upper_bound: "hours from note creation to the earliest public-dump timestamp with a Helpful status; an upper bound because the dump records status changes, not first display",
     verifiability: "every note_id is present in X's public Community Notes data and can be checked independently",
