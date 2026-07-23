@@ -32,6 +32,8 @@ describe("substack reader URLs", () => {
   test("detects reader post URLs, rejects publication and profile URLs", () => {
     expect(isSubstackReaderUrl("https://substack.com/@thezvi/p-207449107")).toBe(true);
     expect(isSubstackReaderUrl("https://www.substack.com/@thezvi/p-207449107?utm_source=x")).toBe(true);
+    expect(isSubstackReaderUrl("https://substack.com/home/post/p-207449107")).toBe(true);
+    expect(isSubstackReaderUrl("https://substack.com/inbox/post/p-207449107")).toBe(true);
     expect(isSubstackReaderUrl("https://thezvi.substack.com/p/on-kimi-k3")).toBe(false);
     expect(isSubstackReaderUrl("https://substack.com/@thezvi")).toBe(false);
     expect(isSubstackReaderUrl("not a url")).toBe(false);

@@ -87,14 +87,16 @@ export function normalizePageUrl(href: string, doc?: Document): string {
   return url.toString();
 }
 
-/** Substack's reader app (substack.com/@author/p-<postid>) shows posts under
- *  URLs the DB has never seen; its <link rel=canonical> is self-referential,
- *  so the only mapping to the publication URL we store is the `canonical_url`
- *  field in the page's embedded JSON. */
+/** Substack's reader app shows posts under several apex-domain URL shapes
+ *  (`/@author/p-<postid>`, `/home/post/p-<postid>`, inbox variants…) the DB
+ *  has never seen; its <link rel=canonical> is self-referential, so the only
+ *  mapping to the publication URL we store is the `canonical_url` field in
+ *  the page's embedded JSON. Match any `/p-<id>` path segment — a false
+ *  positive just fetches a page with no embedded canonical and falls back. */
 export function isSubstackReaderUrl(href: string): boolean {
   try {
     const url = new URL(href);
-    return /^(www\.)?substack\.com$/.test(url.hostname) && /^\/@[^/]+\/p-\d+/.test(url.pathname);
+    return /^(www\.)?substack\.com$/.test(url.hostname) && /\/p-\d+(\/|$)/.test(url.pathname);
   } catch {
     return false;
   }
