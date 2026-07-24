@@ -1,10 +1,11 @@
 /**
- * Insert a "**Rater reasons:**" line into each review-doc entry from the
- * public dump's per-note tag counts (helpful_tag_counts /
- * not_helpful_tag_counts in note_ratings_from_public_dump). Only inserts —
- * never rewrites — so Rob's hand annotations are safe. Idempotent: entries
- * that already carry a Rater reasons line are skipped; entries with no dump
- * row get an explicit "none in dump yet" so silence isn't ambiguous.
+ * Insert or refresh the "**Rater reasons:**" line in each review-doc entry
+ * from the public dump's per-note tag counts (helpful_tag_counts /
+ * not_helpful_tag_counts in note_ratings_from_public_dump). Existing lines
+ * are replaced IN PLACE — but only lines this tooling generated (they all
+ * start with "**Rater reasons:**"); Rob's hand annotations are never
+ * anchors, so they're safe. Entries with no dump row get an explicit
+ * "none in dump yet" so silence isn't ambiguous. Idempotent.
  *
  *   bun run src/scripts_rob/2026_07_21_note_critique/add_rater_reasons.ts
  */
@@ -66,9 +67,12 @@ for (const file of ["WINNERS_REVIEW.md", "OURS_REVIEW.md"]) {
   const lines = text.split("\n");
   const out: string[] = [];
   let added = 0;
+  let refreshed = 0;
   let currentHeading: string | null = null;
-  let entryHasReasons = new Set<string>();
-  // First pass: which entries already have a reasons line
+  const entryHasReasons = new Set<string>();
+  // First pass: register every entry that already carries a reasons line —
+  // the insert below must never fire for them, even when the refresh guard
+  // (no dump row, e.g. all W/N ecosystem entries) leaves the line untouched.
   {
     let h: string | null = null;
     for (const line of lines) {
@@ -80,7 +84,23 @@ for (const file of ["WINNERS_REVIEW.md", "OURS_REVIEW.md"]) {
   for (const line of lines) {
     const m = line.match(/^## ([WNO]\d+) —/);
     if (m) currentHeading = m[1]!;
-    // Insert just above the annotation slot of each entry.
+    // Refresh an existing tooling-generated line in place — but only when we
+    // have a dump row to refresh FROM. Ecosystem notes (W/N) never appear in
+    // note_ratings_from_public_dump (that table only tracks our own notes);
+    // their lines were filled by add_eco_rater_reasons and must not be
+    // clobbered with placeholders here.
+    if (
+      currentHeading
+      && noteIdByHeading.has(currentHeading)
+      && byNoteId.has(noteIdByHeading.get(currentHeading)!)
+      && line.startsWith("**Rater reasons:**")
+    ) {
+      out.push(reasonLine(noteIdByHeading.get(currentHeading)!));
+      refreshed++;
+      entryHasReasons.add(currentHeading);
+      continue;
+    }
+    // Insert just above the annotation slot of entries with no line yet.
     if (
       currentHeading
       && noteIdByHeading.has(currentHeading)
@@ -94,5 +114,5 @@ for (const file of ["WINNERS_REVIEW.md", "OURS_REVIEW.md"]) {
     out.push(line);
   }
   writeFileSync(path, out.join("\n"));
-  console.log(`${file}: added ${added} rater-reason line(s)`);
+  console.log(`${file}: added ${added}, refreshed ${refreshed} rater-reason line(s)`);
 }
