@@ -39,6 +39,41 @@ test("election-administration vocabulary", () => {
   expect(matches("if your birth certificate name differs from your license you cannot vote")).toBe(true);
 });
 
+// ── 7/24 claim-coverage audit: the speech's coverup-lore specifics ──────────
+// (src/scripts_rob/2026_07_24_claim_coverage_audit) These claim families were
+// in the address but their posts often carry no voting word, so the pairing
+// rule never saw them: ~106 posts / ~11M impressions missed since 7/16.
+
+test("coverup specifics: standalone speech-lore phrases with no voting word", () => {
+  expect(matches("an fbi official admitted running a shadow government to bury the intel")).toBe(true);
+  expect(matches("obama's burn bags were never incinerated. think about what was in them.")).toBe(true);
+  expect(matches("they deliberately massaged the presidential daily brief to hide it")).toBe(true);
+});
+
+test("coverup phrasings next to an election word", () => {
+  expect(matches("'most secure election in history' was a cover story and they knew it")).toBe(true);
+  expect(matches("evidence of election fraud was covered up for years")).toBe(true);
+});
+
+test("china influence ops: journalists and business leaders, no voting word", () => {
+  expect(matches("cia docs show china paid us journalists to write hit pieces on trump")).toBe(true);
+  expect(matches("beijing pressured american business leaders to turn against the president")).toBe(true);
+});
+
+test("mail-in without the hyphen, and ballots through the mail", () => {
+  expect(matches("mail in ballots are inherently corrupt, always have been")).toBe(true);
+  expect(matches("tens of millions of ballots flowing aimlessly through the mail. insanity.")).toBe(true);
+});
+
+test("slow-count and compromise stems near an election word", () => {
+  expect(matches("more than a month to count the votes in california. worse than a third world country.")).toBe(true);
+  expect(matches("these voting systems are easy to compromise and they knew it")).toBe(true);
+});
+
+test("china influence ops still needs an ops verb, not china+journalist alone", () => {
+  expect(matches("chinese journalists covered the summit from beijing")).toBe(false);
+});
+
 test("still matches what it always matched", () => {
   expect(matches("dominion voting machines were compromised in the last election")).toBe(true);
   expect(matches("they rigged the election with mail-in ballots")).toBe(true);

@@ -42,6 +42,15 @@ Two triggers:
 or state the claims accurately with context. Correct the misleading factual claim or the unsupported
 leap — never the opinion.
 
+**Coverup-lore families with no vetted debunk section yet** — the "shadow government" FBI email,
+Obama "burn bags," the "massaged" presidential daily briefings, China's 2018–19 influence ops
+(paying journalists, pressuring business leaders), and the Michigan/Muskegon registration case.
+The keyword net now surfaces these posts, but this document has no per-claim sources for them.
+A note is only allowed under trigger 2 — the post asserts something *beyond* what the released
+documents say — and only if that gap can be cited to a source that meets the sourcing rule above.
+If it can't, skip. Never write a note on these families that argues the underlying story is false;
+we have not vetted that ground.
+
 ---
 
 ## Claim 1 — "Hundreds of thousands of noncitizens" / DHS "250,000 in four states" on the rolls
