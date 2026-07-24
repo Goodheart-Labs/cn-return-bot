@@ -83,7 +83,16 @@ export function VoteDonation({ voteId, pair, charity, status, onCharityChange, o
   const [pickerOpen, setPickerOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [fading, setFading] = useState(false);
+  const boxRef = useRef<HTMLDivElement>(null);
   const inUse = pickerOpen || hovered || failed;
+
+  // The notice mounts at the bottom of whatever holds the note — inside the
+  // extension's scroll-constrained popovers that can be below the fold, and a
+  // notice nobody sees defeats its purpose. "nearest" makes it a no-op when
+  // already visible.
+  useEffect(() => {
+    boxRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, []);
 
   // Fade out and unmount once the reader is no longer using the box; any use
   // cancels a fade in progress and restarts the dwell from scratch.
@@ -116,6 +125,7 @@ export function VoteDonation({ voteId, pair, charity, status, onCharityChange, o
     // Theme note: only unmodified utility classes (bg-blue-50, not bg-blue-50/50)
     // — design.css remaps the exact class names per color scheme.
     <div
+      ref={boxRef}
       className="mt-2 rounded-lg border border-blue-100 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/50 p-3 flex items-start justify-between gap-3"
       style={{ opacity: fading ? 0 : 1, transition: `opacity ${FADE_MS}ms ease` }}
       onMouseEnter={() => setHovered(true)}
