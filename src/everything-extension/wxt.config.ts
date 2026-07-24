@@ -27,8 +27,15 @@ export default defineConfig({
   manifest: ({ browser }) => ({
     version: "0.1.0",
     name: "Common Notes",
-    description: "Community notes inline on the pages you read — Substack, YouTube, and any text site.",
+    description: "Community notes inline on the pages you read — Substack, YouTube, ai-2040, and more on request.",
+    icons: { 16: "icon/16.png", 32: "icon/32.png", 48: "icon/48.png", 128: "icon/128.png" },
+    action: { default_icon: { 16: "icon/16.png", 32: "icon/32.png" } },
     permissions: ["storage", "identity", "contextMenus", "activeTab", "tabs", "scripting"],
+    // Lets the BACKGROUND fetch substack.com (reader-URL canonical resolution
+    // — the logged-out 302 to the publication domain is cross-origin, which
+    // content scripts can't follow). Same scope as the substack content
+    // script, so no new install warning.
+    host_permissions: ["*://*.substack.com/*"],
     // Generic text sites are opt-in per site from the popup; only Substack and
     // YouTube are injected by default.
     optional_host_permissions: ["<all_urls>"],
@@ -41,11 +48,13 @@ export default defineConfig({
   }),
   hooks: {
     "build:manifestGenerated": (_wxt, manifest) => {
-      // The generic content script registers at runtime for user-chosen
-      // origins, so WXT can't know its CSS's matches — it emits an empty list,
-      // which would block the shadow-root UI from fetching the stylesheet.
+      // The generic and requestnote content scripts inject at runtime on
+      // arbitrary origins, so WXT can't know their CSS's matches — it emits an
+      // empty list, which would block the shadow-root UI from fetching the
+      // stylesheet.
+      const RUNTIME_INJECTED_CSS = ["content-scripts/generic.css", "content-scripts/requestnote.css"];
       for (const resource of manifest.web_accessible_resources ?? []) {
-        if (typeof resource === "object" && "resources" in resource && resource.resources.includes("content-scripts/generic.css")) {
+        if (typeof resource === "object" && "resources" in resource && RUNTIME_INJECTED_CSS.some((css) => resource.resources.includes(css))) {
           resource.matches = ["<all_urls>"];
         }
       }
