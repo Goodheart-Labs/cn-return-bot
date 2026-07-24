@@ -123,21 +123,7 @@ export async function fetchEligiblePosts(
     const fetchMultiplier = skipPostIds.size > 0 ? 3 : 1;
     const fetchLimit = Math.min(maxResults * fetchMultiplier, 100);
 
-    // A mid-walk failure (timeout, 5xx) must not throw away the pages already
-    // fetched. A first-page failure still throws so callers can tell a dead
-    // feed apart from an exhausted one. The normal end of a feed is not an
-    // error: a 200 whose meta carries no next_token (see
-    // scripts_jim/2026_07_24_feed_pagination_probe).
-    let response;
-    try {
-      response = await fetchPage(fetchLimit, postSelection, nextToken);
-    } catch (err) {
-      if (allEligiblePosts.length === 0) throw err;
-      console.warn(
-        `[generate] Page ${pageCount} failed (${(err as Error)?.message}); keeping the ${allEligiblePosts.length} posts already fetched`
-      );
-      break;
-    }
+    const response = await fetchPage(fetchLimit, postSelection, nextToken);
 
     const allPosts = parsePostsResponse(response.data);
 

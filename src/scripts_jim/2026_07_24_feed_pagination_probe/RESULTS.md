@@ -22,5 +22,5 @@ exercises the same pagination mechanics).
   deleted) alongside a 200 — harmless, the parser already ignores it.
 
 Consequence for `fetchEligiblePosts`: `!next_token → break` is the one true
-end-of-feed signal; the header check stops before the request that would 429;
-the try/catch salvage remains only for genuine mid-walk failures (timeout, 5xx).
+end-of-feed signal, and the header check stops before the request that would
+429 — no error handling needed inside the walk.
