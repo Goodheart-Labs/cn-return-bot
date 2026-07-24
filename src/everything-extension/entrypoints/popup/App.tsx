@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 import { browser } from "#imports";
 import { useSession, signOut } from "../../../everything-shared/auth";
 import { displayName } from "../../../everything-shared/session";
-import { fetchItemForUrl, fetchNotesForItem, fetchReaderCanonical, isSubstackReaderUrl, normalizePageUrl, type PageItem } from "../../../everything-shared/notesQuery";
+import { fetchItemForUrl, fetchNotesForItem, normalizePageUrl, type PageItem } from "../../../everything-shared/notesQuery";
+import { resolveReaderCanonical } from "../../utils/readerCanonical";
 import { COMMONNOTES_ORIGIN } from "../../utils/share";
 import { getEnabledOrigins, updateEnabledOrigins } from "../../utils/settings";
 import { LoginPanel } from "../../components/LoginPanel";
 
-// Sites injected by the static manifest scripts — no opt-in needed.
-const DEFAULT_SITE = /(^|\.)substack\.com$|(^|\.)youtube\.com$|(^|\.)youtu\.be$/;
+// Sites injected by the static manifest scripts — no opt-in needed (keep in
+// sync with notes.content.ts matches + background.ts STATIC_TEXT_SITES).
+const DEFAULT_SITE = /(^|\.)substack\.com$|(^|\.)youtube\.com$|(^|\.)youtu\.be$|(^|\.)ai-2040\.com$/;
 
 type PageState =
   | { kind: "loading" }
@@ -29,7 +31,7 @@ function usePageState(): PageState {
       const url = tab?.url;
       if (!url || !/^https?:/.test(url)) return setState({ kind: "unsupported" });
       const origin = new URL(url).origin;
-      const readerCanonical = isSubstackReaderUrl(url) ? await fetchReaderCanonical(url) : null;
+      const readerCanonical = await resolveReaderCanonical(url);
       const item = await fetchItemForUrl(normalizePageUrl(readerCanonical ?? url));
       if (!item) return setState({ kind: "no_item", origin });
       const notes = await fetchNotesForItem(item.id);
@@ -41,8 +43,11 @@ function usePageState(): PageState {
 
 /** Per-site opt-in for generic text sites: request the host permission, then
  *  register the generic content script for that origin (persists across
- *  restarts). Substack/YouTube are always on via the static manifest. */
-function SiteToggle({ origin }: { origin: string }) {
+ *  restarts). Substack/YouTube are always on via the static manifest.
+ *  Only offered when the page actually has notes — asking for a permission
+ *  on a site we have nothing to show on is pure noise. Already-enabled
+ *  origins still get the disable link so the grant stays revocable. */
+function SiteToggle({ origin, hasNotes }: { origin: string; hasNotes: boolean }) {
   const [enabled, setEnabled] = useState<boolean | null>(null);
   const hostname = new URL(origin).hostname;
   const scriptId = `cn-generic-${hostname}`;
@@ -80,14 +85,14 @@ function SiteToggle({ origin }: { origin: string }) {
     setEnabled(false);
   };
 
-  if (enabled === null) return null;
+  if (enabled === null || (!enabled && !hasNotes)) return null;
   return enabled ? (
     <button onClick={disable} className="text-xs text-gray-500 hover:underline">
       Disable Common Notes on {hostname}
     </button>
   ) : (
     <button onClick={enable} className="w-full bg-blue-600 text-white rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-blue-700">
-      Enable Common Notes on {hostname}
+      Show notes inline on {hostname}
     </button>
   );
 }
@@ -135,11 +140,13 @@ function PageSection({ state }: { state: PageState }) {
   switch (state.kind) {
     case "loading":
       return <p className="text-sm text-gray-500">Loading notes…</p>;
+    // Pages without notes (or non-web pages) get no status line at all — the
+    // popup only ever says "loading" or links to the notes.
     case "unsupported":
-      return <p className="text-sm text-gray-500">Common Notes runs on regular web pages.</p>;
     case "no_item":
-      return <p className="text-sm text-gray-500">No notes on this page yet.</p>;
+      return null;
     case "item":
+      if (state.noteCount === 0) return null;
       return (
         <button onClick={scrollToNotes} className="text-sm text-blue-600 hover:underline">
           {state.noteCount} {state.noteCount === 1 ? "note" : "notes"} on this page
@@ -163,7 +170,7 @@ export function PopupApp() {
       </div>
 
       <PageSection state={state} />
-      {showSiteToggle && <SiteToggle origin={state.origin} />}
+      {showSiteToggle && <SiteToggle origin={state.origin} hasNotes={state.kind === "item" && state.noteCount > 0} />}
 
       <div className="border-t border-gray-200 pt-3">
         {!ready ? null : session ? (

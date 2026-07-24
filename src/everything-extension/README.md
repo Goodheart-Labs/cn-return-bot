@@ -1,6 +1,8 @@
 # Common Notes browser extension
 
-Community notes inline on the pages you read — Substack, YouTube, and (opt-in per site) any text site, backed by the same Supabase database as [commonnotes.net](https://commonnotes.net).
+Community notes inline on the pages you read — Substack, YouTube, ai-2040.com, and (opt-in per site) any text site, backed by the same Supabase database as [commonnotes.net](https://commonnotes.net).
+
+Also: right-click any selected text on **any** page → **"Request a Common Note"** logs that you wanted a note there (no site enabling needed — the click itself authorizes a one-off injection). The inline-notes-everywhere feature isn't built yet; requests tell us where to build next.
 
 ## Install without a store (self-distribution)
 

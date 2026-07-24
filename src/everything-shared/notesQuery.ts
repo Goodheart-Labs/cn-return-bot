@@ -110,7 +110,10 @@ export function extractEmbeddedCanonical(html: string): string | null {
 
 /** Resolve a reader URL to the publication post URL by fetching the page
  *  fresh (the DOM's embedded JSON goes stale on reader SPA navigation).
- *  Works from the popup too — host permission covers substack.com. */
+ *  Extension callers must run this in the BACKGROUND (via the
+ *  cn-reader-canonical message): logged-out Substack 302s the reader URL
+ *  cross-origin to the publication domain, which only a host-permission
+ *  fetch can follow — content scripts and CORS-bound contexts get null. */
 export async function fetchReaderCanonical(href: string): Promise<string | null> {
   try {
     const html = await (await fetch(href, { credentials: "omit" })).text();

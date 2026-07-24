@@ -64,6 +64,15 @@
   z-index: 1000 !important;
 }
 
+/* Request-note popover: fixed bottom-right card on whatever page the user
+ * invoked "Request a Common Note" on. */
+:host(common-notes-requestnote) {
+  position: fixed !important;
+  bottom: 16px !important;
+  right: 16px !important;
+  z-index: 2147483001 !important;
+}
+
 @keyframes cn-countdown {
   from { stroke-dashoffset: 0; }
   to { stroke-dashoffset: 44; }

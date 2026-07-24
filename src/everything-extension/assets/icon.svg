@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- Common Notes icon: a note card with two text lines and the three-way
+       vote pills (not helpful / somewhat / helpful), matching the brand's
+       rating colors. Source of truth for public/icon/*.png — regenerate via
+       scripts/generate-extension-icons.ts. -->
+  <rect x="4" y="4" width="120" height="120" rx="24" fill="#aecdf3" stroke="#2563eb" stroke-width="6"/>
+  <!-- note text lines -->
+  <line x1="26" y1="40" x2="102" y2="40" stroke="#1f2937" stroke-width="8" stroke-linecap="round"/>
+  <line x1="26" y1="62" x2="86" y2="62" stroke="#1f2937" stroke-width="8" stroke-linecap="round"/>
+  <!-- vote pills: red / amber / green -->
+  <rect x="24" y="82" width="24" height="18" rx="6" fill="#fecaca" stroke="#dc2626" stroke-width="4"/>
+  <rect x="52" y="82" width="24" height="18" rx="6" fill="#fde68a" stroke="#d97706" stroke-width="4"/>
+  <rect x="80" y="82" width="24" height="18" rx="6" fill="#bbf7d0" stroke="#16a34a" stroke-width="4"/>
+</svg>
