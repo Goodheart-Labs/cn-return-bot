@@ -123,7 +123,20 @@ export async function fetchEligiblePosts(
     const fetchMultiplier = skipPostIds.size > 0 ? 3 : 1;
     const fetchLimit = Math.min(maxResults * fetchMultiplier, 100);
 
-    const response = await fetchPage(fetchLimit, postSelection, nextToken);
+    // Deep walks are expected to eventually hit the endpoint's rate limit —
+    // keep the pages already fetched instead of throwing them away. A
+    // first-page failure still throws so callers can tell a dead feed apart
+    // from an exhausted one.
+    let response;
+    try {
+      response = await fetchPage(fetchLimit, postSelection, nextToken);
+    } catch (err) {
+      if (allEligiblePosts.length === 0) throw err;
+      console.warn(
+        `[generate] Page ${pageCount} failed (${(err as Error)?.message}); keeping the ${allEligiblePosts.length} posts already fetched`
+      );
+      break;
+    }
 
     const allPosts = parsePostsResponse(response.data);
 
