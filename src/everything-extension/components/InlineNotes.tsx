@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import type { Session } from "@supabase/supabase-js";
-import { NoteNotNeeded, type NnnApi } from "../../everything-web/src/components/NoteNotNeeded";
+import type { NnnApi } from "../../everything-web/src/components/NoteNotNeeded";
 import type { Vote } from "../../everything-shared/votes";
 import type { NnnRow, NoteRow } from "../../everything-shared/types";
 import type { PageItem } from "../../everything-shared/notesQuery";
-import { noteShareUrl } from "../utils/share";
+import { ABSORB_KEYS, ClaimNoteStack, GroupIcon, NOTE_POPOVER_WIDTH, SignInHint } from "./ClaimNoteStack";
 import { NoteWithActions } from "./NoteWithActions";
 import { useNoteVoting, replaceNoteInGroup } from "./useNoteVoting";
 import { WriteNoteOverlay } from "./WriteNoteOverlay";
@@ -22,7 +22,6 @@ export interface AnchoredGroup {
 
 const BADGE_SIZE = 20;
 const BADGE_GAP = 4; // px between the passage's end and the badge
-const POPOVER_WIDTH = 560;
 const POPOVER_GAP = 8; // px between the passage and the opened popover
 const VIEWPORT_MARGIN = 8; // keep the popover this far from the viewport edges
 
@@ -39,14 +38,6 @@ function relRect(range: Range, origin: DOMRect) {
   };
 }
 
-/** Group-of-people glyph (Material Symbols "groups"): the community marker. */
-function GroupIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden>
-      <path d="M0 18v-1.575q0-1.1 1.1-1.763T4 14q.325 0 .625.013t.575.062q-.35.525-.525 1.1T4.5 16.4V18Zm6 0v-1.6q0-.8.438-1.463t1.237-1.162Q8.475 13.275 9.55 13T12 12.725q1.375 0 2.45.275t1.875.775q.8.5 1.238 1.163T18 16.4V18Zm13.5 0v-1.6q0-.65-.163-1.225t-.487-1.075q.275-.05.563-.075T20 14q1.8 0 2.9.663t1.1 1.762V18ZM4 13q-.825 0-1.412-.588T2 11q0-.85.588-1.425T4 9q.85 0 1.425.575T6 11q0 .825-.575 1.413T4 13Zm16 0q-.825 0-1.413-.588T18 11q0-.85.588-1.425T20 9q.85 0 1.425.575T22 11q0 .825-.575 1.413T20 13Zm-8-1q-1.25 0-2.125-.875T9 9q0-1.275.875-2.138T12 6q1.275 0 2.138.863T15 9q0 1.25-.862 2.125T12 12Z" />
-    </svg>
-  );
-}
 
 /** Small badge at the end of the anchored passage: blue community glyph on a
  *  light/dark surface following the host page's theme. */
@@ -77,32 +68,23 @@ function NotePopover({ group, projectSlug, session, myVotes, onVote, onNeedLogin
   nnnApi: NnnApi;
   style: React.CSSProperties;
 }) {
-  const noteProps = (note: NoteRow) => ({
-    note,
-    myVote: myVotes.get(note.id),
-    onVote,
-    session,
-    shareUrl: noteShareUrl(projectSlug, note.id),
-    onNeedLogin,
-    onAuthored,
-    onNnnAuthored,
-    onDeleted,
-  });
   return (
     // max-h + inner scroll: a claim can stack several notes plus an open
     // composer — taller than the viewport. overscroll-contain keeps the inner
     // scroll from chaining into the host page.
     <div style={style} className="absolute bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-xl p-3 text-left max-h-[70vh] overflow-y-auto overscroll-contain">
-      <NoteWithActions {...noteProps(group.primary)} />
-      {group.alternatives.length > 0 && (
-        <div className="mt-3 pl-3 border-l-[3px] border-gray-300 dark:border-gray-600 space-y-3">
-          {group.alternatives.map((d) => (
-            <NoteWithActions key={d.id} {...noteProps(d)} />
-          ))}
-        </div>
-      )}
-      {/* Claim-keyed like the website: the same list belongs to every note above. */}
-      <NoteNotNeeded entries={group.nnn} api={nnnApi} session={session} />
+      <ClaimNoteStack
+        group={group}
+        projectSlug={projectSlug}
+        session={session}
+        myVotes={myVotes}
+        onVote={onVote}
+        onNeedLogin={onNeedLogin}
+        onAuthored={onAuthored}
+        onNnnAuthored={onNnnAuthored}
+        onDeleted={onDeleted}
+        nnnApi={nnnApi}
+      />
     </div>
   );
 }
@@ -241,7 +223,7 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
       // M - origin.left (same clamp as before, minus the scroll offsets).
       const popLeft = Math.max(
         VIEWPORT_MARGIN - origin.left,
-        Math.min(rect.left, window.innerWidth - POPOVER_WIDTH - VIEWPORT_MARGIN - origin.left),
+        Math.min(rect.left, window.innerWidth - NOTE_POPOVER_WIDTH - VIEWPORT_MARGIN - origin.left),
       );
       return {
         group,
@@ -254,7 +236,7 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
         popoverStyle: {
           top: rect.bottom + POPOVER_GAP,
           left: popLeft,
-          width: Math.min(POPOVER_WIDTH, window.innerWidth - VIEWPORT_MARGIN * 2),
+          width: Math.min(NOTE_POPOVER_WIDTH, window.innerWidth - VIEWPORT_MARGIN * 2),
           zIndex: 2,
         } satisfies React.CSSProperties,
       };
@@ -263,16 +245,12 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
   }, [groups, layoutTick, inlineContainer]);
 
   return (
-    // Absorb both event kinds: mousedown would close the popover via the
+    // Absorb mouse AND keyboard: mousedown would close the popover via the
     // document listener above; click would leak to the host page and to our
-    // own passage hit-test.
-    <div onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
-      {signInHint && (
-        <div className="fixed top-4 right-4 z-50 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-3 text-sm text-gray-700 dark:text-gray-300 flex items-center gap-3">
-          Sign in from the Common Notes toolbar icon to vote or write notes.
-          <button onClick={dismissSignInHint} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">✕</button>
-        </div>
-      )}
+    // own passage hit-test; keys typed in a composer would trigger host-page
+    // hotkeys (see ABSORB_KEYS).
+    <div {...ABSORB_KEYS} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
+      {signInHint && <SignInHint onDismiss={dismissSignInHint} className="fixed top-4 right-4 z-50" />}
       {writeSelection && (
         <WriteNoteOverlay
           item={item}
@@ -287,7 +265,7 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
           (React attaches listeners to portal containers, so stopPropagation
           halts the native event before the document-level listeners). */}
       {createPortal(
-        <div onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
+        <div {...ABSORB_KEYS} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
           {positioned.map(({ group, badgeStyle, popoverStyle }) => (
             <div key={group.claimId}>
               <Badge
