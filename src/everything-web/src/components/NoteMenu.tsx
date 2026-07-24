@@ -183,8 +183,15 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
           </button>
         )}
         {open && mine && (
-          <div className="cn-menu absolute right-0 top-8 z-20 w-56 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-1.5 text-sm">
-            <MenuItem onClick={del} icon={<TrashIcon />} label="Delete" danger />
+          // In-flow (w-full wraps to its own line), NOT absolutely positioned:
+          // in the extension the card sits in a max-h scroll popover, and a
+          // dropdown hanging below the bottom action row spilled past the edge
+          // — revealing a scrollbar instead of the menu. In-flow grows the
+          // card, same as the improve/NNN composers.
+          <div className="w-full flex justify-end mt-1">
+            <div className="cn-menu w-56 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-1.5 text-sm">
+              <MenuItem onClick={del} icon={<TrashIcon />} label="Delete" danger />
+            </div>
           </div>
         )}
       </div>
