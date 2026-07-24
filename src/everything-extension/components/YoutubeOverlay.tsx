@@ -122,6 +122,20 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
     dismissed.current.delete(target.claimId);
     video.currentTime = target.startSeconds + 0.01;
   };
+
+  // The popup's "n notes on this page" link: bring the player on screen and
+  // jump to the first claim, same as clicking its pin.
+  useEffect(() => {
+    const listener = (message: unknown) => {
+      if ((message as { type?: string })?.type === "cn-scroll-to-notes" && groups[0]) {
+        video.scrollIntoView({ behavior: "smooth", block: "center" });
+        jumpToPin(groups[0]);
+      }
+    };
+    const runtime = (globalThis as any).browser?.runtime ?? (globalThis as any).chrome?.runtime;
+    runtime?.onMessage.addListener(listener);
+    return () => runtime?.onMessage.removeListener(listener);
+  }, [groups, video]);
   const refresh = async () => setGroups(await refetch());
   const handleAuthored = (noteId: string) => {
     recordAuthored(noteId);
