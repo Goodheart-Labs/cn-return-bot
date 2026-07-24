@@ -123,10 +123,11 @@ export async function fetchEligiblePosts(
     const fetchMultiplier = skipPostIds.size > 0 ? 3 : 1;
     const fetchLimit = Math.min(maxResults * fetchMultiplier, 100);
 
-    // Deep walks are expected to eventually hit the endpoint's rate limit —
-    // keep the pages already fetched instead of throwing them away. A
-    // first-page failure still throws so callers can tell a dead feed apart
-    // from an exhausted one.
+    // A mid-walk failure (timeout, 5xx) must not throw away the pages already
+    // fetched. A first-page failure still throws so callers can tell a dead
+    // feed apart from an exhausted one. The normal end of a feed is not an
+    // error: a 200 whose meta carries no next_token (see
+    // scripts_jim/2026_07_24_feed_pagination_probe).
     let response;
     try {
       response = await fetchPage(fetchLimit, postSelection, nextToken);
@@ -160,6 +161,16 @@ export async function fetchEligiblePosts(
 
     // If no more pages, break
     if (!nextToken) {
+      break;
+    }
+
+    // Every response reports the endpoint's remaining rate budget (500
+    // requests per 15-min window, shared by all fetches in a run). Stop
+    // BEFORE the request that would 429 instead of reacting to it.
+    if (response.headers?.["x-rate-limit-remaining"] === "0") {
+      console.warn(
+        `[generate] Rate budget exhausted after page ${pageCount}; keeping the ${allEligiblePosts.length} posts already fetched`
+      );
       break;
     }
   }
