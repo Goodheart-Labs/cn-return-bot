@@ -101,21 +101,16 @@ function PageSection({ state }: { state: PageState }) {
 
   switch (state.kind) {
     case "loading":
-      return <p className="text-sm text-gray-500">Checking this page…</p>;
+      return <p className="text-sm text-gray-500">Loading notes…</p>;
     case "unsupported":
       return <p className="text-sm text-gray-500">Common Notes runs on regular web pages.</p>;
     case "no_item":
-      return <p className="text-sm text-gray-500">No community notes for this page yet.</p>;
+      return <p className="text-sm text-gray-500">No notes on this page yet.</p>;
     case "item":
       return (
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-gray-800 truncate" title={state.item.title ?? undefined}>
-            {state.item.title ?? state.item.url}
-          </p>
-          <button onClick={scrollToNotes} className="text-sm text-blue-600 hover:underline">
-            {state.noteCount} {state.noteCount === 1 ? "note" : "notes"} on this page — show me
-          </button>
-        </div>
+        <button onClick={scrollToNotes} className="text-sm text-blue-600 hover:underline">
+          {state.noteCount} {state.noteCount === 1 ? "note" : "notes"} on this page
+        </button>
       );
   }
 }
