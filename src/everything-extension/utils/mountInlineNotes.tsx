@@ -1,7 +1,8 @@
 import { createRoot, type Root } from "react-dom/client";
 import { createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
-import { fetchItemForUrl, fetchReaderCanonical, isSubstackReaderUrl, normalizePageUrl } from "../../everything-shared/notesQuery";
+import { fetchItemForUrl, normalizePageUrl } from "../../everything-shared/notesQuery";
+import { resolveReaderCanonical } from "./readerCanonical";
 import { indexContainer, findQuoteRange } from "./anchor";
 import { fetchClaimGroups, type ClaimGroup } from "./claimGroups";
 import { isPageDark, observePageTheme } from "./pageTheme";
@@ -70,7 +71,7 @@ function applyHighlights(ranges: Range[]) {
  *  Returns a teardown for the mounted overlay, or null when the page isn't
  *  ingested. */
 async function mountForUrl(ctx: ContentScriptContext, href: string): Promise<(() => void) | null> {
-  const readerCanonical = isSubstackReaderUrl(href) ? await fetchReaderCanonical(href) : null;
+  const readerCanonical = await resolveReaderCanonical(href);
   const pageUrl = readerCanonical ? normalizePageUrl(readerCanonical) : normalizePageUrl(href, document);
   const item = await fetchItemForUrl(pageUrl);
   console.info(`[common-notes] ${pageUrl} → ${item ? `item "${item.title ?? item.id}"` : "no ingested item"}`);
