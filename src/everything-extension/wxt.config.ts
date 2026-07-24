@@ -54,7 +54,24 @@ export default defineConfig({
   vite: () => ({
     envDir: repoRoot,
     css: {
-      postcss: { plugins: [tailwindcss(path.resolve(__dirname, "tailwind.config.ts"))] },
+      // rem→px after Tailwind: rem resolves against the HOST page's <html>
+      // font-size even inside a shadow root (shadow DOM does not isolate it),
+      // and e.g. YouTube sets html{font-size:10px} — shrinking every rem-based
+      // utility to 62.5%. Baking rem out at 1rem=16px renders the overlays
+      // identically on every host.
+      postcss: {
+        plugins: [
+          tailwindcss(path.resolve(__dirname, "tailwind.config.ts")),
+          {
+            postcssPlugin: "cn-rem-to-px",
+            Declaration(decl: { value: string }) {
+              if (decl.value.includes("rem")) {
+                decl.value = decl.value.replace(/(\d*\.?\d+)rem\b/g, (_, n) => `${parseFloat(n) * 16}px`);
+              }
+            },
+          },
+        ],
+      },
     },
     plugins: [
       {

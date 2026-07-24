@@ -17,12 +17,16 @@ export async function castVote(noteId: string, voterId: string, vote: Vote): Pro
   const { error } = await supabase
     .from("everything_votes")
     .upsert({ note_id: noteId, voter_id: voterId, vote }, { onConflict: "note_id,voter_id" });
-  if (error) return null;
+  if (error) {
+    console.error("[common-notes] vote failed:", error.message);
+    return null;
+  }
   const { data } = await supabase.from("everything_votes").select("id").eq("note_id", noteId).maybeSingle();
   return (data as { id?: string } | null)?.id ?? null;
 }
 
 /** Un-vote (RLS restricts deletion to the caller's own row). */
-export function clearVote(noteId: string) {
-  return supabase.from("everything_votes").delete().eq("note_id", noteId);
+export async function clearVote(noteId: string) {
+  const { error } = await supabase.from("everything_votes").delete().eq("note_id", noteId);
+  if (error) console.error("[common-notes] vote retract failed:", error.message);
 }

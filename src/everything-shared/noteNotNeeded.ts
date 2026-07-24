@@ -58,13 +58,15 @@ export async function fetchMyNnnVotes(): Promise<Map<string, Vote>> {
 }
 
 /** Cast or change an entry vote; the counter trigger updates the entry live. */
-export function castNnnVote(entryId: string, voterId: string, vote: Vote) {
-  return supabase
+export async function castNnnVote(entryId: string, voterId: string, vote: Vote) {
+  const { error } = await supabase
     .from("everything_note_not_needed_votes")
     .upsert({ entry_id: entryId, voter_id: voterId, vote }, { onConflict: "entry_id,voter_id" });
+  if (error) console.error("[common-notes] entry vote failed:", error.message);
 }
 
 /** Un-vote (RLS restricts deletion to the caller's own row). */
-export function clearNnnVote(entryId: string) {
-  return supabase.from("everything_note_not_needed_votes").delete().eq("entry_id", entryId);
+export async function clearNnnVote(entryId: string) {
+  const { error } = await supabase.from("everything_note_not_needed_votes").delete().eq("entry_id", entryId);
+  if (error) console.error("[common-notes] entry vote retract failed:", error.message);
 }

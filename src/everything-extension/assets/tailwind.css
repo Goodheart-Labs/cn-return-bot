@@ -52,12 +52,15 @@
   z-index: 2147483000 !important;
 }
 
-/* YouTube overlay: top-right inside #movie_player (the anchor element);
- * fullscreen/theater keep working since it lives inside the player. */
+/* YouTube overlay: right edge of #movie_player (the anchor element),
+ * vertically centered — the host box is content-sized, so translateY(-50%)
+ * centers the card. Fullscreen/theater keep working since it lives inside
+ * the player. */
 :host(common-notes-yt) {
   position: absolute !important;
-  top: 12px !important;
+  top: 50% !important;
   right: 12px !important;
+  transform: translateY(-50%) !important;
   z-index: 1000 !important;
 }
 

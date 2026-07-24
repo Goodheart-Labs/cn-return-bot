@@ -13,6 +13,9 @@ export function registerDevReloadHook(ctx: ContentScriptContext) {
   // scripts linger as zombies until the tab reloads).
   console.debug(`[common-notes] dev build ${import.meta.env.VITE_CN_BUILD ?? "?"}`);
   ctx.addEventListener(window, "cn-dev-reload" as keyof WindowEventMap, () => {
-    void browser.runtime.sendMessage({ type: "cn-dev-reload" }).catch(() => {});
+    // Surface the failure — a silently-swallowed sendMessage (dead service
+    // worker, invalidated context) makes a non-reloading extension undebuggable.
+    browser.runtime.sendMessage({ type: "cn-dev-reload" })
+      .catch((err) => console.warn("[common-notes] dev reload request failed:", err));
   });
 }
