@@ -147,7 +147,9 @@ function toPageItem(row: any): PageItem {
 
 /** Resolve a page URL to its everything_items row, or null when the page
  *  isn't ingested. YouTube items store the URL as-enqueued (watch?v= or
- *  youtu.be), so match by video ID instead of exact URL. */
+ *  youtu.be), so match by video ID instead of exact URL — with no `source`
+ *  filter: video items ingested through the old podcast pipeline carry
+ *  source "podcast", and the ID re-verify below is the real matcher anyway. */
 export async function fetchItemForUrl(pageUrl: string): Promise<PageItem | null> {
   const videoId = extractYoutubeVideoId(pageUrl);
   if (videoId) {
@@ -156,7 +158,6 @@ export async function fetchItemForUrl(pageUrl: string): Promise<PageItem | null>
     const { data } = await supabase
       .from("everything_items")
       .select(ITEM_SELECT)
-      .eq("source", "youtube")
       .ilike("url", `%${videoId}%`);
     const hit = (data ?? []).find((r: any) => extractYoutubeVideoId(r.url) === videoId);
     return hit ? toPageItem(hit) : null;
