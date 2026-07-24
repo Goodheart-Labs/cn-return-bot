@@ -4,7 +4,7 @@ import { useSession, signOut } from "../../../everything-shared/auth";
 import { displayName } from "../../../everything-shared/session";
 import { fetchItemForUrl, fetchNotesForItem, fetchReaderCanonical, isSubstackReaderUrl, normalizePageUrl, type PageItem } from "../../../everything-shared/notesQuery";
 import { COMMONNOTES_ORIGIN } from "../../utils/share";
-import { updateEnabledOrigins } from "../../utils/settings";
+import { getEnabledOrigins, updateEnabledOrigins } from "../../utils/settings";
 import { LoginPanel } from "../../components/LoginPanel";
 
 // Sites injected by the static manifest scripts — no opt-in needed.
@@ -92,10 +92,43 @@ function SiteToggle({ origin }: { origin: string }) {
   );
 }
 
+/** True when this origin gets our content script (static site or opt-in) —
+ *  the heal below must not reload pages we could never answer from. */
+async function hasContentScript(origin: string) {
+  if (DEFAULT_SITE.test(new URL(origin).hostname)) return true;
+  return (await getEnabledOrigins()).includes(origin);
+}
+
+const RESEND_ATTEMPTS = 15;
+const RESEND_INTERVAL_MS = 400;
+
+/** A tab that predates the last extension reload/update holds an ORPHANED
+ *  content script: its DOM (badges) still renders, but its message listener
+ *  is cut off from the new extension instance, so sendMessage throws with no
+ *  receiver. Heal by reloading the tab and re-sending until the fresh script
+ *  answers (it needs a moment to fetch the item and register). */
+async function sendScrollToNotes(tabId: number) {
+  try {
+    return await browser.tabs.sendMessage(tabId, { type: "cn-scroll-to-notes" });
+  } catch {
+    await browser.tabs.reload(tabId);
+    for (let attempt = 0; attempt < RESEND_ATTEMPTS; attempt++) {
+      await new Promise((resolve) => setTimeout(resolve, RESEND_INTERVAL_MS));
+      try {
+        return await browser.tabs.sendMessage(tabId, { type: "cn-scroll-to-notes" });
+      } catch {
+        // script not up yet — keep trying
+      }
+    }
+  }
+}
+
 function PageSection({ state }: { state: PageState }) {
   const scrollToNotes = async () => {
     const tab = await activeTab();
-    if (tab?.id != null) await browser.tabs.sendMessage(tab.id, { type: "cn-scroll-to-notes" }).catch(() => {});
+    if (tab?.id != null && state.kind === "item" && (await hasContentScript(state.origin))) {
+      await sendScrollToNotes(tab.id);
+    }
     window.close();
   };
 
