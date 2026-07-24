@@ -1,0 +1,81 @@
+{
+  "generated_at": "2026-07-24T15:35:16.299Z",
+  "populations": {
+    "our_rated_notes": 24,
+    "our_raters_total": 839,
+    "nh_only_raters": 699,
+    "h_only_raters": 130,
+    "mixed_raters": 0
+  },
+  "controls": {
+    "winner_helpful_rate_all_kept_raters": 85.2,
+    "winner_votes_all": {
+      "H": 5680,
+      "S": 108,
+      "N": 881
+    },
+    "eco_undecided_nh_rate_all": 43.5
+  },
+  "groups": [
+    {
+      "label": "voted ours NOT_HELPFUL (never helpful)",
+      "raters": 699,
+      "rated_any_winner": 76,
+      "rated_any_winner_pct": 10.9,
+      "helpful_on_some_winner": 41,
+      "helpful_on_some_winner_pct_of_overlap": 53.9,
+      "votes_on_winners": {
+        "H": 45,
+        "S": 0,
+        "N": 42
+      },
+      "winner_helpful_rate": 51.7,
+      "votes_on_all_eco": {
+        "H": 898,
+        "S": 25,
+        "N": 2445
+      },
+      "eco_nh_rate": 72.6
+    },
+    {
+      "label": "voted ours HELPFUL (never NH)",
+      "raters": 130,
+      "rated_any_winner": 24,
+      "rated_any_winner_pct": 18.5,
+      "helpful_on_some_winner": 24,
+      "helpful_on_some_winner_pct_of_overlap": 100,
+      "votes_on_winners": {
+        "H": 74,
+        "S": 0,
+        "N": 1
+      },
+      "winner_helpful_rate": 98.7,
+      "votes_on_all_eco": {
+        "H": 641,
+        "S": 7,
+        "N": 76
+      },
+      "eco_nh_rate": 10.5
+    },
+    {
+      "label": "mixed on ours",
+      "raters": 0,
+      "rated_any_winner": 0,
+      "rated_any_winner_pct": null,
+      "helpful_on_some_winner": 0,
+      "helpful_on_some_winner_pct_of_overlap": null,
+      "votes_on_winners": {
+        "H": 0,
+        "S": 0,
+        "N": 0
+      },
+      "winner_helpful_rate": null,
+      "votes_on_all_eco": {
+        "H": 0,
+        "S": 0,
+        "N": 0
+      },
+      "eco_nh_rate": null
+    }
+  ]
+}

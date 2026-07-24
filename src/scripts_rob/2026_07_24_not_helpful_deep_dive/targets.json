@@ -1,0 +1,4099 @@
+{
+  "generated_at": "2026-07-24T14:50:38.008Z",
+  "ours": [
+    "2078834395046125900",
+    "2078940128895291579",
+    "2078932020105781704",
+    "2078834406693703805",
+    "2078834387701883344",
+    "2078947556391022789",
+    "2079303645326192769",
+    "2078947564632883379",
+    "2079211091423600942",
+    "2079090007420133440",
+    "2078932015231959434",
+    "2079589963801182575",
+    "2080480952204275744",
+    "2080248932576440550",
+    "2079475778471776360",
+    "2080345009572687984",
+    "2079680572293620049",
+    "2079490436515971397",
+    "2080351996675018766",
+    "2080022054955327946",
+    "2079672861841612929",
+    "2080381840121372759",
+    "2079672871861817479",
+    "2079650322801180706"
+  ],
+  "eco": {
+    "2067888592458785149": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2068109830553051243": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069254373528784963": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068617162265153625": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069041034525589597": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069364963404353840": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069898750533759231": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_NOT_HELPFUL"
+    },
+    "2070277520973517280": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071433721346146319": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072444900810109204": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073378254493217055": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073237190268846173": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075929543542804529": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076089321644335197": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078975665542660198": {
+      "tier": "strict",
+      "status": null
+    },
+    "2076894697499562247": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077124795381305805": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077047083186688034": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077741082688032796": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078414414903177686": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077786409398645190": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078682336162443561": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078181024069222693": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078147892531871768": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078451552835239950": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078285609161138243": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078288033376596328": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075520461564248171": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067692928336609641": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069936697761001846": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068647686467719547": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069122397471699139": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068994499120910438": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069041983914668279": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071741609926935030": {
+      "tier": "broad",
+      "status": null
+    },
+    "2069284890928206012": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069289662456238283": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069842471408857358": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070333052962701377": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070307936820486205": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070839448305365016": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071475695436611893": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071625348526018966": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071679796070006894": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071905311070548267": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071749223914336640": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075098668366172560": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075559515391774761": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075510387382886643": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076097279316906040": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077074987069141231": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077437674416435358": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077094931563528304": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_NOT_HELPFUL"
+    },
+    "2077040496711815295": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077768238092493276": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077600405253493066": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078257631475519896": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078028960047227356": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077869487110651908": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077862156327170407": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078124220723376366": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078099532345172291": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078099667473084827": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077996284976226572": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078239882359578736": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078170748485808272": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077988583865270551": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077973297048981756": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077972086002155862": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077965325287501985": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078173949725393163": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078065103140950350": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078636039363809516": {
+      "tier": "strict",
+      "status": null
+    },
+    "2078414583719497756": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078869776466583639": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078866415483019735": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079243920853143939": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067599032457777541": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077392151462232068": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075000228823085096": {
+      "tier": "broad",
+      "status": null
+    },
+    "2069932758038650975": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076761830975013337": {
+      "tier": "broad",
+      "status": null
+    },
+    "2079235177348255800": {
+      "tier": "strict",
+      "status": null
+    },
+    "2078663492496744610": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071362228675031485": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070076200907878888": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071102072095998088": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078108332532097388": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070721511002906728": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078492991996805524": {
+      "tier": "strict",
+      "status": null
+    },
+    "2068477123178684662": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071365186452140209": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068681856648720598": {
+      "tier": "strict",
+      "status": null
+    },
+    "2068690090994339979": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068732042041549207": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070865634901041366": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2078129911215137021": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078160364177445064": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078208336353165434": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079596975482191941": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068397537279529308": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071322420208959997": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070121241973821464": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078137011584508283": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073911786751877477": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074507617599111172": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078123405123916254": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074557349826814056": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069381006025507038": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074595085342412804": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068024914246881372": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074253442906808639": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070554542979121249": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078067491817873444": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075356510452920797": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073998618906751102": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077949428594250106": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067921577425928609": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069539533150900370": {
+      "tier": "strict",
+      "status": null
+    },
+    "2078838948802290059": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078126515372302360": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075035743161074148": {
+      "tier": "broad",
+      "status": null
+    },
+    "2067920518284492962": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070122340709437798": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076831627691389319": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068399320781439207": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078061742639227351": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078057697392345182": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079088158948700417": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072688223499768039": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079270810540519434": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074829700887679257": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2067700666978451575": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070911063919562843": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2071983207290220558": {
+      "tier": "broad",
+      "status": null
+    },
+    "2079363768354521466": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069609504233197844": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072251630263668837": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073146179290853672": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073150505837035632": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073153671077278021": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073494602171212262": {
+      "tier": "broad",
+      "status": null
+    },
+    "2073608242324758875": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073782704911343962": {
+      "tier": "broad",
+      "status": null
+    },
+    "2079723624534016259": {
+      "tier": "strict",
+      "status": null
+    },
+    "2074288280632279510": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071100870268502454": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069780542803878003": {
+      "tier": "strict",
+      "status": null
+    },
+    "2078128730489115078": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078144562522927123": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078148394418090454": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078153042147360907": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073083002771362160": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078215040868434113": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079456856813236623": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067948072450031952": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2078129961672884662": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070103804293402940": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072822696228827173": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069187576389570957": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071013926473695721": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073476067466060161": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067631705016467889": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077467903918797169": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074279013950824824": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070005121413701833": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074973324594094120": {
+      "tier": "broad",
+      "status": null
+    },
+    "2070998594685923660": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076727381004550236": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072223139837190425": {
+      "tier": "strict",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2072225720563032140": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072230784665055707": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072237915699081658": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072239000664846730": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072240646342029457": {
+      "tier": "strict",
+      "status": null
+    },
+    "2072241845933891762": {
+      "tier": "strict",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2072243286761168948": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072244333588222420": {
+      "tier": "strict",
+      "status": null
+    },
+    "2072245783009677621": {
+      "tier": "strict",
+      "status": null
+    },
+    "2072497920583315843": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072728756125569168": {
+      "tier": "strict",
+      "status": null
+    },
+    "2072730849225629875": {
+      "tier": "strict",
+      "status": null
+    },
+    "2072733516995940788": {
+      "tier": "strict",
+      "status": null
+    },
+    "2074403780011986968": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074997504899236327": {
+      "tier": "strict",
+      "status": null
+    },
+    "2069979127327633451": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071051036840563086": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071609133669720159": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074520327883739598": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077088942004850726": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077089060242272461": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077930829389480064": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077930875447062631": {
+      "tier": "strict",
+      "status": null
+    },
+    "2072577380967952599": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074580335418134675": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078382369363669260": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071513494105604110": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071513886381982126": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072893824481820683": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068531190081204264": {
+      "tier": "broad",
+      "status": null
+    },
+    "2074568812964598168": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074953434852122881": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074953516440015104": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074955621292769363": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074957013633634638": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074957919381286953": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077745922050601250": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077748805747822668": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078145771409391946": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072062470227894487": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078323574151278812": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075035749624205557": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069330560485339178": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078236644407414888": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069827598088024511": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078146146040414662": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070215165082239400": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068069925131022784": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079184944551932120": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2071173972109193348": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075602359791882515": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067415821253586996": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073305773245906999": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074978473244803503": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075330654791758076": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2076618114574274877": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2079636448018419975": {
+      "tier": "strict",
+      "status": null
+    },
+    "2070210692439753048": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073656164873589005": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074498599870992691": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072108270190202952": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076356266960850946": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069469757917872633": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074274079180476909": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068989441490715030": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074610869539926017": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076312749076803857": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078056875640176962": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078057132331524390": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078057484174966807": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078057709182529674": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078057980952490078": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078058499276198275": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078058741979631898": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078058914222952589": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078059250350260379": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078059435788849599": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078059949599465482": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078060509559930989": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078060713617031339": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074215751964090859": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078206611806662841": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075619958445457663": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073631357826404837": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068114417225539788": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070138755172696327": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069045631276986669": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078492546238738596": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073920077901238676": {
+      "tier": "strict",
+      "status": null
+    },
+    "2074184209950757096": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067874388481810591": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2069846955744780695": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070118492917940254": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074991599826686461": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077985589341589907": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075331353877303434": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075331818987966632": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_NOT_HELPFUL"
+    },
+    "2075332011032539359": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_NOT_HELPFUL"
+    },
+    "2075266961009770979": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075730541492715851": {
+      "tier": "broad",
+      "status": null
+    },
+    "2067831158378021235": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2070225023541915704": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071124133807853919": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079456192712024422": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068727495310848093": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071607768545378540": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078218847295877441": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068065731699487054": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068452753517506770": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068194173149384968": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068064994772869214": {
+      "tier": "broad",
+      "status": null
+    },
+    "2078098141358792869": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078476105518813571": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068720887143055822": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069648295408873502": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070575309594718437": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077996020575911945": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069074834378604602": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074688777474163109": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075179849392513530": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069397920890171603": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069300838455967850": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079334222825972161": {
+      "tier": "strict",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2076133960644473114": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068612530675560789": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_NOT_HELPFUL"
+    },
+    "2078265069746438511": {
+      "tier": "strict",
+      "status": "CURRENTLY_RATED_NOT_HELPFUL"
+    },
+    "2069967662784893383": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077099308147708145": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076822404090003786": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074411994694766926": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_NOT_HELPFUL"
+    },
+    "2075507904132624716": {
+      "tier": "broad",
+      "status": null
+    },
+    "2076403664462196851": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079208308649398471": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073880492915515701": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077893105060323481": {
+      "tier": "strict",
+      "status": null
+    },
+    "2077941373647622417": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079445708340687355": {
+      "tier": "broad",
+      "status": null
+    },
+    "2076864032083238953": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077956684623032690": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079680983352435001": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074319421443543154": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078325003687190691": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072755751467245683": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079335477765628001": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_NOT_HELPFUL"
+    },
+    "2072029182436298786": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068164570309681625": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077004794389229764": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071822819491709325": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075434225545957471": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076647171043012831": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078637236892172792": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077025747294642560": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078112737268555990": {
+      "tier": "strict",
+      "status": null
+    },
+    "2074758648039956609": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070122977220309448": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074126340643512806": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073563676909433325": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067862537538871694": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079484617711603857": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078093806532997273": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074940337873977659": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071109365340217516": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074265273256096234": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069374500567740633": {
+      "tier": "broad",
+      "status": null
+    },
+    "2071332154370564213": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075599662761857154": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071022166070477046": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079262373882523958": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076398744728129913": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073078826129662171": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069193626949656910": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068219326205702389": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073643598369710303": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2077471930085786052": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077950164958912967": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074841752507166910": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074916593214116056": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2075328412080541892": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075554188088467926": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075958015400755602": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076335657018957856": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076380496225812643": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2077270097207439711": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076119886879969778": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067883321271406647": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070117568099062058": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077440724359127495": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075245377150742594": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078129103278870893": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072857447711010922": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074543943019036815": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073586699712471070": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_NOT_HELPFUL"
+    },
+    "2074647728219394282": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073252823731421617": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_NOT_HELPFUL"
+    },
+    "2071129962388787408": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070839938321412416": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075681418781376677": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075644012669665493": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069070320409956464": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071030977762099568": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068325413177221350": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079530210995703843": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074329646036840585": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079709457227948084": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074950191233331373": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077936498406494618": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074507453421789354": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070544822859862506": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074515094831014131": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076976774852805024": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078073644454961363": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069944878868623672": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078103571938394570": {
+      "tier": "strict",
+      "status": null
+    },
+    "2073078499674317286": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076554267582779588": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078159684503064643": {
+      "tier": "strict",
+      "status": null
+    },
+    "2076679777818165533": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072364987364917523": {
+      "tier": "strict",
+      "status": null
+    },
+    "2072365477767139542": {
+      "tier": "strict",
+      "status": null
+    },
+    "2074143541366800536": {
+      "tier": "broad",
+      "status": null
+    },
+    "2077691159699173472": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078176595832139840": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078257345533247531": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068120450404843849": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067948809494122837": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074209629383635162": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075108055713300916": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077947789351473647": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078921697668030605": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074725415378211265": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078457646693191835": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078704087063814222": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075335818227438006": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075296675854258681": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069622281676947585": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075514875976339798": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074943984904831230": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074504318514778221": {
+      "tier": "broad",
+      "status": null
+    },
+    "2074509974441426950": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074537310767517968": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078644148538581473": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070234346372624543": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_NOT_HELPFUL"
+    },
+    "2078105920349847671": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067639227483857253": {
+      "tier": "broad",
+      "status": null
+    },
+    "2075396004493578523": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078178035120140731": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069923373337960606": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077930852508438551": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078303549411172836": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072756618182176824": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077944427054878748": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073598291246231885": {
+      "tier": "broad",
+      "status": null
+    },
+    "2079606819228393893": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_NOT_HELPFUL"
+    },
+    "2076819009433960801": {
+      "tier": "broad",
+      "status": null
+    },
+    "2078080766513234243": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072197519732326867": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074880939402891436": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075382381863899228": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2079374396687262074": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069064952217022651": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077403545381519820": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078194811895533797": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075043404401053972": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071344951976464759": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078163704051323272": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069387918272020672": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070045276589490593": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067687436734636087": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2069952358319317008": {
+      "tier": "strict",
+      "status": "CURRENTLY_RATED_NOT_HELPFUL"
+    },
+    "2076829214138114547": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069599258089542095": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070902075140047020": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067928276991902120": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077117658563313725": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071628624076136497": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067896011180118524": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074503845602906491": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_NOT_HELPFUL"
+    },
+    "2067747699957379542": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077508851394302048": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2068506924627148827": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_NOT_HELPFUL"
+    },
+    "2069397302339592309": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071629545065836579": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2069105324988973393": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072436253606523185": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077719903319060853": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078157806876987808": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069168869550546993": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067674361633358327": {
+      "tier": "broad",
+      "status": null
+    },
+    "2076993335827251534": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_NOT_HELPFUL"
+    },
+    "2078892414039974141": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077004984588120085": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071627965117739190": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078436903682986423": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072870852152922252": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078132475616780433": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076520344727523688": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069905760037880250": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077082047034638495": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078619056140095828": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069624865636966668": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2072419465355022562": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073419982097019069": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071811393507164445": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069135590562332885": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2069967679612436650": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077931501719535751": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068430842855072246": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072689470336618869": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074126119054258219": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077847132988649505": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069340741512335608": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078319123575058679": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078171823049441309": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2067997690735002034": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068324241460941278": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072126818329711093": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079053586722668807": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070221723774149041": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072388041709121957": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078984584440447014": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079536439247978714": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069834748906569968": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078100284924965188": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075277735660781732": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078244680035189217": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078254319736852771": {
+      "tier": "strict",
+      "status": null
+    },
+    "2078255152075510130": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068019456932987072": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077058727346126864": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067726942053576938": {
+      "tier": "broad",
+      "status": null
+    },
+    "2069927062358360500": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073845338801103121": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073874883730423994": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069113592301908220": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068424989607436542": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076797310437143009": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068174688560230544": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2077786730304876820": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078933097152737594": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2078852775694221730": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074227170499612694": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075107742356795592": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070564943489863962": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077946840147001809": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077130651208425737": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068082420075667786": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_NOT_HELPFUL"
+    },
+    "2079002894729392590": {
+      "tier": "broad",
+      "status": null
+    },
+    "2079298295990829066": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077820336221847807": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078191189937836080": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072148235825631480": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078256651514077367": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078012035611177219": {
+      "tier": "strict",
+      "status": "CURRENTLY_RATED_NOT_HELPFUL"
+    },
+    "2070675535592869974": {
+      "tier": "strict",
+      "status": "CURRENTLY_RATED_NOT_HELPFUL"
+    },
+    "2077369503608865107": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078466336112480616": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077392458451722514": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072200496031715766": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070955654391767287": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073319061501751595": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074969039454036025": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073859457407218043": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077942204316664050": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077686974501024058": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077762308634218997": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078082301544591413": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078542907095556505": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068692790637166840": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074188886486446278": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072665240286670862": {
+      "tier": "broad",
+      "status": null
+    },
+    "2070513182355914982": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073743870765015418": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070321942402302061": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073081368305926238": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078112773041733813": {
+      "tier": "strict",
+      "status": "CURRENTLY_RATED_NOT_HELPFUL"
+    },
+    "2072057298986344849": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078461040874942779": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076835262315806953": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078551358009925636": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070187523494568405": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075426338345808108": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074124971039703047": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077553748268957969": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072559884651106407": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075649809755562181": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076933746696036532": {
+      "tier": "strict",
+      "status": "CURRENTLY_RATED_NOT_HELPFUL"
+    },
+    "2079722633537401324": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070493004654121237": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069948322971078830": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074128447639605703": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074653026896207885": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077561599246631106": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076836346270814709": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067700349025313273": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069489030493065684": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070229877140172975": {
+      "tier": "broad",
+      "status": null
+    },
+    "2077824428558483648": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077967522452635681": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078000779097514221": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072407349113794983": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077945962501198064": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070354268863824303": {
+      "tier": "strict",
+      "status": null
+    },
+    "2073872729653256399": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075374728936866036": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076105767858384958": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067496143697920392": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078144131663036816": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075572553347739720": {
+      "tier": "broad",
+      "status": null
+    },
+    "2078064146583613524": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074558546428178522": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2079763819962773888": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077003144219754550": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_NOT_HELPFUL"
+    },
+    "2077973245408747717": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068405823319998868": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074541821439410609": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074571803091935424": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071915771110805947": {
+      "tier": "broad",
+      "status": null
+    },
+    "2072819698064884007": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069991858336395688": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076842670626882025": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077089604151255087": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072502235259457612": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072503849563119805": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072346870324900338": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078630017920057468": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078278099771314677": {
+      "tier": "strict",
+      "status": "CURRENTLY_RATED_NOT_HELPFUL"
+    },
+    "2068193819888099551": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078589414843048171": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069195243216576813": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069596846578667685": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076732858798911609": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078235950253998534": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067866962131099983": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071369999743131755": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071358327607718288": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069823324998279262": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071691940471468105": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073757722822988281": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073760524894883857": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079657800196600316": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074516820137046291": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069849647213158795": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068829015398379600": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074245208967913832": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069912057936249191": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076823975263445210": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077939697469317313": {
+      "tier": "broad",
+      "status": null
+    },
+    "2077956025404072260": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079079892868644966": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074948470776148003": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078655673186009529": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078657264324678119": {
+      "tier": "broad",
+      "status": null
+    },
+    "2075649035441176738": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076559360806080551": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077437470854320577": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078080611336822946": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077958689533685899": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077959314044489751": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077959564272546270": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079381070537982399": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069463031189299325": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078270551374647424": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078996091089854551": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069132285241098262": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075599532193157322": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079760969379529034": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067682080180391953": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067998500038574227": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068029500319748242": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068750214010212841": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068789415074271676": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069152835892089035": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069255076963590639": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069346450618626518": {
+      "tier": "broad",
+      "status": null
+    },
+    "2069382990505902250": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069531355847831868": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069898985637023747": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069936736826790072": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070158653550739555": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070208197198057598": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070344421745344847": {
+      "tier": "strict",
+      "status": null
+    },
+    "2070484241809305974": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070654902435500498": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070685401778475038": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070687218109231340": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071794715268153595": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072109120090484957": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072145176244441448": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073342351867531772": {
+      "tier": "broad",
+      "status": null
+    },
+    "2073349524932718787": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073411820933488796": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073557942289183231": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073617115597164924": {
+      "tier": "strict",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2073688160186359982": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074498577045286951": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074549179225891267": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074564016727310663": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074880197757719007": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075289386497761367": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075290931427774959": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075343868321501369": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2075885859836936376": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076035808906113104": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076877139090006377": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076947854774382830": {
+      "tier": "broad",
+      "status": null
+    },
+    "2076994555266703566": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077065992799125633": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077420751552983098": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077569529568264387": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077571071306326140": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077690154471354792": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2077785002067079334": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077905663368311233": {
+      "tier": "strict",
+      "status": null
+    },
+    "2077931210978865466": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077957780485386630": {
+      "tier": "strict",
+      "status": null
+    },
+    "2078099009701355868": {
+      "tier": "broad",
+      "status": null
+    },
+    "2078219997864751216": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078256698150486470": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078461904184287483": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078868814360416754": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079316187188461997": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079454530857549869": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079562628926468137": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079564621069877379": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067771624326119556": {
+      "tier": "broad",
+      "status": null
+    },
+    "2067810640635294049": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068134704801292517": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068837917754081512": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069190519599603760": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069318822360703133": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069329854177186046": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069369926826025246": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2069468393212682735": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069620400531689877": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069736386022822339": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069783321698058430": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070174680074317961": {
+      "tier": "strict",
+      "status": null
+    },
+    "2071234132269510813": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071604466407665969": {
+      "tier": "strict",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2071854049373139111": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071961395860554175": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2072031514477388200": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072184954440544674": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072377560760004752": {
+      "tier": "strict",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2072398679495827823": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072413372960661964": {
+      "tier": "broad",
+      "status": null
+    },
+    "2072927912106270770": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073093705389482391": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073204020752060651": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073401575486152880": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073533631692194041": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074295765753639392": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074513030570745872": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074522664530510177": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074535711496163738": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074581909946991031": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074903984523915666": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075190868273725583": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075265970721976521": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076069868583940266": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076131785973325897": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076262403054981322": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076320450402025559": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2076441261641191543": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076877140952219958": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077112071766823416": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077128074164936880": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077140393813037106": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2077237836240023906": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077579491065360864": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077928638071111902": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078257166390112624": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078263141717135486": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078310086217252890": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078339450321485905": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078454571710476704": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078564891779100822": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078844540614545412": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079050893777862690": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079622557796282477": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079711648579797314": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069940462543053173": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078303479982952642": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079729615900168597": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067681631108812959": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067762844074979508": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2067835836519874799": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067988700303102402": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068028416234852758": {
+      "tier": "broad",
+      "status": null
+    },
+    "2068138062601757047": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068150229501669749": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068481416078188851": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068615213515976762": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068795206573408323": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068922354932007010": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068922722910933246": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069273692429807923": {
+      "tier": "broad",
+      "status": null
+    },
+    "2069705391496151237": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069912356914713044": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070535521604964453": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070975665256403426": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071039091739644271": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071137266315956308": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071741065145508227": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071980332497220072": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2072413370590916790": {
+      "tier": "broad",
+      "status": null
+    },
+    "2072810819541209418": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072828828041335054": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073028802188357958": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073127552810430471": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073241616718971150": {
+      "tier": "broad",
+      "status": null
+    },
+    "2073449258959708516": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073483010767307224": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073538538881040894": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074157715874517407": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074259662443057491": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2074529485488005407": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2074618521334534596": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074850094696771817": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075028924522713478": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075364170719957183": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075853137194221787": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076415597819162693": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076888415157551444": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076945757689594027": {
+      "tier": "broad",
+      "status": null
+    },
+    "2077001655514505396": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077037460341579829": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077093227065114746": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077150671153819750": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077441746540057048": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077542356673257590": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077662883094097991": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2077712047869952398": {
+      "tier": "strict",
+      "status": null
+    },
+    "2077803795778523169": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077832695355257152": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077974033384051020": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077998954680037752": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078180851850809828": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078333435798601748": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078390826833440770": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078470043399041426": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078916842127511915": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079023442637008915": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079209829084664232": {
+      "tier": "strict",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2079384169705037918": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079543281348747417": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067512432205984248": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067619647155822803": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067668878751060409": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067681440838361134": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067771620836401404": {
+      "tier": "broad",
+      "status": null
+    },
+    "2067797866463064323": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068507654775861617": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068993553359863931": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069122719942058311": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069131835792150684": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2069292145748418794": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069405012694831268": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069600419450364345": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069651168310026465": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069861413187661919": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069934997310509314": {
+      "tier": "strict",
+      "status": null
+    },
+    "2070119220734529843": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070140164605653233": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070263185270014166": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070363830383731173": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2070542648474014114": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071242182531379518": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071618982860169318": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071945429491577261": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074465663389753456": {
+      "tier": "broad",
+      "status": null
+    },
+    "2074590166677663977": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074611815229591629": {
+      "tier": "broad",
+      "status": null
+    },
+    "2074698306605785583": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074780676629422292": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074872728209834155": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075048027979493622": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076346650109399538": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076791485245071592": {
+      "tier": "broad",
+      "status": null
+    },
+    "2077029494989246812": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2077153476463698181": {
+      "tier": "strict",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2077202100107255994": {
+      "tier": "strict",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2077227329231679873": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077243358393639265": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077383125689094264": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077746216343908379": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077800558396620872": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077825776771072266": {
+      "tier": "broad",
+      "status": null
+    },
+    "2077890918531690967": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2077898963236102220": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077918031460577401": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077928635982381084": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077942553714802850": {
+      "tier": "broad",
+      "status": null
+    },
+    "2078139704571035895": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078147962522230863": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078219866201333866": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078251074687832516": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078471507777298783": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078474462991683711": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078502595685941457": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078504177555157030": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078608186093764616": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078639918083920309": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078934159532110237": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079047557955682626": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079233313785422149": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079300690011156734": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079456154145472779": {
+      "tier": "strict",
+      "status": null
+    },
+    "2079614149240279196": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067427204787499431": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067572299746689489": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067682265275015420": {
+      "tier": "strict",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2067896017769435625": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2067986648059551831": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068625542354481404": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2070051906605449700": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2071040490925854845": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071196790162866556": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2071570398232170819": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071966012983894386": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072520084698943688": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073042698345271479": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073382691680997755": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074170458098823327": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074187576525656167": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074198475672019157": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074470890780119054": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074516315826532732": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074530319424765953": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074547201708105930": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074554567207919874": {
+      "tier": "broad",
+      "status": null
+    },
+    "2074571793851977951": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074686805094387957": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074718245517394035": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074776796675891628": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074845613770850752": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074982591640359312": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075885857928626521": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076917439644754315": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077054137942810899": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077272987003220162": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077373570867470622": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077446558744748247": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077695315583402292": {
+      "tier": "strict",
+      "status": null
+    },
+    "2077784979908526153": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077928305961910771": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078112864741568851": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078327934738104589": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078542004259074186": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078592494325870744": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079000056259129487": {
+      "tier": "broad",
+      "status": null
+    },
+    "2079337735853166643": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079418886718427389": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079639519666512277": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079678894286803240": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067753670125478045": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067788776072425541": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067877411203547327": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067890829243424772": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2067893593377734825": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067965512907129090": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067978271040430479": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2067988698117853399": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068110230131507506": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068124512768405681": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068139087240761446": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068362302361936228": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068539944633561500": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068644882621587492": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068838980636852654": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069019217685250411": {
+      "tier": "broad",
+      "status": null
+    },
+    "2069267922560696615": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069281728435200403": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069295796911013898": {
+      "tier": "broad",
+      "status": null
+    },
+    "2069354039871942715": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069470070082802034": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069540627373588960": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069610632949694489": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069648015816638544": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069824717217763440": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069839571127321048": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2069996991614996902": {
+      "tier": "broad",
+      "status": null
+    },
+    "2070049540254630001": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071226963197399188": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071368551697445289": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2071702242357289185": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072105224034988087": {
+      "tier": "strict",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2072170694029316154": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072350495256072216": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072484485375922260": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072569042087387592": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072788051974135897": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2072813442994454577": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2073239214930464777": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2073532524119142810": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074103832989024306": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074317736046481894": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074558612039471178": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074640221199552969": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074866349386477946": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074936360754962671": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075014020155764776": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075205571540644339": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075254896723440084": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075677987941277938": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075704669620314374": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076203262320038087": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076648619508109608": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076690377638072391": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076945759606280393": {
+      "tier": "broad",
+      "status": null
+    },
+    "2077072918090010726": {
+      "tier": "broad",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2077202097863381337": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077449613800333576": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077928610627768378": {
+      "tier": "strict",
+      "status": null
+    },
+    "2077937087244808423": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078124527339388971": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078227035676098659": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078511098207117521": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078542006800748721": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079010519319470133": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079251933131424163": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079388770864955481": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2074931761071436009": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075304043262456215": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077451220738838648": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078303526057336943": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2076368720461476264": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2068073354192400514": {
+      "tier": "strict",
+      "status": "CURRENTLY_RATED_HELPFUL"
+    },
+    "2068139636715618612": {
+      "tier": "strict",
+      "status": null
+    },
+    "2068788835454976034": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069164557491118485": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069597828012233060": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2069948040383779302": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075276362517008514": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077050517608378554": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077961397246230951": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2075083883478208796": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077901644520464711": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077939736786653604": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078042933110951967": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077609187907916029": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2077931572502626776": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078088282542333978": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078171438628917552": {
+      "tier": "broad",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078231951857627334": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2078420342695989286": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    },
+    "2079315073432952931": {
+      "tier": "strict",
+      "status": "NEEDS_MORE_RATINGS"
+    }
+  }
+}
