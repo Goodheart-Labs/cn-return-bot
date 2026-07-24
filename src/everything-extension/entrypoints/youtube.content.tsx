@@ -2,9 +2,8 @@ import "../assets/tailwind.css";
 import { createRoot } from "react-dom/client";
 import { defineContentScript, createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
-import { originalsFirst } from "../../everything-shared/noteScore";
-import { fetchItemForUrl, fetchNotesForItem, extractYoutubeVideoId } from "../../everything-shared/notesQuery";
-import type { NoteRow } from "../../everything-shared/types";
+import { fetchItemForUrl, extractYoutubeVideoId } from "../../everything-shared/notesQuery";
+import { fetchClaimGroups, type ClaimGroup } from "../utils/claimGroups";
 import { YoutubeOverlayApp, DEFAULT_CLIP_SECONDS, type TimedGroup } from "../components/YoutubeOverlay";
 import { isPageDark, observePageTheme } from "../utils/pageTheme";
 import { registerDevReloadHook } from "../utils/devReload";
@@ -29,26 +28,20 @@ function waitFor<T extends Element>(selector: string): Promise<T | null> {
   });
 }
 
-/** Group notes per timestamped claim, promoted order. */
-function timedGroups(notes: NoteRow[]): TimedGroup[] {
-  const byClaim = new Map<string, NoteRow[]>();
-  for (const note of notes) {
-    if (note.claim?.start_seconds == null) continue;
-    const list = byClaim.get(note.claim_id);
-    if (list) list.push(note);
-    else byClaim.set(note.claim_id, [note]);
-  }
-  return [...byClaim.entries()]
-    .map(([claimId, group]) => {
-      const sorted = [...group].sort(originalsFirst);
-      const claim = sorted[0]!.claim!;
-      return {
+/** The timestamped claims among an item's claim groups, timeline order. */
+function timedGroups(claimGroups: ClaimGroup[]): TimedGroup[] {
+  return claimGroups
+    .flatMap(({ claimId, notes, nnn }) => {
+      const claim = notes[0]!.claim!;
+      if (claim.start_seconds == null) return [];
+      return [{
         claimId,
-        primary: sorted[0]!,
-        alternatives: sorted.slice(1),
-        startSeconds: claim.start_seconds!,
-        endSeconds: claim.end_seconds ?? claim.start_seconds! + DEFAULT_CLIP_SECONDS,
-      };
+        primary: notes[0]!,
+        alternatives: notes.slice(1),
+        nnn,
+        startSeconds: claim.start_seconds,
+        endSeconds: claim.end_seconds ?? claim.start_seconds + DEFAULT_CLIP_SECONDS,
+      }];
     })
     .sort((a, b) => a.startSeconds - b.startSeconds);
 }
@@ -57,7 +50,8 @@ async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | n
   if (!extractYoutubeVideoId(location.href)) return null;
   const item = await fetchItemForUrl(location.href);
   if (!item) return null;
-  const groups = timedGroups(await fetchNotesForItem(item.id));
+  const refetch = async () => timedGroups(await fetchClaimGroups(item.id));
+  const groups = await refetch();
   console.info(`[common-notes] ${groups.length} timestamped claims on this video`);
   if (groups.length === 0) return null;
 
@@ -80,7 +74,7 @@ async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | n
       container.classList.toggle("dark", isPageDark());
       themeRoot = container;
       const root = createRoot(container);
-      root.render(<YoutubeOverlayApp groups={groups} projectSlug={item.projectSlug} video={video} />);
+      root.render(<YoutubeOverlayApp groups={groups} projectSlug={item.projectSlug} video={video} player={player} refetch={refetch} />);
       return root;
     },
     onRemove(root) {

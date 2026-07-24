@@ -1,25 +1,29 @@
 import { useEffect, useRef, useState } from "react";
-import { StatusBadge } from "../../everything-web/src/components/NoteCard";
-import { noteStatus } from "../../everything-shared/noteScore";
-import type { NoteRow } from "../../everything-shared/types";
-import { noteShareUrl } from "../utils/share";
-import { NoteWithActions } from "./NoteWithActions";
+import type { NnnApi } from "../../everything-web/src/components/NoteNotNeeded";
+import type { NnnRow, NoteRow } from "../../everything-shared/types";
+import { ABSORB_KEYS, ClaimNoteStack, NOTE_POPOVER_WIDTH, SignInHint } from "./ClaimNoteStack";
+import { ScrubberPins } from "./ScrubberPins";
 import { useNoteVoting, replaceNoteInGroup } from "./useNoteVoting";
 
-/** A claim pinned to a span of the video timeline. */
+/** A claim pinned to a span of the video timeline, with its notes and
+ *  note-not-needed entries (same shape the Substack popover renders). */
 export interface TimedGroup {
   claimId: string;
   primary: NoteRow;
   alternatives: NoteRow[];
+  nnn: NnnRow[];
   startSeconds: number;
   endSeconds: number;
 }
 
 // A claim without end_seconds stays up this long past its start.
 export const DEFAULT_CLIP_SECONDS = 30;
-// Keep the pill up briefly after the video leaves the claim's window so a
-// viewer can still reach it.
-const LINGER_MS = 5_000;
+// Opacity transition length; the card unmounts when the fade completes.
+const FADE_MS = 400;
+// A fresh interaction (vote click, typing in a composer) holds the card past
+// its window — long enough to outlive the donation notice's own 6.5s
+// dwell-and-fade, so post-vote feedback is never ripped away with the clip.
+const HOLD_AFTER_INTERACTION_MS = 10_000;
 
 const QUOTE_PREVIEW_CHARS = 160;
 
@@ -29,109 +33,148 @@ function quotePreview(group: TimedGroup): string | null {
   return quote.length > QUOTE_PREVIEW_CHARS ? `${quote.slice(0, QUOTE_PREVIEW_CHARS)}…` : quote;
 }
 
-/** Timestamp-triggered community note over the YouTube player: a minimized
- *  pill while the claim's span plays, expandable to the full votable card. */
-export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video }: {
+/** Timestamp-triggered community note over the YouTube player: the full note
+ *  card (Substack-sized, right edge, vertically centered) shown only while the
+ *  video plays through the claim's span — it fades out the moment playback
+ *  leaves the window, unless the pointer is on the card mid-interaction.
+ *  Scrub-bar pins mark every claim and seek into its window on click. */
+export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, player, refetch }: {
   groups: TimedGroup[];
   projectSlug: string | null;
   video: HTMLVideoElement;
+  player: HTMLElement;
+  /** Re-fetch the item's groups (no realtime here) after a post or delete. */
+  refetch: () => Promise<TimedGroup[]>;
 }) {
   const [groups, setGroups] = useState(initialGroups);
-  const [activeClaim, setActiveClaim] = useState<string | null>(null);
-  const [expanded, setExpanded] = useState(false);
+  // displayed = which claim's card is mounted; visible = drives the opacity
+  // transition. Hiding is two-step: visible=false starts the fade, the timer
+  // unmounts after FADE_MS.
+  const [displayed, setDisplayed] = useState<string | null>(null);
+  const [visible, setVisible] = useState(false);
   const dismissed = useRef(new Set<string>()); // per-video-session
-  const lingerTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const { session, myVotes, handleVote, recordAuthored, onNeedLogin, signInHint, dismissSignInHint } = useNoteVoting(
+  const hovered = useRef(false);
+  const inWindow = useRef(false);
+  const lastInteraction = useRef(0);
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const { session, myVotes, myNnnVotes, handleVote, handleNnnVote, recordAuthored, recordNnnAuthored, onNeedLogin, signInHint, dismissSignInHint } = useNoteVoting(
     (updated) => setGroups((prev) => prev.map((g) => replaceNoteInGroup(g, updated))),
+    (updatedEntry) => setGroups((prev) => prev.map((g) => ({
+      ...g,
+      nnn: g.nnn.map((e) => (e.id === updatedEntry.id ? updatedEntry : e)),
+    }))),
   );
-  const expandedRef = useRef(expanded);
-  expandedRef.current = expanded;
+
+  // `shown` mirrors displayed/hiding for the event handlers (timeupdate fires
+  // ~4×/s — reading state through a closure would go stale, and re-arming the
+  // unmount timer on every tick would keep an invisible card mounted forever,
+  // shielding the player from clicks). beginHide is idempotent: the first call
+  // starts the fade, later calls while it runs are no-ops.
+  const shown = useRef<"visible" | "hiding" | "none">("none");
+  const show = (claimId: string) => {
+    clearTimeout(hideTimer.current);
+    shown.current = "visible";
+    setDisplayed(claimId);
+    setVisible(true);
+  };
+  const beginHide = () => {
+    if (shown.current !== "visible") return;
+    shown.current = "hiding";
+    setVisible(false);
+    hideTimer.current = setTimeout(() => {
+      shown.current = "none";
+      setDisplayed(null);
+    }, FADE_MS);
+  };
+
+  // The card outlives its window only while the reader is engaged with it:
+  // pointer on the card, or an interaction (click/keystroke) fresher than the
+  // hold. The playing video's timeupdate stream re-evaluates as holds expire;
+  // on a paused video the card simply stays — paused means reading.
+  const engaged = () => hovered.current || Date.now() - lastInteraction.current < HOLD_AFTER_INTERACTION_MS;
 
   useEffect(() => {
     const onTime = () => {
       const t = video.currentTime;
       const hit = groups.find((g) => !dismissed.current.has(g.claimId) && t >= g.startSeconds && t <= g.endSeconds);
-      if (hit) {
-        clearTimeout(lingerTimer.current);
-        setActiveClaim((cur) => (cur === hit.claimId ? cur : hit.claimId));
-      } else if (!expandedRef.current) {
-        // Leave the pill up briefly, then drop it; an expanded card stays.
-        clearTimeout(lingerTimer.current);
-        lingerTimer.current = setTimeout(() => {
-          if (!expandedRef.current) setActiveClaim(null);
-        }, LINGER_MS);
-      }
+      inWindow.current = !!hit;
+      if (hit) show(hit.claimId);
+      // The moment playback leaves the window the card fades — unless the
+      // reader is engaged (mid-vote, mid-donation-pick, mid-composition).
+      else if (!engaged()) beginHide();
     };
     video.addEventListener("timeupdate", onTime);
     return () => {
       video.removeEventListener("timeupdate", onTime);
-      clearTimeout(lingerTimer.current);
+      clearTimeout(hideTimer.current);
     };
   }, [groups, video]);
 
-  const group = groups.find((g) => g.claimId === activeClaim);
-  if (!group) return null;
-  const note = group.primary;
-  const quote = quotePreview(group);
+  const group = groups.find((g) => g.claimId === displayed);
 
   const dismiss = () => {
-    dismissed.current.add(group.claimId);
-    setActiveClaim(null);
-    setExpanded(false);
+    if (group) dismissed.current.add(group.claimId);
+    beginHide();
   };
+  // A pin click is explicit intent: un-dismiss and seek into the window — the
+  // resulting timeupdate shows the card.
+  const jumpToPin = (target: TimedGroup) => {
+    dismissed.current.delete(target.claimId);
+    video.currentTime = target.startSeconds + 0.01;
+  };
+  const refresh = async () => setGroups(await refetch());
+  const handleAuthored = (noteId: string) => {
+    recordAuthored(noteId);
+    void refresh();
+  };
+  const handleNnnAuthored = (entryId: string) => {
+    recordNnnAuthored(entryId);
+    void refresh();
+  };
+  const nnnApi: NnnApi = { myVotes: myNnnVotes, onVote: handleNnnVote, onAuthored: recordNnnAuthored, onDeleted: () => void refresh() };
 
   return (
     <div className="pointer-events-auto text-left">
-      {signInHint && (
-        <div className="mb-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-3 text-sm text-gray-700 dark:text-gray-300 flex items-center gap-3">
-          Sign in from the Common Notes toolbar icon to vote or write notes.
-          <button onClick={dismissSignInHint} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">✕</button>
-        </div>
-      )}
-      {!expanded ? (
-        <button
-          onClick={() => setExpanded(true)}
-          className="flex items-center gap-2 bg-white/95 border border-gray-200 rounded-full shadow-xl px-3 py-1.5 hover:bg-white dark:bg-gray-900/95 dark:border-gray-700 dark:hover:bg-gray-900"
+      <ScrubberPins groups={groups} video={video} player={player} onPinClick={jumpToPin} />
+      {group && (
+        <div
+          {...ABSORB_KEYS}
+          // Clicks on the card must not fall through to the player's own
+          // handlers either (retargeted to the host element, they look like
+          // player-chrome clicks to YouTube).
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+          // Capture phase so ABSORB_KEYS' stopPropagation can't starve them.
+          onClickCapture={() => { lastInteraction.current = Date.now(); }}
+          onKeyDownCapture={() => { lastInteraction.current = Date.now(); }}
+          onMouseEnter={() => { hovered.current = true; }}
+          onMouseLeave={() => {
+            hovered.current = false;
+            if (!inWindow.current && !engaged()) beginHide();
+          }}
+          style={{ width: NOTE_POPOVER_WIDTH }}
+          className={`max-w-[85vw] max-h-[70vh] overflow-y-auto overscroll-contain bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-2xl p-3 transition-opacity duration-[400ms] ease-out ${visible ? "opacity-100" : "opacity-0"}`}
         >
-          <StatusBadge status={noteStatus(note)} />
-        </button>
-      ) : (
-        <div className="w-[26rem] max-w-[80vw] max-h-[70vh] overflow-y-auto bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-2xl p-3">
+          {signInHint && <SignInHint onDismiss={dismissSignInHint} className="mb-2" />}
           <div className="flex items-start justify-between gap-2 mb-2">
             <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Community note on this part of the video</span>
-            <div className="flex items-center gap-1 shrink-0">
-              <button onClick={() => setExpanded(false)} title="Minimize" className="px-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">–</button>
-              <button onClick={dismiss} title="Dismiss for this video" className="px-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">✕</button>
-            </div>
+            <button onClick={dismiss} title="Dismiss for this video" className="px-1.5 shrink-0 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">✕</button>
           </div>
-          {quote && (
-            <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 pl-2 mb-2 text-xs text-gray-500 dark:text-gray-400 italic">“{quote}”</blockquote>
+          {quotePreview(group) && (
+            <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 pl-2 mb-2 text-xs text-gray-500 dark:text-gray-400 italic">“{quotePreview(group)}”</blockquote>
           )}
-          <NoteWithActions
-            note={note}
-            myVote={myVotes.get(note.id)}
-            onVote={handleVote}
+          <ClaimNoteStack
+            group={group}
+            projectSlug={projectSlug}
             session={session}
-            shareUrl={noteShareUrl(projectSlug, note.id)}
+            myVotes={myVotes}
+            onVote={handleVote}
             onNeedLogin={onNeedLogin}
-            onAuthored={recordAuthored}
+            onAuthored={handleAuthored}
+            onNnnAuthored={handleNnnAuthored}
+            onDeleted={() => void refresh()}
+            nnnApi={nnnApi}
           />
-          {group.alternatives.length > 0 && (
-            <div className="mt-3 pl-3 border-l-[3px] border-gray-300 space-y-3">
-              {group.alternatives.map((d) => (
-                <NoteWithActions
-                  key={d.id}
-                  note={d}
-                  myVote={myVotes.get(d.id)}
-                  onVote={handleVote}
-                  session={session}
-                  shareUrl={noteShareUrl(projectSlug, d.id)}
-                  onNeedLogin={onNeedLogin}
-                  onAuthored={recordAuthored}
-                />
-              ))}
-            </div>
-          )}
         </div>
       )}
     </div>
