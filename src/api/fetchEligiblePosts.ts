@@ -149,6 +149,16 @@ export async function fetchEligiblePosts(
     if (!nextToken) {
       break;
     }
+
+    // Every response reports the endpoint's remaining rate budget (500
+    // requests per 15-min window, shared by all fetches in a run). Stop
+    // BEFORE the request that would 429 instead of reacting to it.
+    if (response.headers?.["x-rate-limit-remaining"] === "0") {
+      console.warn(
+        `[generate] Rate budget exhausted after page ${pageCount}; keeping the ${allEligiblePosts.length} posts already fetched`
+      );
+      break;
+    }
   }
 
   console.log(

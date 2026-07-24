@@ -34,7 +34,12 @@ import type { Post } from "../../api/fetchEligiblePosts";
 import PQueue from "p-queue";
 
 const CONCURRENCY_LIMIT = 5;
-const BACKLOG_LIMIT = 1000;
+// Ceilings, not targets: walk each feed tier as deep as X will paginate. The
+// real stop is next_token running out or a mid-walk rate limit
+// (fetchEligiblePosts keeps what it already fetched) — the old 1000-post cap
+// stopped every big tier at ~11 pages.
+const FEED_MAX_POSTS = 50_000;
+const FEED_MAX_PAGES = 500;
 // Each tier is a superset of the one before it. Start at the curated small
 // feed and broaden only when a tier fails or does not contain enough new posts
 // to fill this run's budget — so small-feed posts get priority, and the
@@ -150,7 +155,7 @@ async function fetchPosts(
   return collectFastPosts(
     maxPosts,
     knownTweetIds,
-    (feedSize) => fetchEligiblePosts(BACKLOG_LIMIT, skipPostIds!, 50, buildPostSelection(feedSize)),
+    (feedSize) => fetchEligiblePosts(FEED_MAX_POSTS, skipPostIds!, FEED_MAX_PAGES, buildPostSelection(feedSize)),
   );
 }
 
