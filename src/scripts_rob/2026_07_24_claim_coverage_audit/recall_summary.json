@@ -1,0 +1,91 @@
+{
+  "scanned_rows": 28423,
+  "posted_since": "2026-07-16",
+  "predicate_hits": 1408,
+  "markers": {
+    "muskegon": {
+      "seen": 6,
+      "alreadyMatched": 6,
+      "missed": 0,
+      "missedImpressions": 0
+    },
+    "burn_bags": {
+      "seen": 24,
+      "alreadyMatched": 13,
+      "missed": 11,
+      "missedImpressions": 316630
+    },
+    "shadow_government": {
+      "seen": 35,
+      "alreadyMatched": 19,
+      "missed": 16,
+      "missedImpressions": 3015833
+    },
+    "data_exploitation_unit": {
+      "seen": 5,
+      "alreadyMatched": 5,
+      "missed": 0,
+      "missedImpressions": 0
+    },
+    "presidential_daily_brief": {
+      "seen": 8,
+      "alreadyMatched": 6,
+      "missed": 2,
+      "missedImpressions": 32278
+    },
+    "china_paid_journalists": {
+      "seen": 19,
+      "alreadyMatched": 10,
+      "missed": 9,
+      "missedImpressions": 4135396
+    },
+    "largest_compromise": {
+      "seen": 21,
+      "alreadyMatched": 21,
+      "missed": 0,
+      "missedImpressions": 0
+    },
+    "most_secure_election": {
+      "seen": 14,
+      "alreadyMatched": 12,
+      "missed": 2,
+      "missedImpressions": 3847
+    },
+    "coverup_plus_election_term": {
+      "seen": 98,
+      "alreadyMatched": 76,
+      "missed": 22,
+      "missedImpressions": 1403139
+    },
+    "slow_count_california": {
+      "seen": 2,
+      "alreadyMatched": 1,
+      "missed": 1,
+      "missedImpressions": 80628
+    },
+    "ballots_through_mail": {
+      "seen": 55,
+      "alreadyMatched": 49,
+      "missed": 6,
+      "missedImpressions": 546423
+    },
+    "network_blackout": {
+      "seen": 57,
+      "alreadyMatched": 20,
+      "missed": 37,
+      "missedImpressions": 1695512
+    },
+    "278_dot_form": {
+      "seen": 0,
+      "alreadyMatched": 0,
+      "missed": 0,
+      "missedImpressions": 0
+    },
+    "gift_cards_registration": {
+      "seen": 2,
+      "alreadyMatched": 2,
+      "missed": 0,
+      "missedImpressions": 0
+    }
+  }
+}
