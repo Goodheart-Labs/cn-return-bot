@@ -103,7 +103,7 @@ for (const ids of chunk(topicIdsInTweets, 100)) {
 console.error(`[landscape] note requests: ${requestsAny}/${requestsChecked} topic posts have any (${requestsTotal} total)`);
 
 // ── Dump pass 1: notes (ecosystem only — ours excluded) ──────────────────────
-interface DNote { tweetId: string; tier: "strict" | "broad" | null; status?: string }
+interface DNote { noteId: string; tweetId: string; tier: "strict" | "broad" | null; status?: string }
 const dumpNotes = new Map<string, DNote>();
 const notesByTweet = new Map<string, DNote[]>();
 const populationIds = new Set([...sightings, ...regularTopicIds]);
@@ -118,7 +118,7 @@ await forEachTsvRow(DUMP_DIR, "notes-", (cols, h) => {
   const summary = (cols[i("summary")] ?? "").toLowerCase();
   const tier = topic.matches(summary) ? "strict" : BROAD.test(summary) ? "broad" : null;
   if (!tier && !populationIds.has(tweetId)) return;
-  const n: DNote = { tweetId, tier };
+  const n: DNote = { noteId, tweetId, tier };
   dumpNotes.set(noteId, n);
   if (populationIds.has(tweetId)) {
     const list = notesByTweet.get(tweetId) ?? [];
@@ -141,12 +141,23 @@ function attention(ids: Set<string>) {
   const decided = all.filter((id) =>
     (notesByTweet.get(id) ?? []).some((n) => n.status === SHOWN || n.status === NOT_HELPFUL));
   const shown = all.filter((id) => (notesByTweet.get(id) ?? []).some((n) => n.status === SHOWN));
+  // The actual displaying ecosystem notes, so the dashboard can link to one
+  // rather than just count them. Kept as a list (usually 0–1) — the UI reads [0].
+  const displaying_notes = shown.flatMap((id) =>
+    (notesByTweet.get(id) ?? [])
+      .filter((n) => n.status === SHOWN)
+      .map((n) => ({
+        note_url: `https://x.com/i/birdwatch/n/${n.noteId}`,
+        post_url: `https://x.com/i/status/${n.tweetId}`,
+      })),
+  );
   return {
     posts: all.length,
     with_ecosystem_note: noted.length,
     with_ecosystem_note_pct: pctNum(noted.length, all.length),
     note_reached_decision: decided.length,
     note_displaying: shown.length,
+    displaying_notes,
   };
 }
 const xxl = attention(sightings);
