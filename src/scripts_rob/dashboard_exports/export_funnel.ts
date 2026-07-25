@@ -58,10 +58,10 @@ const row = (d: string): DayRow => {
 // ── Sightings: the topic ledger (unique per tweet) ───────────────────────────
 const sightings = await logger.fetchAllRows<{
   id: number; tweet_id: string; first_seen_at: string; needs_note: boolean | null;
-  processed_run_id: string | null;
+  impression_count: number | null; processed_run_id: string | null;
 }>(
   (c) => c.from("misinfo_monitoring_sightings")
-    .select("id, tweet_id, first_seen_at, needs_note, processed_run_id")
+    .select("id, tweet_id, first_seen_at, needs_note, impression_count, processed_run_id")
     .eq("topic_id", TOPIC_ID),
   "id", "sightings");
 for (const s of sightings) {
@@ -134,6 +134,7 @@ const notesWritten = runs.filter((r) => (r.note_text ?? "").trim()).length;
 const totalCost = runs.reduce((sum, r) => sum + (r.cost ?? 0), 0);
 const totals = {
   posts_sighted: sightings.length,
+  sighted_post_impressions_at_first_seen: sightings.reduce((sum, s) => sum + (s.impression_count ?? 0), 0),
   posts_selected: sightings.filter((s) => s.needs_note === true).length,
   runs_processed: runs.length,
   notes_written: notesWritten,
@@ -150,6 +151,7 @@ const out = {
   topic: "Curated topic — the July 16, 2026 primetime address",
   series_notes: {
     posts_sighted: "unique posts matching the topic that entered the ledger, by first-seen day",
+    sighted_post_impressions_at_first_seen: "sum of each sighted post's X view count at the moment we first saw it — posts usually keep gaining views afterwards, so this is an undercount of final reach",
     posts_selected: "of those, posts judged to carry a claim worth a context note",
     runs_processed: "note-production attempts (a post can be processed more than once)",
     notes_written: "attempts that produced a note (including notes cut by the daily writing cap)",
