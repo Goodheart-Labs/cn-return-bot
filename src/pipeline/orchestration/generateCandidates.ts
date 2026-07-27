@@ -43,8 +43,8 @@ const FEED_MAX_PAGES = 500;
 // Each tier is a superset of the one before it. Start at the curated small
 // feed and broaden only when a tier fails or does not contain enough new posts
 // to fill this run's budget — so small-feed posts get priority, and the
-// lower-quality bulk of large/XL/XXL is only reached on demand.
-const REGULAR_FEED_LADDER: FeedSize[] = ["small", "large", "xl", "xxl"];
+// lower-quality bulk of large/XL is only reached on demand.
+const REGULAR_FEED_LADDER: FeedSize[] = ["small", "large", "xl"];
 
 /**
  * A post, the feed tier it was fetched from (logged, and recorded per-post in
@@ -67,7 +67,10 @@ type FeedFetcher = (feedSize: FeedSize) => Promise<Post[]>;
  * compute velocity, keep only what clears the floor, and stop as soon as
  * `maxPosts` of them are pooled — otherwise broaden to the next tier. Filtering
  * here rather than at submission means a slow post never costs a pipeline run.
- * `selected` is the fastest first; unknown velocity fails open but sorts last.
+ * `selected` is ordered by feed tier first (every above-floor small post before
+ * any large, every large before any XL) and by velocity within a tier — so a
+ * curated small post is never bumped by a faster post from a broader tier;
+ * unknown velocity fails open but sorts last within its tier.
  * `fresh` is EVERY new post the walked tiers surfaced, below-floor included —
  * topic curation matches against it (a curated-topic post answers to the lower
  * topic floor, not this one, so it must be discoverable here even when too
@@ -111,8 +114,13 @@ export async function collectFastPosts(
     console.log(`[generate] Ladder exhausted: only ${pool.size} of ${maxPosts} post(s) clear the floor`);
   }
 
+  const tierRank = (feedSize: FeedSize) => REGULAR_FEED_LADDER.indexOf(feedSize);
   const selected = [...pool.values()]
-    .sort((a, b) => (b.velocity ?? -Infinity) - (a.velocity ?? -Infinity))
+    .sort(
+      (a, b) =>
+        tierRank(a.feedSize) - tierRank(b.feedSize) ||
+        (b.velocity ?? -Infinity) - (a.velocity ?? -Infinity),
+    )
     .slice(0, maxPosts);
   return { selected, fresh: allFresh };
 }
