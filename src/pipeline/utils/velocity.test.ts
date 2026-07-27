@@ -173,7 +173,22 @@ test("broadens to the next tier when a tier's above-floor posts fall short", asy
   });
   const { selected } = await collectFastPosts(2, new Set(), fetchFeed, NOW);
   expect(fetched).toEqual(["small", "large"]);
-  expect(selected.map((s) => s.post.id)).toEqual(["l1", "s1"]);
+  // Tier-first ordering: the small post ranks above the faster large one.
+  expect(selected.map((s) => s.post.id)).toEqual(["s1", "l1"]);
+});
+
+test("faster broad-tier posts never bump above-floor small posts", async () => {
+  const { selected } = await collectFastPosts(
+    3,
+    new Set(),
+    fakeFeed({
+      small: [feedPost("s-slow", 1.2), feedPost("s-fast", 2)],
+      large: [feedPost("l-blazing", 9)],
+    }).fetchFeed,
+    NOW,
+  );
+  // Both small posts (ordered by velocity) come before the much faster large one.
+  expect(selected.map((s) => s.post.id)).toEqual(["s-fast", "s-slow", "l-blazing"]);
 });
 
 test("below-floor posts are dropped, not used to fill a short pool", async () => {
