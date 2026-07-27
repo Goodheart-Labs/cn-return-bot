@@ -124,11 +124,15 @@ test("unknown velocity fails open (kept, not cut)", () => {
 // the pool is short of maxPosts. Velocities are stated as multiples of the
 // floor so these keep passing if the floor is retuned.
 
-/** A post `id` whose velocity is `floorMultiple` × the floor, as of NOW. */
+/** A post `id` whose velocity is `floorMultiple` × the floor, as of NOW. Ids
+ *  name the tier the post is served from and its standing versus the floor, so
+ *  the assertions read as statements about the ladder. */
 function feedPost(id: string, floorMultiple: number): Post {
   const ageHours = 2;
   return { ...post(REGULAR_VELOCITY_FLOOR_PER_HOUR * floorMultiple * ageHours, ageHours), id };
 }
+
+const ids = (posts: { post: Post }[]) => posts.map((s) => s.post.id);
 
 /** Serves each tier's posts and records which tiers were actually fetched. */
 function fakeFeed(tiers: Partial<Record<FeedSize, Post[]>>) {
@@ -144,23 +148,23 @@ function fakeFeed(tiers: Partial<Record<FeedSize, Post[]>>) {
 
 test("stops at the first tier that supplies enough above-floor posts", async () => {
   const { fetched, fetchFeed } = fakeFeed({
-    small: [feedPost("s1", 2), feedPost("s2", 3)],
-    large: [feedPost("l1", 9)],
+    small: [feedPost("small-slower", 2), feedPost("small-faster", 3)],
+    large: [feedPost("large-never-fetched", 9)],
   });
   const { selected } = await collectFastPosts(2, new Set(), fetchFeed, NOW);
   expect(fetched).toEqual(["small"]);
-  expect(selected.map((s) => s.post.id)).toEqual(["s2", "s1"]); // fastest first
+  expect(ids(selected)).toEqual(["small-faster", "small-slower"]); // fastest first
 });
 
 test("broadens to the next tier when a tier's above-floor posts fall short", async () => {
   const { fetched, fetchFeed } = fakeFeed({
-    small: [feedPost("s1", 2), feedPost("slow", 0.5)],
-    large: [feedPost("l1", 3)],
+    small: [feedPost("small-above-floor", 2), feedPost("small-below-floor", 0.5)],
+    large: [feedPost("large-above-floor", 3)],
   });
   const { selected } = await collectFastPosts(2, new Set(), fetchFeed, NOW);
   expect(fetched).toEqual(["small", "large"]);
   // Tier-first ordering: the small post ranks above the faster large one.
-  expect(selected.map((s) => s.post.id)).toEqual(["s1", "l1"]);
+  expect(ids(selected)).toEqual(["small-above-floor", "large-above-floor"]);
 });
 
 test("faster broad-tier posts never bump above-floor small posts", async () => {
@@ -168,57 +172,59 @@ test("faster broad-tier posts never bump above-floor small posts", async () => {
     3,
     new Set(),
     fakeFeed({
-      small: [feedPost("s-slow", 1.2), feedPost("s-fast", 2)],
-      large: [feedPost("l-blazing", 9)],
+      small: [feedPost("small-slower", 1.2), feedPost("small-faster", 2)],
+      large: [feedPost("large-blazing", 9)],
     }).fetchFeed,
     NOW,
   );
   // Both small posts (ordered by velocity) come before the much faster large one.
-  expect(selected.map((s) => s.post.id)).toEqual(["s-fast", "s-slow", "l-blazing"]);
+  expect(ids(selected)).toEqual(["small-faster", "small-slower", "large-blazing"]);
 });
 
 test("below-floor posts are dropped, not used to fill a short pool", async () => {
   const { fetchFeed } = fakeFeed({
-    small: [feedPost("slow1", 0.9)],
-    large: [feedPost("slow2", 0.1), feedPost("fast", 4)],
+    small: [feedPost("small-below-floor", 0.9)],
+    large: [feedPost("large-below-floor", 0.1), feedPost("large-above-floor", 4)],
   });
   const { selected } = await collectFastPosts(5, new Set(), fetchFeed, NOW);
-  expect(selected.map((s) => s.post.id)).toEqual(["fast"]);
+  expect(ids(selected)).toEqual(["large-above-floor"]);
 });
 
 test("already-known posts are skipped before the floor is applied", async () => {
-  const { fetchFeed } = fakeFeed({ small: [feedPost("seen", 5), feedPost("new", 2)] });
-  const { selected } = await collectFastPosts(5, new Set(["seen"]), fetchFeed, NOW);
-  expect(selected.map((s) => s.post.id)).toEqual(["new"]);
+  const { fetchFeed } = fakeFeed({
+    small: [feedPost("already-known", 5), feedPost("unseen", 2)],
+  });
+  const { selected } = await collectFastPosts(5, new Set(["already-known"]), fetchFeed, NOW);
+  expect(ids(selected)).toEqual(["unseen"]);
 });
 
 test("unknown velocity fails open but sorts last", async () => {
-  const unknown = { ...post(undefined, 2), id: "unknown" };
-  const { fetchFeed } = fakeFeed({ small: [unknown, feedPost("fast", 2)] });
+  const unknown = { ...post(undefined, 2), id: "unknown-velocity" };
+  const { fetchFeed } = fakeFeed({ small: [unknown, feedPost("known-fast", 2)] });
   const { selected } = await collectFastPosts(5, new Set(), fetchFeed, NOW);
-  expect(selected.map((s) => s.post.id)).toEqual(["fast", "unknown"]);
+  expect(ids(selected)).toEqual(["known-fast", "unknown-velocity"]);
   expect(selected.map((s) => s.velocity)).toEqual([REGULAR_VELOCITY_FLOOR_PER_HOUR * 2, null]);
 });
 
 test("a failing tier falls through to the next instead of aborting the run", async () => {
-  const { fetched, fetchFeed } = fakeFeed({ large: [feedPost("l1", 2)] });
+  const { fetched, fetchFeed } = fakeFeed({ large: [feedPost("large-above-floor", 2)] });
   const failingSmall = async (feedSize: FeedSize) => {
     if (feedSize === "small") throw new Error("403");
     return fetchFeed(feedSize);
   };
   const { selected } = await collectFastPosts(1, new Set(), failingSmall, NOW);
   expect(fetched).toEqual(["large"]);
-  expect(selected.map((s) => s.post.id)).toEqual(["l1"]);
+  expect(ids(selected)).toEqual(["large-above-floor"]);
 });
 
 test("fresh exposes below-floor posts from walked tiers (topic curation matches against it)", async () => {
   const { fetchFeed } = fakeFeed({
-    small: [feedPost("slow", 0.5), feedPost("fast", 2)],
-    large: [feedPost("never-fetched", 3)],
+    small: [feedPost("small-below-floor", 0.5), feedPost("small-above-floor", 2)],
+    large: [feedPost("large-never-fetched", 3)],
   });
   const { selected, fresh } = await collectFastPosts(1, new Set(), fetchFeed, NOW);
-  expect(selected.map((s) => s.post.id)).toEqual(["fast"]);
-  // "slow" was floor-dropped from selection but still visible in fresh;
-  // large was never fetched (pool filled at small), so its posts are not.
-  expect(fresh.map((s) => s.post.id).sort()).toEqual(["fast", "slow"]);
+  expect(ids(selected)).toEqual(["small-above-floor"]);
+  // The below-floor small post was dropped from selection but is still visible
+  // in fresh; large was never fetched (pool filled at small), so it is not.
+  expect(ids(fresh).sort()).toEqual(["small-above-floor", "small-below-floor"]);
 });
