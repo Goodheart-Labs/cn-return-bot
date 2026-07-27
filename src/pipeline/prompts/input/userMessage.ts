@@ -15,7 +15,12 @@ import { getBotConfig } from "../../ab-testing/botConfig";
 
 type ReferenceKind = "quoted" | "retweeted";
 
-const MAX_HISTORY_POST_CHARS = 200;
+// X's standard post limit, so an ordinary post is quoted whole. Longer
+// (Premium) posts still get cut — 23% of noted posts run past it — but the
+// opening is enough to place the topic, which is all this block is for.
+const MAX_HISTORY_POST_CHARS = 280;
+// Notes run to ~930 chars, so this does cut most of them. The claim leads and
+// the sources trail, so what's lost is mostly URLs we don't want copied anyway.
 const MAX_HISTORY_NOTE_CHARS = 300;
 
 function formatAuthorNotes(notes: AuthorNote[], noteLabel: string): string[] {
