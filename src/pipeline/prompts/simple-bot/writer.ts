@@ -42,13 +42,6 @@ Empty note means: \`note_text\` = "" and \`sources\` = []. The downstream judge 
 - Tweets or tweet replies can be valid sources
 - Pull source URLs from the research findings — do not invent URLs`;
 
-/** Maximally-terse variant (SIMPLE_BOT_PROMPTS_TEST = simple). */
-export const SIMPLE_WRITER_SYSTEM_PROMPT = `Write one X Community Note that disputes a specific false claim in the post, using the research findings. If nothing in the findings contradicts a claim, return an empty note (note_text "" and sources []).
-
-Lead with the true fact. Max 280 non-URL characters. Neutral, non-partisan tone. Cite only URLs that appear in the findings — never invent any.
-
-Return JSON: { note_text, sources }.`;
-
 /**
  * Appended to the writer system prompt for curated misinfo-monitoring topics
  * (when a MonitoringContext is present). The topic's reference document — with

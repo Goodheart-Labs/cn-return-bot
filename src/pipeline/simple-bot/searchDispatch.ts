@@ -65,7 +65,6 @@ export function getSearchSystemPrompt(): string {
   const monitoring = getMonitoringContext();
   const base = buildSearchSystemPrompt({
     referenceBlock: monitoring ? buildReferenceBlock(monitoring) : null,
-    simple: config.simple_prompts ?? false,
     antiPedantic: config.search_anti_pedantic ?? false,
   });
   return config.search_political_sources ? base + SEARCH_POLITICAL_SOURCES_INSTRUCTION : base;

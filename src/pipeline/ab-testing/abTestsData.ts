@@ -131,19 +131,6 @@ const SIMPLE_BOT_VERIFIER_TEST: ABTest = {
   ],
 };
 
-// Swap simple-bot's search + writer system prompts for maximally-terse variants
-// (the shared verifier / user-message prompts are untouched). Tests whether the
-// long criteria lists pull their weight. Live 50/50 on simple-bot. Prereq-gated
-// to simple-bot, so no defaultVariant.
-const SIMPLE_BOT_PROMPTS_TEST: ABTest = {
-  name: "simple_bot_prompts",
-  prerequisites: { botId: "simple-bot" },
-  variants: [
-    { variant: { name: "detailed", overrides: { simple_prompts: false } }, weight: 50 },
-    { variant: { name: "simple",   overrides: { simple_prompts: true  } }, weight: 50 },
-  ],
-};
-
 // Append an instruction to simple-bot's SEARCH prompt to prefer, for political
 // posts, sources associated with the post author's own political side — the
 // bridging bet that a correction cited to the author's own trusted outlets is
@@ -162,7 +149,6 @@ const SIMPLE_BOT_POLITICAL_SOURCES_TEST: ABTest = {
 // Swap simple-bot's SEARCH prompt for an "anti-pedantic" variant that only
 // flags a correction when the post's main claim / argument is wrong, never a
 // minor side error — the bet that pedantic nitpicks hurt the helpful/FP rate.
-// Composes with SIMPLE_BOT_PROMPTS_TEST (the terse base has its own variant).
 // Live 50/50 on simple-bot. Prereq-gated to simple-bot, so no defaultVariant.
 const SIMPLE_BOT_ANTI_PEDANTIC_TEST: ABTest = {
   name: "simple_bot_anti_pedantic",
@@ -474,7 +460,6 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_SEARCH_TEST,
   SIMPLE_BOT_WRITER_TEST,
   SIMPLE_BOT_VERIFIER_TEST,
-  SIMPLE_BOT_PROMPTS_TEST,
   SIMPLE_BOT_ANTI_PEDANTIC_TEST,
   SIMPLE_BOT_CLAIM_TEST,
   SIMPLE_BOT_WRITER_EXAMPLES_TEST,

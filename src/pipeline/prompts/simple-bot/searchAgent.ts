@@ -53,20 +53,6 @@ Return JSON with two fields:
 - Include what each source says that's relevant.
 - If no correction is needed, the findings can be brief — just explain why.`;
 
-/** Maximally-terse variant (SIMPLE_BOT_PROMPTS_TEST = simple). */
-export const SIMPLE_SEARCH_SYSTEM_PROMPT = `Investigate whether this X/Twitter post contains a factual error worth a Community Note or not. Search the web to find out whats going on in the world.
-
-Return JSON:
-- findings: a research summary with the full https:// source URL written inline next to each claim.
-- correction_needed: true only if the post has a clear factual error backed by direct contradicting evidence.`;
-
-/** Anti-pedantic + terse variant (simple_prompts × search_anti_pedantic). */
-export const SIMPLE_SEARCH_SYSTEM_PROMPT_ANTI_PEDANTIC = `Investigate whether this X/Twitter post contains a factual error worth a Community Note or not. Search the web to find out whats going on in the world.
-
-Return JSON:
-- findings: a research summary with the full https:// source URL written inline next to each claim.
-- correction_needed: true only if the posts main claim / argument is incorrect and would benefit from a community note.`;
-
 /** Appended to the search prompt when `config.search_political_sources` is on
  *  (SIMPLE_BOT_POLITICAL_SOURCES_TEST). Steers sourcing toward the author's own
  *  political side so a note is more likely to bridge / be rated helpful. */
@@ -103,30 +89,21 @@ Return JSON with two fields:
 - Include what each source says that's relevant.
 - If no correction is needed, the findings can be brief — just explain why.`;
 
-/** Picks the base search prompt from the 2×2 of {detailed, terse} ×
- *  {standard, anti-pedantic}, then appends the misinfo pre-pass ground-truth
- *  article when one is active (`referenceBlock`, else null in the regular
- *  pipeline). `simple` = SIMPLE_BOT_PROMPTS_TEST; `antiPedantic` =
+/** Picks the base search prompt (standard vs anti-pedantic), then appends the
+ *  misinfo pre-pass ground-truth article when one is active (`referenceBlock`,
+ *  else null in the regular pipeline). `antiPedantic` =
  *  SIMPLE_BOT_ANTI_PEDANTIC_TEST. */
 export function buildSearchSystemPrompt(params: {
   referenceBlock: string | null;
-  simple: boolean;
   antiPedantic: boolean;
 }): string {
-  const base = selectSearchBasePrompt(params.simple, params.antiPedantic);
+  const base = params.antiPedantic ? SEARCH_SYSTEM_PROMPT_ANTI_PEDANTIC : SEARCH_SYSTEM_PROMPT;
   if (!params.referenceBlock) return base;
   return `${base}
 
 A reference document on this post's topic is provided below. Treat it as ground truth and include its Source URL inline in the findings as a citation.
 
 ${params.referenceBlock}`;
-}
-
-function selectSearchBasePrompt(simple: boolean, antiPedantic: boolean): string {
-  if (simple) {
-    return antiPedantic ? SIMPLE_SEARCH_SYSTEM_PROMPT_ANTI_PEDANTIC : SIMPLE_SEARCH_SYSTEM_PROMPT;
-  }
-  return antiPedantic ? SEARCH_SYSTEM_PROMPT_ANTI_PEDANTIC : SEARCH_SYSTEM_PROMPT;
 }
 
 // OpenAI-flavoured schema (strict json_schema), used by Anthropic via OpenRouter.
