@@ -2,14 +2,14 @@ import "dotenv/config";
 import Anthropic from "@anthropic-ai/sdk";
 import { llm } from "../../pipeline/llm/llm";
 import { extractJsonObject } from "../../pipeline/utils/jsonOutput";
-import { SIMPLE_SEARCH_SYSTEM_PROMPT, SEARCH_PROMPTED_JSON_INSTRUCTION } from "../../pipeline/prompts/simple-bot/searchAgent";
+import { SEARCH_SYSTEM_PROMPT, SEARCH_PROMPTED_JSON_INSTRUCTION } from "../../pipeline/prompts/simple-bot/searchAgent";
 
 const OR_MODEL = "anthropic/claude-opus-4.8";   // OpenRouter id (dots)
 const DIRECT_MODEL = "claude-opus-4-8";          // Anthropic id (dashes)
 const REPEATS = 5;
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-const systemPrompt = `${SIMPLE_SEARCH_SYSTEM_PROMPT}\n\n${SEARCH_PROMPTED_JSON_INSTRUCTION}`;
+const systemPrompt = `${SEARCH_SYSTEM_PROMPT}\n\n${SEARCH_PROMPTED_JSON_INSTRUCTION}`;
 
 // Real-ish posts to fact-check (varied topics → varied search depth)
 const POSTS = [

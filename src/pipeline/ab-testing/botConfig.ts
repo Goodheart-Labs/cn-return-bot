@@ -108,13 +108,6 @@ export interface BotConfig {
    */
   satire_detector?: boolean;
   /**
-   * When true (simple-bot only), the search and writer steps use maximally-terse
-   * "simple" prompt variants instead of the detailed defaults — tests whether the
-   * long criteria lists are pulling their weight. Set by SIMPLE_BOT_PROMPTS_TEST;
-   * defaults false. Doesn't touch the shared source-verifier / user-message prompts.
-   */
-  simple_prompts?: boolean;
-  /**
    * When true (simple-bot only), the search agent's system prompt is appended
    * with an instruction to prefer, for political posts, sources associated with
    * the post author's own political side — the bridging idea that a note is more
@@ -125,8 +118,7 @@ export interface BotConfig {
   /**
    * When true (simple-bot only), the search agent uses the "anti-pedantic"
    * prompt variant, which only flags a correction when the post's main claim /
-   * argument is wrong (not a minor side error). Composes with `simple_prompts`
-   * (each base has its own anti-pedantic variant). Set by
+   * argument is wrong (not a minor side error). Set by
    * SIMPLE_BOT_ANTI_PEDANTIC_TEST; defaults false.
    */
   search_anti_pedantic?: boolean;
@@ -141,8 +133,7 @@ export interface BotConfig {
    * When true, the writer's system prompt is appended with a few-shot block of
    * real notes the community rated helpful — all simple, direct, and short — to
    * pull the writer toward that "simple and nice" style. Set by
-   * SIMPLE_BOT_WRITER_EXAMPLES_TEST; defaults false. Composes with the base
-   * prompt (detailed or `simple_prompts`).
+   * SIMPLE_BOT_WRITER_EXAMPLES_TEST; defaults false.
    */
   writer_examples?: boolean;
   /**
