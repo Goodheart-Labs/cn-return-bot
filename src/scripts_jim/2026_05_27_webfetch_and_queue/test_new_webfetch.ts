@@ -1,9 +1,9 @@
 /**
- * Run the new handleWebFetch against the full 21-URL iter-2 failure set.
+ * Run the new fetchWebPage against the full 21-URL iter-2 failure set.
  * Reports per-URL outcome and a final score we can compare to:
  *   - prod baseline: 7/21
  *   - my v2 (in test_fetch_strategies.ts): 14/21
- *   - new handleWebFetch (this script): TBD
+ *   - new fetchWebPage (this script): TBD
  *
  * Run: bun src/scripts_jim/2026_05_27_webfetch_and_queue/test_new_webfetch.ts
  */
@@ -11,7 +11,7 @@
 import "dotenv/config";
 import * as fs from "fs";
 import * as path from "path";
-import { handleWebFetch } from "../../pipeline/tool-calling/tools";
+import { fetchWebPage } from "../../pipeline/tool-calling/tools";
 import { closeBrowser } from "../../pipeline/utils/browserManager";
 
 const urls: { url: string; classification: string }[] = JSON.parse(
@@ -24,11 +24,10 @@ async function main() {
   const results: Row[] = [];
   for (const { url } of urls) {
     const t0 = Date.now();
-    const r = await handleWebFetch(url);
+    const r = await fetchWebPage(url);
     const took = Date.now() - t0;
-    const out = typeof r.output === "string" ? r.output : JSON.stringify(r.output);
-    const isErrText = out.startsWith("Fetch failed:") || out.startsWith("Fetch error:");
-    const good = !isErrText && out.length >= 300;
+    const out = r.content;
+    const good = r.ok && out.length >= 300;
     results.push({ url, chars: out.length, good, preview: out.slice(0, 200), took_ms: took });
     console.log(`${good ? "✓" : "✗"}  ${url}`);
     console.log(`    ${out.length}c  ${took}ms  ${out.slice(0, 120).replace(/\n/g, " ")}`);

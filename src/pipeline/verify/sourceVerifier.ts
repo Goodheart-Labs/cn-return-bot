@@ -11,7 +11,7 @@
  * Both share the same source-fetching cascade and return a SourceVerification.
  */
 
-import { handleWebFetch } from "../tool-calling/tools";
+import { fetchWebPage } from "../tool-calling/tools";
 import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP, COST } from "../utils/noteWriterSteps";
@@ -67,7 +67,7 @@ function isTwitterUrl(url: string): boolean {
 }
 
 // Hosts where we attempt the media-download cascade (yt-dlp → gallery-dl)
-// before falling back to handleWebFetch. yt-dlp covers video-leaning hosts;
+// before falling back to fetchWebPage. yt-dlp covers video-leaning hosts;
 // gallery-dl covers image-leaning hosts (Reddit/Tumblr/Imgur) and rescues
 // Facebook/Instagram image posts that yt-dlp can't extract.
 const MEDIA_HOSTS = [
@@ -201,7 +201,7 @@ function formatTweetSection(url: string, tweet: SyndicationTweet): string {
   return lines.join("\n");
 }
 
-/** Returns null when the URL isn't a media host or the cascade failed (caller falls through to handleWebFetch). */
+/** Returns null when the URL isn't a media host or the cascade failed (caller falls through to fetchWebPage). */
 async function tryMediaDescription(url: string, costName: string, logKey: string): Promise<FetchedSource | null> {
   if (!isMediaHost(url)) return null;
   return tryDescribeMedia(url, costName, logKey);
@@ -220,13 +220,8 @@ async function tryDescribeMedia(url: string, costName: string, logKey: string): 
 }
 
 async function fetchAsWebPage(url: string): Promise<FetchedSource> {
-  const result = await handleWebFetch(url);
-  const content = typeof result.output === "string" ? result.output : JSON.stringify(result.output);
-  const isFetchError =
-    content.startsWith("Fetch failed:") ||
-    content.startsWith("Fetch error:") ||
-    content.startsWith("Non-text content:");
-  return { url, fetchedUrl: result.fetchedUrl, content: `### ${url}\n${content}`, fetched: !isFetchError };
+  const { content, fetchedUrl, ok } = await fetchWebPage(url);
+  return { url, fetchedUrl, content: `### ${url}\n${content}`, fetched: ok };
 }
 
 export interface VerifySourcesParams {

@@ -23,7 +23,7 @@ import { runSearchAnalyzer } from "../../pipeline/cheap-bot/searchAnalyzer";
 import {
   fetchSearxngResults,
   formatSearxngResults,
-  handleWebFetch,
+  fetchWebPage,
   type SearxngResult,
 } from "../../pipeline/tool-calling/tools";
 import { FILTER_CONFIG } from "./config";
@@ -135,10 +135,8 @@ async function fetchFullPages(urls: string[]): Promise<{ findings: string; fetch
       const i = idx++;
       const url = urls[i];
       try {
-        const res = await handleWebFetch(url);
-        const content = typeof res.output === "string" ? res.output : JSON.stringify(res.output);
-        const failed = content.startsWith("Fetch failed:") || content.startsWith("Fetch error:");
-        out[i] = { url, content: failed ? "" : content.slice(0, MAX_PAGE_CHARS) };
+        const res = await fetchWebPage(url);
+        out[i] = { url, content: res.ok ? res.content.slice(0, MAX_PAGE_CHARS) : "" };
       } catch {
         out[i] = { url, content: "" };
       }
