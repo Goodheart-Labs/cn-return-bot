@@ -48,6 +48,7 @@ const SEEN_AWARE_FAILURE_TYPES: FailureType[] = ["rated_helpful", "rated_unhelpf
 const FULLY_LOADED = new Set<FailureType>(FULLY_LOADED_FAILURE_TYPES);
 
 import { NoteCard } from "./components/NoteCard";
+import { SimilarityPanel } from "./components/SimilarityPanel";
 import { FilterBar } from "./components/FilterBar";
 import { DatasetSelector } from "./components/DatasetSelector";
 import { UploadDialog } from "./components/UploadDialog";
@@ -200,6 +201,10 @@ export function App() {
   const [abFilters, setAbFilters] = useState<ABFilters>({});
   // A/B filter section is collapsed by default (its slots stream in as data loads).
   const [abOpen, setAbOpen] = useState(false);
+  // Top-level panel, deep-linkable via ?view=similarity.
+  const [view, setView] = useState<View>(() =>
+    new URLSearchParams(window.location.search).get("view") === "similarity" ? "similarity" : "review",
+  );
   // Failure-mode tags drawer — collapsed by default so the big pill row doesn't
   // clutter the top (same collapsible style as the A/B test filters section).
   const [tagsOpen, setTagsOpen] = useState(false);
@@ -752,8 +757,19 @@ export function App() {
     setDataset({ type: "dataset_run", id, name });
   };
 
+  if (view === "similarity") {
+    return (
+      <>
+        <ViewTabs view={view} onSelect={setView} />
+        <SimilarityPanel />
+      </>
+    );
+  }
+
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6">
+    <>
+      <ViewTabs view={view} onSelect={setView} />
+      <div className="max-w-4xl mx-auto px-4 py-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-xl font-bold text-gray-800">Note Review</h1>
@@ -974,6 +990,26 @@ export function App() {
         onClose={() => setUploadOpen(false)}
         onUploaded={handleUploaded}
       />
+      </div>
+    </>
+  );
+}
+
+type View = "review" | "similarity";
+
+function ViewTabs({ view, onSelect }: { view: View; onSelect: (v: View) => void }) {
+  const tabClass = (active: boolean) =>
+    `text-sm px-3 py-1 rounded-md border ${
+      active ? "bg-indigo-600 text-white border-indigo-600" : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+    }`;
+  return (
+    <div className="max-w-6xl mx-auto px-4 pt-4 flex items-center gap-2">
+      <button onClick={() => onSelect("review")} className={tabClass(view === "review")}>
+        Note Review
+      </button>
+      <button onClick={() => onSelect("similarity")} className={tabClass(view === "similarity")}>
+        Similarity (derisk)
+      </button>
     </div>
   );
 }
