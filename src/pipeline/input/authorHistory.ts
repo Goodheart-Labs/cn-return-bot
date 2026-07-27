@@ -1,19 +1,44 @@
 /**
  * Author Note History
  *
- * Queries Supabase for past helpful community notes on a given author's posts.
- * Looks up the author's tweets (tweets.author_id) and joins notes and
- * competing_notes to find relevant notes.
+ * Queries Supabase for past community notes on a given author's posts — the
+ * ones raters found helpful, and (behind the `on_with_unhelpful` A/B arm) the
+ * ones they rejected. Looks up the author's tweets (tweets.author_id) and joins
+ * notes and competing_notes.
  */
 
 import { getSupabaseClient } from "../../api/supabaseClient";
 
-export interface AuthorNoteHistory {
-  helpfulNotes: Array<{ tweetText: string; noteText: string }>;
-  totalHelpful: number;
+export interface AuthorNote {
+  tweetText: string;
+  noteText: string;
 }
 
-const EMPTY: AuthorNoteHistory = { helpfulNotes: [], totalHelpful: 0 };
+/**
+ * Past notes on an author's posts. Both kinds are always gathered — which of
+ * them reaches the model is an A/B decision made at render time, so one cached
+ * BotInput serves every arm. `unhelpfulNotes` / `totalUnhelpful` are absent on
+ * runs logged before the arm existed — read them defensively when replaying.
+ */
+export interface AuthorNoteHistory {
+  helpfulNotes: AuthorNote[];
+  totalHelpful: number;
+  unhelpfulNotes: AuthorNote[];
+  totalUnhelpful: number;
+}
+
+const STATUS_HELPFUL = "CURRENTLY_RATED_HELPFUL";
+const STATUS_NOT_HELPFUL = "CURRENTLY_RATED_NOT_HELPFUL";
+
+/** How many notes of each kind we quote to the model. */
+const MAX_NOTES_IN_PROMPT = 5;
+
+const EMPTY: AuthorNoteHistory = {
+  helpfulNotes: [],
+  totalHelpful: 0,
+  unhelpfulNotes: [],
+  totalUnhelpful: 0,
+};
 
 export async function getAuthorNoteHistory(authorId: string): Promise<AuthorNoteHistory> {
   const supabase = getSupabaseClient();
@@ -76,7 +101,8 @@ export async function getAuthorNoteHistory(authorId: string): Promise<AuthorNote
     }
   }
 
-  // Combine and count
+  // Combine. Ours first, so that when we trim to MAX_NOTES_IN_PROMPT the notes
+  // we wrote survive — a rejection of our own note is the sharpest warning.
   const allNotes = [
     ...ourNotes.map((n) => ({
       tweetText: n.tweet_text!,
@@ -88,12 +114,20 @@ export async function getAuthorNoteHistory(authorId: string): Promise<AuthorNote
       noteText: n.note_text,
       status: n.current_status,
     })),
-  ];
+  ].filter((n) => n.tweetText && n.noteText);
 
-  const helpful = allNotes.filter((n) => n.status === "CURRENTLY_RATED_HELPFUL" && n.tweetText && n.noteText);
+  const helpful = allNotes.filter((n) => n.status === STATUS_HELPFUL);
+  // Same rows, second filter — no extra query, so the unhelpful arm costs no I/O.
+  const unhelpful = allNotes.filter((n) => n.status === STATUS_NOT_HELPFUL);
 
   return {
-    helpfulNotes: helpful.slice(0, 5).map((n) => ({ tweetText: n.tweetText, noteText: n.noteText })),
+    helpfulNotes: helpful.slice(0, MAX_NOTES_IN_PROMPT).map(toAuthorNote),
     totalHelpful: helpful.length,
+    unhelpfulNotes: unhelpful.slice(0, MAX_NOTES_IN_PROMPT).map(toAuthorNote),
+    totalUnhelpful: unhelpful.length,
   };
+}
+
+function toAuthorNote(n: { tweetText: string; noteText: string }): AuthorNote {
+  return { tweetText: n.tweetText, noteText: n.noteText };
 }

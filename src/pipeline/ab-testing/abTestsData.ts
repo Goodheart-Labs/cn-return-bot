@@ -446,12 +446,24 @@ const EVAL_SUBMIT_THRESHOLD_TEST: ABTest = {
 // author-history context helps. Not prereq-gated (the input is gathered for every
 // bot in createBotInput); defaultVariant "off" so historical rows resolve to the
 // no-context behaviour they actually had.
+//
+// The third arm adds the author's REJECTED notes to the same block. Roughly 10%
+// of the posts we process are by an author with at least one not-helpful note on
+// record, and those rejections are the signal a satire/opinion account gives off
+// — the writer and the note-needed prefilter both see it.
 const AUTHOR_HISTORY_TEST: ABTest = {
   name: "author_history",
   defaultVariant: "off",
   variants: [
-    { variant: { name: "off", overrides: { author_history: false } }, weight: 50 },
-    { variant: { name: "on",  overrides: { author_history: true  } }, weight: 50 },
+    { variant: { name: "off", overrides: { author_history: false } }, weight: 34 },
+    { variant: { name: "on",  overrides: { author_history: true  } }, weight: 33 },
+    {
+      variant: {
+        name: "on_with_unhelpful",
+        overrides: { author_history: true, author_history_unhelpful: true },
+      },
+      weight: 33,
+    },
   ],
 };
 
