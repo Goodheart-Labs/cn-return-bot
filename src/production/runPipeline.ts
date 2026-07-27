@@ -65,7 +65,7 @@ import { generateCandidates, type TweetProcessedEvent } from "../pipeline/orches
 import { generatePangramCandidates } from "../pipeline/pangram-monitoring/generatePangramCandidates";
 import { generateMisinfoCandidates } from "../pipeline/misinfo-monitoring/generateMisinfoCandidates";
 import type { MisinfoTopicId } from "../pipeline/misinfo-monitoring/topicIds";
-import { submitCandidates, type Candidate } from "../pipeline/orchestration/submitCandidates";
+import { submitCandidates, misinfoReserveRemaining, type Candidate } from "../pipeline/orchestration/submitCandidates";
 import { computeMaxPosts } from "../pipeline/orchestration/computeMaxPosts";
 import { probeWritingLimitAfterCooldown } from "../pipeline/orchestration/writingLimit";
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
@@ -239,11 +239,17 @@ async function main() {
       topicIds: MISINFO_ACTIVE_TOPIC_IDS,
     });
 
-    // Submission order — submitCandidates does not re-sort. Misinfo
-    // (curated-topic) notes first: they're the high-value ones, so on a
-    // saturated day the daily cap cuts pangram and the lowest-ranked regulars
-    // rather than these.
-    const candidates = [...misinfoCandidates, ...regularCandidates, ...pangramCandidates];
+    // Submission order — submitCandidates does not re-sort. Misinfo notes get
+    // BOUNDED priority: the first few (whatever the 24h reserve has left, and
+    // they arrive velocity-ranked) submit ahead of the regular notes; the rest
+    // fall in behind them, so a heavy topic day can't eat the whole daily cap.
+    const misinfoReserve = supabaseLogger ? await misinfoReserveRemaining(supabaseLogger) : 0;
+    const candidates = [
+      ...misinfoCandidates.slice(0, misinfoReserve),
+      ...regularCandidates,
+      ...misinfoCandidates.slice(misinfoReserve),
+      ...pangramCandidates,
+    ];
     if (candidates.length > 0 && supabaseLogger) {
       const submitted = await submitCandidates(candidates, supabaseLogger, isLocal);
       console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates (${pangramCandidates.length} pangram, ${misinfoCandidates.length} misinfo, ${regularCandidates.length} regular)`);

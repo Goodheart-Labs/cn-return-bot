@@ -4,11 +4,10 @@
  * Submits candidates via the X API in the order they arrive. Non-misinfo
  * candidates below the velocity floor are cut first (recorded, not submitted) —
  * a backstop for candidates that skipped the floor the regular feed already
- * applies at selection. There is no re-sorting here: runPipeline hands over the
- * misinfo pre-pass's notes, then the regular pass's (already ranked by feed tier
- * and velocity at selection), then pangram's — so when the daily cap is hit, the
- * notes cut are the ones the pipeline already ranked last. In dry-run mode, just
- * logs what would be submitted.
+ * applies at selection. There is no re-sorting here: runPipeline decides the
+ * order when it merges the passes (see misinfoReserveRemaining below) — so when
+ * the daily cap is hit, the notes cut are the ones the pipeline already ranked
+ * last. In dry-run mode, just logs what would be submitted.
  */
 
 import { SupabaseLogger } from "../../api/supabaseClient";
@@ -20,6 +19,39 @@ import { velocityPerHour, formatVelocity, isAboveVelocityFloor, REGULAR_VELOCITY
 // Prefer the velocity frozen when the post was fetched (regular feed); fall
 // back to deriving it for candidates that arrive without one (the pre-passes).
 const velocityOf = (c: Candidate) => c.velocity ?? velocityPerHour(c.post);
+
+// ── Misinfo submit-priority reserve ─────────────────────────────────────────
+// Misinfo notes (curated topics like Trump election-security) are high-value
+// (~10x the views of a standard note) but high-variance: they may rate poorly,
+// which dilutes our hit rate and *lowers* the future cap (X's anti-spam lever).
+// So they get bounded priority rather than blanket priority — up to
+// MISINFO_RESERVE_24H of them per rolling 24h submit AHEAD of the regular notes;
+// beyond that they fall in BEHIND, so a heavy topic day cannot consume the whole
+// daily cap. Set to 0 to drop misinfo behind the regular notes entirely.
+export const MISINFO_RESERVE_24H = 5;
+const SUBMISSION_WINDOW_HOURS = 24;
+
+/**
+ * How many misinfo notes may still submit ahead of the regular ones in this 24h
+ * window. The count covers every misinfo note we submitted, from either
+ * discovery route (pre-pass and regular-feed curation). Fail-soft: on a count
+ * error reserve nothing — misinfo still submits, just behind the regular notes,
+ * which is the safe direction for the daily cap.
+ */
+export async function misinfoReserveRemaining(logger: SupabaseLogger): Promise<number> {
+  try {
+    const already = await logger.countRecentMisinfoSubmissions(SUBMISSION_WINDOW_HOURS);
+    const remaining = Math.max(0, MISINFO_RESERVE_24H - already);
+    console.log(
+      `[submit] misinfo reserve: ${already}/${MISINFO_RESERVE_24H} used in the last ` +
+        `${SUBMISSION_WINDOW_HOURS}h — ${remaining} note(s) may submit ahead of the regular ones`,
+    );
+    return remaining;
+  } catch (err) {
+    console.warn("[submit] misinfo reserve count failed; misinfo submits behind regulars this run:", err);
+    return 0;
+  }
+}
 
 export interface Candidate {
   post: Post;

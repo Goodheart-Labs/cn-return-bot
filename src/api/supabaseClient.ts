@@ -1315,6 +1315,40 @@ export class SupabaseLogger {
     );
   }
 
+  /**
+   * Count misinfo-monitoring notes we've SUBMITTED in the last `hours`. Bounds
+   * the misinfo submit-priority reserve (see submitCandidates). Misinfo notes
+   * are identified via their processed sightings (processed_at within a slightly
+   * wider window) joined to notes we actually submitted — so curated-topic posts
+   * found by the regular pass count too, not just the pre-pass's. Throws on a
+   * query error so the caller falls back to no priority (the safe direction).
+   */
+  async countRecentMisinfoSubmissions(hours: number): Promise<number> {
+    const submitSince = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
+    // A note submitted in the window was processed at ~the same time; widen the
+    // processed-at window a little so a just-submitted note is never missed.
+    const processedSince = new Date(Date.now() - (hours + 2) * 60 * 60 * 1000).toISOString();
+    const { data: sightings, error: sErr } = await this.client
+      .from("misinfo_monitoring_sightings")
+      .select("tweet_id")
+      .not("processed_run_id", "is", null)
+      .gte("processed_at", processedSince);
+    if (sErr) throw sErr;
+    const tweetIds = [...new Set((sightings ?? []).map((s) => String((s as { tweet_id: string }).tweet_id)))];
+    if (tweetIds.length === 0) return 0;
+    let total = 0;
+    for (let i = 0; i < tweetIds.length; i += 200) {
+      const { count, error } = await this.client
+        .from("notes")
+        .select("id", { count: "exact", head: true })
+        .in("tweet_id", tweetIds.slice(i, i + 200))
+        .gte("submitted_at", submitSince);
+      if (error) throw error;
+      total += count ?? 0;
+    }
+    return total;
+  }
+
   /** Count pipeline_runs created in the last N hours */
   async countRecentPipelineRuns(hours: number): Promise<number> {
     const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
