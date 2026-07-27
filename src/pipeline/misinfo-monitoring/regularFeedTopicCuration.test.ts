@@ -99,12 +99,15 @@ test("budget not full → no displacement", () => {
   expect(displacedCount).toBe(0);
 });
 
-test("output is velocity-sorted descending (unknown velocity last)", () => {
+test("output is the prioritized confirmed posts, then the kept regulars", () => {
   const selected = [fast("r1")];
   const noMetrics = sourced("t1", undefined, 1); // unknown velocity
   const pool = [...selected, noMetrics, sourced("t2", 5_000_000, 1)];
   const { final } = fillWithTopicPriority(selected, new Set(["t1", "t2"]), pool, 3);
-  expect(final.map((s) => s.post.id)).toEqual(["r1", "t2", "t1"]);
+  // Prioritized first (t2 fast, t1 unknown-velocity last), then the regular r1.
+  // NOT globally velocity-sorted: this list is the processing/submission order,
+  // and regulars keep the ranking selection already gave them.
+  expect(final.map((s) => s.post.id)).toEqual(["t2", "t1", "r1"]);
 });
 
 // ── Topic velocity floor (the 7/21 pre-pass/curation loophole) ──────────────

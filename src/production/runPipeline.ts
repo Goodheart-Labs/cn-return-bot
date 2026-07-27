@@ -239,7 +239,11 @@ async function main() {
       topicIds: MISINFO_ACTIVE_TOPIC_IDS,
     });
 
-    const candidates = [...pangramCandidates, ...misinfoCandidates, ...regularCandidates];
+    // Submission order — submitCandidates does not re-sort. Misinfo
+    // (curated-topic) notes first: they're the high-value ones, so on a
+    // saturated day the daily cap cuts pangram and the lowest-ranked regulars
+    // rather than these.
+    const candidates = [...misinfoCandidates, ...regularCandidates, ...pangramCandidates];
     if (candidates.length > 0 && supabaseLogger) {
       const submitted = await submitCandidates(candidates, supabaseLogger, isLocal);
       console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates (${pangramCandidates.length} pangram, ${misinfoCandidates.length} misinfo, ${regularCandidates.length} regular)`);

@@ -243,7 +243,11 @@ export async function processPosts(
 
   const queue = new PQueue({ concurrency: CONCURRENCY_LIMIT });
   const allLogs: TweetLogMap[] = [];
-  const candidates: Candidate[] = [];
+  // Slot by index, not push: posts run concurrently, so pushing on completion
+  // would return them in whatever order they happened to finish. Submission
+  // submits in this order, so it must stay the order `items` came in — the
+  // selection ranking (feed tier, then velocity, curated topics first).
+  const candidateByIndex: (Candidate | undefined)[] = new Array(items.length);
 
   for (const [idx, item] of items.entries()) {
     // Misinfo pre-pass posts carry a MonitoringContext — record that they came
@@ -296,12 +300,14 @@ export async function processPosts(
       }
 
       if (tweetResult.outcome === "candidate" && tweetResult.pipelineRunId) {
-        candidates.push({ post: item.post, tweetResult, botId, velocity: item.velocity });
+        candidateByIndex[idx] = { post: item.post, tweetResult, botId, velocity: item.velocity };
       }
     })));
   }
 
   await queue.onIdle();
+
+  const candidates = candidateByIndex.filter((c): c is Candidate => c !== undefined);
 
   if (process.env.CI) {
     console.log("::endgroup::");

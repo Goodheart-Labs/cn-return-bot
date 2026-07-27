@@ -150,9 +150,10 @@ export async function curateRegularFeedPosts(opts: {
  * Guarantee confirmed topic posts a bounded share of the run's processing
  * budget. Pure. Up to `slots` confirmed posts (fastest first, from the whole
  * new-post pool) are included; the rest of the budget keeps the regular
- * velocity-ranked selection, displacing its slowest picks when full. The
- * returned list is velocity-sorted descending (unknown last), matching the
- * regular selection's ordering.
+ * selection, displacing its lowest-ranked picks when full. The returned list is
+ * the prioritized confirmed posts followed by the kept regulars in their
+ * incoming (selection-ranked) order — this IS the processing and submission
+ * order, so it is not re-sorted.
  *
  * Confirmed posts below the topic velocity floor are returned in
  * `floorDropped` (for the caller's log) and never prioritized — the same
@@ -191,7 +192,7 @@ export function fillWithTopicPriority<T extends { post: Post; velocity: number |
   const regulars = selected.filter((s) => !prioritizedIds.has(s.post.id));
   const keepRegulars = regulars.slice(0, Math.max(0, maxPosts - prioritized.length));
 
-  const final = [...prioritized, ...keepRegulars].sort(byVelocityDesc);
+  const final = [...prioritized, ...keepRegulars];
   return {
     final,
     prioritized,

@@ -7,7 +7,7 @@ import {
   VELOCITY_MIN_AGE_HOURS,
   REGULAR_VELOCITY_FLOOR_PER_HOUR,
 } from "./velocity";
-import { partitionByVelocityFloor, orderWithReserve, type Candidate } from "../orchestration/submitCandidates";
+import { partitionByVelocityFloor, type Candidate } from "../orchestration/submitCandidates";
 import { collectFastPosts } from "../orchestration/generateCandidates";
 import type { FeedSize } from "../orchestration/utils/feedSizeStrategy";
 import type { Post } from "../../api/fetchEligiblePosts";
@@ -69,9 +69,9 @@ test("isAboveVelocityFloor delegates against the regular floor", () => {
 // Fixture velocities are EXTREME (≈0/h vs ≈10M/h) so these tests keep passing
 // if the floor constant is retuned anywhere in a sane range.
 
-// Candidate fixtures age relative to REAL now — partitionByVelocityFloor and
-// orderWithReserve compute velocity as-of Date.now(), and a fixed timestamp
-// would let fixture velocities decay as calendar time passes.
+// Candidate fixtures age relative to REAL now — partitionByVelocityFloor
+// computes velocity as-of Date.now(), and a fixed timestamp would let fixture
+// velocities decay as calendar time passes.
 function livePost(impressions: number | undefined, ageHours: number | null): Post {
   return {
     ...post(impressions, null),
@@ -116,22 +116,8 @@ test("unknown velocity fails open (kept, not cut)", () => {
   expect(floorCut).toHaveLength(0);
 });
 
-test("reserve boost picks the FASTEST misinfo notes, rest stays eval-sorted", () => {
-  const mSlow = candidate("m-slow", { ...crawling, misinfo: true, eval: 0.9 });
-  const mFast = candidate("m-fast", { ...viral, misinfo: true, eval: -5 });
-  const rHigh = candidate("r-high", { ...viral, eval: 0.8 });
-  const rLow = candidate("r-low", { ...viral, eval: 0.1 });
-  const ordered = orderWithReserve([rLow, mSlow, rHigh, mFast], 1);
-  // Boost = 1 slot → the fastest misinfo note (m-fast) leads despite eval -5;
-  // m-slow falls back into the eval-sorted rest.
-  expect(ordered.map((c) => c.post.id)).toEqual(["m-fast", "m-slow", "r-high", "r-low"]);
-});
-
-test("no reserve remaining → plain eval sort", () => {
-  const m = candidate("m", { ...viral, misinfo: true, eval: -5 });
-  const r = candidate("r", { ...viral, eval: 0.5 });
-  expect(orderWithReserve([m, r], 0).map((c) => c.post.id)).toEqual(["r", "m"]);
-});
+// Submission no longer re-sorts (candidates submit in pipeline order), so
+// there is no ordering function here to test.
 
 // ── selection-layer: the feed ladder ────────────────────────────────────────
 // Tiers are filtered to above-floor posts, and the ladder broadens only while
