@@ -424,7 +424,7 @@ export async function generateCandidates(
   });
 
   // Stamp curated posts' sightings as processed (same bookkeeping as the
-  // pre-pass — drives attribution and the misinfo submit-reserve accounting).
+  // pre-pass — drives topic attribution).
   const curatedInRun = new Set(items.filter((i) => i.monitoring).map((i) => i.post.id));
   const onProcessed = curatedInRun.size
     ? async (event: TweetProcessedEvent) => {
@@ -444,9 +444,9 @@ export async function generateCandidates(
     onTweetProcessed: onProcessed,
     label: "generate",
   });
-  // Tag curated candidates like pre-pass ones so submitCandidates applies the
-  // misinfo semantics (velocity-floor backstop exemption + bounded priority
-  // reserve). Done HERE, not in shared processPosts: other processPosts
-  // callers (e.g. the pangram pre-pass) must not silently inherit these.
+  // Tag curated candidates like pre-pass ones so submitCandidates exempts them
+  // from its velocity-floor backstop (they answer to the lower topic floor,
+  // applied in fillWithTopicPriority). Done HERE, not in shared processPosts:
+  // other processPosts callers (e.g. the pangram pre-pass) must not inherit it.
   return candidates.map((c) => (curatedInRun.has(c.post.id) ? { ...c, isMisinfo: true } : c));
 }

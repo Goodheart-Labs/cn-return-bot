@@ -32,8 +32,9 @@ export interface Candidate {
   /** notes.source_url when the candidate has no bot pipelineResult to read it
    *  from (the Pangram pre-pass sets the report link here). */
   sourceUrl?: string;
-  /** True for misinfo-monitoring (curated-topic) candidates. Drives the bounded
-   *  submit-priority reserve above. Set in generateMisinfoCandidates. */
+  /** True for misinfo-monitoring (curated-topic) candidates. Exempts them from
+   *  the velocity-floor cut below — the topic has its own, lower floor, applied
+   *  at selection. Set in generateMisinfoCandidates. */
   isMisinfo?: boolean;
   /** Velocity frozen when the post was fetched. Absent on candidates that never
    *  went through feed selection — those derive it from the post instead. */
