@@ -146,6 +146,14 @@ export interface BotConfig {
    */
   author_history?: boolean;
   /**
+   * When true, the author-history block ALSO lists past notes on this author's
+   * posts that raters rejected (ours + competing) — a warning that this author's
+   * posts may be satire or opinion the community doesn't want noted. Only
+   * meaningful alongside author_history; the AUTHOR_HISTORY_TEST
+   * `on_with_unhelpful` arm sets both. Defaults false.
+   */
+  author_history_unhelpful?: boolean;
+  /**
    * Minimum X eval-score (`claim_opinion_score`) at which a note is submitted.
    * Missing values fall back to 0, preserving older ad-hoc script configs.
    * Set by EVAL_SUBMIT_THRESHOLD_TEST.

@@ -9,10 +9,21 @@
 
 import type { Post } from "../../../api/fetchEligiblePosts";
 import type { GeminiMediaItem } from "../../media/mediaAnalysisGemini";
-import type { AuthorNoteHistory } from "../../input/authorHistory";
+import type { AuthorNote, AuthorNoteHistory } from "../../input/authorHistory";
 import type { BotInput } from "../../input/createBotInput";
+import { getBotConfig } from "../../ab-testing/botConfig";
 
 type ReferenceKind = "quoted" | "retweeted";
+
+const MAX_HISTORY_POST_CHARS = 200;
+const MAX_HISTORY_NOTE_CHARS = 300;
+
+function formatAuthorNotes(notes: AuthorNote[], noteLabel: string): string[] {
+  return notes.flatMap((n, i) => [
+    `${i + 1}. Post: "${n.tweetText.slice(0, MAX_HISTORY_POST_CHARS)}"`,
+    `   ${noteLabel}: "${n.noteText.slice(0, MAX_HISTORY_NOTE_CHARS)}"`,
+  ]);
+}
 
 function getReferenceKind(post: Post): ReferenceKind | undefined {
   if (!post.referenced_tweet_data) return undefined;
@@ -27,6 +38,8 @@ export function buildUserMessage(params: {
   tweetMedia: GeminiMediaItem[];
   quotedTweetMedia: GeminiMediaItem[];
   authorNoteHistory?: AuthorNoteHistory;
+  /** Also show the author's rejected notes — the `on_with_unhelpful` A/B arm. */
+  showUnhelpfulHistory?: boolean;
   comments?: string;
   mediaMadeWithAiLabel?: boolean;
 }): string {
@@ -64,14 +77,23 @@ export function buildUserMessage(params: {
   }
 
   // Author note history
-  if (params.authorNoteHistory && params.authorNoteHistory.totalHelpful > 0) {
-    const h = params.authorNoteHistory;
-    parts.push(`\n## Past corrections to this author's posts (${h.totalHelpful} helpful community notes on record)\n`);
-    for (let i = 0; i < h.helpfulNotes.length; i++) {
-      const n = h.helpfulNotes[i]!;
-      parts.push(`${i + 1}. Post: "${n.tweetText.slice(0, 200)}"`);
-      parts.push(`   Correction: "${n.noteText.slice(0, 300)}"`);
-    }
+  const history = params.authorNoteHistory;
+  if (history && history.totalHelpful > 0) {
+    parts.push(
+      `\n## Past corrections to this author's posts (${history.totalHelpful} helpful community notes on record)\n`,
+    );
+    parts.push(...formatAuthorNotes(history.helpfulNotes, "Correction"));
+  }
+  // Optional-chained because runs logged before this arm existed replay without
+  // the field.
+  if (params.showUnhelpfulHistory && history?.unhelpfulNotes?.length) {
+    parts.push(
+      `\n## Past notes on this author's posts that raters REJECTED (${history.totalUnhelpful} rated not helpful vs ${history.totalHelpful} rated helpful on record)\n`,
+    );
+    parts.push(
+      `Raters saw these notes and voted them down. Ask why before noting this post: the author may write satire, opinion, or commentary that reads as a factual claim but that raters do not think needs correcting. One rejection is weak evidence; several with no helpful notes is strong evidence a note here would be rejected too.\n`,
+    );
+    parts.push(...formatAuthorNotes(history.unhelpfulNotes, "Note rated not helpful"));
   }
 
   // Post + referenced post
@@ -113,13 +135,18 @@ export function buildUserMessage(params: {
   return parts.join("\n");
 }
 
-/** Render the user message for the bots' shared `BotInput`. */
+/**
+ * Render the user message for the bots' shared `BotInput`. Resolves the
+ * author-history arm here rather than at lookup time so a cached `BotInput`
+ * (big_eval's input cache) carries the full history and serves every arm.
+ */
 export function buildUserMessageFromInput(post: Post, input: BotInput): string {
   return buildUserMessage({
     post,
     tweetMedia: input.mediaResult.tweetMedia,
     quotedTweetMedia: input.mediaResult.quotedTweetMedia,
     authorNoteHistory: input.authorHistory,
+    showUnhelpfulHistory: getBotConfig().author_history_unhelpful,
     comments: input.comments,
     mediaMadeWithAiLabel: input.mediaMadeWithAiLabel,
   });
