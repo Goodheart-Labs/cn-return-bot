@@ -85,7 +85,7 @@ export async function executeToolCall(
         ? handleGoogleSearchSummarized(args.query)
         : handleGoogleSearchRaw(args.query);
     case "web_fetch":
-      return handleWebFetch(args.url);
+      return { output: (await fetchWebPage(args.url)).content, isTerminal: false };
     case "propose_notes":
       return handleProposeNotes(args.notes);
     case "no_correction_needed":
@@ -183,7 +183,7 @@ export async function handleGoogleSearchSummarized(query: string): Promise<ToolR
  * Each step's HTML output is passed through `classifyContent`, which treats
  * "200 OK + login wall body" as a failure so we don't accept FB/IG/Reddit
  * shells as valid sources. Note that social-media URLs are handled BEFORE
- * `handleWebFetch` ever sees them, by the media cascade in `sourceVerifier.ts`
+ * `fetchWebPage` ever sees them, by the media cascade in `sourceVerifier.ts`
  * (yt-dlp + gallery-dl + Gemini). This fetcher only sees them if the cascade
  * fell through.
  */
@@ -404,10 +404,17 @@ async function tryBrowserRender(url: string): Promise<RawFetchResult> {
   }
 }
 
-/** `fetchedUrl` is the URL the returned content was actually read from: an
- *  archive snapshot when the ladder fell back to one, the requested URL
- *  otherwise. A note must cite that, not a URL its readers can't open. */
-export async function handleWebFetch(url: string): Promise<ToolResult & { fetchedUrl: string }> {
+export interface WebFetchResult {
+  /** Page markdown, or a "Fetch failed: …" / "Fetch error: …" diagnostic. */
+  content: string;
+  /** The URL the content was actually read from: an archive snapshot when the
+   *  ladder fell back to one, otherwise the requested URL. Callers that publish
+   *  the source (the note's citation) must use this, not the requested URL. */
+  fetchedUrl: string;
+  ok: boolean;
+}
+
+export async function fetchWebPage(url: string): Promise<WebFetchResult> {
   const attempts: Array<{ label: string; cls: ContentClass | "fail"; status?: number; chars: number; markdown: string; sourceLabel?: string }> = [];
 
   // Step 1-3: HTTP fetch ladder with three UAs. Stop as soon as we get
@@ -422,7 +429,7 @@ export async function handleWebFetch(url: string): Promise<ToolResult & { fetche
     if (r.ok && r.body) {
       const { cls, markdown } = classifyContent(r.body);
       attempts.push({ label, cls, status: r.status, chars: markdown.length, markdown });
-      if (cls === "good") return { output: markdown.slice(0, MAX_RETURN_CHARS), isTerminal: false, fetchedUrl: url };
+      if (cls === "good") return { content: markdown.slice(0, MAX_RETURN_CHARS), fetchedUrl: url, ok: true };
     } else {
       attempts.push({ label, cls: "fail", status: r.status, chars: 0, markdown: "" });
     }
@@ -440,9 +447,9 @@ export async function handleWebFetch(url: string): Promise<ToolResult & { fetche
         // The requested URL is dead or blocked — the snapshot is what we read,
         // so it (not the original) is the URL a note may cite.
         return {
-          output: `[fetched via ${archiveLabel} snapshot]\n\n${markdown.slice(0, MAX_RETURN_CHARS)}`,
-          isTerminal: false,
+          content: `[fetched via ${archiveLabel} snapshot]\n\n${markdown.slice(0, MAX_RETURN_CHARS)}`,
           fetchedUrl: r.finalUrl ?? url,
+          ok: true,
         };
       }
     } else {
@@ -458,9 +465,9 @@ export async function handleWebFetch(url: string): Promise<ToolResult & { fetche
     attempts.push({ label: "browser", cls, status: browser.status, chars: markdown.length, markdown });
     if (cls === "good") {
       return {
-        output: `[fetched via headless browser]\n\n${markdown.slice(0, MAX_RETURN_CHARS)}`,
-        isTerminal: false,
+        content: `[fetched via headless browser]\n\n${markdown.slice(0, MAX_RETURN_CHARS)}`,
         fetchedUrl: url,
+        ok: true,
       };
     }
   } else {
@@ -473,11 +480,13 @@ export async function handleWebFetch(url: string): Promise<ToolResult & { fetche
   const best = attempts.find((a) => a.cls === "wall" || a.cls === "thin");
   if (best) {
     const tag = best.cls === "wall" ? "login wall / anti-bot block" : "thin content";
-    return { output: `Fetch failed: ${tag} (${best.label}, ${best.chars} chars)`, isTerminal: false, fetchedUrl: url };
+    return { content: `Fetch failed: ${tag} (${best.label}, ${best.chars} chars)`, fetchedUrl: url, ok: false };
   }
   const last = attempts[attempts.length - 1];
-  if (last?.status) return { output: `Fetch failed: HTTP ${last.status} (last attempt: ${last.label})`, isTerminal: false, fetchedUrl: url };
-  return { output: `Fetch error: all ${attempts.length} attempts failed`, isTerminal: false, fetchedUrl: url };
+  const failure = last?.status
+    ? `Fetch failed: HTTP ${last.status} (last attempt: ${last.label})`
+    : `Fetch error: all ${attempts.length} attempts failed`;
+  return { content: failure, fetchedUrl: url, ok: false };
 }
 
 export function handleProposeNotes(

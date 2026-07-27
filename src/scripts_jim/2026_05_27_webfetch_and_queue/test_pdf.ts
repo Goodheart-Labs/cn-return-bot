@@ -1,10 +1,10 @@
 /**
- * End-to-end test: feed a few PDF URLs through handleWebFetch and check that
+ * End-to-end test: feed a few PDF URLs through fetchWebPage and check that
  * we get extracted text back instead of "Non-text content".
  */
 
 import "dotenv/config";
-import { handleWebFetch } from "../../pipeline/tool-calling/tools";
+import { fetchWebPage } from "../../pipeline/tool-calling/tools";
 import { closeBrowser } from "../../pipeline/utils/browserManager";
 
 const URLS = [
@@ -19,11 +19,10 @@ const URLS = [
 for (const url of URLS) {
   console.log(`\n=== ${url}`);
   const t0 = Date.now();
-  const r = await handleWebFetch(url);
+  const r = await fetchWebPage(url);
   const took = Date.now() - t0;
-  const out = typeof r.output === "string" ? r.output : JSON.stringify(r.output);
-  const isErr = out.startsWith("Fetch failed:") || out.startsWith("Fetch error:");
-  console.log(`  ${isErr ? "✗" : "✓"}  ${out.length}c  ${took}ms`);
+  const out = r.content;
+  console.log(`  ${r.ok ? "✓" : "✗"}  ${out.length}c  ${took}ms`);
   console.log(`  preview: ${out.slice(0, 250).replace(/\s+/g, " ")}`);
 }
 

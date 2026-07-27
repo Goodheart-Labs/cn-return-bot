@@ -469,7 +469,7 @@ async function describeImageFromLocalFile(filePath: string, costName: string): P
  * Cascading dispatch for cited media URLs:
  *   yt-dlp (videos + most image posts) → gallery-dl (Facebook / IG / Reddit
  *   / Tumblr / Imgur image posts that yt-dlp can't extract) → throw.
- * The caller catches the throw and falls back to handleWebFetch.
+ * The caller catches the throw and falls back to fetchWebPage.
  *
  * For videos, the strategy adapts to duration to control cost:
  *   - ≥ 5 min: auto-subs only as the transcript; no Whisper fallback.
