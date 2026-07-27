@@ -8,7 +8,7 @@
  *     tweets.impressions is frozen at first insert (insert-only upsert), so
  *     velocity is only faithful for the first run; cooldown re-runs would get
  *     stale numbers. These runs are fed through the REAL exported
- *     partitionByVelocityFloor / orderWithReserve. Mechanical
+ *     partitionByVelocityFloor. Mechanical
  *     what-would-have-happened only — NO outcome claims (these notes haven't
  *     settled; ratings lag ~24h+ and Helpful status takes days).
  *
@@ -21,16 +21,14 @@
  * (created' = now − (run.created_at − posted_at)). Impressions are unchanged.
  *
  * Approximations: misinfo partition via misinfo_monitoring_sightings
- * .processed_run_id (pipeline_runs has no topic_id); eval scores from
- * pipeline_scores(score_type='evaluation'), missing → sorts last (matches prod
- * evalOf ?? -Infinity); per-day reserve simulated as a fresh daily budget
- * rather than a rolling 24h window.
+ * .processed_run_id (pipeline_runs has no topic_id); the per-day "new top K" is
+ * ranked by velocity, since a replay cannot reproduce prod's pipeline order.
  *
  *   bun run src/scripts_rob/2026_07_20_velocity_floor_sim/run.ts [--days 7]
  */
 
 import { SupabaseLogger } from "../../api/supabaseClient";
-import { partitionByVelocityFloor, orderWithReserve, type Candidate } from "../../pipeline/orchestration/submitCandidates";
+import { partitionByVelocityFloor, type Candidate } from "../../pipeline/orchestration/submitCandidates";
 import { velocityPerHour, formatVelocity } from "../../pipeline/utils/velocity";
 import type { Post } from "../../api/fetchEligiblePosts";
 import type { ProcessTweetResult } from "../../pipeline/orchestration/processTweet";
@@ -42,7 +40,6 @@ const DAYS = (() => {
 const SETTLED_CUTOFF = "2026-07-17";
 const REGULAR_FLOOR = 30_000; // keep in sync with submitCandidates until the dial is final
 const TOPIC_FLOOR = 4_000;    // keep in sync with generateMisinfoCandidates
-const PROPOSED_RESERVE = 5;
 const HELPFUL = "CURRENTLY_RATED_HELPFUL";
 
 const logger = new SupabaseLogger();
@@ -120,7 +117,7 @@ for (const r of runs) {
   (byDay.get(d) ?? byDay.set(d, []).get(d)!).push(r);
 }
 
-console.log(`\n== A. per-day replay (floors: regular ${formatVelocity(REGULAR_FLOOR)}, topic ${formatVelocity(TOPIC_FLOOR)}; proposed reserve ${PROPOSED_RESERVE}/day) ==`);
+console.log(`\n== A. per-day replay (floors: regular ${formatVelocity(REGULAR_FLOOR)}, topic ${formatVelocity(TOPIC_FLOOR)}; top-K ranked by velocity) ==`);
 console.log("day        written  actual-sub  floor-cut  kept  topic>=floor  new-top-K(old∩new)");
 for (const [day, dayRuns] of [...byDay.entries()].sort()) {
   const cands = dayRuns.map(toCandidate).filter((x): x is Candidate => !!x);
@@ -128,7 +125,12 @@ for (const [day, dayRuns] of [...byDay.entries()].sort()) {
   const topicQualifying = cands.filter((c) => c.isMisinfo && (velocityPerHour(c.post) ?? Infinity) >= TOPIC_FLOOR).length;
   const actualSubmitted = new Set(dayRuns.filter((r) => r.outcome === "submitted").map((r) => r.tweet_id));
   const K = actualSubmitted.size;
-  const newTop = orderWithReserve(kept, PROPOSED_RESERVE).slice(0, K);
+  // Prod no longer sorts at submission (notes submit in pipeline order: misinfo
+  // pre-pass, then the regular pass's selection ranking, then pangram). A replay
+  // has no pipeline order to reproduce, so approximate the cut by velocity.
+  const newTop = [...kept]
+    .sort((a, b) => (velocityPerHour(b.post) ?? -Infinity) - (velocityPerHour(a.post) ?? -Infinity))
+    .slice(0, K);
   const overlap = newTop.filter((c) => actualSubmitted.has(c.post.id)).length;
   console.log(
     `${day}  ${String(dayRuns.length).padStart(7)}  ${String(K).padStart(10)}  ${String(floorCut.length).padStart(9)}  ${String(kept.length).padStart(4)}  ${String(topicQualifying).padStart(12)}  K=${K}: ${overlap}/${K} same as actual`,

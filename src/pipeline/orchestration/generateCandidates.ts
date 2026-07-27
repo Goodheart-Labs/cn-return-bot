@@ -243,7 +243,11 @@ export async function processPosts(
 
   const queue = new PQueue({ concurrency: CONCURRENCY_LIMIT });
   const allLogs: TweetLogMap[] = [];
-  const candidates: Candidate[] = [];
+  // Slot by index, not push: posts run concurrently, so pushing on completion
+  // would return them in whatever order they happened to finish. Submission
+  // submits in this order, so it must stay the order `items` came in — the
+  // selection ranking (feed tier, then velocity, curated topics first).
+  const candidateByIndex: (Candidate | undefined)[] = new Array(items.length);
 
   for (const [idx, item] of items.entries()) {
     // Misinfo pre-pass posts carry a MonitoringContext — record that they came
@@ -296,12 +300,14 @@ export async function processPosts(
       }
 
       if (tweetResult.outcome === "candidate" && tweetResult.pipelineRunId) {
-        candidates.push({ post: item.post, tweetResult, botId, velocity: item.velocity });
+        candidateByIndex[idx] = { post: item.post, tweetResult, botId, velocity: item.velocity };
       }
     })));
   }
 
   await queue.onIdle();
+
+  const candidates = candidateByIndex.filter((c): c is Candidate => c !== undefined);
 
   if (process.env.CI) {
     console.log("::endgroup::");
@@ -418,7 +424,7 @@ export async function generateCandidates(
   });
 
   // Stamp curated posts' sightings as processed (same bookkeeping as the
-  // pre-pass — drives attribution and the misinfo submit-reserve accounting).
+  // pre-pass — drives topic attribution).
   const curatedInRun = new Set(items.filter((i) => i.monitoring).map((i) => i.post.id));
   const onProcessed = curatedInRun.size
     ? async (event: TweetProcessedEvent) => {
@@ -438,9 +444,9 @@ export async function generateCandidates(
     onTweetProcessed: onProcessed,
     label: "generate",
   });
-  // Tag curated candidates like pre-pass ones so submitCandidates applies the
-  // misinfo semantics (velocity-floor backstop exemption + bounded priority
-  // reserve). Done HERE, not in shared processPosts: other processPosts
-  // callers (e.g. the pangram pre-pass) must not silently inherit these.
+  // Tag curated candidates like pre-pass ones so submitCandidates exempts them
+  // from its velocity-floor backstop (they answer to the lower topic floor,
+  // applied in fillWithTopicPriority). Done HERE, not in shared processPosts:
+  // other processPosts callers (e.g. the pangram pre-pass) must not inherit it.
   return candidates.map((c) => (curatedInRun.has(c.post.id) ? { ...c, isMisinfo: true } : c));
 }

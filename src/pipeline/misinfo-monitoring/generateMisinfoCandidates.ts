@@ -260,7 +260,8 @@ export async function generateMisinfoCandidates(
     onTweetProcessed: onProcessed,
     label: "misinfo",
   });
-  // Tag as misinfo so submitCandidates can apply the bounded submit-priority
-  // reserve (these ran an advisory eval gate, so they'd otherwise sort low).
+  // Tag as misinfo so submitCandidates exempts them from its velocity-floor
+  // backstop (this pre-pass already applied the lower topic floor). These are
+  // returned first to runPipeline, so they also submit first.
   return candidates.map((c) => ({ ...c, isMisinfo: true }));
 }

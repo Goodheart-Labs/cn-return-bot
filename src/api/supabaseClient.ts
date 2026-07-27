@@ -1317,10 +1317,11 @@ export class SupabaseLogger {
 
   /**
    * Count misinfo-monitoring notes we've SUBMITTED in the last `hours`. Bounds
-   * the misinfo submit-priority reserve to ~10% of the daily cap. Misinfo notes
+   * the misinfo submit-priority reserve (see submitCandidates). Misinfo notes
    * are identified via their processed sightings (processed_at within a slightly
-   * wider window) joined to notes we actually submitted. Throws on a query error
-   * so the caller falls back to no-boost (the safe direction).
+   * wider window) joined to notes we actually submitted — so curated-topic posts
+   * found by the regular pass count too, not just the pre-pass's. Throws on a
+   * query error so the caller falls back to no priority (the safe direction).
    */
   async countRecentMisinfoSubmissions(hours: number): Promise<number> {
     const submitSince = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
