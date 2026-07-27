@@ -260,6 +260,9 @@ interface RawFetchResult {
   contentType?: string;
   body?: string;
   error?: string;
+  /** The URL the body came from, after redirects. Differs from the requested
+   *  URL on the archive steps, where it is the snapshot's own address. */
+  finalUrl?: string;
 }
 
 async function rawFetch(url: string, ua: string): Promise<RawFetchResult> {
@@ -270,21 +273,22 @@ async function rawFetch(url: string, ua: string): Promise<RawFetchResult> {
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     });
     const contentType = response.headers.get("content-type") ?? "";
-    if (!response.ok) return { ok: false, status: response.status, contentType };
+    const finalUrl = response.url || url;
+    if (!response.ok) return { ok: false, status: response.status, contentType, finalUrl };
     if (contentType.includes("application/pdf") || contentType.includes("application/x-pdf")) {
       const bytes = new Uint8Array(await response.arrayBuffer());
       const text = await pdfBytesToText(bytes);
-      if (!text) return { ok: false, status: response.status, contentType, error: "PDF parse produced no text" };
+      if (!text) return { ok: false, status: response.status, contentType, finalUrl, error: "PDF parse produced no text" };
       // Body field is HTML-shaped downstream (Readability runs on it), so we
       // hand back a minimal HTML wrapping of the extracted text. classifyContent
       // strips tags via the raw-text fallback when Readability returns nothing.
-      return { ok: true, status: response.status, contentType, body: `<pre>${escapeHtml(text)}</pre>` };
+      return { ok: true, status: response.status, contentType, finalUrl, body: `<pre>${escapeHtml(text)}</pre>` };
     }
     if (!contentType.includes("text/") && !contentType.includes("json") && !contentType.includes("xml")) {
-      return { ok: false, status: response.status, contentType };
+      return { ok: false, status: response.status, contentType, finalUrl };
     }
     const body = await response.text();
-    return { ok: true, status: response.status, contentType, body };
+    return { ok: true, status: response.status, contentType, finalUrl, body };
   } catch (err: any) {
     return { ok: false, error: err?.message?.slice(0, 200) ?? "unknown" };
   }
@@ -400,7 +404,10 @@ async function tryBrowserRender(url: string): Promise<RawFetchResult> {
   }
 }
 
-export async function handleWebFetch(url: string): Promise<ToolResult> {
+/** `fetchedUrl` is the URL the returned content was actually read from: an
+ *  archive snapshot when the ladder fell back to one, the requested URL
+ *  otherwise. A note must cite that, not a URL its readers can't open. */
+export async function handleWebFetch(url: string): Promise<ToolResult & { fetchedUrl: string }> {
   const attempts: Array<{ label: string; cls: ContentClass | "fail"; status?: number; chars: number; markdown: string; sourceLabel?: string }> = [];
 
   // Step 1-3: HTTP fetch ladder with three UAs. Stop as soon as we get
@@ -415,7 +422,7 @@ export async function handleWebFetch(url: string): Promise<ToolResult> {
     if (r.ok && r.body) {
       const { cls, markdown } = classifyContent(r.body);
       attempts.push({ label, cls, status: r.status, chars: markdown.length, markdown });
-      if (cls === "good") return { output: markdown.slice(0, MAX_RETURN_CHARS), isTerminal: false };
+      if (cls === "good") return { output: markdown.slice(0, MAX_RETURN_CHARS), isTerminal: false, fetchedUrl: url };
     } else {
       attempts.push({ label, cls: "fail", status: r.status, chars: 0, markdown: "" });
     }
@@ -430,9 +437,12 @@ export async function handleWebFetch(url: string): Promise<ToolResult> {
       const { cls, markdown } = classifyContent(r.body);
       attempts.push({ label: archiveLabel, cls, status: r.status, chars: markdown.length, markdown, sourceLabel: archiveLabel });
       if (cls === "good") {
+        // The requested URL is dead or blocked — the snapshot is what we read,
+        // so it (not the original) is the URL a note may cite.
         return {
           output: `[fetched via ${archiveLabel} snapshot]\n\n${markdown.slice(0, MAX_RETURN_CHARS)}`,
           isTerminal: false,
+          fetchedUrl: r.finalUrl ?? url,
         };
       }
     } else {
@@ -450,6 +460,7 @@ export async function handleWebFetch(url: string): Promise<ToolResult> {
       return {
         output: `[fetched via headless browser]\n\n${markdown.slice(0, MAX_RETURN_CHARS)}`,
         isTerminal: false,
+        fetchedUrl: url,
       };
     }
   } else {
@@ -462,11 +473,11 @@ export async function handleWebFetch(url: string): Promise<ToolResult> {
   const best = attempts.find((a) => a.cls === "wall" || a.cls === "thin");
   if (best) {
     const tag = best.cls === "wall" ? "login wall / anti-bot block" : "thin content";
-    return { output: `Fetch failed: ${tag} (${best.label}, ${best.chars} chars)`, isTerminal: false };
+    return { output: `Fetch failed: ${tag} (${best.label}, ${best.chars} chars)`, isTerminal: false, fetchedUrl: url };
   }
   const last = attempts[attempts.length - 1];
-  if (last?.status) return { output: `Fetch failed: HTTP ${last.status} (last attempt: ${last.label})`, isTerminal: false };
-  return { output: `Fetch error: all ${attempts.length} attempts failed`, isTerminal: false };
+  if (last?.status) return { output: `Fetch failed: HTTP ${last.status} (last attempt: ${last.label})`, isTerminal: false, fetchedUrl: url };
+  return { output: `Fetch error: all ${attempts.length} attempts failed`, isTerminal: false, fetchedUrl: url };
 }
 
 export function handleProposeNotes(
