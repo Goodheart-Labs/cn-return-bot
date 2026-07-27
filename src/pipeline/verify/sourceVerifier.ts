@@ -118,7 +118,11 @@ function formatCascadeMediaSection(url: string, media: MediaSourceDescription): 
 }
 
 interface FetchedSource {
+  /** The URL the writer cited. */
   url: string;
+  /** Where the content was actually read from — differs from `url` only when
+   *  the fetch ladder fell back to an archive snapshot. */
+  fetchedUrl: string;
   content: string;
   fetched: boolean;
 }
@@ -129,7 +133,7 @@ async function fetchSourceContent(
   logPrefix: string,
   acceptMediaSources: boolean,
   snippetsByUrl?: Map<string, { title: string; snippet: string }>,
-): Promise<{ sections: string; fetchedCount: number; totalNonTwitter: number }> {
+): Promise<{ sections: string; fetchedCount: number; totalNonTwitter: number; snapshotUrls: Map<string, string> }> {
   const results: FetchedSource[] = [];
   for (let i = 0; i < sources.length; i++) {
     const fetched = await fetchOneSource(sources[i]!, `${costPrefix}.source.${i}`, `${logPrefix}.source.${i}`, acceptMediaSources);
@@ -148,6 +152,7 @@ async function fetchSourceContent(
     sections,
     fetchedCount: nonTwitter.filter((r) => r.fetched).length,
     totalNonTwitter: nonTwitter.length,
+    snapshotUrls: new Map(results.filter((r) => r.fetchedUrl !== r.url).map((r) => [r.url, r.fetchedUrl])),
   };
 }
 
@@ -182,8 +187,8 @@ async function fetchTwitterSource(
     if (media) return media;
   }
   const tweet = await fetchTweetViaSyndication(url);
-  if (tweet) return { url, content: formatTweetSection(url, tweet), fetched: true };
-  return { url, content: `### ${url}\nTwitter/X link — tweet could not be fetched (deleted, protected, or unavailable); accepted without content.`, fetched: true };
+  if (tweet) return { url, fetchedUrl: url, content: formatTweetSection(url, tweet), fetched: true };
+  return { url, fetchedUrl: url, content: `### ${url}\nTwitter/X link — tweet could not be fetched (deleted, protected, or unavailable); accepted without content.`, fetched: true };
 }
 
 function formatTweetSection(url: string, tweet: SyndicationTweet): string {
@@ -207,7 +212,7 @@ async function tryMediaDescription(url: string, costName: string, logKey: string
 async function tryDescribeMedia(url: string, costName: string, logKey: string): Promise<FetchedSource | null> {
   try {
     const media = await describeMediaFromUrl(url, costName);
-    return { url, content: formatCascadeMediaSection(url, media), fetched: true };
+    return { url, fetchedUrl: url, content: formatCascadeMediaSection(url, media), fetched: true };
   } catch (err: any) {
     getTweetLog()?.set(`${logKey}.media_error`, err?.message ?? "unknown error");
     return null;
@@ -221,7 +226,7 @@ async function fetchAsWebPage(url: string): Promise<FetchedSource> {
     content.startsWith("Fetch failed:") ||
     content.startsWith("Fetch error:") ||
     content.startsWith("Non-text content:");
-  return { url, content: `### ${url}\n${content}`, fetched: !isFetchError };
+  return { url, fetchedUrl: result.fetchedUrl, content: `### ${url}\n${content}`, fetched: !isFetchError };
 }
 
 export interface VerifySourcesParams {
@@ -239,7 +244,7 @@ export async function verifySources(params: VerifySourcesParams): Promise<Source
   const logPrefix = `${STEP.sourceVerifier}.turn.${params.turnNumber}`;
 
   const acceptMediaSources = config.verifier_accepts_media_sources ?? false;
-  const { sections, fetchedCount, totalNonTwitter } = await fetchSourceContent(
+  const { sections, fetchedCount, totalNonTwitter, snapshotUrls } = await fetchSourceContent(
     params.sources,
     costPrefix,
     logPrefix,
@@ -253,9 +258,31 @@ export async function verifySources(params: VerifySourcesParams): Promise<Source
     );
   }
 
-  return config.verifier_claim_based
-    ? runClaimBasedVerification(params, sections, costPrefix, logPrefix)
-    : runClassicVerification(params, sections, acceptMediaSources, costPrefix, logPrefix);
+  const verification = config.verifier_claim_based
+    ? await runClaimBasedVerification(params, sections, costPrefix, logPrefix)
+    : await runClassicVerification(params, sections, acceptMediaSources, costPrefix, logPrefix);
+
+  return applySnapshotUrls(verification, snapshotUrls, logPrefix);
+}
+
+/** The cited URL is what the model sees and returns, but when the fetch ladder
+ *  fell back to an archive snapshot that original is dead or blocked — only the
+ *  snapshot serves the content we just verified. Publish the snapshot instead,
+ *  so a note never cites a URL its readers can't open. Rejected sources keep
+ *  their original URL: that's the one the writer chose and must stop reusing. */
+function applySnapshotUrls(
+  verification: SourceVerification,
+  snapshotUrls: Map<string, string>,
+  logPrefix: string,
+): SourceVerification {
+  if (snapshotUrls.size === 0) return verification;
+  const toSnapshot = (url: string) => snapshotUrls.get(url) ?? url;
+  getTweetLog()?.set(`${logPrefix}.snapshot_urls`, Object.fromEntries(snapshotUrls));
+  return {
+    ...verification,
+    good_sources: verification.good_sources.map(toSnapshot),
+    source_evaluations: verification.source_evaluations?.map((e) => ({ ...e, url: toSnapshot(e.url) })),
+  };
 }
 
 /** Shared tail of the verifier user message: the fetched cited sources plus the
