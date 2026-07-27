@@ -73,6 +73,26 @@ export const MISINFO_NOTE_SHAPE_RULE = `
 ## Note shape for this curated topic
 Notes that reach Helpful on this topic correct exactly ONE claim — the claim the post's argument actually rests on, not the easiest-to-source side detail — in one or two blunt declarative sentences, then stop. Do not add a second correction, extra background, or an "also…" clause: every added assertion hands some group of raters a reason to reject the note. Cite one or two sources, never more.`;
 
+/** Marker heading a topic document uses to opt in to the concede-then-correct
+ *  experiment; the writer rule below is appended only when the reference
+ *  document carries this section, so removing the section ends the experiment
+ *  with no code change. */
+export const CONCEDE_SHAPE_MARKER = "## Note shape — concede the true core first";
+
+/**
+ * Concede-then-correct experiment (2026-07-27, Rob). Appended after
+ * MISINFO_NOTE_SHAPE_RULE only for topics whose reference document opts in via
+ * CONCEDE_SHAPE_MARKER. Rating analysis of this topic's notes found the
+ * worst-rejected one (73% "missing key points") sidestepped the true core of
+ * the post's claim; raters read the omission as evasive. The concession is
+ * framed as part of the ONE-claim shape, not an exception to it — the
+ * one-claim rule above otherwise suppresses it as "extra background".
+ */
+export const MISINFO_CONCEDE_SHAPE_RULE = `
+
+## Opening shape for this topic (concede the true core, then correct)
+The reference document has a "Note shape — concede the true core first" section with a "True core:" line per claim. When the post's central claim contains a component a True core line affirms, OPEN the note with that concession in one short impersonal clause ("The raid did occur —", "The released files are real —"), then make your single correction of the false extension and stop. This concession is part of the one-claim shape, not extra background: concede only what a True core line affirms, never improvise balance, never address the poster ("you're right…"). If no True core line applies, or the concession would crowd out the correction, write the correction straight.`;
+
 /**
  * Few-shot block appended to the writer system prompt when
  * `config.writer_examples` is on (SIMPLE_BOT_WRITER_EXAMPLES_TEST). Real notes
