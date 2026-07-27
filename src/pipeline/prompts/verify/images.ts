@@ -6,4 +6,4 @@
  */
 
 /** Bullet appended to both verifier prompts' Rules block when images are attached. */
-export const IMAGE_RULE = `- Images are attached below the text under headings naming where each came from ("Post images", "Quoted post images", "Images from cited source <url>"). The post's own images are context, never sources. A cited source's image often shows a scene that LOOKS like the post's but is a different event, place, or time — compare them, and never treat a source as supporting a claim its image contradicts.`;
+export const IMAGE_RULE = `- Images are attached below the text under headings naming where each came from ("Post images", "Quoted post images", "Images from cited source <url>"). Sometimes a tweet and a source are about similar but different events. You can tell whether they are about the same event or not from the images.`;
