@@ -16,7 +16,7 @@ import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP, COST } from "../utils/noteWriterSteps";
 import { UnfetchableSourcesError } from "../utils/errors";
-import { runJsonLlmCall, type ChatMessage } from "../utils/jsonLlmCall";
+import { runJsonLlmCall } from "../utils/jsonLlmCall";
 import {
   describeMediaFromUrl,
   type MediaSourceDescription,
@@ -130,8 +130,9 @@ interface FetchedSource {
   url: string;
   content: string;
   fetched: boolean;
-  /** Images found in this source, for the vision verifier. Empty unless image
-   *  collection is on (collectImages) and the source yielded usable images. */
+  /** Images this source carries, for the vision verifier. Always collected —
+   *  it is a regex over markdown we already hold — and only sent when the
+   *  verifier_sees_images arm is live. */
   imageUrls: string[];
 }
 
@@ -140,12 +141,11 @@ async function fetchSourceContent(
   costPrefix: string,
   logPrefix: string,
   acceptMediaSources: boolean,
-  collectImages: boolean,
   snippetsByUrl?: Map<string, { title: string; snippet: string }>,
 ): Promise<{ sections: string; fetchedCount: number; totalNonTwitter: number; imageGroups: VerifierImageGroup[] }> {
   const results: FetchedSource[] = [];
   for (let i = 0; i < sources.length; i++) {
-    const fetched = await fetchOneSource(sources[i]!, `${costPrefix}.source.${i}`, `${logPrefix}.source.${i}`, acceptMediaSources, collectImages);
+    const fetched = await fetchOneSource(sources[i]!, `${costPrefix}.source.${i}`, `${logPrefix}.source.${i}`, acceptMediaSources);
     // Fallback: if the full fetch failed but we have a search snippet for this
     // URL, use it so the verifier has something to evaluate rather than nothing.
     if (!fetched.fetched && snippetsByUrl?.has(fetched.url)) {
@@ -170,16 +170,15 @@ async function fetchOneSource(
   costName: string,
   logKey: string,
   acceptMediaSources: boolean,
-  collectImages: boolean,
 ): Promise<FetchedSource> {
   if (isTwitterUrl(url)) {
-    return fetchTwitterSource(url, costName, logKey, acceptMediaSources, collectImages);
+    return fetchTwitterSource(url, costName, logKey, acceptMediaSources);
   }
   if (acceptMediaSources) {
-    const media = await tryMediaDescription(url, costName, logKey, collectImages);
+    const media = await tryMediaDescription(url, costName, logKey);
     if (media) return media;
   }
-  return fetchAsWebPage(url, collectImages);
+  return fetchAsWebPage(url);
 }
 
 /** Fetch a cited X post so the verifier can read it, rather than blind-accepting.
@@ -191,10 +190,9 @@ async function fetchTwitterSource(
   costName: string,
   logKey: string,
   acceptMediaSources: boolean,
-  collectImages: boolean,
 ): Promise<FetchedSource> {
   if (acceptMediaSources) {
-    const media = await tryDescribeMedia(url, costName, logKey, collectImages);
+    const media = await tryDescribeMedia(url, costName, logKey);
     if (media) return media;
   }
   const tweet = await fetchTweetViaSyndication(url);
@@ -213,17 +211,17 @@ function formatTweetSection(url: string, tweet: SyndicationTweet): string {
 }
 
 /** Returns null when the URL isn't a media host or the cascade failed (caller falls through to handleWebFetch). */
-async function tryMediaDescription(url: string, costName: string, logKey: string, collectImages: boolean): Promise<FetchedSource | null> {
+async function tryMediaDescription(url: string, costName: string, logKey: string): Promise<FetchedSource | null> {
   if (!isMediaHost(url)) return null;
-  return tryDescribeMedia(url, costName, logKey, collectImages);
+  return tryDescribeMedia(url, costName, logKey);
 }
 
 /** Run the yt-dlp/gallery-dl cascade + Gemini analysis, or null if it can't
  *  extract media (text-only post, removed content, unsupported host). */
-async function tryDescribeMedia(url: string, costName: string, logKey: string, collectImages: boolean): Promise<FetchedSource | null> {
+async function tryDescribeMedia(url: string, costName: string, logKey: string): Promise<FetchedSource | null> {
   try {
     const media = await describeMediaFromUrl(url, costName);
-    const imageUrls = collectImages && media.imageDataUrl ? [media.imageDataUrl] : [];
+    const imageUrls = media.imageDataUrl ? [media.imageDataUrl] : [];
     return { url, content: formatCascadeMediaSection(url, media), fetched: true, imageUrls };
   } catch (err: any) {
     getTweetLog()?.set(`${logKey}.media_error`, err?.message ?? "unknown error");
@@ -231,14 +229,14 @@ async function tryDescribeMedia(url: string, costName: string, logKey: string, c
   }
 }
 
-async function fetchAsWebPage(url: string, collectImages: boolean): Promise<FetchedSource> {
+async function fetchAsWebPage(url: string): Promise<FetchedSource> {
   const result = await handleWebFetch(url);
   const content = typeof result.output === "string" ? result.output : JSON.stringify(result.output);
   const isFetchError =
     content.startsWith("Fetch failed:") ||
     content.startsWith("Fetch error:") ||
     content.startsWith("Non-text content:");
-  const imageUrls = collectImages && !isFetchError ? extractSourceImageUrls(content, url) : [];
+  const imageUrls = isFetchError ? [] : extractSourceImageUrls(content, url);
   return { url, content: `### ${url}\n${content}`, fetched: !isFetchError, imageUrls };
 }
 
@@ -260,21 +258,20 @@ export async function verifySources(params: VerifySourcesParams): Promise<Source
   const costPrefix = `${COST.sourceVerifier}.turn.${params.turnNumber}`;
   const logPrefix = `${STEP.sourceVerifier}.turn.${params.turnNumber}`;
 
-  const collectImages = (config.verifier_sees_images ?? false) && verifierModelSupportsImages(model);
   const acceptMediaSources = config.verifier_accepts_media_sources ?? false;
   const { sections, fetchedCount, totalNonTwitter, imageGroups: sourceImageGroups } = await fetchSourceContent(
     params.sources,
     costPrefix,
     logPrefix,
     acceptMediaSources,
-    collectImages,
     params.snippetsByUrl,
   );
 
   // verifier_sees_images: show the post's own images first, then each cited
   // source's, so the verifier can catch out-of-context media. Both flows attach
   // the same groups; gated to vision-capable models above.
-  const imageGroups = collectImages
+  const sendImages = (config.verifier_sees_images ?? false) && verifierModelSupportsImages(model);
+  const imageGroups = sendImages
     ? [...collectPostImageGroups(params.mediaResult), ...sourceImageGroups]
     : [];
 
@@ -313,19 +310,11 @@ function clampToCited(urls: string[] | undefined, citedSet: Set<string>): string
   return (urls ?? []).filter((u) => citedSet.has(u));
 }
 
-/** The user message plus its labeled image sections, ready to send. `attach`
- *  tells the caller whether images survived the cap, so its system prompt only
- *  promises pictures the model can actually see. Shared by both flows. */
-async function buildUserContent(userMessage: string, imageGroups: VerifierImageGroup[]): Promise<{
-  attach: boolean;
-  content: ChatMessage["content"];
-  imageLog?: VerifierImageGroup[];
-}> {
-  const { content, attached } = await buildVerifierContent(userMessage, imageGroups);
-  if (attached.length === 0) return { attach: false, content };
-  // Truncate for the log: a yt-dlp'd source image is an inline base64 data URL.
-  const imageLog = attached.map((g) => ({ label: g.label, urls: g.urls.map((u) => u.slice(0, 80)) }));
-  return { attach: true, content, imageLog };
+/** Attached images as the tweet log should record them: a source image from the
+ *  yt-dlp cascade is an inline base64 data URL, so truncate every url. */
+function imageLog(attached: VerifierImageGroup[]): VerifierImageGroup[] | undefined {
+  if (attached.length === 0) return undefined;
+  return attached.map((g) => ({ label: g.label, urls: g.urls.map((u) => u.slice(0, 80)) }));
 }
 
 // --- Classic flow: single accept/reject call ---
@@ -372,10 +361,10 @@ async function runClassicVerification(
     ``,
     buildSourcesContext(sections, params),
   ].join("\n");
-  const { attach, content, imageLog } = await buildUserContent(userMessage, imageGroups);
-  const systemPrompt = buildVerifierSystemPrompt(acceptMediaSources, useCitations, attach);
+  const { content, attached } = await buildVerifierContent(userMessage, imageGroups);
+  const systemPrompt = buildVerifierSystemPrompt(acceptMediaSources, useCitations, attached.length > 0);
 
-  log?.set(`${messagesLogPrefix}.0`, { systemPrompt, userMessage, images: imageLog });
+  log?.set(`${messagesLogPrefix}.0`, { systemPrompt, userMessage, images: imageLog(attached) });
 
   const model = config.verifier_model ?? config.model;
   const messages = [
@@ -484,10 +473,10 @@ async function runClaimBasedVerification(
     ``,
     buildSourcesContext(sections, params),
   ].join("\n");
-  const { attach, content, imageLog } = await buildUserContent(userMessage, imageGroups);
-  const systemPrompt = buildClaimSupportSystemPrompt(acceptMediaSources, useCitations, attach);
+  const { content, attached } = await buildVerifierContent(userMessage, imageGroups);
+  const systemPrompt = buildClaimSupportSystemPrompt(acceptMediaSources, useCitations, attached.length > 0);
 
-  log?.set(`${messagesLogPrefix}.0`, { systemPrompt, userMessage, images: imageLog });
+  log?.set(`${messagesLogPrefix}.0`, { systemPrompt, userMessage, images: imageLog(attached) });
 
   const model = config.verifier_model ?? config.model;
   const messages = [
