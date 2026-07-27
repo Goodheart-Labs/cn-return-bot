@@ -1,0 +1,474 @@
+Project "AI 2040: Plan A" (ai-2040) → 21 pages from https://ai-2040.com (resuming — skipping 8 already done)
+
+=== (1/21) Main Scenario — already done, skipping
+=== (2/21) About — already done, skipping
+=== (3/21) Footnotes — already done, skipping
+=== (4/21) Supplements — already done, skipping
+=== (5/21) AI For Epistemics — already done, skipping
+=== (6/21) Alignment Roadmap — already done, skipping
+=== (7/21) Capability Scaling Strategy — already done, skipping
+=== (8/21) Comparing Possible Plans — already done, skipping
+=== (9/21) Compute in Plan A — https://ai-2040.com/supplements/compute-supplement
+  "Compute in Plan A" (no date)
+  276 claims extracted — dropped 41 speculation, fact-checking 118 of 235 (uncertain or below)
+[gemini] free key out of quota (model: gemini-3.1-pro-preview); falling back to next key.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Non-AI CPU servers score approximately 1.4 on the usefulness factor U, because they carry lots of memory and networking relative to their compute.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (check_failed) — The Nvidia H100 GPU has a Total Processing Performance (TPP) of 15,800.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The Nvidia H100 GPU has Ethernet scale-out bandwidth of 50 GB/s.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The Nvidia A100 GPU has a TPP of 4,992.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — AI hardware cost-efficiency (H100e per dollar) has been improving at around 1.4x per year.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The AI capital expenditure trend was approximately 1.72x per year from Q3 2023 to Q4 2025.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ⚠️  NOTE — The Nvidia RTX 4090 has 64 Gb/s NIC networking.
+      The Nvidia RTX 4090 is a consumer GPU that does not have a built-in Network Interface Card (NIC). The figure of 64 refers to its PCIe 4.0 x16 bidirectional interface bandwidth of 64 GB/s, not a networking speed.
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The Nvidia RTX 4090 has a TPP of 5,285.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — In 2024, 5.09 million H100e were added based on $260 billion in AI spending, according to Epoch AI data.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — In 2025, 13.6 million H100e were added based on $448 billion in AI spending, according to Epoch AI data.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Total annual revenue (ARR) across frontier AI companies was approximately $30 billion at the start of 2026.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The US owned approximately 71% of AI compute in 2024.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — China owned approximately 16% of AI compute in 2024.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — AI-relevant compute represented 48% of all global compute in 2025.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — AI-relevant compute represented 26% of all global compute in 2024.
+[gemini] free key out of quota (model: gemini-3.5-flash); falling back to next key.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — For the non-China AI compute, the supplement splits ownership 85% US and 15% rest of world.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Total AI capex in 2025 was approximately $448 billion, according to Epoch AI's Broad CapEx measure.
+[processTweet] Bot pipeline failed for a7a8ba14-30: 227 |     acceptMediaSources,
+228 |     params.snippetsByUrl,
+229 |   );
+230 | 
+231 |   if (totalNonTwitter > 0 && fetchedCount === 0) {
+232 |     throw new UnfetchableSourcesError(
+                ^
+UnfetchableSourcesError: None of the 1 non-Twitter source(s) could be fetched
+ outcomeReason: "unfetchable_sources",
+
+      at verifySources (/Users/jimmaar/Github/cn-return-bot/src/pipeline/verify/sourceVerifier.ts:232:11)
+
+  ✅ no note (unfetchable_sources) — Total AI capex in 2024 was approximately $260 billion, according to Epoch AI's Broad CapEx measure.
+[pricing] No Gemini pricing for "gemini-3.5-flash" — recording cost as 0
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Epoch's hyperscaler Broad CapEx figures are $260 billion for 2024 and $448 billion for 2025.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — ASML shipped 54 EUV tools in 2022.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — ASML shipped 42 EUV tools in 2023.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — ASML had approximately 127 EUV tools in use at the end of 2021.
+[gemini] free key out of quota (model: gemini-3.1-pro-preview); falling back to next key.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — ASML guided for 60 or more EUV shipments for 2026.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — HBM wafers require approximately 4-7 EUV layers per wafer.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — ASML guided for approximately 80 EUV shipments for 2027.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Each EUV tool performs approximately 360,000 passes per year.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — AI's share of EUV fleet usage was approximately 15% in 2025.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The historical rate of compute cost-efficiency improvement has been approximately 1.4x per year.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — AI's share of EUV fleet usage was approximately 7% in 2024.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The global EUV fleet consisted of approximately 220 operating tools at the start of 2024.
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Approximately 13 million non-AI server units were shipped in 2024.
+[processTweet] Bot pipeline failed for a7a8ba14-55: 85 | 
+86 | function parseSearchJson(content: string, source: string): SearchOutput {
+87 |   try {
+88 |     return JSON.parse(content) as SearchOutput;
+89 |   } catch {
+90 |     throw new ModelOutputInvalidError(
+               ^
+ModelOutputInvalidError: searchWithAnthropicNative: model output was not valid JSON. content="{"findings": "The claim that approximately 7.5 million AI accelerator units shipped in 2024 is well-supported by industry data. DIGITIMES Research specifically estimated that shipments of high-end ser"
+ outcomeReason: "model_output_invalid",
+
+      at parseSearchJson (/Users/jimmaar/Github/cn-return-bot/src/pipeline/simple-bot/searchDispatch.ts:90:11)
+      at searchWithAnthropicNative (/Users/jimmaar/Github/cn-return-bot/src/pipeline/simple-bot/searchDispatch.ts:153:18)
+
+  ✅ no note (model_output_invalid) — Approximately 7.5 million AI accelerator units were shipped in 2024.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — EUV utilization was approximately 52% in 2024.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Immersion (DUV) lithography utilization was approximately 20% in 2024.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Approximately 36 million gaming GPUs were shipped in 2024.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Approximately 5.09 million H100-equivalents of AI compute were added in 2024.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — 44 EUV tools were added to the global fleet in 2024.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Approximately 13.6 million H100-equivalents of AI compute were added in 2025.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — 48 EUV tools were added to the global fleet in 2025.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The H200 is available for export to China under the current licensing policy as of the time of writing.
+[gemini] free key out of quota (model: gemini-3.5-flash); falling back to next key.
+[gemini] free key out of quota (model: gemini-3.1-pro-preview); falling back to next key.
+[gemini] free key out of quota (model: gemini-3.1-pro-preview); falling back to next key.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — CXMT manufactures HBM (High Bandwidth Memory) for China's domestic AI compute supply.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Approximately 30 billion microcontrollers, automotive, and edge devices were shipped in 2024.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The article estimates China's AI compute stock at the end of 2024 at 1.3 million H100 equivalents.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The article uses an 85/15 split between US and Rest-of-World for the non-China remainder of global AI compute.
+[pricing] No Gemini pricing for "gemini-3.5-flash" — recording cost as 0
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Gaming GPUs have a very low usefulness factor for AI workloads relative to their raw compute (0.04 in 2024).
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Roughly 2 million people work in the semiconductor industry today.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The article estimates the US holds about 71% of world AI compute stock in 2024.
+[gemini] free key out of quota (model: gemini-3.1-pro-preview); falling back to next key.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ⚠️  NOTE — The long-run learning rate for semiconductors and solar is approximately 15% cost reduction per doubling of cumulative production.
+      Solar PV has a documented learning rate of 20–24% per doubling of cumulative production (Swanson's Law), and semiconductors typically show 20–30%. The 15% figure used here is below the established long-run rates for both technologies.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (check_failed) — Non-AI server chips have a higher usefulness factor for AI workloads than dedicated AI accelerators in the model's 2024 estimates (1.38 vs 1.16).
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The article estimates non-AI single-device (consumer) compute at 8.7 million effective H100 equivalents as of January 1, 2024, making up 63% of total effective compute.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The forecast attributes approximately 0.48 million H100 equivalents per year in smuggled chips reaching China in 2025.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The article estimates China added approximately 0.9 million H100 equivalents of AI compute during 2024.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Google owns approximately 25% of global AI compute.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The article estimates the all-in cost markup over chip production cost (covering datacenter, power, networking, chip-maker margin) at roughly 7x to 8x in the 2025-2028 period.
+[gemini] free key out of quota (model: gemini-3.5-flash); falling back to next key.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ⚠️  NOTE — The article estimates AI-relevant cluster compute stock at 3.6 million effective H100 equivalents as of January 1, 2024, representing 26% of all effective compute.
+      The 3.6M (26%) figure corresponds to January 1, 2026, not 2024. Epoch AI's estimate of ~26% AI-datacenter compute share aligns with early 2026, and actual H100e stock trajectories confirm the table starts at 2025, not 2024.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Google DeepMind and OpenAI use similar amounts of compute, each around 10% of global compute in 2026.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — In 2024, OpenAI spent approximately one third of its compute on inference.
+[gemini] free key out of quota (model: gemini-3.5-flash); falling back to next key.
+[pricing] No Gemini pricing for "gemini-3.5-flash" — recording cost as 0
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — In 2025, OpenAI spent around half of its compute on inference.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Fitting their formula to Nesov's own compute and sparsity numbers gives a compute exponent α of approximately 0.8.
+[pricing] No Gemini pricing for "gemini-3.5-flash" — recording cost as 0
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Only around 10% of OpenAI's training and experiment compute goes to final frontier training runs.
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ⚠️  NOTE — Today's frontier model size is approximately 10 trillion parameters.
+      As of 2026, the trend of frontier models becoming larger has reversed. Current models like GPT-4o and Claude 3.5 are estimated to be significantly smaller than previous iterations, and even the largest estimated models remain well below 10 trillion parameters.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — There are approximately 30 million concurrent copies of the frontier model being served today (2026).
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — A full set of frontier model weights is approximately 5 TB today at 4-bit precision.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The sparsity exponent β = 0.74 is used in the model size formula relating sparsity to total parameters.
+[gemini] free key out of quota (model: gemini-3-flash-preview); falling back to next key.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Memory bandwidth on the inference fleet is about 31 times its memory capacity, giving approximately 31 full read-throughs per second.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Human working pace is approximately 10 tokens per second.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (check_failed) — Epoch has estimated a CMOS transistor theoretical limit for compute power efficiency at approximately 200 times the H100.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The model projects that the AI fleet's usefulness adjustment per unit of raw compute is 1.16 in 2024 and drifts down to 1.02 by 2029.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The Jones model for R&D uses a base rate of 25% per year for chip design improvement.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Current inference utilization is approximately 90%.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — PCs have a usefulness adjustment of approximately 0.35 in 2024, dropping to 0.03 by 2029 in the model's projections.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Phones have a usefulness adjustment of approximately 0.21 in 2024, dropping to 0.05 by 2029.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Non-AI servers have the highest usefulness adjustment U in the model's projections, scoring approximately 1.38–1.41 from 2024 to 2029.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The H100e unit is defined as TPP (throughput) divided by 15,800.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — In the model, the AI fleet's usefulness starts slightly above 1 due to memory-rich H100s and drifts toward 1 as the memory wall becomes a constraint.
+[gemini] free key out of quota (model: gemini-3.5-flash); falling back to next key.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Gaming GPUs have a usefulness adjustment of approximately 0.04–0.06 across 2024–2029 in the model.
+[pricing] No Gemini pricing for "gemini-3.5-flash" — recording cost as 0
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — AI accelerators consumed approximately 0.4 million leading-edge wafers in 2025.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — TSMC produces approximately 3 million wafers at 5nm or smaller process nodes.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ⚠️  NOTE — SK Hynix has approximately 170,000 wafers per month of HBM TSV/back-end capacity in 2025.
+      TrendForce reports clarify that Samsung reached 170k HBM TSV capacity by the end of 2025, while SK hynix peaked at 150k. The 170k target was attributed to Samsung in TrendForce analysis, while SK hynix was leading with 150k capacity in late 2025.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — An EUV lithography tool produces approximately 360,000 effective exposure passes per year.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Micron has approximately 60,000 wafers per month of HBM TSV/back-end capacity in 2025.
+[gemini] free key out of quota (model: gemini-3.1-pro-preview); falling back to next key.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Samsung has approximately 165,000 wafers per month of HBM TSV/back-end capacity in 2025.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — CoWoS assembly yield is approximately 88%.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — A 24Gb-die DRAM wafer holds approximately 1,400 GB gross.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The HBM industry totaled approximately $35 billion and 2 billion GB in 2025.
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The five largest hyperscalers issued approximately $121 billion in bonds in 2025.
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[gemini] free key out of quota (model: gemini-3.5-flash); falling back to next key.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — HBM core and stacking yield (KGSD/TSV) is approximately 57%.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The average annual bond issuance by the five largest hyperscalers was approximately $28 billion per year from 2020 to 2024.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — CoreWeave carries approximately 4x revenue in debt, with roughly $21 billion in debt on approximately $5 billion in revenue.
+[pricing] No Gemini pricing for "gemini-3.5-flash" — recording cost as 0
+[gemini] free key out of quota (model: gemini-3.1-pro-preview); falling back to next key.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (check_failed) — BofA and JPMorgan projected approximately $175-300 billion in hyperscaler bond issuance for 2026.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — GPT-4 has approximately 1.8 trillion parameters.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — CoWoS advanced packaging costs are increasing approximately 15-20% per year.
+[processTweet] Bot pipeline failed for a7a8ba14-192: 85 | 
+86 | function parseSearchJson(content: string, source: string): SearchOutput {
+87 |   try {
+88 |     return JSON.parse(content) as SearchOutput;
+89 |   } catch {
+90 |     throw new ModelOutputInvalidError(
+               ^
+ModelOutputInvalidError: searchWithAnthropicNative: model output was not valid JSON. content="Based on my research, this claim appears to be accurate. Morgan Stanley's credit research (highlighted in a "Thoughts on the Market" podcast episode with Vishy Tirupattur and Vishwas Patkar) estimated"
+ outcomeReason: "model_output_invalid",
+
+      at parseSearchJson (/Users/jimmaar/Github/cn-return-bot/src/pipeline/simple-bot/searchDispatch.ts:90:11)
+      at searchWithAnthropicNative (/Users/jimmaar/Github/cn-return-bot/src/pipeline/simple-bot/searchDispatch.ts:153:18)
+
+  ✅ no note (model_output_invalid) — Morgan Stanley estimated approximately $1.15 trillion of an approximately $2.9 trillion 2025-2028 AI buildout would be debt-financed.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — TSMC's N2 process node is priced at approximately $30,000 per wafer, representing a 10-20% increase over N3.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — ASML shipped approximately 129 ArF immersion (DUV) lithography tools at some point, about 70% of which went to China.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ⚠️  NOTE — Global broad logic-wafer output was approximately 30 million wafers in 2024.
+      SEMI's figure of ~30 million wafers refers to monthly capacity across ALL chip types (logic, memory, analog, etc.), not annual logic-wafer output. Annualized, 30M wafers/month equals roughly 360M wafers/year — about 12× larger than the claim implies.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — ByteDance has confirmed rental of at least approximately 520,000 H100-equivalent GPU capacity abroad.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Samsung supplied approximately 11.4 million HBM stacks to Chinese firms from a foreign HBM stockpile, enough for approximately 1.6 million Ascend 910C equivalents.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Nvidia shipped approximately 1 million H20 GPUs (throttled for China export) in 2024.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — TSMC had a die bank of approximately 2.9 million dies available for Chinese AI chips, as reported by SemiAnalysis.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ⚠️  NOTE — ASML ships approximately 125 EUV lithography machines per year as of the current period.
+      ASML shipped ~48 EUV machines in 2025 and targets ~60 in 2026, not 125. The 125 figure matches neither EUV-only (~48–60) nor total lithography shipments (~300 including DUV) for the current period.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ⚠️  NOTE — The Nvidia H20 GPU has approximately 0.2 H100-equivalent performance.
+      The H20 performance figure of 0.2 H100-equivalent applies only to compute-bound training. In memory-bound LLM inference, the H20 can actually outperform the H100 due to its higher memory bandwidth (4.0 TB/s vs 3.4 TB/s) and larger memory capacity.
+  ✅ no note (no_correction_needed) — The 2025 AI accelerator fleet consists of approximately 11.7 million accelerators.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (check_failed) — Groq and Cerebras inference chips achieve approximately 60-80x the HBM bandwidth of standard AI accelerators.
+[gemini] free key out of quota (model: gemini-3.5-flash); falling back to next key.
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The SemiAnalysis report projects CXMT to reach approximately 12% of global HBM wafer supply by 2028.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — Epoch AI's observed dataset of largest tracked AI datacenter sites covers approximately 15% of global AI compute as of late 2025.
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — In 2025, annual capital expenditure per H100-equivalent of AI compute added was approximately $33,000.
+[gemini] free key out of quota (model: gemini-3.5-flash); falling back to next key.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The Nesov forecast assumes approximately 200 trillion tokens of unique training data exist.
+[pricing] No Gemini pricing for "gemini-3.5-flash" — recording cost as 0
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — ASML shipped approximately 48 EUV tools in 2025.
+[pricing] No Gemini pricing for "gemini-3.5-flash" — recording cost as 0
+[processTweet] Bot pipeline failed for a7a8ba14-222: 178 |     enableGoogleSearch: true,
+179 |     responseSchema: SEARCH_INLINE_RESPONSE_SCHEMA,
+180 |   });
+181 | 
+182 |   if (!result.parsed) {
+183 |     throw new Error(
+                    ^
+error: Gemini did not return parseable JSON. text=
+      at searchWithGeminiNative (/Users/jimmaar/Github/cn-return-bot/src/pipeline/simple-bot/searchDispatch.ts:183:15)
+
+  ✅ no note (bot_error) — In 2024, annual capital expenditure per H100-equivalent of AI compute added was approximately $51,000.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — CoWoS advanced packaging cost per AI accelerator is approximately $10,000-$15,000.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 134s)
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The HBM memory component cost per AI accelerator package is approximately $50,000-$70,000.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — AI chip designers apply approximately a 4-5x markup on manufacturing costs, resulting in an approximately $400,000-$500,000 accelerator.
+[gemini] free key out of quota (model: gemini-3.5-flash); falling back to next key.
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 104s)
+[processTweet] Bot pipeline failed for a7a8ba14-232: 85 | 
+86 | function parseSearchJson(content: string, source: string): SearchOutput {
+87 |   try {
+88 |     return JSON.parse(content) as SearchOutput;
+89 |   } catch {
+90 |     throw new ModelOutputInvalidError(
+               ^
+ModelOutputInvalidError: searchWithAnthropicNative: model output was not valid JSON. content="Based on my research, this claim is consistent with the AEI report ("The Lithography Loophole: How China Is Printing Its Way to Chip Self-Sufficiency," published April 2026) which is the likely source"
+ outcomeReason: "model_output_invalid",
+
+      at parseSearchJson (/Users/jimmaar/Github/cn-return-bot/src/pipeline/simple-bot/searchDispatch.ts:90:11)
+      at searchWithAnthropicNative (/Users/jimmaar/Github/cn-return-bot/src/pipeline/simple-bot/searchDispatch.ts:153:18)
+
+  ✅ no note (model_output_invalid) — China had a base of approximately 200 ArF immersion DUV lithography tools before 2024 purchases.
+[pricing] No Gemini pricing for "gemini-3.5-flash" — recording cost as 0
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — China purchased approximately 90 ArF immersion DUV lithography tools in 2024, mostly NXT:1980Fi-class with 275-330 wafers per hour throughput.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ⚠️  NOTE — Non-chip buildout costs (datacenters, power, land, networking) add approximately $700,000-$1,100,000 per AI accelerator in the all-in cost.
+      At hyperscale, non-chip buildout cost per GPU is roughly $10K–$18K for facilities (at ~$20M/MW and 0.7 kW/GPU). Even small 100-GPU clusters show ~$56K non-chip cost per accelerator — far below the $700K–$1.1M claimed here.
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — China spent approximately $5-7 billion on ArF immersion DUV lithography tool purchases in 2024.
+[searxng] all providers in cool-down; waiting 10s (uncapped would be 10s)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[searxng] all providers in cool-down; waiting 30s (uncapped would be 182s)
+[searxng] provider=google suspended for 185s; cycle will skip it until cool-down
+[searxng] provider=brave suspended for 185s; cycle will skip it until cool-down
+[noteEvaluationFilter] Error evaluating note: Request failed with status code 403
+[noteEvaluationFilter] Evaluation API failed, skipping: Request failed with status code 403
+  ✅ no note (no_correction_needed) — The Huawei Ascend 910C has approximately 0.8 H100-equivalent raw performance.
+[PROGRESS] (9/21) Compute in Plan A — extracted 276 · spec 41 dropped · kept 235 (skipped 117 confident, checked 118 → ✍️ 9 notes · ✅ 109 no-note · ❌ 0 err)
+=== (10/21) Covert AI Projects — https://ai-2040.com/supplements/covert-ai-projects
+  "Covert AI Projects" (no date)

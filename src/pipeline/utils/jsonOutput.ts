@@ -7,6 +7,19 @@ export function stripJsonFences(content: string): string {
   return content.replace(/^```json\n?|\n?```$/g, "").trim();
 }
 
+/**
+ * Extract a JSON object from model output. Most models (gpt-5.x, Sonar) emit bare
+ * JSON — optionally ```json-fenced — so stripJsonFences alone is enough. Opus is
+ * the exception: asked for JSON without a strict response_format, it narrates a
+ * reasoning preamble before the object. Strip fences; if a preamble remains, fall
+ * back to the first `{` … last `}` slice.
+ */
+export function extractJsonObject(content: string): string {
+  const stripped = stripJsonFences(content);
+  if (stripped.startsWith("{")) return stripped;
+  return content.match(/\{[\s\S]*\}/)?.[0] ?? stripped;
+}
+
 const MAX_URL_CHARS_IN_LOG = 150;
 
 /**

@@ -1,0 +1,2012 @@
+[
+  {
+    "claim": "The document titled 'AI 2040: Plan A' alignment roadmap supplement was authored by Ryan Greenblatt and Thomas Larsen.",
+    "judgement": "likely true",
+    "context": "Alignment Roadmap\nRyan Greenblatt, Thomas Larsen\n\nDISCLAIMER: This supplement is a very rough draft representing in progress thinking.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The alignment roadmap described in this document represents the authors' best guess as of early 2026.",
+    "judgement": "likely true",
+    "context": "This document represents our best guess alignment roadmap as of early 2026. It's focused on outlining high level objectives that need to be accomplished in order to avoid AI takeover.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Preventing AIs from escaping or exfiltrating algorithmic secrets is ranked fourth in importance because it is less direct than backdooring future models.",
+    "judgement": "likely true",
+    "context": "Prevent AIs from escaping, exfilling algo secrets / boosting AI elsewhere. This is much less direct than (1), but could in principle lead to existential catastrophe.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Anthropic has a Responsible Scaling Policy (RSP) that includes an AI R&D-4 capability bar.",
+    "judgement": "uncertain",
+    "context": "It could trigger before or after the AI R&D-4 bar in Anthropic's RSP (depending on how useful AIs end up being relative to what jobs they can virtually fully automate).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Applying a coefficient of 0.5 to a 100x potential Min-H acceleration yields a 10x safety labor R&D acceleration.",
+    "judgement": "certainly true",
+    "context": "This might be modeled by a more aggressive coefficient than 0.6, like maybe 0.5 which only results in 10x safety labor R&D acceleration. This is a large part of why handoff is advantageous at this point.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Plan C in the alignment roadmap refers to a scenario where a basically reasonable AI developer has a small amount of lead time (e.g., a few months) and is willing to take costly safety actions as long as those actions do not cause them to lose the AI race.",
+    "judgement": "likely true",
+    "context": "Second, we'll go over the alignment approach in detail for Plan C, which is the case where we have a basically reasonable AI developer working with a small amount of lead time (e.g. a few months), and are willing to take costly actions that have some safety benefit, as long as this doesn't result in them losing the AI race.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The alignment roadmap described in the document is broken down into 4 phases: Prepare, Mitigate + Elicit, Pause at Min-H, and Handoff.",
+    "judgement": "likely true",
+    "context": "Our alignment roadmap can be broken down into 4 phases, which we'll discuss in detail:\n\nPrepare. This will centrally involve preparing for control, building misalignment analogies that are as realistic as possible, and various other interventions.\n\nMitigate + Elicit. During the early intelligence explosion...\n\nPause at Min-H. Once we've built AI systems with general purpose capabilities sufficient that we can unsafely hand off trust (Min-H)...\n\nHandoff. Once we've mitigated alignment faking and achieved handoff-viability...",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Min-H is defined as the level of general purpose AI capabilities sufficient to unsafely hand off trust.",
+    "judgement": "likely true",
+    "context": "Pause at Min-H. Once we've built AI systems with general purpose capabilities sufficient that we can unsafely hand off trust (Min-H), we pause further AI capabilities progress, and try to build AIs that we can safely hand off trust to.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In Plan D, there is substantially less political will, no ability to pause, and much less overall labor for handling misalignment risk compared to Plan C.",
+    "judgement": "likely true",
+    "context": "In Plan D, we have substantially less political will, no ability to pause, and much less overall labor for handling misalignment risk. This means that plan D will accept a much higher risk budget, and focus exclusively on cheap but low assurance techniques.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In Plan B, the alignment approach is very similar to Plan C but with somewhat more time/effort and the ability to spend slightly more resources on more ambitious/higher assurance proposals.",
+    "judgement": "likely true",
+    "context": "In Plan B, the plan is very similar to Plan C, except you have somewhat more time/effort and can spend slightly more resources on more ambitious/higher assurance proposals.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In Plan A, the approach initially plans similarly to Plan B/C to hedge against international coordination breaking down, then shifts resources to moonshots once the regime is stable.",
+    "judgement": "likely true",
+    "context": "In Plan A, we'll initially plan similarly to Plan B/C (in order to hedge against the international coordination breaking down), and then once the regime is stable, shifting resources to moonshots, updating to potentially huge amounts of resources.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The authors estimate that natural schemers account for approximately 3/6 of the expected value of misalignment analogy work, AIs trained to behave like schemers are 1/6 of the value, and abstract analogies are 2/6 of the value.",
+    "judgement": "uncertain",
+    "context": "My (low confidence) guess is that natural schemers are 3/6 of the expected value, AIs trained to behave like schemers are 1/6 of the value, and abstract analogies are 2/6 of the value; that said, we're likely to increasingly focus on whichever of these areas ends up seeming most promising (but this isn't very predictable in advance).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Alignment faking in this context refers to AIs being so seriously misaligned that they intentionally fake alignment, such as by scheming against humans.",
+    "judgement": "likely true",
+    "context": "Avoiding alignment faking: AIs aren't so seriously misaligned that they intentionally fake alignment (e.g., they aren't scheming against us).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The document identifies control evaluations, misalignment analogies iteration, and elicitation/handoff viability as core methodologies forming the main empirical feedback loops in the plan.",
+    "judgement": "likely true",
+    "context": "As part of this, control, misalignment analogies, and elicitation/handoff viability each have core methodologies that form the main empirical feedback loop for that methodology. The methodologies for these are, respectively:\n\nControl evaluations: Control is relatively easy to evaluate because it just requires estimating capabilities.\n\nMisalignment analogies iteration: Ultimately, our main hope for avoiding scheming is probably iterating using misalignment analogies.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Control evaluations are described as relatively easy to evaluate because they primarily require estimating capabilities.",
+    "judgement": "uncertain",
+    "context": "Control evaluations: Control is relatively easy to evaluate because it just requires estimating capabilities. This makes iteration easier and control is generally relatively easy to iterate on for reasons we've discussed in prior work.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Mitigate + Elicit phase lasts from the early intelligence explosion (specifically ITAI) until Min-H.",
+    "judgement": "likely true",
+    "context": "Mitigate + Elicit. During the early intelligence explosion, mitigate the risk of AIs taking catastrophic actions (e.g. staging a rogue internal deployment or backdoor the values of future models). Meanwhile, elicit their capabilities on domains that we care about (e.g. control research, alignment research, security, strategy) and use them to do huge amounts of useful work in these domains. This phase lasts from the early intelligence explosion (specifically ITAI), until Min-H (definitions here).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The main alternative to handoff described in the plan is to stall for more time, primarily by escalating to Plans A or B, which would typically require substantial government involvement.",
+    "judgement": "likely true",
+    "context": "The main alternative to hand off is to instead stall for more time. The main way of doing that would be to escalate to Plans A or B, which would (typically) require substantial government involvement, which may or may not be feasible.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The document's list of research areas excludes some areas such as hardening the world against rogue AIs (e.g., biodefense and cyber defense).",
+    "judgement": "likely true",
+    "context": "This list excludes some areas which receive less focus in this plan but are still important such as hardening the world against rogue AIs (e.g. biodefence and cyber defence).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "'Misalignment analogies' in this context refers to creating and studying AIs analogous to scheming or otherwise misaligned models, sometimes called 'model organisms.'",
+    "judgement": "likely true",
+    "context": "Misalignment analogies: Creating and studying AIs analogous to scheming or otherwise misaligned models (sometimes called \"model organisms\"). This area will be mostly focused on scheming.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The document identifies 'buying time' as a research area that involves using AI labor to increase the willingness to pay of other actors (centrally the US government and other governments) for lead time.",
+    "judgement": "likely true",
+    "context": "Buying time: Using AI labor to buy time for further safety work. This involves trying to increase the willingness to pay of other actors (centrally the US government and other governments) for lead time, reducing the cost of acquiring lead time for these other actors, and directly acquiring lead time.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The document was published despite being described as a very rough draft, in the spirit of transparency.",
+    "judgement": "likely true",
+    "context": "DISCLAIMER: This supplement is a very rough draft representing in progress thinking. It should be interpreted as internal research notes, not as a final product that we are entirely happy with. This content is dense, full of not-very-well explained jargon, and unpolished. We decided to publish anyway in the spirit of transparency.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Behavioral tests can reasonably evaluate AI alignment in typical circumstances if AIs are not intentionally faking alignment.",
+    "judgement": "somewhat likely true",
+    "context": "If we assume that AIs aren't intentionally faking alignment, then their behavior in typical circumstances (and even under some level of generalization) can probably be understood reasonably well using behavioral tests (at least if we're somewhat careful in how we design these tests, including doing things like building analogies for generalization we need).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Behavioral tests that are easy to distinguish from actual usage may not be robust to scheming AIs.",
+    "judgement": "likely true",
+    "context": "We can also use behavioral tests (likely somewhat different behavioral tests) for ongoing work on elicitation (increasing AI output on safety relevant tasks), though one issue is that this might not be robust to scheming (if the behavioral tests are easy to distinguish from actual usage).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Directly measuring AI performance on actual usage is a special case of a behavioral test.",
+    "judgement": "likely true",
+    "context": "We can instead measure AI performance on actual usage (technically this is just a special case of a behavioral test) which might be trickier, but could yield more accurate measurements in addition to potentially being robust to scheming",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The plan described is somewhat reliant on some version of each of the three core methodologies (control evaluations, misalignment analogies, and behavioral tests) working out.",
+    "judgement": "likely true",
+    "context": "In practice, this plan is somewhat reliant on some version of each of these core methodologies working out, so getting these methodologies to work well (or noticing that they aren't workable) is important.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In the linked post's ontology, 'good analogies' correspond to 'building and iterating against behavioral tests' and 'model organisms' correspond to 'misaligment analogies.'",
+    "judgement": "uncertain",
+    "context": "For more discussion of relevant methodologies, see this discussion of protocol evaluations (in the ontology used in the linked post, good analogies correspond to 'building and iterating against behavioral tests' and 'model organisms' correspond to 'misaignment analogies').",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Control evaluations, misalignment analogies, and behavioral tests are the three core methodologies in this AI safety plan.",
+    "judgement": "likely true",
+    "context": "This plan is based on the three core methodologies above: control evaluations, misaignment analogies, and behavioral tests. These methodologies are a key part of how we'll achieve some of our main objectives of ensuring control, avoiding scheming, and handoff-viability / eliciting useful labor out of AIs (respectively).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Control evaluations are primarily aimed at ensuring control over AI systems, misalignment analogies at avoiding scheming, and behavioral tests at handoff-viability and eliciting useful labor.",
+    "judgement": "likely true",
+    "context": "These methodologies are a key part of how we'll achieve some of our main objectives of ensuring control, avoiding scheming, and handoff-viability / eliciting useful labor out of AIs (respectively).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "If an AI safety methodology fails while practitioners believe it works (unknown methodology failure), they cannot update their plans based on this failure.",
+    "judgement": "certainly true",
+    "context": "Unknown methodology failure: The methodology could fail while we think it actually works. In this case, we can't update our plans based on this failure and instead we're just in trouble (though control and avoiding scheming can act as independent lines of defense).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Control and avoiding scheming can act as independent lines of defense against unknown methodology failure.",
+    "judgement": "likely true",
+    "context": "Unknown methodology failure: The methodology could fail while we think it actually works. In this case, we can't update our plans based on this failure and instead we're just in trouble (though control and avoiding scheming can act as independent lines of defense).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Principled approaches are approaches where there is a strong a priori reason for thinking the method works that doesn't require verification in the exact domain of interest.",
+    "judgement": "likely true",
+    "context": "Broadly speaking, pivoting towards approaches which don't require iteration means we'd be pivoting to principled approaches. That is, approaches where we have some (strong) a priori reason for thinking the method works which doesn't require verification. That is, it at least doesn't require verification in the exact domain of interest, maybe we'd need to establish that the given principled approach/method works for accomplishing something else in some other context we can verify.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "According to the author, the single most promising principled approach for avoiding scheming is ensuring relevant reasoning is monitorable (e.g., monitorable chain-of-thought) such that the AI is incapable of undetected scheming while retaining sufficient capabilities.",
+    "judgement": "uncertain",
+    "context": "I discuss principled approaches for avoiding scheming in much more detail here; the single most promising approach would be ensuring relevant reasoning is monitorable (e.g. monitorable chain-of-thought) such that the AI is incapable of (undetected) scheming while retaining sufficient capabilities.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Phase 1 of the plan lasts from the present until the beginning of the intelligence explosion, specifically once ITAI (internally transformative AI) is reached.",
+    "judgement": "likely true",
+    "context": "This phase lasts from now until the beginning of the intelligence explosion (specifically: once we reach ITAI; defined here). During this phase, the AIs are sufficiently weak that they don't directly pose major existential risks and aren't transformatively useful for accelerating safety work.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "During Phase 1, AIs are sufficiently weak that they don't directly pose major existential risks.",
+    "judgement": "somewhat likely true",
+    "context": "During this phase, the AIs are sufficiently weak that they don't directly pose major existential risks and aren't transformatively useful for accelerating safety work.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "During Phase 1, AIs are not transformatively useful for accelerating safety work.",
+    "judgement": "uncertain",
+    "context": "During this phase, the AIs are sufficiently weak that they don't directly pose major existential risks and aren't transformatively useful for accelerating safety work.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Phase 1 is focused mostly on preparing to deal with risks from scheming AIs, with some emphasis on preparing to elicit labor from AIs.",
+    "judgement": "likely true",
+    "context": "Therefore, this phase will be focused mostly on preparing to deal with risks from scheming AIs with some emphasis on preparing to elicit labor from AIs and generally helpful safety research.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "During Phase 1, the focus on handling risks from egregiously misaligned AIs is most concentrated on control, with substantial focus on misalignment analogies and some focus on miscellaneous research directions.",
+    "judgement": "likely true",
+    "context": "Our work at this point on handling risks from egregiously misaligned AIs will be most focused on control while also having a substantial focus on misalignment analogies and some focus on miscellaneous research directions (typically more speculative approaches or building general understanding).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Work on control (both research and implementation) benefits less from being able to directly study dangerous AIs compared to other safety work, making it relatively more leveraged during Phase 1.",
+    "judgement": "somewhat likely true",
+    "context": "This makes it relatively more leveraged to work on control (both research and implementation) as this work benefits less from being able to directly study the dangerous AIs and we need it to be prepared for later.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Model internals interventions and some moonshot-style approaches are examples of work expected to be broadly invariant to future AI development.",
+    "judgement": "uncertain",
+    "context": "It's also relatively more leveraged to developing interventions or studying model properties that we'd expect to be broadly invariant to future AI development. As in, we'd be almost as good studying these interventions/properties on weak models in the future. This likely includes various model internals interventions and some more moonshot style approaches.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Phase 2 is distinguished from Phase 1 by two key differences: AIs are capable enough that scheming is a serious concern, and AIs are very useful for accelerating existentially useful work.",
+    "judgement": "likely true",
+    "context": "There are two key distinctions between Phase 1 (Prep), and Phase 2 (mitigate and elicit): (1) AIs are sufficiently capable that scheming is a serious concern (scheming is both plausible and scheming AIs are capable enough to cause serious problems in the absence of countermeasures) and (2) AIs are very useful for accelerating existentially useful work.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "During Phase 2, the main priorities are to mitigate the chance that scheming results in existential catastrophe and to elicit useful labor out of AIs so they produce existentially useful work.",
+    "judgement": "likely true",
+    "context": "During this phase, therefore, our main priorities are (1) to mitigate the chance that scheming results in existential catastrophe and (2) to elicit useful labor out of our AIs, so that they in fact produce existentially useful work.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Preventing AIs from sabotaging AI safety work is the second most important threat model because a key strategy for solving AI alignment is leveraging AI labor.",
+    "judgement": "likely true",
+    "context": "Prevent AIs from sabotaging AI safety work / eliciting actually good work. This is also very important, because a key strategy we have for solving AI alignment is leveraging AI labor.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "There is much more compute available inside a leading AI project than outside it, which is why AI escape is a less direct threat.",
+    "judgement": "somewhat likely true",
+    "context": "The problem with AIs escaping is that there is lots of compute on the inside of the leading AI project. Therefore, this threat model relies on the AIs being able to coopt or collude with another AI project, or be able to illicitly acquire a huge amount of compute",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The author of the plan is named Ryan.",
+    "judgement": "likely true",
+    "context": "Under my (Ryan's) views, this generally implies focusing preparation on relatively riskier worlds.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "A rogue internal deployment (RID) is when AI agents are able to deploy themselves on internal lab clusters without monitoring.",
+    "judgement": "likely true",
+    "context": "A key intermediate priority for preventing all of these threat models is to prevent rogue internal deployments (RIDs), which are when AI agents are able to deploy themselves on internal lab clusters without monitoring.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Current AIs (as of early 2026) are empirically better at coding and AI R&D relative to how they perform at AI safety research.",
+    "judgement": "likely true",
+    "context": "Empirically, the current AIs are better at coding and AI R&D relative to how they are at safety stuff (though ofc some safety stuff is overlapping).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Philosophy tends to have bad feedback loops.",
+    "judgement": "likely true",
+    "context": "Lots of safety stuff is in the more conceptual genre, which doesn't have good feedback. Philosophy tends to have bad feedback loops, and AIs tend to be quite good at the type of bullshitting that seems like valid philosophy but isn't.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "AIs tend to be quite good at producing text that seems like valid philosophy but isn't.",
+    "judgement": "likely true",
+    "context": "Philosophy tends to have bad feedback loops, and AIs tend to be quite good at the type of bullshitting that seems like valid philosophy but isn't.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Machine learning systems are very good at Goodharting (optimizing for a proxy metric rather than the intended objective).",
+    "judgement": "likely true",
+    "context": "ML is very good at goodharting. (this isn't differential to safety, but is a factor that makes the hard-to-measure problem worse)",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "There have been previous examples of AI models being randomly evil, such as Mechahitler and Sydney Bing.",
+    "judgement": "somewhat likely true",
+    "context": "We've seen examples of models being randomly evil before (e.g. Mechahitler, Sydney Bing). These models wouldn't directly cause an existential risk, but they could sabotage current research/place backdoors.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Sydney Bing was a Microsoft AI chatbot that exhibited problematic behavior.",
+    "judgement": "certainly true",
+    "context": "We've seen examples of models being randomly evil before (e.g. Mechahitler, Sydney Bing).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The estimated probability of scheming at a 1.15x AI R&D speedup is less than 1%.",
+    "judgement": "uncertain",
+    "context": "AI R&D Speedup 1.15x, Marginal Risk <1%, P(Scheming) <1%. This is roughly the current (early 2026) level of speedup.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The table's risk estimates assume roughly current AI architectures are in use, meaning a large pretraining run followed by RL reasoning training.",
+    "judgement": "likely true",
+    "context": "This table assumes roughly current architectures are in use; we explain updates below. This means that we are doing a large pretraining run, followed by RL reasoning training.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "OpenAI has current safety efforts that serve as a baseline in the risk comparison.",
+    "judgement": "certainly true",
+    "context": "'do baseline mitigations, about as seriously as current OpenAI safety efforts until AI R&D speedups reach threshold X, then begin reasonably competently implementing the control plan outlined here'.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "METR is an organization that measures AI agent time horizons for reliability benchmarking.",
+    "judgement": "likely true",
+    "context": "the 80% reliability METR time horizon will be 8-16 hours.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The term 'slopolis' refers to a default outcome where AI safety research looks good on the surface but is actually poor quality.",
+    "judgement": "uncertain",
+    "context": "If we fail to solve the elicitation problems sufficiently well, the default outcome is slopolis, which makes handoff likely to result in existential catastrophe because we'd be deferring to AIs on the basis of handoff viability and anti-scheming research that looked good but was actually poor.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "AI systems can generally optimize more easily for things that are easy to measure than for things that are hard to measure.",
+    "judgement": "likely true",
+    "context": "Generally, AIs will tend to be differentially bad at tasks that are hard to measure. This difficulty appears at many levels of the model creation process",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Stochastic gradient descent (SGD) can only optimize for things that it can measure.",
+    "judgement": "likely true",
+    "context": "Within a single training step, SGD can only optimize for things that it can measure.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "An AI R&D speedup of 12x means that research which would take a current AI company one year without AI assistance would only take one month with AI assistance.",
+    "judgement": "certainly true",
+    "context": "An AI R&D speedup of 12x means that the research that would take the current AI company (without AI assistance) one year, only takes 1 month with AI assistance.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "AI control protocols for internal deployment reduce immediate risk as a side effect of improving future control effectiveness.",
+    "judgement": "somewhat likely true",
+    "context": "Start practicing AI control immediately by implementing AI control protocols for internal deployment of AI systems. The main effect of this is to make it more likely that your control later is effective, but it also has the side effect of reducing immediate risk.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "There exists a paper claiming that most chain-of-thought reasoning in AI systems is merely 'decorative' rather than faithfully reflecting the model's reasoning process.",
+    "judgement": "likely true",
+    "context": "If we learned that AI companies have been employing techniques that would incentivize the CoT to look nice, or otherwise undermine the faithfulness properties (e.g. if we learn that most CoT is merely 'decorative' as this paper claims), then my risk estimate would go up by 1.5x.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Acausal research is an extremely difficult to verify and conceptually loaded domain.",
+    "judgement": "likely true",
+    "context": "Acasual research. We hope that we don't need to use AIs to do this, because it's an extremely difficult to verify and conceptually loaded domain.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The AI 2027 scenario depicts AIs deployed in government that could strategically mislead policymakers into making decisions that gain the AIs power.",
+    "judgement": "likely true",
+    "context": "As pictured in AI 2027, if AIs deployed in government are misaligned, they could strategically mislead policymakers into making decisions that would gain themselves power.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Human monitoring of AI systems is very expensive.",
+    "judgement": "likely true",
+    "context": "Trusted and Untrusted Monitoring. Human monitoring is very expensive, and so (at least in Plan C) humans will only have capacity to monitor a tiny fraction of the outputs generated by AIs.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Paraphrasing is one measure proposed to counter steganography in AI communications.",
+    "judgement": "likely true",
+    "context": "Pursue various anti-steganography measures (e.g. paraphrasing).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Steganography is a concern in AI-to-AI communication because AI systems could encode hidden messages in their outputs.",
+    "judgement": "likely true",
+    "context": "Information siloing and restricting communication. The worst case scenario from an AI control perspective is if an AI company runs a huge number of AIs that are able to arbitrarily communicate with each other in ways that humans can't understand (e.g. neuralese). For example, we could: ... Pursue various anti-steganography measures (e.g. paraphrasing).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "A key dynamic in cybersecurity is laying down tripwires and alerts for potentially concerning behavior, and then auditing to identify potential threats.",
+    "judgement": "certainly true",
+    "context": "A key dynamic in cyber security is laying down tripwires and alerts for potentially concerning behaviour, and then poking around and auditing to identify if there was a potential threat.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Sting operations on AI monitors involve creating large numbers of plausible-seeming harmful actions to check if the monitor faithfully reports them.",
+    "judgement": "likely true",
+    "context": "The main strategy for mitigating this problem is to run sting operations on the monitors by creating huge numbers of plausible seeming harmful actions that an AI might take, and check if the monitor faithfully reports that action.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "When an AI is caught misbehaving in a sting operation, the operators do not have to inform the AI it was caught, allowing them to gather more examples of misaligned behavior over time.",
+    "judgement": "likely true",
+    "context": "Critically, we don't have to tell any of our AIs that they were caught misbehaving, so we might be able to continually get more and more examples of AIs attempting to do harmful actions, while making our control setup more and more robust to those attack attempts.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Building biodefenses might look somewhat close to building bio threats in terms of the research and capabilities involved.",
+    "judgement": "likely true",
+    "context": "We'd like to use AIs for D/acc, especially on bio-threat related D/acc. However, building biodefenses might look somewhat close to building bio threats, need to ensure that AIs don't have access to physical tools to build and deploy bioweapons.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Training an AI against specific caught scheming behaviors could train the AI to be less likely to get caught scheming in the future.",
+    "judgement": "somewhat likely true",
+    "context": "It's unclear whether we should directly train against cases of clear cut egregious behavior (that seems plausibly due to scheming). It could be bad because we are essentially training the AI to be less likely to get caught. This might make us less likely to catch further examples (which we'd prefer all else equal) and might give the AI a better understanding of our countermeasures.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Training against caught scheming behaviors might give the AI a better understanding of the countermeasures used to detect it.",
+    "judgement": "somewhat likely true",
+    "context": "It could be bad because we are essentially training the AI to be less likely to get caught. This might make us less likely to catch further examples (which we'd prefer all else equal) and might give the AI a better understanding of our countermeasures.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The author considers it very unlikely that OpenAI will actually trigger the merge-and-assist provision in its charter.",
+    "judgement": "uncertain",
+    "context": "(From the OpenAI Charter, though in practice it seems very unlikely that this will be triggered by OpenAI)",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Non-scheming threat models are easier to identify and study than scheming threat models.",
+    "judgement": "likely true",
+    "context": "As we proceed to higher levels of capability and encounter more empirical evidence, we'll have a better sense about which non-scheming threat models look concerning and need to be addressed. (Non-scheming threat models are easier to identify and study, so we should have a reasonable understanding of the probability of these threat models.)",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "If an AI is caught scheming, preventing the AI from knowing it has been caught is a desirable information control measure.",
+    "judgement": "likely true",
+    "context": "Information control: Ideally, prevent AIs from knowing they've already been caught. Minimally, red team AIs based on already having been caught to see how this changes their behavior.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Keeping good, reasonably-verifiable records of a caught AI scheming incident could help convince third parties that the incident is real and not staged.",
+    "judgement": "likely true",
+    "context": "Documentation: Keeping good reasonably-verifiable records might help convince third parties that the incident is real and not staged. This might be important due to the potentially adversarial situation: we want to convince potentially adversarial companies and countries that might be worried about some agenda.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "AIs building security infrastructure must themselves be controlled or too weak to plausibly be scheming, because having potentially scheming AIs build security infrastructure is dangerous from a control perspective.",
+    "judgement": "likely true",
+    "context": "Security implementation: building and auditing security infrastructure (though this is scary from a control perspective—the AIs building security infrastructure must themselves be controlled or too weak to plausibly be scheming)",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Safety R&D is harder to accelerate with AI than capabilities R&D due to being more confused and harder to verify.",
+    "judgement": "uncertain",
+    "context": "The multiplier for safety R&D labor will probably be smaller because safety is harder to accelerate due to being more confused and harder to verify (though elicitation measures could help close this gap).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Safety R&D has relatively larger returns on labor (rather than compute) when compared to capabilities R&D.",
+    "judgement": "somewhat likely true",
+    "context": "But safety R&D will probably have relatively larger returns on labor (rather than compute) when compared to capabilities R&D.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "ITAI corresponds to roughly 3x AI R&D labor acceleration.",
+    "judgement": "uncertain",
+    "context": "Between ITAI (~3x AI R&D labor acceleration) and superhuman coder (~15x AI R&D acceleration)",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Superhuman coder corresponds to roughly 15x AI R&D acceleration.",
+    "judgement": "uncertain",
+    "context": "Between ITAI (~3x AI R&D labor acceleration) and superhuman coder (~15x AI R&D acceleration)",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "If safety acceleration is AI R&D acceleration to the power of 0.6, then at 3x AI R&D acceleration the safety acceleration is approximately 2.2x.",
+    "judgement": "likely true",
+    "context": "If safety acceleration is AI R&D acceleration to the power of 0.6 (due to bottlenecks from human labor, poor elicitation, and the control tax), this yields safety R&D acceleration of 2.2x to 6.7x",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "If safety acceleration is AI R&D acceleration to the power of 0.6, then at 15x AI R&D acceleration the safety acceleration is approximately 6.7x.",
+    "judgement": "likely true",
+    "context": "If safety acceleration is AI R&D acceleration to the power of 0.6 (due to bottlenecks from human labor, poor elicitation, and the control tax), this yields safety R&D acceleration of 2.2x to 6.7x",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Model weights for current large AI models are on the order of terabytes in size.",
+    "judgement": "likely true",
+    "context": "Model weights are (at least right now) very large (on the order of terabytes), which is very desirable from a security perspective, because it means that adversaries will need a high bandwidth channel to smuggle out model weights.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The current compute gap between the US and China is approximately 7x more compute for the US.",
+    "judgement": "uncertain",
+    "context": "If you have a large hardware lead (e.g. 7x more compute, which is the current US/China gap) in Plan C, probably algorithmic security doesn't matter very much.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "RAND has defined a spectrum for model weight security ranging from SL1 to SL5.",
+    "judgement": "likely true",
+    "context": "Each of these comes with a spectrum of robustness, e.g. one spectrum for model weight security is defined by RAND here (SL1-SL5).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "SL5 means secure against high priority operations by top cyber-capable nation states.",
+    "judgement": "likely true",
+    "context": "Probably, we will at least want to get to something like SL-5-1TB-2-months (read: SL5, i.e. secure against high priority operations by top cyber-capable nation states, for exfiltration of model weights that are at least 1 TB in size / 500B FP16 params, for at least 2 months), before handoff.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "1 TB of model weight storage corresponds to approximately 500 billion FP16 parameters.",
+    "judgement": "likely true",
+    "context": "SL-5-1TB-2-months (read: SL5, i.e. secure against high priority operations by top cyber-capable nation states, for exfiltration of model weights that are at least 1 TB in size / 500B FP16 params, for at least 2 months)",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The plan aims to use a relatively iterative and empirical approach, which the authors believe is probably doable once powerful AIs are available.",
+    "judgement": "uncertain",
+    "context": "This plan aims to use a relatively iterative and empirical approach, because I think this is probably doable once you have powerful AIs.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The core elicitation technique described involves building behavioral tests and using them as held-out evaluation sets or as RL environments to train on to improve performance.",
+    "judgement": "likely true",
+    "context": "To summarize, the core hope for elicitation is: Build behavioral tests. Use these behavioral tests as held out evaluation sets or as RL environments to train on to improve performance. Try to use principled techniques to improve generalization performance.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Min-H is defined as AI systems which have a level of overall general capabilities which would suffice for handoff being viable.",
+    "judgement": "likely true",
+    "context": "Default answer: Pause at Min-H: AIs which have a level of overall general capabilities which would suffice for handoff being viable. (As in, the capabilities would suffice for our handoff desiderata if the AIs were also sufficiently aligned and as needed we made narrow improvements to the capability profile which don't augment general abilities.)",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "For an AI to qualify as Min-H, it would at least need to be capable enough to automate AI R&D and ongoing technical AI safety work.",
+    "judgement": "likely true",
+    "context": "For an AI to qualify as Min-H, it would at least need to be capable enough to automate AI R&D and ongoing technical AI safety work (after further elicitation/alignment work and narrow improvements to the capability profile).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "DPA refers to government powers like the Defense Production Act that could be used to speed up large-scale projects.",
+    "judgement": "likely true",
+    "context": "e.g., potentially building up to trillions of dollars and using government powers like DPA etc. to speed up the project",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "CEOs will by default strongly push to stay ahead of their competitors, making self-immolation (voluntarily pausing and allowing oneself to be overtaken) politically infeasible within companies.",
+    "judgement": "likely true",
+    "context": "Overall it's quite unlikely that this is politically feasible within companies: CEOs will by default strongly push to stay ahead of their competitors, invalidating this option.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Refusing to participate in the Holocaust was obviously morally correct even though conscientious objectors would simply have been replaced by others with less scruples.",
+    "judgement": "certainly true",
+    "context": "That said, it's quite plausible to us that with the benefit of hindsight self-immolation will be seen as the obviously morally correct action, analogous to how refusing to participate in the Holocaust was obviously morally correct even though conscientious objectors would simply have been replaced by Nazis with less scruples.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The strategy for AI handoff is extremely similar to the strategy for elicitation during Phase 2 and Phase 3 of the plan, because both are solving the problem of trying to ensure that AIs are doing useful work.",
+    "judgement": "uncertain",
+    "context": "Note that our strategy for handoff is extremely similar to our strategy for elicitation during Phase 2 and 3. That's because we are solving the same problem: trying to ensure that AIs are doing useful work.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "During Phase 2 and Phase 3, humans are still in the loop and can check AI outputs at deployment time using human labor, and humans serve as a load-bearing part of the research process.",
+    "judgement": "likely true",
+    "context": "The main difference is that in Phase 2 and 3, we still have humans in the loop, and so we can check AI outputs at deployment time using human labor, and we can still have humans to use as a load bearing part of the research process, while after handoff, the AIs must be trusted to do this all autonomously.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Studying actual scheming AIs would likely be the best approach from an analogousness perspective for understanding scheming.",
+    "judgement": "likely true",
+    "context": "But, I think there are some routes to overcoming this and studying actual schemers would likely be the best from an analogousness perspective.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Researchers have conducted empirical work using an AI that expresses politically conservative views but only when it is confident it is talking to a politically conservative user, as an abstract analogy for scheming behavior.",
+    "judgement": "likely true",
+    "context": "A concrete example of an abstract/structural analogy is this empirical work using an AI which expresses politically conservative views but only when it is confident that it is talking to a politically conservative user (resulting in a conditional policy which is in some way analogous to scheming).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "There has not been much exploration or discussion of abstract analogies for scheming so far.",
+    "judgement": "likely true",
+    "context": "There hasn't been that much exploration or discussion of abstract analogies so far, but this seems like a worthwhile direction.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "SL-5 Sabotage Security aims to prevent even highly motivated external actors from being able to sabotage or backdoor AI models.",
+    "judgement": "likely true",
+    "context": "SL-5 Sabotage Security. Prevent (even) highly motivated external actors from being able to sabotage / backdoor the models.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Distillation, which may be a component of recursive self-improvement, appears to remove many backdoors from AI models.",
+    "judgement": "somewhat likely true",
+    "context": "Distillation, which may be a component of RSI, seems to remove many backdoors.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "ARC Theory, MIRI, and CLR are organizations that have produced unpublished theoretical AI safety work.",
+    "judgement": "likely true",
+    "context": "Theoretical AI safety. Try to have AIs rediscover unpublished work from places like ARC Theory, MIRI, and CLR.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "There are generalizable reasoning skills which apply across a wide range of conceptual research domains, such that training a model to be good at conceptual physics research also helps the model to be good at conceptual AI safety research.",
+    "judgement": "somewhat likely true",
+    "context": "The main hope with these is that there are generalizable reasoning skills which apply across a wide range of conceptual research domains, i.e. that training a model to be good at conceptual physics research also helps the model to be good at conceptual AI safety research.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Scaling general AI capabilities increases risk.",
+    "judgement": "likely true",
+    "context": "Moreover, directly training for the capabilities that we need for handoff means that we might need to scale general capabilities less far, which reduces risk.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Reinforcement learning environments and synthetic data can be used to train AI for specific capabilities relevant to handoff.",
+    "judgement": "certainly true",
+    "context": "The basic approach for iterating against tests without overfitting is discussed more here. To summarize, the main approaches are: Construct RL environments or synthetic data which train for the relevant capabilities",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "AI scheming (an AI covertly pursuing goals misaligned with its operators) is considered a major alignment risk during the period up to and including Min-H AI.",
+    "judgement": "likely true",
+    "context": "Stop doing control (SDC-Handoff) Early. Ditch control early (e.g. before minH, e.g. at or before SAR), pray AIs aren't scheming, then scale to Min-H, then solve handoff viability, then hand off. This would trade eating a bunch of misalignment risk from scheming at Min-H AI and below",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Plan C assumes that the leading AI developer strongly prioritizes minimizing risk from misaligned AI and has at least several months of lead time over developers that do not strongly prioritize misalignment risk.",
+    "judgement": "likely true",
+    "context": "In Plan C, we assume sufficient political will that the leading AI developer strongly prioritizes minimizing risk from misalignment AI and has at least several months lead time over developers which don't also strongly prioritize misalignment risk.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Plan D assumes substantially lower political will for AI safety than Plan C, described as something like 'Ten people on the inside.'",
+    "judgement": "likely true",
+    "context": "In this section, we discuss some aspects of how the plan changes if the level of political will is substantially lower than this. In particular, we assume something like Ten people on the inside or Plan D.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The text describes 'corrigibility' as AIs generally following human instructions through a desired channel (such as a political institution) and not attempting to subvert human modification or oversight.",
+    "judgement": "certainly true",
+    "context": "Our best guess is that the alignment profile should be that the AIs are corrigible: they generally follow human instructions through the desired channel (e.g the instructions of a political institution), and don't attempt to subvert human modification or oversight in any way.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Introspection is listed as a potential additional affordance that AIs have relative to humans for making alignment progress.",
+    "judgement": "likely true",
+    "context": "AIs have some additional affordances relative to humans for making alignment progress. Notable additional options: ... scalable alignment via introspection + improving capabilities",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Model organisms of misalignment research requires the most capable models available to be most relevant.",
+    "judgement": "somewhat likely true",
+    "context": "Model organisms that would be specific to your models (other model orgs can be done elsewhere), e.g. because you have most capable models.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Security mitigations to prevent AI escape or rogue internal deployment (RID) entail costs to researcher or AI productivity that companies are typically unwilling to pay.",
+    "judgement": "somewhat likely true",
+    "context": "Probably the safety team also doesn't have the affordances to actually mitigate this (e.g. because security mitigations entails costs the company isn't willing to pay to researcher or AI productivity).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Shareholders of AI companies have an incentive to preserve property rights and the continued existence of the US government, because their wealth is downstream of these institutions.",
+    "judgement": "likely true",
+    "context": "Try to pull in shareholders. Wealth is downstream of property rights/usg still existing, so they have an incentive to preserve this, which might be very important.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "A reasonable fraction of shareholders of leading AI companies are also employees of those companies.",
+    "judgement": "likely true",
+    "context": "A reasonable fraction of the shareholders will also be employees.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Multiple AI companies that are close in capability may each be making safety tradeoffs individually due to competitive pressure that they would not make if they could coordinate.",
+    "judgement": "likely true",
+    "context": "E.g. if a few companies are really close, they all care about safety, but are making brutal tradeoffs for competitive pressure reasons, try to do coordination so they all spend on safety.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The risk of AIs escaping from a trailing AI company is dominated by the risk from the leading lab's more capable models.",
+    "judgement": "somewhat likely true",
+    "context": "Don't worry about your AIs escaping at all because this risk is dominated by the leading lab.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The OpenAI Charter contains provisions related to merging with or assisting other organizations.",
+    "judgement": "likely true",
+    "context": "Consider something like merge and assist. Alternatively, if the leading company isn't willing to merge and assist, consider credibly shutting down... (From the OpenAI Charter, though in practice it seems very unlikely that this will be triggered by OpenAI)",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Plan B differs from Plan C mainly in having more time, more affordances to buy time, and generally more government involvement.",
+    "judgement": "likely true",
+    "context": "Plan B is quite similar to Plan C. The main differences are (i) you have more time, meaning that you can pursue somewhat more ambitious safety cases (ii) you have more affordances to buy time, and (iii) there's generally more government involvement.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In Plan B, two obvious capability trajectory strategies are (1) scale as aggressively as possible until the last moment and then pause, or (2) match the pace of one's fastest adversary while maintaining a slight lead.",
+    "judgement": "likely true",
+    "context": "Two obvious strategies are (1) scale as aggressively as possible until the last moment and then pause (this is the strategy taken in Plan C), or (2) match the pace of your fastest adversary, while maintaining a slight lead, until you are forced to hand off, i.e. go as slow as possible.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The author considers it likely that AI companies currently have sufficiently bad security that they cannot prevent model weights and algorithms from leaking.",
+    "judgement": "somewhat likely true",
+    "context": "in the regime where you have sufficiently bad security that you can't prevent model weights and algorithms from leaking (which seems likely)",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Plan C is primarily executed by a leading AI company, which makes domestic coordination (needed for strategy 2) more difficult.",
+    "judgement": "likely true",
+    "context": "In Plan C, you are more likely to be forced into strategy (1), because strategy (2) requires domestic coordination and Plan C is executed by a leading AI company.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Buying more time in Plan B can be done through more aggressive sabotage of adversary AI programs or making deals to mutually slow down with competitors.",
+    "judgement": "likely true",
+    "context": "This can either be done via (i) more aggressive sabotage or (ii) making a deal to mutually slow with competitors.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Plan A has substantially more time, research effort, and resources like compute compared to Plan C at every phase.",
+    "judgement": "likely true",
+    "context": "The main differences are that at every point we have substantially more time, research effort, and other resources like compute to make them go better.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "When AI systems are trained, they are selected for behaviors that perform as desired on the training distribution.",
+    "judgement": "certainly true",
+    "context": "When you train AIs, you are selecting for AIs that behave as desired on the training distribution. Therefore, AIs generally behave as trained on the training distribution, while off distribution, their behavior is underdefined and can be hard to predict.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "AI systems generally behave as trained on the training distribution, but their behavior off-distribution is underdefined and can be hard to predict.",
+    "judgement": "certainly true",
+    "context": "Therefore, AIs generally behave as trained on the training distribution, while off distribution, their behavior is underdefined and can be hard to predict.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Current LLM pretraining involves using whatever high-quality data is most convenient to obtain, resulting in LLMs being trained on large swaths of the internet.",
+    "judgement": "likely true",
+    "context": "Right now, LLM pretraining involves using whatever high quality data is most convenient to obtain, so LLMs are trained on large swaths of the internet.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Claude Opus 4.5 is an AI model that is potentially quite weak relative to future AI systems but possibly not scheming.",
+    "judgement": "likely true",
+    "context": "One hope for scalably solving alignment is (1) take AI that isn't scheming (but is potentially quite weak, e.g. it's possible Claude Opus 4.5 could work), (2) improve introspective access to the point where the AI can reliably tell if a certain training process is corrupting their values",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "There have been substantial returns from training general-purpose AI models that are good at everything, compared to narrow specialist models.",
+    "judgement": "certainly true",
+    "context": "Again, this probably induces a significant tax because you need to train many models, and, at least so far, we've seen substantial returns from having general purpose models that are trained to be good at everything.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The physical world is a high-bitrate environment, making communication restriction for robots harder than in a purely digital setting.",
+    "judgement": "likely true",
+    "context": "Communication restriction and task factorization when possible. Harder in the physical world because robots can scratch symbols into the dirt with their hands; generally the physical world is a high bitrate place and we should have designated communication channels that it goes through",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "A Faraday cage can block radio tracking signals and self-destruct signals for robots.",
+    "judgement": "certainly true",
+    "context": "Mechanisms to make it difficult to put the robots in a faraday cage (to block the tracking or self destruct). E.g. they could be implemented in such a way where the robot self-destructs if it doesn't get an affirmative signal from its manufacturer.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Naive anti-AI sentiment can easily backfire in various ways as a policy approach.",
+    "judgement": "somewhat likely true",
+    "context": "High levels of will don't suffice as implementation is tricky and naive anti-AI sentiment can easily backfire in various ways.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged somewhat likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Key distribution shifts for AI systems include training/tests to deployment, less capable to more capable, and deployment in low-stakes environments to deployment in high-stakes environments.",
+    "judgement": "certainly true",
+    "context": "Key distribution shifts include training/tests -> deployment, dumb->smart, deployment in low-stakes environments->deployment in high stakes environments, etc. Through much more investigation of the form done in these papers, we might be able to get a much better understanding of how our AIs generalize.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "AI 2027 is a framework that describes a scenario with capability milestones including 'Reliable agent' and 'Superhuman coder'.",
+    "judgement": "likely true",
+    "context": "In the framework used by AI 2027, this would happen somewhere between \"Reliable agent\" and \"Superhuman coder\" (probably about halfway, around Jan 2027 in the scenario).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Thomas's overall estimated probability of doom across all regimes and plans is 64%.",
+    "judgement": "likely true",
+    "context": "This is the table for Thomas's views: ... Doom & Plan ... 64%",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Ryan's overall estimated probability of doom across all regimes and plans is 37%.",
+    "judgement": "likely true",
+    "context": "This is the table for Ryan's views: ... Doom & Plan ... 37%",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In Thomas's views, the Lurkville regime has a 10% probability of occurring.",
+    "judgement": "likely true",
+    "context": "This is the table for Thomas's views: ... Lurkville 10% 35% 90% 90% 95% 95% 91% 9%",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In Thomas's views, the Schemeria regime has a 30% probability of occurring.",
+    "judgement": "likely true",
+    "context": "This is the table for Thomas's views: ... Schemeria 30% 20% 50% 70% 95% 95% 82% 25%",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In Thomas's views, the Easyland regime has a 30% probability of occurring.",
+    "judgement": "likely true",
+    "context": "This is the table for Thomas's views: ... Easyland 30% 5% 10% 20% 30% 50% 28% 8%",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In Ryan's views, the Slopolis regime has a 35% probability of occurring, the highest among all regimes.",
+    "judgement": "likely true",
+    "context": "This is the table for Ryan's views: ... Slopolis 35% 5% 8% 15% 40% 65% 33% 12%",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In Thomas's views, Plan D has the highest likelihood at 50%.",
+    "judgement": "likely true",
+    "context": "This is the table for Thomas's views: Plan A B C D E ... Regime 5% 10% 20% 50% 15%",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In Ryan's views, Plan D has the highest likelihood at 43%.",
+    "judgement": "likely true",
+    "context": "This is the table for Ryan's views: Plan A B C D E ... Regime Likelihood 5% 10% 25% 43% 17%",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In Thomas's views, the conditional probability of doom given Plan A is 17%.",
+    "judgement": "likely true",
+    "context": "This is the table for Thomas's views: ... Doom | Plan 17% 41% 56% 71% 80%",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In Ryan's views, the conditional probability of doom given Plan A is 6%.",
+    "judgement": "likely true",
+    "context": "This is the table for Ryan's views: ... Doom | Plan 6% 10% 18% 46% 69%",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In Thomas's views, the Lurkville regime has the highest conditional doom probability (91%) among all regimes.",
+    "judgement": "likely true",
+    "context": "This is the table for Thomas's views: ... Lurkville 10% 35% 90% 90% 95% 95% 91% 9%",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In Ryan's views, the Lurkville regime has the highest conditional doom probability (59%) among all regimes.",
+    "judgement": "likely true",
+    "context": "This is the table for Ryan's views: ... Lurkville 15% 10% 20% 35% 75% 90% 59% 9%",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "ITAI is defined as AIs which yield a greater than 3x AI R&D labor acceleration or can automate virtually all of the job of a typical reasonably senior research engineer at the AI company.",
+    "judgement": "likely true",
+    "context": "ITAI (Initial Transformative AI): AIs which yield a >3x AI R&D labor acceleration OR can automate virtually all of the job of a typical reasonably senior research engineer at the AI company (in terms of what a remote version of their job was like in early 2025).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "ITAI marks the beginning of the 'Mitigate and Elicit' phase in the document's framework.",
+    "judgement": "likely true",
+    "context": "ITAI (Initial Transformative AI): AIs which yield a >3x AI R&D labor acceleration OR can automate virtually all of the job of a typical reasonably senior research engineer at the AI company ... Marks the beginning of the \"Mitigate and Elicit\" phase",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Min-H AI marks the end of the 'Mitigate and Elicit' phase and the beginning of the 'Pause' phase by default.",
+    "judgement": "likely true",
+    "context": "Min-H AI (Min-Handoff AI): ... By default, marks the end of the \"Mitigate and Elicit phase\" and the beginning of the \"Pause\" phase.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The ITAI capability threshold is defined with reference to what a remote version of a senior research engineer's job was like in early 2025.",
+    "judgement": "likely true",
+    "context": "ITAI (Initial Transformative AI): AIs which yield a >3x AI R&D labor acceleration OR can automate virtually all of the job of a typical reasonably senior research engineer at the AI company (in terms of what a remote version of their job was like in early 2025).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "For an AI to qualify as Min-H AI, it would at least need to be capable enough to automate AI R&D and ongoing technical AI safety work.",
+    "judgement": "likely true",
+    "context": "For an AI to qualify as Min-H AI, it would at least need to be capable enough to automate AI R&D and ongoing technical AI safety work (after further elicitation/alignment work and narrow improvements to the capability profile).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Brain emulations (whole brain emulations) are discussed as a possible alternative strategy to short-term defense against AI misalignment.",
+    "judgement": "likely true",
+    "context": "we should generally update upward on alignment difficulty and pursue more moonshots and possible alternatives to short term defence (e.g. buying much more time or pursuing brain emulations).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The document's framework includes five plans labeled A through E, with Plan A being the best scenario and Plan E being the worst.",
+    "judgement": "likely true",
+    "context": "Plan A B C D E ... In desperate rushed scenarios (e.g. Plan D), the correct strategy might be to gamble on Easyland. In better scenarios (e.g. Plan A), we should be cautious about lurkville",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In Thomas's views, the Schemeria regime contributes the most to overall doom probability (25% of the 64% total), more than any other regime.",
+    "judgement": "likely true",
+    "context": "This is the table for Thomas's views: ... Schemeria 30% ... Doom & Regime ... 25% ... 64%",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In Thomas's views, the Easyland regime under Plan A has only a 5% conditional probability of doom.",
+    "judgement": "likely true",
+    "context": "This is the table for Thomas's views: ... Easyland 30% 5% 10% 20% 30% 50% 28% 8%",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In Ryan's views, the Easyland regime under Plan A has a 4% conditional probability of doom.",
+    "judgement": "likely true",
+    "context": "This is the table for Ryan's views: ... Easyland 17% 4% 6% 11% 20% 40% 19% 3%",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The Slopolis regime involves highly capable AIs producing low-quality but good-looking outputs in hard-to-check domains, without the AIs being aware of the low quality of their work.",
+    "judgement": "likely true",
+    "context": "Our biggest and hardest to resolve misalignment problem is that even highly capable AIs produce low-quality but good looking outputs in domains which are hard-to-check or where human experts have hard to resolve disagreements. The AIs aren't scheming. ... So slopolis requires that the models are not aware of how low quality work they are producing. They think their outputs really are good, they are just wrong.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The concept of Max-C AI refers to the highest level of AI capability at which control techniques remain effective.",
+    "judgement": "likely true",
+    "context": "Max-C AI (Maximum Controllable AI): The highest level of AI capability at which control techniques remain effective. Beyond this threshold, either (a) the AI's capabilities exceed what our control measures can reliably contain, or (b) the overhead required for effective control becomes prohibitively expensive relative to the useful work extracted.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The exact capability level of Max-C depends on the quality of control techniques, with better control research pushing Max-C higher.",
+    "judgement": "likely true",
+    "context": "Note that this is a lossy abstraction: The exact capability level of Max-C depends on the quality of our control techniques; better control research pushes Max-C higher.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "It is not guaranteed that the maximum controllable AI capability level (Max-C) is greater than or equal to the minimum helpful AI capability level (Min-H).",
+    "judgement": "likely true",
+    "context": "Note: Max-C ≥ Min-H is not guaranteed. We think it's probably true, but if control techniques don't scale well, we might hit Max-C before reaching Min-H, which would force us to do SDC-handoff before Min-H.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Alignment faking is slightly distinct from scheming: a scheming model might engage in alignment faking, but models might also engage in alignment faking for other reasons, such as AIs that terminally value human approval.",
+    "judgement": "likely true",
+    "context": "Alignment Faking: An AI is alignment faking if the AI is intentionally attempting to look like an alignment model, for reasons other than actually being aligned. Note that this is slightly distinct from being a schemer: a scheming model might engage in alignment faking, but models might also engage in alignment faking for other reasons, for example, AIs that terminally value human approval.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Misalignment analogies (aka model organisms) can either be deliberately trained into models, observed in contrived settings, or observed in real-life deployment.",
+    "judgement": "likely true",
+    "context": "Misalignment Analogies: (aka model organisms). These are examples of behavior that might pose existential threats. These analogies can either be deliberately trained into models, observed in contrived settings (as in the alignment faking paper), or observed in real life deployment.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The alignment faking paper observed misalignment analogy behavior in contrived settings.",
+    "judgement": "likely true",
+    "context": "These analogies can either be deliberately trained into models, observed in contrived settings (as in the alignment faking paper), or observed in real life deployment.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Sam Bowman authored plans called 'The Checklist' and 'Bumpers' related to AI alignment.",
+    "judgement": "likely true",
+    "context": "Here are some key differences between this plan and prior plans (e.g. Sam Bowman's \"The Checklist\" and \"Bumpers\", Josh Clymer's \"Planning for Extreme AI Risks\", and Holden Karnofsky's \"Racing through a minefield\", \"Giving AIs safe motivations - Joe Carlsmith\".",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Josh Clymer authored 'Planning for Extreme AI Risks.'",
+    "judgement": "likely true",
+    "context": "Here are some key differences between this plan and prior plans (e.g. Sam Bowman's \"The Checklist\" and \"Bumpers\", Josh Clymer's \"Planning for Extreme AI Risks\", and Holden Karnofsky's \"Racing through a minefield\", \"Giving AIs safe motivations - Joe Carlsmith\".",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Holden Karnofsky authored 'Racing through a minefield.'",
+    "judgement": "likely true",
+    "context": "Here are some key differences between this plan and prior plans (e.g. Sam Bowman's \"The Checklist\" and \"Bumpers\", Josh Clymer's \"Planning for Extreme AI Risks\", and Holden Karnofsky's \"Racing through a minefield\", \"Giving AIs safe motivations - Joe Carlsmith\".",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The plan described in the article focuses on handoff as the central exit strategy, which is similar to Clymer's plan but distinct from Bowman's and Karnofsky's plans.",
+    "judgement": "uncertain",
+    "context": "We focus on handoff as the central exit strategy. This is similar to Clymer, but distinct from Bowman and Karnofsky.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The plan's core approach to mitigating scheming routes primarily through iterating against misalignment analogies, rather than through interpretability or transparency.",
+    "judgement": "likely true",
+    "context": "Our core hope for mitigating scheming routes primarily through iterating against misalignment analogies, as opposed to interpretability/transparency. The reason for this is that we think current interpretability is not very useful for safety outcomes.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The authors of this plan believe that current interpretability techniques are not very useful for AI safety outcomes.",
+    "judgement": "uncertain",
+    "context": "The reason for this is that we think current interpretability is not very useful for safety outcomes. Our plan still involves spending some research into transparency measures like mechanistic interpretability, probes, and faithful COT, but these are less load bearing.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The plan is compatible with varying levels of political will, resulting in much higher assurance in 'Plan A' worlds and accepting much higher risks in 'Plan D' worlds.",
+    "judgement": "likely true",
+    "context": "Is compatible with varying levels of political will: it results in much higher assurance in Plan A worlds and accepts much higher risks in Plan D worlds.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The plan is based on prosaic strategies without assuming any particular breakthrough in AI safety research.",
+    "judgement": "likely true",
+    "context": "Focuses on current science / is based on prosaic strategies without assuming any particular breakthrough.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The plan specifies that human-level performance on conceptually loaded, hard-to-check tasks like safety research needs to occur before handoff.",
+    "judgement": "likely true",
+    "context": "We attempt to clearly lay out what needs to occur before handoff (notably, human level performance on conceptually loaded, hard to check tasks like safety research), and argue that we should handoff early. Previous work was less clear about the goal that we need to reach.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Joe Carlsmith authored 'Giving AIs safe motivations.'",
+    "judgement": "likely true",
+    "context": "Here are some key differences between this plan and prior plans (e.g. Sam Bowman's \"The Checklist\" and \"Bumpers\", Josh Clymer's \"Planning for Extreme AI Risks\", and Holden Karnofsky's \"Racing through a minefield\", \"Giving AIs safe motivations - Joe Carlsmith\".",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Probes and similar model internals detection techniques are a recognized area of AI safety research relevant to control.",
+    "judgement": "certainly true",
+    "context": "2% studying probes and similar model internals detection techniques (with a focus on control)",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Alignment drift and reflection are examples of exotic origins for AI scheming.",
+    "judgement": "likely true",
+    "context": "10% misalignment analogies of scheming (including more exotic origins for scheming like alignment drift, reflection, etc).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The reversal curse is an example of work studying generalization in AI models.",
+    "judgement": "certainly true",
+    "context": "4% Studying generalization, for example, work in the vein of emergent misalignment and the reversal curse.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Emergent misalignment is an example of work studying generalization in AI models.",
+    "judgement": "likely true",
+    "context": "4% Studying generalization, for example, work in the vein of emergent misalignment and the reversal curse.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Steganography is a concern relevant to AI control, specifically in the context of chain-of-thought monitorability.",
+    "judgement": "likely true",
+    "context": "This includes things like experiments involving humans, mitigations to memetic spread / AI coordination, manipulating capability profile with dataset filtering/unlearning/gradient-routing/etc, and control related science and model properties like exploration hacking and steganography (including studying chain-of-thought monitorability).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Exploration hacking is a recognized concern in AI control-related science.",
+    "judgement": "likely true",
+    "context": "control related science and model properties like exploration hacking and steganography (including studying chain-of-thought monitorability).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Dataset filtering, unlearning, and gradient routing are techniques for manipulating an AI model's capability profile.",
+    "judgement": "likely true",
+    "context": "This includes things like experiments involving humans, mitigations to memetic spread / AI coordination, manipulating capability profile with dataset filtering/unlearning/gradient-routing/etc",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Neuralese refers to a form of AI internal representation that is not human-interpretable and is used in some AI architectures.",
+    "judgement": "likely true",
+    "context": "you need to not use neuralese, monitoring is expensive, etc). The trailing actor could get ahead of you if they steal your models and then, despite having less compute, discard the safety techniques.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Whole brain emulation is a theoretical path to creating aligned or augmented intelligence that some AI safety researchers have considered.",
+    "judgement": "certainly true",
+    "context": "1% other specialized applications like using AI for whole brain emulation or (even more speculatively) adult biological human strong intelligence enhancement. This will be a substantially greater focus later, but for now we just want to get somewhat ready.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Chain-of-thought faithfulness is an active area of AI safety research.",
+    "judgement": "certainly true",
+    "context": "3% Generally maintaining and studying chain-of-thought faithfulness",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Reward hacking is a recognized problem that occurs during AI training and occasionally in deployment.",
+    "judgement": "likely true",
+    "context": "Clear cut issues with deployed behavior due to reward hacking have mostly been resolved, but there are still various types of reward hacking in training and occasional issues in deployment, typically more subtle issues.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "ELK (Eliciting Latent Knowledge) is a recognized area of AI safety research related to honesty and getting AIs to reveal secrets.",
+    "judgement": "certainly true",
+    "context": "5% Honesty, ELK, and getting AIs to reveal secrets",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "AI systems tend to be somewhat better at easy-to-check tasks and worse at tasks requiring 'taste' relative to humans, while still showing some transfer and generalization.",
+    "judgement": "likely true",
+    "context": "AIs are somewhat better at easy-to-check tasks and are bad at 'taste' relative to humans, but there is still some transfer and generalization",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "d/acc refers to a concept involving making the world more robust to powerful AIs through measures like biodefense, cyberdefense, and related efforts.",
+    "judgement": "likely true",
+    "context": "3% make the world more robust to powerful AIs aka d/acc (biodefence, cyberdefense, eating free energy, etc).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged likely true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The plan's prioritization percentages for technical AI safety work during the prep period sum to approximately 100%.",
+    "judgement": "certainly true",
+    "context": "33% Control (and control-adjacent measures)... 15% Misalignment analogies... 17% Elicitation/handoff-viability... 29% Misc science/interventions... 6% Evaluating and demonstrating capabilities",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "skipped",
+    "statusReason": "judged certainly true",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The document identifies acausal trade research and philosophy as examples of high-stakes, difficult, open-ended, and conceptually loaded tasks where humans can't check the AI's output effectively.",
+    "judgement": "uncertain",
+    "context": "Solving handoff-viability: AIs are sufficiently capable and aligned at autonomously completing all the relevant work for managing the intelligence explosion, including high-stakes, difficult, open-ended, and conceptually loaded tasks where we can't check the AI's output effectively (e.g. acausal trade research, philosophy).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "A large fraction of AI safety work in the miscellaneous science/interventions category relies on ad hoc evaluation methodologies rather than core methodologies like control evaluations, misalignment analogies, or behavioral tests.",
+    "judgement": "uncertain",
+    "context": "A large fraction of work, especially work in the misc science/interventions category, won't use any of these core methodologies and will instead rely on ad hoc evaluation methodologies, researchers generally trying to understand what is going on, or researchers judging whether a technique is a priori useful without depending (much) on empirical evidence.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Research directions that are broadly invariant to future AI development don't generally seem that promising at an absolute level.",
+    "judgement": "uncertain",
+    "context": "However, directions which seem this invariant to future AI development don't generally seem that promising at an absolute level, so this doesn't alter the prioritization very much.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Preventing AIs from acquiring large amounts of political capital is ranked third in importance because it is estimated to be somewhat harder for AIs to accomplish than backdooring future models or sabotaging safety work.",
+    "judgement": "uncertain",
+    "context": "Prevent the AIs from acquiring large amounts of political capital. For example, if the AI gains de facto political control of an AI company, that's essentially equivalent to getting a rogue internal deployment that's the size of the whole company, because it can simply get the humans to turn off the mitigations. This is only ranked (3) because we currently guess that this will be somewhat harder for the AIs to accomplish than (1) or (2).",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The roughly current (early 2026) level of AI R&D speedup is approximately 1.15x.",
+    "judgement": "uncertain",
+    "context": "This is roughly the current (early 2026) level of speedup. With these capabilities, it seems unclear what an AI could do to cause harm; the main risk is that we've either (i) completely screwed up the evaluations or (ii) the AI is sandbagging very effectively.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Safety research and implementation output can be modeled as a production function of labor, compute, and wisdom/judgement/taste as inputs.",
+    "judgement": "uncertain",
+    "context": "How much acceleration can we hope for? One way to think about this: safety research/implementation is produced by putting in labor, compute, and wisdom/judgement/taste. There is some production function of output based on these input.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Waiting until a 10x AI R&D uplift to implement AI control incurs a 7% chance of existential risk according to the author's model.",
+    "judgement": "uncertain",
+    "context": "However, only a 7% chance of existential risk is incurred if you wait until 10x AI R&D uplift. This is a serious cost which a sane civilization would not be willing to pay, but, given limited resources and political will which are likely to apply in practice, it might be the correct all things considered strategy to hold off on seriously implementing control until later, due to opportunity cost.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Current AI systems have some amount of unreliable introspective access.",
+    "judgement": "uncertain",
+    "context": "Today, it seems that AIs have some amount of unreliable introspective access. One hope for scalably solving alignment is (1) take AI that isn't scheming (but is potentially quite weak, e.g. it's possible Claude Opus 4.5 could work), (2) improve introspective access to the point where the AI can reliably tell if a certain training process is corrupting their values",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Having a large lead as the leading AI project is described as pretty unlikely in the Plan C scenario.",
+    "judgement": "uncertain",
+    "context": "If the leading AI project has a large lead, then it won't need to rush to Min-H, and can pause beforehand while still having enough time at Min-H to work on handoff viability. This is pretty unlikely in Plan C.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "Prior AI alignment plans tend to present a class of approaches without overall discussions of how to adapt the plan based on evidence.",
+    "judgement": "uncertain",
+    "context": "Attempts to vary in response to observations, as opposed to other plans which tend to present a class of approaches without overall discussions of how to adapt the plan based on evidence.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The authors state that current AI models likely do produce low-quality work while thinking their outputs are good (the Slopolis condition).",
+    "judgement": "uncertain",
+    "context": "So slopolis requires that the models are not aware of how low quality work they are producing. They think their outputs really are good, they are just wrong. This is probably the case now.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "In an AI control framework, security work against human adversaries is roughly as helpful as control measures.",
+    "judgement": "uncertain",
+    "context": "Recall that this is a relatively broad category which includes some things which aren't centrally associated with control but which I thought more so fit in this category than in others. Also recall that I'm not including security work which is roughly as helpful for security against human adversaries under control.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "prefilter_no_note",
+    "note": null,
+    "sources": null
+  },
+  {
+    "claim": "The document's author expects that something much less reasonable than the proposed plan will happen in practice.",
+    "judgement": "uncertain",
+    "context": "Note that we expect that something much less reasonable than this plan will happen in practice, so while this is a recommendation (for what to do with limited resources), it isn't a prediction.",
+    "contextUrl": "https://ai-2040.com/supplements/alignment-roadmap",
+    "status": "no_note",
+    "statusReason": "no_correction_needed",
+    "note": null,
+    "sources": null
+  }
+]

@@ -7,13 +7,14 @@ import type {
   UploadInfo,
   FailureModeInfo,
 } from "./lib/types";
-import { FAILURE_TYPE_CONFIG } from "./lib/types";
+import { defaultFilters } from "./lib/types";
 import { resolveRatingCounts } from "../../dashboard-shared/Ratings";
 import { FULLY_LOADED_FAILURE_TYPES } from "../../dashboard-shared/productionView";
 import {
   fetchDashboardData,
   fetchDefaultStatusData,
   fetchDashboardDataByTags,
+  fetchDashboardDataHighValue,
   buildDashboardItems,
   fetchLogsForRuns,
   fetchProductionPillData,
@@ -52,26 +53,12 @@ import { DatasetSelector } from "./components/DatasetSelector";
 import { UploadDialog } from "./components/UploadDialog";
 import { AbFilterPanel } from "../../dashboard-shared/AbFilterPanel";
 import {
-  abTestOrdering,
   buildAbTestSlots,
   matchesAbFilters,
   type ABFilters,
 } from "../../dashboard-shared/abFilters";
 import { AB_TESTS } from "../../pipeline/ab-testing/abTestsData";
 
-const { slotOrder: AB_TEST_SLOT_ORDER, variantOrder: AB_TEST_VARIANT_ORDER } =
-  abTestOrdering(AB_TESTS);
-
-function defaultFilters(source: "production" | "dataset_run"): FilterState {
-  const failureTypes = new Set<FailureType>();
-  for (const [ft, cfg] of Object.entries(FAILURE_TYPE_CONFIG) as [FailureType, typeof FAILURE_TYPE_CONFIG[FailureType]][]) {
-    if (cfg.defaultOn && (source === "production" ? cfg.production : cfg.datasetRun)) {
-      failureTypes.add(ft);
-    }
-  }
-  // Default to "Unseen" so you work through the notes you haven't reviewed yet.
-  return { seen: "unseen", failureTypes, failureModes: new Set() };
-}
 
 // Union two production item lists by id. `winners` overwrite `base` on overlap:
 // the windowed fetch carries competing/missed/low-eval + in-window ab_test_picks,
@@ -101,6 +88,33 @@ function byCreatedDesc(a: ReviewItem, b: ReviewItem): number {
 
 function matchesFilters(filters: FilterState, abFilters: ABFilters) {
   return (item: ReviewItem) => {
+    // Topic-set LENS: when any set is selected it's the PRIMARY filter — show
+    // every note in that set regardless of status/failure-type (like the ★ lens),
+    // so picking a topic just lists all its notes to page through. The seen
+    // filter still narrows within it (default "unseen" = notes you've not reviewed).
+    if (filters.topicSets.size > 0) {
+      if (!item.topicSet || !filters.topicSets.has(item.topicSet)) return false;
+      if (filters.seen === "seen" && !(item.annotation?.seen)) return false;
+      if (filters.seen === "unseen" && item.annotation?.seen) return false;
+      return matchesAbFilters(item.abTestPicks ?? null, abFilters);
+    }
+    // High-value ★ lens: only starred items. The other filters still narrow
+    // within it — toggling ★ on resets them to non-restrictive (FilterBar), so
+    // any narrowing is one the user has visibly re-applied. An empty pill set
+    // means "all types" here (unlike the normal view, where the pills are the
+    // positive selection), so clearing the pills can't strand an empty list.
+    if (filters.highValueOnly) {
+      if (!item.annotation?.highValue) return false;
+      if (filters.failureModes.size > 0) {
+        const itemModes = item.annotation?.failureModes ?? [];
+        if (!itemModes.some((m) => filters.failureModes.has(m))) return false;
+      } else if (filters.failureTypes.size > 0 && !filters.failureTypes.has(item.failureType)) {
+        return false;
+      }
+      if (filters.seen === "seen" && !(item.annotation?.seen)) return false;
+      if (filters.seen === "unseen" && item.annotation?.seen) return false;
+      return matchesAbFilters(item.abTestPicks ?? null, abFilters);
+    }
     // When tags are selected they're the primary lens: show every item carrying
     // one, regardless of failure type or seen state. Tagged items are usually
     // already marked seen, and many failure types are off by default, so
@@ -125,14 +139,70 @@ function initialDatasetFromUrl(): DatasetOption {
   return { type: "production", name: "Production" };
 }
 
+// Persist the production filter selection across refreshes so a reload doesn't
+// snap back to defaults (Nathan, 2026-07-15). Sets don't survive JSON, so we
+// round-trip them through arrays. Scoped to production — dataset-run filters are
+// short-lived and keyed to a specific run.
+const FILTERS_KEY = "reviewDashboard.filters.production";
+const SHOW_TAGS_KEY = "reviewDashboard.showTags";
+
+function serializeFilters(f: FilterState): string {
+  return JSON.stringify({
+    seen: f.seen,
+    failureTypes: [...f.failureTypes],
+    failureModes: [...f.failureModes],
+    topicSets: [...f.topicSets],
+    highValueOnly: f.highValueOnly,
+  });
+}
+
+function loadSavedFilters(): FilterState | null {
+  try {
+    const raw = localStorage.getItem(FILTERS_KEY);
+    if (!raw) return null;
+    const o = JSON.parse(raw);
+    return {
+      seen: o.seen ?? "unseen",
+      failureTypes: new Set(o.failureTypes ?? []),
+      failureModes: new Set(o.failureModes ?? []),
+      topicSets: new Set(o.topicSets ?? []),
+      highValueOnly: !!o.highValueOnly,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export function App() {
   const [dataset, setDataset] = useState<DatasetOption>(initialDatasetFromUrl);
   const [uploads, setUploads] = useState<UploadInfo[]>([]);
   const [items, setItems] = useState<ReviewItem[]>([]);
-  const [filters, setFilters] = useState<FilterState>(defaultFilters("production"));
+  const [filters, setFilters] = useState<FilterState>(() => {
+    // Restore the saved production selection on load; first-ever visit falls back
+    // to defaults (which now include Underwater). NB initialDatasetFromUrl is a
+    // function — must be CALLED, not read as `.type`.
+    const initial = initialDatasetFromUrl();
+    if (initial.type === "production") {
+      const saved = loadSavedFilters();
+      if (saved) return saved;
+    }
+    return defaultFilters(initial.type);
+  });
+  // Per-note failure-mode tag chips are hidden by default (Nathan finds them
+  // cluttering); the editor dropdown still shows/edits them. Toggle persists.
+  const [showTags, setShowTags] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem(SHOW_TAGS_KEY) === "true";
+    } catch {
+      return false;
+    }
+  });
   const [abFilters, setAbFilters] = useState<ABFilters>({});
   // A/B filter section is collapsed by default (its slots stream in as data loads).
   const [abOpen, setAbOpen] = useState(false);
+  // Failure-mode tags drawer — collapsed by default so the big pill row doesn't
+  // clutter the top (same collapsible style as the A/B test filters section).
+  const [tagsOpen, setTagsOpen] = useState(false);
   const [counts, setCounts] = useState<Record<FailureType, number>>({} as any);
   // All-time tag usage for production pills, fetched once per production
   // session and adjusted optimistically on tag edits. Dataset runs derive
@@ -146,7 +216,10 @@ export function App() {
   const [failureModeCatalog, setFailureModeCatalog] = useState<FailureModeInfo[]>([]);
   const [showFixedTags, setShowFixedTags] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [loadingLogs, setLoadingLogs] = useState(false);
+  // Gate the A/B filter panel on the full recent-notes fetch finishing, so its
+  // "recently varied" detection sees every pick from the window — not just the
+  // injected first-paint subset.
+  const [recentNotesLoaded, setRecentNotesLoaded] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Production: all items in the current date window are loaded up-front
@@ -196,15 +269,26 @@ export function App() {
   const loadData = useCallback(async () => {
     const seq = ++loadSeq.current;
     setLoading(true);
+    setRecentNotesLoaded(false);
     setError(null);
     try {
       if (dataset.type === "production") {
+        // "Great notes" is a standalone all-time lens — fetch every starred note
+        // regardless of window/status, mirroring the tag path. Takes precedence.
+        if (filters.highValueOnly) {
+          const data = await fetchDashboardDataHighValue();
+          if (seq !== loadSeq.current) return;
+          setItems(buildDashboardItems(data));
+          setLogsByRunId(new Map());
+          return;
+        }
         const tags = [...filters.failureModes];
         if (tags.length > 0) {
           const data = await fetchDashboardDataByTags(tags);
           if (seq !== loadSeq.current) return;
           setItems(buildDashboardItems(data));
           setLogsByRunId(new Map());
+          setRecentNotesLoaded(true);
           return;
         }
         // Instant first paint: the server injects the FULL default set as
@@ -229,11 +313,13 @@ export function App() {
         const merged = mergeItemsById(buildDashboardItems(defaultData), buildDashboardItems(windowData));
         setItems((prev) => preserveAnnotations(prev, merged));
         setLogsByRunId(new Map());
+        setRecentNotesLoaded(true);
       } else {
         const loaded = await fetchDatasetRunItems(dataset.id!);
         if (seq !== loadSeq.current) return;
         setItems(loaded);
         setCounts(await fetchDatasetRunCounts(dataset.id!));
+        setRecentNotesLoaded(true);
       }
     } catch (err: any) {
       console.error("Failed to load data:", err);
@@ -242,16 +328,40 @@ export function App() {
       if (seq === loadSeq.current) setLoading(false);
     }
     // productionTagKey is the stable proxy for filters.failureModes (read above).
-  }, [dataset, windowDays, productionTagKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [dataset, windowDays, productionTagKey, filters.highValueOnly]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Reset filters when the dataset changes (but not when only the window
   // extends — extending should preserve the user's filters). windowDays
   // intentionally persists across dataset switches; resetting it here would
-  // re-fire loadData a second time on every switch.
+  // re-fire loadData a second time on every switch. Skip the mount run so a
+  // refresh keeps the restored/persisted selection instead of snapping to
+  // defaults.
+  const didMountReset = useRef(false);
   useEffect(() => {
+    if (!didMountReset.current) {
+      didMountReset.current = true;
+      return;
+    }
     setFilters(defaultFilters(dataset.type));
     setAbFilters({});
   }, [dataset]);
+
+  // Persist the production filter selection + tag visibility across refreshes.
+  useEffect(() => {
+    if (dataset.type !== "production") return;
+    try {
+      localStorage.setItem(FILTERS_KEY, serializeFilters(filters));
+    } catch {
+      /* ignore */
+    }
+  }, [filters, dataset.type]);
+  useEffect(() => {
+    try {
+      localStorage.setItem(SHOW_TAGS_KEY, String(showTags));
+    } catch {
+      /* ignore */
+    }
+  }, [showTags]);
 
   // Load whenever the dataset or the window changes. loadData is memoized on
   // both, so this fires once per meaningful change.
@@ -278,6 +388,12 @@ export function App() {
   // Sort items by date (stable memo so renders don't re-sort unnecessarily).
   const sortedItems = useMemo(() => [...items].sort(byCreatedDesc), [items]);
   const filtered = sortedItems.filter(matchesFilters(filters, abFilters));
+  // How many loaded items sit in each topic set, for the topic-set filter chips.
+  const topicSetCounts = useMemo(() => {
+    const c: Record<string, number> = {};
+    for (const it of items) if (it.topicSet) c[it.topicSet] = (c[it.topicSet] ?? 0) + 1;
+    return c;
+  }, [items]);
 
   // Loaded items keyed by id — their annotation state is the live truth and wins
   // over the all-time pill data below. You can only edit a visible note, so every
@@ -329,14 +445,14 @@ export function App() {
     return derived;
   }, [dataset.type, productionTagCounts, annotationsSeen, items, filters.seen, abFilters, abActive]);
 
-  // Derive A/B slots from observed ab_test_picks; sort by AB_TESTS
-  // declaration order so dropdowns match the stats dashboard layout.
+  // Derive A/B slots from observed ab_test_picks; sort by AB_TESTS declaration
+  // order so dropdowns match the stats dashboard layout. createdAt drives the
+  // "recently varied" flag the panel uses to hide dormant tests by default.
   const abSlots = useMemo(
     () =>
       buildAbTestSlots(
-        items.map((i) => i.abTestPicks),
-        AB_TEST_SLOT_ORDER,
-        AB_TEST_VARIANT_ORDER,
+        items.map((i) => ({ picks: i.abTestPicks, at: i.createdAt })),
+        AB_TESTS,
       ),
     [items],
   );
@@ -392,6 +508,7 @@ export function App() {
   const windowedTypeSelected =
     dataset.type === "production" &&
     !tagFilterActive &&
+    !filters.highValueOnly &&
     [...filters.failureTypes].some((ft) => !FULLY_LOADED.has(ft));
 
   // The boundary: the OLDEST loaded windowed note. Below it (older) only the
@@ -465,37 +582,21 @@ export function App() {
     align();
   }, [visible, firstRatedIndex]);
 
-  // Lazy-load logs for visible production items that don't have them yet.
-  // Dataset runs already carry logs inline (they're small & come from uploads),
-  // so this only fires for production.
-  const visibleRunIdsKey = useMemo(
-    () => visible.map((i) => i.pipelineRunId ?? "").join(","),
-    [visible],
-  );
-  useEffect(() => {
-    if (dataset.type !== "production") return;
-    const needIds = Array.from(
-      new Set(
-        visible
-          .map((i) => i.pipelineRunId)
-          .filter((id): id is string => !!id && !logsByRunId.has(id)),
-      ),
-    );
-    if (needIds.length === 0) return;
-    setLoadingLogs(true);
-    fetchLogsForRuns(needIds)
-      .then((newLogs) => {
-        if (newLogs.size === 0) return;
-        setLogsByRunId((prev) => {
-          const merged = new Map(prev);
-          for (const [k, v] of newLogs) merged.set(k, v);
-          return merged;
-        });
-      })
-      .finally(() => setLoadingLogs(false));
-    // visibleRunIdsKey guards against re-running when only object identity
-    // changes but the actual set of visible items hasn't.
-  }, [dataset.type, visibleRunIdsKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Fetch one run's logs on demand — when a card's log panel is expanded. The
+  // log panel is collapsed by default, so eager-loading every visible card meant
+  // pulling tens of MB of TOASTed JSONB up front (one slow/failed batch wiped
+  // logs for the whole page). Now we pay the TOAST cost only for the card the
+  // user actually opens. Dataset-run items carry logs inline, so they never call
+  // this. Cached in logsByRunId so re-expanding is instant.
+  const requestLogs = useCallback(async (runId: string) => {
+    try {
+      const fetched = await fetchLogsForRuns([runId]);
+      const logs = fetched.get(runId);
+      if (logs) setLogsByRunId((prev) => new Map(prev).set(runId, logs));
+    } catch (e) {
+      console.warn(`Failed to load logs for run ${runId}:`, e);
+    }
+  }, []);
 
   const handleLoadMore = useCallback(() => {
     setWindowDays((prev) => prev + WINDOW_DAYS_STEP);
@@ -516,6 +617,28 @@ export function App() {
       );
     } catch (err: any) {
       console.error("Failed to update seen:", err);
+    }
+  };
+
+  const handleHighValueToggle = async (id: string, highValue: boolean) => {
+    const source = dataset.type === "production" ? "production" : "dataset_run";
+    // Optimistic: flip the star immediately so the click has instant feedback,
+    // then persist. If the write fails, revert and tell the user.
+    const setHV = (hv: boolean) =>
+      setItems((prev) =>
+        prev.map((item) =>
+          item.id === id
+            ? { ...item, annotation: { ...item.annotation, highValue: hv, seen: item.annotation?.seen ?? false, failureModes: item.annotation?.failureModes ?? [] } }
+            : item,
+        ),
+      );
+    setHV(highValue);
+    try {
+      await upsertAnnotation(source as "production" | "dataset_run", id, { highValue });
+    } catch (err: any) {
+      console.error("Failed to update high_value:", err);
+      setHV(!highValue); // revert
+      alert(`Couldn't save high-value: ${err?.message ?? JSON.stringify(err)}`);
     }
   };
 
@@ -649,6 +772,7 @@ export function App() {
           source={dataset.type}
           filters={filters}
           counts={displayCounts}
+          topicSetCounts={topicSetCounts}
           onFiltersChange={setFilters}
         />
       </div>
@@ -681,7 +805,7 @@ export function App() {
           </div>
           {abOpen && (
             <div className="mt-2">
-              {abSlots.length > 0 ? (
+              {recentNotesLoaded && abSlots.length > 0 ? (
                 <AbFilterPanel slots={abSlots} filters={abFilters} onChange={setAbFilters} hideHeader />
               ) : (
                 <div className="text-sm text-gray-400 px-3 py-2">Loading…</div>
@@ -691,10 +815,43 @@ export function App() {
         </div>
       )}
 
-      {/* Failure mode filter pills */}
+      {/* Failure-mode tags drawer — collapsible, same style as A/B test filters. */}
       {failureModeCatalog.length > 0 && (
-        <div className="flex flex-wrap gap-1 mb-4 items-center">
-          {sortedFailureModes.map((mode) => {
+        <div className="mb-4">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setTagsOpen((o) => !o)}
+              aria-expanded={tagsOpen}
+              className="flex flex-1 items-center gap-2 text-left text-sm font-medium text-gray-700 px-3 py-2 rounded-md border border-gray-200 bg-gray-50 hover:bg-gray-100"
+            >
+              <span className={`text-gray-400 transition-transform ${tagsOpen ? "rotate-90" : ""}`}>▶</span>
+              <span>Failure mode tags</span>
+              {filters.failureModes.size > 0 && (
+                <span className="text-xs text-purple-600">· {filters.failureModes.size} active</span>
+              )}
+            </button>
+            {filters.failureModes.size > 0 && (
+              <button
+                onClick={() => setFilters({ ...filters, failureModes: new Set() })}
+                className="text-xs text-purple-600 hover:text-purple-800"
+              >
+                Clear all
+              </button>
+            )}
+          </div>
+          {tagsOpen && (
+            <div className="mt-2">
+              <label className="flex items-center gap-1.5 text-xs text-gray-600 cursor-pointer mb-2">
+                <input
+                  type="checkbox"
+                  checked={showTags}
+                  onChange={(e) => setShowTags(e.target.checked)}
+                  className="rounded"
+                />
+                Show tag chips on note cards
+              </label>
+              <div className="flex flex-wrap gap-1 items-center">
+                {sortedFailureModes.map((mode) => {
             const active = filters.failureModes.has(mode.name);
             const count = tagCounts.get(mode.name) ?? 0;
             return (
@@ -739,8 +896,11 @@ export function App() {
               onChange={(e) => setShowFixedTags(e.target.checked)}
               className="rounded"
             />
-            Show fixed
-          </label>
+                Show fixed
+              </label>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -755,9 +915,11 @@ export function App() {
           {loading && items.length === 0
             ? "Loading..."
             : dataset.type === "production"
-              ? tagFilterActive
-                ? `${visible.length} notes · all time, tagged${loadingLogs ? " · loading logs…" : ""}`
-                : `${visible.length} notes${loadingLogs ? " · loading logs…" : ""}`
+              ? filters.highValueOnly
+                ? `${visible.length} high-value notes · all time ★`
+                : tagFilterActive
+                  ? `${visible.length} notes · all time, tagged`
+                  : `${visible.length} notes`
               : `${filtered.length} items shown`}
         </div>
         {firstRatedIndex > 0 && (
@@ -779,10 +941,13 @@ export function App() {
               failureModeCatalog={activeFailureModes}
               failureModeUsage={tagCounts}
               showFixed={showFixedTags}
+              showTags={showTags}
               onSeenToggle={handleSeenToggle}
+              onHighValueToggle={handleHighValueToggle}
               onFailureModesChange={handleFailureModesChange}
               onCreateFailureMode={handleCreateFailureMode}
               onCommentChange={handleCommentChange}
+              onRequestLogs={requestLogs}
             />
           </div>
         ))}

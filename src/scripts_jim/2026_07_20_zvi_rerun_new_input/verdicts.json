@@ -1,0 +1,102 @@
+[
+  {
+    "claimId": "6a216b41-4d62-42fb-a207-c2eb7573436b",
+    "verdict": "same",
+    "rationale": "Both note that exceptions exist for gifts/low-value goods and that the strict EU-wide customs rule only dates to July 2021, not a decade or more."
+  },
+  {
+    "claimId": "ad4938be-03dc-41f6-affc-c896015b4d1b",
+    "verdict": "same",
+    "rationale": "Both correct the author's name to Max Ghenis and cite the same ~515x marginal GiveWell figure instead of 1,500x."
+  },
+  {
+    "claimId": "4e282fad-a877-4f0b-af74-16986c63be72",
+    "verdict": "same",
+    "rationale": "Both make the identical core point that the 45% is Zvi Mowshowitz's own subjective estimate, not Sol's self-assessment."
+  },
+  {
+    "claimId": "4f6ddd31-aeac-4f05-b363-0669c40c1aac",
+    "verdict": "different",
+    "rationale": "Although both conclude Herbst didn't rely exclusively on AI Overviews, the old note grounds this in specific cited studies (Tow Center/CJR, BBC/EBU) while the new note cites entirely different substantiating facts (WIRED's own fact-checking process, personal chatbot tests, training-data vs. archives) with no overlap in supporting evidence."
+  },
+  {
+    "claimId": "05155f47-2f48-49d4-8298-c54c4ad2cc91",
+    "verdict": "same",
+    "rationale": "Both state the game is not out of print due to a Gamefound-funded second printing that is nearly fulfilled and sold via similar retailers."
+  },
+  {
+    "claimId": "0f69c770-aa7a-40fd-97bf-71974cfbd33f",
+    "verdict": "same",
+    "rationale": "Both notes agree June 26 was only a partial easing of controls on Mythos while Fable remained restricted, with full elimination on both occurring June 30."
+  },
+  {
+    "claimId": "e73c22bb-4ce9-4df6-a469-dbb36eab9bf6",
+    "verdict": "same",
+    "rationale": "Both notes establish the 67% figure is PC-specific (not overall/global) and from an earlier report, undermining the claim."
+  },
+  {
+    "claimId": "fa6d0aa4-f3f9-4933-8b6c-7e6908dd3ed1",
+    "verdict": "same",
+    "rationale": "Both identify the same source (Stat Significant, karaoke playlists from Spotify/Apple Music) and the same debunked claim (not Chartmetric)."
+  },
+  {
+    "claimId": "8df5a762-c56d-4bec-b0a6-6566b9759820",
+    "verdict": "same",
+    "rationale": "Both notes clarify Sol/Terra/Luna are independent capability tiers, not subagents, and that 'ultra mode' is Sol's real subagent feature."
+  },
+  {
+    "claimId": "250ad97c-86a2-4544-9b9c-1d43512dbf7d",
+    "verdict": "same",
+    "rationale": "Both notes trace the 30% figure to a Texas university study (not UC Berkeley) and note Berkeley's actual A rates stayed stable at 30-35%."
+  },
+  {
+    "claimId": "ca9ad223-11db-4f3a-863a-0de512b775c9",
+    "verdict": "same",
+    "rationale": "Both notes reverse the claim, showing the paper itself (not just the blog post) explicitly addresses phenomenal consciousness while limiting itself to functional access consciousness."
+  },
+  {
+    "claimId": "973b4314-e41d-4ba4-9fd9-72ae6cbec42a",
+    "verdict": "same",
+    "rationale": "Both notes state the research found AI agents are far more (not similarly) responsive to nudges than humans."
+  },
+  {
+    "claimId": "d70b1781-d19e-47d6-8f0f-bc7a9c9ce9bb",
+    "verdict": "same",
+    "rationale": "Both identify the figures as pre-correction and give the same corrected values (~205,000 / ~420,000 QALYs)."
+  },
+  {
+    "claimId": "5c32c919-25d2-4755-bd7c-b879b82f7672",
+    "verdict": "same",
+    "rationale": "Both give the same Phoenix release date (Jan 20, 2026) and state no confirmed changes occurred between April and June."
+  },
+  {
+    "claimId": "6d436935-b42b-4788-88fa-4840cbd86b90",
+    "verdict": "same",
+    "rationale": "Both make the same point that Opus 4.8 and Fable are Anthropic models, not OpenAI GPT models."
+  },
+  {
+    "claimId": "274c5b80-d41a-499f-b33b-b6133e01f986",
+    "verdict": "same",
+    "rationale": "Both confirm the $2/$6 base price but reject the $4/$18 fast tier, citing the same $4/$12 priority-tier correction."
+  },
+  {
+    "claimId": "241ec04b-6748-43bf-b1af-84c29caf6729",
+    "verdict": "same",
+    "rationale": "Both rebut the 'substantially behind on cyber' claim using the same Semgrep and Graphistry benchmark evidence showing GLM-5.2 matching/beating Opus."
+  },
+  {
+    "claimId": "c2ebdad5-9336-4d86-af3b-43c6bcefe0a7",
+    "verdict": "same",
+    "rationale": "Both correct the growth figure to ~200% YoY revenue growth rather than ~60%, with the same underlying report citation."
+  },
+  {
+    "claimId": "692de593-376d-4262-9161-8de3315863e3",
+    "verdict": "same",
+    "rationale": "Both conclude the 572 figure misrepresents the Intelligence Index's actual model count, which is roughly 145-165 rather than 572."
+  },
+  {
+    "claimId": "7d1afad6-0dc4-4389-a6f7-3f056fb368f7",
+    "verdict": "same",
+    "rationale": "Both correct the same date range error, stating Graetz & Michaels (2018) covered 1993-2007, not 1980-2000."
+  }
+]

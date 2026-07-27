@@ -37,7 +37,6 @@ const CONFIG: BotConfig = {
   video_description_strategy: "frames",
   scoreFilters: [],
   parallel_research: false,
-  feed_size: "small",
 };
 
 interface Row {

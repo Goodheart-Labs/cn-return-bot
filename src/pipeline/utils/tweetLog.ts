@@ -156,7 +156,7 @@ export function formatTweetLogFull(log: TweetLogMap): string {
 // ---------------------------------------------------------------------------
 
 /** Summary of all tweets processed in this run */
-export function formatRunSummary(logs: TweetLogMap[], feedSize?: string): string {
+export function formatRunSummary(logs: TweetLogMap[]): string {
   const outcomes: Record<string, number> = {};
   const rejectionReasons: Record<string, number> = {};
   const botUsage: Record<string, number> = {};
@@ -213,11 +213,6 @@ export function formatRunSummary(logs: TweetLogMap[], feedSize?: string): string
     const min = Math.min(...recencies);
     const max = Math.max(...recencies);
     lines.push(`  Recency: median ${median(recencies).toFixed(1)}h, min ${min.toFixed(1)}h, max ${max.toFixed(1)}h`);
-  }
-
-  // Feed size
-  if (feedSize) {
-    lines.push(`  Feed size: ${feedSize}`);
   }
 
   // Bot usage

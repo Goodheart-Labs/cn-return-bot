@@ -44,52 +44,36 @@ export async function evaluateNote(
 }
 
 /**
- * Filters a note based on its predicted helpfulness score
- * @param postId The ID of the tweet the note is for
- * @param noteText The text content of the note
- * @param minScore Minimum score threshold (default: -1.5)
- * @returns true if note should be submitted, false if it should be filtered out
+ * Fetches the X eval score (`claim_opinion_score`) for a note. The score is
+ * recorded for ranking, analysis, and the submission threshold gate. Returns
+ * the score, or an error string when the eval API fails or returns an
+ * unexpected shape.
  */
-export async function shouldSubmitNote(
+export async function getEvaluationScore(
   postId: string,
-  noteText: string,
-  minScore: number = -1.5
-): Promise<{ shouldSubmit: boolean; score?: number; error?: string }> {
+  noteText: string
+): Promise<{ score?: number; error?: string }> {
   try {
     const evaluation = await evaluateNote(postId, noteText);
 
     if (evaluation.errors) {
       console.error("[noteEvaluationFilter] API returned errors:", evaluation.errors);
-      return {
-        shouldSubmit: false,
-        error: "API returned errors",
-      };
+      return { error: "API returned errors" };
     }
 
-    if (!evaluation.data || typeof evaluation.data.claim_opinion_score !== 'number') {
+    if (!evaluation.data || typeof evaluation.data.claim_opinion_score !== "number") {
       console.error("[noteEvaluationFilter] Invalid response format:", evaluation);
-      return {
-        shouldSubmit: false,
-        error: "Invalid response format",
-      };
+      return { error: "Invalid response format" };
     }
 
     const score = evaluation.data.claim_opinion_score;
-    const shouldSubmit = score >= minScore;
-
-    const log = getTweetLog();
-    log?.set("eval.score", score);
-    log?.set("eval.shouldSubmit", shouldSubmit);
-
-    return {
-      shouldSubmit,
-      score,
-    };
+    getTweetLog()?.set("eval.score", score);
+    return { score };
   } catch (error) {
-    console.warn("[noteEvaluationFilter] Evaluation API failed, skipping check:", error instanceof Error ? error.message : error);
-    return {
-      shouldSubmit: true,
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
+    console.warn(
+      "[noteEvaluationFilter] Evaluation API failed, skipping:",
+      error instanceof Error ? error.message : error
+    );
+    return { error: error instanceof Error ? error.message : "Unknown error" };
   }
 }

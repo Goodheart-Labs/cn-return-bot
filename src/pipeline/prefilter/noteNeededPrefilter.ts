@@ -52,8 +52,6 @@ const PREFILTER_CONFIG: BotConfig = {
   search_analyzer: true,
   reasoning_effort: "high",
   temperature: 0,
-  feed_size: "small",
-  eval_submit_threshold: 0, // unused — prefilter runs before the bot / eval gate
 };
 
 export interface PrefilterVerdict {

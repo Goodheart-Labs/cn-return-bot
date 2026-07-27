@@ -16,8 +16,10 @@ import { tmpdir } from "os";
 import { join } from "path";
 import { readFile, writeFile, rm, mkdir, stat } from "fs/promises";
 import { getTweetLog } from "../utils/tweetLog";
+import { addWarning } from "../utils/warnings";
 import { GEMINI_MODEL } from "../cost-tracking/pricing";
-import { trackLlmCall } from "../cost-tracking/costTracker";
+import { trackLlmCall, trackedLlmCreate } from "../cost-tracking/costTracker";
+import { stripJsonFences } from "../utils/jsonOutput";
 import { geminiNativeGenerate, type GeminiContentPart } from "../llm/gemini";
 import {
   downloadVideoWithYtDlp,
@@ -33,6 +35,9 @@ import { getBestMediaUrl } from "./bestMediaUrl";
 const execAsync = promisify(exec);
 // Native Gemini API takes the model id without the OpenRouter "google/" prefix.
 const GEMINI_NATIVE_MODEL = GEMINI_MODEL.replace(/^google\//, "");
+// Vision fallback when Gemini is unavailable (e.g. 503 high-demand). Routed via
+// OpenRouter, so it stays up when Google's native API is overloaded.
+const HAIKU_FALLBACK_MODEL = "anthropic/claude-haiku-4.5";
 const FRAME_SAMPLE_COUNT = 5;              // equally-spaced frames sent for frame-sampled videos
 const LONG_VIDEO_THRESHOLD_MS = 210_000;   // 3.5 minutes — short videos go to Gemini whole; long videos get frame sampling
 const AUTO_SUBS_THRESHOLD_MS = 300_000;    // 5 minutes — above this we use auto-subs as the transcript and never run Whisper
@@ -149,20 +154,65 @@ async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
 
 // --- Image analysis ---
 
+/** Claude Haiku vision fallback (via OpenRouter) for when the native Gemini call
+ *  is unavailable. Same prompt; JSON-object output mapped to the Gemini shape. */
+async function describeImageWithHaiku(
+  inline: { mimeType: string; data: string },
+  promptText: string,
+  costName: string,
+): Promise<GeminiMediaDescription> {
+  const log = getTweetLog();
+  log?.set(`${costName}.input`, promptText);
+
+  const { response, costEntry } = await trackedLlmCreate(costName, {
+    model: HAIKU_FALLBACK_MODEL,
+    messages: [
+      {
+        role: "user",
+        content: [
+          { type: "text", text: `${promptText}\n\nRespond with JSON: {"description": string, "ocr_text": string}` },
+          { type: "image_url", image_url: { url: `data:${inline.mimeType};base64,${inline.data}` } },
+        ],
+      },
+    ],
+    response_format: { type: "json_object" },
+  } as any);
+  trackLlmCall(costEntry);
+
+  const parsed = JSON.parse(stripJsonFences(response.choices?.[0]?.message?.content ?? "{}"));
+  const description: GeminiMediaDescription = {
+    description: parsed.description ?? "",
+    ocrText: parsed.ocr_text ?? "",
+  };
+  log?.set(`${costName}.output`, description);
+  return description;
+}
+
+/** Gemini vision, falling back to Haiku when Gemini errors or returns nothing
+ *  usable. A successful description is never empty, so an empty result is
+ *  treated as a Gemini miss and retried on Haiku. */
 async function describeImage(
   inline: { mimeType: string; data: string },
   url: string,
   costName: string,
   entities?: string[],
 ): Promise<GeminiMediaItem> {
-  const description = await analyzeMediaParts(
-    [{ text: IMAGE_PROMPT + entityHint(entities) }, { inlineData: inline }],
-    costName,
-  );
+  const promptText = IMAGE_PROMPT + entityHint(entities);
+
+  try {
+    const description = await analyzeMediaParts([{ text: promptText }, { inlineData: inline }], costName);
+    if (description.description !== "") return { type: "image", url, description };
+    // Empty output — treat as a Gemini miss and fall through to Haiku.
+  } catch (err: any) {
+    console.error("[mediaAnalysisGemini] Gemini image analysis failed, falling back to Haiku:", err.message);
+  }
+
+  const description = await describeImageWithHaiku(inline, promptText, `${costName}.haiku`);
+  addWarning(`Image analysis: Gemini failed, used Claude Haiku fallback (${url})`);
   return { type: "image", url, description };
 }
 
-async function describeImageFromUrl(imageUrl: string, costName: string, entities?: string[]): Promise<GeminiMediaItem> {
+export async function describeImageFromUrl(imageUrl: string, costName: string, entities?: string[]): Promise<GeminiMediaItem> {
   return describeImage(await fetchImageInlineData(imageUrl), imageUrl, costName, entities);
 }
 
@@ -325,6 +375,7 @@ async function analyzeVideo(
     return { type: "video", url: videoUrl, description, transcription };
   } catch (err: any) {
     console.error("[mediaAnalysisGemini] Video analysis failed:", err.message);
+    addWarning(`Video analysis failed, no description (${videoUrl}): ${err.message?.slice(0, 150)}`);
     return { type: "video", url: videoUrl, description: { description: "", ocrText: "" }, };
   } finally {
     try { await rm(tmpDir, { recursive: true, force: true }); } catch {}
@@ -371,7 +422,8 @@ async function analyzeMediaItems(
       .map((img) => getBestMediaUrl(img))
       .filter((url): url is string => !!url)
       .map((url) => describeImageFromUrl(url, `${namePrefix}.image.${imageIdx++}`, entities).catch((err) => {
-        console.error("[mediaAnalysisGemini] Image analysis failed:", err.message);
+        console.error("[mediaAnalysisGemini] Image analysis failed (Gemini + Haiku):", err.message);
+        addWarning(`Image analysis failed, no description (${url}): ${err.message?.slice(0, 150)}`);
         return { type: "image" as const, url, description: { description: "", ocrText: "" } };
       })),
   );

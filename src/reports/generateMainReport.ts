@@ -19,16 +19,11 @@ if (useLocal) {
 import { getSupabaseClient } from "../api/supabaseClient";
 import { fetchAllRows, fetchInBatches } from "../api/paging";
 import { resolvePicks } from "../pipeline/ab-testing/abTests";
+import { snowflakeToDate } from "../pipeline/utils/snowflake";
 import { writeFileSync, mkdirSync, existsSync } from "fs";
 import { execSync } from "child_process";
 
 const client = getSupabaseClient();
-
-// Extract creation date from Twitter Snowflake ID
-function snowflakeToDate(id: string): Date {
-  const TWITTER_EPOCH = 1288834974657n;
-  return new Date(Number((BigInt(id) >> 22n) + TWITTER_EPOCH));
-}
 
 console.log("Fetching data...");
 
@@ -89,7 +84,7 @@ const rawPipelineRunsFull = await fetchAllRows<{
   { label: "report.allPipelineRuns" },
 );
 // Fill AB-test defaults so variant labels stay consistent across rows written
-// before vs. after a test was introduced (e.g. feed_size pre-2026-05-16).
+// before vs. after a test was introduced.
 for (const r of rawPipelineRunsFull) {
   r.ab_test_picks = resolvePicks(r.ab_test_picks);
 }

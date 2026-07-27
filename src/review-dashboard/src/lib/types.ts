@@ -54,6 +54,11 @@ export interface ReviewItem {
   // Auto-computed competitor lead time tag (not persisted)
   competitorLeadTag?: string;
 
+  // Misinfo fact-check topic (granular topic_id from misinfo_monitoring_sightings)
+  // and its derived review set. Undefined for regular (non-misinfo) notes.
+  topic?: string;
+  topicSet?: import("../../../dashboard-shared/topicSets").TopicSet;
+
   // For filter categorization
   failureType: FailureType;
 }
@@ -71,6 +76,7 @@ export interface Annotation {
   seen: boolean;
   failureModes: string[];
   comment?: string;
+  highValue?: boolean;
 }
 
 // Production failure types (derived from CN status)
@@ -80,6 +86,7 @@ export type ProductionFailureType =
   | "lost_to_competitor"
   | "missed_opportunity"
   | "needs_more_ratings"
+  | "underwater"
   | "filtered_low_eval_score";
 
 // V2 dataset run categories (from evaluateResults categorizeRowV2)
@@ -109,6 +116,14 @@ export interface FilterState {
   seen: "all" | "seen" | "unseen";
   failureTypes: Set<FailureType>;
   failureModes: Set<string>;
+  // Misinfo topic-set filter (AI / animal-welfare / EA / politics). Empty = no
+  // topic narrowing (show all). AND-combined with the other filters.
+  topicSets: Set<string>;
+  // When on, the list is the high-value (starred ★) notes, all-time. The other
+  // filters still apply within it, but toggling ★ on resets them to
+  // non-restrictive (seen "all", no pills, no tags) so narrowing is opt-in and
+  // always visible in the filter bar — nothing is overridden behind the UI.
+  highValueOnly: boolean;
 }
 
 export interface FailureTypeConfig {
@@ -122,11 +137,15 @@ export interface FailureTypeConfig {
 
 export const FAILURE_TYPE_CONFIG: Record<FailureType, FailureTypeConfig> = {
   // --- Production types ---
-  rated_helpful: { label: "Rated Helpful", defaultOn: false, production: true, datasetRun: false, color: "bg-green-100 text-green-800" },
+  rated_helpful: { label: "Rated Helpful", defaultOn: true, production: true, datasetRun: false, color: "bg-green-100 text-green-800" },
   rated_unhelpful: { label: "Rated Unhelpful", defaultOn: true, production: true, datasetRun: false, color: "bg-red-100 text-red-800" },
   lost_to_competitor: { label: "Lost to competitor", defaultOn: false, production: true, datasetRun: false, color: "bg-orange-100 text-orange-800" },
   missed_opportunity: { label: "Missed opportunity", defaultOn: false, production: true, datasetRun: false, color: "bg-yellow-100 text-yellow-800" },
   needs_more_ratings: { label: "Needs More Ratings", defaultOn: false, production: true, datasetRun: false, color: "bg-blue-100 text-blue-800" },
+  // NEEDS_MORE_RATINGS notes whose rating counts run net negative (not-helpful >
+  // helpful) — still undecided by CN, but sinking. Split out of needs_more_ratings
+  // the same way lost_to_competitor is, so the two pills stay disjoint.
+  underwater: { label: "Underwater", defaultOn: true, production: true, datasetRun: false, color: "bg-indigo-100 text-indigo-800" },
   filtered_low_eval_score: { label: "Filtered (low eval score)", defaultOn: false, production: true, datasetRun: false, color: "bg-teal-100 text-teal-800" },
 
   // --- V2 dataset categories: noteworthy ---
@@ -198,4 +217,15 @@ export interface UploadInfo {
 export interface FailureModeInfo {
   name: string;
   fixed: boolean;
+}
+
+export function defaultFilters(source: "production" | "dataset_run"): FilterState {
+  const failureTypes = new Set<FailureType>();
+  for (const [ft, cfg] of Object.entries(FAILURE_TYPE_CONFIG) as [FailureType, FailureTypeConfig][]) {
+    if (cfg.defaultOn && (source === "production" ? cfg.production : cfg.datasetRun)) {
+      failureTypes.add(ft);
+    }
+  }
+  // Default to "Unseen" so you work through the notes you haven't reviewed yet.
+  return { seen: "unseen", failureTypes, failureModes: new Set(), topicSets: new Set(), highValueOnly: false };
 }

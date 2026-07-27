@@ -1,6 +1,12 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { fetchAllRows as fetchAllRowsShared } from "./paging";
 import type { Post } from "./fetchEligiblePosts";
+import { stripNullChars } from "../utils/stripNullChars";
+
+// A note that an --incremental scrape scrolled past without capturing this many
+// times is "given up": excluded from the anchor so a permanently-deleted note
+// can't pin the daily window. The staged updates in markIncrementalMisses assume 2.
+const MISS_LIMIT = 2;
 
 // Database types
 export interface Notewriter {
@@ -63,6 +69,32 @@ export type NoteInsert = {
 
 let supabaseInstance: SupabaseClient | null = null;
 
+type CountError = {
+  message?: string;
+  details?: string;
+  hint?: string;
+  code?: string;
+};
+
+type ExactCountResponse = {
+  count: number | null;
+  error: CountError | null;
+  status: number;
+};
+
+// Builds the count query. head:true is the normal body-less request; head:false
+// is the diagnostic GET fallback (error bodies only survive on GET). Builders
+// should append .limit(1) — a no-op on HEAD — so the fallback fetches one row.
+type ExactCountQuery = (head: boolean) => PromiseLike<ExactCountResponse>;
+
+const COUNT_RETRY_DELAYS_MS = [250, 1000] as const;
+// status 0 = network-level failure (supabase-js resolves with no HTTP status)
+const RETRYABLE_COUNT_STATUSES = new Set([0, 408, 425, 429]);
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 /**
  * Returns the singleton supabase-js client.
  *
@@ -89,6 +121,50 @@ export function getSupabaseClient(): SupabaseClient {
 
   supabaseInstance = createClient(supabaseUrl, supabaseKey);
   return supabaseInstance;
+}
+
+// Rows with raw_tweet blobs are large — keep write batches small enough that a
+// single PostgREST request stays well under body-size/time limits.
+const FEED_TWEETS_WRITE_CHUNK = 500;
+
+function chunked<T>(items: T[], size: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < items.length; i += size) chunks.push(items.slice(i, i + size));
+  return chunks;
+}
+
+/**
+ * Map an eligibility-endpoint Post to the shared column shape of the `tweets`
+ * and `feed_tweets` tables. Derives has_video / has_photo / media_count /
+ * video_duration_ms from post.media and carries the complete raw X-API object
+ * in raw_tweet. Table-specific timestamps are added by the callers.
+ */
+function postToTweetRow(post: Post) {
+  const videoMedia = post.media?.find((m) => m.type === "video");
+  return {
+    tweet_id: post.id,
+    author_id: post.author_id,
+    author_name: post.author_name,
+    author_description: post.author_description,
+    author_followers: post.author_followers,
+    author_tweet_count: post.author_tweet_count,
+    text: post.text,
+    posted_at: post.created_at,
+    impressions: post.public_metrics?.impression_count,
+    likes: post.public_metrics?.like_count,
+    retweets: post.public_metrics?.retweet_count,
+    replies: post.public_metrics?.reply_count,
+    quotes: post.public_metrics?.quote_count,
+    bookmarks: post.public_metrics?.bookmark_count,
+    media: post.media ?? null,
+    referenced_tweets: post.referenced_tweets ?? null,
+    referenced_tweet_data: post.referenced_tweet_data ?? null,
+    raw_tweet: post.raw ?? null,
+    has_video: !!videoMedia,
+    has_photo: post.media?.some((m) => m.type === "photo") ?? false,
+    media_count: post.media?.length ?? 0,
+    video_duration_ms: videoMedia?.duration_ms,
+  };
 }
 
 export class SupabaseLogger {
@@ -298,53 +374,193 @@ export class SupabaseLogger {
     return (data || []).map((n: { note_id: string }) => n.note_id);
   }
 
+  /**
+   * Existence + first-snapshot state for a note in a single read. Lets the
+   * scraper decide whether to create the note row and whether it still needs its
+   * `first_snapshot_at` stamped, without an extra round-trip.
+   */
+  async getNoteSnapshotState(noteId: string): Promise<{ exists: boolean; hasFirstSnapshot: boolean }> {
+    const { data, error } = await this.client
+      .from("notes")
+      .select("note_id, first_snapshot_at")
+      .eq("note_id", noteId)
+      .single();
+
+    if (error && error.code !== "PGRST116") {
+      console.error("[SupabaseLogger] Error reading note snapshot state:", error);
+      throw error;
+    }
+
+    return { exists: !!data, hasFirstSnapshot: !!data?.first_snapshot_at };
+  }
+
+  /**
+   * Stamp when a note first received a scraper snapshot. Idempotent — only sets
+   * the value while it is still null. This is what makes getOldestUnscrapedNoteId
+   * a cheap indexed lookup instead of a scan of the whole snapshots time-series.
+   */
+  async markFirstSnapshot(noteId: string): Promise<void> {
+    const { error } = await this.client
+      .from("notes")
+      .update({ first_snapshot_at: new Date().toISOString() })
+      .eq("note_id", noteId)
+      .is("first_snapshot_at", null);
+
+    if (error) {
+      console.error("[SupabaseLogger] Error stamping first_snapshot_at:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Oldest known note that is still eligible to anchor the --incremental scrape:
+   * no snapshot yet (`first_snapshot_at IS NULL`) and not given up after repeated
+   * misses (`scrape_misses < MISS_LIMIT`). `first_snapshot_at` is stamped on a
+   * note's first snapshot (see markFirstSnapshot + migration 048) and this exact
+   * predicate is backed by the partial index `idx_notes_incremental_anchor`, so
+   * it's a cheap indexed read rather than a scan of the snapshots time-series.
+   * Returns null when every known note has a snapshot or has been given up.
+   */
+  async getOldestUnscrapedNoteId(): Promise<string | null> {
+    // note_id is text so .order() is lexicographic; take the smallest window and
+    // pick the true min as a BigInt to guard against any mixed-length ids.
+    const TOP_CANDIDATES = 50;
+    const { data, error } = await this.client
+      .from("notes")
+      .select("note_id")
+      .is("first_snapshot_at", null)
+      .lt("scrape_misses", MISS_LIMIT)
+      .not("note_id", "like", "tweet_%")
+      .not("note_id", "like", "unavailable_%")
+      .order("note_id", { ascending: true })
+      .limit(TOP_CANDIDATES);
+
+    if (error) {
+      console.error("[SupabaseLogger] Error fetching oldest unscraped note id:", error);
+      throw error;
+    }
+
+    const numericIds = (data || [])
+      .map((n: { note_id: string }) => n.note_id)
+      .filter((id: string) => /^\d+$/.test(id));
+    if (numericIds.length === 0) return null;
+
+    return numericIds.reduce((min, id) => (BigInt(id) < BigInt(min) ? id : min));
+  }
+
+  /**
+   * After an --incremental run, account for notes the scrape scrolled past but
+   * failed to capture — still no snapshot and note_id >= the lowest captured id.
+   * Implements a MISS_LIMIT-miss give-up with two ordered literal-set updates (no
+   * column arithmetic, so no RPC needed): first promote already-missed notes to
+   * MISS_LIMIT (given up), then record a first miss for the rest. The order avoids
+   * giving up on a note in the same run it was first missed. A captured note has
+   * first_snapshot_at set and so drops out of this set, making misses effectively
+   * consecutive. Returns counts for logging.
+   */
+  async markIncrementalMisses(minCoveredNoteId: string): Promise<{ givenUp: number; firstMisses: number }> {
+    const coveredUnscraped = (q: any) =>
+      q.is("first_snapshot_at", null)
+        .gte("note_id", minCoveredNoteId)
+        .not("note_id", "like", "tweet_%")
+        .not("note_id", "like", "unavailable_%");
+
+    // 1. Missed before and missed again → give up.
+    const { data: givenUp, error: giveUpErr } = await coveredUnscraped(
+      this.client.from("notes").update({ scrape_misses: MISS_LIMIT }),
+    )
+      .eq("scrape_misses", MISS_LIMIT - 1)
+      .select("note_id");
+    if (giveUpErr) {
+      console.error("[SupabaseLogger] Error giving up on unscrapable notes:", giveUpErr);
+      throw giveUpErr;
+    }
+
+    // 2. First miss for notes never missed before.
+    const { data: firstMissed, error: firstMissErr } = await coveredUnscraped(
+      this.client.from("notes").update({ scrape_misses: 1 }),
+    )
+      .eq("scrape_misses", 0)
+      .select("note_id");
+    if (firstMissErr) {
+      console.error("[SupabaseLogger] Error recording first scrape misses:", firstMissErr);
+      throw firstMissErr;
+    }
+
+    return { givenUp: (givenUp || []).length, firstMisses: (firstMissed || []).length };
+  }
+
   // ============================================
   // Tweets
   // ============================================
 
   /**
-   * Bulk insert tweets from fetched eligibility-endpoint posts. Derives
-   * has_video / has_photo / media_count / video_duration_ms from post.media,
-   * and stores the complete raw X-API object in raw_tweet.
+   * Bulk insert tweets from fetched eligibility-endpoint posts.
    * Insert-only: rows whose tweet_id already exists are skipped, so engagement
    * metrics remain frozen at first sight.
    */
   async bulkInsertNewTweets(posts: Post[]): Promise<void> {
     if (!posts.length) return;
     const now = new Date().toISOString();
-    const rows = posts.map((post) => {
-      const videoMedia = post.media?.find((m) => m.type === "video");
-      return {
+    const rows = posts.map((post) => ({ ...postToTweetRow(post), last_updated_at: now }));
+    const { error } = await this.client.from("tweets").upsert(rows, { onConflict: "tweet_id", ignoreDuplicates: true });
+    if (error) {
+      console.error(`[SupabaseLogger] Error bulk-inserting ${rows.length} tweets:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Save every post from a full eligible-feed pull into feed_tweets.
+   * First-seen tweets get a full row (incl. the large raw_tweet blob);
+   * already-known tweets get only their engagement metrics, author counts and
+   * last_seen_at refreshed — the big JSONB/text columns are never rewritten.
+   * Returns { inserted, updated } for run logging.
+   */
+  async bulkSaveFeedTweets(posts: Post[]): Promise<{ inserted: number; updated: number }> {
+    if (!posts.length) return { inserted: 0, updated: 0 };
+    const now = new Date().toISOString();
+
+    // Pass 1: insert full rows for tweets not seen before (DO NOTHING on
+    // conflict); .select() returns only the actually-inserted rows.
+    const insertedIds = new Set<string>();
+    const fullRows = posts.map((post) => ({ ...postToTweetRow(post), first_seen_at: now, last_seen_at: now }));
+    for (const chunk of chunked(fullRows, FEED_TWEETS_WRITE_CHUNK)) {
+      const { data, error } = await this.client
+        .from("feed_tweets")
+        .upsert(chunk, { onConflict: "tweet_id", ignoreDuplicates: true })
+        .select("tweet_id");
+      if (error) {
+        console.error(`[SupabaseLogger] Error inserting ${chunk.length} feed tweets:`, error);
+        throw error;
+      }
+      for (const row of data ?? []) insertedIds.add(row.tweet_id);
+    }
+
+    // Pass 2: for the pre-existing rest, refresh only the volatile columns.
+    const metricRows = posts
+      .filter((post) => !insertedIds.has(post.id))
+      .map((post) => ({
         tweet_id: post.id,
-        author_id: post.author_id,
-        author_name: post.author_name,
-        author_description: post.author_description,
         author_followers: post.author_followers,
         author_tweet_count: post.author_tweet_count,
-        text: post.text,
-        posted_at: post.created_at,
         impressions: post.public_metrics?.impression_count,
         likes: post.public_metrics?.like_count,
         retweets: post.public_metrics?.retweet_count,
         replies: post.public_metrics?.reply_count,
         quotes: post.public_metrics?.quote_count,
         bookmarks: post.public_metrics?.bookmark_count,
-        media: post.media ?? null,
-        referenced_tweets: post.referenced_tweets ?? null,
-        referenced_tweet_data: post.referenced_tweet_data ?? null,
-        raw_tweet: post.raw ?? null,
-        has_video: !!videoMedia,
-        has_photo: post.media?.some((m) => m.type === "photo") ?? false,
-        media_count: post.media?.length ?? 0,
-        video_duration_ms: videoMedia?.duration_ms,
-        last_updated_at: now,
-      };
-    });
-    const { error } = await this.client.from("tweets").upsert(rows, { onConflict: "tweet_id", ignoreDuplicates: true });
-    if (error) {
-      console.error(`[SupabaseLogger] Error bulk-inserting ${rows.length} tweets:`, error);
-      throw error;
+        last_seen_at: now,
+      }));
+    for (const chunk of chunked(metricRows, FEED_TWEETS_WRITE_CHUNK)) {
+      const { error } = await this.client.from("feed_tweets").upsert(chunk, { onConflict: "tweet_id" });
+      if (error) {
+        console.error(`[SupabaseLogger] Error refreshing ${chunk.length} feed tweet metrics:`, error);
+        throw error;
+      }
     }
+
+    return { inserted: insertedIds.size, updated: metricRows.length };
   }
 
   // ============================================
@@ -393,6 +609,7 @@ export class SupabaseLogger {
       outcome: "submitted" | "filtered" | "failed" | "rejected" | "candidate";
       outcome_reason?: string;
       error_message?: string;
+      warnings?: string[];
       final_stage: string;
       note_id?: string;
       bot_name?: string;
@@ -409,10 +626,14 @@ export class SupabaseLogger {
   ): Promise<void> {
     const { error } = await this.client
       .from("pipeline_runs")
-      .update({
+      // Scrub NUL chars from every free-text / JSONB field — model output (e.g.
+      // Gemini media OCR) can emit U+0000, which Postgres rejects with 22P05 and
+      // would otherwise drop the whole run's row (logs + outcome).
+      .update(stripNullChars({
         outcome: data.outcome,
         outcome_reason: data.outcome_reason,
         error_message: data.error_message,
+        warnings: data.warnings,
         final_stage: data.final_stage,
         note_id: data.note_id,
         bot_name: data.bot_name,
@@ -425,7 +646,7 @@ export class SupabaseLogger {
         check_reasoning: data.check_reasoning,
         logs: data.logs,
         cost: data.cost,
-      })
+      }))
       .eq("id", runId);
 
     if (error) {
@@ -613,13 +834,64 @@ export class SupabaseLogger {
   // ============================================
 
   /**
-   * All sightings recorded so far, keyed "<tweetId>:<topicId>". One read per
-   * run so the pre-pass can tell which keyword-matched posts are *new* (worth
-   * upserting + evaluating with the selection LLM) versus already-seen.
+   * Tweet IDs already run through Pangram (any verdict). One read per run so the
+   * Pangram pre-pass checks each long-form post exactly once instead of
+   * re-classifying the same viral post every run. Fail-soft to an empty set so
+   * the pre-pass still runs before migration 049 is applied (it just re-checks).
+   */
+  async getPangramCheckedTweetIds(): Promise<Set<string>> {
+    try {
+      const rows = await this.fetchAllRows<{ tweet_id: string }>(
+        (client) => client.from("pangram_monitoring_sightings").select("tweet_id"),
+        "tweet_id",
+        "getPangramCheckedTweetIds",
+      );
+      return new Set(rows.map((r) => r.tweet_id));
+    } catch (err) {
+      console.warn("[SupabaseLogger] getPangramCheckedTweetIds failed (table missing?):", err);
+      return new Set();
+    }
+  }
+
+  /** Record Pangram verdicts (insert-only; the first verdict per tweet wins). */
+  async recordPangramChecks(rows: Array<{
+    tweet_id: string;
+    feed_size?: string;
+    impression_count?: number;
+    author_name?: string;
+    prediction_short: string;
+    fraction_ai?: number;
+    is_ai: boolean;
+    processed_run_id?: string;
+  }>): Promise<void> {
+    if (!rows.length) return;
+    const { error } = await this.client
+      .from("pangram_monitoring_sightings")
+      .upsert(rows, { onConflict: "tweet_id", ignoreDuplicates: true });
+    if (error) {
+      console.error("[SupabaseLogger] Error recording pangram checks:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * All JUDGED sightings, keyed "<tweetId>:<topicId>". One read per pass so
+   * callers can tell which keyword-matched posts are *new* (worth upserting +
+   * evaluating with the selection LLM) versus already-judged. Rows with a null
+   * needs_note are deliberately EXCLUDED: they were upserted but the selection
+   * LLM never returned a verdict (e.g. it crashed after the upsert), and
+   * treating them as "seen" would silently drop them forever — excluding them
+   * lets the next run re-evaluate, which is what the sightings-first ordering
+   * was designed for (and what migration 043's needs_note-IS-NULL partial
+   * index anticipated). The table grows unboundedly and this paginates the
+   * whole thing; fine at current scale, revisit if reads get slow.
    */
   async getMisinfoSightingKeys(): Promise<Set<string>> {
     const rows = await this.fetchAllRows<{ tweet_id: string; topic_id: string }>(
-      (client) => client.from("misinfo_monitoring_sightings").select("id, tweet_id, topic_id"),
+      (client) => client
+        .from("misinfo_monitoring_sightings")
+        .select("id, tweet_id, topic_id")
+        .not("needs_note", "is", null),
       "id",
       "getMisinfoSightingKeys",
     );
@@ -627,19 +899,24 @@ export class SupabaseLogger {
   }
 
   /**
-   * Sightings that need a note (needs_note=true) but haven't been processed
-   * yet (processed_run_id is null) — the carry-over backlog the pre-pass works
-   * through, oldest first.
+   * Sightings judged note-worthy but never processed (needs_note = true,
+   * processed_run_id IS NULL — served by migration 043's partial index), keyed
+   * "<tweetId>:<topicId>". When such a post re-surfaces in a later fetch, the
+   * stored verdict is reused instead of re-spending a selection-LLM call.
    */
-  async getPendingMisinfoSightings(): Promise<Array<{ tweet_id: string; topic_id: string }>> {
-    return this.fetchAllRows<{ tweet_id: string; topic_id: string }>(
-      (client) => client.from("misinfo_monitoring_sightings")
+  async getPendingMisinfoSightings(topicIds: string[]): Promise<Set<string>> {
+    if (!topicIds.length) return new Set();
+    const rows = await this.fetchAllRows<{ tweet_id: string; topic_id: string }>(
+      (client) => client
+        .from("misinfo_monitoring_sightings")
         .select("id, tweet_id, topic_id")
         .eq("needs_note", true)
-        .is("processed_run_id", null),
+        .is("processed_run_id", null)
+        .in("topic_id", topicIds),
       "id",
       "getPendingMisinfoSightings",
     );
+    return new Set(rows.map((r) => `${r.tweet_id}:${r.topic_id}`));
   }
 
   /** Insert newly-matched sightings; existing (tweet, topic) pairs are ignored. */
@@ -943,60 +1220,156 @@ export class SupabaseLogger {
     }
   }
 
+  private isRetryableCountError(status: number, error: CountError | null): boolean {
+    const code = error?.code ?? "";
+    return RETRYABLE_COUNT_STATUSES.has(status) || status >= 500 || code.startsWith("08") || code === "57014";
+  }
+
+  private formatCountError(status: number, error: CountError | null): string {
+    if (!error) return `HTTP ${status}: unknown error`;
+
+    const parts = [`HTTP ${status}`];
+    if (error.code) parts.push(error.code);
+    if (error.message) parts.push(error.message);
+    if (error.details) parts.push(`details=${error.details}`);
+    if (error.hint) parts.push(`hint=${error.hint}`);
+
+    if (parts.length > 1) return parts.join(": ");
+    return `HTTP ${status}: ${JSON.stringify(error)}`;
+  }
+
+  private errorToCountResponse(err: unknown): ExactCountResponse {
+    const anyErr = err as any;
+    return {
+      count: null,
+      error: {
+        message: anyErr?.message ?? String(err),
+        code: anyErr?.code,
+        details: anyErr?.details,
+        hint: anyErr?.hint,
+      },
+      status: anyErr?.status ?? anyErr?.statusCode ?? 0,
+    };
+  }
+
+  private async settleCountQuery(query: PromiseLike<ExactCountResponse>): Promise<ExactCountResponse> {
+    try {
+      return await query;
+    } catch (err) {
+      return this.errorToCountResponse(err);
+    }
+  }
+
+  /**
+   * Run a head-only exact count with retries, returning 0 (and logging) on error.
+   *
+   * HEAD responses have no body, so on failure the HTTP status is the only
+   * diagnostic. Transient failures (network, 5xx, timeouts) are retried; once
+   * retries are exhausted a one-row GET runs the same count, which either
+   * recovers it or surfaces the real PostgREST error body.
+   */
+  private async runExactCount(makeQuery: ExactCountQuery, label: string): Promise<number> {
+    const maxAttempts = COUNT_RETRY_DELAYS_MS.length + 1;
+    let lastFailure: ExactCountResponse | null = null;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      const result = await this.settleCountQuery(makeQuery(true));
+      if (!result.error) {
+        if (attempt > 1) {
+          console.warn(`[SupabaseLogger] Count ${label} succeeded on attempt ${attempt}/${maxAttempts}`);
+        }
+        return result.count ?? 0;
+      }
+
+      lastFailure = result;
+      const retryDelay = COUNT_RETRY_DELAYS_MS[attempt - 1];
+      if (!retryDelay || !this.isRetryableCountError(result.status, result.error)) break;
+
+      console.warn(
+        `[SupabaseLogger] Failed to count ${label} (${this.formatCountError(result.status, result.error)}), ` +
+          `retrying in ${retryDelay}ms (attempt ${attempt}/${maxAttempts})`,
+      );
+      await sleep(retryDelay);
+    }
+
+    const headFailure = this.formatCountError(lastFailure!.status, lastFailure!.error);
+    const fallback = await this.settleCountQuery(makeQuery(false));
+    if (!fallback.error) {
+      console.warn(`[SupabaseLogger] Count ${label} recovered via GET fallback after HEAD failure: ${headFailure}`);
+      return fallback.count ?? 0;
+    }
+
+    console.warn(
+      `[SupabaseLogger] Failed to count ${label}: HEAD ${headFailure}; ` +
+        `GET fallback ${this.formatCountError(fallback.status, fallback.error)}`,
+    );
+    return 0;
+  }
+
   /** Count notes submitted in the last N hours (rolling window) */
   async countRecentSubmissions(hours: number): Promise<number> {
     const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
-    const { count, error } = await this.client
-      .from("notes")
-      .select("*", { count: "exact", head: true })
-      .gte("submitted_at", since);
-    if (error) {
-      console.warn("[SupabaseLogger] Failed to count recent submissions:", error.message);
-      return 0;
+    return this.runExactCount(
+      (head) => this.client.from("notes").select("id", { count: "exact", head }).gte("submitted_at", since).limit(1),
+      "recent submissions",
+    );
+  }
+
+  /**
+   * Count misinfo-monitoring notes we've SUBMITTED in the last `hours`. Bounds
+   * the misinfo submit-priority reserve to ~10% of the daily cap. Misinfo notes
+   * are identified via their processed sightings (processed_at within a slightly
+   * wider window) joined to notes we actually submitted. Throws on a query error
+   * so the caller falls back to no-boost (the safe direction).
+   */
+  async countRecentMisinfoSubmissions(hours: number): Promise<number> {
+    const submitSince = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
+    // A note submitted in the window was processed at ~the same time; widen the
+    // processed-at window a little so a just-submitted note is never missed.
+    const processedSince = new Date(Date.now() - (hours + 2) * 60 * 60 * 1000).toISOString();
+    const { data: sightings, error: sErr } = await this.client
+      .from("misinfo_monitoring_sightings")
+      .select("tweet_id")
+      .not("processed_run_id", "is", null)
+      .gte("processed_at", processedSince);
+    if (sErr) throw sErr;
+    const tweetIds = [...new Set((sightings ?? []).map((s) => String((s as { tweet_id: string }).tweet_id)))];
+    if (tweetIds.length === 0) return 0;
+    let total = 0;
+    for (let i = 0; i < tweetIds.length; i += 200) {
+      const { count, error } = await this.client
+        .from("notes")
+        .select("id", { count: "exact", head: true })
+        .in("tweet_id", tweetIds.slice(i, i + 200))
+        .gte("submitted_at", submitSince);
+      if (error) throw error;
+      total += count ?? 0;
     }
-    return count ?? 0;
+    return total;
   }
 
   /** Count pipeline_runs created in the last N hours */
   async countRecentPipelineRuns(hours: number): Promise<number> {
     const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
-    const { count, error } = await this.client
-      .from("pipeline_runs")
-      .select("*", { count: "exact", head: true })
-      .gte("created_at", since);
-    if (error) {
-      console.warn("[SupabaseLogger] Failed to count recent pipeline runs:", error.message);
-      return 0;
-    }
-    return count ?? 0;
+    return this.runExactCount(
+      (head) =>
+        this.client.from("pipeline_runs").select("id", { count: "exact", head }).gte("created_at", since).limit(1),
+      "recent pipeline runs",
+    );
   }
 
   /** Count pipeline_runs created in the last N hours whose outcome is in `outcomes` */
   async countRecentPipelineRunsByOutcomes(hours: number, outcomes: string[]): Promise<number> {
     const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
-    const { count, error } = await this.client
-      .from("pipeline_runs")
-      .select("*", { count: "exact", head: true })
-      .gte("created_at", since)
-      .in("outcome", outcomes);
-    if (error) {
-      console.warn("[SupabaseLogger] Failed to count recent pipeline runs by outcome:", error.message);
-      return 0;
-    }
-    return count ?? 0;
+    return this.runExactCount(
+      (head) =>
+        this.client
+          .from("pipeline_runs")
+          .select("id", { count: "exact", head })
+          .gte("created_at", since)
+          .in("outcome", outcomes)
+          .limit(1),
+      "recent pipeline runs by outcome",
+    );
   }
-
-  /** Check if any notes have been submitted since a given ISO timestamp */
-  async hasSubmissionsSince(since: string): Promise<boolean> {
-    const { count, error } = await this.client
-      .from("notes")
-      .select("*", { count: "exact", head: true })
-      .gte("submitted_at", since);
-    if (error) {
-      console.warn("[SupabaseLogger] Failed to check submissions since:", error.message);
-      return true; // assume reset on error so we don't get stuck in cautious mode
-    }
-    return (count ?? 0) > 0;
-  }
-
 }

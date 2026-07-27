@@ -59,14 +59,15 @@ async function fetchDefaultView(): Promise<any | null> {
     const noteIds = canonical.map((n) => n.note_id);
     const tweetIds = [...new Set(canonical.map((n) => n.tweet_id).filter(Boolean))] as string[];
     if (noteIds.length === 0) {
-      return { canonical, competing: [], submittedRuns: [], missedRuns: [], lowEvalRuns: [], lowEvalScores: [], annotations: [], tweets: [], publicDumpRatings: [] };
+      return { canonical, competing: [], submittedRuns: [], missedRuns: [], lowEvalRuns: [], lowEvalScores: [], annotations: [], tweets: [], publicDumpRatings: [], sightings: [] };
     }
-    const [tweets, publicDumpRatings, annotations] = await Promise.all([
+    const [tweets, publicDumpRatings, annotations, sightings] = await Promise.all([
       tweetIds.length ? sb(`tweets?select=${TWEET_COLS}&tweet_id=in.${encodeURIComponent(inList(tweetIds))}`) : Promise.resolve([]),
       sb(`note_ratings_from_public_dump?select=${RATING_COLS}&note_id=in.${encodeURIComponent(inList(noteIds))}`),
       sb(`review_dashboard_annotations?select=*&source=eq.production&target_id=in.${encodeURIComponent(inList(noteIds))}`).catch(() => []),
+      tweetIds.length ? sb(`misinfo_monitoring_sightings?select=tweet_id,topic_id&tweet_id=in.${encodeURIComponent(inList(tweetIds))}`).catch(() => []) : Promise.resolve([]),
     ]);
-    return { canonical, competing: [], submittedRuns: [], missedRuns: [], lowEvalRuns: [], lowEvalScores: [], annotations, tweets, publicDumpRatings };
+    return { canonical, competing: [], submittedRuns: [], missedRuns: [], lowEvalRuns: [], lowEvalScores: [], annotations, tweets, publicDumpRatings, sightings };
   } catch (e) {
     console.warn("[server] default-view prefetch failed:", (e as Error).message);
     return null;
@@ -113,7 +114,11 @@ serve({
     // request still serves the snapshot already in hand (instant).
     fetchDefaultView().then((dv) => { if (dv) defaultView = dv; });
     const html = injectCredentials(readFileSync(join(import.meta.dir, "dist/index.html"), "utf-8"));
-    return new Response(html, { headers: { "Content-Type": "text/html" } });
+    // Never cache the HTML: it references content-hashed JS/CSS, so a plain
+    // refresh must always re-read index.html to pick up a new build's hashes.
+    return new Response(html, {
+      headers: { "Content-Type": "text/html", "Cache-Control": "no-store, must-revalidate" },
+    });
   },
 });
 

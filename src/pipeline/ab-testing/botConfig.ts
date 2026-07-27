@@ -4,9 +4,6 @@ import { AsyncLocalStorage } from "node:async_hooks";
 
 export type VideoDescriptionStrategy = "full_video" | "frames";
 
-/** Feed sizes accepted by X's eligible-posts API. */
-export type FeedSize = "small" | "large" | "xl" | "xxl";
-
 export interface BotConfig {
   /** Which bot to run. Set by the BOT_TEST A/B test (or forced via withForcedPicks). */
   botId: string;
@@ -22,11 +19,11 @@ export interface BotConfig {
   verifier_model?: string;
   /** If true, the source verifier surfaces an automated Gemini analysis (yt-dlp for video/audio/Instagram-photo, direct vision call for image URLs) for cited media URLs and treats that as the source's content. Defaults to false. */
   verifier_accepts_media_sources?: boolean;
-  /** If true, the source verifier additionally receives the actual images
-   *  (post + quoted-tweet media, plus images found in the cited sources) as
-   *  vision input, with a manifest mapping each image to its origin. Lets it
-   *  catch out-of-context / misattributed media (post image vs. a source
-   *  showing a similar but different event). Only takes effect on a
+  /** If true, the source verifier additionally receives the actual images —
+   *  post media, quoted-post media, and images found in the cited sources — as
+   *  vision input, each run of images under a heading naming where it came
+   *  from. Lets it catch out-of-context / misattributed media (post image vs. a
+   *  source showing a similar but different event). Only takes effect on a
    *  vision-capable verifier_model; ignored otherwise. Defaults to false. */
   verifier_sees_images?: boolean;
   /**
@@ -38,6 +35,15 @@ export interface BotConfig {
    */
   verifier_claim_based?: boolean;
   /**
+   * When true, the source verifier collects, per source, the most relevant
+   * verbatim snippets + a plain-language note on how each supports or fails to
+   * support the note BEFORE judging good/bad (reason-then-judge). Applies to both
+   * the classic and claim-based flows. Surfaced as `source_evaluations` on the
+   * result + tweet log; does not change which URLs the published note carries.
+   * Set by VERIFIER_CITATIONS_TEST; defaults false.
+   */
+  verifier_citations?: boolean;
+  /**
    * When true, the pipeline runs an extra LLM step between writer and source
    * verifier that judges whether a note is actually warranted for the post.
    * cheap-bot's primary FP guard (always on there via BOT_TEST). Defaults to
@@ -46,6 +52,17 @@ export interface BotConfig {
   note_needed_judge?: boolean;
   /** Model for the note-needed-judge step. Defaults to `model` when unset. */
   note_judge_model?: string;
+  /**
+   * When true (simple-bot only), an LLM step between search and writer extracts
+   * atomic corrections from the search findings, grades each (clear_error /
+   * minor_error / critical_context / useful_context / not_useful), and passes the
+   * writer only the high-value ones (clear_error + critical_context) instead of
+   * the raw findings. If none grade high, the run early-exits as no_correction.
+   * Set by SIMPLE_BOT_CORRECTION_EXTRACTION_TEST; defaults false.
+   */
+  correction_extraction?: boolean;
+  /** Model for the correction-extractor step. Defaults to `model` when unset. */
+  correction_extraction_model?: string;
   /**
    * When true, a cheap deepseek-v4-flash "note-needed prefilter" runs BEFORE the
    * bot (query writer → SearXNG → analyzer → reframed note-needed judge). If it
@@ -98,13 +115,6 @@ export interface BotConfig {
    */
   satire_detector?: boolean;
   /**
-   * When true (simple-bot only), the search and writer steps use maximally-terse
-   * "simple" prompt variants instead of the detailed defaults — tests whether the
-   * long criteria lists are pulling their weight. Set by SIMPLE_BOT_PROMPTS_TEST;
-   * defaults false. Doesn't touch the shared source-verifier / user-message prompts.
-   */
-  simple_prompts?: boolean;
-  /**
    * When true (simple-bot only), the search agent's system prompt is appended
    * with an instruction to prefer, for political posts, sources associated with
    * the post author's own political side — the bridging idea that a note is more
@@ -113,21 +123,41 @@ export interface BotConfig {
    */
   search_political_sources?: boolean;
   /**
+   * When true (simple-bot only), the search agent uses the "anti-pedantic"
+   * prompt variant, which only flags a correction when the post's main claim /
+   * argument is wrong (not a minor side error). Set by
+   * SIMPLE_BOT_ANTI_PEDANTIC_TEST; defaults false.
+   */
+  search_anti_pedantic?: boolean;
+  /**
+   * When true (simple-bot only), the search step uses the claim-check prompt —
+   * the input is a claim extracted from a podcast, interview, or article plus
+   * surrounding context, not an X post. Forced on by the everything pipeline.
+   * Set by SIMPLE_BOT_CLAIM_TEST; defaults false.
+   */
+  search_claim?: boolean;
+  /**
    * When true, the writer's system prompt is appended with a few-shot block of
    * real notes the community rated helpful — all simple, direct, and short — to
    * pull the writer toward that "simple and nice" style. Set by
-   * SIMPLE_BOT_WRITER_EXAMPLES_TEST; defaults false. Composes with the base
-   * prompt (detailed or `simple_prompts`).
+   * SIMPLE_BOT_WRITER_EXAMPLES_TEST; defaults false.
    */
   writer_examples?: boolean;
-  /** Feed size used for the eligible-posts fetch. Pseudo A/B test (large=100%). */
-  feed_size: FeedSize;
+  /**
+   * When true, the writer's user message includes a block of the post author's
+   * past helpful community notes (ours + competing notes on tweets we've noted)
+   * as context — see getAuthorNoteHistory. The lookup was silently broken from
+   * migration 033 until June 2026 (it queried the dropped pipeline_runs.author_id
+   * column), so this input was effectively off the whole time. Now a 50/50 A/B
+   * test via AUTHOR_HISTORY_TEST. Not prereq-gated — runs for every bot. Defaults false.
+   */
+  author_history?: boolean;
   /**
    * Minimum X eval-score (`claim_opinion_score`) at which a note is submitted.
-   * The note is gated out when `score < eval_submit_threshold`. Defaults to 0
-   * (the historical hardcoded cutoff). Set by EVAL_SUBMIT_THRESHOLD_TEST.
+   * Missing values fall back to 0, preserving older ad-hoc script configs.
+   * Set by EVAL_SUBMIT_THRESHOLD_TEST.
    */
-  eval_submit_threshold: number;
+  eval_submit_threshold?: number;
 }
 
 // --- Default config ---
@@ -139,7 +169,6 @@ export const DEFAULT_CONFIG: BotConfig = {
   web_search: "perplexity",
   video_description_strategy: "frames",
   parallel_research: false,
-  feed_size: "small",
   eval_submit_threshold: 0,
 };
 

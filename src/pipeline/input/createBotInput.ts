@@ -7,6 +7,7 @@
 import type { Post } from "../../api/fetchEligiblePosts";
 import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
+import { addWarning } from "../utils/warnings";
 import { analyzeMediaGemini, type GeminiMediaResult } from "../media/mediaAnalysisGemini";
 import { getAuthorNoteHistory, type AuthorNoteHistory } from "./authorHistory";
 import { fetchTweetComments } from "./comments";
@@ -19,7 +20,6 @@ export interface BotInput {
   comments?: string;
   /** X showed a "Made with AI" provenance label on the post's media. */
   mediaMadeWithAiLabel: boolean;
-  warnings: string[];
 }
 
 const MIN_TEXT_LENGTH_FOR_SEARCH = 20;
@@ -52,7 +52,6 @@ export async function createBotInput(post: Post, logTag: string): Promise<BotInp
   }
 
   const log = getTweetLog();
-  const warnings: string[] = [];
 
   let mediaResult: GeminiMediaResult = { tweetMedia: [], quotedTweetMedia: [] };
   const hasTweetMedia = post.media?.length > 0;
@@ -74,21 +73,28 @@ export async function createBotInput(post: Post, logTag: string): Promise<BotInp
         throw new Error(`${msg} (fatal: media-only tweet has no text to search with)`);
       }
       console.warn(`[${logTag}] ${msg} (continuing without media context)`);
-      warnings.push(msg);
+      addWarning(msg);
     }
   }
 
   // Only posts with media can carry the "Made with AI" label, so gate the
   // (browser-based) check on media presence to keep the page-load off text-only
-  // posts. Fails open — never blocks note generation.
-  const mediaMadeWithAiLabel = hasMedia ? await detectMadeWithAiLabel(post.id, logTag) : false;
+  // posts. Everything-pipeline synthetic posts (hyphenated ids by design — see
+  // buildClaimPost) have no X status page to load, so skip the check instead of
+  // burning its 15s timeout per image-backed claim. Fails open — never blocks
+  // note generation.
+  const isRealTweetId = /^\d+$/.test(post.id);
+  const mediaMadeWithAiLabel = hasMedia && isRealTweetId ? await detectMadeWithAiLabel(post.id, logTag) : false;
 
-  // Author history (best-effort)
+  // Author history (best-effort; gated by the author_history A/B test). When
+  // off, skip the lookup entirely so the writer gets no author-history block.
   let authorHistory: AuthorNoteHistory | undefined;
-  try {
-    authorHistory = await getAuthorNoteHistory(post.author_id);
-  } catch (err: any) {
-    console.warn(`[${logTag}] Author history lookup failed: ${err.message}`);
+  if (config.author_history) {
+    try {
+      authorHistory = await getAuthorNoteHistory(post.author_id);
+    } catch (err: any) {
+      console.warn(`[${logTag}] Author history lookup failed: ${err.message}`);
+    }
   }
 
   // Comments (best-effort)
@@ -109,7 +115,7 @@ export async function createBotInput(post: Post, logTag: string): Promise<BotInp
   });
   log?.set("inputs.mediaMadeWithAiLabel", mediaMadeWithAiLabel);
 
-  const result: BotInput = { mediaResult, authorHistory, comments, mediaMadeWithAiLabel, warnings };
+  const result: BotInput = { mediaResult, authorHistory, comments, mediaMadeWithAiLabel };
   writeInputCache(post, strategy, result);
   writeInputCacheMem(post.id, strategy, result);
   return result;

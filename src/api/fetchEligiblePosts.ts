@@ -38,6 +38,9 @@ export type Post = {
   author_name?: string;
   author_description?: string;
   author_tweet_count?: number;
+  // Named entities X tagged on the post (people, orgs, topics), from
+  // context_annotations. Always an array on X-fetched posts (empty when X
+  // tagged nothing); optional only because other Post builders omit it.
   entities?: string[];
   // Complete, self-contained X-API tweet object (every field the endpoint
   // returns) with its expansions resolved inline under `includes`. Persisted
@@ -144,6 +147,16 @@ export async function fetchEligiblePosts(
 
     // If no more pages, break
     if (!nextToken) {
+      break;
+    }
+
+    // Every response reports the endpoint's remaining rate budget (500
+    // requests per 15-min window, shared by all fetches in a run). Stop
+    // BEFORE the request that would 429 instead of reacting to it.
+    if (response.headers?.["x-rate-limit-remaining"] === "0") {
+      console.warn(
+        `[generate] Rate budget exhausted after page ${pageCount}; keeping the ${allEligiblePosts.length} posts already fetched`
+      );
       break;
     }
   }
@@ -280,7 +293,10 @@ export function parsePostsResponse(data: any): Post[] {
         author_name: authorName,
         author_description: authorDescription,
         author_tweet_count: authorTweetCount,
-        entities: entities.length ? entities : undefined,
+        // Always emit the array (empty when X tagged nothing) so `tweet.post`
+        // logs `entities: []` and an absent hint is distinguishable from a
+        // dropped field. entityHint() treats [] as "no hint".
+        entities,
         raw: buildRawTweet(tweet, mediaMap, userMap, referencedTweetsMap, pollMap, placeMap),
       });
     }

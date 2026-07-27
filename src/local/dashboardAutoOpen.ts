@@ -164,7 +164,8 @@ function openUrlInBrowser(url: string): void {
   }
 }
 
-export async function autoOpenInDashboard(csvPath: string, runName: string): Promise<void> {
+/** Returns the created upload's id, or null if the upload/open failed. */
+export async function autoOpenInDashboard(csvPath: string, runName: string): Promise<string | null> {
   try {
     const uploadId = await uploadCsvToProdDashboard(csvPath, runName);
     console.log(`[dashboard] uploaded ${runName} → ${uploadId}`);
@@ -172,7 +173,9 @@ export async function autoOpenInDashboard(csvPath: string, runName: string): Pro
     const url = `http://localhost:${DASHBOARD_PORT}/?upload=${uploadId}`;
     console.log(`[dashboard] opening ${url}`);
     openUrlInBrowser(url);
+    return uploadId;
   } catch (err: any) {
     console.error(`[dashboard] auto-open failed: ${err?.message}`);
+    return null;
   }
 }

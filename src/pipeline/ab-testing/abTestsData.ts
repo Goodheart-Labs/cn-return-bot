@@ -8,6 +8,7 @@
  */
 
 import type { BotConfig } from "./botConfig";
+import { MISINFO_TOPIC_IDS } from "../misinfo-monitoring/topicIds";
 
 // --- Types ---
 
@@ -80,25 +81,27 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
   name: "simple_bot_search",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    // Non-uniform weights: sonnet46-native is the primary arm; the rest carry
-    // smaller exploratory weights, with the weaker/redundant variants pinned to
-    // 0 (still declared so their historical picks resolve).
-    { variant: { name: "sonnet46-native",         overrides: { search_model: "anthropic/claude-sonnet-4.6",       web_search: "native" }},        weight: 10 },
+    // Only sonnet5-native is active — every other arm is pinned to 0 (still
+    // declared so their historical picks resolve).
+    { variant: { name: "sonnet46-native",         overrides: { search_model: "anthropic/claude-sonnet-4.6",       web_search: "native" }},        weight: 0 },
+    { variant: { name: "sonnet5-native",          overrides: { search_model: "anthropic/claude-sonnet-5",         web_search: "native" }},        weight: 100 },
+    { variant: { name: "opus48-native",           overrides: { search_model: "anthropic/claude-opus-4.8",         web_search: "native" }},        weight: 0 },
     { variant: { name: "haiku45-native",          overrides: { search_model: "anthropic/claude-haiku-4.5",        web_search: "native" }},        weight: 0 },
-    { variant: { name: "grok43-native",           overrides: { search_model: "x-ai/grok-4.3",                     web_search: "native_grok" }},   weight: 2 },
+    { variant: { name: "grok43-native",           overrides: { search_model: "x-ai/grok-4.3",                     web_search: "native_grok" }},   weight: 0 },
     { variant: { name: "gemini3flash-native",     overrides: { search_model: "google/gemini-3-flash-preview",     web_search: "native_gemini" }}, weight: 0 },
-    { variant: { name: "gemini35flash-native",    overrides: { search_model: "google/gemini-3.5-flash",           web_search: "native_gemini" }}, weight: 2 },
-    { variant: { name: "gemini31pro-native",      overrides: { search_model: "google/gemini-3.1-pro-preview",      web_search: "native_gemini" }}, weight: 2 },
+    { variant: { name: "gemini35flash-native",    overrides: { search_model: "google/gemini-3.5-flash",           web_search: "native_gemini" }}, weight: 0 },
+    { variant: { name: "gemini31pro-native",      overrides: { search_model: "google/gemini-3.1-pro-preview",      web_search: "native_gemini" }}, weight: 0 },
     { variant: { name: "sonar-reasoning-pro",     overrides: { search_model: "perplexity/sonar-reasoning-pro",    web_search: "bundled" }},       weight: 0 },
     { variant: { name: "sonar-pro",               overrides: { search_model: "perplexity/sonar-pro",              web_search: "bundled" }},       weight: 0 },
     { variant: { name: "kimi-k26-searxng",        overrides: { search_model: "moonshotai/kimi-k2.6",              web_search: "searxng" }},       weight: 0 },
     { variant: { name: "deepseek-v4pro-searxng",  overrides: { search_model: "deepseek/deepseek-v4-pro",          web_search: "searxng" }},       weight: 0 },
     { variant: { name: "deepseek-v4flash-searxng",overrides: { search_model: "deepseek/deepseek-v4-flash",        web_search: "searxng" }},       weight: 0 },
     { variant: { name: "glm5-searxng",            overrides: { search_model: "z-ai/glm-5",                        web_search: "searxng" }},       weight: 0 },
+    { variant: { name: "glm52-searxng",           overrides: { search_model: "z-ai/glm-5.2",                      web_search: "searxng" }},       weight: 0 },
     { variant: { name: "deepseek-v32exp-searxng", overrides: { search_model: "deepseek/deepseek-v3.2-exp",        web_search: "searxng" }},       weight: 0 },
     { variant: { name: "qwen3max-searxng",        overrides: { search_model: "qwen/qwen3-max",                    web_search: "searxng" }},       weight: 0 },
     { variant: { name: "gpt5_4mini-native",       overrides: { search_model: "openai/gpt-5.4-mini",               web_search: "native_openai" }}, weight: 0 },
-    { variant: { name: "gpt5-native",             overrides: { search_model: "openai/gpt-5",                      web_search: "native_openai" }}, weight: 1 },
+    { variant: { name: "gpt5-native",             overrides: { search_model: "openai/gpt-5",                      web_search: "native_openai" }}, weight: 0 },
     { variant: { name: "mistral-large-3-searxng", overrides: { search_model: "mistralai/mistral-large-2512",      web_search: "searxng" }},       weight: 0 },
   ],
 };
@@ -107,38 +110,23 @@ const SIMPLE_BOT_WRITER_TEST: ABTest = {
   name: "simple_bot_writer",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 0 },
-    { variant: { name: "gemini-flash",     overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 100 },
+    { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 40 },
+    { variant: { name: "gemini-flash",     overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 40 },
+    { variant: { name: "sonnet5",          overrides: { writer_model: "anthropic/claude-sonnet-5"      }}, weight: 20 },
     { variant: { name: "deepseek-v4flash", overrides: { writer_model: "deepseek/deepseek-v4-flash"    }}, weight: 0 },
   ],
 };
 
-// Source checker (text-LLM source verifier) model for simple-bot. Three-way:
-// Gemini-flash WITH images (sees post + source media as vision input, to catch
-// out-of-context media), Gemini-flash text-only (the prior baseline), and
-// deepseek-v4-flash. verifier_sees_images only fires on a vision-capable model,
-// so it's paired with the gemini variant. Prereq-gated to simple-bot, so no
-// defaultVariant.
+// Source checker (text-LLM source verifier) model for simple-bot. Baseline is
+// Gemini-flash (DEFAULT_CONFIG.verifier_model); deepseek-v4-flash is parked at
+// weight 0. Media analysis is unaffected — it always runs on Gemini regardless
+// of verifier_model. Prereq-gated to simple-bot, so no defaultVariant.
 const SIMPLE_BOT_VERIFIER_TEST: ABTest = {
   name: "simple_bot_verifier",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "gemini-images",    overrides: { verifier_model: "google/gemini-3-flash-preview", verifier_sees_images: true  }}, weight: 34 },
-    { variant: { name: "gemini-no-images", overrides: { verifier_model: "google/gemini-3-flash-preview", verifier_sees_images: false }}, weight: 33 },
-    { variant: { name: "deepseek-v4flash", overrides: { verifier_model: "deepseek/deepseek-v4-flash"                                  }}, weight: 33 },
-  ],
-};
-
-// Swap simple-bot's search + writer system prompts for maximally-terse variants
-// (the shared verifier / user-message prompts are untouched). Tests whether the
-// long criteria lists pull their weight. Live 50/50 on simple-bot. Prereq-gated
-// to simple-bot, so no defaultVariant.
-const SIMPLE_BOT_PROMPTS_TEST: ABTest = {
-  name: "simple_bot_prompts",
-  prerequisites: { botId: "simple-bot" },
-  variants: [
-    { variant: { name: "detailed", overrides: { simple_prompts: false } }, weight: 50 },
-    { variant: { name: "simple",   overrides: { simple_prompts: true  } }, weight: 50 },
+    { variant: { name: "gemini-flash",     overrides: { verifier_model: "google/gemini-3-flash-preview" }}, weight: 50 },
+    { variant: { name: "deepseek-v4flash", overrides: { verifier_model: "deepseek/deepseek-v4-flash"    }}, weight: 0  },
   ],
 };
 
@@ -157,6 +145,32 @@ const SIMPLE_BOT_POLITICAL_SOURCES_TEST: ABTest = {
   ],
 };
 
+// Swap simple-bot's SEARCH prompt for an "anti-pedantic" variant that only
+// flags a correction when the post's main claim / argument is wrong, never a
+// minor side error — the bet that pedantic nitpicks hurt the helpful/FP rate.
+// Live 50/50 on simple-bot. Prereq-gated to simple-bot, so no defaultVariant.
+const SIMPLE_BOT_ANTI_PEDANTIC_TEST: ABTest = {
+  name: "simple_bot_anti_pedantic",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off", overrides: { search_anti_pedantic: false } }, weight: 50 },
+    { variant: { name: "on",  overrides: { search_anti_pedantic: true  } }, weight: 50 },
+  ],
+};
+
+// Use the claim-check search prompt (input is a claim + excerpt from a podcast,
+// interview, or article, not an X post). Off in prod (weight 0 on); forced on by
+// the everything pipeline (src/everything/checkClaims.ts). Prereq-gated to
+// simple-bot, so no defaultVariant.
+const SIMPLE_BOT_CLAIM_TEST: ABTest = {
+  name: "search_claim",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off", overrides: { search_claim: false } }, weight: 100 },
+    { variant: { name: "on",  overrides: { search_claim: true  } }, weight: 0   },
+  ],
+};
+
 // Append a few-shot block of real, well-performing notes (all simple, direct,
 // and short) to simple-bot's writer system prompt, testing whether concrete
 // examples pull the writer toward that "simple and nice" style vs the
@@ -170,6 +184,23 @@ const SIMPLE_BOT_WRITER_EXAMPLES_TEST: ABTest = {
   variants: [
     { variant: { name: "off", overrides: { writer_examples: false } }, weight: 50 },
     { variant: { name: "on",  overrides: { writer_examples: true  } }, weight: 50 },
+  ],
+};
+
+// Insert an LLM step between simple-bot's search and writer that extracts atomic
+// corrections from the search findings, grades each (clear_error / minor_error /
+// critical_context / useful_context / not_useful), and feeds the writer only the
+// high-value ones (clear_error + critical_context) instead of the raw findings —
+// early-exiting no_correction when none grade high. `off` = today's full-findings
+// writer. Trials Gemini 3 Flash vs Sonnet 5 as the extractor. Prereq-gated to
+// simple-bot, so no defaultVariant.
+const SIMPLE_BOT_CORRECTION_EXTRACTION_TEST: ABTest = {
+  name: "simple_bot_correction_extraction",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off",          overrides: { correction_extraction: false } }, weight: 34 },
+    { variant: { name: "gemini3flash", overrides: { correction_extraction: true, correction_extraction_model: "google/gemini-3-flash-preview" } }, weight: 33 },
+    { variant: { name: "sonnet5",      overrides: { correction_extraction: true, correction_extraction_model: "anthropic/claude-sonnet-5" } }, weight: 33 },
   ],
 };
 
@@ -269,17 +300,108 @@ const VERIFIER_CLAIM_BASED_TEST: ABTest = {
   ],
 };
 
-// Pseudo A/B test: records the feed size in `pipeline_runs.ab_test_picks.feed_size`.
-// `generateCandidates` forces the pick to the size the fetch actually used.
-// Pre-existing rows (no `feed_size` key) resolve to "small".
+// Reason-then-judge source verifier: per source, gather verbatim snippets + a
+// plain-language explanation of how each supports/refutes the note, THEN judge
+// good/bad. Orthogonal to verifier_claim_based — both flows have a citations
+// variant, so the two tests mix freely. Not prereq-gated (verifySources runs in
+// both bots), so defaultVariant "off" lets historical rows resolve.
+const VERIFIER_CITATIONS_TEST: ABTest = {
+  name: "verifier_citations",
+  defaultVariant: "off",
+  variants: [
+    { variant: { name: "off", overrides: { verifier_citations: false } }, weight: 50 },
+    { variant: { name: "on",  overrides: { verifier_citations: true  } }, weight: 50 },
+  ],
+};
+
+// Show the source verifier the actual images — the post's media, the quoted
+// post's, and images pulled from the cited sources — instead of only their text
+// descriptions. Targets out-of-context media: the post's photo and a cited
+// source's photo can be a similar but different event, which no text summary of
+// either reveals. Only fires on a vision-capable verifier_model, so the "on"
+// arm is a no-op if the model test ever routes to a text-only model. Orthogonal
+// to the claim-based and citations flows (both attach the same images). Not
+// prereq-gated (verifySources runs in both bots), so defaultVariant "off" lets
+// historical rows resolve.
+const VERIFIER_IMAGES_TEST: ABTest = {
+  name: "verifier_images",
+  defaultVariant: "off",
+  variants: [
+    { variant: { name: "off", overrides: { verifier_sees_images: false } }, weight: 50 },
+    { variant: { name: "on",  overrides: { verifier_sees_images: true  } }, weight: 50 },
+  ],
+};
+
+// Pseudo A/B test: records which feed tier the post came from, so note
+// outcomes can be sliced by tier (the small feed is X's curated subset; each
+// larger tier is a lower-quality superset). Not sampled — `processPosts`
+// forces the pick from the item's `feedSize`, which the ladder in
+// `collectFastPosts` (and the pre-passes' crawls) already tracks per post.
+// Empty overrides: this records only, the tier is decided at fetch time.
+// Historical rows with no pick resolve to `small` — true before the ladder
+// landed (2026-06-06), and the fallback for the 2026-07-21..22 window where
+// the pick was accidentally dropped (small dominates there too, since the
+// ladder only broadens when small can't fill the run).
 const FEED_SIZE_TEST: ABTest = {
   name: "feed_size",
   defaultVariant: "small",
   variants: [
-    { variant: { name: "small", overrides: { feed_size: "small" }}, weight: 100 },
-    { variant: { name: "large", overrides: { feed_size: "large" }}, weight: 0 },
-    { variant: { name: "xl",    overrides: { feed_size: "xl"    }}, weight: 0 },
-    { variant: { name: "xxl",   overrides: { feed_size: "xxl"   }}, weight: 0 },
+    { variant: { name: "small", overrides: {} }, weight: 100 },
+    { variant: { name: "large", overrides: {} }, weight: 0 },
+    { variant: { name: "xl",    overrides: {} }, weight: 0 },
+    { variant: { name: "xxl",   overrides: {} }, weight: 0 },
+  ],
+};
+
+// Pseudo A/B tests: record whether a run came from the XXL-feed misinfo
+// pre-pass and, if so, which topic it matched. `processPosts` forces both picks
+// from the item's MonitoringContext; regular runs carry no monitoring, so they
+// sample the default arm (`no` / `none`). Empty overrides — these record only,
+// they drive no behaviour (the reference document is injected via
+// MonitoringContext, independent of BotConfig).
+const MISINFO_MONITORING_TEST: ABTest = {
+  name: "misinfo_monitoring",
+  defaultVariant: "no",
+  variants: [
+    { variant: { name: "no",  overrides: {} }, weight: 100 },
+    { variant: { name: "yes", overrides: {} }, weight: 0 },
+  ],
+};
+
+// One variant per topic id (kept in sync with topics.ts via MISINFO_TOPIC_IDS),
+// so a forced topic pick always resolves in findVariantByName.
+const MISINFO_TOPIC_TEST: ABTest = {
+  name: "misinfo_topic",
+  defaultVariant: "none",
+  variants: [
+    { variant: { name: "none", overrides: {} }, weight: 100 },
+    ...MISINFO_TOPIC_IDS.map((id) => ({ variant: { name: id, overrides: {} }, weight: 0 })),
+  ],
+};
+
+// Pseudo A/B test: record whether a run came from the XXL-feed Pangram
+// AI-detection pre-pass. generatePangramCandidates forces `yes` on the runs it
+// creates; every other run carries no pick and resolves to the default `no`.
+// Empty overrides — this records only, it drives no behaviour.
+const PANGRAM_MONITORING_TEST: ABTest = {
+  name: "pangram_monitoring",
+  defaultVariant: "no",
+  variants: [
+    { variant: { name: "no",  overrides: {} }, weight: 100 },
+    { variant: { name: "yes", overrides: {} }, weight: 0 },
+  ],
+};
+
+// 50/50: does adding a false-positive-rate reassurance (+ two supporting sources)
+// to the Pangram AI-detection note change how it's rated? Read directly by
+// generatePangramCandidates (buildPangramNote) via pickVariantName, not through
+// BotConfig, so overrides are empty.
+export const PANGRAM_NOTE_TEST: ABTest = {
+  name: "pangram_note",
+  defaultVariant: "plain",
+  variants: [
+    { variant: { name: "plain",      overrides: {} }, weight: 50 },
+    { variant: { name: "fp_context", overrides: {} }, weight: 50 },
   ],
 };
 
@@ -318,21 +440,35 @@ const CHEAP_BOT_TEMPERATURE_TEST: ABTest = {
 };
 
 // Eval-score cutoff for submission. The X eval gate keeps a note iff
-// `claim_opinion_score >= eval_submit_threshold`. Baseline is 0 (the historical
-// hardcoded cutoff) at 50%; the five lower cutoffs each get 10% to measure how
-// many extra notes submit — and how they perform — as we relax the gate. Not
-// prereq-gated (the eval gate runs for every bot in processTweet), so
-// defaultVariant "0" lets pre-existing rows resolve to the old cutoff.
+// `claim_opinion_score >= eval_submit_threshold`. Fixed at the -3 cutoff so every
+// note scoring below -3 is filtered out; the old 0 and -6 arms are pinned to
+// weight 0 (still declared so their historical picks resolve). Not prereq-gated
+// (the eval gate runs for every bot in processTweet), so defaultVariant "0" lets
+// pre-existing rows resolve to the original cutoff.
 const EVAL_SUBMIT_THRESHOLD_TEST: ABTest = {
   name: "eval_submit_threshold",
   defaultVariant: "0",
   variants: [
-    { variant: { name: "0",    overrides: { eval_submit_threshold: 0    } }, weight: 50 },
-    { variant: { name: "-0.5", overrides: { eval_submit_threshold: -0.5 } }, weight: 10 },
-    { variant: { name: "-1.0", overrides: { eval_submit_threshold: -1.0 } }, weight: 10 },
-    { variant: { name: "-1.5", overrides: { eval_submit_threshold: -1.5 } }, weight: 10 },
-    { variant: { name: "-2.0", overrides: { eval_submit_threshold: -2.0 } }, weight: 10 },
-    { variant: { name: "-2.5", overrides: { eval_submit_threshold: -2.5 } }, weight: 10 },
+    { variant: { name: "-3", overrides: { eval_submit_threshold: -3 } }, weight: 100 },
+    { variant: { name: "0",  overrides: { eval_submit_threshold: 0  } }, weight: 0   },
+    { variant: { name: "-6", overrides: { eval_submit_threshold: -6 } }, weight: 0   },
+  ],
+};
+
+// Inject the post author's past helpful community notes (ours + competing notes
+// on tweets we've noted) into the writer's user message — see
+// getAuthorNoteHistory. The lookup was silently broken from migration 033 until
+// June 2026 (queried the dropped pipeline_runs.author_id), so this input has been
+// effectively off the whole time. Now a clean 50/50 to measure whether the
+// author-history context helps. Not prereq-gated (the input is gathered for every
+// bot in createBotInput); defaultVariant "off" so historical rows resolve to the
+// no-context behaviour they actually had.
+const AUTHOR_HISTORY_TEST: ABTest = {
+  name: "author_history",
+  defaultVariant: "off",
+  variants: [
+    { variant: { name: "off", overrides: { author_history: false } }, weight: 50 },
+    { variant: { name: "on",  overrides: { author_history: true  } }, weight: 50 },
   ],
 };
 
@@ -341,18 +477,27 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_SEARCH_TEST,
   SIMPLE_BOT_WRITER_TEST,
   SIMPLE_BOT_VERIFIER_TEST,
-  SIMPLE_BOT_PROMPTS_TEST,
+  SIMPLE_BOT_ANTI_PEDANTIC_TEST,
+  SIMPLE_BOT_CLAIM_TEST,
   SIMPLE_BOT_WRITER_EXAMPLES_TEST,
   SIMPLE_BOT_POLITICAL_SOURCES_TEST,
+  SIMPLE_BOT_CORRECTION_EXTRACTION_TEST,
   NOTE_PREFILTER_TEST,
   CHEAP_BOT_JUDGE_MODEL_TEST,
   CHEAP_BOT_GEMINI_STEPS_TEST,
   CHEAP_BOT_NATIVE_SEARCH_TEST,
   VERIFIER_MEDIA_SOURCES_TEST,
   VERIFIER_CLAIM_BASED_TEST,
+  VERIFIER_CITATIONS_TEST,
+  VERIFIER_IMAGES_TEST,
   SEARCH_ANALYZER_TEST,
   SATIRE_DETECTOR_TEST,
   CHEAP_BOT_TEMPERATURE_TEST,
-  FEED_SIZE_TEST,
   EVAL_SUBMIT_THRESHOLD_TEST,
+  FEED_SIZE_TEST,
+  MISINFO_MONITORING_TEST,
+  MISINFO_TOPIC_TEST,
+  PANGRAM_MONITORING_TEST,
+  PANGRAM_NOTE_TEST,
+  AUTHOR_HISTORY_TEST,
 ];

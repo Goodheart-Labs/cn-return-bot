@@ -1,0 +1,207 @@
+[
+  {
+    "claimId": "080ec84a-f6b3-4fb3-878f-e088c1969e40",
+    "itemTitle": "Monthly Roundup #44: July 2026",
+    "itemUrl": "https://thezvi.substack.com/p/monthly-roundup-44-july-2026",
+    "contextUrl": "https://thezvi.substack.com/p/monthly-roundup-44-july-2026",
+    "claim": "The 2010s account for 17.9% of songs in karaoke playlists, according to Chartmetric data.",
+    "highlighted": "",
+    "paragraph": "",
+    "oldNote": "This karaoke-by-decade breakdown originates from Stat Significant's statistical analysis of karaoke playlists, not Chartmetric. Chartmetric has not published this data; Stat Significant found the same ranking (2000s, then 1990s, then 2010s).",
+    "oldSources": [
+      {
+        "url": "https://www.statsignificant.com/p/what-are-the-greatest-karaoke-songs",
+        "quote": "When we tabulate playlist selections by decade, we find that the 1990s and 2000s are heavily featured across our combined set of tracks.",
+        "explanation": "This demonstrates that Stat Significant performed the decade-based analysis of karaoke playlists mentioned in the note."
+      },
+      {
+        "url": "https://www.statsignificant.com/p/what-are-the-greatest-karaoke-songs",
+        "quote": "To curate the ultimate karaoke canon, I pulled track data from widely followed \"karaoke\" playlists on Spotify and Apple Music, then tallied how often each song and artist appeared across our combined catalog.",
+        "explanation": "The source explains its methodology for analyzing karaoke playlists, which matches the description in the note."
+      },
+      {
+        "url": "https://singa.com/blog/karaoke-statistics/",
+        "quote": "Stat significant also continues their research to discover which decades of music are most popular in karaoke, and discover that the Millenium era — 2000's — is the winning decade, where as 1990's and 2010's are following as second and third.",
+        "explanation": "This confirms the specific ranking (2000s, 1990s, then 2010s) and identifies Stat Significant as the researcher."
+      }
+    ],
+    "newOutcome": {
+      "kind": "no_note",
+      "outcome": "rejected",
+      "reason": "no_correction_needed"
+    }
+  },
+  {
+    "claimId": "fa6d0aa4-f3f9-4933-8b6c-7e6908dd3ed1",
+    "itemTitle": "Monthly Roundup #44: July 2026",
+    "itemUrl": "https://thezvi.substack.com/p/monthly-roundup-44-july-2026",
+    "contextUrl": "https://thezvi.substack.com/p/monthly-roundup-44-july-2026",
+    "claim": "The karaoke playlist data in the chart is sourced from Chartmetric.",
+    "highlighted": "",
+    "paragraph": "",
+    "oldNote": "This dataset was actually compiled by Stat Significant, which built it by pulling track data directly from \"karaoke\" playlists on Spotify and Apple Music, not from Chartmetric.",
+    "oldSources": [
+      {
+        "url": "https://www.statsignificant.com/p/what-are-the-greatest-karaoke-songs",
+        "quote": "To curate the ultimate karaoke canon, I pulled track data from widely followed \"karaoke\" playlists on Spotify and Apple Music, then tallied how often each song and artist appeared across our combined catalog.",
+        "explanation": "The author of the article explicitly describes their own data collection methodology, which involves pulling data directly from Spotify and Apple Music playlists rather than using a third-party service like Chartmetric."
+      }
+    ],
+    "newOutcome": {
+      "kind": "note",
+      "note": "This chart's data isn't from Chartmetric. It originates from an April 2025 Stat Significant essay, 'What Are the Greatest Karaoke Songs of All Time?', which tallied songs from Spotify and Apple Music karaoke playlists by decade. No evidence links Chartmetric to this chart.",
+      "sources": [
+        {
+          "url": "https://www.statsignificant.com/p/what-are-the-greatest-karaoke-songs",
+          "quote": "To curate the ultimate karaoke canon, I pulled track data from widely followed \"karaoke\" playlists on Spotify and Apple Music, then tallied how often each song and artist appeared across our combined catalog.",
+          "explanation": "The author explains their methodology for collecting the data used in the charts, which involved Spotify and Apple Music, not Chartmetric."
+        },
+        {
+          "url": "https://www.statsignificant.com/p/what-are-the-greatest-karaoke-songs",
+          "quote": "When we tabulate playlist selections by decade, we find that the 1990s and 2000s are heavily featured across our combined set of tracks.",
+          "explanation": "This confirms the source of the decade-based tabulation mentioned in the note."
+        },
+        {
+          "url": "https://singa.com/blog/karaoke-statistics/",
+          "quote": "Stat significant also continues their research to discover which decades of music are most popular in karaoke, and discover that the Millenium era — 2000's — is the winning decade, where as 1990's and 2010's are following as second and third.",
+          "explanation": "This external source attributes the specific decade-based karaoke research findings to Stat Significant."
+        }
+      ]
+    }
+  },
+  {
+    "claimId": "a930e6af-4b33-4883-bf57-6a0e11138c10",
+    "itemTitle": "Better Call Sol The Workhorse",
+    "itemUrl": "https://thezvi.substack.com/p/better-call-sol-the-workhorse",
+    "contextUrl": "https://thezvi.substack.com/p/better-call-sol-the-workhorse",
+    "claim": "Claude Mythos 5 scored 61.7% on the Toolathlon benchmark, matching another Claude variant, while GPT-5.6 Sol scored 58%.",
+    "highlighted": "",
+    "paragraph": "",
+    "oldNote": "Per OpenAI's published GPT-5.6 eval tables, the 61.7% Toolathlon score belongs to Claude Fable 5, not Mythos 5. Independent leaderboard data shows Claude Opus 4.8 scores 59.9%, not 61.7%, so no second Claude variant matches that score.",
+    "oldSources": [
+      {
+        "url": "https://www.marktechpost.com/2026/07/09/openai-releases-gpt-5-6-a-three-tier-model-family-with-programmatic-tool-calling/",
+        "quote": "Claude Fable 5 ... Toolathlon ... 61.7%",
+        "explanation": "This text confirms that the 61.7% score on the Toolathlon benchmark belongs to the Claude Fable 5 model."
+      },
+      {
+        "url": "https://www.marktechpost.com/2026/07/09/openai-releases-gpt-5-6-a-three-tier-model-family-with-programmatic-tool-calling/",
+        "quote": "Fable 5 leads on AA Intelligence Index v4.1, GDPval-AA v2, HealthBench Professional, and Toolathlon",
+        "explanation": "This reinforces that Fable 5 is the leader on the Toolathlon benchmark, supporting the claim that the post misattributed the score to Mythos 5."
+      },
+      {
+        "url": "https://llm-stats.com/benchmarks/toolathlon",
+        "quote": "Claude Opus 4.8 from Anthropic currently leads the Toolathlon leaderboard with a score of 0.599",
+        "explanation": "This supports the claim that Claude Opus 4.8 scores 59.9% (0.599), contradicting the post's claim that a second Claude variant matched the 61.7% score."
+      }
+    ],
+    "newOutcome": {
+      "kind": "no_note",
+      "outcome": "rejected",
+      "reason": "no_correction_needed"
+    }
+  },
+  {
+    "claimId": "692de593-376d-4262-9161-8de3315863e3",
+    "itemTitle": "Better Call Sol The Workhorse",
+    "itemUrl": "https://thezvi.substack.com/p/better-call-sol-the-workhorse",
+    "contextUrl": "https://thezvi.substack.com/p/better-call-sol-the-workhorse",
+    "claim": "The Artificial Analysis Intelligence Index ranks 572 models in total.",
+    "highlighted": "",
+    "paragraph": "",
+    "oldNote": "Artificial Analysis's own current models page states the Intelligence Index evaluates 145 models, not 572. Other snapshots have shown roughly 100–316 models depending on date, but none matches 572.",
+    "oldSources": [
+      {
+        "url": "https://artificialanalysis.ai/leaderboards/models",
+        "quote": "Comparison and ranking the performance of over 100 AI models (LLMs)",
+        "explanation": "This official leaderboard page indicates they rank \"over 100\" models, contradicting the claim of 572."
+      }
+    ],
+    "newOutcome": {
+      "kind": "note",
+      "note": "The \"572\" figure is the total models available in Artificial Analysis' model picker, not the number ranked on the Intelligence Index. Artificial Analysis' own comparison page says the index evaluated about 150 models; a third-party tracker puts it at roughly 165.",
+      "sources": [
+        {
+          "url": "https://benchlm.ai/benchmarks/artificialAnalysis",
+          "quote": "Claude Fable 5 (59.9%) and Kimi K3 (57.1%) among 165 tested models.",
+          "explanation": "Confirms the index ranks 165 models, not 572."
+        },
+        {
+          "url": "https://benchlm.ai/benchmarks/artificialAnalysis",
+          "quote": "165 models have been evaluated on Artificial Analysis Intelligence Index.",
+          "explanation": "Explicitly states the number of models evaluated on this specific index."
+        }
+      ]
+    }
+  },
+  {
+    "claimId": "7d1afad6-0dc4-4389-a6f7-3f056fb368f7",
+    "itemTitle": "AI #175: The Fable Continues",
+    "itemUrl": "https://thezvi.substack.com/p/ai-175-the-fable-continues",
+    "contextUrl": "https://thezvi.substack.com/p/ai-175-the-fable-continues",
+    "claim": "According to a slide from Exponential View citing Graetz & Michaels (2018), automation between 1980 and 2000 added approximately 0.37 percentage points per year to GDP growth.",
+    "highlighted": "",
+    "paragraph": "",
+    "oldNote": "Graetz & Michaels (2018) 'Robots at Work' analyzed panel data on industrial robots across 17 countries from 1993 to 2007, not 1980-2000 as the slide states.",
+    "oldSources": [
+      {
+        "url": "https://cepr.org/voxeu/columns/estimating-impact-robots-productivity-and-employment",
+        "quote": "Uniquely, our dataset includes a measure of the use of industrial robots employed in each industry, in each of these countries, and how it has changed from 1993-2007.",
+        "explanation": "This confirms that the study's primary dataset on robot use covers the years 1993 to 2007, directly contradicting the 1980-2000 range shown on the slide."
+      },
+      {
+        "url": "https://cepr.org/voxeu/columns/estimating-impact-robots-productivity-and-employment",
+        "quote": "Specifically, we match data on tasks performed by industrial robots today with data on similar tasks performed by US workers in 1980, before robots were used.",
+        "explanation": "The source clarifies that 1980 was used as a baseline for measuring tasks *before* robots were widely employed, not as the period for measuring their impact on GDP growth."
+      },
+      {
+        "url": "https://cepr.org/voxeu/columns/estimating-impact-robots-productivity-and-employment",
+        "quote": "We conservatively calculate that on average, the increased use of robots contributed about 0.37 percentage points to the annual GDP growth",
+        "explanation": "This confirms the 0.37 figure cited in the note originates from this specific research by Graetz and Michaels."
+      }
+    ],
+    "newOutcome": {
+      "kind": "note",
+      "note": "The 0.37 pp/yr GDP figure is correctly attributed to Graetz & Michaels (2018), but their study analyzed robot adoption across 17 countries and 14 industries from 1993 to 2007, not 1980-2000.",
+      "sources": [
+        {
+          "url": "https://www.brookings.edu/articles/robots-are-infiltrating-the-growth-statistics/",
+          "quote": "Graetz and Michaels employ new data from the International Federation of Robotics to analyze the use of industrial robots across 14 industries in 17 countries between 1993 and 2007.",
+          "explanation": "Confirms the study period was 1993-2007, not 1980-2000 as claimed in the post's slide."
+        },
+        {
+          "url": "https://www.brookings.edu/articles/robots-are-infiltrating-the-growth-statistics/",
+          "quote": "Overall, they conclude that the use of robots within manufacturing raised the annual growth of labor productivity and GDP by 0.36 and 0.37 percentage points, respectively.",
+          "explanation": "Confirms the 0.37 pp/yr GDP figure mentioned in the note."
+        }
+      ]
+    }
+  },
+  {
+    "claimId": "d83775c5-0b46-40ab-b099-461494f5e0d1",
+    "itemTitle": "Claude Sonnet 5 Is Not Frontier But Has Its Uses",
+    "itemUrl": "https://thezvi.substack.com/p/claude-sonnet-5-is-not-frontier-but",
+    "contextUrl": "https://thezvi.substack.com/p/claude-sonnet-5-is-not-frontier-but",
+    "claim": "Claude Mythos Preview achieved a 96.21% refusal rate for malicious requests in Claude Code evaluation, the highest of all models tested.",
+    "highlighted": "",
+    "paragraph": "",
+    "oldNote": "Mythos Preview's Claude Code malicious-request refusal rate is reported elsewhere as 96.72%, not 96.21%. It is still the highest among tested models, but the specific figure cited is inaccurate.",
+    "oldSources": [
+      {
+        "url": "https://www.authmind.com/blogs/when-a-lab-withholds-its-best-model-what-the-claude-mythos-system-card-signals-for-cybersecurity",
+        "quote": "Its refusal rate on malicious Claude Code requests reached 96.72%, compared to 80.94% for prior models.",
+        "explanation": "This directly supports the claim that the refusal rate is 96.72% rather than the 96.21% shown in the post."
+      },
+      {
+        "url": "https://www.authmind.com/blogs/when-a-lab-withholds-its-best-model-what-the-claude-mythos-system-card-signals-for-cybersecurity",
+        "quote": "Claude Mythos Preview became the first frontier model to complete a private cyber range end-to-end.",
+        "explanation": "This supports the claim that Mythos Preview represents the highest level of performance among tested models."
+      }
+    ],
+    "newOutcome": {
+      "kind": "no_note",
+      "outcome": "rejected",
+      "reason": "no_correction_needed"
+    }
+  }
+]

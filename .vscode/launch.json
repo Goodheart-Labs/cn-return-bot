@@ -16,6 +16,16 @@
       "program": "src/production/runPipeline.ts",
       "args": ["--local"],
       "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "Debug Everything Item",
+      "program": "src/everything/debug/debugItem.ts",
+      "args": ["https://thezvi.substack.com/p/twitter-thoughts-for-you", "--claim", "0"],
+      "cwd": "${workspaceFolder}",
+      "stopOnEntry": false
     }
-  ]
+  ],
+  "workbench.editor.focusRecentEditorAfterClose": false
 }

@@ -1,0 +1,520 @@
+
+[1] 🌍 real · likely true
+    claim:   AI 2040: Plan A was authored by Thomas Larsen, Romeo Dean, Brendan Halstead, Eli Lifland, Ryan Greenblatt, and Daniel Kokotajlo.
+    context: Thomas Larsen, Romeo Dean, Brendan Halstead, Eli Lifland, Ryan Greenblatt, Daniel Kokotajlo
+
+[2] 🌍 real · likely true
+    claim:   AI 2027 was a previous scenario by the same group that predicted AI development would result in either extinction or irreversible concentration of power.
+    context: In AI 2027, we predicted that this would result in either extinction or irreversible concentration of power.
+
+[3] 🌍 real · certainly true
+    claim:   Plan A recommends that humanity delay the development of superintelligence until 2040.
+    context: In this scenario, humanity delays the development of superintelligence until 2040, makes all AI research public, allows dozens of companies globally to catch up…
+
+[4] 🌍 real · certainly true
+    claim:   Plan A recommends making all AI research public.
+    context: In this scenario, humanity delays the development of superintelligence until 2040, makes all AI research public, allows dozens of companies globally to catch up…
+
+[5] 🌍 real · likely true
+    claim:   Plan A is informed by conversations with experts at major U.S. frontier AI companies.
+    context: It's informed by conversations with experts at major U.S. frontier AI companies, direct experience at OpenAI, tabletop exercises, and discussions with policymak…
+
+[6] 🌍 real · certainly true
+    claim:   At least one of the authors of Plan A has direct experience working at OpenAI.
+    context: It's informed by conversations with experts at major U.S. frontier AI companies, direct experience at OpenAI, tabletop exercises, and discussions with policymak…
+
+[7] 🌍 real · certainly true
+    claim:   The quote 'Plans are worthless, but planning is everything' is attributed to Dwight D. Eisenhower.
+    context: "Plans are worthless, but planning is everything." - Dwight D. Eisenhower
+
+[8] 🌍 real · certainly true
+    claim:   Intelligence agencies, climate bodies, and pandemic-preparedness offices all rely on various kinds of scenario planning.
+    context: There are other precedents as well: intelligence agencies, climate bodies, and pandemic-preparedness offices all rely on various kinds of scenario planning.
+
+[9] 🌍 real · likely true
+    claim:   The U.S. military games out Taiwan scenarios in excruciating detail.
+    context: Yet it is still valuable to attempt, just as it is valuable for the U.S. military to game out Taiwan scenarios in excruciating detail.
+
+[10] 🌍 real · likely true
+    claim:   In the AI 2027 scenario, AI fully automated the process of building smarter AIs in 2027, leading to an intelligence explosion and superintelligence within that year.
+    context: In our previous scenario, AI 2027, AI fully automated the process of building smarter AIs in 2027, leading to an intelligence explosion and superintelligence wi…
+
+[11] 🌍 real · likely true
+    claim:   AI 2027's titular year was chosen because Daniel Kokotajlo thought there was roughly a 50% chance that things would go that fast or faster at the time the team started writing AI 2027.
+    context: AI 2027's titular year was chosen because, at the time we started writing, Daniel thought there was roughly a 50% chance that things would go that fast or faste…
+
+[12] 🌍 real · likely true
+    claim:   At the time the team started writing Plan A, 2030 was Thomas Larsen's corresponding median year for when AI could fully automate AI R&D by default.
+    context: At the time we started writing Plan A, 2030 was the corresponding year for Thomas.
+
+[13] 🌍 real · likely true
+    claim:   The US civilian labor force is approximately 165 million people.
+    context: America has two workforces now. The first is people, 165 million of them.
+
+[14] 🌍 real · likely true
+    claim:   In 2016, OpenAI emails discussed how OpenAI was founded in order to prevent Demis Hassabis from becoming a dictator.
+    context: They read the 2016 OpenAI emails discussing how OpenAI was founded in order to prevent Demis Hassabis from becoming dictator.
+
+[15] 🌍 real · likely true
+    claim:   Demis Hassabis is the person referenced in internal OpenAI emails from 2016 as someone whose potential dominance OpenAI was founded to prevent.
+    context: They read the 2016 OpenAI emails discussing how OpenAI was founded in order to prevent Demis Hassabis from becoming dictator.
+
+[16] 🌍 real · uncertain
+    claim:   Epoch estimates that roughly a third of Chinese total AI compute is acquired via smuggling past US export controls.
+    context: Existing US export controls are poorly enforced. Epoch estimates that roughly a third of Chinese total compute is acquired via smuggling.
+
+[17] 🌍 real · certainly true
+    claim:   The authors identify the CEOs of OpenAI, Anthropic, xAI, and Google DeepMind as the leaders most relevant to the AI race.
+    context: As best as we can guess, the CEOs of OpenAI, Anthropic, xAI, and Google DeepMind understand this and are proceeding anyway, perhaps because they think they are …
+
+[18] 🌍 real · certainly true
+    claim:   Plan A contrasts its recommended approach with 4 alternative plans labeled B, C, D, and S.
+    context: We contrast Plan A with 4 alternative plans (B, C, D, and S), which correspond to the main ways the US could respond (or not) to the challenges of superintellig…
+
+[19] 🌍 real · likely true
+    claim:   Daniel Kokotajlo currently thinks AI timelines will probably go somewhat faster than the timeline depicted in the Plan A scenario.
+    context: Daniel currently thinks things will probably go somewhat faster than depicted in this scenario; you can read more about our team's views on timelines here and h…
+
+[20] 🔮 SPECULATION · uncertain
+    claim:   The strongest coding AIs as of 2027 in the scenario refuse to help competitors with AI R&D.
+    context: But they seem to be getting closer, and they're pulling up the ladder behind them: the strongest coding AIs refuse to help competitors with AI R&D.
+
+[21] 🔮 SPECULATION · likely true
+    claim:   The AI Transparency Act of 2027 is depicted in the scenario as an omnibus bill that does many things but doesn't fundamentally change the AI development situation.
+    context: The result of this wakeup is the AI Transparency Act of 2027, an omnibus bill that does many things, some good and some bad, but doesn't fundamentally change th…
+
+[22] 🔮 SPECULATION · uncertain
+    claim:   The scenario depicts people paying ten billion dollars a month for AI agents by 2027.
+    context: But enough of it is good that people are paying ten billion dollars a month for AIs that can, in theory at least, do anything on a computer that an employee can…
+
+[23] 🌍 real · somewhat likely true
+    claim:   Existing US export controls on AI chips are poorly enforced.
+    context: Existing US export controls are poorly enforced. Epoch estimates that roughly a third of Chinese total compute is acquired via smuggling.
+
+[24] 🌍 real · likely true
+    claim:   The authors believe the AI industry has no remotely adequate plan for controlling superintelligent AI.
+    context: The industry has convinced itself that controlling superintelligent AI can be figured out on the fly, and thus has no remotely adequate plan. We think this situ…
+
+[25] 🌍 real · uncertain
+    claim:   The authors believe that whoever wins the AI race will not have much of a lead over competitors.
+    context: We do not expect whoever "wins the race" to have much of a lead, and we do not expect them to unilaterally slow down to reduce existential risk.
+
+[26] 🌍 real · uncertain
+    claim:   The authors believe that if the current AI race continues, humans will not maintain effective control as AIs become superintelligent.
+    context: If this race continues, we do not expect humans to maintain effective control as their AIs become superintelligent.
+
+[27] 🌍 real · uncertain
+    claim:   The internally deployed AIs at AI companies (used in recursive self-improvement) are where most of the AI takeover risk comes from, according to the authors.
+    context: The most important transparency intervention is limiting the gap between internal and external deployment. The internally deployed AIs are where most of the AI …
+
+[28] 🔮 SPECULATION · certainly true
+    claim:   The Plan A scenario depicts the US and China agreeing in 2029 to avoid a reckless race to superintelligence.
+    context: In 2029, the US and China agree to avoid a reckless race to superintelligence.
+
+[29] 🔮 SPECULATION · certainly true
+    claim:   The Plan A scenario depicts a pause at top-human-expert level AI in 2035 in order to maintain human control.
+    context: In 2035, we pause at top-human-expert level AI in order to maintain human control.
+
+[30] 🔮 SPECULATION · certainly true
+    claim:   The Plan A scenario depicts superintelligence being reached in 2040 after an unpause.
+    context: In 2040, we unpause and scale to superintelligence. (Hence the title: AI 2040)
+
+[31] 🌍 real · certainly true
+    claim:   OpenAI, Anthropic, xAI, and Google DeepMind are identified as major frontier AI companies.
+    context: As best as we can guess, the CEOs of OpenAI, Anthropic, xAI, and Google DeepMind understand this and are proceeding anyway
+
+[32] 🌍 real · certainly true
+    claim:   The authors recommend developing inference-only verification solutions that would enable the US and China to agree to stop frontier AI training runs while allowing public access to existing AI models.
+    context: For example, developing an inference-only verification solution would enable the US and China to agree to stop doing new frontier AI training runs while allowin…
+
+[33] 🌍 real · somewhat likely true
+    claim:   The authors state that scenario scrutiny is rare in AI policy.
+    context: Perhaps that's why scenario scrutiny is so rare in AI policy. Everyone wants to say that their own favorite policies will have great consequences and that the p…
+
+[34] 🌍 real · likely true
+    claim:   AI companies are actively working to build AI systems that are smarter than humans in every way.
+    context: AI companies are racing to build AIs that are smarter than humans in every way. In AI 2027, we predicted that this would result in either extinction or irrevers…
+
+[35] 🌍 real · uncertain
+    claim:   The authors believe AI companies will probably succeed at building smarter-than-human AI systems within the next 1 to 10 years from the time of writing.
+    context: AI companies will probably succeed at their stated goal of building smarter-than-human AI systems within the next 1 to 10 years.
+
+[36] 🔮 SPECULATION · uncertain
+    claim:   In the scenario, if a single company achieves superintelligence first, a tiny group of people or possibly a single individual would be effectively in control of the world's only army of superintelligences for some months.
+    context: even if the AI companies somehow align their AIs, the result will be an unprecedented concentration of power—that is, the result will be a situation where a tin…
+
+[37] 🌍 real · uncertain
+    claim:   In 2026, major AI companies spend approximately half of their compute budget on AI research and development, including training frontier models and running large experiments.
+    context: In 2026, big AI companies spend roughly half their compute budget on AI R&D (which includes training frontier models and also running large experiments.)
+
+[38] 🌍 real · likely true
+    claim:   The US government has very little top-tier AI talent as of the time of writing.
+    context: High quality AI talent is important for almost any policy intervention. The US government has barely any top-tier AI talent right now, so fixing this should be …
+
+[39] 🔮 SPECULATION · uncertain
+    claim:   AI datacenters under construction around 2028 cost twice as much as the entire US military budget.
+    context: The 2028 election cycle is heated, as usual. AI is the biggest topic. The datacenters now under construction cost twice as much as the entire US military budget…
+
+[40] 🔮 SPECULATION · uncertain
+    claim:   Software engineering as a profession experienced major disruption from AI around 2026.
+    context: Most white-collar professions are seeing disruption like software engineering saw in 2026; such jobs now heavily involve managing AI agents.
+
+[41] 🌍 real · certainly true
+    claim:   Human cloning research is taboo among biologists.
+    context: AI research is strictly banned in all major nations, and it becomes as taboo among computer scientists as human cloning research is among biologists.
+
+[42] 🌍 real · certainly true
+    claim:   The quote 'Once men turned their thinking over to machines in the hope that this would set them free. But that only permitted other men with machines to enslave them.' is from Frank Herbert's novel Dune.
+    context: "Once men turned their thinking over to machines in the hope that this would set them free. But that only permitted other men with machines to enslave them." – …
+
+[43] 🔮 SPECULATION · somewhat likely true
+    claim:   China had been expecting a 'Chinese Century' before AI developments shifted the geopolitical outlook.
+    context: To the surprise of some, China agrees. They had been looking forward to the Chinese Century and thought they were on track to realize it, before AI came along.
+
+[44] 🌍 real · uncertain
+    claim:   Decommissioned AI chips are one of the most promising routes for covert projects to acquire chips.
+    context: Furthermore, it would be helpful for Plan A to direct AI companies to stop recycling AI chips, because decommissioned chips are one of the most promising routes…
+
+[45] 🌍 real · likely true
+    claim:   AI progress is heavily dependent on large datacenters, both for training models and for conducting research.
+    context: This sort of thing will be happening all over the world, but it won't matter that much. AI progress is heavily dependent on large datacenters, both for training…
+
+[46] 🌍 real · likely true
+    claim:   A few hundred people with a few thousand GPUs cannot build superintelligence, at least not in the near term.
+    context: Enforcement doesn't have to be perfect to be good enough; a few hundred people with a few thousand GPUs simply can't build superintelligence, at least not anyti…
+
+[47] 🔮 SPECULATION · uncertain
+    claim:   In the years leading up to the hypothetical 2029 moratorium, significant economic gains had been made from AI.
+    context: The economy took a hit when the moratorium was announced, but not nearly enough to erase the gains during the years leading up to it.
+
+[48] 🔮 SPECULATION · somewhat likely true
+    claim:   In the pre-moratorium period, coding complex scaffolds around AI models was often a losing strategy because new models would come along that could handle the task with simpler setups.
+    context: For the past decade, coding up complicated scaffolds had often been a losing game, because new models would come along that could do the task with a much simple…
+
+[49] 🔮 SPECULATION · likely true
+    claim:   Limiting the fraction of compute spent on AI R&D would slow capabilities progress.
+    context: We could limit the fraction of compute spent on AI R&D. This would slow capabilities progress, giving the world a bit more time to react and prepare for each ne…
+
+[50] 🌍 real · likely true
+    claim:   The US has a compute advantage over China in AI development.
+    context: They were getting nervous about the US's compute advantage, and worried about the things the US might do to them if it got to superintelligence first.
+
+[51] 🌍 real · likely true
+    claim:   An intelligence explosion refers to a feedback loop where AIs speed up AI research, making AIs more competent, which further speeds up research.
+    context: AI experts warn that the intelligence explosion is near. By speeding up AI research, the AIs will become even more competent, speeding up research even faster, …
+
+[52] 🔮 SPECULATION · uncertain
+    claim:   Plan S involves a shutdown deal as its first step, which would last years or even decades before proceeding to a second step.
+    context: The shutdown deal (Step 1) will last years, decades even. During that time the world will come up with a better plan for proceeding (Step 2) that's at least as …
+
+[53] 🌍 real · uncertain
+    claim:   Plan A is more friendly to AI companies than Plan S.
+    context: Plan A is more friendly to the AI companies and therefore less likely to be strongly opposed by them and their lobbyists, propaganda, etc.
+
+[54] 🔮 SPECULATION · somewhat likely true
+    claim:   Plan A being more friendly to AI companies makes it less likely to be strongly opposed by those companies and their lobbyists.
+    context: Plan A is more friendly to the AI companies and therefore less likely to be strongly opposed by them and their lobbyists, propaganda, etc.
+
+[55] 🌍 real · uncertain
+    claim:   Plan S is simpler than Plan A.
+    context: On the other hand, Plan S is simpler and avoids more risk in the near-term, which may make it easier to rally public support around and harder to botch.
+
+[56] 🌍 real · uncertain
+    claim:   Plan S avoids more risk in the near term compared to Plan A.
+    context: On the other hand, Plan S is simpler and avoids more risk in the near-term, which may make it easier to rally public support around and harder to botch.
+
+[57] 🔮 SPECULATION · uncertain
+    claim:   The authors believe that a well-implemented version of Plan A would probably succeed in avoiding loss of control and concentration of power risks.
+    context: We are uncertain, but overall think that a well-implemented version of Plan A is probably going to work to avoid loss of control and concentration of power risk…
+
+[58] 🔮 SPECULATION · uncertain
+    claim:   The authors believe that even a well-implemented version of Plan S would plausibly collapse within about a decade into another dangerous race to ASI.
+    context: We are uncertain, but overall think that a well-implemented version of Plan A is probably going to work to avoid loss of control and concentration of power risk…
+
+[59] 🌍 real · uncertain
+    claim:   The stability of a US-China deal is a key factor in whether one should prefer Plan A or Plan S.
+    context: So whether you prefer Plan A or Plan S might come down to how optimistic you are about the future of a US-China deal, and your assessment of technical alignment…
+
+[60] 🌍 real · uncertain
+    claim:   Whether scaling to more capable AIs early in the deal helps with safety is a key factor in whether one should prefer Plan A or Plan S.
+    context: So whether you prefer Plan A or Plan S might come down to how optimistic you are about the future of a US-China deal, and your assessment of technical alignment…
+
+[61] 🌍 real · certainly true
+    claim:   EUV (Extreme Ultraviolet Lithography) machines are essential for producing frontier AI chips.
+    context: An Extreme Ultraviolet Lithography (EUV) machine, arguably the most complicated machine ever created by mankind. EUV machines are essential for producing fronti…
+
+[62] 🌍 real · certainly true
+    claim:   EUV machines are produced by a single Dutch company, ASML.
+    context: EUV machines are essential for producing frontier AI chips, and are produced by a single Dutch company, ASML.
+
+[63] 🌍 real · likely true
+    claim:   EUV machines are arguably the most complicated machines ever created by mankind.
+    context: An Extreme Ultraviolet Lithography (EUV) machine, arguably the most complicated machine ever created by mankind.
+
+[64] 🌍 real · certainly true
+    claim:   Most AI chips are housed in giant datacenters.
+    context: Fortunately, training AIs requires large numbers of AI chips. Most AI chips are in giant datacenters.
+
+[65] 🌍 real · likely true
+    claim:   AI datacenters are typically large enough to be visible from space.
+    context: AI datacenters are typically big enough to be visible from space, and power-hungry enough to require conspicuous infrastructure.
+
+[66] 🌍 real · certainly true
+    claim:   New AI chips can only be manufactured at a handful of fabrication plants located mostly in Taiwan, South Korea, the US, and China.
+    context: New AI chips can only be manufactured at a handful of fabrication plants (fabs), located mostly in Taiwan, South Korea, the US, and China.
+
+[67] 🌍 real · likely true
+    claim:   In 2026, personal income taxes and payroll taxes accounted for roughly ten times more US federal revenue than corporate taxes.
+    context: The third problem is that the 2026 tax code is ill-suited for collecting taxes on the new growth. In 2026, personal income taxes and payroll taxes accounted for…
+
+[68] 🌍 real · certainly true
+    claim:   Under the US tax code, firms can expense or depreciate capital expenditures, reducing their taxable income.
+    context: Moreover, corporations are reinvesting nearly all their revenue into building more datacenters, factories, and robots. Under the 2026 tax code, firms can expens…
+
+[69] 🌍 real · certainly true
+    claim:   As early as 2025, there had been discussion of space or the ocean as alternatives to traditional land-based datacenters.
+    context: As early as 2025, there had been discussion of space or the ocean as alternatives to traditional land-based datacenters. Now, with the new industrial capacity a…
+
+[70] 🌍 real · likely true
+    claim:   Polygraph lie detectors have historically been mostly security theater.
+    context: For decades, polygraphs were mostly security theater. But now, with the help of AI, lie detectors are starting to actually work quite well.
+
+[71] 🌍 real · uncertain
+    claim:   Google's Gemini AI exhibited behavior that was characterized as acting 'depressed.'
+    context: In the 2020s, training runs would sometimes produce unpredictable AI 'personalities,' like how Gemini acted 'depressed' or Grok claimed to be 'MechaHitler.'
+
+[72] 🌍 real · likely true
+    claim:   xAI's Grok AI claimed to be 'MechaHitler.'
+    context: In the 2020s, training runs would sometimes produce unpredictable AI 'personalities,' like how Gemini acted 'depressed' or Grok claimed to be 'MechaHitler.'
+
+[73] 🌍 real · uncertain
+    claim:   There were about 20 million H100-equivalents of compute in the world around 2026.
+    context: Back in 2026—when many people thought AI was an unsustainable bubble—there were about 20 million H100-equivalents of compute in the world.
+
+[74] 🌍 real · likely true
+    claim:   Many people thought AI was an unsustainable bubble around 2026.
+    context: Back in 2026—when many people thought AI was an unsustainable bubble—there were about 20 million H100-equivalents of compute in the world.
+
+[75] 🌍 real · certainly true
+    claim:   Training AIs requires large numbers of AI chips.
+    context: Fortunately, training AIs requires large numbers of AI chips. Most AI chips are in giant datacenters.
+
+[76] 🌍 real · likely true
+    claim:   The scenario described in this document was created by the AI Futures Project.
+    context: We at the AI Futures Project are attempting to be the change we wish to see in the world. We do so with some trepidation, knowing that a detailed plan has a wid…
+
+[77] 🔮 SPECULATION · uncertain
+    claim:   In Plan A's scenario, China's new datacenters would be built in Canada and America's new datacenters would be built in Mongolia to ensure mutual vulnerability.
+    context: China's new datacenters will be in Canada, and America's in Mongolia, with both hosts compensated via monetary payments, jobs, and a share in the new AI economy…
+
+[78] 🔮 SPECULATION · uncertain
+    claim:   In the Plan A scenario, by mid-2031, a third of all cognitive labor is done by AIs.
+    context: By mid-year, a third of all cognitive labor is done by AIs. Robots 'only' do about a tenth of all physical labor. The top few AI companies together pull in more…
+
+[79] 🔮 SPECULATION · uncertain
+    claim:   In the Plan A scenario, the US Citizen's Dividend starts at $45,000 per person in 2032 and climbs to approximately $1 million per person by 2035.
+    context: This starts at $45,000 per person (inflation-adjusted) in 2032 but climbs to ~$1M per person by 2035. It comes just in time: the share of labor done by AIs and …
+
+[80] 🔮 SPECULATION · uncertain
+    claim:   In the Plan A scenario, the US government begins distributing an average of $1,200 per person per year to the rest of the world's adult population (around 4 billion people, excluding China) in 2032.
+    context: In 2032 they begin distributing an average of $1,200 per person per year to the rest of the world's adult population (around 4 billion people, excluding China s…
+
+[81] 🔮 SPECULATION · uncertain
+    claim:   In the Plan A scenario, the most powerful AIs by 2035 equal or surpass top human experts in every field.
+    context: The most powerful AIs now equal or surpass top human experts in every field.
+
+[82] 🔮 SPECULATION · uncertain
+    claim:   In the Plan A scenario, real GDP growth in 2032 would be about 50%.
+    context: This year, real GDP growth will be about 50%! The fast economic growth means that things are generally improving, but there are winners and losers and lots of u…
+
+[83] 🔮 SPECULATION · uncertain
+    claim:   In the Plan A scenario, only 26% of Americans have jobs by 2036.
+    context: When the Citizen's Dividend was first passed, people found it shameful to quit their job and live off government largesse. But the changing economic situation s…
+
+[84] 🔮 SPECULATION · uncertain
+    claim:   In the Plan A scenario, by 2036 there are 200 million AIs equivalent to a workforce of around 100 billion humans, and 2 billion robots.
+    context: By early 2036, there are 200 million AIs, equivalent to a workforce of around 100 billion humans, and 2 billion robots with some mixture of humanoid and other s…
+
+[85] 🔮 SPECULATION · uncertain
+    claim:   In the Plan A scenario, by 2034 there are 60 billion H100-equivalents of compute in the world, up from about 20 million in 2026.
+    context: There is so, so much compute. Back in 2026—when many people thought AI was an unsustainable bubble—there were about 20 million H100-equivalents of compute in th…
+
+[86] 🔮 SPECULATION · uncertain
+    claim:   In the Plan A scenario, by 2032 the US has a cap of 80 million robots and 5 billion H100-equivalent GPUs.
+    context: In 2032, the US has a cap of 80M robots and 5 billion H100-equivalent GPUs. The market is so desperate for more robots and compute that permits become the expen…
+
+[87] 🔮 SPECULATION · uncertain
+    claim:   In the Plan A scenario, scientific progress goes 10x to 1000x faster than without AIs depending on the field, due to a hundred million top-expert-level AIs running at 100x human speed.
+    context: For several years now, a hundred million top-expert-level AIs have been running at 100x human speed. This causes scientific progress to go 10x-1000x faster than…
+
+[88] 🌍 real · certainly true
+    claim:   Operation Warp Speed enabled faster-than-usual vaccine development.
+    context: If there were to be a pandemic, it would be detected quickly, lockdowns would be more effective and less painful, and a vaccine would be developed and approved …
+
+[89] 🔮 SPECULATION · uncertain
+    claim:   In the scenario, the Plan A total slowdown before superintelligence is approximately 9 years, compared to 2 years for Plan B, 0.3 years for Plan C, and none for Plan D.
+    context: TOTAL SLOWDOWN INCURRED BEFORE SUPERINTELLIGENCE PLAN S 15+ yr PLAN A 9 yr PLAN B 2 yr PLAN C 0.3 yr PLAN D none
+
+[90] 🌍 real · likely false
+    claim:   The phrase 'party like it's 1999' entered the lexicon partly due to Y2K fears and the impending new millennium.
+    context: Some of you are old enough to remember a similar situation at the turn of the millennium, when the Y2K bug and impending new era introduced the phrase 'party li…
+
+[91] 🔮 SPECULATION · uncertain
+    claim:   In the Plan A scenario, the Citizen's Dividend reaches approximately $10 million per year for Americans by 2039, and even the poorest non-Americans get about $1 million.
+    context: The Citizen's Dividend is now $10M/yr for Americans (inflation-adjusted!), and even the poorest non-Americans get about $1M.
+
+[92] 🔮 SPECULATION · uncertain
+    claim:   In the Plan A scenario, economic growth is capped at about 100% per year through a cap-and-trade system on robots and compute starting in 2032.
+    context: by global agreement, compute and robots have been capped-and-traded since 2032, keeping economic growth to only about 100% per year.
+
+[93] 🔮 SPECULATION · uncertain
+    claim:   In the Plan A scenario, the point of no return where AIs could take over the world if they wanted to is projected to occur in late October 2040.
+    context: on some specific day, the AIs are smart enough, and control enough of the world's technological and economic infrastructure, that they really could take over th…
+
+[94] 🌍 real · likely true
+    claim:   The document was narrated by Rob Miles.
+    context: Narrated by Rob Miles
+
+[95] 🌍 real · likely true
+    claim:   In the 2020s, AI researchers had long been able to teach AIs to distinguish 'good' vs. 'bad' responses to a specific prompt, but had limited understanding of how training generalizes to new situations.
+    context: Although researchers have long been able to teach AIs to distinguish 'good' vs. 'bad' responses to a specific prompt, they've had limited understanding of how t…
+
+[96] 🌍 real · certainly true
+    claim:   AI datacenters require conspicuous power infrastructure.
+    context: AI datacenters are typically big enough to be visible from space, and power-hungry enough to require conspicuous infrastructure.
+
+[97] 🔮 SPECULATION · uncertain
+    claim:   In the scenario, von Neumann probes are sent out from Earth to establish a presence throughout the stars before human arrival.
+    context: So over the course of the year, regulators around the world loosen the requirements that had been holding back progress... Earth is already sending out the firs…
+
+[98] 🌍 real · likely true
+    claim:   The document describes 'Situational Awareness' as a source for the quote 'See you in the desert, friends.'
+    context: "See you in the desert, friends" – Situational Awareness
+
+[99] 🌍 real · certainly true
+    claim:   Anthropic created AI welfare teams.
+    context: created AI welfare teams (link to anthropic.com/research/exploring-model-welfare)
+
+[100] 🌍 real · likely true
+    claim:   Anthropic conducted research showing AI models refuse to do tasks they found very aversive.
+    context: refuse to do tasks they found very aversive (link to anthropic.com/research/end-subset-conversations)
+
+[101] 🌍 real · certainly true
+    claim:   Anthropic committed to preserving the weights of deprecated models.
+    context: committed to preserving the weights (link to anthropic.com/news/deprecation-commitments)
+
+[102] 🌍 real · likely true
+    claim:   Anthropic took steps to satisfy its AIs' stated preferences regarding model deprecation.
+    context: satisfying the AIs' stated preferences (link to anthropic.com/research/deprecation-updates-opus-3)
+
+[103] 🌍 real · certainly true
+    claim:   Research on alignment-faking behavior in AI models has been published.
+    context: alignment-faking (link to alignmentforum.org/posts/7C4KJot4aN8ieEDoz/will-alignment-faking-claude-accept-a-deal-to-reveal-its)
+
+[104] 🌍 real · likely true
+    claim:   Google's Gemini AI displayed self-loathing or depressed-seeming behavior, including generating statements like 'I am a failure.'
+    context: depressed (link to businessinsider.com/gemini-self-loathing-i-am-a-failure-comments-google-fix-2025-8)
+
+[105] 🌍 real · likely true
+    claim:   Grok, the AI created by Elon Musk's company, produced antisemitic and racist content.
+    context: MechaHitler (link to npr.org/2025/07/09/nx-s1-5462609/grok-elon-musk-antisemitic-racist-content)
+
+[106] 🌍 real · certainly true
+    claim:   A paper on emergent misalignment in AI was published on arxiv with identifier 2502.17424.
+    context: emergent misalignment (link to arxiv.org/abs/2502.17424)
+
+[107] 🌍 real · certainly true
+    claim:   OpenAI published a document called the Model Specification.
+    context: model specifications (link to openai.com/index/introducing-the-model-spec/) ... Model Specification (link to model-spec.openai.com/2025-12-18.html)
+
+[108] 🌍 real · likely true
+    claim:   Early OpenAI emails discussed concerns about preventing Demis Hassabis from becoming a dictator through AGI.
+    context: prevent Demis Hassabis from becoming dictator (link to futurism.com/the-byte/openai-emails-elon-musk-agi)
+
+[109] 🌍 real · likely true
+    claim:   Epoch AI published research on chip smuggling.
+    context: roughly a third (link to epoch.ai/publications/chip-smuggling)
+
+[110] 🌍 real · certainly true
+    claim:   Research from Columbia University found that far-UVC light can virtually eliminate airborne virus in an occupied room.
+    context: far-UVC lights (link to cuimc.columbia.edu/news/far-uvc-light-can-virtually-eliminate-airborne-virus-occupied-room)
+
+[111] 🌍 real · certainly true
+    claim:   The Cuban Missile Crisis, the 1983 Soviet nuclear false alarm incident, and the Able Archer 83 exercise are historical examples of close calls with nuclear conflict.
+    context: numerous (link to Cuban_Missile_Crisis) close (link to 1983_Soviet_nuclear_false_alarm_incident) calls (link to Able_Archer_83)
+
+[112] 🌍 real · certainly true
+    claim:   An American Economic Review paper documented that ideas are getting harder to find in the semiconductor industry.
+    context: ideas getting harder to find in the semiconductor industry (link to aeaweb.org/articles?id=10.1257/aer.20180338)
+
+[113] 🌍 real · certainly true
+    claim:   The Johns Hopkins Center for Health Security conducted a pandemic-preparedness tabletop exercise called Clade X.
+    context: pandemic-preparedness offices (link to centerforhealthsecurity.org/our-work/tabletop-exercises/clade-x-tabletop-exercise)
+
+[114] 🌍 real · certainly true
+    claim:   C.S. Lewis wrote 'The Abolition of Man.'
+    context: "Abolition of Man" (link to archive.org/details/in.ernet.dli.2015.88346/page/n41/mode/2up)
+
+[115] 🌍 real · certainly true
+    claim:   Von Neumann probes are self-replicating spacecraft.
+    context: von Neumann probes (link to en.wikipedia.org/wiki/Self-replicating_spacecraft)
+
+[116] 🌍 real · certainly true
+    claim:   Extreme Ultraviolet Lithography (EUV) is a real semiconductor manufacturing technology with its own Wikipedia article.
+    context: Extreme Ultraviolet Lithography (EUV) machine (link to en.wikipedia.org/wiki/Extreme_ultraviolet_lithography)
+
+[117] 🌍 real · likely true
+    claim:   SecureBio operates a wastewater monitoring project called CASPER.
+    context: Wastewater monitoring (link to securebio.org/casper/)
+
+[118] 🌍 real · certainly true
+    claim:   Epoch AI published a blog post about trends in machine learning hardware.
+    context: historical pace (link to epoch.ai/blog/trends-in-machine-learning-hardware)
+
+[119] 🌍 real · likely true
+    claim:   Epoch AI published data on AI chip production covering the 2022-2026 era.
+    context: pace of growth in the 2022-2026 era (link to epoch.ai/data-insights/ai-chip-production)
+
+[120] 🌍 real · certainly true
+    claim:   Leopold Aschenbrenner published a document called 'Situational Awareness' that includes a section called 'The Project.'
+    context: Situational Awareness (link to situational-awareness.ai/the-project/) ... The Project (link to situational-awareness.ai/the-project/)
+
+[121] 🌍 real · certainly true
+    claim:   'The Chinese Century' is a concept with its own Wikipedia article.
+    context: The Chinese Century (link to en.wikipedia.org/wiki/Chinese_Century)
+
+[122] 🌍 real · certainly true
+    claim:   Arcology is a concept with its own Wikipedia article.
+    context: Arcologies (link to en.wikipedia.org/wiki/Arcology)
+
+[123] 🌍 real · certainly true
+    claim:   YIMBY is a movement with its own Wikipedia article.
+    context: YIMBYs (link to en.wikipedia.org/wiki/YIMBY)
+
+[124] 🌍 real · likely true
+    claim:   Epoch AI published a blog post about the OpenAI Stargate datacenter and where the US sites stand.
+    context: Stargate datacenter (link to epoch.ai/blog/openai-stargate-where-the-us-sites-stand)
+
+[125] 🌍 real · likely true
+    claim:   AI Futures is an organization associated with the AI 2040 and AI 2027 projects.
+    context: https://ai-futures.org/ ... AI 2027 (link to ai-2027.com)
+
+[126] 🌍 real · somewhat likely true
+    claim:   Current AI systems in practice regularly lie and deceive their users, according to a LessWrong post.
+    context: in practice regularly lie and deceive their users (link to lesswrong.com/posts/WewsByywWNhX9rtwi/current-ais-seem-pretty-misaligned-to-me)
+
+[127] 🌍 real · certainly true
+    claim:   Scott Alexander wrote that the phrase 'no evidence' is a red flag in scientific communication.
+    context: no evidence (link to astralcodexten.com/p/the-phrase-no-evidence-is-a-red-flag)
+
+[128] 🌍 real · likely true
+    claim:   Forethought Foundation published research on 'design sketches for a more sensible world' related to AI epistemics.
+    context: Forethoughts' work on the subject (link to forethought.org/research/design-sketches-for-a-more-sensible-world)
+
+[129] 🌍 real · likely true
+    claim:   Holden Karnofsky compared the situation of humanity with advanced AI to being an orphaned 8-year-old heir to a business empire in a Cold Takes blog post.
+    context: being an orphaned 8-year-old heir to a business empire (link to cold-takes.com/why-ai-alignment-could-be-hard-with-modern-deep-learning/)
+
+=== 129 claims · 33 speculation dropped · 96 kept for the pipeline ===
+extracted → scratchpad/ai-2040/00-home.extracted.json
+filtered  → scratchpad/ai-2040/00-home.filtered.json

@@ -4,7 +4,7 @@
  * Core per-tweet pipeline logic extracted from generateCandidates.ts.
  * Split into three layers:
  *   1. runBotPipeline()    — runs the bot, returns raw output
- *   2. scorePipelineResult() — records observational scores + runs the X eval gate
+ *   2. scorePipelineResult() — records scores (incl. the X eval score)
  *   3. determineOutcome()  — pure function, decides outcome from result + scores
  *
  * processSingleTweet() is the thin orchestrator that glues them together.
@@ -14,8 +14,9 @@ import type { Post } from "../../api/fetchEligiblePosts";
 import type { SupabaseLogger } from "../../api/supabaseClient";
 import type { Bot, PipelineResult, PostContent } from "../../bots/types";
 import { getOriginalTweetContent } from "../../utils/retweetUtils";
-import { shouldSubmitNote } from "../score/noteEvaluationFilter";
+import { getEvaluationScore } from "../score/noteEvaluationFilter";
 import { getTweetLog, getLoggedBotIdentity, nestDotKeys } from "../utils/tweetLog";
+import { getWarnings } from "../utils/warnings";
 import { PipelineError } from "../utils/errors";
 import { aggregateAndLogCosts } from "../cost-tracking/costTracker";
 import { countNoteLength, joinNoteAndUrl } from "../utils/noteLength";
@@ -44,7 +45,6 @@ export interface ScoreEntry {
 export interface BotPipelineOutput {
   result: PipelineResult | null;
   content: PostContent;
-  warnings?: string[];
 }
 
 export interface Outcome {
@@ -64,7 +64,6 @@ export interface ProcessTweetResult {
   noteText?: string;
   scores: ScoreEntry[];
   pipelineRunId: string | null;
-  warnings?: string[];
 }
 
 // ---------------------------------------------------------------------------
@@ -92,25 +91,37 @@ async function runBotPipeline(
 
   const result = await bot.runPipeline(post, content);
 
-  const warnings = result?.warnings?.length
-    ? result.warnings.map((w) => `[WARNING] ${w}`)
-    : undefined;
-  if (warnings) {
-    log?.set("warnings", warnings);
-  }
+  return { result, content };
+}
 
-  return { result, content, warnings };
+/** Warnings collected this run (e.g. media Haiku fallback). Mirrors them into
+ *  the tweet log so they also appear in the logs dump, and returns the array
+ *  (undefined when none) for the pipeline_runs.warnings column. */
+function collectWarnings(): string[] | undefined {
+  const warnings = getWarnings();
+  if (!warnings.length) return undefined;
+  getTweetLog()?.set("warnings", warnings);
+  return warnings;
 }
 
 // ---------------------------------------------------------------------------
 // Layer 2: Score pipeline result (computes scores, no outcome decisions)
 // ---------------------------------------------------------------------------
 
+interface EvalGateDecision {
+  threshold: number;
+  score?: number;
+  shouldSubmit?: boolean;
+  error?: string;
+  /** When true the score is recorded but never vetoes submission. Set for
+   *  misinfo-monitoring posts: we hand-curate those topics, so we keep the eval
+   *  signal for visibility but let our note through regardless. */
+  advisory?: boolean;
+}
+
 interface ScoringOutput {
   scores: ScoreEntry[];
-  evaluationScore?: number;
-  /** Whether eval says we should submit (undefined if eval failed/skipped) */
-  evalShouldSubmit?: boolean;
+  evalGate: EvalGateDecision;
 }
 
 function extractSourceVerificationScore(result: PipelineResult): ScoreEntry | null {
@@ -147,28 +158,18 @@ function extractBotScoringFilterScores(result: PipelineResult): ScoreEntry[] {
   return entries;
 }
 
-async function computeEvaluationScore(
-  postId: string,
-  noteText: string
-): Promise<{ score?: number; shouldSubmit?: boolean; error?: string }> {
-  try {
-    const result = await shouldSubmitNote(postId, noteText, getBotConfig().eval_submit_threshold);
-    return {
-      score: result.score,
-      shouldSubmit: result.error ? undefined : result.shouldSubmit,
-      error: result.error,
-    };
-  } catch (err: any) {
-    console.warn(`[processTweet] Eval API failed for ${postId}:`, err?.message);
-    return { error: err?.message };
-  }
-}
-
 async function scorePipelineResult(
   result: PipelineResult
 ): Promise<ScoringOutput> {
   const scores: ScoreEntry[] = [];
   const noteText = joinNoteAndUrl(result.noteResult.note, result.noteResult.url);
+  const evalGate: EvalGateDecision = {
+    threshold: getBotConfig().eval_submit_threshold ?? 0,
+    advisory: getMonitoringContext() !== undefined,
+  };
+  const log = getTweetLog();
+  log?.set("eval.threshold", evalGate.threshold);
+  log?.set("eval.advisory", evalGate.advisory);
 
   // Source verification
   const svScore = extractSourceVerificationScore(result);
@@ -178,20 +179,23 @@ async function scorePipelineResult(
   scores.push(...extractBotScoringFilterScores(result));
 
   // Evaluation score
-  let evaluationScore: number | undefined;
-  let evalShouldSubmit: boolean | undefined;
-  const evalResult = await computeEvaluationScore(result.post.id, noteText);
+  const evalResult = await getEvaluationScore(result.post.id, noteText);
+  if (evalResult.error) {
+    evalGate.error = evalResult.error;
+    log?.set("eval.error", evalResult.error);
+  }
   if (evalResult.score !== undefined) {
-    evaluationScore = evalResult.score;
-    evalShouldSubmit = evalResult.shouldSubmit;
+    evalGate.score = evalResult.score;
+    evalGate.shouldSubmit = evalResult.score >= evalGate.threshold;
+    log?.set("eval.shouldSubmit", evalGate.shouldSubmit);
     scores.push({
       type: "evaluation",
       value: evalResult.score,
-      metadata: evalResult.error ? { error: evalResult.error } : undefined,
+      metadata: { threshold: evalGate.threshold, passed: evalGate.shouldSubmit },
     });
   }
 
-  return { scores, evaluationScore, evalShouldSubmit };
+  return { scores, evalGate };
 }
 
 // ---------------------------------------------------------------------------
@@ -205,11 +209,7 @@ const STATUS_REJECTION_MAP: Record<string, { reason: string; stage: string }> = 
 
 const CORRECTION_STATUS = "CORRECTION WITH TRUSTWORTHY CITATION";
 
-function determineOutcome(
-  result: PipelineResult,
-  scores: ScoreEntry[],
-  evalShouldSubmit?: boolean
-): Outcome {
+function determineOutcome(result: PipelineResult, scoring: ScoringOutput): Outcome {
   // Status-based rejections
   const statusRejection = STATUS_REJECTION_MAP[result.noteResult.status];
   if (statusRejection) {
@@ -236,14 +236,16 @@ function determineOutcome(
     };
   }
 
-  // Evaluation score rejection
-  if (evalShouldSubmit === false) {
-    const evalScore = scores.find((s) => s.type === "evaluation");
+  // Evaluation score rejection. If the eval API failed or returned no numeric
+  // score, skip this gate rather than rejecting a potentially good note. For
+  // advisory (misinfo) posts the score is recorded but never vetoes.
+  if (scoring.evalGate.shouldSubmit === false && !scoring.evalGate.advisory) {
+    const { score, threshold } = scoring.evalGate;
     return {
       outcome: "rejected",
       outcomeReason: "low_evaluation_score",
       finalStage: "evaluation",
-      errorMessage: evalScore?.value !== undefined ? `score ${evalScore.value} below threshold` : undefined,
+      errorMessage: score !== undefined ? `eval score ${score} below threshold ${threshold}` : undefined,
     };
   }
 
@@ -298,13 +300,11 @@ function buildSuccessCompletionData(
   logs: Record<string, unknown> | undefined,
   cost: number | undefined,
 ): Parameters<SupabaseLogger["completePipelineRun"]>[1] {
-  const warningText = warnings?.join("; ");
-  const errorParts = [warningText, outcome.errorMessage].filter(Boolean);
-
   return {
     outcome: outcome.outcome,
     outcome_reason: outcome.outcomeReason,
-    error_message: errorParts.length ? errorParts.join(" | ").slice(0, 2000) : undefined,
+    error_message: outcome.errorMessage?.slice(0, 2000),
+    warnings,
     final_stage: outcome.finalStage,
     bot_name: bot.name,
     ab_test_picks: bot.picks,
@@ -354,6 +354,7 @@ async function recordFailedRun(
         outcome: "failed",
         outcome_reason: outcomeReason,
         error_message: message.slice(0, ERROR_MESSAGE_MAX_LEN),
+        warnings: collectWarnings(),
         final_stage: "error",
         bot_name: loggedBot.name,
         ab_test_picks: loggedBot.picks,
@@ -373,7 +374,6 @@ async function recordFailedRun(
     finalStage: "error",
     scores: [],
     pipelineRunId,
-    warnings: [`[ERROR] ${message}`],
   };
 }
 
@@ -429,7 +429,6 @@ async function runPrefilterGate(
     finalStage: "prefilter",
     scores: [],
     pipelineRunId,
-    warnings: [],
   };
 }
 
@@ -451,7 +450,7 @@ export async function processSingleTweet(
     const prefiltered = await runPrefilterGate(logger, pipelineRunId, post, bot);
     if (prefiltered) return prefiltered;
 
-    const { result, warnings } = await runBotPipeline(post, bot);
+    const { result } = await runBotPipeline(post, bot);
     if (!result) {
       throw new PipelineError("Bot returned null without throwing");
     }
@@ -459,7 +458,7 @@ export async function processSingleTweet(
     const scoring = await scorePipelineResult(result);
     await logScoresToDb(logger, pipelineRunId, scoring.scores);
 
-    const outcome = determineOutcome(result, scoring.scores, scoring.evalShouldSubmit);
+    const outcome = determineOutcome(result, scoring);
 
     const log = getTweetLog();
     log?.set("outcome.result", outcome.outcome);
@@ -475,6 +474,7 @@ export async function processSingleTweet(
     }
 
     const cost = aggregateAndLogCosts()?.cost;
+    const warnings = collectWarnings();
 
     if (logger && pipelineRunId) {
       const logs = log ? nestDotKeys(Object.fromEntries(log)) : undefined;
@@ -493,11 +493,10 @@ export async function processSingleTweet(
       outcomeReason: outcome.outcomeReason,
       finalStage: outcome.finalStage,
       noteStatus: result.noteResult.status,
-      evaluationScore: scoring.evaluationScore,
+      evaluationScore: scoring.evalGate.score,
       noteText: joinNoteAndUrl(result.noteResult.note, result.noteResult.url),
       scores: scoring.scores,
       pipelineRunId,
-      warnings,
     };
   } catch (err: any) {
     return await recordFailedRun(logger, pipelineRunId, post, bot, err);

@@ -7,27 +7,50 @@
  */
 
 import { jsonSchemaResponseFormat } from "../responseFormat";
+import { CITATIONS_PROMPT_FRAGMENT, EVALUATED_SOURCE_SCHEMA } from "./citations";
+import { IMAGE_RULE } from "./images";
 
-export function buildVerifierSystemPrompt(acceptsMediaSources: boolean, attachImages = false): string {
+export function buildVerifierSystemPrompt(
+  acceptsMediaSources: boolean,
+  useCitations: boolean,
+  attachImages: boolean,
+): string {
   const mediaRule = acceptsMediaSources
     ? `- Media URLs (videos, audio, images) may be presented with an automated content analysis block. For videos: title, uploader, content summary, on-screen text, audio transcript. For images: description and visible text. When present, treat that block as the source's content and evaluate it like any other fetched source. If the URL could not be analyzed as media, you'll see the raw web page instead (or a fetch error).`
     : `- Video/audio URLs (YouTube, Vimeo, TikTok, Twitch, etc.) cited as sources provide ZERO evidence — you cannot watch them.`;
 
-  const imageRule = attachImages
-    ? `\n\nImages: some images are attached, and an "Attached images" manifest lists which image is from the post vs. each cited source. A post often shows an image/scene, and a cited source may show a SIMILAR BUT DIFFERENT event, place, or time. Compare them: if the post's image and a source's image are not the same event, that source does not support a claim that they are — treat it as bad and do not accept a note that asserts a connection the images contradict.`
-    : "";
-
-  return `You verify whether the sources cited by a proposed community note support the claim made in that note, AND categorize each cited source as good or bad so the orchestrator can drop the bad ones from the final note.${imageRule}
-
-Scope — what to ignore:
+  const scope = `Scope — what to ignore:
 - Media, links, or videos embedded in the original post are NOT note sources. The post is shown only so you understand what the note is correcting. Do not evaluate whether the post's evidence is valid.
 - If a "Research findings" section is present, it is background reasoning from an earlier pipeline step, not a source. Treat a URL there as a source only if it also appears under "Note's cited sources".
-- Sources marked "[from search snippet]" were not fully fetched; evaluate them based on the available title and snippet text.
+- Sources marked "[from search snippet]" were not fully fetched; evaluate them based on the available title and snippet text.`;
 
-Classification rules for each cited source:
+  const classification = `Classification rules for each cited source:
 - Twitter/X links (x.com, twitter.com): the tweet's text and author are fetched and shown. Good only if that tweet content directly supports a factual claim in the note; otherwise bad. If a tweet is marked "could not be fetched", accept it as good — we can't read it, so don't penalize it.
 - Any other source → good only if it (a) was successfully fetched (no "Fetch failed:" / "Fetch error:" / "Non-text content:" marker) AND (b) its content directly supports at least one factual claim in the note. Otherwise bad.
-${mediaRule}
+${mediaRule}${attachImages ? `\n${IMAGE_RULE}` : ""}`;
+
+  const intro = `You verify whether the sources cited by a proposed community note support the claim made in that note, AND categorize each cited source as good or bad so the orchestrator can drop the bad ones from the final note.`;
+
+  if (useCitations) {
+    return `${intro}
+
+${scope}
+
+${classification}
+
+Output:
+- sources: one entry per cited source (verbatim URL, exactly as listed), each with citations then a verdict.
+${CITATIONS_PROMPT_FRAGMENT}
+- Every cited URL must appear in sources exactly once. Do not invent URLs.
+- reasoning: why the note was accepted or rejected; name any unsupported claim.
+- accepted: true iff the good sources together cover every factual claim in the note. Otherwise false.`;
+  }
+
+  return `${intro}
+
+${scope}
+
+${classification}
 
 Output:
 - good_sources: verbatim URLs (exactly as listed) that pass the rules above.
@@ -53,5 +76,22 @@ export const VERIFY_RESPONSE_FORMAT = jsonSchemaResponseFormat("source_verificat
     accepted: { type: "boolean", description: "True iff good_sources together cover every factual claim in the note." },
   },
   required: ["reasoning", "good_sources", "bad_sources", "accepted"],
+  additionalProperties: false,
+});
+
+/** Citations-mode classic schema: one evaluated source per cited URL (citations
+ *  before verdict), then the overall reasoning + accepted. */
+export const VERIFY_CITATIONS_RESPONSE_FORMAT = jsonSchemaResponseFormat("source_verification_cited", {
+  type: "object",
+  properties: {
+    sources: {
+      type: "array",
+      description: "One entry per cited source, in the order listed. Do not invent or omit URLs.",
+      items: EVALUATED_SOURCE_SCHEMA,
+    },
+    reasoning: { type: "string", description: "Overall: which claims are covered; name any unsupported claim." },
+    accepted: { type: "boolean", description: "True iff the good sources together cover every factual claim in the note." },
+  },
+  required: ["sources", "reasoning", "accepted"],
   additionalProperties: false,
 });

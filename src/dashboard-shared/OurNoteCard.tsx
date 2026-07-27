@@ -1,8 +1,9 @@
 import { LinkifiedText } from "./LinkifiedText";
 import { communityNoteUrl } from "./communityNoteUrl";
 
-// The "Our note" block shared by the review and stats dashboards: the note text
-// (with clickable URLs) plus a permalink. Renders nothing without note text.
+// A note rendered in a soft blue box — note text with clickable URLs, plus a
+// "View note" permalink when a noteId is given (the dashboards pass one; the
+// Common Notes site doesn't). Shared everywhere; renders nothing without text.
 export function OurNoteCard({
   noteId,
   noteText,
@@ -20,9 +21,8 @@ export function OurNoteCard({
 
   return (
     <div className={containerClasses}>
-      <div className="flex items-center justify-between mb-1">
-        <span className="text-xs text-blue-600 font-medium">Our note</span>
-        {noteId && (
+      {noteId && (
+        <div className="flex justify-end mb-1">
           <a
             href={communityNoteUrl(noteId)}
             target="_blank"
@@ -31,8 +31,8 @@ export function OurNoteCard({
           >
             View note ↗
           </a>
-        )}
-      </div>
+        </div>
+      )}
       <LinkifiedText className="text-sm text-gray-800 whitespace-pre-wrap" text={noteText} />
     </div>
   );

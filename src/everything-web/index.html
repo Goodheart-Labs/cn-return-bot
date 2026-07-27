@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Common Notes — Community Notes on everything</title>
+  <meta name="description" content="AI-written community notes on podcasts, newsletters, and beyond. Read freely; sign in to rate notes or suggest better ones." />
+  <meta property="og:title" content="Common Notes" />
+  <meta property="og:description" content="Community Notes everywhere: podcasts, newsletters, and beyond. In alpha, but voting works." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://commonnotes.net/" />
+  <meta property="og:image" content="https://commonnotes.net/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://commonnotes.net/og.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    /* Shared components carry dark: variants for the browser extension (which
+     * follows the system theme); the site keeps its own DesignMenu theming, so
+     * dark: stays inert here unless a .dark class is ever set. */
+    tailwind.config = { darkMode: "class" };
+  </script>
+  <style>
+    /* System font stack. NOTE: we deliberately do NOT lead with X's proprietary
+     * "TwitterChirp" webfont. The assumption that Chirp "resolves to the system
+     * font because nobody has it installed" is false for anyone who does have it
+     * locally (e.g. Nathan, via ~/Library/Fonts/TwitterChirp-*): they'd render
+     * the whole site in Chirp, and mismapped local weight files make it read
+     * heavy/bold. The system font is what ~all visitors already saw anyway. */
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>

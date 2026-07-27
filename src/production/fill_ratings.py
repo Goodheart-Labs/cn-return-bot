@@ -33,8 +33,12 @@ CN_DATA_DIR = Path(__file__).resolve().parent / "cn_data"
 CACHE_PATH = Path(__file__).resolve().parent / "_aggregates_cache.json"
 DOWNLOAD_LOOKBACK_DAYS = 7
 
-NOTE_FILES = ["notes-00000.tsv", "notes-00001.tsv"]
-RATING_FILES = [f"ratings-{i:05d}.tsv" for i in range(8)]
+# The dump grows a partition every few months (notes went 2→3 in Jul 2026).
+# We discover the count by probing rather than hardcoding, so a new partition
+# doesn't silently drop notes/ratings. (file_type is the URL path segment,
+# prefix is the on-disk filename stem — they differ only for ratings.)
+NOTE_FILE_TYPE, NOTE_PREFIX = "notes", "notes"
+RATING_FILE_TYPE, RATING_PREFIX = "noteRatings", "ratings"
 AUTHOR_ID = "813EB394B10809EBA8D09BCFA8E2E1C25A2DA0085186867F9E9C00696951C447"
 
 # Columns in the public-dump ratings TSV that are NOT per-tag flags.
@@ -87,22 +91,54 @@ def try_download_partition(file_type: str, partition: str) -> bool:
     return False
 
 
+def resolve_dump_date(file_type: str, prefix: str) -> str | None:
+    """Most recent snapshot date (within lookback) whose partition 0 exists."""
+    for days_back in range(DOWNLOAD_LOOKBACK_DAYS):
+        date_str = (datetime.now(timezone.utc) - timedelta(days=days_back)).strftime("%Y/%m/%d")
+        url = f"{CN_DATA_BASE_URL}/{date_str}/{file_type}/{prefix}-00000.zip"
+        if requests.head(url).status_code == 200:
+            return date_str
+    return None
+
+
+def discover_partition_files(file_type: str, prefix: str) -> list[str]:
+    """Enumerate every partition in the latest dump by walking the index up
+    from 0 until the CDN 404s — so a newly added partition is picked up."""
+    date_str = resolve_dump_date(file_type, prefix)
+    if date_str is None:
+        return []
+    files: list[str] = []
+    index = 0
+    while requests.head(f"{CN_DATA_BASE_URL}/{date_str}/{file_type}/{prefix}-{index:05d}.zip").status_code == 200:
+        files.append(f"{prefix}-{index:05d}.tsv")
+        index += 1
+    return files
+
+
+def existing_partition_files(prefix: str) -> list[str]:
+    return sorted(p.name for p in CN_DATA_DIR.glob(f"{prefix}-*.tsv"))
+
+
 def ensure_notes_files() -> None:
     CN_DATA_DIR.mkdir(parents=True, exist_ok=True)
-    for fname in NOTE_FILES:
+    note_files = discover_partition_files(NOTE_FILE_TYPE, NOTE_PREFIX)
+    if not note_files:
+        raise SystemExit("no notes-*.tsv partitions found in the dump")
+    print(f"[notes] dump has {len(note_files)} note partitions")
+    for fname in note_files:
         if (CN_DATA_DIR / fname).exists():
             continue
-        if not try_download_partition("notes", fname):
+        if not try_download_partition(NOTE_FILE_TYPE, fname):
             raise SystemExit(f"failed to download {fname}")
 
 
 def load_our_note_ids() -> set[str]:
     ids: set[str] = set()
-    for fname in NOTE_FILES:
+    note_files = existing_partition_files(NOTE_PREFIX)
+    if not note_files:
+        print("[notes] no notes-*.tsv on disk")
+    for fname in note_files:
         path = CN_DATA_DIR / fname
-        if not path.exists():
-            print(f"[notes] missing {fname}, skipping")
-            continue
         with path.open() as f:
             reader = csv.DictReader(f, delimiter="\t")
             for row in reader:
@@ -142,7 +178,15 @@ def aggregate_ratings(our_note_ids: set[str], stream: bool) -> dict[str, dict]:
     total_rows = 0
     matched_rows = 0
 
-    for fname in RATING_FILES:
+    if stream:
+        rating_files = discover_partition_files(RATING_FILE_TYPE, RATING_PREFIX)
+        if not rating_files:
+            raise SystemExit("no ratings-*.tsv partitions found in the dump")
+        print(f"[ratings] dump has {len(rating_files)} rating partitions")
+    else:
+        rating_files = existing_partition_files(RATING_PREFIX)
+
+    for fname in rating_files:
         path = CN_DATA_DIR / fname
         downloaded_here = False
         if not path.exists():
@@ -150,7 +194,7 @@ def aggregate_ratings(our_note_ids: set[str], stream: bool) -> dict[str, dict]:
                 print(f"[ratings] missing {fname}, skipping")
                 continue
             print(f"[ratings] downloading {fname}...")
-            if not try_download_partition("noteRatings", fname):
+            if not try_download_partition(RATING_FILE_TYPE, fname):
                 print(f"[ratings] failed to download {fname}, skipping")
                 continue
             downloaded_here = True

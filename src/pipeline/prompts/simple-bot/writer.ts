@@ -42,12 +42,36 @@ Empty note means: \`note_text\` = "" and \`sources\` = []. The downstream judge 
 - Tweets or tweet replies can be valid sources
 - Pull source URLs from the research findings — do not invent URLs`;
 
-/** Maximally-terse variant (SIMPLE_BOT_PROMPTS_TEST = simple). */
-export const SIMPLE_WRITER_SYSTEM_PROMPT = `Write one X Community Note that disputes a specific false claim in the post, using the research findings. If nothing in the findings contradicts a claim, return an empty note (note_text "" and sources []).
+/**
+ * Appended to the writer system prompt for curated misinfo-monitoring topics
+ * (when a MonitoringContext is present). The topic's reference document — with
+ * its vetted in-group / primary sources — is also prepended to the findings so
+ * those URLs are actually citable. Soft, per-tweet preference (not a hard block):
+ * a correction the post's audience won't rate "Helpful" changes no minds and
+ * dents our writing reputation, so lean in-group when the audience distrusts the
+ * mainstream press. Nathan, 2026-07-19. Sharpened 2026-07-22 from the rubric
+ * scoring of our first 14 topic notes: doc-first sourcing, and branded
+ * fact-checkers demoted to last resort (they appeared in 5/14 of our notes and
+ * 0 of the 4 ecosystem notes that reached Helpful on this topic).
+ */
+export const MISINFO_SOURCING_RULE = `
 
-Lead with the true fact. Max 280 non-URL characters. Neutral, non-partisan tone. Cite only URLs that appear in the findings — never invent any.
+## Sourcing for this curated topic
+The findings begin with a reference document listing vetted in-group / primary sources for this topic. If the reference document already contains a source for your correction, cite that source rather than searching for another. Judge each post on its own — but posts on this topic often come from an audience that distrusts mainstream outlets, and a note they won't rate "Helpful" changes no minds and hurts our standing. Prefer in-group / primary sources (official .gov records, court filings, the subject's own government and agencies, state officials, outlets like Fox News, National Review, The Daily Signal, Deseret News). Cite CNN, NBC, ABC and similar mainstream outlets less — acceptable when they are the only proof — and treat branded fact-checkers (PolitiFact, FactCheck.org, Snopes) as a last resort: on this topic the brand itself reads as taking a side. Still only cite URLs that actually appear in the findings (including the reference document) and that engage with the central argument of the post; never invent any.`;
 
-Return JSON: { note_text, sources }.`;
+/**
+ * Appended alongside MISINFO_SOURCING_RULE for curated topics. From the 7/22
+ * rubric scoring: 9 of our 14 topic notes appended a second correction or
+ * context clause ("one claim only" was the worst-scoring rubric column at
+ * -4/14), while every ecosystem note that reached Helpful on this topic makes
+ * exactly one blunt correction and stops. "The claim the argument rests on"
+ * tie-break targets the other top failure mode (pedantic-but-checkable side
+ * details — Nathan's two most-used review tags).
+ */
+export const MISINFO_NOTE_SHAPE_RULE = `
+
+## Note shape for this curated topic
+Notes that reach Helpful on this topic correct exactly ONE claim — the claim the post's argument actually rests on, not the easiest-to-source side detail — in one or two blunt declarative sentences, then stop. Do not add a second correction, extra background, or an "also…" clause: every added assertion hands some group of raters a reason to reject the note. Cite one or two sources, never more.`;
 
 /**
  * Few-shot block appended to the writer system prompt when
@@ -91,7 +115,17 @@ Tweet: Nintendo LOST the palworld lawsuit lets GOOOOOOOOOOOOOO
 ### Example 6
 Tweet: Knicks fans beat a 17-year old into a coma for saying "Spurs in 7". What a pathetic-ass fanbase.
 Quoted Tweet: A 17-year-old boy was beaten into a coma near Madison Square Garden following Game 4 of the NBA Finals, New York City police said Friday while releasing a photo of a suspect sought in connection with the assault.
-{ "note_text": "The 17-year-old victim, a Knicks fan, was beaten by a Spurs fan yelling \\"Spurs in 7,\\" not Knicks fans beating a Spurs fan as claimed.", "sources": ["https://nypost.com/2026/06/12/us-news/teen-beaten-into-coma-by-brute-bellowing-spurs-in-7-during-livestreamed-game-4-brawl-cops-sources/", "https://people.com/teen-beaten-into-coma-on-livestream-following-nba-finals-11996743"] }`;
+{ "note_text": "The 17-year-old victim, a Knicks fan, was beaten by a Spurs fan yelling \\"Spurs in 7,\\" not Knicks fans beating a Spurs fan as claimed.", "sources": ["https://nypost.com/2026/06/12/us-news/teen-beaten-into-coma-by-brute-bellowing-spurs-in-7-during-livestreamed-game-4-brawl-cops-sources/", "https://people.com/teen-beaten-into-coma-on-livestream-following-nba-finals-11996743"] }
+
+### Example 7
+Tweet: GTA 6 has reportedly surpassed 50 million pre-orders, generating an estimated $4+ billion in revenue before launch Rockstar might be the only company capable of turning a game that isn't even out yet into a multi billion dollar success Gaming history is being rewritten before release.
+Media Description: A promotional graphic for Grand Theft Auto VI featuring the game's logo over a synthwave-inspired sunset cityscape. The background shows a coastal city with palm trees, neon-lit buildings, and a sports car. Text on the image highlights a milestone of over 50 million copies sold and more than $4 billion in revenue.
+{ "note_text": "No official pre-order figures for GTA VI have been released since pre-orders opened on June 25; analyst estimates predict $1 billion in pre-orders (about 12.5 million units), not 50 million or $4 billion.", "sources": ["https://www.forbes.com/sites/maryroeloffs/2026/06/24/pre-orders-for-grand-theft-auto-vi-decades-most-anticipated-game-will-open-thursday", "https://www.take2games.com/ir/news/rockstar-games-announces-pre-orders-grand-theft-auto-vi"] }
+
+### Example 8
+Tweet: Did the Simpsons really the predict 3D printer ?
+Media Description: A scene from a classroom in Springfield Elementary where two construction workers walk past a large, blank white board while Bart Simpson looks on from the side. An alphabet banner is visible above the board.
+{ "note_text": "The first 3D printing technologies were invented in the 1980s; the depicted episode aired May 17, 2015.", "sources": ["https://en.wikipedia.org/wiki/3D_printing", "https://en.wikipedia.org/wiki/The_Simpsons_season_26"] }`;
 
 export const WRITER_RESPONSE_FORMAT = jsonSchemaResponseFormat("simple_bot_note", {
   type: "object",
@@ -123,5 +157,17 @@ export function buildWriterRetryMessage(params: {
   return (
     `Your previous note was ${params.charCount} chars long (URLs count as one char). The limit is ${params.maxChars}. ` +
     `Previous note: "${params.noteText}"`
+  );
+}
+
+/** Re-ask the writer after curated-topic lint problems (may include length). */
+export function buildWriterLintMessage(params: {
+  problems: string[];
+  noteText: string;
+}): string {
+  return (
+    `Your previous note has the following problem(s):\n` +
+    params.problems.map((p) => `- ${p}`).join("\n") +
+    `\nRewrite the note fixing all of them. Previous note: "${params.noteText}"`
   );
 }

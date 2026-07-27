@@ -1,0 +1,63 @@
+name: XXL Feed AI Detection
+
+# Manual run only. Uses the admitted production note-writer secrets (xxl access)
+# to fetch the eligible-posts feed, keep long-form (paid/premium) posts, rank
+# them 50/50 by recency+views, and run the top N through Pangram AI detection.
+# Results appear in the run's step summary and as a downloadable artifact.
+on:
+  workflow_dispatch:
+    inputs:
+      feed_size:
+        description: "Feed size"
+        type: choice
+        default: xxl
+        options: [xxl, xl, large, small]
+      top_n:
+        description: "How many top-ranked long-form posts to run through Pangram"
+        type: string
+        default: "500"
+      min_chars:
+        description: "Min characters to count as long-form (X free limit is 280)"
+        type: string
+        default: "280"
+      max_pages:
+        description: "Max feed pages to paginate (100 posts/page)"
+        type: string
+        default: "1000"
+
+jobs:
+  ai-detection:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      X_API_KEY: ${{ secrets.X_API_KEY }}
+      X_API_KEY_SECRET: ${{ secrets.X_API_KEY_SECRET }}
+      X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+      X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+      PANGRAM_API_KEY: ${{ secrets.PANGRAM_API_KEY }}
+      FEED_SIZE: ${{ inputs.feed_size }}
+      TOP_N: ${{ inputs.top_n }}
+      MIN_CHARS: ${{ inputs.min_chars }}
+      MAX_PAGES: ${{ inputs.max_pages }}
+      OUT_DIR: ai-detection-out
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run AI detection probe
+        run: bun run src/scripts_jim/2026_07_08_xxl_ai_detection/run.ts
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xxl-feed-ai-detection
+          path: ai-detection-out/
+          if-no-files-found: warn

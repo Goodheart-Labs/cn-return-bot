@@ -151,9 +151,13 @@ max_indexes = 5
 enabled = true
 # The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
 # in emails.
-site_url = "http://127.0.0.1:3000"
-# A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["https://127.0.0.1:3000"]
+site_url = "http://localhost:8003"
+# A list of URLs (globs allowed) auth providers may redirect to post authentication.
+# Add the deployed GitHub Pages notes URL here for prod magic-link / X sign-in.
+# The chromiumapp.org / allizom.org wildcards are the browser-extension OAuth
+# redirect URLs (launchWebAuthFlow); mirror them in the prod dashboard's
+# allow-list, with the real extension IDs, for X sign-in from the extension.
+additional_redirect_urls = ["http://localhost:8003", "http://localhost:8003/**", "http://localhost:8004", "http://localhost:8004/**", "https://*.github.io/**", "https://commonnotes.net/**", "https://*.chromiumapp.org/**", "https://*.extensions.allizom.org/**"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
 # JWT issuer URL. If not set, defaults to the local API URL (http://127.0.0.1:<port>/auth/v1).
@@ -226,10 +230,15 @@ otp_expiry = 3600
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
 
-# Uncomment to customize email template
-# [auth.email.template.invite]
-# subject = "You have been invited"
-# content_path = "./supabase/templates/invite.html"
+# Branded Common Notes auth emails. Mirror these in the prod project's
+# dashboard (Auth → Email Templates) — config.toml only applies to local dev.
+[auth.email.template.confirmation]
+subject = "Confirm your email for Common Notes"
+content_path = "./supabase/templates/confirmation.html"
+
+[auth.email.template.magic_link]
+subject = "Sign in to Common Notes"
+content_path = "./supabase/templates/magic_link.html"
 
 # Uncomment to customize notification email template
 # [auth.email.notification.password_changed]
@@ -317,6 +326,13 @@ skip_nonce_check = false
 # If enabled, it will allow the user to successfully authenticate when the provider does not return an email address.
 email_optional = false
 
+# "Sign in with X" for Common Notes voting. Create an X/Twitter OAuth 2.0 app and
+# set TWITTER_CLIENT_ID + SUPABASE_AUTH_EXTERNAL_TWITTER_SECRET in .env to enable.
+[auth.external.twitter]
+enabled = true
+client_id = "env(TWITTER_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_EXTERNAL_TWITTER_SECRET)"
+
 # Allow Solana wallet holders to sign in to your project via the Sign in with Solana (SIWS, EIP-4361) standard.
 # You can configure "web3" rate limit in the [auth.rate_limit] section and set up [auth.captcha] if self-hosting.
 [auth.web3.solana]
@@ -353,6 +369,16 @@ enabled = false
 authorization_url_path = "/oauth/consent"
 # Allow dynamic client registration
 allow_dynamic_registration = false
+
+[functions.judge-note]
+# Gates both note flows (write-a-note + suggest-an-improvement): an LLM decides
+# earnest vs trolling; the client posts the note only on an "accepted" verdict.
+# Needs OPENROUTER_API_KEY. verify_jwt is off because the function does its own
+# auth via getUser() (validates against the auth server, so it works with the
+# local ES256 signing keys that the gateway's verify_jwt can't handle); an
+# unauthenticated call is rejected before any LLM cost is incurred.
+enabled = true
+verify_jwt = false
 
 [edge_runtime]
 enabled = true

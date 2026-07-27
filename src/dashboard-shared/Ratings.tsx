@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { PublicDumpRatings } from "./types";
+import { humanizeTagName } from "./ratingReasons";
 
 type TagBucket = "helpful" | "not_helpful";
 
@@ -73,6 +74,55 @@ export function Ratings({
   );
 }
 
+/** Interactive twin of Ratings: labeled pills instead of ▲/▼ — Common Notes
+ *  uses X's three-way rating scale (helpful / somewhat helpful / not helpful;
+ *  somewhat carries 0.5 weight at scoring time). Clicking casts a vote, active
+ *  = the viewer's own vote. The dashboards keep the display-only Ratings;
+ *  unlike Ratings this renders at zero counts — you must be able to cast the
+ *  first vote. */
+export type VoteValue = 1 | 0 | -1;
+
+const VOTE_OPTIONS: { value: VoteValue; label: string; active: string; idle: string }[] = [
+  { value: 1, label: "Helpful", active: "bg-green-100 text-green-800 border-green-300 dark:bg-green-900/50 dark:text-green-300 dark:border-green-700", idle: "text-green-700 border-gray-200 hover:bg-green-50 dark:text-green-400 dark:border-gray-600 dark:hover:bg-green-950/40" },
+  { value: 0, label: "Somewhat helpful", active: "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900/50 dark:text-amber-300 dark:border-amber-700", idle: "text-amber-700 border-gray-200 hover:bg-amber-50 dark:text-amber-400 dark:border-gray-600 dark:hover:bg-amber-950/40" },
+  { value: -1, label: "Not helpful", active: "bg-red-100 text-red-800 border-red-300 dark:bg-red-900/50 dark:text-red-300 dark:border-red-700", idle: "text-red-700 border-gray-200 hover:bg-red-50 dark:text-red-400 dark:border-gray-600 dark:hover:bg-red-950/40" },
+];
+
+/** Every vote, in display order — so callers that need to enumerate the type
+ *  (scoring every option, ranking a feed) don't hand-write the literal. */
+export const VOTE_VALUES: readonly VoteValue[] = VOTE_OPTIONS.map((o) => o.value);
+
+export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVote, showCounts = myVote !== undefined }: {
+  helpful: number;
+  somewhatHelpful: number;
+  notHelpful: number;
+  myVote?: VoteValue;
+  onVote: (vote: VoteValue) => void;
+  /** Tallies stay hidden until the viewer has cast their own vote, so the
+   *  crowd doesn't anchor it (aria included — no leaking via screen reader).
+   *  Callers can widen the rule (e.g. reveal on old notes). */
+  showCounts?: boolean;
+}) {
+  const counts: Record<VoteValue, number> = { 1: helpful, 0: somewhatHelpful, [-1]: notHelpful };
+  return (
+    <span className="inline-flex items-center gap-1.5 flex-wrap">
+      {VOTE_OPTIONS.map(({ value, label, active, idle }) => (
+        <button
+          key={value}
+          type="button"
+          aria-pressed={myVote === value}
+          aria-label={showCounts ? `${label}: ${counts[value]} ratings` : label}
+          onClick={() => onVote(value)}
+          className={`text-xs px-2 py-0.5 rounded-full border cursor-pointer transition-colors ${myVote === value ? active : idle}`}
+        >
+          {label}
+          {showCounts && counts[value] > 0 && <span className="ml-1 font-semibold">{counts[value].toLocaleString("en-US")}</span>}
+        </button>
+      ))}
+    </span>
+  );
+}
+
 function RatingButton({
   bucket,
   count,
@@ -91,9 +141,7 @@ function RatingButton({
     ? "cursor-default text-gray-500"
     : "cursor-pointer hover:bg-gray-100 text-gray-700";
   const activeClass = active ? "bg-gray-200 text-gray-900" : "";
-  const triangle = bucket === "helpful"
-    ? <span className="text-green-600 leading-none">▲</span>
-    : <span className="text-red-600 leading-none">▼</span>;
+  const color = bucket === "helpful" ? "text-green-600" : "text-red-600";
   return (
     <button
       type="button"
@@ -103,7 +151,7 @@ function RatingButton({
       onClick={onClick}
       className={`${base} ${interactive} ${activeClass}`.trim()}
     >
-      {triangle}
+      <span className={`${color} leading-none`.trim()}>{bucket === "helpful" ? "▲" : "▼"}</span>
       {count.toLocaleString("en-US")}
     </button>
   );
@@ -130,10 +178,4 @@ function TagPills({ ratings, bucket }: { ratings: PublicDumpRatings; bucket: Tag
       ))}
     </div>
   );
-}
-
-// e.g. "notHelpfulSourcesMissingOrUnreliable" -> "Sources Missing Or Unreliable"
-function humanizeTagName(raw: string): string {
-  const trimmed = raw.replace(/^helpful|^notHelpful/, "");
-  return trimmed.replace(/([A-Z])/g, " $1").trim();
 }

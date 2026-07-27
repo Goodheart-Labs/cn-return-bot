@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Mirrors everything-web/index.html: system font stack (deliberately no
+ * TwitterChirp). Lives on the React root container (the shadow tree's inner
+ * <body>), NOT on :host: WXT's prepended `:host{all:initial !important}`
+ * outranks non-important :host declarations, and :host can't react to the
+ * `.dark` class the mount code toggles on the container to follow the HOST
+ * PAGE's theme. (Never write a literal `:root` in this file — WXT rewrites
+ * it to `:host`.) */
+.cn-theme-root {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #111827;
+}
+
+.cn-theme-root.dark {
+  color: #f3f4f6;
+}
+
+/* Host geometry MUST live here, not in JS. WXT prepends
+ * `:host{all:initial !important}` to this sheet, and an important rule inside
+ * the shadow tree outranks even the page-side inline `!important` styles the
+ * mount code could set (CSS scoping inverts proximity for !important). These
+ * rules come later with higher specificity, so they win over the reset — and
+ * over any host-page global reset like Substack's. */
+
+/* Inline-notes overlay: zero-footprint anchor at the document origin; badges
+ * and popovers inside are positioned in page coordinates relative to it. */
+:host(common-notes-ui) {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  z-index: 2147483000 !important;
+}
+
+/* In-content annotation layer: in-flow zero-size last child of the article
+ * container, so badges/popovers scroll natively with the text in EVERY scroll
+ * mode (document scroll AND inner-container scroll, e.g. Substack's reader).
+ * Must be IN-FLOW, not absolute: an absolute host only scrolls with its
+ * containing block's scrollers, which may sit outside an inner scroller. */
+:host(common-notes-inline) {
+  position: relative !important;
+  display: block !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: visible !important;
+  z-index: 2147483000 !important;
+}
+
+/* YouTube overlay: right edge of #movie_player (the anchor element),
+ * vertically centered — the host box is content-sized, so translateY(-50%)
+ * centers the card. Fullscreen/theater keep working since it lives inside
+ * the player. */
+:host(common-notes-yt) {
+  position: absolute !important;
+  top: 50% !important;
+  right: 12px !important;
+  transform: translateY(-50%) !important;
+  z-index: 1000 !important;
+}
+
+/* Request-note popover: fixed bottom-right card on whatever page the user
+ * invoked "Request a Common Note" on. */
+:host(common-notes-requestnote) {
+  position: fixed !important;
+  bottom: 16px !important;
+  right: 16px !important;
+  z-index: 2147483001 !important;
+}
+
+@keyframes cn-countdown {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: 44; }
+}
