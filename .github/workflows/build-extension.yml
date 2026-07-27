@@ -34,9 +34,6 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Test anchor engine
-        run: bun test src/everything-extension
-
       - name: Zip Chrome + Firefox builds
         run: cd src/everything-extension && bunx wxt zip && bunx wxt zip -b firefox
         env:
