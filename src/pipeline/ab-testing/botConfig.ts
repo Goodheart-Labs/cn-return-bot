@@ -123,6 +123,14 @@ export interface BotConfig {
    */
   search_anti_pedantic?: boolean;
   /**
+   * When true (simple-bot only), the search AND writer prompts gain the
+   * time-travel test: a correction must have been accurate and fair at the
+   * moment the post was published — a claim outdated only by later events is
+   * not an error. Backtested 2026-07-28 (docs/improvement-menu-2026-07-25.md,
+   * T2). Set by TIME_TRAVEL_PROMPT_TEST; defaults false.
+   */
+  time_travel_prompt?: boolean;
+  /**
    * When true (simple-bot only), the search step uses the claim-check prompt —
    * the input is a claim extracted from a podcast, interview, or article plus
    * surrounding context, not an X post. Forced on by the everything pipeline.

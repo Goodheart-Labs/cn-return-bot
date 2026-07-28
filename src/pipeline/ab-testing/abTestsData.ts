@@ -159,6 +159,24 @@ const SIMPLE_BOT_ANTI_PEDANTIC_TEST: ABTest = {
   ],
 };
 
+// Add the time-travel test to simple-bot's search AND writer prompts (one flag,
+// both steps — the mechanisms overlap): a correction must have been accurate
+// and fair at the moment the post was published; a claim outdated only by later
+// events is not an error. Backtested 2026-07-28 on 398 rated notes — flags
+// 9 NH vs ~3 real H (−11–15% of NH at ~1% H cost); the absence-of-reports
+// companion rule tested INVERTED (9H/5NH) and is excluded. Read on process
+// metrics first (abstention-rate guard, then Nathan's breaking-news tag rate);
+// cn_status per arm is underpowered for months. docs/improvement-menu-2026-07-25.md
+// (T2). Prereq-gated to simple-bot, so no defaultVariant.
+const TIME_TRAVEL_PROMPT_TEST: ABTest = {
+  name: "time_travel_prompt",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off", overrides: { time_travel_prompt: false } }, weight: 50 },
+    { variant: { name: "on",  overrides: { time_travel_prompt: true  } }, weight: 50 },
+  ],
+};
+
 // Use the claim-check search prompt (input is a claim + excerpt from a podcast,
 // interview, or article, not an X post). Off in prod (weight 0 on); forced on by
 // the everything pipeline (src/everything/checkClaims.ts). Prereq-gated to
@@ -474,6 +492,7 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_WRITER_TEST,
   SIMPLE_BOT_VERIFIER_TEST,
   SIMPLE_BOT_ANTI_PEDANTIC_TEST,
+  TIME_TRAVEL_PROMPT_TEST,
   SIMPLE_BOT_CLAIM_TEST,
   SIMPLE_BOT_WRITER_EXAMPLES_TEST,
   SIMPLE_BOT_POLITICAL_SOURCES_TEST,
