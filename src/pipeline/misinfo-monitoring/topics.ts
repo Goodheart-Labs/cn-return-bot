@@ -36,6 +36,20 @@ const AI =
   /(\bai\b|\ba\.i\.?|chatgpt|chat gpt|openai|\bllm\b|artificial intelligence|\bgpt\b|gemini|\bgrok\b|chatbot|data ?cent(er|re))/;
 const ENERGY =
   /(energy|electricit|\bkwh\b|\bwatt|carbon|emission|\bco2\b|climate|power grid|fossil|environment|footprint|greenhouse)/;
+// Three clauses: a fraud/tampering FRAME + an election OBJECT + a 2020/national
+// ANCHOR. The frame+object pair alone matched the whole US election-fraud
+// firehose (incl. live local races the grounding doc can't address — e.g. the
+// 2026 California contests); the anchor narrows to the specific "2020 (/22/24)
+// stolen / China / hacked-machines / noncitizen-rolls / declassified-docs"
+// cluster the document actually debunks. Empirically (19.6k post-speech feed):
+// frame+object = 530 hits, + anchor = 391. The selection LLM + brief still do
+// the claim-vs-debunk precision; the anchor only does topic scoping.
+const ELECTION_FRAUD_FRAME =
+  /(rigged|rig the|stolen|\bstole\b|\bsteal\b|fraud|fraudulent|flip(ped|ping)?|hacked|manipulat|tamper(ed|ing)?|decertif|overturn(ed|ing)?|ballot stuffing|dead voters|noncitizen|non-?citizen|illegal (vote|ballot|voter)|cheat(ed|ing)?)/;
+const ELECTION_OBJECT =
+  /(election|\bvote[sd]?\b|\bvoting\b|ballot|voter (roll|file|registration|data)|voting machine|dominion|smartmatic|raffensperger|recount)/;
+const ELECTION_2020_ANCHOR =
+  /(\b20(16|20|22|24)\b|dominion|smartmatic|raffensperger|voting machines?|voter files?|voter rolls?|non-?citizens?|declassif|220 ?million|deep state|decertif|overturn|stolen election|election was stolen|rigged election|chin(a|ese)|foreign (interference|meddl|power)|mail-?in ballot)/;
 
 interface TopicSpec {
   id: MisinfoTopicId;
@@ -110,6 +124,18 @@ const SPECS: TopicSpec[] = [
       /(nothing|useless|pointless|\bwaste\b|scam|grift|fraud|\bfail(ed|ure|s)?\b|hasn'?t|haven'?t|discredit|overrated|never (done|helped|achieved|accomplished)|what (has|have))/.test(
         t,
       ),
+  },
+  {
+    // The "2020 (or 2022/2024) election was stolen/rigged/flipped" narrative,
+    // revived by Trump's 16 Jul 2026 declassified-documents address. The topic
+    // corrects the narrow FACTUAL claim that an outcome was changed — not
+    // opinions or election-security policy views (the brief draws that line).
+    id: "trump_election_fraud",
+    title: "Trump's 2020 stolen-election claims",
+    documentUrl:
+      "https://www.cbsnews.com/news/trump-election-primetime-speech-declassified-documents-revisits-disputed-claims/",
+    matches: (t) =>
+      ELECTION_FRAUD_FRAME.test(t) && ELECTION_OBJECT.test(t) && ELECTION_2020_ANCHOR.test(t),
   },
 ];
 

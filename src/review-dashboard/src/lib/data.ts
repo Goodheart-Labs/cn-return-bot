@@ -986,3 +986,156 @@ export async function deleteUpload(id: string): Promise<void> {
     .eq("id", id);
   if (error) throw error;
 }
+
+// ============================================================================
+// Posting limit (X writing cap) — data for the "Posting limit" drawer.
+// The cap is observation-based (X returns a "daily limit" 403 and we record the
+// count). This reconstructs X's published AI-writer FORMULA from live note
+// statuses so we can see WHICH input the cap is resting on. Formula: X guide
+// "writing-notes" + AI-writer page; denominator includes unrated (NMR) notes —
+// confirmed by communitynotes/scoring/.../contributor_state.py.
+// ============================================================================
+
+const H_STATUS = "CURRENTLY_RATED_HELPFUL";
+const NH_STATUS = "CURRENTLY_RATED_NOT_HELPFUL";
+
+export interface CapWindow {
+  key: string; // HR_R | HR_100 | HR_14d
+  label: string;
+  rate: number; // net hit rate = (H − NH) / denom, as a fraction
+  h: number;
+  nh: number;
+  nmr: number; // unrated in-window (0 for the rated-only window)
+  denom: number;
+  binding: boolean; // is this the window currently setting WL_L?
+}
+
+export interface CapTier {
+  label: string;
+  formula: string;
+  active: boolean;
+}
+
+export interface PostingLimitData {
+  cap: number | null; // observed writing_limit (pipeline_state) — the real ceiling
+  limitHitAt: string | null;
+  modeledCap: number; // WL from the live formula inputs
+  wlL: number; // WL_L quality ceiling
+  dn30: number;
+  volTerm: number; // DN_30 × 5
+  bindingTerm: "quality" | "volume" | "cliff";
+  hrL: number; // max(HR_100, HR_14d)
+  windows: CapWindow[];
+  tiers: CapTier[];
+  nh5: number;
+  nh10: number;
+  bindingWindow: CapWindow | null;
+  slopePerPoint: number; // Δcap per +1 percentage-point of the binding window
+  ratedAtAll: number; // fraction of ALL notes ever rated (coverage)
+  totalNotes: number;
+}
+
+function computeWL(i: {
+  hr100: number; hr14d: number; hrR: number; dn30: number; nh5: number; nh10: number; t: number;
+}): { wl: number; wlL: number; binding: "quality" | "volume" | "cliff" } {
+  if (i.nh10 >= 8) return { wl: 2, wlL: 0, binding: "cliff" };
+  if (i.nh5 >= 3) return { wl: 5, wlL: 0, binding: "cliff" };
+  if (i.t < 20) return { wl: 10, wlL: 0, binding: "quality" };
+  const hrL = Math.max(i.hr100, i.hr14d);
+  let wlL: number;
+  if (hrL < 0.05) wlL = 300 * Math.max(i.hrR, hrL);
+  else if (hrL < 0.1) wlL = 15 + 700 * (hrL - 0.05);
+  else if (hrL < 0.15) wlL = 50 + 3000 * (hrL - 0.1);
+  else if (hrL < 0.2) wlL = 200 + 6000 * (hrL - 0.15);
+  else wlL = 500;
+  const vol = i.dn30 * 5;
+  const wl = Math.max(5, Math.floor(Math.min(vol, wlL)));
+  return { wl, wlL, binding: vol < wlL ? "volume" : "quality" };
+}
+
+export async function fetchPostingLimitData(): Promise<PostingLimitData> {
+  const [{ data: capRow }, { data: hitRow }] = await Promise.all([
+    supabase.from("pipeline_state").select("value").eq("key", "writing_limit").maybeSingle(),
+    supabase.from("pipeline_state").select("value").eq("key", "limit_hit_at").maybeSingle(),
+  ]);
+  const cap = capRow?.value != null ? Number(capRow.value) : null;
+  const limitHitAt = (hitRow?.value as string) ?? null;
+
+  // Tiny columns; order by note_id (unique) so the parallel page ranges partition cleanly.
+  const rows = await fetchAllRowsParallel<{ note_id: string; cn_status: string | null; submitted_at: string | null }>(
+    () => supabase.from("notes").select("note_id, cn_status, submitted_at").order("note_id", { ascending: true }),
+    "posting_limit_notes",
+  );
+  const notes = rows
+    .filter((n) => n.submitted_at)
+    .sort((a, b) => (a.submitted_at! < b.submitted_at! ? -1 : 1));
+
+  const now = Date.now();
+  const DAY = 86400000;
+  const isH = (s: string | null) => s === H_STATUS;
+  const isNH = (s: string | null) => s === NH_STATUS;
+  const count = (arr: typeof notes) => ({
+    h: arr.filter((n) => isH(n.cn_status)).length,
+    nh: arr.filter((n) => isNH(n.cn_status)).length,
+  });
+
+  const last20 = notes.slice(-20);
+  const last100 = notes.slice(-100);
+  const in14 = notes.filter((n) => now - Date.parse(n.submitted_at!) < 14 * DAY);
+  const rated14 = in14.filter((n) => isH(n.cn_status) || isNH(n.cn_status));
+  const in30 = notes.filter((n) => now - Date.parse(n.submitted_at!) < 30 * DAY);
+
+  const c20 = count(last20), c100 = count(last100), c14 = count(rated14);
+  const hrR = (c20.h - c20.nh) / 20;
+  const hr100 = (c100.h - c100.nh) / 100;
+  const hr14d = rated14.length ? (c14.h - c14.nh) / rated14.length : 0;
+  const dn30 = in30.length / 30;
+
+  const ratedRev = notes.filter((n) => isH(n.cn_status) || isNH(n.cn_status)).reverse();
+  const nh5 = ratedRev.slice(0, 5).filter((n) => isNH(n.cn_status)).length;
+  const nh10 = ratedRev.slice(0, 10).filter((n) => isNH(n.cn_status)).length;
+
+  const t = notes.length;
+  const cur = computeWL({ hr100, hr14d, hrR, dn30, nh5, nh10, t });
+  const hrL = Math.max(hr100, hr14d);
+
+  // Which window is carrying WL_L: below 5% the last-20 also counts (formula takes the max).
+  const basement = hrL < 0.05;
+  const pool: [string, number][] = basement
+    ? [["HR_R", hrR], ["HR_100", hr100], ["HR_14d", hr14d]]
+    : [["HR_100", hr100], ["HR_14d", hr14d]];
+  let bindKey = "HR_100";
+  let best = -Infinity;
+  for (const [k, v] of pool) if (v > best) { best = v; bindKey = k; }
+  const qualityBound = cur.binding === "quality";
+
+  const windows: CapWindow[] = [
+    { key: "HR_R", label: "Last 20 written", rate: hrR, h: c20.h, nh: c20.nh, nmr: 20 - c20.h - c20.nh, denom: 20, binding: qualityBound && bindKey === "HR_R" },
+    { key: "HR_100", label: "Last 100 written", rate: hr100, h: c100.h, nh: c100.nh, nmr: 100 - c100.h - c100.nh, denom: 100, binding: qualityBound && bindKey === "HR_100" },
+    { key: "HR_14d", label: "Last 14 days (rated)", rate: hr14d, h: c14.h, nh: c14.nh, nmr: 0, denom: rated14.length, binding: qualityBound && bindKey === "HR_14d" },
+  ];
+
+  const tierIdx = hrL < 0.05 ? 0 : hrL < 0.1 ? 1 : hrL < 0.15 ? 2 : hrL < 0.2 ? 3 : 4;
+  const tiers: CapTier[] = [
+    { label: "< 5%", formula: "WL_L = 300 × max(HR_R, HR_L)", active: tierIdx === 0 },
+    { label: "5–10%", formula: "WL_L = 15 + 700 × (HR_L − 5%)", active: tierIdx === 1 },
+    { label: "10–15%", formula: "WL_L = 50 + 3000 × (HR_L − 10%)", active: tierIdx === 2 },
+    { label: "15–20%", formula: "WL_L = 200 + 6000 × (HR_L − 15%)", active: tierIdx === 3 },
+    { label: "≥ 20%", formula: "WL_L = 500 (max)", active: tierIdx === 4 },
+  ];
+
+  const bump = { hr100, hr14d, hrR, dn30, nh5, nh10, t };
+  if (bindKey === "HR_100") bump.hr100 += 0.01;
+  else if (bindKey === "HR_14d") bump.hr14d += 0.01;
+  else bump.hrR += 0.01;
+  const slopePerPoint = computeWL(bump).wl - cur.wl;
+
+  const ratedTotal = notes.filter((n) => isH(n.cn_status) || isNH(n.cn_status)).length;
+
+  return {
+    cap, limitHitAt, modeledCap: cur.wl, wlL: cur.wlL, dn30, volTerm: dn30 * 5,
+    bindingTerm: cur.binding, hrL, windows, tiers, nh5, nh10,
+    bindingWindow: windows.find((w) => w.binding) ?? null,
+    slopePerPoint, ratedAtAll: t ? ratedTotal / t : 0, totalNotes: t,
+  };
+}

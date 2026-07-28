@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { PostingLimitDrawer } from "./components/PostingLimitDrawer";
 import type {
   ReviewItem,
   DatasetOption,
@@ -129,14 +130,68 @@ function initialDatasetFromUrl(): DatasetOption {
   return { type: "production", name: "Production" };
 }
 
+// Persist the production filter selection across refreshes so a reload doesn't
+// snap back to defaults (Nathan, 2026-07-15). Sets don't survive JSON, so we
+// round-trip them through arrays. Scoped to production — dataset-run filters are
+// short-lived and keyed to a specific run.
+const FILTERS_KEY = "reviewDashboard.filters.production";
+const SHOW_TAGS_KEY = "reviewDashboard.showTags";
+
+function serializeFilters(f: FilterState): string {
+  return JSON.stringify({
+    seen: f.seen,
+    failureTypes: [...f.failureTypes],
+    failureModes: [...f.failureModes],
+    highValueOnly: f.highValueOnly,
+  });
+}
+
+function loadSavedFilters(): FilterState | null {
+  try {
+    const raw = localStorage.getItem(FILTERS_KEY);
+    if (!raw) return null;
+    const o = JSON.parse(raw);
+    return {
+      seen: o.seen ?? "unseen",
+      failureTypes: new Set(o.failureTypes ?? []),
+      failureModes: new Set(o.failureModes ?? []),
+      highValueOnly: !!o.highValueOnly,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export function App() {
   const [dataset, setDataset] = useState<DatasetOption>(initialDatasetFromUrl);
   const [uploads, setUploads] = useState<UploadInfo[]>([]);
   const [items, setItems] = useState<ReviewItem[]>([]);
-  const [filters, setFilters] = useState<FilterState>(defaultFilters("production"));
+  const [filters, setFilters] = useState<FilterState>(() => {
+    // Restore the saved production selection on load; first-ever visit falls back
+    // to defaults (which now include Underwater). NB initialDatasetFromUrl is a
+    // function — must be CALLED, not read as `.type`.
+    const initial = initialDatasetFromUrl();
+    if (initial.type === "production") {
+      const saved = loadSavedFilters();
+      if (saved) return saved;
+    }
+    return defaultFilters(initial.type);
+  });
+  // Per-note failure-mode tag chips are hidden by default (Nathan finds them
+  // cluttering); the editor dropdown still shows/edits them. Toggle persists.
+  const [showTags, setShowTags] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem(SHOW_TAGS_KEY) === "true";
+    } catch {
+      return false;
+    }
+  });
   const [abFilters, setAbFilters] = useState<ABFilters>({});
   // A/B filter section is collapsed by default (its slots stream in as data loads).
   const [abOpen, setAbOpen] = useState(false);
+  // Failure-mode tags drawer — collapsed by default so the big pill row doesn't
+  // clutter the top (same collapsible style as the A/B test filters section).
+  const [tagsOpen, setTagsOpen] = useState(false);
   const [counts, setCounts] = useState<Record<FailureType, number>>({} as any);
   // All-time tag usage for production pills, fetched once per production
   // session and adjusted optimistically on tag edits. Dataset runs derive
@@ -267,11 +322,35 @@ export function App() {
   // Reset filters when the dataset changes (but not when only the window
   // extends — extending should preserve the user's filters). windowDays
   // intentionally persists across dataset switches; resetting it here would
-  // re-fire loadData a second time on every switch.
+  // re-fire loadData a second time on every switch. Skip the mount run so a
+  // refresh keeps the restored/persisted selection instead of snapping to
+  // defaults.
+  const didMountReset = useRef(false);
   useEffect(() => {
+    if (!didMountReset.current) {
+      didMountReset.current = true;
+      return;
+    }
     setFilters(defaultFilters(dataset.type));
     setAbFilters({});
   }, [dataset]);
+
+  // Persist the production filter selection + tag visibility across refreshes.
+  useEffect(() => {
+    if (dataset.type !== "production") return;
+    try {
+      localStorage.setItem(FILTERS_KEY, serializeFilters(filters));
+    } catch {
+      /* ignore */
+    }
+  }, [filters, dataset.type]);
+  useEffect(() => {
+    try {
+      localStorage.setItem(SHOW_TAGS_KEY, String(showTags));
+    } catch {
+      /* ignore */
+    }
+  }, [showTags]);
 
   // Load whenever the dataset or the window changes. loadData is memoized on
   // both, so this fires once per meaningful change.
@@ -670,6 +749,9 @@ export function App() {
         />
       </div>
 
+      {/* Posting limit (writing cap) — collapsed by default, lazy-loads on open. */}
+      <PostingLimitDrawer />
+
       {/* Filters */}
       <div className="mb-4">
         <FilterBar
@@ -718,10 +800,43 @@ export function App() {
         </div>
       )}
 
-      {/* Failure mode filter pills */}
+      {/* Failure-mode tags drawer — collapsible, same style as A/B test filters. */}
       {failureModeCatalog.length > 0 && (
-        <div className="flex flex-wrap gap-1 mb-4 items-center">
-          {sortedFailureModes.map((mode) => {
+        <div className="mb-4">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setTagsOpen((o) => !o)}
+              aria-expanded={tagsOpen}
+              className="flex flex-1 items-center gap-2 text-left text-sm font-medium text-gray-700 px-3 py-2 rounded-md border border-gray-200 bg-gray-50 hover:bg-gray-100"
+            >
+              <span className={`text-gray-400 transition-transform ${tagsOpen ? "rotate-90" : ""}`}>▶</span>
+              <span>Failure mode tags</span>
+              {filters.failureModes.size > 0 && (
+                <span className="text-xs text-purple-600">· {filters.failureModes.size} active</span>
+              )}
+            </button>
+            {filters.failureModes.size > 0 && (
+              <button
+                onClick={() => setFilters({ ...filters, failureModes: new Set() })}
+                className="text-xs text-purple-600 hover:text-purple-800"
+              >
+                Clear all
+              </button>
+            )}
+          </div>
+          {tagsOpen && (
+            <div className="mt-2">
+              <label className="flex items-center gap-1.5 text-xs text-gray-600 cursor-pointer mb-2">
+                <input
+                  type="checkbox"
+                  checked={showTags}
+                  onChange={(e) => setShowTags(e.target.checked)}
+                  className="rounded"
+                />
+                Show tag chips on note cards
+              </label>
+              <div className="flex flex-wrap gap-1 items-center">
+                {sortedFailureModes.map((mode) => {
             const active = filters.failureModes.has(mode.name);
             const count = tagCounts.get(mode.name) ?? 0;
             return (
@@ -766,8 +881,11 @@ export function App() {
               onChange={(e) => setShowFixedTags(e.target.checked)}
               className="rounded"
             />
-            Show fixed
-          </label>
+                Show fixed
+              </label>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -808,6 +926,7 @@ export function App() {
               failureModeCatalog={activeFailureModes}
               failureModeUsage={tagCounts}
               showFixed={showFixedTags}
+              showTags={showTags}
               onSeenToggle={handleSeenToggle}
               onHighValueToggle={handleHighValueToggle}
               onFailureModesChange={handleFailureModesChange}

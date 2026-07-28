@@ -137,7 +137,7 @@ export const FAILURE_TYPE_CONFIG: Record<FailureType, FailureTypeConfig> = {
   // NEEDS_MORE_RATINGS notes whose rating counts run net negative (not-helpful >
   // helpful) — still undecided by CN, but sinking. Split out of needs_more_ratings
   // the same way lost_to_competitor is, so the two pills stay disjoint.
-  underwater: { label: "Underwater", defaultOn: false, production: true, datasetRun: false, color: "bg-indigo-100 text-indigo-800" },
+  underwater: { label: "Underwater", defaultOn: true, production: true, datasetRun: false, color: "bg-indigo-100 text-indigo-800" },
   filtered_low_eval_score: { label: "Filtered (low eval score)", defaultOn: false, production: true, datasetRun: false, color: "bg-teal-100 text-teal-800" },
 
   // --- V2 dataset categories: noteworthy ---

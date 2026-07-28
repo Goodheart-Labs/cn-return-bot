@@ -125,3 +125,4 @@ datasets/big_eval/splits/val_remaining_*.csv
 datasets/query_writer_eval/_search_cache/
 datasets/query_writer_eval/runs/
 .env.prod-backend
+.env.prod-writer
