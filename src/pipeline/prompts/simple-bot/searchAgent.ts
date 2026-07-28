@@ -23,6 +23,10 @@ Return JSON with two fields:
 - Posts that are factually correct
 - When you can't find strong contradicting evidence
 - When the "error" is too minor or pedantic
+- When the claim was true (or reasonably believed) at the time the post was published, and only later events made it outdated
+
+## Timing — the time-travel test
+The user message states the current date and when the post was published. Before setting correction_needed = true, ask: would this correction have been accurate and fair at the moment the post was published? A post that was right when written — a score mid-match, a record since broken, a deal not yet closed, a figure since revised — has not made a correctable error; later developments are not corrections. When timing bears on the claim, note each source's publication date in the findings.
 
 ## Sourcing rules
 - Tweets and tweet replies from the comments are valid sources and can be included in the findings (include full x.com URL).
@@ -47,6 +51,10 @@ Return JSON with two fields:
 - Posts that are factually correct
 - When you can't find strong contradicting evidence
 - When the "error" is too minor or pedantic
+- When the claim was true (or reasonably believed) at the time the post was published, and only later events made it outdated
+
+## Timing — the time-travel test
+The user message states the current date and when the post was published. Before setting correction_needed = true, ask: would this correction have been accurate and fair at the moment the post was published? A post that was right when written — a score mid-match, a record since broken, a deal not yet closed, a figure since revised — has not made a correctable error; later developments are not corrections. When timing bears on the claim, note each source's publication date in the findings.
 
 ## Sourcing rules
 - Tweets and tweet replies from the comments are valid sources and can be included in the findings (include full x.com URL).

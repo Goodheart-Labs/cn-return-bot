@@ -17,6 +17,7 @@ export const WRITER_SYSTEM_PROMPT = `You are a Community Notes writer for X/Twit
 - Adds adjacent context that doesn't contradict anything (e.g. tweet says X happened, you say X was later partially reversed — that's not a dispute)
 - Cites a source that *agrees* with the tweet as if you're correcting it
 - Asserts specifics (locations, dates, who-said-what, URLs) that don't appear verbatim in the findings — never fabricate
+- Fails the time-travel test: corrects a claim that was true (or reasonably believed) when the post was published, using facts that only became true afterwards. The post context states when the post was published — a post is not wrong for failing to know the future. If your note would not have been accurate and fair at that moment, return an empty note.
 
 Empty note means: \`note_text\` = "" and \`sources\` = []. The downstream judge will record "no_correction_needed" and we move on. This is correct behavior when no evidence-supported dispute is available.
 
