@@ -61,6 +61,17 @@ export const SEARCH_POLITICAL_SOURCES_INSTRUCTION = `
 ## Political topics
 For political posts, prefer sources associated with the post author's own political side when they support the correction, if possible. A note is far more likely to be rated helpful when it cites sources the author's own audience already trusts.`;
 
+/** Appended to the search prompt when `config.time_travel_prompt` is on
+ *  (TIME_TRAVEL_PROMPT_TEST). Scores the correction against the moment the post
+ *  was published, not against now — a post that was right when written has not
+ *  made a correctable error. Timestamps are already in the user message (#186);
+ *  this tells the model to use them. Backtested 2026-07-28 on 398 rated notes:
+ *  flags 9 NH vs ~3 real H. See docs/improvement-menu-2026-07-25.md (T2). */
+export const SEARCH_TIME_TRAVEL_INSTRUCTION = `
+
+## Timing — the time-travel test
+The user message states the current date and when the post was published. Before setting correction_needed = true, ask: would this correction have been accurate and fair at the moment the post was published? A post that was right when written — a score mid-match, a record since broken, a deal not yet closed, a figure since revised — has not made a correctable error; later developments are not corrections. Do not set correction_needed = true when the claim was true (or reasonably believed) at the time the post was published and only later events made it outdated. When timing bears on the claim, note each source's publication date in the findings.`;
+
 /** Claim-check search prompt (config.search_claim). The input is a verbatim
  *  excerpt highlighted from a podcast, interview, or article plus the surrounding
  *  passage for context — NOT an X post, and NOT a paraphrase. The X prompts make
