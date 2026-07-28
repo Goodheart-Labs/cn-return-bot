@@ -56,7 +56,7 @@ export function formatVelocity(v: number | null): string {
 // re-checks it as a backstop for candidates that skip selection (the Pangram
 // pre-pass; topic posts answer to MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR below,
 // enforced at both topic selection points). Set 0 to disable.
-export const REGULAR_VELOCITY_FLOOR_PER_HOUR = 30_000;
+export const REGULAR_VELOCITY_FLOOR_PER_HOUR = 15_000;
 
 // ── Topic velocity floor ────────────────────────────────────────────────────
 // Experiment (week of 2026-07-20; analysis in
