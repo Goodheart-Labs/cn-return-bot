@@ -25,7 +25,7 @@ export function PostingLimitDrawer() {
   }, [open, data, loading]);
 
   return (
-    <div className="mb-4">
+    <div>
       <button
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
