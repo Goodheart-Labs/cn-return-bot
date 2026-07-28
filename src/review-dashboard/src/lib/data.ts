@@ -754,6 +754,9 @@ export interface ProductionPillData {
   counts: Record<FailureType, number>;
   // All-time tag usage counts for the failure-mode pills.
   tagCounts: Map<string, number>;
+  // Tag usage over notes submitted in the last 30 days — sorts the per-card
+  // failure-mode selector so its order tracks current failure patterns.
+  tagCounts30d: Map<string, number>;
   // Per-note {noteId, failureType, seen, abTestPicks}, all-time — lets the UI
   // recompute the rated pills under the seen + A/B filters ("how many left to
   // review" in this variant, not the all-time total). noteId so the UI can
@@ -780,7 +783,7 @@ export async function fetchProductionPillData(): Promise<ProductionPillData> {
     // Stable ORDER BY note_id so the concurrent page ranges partition cleanly.
     // helpful/not_helpful counts feed the underwater classification.
     fetchAllRowsParallel<any>(
-      () => supabase.from("notes").select("note_id, cn_status, tweet_id, helpful_count, not_helpful_count").order("note_id", { ascending: true }),
+      () => supabase.from("notes").select("note_id, cn_status, tweet_id, helpful_count, not_helpful_count, submitted_at").order("note_id", { ascending: true }),
       "count_notes",
     ),
     // Public-dump rating counts for every note, so the underwater pill count uses
@@ -875,16 +878,28 @@ export async function fetchProductionPillData(): Promise<ProductionPillData> {
   counts.draft_check_failed = checkFailed.count ?? 0;
 
   const tagCounts = new Map<string, number>();
+  const tagCounts30d = new Map<string, number>();
+  // Last-30-days window for the card selector's sort: tags on notes submitted in
+  // the last month track what's going wrong NOW; retired failure modes sink
+  // (Nathan, 2026-07-28). Keyed on the note's submitted_at — prefixed
+  // missed/low-eval targets have no note date and stay out of the 30d counts.
+  const cutoff30d = Date.now() - 30 * 24 * 60 * 60 * 1000;
+  const submittedByNoteId = new Map<string, string | null>();
+  for (const note of notes) submittedByNoteId.set(note.note_id, note.submitted_at ?? null);
   const annotationsSeen: ProductionPillData["annotationsSeen"] = [];
   for (const a of annotationRows) {
     const failureModes = a.failure_modes ?? [];
     for (const m of failureModes) tagCounts.set(m, (tagCounts.get(m) ?? 0) + 1);
+    const submittedAt = submittedByNoteId.get(a.target_id);
+    if (submittedAt && Date.parse(submittedAt) >= cutoff30d) {
+      for (const m of failureModes) tagCounts30d.set(m, (tagCounts30d.get(m) ?? 0) + 1);
+    }
     // target_id is a bare note_id for canonical notes (the common case); prefixed
     // missed/low-eval targets have no note tweet, so no A/B picks.
     annotationsSeen.push({ targetId: a.target_id, failureModes, seen: !!a.seen, abTestPicks: picksForNoteId(a.target_id) });
   }
 
-  return { counts, tagCounts, notesSeen, annotationsSeen };
+  return { counts, tagCounts, tagCounts30d, notesSeen, annotationsSeen };
 }
 
 // ─── Dataset run data ────────────────────────────────────────────────────────

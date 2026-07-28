@@ -302,6 +302,7 @@ export function App() {
   // session and adjusted optimistically on tag edits. Dataset runs derive
   // counts from their (fully loaded) items instead.
   const [productionTagCounts, setProductionTagCounts] = useState<Map<string, number>>(new Map());
+  const [productionTagCounts30d, setProductionTagCounts30d] = useState<Map<string, number>>(new Map());
   // All-time {failureType, seen} per note and {failureModes, seen} per annotation,
   // so the rated/tag pills can show counts under the current seen filter (how many
   // are left to review) rather than the all-time total. Fetched with the counts.
@@ -486,9 +487,10 @@ export function App() {
   useEffect(() => {
     if (dataset.type !== "production") return;
     fetchProductionPillData()
-      .then(({ counts, tagCounts, notesSeen, annotationsSeen }) => {
+      .then(({ counts, tagCounts, tagCounts30d, notesSeen, annotationsSeen }) => {
         setCounts(counts);
         setProductionTagCounts(tagCounts);
+        setProductionTagCounts30d(tagCounts30d);
         setNotesSeen(notesSeen);
         setAnnotationsSeen(annotationsSeen);
       })
@@ -602,6 +604,10 @@ export function App() {
   // (Nathan, 2026-07-21). The little count shown on each chip still reflects the
   // current view (tagCounts); only the sort key is all-time.
   const tagOrderCounts = dataset.type === "production" ? productionTagCounts : itemTagCounts;
+  // The per-card selector dropdown sorts by LAST-30-DAYS usage instead (Nathan,
+  // 2026-07-28: current-view counts made the order reshuffle with every filter;
+  // 30d tracks what's going wrong now, so retired failure modes sink).
+  const cardSelectorCounts = dataset.type === "production" ? productionTagCounts30d : itemTagCounts;
 
   const sortedFailureModes = useMemo(() => {
     const list = showFixedTags ? failureModeCatalog : failureModeCatalog.filter((m) => !m.fixed);
@@ -1056,7 +1062,7 @@ export function App() {
             <NoteCard
               item={item}
               failureModeCatalog={activeFailureModes}
-              failureModeUsage={tagCounts}
+              failureModeUsage={cardSelectorCounts}
               showFixed={showFixedTags}
               showTags={showTags}
               onSeenToggle={handleSeenToggle}
