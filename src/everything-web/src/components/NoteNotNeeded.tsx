@@ -5,7 +5,6 @@ import type { Vote } from "../../../everything-shared/votes";
 import { deleteNnn } from "../../../everything-shared/noteNotNeeded";
 import { tallyVisible } from "../../../everything-shared/noteScore";
 import { MenuItem, TrashIcon } from "./NoteMenu";
-import { RevealOnMount } from "./editorBits";
 
 /** Entry voting + authored-entry bookkeeping, owned by App and shared by
  *  every list on the page. */
@@ -118,9 +117,9 @@ function OwnEntryMenu({ onDelete }: { onDelete: () => void }) {
         ⋯
       </button>
       {open && (
-        <RevealOnMount className="cn-menu absolute left-0 top-7 z-20 w-44 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-1.5 text-sm">
-          <MenuItem onClick={() => { setOpen(false); onDelete(); }} icon={<TrashIcon />} label="Delete" danger />
-        </RevealOnMount>
+        <div className="cn-menu absolute left-0 top-7 z-20 w-44 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-1.5 text-sm">
+          <MenuItem onClick={() => { setOpen(false); onDelete(); }} icon={<TrashIcon />} label="Delete" danger autoFocus />
+        </div>
       )}
     </span>
   );

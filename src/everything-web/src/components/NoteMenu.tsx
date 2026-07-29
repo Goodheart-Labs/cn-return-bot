@@ -5,15 +5,19 @@ import { displayName } from "../../../everything-shared/session";
 import { postImprovement } from "../../../everything-shared/postNote";
 import { postNnn } from "../../../everything-shared/noteNotNeeded";
 import type { NoteRow } from "../../../everything-shared/types";
-import { AutoGrowTextarea, PostAsCheckbox, RejectedNotice, RevealOnMount, useSignedByline } from "./editorBits";
+import { AutoGrowTextarea, PostAsCheckbox, RejectedNotice, useSignedByline } from "./editorBits";
 
 /** One row of the ⋯ dropdown: muted icon, medium-weight label, rounded hover;
  *  danger rows go red with a red hover wash. */
-export function MenuItem({ onClick, icon, label, danger }: {
+export function MenuItem({ onClick, icon, label, danger, autoFocus }: {
   onClick: () => void;
   icon: React.ReactNode;
   label: string;
   danger?: boolean;
+  /** Focus on mount — the native focus-scroll is what reveals a menu that
+   *  opens below the popover's fold (same snap the composers get from their
+   *  autoFocus textarea; no separate scroll mechanism). */
+  autoFocus?: boolean;
 }) {
   const tone = danger
     ? "text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40"
@@ -21,6 +25,7 @@ export function MenuItem({ onClick, icon, label, danger }: {
   return (
     <button
       onClick={onClick}
+      autoFocus={autoFocus}
       className={`flex w-full items-center gap-2.5 text-left px-2.5 py-2 rounded-lg font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${tone}`}
     >
       <span className={`shrink-0 ${danger ? "text-red-500" : "text-gray-400 dark:text-gray-500"}`} aria-hidden>{icon}</span>
@@ -193,22 +198,18 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
           // dropdown hanging below the bottom action row spilled past the edge
           // — revealing a scrollbar instead of the menu. In-flow grows the
           // card, same as the improve/NNN composers.
-          <RevealOnMount className="w-full flex justify-end mt-1">
+          <div className="w-full flex justify-end mt-1">
             <div className="cn-menu w-56 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-1.5 text-sm">
-              <MenuItem onClick={del} icon={<TrashIcon />} label="Delete" danger />
+              <MenuItem onClick={del} icon={<TrashIcon />} label="Delete" danger autoFocus />
             </div>
-          </RevealOnMount>
+          </div>
         )}
       </div>
       {composer === "improve" && session && (
-        <RevealOnMount>
-          <ImproveEditor note={note} session={session} text={improveDraft} onTextChange={setImproveDraft} onAuthored={onAuthored} onClose={() => setComposer(null)} />
-        </RevealOnMount>
+        <ImproveEditor note={note} session={session} text={improveDraft} onTextChange={setImproveDraft} onAuthored={onAuthored} onClose={() => setComposer(null)} />
       )}
       {composer === "nnn" && session && (
-        <RevealOnMount>
-          <NnnComposer note={note} session={session} text={nnnDraft} onTextChange={setNnnDraft} onAuthored={onNnnAuthored} onClose={() => setComposer(null)} />
-        </RevealOnMount>
+        <NnnComposer note={note} session={session} text={nnnDraft} onTextChange={setNnnDraft} onAuthored={onNnnAuthored} onClose={() => setComposer(null)} />
       )}
     </div>
   );

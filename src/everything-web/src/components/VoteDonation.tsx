@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { RevealOnMount } from "./editorBits";
 import { CHARITIES, setDonationCharity, usePreferredCharity, type CharityId } from "../lib/donations";
 import type { DonationPair } from "../lib/donationScoring";
 import type { NoteStatus } from "../../../everything-shared/noteScore";
@@ -43,10 +42,13 @@ function CharityPicker({ charity, onPick, open, setOpen }: {
         {charityLabel(charity)}
       </button>
       {open && (
-        <RevealOnMount className="cn-menu absolute left-0 top-6 z-20 w-72 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-1.5 text-sm">
+        <div className="cn-menu absolute left-0 top-6 z-20 w-72 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-1.5 text-sm">
           {CHARITIES.map((c) => (
             <button
               key={c.id}
+              // Native focus-scroll reveals a menu opening below the
+              // popover's fold — no separate scroll mechanism.
+              autoFocus={c.id === charity}
               onClick={() => {
                 onPick(c.id);
                 setOpen(false);
@@ -59,7 +61,7 @@ function CharityPicker({ charity, onPick, open, setOpen }: {
               {c.label}
             </button>
           ))}
-        </RevealOnMount>
+        </div>
       )}
     </span>
   );
