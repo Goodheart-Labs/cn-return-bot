@@ -69,6 +69,8 @@ function daysUntil(iso: string): number {
 function BurndownBar({ unseen, reviewedToday, ready, inflowPerDay, pacePerDay }: { unseen: number; reviewedToday: number; ready: boolean; inflowPerDay: number; pacePerDay: number }) {
   const todayKey = new Date().toISOString().slice(0, 10);
   const [dayStart, setDayStart] = useState<number | null>(null);
+  // "at this rate" explainer, toggled by clicking the projection text.
+  const [explainOpen, setExplainOpen] = useState(false);
   const [dismissed, setDismissed] = useState<boolean>(() => {
     try { return localStorage.getItem(`reviewDashboard.burndown.dismissed.${new Date().toISOString().slice(0, 10)}`) === "true"; }
     catch { return false; }
@@ -141,14 +143,29 @@ function BurndownBar({ unseen, reviewedToday, ready, inflowPerDay, pacePerDay }:
         </span>
         <span className="text-xs text-gray-500">
           {unseen} unseen · target {targetLabel} ·{" "}
-          <span className={onTrack ? "text-green-600" : "text-amber-600"} title={`pace ${pacePerDay.toFixed(1)}/day − inflow ${inflowPerDay.toFixed(1)}/day`}>
+          <button
+            onClick={() => setExplainOpen((o) => !o)}
+            className={`${onTrack ? "text-green-600" : "text-amber-600"} underline decoration-dotted cursor-help`}
+            title="What does this mean?"
+          >
             at this rate: {projectedLabel}
-          </span>
+          </button>
         </span>
       </div>
       <div className="mt-2 h-1.5 w-full rounded-full bg-gray-200 overflow-hidden">
         <div className={`h-full transition-all duration-300 ${done ? "bg-green-500" : "bg-blue-500"}`} style={{ width: `${pct}%` }} />
       </div>
+      {explainOpen && (
+        <div className="mt-2 text-xs text-gray-500 leading-relaxed">
+          <b>"At this rate"</b> = your average reviewing speed over the last 14 days ({pacePerDay.toFixed(1)}/day,
+          zero-days included) minus new notes joining the pile as they get rated (~{inflowPerDay.toFixed(1)}/day,
+          estimated from the matured 14–44-day cohort). Net ≈ {Math.max(0, pacePerDay - inflowPerDay).toFixed(1)}/day
+          of real shrinkage on {unseen} unseen → zero around <b>{projectedLabel}</b>. If the next months look like the
+          last two weeks, that's when you finish; review more days per week and this date marches toward the{" "}
+          {targetLabel} target (it turns green when it crosses). Today's quota ({quota}) is the honest constant-effort
+          number: backlog ÷ days-left + inflow.
+        </div>
+      )}
     </div>
   );
 }
