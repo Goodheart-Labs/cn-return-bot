@@ -154,7 +154,6 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
   return (
     <div className="mt-1">
       <div ref={ref} className="relative flex flex-wrap justify-end items-center gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
-        {copied && <span className="text-green-700 dark:text-green-400">Link copied</span>}
         {/* Sources + improve + share ride visibly on every card; the ⋯ menu
             only exists for delete on your own notes (Nathan, 2026-07-14 — the
             menu was hiding the whole improve flow). */}
@@ -169,8 +168,11 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
         <button onClick={startImprove} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
           <PencilIcon /> Suggest an improvement
         </button>
-        <button onClick={share} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
-          <ShareIcon /> Share
+        <button
+          onClick={share}
+          className={`inline-flex items-center gap-1 hover:underline ${copied ? "text-green-700 dark:text-green-400" : "text-blue-600 dark:text-blue-400"}`}
+        >
+          <ShareIcon /> {copied ? "Link copied" : "Share"}
         </button>
         {children}
         {mine && (
