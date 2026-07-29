@@ -68,7 +68,7 @@ export function WriteNoteOverlay({ item, selection, session, onClose, onPosted }
               onChange={(e) => { setNote(e.target.value); setRejected(false); }}
               rows={4}
               autoFocus
-              placeholder="Write your correction — include sources as plain URLs…"
+              placeholder="Write your correction"
               className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-3 py-2 text-sm"
             />
             {rejected && (

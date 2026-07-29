@@ -207,7 +207,7 @@ export function WriteNoteModal({ open, onClose, projectId, session, onAuthored }
               value={note}
               onChange={(e) => { setNote(e.target.value); setRejected(false); }}
               rows={4}
-              placeholder="Write your correction — include sources as plain URLs…"
+              placeholder="Write your correction"
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
             />
             {rejected && (
