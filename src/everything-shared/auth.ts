@@ -54,18 +54,14 @@ export function useSession(): { session: Session | null; ready: boolean } {
   return { session, ready };
 }
 
-/** Send a magic link; the user returns to this same page signed in. */
-export function signInWithEmail(email: string) {
-  return supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.href } });
-}
-
-/** Extension email sign-in, step 1: the same email as the magic link also
- *  carries a 6-digit code ({{ .Token }} in the template) — no redirect needed. */
+/** Email sign-in, step 1 (website + extension): the email carries a 6-digit
+ *  code ({{ .Token }} in the templates) — no magic link, so email auth never
+ *  touches the redirect allow-list and works across devices. */
 export function signInWithEmailCode(email: string) {
   return supabase.auth.signInWithOtp({ email });
 }
 
-/** Extension email sign-in, step 2: verify the typed code. */
+/** Email sign-in, step 2: verify the typed code. */
 export function verifyEmailCode(email: string, code: string) {
   return supabase.auth.verifyOtp({ email, token: code, type: "email" });
 }
