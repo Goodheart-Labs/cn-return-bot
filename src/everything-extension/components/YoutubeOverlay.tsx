@@ -176,7 +176,11 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
             if (!inWindow.current && !engaged()) beginHide();
           }}
           style={{ width: NOTE_POPOVER_WIDTH }}
-          className={`max-w-[85vw] max-h-[70vh] overflow-y-auto overscroll-contain bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-2xl p-3 transition-opacity duration-[400ms] ease-out ${visible ? "opacity-100" : "opacity-0"}`}
+          // select-text: user-select resets to `auto` in the shadow root,
+          // which resolves from the PARENT's used value — inside #movie_player
+          // that's YouTube's chrome-wide `none`, making the note text
+          // uncopyable unless we opt back in explicitly.
+          className={`select-text max-w-[85vw] max-h-[70vh] overflow-y-auto overscroll-contain bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-2xl p-3 transition-opacity duration-[400ms] ease-out ${visible ? "opacity-100" : "opacity-0"}`}
         >
           {signInHint && <SignInHint onDismiss={dismissSignInHint} className="mb-2" />}
           <div className="flex items-start justify-between gap-2 mb-2">
