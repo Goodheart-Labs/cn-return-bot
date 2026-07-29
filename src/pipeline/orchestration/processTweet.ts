@@ -23,6 +23,7 @@ import { countNoteLength, joinNoteAndUrl } from "../utils/noteLength";
 import { getBotConfig } from "../ab-testing/botConfig";
 import { getMonitoringContext } from "../misinfo-monitoring/monitoringContext";
 import { runNoteNeededPrefilter } from "../prefilter/noteNeededPrefilter";
+import { runBlockedTopicFilter } from "../prefilter/blockedTopicFilter";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -377,6 +378,68 @@ async function recordFailedRun(
   };
 }
 
+/** Complete the run as rejected at an early gate (before the bot ran) and
+ *  build the ProcessTweetResult the caller returns. */
+async function recordGateRejection(
+  logger: SupabaseLogger | null,
+  pipelineRunId: string | null,
+  bot: Bot,
+  outcomeReason: string,
+  finalStage: string,
+): Promise<ProcessTweetResult> {
+  const log = getTweetLog();
+  log?.set("outcome.result", "rejected");
+  log?.set("outcome.reason", outcomeReason);
+  log?.set("outcome.finalStage", finalStage);
+  const cost = aggregateAndLogCosts()?.cost;
+
+  if (logger && pipelineRunId) {
+    const logs = log ? nestDotKeys(Object.fromEntries(log)) : undefined;
+    const loggedBot = getLoggedBotIdentity(bot.id, log);
+    try {
+      await logger.completePipelineRun(pipelineRunId, {
+        outcome: "rejected",
+        outcome_reason: outcomeReason,
+        final_stage: finalStage,
+        bot_name: loggedBot.name,
+        ab_test_picks: loggedBot.picks,
+        bot_config: loggedBot.config,
+        logs,
+        cost,
+      });
+    } catch (err) {
+      console.warn(`[processTweet] Failed to record ${outcomeReason} rejection:`, err);
+    }
+  }
+
+  return {
+    pipelineResult: null,
+    outcome: "rejected",
+    outcomeReason,
+    finalStage,
+    scores: [],
+    pipelineRunId,
+  };
+}
+
+/**
+ * Blocked-topic gate — always on, runs before everything else (even the
+ * note-needed prefilter). One cheap deepseek call, no tools; if the post is on
+ * a blocked topic the run is completed as rejected/blocked_topic and the bot
+ * never runs. Returns null when the post is clean (proceed).
+ */
+async function runTopicFilterGate(
+  logger: SupabaseLogger | null,
+  pipelineRunId: string | null,
+  post: Post,
+  bot: Bot,
+): Promise<ProcessTweetResult | null> {
+  // runBlockedTopicFilter logs its messages + verdict under topic_filter.*.
+  const verdict = await runBlockedTopicFilter(post);
+  if (!verdict.blocked) return null;
+  return recordGateRejection(logger, pipelineRunId, bot, "blocked_topic", "topic_filter");
+}
+
 /**
  * Cheap note-needed prefilter gate. When `config.note_prefilter` is on (and this
  * isn't the misinfo pre-pass), run the deepseek prefilter before the bot. If it
@@ -395,41 +458,8 @@ async function runPrefilterGate(
   // runNoteNeededPrefilter logs its own steps under note_prefilter_steps.* (incl.
   // the verdict) and folds its cost into the run total.
   const verdict = await runNoteNeededPrefilter(post);
-  const log = getTweetLog();
   if (verdict.needsNote) return null; // proceed to the bot; bot reuses cached input
-
-  log?.set("outcome.result", "rejected");
-  log?.set("outcome.reason", "prefilter_no_note");
-  log?.set("outcome.finalStage", "prefilter");
-  const cost = aggregateAndLogCosts()?.cost;
-
-  if (logger && pipelineRunId) {
-    const logs = log ? nestDotKeys(Object.fromEntries(log)) : undefined;
-    const loggedBot = getLoggedBotIdentity(bot.id, log);
-    try {
-      await logger.completePipelineRun(pipelineRunId, {
-        outcome: "rejected",
-        outcome_reason: "prefilter_no_note",
-        final_stage: "prefilter",
-        bot_name: loggedBot.name,
-        ab_test_picks: loggedBot.picks,
-        bot_config: loggedBot.config,
-        logs,
-        cost,
-      });
-    } catch (err) {
-      console.warn(`[processTweet] Failed to record prefilter rejection:`, err);
-    }
-  }
-
-  return {
-    pipelineResult: null,
-    outcome: "rejected",
-    outcomeReason: "prefilter_no_note",
-    finalStage: "prefilter",
-    scores: [],
-    pipelineRunId,
-  };
+  return recordGateRejection(logger, pipelineRunId, bot, "prefilter_no_note", "prefilter");
 }
 
 // ---------------------------------------------------------------------------
@@ -447,6 +477,9 @@ export async function processSingleTweet(
   }
 
   try {
+    const topicFiltered = await runTopicFilterGate(logger, pipelineRunId, post, bot);
+    if (topicFiltered) return topicFiltered;
+
     const prefiltered = await runPrefilterGate(logger, pipelineRunId, post, bot);
     if (prefiltered) return prefiltered;
 
