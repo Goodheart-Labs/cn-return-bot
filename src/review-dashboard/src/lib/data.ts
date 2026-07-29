@@ -761,10 +761,11 @@ export interface ProductionPillData {
   // recompute the rated pills under the seen + A/B filters ("how many left to
   // review" in this variant, not the all-time total). noteId so the UI can
   // override with live state for loaded notes.
-  notesSeen: { noteId: string; failureType: FailureType; seen: boolean; abTestPicks: AbPicks }[];
+  notesSeen: { noteId: string; failureType: FailureType; seen: boolean; abTestPicks: AbPicks; submittedAt: string | null }[];
   // Per-annotation {targetId, failureModes, seen, abTestPicks}, all-time — same,
-  // for tag pills.
-  annotationsSeen: { targetId: string; failureModes: string[]; seen: boolean; abTestPicks: AbPicks }[];
+  // for tag pills. updatedAt (= when seen was last toggled) feeds the burndown
+  // bar's recent review-pace estimate.
+  annotationsSeen: { targetId: string; failureModes: string[]; seen: boolean; abTestPicks: AbPicks; updatedAt: string | null }[];
 }
 
 /**
@@ -826,7 +827,7 @@ export async function fetchProductionPillData(): Promise<ProductionPillData> {
     fetchAllRows<any>(
       supabase
         .from("review_dashboard_annotations")
-        .select("target_id, seen, failure_modes")
+        .select("target_id, seen, failure_modes, updated_at")
         .eq("source", "production"),
       "production_annotations",
     ),
@@ -870,6 +871,7 @@ export async function fetchProductionPillData(): Promise<ProductionPillData> {
       failureType,
       seen: seenByTargetId.get(note.note_id) ?? false,
       abTestPicks: abPicksByTweet.get(note.tweet_id) ?? null,
+      submittedAt: note.submitted_at ?? null,
     });
   }
   counts.missed_opportunity = missed.count ?? 0;
@@ -896,7 +898,7 @@ export async function fetchProductionPillData(): Promise<ProductionPillData> {
     }
     // target_id is a bare note_id for canonical notes (the common case); prefixed
     // missed/low-eval targets have no note tweet, so no A/B picks.
-    annotationsSeen.push({ targetId: a.target_id, failureModes, seen: !!a.seen, abTestPicks: picksForNoteId(a.target_id) });
+    annotationsSeen.push({ targetId: a.target_id, failureModes, seen: !!a.seen, abTestPicks: picksForNoteId(a.target_id), updatedAt: a.updated_at ?? null });
   }
 
   return { counts, tagCounts, tagCounts30d, notesSeen, annotationsSeen };

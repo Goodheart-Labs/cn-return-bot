@@ -66,7 +66,7 @@ function daysUntil(iso: string): number {
 // quota is anchored to the day's STARTING unseen count (persisted per-day in
 // localStorage) so it doesn't shrink out from under you as you rate — that's what
 // makes "done today" a fixed, hittable bar.
-function BurndownBar({ unseen, reviewedToday, ready }: { unseen: number; reviewedToday: number; ready: boolean }) {
+function BurndownBar({ unseen, reviewedToday, ready, inflowPerDay, pacePerDay }: { unseen: number; reviewedToday: number; ready: boolean; inflowPerDay: number; pacePerDay: number }) {
   const todayKey = new Date().toISOString().slice(0, 10);
   const [dayStart, setDayStart] = useState<number | null>(null);
   const [dismissed, setDismissed] = useState<boolean>(() => {
@@ -95,10 +95,11 @@ function BurndownBar({ unseen, reviewedToday, ready }: { unseen: number; reviewe
 
   if (!ready || dayStart == null || dismissed) return null;
   const daysLeft = daysUntil(BURNDOWN_TARGET_ISO);
-  // Quota = the day's-start backlog spread over the days left. New notes that
-  // arrive today grow tomorrow's backlog → tomorrow's quota, so inflow is
-  // accounted for across days without making today's target a moving goalpost.
-  const quota = Math.max(1, Math.ceil(dayStart / daysLeft));
+  // Quota = the honest constant-effort number for the locked target: today's
+  // share of the backlog PLUS the day's expected inflow (Nathan, 2026-07-29 —
+  // the backlog-only quota looked easy early and silently ramped later; folding
+  // inflow in up front makes every day's bar the same real size).
+  const quota = Math.max(1, Math.ceil(dayStart / daysLeft + inflowPerDay));
   const progress = reviewedToday; // notes YOU marked seen today — inflow-proof
   const done = progress >= quota;
   const remainingToday = Math.max(0, quota - progress);
@@ -106,6 +107,21 @@ function BurndownBar({ unseen, reviewedToday, ready }: { unseen: number; reviewe
   // past it (progress rises) while the bar stays full.
   const pct = done ? 100 : Math.min(100, Math.round((progress / quota) * 100));
   const targetLabel = new Date(BURNDOWN_TARGET_ISO + "T00:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  // Reality check: at the observed 14-day pace, net of inflow, when does the
+  // pile actually hit zero? Diverges (or regresses) → "not at this pace".
+  const netPerDay = pacePerDay - inflowPerDay;
+  let projectedLabel: string;
+  if (netPerDay <= 0.05) {
+    projectedLabel = "not at this pace";
+  } else {
+    const projected = new Date(Date.now() + (unseen / netPerDay) * MS_PER_DAY);
+    projectedLabel = projected.toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+      ...(projected.getFullYear() !== new Date().getFullYear() ? { year: "2-digit" } : {}),
+    });
+  }
+  const onTrack = projectedLabel !== "not at this pace" && Date.now() + (unseen / Math.max(netPerDay, 0.05)) * MS_PER_DAY <= new Date(BURNDOWN_TARGET_ISO + "T23:59:59").getTime();
 
   return (
     <div className={`relative mb-4 rounded-lg border p-3 ${done ? "border-green-300 bg-green-50" : "border-gray-200 bg-gray-50"}`}>
@@ -123,7 +139,12 @@ function BurndownBar({ unseen, reviewedToday, ready }: { unseen: number; reviewe
             ? `✓ Done for today — ${progress} reviewed`
             : `Review ${remainingToday} more today (${progress}/${quota})`}
         </span>
-        <span className="text-xs text-gray-500">{unseen} unseen · clear by {targetLabel}</span>
+        <span className="text-xs text-gray-500">
+          {unseen} unseen · target {targetLabel} ·{" "}
+          <span className={onTrack ? "text-green-600" : "text-amber-600"} title={`pace ${pacePerDay.toFixed(1)}/day − inflow ${inflowPerDay.toFixed(1)}/day`}>
+            at this rate: {projectedLabel}
+          </span>
+        </span>
       </div>
       <div className="mt-2 h-1.5 w-full rounded-full bg-gray-200 overflow-hidden">
         <div className={`h-full transition-all duration-300 ${done ? "bg-green-500" : "bg-blue-500"}`} style={{ width: `${pct}%` }} />
@@ -527,6 +548,35 @@ export function App() {
     return n;
   }, [notesSeen, itemById]);
 
+  // Inflow into the burndown pile (notes/day newly becoming rated/underwater).
+  // Status-change dates aren't stored, so proxy with a matured cohort: burndown
+  // notes SUBMITTED 14-44 days ago (old enough that most of their ratings have
+  // arrived) over that 30-day span. Undercounts slightly while posting volume is
+  // ramping, but it's data-driven and self-corrects as cohorts mature.
+  const burndownInflowPerDay = useMemo(() => {
+    const now = Date.now();
+    const DAY = 86400000;
+    let n = 0;
+    for (const ns of notesSeen) {
+      if (!BURNDOWN_TYPES.has(ns.failureType) || !ns.submittedAt) continue;
+      const age = now - Date.parse(ns.submittedAt);
+      if (age >= 14 * DAY && age < 44 * DAY) n++;
+    }
+    return n / 30;
+  }, [notesSeen]);
+
+  // Nathan's actual recent review pace: seen-annotations toggled in the last 14
+  // days (updated_at moves on any edit, so this can over-count slightly if old
+  // reviews get re-touched — acceptable for a pace estimate).
+  const reviewPacePerDay = useMemo(() => {
+    const cutoff = Date.now() - 14 * 86400000;
+    let n = 0;
+    for (const a of annotationsSeen) {
+      if (a.seen && a.updatedAt && Date.parse(a.updatedAt) >= cutoff) n++;
+    }
+    return n / 14;
+  }, [annotationsSeen]);
+
   // True when any A/B slot is filtered. An empty A/B filter matches everything,
   // so the seen-aware counts already double as A/B-aware ones — we only need the
   // recompute when at least one of the seen / A/B filters is actually narrowing.
@@ -876,7 +926,7 @@ export function App() {
 
       {/* Burn-down pace bar — how much of the review backlog to clear today. */}
       {dataset.type === "production" && (
-        <BurndownBar unseen={burndownUnseen} reviewedToday={reviewedToday} ready={notesSeen.length > 0} />
+        <BurndownBar unseen={burndownUnseen} reviewedToday={reviewedToday} ready={notesSeen.length > 0} inflowPerDay={burndownInflowPerDay} pacePerDay={reviewPacePerDay} />
       )}
 
       {/* Filters */}
