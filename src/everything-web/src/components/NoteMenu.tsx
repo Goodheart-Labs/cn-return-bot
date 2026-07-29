@@ -243,7 +243,7 @@ function NnnComposer({ note, session, text, onTextChange, onAuthored, onClose }:
         authorId: session.user.id,
         authorName: signed ? displayName(session) : null,
       });
-      if (!entryId) return setError("Could not post — try again.");
+      if (!entryId) return setError("Could not post (try again)");
       onTextChange("");
       onAuthored(entryId);
       onClose();
@@ -316,7 +316,7 @@ function ImproveEditor({ note, session, text, onTextChange, onAuthored, onClose 
         onChange={(e) => { onTextChange(e.target.value); setRejected(false); }}
         rows={3}
         autoFocus
-        placeholder="Write a clearer or better-sourced version — it posts as your own note on this claim…"
+        placeholder="Write a clearer or better-sourced version"
       />
       <div className="flex gap-2 items-center">
         <button

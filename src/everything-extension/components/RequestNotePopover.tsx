@@ -31,7 +31,7 @@ export function RequestNotePopover({ selection, state, error, onClose }: {
         <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
       ) : (
         <p className="text-sm text-gray-800 dark:text-gray-200">
-          ✓ Request saved. Common Notes doesn't cover this page yet — requests like yours tell us where to build next.
+          ✓ Thanks for requesting a note — this helps us figure out which platforms to run Common Notes on.
         </p>
       )}
     </div>

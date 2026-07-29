@@ -54,7 +54,7 @@ export function Leaderboard({ session, myVoteCount }: {
           </label>
           {!optIn && (
             <span className="text-gray-400">
-              You're not listed — you've rated {myVoteCount} {myVoteCount === 1 ? "note" : "notes"}
+              You're not listed, you've rated {myVoteCount} {myVoteCount === 1 ? "note" : "notes"}
             </span>
           )}
         </div>
