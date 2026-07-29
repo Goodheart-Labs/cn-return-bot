@@ -27,7 +27,7 @@ export default defineConfig({
   manifest: ({ browser }) => ({
     version: "0.1.0",
     name: "Common Notes",
-    description: "Community notes inline on the pages you read — Substack, YouTube, ai-2040, and more on request.",
+    description: "Community Notes Everywhere (Go to commonnotes.net to see which pages we currently support)",
     icons: { 16: "icon/16.png", 32: "icon/32.png", 48: "icon/48.png", 128: "icon/128.png" },
     action: { default_icon: { 16: "icon/16.png", 32: "icon/32.png" } },
     permissions: ["storage", "identity", "contextMenus", "activeTab", "tabs", "scripting"],
