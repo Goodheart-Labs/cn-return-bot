@@ -13,35 +13,16 @@
             </tr>
             <tr>
               <td style="padding:32px;">
-                <h1 style="margin:0 0 20px;font-size:20px;font-weight:700;color:#111827;">Sign in to Common Notes</h1>
-
-                <!-- Website: one-click link -->
-                <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:#9ca3af;text-transform:uppercase;margin:0 0 8px;">On commonnotes.net</div>
-                <p style="margin:0 0 16px;font-size:15px;line-height:1.5;color:#4b5563;">
-                  Click below to sign in. This link works once and expires shortly.
+                <h1 style="margin:0 0 12px;font-size:20px;font-weight:700;color:#111827;">Sign in to Common Notes</h1>
+                <p style="margin:0 0 20px;font-size:15px;line-height:1.5;color:#4b5563;">
+                  Enter this code where you asked to sign in:
                 </p>
-                <table role="presentation" cellpadding="0" cellspacing="0">
-                  <tr>
-                    <td style="border-radius:8px;background-color:#2563eb;">
-                      <a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:12px 28px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:8px;">
-                        Sign in
-                      </a>
-                    </td>
-                  </tr>
-                </table>
-                <p style="margin:16px 0 0;font-size:13px;line-height:1.5;color:#6b7280;">
-                  Or paste this link into your browser:<br />
-                  <a href="{{ .ConfirmationURL }}" style="color:#2563eb;word-break:break-all;">{{ .ConfirmationURL }}</a>
-                </p>
-
-                <!-- Extension: 6-digit code -->
-                <div style="margin-top:24px;padding:16px 20px;background-color:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;">
-                  <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:#9ca3af;text-transform:uppercase;margin:0 0 8px;">In the browser extension</div>
-                  <p style="margin:0 0 8px;font-size:14px;line-height:1.5;color:#4b5563;">
-                    Enter this code in the extension popup:
-                  </p>
-                  <span style="display:inline-block;font-size:24px;font-weight:700;letter-spacing:6px;color:#111827;">{{ .Token }}</span>
+                <div style="padding:20px;background-color:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;text-align:center;">
+                  <span style="display:inline-block;font-size:28px;font-weight:700;letter-spacing:8px;color:#111827;">{{ .Token }}</span>
                 </div>
+                <p style="margin:16px 0 0;font-size:13px;line-height:1.5;color:#6b7280;">
+                  The code works once and expires shortly.
+                </p>
               </td>
             </tr>
             <tr>
