@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import { browser } from "#imports";
 import { useSession, signOut } from "../../../everything-shared/auth";
-import { displayName } from "../../../everything-shared/session";
-import { fetchItemForUrl, fetchNotesForItem, normalizePageUrl, type PageItem } from "../../../everything-shared/notesQuery";
+import { fetchItemForUrl, fetchNotesForItem, fetchRandomNotedPageUrl, normalizePageUrl, type PageItem } from "../../../everything-shared/notesQuery";
 import { resolveReaderCanonical } from "../../utils/readerCanonical";
-import { COMMONNOTES_ORIGIN } from "../../utils/share";
 import { getEnabledOrigins, updateEnabledOrigins } from "../../utils/settings";
 import { LoginPanel } from "../../components/LoginPanel";
 
 // Sites injected by the static manifest scripts — no opt-in needed (keep in
 // sync with notes.content.ts matches + background.ts STATIC_TEXT_SITES).
 const DEFAULT_SITE = /(^|\.)substack\.com$|(^|\.)youtube\.com$|(^|\.)youtu\.be$|(^|\.)ai-2040\.com$/;
+
+const PRIMARY_BUTTON = "w-full bg-blue-600 text-white rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-blue-700 disabled:opacity-40";
+const SECONDARY_BUTTON = "w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-800 hover:bg-gray-100";
 
 type PageState =
   | { kind: "loading" }
@@ -39,6 +40,27 @@ function usePageState(): PageState {
     })();
   }, []);
   return state;
+}
+
+/** Whether this page's content script has already jumped once — decides the
+ *  "first" vs "next" button label. An unreachable script (not injected,
+ *  orphaned) reads as never-jumped. */
+function useJumped(state: PageState): boolean {
+  const [jumped, setJumped] = useState(false);
+  useEffect(() => {
+    if (state.kind !== "item" || state.noteCount === 0) return;
+    (async () => {
+      const tab = await activeTab();
+      if (tab?.id == null) return;
+      try {
+        const response = await browser.tabs.sendMessage(tab.id, { type: "cn-jump-state" });
+        setJumped(!!(response as { jumped?: boolean })?.jumped);
+      } catch {
+        // no listener in the tab — nothing jumped yet
+      }
+    })();
+  }, [state]);
+  return jumped;
 }
 
 /** Per-site opt-in for generic text sites: request the host permission, then
@@ -91,7 +113,7 @@ function SiteToggle({ origin, hasNotes }: { origin: string; hasNotes: boolean })
       Disable Common Notes on {hostname}
     </button>
   ) : (
-    <button onClick={enable} className="w-full bg-blue-600 text-white rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-blue-700">
+    <button onClick={enable} className={PRIMARY_BUTTON}>
       Show notes inline on {hostname}
     </button>
   );
@@ -112,15 +134,15 @@ const RESEND_INTERVAL_MS = 400;
  *  is cut off from the new extension instance, so sendMessage throws with no
  *  receiver. Heal by reloading the tab and re-sending until the fresh script
  *  answers (it needs a moment to fetch the item and register). */
-async function sendScrollToNotes(tabId: number) {
+async function sendJumpToNote(tabId: number) {
   try {
-    return await browser.tabs.sendMessage(tabId, { type: "cn-scroll-to-notes" });
+    return await browser.tabs.sendMessage(tabId, { type: "cn-jump-note" });
   } catch {
     await browser.tabs.reload(tabId);
     for (let attempt = 0; attempt < RESEND_ATTEMPTS; attempt++) {
       await new Promise((resolve) => setTimeout(resolve, RESEND_INTERVAL_MS));
       try {
-        return await browser.tabs.sendMessage(tabId, { type: "cn-scroll-to-notes" });
+        return await browser.tabs.sendMessage(tabId, { type: "cn-jump-note" });
       } catch {
         // script not up yet — keep trying
       }
@@ -128,56 +150,55 @@ async function sendScrollToNotes(tabId: number) {
   }
 }
 
-function PageSection({ state }: { state: PageState }) {
-  const scrollToNotes = async () => {
-    const tab = await activeTab();
-    if (tab?.id != null && state.kind === "item" && (await hasContentScript(state.origin))) {
-      await sendScrollToNotes(tab.id);
-    }
+/** The popup's one action button: jump through this page's notes when it has
+ *  any, otherwise open a random page that does. */
+function PrimaryAction({ state, jumped }: { state: PageState; jumped: boolean }) {
+  const [busy, setBusy] = useState(false);
+
+  if (state.kind === "loading") return <p className="text-sm text-gray-500">Loading notes…</p>;
+
+  if (state.kind === "item" && state.noteCount > 0) {
+    const jumpToNote = async () => {
+      const tab = await activeTab();
+      if (tab?.id != null && (await hasContentScript(state.origin))) {
+        await sendJumpToNote(tab.id);
+      }
+      window.close();
+    };
+    return (
+      <button onClick={jumpToNote} className={PRIMARY_BUTTON}>
+        {jumped ? "Jump to next note" : "Jump to first note"}
+      </button>
+    );
+  }
+
+  const openRandomPage = async () => {
+    setBusy(true);
+    const url = await fetchRandomNotedPageUrl();
+    if (url) await browser.tabs.create({ url });
     window.close();
   };
-
-  switch (state.kind) {
-    case "loading":
-      return <p className="text-sm text-gray-500">Loading notes…</p>;
-    // Pages without notes (or non-web pages) get no status line at all — the
-    // popup only ever says "loading" or links to the notes.
-    case "unsupported":
-    case "no_item":
-      return null;
-    case "item":
-      if (state.noteCount === 0) return null;
-      return (
-        <button onClick={scrollToNotes} className="text-sm text-blue-600 hover:underline">
-          {state.noteCount} {state.noteCount === 1 ? "note" : "notes"} on this page
-        </button>
-      );
-  }
+  return (
+    <button onClick={openRandomPage} disabled={busy} className={PRIMARY_BUTTON}>
+      Open random page
+    </button>
+  );
 }
 
 export function PopupApp() {
   const { session, ready } = useSession();
   const state = usePageState();
+  const jumped = useJumped(state);
   const showSiteToggle = (state.kind === "no_item" || state.kind === "item") && !DEFAULT_SITE.test(new URL(state.origin).hostname);
 
   return (
     <div className="p-4 space-y-4 bg-gray-50 min-h-[180px]">
-      <div className="flex items-center justify-between">
-        <h1 className="text-base font-extrabold text-gray-900">Common Notes</h1>
-        <a href={COMMONNOTES_ORIGIN} target="_blank" rel="noreferrer" className="text-xs text-blue-600 hover:underline">
-          commonnotes.net
-        </a>
-      </div>
-
-      <PageSection state={state} />
+      <PrimaryAction state={state} jumped={jumped} />
       {showSiteToggle && <SiteToggle origin={state.origin} hasNotes={state.kind === "item" && state.noteCount > 0} />}
 
       <div className="border-t border-gray-200 pt-3">
         {!ready ? null : session ? (
-          <div className="flex items-center justify-between text-sm text-gray-600">
-            <span className="truncate" title={displayName(session)}>{displayName(session)}</span>
-            <button onClick={() => signOut()} className="text-blue-600 hover:underline">Sign out</button>
-          </div>
+          <button onClick={() => signOut()} className={SECONDARY_BUTTON}>Sign out</button>
         ) : (
           <LoginPanel />
         )}

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { Session } from "@supabase/supabase-js";
 import type { NnnApi } from "../../everything-web/src/components/NoteNotNeeded";
@@ -194,15 +194,22 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
     return () => document.removeEventListener("click", onClick);
   }, [groups]);
 
-  // Requests from the popup (scroll to the first note) and the background's
-  // context menu (write a note on the current selection).
+  // Requests from the popup (jump through the notes in document order,
+  // wrapping) and the background's context menu (write a note on the current
+  // selection). The cursor lives here so "next" survives popup reopenings;
+  // it resets with the page.
+  const jumpCursor = useRef(-1);
   useEffect(() => {
-    const first = groups[0];
-    const listener = (message: unknown) => {
+    const ordered = [...groups].sort((a, b) => a.range.compareBoundaryPoints(Range.START_TO_START, b.range));
+    const listener = (message: unknown, _sender: unknown, sendResponse: (response?: unknown) => void) => {
       const { type, selection } = (message as { type?: string; selection?: string }) ?? {};
-      if (type === "cn-scroll-to-notes" && first) {
-        first.range.startContainer.parentElement?.scrollIntoView({ behavior: "smooth", block: "center" });
-        setOpenClaim(first.claimId);
+      if (type === "cn-jump-state") sendResponse({ jumped: jumpCursor.current >= 0 });
+      if (type === "cn-jump-note" && ordered.length) {
+        jumpCursor.current = (jumpCursor.current + 1) % ordered.length;
+        const target = ordered[jumpCursor.current];
+        target.range.startContainer.parentElement?.scrollIntoView({ behavior: "smooth", block: "center" });
+        setOpenClaim(target.claimId);
+        sendResponse({ jumped: true });
       }
       if (type === "cn-write-note" && selection?.trim()) setWriteSelection(selection.trim());
     };

@@ -123,13 +123,19 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
     video.currentTime = target.startSeconds + 0.01;
   };
 
-  // The popup's "n notes on this page" link: bring the player on screen and
-  // jump to the first claim, same as clicking its pin.
+  // The popup's jump button: bring the player on screen and step through the
+  // claims in time order (wrapping), same as clicking their pins. The cursor
+  // lives here so "next" survives popup reopenings; it resets with the page.
+  const jumpCursor = useRef(-1);
   useEffect(() => {
-    const listener = (message: unknown) => {
-      if ((message as { type?: string })?.type === "cn-scroll-to-notes" && groups[0]) {
+    const listener = (message: unknown, _sender: unknown, sendResponse: (response?: unknown) => void) => {
+      const type = (message as { type?: string })?.type;
+      if (type === "cn-jump-state") sendResponse({ jumped: jumpCursor.current >= 0 });
+      if (type === "cn-jump-note" && groups.length) {
+        jumpCursor.current = (jumpCursor.current + 1) % groups.length;
         video.scrollIntoView({ behavior: "smooth", block: "center" });
-        jumpToPin(groups[0]);
+        jumpToPin(groups[jumpCursor.current]);
+        sendResponse({ jumped: true });
       }
     };
     const runtime = (globalThis as any).browser?.runtime ?? (globalThis as any).chrome?.runtime;

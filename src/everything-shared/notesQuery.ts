@@ -174,6 +174,18 @@ export async function fetchItemForUrl(pageUrl: string): Promise<PageItem | null>
   return data?.[0] ? toPageItem(data[0]) : null;
 }
 
+/** A random ingested page with visible notes — the popup's "Open random page"
+ *  target. Synthetic local docs (`local:…`) have no page to open. */
+export async function fetchRandomNotedPageUrl(): Promise<string | null> {
+  const { data } = await supabase
+    .from("everything_notes")
+    .select("claim:everything_claims!inner(item:everything_items!inner(url))")
+    .neq("status", "hidden");
+  const urls = [...new Set((data ?? []).map((r: any) => r.claim.item.url as string))]
+    .filter((url) => !url.startsWith("local:"));
+  return urls[Math.floor(Math.random() * urls.length)] ?? null;
+}
+
 /** All visible notes on one item, joined + normalized. */
 export async function fetchNotesForItem(itemId: string): Promise<NoteRow[]> {
   const schema = await detectSchema();
