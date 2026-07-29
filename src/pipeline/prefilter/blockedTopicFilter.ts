@@ -2,18 +2,10 @@
  * Blocked-topic filter — a single deepseek-v4-flash call (reasoning, no tools,
  * no search) that checks whether a post is on one of the BLOCKED_TOPICS we
  * never write notes on. Runs before everything else — even the note-needed
- * prefilter.
- *
- * Reads the same user message the prefilter and the bot's search step see
- * (createBotInput → buildUserMessageFromInput). The input is built under the
- * AMBIENT bot config — not the filter's — so the in-memory input cache is
- * warmed exactly as the picked bot would build it (author_history, video
- * strategy); only the verdict call runs under the filter's deepseek config.
+ * prefilter. Receives the shared bot-input user message (the same one the
+ * prefilter and the bot's search step see), built once in processSingleTweet.
  */
-import type { Post } from "../../api/fetchEligiblePosts";
 import { withBotConfig, type BotConfig } from "../ab-testing/botConfig";
-import { createBotInput } from "../input/createBotInput";
-import { buildUserMessageFromInput } from "../prompts/input/userMessage";
 import {
   TOPIC_FILTER_SYSTEM_PROMPT,
   TOPIC_FILTER_RESPONSE_FORMAT,
@@ -42,13 +34,11 @@ export interface TopicFilterVerdict {
   reasoning: string;
 }
 
-/** Decide whether `post` is on a blocked topic. Logs its messages + verdict
- *  under `topic_filter.*` on the ambient tweet log; the call's cost lands in
- *  the ambient cost tracker under the `topic_filter` group. */
-export async function runBlockedTopicFilter(post: Post): Promise<TopicFilterVerdict> {
-  const input = await createBotInput(post, `topic-filter:${post.id}`);
-  const userMessage = buildUserMessageFromInput(post, input);
-
+/** Decide whether the post in `userMessage` is on a blocked topic. Logs its
+ *  messages + verdict under `topic_filter.*` on the ambient tweet log; the
+ *  call's cost lands in the ambient cost tracker under the `topic_filter`
+ *  group. */
+export async function runBlockedTopicFilter(userMessage: string): Promise<TopicFilterVerdict> {
   const log = getTweetLog();
   log?.set(`${STEP}.messages.0`, { systemPrompt: TOPIC_FILTER_SYSTEM_PROMPT, userMessage, model: DEEPSEEK });
 

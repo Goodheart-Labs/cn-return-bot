@@ -24,6 +24,8 @@ import { getBotConfig } from "../ab-testing/botConfig";
 import { getMonitoringContext } from "../misinfo-monitoring/monitoringContext";
 import { runNoteNeededPrefilter } from "../prefilter/noteNeededPrefilter";
 import { runBlockedTopicFilter } from "../prefilter/blockedTopicFilter";
+import { createBotInput } from "../input/createBotInput";
+import { buildUserMessageFromInput } from "../prompts/input/userMessage";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -431,11 +433,11 @@ async function recordGateRejection(
 async function runTopicFilterGate(
   logger: SupabaseLogger | null,
   pipelineRunId: string | null,
-  post: Post,
+  userMessage: string,
   bot: Bot,
 ): Promise<ProcessTweetResult | null> {
   // runBlockedTopicFilter logs its messages + verdict under topic_filter.*.
-  const verdict = await runBlockedTopicFilter(post);
+  const verdict = await runBlockedTopicFilter(userMessage);
   if (!verdict.blocked) return null;
   return recordGateRejection(logger, pipelineRunId, bot, "blocked_topic", "topic_filter");
 }
@@ -450,14 +452,14 @@ async function runTopicFilterGate(
 async function runPrefilterGate(
   logger: SupabaseLogger | null,
   pipelineRunId: string | null,
-  post: Post,
+  userMessage: string,
   bot: Bot,
 ): Promise<ProcessTweetResult | null> {
   if (!getBotConfig().note_prefilter || getMonitoringContext()) return null;
 
   // runNoteNeededPrefilter logs its own steps under note_prefilter_steps.* (incl.
   // the verdict) and folds its cost into the run total.
-  const verdict = await runNoteNeededPrefilter(post);
+  const verdict = await runNoteNeededPrefilter(userMessage);
   if (verdict.needsNote) return null; // proceed to the bot; bot reuses cached input
   return recordGateRejection(logger, pipelineRunId, bot, "prefilter_no_note", "prefilter");
 }
@@ -477,10 +479,15 @@ export async function processSingleTweet(
   }
 
   try {
-    const topicFiltered = await runTopicFilterGate(logger, pipelineRunId, post, bot);
+    // Build the shared bot input ONCE. Both gates consume the resulting user
+    // message directly; the bot rebuilds it from the in-memory input cache.
+    const input = await createBotInput(post, `processTweet:${post.id}`);
+    const userMessage = buildUserMessageFromInput(post, input);
+
+    const topicFiltered = await runTopicFilterGate(logger, pipelineRunId, userMessage, bot);
     if (topicFiltered) return topicFiltered;
 
-    const prefiltered = await runPrefilterGate(logger, pipelineRunId, post, bot);
+    const prefiltered = await runPrefilterGate(logger, pipelineRunId, userMessage, bot);
     if (prefiltered) return prefiltered;
 
     const { result } = await runBotPipeline(post, bot);
