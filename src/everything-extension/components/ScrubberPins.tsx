@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { isPageDark, observePageTheme } from "../utils/pageTheme";
 import { GROUP_GLYPH_PATH } from "./ClaimNoteStack";
 import type { TimedGroup } from "./YoutubeOverlay";
 
@@ -19,6 +20,10 @@ const PIN_CSS = `
   pointer-events: auto;
   cursor: pointer;
   transition: transform .15s ease;
+  /* Above YouTube's tall invisible scrub hit-area, which otherwise paints
+     over the pin body and eats its clicks — only the tip poking out above
+     it was clickable. */
+  z-index: 60;
 }
 .cn-scrub-pin:hover { transform: translateX(-50%) scale(1.2); }
 .cn-scrub-pin svg { display: block; width: 18px; height: 24px; filter: drop-shadow(0 1px 1px rgba(0,0,0,.5)); }
@@ -33,29 +38,29 @@ function ensurePinStyle() {
   document.head.appendChild(style);
 }
 
-// The Substack passage badge (white circle, gray border, blue community
-// glyph) in pin form: the head is the badge, the tail's tip points at the
-// timestamp. Colors are the badge's light-theme palette — white pops on the
-// video regardless of YouTube's theme, matching the player's own white
-// scrubber dot.
-const PIN_BODY = "#ffffff";
-const PIN_BORDER = "#d1d5db"; // gray-300, the badge's border
-const PIN_GLYPH = "#2563eb"; // blue-600, the badge's icon tint
+// The Substack passage badge in pin form: the head is the badge, the tail's
+// tip points at the timestamp. Both palettes mirror the badge's (Tailwind
+// can't reach the host DOM, hence inline colors), and the pin follows the
+// same isPageDark/observePageTheme pair the note card's `.dark` toggle uses
+// — one theme source for every YouTube surface.
+const PIN_LIGHT = { body: "#ffffff", border: "#d1d5db", glyph: "#2563eb" }; // white / gray-300 / blue-600
+const PIN_DARK = { body: "#111827", border: "#4b5563", glyph: "#3b82f6" }; // gray-900 / gray-600 / blue-500
 
 /** Badge-in-pin-form marker: circle head tapering into a tail whose tip is
  *  the bottom-center of the viewBox — the tip is what points at the
  *  timestamp. Head center (12, 10.8), the glyph is scaled into it. */
-function PinGlyph() {
+function PinGlyph({ dark }: { dark: boolean }) {
+  const palette = dark ? PIN_DARK : PIN_LIGHT;
   return (
     <svg viewBox="0 0 24 32" aria-hidden>
       <path
         d="M12 1C6.5 1 2 5.4 2 10.8 2 18 12 31 12 31s10-13 10-20.2C22 5.4 17.5 1 12 1z"
-        fill={PIN_BODY}
-        stroke={PIN_BORDER}
+        fill={palette.body}
+        stroke={palette.border}
         strokeWidth="1.5"
       />
       <g transform="translate(4.56 3.36) scale(0.62)">
-        <path d={GROUP_GLYPH_PATH} fill={PIN_GLYPH} />
+        <path d={GROUP_GLYPH_PATH} fill={palette.glyph} />
       </g>
     </svg>
   );
@@ -82,6 +87,8 @@ export function ScrubberPins({ groups, video, player, onPinClick }: {
   const [strip, setStrip] = useState<HTMLElement | null>(null);
   const stripRef = useRef<HTMLElement | null>(null);
   const [duration, setDuration] = useState(video.duration || 0);
+  const [dark, setDark] = useState(() => isPageDark());
+  useEffect(() => observePageTheme(setDark), []);
 
   useEffect(() => {
     ensurePinStyle();
@@ -92,7 +99,7 @@ export function ScrubberPins({ groups, video, player, onPinClick }: {
       if (!el) {
         el = document.createElement("div");
         el.className = "cn-scrub-pins";
-        el.style.cssText = "position:relative;width:100%;height:0;pointer-events:none;";
+        el.style.cssText = "position:relative;width:100%;height:0;pointer-events:none;z-index:60;";
         bar.appendChild(el);
       }
       stripRef.current = el;
@@ -139,7 +146,7 @@ export function ScrubberPins({ groups, video, player, onPinClick }: {
         }}
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <PinGlyph />
+        <PinGlyph dark={dark} />
       </button>
     )),
     strip,
