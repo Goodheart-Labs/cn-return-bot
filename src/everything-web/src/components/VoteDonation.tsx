@@ -156,7 +156,7 @@ export function VoteDonation({ voteId, pair, charity, status, onCharityChange, o
             <CharityPicker charity={charity} onPick={pickCharity} open={pickerOpen} setOpen={setPickerOpen} />.
           </p>
         )}
-        {failed && <p className="text-sm text-red-600 dark:text-red-400 mt-1">Could not switch the charity — try again.</p>}
+        {failed && <p className="text-sm text-red-600 dark:text-red-400 mt-1">Could not switch the charity (try again)</p>}
       </div>
       <button onClick={onClose} className="text-sm text-gray-500 dark:text-gray-400 hover:underline shrink-0">Close</button>
     </div>

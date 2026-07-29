@@ -4,6 +4,7 @@ import { displayName } from "../../everything-shared/session";
 import { normalizeText } from "../../everything-shared/normalizeText";
 import { postClaimWithNote } from "../../everything-shared/postNote";
 import type { PageItem } from "../../everything-shared/notesQuery";
+import { RejectedNotice } from "../../everything-web/src/components/editorBits";
 
 /** Write a note anchored to the reader's selection — the extension's answer
  *  to the website's WriteNoteModal (there you search the transcript; here you
@@ -71,11 +72,7 @@ export function WriteNoteOverlay({ item, selection, session, onClose, onPosted }
               placeholder="Write your correction"
               className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-3 py-2 text-sm"
             />
-            {rejected && (
-              <p className="text-sm rounded-lg p-2 bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900">
-                That didn't look like a genuine note — try again.
-              </p>
-            )}
+            {rejected && <RejectedNotice />}
             <div className="flex gap-2 items-center justify-end">
               <label className="mr-auto flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 cursor-pointer">
                 <input type="checkbox" checked={signed} onChange={(e) => setSigned(e.target.checked)} />

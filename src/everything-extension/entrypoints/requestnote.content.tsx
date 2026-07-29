@@ -91,7 +91,7 @@ export default defineContentScript({
         if (response?.ok) state = "saved";
         else {
           state = "error";
-          error = response?.error ?? "Could not save the request — try reloading the page.";
+          error = response?.error ?? "Could not save the request (try reloading the page)";
         }
         render();
       })();

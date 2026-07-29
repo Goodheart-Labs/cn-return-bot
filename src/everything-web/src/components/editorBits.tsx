@@ -48,7 +48,7 @@ export function PostAsCheckbox({ signed, onChange, session, className }: {
 export function RejectedNotice({ children }: { children?: React.ReactNode }) {
   return (
     <p className="text-sm rounded-lg p-2 bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900">
-      {children ?? "That didn't look like a genuine note — try again."}
+      {children ?? "That didn't look like a genuine note (try again)"}
     </p>
   );
 }

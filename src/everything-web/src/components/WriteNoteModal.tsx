@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "../../../everything-shared/supabase";
 import { postClaimWithNote } from "../../../everything-shared/postNote";
-import { PostAsCheckbox, useSignedByline } from "./editorBits";
+import { PostAsCheckbox, RejectedNotice, useSignedByline } from "./editorBits";
 
 interface SourceItem {
   id: string;
@@ -210,11 +210,7 @@ export function WriteNoteModal({ open, onClose, projectId, session, onAuthored }
               placeholder="Write your correction"
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
             />
-            {rejected && (
-              <p className="text-sm rounded-lg p-2 bg-amber-50 text-amber-800 border border-amber-200">
-                That didn't look like a genuine note — try again.
-              </p>
-            )}
+            {rejected && <RejectedNotice />}
             <div className="flex gap-2 items-center justify-end">
               <PostAsCheckbox signed={signed} onChange={setSigned} session={session} className="mr-auto" />
               <button onClick={() => { setAnchorText(""); setFreeform(false); }} className="text-sm text-gray-500 hover:underline">
