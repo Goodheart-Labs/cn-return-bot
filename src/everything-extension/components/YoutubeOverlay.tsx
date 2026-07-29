@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { NnnApi } from "../../everything-web/src/components/NoteNotNeeded";
 import type { NnnRow, NoteRow } from "../../everything-shared/types";
+import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
+import { onNoteFiltersChanged } from "../utils/settings";
 import { ABSORB_KEYS, ClaimNoteStack, NOTE_POPOVER_WIDTH, SignInHint } from "./ClaimNoteStack";
 import { ScrubberPins } from "./ScrubberPins";
 import { useNoteVoting, replaceNoteInGroup } from "./useNoteVoting";
@@ -116,6 +118,20 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
     if (group) dismissed.current.add(group.claimId);
     beginHide();
   };
+  // An empty-surface click outside the card dismisses it, same strength as
+  // the ✕ (a plain beginHide would re-show on the next in-window timeupdate).
+  // Clicks that do something — the video (play/pause), like, comments — keep
+  // the card up; isInertClick tells them apart by interactive affordance.
+  useEffect(() => {
+    if (!group) return;
+    const onClick = (e: MouseEvent) => {
+      if (insideCommonNotesUi(e) || !isInertClick(e)) return;
+      if (!window.getSelection()?.isCollapsed) return;
+      dismiss();
+    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
+  }, [group]);
   // A pin click is explicit intent: un-dismiss and seek into the window — the
   // resulting timeupdate shows the card.
   const jumpToPin = (target: TimedGroup) => {
@@ -123,13 +139,19 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
     video.currentTime = target.startSeconds + 0.01;
   };
 
-  // The popup's "n notes on this page" link: bring the player on screen and
-  // jump to the first claim, same as clicking its pin.
+  // The popup's jump button: bring the player on screen and step through the
+  // claims in time order (wrapping), same as clicking their pins. The cursor
+  // lives here so "next" survives popup reopenings; it resets with the page.
+  const jumpCursor = useRef(-1);
   useEffect(() => {
-    const listener = (message: unknown) => {
-      if ((message as { type?: string })?.type === "cn-scroll-to-notes" && groups[0]) {
+    const listener = (message: unknown, _sender: unknown, sendResponse: (response?: unknown) => void) => {
+      const type = (message as { type?: string })?.type;
+      if (type === "cn-jump-state") sendResponse({ jumped: jumpCursor.current >= 0 });
+      if (type === "cn-jump-note" && groups.length) {
+        jumpCursor.current = (jumpCursor.current + 1) % groups.length;
         video.scrollIntoView({ behavior: "smooth", block: "center" });
-        jumpToPin(groups[0]);
+        jumpToPin(groups[jumpCursor.current]);
+        sendResponse({ jumped: true });
       }
     };
     const runtime = (globalThis as any).browser?.runtime ?? (globalThis as any).chrome?.runtime;
@@ -137,6 +159,8 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
     return () => runtime?.onMessage.removeListener(listener);
   }, [groups, video]);
   const refresh = async () => setGroups(await refetch());
+  // Popup tickbox flips re-fetch through the new filters, live.
+  useEffect(() => onNoteFiltersChanged(() => void refresh()), []);
   const handleAuthored = (noteId: string) => {
     recordAuthored(noteId);
     void refresh();
@@ -167,7 +191,11 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
             if (!inWindow.current && !engaged()) beginHide();
           }}
           style={{ width: NOTE_POPOVER_WIDTH }}
-          className={`max-w-[85vw] max-h-[70vh] overflow-y-auto overscroll-contain bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-2xl p-3 transition-opacity duration-[400ms] ease-out ${visible ? "opacity-100" : "opacity-0"}`}
+          // select-text: user-select resets to `auto` in the shadow root,
+          // which resolves from the PARENT's used value — inside #movie_player
+          // that's YouTube's chrome-wide `none`, making the note text
+          // uncopyable unless we opt back in explicitly.
+          className={`select-text max-w-[85vw] max-h-[70vh] overflow-y-auto overscroll-contain bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-2xl p-3 transition-opacity duration-[400ms] ease-out ${visible ? "opacity-100" : "opacity-0"}`}
         >
           {signInHint && <SignInHint onDismiss={dismissSignInHint} className="mb-2" />}
           <div className="flex items-start justify-between gap-2 mb-2">

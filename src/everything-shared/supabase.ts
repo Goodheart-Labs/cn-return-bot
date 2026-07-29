@@ -29,6 +29,15 @@ const extensionStorage = local
     }
   : null;
 
+// auth-js defaults its session lock to navigator.locks when present. In a
+// Firefox content script `navigator` is an Xray to the HOST PAGE's, and the
+// lock manager hands back a page-compartment Promise whose `then` the sandbox
+// is denied ("Permission denied to access property 'then'") — killing every
+// query. A pass-through lock skips the API; the only thing left unguarded is
+// a rare concurrent on-demand token refresh, which GoTrue's refresh-token
+// reuse window absorbs.
+const passthroughLock = <R>(_name: string, _acquireTimeout: number, fn: () => Promise<R>) => fn();
+
 export const supabase = createClient(url, anonKey, extensionStorage
-  ? { auth: { storage: extensionStorage, persistSession: true, autoRefreshToken: false, detectSessionInUrl: false } }
+  ? { auth: { storage: extensionStorage, persistSession: true, autoRefreshToken: false, detectSessionInUrl: false, lock: passthroughLock } }
   : undefined);

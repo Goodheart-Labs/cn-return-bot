@@ -9,11 +9,15 @@ import { AutoGrowTextarea, PostAsCheckbox, RejectedNotice, useSignedByline } fro
 
 /** One row of the ⋯ dropdown: muted icon, medium-weight label, rounded hover;
  *  danger rows go red with a red hover wash. */
-export function MenuItem({ onClick, icon, label, danger }: {
+export function MenuItem({ onClick, icon, label, danger, autoFocus }: {
   onClick: () => void;
   icon: React.ReactNode;
   label: string;
   danger?: boolean;
+  /** Focus on mount — the native focus-scroll is what reveals a menu that
+   *  opens below the popover's fold (same snap the composers get from their
+   *  autoFocus textarea; no separate scroll mechanism). */
+  autoFocus?: boolean;
 }) {
   const tone = danger
     ? "text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40"
@@ -21,6 +25,7 @@ export function MenuItem({ onClick, icon, label, danger }: {
   return (
     <button
       onClick={onClick}
+      autoFocus={autoFocus}
       className={`flex w-full items-center gap-2.5 text-left px-2.5 py-2 rounded-lg font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${tone}`}
     >
       <span className={`shrink-0 ${danger ? "text-red-500" : "text-gray-400 dark:text-gray-500"}`} aria-hidden>{icon}</span>
@@ -103,31 +108,39 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
   /** Extra actions slotted between Share and the ⋯ (e.g. improvement jump chips). */
   children?: React.ReactNode;
 }) {
-  const [open, setOpen] = useState(false);
-  const [improving, setImproving] = useState(false);
-  const [composing, setComposing] = useState(false);
+  // One expanded block at a time — the ⋯ menu and the two composers replace
+  // each other (source details stay independent of this group). Drafts
+  // survive switches: the editors unmount when hidden, so their text lives
+  // here in the parent.
+  const [expanded, setExpanded] = useState<"menu" | "improve" | "nnn" | null>(null);
+  const [improveDraft, setImproveDraft] = useState("");
+  const [nnnDraft, setNnnDraft] = useState("");
   const [copied, setCopied] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const mine = !!session && session.user.id === note.author_id;
 
-  // Close the menu on an outside click.
+  // Close the menu when a press lands anywhere outside the action row —
+  // including elsewhere on the note (composers stay put; only an explicit
+  // action closes those). Capture phase + composedPath: the extension's
+  // popover absorbs bubbling mousedowns so the host page never sees them,
+  // which would also shield in-card clicks from a bubble-phase listener.
   useEffect(() => {
-    if (!open) return;
+    if (expanded !== "menu") return;
     const onDown = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      if (ref.current && !e.composedPath().includes(ref.current)) setExpanded(null);
     };
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
-  }, [open]);
+    document.addEventListener("mousedown", onDown, { capture: true });
+    return () => document.removeEventListener("mousedown", onDown, { capture: true });
+  }, [expanded]);
 
   const share = async () => {
-    setOpen(false);
+    setExpanded((prev) => (prev === "menu" ? null : prev));
     await navigator.clipboard.writeText(shareUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
   const del = async () => {
-    setOpen(false);
+    setExpanded(null);
     // The `.select()` echo distinguishes a real delete from an RLS
     // silently-matched-zero-rows no-op (only own draft notes are deletable).
     const { data, error } = await supabase.from("everything_notes").delete().eq("id", note.id).select("id");
@@ -137,15 +150,13 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
     }
     onDeleted?.();
   };
-  const startImprove = () => {
-    setOpen(false);
+  const toggleImprove = () => {
     if (!session) return onNeedLogin();
-    setImproving(true);
+    setExpanded((prev) => (prev === "improve" ? null : "improve"));
   };
-  const startNnn = () => {
-    setOpen(false);
+  const toggleNnn = () => {
     if (!session) return onNeedLogin();
-    setComposing(true);
+    setExpanded((prev) => (prev === "nnn" ? null : "nnn"));
   };
   // The source links sit inline on every card; this toggle only reveals the
   // per-source quote + explanation, so it appears only when a quote exists.
@@ -154,7 +165,6 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
   return (
     <div className="mt-1">
       <div ref={ref} className="relative flex flex-wrap justify-end items-center gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
-        {copied && <span className="text-green-700 dark:text-green-400">Link copied</span>}
         {/* Sources + improve + share ride visibly on every card; the ⋯ menu
             only exists for delete on your own notes (Nathan, 2026-07-14 — the
             menu was hiding the whole improve flow). */}
@@ -163,26 +173,29 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
             <QuoteIcon /> {sourcesOpen ? "Hide source details" : "Show source details"}
           </button>
         )}
-        <button onClick={startNnn} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
+        <button onClick={toggleNnn} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
           <SpeechBubbleIcon /> Note not needed
         </button>
-        <button onClick={startImprove} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
+        <button onClick={toggleImprove} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
           <PencilIcon /> Suggest an improvement
         </button>
-        <button onClick={share} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
-          <ShareIcon /> Share
+        <button
+          onClick={share}
+          className={`inline-flex items-center gap-1 hover:underline ${copied ? "text-green-700 dark:text-green-400" : "text-blue-600 dark:text-blue-400"}`}
+        >
+          {copied ? "Link copied" : <><ShareIcon /> Share</>}
         </button>
         {children}
         {mine && (
           <button
             aria-label="Note actions"
-            onClick={() => setOpen((o) => !o)}
+            onClick={() => setExpanded((prev) => (prev === "menu" ? null : "menu"))}
             className="px-1.5 py-0.5 rounded text-base leading-none text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800"
           >
             ⋯
           </button>
         )}
-        {open && mine && (
+        {expanded === "menu" && mine && (
           // In-flow (w-full wraps to its own line), NOT absolutely positioned:
           // in the extension the card sits in a max-h scroll popover, and a
           // dropdown hanging below the bottom action row spilled past the edge
@@ -190,16 +203,16 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
           // card, same as the improve/NNN composers.
           <div className="w-full flex justify-end mt-1">
             <div className="cn-menu w-56 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-1.5 text-sm">
-              <MenuItem onClick={del} icon={<TrashIcon />} label="Delete" danger />
+              <MenuItem onClick={del} icon={<TrashIcon />} label="Delete" danger autoFocus />
             </div>
           </div>
         )}
       </div>
-      {improving && session && (
-        <ImproveEditor note={note} session={session} onAuthored={onAuthored} onClose={() => setImproving(false)} />
+      {expanded === "improve" && session && (
+        <ImproveEditor note={note} session={session} text={improveDraft} onTextChange={setImproveDraft} onAuthored={onAuthored} onClose={() => setExpanded(null)} />
       )}
-      {composing && session && (
-        <NnnComposer note={note} session={session} onAuthored={onNnnAuthored} onClose={() => setComposing(false)} />
+      {expanded === "nnn" && session && (
+        <NnnComposer note={note} session={session} text={nnnDraft} onTextChange={setNnnDraft} onAuthored={onNnnAuthored} onClose={() => setExpanded(null)} />
       )}
     </div>
   );
@@ -208,13 +221,14 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
 /** Post a "note not needed" argument on the note's claim (ungated, like the
  *  plain discussion it replaces). Claim-keyed, so it shows under every note
  *  on the same text. */
-function NnnComposer({ note, session, onAuthored, onClose }: {
+function NnnComposer({ note, session, text, onTextChange, onAuthored, onClose }: {
   note: NoteRow;
   session: Session;
+  text: string;
+  onTextChange: (text: string) => void;
   onAuthored: (entryId: string) => void;
   onClose: () => void;
 }) {
-  const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [signed, setSigned] = useSignedByline();
@@ -230,6 +244,7 @@ function NnnComposer({ note, session, onAuthored, onClose }: {
         authorName: signed ? displayName(session) : null,
       });
       if (!entryId) return setError("Could not post — try again.");
+      onTextChange("");
       onAuthored(entryId);
       onClose();
     } catch (err) {
@@ -243,7 +258,7 @@ function NnnComposer({ note, session, onAuthored, onClose }: {
     <div className="mt-2 space-y-2">
       <AutoGrowTextarea
         value={text}
-        onChange={(e) => setText(e.target.value)}
+        onChange={(e) => onTextChange(e.target.value)}
         rows={2}
         autoFocus
         placeholder="Why does this claim need no note?"
@@ -268,13 +283,14 @@ function NnnComposer({ note, session, onAuthored, onClose }: {
  *  as its own card, jump-linked to the original (both are rated); it does not
  *  replace it. The judge-note edge function gates it earnest-vs-trolling
  *  before it posts. */
-function ImproveEditor({ note, session, onAuthored, onClose }: {
+function ImproveEditor({ note, session, text, onTextChange, onAuthored, onClose }: {
   note: NoteRow;
   session: Session;
+  text: string;
+  onTextChange: (text: string) => void;
   onAuthored: (noteId: string) => void;
   onClose: () => void;
 }) {
-  const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [rejected, setRejected] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -288,6 +304,7 @@ function ImproveEditor({ note, session, onAuthored, onClose }: {
     setBusy(false);
     if (outcome.type === "rejected") return setRejected(true);
     if (outcome.type === "error") return setError(outcome.message);
+    onTextChange("");
     onAuthored(outcome.noteId);
     onClose();
   };
@@ -296,7 +313,7 @@ function ImproveEditor({ note, session, onAuthored, onClose }: {
     <div className="mt-2 space-y-2">
       <AutoGrowTextarea
         value={text}
-        onChange={(e) => { setText(e.target.value); setRejected(false); }}
+        onChange={(e) => { onTextChange(e.target.value); setRejected(false); }}
         rows={3}
         autoFocus
         placeholder="Write a clearer or better-sourced version — it posts as your own note on this claim…"

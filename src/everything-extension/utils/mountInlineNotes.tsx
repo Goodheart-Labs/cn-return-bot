@@ -5,6 +5,7 @@ import { fetchItemForUrl, normalizePageUrl } from "../../everything-shared/notes
 import { resolveReaderCanonical } from "./readerCanonical";
 import { indexContainer, findQuoteRange } from "./anchor";
 import { fetchClaimGroups, type ClaimGroup } from "./claimGroups";
+import { onNoteFiltersChanged } from "./settings";
 import { isPageDark, observePageTheme } from "./pageTheme";
 import { InlineNotesApp, type AnchoredGroup } from "../components/InlineNotes";
 
@@ -142,6 +143,8 @@ async function mountForUrl(ctx: ContentScriptContext, href: string): Promise<(()
     groups = await fetchClaimGroups(item.id);
     render();
   };
+  // Popup tickbox flips re-fetch through the new filters, live.
+  const stopFilters = onNoteFiltersChanged(() => void refresh());
 
   const ui = await createShadowRootUi(ctx, {
     name: "common-notes-ui",
@@ -185,6 +188,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string): Promise<(()
   observer.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
 
   return () => {
+    stopFilters();
     stopTheme();
     observer.disconnect();
     clearTimeout(timer);

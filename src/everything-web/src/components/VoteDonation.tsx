@@ -46,6 +46,9 @@ function CharityPicker({ charity, onPick, open, setOpen }: {
           {CHARITIES.map((c) => (
             <button
               key={c.id}
+              // Native focus-scroll reveals a menu opening below the
+              // popover's fold — no separate scroll mechanism.
+              autoFocus={c.id === charity}
               onClick={() => {
                 onPick(c.id);
                 setOpen(false);

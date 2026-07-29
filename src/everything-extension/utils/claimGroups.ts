@@ -1,7 +1,8 @@
-import { originalsFirst } from "../../everything-shared/noteScore";
+import { noteStatus, originalsFirst } from "../../everything-shared/noteScore";
 import { fetchNnnForClaims } from "../../everything-shared/noteNotNeeded";
 import { fetchNotesForItem } from "../../everything-shared/notesQuery";
 import type { NnnRow, NoteRow } from "../../everything-shared/types";
+import { getNoteFilters, type NoteFilters } from "./settings";
 
 export type ClaimGroup = { claimId: string; notes: NoteRow[]; nnn: NnnRow[] };
 
@@ -22,10 +23,21 @@ function groupByClaim(notes: NoteRow[], nnn: NnnRow[]): ClaimGroup[] {
   }));
 }
 
-/** An item's notes + its claims' note-not-needed entries, grouped per claim.
- *  Shared by the Substack/generic inline mount and the YouTube overlay. */
+/** Whether the popup's filter tickboxes let this note render — rated-helpful
+ *  notes always show. */
+export function noteVisible(note: NoteRow, filters: NoteFilters): boolean {
+  const status = noteStatus(note);
+  if (status === "needs_ratings") return filters.showNeedsRatings;
+  if (status === "not_helpful") return filters.showUnhelpful;
+  return true;
+}
+
+/** An item's notes + its claims' note-not-needed entries, grouped per claim,
+ *  with the popup's status filters applied. Shared by the Substack/generic
+ *  inline mount and the YouTube overlay. */
 export async function fetchClaimGroups(itemId: string): Promise<ClaimGroup[]> {
-  const notes = await fetchNotesForItem(itemId);
-  const nnn = await fetchNnnForClaims([...new Set(notes.map((n) => n.claim_id))]);
-  return groupByClaim(notes, nnn);
+  const [notes, filters] = await Promise.all([fetchNotesForItem(itemId), getNoteFilters()]);
+  const visible = notes.filter((note) => noteVisible(note, filters));
+  const nnn = await fetchNnnForClaims([...new Set(visible.map((n) => n.claim_id))]);
+  return groupByClaim(visible, nnn);
 }
