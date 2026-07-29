@@ -22,10 +22,6 @@ Return JSON with two fields:
 - reasoning: one sentence, written BEFORE the verdict.
 - blocked: boolean. True if the post is about (or authored by) any listed topic.`;
 
-export function buildTopicFilterUserMessage(authorName: string, postText: string): string {
-  return `## Author\n${authorName}\n\n## Post\n${postText}`;
-}
-
 export const TOPIC_FILTER_RESPONSE_FORMAT = jsonSchemaResponseFormat("blocked_topic_filter", {
   type: "object",
   properties: {
