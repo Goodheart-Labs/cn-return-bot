@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { browser } from "#imports";
 import { useSession, signOut } from "../../../everything-shared/auth";
 import { fetchItemForUrl, fetchNotesForItem, fetchRandomNotedPageUrl, normalizePageUrl, type PageItem } from "../../../everything-shared/notesQuery";
+import type { NoteRow } from "../../../everything-shared/types";
+import { noteVisible } from "../../utils/claimGroups";
 import { resolveReaderCanonical } from "../../utils/readerCanonical";
-import { getEnabledOrigins, updateEnabledOrigins } from "../../utils/settings";
+import { getEnabledOrigins, getNoteFilters, updateEnabledOrigins, updateNoteFilters, type NoteFilters } from "../../utils/settings";
 import { LoginPanel } from "../../components/LoginPanel";
 
 // Sites injected by the static manifest scripts — no opt-in needed (keep in
@@ -17,7 +19,7 @@ type PageState =
   | { kind: "loading" }
   | { kind: "unsupported" } // not http(s)
   | { kind: "no_item"; origin: string }
-  | { kind: "item"; origin: string; item: PageItem; noteCount: number };
+  | { kind: "item"; origin: string; item: PageItem; notes: NoteRow[] };
 
 async function activeTab() {
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
@@ -36,10 +38,47 @@ function usePageState(): PageState {
       const item = await fetchItemForUrl(normalizePageUrl(readerCanonical ?? url));
       if (!item) return setState({ kind: "no_item", origin });
       const notes = await fetchNotesForItem(item.id);
-      setState({ kind: "item", origin, item, noteCount: notes.length });
+      setState({ kind: "item", origin, item, notes });
     })();
   }, []);
   return state;
+}
+
+/** The popup's two tickboxes; writes go to synced storage, which the content
+ *  scripts watch to re-render the open pages live. */
+function useNoteFilters(): [NoteFilters | null, (patch: Partial<NoteFilters>) => void] {
+  const [filters, setFilters] = useState<NoteFilters | null>(null);
+  useEffect(() => {
+    getNoteFilters().then(setFilters);
+  }, []);
+  const toggle = (patch: Partial<NoteFilters>) => {
+    setFilters((prev) => (prev ? { ...prev, ...patch } : prev));
+    void updateNoteFilters(patch);
+  };
+  return [filters, toggle];
+}
+
+function NoteFilterToggles({ filters, onToggle }: { filters: NoteFilters; onToggle: (patch: Partial<NoteFilters>) => void }) {
+  return (
+    <div className="space-y-1.5">
+      <label className="flex items-center gap-2 text-sm text-gray-700">
+        <input
+          type="checkbox"
+          checked={filters.showNeedsRatings}
+          onChange={(e) => onToggle({ showNeedsRatings: e.target.checked })}
+        />
+        Show notes that need more ratings
+      </label>
+      <label className="flex items-center gap-2 text-sm text-gray-700">
+        <input
+          type="checkbox"
+          checked={filters.showUnhelpful}
+          onChange={(e) => onToggle({ showUnhelpful: e.target.checked })}
+        />
+        Show unhelpful notes
+      </label>
+    </div>
+  );
 }
 
 /** Whether this page's content script has already jumped once — decides the
@@ -48,7 +87,7 @@ function usePageState(): PageState {
 function useJumped(state: PageState): boolean {
   const [jumped, setJumped] = useState(false);
   useEffect(() => {
-    if (state.kind !== "item" || state.noteCount === 0) return;
+    if (state.kind !== "item" || state.notes.length === 0) return;
     (async () => {
       const tab = await activeTab();
       if (tab?.id == null) return;
@@ -150,14 +189,14 @@ async function sendJumpToNote(tabId: number) {
   }
 }
 
-/** The popup's one action button: jump through this page's notes when it has
- *  any, otherwise open a random page that does. */
-function PrimaryAction({ state, jumped }: { state: PageState; jumped: boolean }) {
+/** The popup's one action button: jump through this page's visible notes
+ *  when it has any, otherwise open a random page that does. */
+function PrimaryAction({ state, visibleNoteCount, jumped }: { state: PageState; visibleNoteCount: number; jumped: boolean }) {
   const [busy, setBusy] = useState(false);
 
   if (state.kind === "loading") return <p className="text-sm text-gray-500">Loading notes…</p>;
 
-  if (state.kind === "item" && state.noteCount > 0) {
+  if (state.kind === "item" && visibleNoteCount > 0) {
     const jumpToNote = async () => {
       const tab = await activeTab();
       if (tab?.id != null && (await hasContentScript(state.origin))) {
@@ -189,12 +228,17 @@ export function PopupApp() {
   const { session, ready } = useSession();
   const state = usePageState();
   const jumped = useJumped(state);
+  const [filters, toggleFilters] = useNoteFilters();
+  const visibleNoteCount = state.kind === "item" && filters
+    ? state.notes.filter((note) => noteVisible(note, filters)).length
+    : 0;
   const showSiteToggle = (state.kind === "no_item" || state.kind === "item") && !DEFAULT_SITE.test(new URL(state.origin).hostname);
 
   return (
     <div className="p-4 space-y-4 bg-gray-50 min-h-[180px]">
-      <PrimaryAction state={state} jumped={jumped} />
-      {showSiteToggle && <SiteToggle origin={state.origin} hasNotes={state.kind === "item" && state.noteCount > 0} />}
+      <PrimaryAction state={state} visibleNoteCount={visibleNoteCount} jumped={jumped} />
+      {filters && <NoteFilterToggles filters={filters} onToggle={toggleFilters} />}
+      {showSiteToggle && <SiteToggle origin={state.origin} hasNotes={visibleNoteCount > 0} />}
 
       <div className="border-t border-gray-200 pt-3">
         {!ready ? null : session ? (

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { NnnApi } from "../../everything-web/src/components/NoteNotNeeded";
 import type { NnnRow, NoteRow } from "../../everything-shared/types";
+import { onNoteFiltersChanged } from "../utils/settings";
 import { ABSORB_KEYS, ClaimNoteStack, NOTE_POPOVER_WIDTH, SignInHint } from "./ClaimNoteStack";
 import { ScrubberPins } from "./ScrubberPins";
 import { useNoteVoting, replaceNoteInGroup } from "./useNoteVoting";
@@ -143,6 +144,8 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
     return () => runtime?.onMessage.removeListener(listener);
   }, [groups, video]);
   const refresh = async () => setGroups(await refetch());
+  // Popup tickbox flips re-fetch through the new filters, live.
+  useEffect(() => onNoteFiltersChanged(() => void refresh()), []);
   const handleAuthored = (noteId: string) => {
     recordAuthored(noteId);
     void refresh();
