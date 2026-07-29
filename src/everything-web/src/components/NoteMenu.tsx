@@ -172,7 +172,7 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
           onClick={share}
           className={`inline-flex items-center gap-1 hover:underline ${copied ? "text-green-700 dark:text-green-400" : "text-blue-600 dark:text-blue-400"}`}
         >
-          <ShareIcon /> {copied ? "Link copied" : "Share"}
+          {copied ? "Link copied" : <><ShareIcon /> Share</>}
         </button>
         {children}
         {mine && (
