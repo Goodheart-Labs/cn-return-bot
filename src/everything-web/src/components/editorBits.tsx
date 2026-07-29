@@ -1,6 +1,21 @@
+import { useEffect, useRef } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { createLocalPreference } from "../lib/preference";
 import { displayName } from "../../../everything-shared/session";
+
+/** Wrapper that scrolls itself into view when it mounts. Expanding UI
+ *  (⋯ menus, inline composers) in the extension's max-h note popover can
+ *  otherwise open below the fold, invisibly — a component (not a hook)
+ *  because these blocks toggle inside an already-mounted parent, and the
+ *  scroll must fire on the BLOCK's mount. "nearest" is a no-op when the
+ *  block is already visible. */
+export function RevealOnMount({ className, children }: { className?: string; children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    ref.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, []);
+  return <div ref={ref} className={className}>{children}</div>;
+}
 
 /** Shared pieces of the small inline editors (improve a note, argue a note
  *  isn't needed): auto-growing textarea, the opt-in byline checkbox, and the

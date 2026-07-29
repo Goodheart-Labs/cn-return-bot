@@ -5,7 +5,7 @@ import { displayName } from "../../../everything-shared/session";
 import { postImprovement } from "../../../everything-shared/postNote";
 import { postNnn } from "../../../everything-shared/noteNotNeeded";
 import type { NoteRow } from "../../../everything-shared/types";
-import { AutoGrowTextarea, PostAsCheckbox, RejectedNotice, useSignedByline } from "./editorBits";
+import { AutoGrowTextarea, PostAsCheckbox, RejectedNotice, RevealOnMount, useSignedByline } from "./editorBits";
 
 /** One row of the ⋯ dropdown: muted icon, medium-weight label, rounded hover;
  *  danger rows go red with a red hover wash. */
@@ -190,18 +190,22 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
           // dropdown hanging below the bottom action row spilled past the edge
           // — revealing a scrollbar instead of the menu. In-flow grows the
           // card, same as the improve/NNN composers.
-          <div className="w-full flex justify-end mt-1">
+          <RevealOnMount className="w-full flex justify-end mt-1">
             <div className="cn-menu w-56 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-1.5 text-sm">
               <MenuItem onClick={del} icon={<TrashIcon />} label="Delete" danger />
             </div>
-          </div>
+          </RevealOnMount>
         )}
       </div>
       {improving && session && (
-        <ImproveEditor note={note} session={session} onAuthored={onAuthored} onClose={() => setImproving(false)} />
+        <RevealOnMount>
+          <ImproveEditor note={note} session={session} onAuthored={onAuthored} onClose={() => setImproving(false)} />
+        </RevealOnMount>
       )}
       {composing && session && (
-        <NnnComposer note={note} session={session} onAuthored={onNnnAuthored} onClose={() => setComposing(false)} />
+        <RevealOnMount>
+          <NnnComposer note={note} session={session} onAuthored={onNnnAuthored} onClose={() => setComposing(false)} />
+        </RevealOnMount>
       )}
     </div>
   );
