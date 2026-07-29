@@ -119,15 +119,18 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
   const ref = useRef<HTMLDivElement>(null);
   const mine = !!session && session.user.id === note.author_id;
 
-  // Close the menu on an outside click (composers stay put — only an
-  // explicit action closes those).
+  // Close the menu when a press lands anywhere outside the action row —
+  // including elsewhere on the note (composers stay put; only an explicit
+  // action closes those). Capture phase + composedPath: the extension's
+  // popover absorbs bubbling mousedowns so the host page never sees them,
+  // which would also shield in-card clicks from a bubble-phase listener.
   useEffect(() => {
     if (expanded !== "menu") return;
     const onDown = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setExpanded(null);
+      if (ref.current && !e.composedPath().includes(ref.current)) setExpanded(null);
     };
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
+    document.addEventListener("mousedown", onDown, { capture: true });
+    return () => document.removeEventListener("mousedown", onDown, { capture: true });
   }, [expanded]);
 
   const share = async () => {
