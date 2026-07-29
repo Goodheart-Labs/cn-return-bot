@@ -108,34 +108,36 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
   /** Extra actions slotted between Share and the ⋯ (e.g. improvement jump chips). */
   children?: React.ReactNode;
 }) {
-  const [open, setOpen] = useState(false);
-  // One composer visible at a time, but each keeps its draft across switches:
-  // the editors unmount when hidden, so the text lives here in the parent.
-  const [composer, setComposer] = useState<"improve" | "nnn" | null>(null);
+  // One expanded block at a time — the ⋯ menu and the two composers replace
+  // each other (source details stay independent of this group). Drafts
+  // survive switches: the editors unmount when hidden, so their text lives
+  // here in the parent.
+  const [expanded, setExpanded] = useState<"menu" | "improve" | "nnn" | null>(null);
   const [improveDraft, setImproveDraft] = useState("");
   const [nnnDraft, setNnnDraft] = useState("");
   const [copied, setCopied] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const mine = !!session && session.user.id === note.author_id;
 
-  // Close the menu on an outside click.
+  // Close the menu on an outside click (composers stay put — only an
+  // explicit action closes those).
   useEffect(() => {
-    if (!open) return;
+    if (expanded !== "menu") return;
     const onDown = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target as Node)) setExpanded(null);
     };
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
-  }, [open]);
+  }, [expanded]);
 
   const share = async () => {
-    setOpen(false);
+    setExpanded((prev) => (prev === "menu" ? null : prev));
     await navigator.clipboard.writeText(shareUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
   const del = async () => {
-    setOpen(false);
+    setExpanded(null);
     // The `.select()` echo distinguishes a real delete from an RLS
     // silently-matched-zero-rows no-op (only own draft notes are deletable).
     const { data, error } = await supabase.from("everything_notes").delete().eq("id", note.id).select("id");
@@ -146,14 +148,12 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
     onDeleted?.();
   };
   const startImprove = () => {
-    setOpen(false);
     if (!session) return onNeedLogin();
-    setComposer("improve");
+    setExpanded("improve");
   };
   const startNnn = () => {
-    setOpen(false);
     if (!session) return onNeedLogin();
-    setComposer("nnn");
+    setExpanded("nnn");
   };
   // The source links sit inline on every card; this toggle only reveals the
   // per-source quote + explanation, so it appears only when a quote exists.
@@ -186,13 +186,13 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
         {mine && (
           <button
             aria-label="Note actions"
-            onClick={() => setOpen((o) => !o)}
+            onClick={() => setExpanded((prev) => (prev === "menu" ? null : "menu"))}
             className="px-1.5 py-0.5 rounded text-base leading-none text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800"
           >
             ⋯
           </button>
         )}
-        {open && mine && (
+        {expanded === "menu" && mine && (
           // In-flow (w-full wraps to its own line), NOT absolutely positioned:
           // in the extension the card sits in a max-h scroll popover, and a
           // dropdown hanging below the bottom action row spilled past the edge
@@ -205,11 +205,11 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
           </div>
         )}
       </div>
-      {composer === "improve" && session && (
-        <ImproveEditor note={note} session={session} text={improveDraft} onTextChange={setImproveDraft} onAuthored={onAuthored} onClose={() => setComposer(null)} />
+      {expanded === "improve" && session && (
+        <ImproveEditor note={note} session={session} text={improveDraft} onTextChange={setImproveDraft} onAuthored={onAuthored} onClose={() => setExpanded(null)} />
       )}
-      {composer === "nnn" && session && (
-        <NnnComposer note={note} session={session} text={nnnDraft} onTextChange={setNnnDraft} onAuthored={onNnnAuthored} onClose={() => setComposer(null)} />
+      {expanded === "nnn" && session && (
+        <NnnComposer note={note} session={session} text={nnnDraft} onTextChange={setNnnDraft} onAuthored={onNnnAuthored} onClose={() => setExpanded(null)} />
       )}
     </div>
   );
