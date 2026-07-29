@@ -76,7 +76,7 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
           </form>
         ) : (
           <form onSubmit={verify} className="space-y-2">
-            <p className="text-sm text-gray-500">We emailed a 6-digit code to <span className="font-medium text-gray-700">{email.trim()}</span>.</p>
+            <p className="text-sm text-gray-500">Enter the code we sent to <span className="font-medium text-gray-700">{email.trim()}</span>.</p>
             <input
               inputMode="numeric"
               autoFocus

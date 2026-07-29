@@ -84,7 +84,7 @@ export function LoginPanel() {
         </form>
       ) : (
         <form className="space-y-2" onSubmit={(e) => { e.preventDefault(); verify(); }}>
-          <p className="text-xs text-gray-500">We emailed a 6-digit code to {email.trim()}.</p>
+          <p className="text-xs text-gray-500">Enter the code we sent to {email.trim()}.</p>
           <div className="flex gap-2">
             <input
               inputMode="numeric"
