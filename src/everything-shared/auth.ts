@@ -54,7 +54,11 @@ export function useSession(): { session: Session | null; ready: boolean } {
   return { session, ready };
 }
 
-/** Email sign-in, step 1 (website + extension): the email carries a 6-digit
+/** Supabase's standard email OTP length (mirrored by config.toml's
+ *  auth.email.otp_length for local dev). */
+export const EMAIL_OTP_LENGTH = 8;
+
+/** Email sign-in, step 1 (website + extension): the email carries an 8-digit
  *  code ({{ .Token }} in the templates) — no magic link, so email auth never
  *  touches the redirect allow-list and works across devices. */
 export function signInWithEmailCode(email: string) {

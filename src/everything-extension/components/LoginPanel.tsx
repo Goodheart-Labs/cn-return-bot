@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { browser } from "#imports";
-import { signInWithEmailCode, verifyEmailCode } from "../../everything-shared/auth";
+import { EMAIL_OTP_LENGTH, signInWithEmailCode, verifyEmailCode } from "../../everything-shared/auth";
 
 // The popup CLOSES when the user switches to their mail client to fetch the
 // code, wiping React state — persist the awaiting-code email so reopening the
@@ -9,7 +9,7 @@ import { signInWithEmailCode, verifyEmailCode } from "../../everything-shared/au
 const PENDING_EMAIL_KEY = "cn-login-pending-email";
 const pendingStore = () => browser.storage.session ?? browser.storage.local;
 
-/** Popup sign-in: email → 6-digit code (no redirects), or X OAuth via the
+/** Popup sign-in: email → 8-digit code (no redirects), or X OAuth via the
  *  background's launchWebAuthFlow. Session lands in chrome.storage.local and
  *  reaches every context through useSession's storage listener. */
 export function LoginPanel() {
@@ -91,12 +91,12 @@ export function LoginPanel() {
               autoFocus
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder="123456"
+              placeholder="12345678"
               className="flex-1 min-w-0 border border-gray-300 rounded-lg px-2.5 py-1.5 text-sm tracking-widest"
             />
             <button
               type="submit"
-              disabled={busy || code.trim().length < 6}
+              disabled={busy || code.trim().length < EMAIL_OTP_LENGTH}
               className="bg-blue-600 text-white rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-blue-700 disabled:opacity-40"
             >
               Verify

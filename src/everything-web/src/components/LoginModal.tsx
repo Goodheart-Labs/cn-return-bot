@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
-import { signInWithEmailCode, verifyEmailCode, signInWithTwitter } from "../../../everything-shared/auth";
+import { EMAIL_OTP_LENGTH, signInWithEmailCode, verifyEmailCode, signInWithTwitter } from "../../../everything-shared/auth";
 
 const X_SIGNIN_ENABLED = true;
 
-/** Email sign-in is a 6-digit code typed here (same flow as the extension
+/** Email sign-in is an 8-digit code typed here (same flow as the extension
  *  popup) — the tab keeps its state while the user fetches the code, so no
  *  persistence is needed. Verifying sets the session in this context, so the
  *  modal closes itself. */
@@ -83,12 +83,12 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
               required
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder="123456"
+              placeholder="12345678"
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm tracking-widest"
             />
             <button
               type="submit"
-              disabled={busy || code.trim().length < 6}
+              disabled={busy || code.trim().length < EMAIL_OTP_LENGTH}
               className="w-full bg-blue-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-blue-700 disabled:opacity-40"
             >
               Verify

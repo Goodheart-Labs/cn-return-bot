@@ -154,7 +154,7 @@ enabled = true
 site_url = "http://localhost:8003"
 # A list of URLs (globs allowed) auth providers may redirect to post authentication.
 # Add the deployed GitHub Pages notes URL here for prod X sign-in. (Email
-# sign-in is a typed 6-digit code on both surfaces — no redirects involved.)
+# sign-in is a typed 8-digit code on both surfaces — no redirects involved.)
 # The chromiumapp.org / allizom.org wildcards are the browser-extension OAuth
 # redirect URLs (launchWebAuthFlow); mirror them in the prod dashboard's
 # allow-list, with the real extension IDs, for X sign-in from the extension.
@@ -216,8 +216,9 @@ enable_confirmations = false
 secure_password_change = false
 # Controls the minimum amount of time that must pass before sending another signup confirmation or password reset email.
 max_frequency = "1s"
-# Number of characters used in the email OTP.
-otp_length = 6
+# Number of characters used in the email OTP. Matches prod's standard 8 —
+# the UI gates on EMAIL_OTP_LENGTH in everything-shared/auth.ts.
+otp_length = 8
 # Number of seconds before the email OTP expires (defaults to 1 hour).
 otp_expiry = 3600
 
