@@ -104,8 +104,11 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
   children?: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
-  const [improving, setImproving] = useState(false);
-  const [composing, setComposing] = useState(false);
+  // One composer visible at a time, but each keeps its draft across switches:
+  // the editors unmount when hidden, so the text lives here in the parent.
+  const [composer, setComposer] = useState<"improve" | "nnn" | null>(null);
+  const [improveDraft, setImproveDraft] = useState("");
+  const [nnnDraft, setNnnDraft] = useState("");
   const [copied, setCopied] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const mine = !!session && session.user.id === note.author_id;
@@ -140,12 +143,12 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
   const startImprove = () => {
     setOpen(false);
     if (!session) return onNeedLogin();
-    setImproving(true);
+    setComposer("improve");
   };
   const startNnn = () => {
     setOpen(false);
     if (!session) return onNeedLogin();
-    setComposing(true);
+    setComposer("nnn");
   };
   // The source links sit inline on every card; this toggle only reveals the
   // per-source quote + explanation, so it appears only when a quote exists.
@@ -197,14 +200,14 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
           </RevealOnMount>
         )}
       </div>
-      {improving && session && (
+      {composer === "improve" && session && (
         <RevealOnMount>
-          <ImproveEditor note={note} session={session} onAuthored={onAuthored} onClose={() => setImproving(false)} />
+          <ImproveEditor note={note} session={session} text={improveDraft} onTextChange={setImproveDraft} onAuthored={onAuthored} onClose={() => setComposer(null)} />
         </RevealOnMount>
       )}
-      {composing && session && (
+      {composer === "nnn" && session && (
         <RevealOnMount>
-          <NnnComposer note={note} session={session} onAuthored={onNnnAuthored} onClose={() => setComposing(false)} />
+          <NnnComposer note={note} session={session} text={nnnDraft} onTextChange={setNnnDraft} onAuthored={onNnnAuthored} onClose={() => setComposer(null)} />
         </RevealOnMount>
       )}
     </div>
@@ -214,13 +217,14 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
 /** Post a "note not needed" argument on the note's claim (ungated, like the
  *  plain discussion it replaces). Claim-keyed, so it shows under every note
  *  on the same text. */
-function NnnComposer({ note, session, onAuthored, onClose }: {
+function NnnComposer({ note, session, text, onTextChange, onAuthored, onClose }: {
   note: NoteRow;
   session: Session;
+  text: string;
+  onTextChange: (text: string) => void;
   onAuthored: (entryId: string) => void;
   onClose: () => void;
 }) {
-  const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [signed, setSigned] = useSignedByline();
@@ -236,6 +240,7 @@ function NnnComposer({ note, session, onAuthored, onClose }: {
         authorName: signed ? displayName(session) : null,
       });
       if (!entryId) return setError("Could not post — try again.");
+      onTextChange("");
       onAuthored(entryId);
       onClose();
     } catch (err) {
@@ -249,7 +254,7 @@ function NnnComposer({ note, session, onAuthored, onClose }: {
     <div className="mt-2 space-y-2">
       <AutoGrowTextarea
         value={text}
-        onChange={(e) => setText(e.target.value)}
+        onChange={(e) => onTextChange(e.target.value)}
         rows={2}
         autoFocus
         placeholder="Why does this claim need no note?"
@@ -274,13 +279,14 @@ function NnnComposer({ note, session, onAuthored, onClose }: {
  *  as its own card, jump-linked to the original (both are rated); it does not
  *  replace it. The judge-note edge function gates it earnest-vs-trolling
  *  before it posts. */
-function ImproveEditor({ note, session, onAuthored, onClose }: {
+function ImproveEditor({ note, session, text, onTextChange, onAuthored, onClose }: {
   note: NoteRow;
   session: Session;
+  text: string;
+  onTextChange: (text: string) => void;
   onAuthored: (noteId: string) => void;
   onClose: () => void;
 }) {
-  const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [rejected, setRejected] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -294,6 +300,7 @@ function ImproveEditor({ note, session, onAuthored, onClose }: {
     setBusy(false);
     if (outcome.type === "rejected") return setRejected(true);
     if (outcome.type === "error") return setError(outcome.message);
+    onTextChange("");
     onAuthored(outcome.noteId);
     onClose();
   };
@@ -302,7 +309,7 @@ function ImproveEditor({ note, session, onAuthored, onClose }: {
     <div className="mt-2 space-y-2">
       <AutoGrowTextarea
         value={text}
-        onChange={(e) => { setText(e.target.value); setRejected(false); }}
+        onChange={(e) => { onTextChange(e.target.value); setRejected(false); }}
         rows={3}
         autoFocus
         placeholder="Write a clearer or better-sourced version — it posts as your own note on this claim…"

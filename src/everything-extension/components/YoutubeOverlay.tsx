@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { NnnApi } from "../../everything-web/src/components/NoteNotNeeded";
 import type { NnnRow, NoteRow } from "../../everything-shared/types";
+import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
 import { onNoteFiltersChanged } from "../utils/settings";
 import { ABSORB_KEYS, ClaimNoteStack, NOTE_POPOVER_WIDTH, SignInHint } from "./ClaimNoteStack";
 import { ScrubberPins } from "./ScrubberPins";
@@ -117,6 +118,20 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
     if (group) dismissed.current.add(group.claimId);
     beginHide();
   };
+  // An empty-surface click outside the card dismisses it, same strength as
+  // the ✕ (a plain beginHide would re-show on the next in-window timeupdate).
+  // Clicks that do something — the video (play/pause), like, comments — keep
+  // the card up; isInertClick tells them apart by interactive affordance.
+  useEffect(() => {
+    if (!group) return;
+    const onClick = (e: MouseEvent) => {
+      if (insideCommonNotesUi(e) || !isInertClick(e)) return;
+      if (!window.getSelection()?.isCollapsed) return;
+      dismiss();
+    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
+  }, [group]);
   // A pin click is explicit intent: un-dismiss and seek into the window — the
   // resulting timeupdate shows the card.
   const jumpToPin = (target: TimedGroup) => {

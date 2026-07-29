@@ -5,6 +5,7 @@ import type { NnnApi } from "../../everything-web/src/components/NoteNotNeeded";
 import type { Vote } from "../../everything-shared/votes";
 import type { NnnRow, NoteRow } from "../../everything-shared/types";
 import type { PageItem } from "../../everything-shared/notesQuery";
+import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
 import { ABSORB_KEYS, ClaimNoteStack, GroupIcon, NOTE_POPOVER_WIDTH, SignInHint } from "./ClaimNoteStack";
 import { NoteWithActions } from "./NoteWithActions";
 import { useNoteVoting, replaceNoteInGroup } from "./useNoteVoting";
@@ -177,19 +178,18 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
       }
       return null;
     };
-    // Clicks inside our own overlay bubble out of the shadow root too — the
-    // popover overlaps page text, so without this guard a vote click would
-    // also hit-test the passage underneath and open ITS note.
-    const insideOurUi = (e: MouseEvent) => e.composedPath().some((n) => {
-      const tag = (n as Element).tagName;
-      return tag === "COMMON-NOTES-UI" || tag === "COMMON-NOTES-INLINE";
-    });
     const onDown = (e: MouseEvent) => {
-      if (insideOurUi(e) || claimAt(e.clientX, e.clientY)) return;
+      // Clicks inside our own overlay bubble out of the shadow root too — the
+      // popover overlaps page text, so without this guard a vote click would
+      // also hit-test the passage underneath and open ITS note.
+      if (insideCommonNotesUi(e) || claimAt(e.clientX, e.clientY)) return;
+      // Only empty-surface presses close the note: a click that does
+      // something (a link, a like button) shouldn't also dismiss it.
+      if (!isInertClick(e)) return;
       setOpenClaim(null);
     };
     const onClick = (e: MouseEvent) => {
-      if (insideOurUi(e)) return;
+      if (insideCommonNotesUi(e)) return;
       // A drag-selection (e.g. selecting text to write a note on) ends in a
       // click too — don't hijack it.
       if (!window.getSelection()?.isCollapsed) return;
