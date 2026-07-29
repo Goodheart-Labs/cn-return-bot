@@ -147,13 +147,13 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
     }
     onDeleted?.();
   };
-  const startImprove = () => {
+  const toggleImprove = () => {
     if (!session) return onNeedLogin();
-    setExpanded("improve");
+    setExpanded((prev) => (prev === "improve" ? null : "improve"));
   };
-  const startNnn = () => {
+  const toggleNnn = () => {
     if (!session) return onNeedLogin();
-    setExpanded("nnn");
+    setExpanded((prev) => (prev === "nnn" ? null : "nnn"));
   };
   // The source links sit inline on every card; this toggle only reveals the
   // per-source quote + explanation, so it appears only when a quote exists.
@@ -170,10 +170,10 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
             <QuoteIcon /> {sourcesOpen ? "Hide source details" : "Show source details"}
           </button>
         )}
-        <button onClick={startNnn} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
+        <button onClick={toggleNnn} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
           <SpeechBubbleIcon /> Note not needed
         </button>
-        <button onClick={startImprove} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
+        <button onClick={toggleImprove} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
           <PencilIcon /> Suggest an improvement
         </button>
         <button
