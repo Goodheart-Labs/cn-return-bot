@@ -31,11 +31,14 @@ export default defineConfig({
     icons: { 16: "icon/16.png", 32: "icon/32.png", 48: "icon/48.png", 128: "icon/128.png" },
     action: { default_icon: { 16: "icon/16.png", 32: "icon/32.png" } },
     permissions: ["storage", "identity", "contextMenus", "activeTab", "tabs", "scripting"],
-    // Lets the BACKGROUND fetch substack.com (reader-URL canonical resolution
-    // — the logged-out 302 to the publication domain is cross-origin, which
-    // content scripts can't follow). Same scope as the substack content
-    // script, so no new install warning.
-    host_permissions: ["*://*.substack.com/*"],
+    // substack.com lets the BACKGROUND fetch reader-URL canonicals (the
+    // logged-out 302 to the publication domain is cross-origin, which content
+    // scripts can't follow; same scope as the substack content script, so no
+    // new install warning). supabase.co lets CONTENT SCRIPTS reach the
+    // backend in Firefox, which blocks their cross-origin fetches to
+    // non-permitted hosts outright (NetworkError) — Chrome lets them ride
+    // the page's CORS, but Firefox only exempts permissioned hosts.
+    host_permissions: ["*://*.substack.com/*", "https://*.supabase.co/*"],
     // Generic text sites are opt-in per site from the popup; only Substack and
     // YouTube are injected by default.
     optional_host_permissions: ["<all_urls>"],
