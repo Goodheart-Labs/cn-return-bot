@@ -64,6 +64,13 @@ export interface BotConfig {
    * NOTE_PREFILTER_TEST; defaults false.
    */
   note_prefilter?: boolean;
+  /**
+   * When true, a blocked-topic gate runs before everything else (even the
+   * note-needed prefilter): one deepseek-v4-flash call checks the post against
+   * BLOCKED_TOPICS and skips the run (rejected / blocked_topic) on a hit. Set
+   * by TOPIC_FILTER_TEST; defaults false.
+   */
+  topic_filter?: boolean;
   /** Model for the cheap-bot satire detector. Defaults to `note_judge_model`
    *  then `model`. Decouples the satire detector from the note-needed judge
    *  (which also reads `note_judge_model`) so they can run on different models. */
