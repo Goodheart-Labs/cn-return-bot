@@ -8,7 +8,7 @@ import { registerDevReloadHook } from "../utils/devReload";
 // newsletters and other text sites go through the opt-in generic script
 // instead.
 export default defineContentScript({
-  matches: ["*://*.substack.com/*", "*://*.ai-2040.com/*"],
+  matches: ["*://*.substack.com/*"],
   cssInjectionMode: "ui",
   async main(ctx) {
     registerDevReloadHook(ctx);
