@@ -5,12 +5,9 @@ import { fetchItemForUrl, fetchNotesForItem, fetchRandomNotedPageUrl, normalizeP
 import type { NoteRow } from "../../../everything-shared/types";
 import { noteVisible } from "../../utils/claimGroups";
 import { resolveReaderCanonical } from "../../utils/readerCanonical";
-import { getEnabledOrigins, getNoteFilters, updateEnabledOrigins, updateNoteFilters, type NoteFilters } from "../../utils/settings";
+import { getNoteFilters, updateNoteFilters, type NoteFilters } from "../../utils/settings";
+import { STATIC_SITE_HOSTNAME } from "../../utils/staticSites";
 import { LoginPanel } from "../../components/LoginPanel";
-
-// Sites injected by the static manifest scripts — no opt-in needed (keep in
-// sync with notes.content.ts matches + background.ts STATIC_TEXT_SITES).
-const DEFAULT_SITE = /(^|\.)substack\.com$|(^|\.)youtube\.com$|(^|\.)youtu\.be$/;
 
 const PRIMARY_BUTTON = "w-full bg-blue-600 text-white rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-blue-700 disabled:opacity-40";
 const SECONDARY_BUTTON = "w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-800 hover:bg-gray-100";
@@ -102,90 +99,41 @@ function useJumped(state: PageState): boolean {
   return jumped;
 }
 
-/** Per-site opt-in for generic text sites: request the host permission, then
- *  register the generic content script for that origin (persists across
- *  restarts). Substack/YouTube are always on via the static manifest.
- *  Only offered when the page actually has notes — asking for a permission
- *  on a site we have nothing to show on is pure noise. Already-enabled
- *  origins still get the disable link so the grant stays revocable. */
-function SiteToggle({ origin, hasNotes }: { origin: string; hasNotes: boolean }) {
-  const [enabled, setEnabled] = useState<boolean | null>(null);
-  const hostname = new URL(origin).hostname;
-  const scriptId = `cn-generic-${hostname}`;
-  const originPattern = `${origin}/*`;
-
-  useEffect(() => {
-    browser.scripting.getRegisteredContentScripts({ ids: [scriptId] })
-      .then((scripts) => setEnabled(scripts.length > 0))
-      .catch(() => setEnabled(false));
-  }, [scriptId]);
-
-  const enable = async () => {
-    const granted = await browser.permissions.request({ origins: [originPattern] });
-    if (!granted) return;
-    await browser.scripting.registerContentScripts([{
-      id: scriptId,
-      matches: [originPattern],
-      js: ["/content-scripts/generic.js"],
-      runAt: "document_idle",
-      persistAcrossSessions: true,
-    }]);
-    await updateEnabledOrigins((origins) => [...new Set([...origins, origin])]);
-    // Inject into the current tab right away instead of asking for a reload.
-    const tab = await activeTab();
-    if (tab?.id != null) {
-      await browser.scripting.executeScript({ target: { tabId: tab.id }, files: ["/content-scripts/generic.js"] }).catch(() => {});
-    }
-    setEnabled(true);
-  };
-
-  const disable = async () => {
-    await browser.scripting.unregisterContentScripts({ ids: [scriptId] }).catch(() => {});
-    await browser.permissions.remove({ origins: [originPattern] }).catch(() => {});
-    await updateEnabledOrigins((origins) => origins.filter((o) => o !== origin));
-    setEnabled(false);
-  };
-
-  if (enabled === null || (!enabled && !hasNotes)) return null;
-  return enabled ? (
-    <button onClick={disable} className="text-xs text-gray-500 hover:underline">
-      Disable Common Notes on {hostname}
-    </button>
-  ) : (
-    <button onClick={enable} className={PRIMARY_BUTTON}>
-      Show notes inline on {hostname}
-    </button>
-  );
-}
-
-/** True when this origin gets our content script (static site or opt-in) —
- *  the heal below must not reload pages we could never answer from. */
+/** True when this origin already gets our content script (static site or a
+ *  registration from the background's noted-sites sync) — decides whether
+ *  the jump below may heal by reloading, or must inject directly first. */
 async function hasContentScript(origin: string) {
-  if (DEFAULT_SITE.test(new URL(origin).hostname)) return true;
-  return (await getEnabledOrigins()).includes(origin);
+  const hostname = new URL(origin).hostname;
+  if (STATIC_SITE_HOSTNAME.test(hostname)) return true;
+  const scripts = await browser.scripting.getRegisteredContentScripts({ ids: [`cn-generic-${hostname}`] }).catch(() => []);
+  return scripts.length > 0;
 }
 
 const RESEND_ATTEMPTS = 15;
 const RESEND_INTERVAL_MS = 400;
 
+async function retryJumpMessage(tabId: number) {
+  for (let attempt = 0; attempt < RESEND_ATTEMPTS; attempt++) {
+    await new Promise((resolve) => setTimeout(resolve, RESEND_INTERVAL_MS));
+    try {
+      return await browser.tabs.sendMessage(tabId, { type: "cn-jump-note" });
+    } catch {
+      // script not up yet — keep trying
+    }
+  }
+}
+
 /** A tab that predates the last extension reload/update holds an ORPHANED
  *  content script: its DOM (badges) still renders, but its message listener
  *  is cut off from the new extension instance, so sendMessage throws with no
- *  receiver. Heal by reloading the tab and re-sending until the fresh script
- *  answers (it needs a moment to fetch the item and register). */
-async function sendJumpToNote(tabId: number) {
+ *  receiver. Heal by reloading the tab (only when a registration would
+ *  re-inject on load) and re-sending until the fresh script answers. */
+async function sendJumpToNote(tabId: number, scriptWasRegistered: boolean) {
   try {
     return await browser.tabs.sendMessage(tabId, { type: "cn-jump-note" });
   } catch {
-    await browser.tabs.reload(tabId);
-    for (let attempt = 0; attempt < RESEND_ATTEMPTS; attempt++) {
-      await new Promise((resolve) => setTimeout(resolve, RESEND_INTERVAL_MS));
-      try {
-        return await browser.tabs.sendMessage(tabId, { type: "cn-jump-note" });
-      } catch {
-        // script not up yet — keep trying
-      }
-    }
+    if (scriptWasRegistered) await browser.tabs.reload(tabId);
+    return retryJumpMessage(tabId);
   }
 }
 
@@ -199,8 +147,14 @@ function PrimaryAction({ state, visibleNoteCount, jumped }: { state: PageState; 
   if (state.kind === "item" && visibleNoteCount > 0) {
     const jumpToNote = async () => {
       const tab = await activeTab();
-      if (tab?.id != null && (await hasContentScript(state.origin))) {
-        await sendJumpToNote(tab.id);
+      if (tab?.id != null) {
+        // The background's noted-sites sync may not have caught this origin
+        // yet — <all_urls> lets us inject directly for this tab meanwhile.
+        const registered = await hasContentScript(state.origin);
+        if (!registered) {
+          await browser.scripting.executeScript({ target: { tabId: tab.id }, files: ["/content-scripts/generic.js"] }).catch(() => {});
+        }
+        await sendJumpToNote(tab.id, registered);
       }
       window.close();
     };
@@ -232,13 +186,11 @@ export function PopupApp() {
   const visibleNoteCount = state.kind === "item" && filters
     ? state.notes.filter((note) => noteVisible(note, filters)).length
     : 0;
-  const showSiteToggle = (state.kind === "no_item" || state.kind === "item") && !DEFAULT_SITE.test(new URL(state.origin).hostname);
 
   return (
     <div className="p-4 space-y-4 bg-gray-50 min-h-[180px]">
       <PrimaryAction state={state} visibleNoteCount={visibleNoteCount} jumped={jumped} />
       {filters && <NoteFilterToggles filters={filters} onToggle={toggleFilters} />}
-      {showSiteToggle && <SiteToggle origin={state.origin} hasNotes={visibleNoteCount > 0} />}
 
       <div className="border-t border-gray-200 pt-3">
         {!ready ? null : session ? (

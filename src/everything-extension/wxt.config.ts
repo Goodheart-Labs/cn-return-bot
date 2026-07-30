@@ -30,18 +30,15 @@ export default defineConfig({
     description: "Community Notes Everywhere (Go to commonnotes.net to see which pages we currently support)",
     icons: { 16: "icon/16.png", 32: "icon/32.png", 48: "icon/48.png", 128: "icon/128.png" },
     action: { default_icon: { 16: "icon/16.png", 32: "icon/32.png" } },
-    permissions: ["storage", "identity", "contextMenus", "activeTab", "tabs", "scripting"],
-    // substack.com lets the BACKGROUND fetch reader-URL canonicals (the
-    // logged-out 302 to the publication domain is cross-origin, which content
-    // scripts can't follow; same scope as the substack content script, so no
-    // new install warning). supabase.co lets CONTENT SCRIPTS reach the
-    // backend in Firefox, which blocks their cross-origin fetches to
-    // non-permitted hosts outright (NetworkError) — Chrome lets them ride
-    // the page's CORS, but Firefox only exempts permissioned hosts.
-    host_permissions: ["*://*.substack.com/*", "https://*.supabase.co/*"],
-    // Generic text sites are opt-in per site from the popup; only Substack and
-    // YouTube are injected by default.
-    optional_host_permissions: ["<all_urls>"],
+    permissions: ["storage", "identity", "contextMenus", "activeTab", "tabs", "scripting", "alarms"],
+    // Required all-sites access, deliberately: the background registers the
+    // generic content script for every noted hostname (synced hourly from
+    // the DB), so notes appear on any site with notes — no per-site prompt,
+    // and a new site goes live for existing installs without a store update.
+    // Also subsumes the background's substack.com canonical fetches and the
+    // content scripts' Supabase calls in Firefox (which blocks cross-origin
+    // fetches to non-permissioned hosts).
+    host_permissions: ["<all_urls>"],
     ...(browser === "chrome" ? { key: CHROME_PUBLIC_KEY } : {}),
     browser_specific_settings: {
       // Stable add-on ID so the OAuth redirect URL (…extensions.allizom.org)

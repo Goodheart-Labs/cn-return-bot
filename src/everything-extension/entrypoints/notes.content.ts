@@ -4,9 +4,8 @@ import { mountInlineNotes } from "../utils/mountInlineNotes";
 import { registerDevReloadHook } from "../utils/devReload";
 
 // First-class text sites, injected by the static manifest (keep in sync with
-// background.ts STATIC_TEXT_SITES + the popup's DEFAULT_SITE). Custom-domain
-// newsletters and other text sites go through the opt-in generic script
-// instead.
+// utils/staticSites.ts). Custom-domain newsletters and other text sites get
+// the generic script registered by the background's noted-sites sync.
 export default defineContentScript({
   matches: ["*://*.substack.com/*"],
   cssInjectionMode: "ui",

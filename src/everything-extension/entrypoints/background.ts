@@ -1,32 +1,84 @@
 import { defineBackground } from "#imports";
 import { browser } from "#imports";
 import { submitNoteRequest } from "../../everything-shared/noteRequests";
-import { fetchReaderCanonical } from "../../everything-shared/notesQuery";
+import { fetchNotedPageUrls, fetchReaderCanonical } from "../../everything-shared/notesQuery";
 import { signInWithXViaWebAuthFlow } from "../utils/oauth";
-import { getEnabledOrigins, onEnabledOriginsChanged } from "../utils/settings";
+import { STATIC_SITE_HOSTNAME, STATIC_TEXT_SITE_PATTERNS } from "../utils/staticSites";
 
 const WRITE_MENU_ID = "cn-write-note";
 const REQUEST_MENU_ID = "cn-request-note";
 const INJECT_RETRY_DELAY_MS = 150;
+const GENERIC_SCRIPT_PREFIX = "cn-generic-";
+const SYNC_ALARM = "cn-sync-noted-sites";
+const SYNC_PERIOD_MINUTES = 60;
 
-// Sites whose content scripts the static manifest injects (keep in sync with
-// notes.content.ts matches + the popup's DEFAULT_SITE).
-const STATIC_TEXT_SITES = ["*://*.substack.com/*"];
+/** Hostnames of noted pages outside the static sites — where the generic
+ *  content script belongs. */
+function genericHostnames(urls: string[]): string[] {
+  const hostnames = new Set<string>();
+  for (const url of urls) {
+    try {
+      const { protocol, hostname } = new URL(url);
+      if (!/^https?:$/.test(protocol) || STATIC_SITE_HOSTNAME.test(hostname)) continue;
+      hostnames.add(hostname);
+    } catch {
+      // synthetic local: keys
+    }
+  }
+  return [...hostnames];
+}
+
+async function registeredGenericHostnames(): Promise<string[]> {
+  const scripts = await browser.scripting.getRegisteredContentScripts();
+  return scripts
+    .map((s) => s.id)
+    .filter((id) => id.startsWith(GENERIC_SCRIPT_PREFIX))
+    .map((id) => id.slice(GENERIC_SCRIPT_PREFIX.length));
+}
+
+/** <all_urls> is granted at install, so every site with notes gets the
+ *  generic content script registered automatically — no per-site prompts,
+ *  and a new site goes live for existing installs straight from the DB on
+ *  the next sync, without a store update. */
+async function syncNotedSites() {
+  try {
+    const urls = await fetchNotedPageUrls();
+    if (urls) {
+      const wanted = new Set(genericHostnames(urls));
+      const existing = new Set(await registeredGenericHostnames());
+      const toAdd = [...wanted].filter((hostname) => !existing.has(hostname));
+      const toRemove = [...existing].filter((hostname) => !wanted.has(hostname));
+      if (toAdd.length) {
+        await browser.scripting.registerContentScripts(toAdd.map((hostname) => ({
+          id: `${GENERIC_SCRIPT_PREFIX}${hostname}`,
+          matches: [`*://${hostname}/*`],
+          js: ["/content-scripts/generic.js"],
+          runAt: "document_idle" as const,
+          persistAcrossSessions: true,
+        })));
+      }
+      if (toRemove.length) {
+        await browser.scripting.unregisterContentScripts({ ids: toRemove.map((hostname) => `${GENERIC_SCRIPT_PREFIX}${hostname}`) });
+      }
+    }
+    await rebuildMenus(await registeredGenericHostnames());
+  } catch (err) {
+    console.warn("[common-notes] noted-sites sync failed:", err);
+  }
+}
 
 /** Selection context menus. Write-note is scoped to the sites the extension
- *  runs on (static text sites plus the user's opted-in origins) — clicking
+ *  runs on (static text sites plus the synced noted hostnames) — clicking
  *  hands the selection to that tab's content script, which opens the
  *  write-note overlay. Request-a-note appears on EVERY OTHER page: the click
- *  itself grants activeTab, so we can inject its content script on demand
- *  without any host permissions. */
-async function rebuildMenus() {
+ *  itself grants activeTab, so its script injects on demand anywhere. */
+async function rebuildMenus(genericHosts: string[]) {
   await browser.contextMenus.removeAll();
-  const origins = await getEnabledOrigins();
   browser.contextMenus.create({
     id: WRITE_MENU_ID,
     title: "Write a Common Note on this",
     contexts: ["selection"],
-    documentUrlPatterns: [...STATIC_TEXT_SITES, ...origins.map((origin) => `${origin}/*`)],
+    documentUrlPatterns: [...STATIC_TEXT_SITE_PATTERNS, ...genericHosts.map((hostname) => `*://${hostname}/*`)],
   });
   browser.contextMenus.create({
     id: REQUEST_MENU_ID,
@@ -36,8 +88,17 @@ async function rebuildMenus() {
 }
 
 export default defineBackground(() => {
-  browser.runtime.onInstalled.addListener(() => void rebuildMenus());
-  onEnabledOriginsChanged(() => void rebuildMenus());
+  // Sync on install/update and browser start; the hourly alarm keeps
+  // long-lived sessions current (the MV3 worker can't hold a timer).
+  const startSync = () => {
+    browser.alarms.create(SYNC_ALARM, { periodInMinutes: SYNC_PERIOD_MINUTES });
+    void syncNotedSites();
+  };
+  browser.runtime.onInstalled.addListener(startSync);
+  browser.runtime.onStartup.addListener(startSync);
+  browser.alarms.onAlarm.addListener((alarm) => {
+    if (alarm.name === SYNC_ALARM) void syncNotedSites();
+  });
 
   browser.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === WRITE_MENU_ID && tab?.id != null) {
