@@ -2,6 +2,7 @@ import path from "node:path";
 import { loadEnv } from "vite";
 import { defineConfig } from "wxt";
 import tailwindcss from "tailwindcss";
+import { ASSUME_ALL_URLS } from "./utils/permissionsMode";
 
 // Root .env feeds VITE_SUPABASE_* to import.meta.env, same as the web app's
 // vite config. The anon key is public by design (RLS-locked, migration 050).
@@ -31,14 +32,20 @@ export default defineConfig({
     icons: { 16: "icon/16.png", 32: "icon/32.png", 48: "icon/48.png", 128: "icon/128.png" },
     action: { default_icon: { 16: "icon/16.png", 32: "icon/32.png" } },
     permissions: ["storage", "identity", "contextMenus", "activeTab", "tabs", "scripting", "alarms"],
-    // Required all-sites access, deliberately: the background registers the
-    // generic content script for every noted hostname (synced hourly from
-    // the DB), so notes appear on any site with notes — no per-site prompt,
-    // and a new site goes live for existing installs without a store update.
-    // Also subsumes the background's substack.com canonical fetches and the
-    // content scripts' Supabase calls in Firefox (which blocks cross-origin
-    // fetches to non-permissioned hosts).
-    host_permissions: ["<all_urls>"],
+    // Two permission models, switched by utils/permissionsMode.ts:
+    //   ASSUME_ALL_URLS — required all-sites access; the background registers
+    //   the generic script for every noted hostname silently. One big
+    //   install warning, zero per-site friction.
+    //   default (redirect mode) — substack.com for the background's
+    //   canonical fetches, supabase.co for content-script fetches in Firefox
+    //   (which blocks cross-origin fetches to non-permissioned hosts);
+    //   everything else is optional, granted per site via grant.html.
+    ...(ASSUME_ALL_URLS
+      ? { host_permissions: ["<all_urls>"] }
+      : {
+          host_permissions: ["*://*.substack.com/*", "https://*.supabase.co/*"],
+          optional_host_permissions: ["<all_urls>"],
+        }),
     ...(browser === "chrome" ? { key: CHROME_PUBLIC_KEY } : {}),
     browser_specific_settings: {
       // Stable add-on ID so the OAuth redirect URL (…extensions.allizom.org)

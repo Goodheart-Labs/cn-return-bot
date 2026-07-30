@@ -3,14 +3,19 @@ import { browser } from "#imports";
 import { submitNoteRequest } from "../../everything-shared/noteRequests";
 import { fetchNotedPageUrls, fetchReaderCanonical } from "../../everything-shared/notesQuery";
 import { signInWithXViaWebAuthFlow } from "../utils/oauth";
+import { GENERIC_SCRIPT_PREFIX, hostnamePattern, registerGenericScripts, genericScriptId } from "../utils/genericScript";
+import { ASSUME_ALL_URLS } from "../utils/permissionsMode";
+import { getDismissedGrantHosts } from "../utils/settings";
 import { STATIC_SITE_HOSTNAME, STATIC_TEXT_SITE_PATTERNS } from "../utils/staticSites";
 
 const WRITE_MENU_ID = "cn-write-note";
 const REQUEST_MENU_ID = "cn-request-note";
 const INJECT_RETRY_DELAY_MS = 150;
-const GENERIC_SCRIPT_PREFIX = "cn-generic-";
 const SYNC_ALARM = "cn-sync-noted-sites";
 const SYNC_PERIOD_MINUTES = 60;
+// Noted hostnames from the last sync, readable by the navigation listener
+// without a DB round-trip per page load (redirect mode).
+const NOTED_HOSTNAMES_KEY = "cn:notedHostnames";
 
 /** Hostnames of noted pages outside the static sites — where the generic
  *  content script belongs. */
@@ -36,35 +41,56 @@ async function registeredGenericHostnames(): Promise<string[]> {
     .map((id) => id.slice(GENERIC_SCRIPT_PREFIX.length));
 }
 
-/** <all_urls> is granted at install, so every site with notes gets the
- *  generic content script registered automatically — no per-site prompts,
- *  and a new site goes live for existing installs straight from the DB on
- *  the next sync, without a store update. */
+/** The hostnames we may register without asking: all of them when
+ *  <all_urls> is required at install, else only the origins the user granted
+ *  through grant.html (permission survives; registration is re-derived). */
+async function registrableHostnames(noted: string[]): Promise<string[]> {
+  if (ASSUME_ALL_URLS) return noted;
+  const granted = await Promise.all(noted.map((hostname) =>
+    browser.permissions.contains({ origins: [hostnamePattern(hostname)] }).catch(() => false)));
+  return noted.filter((_, i) => granted[i]);
+}
+
+/** Keep the generic content-script registrations in step with the sites that
+ *  have notes — a new site goes live for existing installs straight from the
+ *  DB on the next sync, without a store update. In redirect mode the noted
+ *  list also feeds the navigation listener below. */
 async function syncNotedSites() {
   try {
     const urls = await fetchNotedPageUrls();
     if (urls) {
-      const wanted = new Set(genericHostnames(urls));
+      const noted = genericHostnames(urls);
+      await browser.storage.local.set({ [NOTED_HOSTNAMES_KEY]: noted });
+      const wanted = new Set(await registrableHostnames(noted));
       const existing = new Set(await registeredGenericHostnames());
       const toAdd = [...wanted].filter((hostname) => !existing.has(hostname));
       const toRemove = [...existing].filter((hostname) => !wanted.has(hostname));
-      if (toAdd.length) {
-        await browser.scripting.registerContentScripts(toAdd.map((hostname) => ({
-          id: `${GENERIC_SCRIPT_PREFIX}${hostname}`,
-          matches: [`*://${hostname}/*`],
-          js: ["/content-scripts/generic.js"],
-          runAt: "document_idle" as const,
-          persistAcrossSessions: true,
-        })));
-      }
+      if (toAdd.length) await registerGenericScripts(toAdd);
       if (toRemove.length) {
-        await browser.scripting.unregisterContentScripts({ ids: toRemove.map((hostname) => `${GENERIC_SCRIPT_PREFIX}${hostname}`) });
+        await browser.scripting.unregisterContentScripts({ ids: toRemove.map(genericScriptId) });
       }
     }
     await rebuildMenus(await registeredGenericHostnames());
   } catch (err) {
     console.warn("[common-notes] noted-sites sync failed:", err);
   }
+}
+
+/** Redirect mode: a navigation to a noted site we can't inject into yet
+ *  detours through grant.html, whose Allow click is the user gesture a
+ *  permission request needs. Dismissals ("Not now") are remembered per host
+ *  so the detour never becomes a nag loop. */
+async function offerGrantOnNavigation(tabId: number, url: string) {
+  if (!/^https?:/.test(url)) return;
+  const hostname = new URL(url).hostname;
+  if (STATIC_SITE_HOSTNAME.test(hostname)) return;
+  const { [NOTED_HOSTNAMES_KEY]: noted = [] } = await browser.storage.local.get(NOTED_HOSTNAMES_KEY);
+  if (!(noted as string[]).includes(hostname)) return;
+  if (await browser.permissions.contains({ origins: [hostnamePattern(hostname)] }).catch(() => false)) return;
+  if ((await getDismissedGrantHosts()).includes(hostname)) return;
+  await browser.tabs.update(tabId, {
+    url: browser.runtime.getURL(`/grant.html?host=${encodeURIComponent(hostname)}&back=${encodeURIComponent(url)}`),
+  });
 }
 
 /** Selection context menus. Write-note is scoped to the sites the extension
@@ -99,6 +125,12 @@ export default defineBackground(() => {
   browser.alarms.onAlarm.addListener((alarm) => {
     if (alarm.name === SYNC_ALARM) void syncNotedSites();
   });
+
+  if (!ASSUME_ALL_URLS) {
+    browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
+      if (changeInfo.url) void offerGrantOnNavigation(tabId, changeInfo.url).catch(() => {});
+    });
+  }
 
   browser.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === WRITE_MENU_ID && tab?.id != null) {

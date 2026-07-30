@@ -1,5 +1,17 @@
 import { browser } from "#imports";
 
+// Hosts whose grant.html offer the user declined with "Not now" — never
+// redirect them there again (redirect mode only).
+const GRANT_DISMISSED_KEY = "cn:grantDismissed";
+
+export async function getDismissedGrantHosts(): Promise<string[]> {
+  return ((await browser.storage.sync.get(GRANT_DISMISSED_KEY))[GRANT_DISMISSED_KEY] as string[] | undefined) ?? [];
+}
+
+export async function addDismissedGrantHost(hostname: string): Promise<void> {
+  await browser.storage.sync.set({ [GRANT_DISMISSED_KEY]: [...new Set([...(await getDismissedGrantHosts()), hostname])] });
+}
+
 // Which note statuses render on pages: helpful notes always show, the other
 // two are the popup's tickboxes (synced across devices like the origin
 // opt-ins).
