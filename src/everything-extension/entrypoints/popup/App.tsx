@@ -10,7 +10,7 @@ import { LoginPanel } from "../../components/LoginPanel";
 
 // Sites injected by the static manifest scripts — no opt-in needed (keep in
 // sync with notes.content.ts matches + background.ts STATIC_TEXT_SITES).
-const DEFAULT_SITE = /(^|\.)substack\.com$|(^|\.)youtube\.com$|(^|\.)youtu\.be$|(^|\.)ai-2040\.com$/;
+const DEFAULT_SITE = /(^|\.)substack\.com$|(^|\.)youtube\.com$|(^|\.)youtu\.be$/;
 
 const PRIMARY_BUTTON = "w-full bg-blue-600 text-white rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-blue-700 disabled:opacity-40";
 const SECONDARY_BUTTON = "w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-800 hover:bg-gray-100";

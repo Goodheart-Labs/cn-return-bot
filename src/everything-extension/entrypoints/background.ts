@@ -11,7 +11,7 @@ const INJECT_RETRY_DELAY_MS = 150;
 
 // Sites whose content scripts the static manifest injects (keep in sync with
 // notes.content.ts matches + the popup's DEFAULT_SITE).
-const STATIC_TEXT_SITES = ["*://*.substack.com/*", "*://*.ai-2040.com/*"];
+const STATIC_TEXT_SITES = ["*://*.substack.com/*"];
 
 /** Selection context menus. Write-note is scoped to the sites the extension
  *  runs on (static text sites plus the user's opted-in origins) — clicking
