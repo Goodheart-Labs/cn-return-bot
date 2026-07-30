@@ -425,10 +425,11 @@ async function recordGateRejection(
 }
 
 /**
- * Blocked-topic gate — always on, runs before everything else (even the
- * note-needed prefilter). One cheap deepseek call, no tools; if the post is on
- * a blocked topic the run is completed as rejected/blocked_topic and the bot
- * never runs. Returns null when the post is clean (proceed).
+ * Blocked-topic gate — when `config.topic_filter` is on (TOPIC_FILTER_TEST),
+ * runs before everything else (even the note-needed prefilter). One cheap
+ * deepseek call, no tools; if the post is on a blocked topic the run is
+ * completed as rejected/blocked_topic and the bot never runs. Returns null
+ * when the filter is off or the post is clean (proceed).
  */
 async function runTopicFilterGate(
   logger: SupabaseLogger | null,
@@ -436,6 +437,8 @@ async function runTopicFilterGate(
   userMessage: string,
   bot: Bot,
 ): Promise<ProcessTweetResult | null> {
+  if (!getBotConfig().topic_filter) return null;
+
   // runBlockedTopicFilter logs its messages + verdict under topic_filter.*.
   const verdict = await runBlockedTopicFilter(userMessage);
   if (!verdict.blocked) return null;

@@ -1,9 +1,10 @@
 /**
  * Blocked-topic filter — a single deepseek-v4-flash call (reasoning, no tools,
  * no search) that checks whether a post is on one of the BLOCKED_TOPICS we
- * never write notes on. Runs before everything else — even the note-needed
- * prefilter. Receives the shared bot-input user message (the same one the
- * prefilter and the bot's search step see), built once in processSingleTweet.
+ * never write notes on. Gated by `config.topic_filter` (TOPIC_FILTER_TEST) and
+ * runs before everything else — even the note-needed prefilter. Receives the
+ * shared bot-input user message (the same one the prefilter and the bot's
+ * search step see), built once in processSingleTweet.
  */
 import { withBotConfig, type BotConfig } from "../ab-testing/botConfig";
 import {

@@ -223,6 +223,21 @@ const SIMPLE_BOT_CORRECTION_EXTRACTION_TEST: ABTest = {
   ],
 };
 
+// Blocked-topic gate that runs BEFORE everything else (even the note-needed
+// prefilter): one deepseek-v4-flash call (reasoning, no tools) checks the post
+// against BLOCKED_TOPICS and skips the run as rejected / blocked_topic on a
+// hit. Mostly-on, with a 33% "off" holdout to measure what notes we forgo on
+// the blocked topics. Not prereq-gated (the gate runs for every bot);
+// defaultVariant "off" so historical rows resolve to no-filter.
+const TOPIC_FILTER_TEST: ABTest = {
+  name: "topic_filter",
+  defaultVariant: "off",
+  variants: [
+    { variant: { name: "off", overrides: { topic_filter: false } }, weight: 33 },
+    { variant: { name: "on",  overrides: { topic_filter: true  } }, weight: 67 },
+  ],
+};
+
 // Cheap deepseek-v4-flash note-needed prefilter that runs BEFORE the bot and
 // skips it when no note is warranted (recorded as rejected / prefilter_no_note).
 // This is what makes the large feed affordable. Mostly-on, with a 20% "off"
@@ -497,6 +512,7 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_WRITER_EXAMPLES_TEST,
   SIMPLE_BOT_POLITICAL_SOURCES_TEST,
   SIMPLE_BOT_CORRECTION_EXTRACTION_TEST,
+  TOPIC_FILTER_TEST,
   NOTE_PREFILTER_TEST,
   CHEAP_BOT_JUDGE_MODEL_TEST,
   CHEAP_BOT_GEMINI_STEPS_TEST,
