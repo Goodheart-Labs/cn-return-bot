@@ -49,21 +49,14 @@ function GrantApp() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8 max-w-md w-full space-y-4">
         <h1 className="text-lg font-extrabold text-gray-900">This site has Common Notes</h1>
-        <p className="text-sm text-gray-600">
-          There are community notes for pages on <span className="font-medium text-gray-800">{host}</span>.
-          Allow Common Notes to run there to see them inline.
-        </p>
         <div className="space-y-2">
           <button onClick={allow} disabled={busy} className="w-full bg-blue-600 text-white rounded-lg px-3 py-2 text-sm font-medium hover:bg-blue-700 disabled:opacity-40">
             Show notes on {host}
           </button>
           <button onClick={notNow} disabled={busy} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-100">
-            Not now
+            Do not ask again
           </button>
         </div>
-        <p className="text-xs text-gray-400">
-          "Not now" remembers your choice for this site — you won't be asked again.
-        </p>
       </div>
     </div>
   );
