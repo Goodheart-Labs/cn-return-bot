@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { displayName } from "../../everything-shared/session";
+import { ensureWebItem } from "../../everything-shared/ensureWebItem";
 import { normalizeText } from "../../everything-shared/normalizeText";
 import { postClaimWithNote } from "../../everything-shared/postNote";
 import type { PageItem } from "../../everything-shared/notesQuery";
@@ -8,9 +9,13 @@ import { RejectedNotice } from "../../everything-web/src/components/editorBits";
 
 /** Write a note anchored to the reader's selection — the extension's answer
  *  to the website's WriteNoteModal (there you search the transcript; here you
- *  already selected the span on the page itself). */
-export function WriteNoteOverlay({ item, selection, session, onClose, onPosted }: {
-  item: PageItem;
+ *  already selected the span on the page itself). On an uncovered page there
+ *  is no item yet (`item` null): `pageForItem` carries what's needed to
+ *  create one, lazily, at post time — a closed overlay leaves no orphan
+ *  item, same spirit as judging before creating the claim. */
+export function WriteNoteOverlay({ item, pageForItem, selection, session, onClose, onPosted }: {
+  item: PageItem | null;
+  pageForItem?: { url: string; title: string; fullText: string };
   selection: string;
   session: Session | null;
   onClose: () => void;
@@ -23,16 +28,29 @@ export function WriteNoteOverlay({ item, selection, session, onClose, onPosted }
   // Bylines are opt-in (Nathan, 2026-07-14): default anonymous, X-CN style.
   const [signed, setSigned] = useState(false);
 
-  const anchorInText = !!item.full_text && normalizeText(item.full_text).includes(normalizeText(selection));
+  const fullText = item?.full_text ?? pageForItem?.fullText ?? "";
+  const anchorInText = !!fullText && normalizeText(fullText).includes(normalizeText(selection));
 
   const submit = async () => {
     if (!session) return;
     setBusy(true);
     setError(null);
     setRejected(false);
+    let itemId = item?.id;
+    let itemUrl = item?.url;
+    if (!itemId) {
+      if (!pageForItem) return;
+      try {
+        itemId = await ensureWebItem(pageForItem);
+        itemUrl = pageForItem.url;
+      } catch (err) {
+        setBusy(false);
+        return setError((err as Error).message);
+      }
+    }
     const outcome = await postClaimWithNote({
-      itemId: item.id,
-      itemUrl: item.url,
+      itemId,
+      itemUrl: itemUrl!,
       anchorText: selection,
       note,
       session,

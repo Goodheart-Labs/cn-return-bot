@@ -181,9 +181,18 @@ export async function fetchItemForUrl(pageUrl: string): Promise<PageItem | null>
   return data?.[0] ? toPageItem(data[0]) : null;
 }
 
+/** URLs of every ingested page — the extension's coverage list, cached
+ *  locally so content scripts can decide "is this page ours?" on-device
+ *  (noteless browsing must never reach the backend). Null on failure —
+ *  callers must not mistake an outage for "no coverage". */
+export async function fetchCoveredPageUrls(): Promise<string[] | null> {
+  const { data, error } = await supabase.from("everything_items").select("url");
+  if (error) return null;
+  return (data ?? []).map((r: any) => r.url as string).filter((url) => !url.startsWith("local:"));
+}
+
 /** URLs of every ingested page with visible notes, or null when the query
- *  failed — callers (the background's noted-sites sync) must not mistake a
- *  failure for "no noted pages". Synthetic local docs (`local:…`) excluded. */
+ *  failed. Synthetic local docs (`local:…`) excluded. */
 export async function fetchNotedPageUrls(): Promise<string[] | null> {
   const { data, error } = await supabase
     .from("everything_notes")

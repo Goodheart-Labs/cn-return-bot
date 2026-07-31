@@ -3,11 +3,17 @@ import { browser } from "#imports";
 import { useSession, signOut } from "../../../everything-shared/auth";
 import { fetchItemForUrl, fetchNotesForItem, fetchRandomNotedPageUrl, normalizePageUrl, type PageItem } from "../../../everything-shared/notesQuery";
 import type { NoteRow } from "../../../everything-shared/types";
+import { submitNoteRequest } from "../../../everything-shared/noteRequests";
 import { noteVisible } from "../../utils/claimGroups";
+import { genericScriptId, hostnamePattern, registerGenericScripts } from "../../utils/genericScript";
 import { resolveReaderCanonical } from "../../utils/readerCanonical";
-import { getNoteFilters, updateNoteFilters, type NoteFilters } from "../../utils/settings";
+import { getNoteFilters, removeDismissedGrantHost, updateNoteFilters, type NoteFilters } from "../../utils/settings";
 import { STATIC_SITE_HOSTNAME } from "../../utils/staticSites";
 import { LoginPanel } from "../../components/LoginPanel";
+
+// Pages where "request notes" makes no sense — searches and portals, not
+// content (non-http pages are already excluded as kind "unsupported").
+const NON_CONTENT_HOSTNAME = /(^|\.)google\.[a-z.]+$|(^|\.)bing\.com$|(^|\.)duckduckgo\.com$|(^|\.)ecosia\.org$|(^|\.)startpage\.com$|(^|\.)search\.brave\.com$/;
 
 const PRIMARY_BUTTON = "w-full bg-blue-600 text-white rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-blue-700 disabled:opacity-40";
 const SECONDARY_BUTTON = "w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-800 hover:bg-gray-100";
@@ -99,14 +105,28 @@ function useJumped(state: PageState): boolean {
   return jumped;
 }
 
-/** True when this origin already gets our content script (static site or a
- *  registration from the background's noted-sites sync) — decides whether
- *  the jump below may heal by reloading, or must inject directly first. */
-async function hasContentScript(origin: string) {
-  const hostname = new URL(origin).hostname;
-  if (STATIC_SITE_HOSTNAME.test(hostname)) return true;
-  const scripts = await browser.scripting.getRegisteredContentScripts({ ids: [`cn-generic-${hostname}`] }).catch(() => []);
-  return scripts.length > 0;
+/** How this page's origin stands with the extension: script guaranteed
+ *  (static/registered), injectable without asking (granted), or needing the
+ *  user's grant (ungranted — redirect mode only; all-urls installs always
+ *  read as granted). Precomputed so the enable button can call
+ *  permissions.request FIRST in its click handler — an await before it can
+ *  void the user gesture the API requires. */
+type PageAccess = "static" | "registered" | "granted" | "ungranted";
+
+function usePageAccess(state: PageState): PageAccess | null {
+  const [access, setAccess] = useState<PageAccess | null>(null);
+  useEffect(() => {
+    if (state.kind !== "item") return;
+    const hostname = new URL(state.origin).hostname;
+    if (STATIC_SITE_HOSTNAME.test(hostname)) return setAccess("static");
+    (async () => {
+      const scripts = await browser.scripting.getRegisteredContentScripts({ ids: [genericScriptId(hostname)] }).catch(() => []);
+      if (scripts.length > 0) return setAccess("registered");
+      const granted = await browser.permissions.contains({ origins: [hostnamePattern(hostname)] }).catch(() => false);
+      setAccess(granted ? "granted" : "ungranted");
+    })();
+  }, [state]);
+  return access;
 }
 
 const RESEND_ATTEMPTS = 15;
@@ -137,24 +157,83 @@ async function sendJumpToNote(tabId: number, scriptWasRegistered: boolean) {
   }
 }
 
-/** The popup's one action button: jump through this page's visible notes
- *  when it has any, otherwise open a random page that does. */
-function PrimaryAction({ state, visibleNoteCount, jumped }: { state: PageState; visibleNoteCount: number; jumped: boolean }) {
+/** "Request notes on this page" for uncovered content pages — the page-level
+ *  successor of the old text-selection request flow. */
+function RequestNoteButton() {
+  const [phase, setPhase] = useState<"idle" | "busy" | "done" | "error">("idle");
+
+  const request = async () => {
+    setPhase("busy");
+    try {
+      const tab = await activeTab();
+      if (!tab?.url) throw new Error("no page");
+      await submitNoteRequest({ pageUrl: normalizePageUrl(tab.url), pageTitle: tab.title ?? "", selection: null });
+      setPhase("done");
+    } catch {
+      setPhase("error");
+    }
+  };
+
+  if (phase === "done") {
+    return <button disabled className={PRIMARY_BUTTON}>✓ Requested</button>;
+  }
+  return (
+    <>
+      <button onClick={request} disabled={phase === "busy"} className={PRIMARY_BUTTON}>
+        Request notes on this page
+      </button>
+      {phase === "error" && <p className="text-sm text-red-600">Could not save the request (try again)</p>}
+    </>
+  );
+}
+
+/** The popup's one action button: on a page with visible notes, jump to them
+ *  (enabling the site first when the user never granted it); on an uncovered
+ *  content page, request notes; anywhere else, open a random noted page. */
+function PrimaryAction({ state, visibleNoteCount, jumped, access }: {
+  state: PageState;
+  visibleNoteCount: number;
+  jumped: boolean;
+  access: PageAccess | null;
+}) {
   const [busy, setBusy] = useState(false);
 
   if (state.kind === "loading") return <p className="text-sm text-gray-500">Loading notes…</p>;
 
   if (state.kind === "item" && visibleNoteCount > 0) {
+    if (!access) return <p className="text-sm text-gray-500">Loading notes…</p>;
+
+    if (access === "ungranted") {
+      const enable = async () => {
+        const hostname = new URL(state.origin).hostname;
+        // permissions.request comes FIRST — the click is its user gesture.
+        const granted = await browser.permissions.request({ origins: [hostnamePattern(hostname)] }).catch(() => false);
+        if (!granted) return;
+        await registerGenericScripts([hostname]);
+        await removeDismissedGrantHost(hostname);
+        const tab = await activeTab();
+        if (tab?.id != null) {
+          await browser.scripting.executeScript({ target: { tabId: tab.id }, files: ["/content-scripts/generic.js"] }).catch(() => {});
+        }
+        window.close();
+      };
+      return (
+        <button onClick={enable} className={PRIMARY_BUTTON}>
+          Show notes on this site
+        </button>
+      );
+    }
+
     const jumpToNote = async () => {
       const tab = await activeTab();
       if (tab?.id != null) {
-        // The background's noted-sites sync may not have caught this origin
-        // yet — <all_urls> lets us inject directly for this tab meanwhile.
-        const registered = await hasContentScript(state.origin);
-        if (!registered) {
+        if (access === "granted") {
+          // Consent given but the sync hasn't registered this origin yet —
+          // bridge directly for this tab. Retry-only heal: a reload would
+          // land scriptless (nothing registered to re-inject).
           await browser.scripting.executeScript({ target: { tabId: tab.id }, files: ["/content-scripts/generic.js"] }).catch(() => {});
         }
-        await sendJumpToNote(tab.id, registered);
+        await sendJumpToNote(tab.id, access !== "granted");
       }
       window.close();
     };
@@ -163,6 +242,10 @@ function PrimaryAction({ state, visibleNoteCount, jumped }: { state: PageState; 
         {jumped ? "Jump to next note" : "Jump to first note"}
       </button>
     );
+  }
+
+  if (state.kind === "no_item" && !NON_CONTENT_HOSTNAME.test(new URL(state.origin).hostname)) {
+    return <RequestNoteButton />;
   }
 
   const openRandomPage = async () => {
@@ -182,14 +265,19 @@ export function PopupApp() {
   const { session, ready } = useSession();
   const state = usePageState();
   const jumped = useJumped(state);
+  const access = usePageAccess(state);
   const [filters, toggleFilters] = useNoteFilters();
+  // A fresh site should reach this session now, not on the next hourly tick.
+  useEffect(() => {
+    void browser.runtime.sendMessage({ type: "cn-sync-noted-sites" }).catch(() => {});
+  }, []);
   const visibleNoteCount = state.kind === "item" && filters
     ? state.notes.filter((note) => noteVisible(note, filters)).length
     : 0;
 
   return (
     <div className="p-4 space-y-4 bg-gray-50 min-h-[180px]">
-      <PrimaryAction state={state} visibleNoteCount={visibleNoteCount} jumped={jumped} />
+      <PrimaryAction state={state} visibleNoteCount={visibleNoteCount} jumped={jumped} access={access} />
       {filters && <NoteFilterToggles filters={filters} onToggle={toggleFilters} />}
 
       <div className="border-t border-gray-200 pt-3">

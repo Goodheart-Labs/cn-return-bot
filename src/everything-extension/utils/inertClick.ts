@@ -36,7 +36,7 @@ export function isInertClick(e: MouseEvent): boolean {
 }
 
 /** Whether the event passed through any of our shadow hosts
- *  (common-notes-ui / -inline / -yt / -requestnote) — events bubbling out of
+ *  (common-notes-ui / -inline / -yt) — events bubbling out of
  *  a shadow root retarget to the host, but composedPath keeps the hosts. */
 export function insideCommonNotesUi(e: Event): boolean {
   return e.composedPath().some((n) => ((n as Element).tagName ?? "").startsWith("COMMON-NOTES"));

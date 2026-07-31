@@ -12,6 +12,12 @@ export async function addDismissedGrantHost(hostname: string): Promise<void> {
   await browser.storage.sync.set({ [GRANT_DISMISSED_KEY]: [...new Set([...(await getDismissedGrantHosts()), hostname])] });
 }
 
+/** The un-dismiss escape hatch: granting a site from the popup's "Show notes
+ *  on this site" button clears an earlier "Do not ask again". */
+export async function removeDismissedGrantHost(hostname: string): Promise<void> {
+  await browser.storage.sync.set({ [GRANT_DISMISSED_KEY]: (await getDismissedGrantHosts()).filter((h) => h !== hostname) });
+}
+
 // Which note statuses render on pages: helpful notes always show, the other
 // two are the popup's tickboxes (synced across devices like the origin
 // opt-ins).

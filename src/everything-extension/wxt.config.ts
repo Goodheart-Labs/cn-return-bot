@@ -55,11 +55,10 @@ export default defineConfig({
   }),
   hooks: {
     "build:manifestGenerated": (_wxt, manifest) => {
-      // The generic and requestnote content scripts inject at runtime on
-      // arbitrary origins, so WXT can't know their CSS's matches — it emits an
-      // empty list, which would block the shadow-root UI from fetching the
-      // stylesheet.
-      const RUNTIME_INJECTED_CSS = ["content-scripts/generic.css", "content-scripts/requestnote.css"];
+      // The generic content script injects at runtime on arbitrary origins,
+      // so WXT can't know its CSS's matches — it emits an empty list, which
+      // would block the shadow-root UI from fetching the stylesheet.
+      const RUNTIME_INJECTED_CSS = ["content-scripts/generic.css"];
       for (const resource of manifest.web_accessible_resources ?? []) {
         if (typeof resource === "object" && "resources" in resource && RUNTIME_INJECTED_CSS.some((css) => resource.resources.includes(css))) {
           resource.matches = ["<all_urls>"];

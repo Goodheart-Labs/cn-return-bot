@@ -5,6 +5,8 @@ import { fetchItemForUrl, normalizePageUrl } from "../../everything-shared/notes
 import { resolveReaderCanonical } from "./readerCanonical";
 import { indexContainer, findQuoteRange } from "./anchor";
 import { fetchClaimGroups, type ClaimGroup } from "./claimGroups";
+import { getCoveredPageUrls, pageIsCovered } from "./coveredPages";
+import { mountWriteAnywhere } from "./mountWriteAnywhere";
 import { onNoteFiltersChanged } from "./settings";
 import { isPageDark, observePageTheme } from "./pageTheme";
 import { InlineNotesApp, type AnchoredGroup } from "../components/InlineNotes";
@@ -74,9 +76,18 @@ function applyHighlights(ranges: Range[]) {
 async function mountForUrl(ctx: ContentScriptContext, href: string): Promise<(() => void) | null> {
   const readerCanonical = await resolveReaderCanonical(href);
   const pageUrl = readerCanonical ? normalizePageUrl(readerCanonical) : normalizePageUrl(href, document);
+  // Decide "is this page ours?" against the locally cached coverage list
+  // BEFORE any backend call — ordinary browsing on covered sites must never
+  // reach our server. A missing list (pre-first-sync) falls through to the
+  // live lookup rather than hiding notes.
+  const covered = await getCoveredPageUrls();
+  if (covered && !pageIsCovered(pageUrl, covered)) {
+    console.info(`[common-notes] ${pageUrl} → not in the covered list (no backend lookup)`);
+    return mountWriteAnywhere(ctx, pageUrl);
+  }
   const item = await fetchItemForUrl(pageUrl);
   console.info(`[common-notes] ${pageUrl} → ${item ? `item "${item.title ?? item.id}"` : "no ingested item"}`);
-  if (!item) return null;
+  if (!item) return mountWriteAnywhere(ctx, pageUrl);
   // Mount even with zero notes: the write-from-selection flow works on any
   // ingested page, and its first note appears via refresh().
   let groups = await fetchClaimGroups(item.id);
