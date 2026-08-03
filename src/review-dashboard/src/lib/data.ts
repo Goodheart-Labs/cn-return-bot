@@ -236,7 +236,18 @@ async function assembleDashboardData(primary: {
   // the notes always render (with reduced classification/comparison detail).
   const softBatch = (p: Promise<any[]>, what: string) =>
     p.catch((e) => { console.warn(`[data] ${what} failed — degrading:`, e); return [] as any[]; });
-  const [comparisonCompeting, submittedRuns, publicDumpRatings, annotations] = await Promise.all([
+  // Every id needed below is derivable from the primary fetch, so ALL satellites
+  // run in ONE parallel wave (they used to be five serial awaits — tweet text
+  // landed 4 round-trips after the notes painted; Nathan, 2026-07-29). Tweet ids
+  // discovered on runs (rare) get a tiny top-up fetch after the wave.
+  const missedRunIds = [
+    ...new Set(missedOpps.map((cn: any) => cn.pipeline_run_id as string)),
+  ];
+  const lowEvalRunIds = lowEvalRuns.map((r: any) => r.id);
+  const knownTweetIds = [
+    ...new Set([...noteTweetIds, ...lowEvalRuns.map((r: any) => r.tweet_id).filter(Boolean)]),
+  ];
+  const [comparisonCompeting, submittedRuns, publicDumpRatings, annotations, missedRuns, lowEvalScores, tweetsMain, sightingsMain] = await Promise.all([
     // Competing notes attached to our notes — drives the comparison list and the
     // lost-to-competitor classification.
     softBatch(fetchInBatches<any>(
@@ -253,52 +264,45 @@ async function assembleDashboardData(primary: {
       undefined, "public_dump_ratings",
     ), "public_dump_ratings"),
     fetchAnnotationsForTargets(annotationTargetIds(canonical, missedOpps, lowEvalRuns)),
+    // Missed opportunities reference specific pipeline_run ids; fetch just those.
+    missedRunIds.length
+      ? fetchInBatches<any>(supabase, "pipeline_runs", PIPELINE_METADATA_COLUMNS, "id", missedRunIds, undefined, "missed_runs")
+      : Promise.resolve([] as any[]),
+    // The eval score itself lives in pipeline_scores (it isn't mirrored onto
+    // pipeline_runs), so fetch it for the low-eval runs to display.
+    lowEvalRunIds.length
+      ? fetchInBatches<any>(
+          supabase, "pipeline_scores", "pipeline_run_id, score_value", "pipeline_run_id", lowEvalRunIds,
+          (q) => q.eq("score_type", "evaluation"), "low_eval_scores",
+        )
+      : Promise.resolve([] as any[]),
+    // tweets carries text/media/engagement — the note cards' tweet boxes.
+    knownTweetIds.length
+      ? softBatch(fetchInBatches<any>(supabase, "tweets", TWEETS_LIST_COLUMNS, "tweet_id", knownTweetIds, undefined, "tweets"), "tweets")
+      : Promise.resolve([] as any[]),
+    // Misinfo-monitoring sightings for these tweets → each item's fact-check topic.
+    knownTweetIds.length
+      ? fetchInBatches<any>(supabase, "misinfo_monitoring_sightings", "tweet_id, topic_id", "tweet_id", knownTweetIds, undefined, "misinfo_sightings").catch(() => [] as any[])
+      : Promise.resolve([] as any[]),
   ]);
-
-  // Missed opportunities reference specific pipeline_run ids; fetch just those.
-  const missedRunIds = [
-    ...new Set(missedOpps.map((cn: any) => cn.pipeline_run_id as string)),
-  ];
-  const missedRuns = missedRunIds.length
-    ? await fetchInBatches<any>(
-        supabase, "pipeline_runs", PIPELINE_METADATA_COLUMNS, "id", missedRunIds, undefined, "missed_runs",
-      )
-    : [];
-
-  // The eval score itself lives in pipeline_scores (it isn't mirrored onto
-  // pipeline_runs), so fetch it for the low-eval runs to display.
-  const lowEvalRunIds = lowEvalRuns.map((r: any) => r.id);
-  const lowEvalScores = lowEvalRunIds.length
-    ? await fetchInBatches<any>(
-        supabase, "pipeline_scores", "pipeline_run_id, score_value", "pipeline_run_id", lowEvalRunIds,
-        (q) => q.eq("score_type", "evaluation"), "low_eval_scores",
-      )
-    : [];
 
   const competing = [...comparisonCompeting, ...missedOppCompeting];
 
-  // Pull the tweets rows for every tweet_id referenced by the notes or the
-  // pipeline_runs we care about. tweets carries text/media/engagement.
-  const tweetIds = [
-    ...new Set([
-      ...noteTweetIds,
-      ...submittedRuns.map((r: any) => r.tweet_id).filter(Boolean),
-      ...missedRuns.map((r: any) => r.tweet_id).filter(Boolean),
-      ...lowEvalRuns.map((r: any) => r.tweet_id).filter(Boolean),
-    ]),
+  // Top-up: tweet ids that only appear on the fetched runs (not on any note).
+  const knownTweetIdSet = new Set(knownTweetIds);
+  const extraTweetIds = [
+    ...new Set(
+      [...submittedRuns, ...missedRuns].map((r: any) => r.tweet_id).filter((id: any) => id && !knownTweetIdSet.has(id)),
+    ),
   ];
-  const tweets = tweetIds.length
-    ? await softBatch(fetchInBatches<any>(
-        supabase, "tweets", TWEETS_LIST_COLUMNS, "tweet_id", tweetIds, undefined, "tweets",
-      ), "tweets")
-    : [];
-
-  // Misinfo-monitoring sightings for these tweets → each item's fact-check topic.
-  const sightings = tweetIds.length
-    ? await fetchInBatches<any>(
-        supabase, "misinfo_monitoring_sightings", "tweet_id, topic_id", "tweet_id", tweetIds, undefined, "misinfo_sightings",
-      ).catch(() => [] as any[])
-    : [];
+  const [tweetsExtra, sightingsExtra] = extraTweetIds.length
+    ? await Promise.all([
+        softBatch(fetchInBatches<any>(supabase, "tweets", TWEETS_LIST_COLUMNS, "tweet_id", extraTweetIds, undefined, "tweets_extra"), "tweets_extra"),
+        fetchInBatches<any>(supabase, "misinfo_monitoring_sightings", "tweet_id, topic_id", "tweet_id", extraTweetIds, undefined, "misinfo_sightings_extra").catch(() => [] as any[]),
+      ])
+    : [[] as any[], [] as any[]];
+  const tweets = [...tweetsMain, ...tweetsExtra];
+  const sightings = [...sightingsMain, ...sightingsExtra];
 
   return { canonical, competing, submittedRuns, missedRuns, lowEvalRuns, lowEvalScores, annotations, tweets, publicDumpRatings, sightings };
 }

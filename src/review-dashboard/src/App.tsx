@@ -56,6 +56,12 @@ const SEEN_AWARE_FAILURE_TYPES: FailureType[] = ["rated_helpful", "rated_unhelpf
 const BURNDOWN_TYPES = new Set<FailureType>(["rated_helpful", "rated_unhelpful", "underwater"]);
 const BURNDOWN_TARGET_ISO = "2026-10-18";
 
+// Stale-while-revalidate caches for the slow once-per-session fetches, so the
+// burndown bar / pills / tags drawer paint instantly from the last session's
+// snapshot instead of popping in one by one as their scans finish.
+const PILL_CACHE_KEY = "reviewDashboard.pillCache.v1";
+const CATALOG_CACHE_KEY = "reviewDashboard.catalogCache.v1";
+
 function daysUntil(iso: string): number {
   const ms = new Date(iso + "T23:59:59").getTime() - Date.now();
   return Math.max(1, Math.ceil(ms / MS_PER_DAY));
@@ -67,12 +73,12 @@ function daysUntil(iso: string): number {
 // localStorage) so it doesn't shrink out from under you as you rate — that's what
 // makes "done today" a fixed, hittable bar.
 function BurndownBar({ unseen, reviewedToday, ready, inflowPerDay, pacePerDay }: { unseen: number; reviewedToday: number; ready: boolean; inflowPerDay: number; pacePerDay: number }) {
-  const todayKey = new Date().toISOString().slice(0, 10);
+  const todayKey = new Date().toLocaleDateString("en-CA"); // local YYYY-MM-DD
   const [dayStart, setDayStart] = useState<number | null>(null);
   // "at this rate" explainer, toggled by clicking the projection text.
   const [explainOpen, setExplainOpen] = useState(false);
   const [dismissed, setDismissed] = useState<boolean>(() => {
-    try { return localStorage.getItem(`reviewDashboard.burndown.dismissed.${new Date().toISOString().slice(0, 10)}`) === "true"; }
+    try { return localStorage.getItem(`reviewDashboard.burndown.dismissed.${new Date().toLocaleDateString("en-CA")}`) === "true"; }
     catch { return false; }
   });
   useEffect(() => {
@@ -349,18 +355,13 @@ export function App() {
   const [failureModeCatalog, setFailureModeCatalog] = useState<FailureModeInfo[]>([]);
   const [showFixedTags, setShowFixedTags] = useState(false);
   const [loading, setLoading] = useState(true);
-  // Notes YOU marked seen today — the burn-down's progress counter, persisted per
-  // day so it survives refresh. Inflow-proof: notes the bot writes never reduce it.
-  const [reviewedToday, setReviewedToday] = useState<number>(() => {
-    try { return Number(localStorage.getItem(`reviewDashboard.burndown.reviewed.${new Date().toISOString().slice(0, 10)}`)) || 0; }
-    catch { return 0; }
-  });
+  // Seen-toggles made THIS page session — added to the DB-derived count below.
+  // The old localStorage click counter missed ratings made in other sessions/
+  // builds and keyed on the UTC date (evening-PT clicks counted for tomorrow);
+  // deriving from annotation updated_at makes "done today" survive anything.
+  const [sessionSeenBumps, setSessionSeenBumps] = useState(0);
   const bumpReviewedToday = useCallback((delta: number) => {
-    setReviewedToday((n) => {
-      const next = Math.max(0, n + delta);
-      try { localStorage.setItem(`reviewDashboard.burndown.reviewed.${new Date().toISOString().slice(0, 10)}`, String(next)); } catch { /* ignore */ }
-      return next;
-    });
+    setSessionSeenBumps((n) => n + delta);
   }, []);
   // Gate the A/B filter panel on the full recent-notes fetch finishing, so its
   // "recently varied" detection sees every pick from the window — not just the
@@ -383,7 +384,16 @@ export function App() {
         return match ? { type: "dataset_run", id: match.id, name: match.name } : d;
       });
     }).catch((e) => console.warn("Failed to fetch uploads (table may not exist yet):", e));
-    fetchFailureModes().then(setFailureModeCatalog).catch((e) => console.warn("Failed to fetch failure modes (table may not exist yet):", e));
+    try {
+      const raw = localStorage.getItem(CATALOG_CACHE_KEY);
+      if (raw) setFailureModeCatalog(JSON.parse(raw));
+    } catch { /* corrupt cache — fresh fetch below overwrites it */ }
+    fetchFailureModes()
+      .then((modes) => {
+        setFailureModeCatalog(modes);
+        try { localStorage.setItem(CATALOG_CACHE_KEY, JSON.stringify(modes)); } catch { /* ignore */ }
+      })
+      .catch((e) => console.warn("Failed to fetch failure modes (table may not exist yet):", e));
   }, []);
 
   // Selecting failure-mode tags makes production loading fetch all-time tagged
@@ -524,6 +534,21 @@ export function App() {
   // flags the seen-aware pills derive from.
   useEffect(() => {
     if (dataset.type !== "production") return;
+    // Stale-while-revalidate: the pill scan is the slowest fetch on the page
+    // (~5s of all-time table scans) and it gates the burndown bar + pill counts.
+    // Render last session's snapshot instantly, then swap in fresh data quietly
+    // (Nathan, 2026-07-29: boxes popping in one by one).
+    try {
+      const raw = localStorage.getItem(PILL_CACHE_KEY);
+      if (raw) {
+        const c = JSON.parse(raw);
+        setCounts(c.counts);
+        setProductionTagCounts(new Map(c.tagCounts));
+        setProductionTagCounts30d(new Map(c.tagCounts30d ?? []));
+        setNotesSeen(c.notesSeen ?? []);
+        setAnnotationsSeen(c.annotationsSeen ?? []);
+      }
+    } catch { /* corrupt cache — fresh fetch below overwrites it */ }
     fetchProductionPillData()
       .then(({ counts, tagCounts, tagCounts30d, notesSeen, annotationsSeen }) => {
         setCounts(counts);
@@ -531,6 +556,15 @@ export function App() {
         setProductionTagCounts30d(tagCounts30d);
         setNotesSeen(notesSeen);
         setAnnotationsSeen(annotationsSeen);
+        try {
+          localStorage.setItem(PILL_CACHE_KEY, JSON.stringify({
+            counts,
+            tagCounts: [...tagCounts],
+            tagCounts30d: [...tagCounts30d],
+            notesSeen,
+            annotationsSeen,
+          }));
+        } catch { /* quota — cache is an optimization, not required */ }
       })
       .catch((e) => console.warn("Failed to fetch production pill data:", e));
   }, [dataset]);
@@ -593,6 +627,18 @@ export function App() {
     }
     return n / 14;
   }, [annotationsSeen]);
+
+  // "Done today" from the DB: seen-annotations whose updated_at falls on today's
+  // LOCAL date, plus toggles made this session (which aren't in the fetched
+  // snapshot yet). Survives refreshes, other builds, other browsers.
+  const reviewedToday = useMemo(() => {
+    const today = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD, local tz
+    let n = 0;
+    for (const a of annotationsSeen) {
+      if (a.seen && a.updatedAt && new Date(a.updatedAt).toLocaleDateString("en-CA") === today) n++;
+    }
+    return Math.max(0, n + sessionSeenBumps);
+  }, [annotationsSeen, sessionSeenBumps]);
 
   // True when any A/B slot is filtered. An empty A/B filter matches everything,
   // so the seen-aware counts already double as A/B-aware ones — we only need the
