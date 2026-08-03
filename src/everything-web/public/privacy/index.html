@@ -16,24 +16,50 @@
 <body>
 <main>
   <h1>Privacy Policy</h1>
-  <p class="muted">Common Notes (commonnotes.net) · Last updated 10 July 2026</p>
+  <p class="muted">Common Notes (commonnotes.net and the Common Notes browser extension) · Last updated 3 August 2026</p>
 
   <h2>What we collect</h2>
   <ul>
     <li><strong>Reading:</strong> nothing personal — no account needed, no tracking cookies.</li>
-    <li><strong>Signing in with email:</strong> your email address, used only to send login links.</li>
+    <li><strong>Signing in with email:</strong> your email address, used only to send an 8-digit login code.</li>
     <li><strong>Signing in with X:</strong> your X handle, display name, and the email X shares with us.</li>
-    <li><strong>Contributing:</strong> your votes, suggested improvements, and draft notes, linked to your account. Draft notes display your handle or display name publicly.</li>
+    <li><strong>Contributing:</strong> your votes, suggested improvements, and draft notes, linked to your account. Draft notes display your handle or display name publicly. When you rate a note, we record the charity you pick for the donation we pledge on that rating (the donation is our money, not yours).</li>
+  </ul>
+
+  <h2>The browser extension</h2>
+  <p>The Common Notes browser extension shows notes directly on the pages they were
+  written about. It is built to know as little about your browsing as possible:</p>
+  <ul>
+    <li><strong>Matching happens on your device.</strong> The extension periodically
+    downloads the list of pages that have notes and checks the pages you visit against
+    that local list. Browsing pages without notes generates no request to our servers.</li>
+    <li><strong>Pages with notes:</strong> to display notes, the page's address is sent
+    to our server (together with your login token if you are signed in). The same
+    happens for the page you are on when you open the extension's toolbar popup.</li>
+    <li><strong>Contributing from the extension:</strong> "Request notes on this page"
+    stores that page's address and title; writing a note stores the text you selected,
+    your note, and the page's address and title.</li>
+    <li><strong>Moderation:</strong> before a note or improvement is posted, its text and
+    the selected passage are checked by an AI model via OpenRouter (Anthropic) to filter
+    out non-earnest submissions. The check returns only accept or reject and stores
+    nothing; no name, email, or page address is included.</li>
+    <li><strong>Settings:</strong> small preferences (which notes to display, sites where
+    you declined the permission prompt) live in your browser's built-in extension sync
+    storage — they travel with your browser account (e.g. Chrome sync), not through our
+    servers.</li>
+    <li><strong>No analytics:</strong> the extension contains no analytics, advertising,
+    or tracking code. Uninstalling it removes everything it stored in your browser.</li>
   </ul>
 
   <h2>Where it lives</h2>
   <p>Account data and contributions are stored with Supabase (our database provider).
-  Login emails are delivered via Resend. The site is served through Cloudflare. We do
+  Login emails are delivered via Resend. The site is served through Cloudflare. The
+  moderation check for submitted notes runs through OpenRouter (Anthropic). We do
   not sell your data or use third-party advertising or analytics trackers.</p>
 
   <h2>Cookies</h2>
-  <p>Only what sign-in requires: a session token in your browser's local storage. No
-  advertising or cross-site tracking.</p>
+  <p>Only what sign-in requires: a session token in your browser's local storage (for
+  the extension, in its own extension storage). No advertising or cross-site tracking.</p>
 
   <h2>Your choices</h2>
   <ul>
