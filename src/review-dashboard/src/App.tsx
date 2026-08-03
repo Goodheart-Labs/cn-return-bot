@@ -49,6 +49,7 @@ const FULLY_LOADED = new Set<FailureType>(FULLY_LOADED_FAILURE_TYPES);
 
 import { NoteCard } from "./components/NoteCard";
 import { FilterBar } from "./components/FilterBar";
+import { PostingLimitDrawer } from "./components/PostingLimitDrawer";
 import { DatasetSelector } from "./components/DatasetSelector";
 import { UploadDialog } from "./components/UploadDialog";
 import { AbFilterPanel } from "../../dashboard-shared/AbFilterPanel";
@@ -777,13 +778,16 @@ export function App() {
         />
       </div>
 
+      {/* Collapsible drawers, grouped in one stack (Nathan 2026-07-30: "weird to
+          have them separated"): A/B test filters, failure-mode tags, posting limit. */}
+      <div className="mb-4 space-y-1">
       {/* A/B test filters. The toggle bar is ALWAYS shown in production (not gated on
           abSlots) so it doesn't pop in and shift the layout when the slots — derived
           from the progressively-loaded items — arrive a beat later. Collapsed by
           default; expanding before the data lands shows a "Loading…" placeholder.
           The bar is the section header; the panel's own header is hidden. */}
       {(dataset.type === "production" || abSlots.length > 0) && (
-        <div className="mb-4">
+        <div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setAbOpen((o) => !o)}
@@ -817,7 +821,7 @@ export function App() {
 
       {/* Failure-mode tags drawer — collapsible, same style as A/B test filters. */}
       {failureModeCatalog.length > 0 && (
-        <div className="mb-4">
+        <div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setTagsOpen((o) => !o)}
@@ -903,6 +907,10 @@ export function App() {
           )}
         </div>
       )}
+
+      {/* Posting limit (writing cap) — collapsed by default, lazy-loads on open. */}
+      <PostingLimitDrawer />
+      </div>
 
       {/* Error */}
       {error && (
