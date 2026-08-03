@@ -18,6 +18,22 @@ export async function removeDismissedGrantHost(hostname: string): Promise<void> 
   await browser.storage.sync.set({ [GRANT_DISMISSED_KEY]: (await getDismissedGrantHosts()).filter((h) => h !== hostname) });
 }
 
+// Pages the user already asked us to cover ("Request notes on this page") —
+// reopening the popup shows the done state instead of minting a duplicate
+// request. Rolling window: sync storage has an ~8KB per-key quota, so only
+// the most recent requests are remembered.
+const REQUESTED_PAGES_KEY = "cn:requestedPages";
+const REQUESTED_PAGES_MAX = 50;
+
+export async function getRequestedPages(): Promise<string[]> {
+  return ((await browser.storage.sync.get(REQUESTED_PAGES_KEY))[REQUESTED_PAGES_KEY] as string[] | undefined) ?? [];
+}
+
+export async function addRequestedPage(pageUrl: string): Promise<void> {
+  const pages = [...new Set([...(await getRequestedPages()), pageUrl])];
+  await browser.storage.sync.set({ [REQUESTED_PAGES_KEY]: pages.slice(-REQUESTED_PAGES_MAX) });
+}
+
 // Which note statuses render on pages: helpful notes always show, the other
 // two are the popup's tickboxes (synced across devices like the origin
 // opt-ins).
