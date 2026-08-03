@@ -5,6 +5,8 @@ import { fetchItemForUrl, normalizePageUrl } from "../../everything-shared/notes
 import { resolveReaderCanonical } from "./readerCanonical";
 import { indexContainer, findQuoteRange } from "./anchor";
 import { fetchClaimGroups, type ClaimGroup } from "./claimGroups";
+import { getCoveredPageUrls, pageIsCovered } from "./coveredPages";
+import { mountWriteAnywhere } from "./mountWriteAnywhere";
 import { onNoteFiltersChanged } from "./settings";
 import { isPageDark, observePageTheme } from "./pageTheme";
 import { InlineNotesApp, type AnchoredGroup } from "../components/InlineNotes";
@@ -71,12 +73,21 @@ function applyHighlights(ranges: Range[]) {
 /** Resolve `href` to an ingested item, anchor its claims, mount the overlay.
  *  Returns a teardown for the mounted overlay, or null when the page isn't
  *  ingested. */
-async function mountForUrl(ctx: ContentScriptContext, href: string): Promise<(() => void) | null> {
+async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageChanged: () => void): Promise<(() => void) | null> {
   const readerCanonical = await resolveReaderCanonical(href);
   const pageUrl = readerCanonical ? normalizePageUrl(readerCanonical) : normalizePageUrl(href, document);
+  // Decide "is this page ours?" against the locally cached coverage list
+  // BEFORE any backend call — ordinary browsing on covered sites must never
+  // reach our server. A missing list (pre-first-sync) falls through to the
+  // live lookup rather than hiding notes.
+  const covered = await getCoveredPageUrls();
+  if (covered && !pageIsCovered(pageUrl, covered)) {
+    console.info(`[common-notes] ${pageUrl} → not in the covered list (no backend lookup)`);
+    return mountWriteAnywhere(ctx, pageUrl, onCoverageChanged);
+  }
   const item = await fetchItemForUrl(pageUrl);
   console.info(`[common-notes] ${pageUrl} → ${item ? `item "${item.title ?? item.id}"` : "no ingested item"}`);
-  if (!item) return null;
+  if (!item) return mountWriteAnywhere(ctx, pageUrl, onCoverageChanged);
   // Mount even with zero notes: the write-from-selection flow works on any
   // ingested page, and its first note appears via refresh().
   let groups = await fetchClaimGroups(item.id);
@@ -209,7 +220,10 @@ export async function mountInlineNotes(ctx: ContentScriptContext): Promise<void>
     const mine = ++seq;
     cleanup?.();
     cleanup = null;
-    const teardown = await mountForUrl(ctx, href);
+    // Writing the first note on an uncovered page makes it covered: the
+    // write-anywhere mount reports back and the full notes flow takes over
+    // in place — the fresh note shows without a reload.
+    const teardown = await mountForUrl(ctx, href, () => void remount(location.href));
     // A newer navigation superseded this one mid-resolve: drop the stale mount.
     if (mine !== seq) return teardown?.();
     cleanup = teardown;

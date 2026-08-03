@@ -2,6 +2,7 @@ import path from "node:path";
 import { loadEnv } from "vite";
 import { defineConfig } from "wxt";
 import tailwindcss from "tailwindcss";
+import { ASSUME_ALL_URLS } from "./utils/permissionsMode";
 
 // Root .env feeds VITE_SUPABASE_* to import.meta.env, same as the web app's
 // vite config. The anon key is public by design (RLS-locked, migration 050).
@@ -30,18 +31,26 @@ export default defineConfig({
     description: "Community Notes Everywhere (Go to commonnotes.net to see which pages we currently support)",
     icons: { 16: "icon/16.png", 32: "icon/32.png", 48: "icon/48.png", 128: "icon/128.png" },
     action: { default_icon: { 16: "icon/16.png", 32: "icon/32.png" } },
-    permissions: ["storage", "identity", "contextMenus", "activeTab", "tabs", "scripting"],
-    // substack.com lets the BACKGROUND fetch reader-URL canonicals (the
-    // logged-out 302 to the publication domain is cross-origin, which content
-    // scripts can't follow; same scope as the substack content script, so no
-    // new install warning). supabase.co lets CONTENT SCRIPTS reach the
-    // backend in Firefox, which blocks their cross-origin fetches to
-    // non-permitted hosts outright (NetworkError) — Chrome lets them ride
-    // the page's CORS, but Firefox only exempts permissioned hosts.
-    host_permissions: ["*://*.substack.com/*", "https://*.supabase.co/*"],
-    // Generic text sites are opt-in per site from the popup; only Substack and
-    // YouTube are injected by default.
-    optional_host_permissions: ["<all_urls>"],
+    permissions: ["storage", "identity", "contextMenus", "activeTab", "tabs", "scripting", "alarms"],
+    // Two permission models, switched by utils/permissionsMode.ts:
+    //   ASSUME_ALL_URLS — required all-sites access; the background registers
+    //   the generic script for every noted hostname silently. One big
+    //   install warning, zero per-site friction.
+    //   default (redirect mode) — substack.com for the background's
+    //   canonical fetches, supabase.co for content-script fetches in Firefox
+    //   (which blocks cross-origin fetches to non-permissioned hosts);
+    //   everything else is optional, granted per site via grant.html.
+    ...(ASSUME_ALL_URLS
+      ? { host_permissions: ["<all_urls>"] }
+      : {
+          host_permissions: ["*://*.substack.com/*", "https://*.supabase.co/*"],
+          // optional_host_permissions is an MV3-only key — WXT silently drops
+          // it from the Firefox MV2 build, which made permissions.request
+          // reject on every grant. MV2 spells it optional_permissions.
+          ...(browser === "firefox"
+            ? { optional_permissions: ["<all_urls>"] }
+            : { optional_host_permissions: ["<all_urls>"] }),
+        }),
     ...(browser === "chrome" ? { key: CHROME_PUBLIC_KEY } : {}),
     browser_specific_settings: {
       // Stable add-on ID so the OAuth redirect URL (…extensions.allizom.org)
@@ -51,11 +60,10 @@ export default defineConfig({
   }),
   hooks: {
     "build:manifestGenerated": (_wxt, manifest) => {
-      // The generic and requestnote content scripts inject at runtime on
-      // arbitrary origins, so WXT can't know their CSS's matches — it emits an
-      // empty list, which would block the shadow-root UI from fetching the
-      // stylesheet.
-      const RUNTIME_INJECTED_CSS = ["content-scripts/generic.css", "content-scripts/requestnote.css"];
+      // The generic content script injects at runtime on arbitrary origins,
+      // so WXT can't know its CSS's matches — it emits an empty list, which
+      // would block the shadow-root UI from fetching the stylesheet.
+      const RUNTIME_INJECTED_CSS = ["content-scripts/generic.css"];
       for (const resource of manifest.web_accessible_resources ?? []) {
         if (typeof resource === "object" && "resources" in resource && RUNTIME_INJECTED_CSS.some((css) => resource.resources.includes(css))) {
           resource.matches = ["<all_urls>"];

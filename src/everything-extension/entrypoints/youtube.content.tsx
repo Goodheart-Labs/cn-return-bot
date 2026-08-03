@@ -4,6 +4,7 @@ import { defineContentScript, createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
 import { fetchItemForUrl, extractYoutubeVideoId } from "../../everything-shared/notesQuery";
 import { fetchClaimGroups, type ClaimGroup } from "../utils/claimGroups";
+import { getCoveredPageUrls, pageIsCovered } from "../utils/coveredPages";
 import { YoutubeOverlayApp, DEFAULT_CLIP_SECONDS, type TimedGroup } from "../components/YoutubeOverlay";
 import { isPageDark, observePageTheme } from "../utils/pageTheme";
 import { registerDevReloadHook } from "../utils/devReload";
@@ -48,6 +49,10 @@ function timedGroups(claimGroups: ClaimGroup[]): TimedGroup[] {
 
 async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | null> {
   if (!extractYoutubeVideoId(location.href)) return null;
+  // Local coverage check first — most videos aren't covered, and that
+  // decision must not cost a backend request per watch page.
+  const covered = await getCoveredPageUrls();
+  if (covered && !pageIsCovered(location.href, covered)) return null;
   const item = await fetchItemForUrl(location.href);
   if (!item) return null;
   const refetch = async () => timedGroups(await fetchClaimGroups(item.id));

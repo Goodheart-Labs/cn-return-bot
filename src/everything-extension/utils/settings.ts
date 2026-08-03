@@ -1,20 +1,21 @@
 import { browser } from "#imports";
 
-// Origins the user has opted into beyond the static Substack/YouTube matches.
-const ENABLED_ORIGINS_KEY = "cn:enabledOrigins";
+// Hosts whose grant.html offer the user declined with "Not now" — never
+// redirect them there again (redirect mode only).
+const GRANT_DISMISSED_KEY = "cn:grantDismissed";
 
-export async function getEnabledOrigins(): Promise<string[]> {
-  return ((await browser.storage.sync.get(ENABLED_ORIGINS_KEY))[ENABLED_ORIGINS_KEY] as string[] | undefined) ?? [];
+export async function getDismissedGrantHosts(): Promise<string[]> {
+  return ((await browser.storage.sync.get(GRANT_DISMISSED_KEY))[GRANT_DISMISSED_KEY] as string[] | undefined) ?? [];
 }
 
-export async function updateEnabledOrigins(mutate: (origins: string[]) => string[]): Promise<void> {
-  await browser.storage.sync.set({ [ENABLED_ORIGINS_KEY]: mutate(await getEnabledOrigins()) });
+export async function addDismissedGrantHost(hostname: string): Promise<void> {
+  await browser.storage.sync.set({ [GRANT_DISMISSED_KEY]: [...new Set([...(await getDismissedGrantHosts()), hostname])] });
 }
 
-export function onEnabledOriginsChanged(callback: () => void): void {
-  browser.storage.onChanged.addListener((changes, area) => {
-    if (area === "sync" && changes[ENABLED_ORIGINS_KEY]) callback();
-  });
+/** The un-dismiss escape hatch: granting a site from the popup's "Show notes
+ *  on this site" button clears an earlier "Do not ask again". */
+export async function removeDismissedGrantHost(hostname: string): Promise<void> {
+  await browser.storage.sync.set({ [GRANT_DISMISSED_KEY]: (await getDismissedGrantHosts()).filter((h) => h !== hostname) });
 }
 
 // Which note statuses render on pages: helpful notes always show, the other
