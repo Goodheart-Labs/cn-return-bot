@@ -267,7 +267,7 @@ export function PopupApp() {
   const jumped = useJumped(state);
   const access = usePageAccess(state);
   const [filters, toggleFilters] = useNoteFilters();
-  // A fresh site should reach this session now, not on the next hourly tick.
+  // A fresh site should reach this session now, not on the next scheduled tick.
   useEffect(() => {
     void browser.runtime.sendMessage({ type: "cn-sync-noted-sites" }).catch(() => {});
   }, []);

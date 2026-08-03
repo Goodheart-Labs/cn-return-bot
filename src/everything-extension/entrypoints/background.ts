@@ -12,7 +12,7 @@ const WRITE_MENU_ID = "cn-write-note";
 const INJECT_RETRY_DELAY_MS = 150;
 const INJECT_RETRY_ATTEMPTS = 10;
 const SYNC_ALARM = "cn-sync-noted-sites";
-const SYNC_PERIOD_MINUTES = 60;
+const SYNC_PERIOD_MINUTES = 5;
 
 /** Hostnames of covered pages outside the static sites — where the generic
  *  content script belongs. */
@@ -120,7 +120,7 @@ async function createMenus() {
 }
 
 export default defineBackground(() => {
-  // Sync on install/update and browser start; the hourly alarm keeps
+  // Sync on install/update and browser start; the 5-minute alarm keeps
   // long-lived sessions current (the MV3 worker can't hold a timer), and
   // the popup pings cn-sync-noted-sites on open.
   const startSync = () => {
@@ -191,7 +191,7 @@ export default defineBackground(() => {
     }
     if ((message as { type?: string })?.type === "cn-sync-noted-sites") {
       // The popup pings this on open so a fresh site reaches the current
-      // session immediately instead of on the next hourly tick.
+      // session immediately instead of on the next scheduled tick.
       syncNotedSites().then(() => sendResponse({ ok: true }));
       return true; // async response
     }
