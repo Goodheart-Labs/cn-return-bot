@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import { EMAIL_OTP_LENGTH, signInWithEmailCode, verifyEmailCode, signInWithTwitter } from "../../../everything-shared/auth";
-import { track } from "../lib/analytics";
 
 const X_SIGNIN_ENABLED = true;
 
@@ -22,7 +21,6 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
     e.preventDefault();
     setBusy(true);
     setError(null);
-    track("sign_in_started", { method: "email" });
     const { error } = await signInWithEmailCode(email.trim());
     setBusy(false);
     if (error) return setError(error.message);
@@ -109,7 +107,7 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
               <span className="flex-1 border-t" /> or <span className="flex-1 border-t" />
             </div>
             <button
-              onClick={() => { track("sign_in_started", { method: "twitter" }); signInWithTwitter(); }}
+              onClick={() => signInWithTwitter()}
               className="w-full border border-gray-800 bg-black text-white rounded-lg py-2 text-sm font-medium hover:bg-gray-800"
             >
               Sign in with 𝕏

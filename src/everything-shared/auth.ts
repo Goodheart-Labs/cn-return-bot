@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
-import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
+import type { Session } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
 
-export function useSession(): { session: Session | null; ready: boolean; event: AuthChangeEvent | null } {
+export function useSession(): { session: Session | null; ready: boolean } {
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
-  // The last auth transition. Lets a consumer tell an actual SIGNED_IN apart
-  // from INITIAL_SESSION (a returning user's persisted session on page load).
-  const [event, setEvent] = useState<AuthChangeEvent | null>(null);
 
   useEffect(() => {
     // Extension contexts (popup, content scripts, background) each run their
@@ -34,7 +31,6 @@ export function useSession(): { session: Session | null; ready: boolean; event: 
     });
     const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
       setSession(s);
-      setEvent(event);
       logSession(`event ${event}`, s);
     });
 
@@ -55,7 +51,7 @@ export function useSession(): { session: Session | null; ready: boolean; event: 
     };
   }, []);
 
-  return { session, ready, event };
+  return { session, ready };
 }
 
 /** Supabase's standard email OTP length (mirrored by config.toml's
