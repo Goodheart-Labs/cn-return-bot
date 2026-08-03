@@ -22,7 +22,7 @@ const BATCH = 1000;
 type SyncSpec = { local: string; prod?: string };
 const SYNC_SPECS: SyncSpec[] = [
   { local: "notewriters" },
-  { local: "tweets", prod: "__skip__" },          // tweets is local-only (no prod equivalent)
+  { local: "tweets" }, // prod's tweets table is the author-history source (author_id since migration 033); ~171k rows
   { local: "notes" }, // prod merged canonical_note_information into notes (May 2026)
   { local: "pipeline_runs" },
   { local: "misinfo_monitoring_sightings" }, // after pipeline_runs: processed_run_id FKs to it
