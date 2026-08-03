@@ -2,7 +2,6 @@ import { useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { displayName } from "../../everything-shared/session";
 import { ensureWebItem } from "../../everything-shared/ensureWebItem";
-import { normalizeText } from "../../everything-shared/normalizeText";
 import { postClaimWithNote } from "../../everything-shared/postNote";
 import type { PageItem } from "../../everything-shared/notesQuery";
 import { RejectedNotice } from "../../everything-web/src/components/editorBits";
@@ -27,9 +26,6 @@ export function WriteNoteOverlay({ item, pageForItem, selection, session, onClos
   const [error, setError] = useState<string | null>(null);
   // Bylines are opt-in (Nathan, 2026-07-14): default anonymous, X-CN style.
   const [signed, setSigned] = useState(false);
-
-  const fullText = item?.full_text ?? pageForItem?.fullText ?? "";
-  const anchorInText = !!fullText && normalizeText(fullText).includes(normalizeText(selection));
 
   const submit = async () => {
     if (!session) return;
@@ -71,11 +67,6 @@ export function WriteNoteOverlay({ item, pageForItem, selection, session, onClos
           <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">✕</button>
         </div>
         <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 pl-3 text-gray-600 dark:text-gray-300 italic text-sm">“{selection}”</blockquote>
-        {!anchorInText && (
-          <span className="inline-block text-xs px-2 py-0.5 rounded-full border bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900">
-            ⚠ Text not found in the article text we have on file
-          </span>
-        )}
         {!session ? (
           <p className="text-sm rounded-lg p-2 bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900">
             Sign in from the Common Notes toolbar icon to write notes.
