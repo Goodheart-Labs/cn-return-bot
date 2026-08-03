@@ -8,6 +8,7 @@ import { donationPair, priorTally } from "./lib/donationScoring";
 import { noteTally, probabilityHelpful, probabilityHelpfulAfter } from "../../everything-shared/noteBelief";
 import { saveDonation, usePreferredCharity, type MintedDonation } from "./lib/donations";
 import { readRoute, pushProject, pushItem, pushLeaderboard, type View } from "./lib/routing";
+import { identifyUser, resetAnalytics, track } from "./lib/analytics";
 import { Sidebar } from "./components/Sidebar";
 
 function AuthCorner({ session, onSignIn, onSignOut }: {
@@ -66,7 +67,7 @@ function NoteSection({ label, notes, render }: {
 
 export function App() {
   const { projects, items, notes, nnn, loaded } = useLiveData();
-  const { session } = useSession();
+  const { session, event: authEvent } = useSession();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   // Which top-level view — the note feed or the rating leaderboard.
   const [view, setView] = useState<View>(() => readRoute().view);
@@ -89,6 +90,28 @@ export function App() {
       setMyNnnVotes(new Map());
     }
   }, [session?.user.id]);
+
+  // Attribute analytics to the person once signed in; drop the link on sign-out.
+  const signedInFor = useRef<string | null>(null);
+  useEffect(() => {
+    if (session) {
+      identifyUser(session.user.id, { auth_provider: session.user.app_metadata?.provider });
+    } else {
+      resetAnalytics();
+      signedInFor.current = null; // allow a fresh sign_in if they log back in
+    }
+  }, [session?.user.id]);
+
+  // The sign-in funnel step. SIGNED_IN fires on a real sign-in (email link /
+  // OAuth return), not on a returning user's restored session (INITIAL_SESSION);
+  // the per-user guard drops the duplicate SIGNED_IN supabase-js emits on tab
+  // refocus, so the count stays one-per-sign-in.
+  useEffect(() => {
+    if (authEvent === "SIGNED_IN" && session && signedInFor.current !== session.user.id) {
+      signedInFor.current = session.user.id;
+      track("signed_in", { provider: session.user.app_metadata?.provider });
+    }
+  }, [authEvent, session?.user.id]);
 
   // Every note is its own card — AI note, user note, improvement alike; the
   // feed ranking below treats them uniformly. An improvement is tied to its
@@ -189,6 +212,8 @@ export function App() {
   // note — retracting cascades the donation away, own-note votes mint none).
   const handleVote = async (note: NoteRow, vote: Vote): Promise<MintedDonation | null> => {
     if (!session) {
+      // An anonymous reader hit the vote wall — the funnel's sign-in prompt.
+      track("vote_gated_login", { note_id: note.id });
       setLoginOpen(true);
       return null;
     }
@@ -198,12 +223,24 @@ export function App() {
       next.delete(note.id);
       setMyVotes(next);
       await clearVote(note.id);
+      track("note_vote_retracted", { note_id: note.id });
       return null;
     }
     next.set(note.id, vote);
     setMyVotes(next);
     const voteId = await castVote(note.id, session.user.id, vote);
-    if (!voteId || note.author_id === session.user.id) return null;
+    if (!voteId) return null;
+    const ownNote = note.author_id === session.user.id;
+    // The vote funnel step. distinct_notes_voted is the count AFTER this cast,
+    // so "voted on multiple notes" is note_voted where distinct_notes_voted >= 2.
+    track("note_voted", {
+      note_id: note.id,
+      vote, // 1 helpful · 0 somewhat · -1 not helpful
+      changed_vote: current != null,
+      own_note: ownNote,
+      distinct_notes_voted: next.size,
+    });
+    if (ownNote) return null;
     const pair = donationPair(priorTally(note, current), vote);
     // A backend without migration 061 rejects the pair columns — keep the vote,
     // just don't promise a donation the ledger didn't record.

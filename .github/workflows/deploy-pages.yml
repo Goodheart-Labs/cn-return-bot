@@ -63,6 +63,7 @@ jobs:
           BASE_PATH: /cn-return-bot/notes/
           VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          VITE_PUBLIC_POSTHOG_KEY: ${{ secrets.POSTHOG_KEY }}
 
       - name: Assemble site
         run: |
@@ -76,6 +77,7 @@ jobs:
           BASE_PATH: /
           VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          VITE_PUBLIC_POSTHOG_KEY: ${{ secrets.POSTHOG_KEY }}
 
       - name: Deploy commonnotes.net (Cloudflare Pages)
         # Manual only (Nathan 2026-07-10): merges must NOT silently update the
