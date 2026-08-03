@@ -44,7 +44,12 @@ export default defineConfig({
       ? { host_permissions: ["<all_urls>"] }
       : {
           host_permissions: ["*://*.substack.com/*", "https://*.supabase.co/*"],
-          optional_host_permissions: ["<all_urls>"],
+          // optional_host_permissions is an MV3-only key — WXT silently drops
+          // it from the Firefox MV2 build, which made permissions.request
+          // reject on every grant. MV2 spells it optional_permissions.
+          ...(browser === "firefox"
+            ? { optional_permissions: ["<all_urls>"] }
+            : { optional_host_permissions: ["<all_urls>"] }),
         }),
     ...(browser === "chrome" ? { key: CHROME_PUBLIC_KEY } : {}),
     browser_specific_settings: {

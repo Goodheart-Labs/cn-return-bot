@@ -197,6 +197,7 @@ function PrimaryAction({ state, visibleNoteCount, jumped, access }: {
   access: PageAccess | null;
 }) {
   const [busy, setBusy] = useState(false);
+  const [enableError, setEnableError] = useState<string | null>(null);
 
   if (state.kind === "loading") return <p className="text-sm text-gray-500">Loading notes…</p>;
 
@@ -205,10 +206,17 @@ function PrimaryAction({ state, visibleNoteCount, jumped, access }: {
 
     if (access === "ungranted") {
       const enable = async () => {
+        setEnableError(null);
         const hostname = new URL(state.origin).hostname;
-        // permissions.request comes FIRST — the click is its user gesture.
-        const granted = await browser.permissions.request({ origins: [hostnamePattern(hostname)] }).catch(() => false);
-        if (!granted) return;
+        try {
+          // permissions.request comes FIRST — the click is its user gesture.
+          // A rejection is a real bug (e.g. missing optional permissions in
+          // the manifest), not a user choice — show it, don't swallow it.
+          const granted = await browser.permissions.request({ origins: [hostnamePattern(hostname)] });
+          if (!granted) return;
+        } catch (err) {
+          return setEnableError((err as Error).message);
+        }
         await registerGenericScripts([hostname]);
         await removeDismissedGrantHost(hostname);
         const tab = await activeTab();
@@ -218,9 +226,12 @@ function PrimaryAction({ state, visibleNoteCount, jumped, access }: {
         window.close();
       };
       return (
-        <button onClick={enable} className={PRIMARY_BUTTON}>
-          Show notes on this site
-        </button>
+        <>
+          <button onClick={enable} className={PRIMARY_BUTTON}>
+            Show notes on this site
+          </button>
+          {enableError && <p className="text-sm text-red-600">{enableError}</p>}
+        </>
       );
     }
 

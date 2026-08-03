@@ -6,19 +6,10 @@ import { useSession } from "../../everything-shared/auth";
 import { WriteNoteOverlay } from "../components/WriteNoteOverlay";
 import { isPageDark } from "./pageTheme";
 
-// Keeps write-anywhere item bodies bounded; items store full transcripts
-// anyway, so this is generous.
-const FULL_TEXT_CAP = 200_000;
-
-function pageFullText(): string {
-  const container = document.querySelector("article") ?? document.querySelector("main") ?? document.body;
-  return ((container as HTMLElement).innerText ?? "").slice(0, FULL_TEXT_CAP);
-}
-
 /** The write-anywhere shell for UNCOVERED pages: nothing renders until the
  *  background forwards a "Write a Common Note on this" click, then the
  *  standard overlay opens with a lazily-created item. */
-function WriteAnywhereApp({ pageUrl }: { pageUrl: string }) {
+function WriteAnywhereApp({ pageUrl, onPosted }: { pageUrl: string; onPosted: () => void }) {
   const { session } = useSession();
   const [selection, setSelection] = useState<string | null>(null);
 
@@ -36,19 +27,34 @@ function WriteAnywhereApp({ pageUrl }: { pageUrl: string }) {
   return (
     <WriteNoteOverlay
       item={null}
-      pageForItem={{ url: pageUrl, title: document.title, fullText: pageFullText() }}
+      pageForItem={{ url: pageUrl, title: document.title }}
       selection={selection}
       session={session}
       onClose={() => setSelection(null)}
-      onPosted={() => setSelection(null)}
+      onPosted={() => {
+        setSelection(null);
+        onPosted();
+      }}
     />
   );
 }
 
 /** Mounted instead of the notes UI when the local coverage check says this
  *  page has no item — costs no backend traffic until the user actually
- *  writes. */
-export async function mountWriteAnywhere(ctx: ContentScriptContext, pageUrl: string): Promise<() => void> {
+ *  writes. After a successful post the page IS covered: sync the background
+ *  (so the covered list includes it) and hand control back via
+ *  `onCoverageChanged`, which remounts the full notes flow — the fresh note
+ *  appears without a reload. */
+export async function mountWriteAnywhere(
+  ctx: ContentScriptContext,
+  pageUrl: string,
+  onCoverageChanged: () => void,
+): Promise<() => void> {
+  const runtime = (globalThis as any).browser?.runtime ?? (globalThis as any).chrome?.runtime;
+  const handlePosted = async () => {
+    await runtime?.sendMessage({ type: "cn-sync-noted-sites" })?.catch?.(() => {});
+    onCoverageChanged();
+  };
   let root: Root | null = null;
   const ui = await createShadowRootUi(ctx, {
     name: "common-notes-ui",
@@ -58,7 +64,7 @@ export async function mountWriteAnywhere(ctx: ContentScriptContext, pageUrl: str
       container.classList.add("cn-theme-root");
       container.classList.toggle("dark", isPageDark());
       root = createRoot(container);
-      root.render(<WriteAnywhereApp pageUrl={pageUrl} />);
+      root.render(<WriteAnywhereApp pageUrl={pageUrl} onPosted={() => void handlePosted()} />);
       return root;
     },
     onRemove(mounted) {

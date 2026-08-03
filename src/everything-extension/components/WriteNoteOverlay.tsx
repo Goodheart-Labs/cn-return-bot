@@ -14,7 +14,7 @@ import { RejectedNotice } from "../../everything-web/src/components/editorBits";
  *  item, same spirit as judging before creating the claim. */
 export function WriteNoteOverlay({ item, pageForItem, selection, session, onClose, onPosted }: {
   item: PageItem | null;
-  pageForItem?: { url: string; title: string; fullText: string };
+  pageForItem?: { url: string; title: string };
   selection: string;
   session: Session | null;
   onClose: () => void;

@@ -8,7 +8,7 @@ const POSTGRES_UNIQUE_VIOLATION = "23505";
  *  item). Client inserts are RLS-constrained to source='web' under the
  *  catch-all project (migration 068); `url` is unique, so a losing race
  *  simply re-selects the winner's row. Returns the item id. */
-export async function ensureWebItem(params: { url: string; title: string; fullText: string }): Promise<string> {
+export async function ensureWebItem(params: { url: string; title: string }): Promise<string> {
   const url = params.url.replace(/\/$/, "");
   const existing = await supabase
     .from("everything_items")
@@ -32,7 +32,6 @@ export async function ensureWebItem(params: { url: string; title: string; fullTe
       url,
       title: params.title || null,
       status: "done",
-      full_text: params.fullText,
     })
     .select("id")
     .single();

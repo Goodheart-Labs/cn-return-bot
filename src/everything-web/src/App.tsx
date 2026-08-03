@@ -383,7 +383,7 @@ export function App() {
           </h2>
           <div className="flex items-center gap-4">
             <button
-              onClick={() => (session ? setWriteOpen(true) : setLoginOpen(true))}
+              onClick={() => setWriteOpen(true)}
               className="text-sm font-medium text-blue-600 hover:underline shrink-0"
             >
               Write a note
@@ -416,15 +416,7 @@ export function App() {
 
       <DesignMenu />
       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
-      {session && (
-        <WriteNoteModal
-          open={writeOpen}
-          onClose={() => setWriteOpen(false)}
-          projectId={selectedId}
-          session={session}
-          onAuthored={noteAuthored}
-        />
-      )}
+      <WriteNoteModal open={writeOpen} onClose={() => setWriteOpen(false)} />
     </div>
   );
 }

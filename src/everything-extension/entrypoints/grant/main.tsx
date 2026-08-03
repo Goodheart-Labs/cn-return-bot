@@ -27,16 +27,26 @@ const back = (() => {
 
 function GrantApp() {
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const allow = async () => {
     setBusy(true);
-    const granted = await browser.permissions.request({ origins: [hostnamePattern(host)] }).catch(() => false);
-    if (granted) {
-      await registerGenericScripts([host]);
-      location.href = back;
-      return;
+    setError(null);
+    try {
+      // A rejection here is a real bug (e.g. the missing MV2
+      // optional_permissions), not a user choice — surface it, never
+      // swallow it into a dead-looking button.
+      const granted = await browser.permissions.request({ origins: [hostnamePattern(host)] });
+      if (granted) {
+        await registerGenericScripts([host]);
+        location.href = back;
+        return;
+      }
+    } catch (err) {
+      setError((err as Error).message);
     }
-    // Native prompt denied/closed — stay so they can retry or pick Not now.
+    // Native prompt denied/closed — stay so they can retry or pick the
+    // other button.
     setBusy(false);
   };
 
@@ -57,6 +67,7 @@ function GrantApp() {
             Do not ask again
           </button>
         </div>
+        {error && <p className="text-sm text-red-600">{error}</p>}
       </div>
     </div>
   );
