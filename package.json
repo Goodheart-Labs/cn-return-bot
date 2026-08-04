@@ -26,6 +26,7 @@
   "name": "community-notes-writer",
   "type": "module",
   "private": true,
+  "license": "MIT",
   "devDependencies": {
     "@types/bun": "^1.2.23",
     "@types/linkify-it": "^5.0.0",
