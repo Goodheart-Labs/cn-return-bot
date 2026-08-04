@@ -32,7 +32,7 @@ export default defineConfig({
   // `git archive` instead; this guard is defense in depth.
   zip: { excludeSources: ["chrome-signing-key.pem", "store-assets/**"] },
   manifest: ({ browser }) => ({
-    version: "0.1.0",
+    version: "0.1.1",
     name: "Common Notes",
     description: "Community Notes Everywhere (Go to commonnotes.net to see which pages we currently support)",
     icons: { 16: "icon/16.png", 32: "icon/32.png", 48: "icon/48.png", 128: "icon/128.png" },
