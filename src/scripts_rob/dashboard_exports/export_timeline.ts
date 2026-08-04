@@ -100,12 +100,20 @@ for (const line of readFileSync("capture-data/trump-election-fraud.jsonl", "utf8
 }
 
 // ── Activity: notes written (pipeline_runs on topic tweets) ──────────────────
+// Fetched per sighted tweet_id, not by created_at range: pipeline_runs.id is a
+// random UUID and created_at is unindexed, so a date-filtered keyset scan makes
+// page 0 walk the whole table (statement_timeout — killed the 8/1 refresh).
 const WRITTEN_REASONS = new Set(["daily_limit_reached", "below_velocity_floor"]);
-const runs = await logger.fetchAllRows<{ id: string; tweet_id: string; created_at: string; outcome: string | null; outcome_reason: string | null }>(
-  (c) => c.from("pipeline_runs").select("id, tweet_id, created_at, outcome, outcome_reason").gte("created_at", SPEECH_DAY),
-  "id", "pipeline_runs");
+type Run = { id: string; tweet_id: string; created_at: string; outcome: string | null; outcome_reason: string | null };
+const idList = [...topicTweetIds];
+const runs: Run[] = [];
+for (let i = 0; i < idList.length; i += 100) {
+  runs.push(...await logger.fetchAllRows<Run>(
+    (c) => c.from("pipeline_runs").select("id, tweet_id, created_at, outcome, outcome_reason")
+      .in("tweet_id", idList.slice(i, i + 100)).gte("created_at", SPEECH_DAY),
+    "id", "pipeline_runs"));
+}
 for (const rn of runs) {
-  if (!topicTweetIds.has(rn.tweet_id)) continue;
   const wrote = rn.outcome === "submitted" || rn.outcome === "candidate" || WRITTEN_REASONS.has(rn.outcome_reason ?? "");
   if (!wrote) continue;
   const d = day(rn.created_at);
