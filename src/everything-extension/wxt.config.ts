@@ -55,7 +55,17 @@ export default defineConfig({
     browser_specific_settings: {
       // Stable add-on ID so the OAuth redirect URL (…extensions.allizom.org)
       // stays constant across Firefox installs.
-      gecko: { id: "common-notes@commonnotes.net" },
+      gecko: {
+        id: "common-notes@commonnotes.net",
+        // Mozilla's built-in data consent (mandatory for new AMO submissions
+        // since Nov 2025; Firefox 140+ shows it at install). Reading notes
+        // sends the covered page's URL to our API; signing in is optional and
+        // carries the user's email plus auth credentials/session.
+        data_collection_permissions: {
+          required: ["browsingActivity"],
+          optional: ["authenticationInfo", "personallyIdentifyingInfo"],
+        },
+      },
     },
   }),
   hooks: {
