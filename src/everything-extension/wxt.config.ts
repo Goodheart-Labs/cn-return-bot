@@ -89,6 +89,12 @@ export default defineConfig({
   },
   vite: () => ({
     envDir: repoRoot,
+    // Unminified on purpose: extension code loads from disk (no network win),
+    // Mozilla recommends against minifying, and minified output is not
+    // path-reproducible (the minifier's name assignment follows module ids,
+    // which embed absolute paths) — AMO reviewers must rebuild our source and
+    // get a byte-identical diff, which only works unminified.
+    build: { minify: false },
     css: {
       // rem→px after Tailwind: rem resolves against the HOST page's <html>
       // font-size even inside a shadow root (shadow DOM does not isolate it),
@@ -121,6 +127,22 @@ export default defineConfig({
         config(config: { define?: Record<string, unknown> }, { command }: { command: string }) {
           if (command !== "build") return;
           (config.define ??= {})["process.env.NODE_ENV"] = JSON.stringify("production");
+          // Also flip the PROCESS env: Vite's isProduction (and with it
+          // plugin-react's choice of the production JSX transform — the dev
+          // transform bakes absolute-path _jsxFileName vars into the output)
+          // follows process.env.NODE_ENV, which WXT set to the mode name.
+          process.env.NODE_ENV = "production";
+        },
+      },
+      {
+        // Rolldown's unminified output labels each module with a //#region
+        // comment carrying its id; WXT's virtual entrypoint ids embed the
+        // repo's ABSOLUTE path. Strip the machine-specific prefix so a
+        // rebuild from any directory is byte-identical (AMO reviewers diff
+        // their rebuild against the submitted files).
+        name: "cn-path-independent-output",
+        renderChunk(code: string) {
+          return code.includes(repoRoot) ? code.split(repoRoot).join("") : null;
         },
       },
       {
