@@ -25,6 +25,12 @@ export default defineConfig({
   // in the user's existing browser; WXT's dev client then hot-reloads the
   // extension (and its tabs) on every rebuild.
   webExt: { disabled: true },
+  // The auto sources zip must never carry the Chrome signing PRIVATE key
+  // (present only on dev machines, gitignored) or local store assets. Note
+  // the zip is incomplete for AMO anyway (imports from ../everything-shared
+  // etc. are outside sourcesRoot) — reviewer sources are built with
+  // `git archive` instead; this guard is defense in depth.
+  zip: { excludeSources: ["chrome-signing-key.pem", "store-assets/**"] },
   manifest: ({ browser }) => ({
     version: "0.1.0",
     name: "Common Notes",
