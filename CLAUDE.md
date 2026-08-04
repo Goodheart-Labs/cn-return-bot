@@ -120,6 +120,8 @@ Privacy + coverage: the background's sync caches the full covered-page URL list 
 
 Distribution without stores: `.github/workflows/build-extension.yml` keeps a rolling `extension-latest` GitHub release updated with both zips; install steps in `src/everything-extension/README.md` (Chrome: load unpacked — pinned ID makes every install identical; Firefox: temporary load only until we run Mozilla's automated unlisted signing once).
 
+Store submissions (CWS + AMO): read `src/everything-extension/STORE.md` BEFORE any store upload — it holds the reviewer-simulation procedure (mandatory pre-upload check), the reproducible-build rationale, the sources-package recipe, and the AMO landmines (deleting a listing burns the gecko id forever; version numbers burn too; the source-upload field hides behind the machine-generated-code question).
+
 ## Review dashboard
 
 Dashboard listens on port 8001 — free it first in case a previous run is still bound.
