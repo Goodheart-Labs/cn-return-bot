@@ -111,6 +111,19 @@ export default defineConfig({
     },
     plugins: [
       {
+        // WXT defines process.env.NODE_ENV as the MODE NAME in every bundle
+        // (its lib-mode per-entrypoint config even overrides a user define),
+        // so `--mode prod-backend` ships React's DEVELOPMENT build (~2× size,
+        // dev-only code paths) in all content scripts. A plugin config hook
+        // runs after that merge, in WXT's child builds too. Dev serve keeps
+        // the dev runtime (react-refresh needs it).
+        name: "cn-force-prod-react",
+        config(config: { define?: Record<string, unknown> }, { command }: { command: string }) {
+          if (command !== "build") return;
+          (config.define ??= {})["process.env.NODE_ENV"] = JSON.stringify("production");
+        },
+      },
+      {
         // Same guard as everything-web/vite.config.ts: a build without the
         // Supabase env inlines `undefined`, turning the module-scope check in
         // everything-shared/supabase.ts into an unconditional throw. Fail the
