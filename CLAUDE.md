@@ -111,10 +111,10 @@ Auth: one Supabase session in `chrome.storage.local` (adapter branch in `everyth
 
 ```
 https://jodkhmefbcmgldokmeicpdogkepmcnij.chromiumapp.org/**
-https://817870a63bcf42546873a59b63fd9e267d889c26.extensions.allizom.org/**
+https://edc17663d98cd6a49556fdc1882c73dace1728c1.extensions.allizom.org/**
 ```
 
-(The Firefox subdomain is SHA-1 of `common-notes@commonnotes.net`, computed offline — confirm once by logging `browser.identity.getRedirectURL()` in a Firefox-loaded build before relying on it.) Email/code login needs no allow-list entry; only the X button does. No realtime — notes refetch after votes.
+(The Firefox subdomain is SHA-1 of `extension@commonnotes.net` — the original `common-notes@commonnotes.net` id was permanently burned when the first AMO listing was deleted; never delete an AMO listing. Confirm the hash once by logging `browser.identity.getRedirectURL()` in a Firefox-loaded build before relying on it.) Email/code login needs no allow-list entry; only the X button does. No realtime — notes refetch after votes.
 
 Privacy + coverage: the background's sync caches the full covered-page URL list locally (`cn:coveredPageUrls`); content scripts decide "is this page ours?" on-device (`utils/coveredPages.ts`) BEFORE any backend call, so browsing noteless pages never reaches our server. The popup pings `cn-sync-noted-sites` on open, and the sync injects into already-open tabs on newly-registered hosts (registration alone only affects future loads). Requesting notes is page-level: the popup shows "Request notes on this page" on uncovered content pages (search engines/new-tab excluded) → `everything_note_requests` (migration 066; `selection` nullable since 067 — the old selection right-click + requestnote card were removed). Writing works ANYWHERE: the "Write a Common Note on this" selection menu is on every page — on uncovered pages the click's activeTab grant injects `generic.js`, and posting lazily creates the page's item via `ensureWebItem` (`source='web'` under the catch-all `web` project, client-insert RLS from migration 068). The only static first-class text site is `*://*.substack.com/*` (single source: `utils/staticSites.ts`, mirrored by `notes.content.ts` matches); every other text site (incl. ai-2040.com since Jul 2026) is covered by the background's noted-sites sync. The extension icon is generated from `src/everything-extension/assets/icon.svg` via `bun run scripts/generate-extension-icons.ts` (PNGs checked in under `public/icon/`).
 

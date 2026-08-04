@@ -60,9 +60,12 @@ export default defineConfig({
     ...(browser === "chrome" ? { key: CHROME_PUBLIC_KEY } : {}),
     browser_specific_settings: {
       // Stable add-on ID so the OAuth redirect URL (…extensions.allizom.org)
-      // stays constant across Firefox installs.
+      // stays constant across Firefox installs. NOT the original id: AMO
+      // permanently burns an id when its add-on is deleted, which happened
+      // to common-notes@commonnotes.net during the first submission attempt
+      // (Aug 2026). Never delete the AMO listing — the id dies with it.
       gecko: {
-        id: "common-notes@commonnotes.net",
+        id: "extension@commonnotes.net",
         // Mozilla's built-in data consent (mandatory for new AMO submissions
         // since Nov 2025; Firefox 140+ shows it at install). Reading notes
         // sends the covered page's URL to our API; signing in is optional and
