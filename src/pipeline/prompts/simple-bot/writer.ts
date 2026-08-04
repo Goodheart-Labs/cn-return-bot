@@ -83,7 +83,7 @@ Notes that reach Helpful on this topic correct exactly ONE claim — the claim t
 export const WRITER_TIME_TRAVEL_RULE = `
 
 ## The time-travel test
-The post context states when the post was published. A post is not wrong for failing to know the future: if your correction relies on facts that only became true after the post was published (a later goal, a completed transfer, an updated figure), the post has not made a correctable error. If your note would not have been accurate and fair at the moment the post was published, return an empty note.`;
+The post context states when the post was published and its age in hours. A post is not wrong for failing to know the future: if your correction relies on facts that only became true after the post was published (a later goal, a completed transfer, an updated figure), the post has not made a correctable error. The same holds when the event was still unfolding at posting time and the findings cannot establish what was actually known at that moment — an unverifiable-then claim is not an error. In either case, return an empty note.`;
 
 /**
  * Few-shot block appended to the writer system prompt when
