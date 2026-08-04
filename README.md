@@ -158,3 +158,9 @@ This allows you to safely test different bot personalities, prompts, models, or 
 - **Rate-Limited**: Processes 10 posts per run with concurrency control
 - **Duplicate-Safe**: Tracks processed posts to avoid re-processing
 - **Production-Ready**: Robust error handling and comprehensive logging
+
+## License
+
+MIT — see [LICENSE](LICENSE). Third-party content in the repository (e.g.
+captured tweets under `capture-data/`) belongs to its respective authors and
+is not covered by this license.
