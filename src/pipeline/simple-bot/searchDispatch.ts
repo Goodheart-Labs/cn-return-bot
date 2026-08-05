@@ -17,7 +17,6 @@ import {
   buildSearchSystemPrompt,
   SEARCH_SYSTEM_PROMPT_CLAIM,
   SEARCH_POLITICAL_SOURCES_INSTRUCTION,
-  SEARCH_TIME_TRAVEL_INSTRUCTION,
   SEARCH_RESPONSE_FORMAT,
   SEARCH_INLINE_RESPONSE_SCHEMA,
   SEARCH_PROMPTED_JSON_INSTRUCTION,
@@ -68,7 +67,6 @@ export function getSearchSystemPrompt(): string {
     referenceBlock: monitoring ? buildReferenceBlock(monitoring) : null,
     antiPedantic: config.search_anti_pedantic ?? false,
   });
-  if (config.time_travel_prompt) prompt += SEARCH_TIME_TRAVEL_INSTRUCTION;
   if (config.search_political_sources) prompt += SEARCH_POLITICAL_SOURCES_INSTRUCTION;
   return prompt;
 }

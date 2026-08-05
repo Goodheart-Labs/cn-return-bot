@@ -14,7 +14,6 @@ import { runJsonLlmCall, type ChatMessage } from "../utils/jsonLlmCall";
 import {
   WRITER_SYSTEM_PROMPT,
   WRITER_FEWSHOT_EXAMPLES,
-  WRITER_TIME_TRAVEL_RULE,
   WRITER_RESPONSE_FORMAT,
   MISINFO_SOURCING_RULE,
   MISINFO_NOTE_SHAPE_RULE,
@@ -22,6 +21,7 @@ import {
   buildWriterRetryMessage,
   buildWriterLintMessage,
 } from "../prompts/simple-bot/writer";
+import { WRITER_LIVE_EVENT_RULE } from "../prompts/simple-bot/timingJudge";
 import { getMonitoringContext, buildReferenceBlock } from "../misinfo-monitoring/monitoringContext";
 
 export interface WriterResult {
@@ -32,12 +32,21 @@ export interface WriterResult {
 const MAX_WRITER_ATTEMPTS = 3;
 const MAX_NOTE_CHARS = 280;
 
-export async function runWriter(userMessage: string, findings: string): Promise<WriterResult> {
+export async function runWriter(
+  userMessage: string,
+  findings: string,
+  opts?: { liveEvent?: boolean },
+): Promise<WriterResult> {
   const log = getTweetLog();
   const config = getBotConfig();
   const monitoring = getMonitoringContext();
   let systemPrompt = config.writer_examples ? WRITER_SYSTEM_PROMPT + WRITER_FEWSHOT_EXAMPLES : WRITER_SYSTEM_PROMPT;
-  if (config.time_travel_prompt) systemPrompt += WRITER_TIME_TRAVEL_RULE;
+  // Timing-stage verdict (time_travel_prompt arm): only a judged live event
+  // changes the prompt; settled events keep the exact OFF-arm prompt.
+  if (opts?.liveEvent) {
+    systemPrompt += WRITER_LIVE_EVENT_RULE;
+    log?.set("writer.liveEventRule", true);
+  }
 
   // Curated misinfo topic: prepend the topic's vetted in-group / primary sources
   // to the findings (so the writer can actually cite them), steer it to prefer

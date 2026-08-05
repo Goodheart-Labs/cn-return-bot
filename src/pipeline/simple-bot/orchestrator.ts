@@ -23,6 +23,7 @@ import {
 } from "../prompts/simple-bot/correctionExtractor";
 import { runSearch } from "./search";
 import { runCorrectionExtractor } from "./correctionExtractor";
+import { runTimingStage } from "./timingStage";
 import { runWriter } from "./writer";
 import { topicSourcelessRejection } from "../utils/noteLint";
 
@@ -49,6 +50,21 @@ async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterS
     return { kind: "early_exit", outcome: { type: "no_correction", reason: search.findings } };
   }
 
+  // Timing stage (time_travel_prompt ON arm): settled events pass through
+  // untouched; live events (<6h / ongoing) get a needs-a-note-at-all judge,
+  // and only a judged live event changes the writer prompt below.
+  let liveEvent = false;
+  if (getBotConfig().time_travel_prompt) {
+    const timing = await runTimingStage({ userMessage, findings: search.findings });
+    if (timing.action === "abstain") {
+      return {
+        kind: "early_exit",
+        outcome: { type: "no_correction", reason: `timing judge: ${timing.why}` },
+      };
+    }
+    liveEvent = timing.action === "live_write";
+  }
+
   let writerFindings = search.findings;
   if (getBotConfig().correction_extraction) {
     const corrections = await runCorrectionExtractor(search.findings);
@@ -65,7 +81,7 @@ async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterS
     writerFindings = formatCorrectionsForWriter(highValue);
   }
 
-  const note = await runWriter(userMessage, writerFindings);
+  const note = await runWriter(userMessage, writerFindings, { liveEvent });
   return {
     kind: "writer_done",
     userMessage,
