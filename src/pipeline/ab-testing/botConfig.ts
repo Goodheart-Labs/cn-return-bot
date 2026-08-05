@@ -82,6 +82,14 @@ export interface BotConfig {
    */
   reasoning_effort?: "low" | "medium" | "high";
   /**
+   * If set, passed as `reasoning_effort` on the simple-bot SEARCH call only
+   * (Anthropic-native path). Unlike `reasoning_effort` this leaves the
+   * writer/verifier/judge calls untouched, so a search A/B arm can vary
+   * reasoning without confounding the other stages. Unset = model default
+   * (Claude models don't reason by default). Set by SIMPLE_BOT_SEARCH_TEST.
+   */
+  search_reasoning_effort?: "low" | "medium" | "high";
+  /**
    * If set, passed through to OpenRouter as `temperature` for every LLM call
    * made by this bot. cheap-bot pins this to 0 (via the `cheap_bot_temperature`
    * A/B test) so its judge/verifier/writer decisions are deterministic enough

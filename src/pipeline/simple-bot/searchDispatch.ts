@@ -194,7 +194,11 @@ async function searchWithAnthropicNative(
       },
       { role: "user" as const, content: userMessage },
     ],
-    createOptions: { model, tools: [WEB_SEARCH_TOOL] },
+    createOptions: {
+      model,
+      tools: [WEB_SEARCH_TOOL],
+      ...(config.search_reasoning_effort ? { reasoning_effort: config.search_reasoning_effort } : {}),
+    },
     extractJson: extractJsonObject,
   });
   log?.set(`${STEP.search}.messages.1`, { content: { findings, correction_needed: correctionNeeded } });
