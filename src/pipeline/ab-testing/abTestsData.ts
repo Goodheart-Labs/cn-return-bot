@@ -86,7 +86,7 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     // The Claude arms pair each model with and without test-time reasoning
     // (search_reasoning_effort medium vs unset — Claude defaults to none).
     { variant: { name: "sonnet5-native",          overrides: { search_model: "anthropic/claude-sonnet-5",         web_search: "native" }},        weight: 4 },
-    { variant: { name: "sonnet5-native-medium",   overrides: { search_model: "anthropic/claude-sonnet-5",         web_search: "native", search_reasoning_effort: "medium" }}, weight: 4 },
+    { variant: { name: "sonnet5-native-medium",   overrides: { search_model: "anthropic/claude-sonnet-5",         web_search: "native", search_reasoning_effort: "medium" }}, weight: 2 },
     // opus48-native garbled ~80% of runs (web_search + json_schema collision);
     // the Opus arms are now Opus 5, watched for the same failure mode.
     { variant: { name: "opus48-native",           overrides: { search_model: "anthropic/claude-opus-4.8",         web_search: "native" }},        weight: 0 },
