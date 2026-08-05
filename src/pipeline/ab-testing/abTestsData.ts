@@ -247,16 +247,16 @@ const TOPIC_FILTER_TEST: ABTest = {
 
 // Cheap deepseek-v4-flash note-needed prefilter that runs BEFORE the bot and
 // skips it when no note is warranted (recorded as rejected / prefilter_no_note).
-// This is what makes the large feed affordable. Mostly-on, with a 20% "off"
-// holdout so we can measure in prod how often the bot writes a note on posts the
-// prefilter would have cut (the real false-negative rate). defaultVariant "off"
-// so historical rows (no pick) resolve to no-prefilter via resolvePicks.
+// This is what makes the large feed affordable. Now a 50/50 split so we can
+// measure in prod how often the bot writes a note on posts the prefilter would
+// have cut (the real false-negative rate). defaultVariant "off" so historical
+// rows (no pick) resolve to no-prefilter via resolvePicks.
 const NOTE_PREFILTER_TEST: ABTest = {
   name: "note_prefilter",
   defaultVariant: "off",
   variants: [
-    { variant: { name: "off",      overrides: { note_prefilter: false } }, weight: 20 },
-    { variant: { name: "deepseek", overrides: { note_prefilter: true  } }, weight: 80 },
+    { variant: { name: "off",      overrides: { note_prefilter: false } }, weight: 50 },
+    { variant: { name: "deepseek", overrides: { note_prefilter: true  } }, weight: 50 },
   ],
 };
 
