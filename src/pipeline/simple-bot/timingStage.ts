@@ -1,15 +1,16 @@
 /**
- * Timing stage — Nathan's conditional design for the time-travel problem.
+ * Timing stage — Nathan's design for the time-travel problem: information,
+ * not a gate.
  *
- * Runs between search and writer, only on the time_travel_prompt ON arm:
- *   A. extractor: when did the event the post describes happen?
- *   B. judge (only when within LIVE_EVENT_WINDOW_HOURS or ongoing): given the
- *      event is live, is a fact check appropriate at all?
- *
- * Outcomes: pass-through untouched (settled event — the common case), write
- * with the live-event writer rule, or abstain. Verdicts go to the tweet log
- * (logs.timing.*) for per-arm analysis. Fail-soft: any error → pass-through,
- * identical to the OFF arm.
+ * Runs between search and writer, only on the time_travel_prompt ON arm. One
+ * extractor call answers "how close to its event was this post published?".
+ * Settled-event posts (the common case) pass through untouched; fog-window
+ * posts (published within LIVE_EVENT_WINDOW_HOURS of the event, or mid-event)
+ * get a timing-context block piped into the writer's user message — the fact
+ * plus the known regularity that true-at-posting corrections rarely rate
+ * helpful. The writer's normal rules and empty-note path do the deciding.
+ * Verdicts go to the tweet log (logs.timing.*). Fail-soft: any error →
+ * pass-through, identical to the OFF arm.
  */
 
 import { runJsonLlmCall } from "../utils/jsonLlmCall";
@@ -19,9 +20,7 @@ import {
   TIMING_EXTRACTOR_SYSTEM_PROMPT,
   TIMING_EXTRACTOR_RESPONSE_FORMAT,
   TIMING_EXTRACTOR_SCHEMA_HINT,
-  TIMING_JUDGE_SYSTEM_PROMPT,
-  TIMING_JUDGE_RESPONSE_FORMAT,
-  TIMING_JUDGE_SCHEMA_HINT,
+  buildTimingContextBlock,
 } from "../prompts/simple-bot/timingJudge";
 
 // Same cheap judge model as the note-needed prefilter family.
@@ -29,17 +28,11 @@ const TIMING_MODEL = "google/gemini-3-flash-preview";
 
 export type TimingVerdict =
   | { action: "pass" }
-  | { action: "live_write" }
-  | { action: "abstain"; why: string };
+  | { action: "inform"; contextBlock: string };
 
 interface ExtractorOut {
   hours_event_to_post: number | null;
   event_ongoing_at_post: boolean;
-  why: string;
-}
-
-interface JudgeOut {
-  needs_note: boolean;
   why: string;
 }
 
@@ -73,20 +66,14 @@ export async function runTimingStage(params: {
     log?.set("timing.live", live);
     if (!live) return { action: "pass" };
 
-    const judged = await runJsonLlmCall<JudgeOut>({
-      costName: "timingJudge",
-      model: TIMING_MODEL,
-      messages: [
-        { role: "system", content: TIMING_JUDGE_SYSTEM_PROMPT },
-        { role: "user", content: input },
-      ],
-      responseFormat: TIMING_JUDGE_RESPONSE_FORMAT,
-      schemaHint: TIMING_JUDGE_SCHEMA_HINT,
-    });
-    log?.set("timing.needsNote", judged.needs_note);
-    log?.set("timing.judgeWhy", judged.why);
-
-    return judged.needs_note ? { action: "live_write" } : { action: "abstain", why: judged.why };
+    return {
+      action: "inform",
+      contextBlock: buildTimingContextBlock({
+        hoursEventToPost: extracted.hours_event_to_post,
+        eventOngoingAtPost: extracted.event_ongoing_at_post,
+        why: extracted.why,
+      }),
+    };
   } catch (err) {
     // Shadow-grade robustness: a timing failure must never block a run — fall
     // back to exactly the OFF arm's behavior.

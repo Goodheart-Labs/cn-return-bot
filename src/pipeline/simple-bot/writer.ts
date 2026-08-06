@@ -21,7 +21,6 @@ import {
   buildWriterRetryMessage,
   buildWriterLintMessage,
 } from "../prompts/simple-bot/writer";
-import { WRITER_LIVE_EVENT_RULE } from "../prompts/simple-bot/timingJudge";
 import { getMonitoringContext, buildReferenceBlock } from "../misinfo-monitoring/monitoringContext";
 
 export interface WriterResult {
@@ -35,18 +34,13 @@ const MAX_NOTE_CHARS = 280;
 export async function runWriter(
   userMessage: string,
   findings: string,
-  opts?: { liveEvent?: boolean },
+  opts?: { timingContext?: string },
 ): Promise<WriterResult> {
   const log = getTweetLog();
   const config = getBotConfig();
   const monitoring = getMonitoringContext();
   let systemPrompt = config.writer_examples ? WRITER_SYSTEM_PROMPT + WRITER_FEWSHOT_EXAMPLES : WRITER_SYSTEM_PROMPT;
-  // Timing-stage verdict (time_travel_prompt arm): only a judged live event
-  // changes the prompt; settled events keep the exact OFF-arm prompt.
-  if (opts?.liveEvent) {
-    systemPrompt += WRITER_LIVE_EVENT_RULE;
-    log?.set("writer.liveEventRule", true);
-  }
+  if (opts?.timingContext) log?.set("writer.timingContext", true);
 
   // Curated misinfo topic: prepend the topic's vetted in-group / primary sources
   // to the findings (so the writer can actually cite them), steer it to prefer
@@ -61,7 +55,7 @@ export async function runWriter(
 
   const messages: ChatMessage[] = [
     { role: "system", content: systemPrompt },
-    { role: "user", content: buildWriterUserMessage(userMessage, effectiveFindings) },
+    { role: "user", content: buildWriterUserMessage(userMessage, effectiveFindings) + (opts?.timingContext ?? "") },
   ];
 
   // The helper owns the JSON parse + re-ask loop; this loop layers the note's

@@ -42,32 +42,23 @@ export const TIMING_EXTRACTOR_RESPONSE_FORMAT = jsonSchemaResponseFormat("timing
 export const TIMING_EXTRACTOR_SCHEMA_HINT =
   '{ "hours_event_to_post": number | null, "event_ongoing_at_post": boolean, "why": string }';
 
-export const TIMING_JUDGE_SYSTEM_PROMPT = `An X post describes an event that is live — it happened within the last few hours or is still unfolding. You decide whether a Community Note fact-check is appropriate AT ALL right now.
-
-Raters punish notes that "correct" posts which were right (or reasonably believed) when published — a mid-match score, an early casualty figure, a deal not yet closed. People understand posts happen at a time. A note is appropriate on a live event ONLY when the post's claim was ALREADY false at the moment of posting, given what was then known — a fabricated quote, a misattributed video, a claim contradicted by evidence that existed before the post.
-
-Return JSON:
-- needs_note: boolean — true only if the claim was already false when posted AND the findings establish that with dated evidence. When the findings cannot establish what was known at posting time, needs_note = false: an unverifiable-then claim is not correctable.
-- why: one short sentence.`;
-
-export const TIMING_JUDGE_RESPONSE_FORMAT = jsonSchemaResponseFormat("timing_judge", {
-  type: "object",
-  properties: {
-    needs_note: { type: "boolean" },
-    why: { type: "string" },
-  },
-  required: ["needs_note", "why"],
-  additionalProperties: false,
-});
-
-export const TIMING_JUDGE_SCHEMA_HINT = '{ "needs_note": boolean, "why": string }';
-
 /**
- * Appended to the writer system prompt ONLY when a live event passed the
- * stage-B judge — the one case where the writer must anchor its correction to
- * posting time. Evergreen notes never see this.
+ * Timing context piped into the writer's USER message when the post was
+ * published within the fog window (Nathan's design, 2026-08-05: no judge, no
+ * gate — give the writer the fact and the known regularity, let its normal
+ * rules and empty-note path do the deciding).
  */
-export const WRITER_LIVE_EVENT_RULE = `
+export function buildTimingContextBlock(params: {
+  hoursEventToPost: number | null;
+  eventOngoingAtPost: boolean;
+  why: string;
+}): string {
+  const gap = params.eventOngoingAtPost
+    ? "while the event it describes was still unfolding"
+    : `about ${params.hoursEventToPost?.toFixed(1)} hours after the event it describes`;
+  return `
 
-## Live event — anchor to posting time
-The event this post describes was still recent or unfolding when the post was published, and the timing judge confirmed the claim was already false at that moment. Correct ONLY what was already false when the post was published, citing sources dated before or at the post's time where possible. Do not correct anything that merely changed after posting. If, while writing, you find the correction actually rests on later developments, return an empty note.`;
+## Timing context
+This post was published ${gap}. (${params.why})
+Bear this in mind when deciding what — and whether — to correct: a claim that was true when the post was published but became false afterwards is rarely rated helpful — raters understand that posts happen at a time. Corrections that hold up are ones where the claim was already false at the moment of posting.`;
+}
