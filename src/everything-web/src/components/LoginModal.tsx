@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { EMAIL_OTP_LENGTH, signInWithEmailCode, verifyEmailCode, signInWithTwitter } from "../../../everything-shared/auth";
-import { track } from "../lib/analytics";
+import { track } from "../../../everything-shared/analytics";
 
 const X_SIGNIN_ENABLED = true;
 

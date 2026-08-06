@@ -1,18 +1,15 @@
 import posthog from "posthog-js";
+import { setAnalyticsSink } from "../../../everything-shared/analytics";
 
-// Product analytics for commonnotes.net (the funnel: visited → signed in →
-// voted → voted on multiple notes). This module is web-only on purpose — the
-// browser extension shares everything-shared/* but must NOT pull in posthog, so
-// every capture lives in the web app's own components and routes through here.
+// The website's analytics transport: posthog-js, registered as the sink behind
+// everything-shared/analytics (the module components import `track` etc. from).
 //
 // The key (a publishable PostHog project key, phc_…) is inlined at build time
 // like the Supabase anon key. When it's absent — local dev, or before the repo
-// secret is set — every function below is a no-op, so the app runs untouched
-// and no build ever breaks for lack of it.
+// secret is set — no sink is registered, so the app runs untouched and no
+// build ever breaks for lack of it.
 const KEY = import.meta.env.VITE_PUBLIC_POSTHOG_KEY;
 const HOST = import.meta.env.VITE_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com";
-
-let live = false;
 
 export function initAnalytics() {
   if (!KEY) return;
@@ -21,22 +18,15 @@ export function initAnalytics() {
     // Anonymous readers don't mint a person profile (they still count in the
     // "visited" step as anonymous events); a profile is created on identify.
     person_profiles: "identified_only",
+    // Covers the initial load only — in-app navigation is query-param
+    // pushState, which posthog's history detection ignores (it only watches
+    // pathname changes), so App.tsx captures $pageview manually on route changes.
     capture_pageview: true,
   });
-  live = true;
-}
-
-/** Link this browser's events to the signed-in user (merges the prior
- *  anonymous session into the person, so the funnel spans visit → sign-in). */
-export function identifyUser(userId: string, traits?: Record<string, unknown>) {
-  if (live) posthog.identify(userId, traits);
-}
-
-/** Sign-out: stop attributing events to the person. */
-export function resetAnalytics() {
-  if (live) posthog.reset();
-}
-
-export function track(event: string, props?: Record<string, unknown>) {
-  if (live) posthog.capture(event, props);
+  posthog.register({ platform: "web" });
+  setAnalyticsSink({
+    capture: (event, props) => posthog.capture(event, props),
+    identify: (userId, traits) => posthog.identify(userId, traits),
+    reset: () => posthog.reset(),
+  });
 }
