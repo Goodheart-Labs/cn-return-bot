@@ -75,33 +75,45 @@ export const BOT_TEST: ABTest = {
   ],
 };
 
-// Variants for simple-bot ship at the existing 100% sonnet46-native split.
-// Other archs land variant-by-variant in commits 4-7 with non-zero weights.
 const SIMPLE_BOT_SEARCH_TEST: ABTest = {
   name: "simple_bot_search",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    // Only sonnet5-native is active — every other arm is pinned to 0 (still
-    // declared so their historical picks resolve).
+    // Diverse multi-model split (Aug 2026). Sonnet 5 stays the primary arm;
+    // the rest carry exploratory weights. Weights are relative (sum 19).
+    // Retired arms stay declared at 0 so their historical picks resolve.
     { variant: { name: "sonnet46-native",         overrides: { search_model: "anthropic/claude-sonnet-4.6",       web_search: "native" }},        weight: 0 },
-    { variant: { name: "sonnet5-native",          overrides: { search_model: "anthropic/claude-sonnet-5",         web_search: "native" }},        weight: 100 },
+    // The Claude arms pair each model with and without test-time reasoning
+    // (search_reasoning_effort medium vs unset — Claude defaults to none).
+    { variant: { name: "sonnet5-native",          overrides: { search_model: "anthropic/claude-sonnet-5",         web_search: "native" }},        weight: 4 },
+    { variant: { name: "sonnet5-native-medium",   overrides: { search_model: "anthropic/claude-sonnet-5",         web_search: "native", search_reasoning_effort: "medium" }}, weight: 2 },
+    // opus48-native garbled ~80% of runs (web_search + json_schema collision);
+    // the Opus arms are now Opus 5, watched for the same failure mode.
     { variant: { name: "opus48-native",           overrides: { search_model: "anthropic/claude-opus-4.8",         web_search: "native" }},        weight: 0 },
+    { variant: { name: "opus5-native",            overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native" }},        weight: 1 },
+    { variant: { name: "opus5-native-medium",     overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native", search_reasoning_effort: "medium" }}, weight: 1 },
     { variant: { name: "haiku45-native",          overrides: { search_model: "anthropic/claude-haiku-4.5",        web_search: "native" }},        weight: 0 },
-    { variant: { name: "grok43-native",           overrides: { search_model: "x-ai/grok-4.3",                     web_search: "native_grok" }},   weight: 0 },
-    { variant: { name: "gemini3flash-native",     overrides: { search_model: "google/gemini-3-flash-preview",     web_search: "native_gemini" }}, weight: 0 },
+    { variant: { name: "grok43-native",           overrides: { search_model: "x-ai/grok-4.3",                     web_search: "native_grok" }},   weight: 2 },
+    { variant: { name: "grok45-native",           overrides: { search_model: "x-ai/grok-4.5",                     web_search: "native_grok" }},   weight: 2 },
+    { variant: { name: "gemini3flash-native",     overrides: { search_model: "google/gemini-3-flash-preview",     web_search: "native_gemini" }}, weight: 1 },
     { variant: { name: "gemini35flash-native",    overrides: { search_model: "google/gemini-3.5-flash",           web_search: "native_gemini" }}, weight: 0 },
-    { variant: { name: "gemini31pro-native",      overrides: { search_model: "google/gemini-3.1-pro-preview",      web_search: "native_gemini" }}, weight: 0 },
+    { variant: { name: "gemini36flash-native",    overrides: { search_model: "google/gemini-3.6-flash",           web_search: "native_gemini" }}, weight: 2 },
+    { variant: { name: "gemini31pro-native",      overrides: { search_model: "google/gemini-3.1-pro-preview",      web_search: "native_gemini" }}, weight: 1 },
     { variant: { name: "sonar-reasoning-pro",     overrides: { search_model: "perplexity/sonar-reasoning-pro",    web_search: "bundled" }},       weight: 0 },
     { variant: { name: "sonar-pro",               overrides: { search_model: "perplexity/sonar-pro",              web_search: "bundled" }},       weight: 0 },
     { variant: { name: "kimi-k26-searxng",        overrides: { search_model: "moonshotai/kimi-k2.6",              web_search: "searxng" }},       weight: 0 },
+    { variant: { name: "kimi-k3-searxng",         overrides: { search_model: "moonshotai/kimi-k3",                web_search: "searxng" }},       weight: 2 },
     { variant: { name: "deepseek-v4pro-searxng",  overrides: { search_model: "deepseek/deepseek-v4-pro",          web_search: "searxng" }},       weight: 0 },
     { variant: { name: "deepseek-v4flash-searxng",overrides: { search_model: "deepseek/deepseek-v4-flash",        web_search: "searxng" }},       weight: 0 },
     { variant: { name: "glm5-searxng",            overrides: { search_model: "z-ai/glm-5",                        web_search: "searxng" }},       weight: 0 },
-    { variant: { name: "glm52-searxng",           overrides: { search_model: "z-ai/glm-5.2",                      web_search: "searxng" }},       weight: 0 },
+    { variant: { name: "glm52-searxng",           overrides: { search_model: "z-ai/glm-5.2",                      web_search: "searxng" }},       weight: 2 },
     { variant: { name: "deepseek-v32exp-searxng", overrides: { search_model: "deepseek/deepseek-v3.2-exp",        web_search: "searxng" }},       weight: 0 },
     { variant: { name: "qwen3max-searxng",        overrides: { search_model: "qwen/qwen3-max",                    web_search: "searxng" }},       weight: 0 },
     { variant: { name: "gpt5_4mini-native",       overrides: { search_model: "openai/gpt-5.4-mini",               web_search: "native_openai" }}, weight: 0 },
     { variant: { name: "gpt5-native",             overrides: { search_model: "openai/gpt-5",                      web_search: "native_openai" }}, weight: 0 },
+    { variant: { name: "gpt5_6luna-native",       overrides: { search_model: "openai/gpt-5.6-luna",               web_search: "native_openai" }}, weight: 2 },
+    { variant: { name: "gpt5_6terra-native",      overrides: { search_model: "openai/gpt-5.6-terra",              web_search: "native_openai" }}, weight: 2 },
+    { variant: { name: "gpt5_6sol-native",        overrides: { search_model: "openai/gpt-5.6-sol",                web_search: "native_openai" }}, weight: 1 },
     { variant: { name: "mistral-large-3-searxng", overrides: { search_model: "mistralai/mistral-large-2512",      web_search: "searxng" }},       weight: 0 },
   ],
 };
@@ -168,12 +180,36 @@ const SIMPLE_BOT_ANTI_PEDANTIC_TEST: ABTest = {
 // metrics first (abstention-rate guard, then Nathan's breaking-news tag rate);
 // cn_status per arm is underpowered for months. docs/improvement-menu-2026-07-25.md
 // (T2). Prereq-gated to simple-bot, so no defaultVariant.
+// One three-arm test for the time-travel problem (Nathan, 2026-08-05: the
+// instruction and the context are competing treatments, not composable ones —
+// the both-on cell is a configuration we would never ship, and double-dosing
+// the writer risks over-abstention exactly on fog-window posts). Arms:
+//   off         — neither treatment
+//   instruction — the always-on searcher+writer time-travel instruction (v1)
+//   context     — extractor names event_time_utc → code computes the gap →
+//                 fog-window posts (<=6h) get the timing-context paragraph
+//                 piped into the writer's user message. No gate.
+// Supersedes TIME_TRAVEL_PROMPT_TEST (below, retired to weight 0 so historical
+// picks resolve). Reads: logs.timing.* per run + tag rate per arm. Prereq-gated
+// to simple-bot, so no defaultVariant.
+const TIMING_TREATMENT_TEST: ABTest = {
+  name: "timing_treatment",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off",         overrides: { time_travel_prompt: false, timing_context: false } }, weight: 34 },
+    { variant: { name: "instruction", overrides: { time_travel_prompt: true,  timing_context: false } }, weight: 33 },
+    { variant: { name: "context",     overrides: { time_travel_prompt: false, timing_context: true  } }, weight: 33 },
+  ],
+};
+
+// RETIRED 2026-08-05 in favour of TIMING_TREATMENT_TEST (its "instruction"
+// arm). Declared at weight 0 so historical picks resolve.
 const TIME_TRAVEL_PROMPT_TEST: ABTest = {
   name: "time_travel_prompt",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "off", overrides: { time_travel_prompt: false } }, weight: 50 },
-    { variant: { name: "on",  overrides: { time_travel_prompt: true  } }, weight: 50 },
+    { variant: { name: "off", overrides: { time_travel_prompt: false } }, weight: 0 },
+    { variant: { name: "on",  overrides: { time_travel_prompt: true  } }, weight: 0 },
   ],
 };
 
@@ -240,16 +276,16 @@ const TOPIC_FILTER_TEST: ABTest = {
 
 // Cheap deepseek-v4-flash note-needed prefilter that runs BEFORE the bot and
 // skips it when no note is warranted (recorded as rejected / prefilter_no_note).
-// This is what makes the large feed affordable. Mostly-on, with a 20% "off"
-// holdout so we can measure in prod how often the bot writes a note on posts the
-// prefilter would have cut (the real false-negative rate). defaultVariant "off"
-// so historical rows (no pick) resolve to no-prefilter via resolvePicks.
+// This is what makes the large feed affordable. Now a 50/50 split so we can
+// measure in prod how often the bot writes a note on posts the prefilter would
+// have cut (the real false-negative rate). defaultVariant "off" so historical
+// rows (no pick) resolve to no-prefilter via resolvePicks.
 const NOTE_PREFILTER_TEST: ABTest = {
   name: "note_prefilter",
   defaultVariant: "off",
   variants: [
-    { variant: { name: "off",      overrides: { note_prefilter: false } }, weight: 20 },
-    { variant: { name: "deepseek", overrides: { note_prefilter: true  } }, weight: 80 },
+    { variant: { name: "off",      overrides: { note_prefilter: false } }, weight: 50 },
+    { variant: { name: "deepseek", overrides: { note_prefilter: true  } }, weight: 50 },
   ],
 };
 
@@ -508,6 +544,7 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_VERIFIER_TEST,
   SIMPLE_BOT_ANTI_PEDANTIC_TEST,
   TIME_TRAVEL_PROMPT_TEST,
+  TIMING_TREATMENT_TEST,
   SIMPLE_BOT_CLAIM_TEST,
   SIMPLE_BOT_WRITER_EXAMPLES_TEST,
   SIMPLE_BOT_POLITICAL_SOURCES_TEST,

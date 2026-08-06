@@ -31,6 +31,54 @@ const velocityOf = (c: Candidate) => c.velocity ?? velocityPerHour(c.post);
 export const MISINFO_RESERVE_24H = 5;
 const SUBMISSION_WINDOW_HOURS = 24;
 
+// ── Stale-tweet cutoff ──────────────────────────────────────────────────────
+// The velocity floor screens at FETCH time, but a note written on a fresh
+// tweet can wait in the candidate queue for cap slots and go out a day later —
+// 11.9% of post-floor submissions (Jul 21–Aug 3) were >24h after the tweet,
+// and they earn about half a fresh slot: 7.9% ever rated / +3.4% net vs 16.1%
+// / +7.3% fresh (historical Mar–Jul: 6.7% rated, +1.5% net, n=310). The knee
+// in the lag curve is at 24h — the 12–24h band still carries real helpful
+// supply (+5.2% net), so don't cut earlier. Curated-topic notes get 48h:
+// slower claim cycles, an 8×-lower velocity floor, and the submit reserve
+// exists to protect exactly those notes. Raise the constants to disable.
+export const STALE_TWEET_CUTOFF_HOURS = 24;
+export const MISINFO_STALE_CUTOFF_HOURS = 48;
+
+/** Tweet age in hours at `nowMs`, from post.created_at, falling back to the
+ *  timestamp encoded in the tweet id (snowflake). Null when neither parses. */
+export function tweetAgeHours(post: Post, nowMs: number): number | null {
+  const fromCreatedAt = post.created_at ? Date.parse(post.created_at) : NaN;
+  if (!Number.isNaN(fromCreatedAt)) return (nowMs - fromCreatedAt) / 3_600_000;
+  if (/^\d+$/.test(post.id)) {
+    const fromSnowflake = Number((BigInt(post.id) >> 22n) + 1288834974657n);
+    return (nowMs - fromSnowflake) / 3_600_000;
+  }
+  return null;
+}
+
+/**
+ * Split candidates at the stale-tweet cutoff — the at-SUBMIT counterpart of the
+ * at-fetch velocity floor, so queue-aged candidates get re-checked every time
+ * they come up. Unknown age fails open. Pure — exported for tests.
+ */
+export function partitionByStaleCutoff(
+  candidates: Candidate[],
+  nowMs: number = Date.now(),
+): { kept: Candidate[]; staleCut: { candidate: Candidate; ageHours: number }[] } {
+  const kept: Candidate[] = [];
+  const staleCut: { candidate: Candidate; ageHours: number }[] = [];
+  for (const c of candidates) {
+    const age = tweetAgeHours(c.post, nowMs);
+    const cutoff = c.isMisinfo ? MISINFO_STALE_CUTOFF_HOURS : STALE_TWEET_CUTOFF_HOURS;
+    if (age !== null && age > cutoff) {
+      staleCut.push({ candidate: c, ageHours: age });
+    } else {
+      kept.push(c);
+    }
+  }
+  return { kept, staleCut };
+}
+
 /**
  * How many misinfo notes may still submit ahead of the regular ones in this 24h
  * window. The count covers every misinfo note we submitted, from either
@@ -114,12 +162,21 @@ export async function submitCandidates(
   }
 
   try {
-    const { kept, floorCut } = partitionByVelocityFloor(candidates);
+    const { kept: fastEnough, floorCut } = partitionByVelocityFloor(candidates);
     if (floorCut.length) {
       console.log(
         `[submit] velocity floor: cut ${floorCut.length} of ${candidates.length} candidate(s) below ` +
           `${formatVelocity(REGULAR_VELOCITY_FLOOR_PER_HOUR)} — ` +
           floorCut.map((f) => `${f.candidate.post.id} vel=${formatVelocity(f.velocity)}`).join(", "),
+      );
+    }
+
+    const { kept, staleCut } = partitionByStaleCutoff(fastEnough);
+    if (staleCut.length) {
+      console.log(
+        `[submit] stale cutoff: cut ${staleCut.length} candidate(s) past ` +
+          `${STALE_TWEET_CUTOFF_HOURS}h (${MISINFO_STALE_CUTOFF_HOURS}h misinfo) — ` +
+          staleCut.map((sc) => `${sc.candidate.post.id} age=${sc.ageHours.toFixed(1)}h`).join(", "),
       );
     }
 
@@ -133,21 +190,36 @@ export async function submitCandidates(
       for (const f of floorCut) {
         console.log(`[submit]   (dry run) FLOOR-CUT vel=${formatVelocity(f.velocity)} | ${f.candidate.post.id}`);
       }
+      for (const sc of staleCut) {
+        console.log(`[submit]   (dry run) STALE-CUT age=${sc.ageHours.toFixed(1)}h | ${sc.candidate.post.id}`);
+      }
       for (const c of ordered) {
         console.log(`[submit]   (dry run) eval=${c.tweetResult.evaluationScore?.toFixed(2) ?? "?"} vel=${formatVelocity(velocityOf(c))}${c.isMisinfo ? " [misinfo]" : ""} | ${c.post.id}`);
       }
       return 0;
     }
 
-    // Record floor-cuts before submitting: same rejected-with-reason pattern
-    // (and cooldown) as the daily-limit drops below. Fail-soft per candidate —
-    // a DB hiccup here must not block submitting the keepers.
+    // Record floor-cuts and stale-cuts before submitting: same
+    // rejected-with-reason pattern (and cooldown) as the daily-limit drops
+    // below. Fail-soft per candidate — a DB hiccup here must not block
+    // submitting the keepers.
     for (const f of floorCut) {
       if (f.candidate.tweetResult.pipelineRunId) {
         try {
           await supabaseLogger.completePipelineRun(f.candidate.tweetResult.pipelineRunId, {
             outcome: "rejected",
             outcome_reason: "below_velocity_floor",
+            final_stage: "submission",
+          });
+        } catch {}
+      }
+    }
+    for (const sc of staleCut) {
+      if (sc.candidate.tweetResult.pipelineRunId) {
+        try {
+          await supabaseLogger.completePipelineRun(sc.candidate.tweetResult.pipelineRunId, {
+            outcome: "rejected",
+            outcome_reason: "stale_at_submit",
             final_stage: "submission",
           });
         } catch {}
@@ -196,6 +268,7 @@ export async function submitCandidates(
     const breakdown = [
       `${submitted} submitted`,
       floorCut.length ? `${floorCut.length} floor-cut` : null,
+      staleCut.length ? `${staleCut.length} stale-cut` : null,
       expired ? `${expired} expired` : null,
       errors ? `${errors} errors` : null,
       limitHit ? `${limitSkipped} skipped (daily limit)` : null,

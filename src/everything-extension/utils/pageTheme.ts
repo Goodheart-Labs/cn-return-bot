@@ -4,12 +4,42 @@
  *  Dark Reader's built-in-dark-theme detection: prefer the standards-based
  *  `color-scheme` signal, else judge the rendered background's luminance. */
 
+/** "0.5" | "50%" | "none" → 0..1 */
+function channel(v: string): number {
+  if (v === "none") return 0;
+  return v.endsWith("%") ? parseFloat(v) / 100 : parseFloat(v);
+}
+
 function parseColor(value: string): { r: number; g: number; b: number; a: number } | null {
-  // Computed colors serialize as rgb()/rgba() in practice; anything exotic
-  // (oklch(), color()) returns null and the caller keeps walking.
-  const m = value.match(/^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+)\s*)?\)$/);
-  if (!m) return null;
-  return { r: +m[1]!, g: +m[2]!, b: +m[3]!, a: m[4] === undefined ? 1 : +m[4]! };
+  // Legacy sRGB serialization.
+  let m = value.match(/^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+)\s*)?\)$/);
+  if (m) return { r: +m[1]!, g: +m[2]!, b: +m[3]!, a: m[4] === undefined ? 1 : +m[4]! };
+  // Wide-gamut colors keep their function form in getComputedStyle (Substack
+  // paints in display-p3). Components are 0..1; the slight per-space channel
+  // differences don't matter for a light/dark call.
+  m = value.match(
+    /^color\((?:srgb|srgb-linear|display-p3|rec2020|a98-rgb|prophoto-rgb)\s+([\d.]+%?|none)\s+([\d.]+%?|none)\s+([\d.]+%?|none)(?:\s*\/\s*([\d.]+%?|none))?\)$/,
+  );
+  if (m) {
+    return {
+      r: channel(m[1]!) * 255,
+      g: channel(m[2]!) * 255,
+      b: channel(m[3]!) * 255,
+      a: m[4] === undefined ? 1 : channel(m[4]!),
+    };
+  }
+  // Lightness-leading spaces: the L component alone is a fine dark/light
+  // proxy — report it as a gray so luminance() reproduces it.
+  m = value.match(/^(oklab|oklch|lab|lch)\(\s*([\d.]+%?|none)\s+[^/)]+(?:\/\s*([\d.]+%?|none)\s*)?\)$/);
+  if (m) {
+    const raw = m[2]!;
+    let lightness = channel(raw);
+    // lab()/lch() lightness is 0..100 when written as a bare number.
+    if (!raw.endsWith("%") && (m[1] === "lab" || m[1] === "lch")) lightness /= 100;
+    const v = lightness * 255;
+    return { r: v, g: v, b: v, a: m[3] === undefined ? 1 : channel(m[3]!) };
+  }
+  return null;
 }
 
 /** Perceived lightness 0..1 (Rec. 709 weights on raw sRGB — the same formula

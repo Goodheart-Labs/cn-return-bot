@@ -7,7 +7,7 @@ import { submitNoteRequest } from "../../../everything-shared/noteRequests";
 import { noteVisible } from "../../utils/claimGroups";
 import { genericScriptId, hostnamePattern, registerGenericScripts } from "../../utils/genericScript";
 import { resolveReaderCanonical } from "../../utils/readerCanonical";
-import { getNoteFilters, removeDismissedGrantHost, updateNoteFilters, type NoteFilters } from "../../utils/settings";
+import { addRequestedPage, getNoteFilters, getRequestedPages, removeDismissedGrantHost, updateNoteFilters, type NoteFilters } from "../../utils/settings";
 import { STATIC_SITE_HOSTNAME } from "../../utils/staticSites";
 import { LoginPanel } from "../../components/LoginPanel";
 
@@ -158,16 +158,29 @@ async function sendJumpToNote(tabId: number, scriptWasRegistered: boolean) {
 }
 
 /** "Request notes on this page" for uncovered content pages — the page-level
- *  successor of the old text-selection request flow. */
+ *  successor of the old text-selection request flow. Requested pages are
+ *  remembered (storage, not component state) so closing and reopening the
+ *  popup can't submit the same page twice. */
 function RequestNoteButton() {
-  const [phase, setPhase] = useState<"idle" | "busy" | "done" | "error">("idle");
+  const [phase, setPhase] = useState<"loading" | "idle" | "busy" | "done" | "error">("loading");
+
+  useEffect(() => {
+    (async () => {
+      const tab = await activeTab();
+      if (!tab?.url) return;
+      setPhase((await getRequestedPages()).includes(normalizePageUrl(tab.url)) ? "done" : "idle");
+    })();
+  }, []);
 
   const request = async () => {
     setPhase("busy");
     try {
       const tab = await activeTab();
       if (!tab?.url) throw new Error("no page");
-      await submitNoteRequest({ pageUrl: normalizePageUrl(tab.url), pageTitle: tab.title ?? "", selection: null });
+      const pageUrl = normalizePageUrl(tab.url);
+      await submitNoteRequest({ pageUrl, pageTitle: tab.title ?? "", selection: null });
+      // Best-effort memory — the request itself is already saved.
+      await addRequestedPage(pageUrl).catch(() => {});
       setPhase("done");
     } catch {
       setPhase("error");
@@ -175,11 +188,11 @@ function RequestNoteButton() {
   };
 
   if (phase === "done") {
-    return <button disabled className={PRIMARY_BUTTON}>✓ Requested</button>;
+    return <button disabled className={PRIMARY_BUTTON}>You requested notes on this page</button>;
   }
   return (
     <>
-      <button onClick={request} disabled={phase === "busy"} className={PRIMARY_BUTTON}>
+      <button onClick={request} disabled={phase !== "idle"} className={PRIMARY_BUTTON}>
         Request notes on this page
       </button>
       {phase === "error" && <p className="text-sm text-red-600">Could not save the request (try again)</p>}

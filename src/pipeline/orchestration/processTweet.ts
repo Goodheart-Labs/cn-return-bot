@@ -13,6 +13,7 @@
 import type { Post } from "../../api/fetchEligiblePosts";
 import type { SupabaseLogger } from "../../api/supabaseClient";
 import type { Bot, PipelineResult, PostContent } from "../../bots/types";
+import { runMaterialityJudge } from "./materialityJudge";
 import { getOriginalTweetContent } from "../../utils/retweetUtils";
 import { getEvaluationScore } from "../score/noteEvaluationFilter";
 import { getTweetLog, getLoggedBotIdentity, nestDotKeys } from "../utils/tweetLog";
@@ -180,6 +181,25 @@ async function scorePipelineResult(
 
   // Bot scoring filter results
   scores.push(...extractBotScoringFilterScores(result));
+
+  // Materiality / persuasion judge — SHADOW: scores logged, nothing gated.
+  // Only on real corrections (empty notes have nothing to judge); fail-soft —
+  // a judge error must never block the run.
+  if (result.noteResult.status === CORRECTION_STATUS && result.noteResult.note) {
+    try {
+      const materialityScores = await runMaterialityJudge({
+        postText: String(result.post?.text ?? ""),
+        findings: result.searchContextResult?.searchResults ?? "",
+        noteText,
+      });
+      scores.push(...materialityScores);
+      const overall = materialityScores.find((s) => s.type === "materiality_overall");
+      log?.set("materiality.overall", overall?.value);
+    } catch (err) {
+      log?.set("materiality.error", String(err).slice(0, 200));
+      console.warn("[materiality] judge failed (shadow — continuing):", err);
+    }
+  }
 
   // Evaluation score
   const evalResult = await getEvaluationScore(result.post.id, noteText);

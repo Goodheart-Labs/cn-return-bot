@@ -27,6 +27,7 @@
   "name": "community-notes-writer",
   "type": "module",
   "private": true,
+  "license": "MIT",
   "devDependencies": {
     "@types/bun": "^1.2.23",
     "@types/linkify-it": "^5.0.0",
@@ -65,6 +66,7 @@
     "stats": "lsof -ti:8002 | xargs kill -9 2>/dev/null; bun run dev-stats",
     "scrape": "(curl -sf http://127.0.0.1:9222/json/version > /dev/null 2>&1 || (echo '🌐 Starting Chrome with remote debugging...' && open -na 'Google Chrome' --args --remote-debugging-port=9222 --user-data-dir=$HOME/.chrome-debug-profile --disable-backgrounding-occluded-windows --disable-renderer-backgrounding --disable-background-timer-throttling && until curl -sf http://127.0.0.1:9222/json/version > /dev/null 2>&1; do sleep 0.5; done)) && bun run src/scraper/scrapeNotewriterClickThrough.ts",
     "everything-enqueue": "bun run src/everything/enqueue.ts",
+    "everything-auto-enqueue": "bun run src/everything/autoEnqueue.ts",
     "everything-worker": "bun run src/everything/worker.ts",
     "commonnotes": "cd src/everything-web && bunx vite --port 8003 --mode prod-backend",
     "commonnotes-local": "cd src/everything-web && bunx vite --port 8003",

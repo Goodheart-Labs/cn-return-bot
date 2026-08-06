@@ -33,6 +33,44 @@ function fetchVideoMeta(url: string): { id: string; title: string; uploadDate?: 
   return { id, title: titleParts.join(" ").trim(), uploadDate: parseUploadDate(uploadDate) };
 }
 
+export interface ChannelVideo {
+  videoId: string;
+  url: string;
+  title: string;
+  durationSeconds: number | null;
+}
+
+/** Latest videos of a channel's /videos tab (newest first, Shorts excluded),
+ *  via one flat-playlist yt-dlp call. Duration is null for premieres/upcoming. */
+export function fetchChannelVideos(channelUrl: string, limit: number): ChannelVideo[] {
+  const out = execFileSync(
+    "yt-dlp",
+    [
+      "--flat-playlist",
+      "--no-warnings",
+      "--playlist-items",
+      `1:${limit}`,
+      "--print",
+      "%(id)s\t%(duration)s\t%(title)s",
+      `${channelUrl.replace(/\/$/, "")}/videos`,
+    ],
+    { encoding: "utf8", timeout: 120_000 },
+  );
+  return out
+    .trim()
+    .split("\n")
+    .filter(Boolean)
+    .map((line) => {
+      const [videoId = "", duration = "", ...titleParts] = line.split("\t");
+      return {
+        videoId,
+        url: `https://www.youtube.com/watch?v=${videoId}`,
+        title: titleParts.join(" "),
+        durationSeconds: /^\d/.test(duration) ? Number.parseFloat(duration) : null,
+      };
+    });
+}
+
 const TRANSCRIPT_LANG = "en";
 
 /** Fetch the video's timestamped cues (temp dir cleaned up); throws if none. */

@@ -25,10 +25,16 @@ export default defineConfig({
   // in the user's existing browser; WXT's dev client then hot-reloads the
   // extension (and its tabs) on every rebuild.
   webExt: { disabled: true },
+  // The auto sources zip must never carry the Chrome signing PRIVATE key
+  // (present only on dev machines, gitignored) or local store assets. Note
+  // the zip is incomplete for AMO anyway (imports from ../everything-shared
+  // etc. are outside sourcesRoot) — reviewer sources are built with
+  // `git archive` instead; this guard is defense in depth.
+  zip: { excludeSources: ["chrome-signing-key.pem", "store-assets/**"] },
   manifest: ({ browser }) => ({
-    version: "0.1.0",
+    version: "0.1.1",
     name: "Common Notes",
-    description: "Community Notes Everywhere (Go to commonnotes.net to see which pages we currently support)",
+    description: "Community Notes Everywhere",
     icons: { 16: "icon/16.png", 32: "icon/32.png", 48: "icon/48.png", 128: "icon/128.png" },
     action: { default_icon: { 16: "icon/16.png", 32: "icon/32.png" } },
     permissions: ["storage", "identity", "contextMenus", "activeTab", "tabs", "scripting", "alarms"],
@@ -54,8 +60,21 @@ export default defineConfig({
     ...(browser === "chrome" ? { key: CHROME_PUBLIC_KEY } : {}),
     browser_specific_settings: {
       // Stable add-on ID so the OAuth redirect URL (…extensions.allizom.org)
-      // stays constant across Firefox installs.
-      gecko: { id: "common-notes@commonnotes.net" },
+      // stays constant across Firefox installs. NOT the original id: AMO
+      // permanently burns an id when its add-on is deleted, which happened
+      // to common-notes@commonnotes.net during the first submission attempt
+      // (Aug 2026). Never delete the AMO listing — the id dies with it.
+      gecko: {
+        id: "extension@commonnotes.net",
+        // Mozilla's built-in data consent (mandatory for new AMO submissions
+        // since Nov 2025; Firefox 140+ shows it at install). Reading notes
+        // sends the covered page's URL to our API; signing in is optional and
+        // carries the user's email plus auth credentials/session.
+        data_collection_permissions: {
+          required: ["browsingActivity"],
+          optional: ["authenticationInfo", "personallyIdentifyingInfo"],
+        },
+      },
     },
   }),
   hooks: {
@@ -73,6 +92,12 @@ export default defineConfig({
   },
   vite: () => ({
     envDir: repoRoot,
+    // Unminified on purpose: extension code loads from disk (no network win),
+    // Mozilla recommends against minifying, and minified output is not
+    // path-reproducible (the minifier's name assignment follows module ids,
+    // which embed absolute paths) — AMO reviewers must rebuild our source and
+    // get a byte-identical diff, which only works unminified.
+    build: { minify: false },
     css: {
       // rem→px after Tailwind: rem resolves against the HOST page's <html>
       // font-size even inside a shadow root (shadow DOM does not isolate it),
@@ -94,6 +119,35 @@ export default defineConfig({
       },
     },
     plugins: [
+      {
+        // WXT defines process.env.NODE_ENV as the MODE NAME in every bundle
+        // (its lib-mode per-entrypoint config even overrides a user define),
+        // so `--mode prod-backend` ships React's DEVELOPMENT build (~2× size,
+        // dev-only code paths) in all content scripts. A plugin config hook
+        // runs after that merge, in WXT's child builds too. Dev serve keeps
+        // the dev runtime (react-refresh needs it).
+        name: "cn-force-prod-react",
+        config(config: { define?: Record<string, unknown> }, { command }: { command: string }) {
+          if (command !== "build") return;
+          (config.define ??= {})["process.env.NODE_ENV"] = JSON.stringify("production");
+          // Also flip the PROCESS env: Vite's isProduction (and with it
+          // plugin-react's choice of the production JSX transform — the dev
+          // transform bakes absolute-path _jsxFileName vars into the output)
+          // follows process.env.NODE_ENV, which WXT set to the mode name.
+          process.env.NODE_ENV = "production";
+        },
+      },
+      {
+        // Rolldown's unminified output labels each module with a //#region
+        // comment carrying its id; WXT's virtual entrypoint ids embed the
+        // repo's ABSOLUTE path. Strip the machine-specific prefix so a
+        // rebuild from any directory is byte-identical (AMO reviewers diff
+        // their rebuild against the submitted files).
+        name: "cn-path-independent-output",
+        renderChunk(code: string) {
+          return code.includes(repoRoot) ? code.split(repoRoot).join("") : null;
+        },
+      },
       {
         // Same guard as everything-web/vite.config.ts: a build without the
         // Supabase env inlines `undefined`, turning the module-scope check in
