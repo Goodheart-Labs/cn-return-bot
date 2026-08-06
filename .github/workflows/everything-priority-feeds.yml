@@ -1,0 +1,70 @@
+name: Everything Priority Feeds
+
+on:
+  workflow_dispatch:
+
+# Triggered by Supabase pg_cron via workflow_dispatch (GitHub's own scheduler
+# delays/drops runs) — see migrations/067_schedule_everything_dispatch.sql.
+# Fires at :03/:33, offset from the create-notes routine's :18/:48.
+#
+# Never run two workers at once: the queue claim has no locking, and the
+# auto-enqueue's orphan cleanup assumes no worker is live. Queue (don't cancel)
+# so a run is never killed mid-item.
+concurrency:
+  group: everything-priority-feeds
+  cancel-in-progress: false
+
+jobs:
+  enqueue-and-process:
+    runs-on: ubuntu-latest
+    # Two large items (a Zvi post / a podcast episode) can take well over an
+    # hour of claim checks; queued dispatch ticks cover the cadence meanwhile.
+    timeout-minutes: 120
+    env:
+      # OpenRouter API key for AI models (claim extraction, search, writer)
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      # Supabase credentials for the everything_* tables
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      # Gemini API key for the source verifier and media analysis
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      # Groq API key for Whisper audio transcription (media analysis)
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      # xAI API key for Grok X search
+      XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+      # Brave Search API key — fallback search provider
+      BRAVE_API_KEY: ${{ secrets.BRAVE_API_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Install FFmpeg and yt-dlp for YouTube ingestion
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg yt-dlp
+
+      - name: Get Playwright version
+        id: playwright-version
+        run: echo "version=$(npx playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')" >> $GITHUB_OUTPUT
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
+
+      - name: Install Playwright Browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps
+
+      - name: Enqueue next priority-feed items
+        run: bun run everything-auto-enqueue
+
+      - name: Process the queue
+        run: bun run everything-worker
