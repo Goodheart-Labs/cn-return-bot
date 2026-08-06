@@ -2,6 +2,7 @@ import "../assets/tailwind.css";
 import { defineContentScript } from "#imports";
 import { mountInlineNotes } from "../utils/mountInlineNotes";
 import { registerDevReloadHook } from "../utils/devReload";
+import { initUiAnalytics } from "../utils/analytics";
 
 // Registered at runtime (scripting.registerContentScripts) for covered
 // hostnames by the background's sync, and ALSO injected directly
@@ -14,6 +15,7 @@ export default defineContentScript({
     const flagged = window as unknown as { __cnNotesMounted?: boolean };
     if (flagged.__cnNotesMounted) return;
     flagged.__cnNotesMounted = true;
+    initUiAnalytics();
     registerDevReloadHook(ctx);
     await mountInlineNotes(ctx);
   },

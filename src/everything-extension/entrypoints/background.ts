@@ -1,6 +1,8 @@
 import { defineBackground } from "#imports";
 import { browser } from "#imports";
 import { fetchCoveredPageUrls, fetchReaderCanonical } from "../../everything-shared/notesQuery";
+import { track } from "../../everything-shared/analytics";
+import { initBackgroundAnalytics } from "../utils/analytics";
 import { signInWithXViaWebAuthFlow } from "../utils/oauth";
 import { COVERED_PAGE_URLS_KEY } from "../utils/coveredPages";
 import { GENERIC_SCRIPT_PREFIX, hostnamePattern, registerGenericScripts, genericScriptId } from "../utils/genericScript";
@@ -120,6 +122,7 @@ async function createMenus() {
 }
 
 export default defineBackground(() => {
+  initBackgroundAnalytics();
   // Sync on install/update and browser start; the 5-minute alarm keeps
   // long-lived sessions current (the MV3 worker can't hold a timer), and
   // the popup pings cn-sync-noted-sites on open.
@@ -127,7 +130,8 @@ export default defineBackground(() => {
     browser.alarms.create(SYNC_ALARM, { periodInMinutes: SYNC_PERIOD_MINUTES });
     void syncNotedSites();
   };
-  browser.runtime.onInstalled.addListener(() => {
+  browser.runtime.onInstalled.addListener((details) => {
+    if (details.reason === "install") track("extension_installed");
     void createMenus();
     startSync();
   });

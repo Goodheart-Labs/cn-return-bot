@@ -3,6 +3,7 @@ import type { Session } from "@supabase/supabase-js";
 import { displayName } from "../../everything-shared/session";
 import { ensureWebItem } from "../../everything-shared/ensureWebItem";
 import { postClaimWithNote } from "../../everything-shared/postNote";
+import { track } from "../../everything-shared/analytics";
 import type { PageItem } from "../../everything-shared/notesQuery";
 import { RejectedNotice } from "../../everything-web/src/components/editorBits";
 
@@ -53,7 +54,11 @@ export function WriteNoteOverlay({ item, pageForItem, selection, session, onClos
       signed,
     });
     setBusy(false);
-    if (outcome.type === "rejected") return setRejected(true);
+    if (outcome.type === "rejected") {
+      // The earnest-gate judge stores nothing, so rejections exist only as events.
+      track("note_write_rejected", { item_id: itemId });
+      return setRejected(true);
+    }
     if (outcome.type === "error") return setError(outcome.message);
     onPosted();
     onClose();
