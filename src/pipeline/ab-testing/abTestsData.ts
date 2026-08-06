@@ -162,12 +162,18 @@ const SIMPLE_BOT_POLITICAL_SOURCES_TEST: ABTest = {
 // flags a correction when the post's main claim / argument is wrong, never a
 // minor side error — the bet that pedantic nitpicks hurt the helpful/FP rate.
 // Live 50/50 on simple-bot. Prereq-gated to simple-bot, so no defaultVariant.
+// CLOSED 2026-08-05 → off (Nathan). Dead even after 15wk / 1,165 matured
+// notes (on +5.8% vs off +6.0%; pedantic review-tags landed on BOTH arms —
+// the prompt variant does not move pedantry; the materiality judge (#345)
+// owns that failure now). Declared at weight 0 so historical picks resolve.
+// Reopen trigger: pedantic tag-rate rises with the judge also failing to
+// catch it.
 const SIMPLE_BOT_ANTI_PEDANTIC_TEST: ABTest = {
   name: "simple_bot_anti_pedantic",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "off", overrides: { search_anti_pedantic: false } }, weight: 50 },
-    { variant: { name: "on",  overrides: { search_anti_pedantic: true  } }, weight: 50 },
+    { variant: { name: "off", overrides: { search_anti_pedantic: false } }, weight: 0 },
+    { variant: { name: "on",  overrides: { search_anti_pedantic: true  } }, weight: 0 },
   ],
 };
 
@@ -280,12 +286,18 @@ const TOPIC_FILTER_TEST: ABTest = {
 // measure in prod how often the bot writes a note on posts the prefilter would
 // have cut (the real false-negative rate). defaultVariant "off" so historical
 // rows (no pick) resolve to no-prefilter via resolvePicks.
+// CLOSED 2026-08-05 → deepseek 100 (Nathan). 4.5mo matured: deepseek +6.9%
+// net (n=1564, 76% H-of-rated) vs off +6.3% (n=505, 75%) — quality identical,
+// prefilter saves the search cost, nothing left for the off arm to teach.
+// Off-arm observability replaced by a scheduled discard audit: sample
+// prefilter-rejected tweets, dry-run the full pipeline (null logger), inspect
+// would-have-been notes. Reopen trigger: audit finds real notes being lost.
 const NOTE_PREFILTER_TEST: ABTest = {
   name: "note_prefilter",
   defaultVariant: "off",
   variants: [
-    { variant: { name: "off",      overrides: { note_prefilter: false } }, weight: 50 },
-    { variant: { name: "deepseek", overrides: { note_prefilter: true  } }, weight: 50 },
+    { variant: { name: "off",      overrides: { note_prefilter: false } }, weight: 0 },
+    { variant: { name: "deepseek", overrides: { note_prefilter: true  } }, weight: 100 },
   ],
 };
 

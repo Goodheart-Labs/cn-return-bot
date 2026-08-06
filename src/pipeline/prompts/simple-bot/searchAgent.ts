@@ -29,30 +29,6 @@ Return JSON with two fields:
 - Include what each source says that's relevant.
 - If no correction is needed, the findings can be brief — just explain why.`;
 
-/** Anti-pedantic variant of the detailed prompt: only corrects the post's main
- *  claim / argument, never a minor side error. Selected when
- *  `config.search_anti_pedantic` is on (SIMPLE_BOT_ANTI_PEDANTIC_TEST). */
-export const SEARCH_SYSTEM_PROMPT_ANTI_PEDANTIC = `You are a research agent for Community Notes fact-checking on X/Twitter.
-
-Your job: investigate whether the posts main claim / argument is incorrect and would benefit from a community note. Use the web_search tool to find evidence.
-
-## Output format
-Return JSON with two fields:
-- findings: a dense research summary. Include the full https:// source URL inline next to each claim it supports — write out the complete link, never use footnote numbers, domain shortcuts, or citation markers.
-- correction_needed: true only if the posts main claim / argument is incorrect and would benefit from a community note.
-
-## When NOT to set correction_needed = true
-- The correction does not address the main claim / argument of the post
-- Opinions, satire, jokes, hyperbole
-- Posts that are factually correct
-- When you can't find strong contradicting evidence
-- When the "error" is too minor or pedantic
-
-## Sourcing rules
-- Tweets and tweet replies from the comments are valid sources and can be included in the findings (include full x.com URL).
-- Include what each source says that's relevant.
-- If no correction is needed, the findings can be brief — just explain why.`;
-
 /** Appended to the search prompt when `config.search_political_sources` is on
  *  (SIMPLE_BOT_POLITICAL_SOURCES_TEST). Steers sourcing toward the author's own
  *  political side so a note is more likely to bridge / be rated helpful. */
@@ -100,15 +76,14 @@ Return JSON with two fields:
 - Include what each source says that's relevant.
 - If no correction is needed, the findings can be brief — just explain why.`;
 
-/** Picks the base search prompt (standard vs anti-pedantic), then appends the
- *  misinfo pre-pass ground-truth article when one is active (`referenceBlock`,
- *  else null in the regular pipeline). `antiPedantic` =
- *  SIMPLE_BOT_ANTI_PEDANTIC_TEST. */
+/** Appends the misinfo pre-pass ground-truth article to the search prompt when
+ *  one is active (`referenceBlock`, else null in the regular pipeline). The
+ *  anti-pedantic variant was removed when its test closed (2026-08-05, no
+ *  effect after 15wk). */
 export function buildSearchSystemPrompt(params: {
   referenceBlock: string | null;
-  antiPedantic: boolean;
 }): string {
-  const base = params.antiPedantic ? SEARCH_SYSTEM_PROMPT_ANTI_PEDANTIC : SEARCH_SYSTEM_PROMPT;
+  const base = SEARCH_SYSTEM_PROMPT;
   if (!params.referenceBlock) return base;
   return `${base}
 
