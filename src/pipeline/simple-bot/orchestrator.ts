@@ -50,12 +50,13 @@ async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterS
     return { kind: "early_exit", outcome: { type: "no_correction", reason: search.findings } };
   }
 
-  // Timing stage (time_travel_prompt ON arm): settled-event posts pass
+  // Timing stage (timing_context ON arm — independent of the time_travel_prompt
+  // instruction test; the two compose as a 2x2): settled-event posts pass
   // through untouched; fog-window posts (published within 6h of their event,
   // or mid-event) get a timing-context block piped into the writer's user
   // message. Information, not a gate — the writer decides.
   let timingContext: string | undefined;
-  if (getBotConfig().time_travel_prompt) {
+  if (getBotConfig().timing_context) {
     const timing = await runTimingStage({ userMessage, findings: search.findings });
     if (timing.action === "inform") timingContext = timing.contextBlock;
   }

@@ -2,7 +2,7 @@
  * Timing stage — Nathan's design for the time-travel problem: information,
  * not a gate.
  *
- * Runs between search and writer, only on the time_travel_prompt ON arm. One
+ * Runs between search and writer, only on the timing_context ON arm. One
  * extractor call answers "how close to its event was this post published?".
  * Settled-event posts (the common case) pass through untouched; fog-window
  * posts (published within LIVE_EVENT_WINDOW_HOURS of the event, or mid-event)

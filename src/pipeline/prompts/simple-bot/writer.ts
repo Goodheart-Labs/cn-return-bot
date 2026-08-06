@@ -74,6 +74,18 @@ export const MISINFO_NOTE_SHAPE_RULE = `
 Notes that reach Helpful on this topic correct exactly ONE claim — the claim the post's argument actually rests on, not the easiest-to-source side detail — in one or two blunt declarative sentences, then stop. Do not add a second correction, extra background, or an "also…" clause: every added assertion hands some group of raters a reason to reject the note. Cite one or two sources, never more.`;
 
 /**
+ * Appended to the writer system prompt when `config.time_travel_prompt` is on
+ * (TIME_TRAVEL_PROMPT_TEST). Companion of SEARCH_TIME_TRAVEL_INSTRUCTION: the
+ * writer is the second chance to catch a correction that is only true because
+ * events moved on after the post was published. Backtested 2026-07-28; see
+ * docs/improvement-menu-2026-07-25.md (T2).
+ */
+export const WRITER_TIME_TRAVEL_RULE = `
+
+## The time-travel test
+The post context states when the post was published. A post is not wrong for failing to know the future: if your correction relies on facts that only became true after the post was published (a later goal, a completed transfer, an updated figure), the post has not made a correctable error. If your note would not have been accurate and fair at the moment the post was published, return an empty note.`;
+
+/**
  * Few-shot block appended to the writer system prompt when
  * `config.writer_examples` is on (SIMPLE_BOT_WRITER_EXAMPLES_TEST). Real notes
  * that performed well — picked because they are simple, direct, and far shorter

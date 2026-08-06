@@ -14,6 +14,7 @@ import { runJsonLlmCall, type ChatMessage } from "../utils/jsonLlmCall";
 import {
   WRITER_SYSTEM_PROMPT,
   WRITER_FEWSHOT_EXAMPLES,
+  WRITER_TIME_TRAVEL_RULE,
   WRITER_RESPONSE_FORMAT,
   MISINFO_SOURCING_RULE,
   MISINFO_NOTE_SHAPE_RULE,
@@ -40,6 +41,7 @@ export async function runWriter(
   const config = getBotConfig();
   const monitoring = getMonitoringContext();
   let systemPrompt = config.writer_examples ? WRITER_SYSTEM_PROMPT + WRITER_FEWSHOT_EXAMPLES : WRITER_SYSTEM_PROMPT;
+  if (config.time_travel_prompt) systemPrompt += WRITER_TIME_TRAVEL_RULE;
   if (opts?.timingContext) log?.set("writer.timingContext", true);
 
   // Curated misinfo topic: prepend the topic's vetted in-group / primary sources

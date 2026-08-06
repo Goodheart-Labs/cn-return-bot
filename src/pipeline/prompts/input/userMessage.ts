@@ -56,10 +56,10 @@ export function buildUserMessage(params: {
   parts.push(`Current date: ${now.toISOString().split("T")[0]}`);
   parts.push(`Current time: ${now.toISOString().split("T")[1]!.slice(0, 5)} UTC`);
   parts.push(`Tweet posted: ${post.created_at}`);
-  // Pre-computed age (time_travel_prompt arm): the timing rule turns on the
+  // Pre-computed age (timing_context arm): the timing machinery turns on the
   // post's age, and models are unreliable at timestamp arithmetic — hand them
   // the operative number. Gated on the same flag so the A/B arms stay clean.
-  if (getBotConfig().time_travel_prompt && post.created_at) {
+  if (getBotConfig().timing_context && post.created_at) {
     const ageMs = now.getTime() - Date.parse(post.created_at);
     if (Number.isFinite(ageMs) && ageMs >= 0) {
       parts.push(`Post age: ${(ageMs / 3_600_000).toFixed(1)} hours`);

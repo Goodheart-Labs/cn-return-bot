@@ -168,6 +168,22 @@ const SIMPLE_BOT_ANTI_PEDANTIC_TEST: ABTest = {
 // metrics first (abstention-rate guard, then Nathan's breaking-news tag rate);
 // cn_status per arm is underpowered for months. docs/improvement-menu-2026-07-25.md
 // (T2). Prereq-gated to simple-bot, so no defaultVariant.
+// Timing-context stage (Nathan's design): extractor measures the event-to-post
+// gap; fog-window posts (<=6h or mid-event) get a context block piped into the
+// writer's user message — the fact plus "true-at-posting corrections rarely
+// rate helpful". No gate; the writer's empty-note path decides. Independent of
+// TIME_TRAVEL_PROMPT_TEST (the always-on instruction), giving a 2x2 for
+// reading interaction. Reads: logs.timing.* per run. Prereq-gated to
+// simple-bot, so no defaultVariant.
+const TIMING_CONTEXT_TEST: ABTest = {
+  name: "timing_context",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off", overrides: { timing_context: false } }, weight: 50 },
+    { variant: { name: "on",  overrides: { timing_context: true  } }, weight: 50 },
+  ],
+};
+
 const TIME_TRAVEL_PROMPT_TEST: ABTest = {
   name: "time_travel_prompt",
   prerequisites: { botId: "simple-bot" },
@@ -508,6 +524,7 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_VERIFIER_TEST,
   SIMPLE_BOT_ANTI_PEDANTIC_TEST,
   TIME_TRAVEL_PROMPT_TEST,
+  TIMING_CONTEXT_TEST,
   SIMPLE_BOT_CLAIM_TEST,
   SIMPLE_BOT_WRITER_EXAMPLES_TEST,
   SIMPLE_BOT_POLITICAL_SOURCES_TEST,
