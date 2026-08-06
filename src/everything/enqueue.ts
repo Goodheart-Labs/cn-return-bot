@@ -31,7 +31,7 @@ import "dotenv/config";
 import * as fs from "fs";
 import * as path from "path";
 import { enqueueItems, resolveProjectId, syntheticDocUrl, type EnqueueRow } from "./db";
-import { fetchLatestFreePostUrls, parseProfileHandle } from "./sources/substack";
+import { fetchLatestFreePosts, parseProfileHandle } from "./sources/substack";
 import type { SourceKind } from "./types";
 
 const DEFAULT_LATEST_POSTS = 5;
@@ -46,9 +46,9 @@ async function expandLiveUrl(url: string, latest: number): Promise<{ source: Sou
   if (/youtube\.com|youtu\.be/.test(url)) return [{ source: "youtube", url }];
   if (/\.substack\.com\/p\//.test(url)) return [{ source: "substack", url }];
   if (parseProfileHandle(url)) {
-    const postUrls = await fetchLatestFreePostUrls(url, latest);
-    console.log(`Profile ${url} → ${postUrls.length} latest free posts`);
-    return postUrls.map((postUrl) => ({ source: "substack" as const, url: postUrl }));
+    const posts = await fetchLatestFreePosts(url, latest);
+    console.log(`Profile ${url} → ${posts.length} latest free posts`);
+    return posts.map((post) => ({ source: "substack" as const, url: post.url }));
   }
   throw new Error(`Unsupported URL (need a YouTube video, Substack post, or Substack profile): ${url}`);
 }
