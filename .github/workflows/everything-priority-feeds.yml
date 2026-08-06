@@ -3,9 +3,8 @@ name: Everything Priority Feeds
 on:
   workflow_dispatch:
 
-# Triggered by Supabase pg_cron via workflow_dispatch (GitHub's own scheduler
-# delays/drops runs) — see migrations/067_schedule_everything_dispatch.sql.
-# Fires at :03/:33, offset from the create-notes routine's :18/:48.
+# Manual-only: the Supabase pg_cron dispatch (migration 067, :03/:33) was
+# unscheduled by migration 070. Re-run migration 067 to resume automated runs.
 #
 # Never run two workers at once: the queue claim has no locking, and the
 # auto-enqueue's orphan cleanup assumes no worker is live. Queue (don't cancel)
