@@ -55,6 +55,9 @@ const SEEN_AWARE_FAILURE_TYPES: FailureType[] = ["rated_helpful", "rated_unhelpf
 // date to re-aim.
 const BURNDOWN_TYPES = new Set<FailureType>(["rated_helpful", "rated_unhelpful", "underwater"]);
 const BURNDOWN_TARGET_ISO = "2026-10-18";
+// Nathan rates in bursts, not daily — quota assumes this many rating-days per
+// week (Nathan, 2026-08-06: "assume I rate 4 days a week, set the rate for that").
+const RATING_DAYS_PER_WEEK = 4;
 
 // Stale-while-revalidate caches for the slow once-per-session fetches, so the
 // burndown bar / pills / tags drawer paint instantly from the last session's
@@ -103,11 +106,13 @@ function BurndownBar({ unseen, reviewedToday, ready, inflowPerDay, pacePerDay }:
 
   if (!ready || dayStart == null || dismissed) return null;
   const daysLeft = daysUntil(BURNDOWN_TARGET_ISO);
-  // Quota = the honest constant-effort number for the locked target: today's
-  // share of the backlog PLUS the day's expected inflow (Nathan, 2026-07-29 —
-  // the backlog-only quota looked easy early and silently ramped later; folding
-  // inflow in up front makes every day's bar the same real size).
-  const quota = Math.max(1, Math.ceil(dayStart / daysLeft + inflowPerDay));
+  // Quota = what a RATING DAY must clear to hit the target, assuming
+  // RATING_DAYS_PER_WEEK rating-days a week: total remaining work (backlog +
+  // inflow over ALL remaining calendar days) spread over the remaining
+  // rating-days only. Recomputed daily from live state, so slipping raises it
+  // and getting ahead lowers it.
+  const ratingDaysLeft = Math.max(1, daysLeft * (RATING_DAYS_PER_WEEK / 7));
+  const quota = Math.max(1, Math.ceil((dayStart + inflowPerDay * daysLeft) / ratingDaysLeft));
   const progress = reviewedToday; // notes YOU marked seen today — inflow-proof
   const done = progress >= quota;
   const remainingToday = Math.max(0, quota - progress);
@@ -168,8 +173,8 @@ function BurndownBar({ unseen, reviewedToday, ready, inflowPerDay, pacePerDay }:
           estimated from the matured 14–44-day cohort). Net ≈ {Math.max(0, pacePerDay - inflowPerDay).toFixed(1)}/day
           of real shrinkage on {unseen} unseen → zero around <b>{projectedLabel}</b>. If the next months look like the
           last two weeks, that's when you finish; review more days per week and this date marches toward the{" "}
-          {targetLabel} target (it turns green when it crosses). Today's quota ({quota}) is the honest constant-effort
-          number: backlog ÷ days-left + inflow.
+          {targetLabel} target (it turns green when it crosses). Today's quota ({quota}) assumes you rate {RATING_DAYS_PER_WEEK} days a
+          week: all remaining work (backlog + inflow to the target) ÷ remaining rating-days.
         </div>
       )}
     </div>
