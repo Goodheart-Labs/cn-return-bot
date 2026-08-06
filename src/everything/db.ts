@@ -59,21 +59,25 @@ const LOCAL_DOC_URL_PREFIX = "local:";
 export const syntheticDocUrl = (slug: string, basename: string) => `${LOCAL_DOC_URL_PREFIX}${slug}/${basename}`;
 export const isSyntheticDocUrl = (url: string | null): boolean => !!url?.startsWith(LOCAL_DOC_URL_PREFIX);
 
-/** A queued item: a live URL (worker fetches) or a local `--doc` (body supplied). */
+/** A queued item: a live URL (worker fetches) or one with its body supplied
+ *  (local `--doc` files, RSS-fed priority-feed posts). */
 export interface EnqueueRow {
   project_id: string;
   source: SourceKind;
   url: string;
-  title?: string; // known for --doc items; live URLs get their title from the worker fetch
-  full_text?: string; // pre-supplied body for --doc items; absent for live URLs
+  title?: string; // known for supplied-body items; live URLs get their title from the worker fetch
+  full_text?: string; // pre-supplied body; absent for live URLs
+  published_at?: string; // known at enqueue for RSS-fed items; else set by the worker
 }
 
-/** Insert new items into the queue; already-known URLs are ignored. Returns the inserted count. */
+/** Insert new items into the queue; already-known URLs are ignored. Returns the inserted count.
+ *  Rows are padded to a uniform key set — PostgREST rejects bulk rows with differing keys. */
 export async function enqueueItems(rows: EnqueueRow[]): Promise<number> {
+  const padded = rows.map((r) => ({ title: null, full_text: null, published_at: null, ...r }));
   const inserted = throwOnError(
     await getSupabaseClient()
       .from("everything_items")
-      .upsert(rows, { onConflict: "url", ignoreDuplicates: true })
+      .upsert(padded, { onConflict: "url", ignoreDuplicates: true })
       .select("id"),
   );
   return inserted?.length ?? 0;

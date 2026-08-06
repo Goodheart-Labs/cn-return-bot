@@ -132,3 +132,4 @@ src/everything-extension/.output/
 
 # Chrome extension private key (public half is pinned in wxt.config.ts)
 src/everything-extension/chrome-signing-key.pem
+.wrangler/

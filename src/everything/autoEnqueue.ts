@@ -3,12 +3,14 @@
  * (see priorityFeeds.ts) — run by the everything-priority-feeds workflow
  * right before the worker drains the queue.
  *
- * Selection per feed: fetch the latest entries (Substack archive API /
- * YouTube channel /videos tab — both newest first), drop the ones that
- * already have an everything_items row (any status — done-with-zero-notes
- * and errored count as processed), and take the remaining entries oldest
- * first, so coverage advances chronologically. The feed window (~15-20
- * entries) bounds how far back this can ever reach.
+ * Selection per feed: fetch the latest entries (Substack RSS feed, proxied
+ * through our Cloudflare Worker in CI / YouTube channel /videos tab — both
+ * newest first), drop the ones that already have an everything_items row
+ * (any status — done-with-zero-notes and errored count as processed), and
+ * take the remaining entries oldest first, so coverage advances
+ * chronologically. The feed window (~15-20 entries) bounds how far back
+ * this can ever reach. Substack posts are enqueued with their RSS body as
+ * full_text, so the worker never fetches Substack (blocked from CI).
  *
  * Usage:
  *   bun run src/everything/autoEnqueue.ts [--dry-run]
@@ -17,7 +19,7 @@
 import "dotenv/config";
 import { enqueueItems, fetchItemUrlsContaining, fetchItemUrlsIn, markOrphanedProcessingAsError, resolveProjectId, type EnqueueRow } from "./db";
 import { BATCH_SIZE, PRIORITY_FEEDS, type PriorityFeed } from "./priorityFeeds";
-import { ARCHIVE_FETCH_LIMIT, fetchArchivePosts } from "./sources/substack";
+import { fetchFeedPosts, htmlToText } from "./sources/substack";
 import { ensureYtDlp, fetchChannelVideos } from "./sources/youtube";
 import type { SourceKind } from "./types";
 
@@ -30,13 +32,26 @@ interface FeedEntry {
    *  forms vary; Substack the canonical url itself). */
   matchKey: string;
   label: string;
+  /** Substack only: the post body from the RSS feed, enqueued with the item so
+   *  the worker never fetches Substack (blocked from CI). */
+  fullText?: string;
+  title?: string;
+  publishedAt?: string;
 }
 
 /** A feed's latest entries, newest first. */
 async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedEntry[]> {
   if (feed.type === "substack") {
-    const posts = await fetchArchivePosts(feed.publicationUrl, ARCHIVE_FETCH_LIMIT);
-    return posts.map((p) => ({ source: "substack" as const, url: p.url, matchKey: p.url, label: `${p.postDate.slice(0, 10)} ${p.title}` }));
+    const posts = await fetchFeedPosts(feed.publicationUrl);
+    return posts.map((p) => ({
+      source: "substack" as const,
+      url: p.url,
+      matchKey: p.url,
+      label: `${p.publishedAt.slice(0, 10)} ${p.title}`,
+      fullText: htmlToText(p.bodyHtml, true),
+      title: p.title,
+      publishedAt: p.publishedAt.slice(0, 10),
+    }));
   }
   return fetchChannelVideos(feed.channelUrl, CHANNEL_FETCH_LIMIT)
     // A null duration is an upcoming premiere — not watchable yet, and enqueueing
@@ -84,7 +99,14 @@ async function main() {
 
   const rows: EnqueueRow[] = [];
   for (const { feed, entry } of picks) {
-    rows.push({ project_id: await resolveProjectId(feed.project), source: entry.source, url: entry.url });
+    rows.push({
+      project_id: await resolveProjectId(feed.project),
+      source: entry.source,
+      url: entry.url,
+      title: entry.title,
+      full_text: entry.fullText,
+      published_at: entry.publishedAt,
+    });
   }
   const inserted = await enqueueItems(rows);
   console.log(`Enqueued ${inserted} item(s)`);
