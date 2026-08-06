@@ -1222,7 +1222,11 @@ export async function fetchPostingLimitData(): Promise<PostingLimitData> {
   const c20 = count(last20), c100 = count(last100), c14 = count(rated14);
   const hrR = (c20.h - c20.nh) / 20;
   const hr100 = (c100.h - c100.nh) / 100;
-  const hr14d = rated14.length ? (c14.h - c14.nh) / rated14.length : 0;
+  // Denominator = ALL notes written in the window, not just rated ones. X's own
+  // scoring counts NMR notes in totalNotes, and the all-written variant is the
+  // only one that has reproduced X's observed cap (rated-only inflated the rate
+  // ~6x — Nathan, 2026-08-05: "laughably wrong").
+  const hr14d = in14.length ? (c14.h - c14.nh) / in14.length : 0;
   const dn30 = in30.length / 30;
 
   const ratedRev = notes.filter((n) => isH(n.cn_status) || isNH(n.cn_status)).reverse();
@@ -1246,7 +1250,7 @@ export async function fetchPostingLimitData(): Promise<PostingLimitData> {
   const windows: CapWindow[] = [
     { key: "HR_R", label: "Last 20 written", rate: hrR, h: c20.h, nh: c20.nh, nmr: 20 - c20.h - c20.nh, denom: 20, binding: qualityBound && bindKey === "HR_R" },
     { key: "HR_100", label: "Last 100 written", rate: hr100, h: c100.h, nh: c100.nh, nmr: 100 - c100.h - c100.nh, denom: 100, binding: qualityBound && bindKey === "HR_100" },
-    { key: "HR_14d", label: "Last 14 days (rated)", rate: hr14d, h: c14.h, nh: c14.nh, nmr: 0, denom: rated14.length, binding: qualityBound && bindKey === "HR_14d" },
+    { key: "HR_14d", label: "Last 14 days (written)", rate: hr14d, h: c14.h, nh: c14.nh, nmr: in14.length - rated14.length, denom: in14.length, binding: qualityBound && bindKey === "HR_14d" },
   ];
 
   const tierIdx = hrL < 0.05 ? 0 : hrL < 0.1 ? 1 : hrL < 0.15 ? 2 : hrL < 0.2 ? 3 : 4;
