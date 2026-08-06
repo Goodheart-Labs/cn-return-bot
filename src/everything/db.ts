@@ -78,6 +78,43 @@ export async function enqueueItems(rows: EnqueueRow[]): Promise<number> {
   return inserted?.length ?? 0;
 }
 
+/** Urls among the given ones that already have an item row (any status). */
+export async function fetchItemUrlsIn(urls: string[]): Promise<string[]> {
+  if (urls.length === 0) return [];
+  const rows = throwOnError(
+    await getSupabaseClient().from("everything_items").select("url").in("url", urls),
+  ) as { url: string }[];
+  return rows.map((r) => r.url);
+}
+
+/** Item urls containing any of the given fragments (e.g. YouTube video ids —
+ *  stored URL forms vary, so items are matched by id, not exact url). */
+export async function fetchItemUrlsContaining(fragments: string[]): Promise<string[]> {
+  if (fragments.length === 0) return [];
+  const rows = throwOnError(
+    await getSupabaseClient()
+      .from("everything_items")
+      .select("url")
+      .or(fragments.map((f) => `url.like.*${f}*`).join(",")),
+  ) as { url: string }[];
+  return rows.map((r) => r.url);
+}
+
+/** Fail items stranded in `processing` by a killed run. The caller must know no
+ *  worker is live (the workflow's concurrency group guarantees that); marking
+ *  error instead of re-queueing avoids duplicate claims from a partial run.
+ *  Returns the failed items' urls. */
+export async function markOrphanedProcessingAsError(): Promise<string[]> {
+  const rows = throwOnError(
+    await getSupabaseClient()
+      .from("everything_items")
+      .update({ status: "error", error: "orphaned in processing by a killed run", processed_at: new Date().toISOString() })
+      .eq("status", "processing")
+      .select("url"),
+  ) as { url: string }[];
+  return rows.map((r) => r.url);
+}
+
 /** Oldest queued item → processing (single worker, so no locking needed). */
 export async function claimNextQueuedItem(): Promise<EverythingItem | null> {
   const db = getSupabaseClient();
