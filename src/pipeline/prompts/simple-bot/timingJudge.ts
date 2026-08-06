@@ -50,11 +50,12 @@ export const TIMING_EXTRACTOR_SCHEMA_HINT =
 export function buildTimingContextBlock(params: {
   /** Computed in code: post.created_at minus the extractor's event time. */
   hoursEventToPost: number;
+  why: string;
 }): string {
   return `
 
 ## Timing context
-According to an evaluator this post was published about ${params.hoursEventToPost.toFixed(1)} hours after the event it describes.
+According to an evaluator (a small model), this post was published about ${params.hoursEventToPost.toFixed(1)} hours after the event it describes. Its reasoning: ${params.why}
 
 Bear this in mind when deciding what — and whether — to correct: a claim that was true when the post was published but became false afterwards is rarely rated helpful — raters understand that posts happen at a time. Corrections that hold up are ones where the claim was already false at the moment of posting.`;
 }

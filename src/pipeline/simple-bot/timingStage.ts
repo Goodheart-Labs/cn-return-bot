@@ -79,7 +79,7 @@ export async function runTimingStage(params: {
 
     return {
       action: "inform",
-      contextBlock: buildTimingContextBlock({ hoursEventToPost: gapHours! }),
+      contextBlock: buildTimingContextBlock({ hoursEventToPost: gapHours!, why: extracted.why }),
     };
   } catch (err) {
     // Shadow-grade robustness: a timing failure must never block a run — fall
