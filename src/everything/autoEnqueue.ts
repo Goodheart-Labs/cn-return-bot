@@ -17,7 +17,7 @@
 import "dotenv/config";
 import { enqueueItems, fetchItemUrlsContaining, fetchItemUrlsIn, markOrphanedProcessingAsError, resolveProjectId, type EnqueueRow } from "./db";
 import { BATCH_SIZE, PRIORITY_FEEDS, type PriorityFeed } from "./priorityFeeds";
-import { ARCHIVE_FETCH_LIMIT, fetchLatestFreePosts } from "./sources/substack";
+import { ARCHIVE_FETCH_LIMIT, fetchArchivePosts } from "./sources/substack";
 import { ensureYtDlp, fetchChannelVideos } from "./sources/youtube";
 import type { SourceKind } from "./types";
 
@@ -35,7 +35,7 @@ interface FeedEntry {
 /** A feed's latest entries, newest first. */
 async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedEntry[]> {
   if (feed.type === "substack") {
-    const posts = await fetchLatestFreePosts(feed.profileUrl, ARCHIVE_FETCH_LIMIT);
+    const posts = await fetchArchivePosts(feed.publicationUrl, ARCHIVE_FETCH_LIMIT);
     return posts.map((p) => ({ source: "substack" as const, url: p.url, matchKey: p.url, label: `${p.postDate.slice(0, 10)} ${p.title}` }));
   }
   return fetchChannelVideos(feed.channelUrl, CHANNEL_FETCH_LIMIT)
@@ -64,13 +64,24 @@ async function main() {
   }
 
   const picks: { feed: PriorityFeed; entry: FeedEntry }[] = [];
+  const feedErrors: string[] = [];
   for (const feed of PRIORITY_FEEDS) {
     if (picks.length >= BATCH_SIZE) break;
-    const entries = await fetchFeedEntries(feed);
+    // One unreachable feed (e.g. Substack 403ing the runner) must not block the
+    // ones below it — note the failure and keep filling the batch.
+    let entries: FeedEntry[];
+    try {
+      entries = await fetchFeedEntries(feed);
+    } catch (err: any) {
+      console.error(`[${feed.project}] feed discovery failed: ${err?.message}`);
+      feedErrors.push(feed.project);
+      continue;
+    }
     const unprocessed = await unprocessedEntries(feed, entries);
     console.log(`[${feed.project}] ${entries.length} feed entries, ${unprocessed.length} unprocessed`);
     for (const entry of unprocessed.slice(0, BATCH_SIZE - picks.length)) picks.push({ feed, entry });
   }
+  if (feedErrors.length === PRIORITY_FEEDS.length) throw new Error(`Every feed failed discovery: ${feedErrors.join(", ")}`);
 
   if (picks.length === 0) {
     console.log("All priority feeds are caught up — nothing to enqueue");
