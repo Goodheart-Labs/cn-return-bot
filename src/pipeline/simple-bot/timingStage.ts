@@ -31,7 +31,7 @@ export type TimingVerdict =
   | { action: "inform"; contextBlock: string };
 
 interface ExtractorOut {
-  hours_event_to_post: number | null;
+  event_time_utc: string | null;
   event_ongoing_at_post: boolean;
   why: string;
 }
@@ -39,6 +39,9 @@ interface ExtractorOut {
 export async function runTimingStage(params: {
   userMessage: string;
   findings: string;
+  /** post.created_at — the other operand of the gap; the model only names the
+   *  event's time, the subtraction happens here. */
+  postCreatedAt: string;
 }): Promise<TimingVerdict> {
   const log = getTweetLog();
   try {
@@ -54,22 +57,34 @@ export async function runTimingStage(params: {
       responseFormat: TIMING_EXTRACTOR_RESPONSE_FORMAT,
       schemaHint: TIMING_EXTRACTOR_SCHEMA_HINT,
     });
-    log?.set("timing.hoursEventToPost", extracted.hours_event_to_post);
+    log?.set("timing.eventTimeUtc", extracted.event_time_utc);
     log?.set("timing.eventOngoingAtPost", extracted.event_ongoing_at_post);
     log?.set("timing.extractorWhy", extracted.why);
 
-    // Event-to-POST gap, not event-to-now: the tweet's epistemic position must
-    // not depend on how long the note waited in our queue.
+    // The model names the event time; the gap is OUR arithmetic. Event-to-POST,
+    // not event-to-now: the tweet's epistemic position must not depend on how
+    // long the note waited in our queue. Signed gap logged (negative = the post
+    // predates its event, e.g. announcements) — observable, not yet triggering.
+    let gapHours: number | null = null;
+    if (extracted.event_time_utc) {
+      const eventMs = Date.parse(extracted.event_time_utc);
+      const postMs = Date.parse(params.postCreatedAt);
+      if (Number.isFinite(eventMs) && Number.isFinite(postMs)) {
+        gapHours = (postMs - eventMs) / 3_600_000;
+      }
+    }
+    log?.set("timing.hoursEventToPost", gapHours);
+
     const live =
       extracted.event_ongoing_at_post ||
-      (extracted.hours_event_to_post !== null && extracted.hours_event_to_post <= LIVE_EVENT_WINDOW_HOURS);
+      (gapHours !== null && gapHours >= 0 && gapHours <= LIVE_EVENT_WINDOW_HOURS);
     log?.set("timing.live", live);
     if (!live) return { action: "pass" };
 
     return {
       action: "inform",
       contextBlock: buildTimingContextBlock({
-        hoursEventToPost: extracted.hours_event_to_post,
+        hoursEventToPost: gapHours,
         eventOngoingAtPost: extracted.event_ongoing_at_post,
         why: extracted.why,
       }),

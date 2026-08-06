@@ -57,7 +57,7 @@ async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterS
   // message. Information, not a gate — the writer decides.
   let timingContext: string | undefined;
   if (getBotConfig().timing_context) {
-    const timing = await runTimingStage({ userMessage, findings: search.findings });
+    const timing = await runTimingStage({ userMessage, findings: search.findings, postCreatedAt: post.created_at });
     if (timing.action === "inform") timingContext = timing.contextBlock;
   }
 

@@ -13,34 +13,35 @@
 import { jsonSchemaResponseFormat } from "../responseFormat";
 
 /** Posts written within this many hours of their event (or while it was still
- *  unfolding) get the stage-B judge. The gap is EVENT-to-POST, not event-to-now
- *  (Nathan, 2026-08-05): what matters is the tweet's epistemic position — was
- *  it written in the fog of a live event — which must not depend on how long
- *  the note sat in our queue before we processed it. */
+ *  unfolding) get the timing-context block. The gap is EVENT-to-POST, not
+ *  event-to-now (Nathan, 2026-08-05): the tweet's epistemic position — was it
+ *  written in the fog of a live event — must not depend on how long the note
+ *  sat in our queue. The model only NAMES the event time; the gap arithmetic
+ *  is code (timingStage.ts). */
 export const LIVE_EVENT_WINDOW_HOURS = 6;
 
-export const TIMING_EXTRACTOR_SYSTEM_PROMPT = `You read an X post and research findings about it, and answer one narrow question: how close to the event it describes was this post PUBLISHED?
+export const TIMING_EXTRACTOR_SYSTEM_PROMPT = `You read an X post and research findings about it, and answer one narrow question: WHEN did the event the post describes happen?
 
-The user message states when the post was published. Return JSON:
-- hours_event_to_post: number | null — hours between the event happening and the post being published. 0.5 means the post went up thirty minutes after the event. null when the post is not about a datable event (evergreen claims, old photos resurfacing, general statistics).
-- event_ongoing_at_post: boolean — true when the event was still actively developing AT THE MOMENT the post was published (match in progress, ongoing search/rescue, live negotiation, unresolved breaking story).
+Return JSON:
+- event_time_utc: string | null — your best estimate of when the event happened, as an ISO 8601 UTC timestamp (e.g. "2026-08-05T14:30:00Z"). Precision to the hour is fine. null when the post is not about a datable event (evergreen claims, old photos resurfacing, general statistics).
+- event_ongoing_at_post: boolean — true when the event was still actively developing AT THE MOMENT the post was published (match in progress, ongoing search/rescue, live negotiation, unresolved breaking story). The user message states when the post was published.
 - why: one short sentence.
 
-Date the EVENT, not the post: an old video reposted today is an old event (large gap). A post claiming a death, score, transfer, or ruling that had reportedly just happened is a small gap even if the claim is false — measure to what the claim is about. Judge from the post's moment, not from today.`;
+Date the EVENT, not the post: an old video reposted today is an old event. A post claiming a death, score, transfer, or ruling that had reportedly just happened is a recent event even if the claim is false — date what the claim is about. Use dates in the findings and the post itself; do not compute any durations — just name the time.`;
 
 export const TIMING_EXTRACTOR_RESPONSE_FORMAT = jsonSchemaResponseFormat("timing_extractor", {
   type: "object",
   properties: {
-    hours_event_to_post: { type: ["number", "null"] },
+    event_time_utc: { type: ["string", "null"] },
     event_ongoing_at_post: { type: "boolean" },
     why: { type: "string" },
   },
-  required: ["hours_event_to_post", "event_ongoing_at_post", "why"],
+  required: ["event_time_utc", "event_ongoing_at_post", "why"],
   additionalProperties: false,
 });
 
 export const TIMING_EXTRACTOR_SCHEMA_HINT =
-  '{ "hours_event_to_post": number | null, "event_ongoing_at_post": boolean, "why": string }';
+  '{ "event_time_utc": string | null, "event_ongoing_at_post": boolean, "why": string }';
 
 /**
  * Timing context piped into the writer's USER message when the post was
@@ -49,6 +50,7 @@ export const TIMING_EXTRACTOR_SCHEMA_HINT =
  * rules and empty-note path do the deciding).
  */
 export function buildTimingContextBlock(params: {
+  /** Computed in code: post.created_at minus the extractor's event time. */
   hoursEventToPost: number | null;
   eventOngoingAtPost: boolean;
   why: string;
