@@ -161,13 +161,21 @@ const SIMPLE_BOT_POLITICAL_SOURCES_TEST: ABTest = {
 // Swap simple-bot's SEARCH prompt for an "anti-pedantic" variant that only
 // flags a correction when the post's main claim / argument is wrong, never a
 // minor side error — the bet that pedantic nitpicks hurt the helpful/FP rate.
-// Live 50/50 on simple-bot. Prereq-gated to simple-bot, so no defaultVariant.
+// Prereq-gated to simple-bot, so no defaultVariant.
+// CLOSED 2026-08-06 → on (Jim). CN statuses settle within ~48h, so the audit
+// uses a 48h maturity cutoff instead of 2 weeks — that keeps the freshest
+// weeks, where "on" led. Era-fair (both arms live, Jun 24–Aug 3), settled
+// notes: on +7.1% net (n=945, 76% H-of-rated) vs off +6.1% (n=918, 73%).
+// The winning anti-pedantic prompt is folded into SEARCH_SYSTEM_PROMPT, so
+// the flag is dead; declared fully retired (all weights 0, skipped in live
+// sampling) so historical picks still resolve. Reopen trigger: settled
+// outcomes reversing the gap once the recent weeks fully mature.
 const SIMPLE_BOT_ANTI_PEDANTIC_TEST: ABTest = {
   name: "simple_bot_anti_pedantic",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "off", overrides: { search_anti_pedantic: false } }, weight: 50 },
-    { variant: { name: "on",  overrides: { search_anti_pedantic: true  } }, weight: 50 },
+    { variant: { name: "off", overrides: { search_anti_pedantic: false } }, weight: 0 },
+    { variant: { name: "on",  overrides: { search_anti_pedantic: true  } }, weight: 0 },
   ],
 };
 
@@ -280,12 +288,18 @@ const TOPIC_FILTER_TEST: ABTest = {
 // measure in prod how often the bot writes a note on posts the prefilter would
 // have cut (the real false-negative rate). defaultVariant "off" so historical
 // rows (no pick) resolve to no-prefilter via resolvePicks.
+// CLOSED 2026-08-06 → deepseek 100. Era-fair, 48h-settled: deepseek +7.0%
+// net (n=2085, 75% H-of-rated) vs off +6.6% (n=774, 73%) — quality identical,
+// prefilter saves the search cost, nothing left for the off arm to teach.
+// Off-arm observability replaced by a scheduled discard audit: sample
+// prefilter-rejected tweets, dry-run the full pipeline (null logger), inspect
+// would-have-been notes. Reopen trigger: audit finds real notes being lost.
 const NOTE_PREFILTER_TEST: ABTest = {
   name: "note_prefilter",
   defaultVariant: "off",
   variants: [
-    { variant: { name: "off",      overrides: { note_prefilter: false } }, weight: 50 },
-    { variant: { name: "deepseek", overrides: { note_prefilter: true  } }, weight: 50 },
+    { variant: { name: "off",      overrides: { note_prefilter: false } }, weight: 0 },
+    { variant: { name: "deepseek", overrides: { note_prefilter: true  } }, weight: 100 },
   ],
 };
 
