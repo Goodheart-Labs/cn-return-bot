@@ -9,9 +9,6 @@ export type PriorityFeed =
 /** Items enqueued (and thus processed) per run, across all feeds. */
 export const BATCH_SIZE = 2;
 
-/** Channel videos shorter than this are trailers/announcements, not episodes. */
-export const MIN_VIDEO_SECONDS = 5 * 60;
-
 export const PRIORITY_FEEDS: PriorityFeed[] = [
   { project: "zvi", type: "substack", profileUrl: "https://substack.com/@thezvi" },
   { project: "dwarkesh", type: "youtube", channelUrl: "https://www.youtube.com/@DwarkeshPatel" },

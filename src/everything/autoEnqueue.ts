@@ -16,7 +16,7 @@
 
 import "dotenv/config";
 import { enqueueItems, fetchItemUrlsContaining, fetchItemUrlsIn, markOrphanedProcessingAsError, resolveProjectId, type EnqueueRow } from "./db";
-import { BATCH_SIZE, MIN_VIDEO_SECONDS, PRIORITY_FEEDS, type PriorityFeed } from "./priorityFeeds";
+import { BATCH_SIZE, PRIORITY_FEEDS, type PriorityFeed } from "./priorityFeeds";
 import { ARCHIVE_FETCH_LIMIT, fetchLatestFreePosts } from "./sources/substack";
 import { ensureYtDlp, fetchChannelVideos } from "./sources/youtube";
 import type { SourceKind } from "./types";
@@ -39,7 +39,9 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedEntry[]> {
     return posts.map((p) => ({ source: "substack" as const, url: p.url, matchKey: p.url, label: `${p.postDate.slice(0, 10)} ${p.title}` }));
   }
   return fetchChannelVideos(feed.channelUrl, CHANNEL_FETCH_LIMIT)
-    .filter((v) => v.durationSeconds !== null && v.durationSeconds >= MIN_VIDEO_SECONDS)
+    // A null duration is an upcoming premiere — not watchable yet, and enqueueing
+    // it would error the item permanently. It gets picked up once it's live.
+    .filter((v) => v.durationSeconds !== null)
     .map((v) => ({ source: "youtube" as const, url: v.url, matchKey: v.videoId, label: v.title }));
 }
 
