@@ -60,7 +60,12 @@ export interface FeedPost {
   publishedAt: string;
   /** Full post HTML (RSS content:encoded). */
   bodyHtml: string;
+  /** True for paid posts: their RSS body is only the free preview, ending in a
+   *  "Read more" link back to the post. */
+  paywalled: boolean;
 }
+
+const PAYWALL_TRAILER = /<a href="[^"]*">\s*Read more\s*<\/a>\s*<\/p>\s*$/;
 
 /** Substack blocks datacenter IPs (403), so in CI the RSS fetch goes through
  *  our Cloudflare Worker relay (src/everything/substack-proxy-worker) — its
@@ -105,12 +110,16 @@ export async function fetchFeedPosts(publicationUrl: string): Promise<FeedPost[]
   }
   const xml = await res.text();
   return [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)]
-    .map(([, item]) => ({
-      url: tagContent(item!, "link").trim(),
-      title: decodeHtmlEntities(cdataUnwrap(tagContent(item!, "title"))),
-      publishedAt: new Date(tagContent(item!, "pubDate").trim()).toISOString(),
-      bodyHtml: cdataUnwrap(tagContent(item!, "content:encoded")),
-    }))
+    .map(([, item]) => {
+      const bodyHtml = cdataUnwrap(tagContent(item!, "content:encoded"));
+      return {
+        url: tagContent(item!, "link").trim(),
+        title: decodeHtmlEntities(cdataUnwrap(tagContent(item!, "title"))),
+        publishedAt: new Date(tagContent(item!, "pubDate").trim()).toISOString(),
+        bodyHtml,
+        paywalled: PAYWALL_TRAILER.test(bodyHtml),
+      };
+    })
     .filter((p) => p.url && p.bodyHtml);
 }
 
