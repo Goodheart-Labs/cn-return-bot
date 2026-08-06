@@ -64,24 +64,13 @@ async function main() {
   }
 
   const picks: { feed: PriorityFeed; entry: FeedEntry }[] = [];
-  const feedErrors: string[] = [];
   for (const feed of PRIORITY_FEEDS) {
     if (picks.length >= BATCH_SIZE) break;
-    // One unreachable feed (e.g. Substack 403ing the runner) must not block the
-    // ones below it — note the failure and keep filling the batch.
-    let entries: FeedEntry[];
-    try {
-      entries = await fetchFeedEntries(feed);
-    } catch (err: any) {
-      console.error(`[${feed.project}] feed discovery failed: ${err?.message}`);
-      feedErrors.push(feed.project);
-      continue;
-    }
+    const entries = await fetchFeedEntries(feed);
     const unprocessed = await unprocessedEntries(feed, entries);
     console.log(`[${feed.project}] ${entries.length} feed entries, ${unprocessed.length} unprocessed`);
     for (const entry of unprocessed.slice(0, BATCH_SIZE - picks.length)) picks.push({ feed, entry });
   }
-  if (feedErrors.length === PRIORITY_FEEDS.length) throw new Error(`Every feed failed discovery: ${feedErrors.join(", ")}`);
 
   if (picks.length === 0) {
     console.log("All priority feeds are caught up — nothing to enqueue");
