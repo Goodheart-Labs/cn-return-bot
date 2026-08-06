@@ -32,7 +32,6 @@ export type TimingVerdict =
 
 interface ExtractorOut {
   event_time_utc: string | null;
-  event_ongoing_at_post: boolean;
   why: string;
 }
 
@@ -58,7 +57,6 @@ export async function runTimingStage(params: {
       schemaHint: TIMING_EXTRACTOR_SCHEMA_HINT,
     });
     log?.set("timing.eventTimeUtc", extracted.event_time_utc);
-    log?.set("timing.eventOngoingAtPost", extracted.event_ongoing_at_post);
     log?.set("timing.extractorWhy", extracted.why);
 
     // The model names the event time; the gap is OUR arithmetic. Event-to-POST,
@@ -75,19 +73,13 @@ export async function runTimingStage(params: {
     }
     log?.set("timing.hoursEventToPost", gapHours);
 
-    const live =
-      extracted.event_ongoing_at_post ||
-      (gapHours !== null && gapHours >= 0 && gapHours <= LIVE_EVENT_WINDOW_HOURS);
+    const live = gapHours !== null && gapHours >= 0 && gapHours <= LIVE_EVENT_WINDOW_HOURS;
     log?.set("timing.live", live);
     if (!live) return { action: "pass" };
 
     return {
       action: "inform",
-      contextBlock: buildTimingContextBlock({
-        hoursEventToPost: gapHours,
-        eventOngoingAtPost: extracted.event_ongoing_at_post,
-        why: extracted.why,
-      }),
+      contextBlock: buildTimingContextBlock({ hoursEventToPost: gapHours!, why: extracted.why }),
     };
   } catch (err) {
     // Shadow-grade robustness: a timing failure must never block a run — fall

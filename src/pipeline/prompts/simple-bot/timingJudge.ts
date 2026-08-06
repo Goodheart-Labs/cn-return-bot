@@ -24,24 +24,22 @@ export const TIMING_EXTRACTOR_SYSTEM_PROMPT = `You read an X post and research f
 
 Return JSON:
 - event_time_utc: string | null — your best estimate of when the event happened, as an ISO 8601 UTC timestamp (e.g. "2026-08-05T14:30:00Z"). Precision to the hour is fine. null when the post is not about a datable event (evergreen claims, old photos resurfacing, general statistics).
-- event_ongoing_at_post: boolean — true when the event was still actively developing AT THE MOMENT the post was published (match in progress, ongoing search/rescue, live negotiation, unresolved breaking story). The user message states when the post was published.
 - why: one short sentence.
 
-Date the EVENT, not the post: an old video reposted today is an old event. A post claiming a death, score, transfer, or ruling that had reportedly just happened is a recent event even if the claim is false — date what the claim is about. Use dates in the findings and the post itself; do not compute any durations — just name the time.`;
+Date the EVENT, not the post: an old video reposted today is an old event. A post claiming a death, score, transfer, or ruling that had reportedly just happened is a recent event even if the claim is false — date what the claim is about. For a claim about a still-developing situation (an ongoing search, a running count, a match in progress), the event is the latest development the claim rests on. Use dates in the findings and the post itself; do not compute any durations — just name the time.`;
 
 export const TIMING_EXTRACTOR_RESPONSE_FORMAT = jsonSchemaResponseFormat("timing_extractor", {
   type: "object",
   properties: {
     event_time_utc: { type: ["string", "null"] },
-    event_ongoing_at_post: { type: "boolean" },
     why: { type: "string" },
   },
-  required: ["event_time_utc", "event_ongoing_at_post", "why"],
+  required: ["event_time_utc", "why"],
   additionalProperties: false,
 });
 
 export const TIMING_EXTRACTOR_SCHEMA_HINT =
-  '{ "event_time_utc": string | null, "event_ongoing_at_post": boolean, "why": string }';
+  '{ "event_time_utc": string | null, "why": string }';
 
 /**
  * Timing context piped into the writer's USER message when the post was
@@ -51,13 +49,10 @@ export const TIMING_EXTRACTOR_SCHEMA_HINT =
  */
 export function buildTimingContextBlock(params: {
   /** Computed in code: post.created_at minus the extractor's event time. */
-  hoursEventToPost: number | null;
-  eventOngoingAtPost: boolean;
+  hoursEventToPost: number;
   why: string;
 }): string {
-  const gap = params.eventOngoingAtPost
-    ? "while the event it describes was still unfolding"
-    : `about ${params.hoursEventToPost?.toFixed(1)} hours after the event it describes`;
+  const gap = `about ${params.hoursEventToPost.toFixed(1)} hours after the event it describes`;
   return `
 
 ## Timing context
