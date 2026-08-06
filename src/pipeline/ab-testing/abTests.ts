@@ -85,6 +85,9 @@ export function runABTests(tests: ABTest[]): {
     if (test.prerequisites && !matchesPrerequisites(config, test.prerequisites)) continue;
 
     const forcedName = forced[test.name];
+    // A test retired at all-zero weights stays declared so forced picks from
+    // historical runs still resolve, but live sampling skips it.
+    if (!forcedName && test.variants.every((v) => v.weight <= 0)) continue;
     const variant = forcedName
       ? findVariantByName(test, forcedName)
       : sampleVariantByWeight(test.variants);
