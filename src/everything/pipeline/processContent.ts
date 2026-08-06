@@ -62,7 +62,7 @@ async function checkAndRecordClaim(
   publishedAt: string | undefined,
 ): Promise<"note" | "no_note" | "error"> {
   try {
-    const check = await checkClaim({ claim, source: item.source, itemId: item.id, index, publishedAt });
+    const check = await checkClaim({ claim, source: item.source, itemId: item.id, claimId, index, publishedAt });
     if (check.kind === "note") {
       await insertNote(claimId, check.note, check.sources);
       await setClaimStatus(claimId, "note", null);

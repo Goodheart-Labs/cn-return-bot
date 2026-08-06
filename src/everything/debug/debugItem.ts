@@ -96,7 +96,7 @@ async function main() {
   for (let i = 0; i < targets.length; i++) {
     const claim = targets[i]!;
     console.log(`\n--- checking claim: ${claim.claim}`);
-    const check = await checkClaim({ claim, source, itemId: `debugitm-${i}`, index: i, publishedAt: content.publishedAt });
+    const check = await checkClaim({ claim, source, itemId: `debugitm-${i}`, claimId: null, index: i, publishedAt: content.publishedAt });
     if (check.kind === "note") {
       console.log(`  ⚠️  NOTE: ${check.note}`);
       check.sources.forEach((s) => console.log(`      source: ${s.url}${s.quote ? `\n        “${s.quote}”` : ""}`));
