@@ -146,6 +146,15 @@ export interface BotConfig {
    */
   time_travel_prompt?: boolean;
   /**
+   * When true (simple-bot only), a post-search extractor measures the gap
+   * between the post's event and the post's publication; fog-window posts
+   * (published within 6h of the event, or mid-event) get a timing-context
+   * block piped into the writer's user message plus a pre-computed Post-age
+   * line. Information, not a gate. Independent of time_travel_prompt (2x2).
+   * Set by TIMING_CONTEXT_TEST; defaults false.
+   */
+  timing_context?: boolean;
+  /**
    * When true (simple-bot only), the search step uses the claim-check prompt —
    * the input is a claim extracted from a podcast, interview, or article plus
    * surrounding context, not an X post. Forced on by the everything pipeline.

@@ -180,12 +180,36 @@ const SIMPLE_BOT_ANTI_PEDANTIC_TEST: ABTest = {
 // metrics first (abstention-rate guard, then Nathan's breaking-news tag rate);
 // cn_status per arm is underpowered for months. docs/improvement-menu-2026-07-25.md
 // (T2). Prereq-gated to simple-bot, so no defaultVariant.
+// One three-arm test for the time-travel problem (Nathan, 2026-08-05: the
+// instruction and the context are competing treatments, not composable ones —
+// the both-on cell is a configuration we would never ship, and double-dosing
+// the writer risks over-abstention exactly on fog-window posts). Arms:
+//   off         — neither treatment
+//   instruction — the always-on searcher+writer time-travel instruction (v1)
+//   context     — extractor names event_time_utc → code computes the gap →
+//                 fog-window posts (<=6h) get the timing-context paragraph
+//                 piped into the writer's user message. No gate.
+// Supersedes TIME_TRAVEL_PROMPT_TEST (below, retired to weight 0 so historical
+// picks resolve). Reads: logs.timing.* per run + tag rate per arm. Prereq-gated
+// to simple-bot, so no defaultVariant.
+const TIMING_TREATMENT_TEST: ABTest = {
+  name: "timing_treatment",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off",         overrides: { time_travel_prompt: false, timing_context: false } }, weight: 34 },
+    { variant: { name: "instruction", overrides: { time_travel_prompt: true,  timing_context: false } }, weight: 33 },
+    { variant: { name: "context",     overrides: { time_travel_prompt: false, timing_context: true  } }, weight: 33 },
+  ],
+};
+
+// RETIRED 2026-08-05 in favour of TIMING_TREATMENT_TEST (its "instruction"
+// arm). Declared at weight 0 so historical picks resolve.
 const TIME_TRAVEL_PROMPT_TEST: ABTest = {
   name: "time_travel_prompt",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "off", overrides: { time_travel_prompt: false } }, weight: 50 },
-    { variant: { name: "on",  overrides: { time_travel_prompt: true  } }, weight: 50 },
+    { variant: { name: "off", overrides: { time_travel_prompt: false } }, weight: 0 },
+    { variant: { name: "on",  overrides: { time_travel_prompt: true  } }, weight: 0 },
   ],
 };
 
@@ -520,6 +544,7 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_VERIFIER_TEST,
   SIMPLE_BOT_ANTI_PEDANTIC_TEST,
   TIME_TRAVEL_PROMPT_TEST,
+  TIMING_TREATMENT_TEST,
   SIMPLE_BOT_CLAIM_TEST,
   SIMPLE_BOT_WRITER_EXAMPLES_TEST,
   SIMPLE_BOT_POLITICAL_SOURCES_TEST,
