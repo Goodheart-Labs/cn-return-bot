@@ -33,8 +33,8 @@ export type TimingVerdict =
   | { action: "abstain"; why: string };
 
 interface ExtractorOut {
-  hours_since_event: number | null;
-  event_ongoing: boolean;
+  hours_event_to_post: number | null;
+  event_ongoing_at_post: boolean;
   why: string;
 }
 
@@ -61,13 +61,15 @@ export async function runTimingStage(params: {
       responseFormat: TIMING_EXTRACTOR_RESPONSE_FORMAT,
       schemaHint: TIMING_EXTRACTOR_SCHEMA_HINT,
     });
-    log?.set("timing.hoursSinceEvent", extracted.hours_since_event);
-    log?.set("timing.eventOngoing", extracted.event_ongoing);
+    log?.set("timing.hoursEventToPost", extracted.hours_event_to_post);
+    log?.set("timing.eventOngoingAtPost", extracted.event_ongoing_at_post);
     log?.set("timing.extractorWhy", extracted.why);
 
+    // Event-to-POST gap, not event-to-now: the tweet's epistemic position must
+    // not depend on how long the note waited in our queue.
     const live =
-      extracted.event_ongoing ||
-      (extracted.hours_since_event !== null && extracted.hours_since_event <= LIVE_EVENT_WINDOW_HOURS);
+      extracted.event_ongoing_at_post ||
+      (extracted.hours_event_to_post !== null && extracted.hours_event_to_post <= LIVE_EVENT_WINDOW_HOURS);
     log?.set("timing.live", live);
     if (!live) return { action: "pass" };
 

@@ -12,31 +12,35 @@
 
 import { jsonSchemaResponseFormat } from "../responseFormat";
 
-/** Events younger than this (or still ongoing) get the stage-B judge. */
+/** Posts written within this many hours of their event (or while it was still
+ *  unfolding) get the stage-B judge. The gap is EVENT-to-POST, not event-to-now
+ *  (Nathan, 2026-08-05): what matters is the tweet's epistemic position — was
+ *  it written in the fog of a live event — which must not depend on how long
+ *  the note sat in our queue before we processed it. */
 export const LIVE_EVENT_WINDOW_HOURS = 6;
 
-export const TIMING_EXTRACTOR_SYSTEM_PROMPT = `You read an X post and research findings about it, and answer one narrow question: WHEN did the event the post describes actually happen?
+export const TIMING_EXTRACTOR_SYSTEM_PROMPT = `You read an X post and research findings about it, and answer one narrow question: how close to the event it describes was this post PUBLISHED?
 
-Return JSON:
-- hours_since_event: number | null — hours between the event and now (the user message states the current date/time). null when the post is not about a datable event (evergreen claims, old photos resurfacing, general statistics).
-- event_ongoing: boolean — true when the event is still actively developing right now (match in progress, ongoing search/rescue, live negotiation, unresolved breaking story).
+The user message states when the post was published. Return JSON:
+- hours_event_to_post: number | null — hours between the event happening and the post being published. 0.5 means the post went up thirty minutes after the event. null when the post is not about a datable event (evergreen claims, old photos resurfacing, general statistics).
+- event_ongoing_at_post: boolean — true when the event was still actively developing AT THE MOMENT the post was published (match in progress, ongoing search/rescue, live negotiation, unresolved breaking story).
 - why: one short sentence.
 
-Date the EVENT, not the post: an old video reposted today is an old event. A post claiming a death, score, transfer, or ruling that reportedly happened today is a recent event even if the claim is false — date what the claim is about.`;
+Date the EVENT, not the post: an old video reposted today is an old event (large gap). A post claiming a death, score, transfer, or ruling that had reportedly just happened is a small gap even if the claim is false — measure to what the claim is about. Judge from the post's moment, not from today.`;
 
 export const TIMING_EXTRACTOR_RESPONSE_FORMAT = jsonSchemaResponseFormat("timing_extractor", {
   type: "object",
   properties: {
-    hours_since_event: { type: ["number", "null"] },
-    event_ongoing: { type: "boolean" },
+    hours_event_to_post: { type: ["number", "null"] },
+    event_ongoing_at_post: { type: "boolean" },
     why: { type: "string" },
   },
-  required: ["hours_since_event", "event_ongoing", "why"],
+  required: ["hours_event_to_post", "event_ongoing_at_post", "why"],
   additionalProperties: false,
 });
 
 export const TIMING_EXTRACTOR_SCHEMA_HINT =
-  '{ "hours_since_event": number | null, "event_ongoing": boolean, "why": string }';
+  '{ "hours_event_to_post": number | null, "event_ongoing_at_post": boolean, "why": string }';
 
 export const TIMING_JUDGE_SYSTEM_PROMPT = `An X post describes an event that is live — it happened within the last few hours or is still unfolding. You decide whether a Community Note fact-check is appropriate AT ALL right now.
 
