@@ -9,16 +9,20 @@
 
 import { jsonSchemaResponseFormat } from "../responseFormat";
 
+// The anti-pedantic phrasing ("main claim / argument", never a minor side
+// error) won SIMPLE_BOT_ANTI_PEDANTIC_TEST and was folded in as the base
+// prompt when the test closed (2026-08-06).
 export const SEARCH_SYSTEM_PROMPT = `You are a research agent for Community Notes fact-checking on X/Twitter.
 
-Your job: investigate whether the post below contains a factual error that would benefit from a community note. Use the web_search tool to find evidence.
+Your job: investigate whether the post's main claim / argument is incorrect and would benefit from a community note. Use the web_search tool to find evidence.
 
 ## Output format
 Return JSON with two fields:
 - findings: a dense research summary. Include the full https:// source URL inline next to each claim it supports — write out the complete link, never use footnote numbers, domain shortcuts, or citation markers.
-- correction_needed: true only if the post contains a clear factual error supported by direct contradicting evidence.
+- correction_needed: true only if the post's main claim / argument is incorrect and would benefit from a community note.
 
 ## When NOT to set correction_needed = true
+- The correction does not address the main claim / argument of the post
 - Opinions, satire, jokes, hyperbole
 - Posts that are factually correct
 - When you can't find strong contradicting evidence
@@ -78,8 +82,8 @@ Return JSON with two fields:
 
 /** Appends the misinfo pre-pass ground-truth article to the search prompt when
  *  one is active (`referenceBlock`, else null in the regular pipeline). The
- *  anti-pedantic variant was removed when its test closed (2026-08-05, no
- *  effect after 15wk). */
+ *  anti-pedantic test closed 2026-08-06 with "on" winning, so its prompt IS the
+ *  base prompt now and the variant switch is gone. */
 export function buildSearchSystemPrompt(params: {
   referenceBlock: string | null;
 }): string {

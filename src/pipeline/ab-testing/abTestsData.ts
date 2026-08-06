@@ -161,13 +161,15 @@ const SIMPLE_BOT_POLITICAL_SOURCES_TEST: ABTest = {
 // Swap simple-bot's SEARCH prompt for an "anti-pedantic" variant that only
 // flags a correction when the post's main claim / argument is wrong, never a
 // minor side error — the bet that pedantic nitpicks hurt the helpful/FP rate.
-// Live 50/50 on simple-bot. Prereq-gated to simple-bot, so no defaultVariant.
-// CLOSED 2026-08-05 → off (Nathan). Dead even after 15wk / 1,165 matured
-// notes (on +5.8% vs off +6.0%; pedantic review-tags landed on BOTH arms —
-// the prompt variant does not move pedantry; the materiality judge (#345)
-// owns that failure now). Declared at weight 0 so historical picks resolve.
-// Reopen trigger: pedantic tag-rate rises with the judge also failing to
-// catch it.
+// Prereq-gated to simple-bot, so no defaultVariant.
+// CLOSED 2026-08-06 → on (Jim). CN statuses settle within ~48h, so the audit
+// uses a 48h maturity cutoff instead of 2 weeks — that keeps the freshest
+// weeks, where "on" led. Era-fair (both arms live, Jun 24–Aug 3), settled
+// notes: on +7.1% net (n=945, 76% H-of-rated) vs off +6.1% (n=918, 73%).
+// The winning anti-pedantic prompt is folded into SEARCH_SYSTEM_PROMPT, so
+// the flag is dead; declared fully retired (all weights 0, skipped in live
+// sampling) so historical picks still resolve. Reopen trigger: settled
+// outcomes reversing the gap once the recent weeks fully mature.
 const SIMPLE_BOT_ANTI_PEDANTIC_TEST: ABTest = {
   name: "simple_bot_anti_pedantic",
   prerequisites: { botId: "simple-bot" },
@@ -286,8 +288,8 @@ const TOPIC_FILTER_TEST: ABTest = {
 // measure in prod how often the bot writes a note on posts the prefilter would
 // have cut (the real false-negative rate). defaultVariant "off" so historical
 // rows (no pick) resolve to no-prefilter via resolvePicks.
-// CLOSED 2026-08-05 → deepseek 100 (Nathan). 4.5mo matured: deepseek +6.9%
-// net (n=1564, 76% H-of-rated) vs off +6.3% (n=505, 75%) — quality identical,
+// CLOSED 2026-08-06 → deepseek 100. Era-fair, 48h-settled: deepseek +7.0%
+// net (n=2085, 75% H-of-rated) vs off +6.6% (n=774, 73%) — quality identical,
 // prefilter saves the search cost, nothing left for the off arm to teach.
 // Off-arm observability replaced by a scheduled discard audit: sample
 // prefilter-rejected tweets, dry-run the full pipeline (null logger), inspect
