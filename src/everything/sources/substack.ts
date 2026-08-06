@@ -8,8 +8,16 @@
 import { decodeHtmlEntities } from "../../pipeline/utils/html";
 import type { FetchedContent } from "../types";
 
+// Substack 403s requests that don't look like a browser (e.g. from GitHub
+// Actions runners); plain local fetches pass, so this only levels the field.
+const BROWSER_HEADERS = {
+  "User-Agent":
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+  Accept: "application/json",
+};
+
 async function fetchJson(url: string): Promise<any> {
-  const res = await fetch(url);
+  const res = await fetch(url, { headers: BROWSER_HEADERS });
   if (!res.ok) throw new Error(`${res.status} ${res.statusText} for ${url}`);
   return res.json();
 }
@@ -36,18 +44,21 @@ export interface ArchivePost {
   postDate: string;
 }
 
+/** Latest N free text posts of a publication ("https://thezvi.substack.com"), newest first. */
+export async function fetchArchivePosts(publicationUrl: string, n: number): Promise<ArchivePost[]> {
+  const archive = await fetchJson(`${publicationUrl.replace(/\/$/, "")}/api/v1/archive?sort=new&limit=${ARCHIVE_FETCH_LIMIT}`);
+  return (archive as any[])
+    .filter((p) => p.audience === "everyone" && p.type !== "podcast")
+    .slice(0, n)
+    .map((p) => ({ url: p.canonical_url as string, title: p.title as string, postDate: p.post_date as string }));
+}
+
 /** Latest N free text posts of a profile ("https://substack.com/@handle/posts"), newest first. */
 export async function fetchLatestFreePosts(profileUrl: string, n: number): Promise<ArchivePost[]> {
   const handle = parseProfileHandle(profileUrl);
   if (!handle) throw new Error(`Not a substack profile URL: ${profileUrl}`);
   const subdomain = await fetchPublicationSubdomain(handle);
-  const archive = await fetchJson(
-    `https://${subdomain}.substack.com/api/v1/archive?sort=new&limit=${ARCHIVE_FETCH_LIMIT}`,
-  );
-  return (archive as any[])
-    .filter((p) => p.audience === "everyone" && p.type !== "podcast")
-    .slice(0, n)
-    .map((p) => ({ url: p.canonical_url as string, title: p.title as string, postDate: p.post_date as string }));
+  return fetchArchivePosts(`https://${subdomain}.substack.com`, n);
 }
 
 /** Inline image placeholder left in the plain text so the extractor can render

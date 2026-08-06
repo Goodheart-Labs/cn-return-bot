@@ -1,6 +1,7 @@
 /** Typed read/write helpers for the everything_* tables (service key). */
 
 import { getSupabaseClient } from "../api/supabaseClient";
+import { stripNullChars } from "../utils/stripNullChars";
 import type { NoteSourceCitation, SourceKind } from "./types";
 
 export interface EverythingItem {
@@ -170,6 +171,25 @@ export async function setClaimStatus(id: string, status: ClaimStatus, reason: st
   throwOnError(
     await getSupabaseClient().from("everything_claims").update({ status, status_reason: reason }).eq("id", id),
   );
+}
+
+/** One fact-check run of a claim — the everything counterpart of pipeline_runs. */
+export interface ClaimPipelineRun {
+  claim_id: string;
+  bot_name: string;
+  outcome: string;
+  outcome_reason: string | null;
+  final_stage: string | null;
+  ab_test_picks: Record<string, string> | null;
+  bot_config: Record<string, unknown> | null;
+  logs: Record<string, unknown> | null;
+  cost: number | null;
+}
+
+/** NUL chars are scrubbed like pipeline_runs does — model output (e.g. media
+ *  OCR) can emit U+0000, which Postgres rejects with 22P05. */
+export async function insertClaimPipelineRun(run: ClaimPipelineRun): Promise<void> {
+  throwOnError(await getSupabaseClient().from("everything_pipeline_runs").insert(stripNullChars(run)));
 }
 
 /** Insert an AI note plus one everything_note_sources row per cited snippet. */

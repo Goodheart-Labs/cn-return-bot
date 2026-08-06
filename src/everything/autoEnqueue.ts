@@ -17,7 +17,7 @@
 import "dotenv/config";
 import { enqueueItems, fetchItemUrlsContaining, fetchItemUrlsIn, markOrphanedProcessingAsError, resolveProjectId, type EnqueueRow } from "./db";
 import { BATCH_SIZE, PRIORITY_FEEDS, type PriorityFeed } from "./priorityFeeds";
-import { ARCHIVE_FETCH_LIMIT, fetchLatestFreePosts } from "./sources/substack";
+import { ARCHIVE_FETCH_LIMIT, fetchArchivePosts } from "./sources/substack";
 import { ensureYtDlp, fetchChannelVideos } from "./sources/youtube";
 import type { SourceKind } from "./types";
 
@@ -35,7 +35,7 @@ interface FeedEntry {
 /** A feed's latest entries, newest first. */
 async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedEntry[]> {
   if (feed.type === "substack") {
-    const posts = await fetchLatestFreePosts(feed.profileUrl, ARCHIVE_FETCH_LIMIT);
+    const posts = await fetchArchivePosts(feed.publicationUrl, ARCHIVE_FETCH_LIMIT);
     return posts.map((p) => ({ source: "substack" as const, url: p.url, matchKey: p.url, label: `${p.postDate.slice(0, 10)} ${p.title}` }));
   }
   return fetchChannelVideos(feed.channelUrl, CHANNEL_FETCH_LIMIT)
