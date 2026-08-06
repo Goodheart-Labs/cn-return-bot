@@ -20,7 +20,7 @@ import type { ClaimCheck, ExtractedClaim, NoteSourceCitation, SourceKind } from 
 // simple-bot with the note-needed prefilter OFF (every checked claim goes through
 // full search + write; the prefilter was dropping too many checkable claims) and
 // the claim-check search prompt (each claim is a transcript/article excerpt, not an X post).
-// Pinned models: search on Opus 4.8 (opus48-native), writer on Sonnet 5 (the
+// Pinned models: search on Opus 5 (opus5-native), writer on Sonnet 5 (the
 // sonnet5 writer arm), verifier on Gemini 3 Flash. verifier_citations ON so
 // accepted sources carry a verbatim supporting quote + explanation (persisted
 // per source). verifier_claim_based "classic" pins the single-call accept/reject
@@ -30,7 +30,7 @@ const FORCED_PICKS: Record<string, string> = {
   bot: "simple-bot",
   note_prefilter: "off",
   search_claim: "on",
-  simple_bot_search: "opus48-native",
+  simple_bot_search: "opus5-native",
   simple_bot_writer: "sonnet5",
   simple_bot_verifier: "gemini-flash",
   verifier_citations: "on",
