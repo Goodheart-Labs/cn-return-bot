@@ -49,7 +49,6 @@ const FULLY_LOADED = new Set<FailureType>(FULLY_LOADED_FAILURE_TYPES);
 
 import { NoteCard } from "./components/NoteCard";
 import { FilterBar } from "./components/FilterBar";
-import { PostingLimitDrawer } from "./components/PostingLimitDrawer";
 import { DatasetSelector } from "./components/DatasetSelector";
 import { UploadDialog } from "./components/UploadDialog";
 import { AbFilterPanel } from "../../dashboard-shared/AbFilterPanel";
@@ -778,8 +777,8 @@ export function App() {
         />
       </div>
 
-      {/* Collapsible drawers, grouped in one stack (Nathan 2026-07-30: "weird to
-          have them separated"): A/B test filters, failure-mode tags, posting limit. */}
+      {/* Collapsible drawers, grouped in one stack (Nathan: "weird to have them
+          separated"): A/B test filters + failure-mode tags. */}
       <div className="mb-4 space-y-1">
       {/* A/B test filters. The toggle bar is ALWAYS shown in production (not gated on
           abSlots) so it doesn't pop in and shift the layout when the slots — derived
@@ -908,8 +907,6 @@ export function App() {
         </div>
       )}
 
-      {/* Posting limit (writing cap) — collapsed by default, lazy-loads on open. */}
-      <PostingLimitDrawer />
       </div>
 
       {/* Error */}
