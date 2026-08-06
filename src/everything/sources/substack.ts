@@ -8,16 +8,8 @@
 import { decodeHtmlEntities } from "../../pipeline/utils/html";
 import type { FetchedContent } from "../types";
 
-// Substack 403s requests that don't look like a browser (e.g. from GitHub
-// Actions runners); plain local fetches pass, so this only levels the field.
-const BROWSER_HEADERS = {
-  "User-Agent":
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
-  Accept: "application/json",
-};
-
 async function fetchJson(url: string): Promise<any> {
-  const res = await fetch(url, { headers: BROWSER_HEADERS });
+  const res = await fetch(url);
   if (!res.ok) throw new Error(`${res.status} ${res.statusText} for ${url}`);
   return res.json();
 }
@@ -35,7 +27,7 @@ async function fetchPublicationSubdomain(handle: string): Promise<string> {
 }
 
 // Fetch more than needed: paywalled and podcast-type posts are filtered out.
-export const ARCHIVE_FETCH_LIMIT = 20;
+const ARCHIVE_FETCH_LIMIT = 20;
 
 export interface ArchivePost {
   url: string;
@@ -59,6 +51,67 @@ export async function fetchLatestFreePosts(profileUrl: string, n: number): Promi
   if (!handle) throw new Error(`Not a substack profile URL: ${profileUrl}`);
   const subdomain = await fetchPublicationSubdomain(handle);
   return fetchArchivePosts(`https://${subdomain}.substack.com`, n);
+}
+
+export interface FeedPost {
+  url: string;
+  title: string;
+  /** ISO timestamp of publication (the feed's pubDate). */
+  publishedAt: string;
+  /** Full post HTML (RSS content:encoded). */
+  bodyHtml: string;
+}
+
+/** Substack blocks datacenter IPs (403), so in CI the RSS fetch goes through
+ *  our Cloudflare Worker relay (src/everything/substack-proxy-worker) — its
+ *  egress is served reliably. Locally the env vars are unset → direct fetch. */
+function feedRequest(feedUrl: string): { url: string; headers?: Record<string, string> } {
+  const proxyUrl = process.env.SUBSTACK_PROXY_URL;
+  if (!proxyUrl) return { url: feedUrl };
+  return {
+    url: `${proxyUrl}?url=${encodeURIComponent(feedUrl)}`,
+    headers: { "X-Proxy-Key": process.env.SUBSTACK_PROXY_KEY ?? "" },
+  };
+}
+
+const cdataUnwrap = (raw: string): string =>
+  raw
+    .trim()
+    .replace(/^<!\[CDATA\[/, "")
+    .replace(/\]\]>$/, "")
+    // a "]]>" inside CDATA is encoded by splitting the section — rejoin it
+    .replace(/\]\]><!\[CDATA\[/g, "");
+
+function tagContent(item: string, tag: string): string {
+  return item.match(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`))?.[1] ?? "";
+}
+
+/** The proxy serves feeds from a background-refreshed cache; a stale cache
+ *  means its live fetches have been failing for a long time — fail loudly
+ *  instead of quietly re-reading frozen data forever. */
+const MAX_PROXY_CACHE_AGE_SECONDS = 24 * 3600;
+
+/** A publication's RSS feed ("https://thezvi.substack.com" → /feed): its ~20
+ *  latest posts, newest first, each with the full post HTML. This is the only
+ *  Substack endpoint the automated pipeline uses — feed-reader traffic is the
+ *  one kind Substack serves to non-residential IPs. */
+export async function fetchFeedPosts(publicationUrl: string): Promise<FeedPost[]> {
+  const { url, headers } = feedRequest(`${publicationUrl.replace(/\/$/, "")}/feed`);
+  const res = await fetch(url, { headers });
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText} for ${url}`);
+  const cacheAgeSeconds = Number(res.headers.get("X-Cache-Age-Seconds") ?? 0);
+  if (cacheAgeSeconds > MAX_PROXY_CACHE_AGE_SECONDS) {
+    throw new Error(`Proxy cache for ${url} is ${Math.round(cacheAgeSeconds / 3600)}h old — its Substack fetches must be failing`);
+  }
+  const xml = await res.text();
+  return [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)]
+    .map(([, item]) => ({
+      url: tagContent(item!, "link").trim(),
+      title: decodeHtmlEntities(cdataUnwrap(tagContent(item!, "title"))),
+      publishedAt: new Date(tagContent(item!, "pubDate").trim()).toISOString(),
+      bodyHtml: cdataUnwrap(tagContent(item!, "content:encoded")),
+    }))
+    .filter((p) => p.url && p.bodyHtml);
 }
 
 /** Inline image placeholder left in the plain text so the extractor can render

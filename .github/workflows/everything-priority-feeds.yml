@@ -34,6 +34,9 @@ jobs:
       XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
       # Brave Search API key — fallback search provider
       BRAVE_API_KEY: ${{ secrets.BRAVE_API_KEY }}
+      # Cloudflare Worker relaying Substack RSS fetches (Substack 403s runner IPs)
+      SUBSTACK_PROXY_URL: ${{ secrets.SUBSTACK_PROXY_URL }}
+      SUBSTACK_PROXY_KEY: ${{ secrets.SUBSTACK_PROXY_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
