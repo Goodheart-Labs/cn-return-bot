@@ -27,10 +27,17 @@ async function fetchPublicationSubdomain(handle: string): Promise<string> {
 }
 
 // Fetch more than needed: paywalled and podcast-type posts are filtered out.
-const ARCHIVE_FETCH_LIMIT = 20;
+export const ARCHIVE_FETCH_LIMIT = 20;
 
-/** Latest N free text posts of a profile ("https://substack.com/@handle/posts"). */
-export async function fetchLatestFreePostUrls(profileUrl: string, n: number): Promise<string[]> {
+export interface ArchivePost {
+  url: string;
+  title: string;
+  /** ISO timestamp of publication (the archive API's post_date). */
+  postDate: string;
+}
+
+/** Latest N free text posts of a profile ("https://substack.com/@handle/posts"), newest first. */
+export async function fetchLatestFreePosts(profileUrl: string, n: number): Promise<ArchivePost[]> {
   const handle = parseProfileHandle(profileUrl);
   if (!handle) throw new Error(`Not a substack profile URL: ${profileUrl}`);
   const subdomain = await fetchPublicationSubdomain(handle);
@@ -40,7 +47,7 @@ export async function fetchLatestFreePostUrls(profileUrl: string, n: number): Pr
   return (archive as any[])
     .filter((p) => p.audience === "everyone" && p.type !== "podcast")
     .slice(0, n)
-    .map((p) => p.canonical_url as string);
+    .map((p) => ({ url: p.canonical_url as string, title: p.title as string, postDate: p.post_date as string }));
 }
 
 /** Inline image placeholder left in the plain text so the extractor can render
