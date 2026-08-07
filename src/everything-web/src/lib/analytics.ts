@@ -1,5 +1,5 @@
 import posthog from "posthog-js";
-import { setAnalyticsSink } from "../../../everything-shared/analytics";
+import { setAnalyticsSink, track } from "../../../everything-shared/analytics";
 
 // The website's analytics transport: posthog-js, registered as the sink behind
 // everything-shared/analytics (the module components import `track` etc. from).
@@ -20,8 +20,13 @@ export function initAnalytics() {
     person_profiles: "identified_only",
     // Covers the initial load only — in-app navigation is query-param
     // pushState, which posthog's history detection ignores (it only watches
-    // pathname changes), so App.tsx captures $pageview manually on route changes.
+    // pathname changes), so App.tsx calls capturePageview on route changes.
+    // Note: posthog defers this initial capture until the tab is actually
+    // visible, so a page loaded in a background tab counts only once viewed.
     capture_pageview: true,
+    // We track deliberate events only; auto-captured clicks would just add
+    // volume without answering any question the DB or our events don't.
+    autocapture: false,
   });
   posthog.register({ platform: "web" });
   setAnalyticsSink({
@@ -29,4 +34,17 @@ export function initAnalytics() {
     identify: (userId, traits) => posthog.identify(userId, traits),
     reset: () => posthog.reset(),
   });
+}
+
+// The URL of the last counted pageview, starting with the landing URL (whose
+// pageview posthog captures itself via capture_pageview above).
+let lastPageviewUrl = window.location.href;
+
+/** Capture a $pageview for an in-app navigation, but only if the URL actually
+ *  changed. Route handlers can then call this unconditionally after their
+ *  pushState — re-selecting the current filter doesn't inflate the count. */
+export function capturePageview() {
+  if (window.location.href === lastPageviewUrl) return;
+  lastPageviewUrl = window.location.href;
+  track("$pageview");
 }
