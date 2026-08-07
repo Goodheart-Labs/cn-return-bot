@@ -292,13 +292,20 @@ export function App() {
   const [failureModeCatalog, setFailureModeCatalog] = useState<FailureModeInfo[]>([]);
   const [showFixedTags, setShowFixedTags] = useState(false);
   const [loading, setLoading] = useState(true);
-  // Seen-toggles made THIS page session — added to the DB-derived count below.
-  // The old localStorage click counter missed ratings made in other sessions/
-  // builds and keyed on the UTC date (evening-PT clicks counted for tomorrow);
-  // deriving from annotation updated_at makes "done today" survive anything.
+  // Seen-toggles made THIS page session — added to the DB-derived count below,
+  // then SUBTRACTED again once a fresh counts payload (which includes those
+  // toggles' annotations) lands, so a toggle is never counted twice. The ref
+  // mirrors the state so the async counts fetches can read the value at fetch
+  // start without re-running on every bump.
   const [sessionSeenBumps, setSessionSeenBumps] = useState(0);
+  const sessionSeenBumpsRef = useRef(0);
   const bumpReviewedToday = useCallback((delta: number) => {
+    sessionSeenBumpsRef.current += delta;
     setSessionSeenBumps((n) => n + delta);
+  }, []);
+  const absorbSeenBumps = useCallback((bumpsAtFetchStart: number) => {
+    sessionSeenBumpsRef.current -= bumpsAtFetchStart;
+    setSessionSeenBumps((n) => n - bumpsAtFetchStart);
   }, []);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -386,7 +393,10 @@ export function App() {
 
   // Append the next page when the scroll sentinel comes into view.
   const loadMore = useCallback(async () => {
-    if (dataset.type !== "production" || !nextCursor || loadingMore) return;
+    // `loading` bail: while page 1 of a new filter set is in flight, the cursor
+    // still points into the OLD result set — following it would fetch a page of
+    // the wrong list.
+    if (dataset.type !== "production" || !nextCursor || loadingMore || loading) return;
     const seq = loadSeq.current;
     setLoadingMore(true);
     try {
@@ -403,7 +413,7 @@ export function App() {
     } finally {
       setLoadingMore(false);
     }
-  }, [dataset.type, nextCursor, loadingMore, pageFilters]);
+  }, [dataset.type, nextCursor, loadingMore, loading, pageFilters]);
 
   // Reset filters when the dataset changes (but not when only the window
   // extends — extending should preserve the user's filters). windowDays
@@ -450,9 +460,12 @@ export function App() {
   useEffect(() => {
     if (dataset.type !== "production" || !pageFilters) return;
     const seq = loadSeq.current;
+    const bumpsAtStart = sessionSeenBumpsRef.current;
     fetchDashboardCounts(pageFilters)
       .then((c) => {
-        if (seq === loadSeq.current) setCountsData(c);
+        if (seq !== loadSeq.current) return;
+        setCountsData(c);
+        absorbSeenBumps(bumpsAtStart);
       })
       .catch((e) => {
         console.error("Failed to fetch counts:", e);
@@ -470,13 +483,16 @@ export function App() {
     const f = pageFilters;
     if (!f) return;
     countsReconcileTimer.current = setTimeout(() => {
+      const bumpsAtStart = sessionSeenBumpsRef.current;
       fetchDashboardCounts(f)
         .then((c) => {
-          if (seq === loadSeq.current) setCountsData(c);
+          if (seq !== loadSeq.current) return;
+          setCountsData(c);
+          absorbSeenBumps(bumpsAtStart);
         })
         .catch((e) => console.error("Counts reconcile failed:", e));
     }, 2000);
-  }, [pageFilters]);
+  }, [pageFilters, absorbSeenBumps]);
 
   // Production items arrive server-sorted and server-filtered; the only live
   // client-side narrowing is the seen re-filter below (so marking a card seen in
@@ -646,24 +662,24 @@ export function App() {
   const tagFilterActive = dataset.type === "production" && filters.failureModes.size > 0;
 
   // Infinite scroll: fetch the next server page when the user nears the bottom.
-  // Keyed on scroll position (not a sentinel) so it also fires when live seen-
-  // filtering empties the tail without any scrolling.
   const loadMoreRef = useRef(loadMore);
   loadMoreRef.current = loadMore;
+  const nearBottom = () =>
+    window.innerHeight + window.scrollY >= document.body.offsetHeight - 1200;
   useEffect(() => {
     const onScroll = () => {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 1200) {
-        loadMoreRef.current();
-      }
+      if (nearBottom()) loadMoreRef.current();
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-  // If the loaded list is too short to scroll (aggressive filters, small pages),
-  // keep fetching until the viewport fills or the cursor runs out.
+  // Scroll events only fire on movement — a user PARKED at the bottom (or a list
+  // too short to scroll at all) never emits one. Re-check the position after
+  // every append/filter/fetch-state change and keep chaining pages until the
+  // content outruns the threshold or the cursor runs out.
   useEffect(() => {
-    if (document.body.offsetHeight <= window.innerHeight + 400) loadMoreRef.current();
-  }, [visible.length, nextCursor]);
+    if (nearBottom()) loadMoreRef.current();
+  }, [visible.length, nextCursor, loadingMore, loading]);
 
   // The list is newest-first, so the top is often freshly-submitted notes with
   // no ratings yet. Offer a jump to the first note that actually has ratings —
@@ -735,10 +751,16 @@ export function App() {
       // Burn-down progress = notes newly marked seen today (production only).
       if (dataset.type === "production" && seen !== wasSeen) {
         bumpReviewedToday(seen ? 1 : -1);
+        // The header total counts items matching the current seen filter; a
+        // toggle moves this item across that boundary, so track it live (the
+        // next page-1 fetch replaces it with the server's number).
+        const wantSeen = pageFilters?.seen;
+        if (wantSeen !== undefined) {
+          setTotalItems((t) => (t == null ? t : Math.max(0, t + (seen === wantSeen ? 1 : -1))));
+        }
         // Keep the server-derived counts live without waiting for the
         // reconcile: the item's unseen count (burndown, pills) moves now.
         const ft = item?.failureType;
-        const wantSeen = pageFilters?.seen;
         if (ft) {
           setCountsData((prev) =>
             prev && {

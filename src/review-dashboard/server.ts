@@ -8,6 +8,10 @@ dotenv.config({ path: join(process.cwd(), ".env") });
 const useLocal = process.argv.includes("--local");
 const supabaseUrl = useLocal ? process.env.LOCAL_SUPABASE_URL : process.env.SUPABASE_URL;
 const supabaseKey = useLocal ? process.env.LOCAL_SUPABASE_SERVICE_KEY : process.env.SUPABASE_SERVICE_KEY;
+if (!supabaseUrl || !supabaseKey) {
+  const which = useLocal ? "LOCAL_SUPABASE_URL / LOCAL_SUPABASE_SERVICE_KEY" : "SUPABASE_URL / SUPABASE_SERVICE_KEY";
+  throw new Error(`Missing ${which} — run from a directory whose .env defines them (cwd: ${process.cwd()})`);
+}
 
 const PORT = 8001;
 

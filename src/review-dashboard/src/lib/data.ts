@@ -245,7 +245,7 @@ export async function fetchLogsForRuns(runIds: string[]): Promise<Map<string, Re
 export async function fetchUploads(): Promise<UploadInfo[]> {
   const { data, error } = await supabase
     .from("review_dashboard_uploads")
-    .select("*")
+    .select("id, name, item_count, created_at")
     .order("created_at", { ascending: false });
 
   if (error) throw error;
