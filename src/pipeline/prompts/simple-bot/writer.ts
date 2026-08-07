@@ -42,13 +42,6 @@ Empty note means: \`note_text\` = "" and \`sources\` = []. The downstream judge 
 - Tweets or tweet replies can be valid sources
 - Pull source URLs from the research findings — do not invent URLs`;
 
-/** Maximally-terse variant (SIMPLE_BOT_PROMPTS_TEST = simple). */
-export const SIMPLE_WRITER_SYSTEM_PROMPT = `Write one X Community Note that disputes a specific false claim in the post, using the research findings. If nothing in the findings contradicts a claim, return an empty note (note_text "" and sources []).
-
-Lead with the true fact. Max 280 non-URL characters. Neutral, non-partisan tone. Cite only URLs that appear in the findings — never invent any.
-
-Return JSON: { note_text, sources }.`;
-
 /**
  * Appended to the writer system prompt for curated misinfo-monitoring topics
  * (when a MonitoringContext is present). The topic's reference document — with
@@ -56,12 +49,41 @@ Return JSON: { note_text, sources }.`;
  * those URLs are actually citable. Soft, per-tweet preference (not a hard block):
  * a correction the post's audience won't rate "Helpful" changes no minds and
  * dents our writing reputation, so lean in-group when the audience distrusts the
- * mainstream press. Nathan, 2026-07-19.
+ * mainstream press. Nathan, 2026-07-19. Sharpened 2026-07-22 from the rubric
+ * scoring of our first 14 topic notes: doc-first sourcing, and branded
+ * fact-checkers demoted to last resort (they appeared in 5/14 of our notes and
+ * 0 of the 4 ecosystem notes that reached Helpful on this topic).
  */
 export const MISINFO_SOURCING_RULE = `
 
 ## Sourcing for this curated topic
-The findings begin with a reference document listing vetted in-group / primary sources for this topic. Judge each post on its own — but posts on this topic often come from an audience that distrusts mainstream outlets, and a note they won't rate "Helpful" changes no minds and hurts our standing. In those cases, prefer the reference document's in-group / primary sources (official .gov records, the subject's own government and agencies, state officials, outlets like Fox News, National Review, The Daily Signal, Deseret News) and cite CNN, NBC, PolitiFact, ABC and similar mainstream outlets *less*. Still only cite URLs that actually appear in the findings (including the reference document) and that engage with the central argument of the post; never invent any.`;
+The findings begin with a reference document listing vetted in-group / primary sources for this topic. If the reference document already contains a source for your correction, cite that source rather than searching for another. Judge each post on its own — but posts on this topic often come from an audience that distrusts mainstream outlets, and a note they won't rate "Helpful" changes no minds and hurts our standing. Prefer in-group / primary sources (official .gov records, court filings, the subject's own government and agencies, state officials, outlets like Fox News, National Review, The Daily Signal, Deseret News). Cite CNN, NBC, ABC and similar mainstream outlets less — acceptable when they are the only proof — and treat branded fact-checkers (PolitiFact, FactCheck.org, Snopes) as a last resort: on this topic the brand itself reads as taking a side. Still only cite URLs that actually appear in the findings (including the reference document) and that engage with the central argument of the post; never invent any.`;
+
+/**
+ * Appended alongside MISINFO_SOURCING_RULE for curated topics. From the 7/22
+ * rubric scoring: 9 of our 14 topic notes appended a second correction or
+ * context clause ("one claim only" was the worst-scoring rubric column at
+ * -4/14), while every ecosystem note that reached Helpful on this topic makes
+ * exactly one blunt correction and stops. "The claim the argument rests on"
+ * tie-break targets the other top failure mode (pedantic-but-checkable side
+ * details — Nathan's two most-used review tags).
+ */
+export const MISINFO_NOTE_SHAPE_RULE = `
+
+## Note shape for this curated topic
+Notes that reach Helpful on this topic correct exactly ONE claim — the claim the post's argument actually rests on, not the easiest-to-source side detail — in one or two blunt declarative sentences, then stop. Do not add a second correction, extra background, or an "also…" clause: every added assertion hands some group of raters a reason to reject the note. Cite one or two sources, never more.`;
+
+/**
+ * Appended to the writer system prompt when `config.time_travel_prompt` is on
+ * (TIME_TRAVEL_PROMPT_TEST). Companion of SEARCH_TIME_TRAVEL_INSTRUCTION: the
+ * writer is the second chance to catch a correction that is only true because
+ * events moved on after the post was published. Backtested 2026-07-28; see
+ * docs/improvement-menu-2026-07-25.md (T2).
+ */
+export const WRITER_TIME_TRAVEL_RULE = `
+
+## The time-travel test
+The post context states when the post was published. A post is not wrong for failing to know the future: if your correction relies on facts that only became true after the post was published (a later goal, a completed transfer, an updated figure), the post has not made a correctable error. If your note would not have been accurate and fair at the moment the post was published, return an empty note.`;
 
 /**
  * Few-shot block appended to the writer system prompt when
@@ -147,5 +169,17 @@ export function buildWriterRetryMessage(params: {
   return (
     `Your previous note was ${params.charCount} chars long (URLs count as one char). The limit is ${params.maxChars}. ` +
     `Previous note: "${params.noteText}"`
+  );
+}
+
+/** Re-ask the writer after curated-topic lint problems (may include length). */
+export function buildWriterLintMessage(params: {
+  problems: string[];
+  noteText: string;
+}): string {
+  return (
+    `Your previous note has the following problem(s):\n` +
+    params.problems.map((p) => `- ${p}`).join("\n") +
+    `\nRewrite the note fixing all of them. Previous note: "${params.noteText}"`
   );
 }

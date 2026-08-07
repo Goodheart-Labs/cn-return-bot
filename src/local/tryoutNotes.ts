@@ -9,6 +9,9 @@
  *
  * Flags:
  *   --bot <id>              force a specific bot (shorthand for --pick bot=<id>)
+ *   --topic <id>            run as a curated-topic post: inject the topic's
+ *                           grounding document + advisory eval gate, exactly
+ *                           as the prod misinfo pre-pass stage 3 does
  *   --pick test=variant     force an A/B test variant (repeatable)
  *   --max <n>               limit number of inputs
  *   --reversed              process newest-last
@@ -166,6 +169,7 @@ async function main() {
     reversed: parsed.reversed,
     concurrency: parsed.concurrency,
     runName: parsed.runName,
+    topicId: parsed.topicId,
   });
 }
 

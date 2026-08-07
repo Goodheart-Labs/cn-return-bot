@@ -4,9 +4,6 @@ import { AsyncLocalStorage } from "node:async_hooks";
 
 export type VideoDescriptionStrategy = "full_video" | "frames";
 
-/** Feed sizes accepted by X's eligible-posts API. */
-export type FeedSize = "small" | "large" | "xl" | "xxl";
-
 export interface BotConfig {
   /** Which bot to run. Set by the BOT_TEST A/B test (or forced via withForcedPicks). */
   botId: string;
@@ -67,6 +64,13 @@ export interface BotConfig {
    * NOTE_PREFILTER_TEST; defaults false.
    */
   note_prefilter?: boolean;
+  /**
+   * When true, a blocked-topic gate runs before everything else (even the
+   * note-needed prefilter): one deepseek-v4-flash call checks the post against
+   * BLOCKED_TOPICS and skips the run (rejected / blocked_topic) on a hit. Set
+   * by TOPIC_FILTER_TEST; defaults false.
+   */
+  topic_filter?: boolean;
   /** Model for the cheap-bot satire detector. Defaults to `note_judge_model`
    *  then `model`. Decouples the satire detector from the note-needed judge
    *  (which also reads `note_judge_model`) so they can run on different models. */
@@ -77,6 +81,14 @@ export interface BotConfig {
    * reasoning (e.g. deepseek-v4-flash with extended reasoning). Falsy = omit.
    */
   reasoning_effort?: "low" | "medium" | "high";
+  /**
+   * If set, passed as `reasoning_effort` on the simple-bot SEARCH call only
+   * (Anthropic-native path). Unlike `reasoning_effort` this leaves the
+   * writer/verifier/judge calls untouched, so a search A/B arm can vary
+   * reasoning without confounding the other stages. Unset = model default
+   * (Claude models don't reason by default). Set by SIMPLE_BOT_SEARCH_TEST.
+   */
+  search_reasoning_effort?: "low" | "medium" | "high";
   /**
    * If set, passed through to OpenRouter as `temperature` for every LLM call
    * made by this bot. cheap-bot pins this to 0 (via the `cheap_bot_temperature`
@@ -111,13 +123,6 @@ export interface BotConfig {
    */
   satire_detector?: boolean;
   /**
-   * When true (simple-bot only), the search and writer steps use maximally-terse
-   * "simple" prompt variants instead of the detailed defaults — tests whether the
-   * long criteria lists are pulling their weight. Set by SIMPLE_BOT_PROMPTS_TEST;
-   * defaults false. Doesn't touch the shared source-verifier / user-message prompts.
-   */
-  simple_prompts?: boolean;
-  /**
    * When true (simple-bot only), the search agent's system prompt is appended
    * with an instruction to prefer, for political posts, sources associated with
    * the post author's own political side — the bridging idea that a note is more
@@ -128,11 +133,27 @@ export interface BotConfig {
   /**
    * When true (simple-bot only), the search agent uses the "anti-pedantic"
    * prompt variant, which only flags a correction when the post's main claim /
-   * argument is wrong (not a minor side error). Composes with `simple_prompts`
-   * (each base has its own anti-pedantic variant). Set by
+   * argument is wrong (not a minor side error). Set by
    * SIMPLE_BOT_ANTI_PEDANTIC_TEST; defaults false.
    */
   search_anti_pedantic?: boolean;
+  /**
+   * When true (simple-bot only), the search AND writer prompts gain the
+   * time-travel test: a correction must have been accurate and fair at the
+   * moment the post was published — a claim outdated only by later events is
+   * not an error. Backtested 2026-07-28 (docs/improvement-menu-2026-07-25.md,
+   * T2). Set by TIME_TRAVEL_PROMPT_TEST; defaults false.
+   */
+  time_travel_prompt?: boolean;
+  /**
+   * When true (simple-bot only), a post-search extractor measures the gap
+   * between the post's event and the post's publication; fog-window posts
+   * (published within 6h of the event, or mid-event) get a timing-context
+   * block piped into the writer's user message plus a pre-computed Post-age
+   * line. Information, not a gate. Independent of time_travel_prompt (2x2).
+   * Set by TIMING_CONTEXT_TEST; defaults false.
+   */
+  timing_context?: boolean;
   /**
    * When true (simple-bot only), the search step uses the claim-check prompt —
    * the input is a claim extracted from a podcast, interview, or article plus
@@ -144,8 +165,7 @@ export interface BotConfig {
    * When true, the writer's system prompt is appended with a few-shot block of
    * real notes the community rated helpful — all simple, direct, and short — to
    * pull the writer toward that "simple and nice" style. Set by
-   * SIMPLE_BOT_WRITER_EXAMPLES_TEST; defaults false. Composes with the base
-   * prompt (detailed or `simple_prompts`).
+   * SIMPLE_BOT_WRITER_EXAMPLES_TEST; defaults false.
    */
   writer_examples?: boolean;
   /**
@@ -157,8 +177,14 @@ export interface BotConfig {
    * test via AUTHOR_HISTORY_TEST. Not prereq-gated — runs for every bot. Defaults false.
    */
   author_history?: boolean;
-  /** Feed size used for the eligible-posts fetch. Pseudo A/B test (large=100%). */
-  feed_size: FeedSize;
+  /**
+   * When true, the author-history block ALSO lists past notes on this author's
+   * posts that raters rejected (ours + competing) — a warning that this author's
+   * posts may be satire or opinion the community doesn't want noted. Only
+   * meaningful alongside author_history; the AUTHOR_HISTORY_TEST
+   * `on_with_unhelpful` arm sets both. Defaults false.
+   */
+  author_history_unhelpful?: boolean;
   /**
    * Minimum X eval-score (`claim_opinion_score`) at which a note is submitted.
    * Missing values fall back to 0, preserving older ad-hoc script configs.
@@ -176,7 +202,6 @@ export const DEFAULT_CONFIG: BotConfig = {
   web_search: "perplexity",
   video_description_strategy: "frames",
   parallel_research: false,
-  feed_size: "small",
   eval_submit_threshold: 0,
 };
 

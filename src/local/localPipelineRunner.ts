@@ -14,6 +14,8 @@ import { withCostTracker } from "../pipeline/cost-tracking/costTracker";
 import { runABTests, withForcedPicks } from "../pipeline/ab-testing/abTests";
 import { AB_TESTS } from "../pipeline/ab-testing/abTestsData";
 import { createTweetLog, getLoggedBotId, nestDotKeys, withTweetLog } from "../pipeline/utils/tweetLog";
+import { withMonitoringContext, type MonitoringContext } from "../pipeline/misinfo-monitoring/monitoringContext";
+import { MISINFO_TOPICS } from "../pipeline/misinfo-monitoring/topics";
 import type { Post } from "../api/fetchEligiblePosts";
 import * as fs from "fs";
 import * as path from "path";
@@ -112,6 +114,9 @@ export interface ParsedCliArgs {
   reversed: boolean;
   concurrency?: number;
   runName?: string;
+  /** Curated-topic id: run each post as a misinfo pre-pass post (document
+   *  injection + advisory eval gate), exactly as prod stage 3 does. */
+  topicId?: string;
 }
 
 function takeFlagValue(args: string[], flag: string): string | undefined {
@@ -153,6 +158,7 @@ export function parseCliArgs(
     console.error("  --reversed              process newest-last");
     console.error("  --concurrency <n>       parallel workers (default 5)");
     console.error("  --name <label>          name for dashboard upload (default: derived)");
+    console.error("  --topic <id>            run as a curated-topic post: inject the topic's grounding document and make the eval gate advisory, as prod does");
     console.error("  --search-cache <dir>    cache/replay SearXNG results to/from this directory");
     console.error("  --input-cache <dir>     cache/replay bot inputs (media, comments, author history)");
     console.error("  --writer-cache <dir>    cache/replay cheap-bot writer output (replay starts from the two judges)");
@@ -196,6 +202,13 @@ export function parseCliArgs(
   }
 
   const runName = takeFlagValue(args, "--name");
+
+  const topicId = takeFlagValue(args, "--topic");
+  if (topicId && !MISINFO_TOPICS.some((t) => t.id === topicId)) {
+    console.error(`Unknown topic: ${topicId}`);
+    console.error("Available topics:", MISINFO_TOPICS.map((t) => t.id).join(", "));
+    process.exit(1);
+  }
 
   const searchCache = takeFlagValue(args, "--search-cache");
   if (searchCache) {
@@ -242,7 +255,7 @@ export function parseCliArgs(
 
   if (maxInputs) inputs = inputs.slice(0, maxInputs);
 
-  return { inputs, forcedPicks, datasetName, reversed, concurrency, runName };
+  return { inputs, forcedPicks, datasetName, reversed, concurrency, runName, topicId };
 }
 
 
@@ -373,6 +386,8 @@ export interface RunPipelineOptions {
   concurrency?: number;
   reversed?: boolean;
   runName?: string;
+  /** Curated-topic id (see ParsedCliArgs.topicId). */
+  topicId?: string;
   cleanup?: () => Promise<void>;
 }
 
@@ -390,6 +405,21 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
     cleanup,
   } = options;
   const forcedBotId = forcedPicks.bot;
+
+  // Curated-topic mode: build the same MonitoringContext prod stage 3 runs
+  // under, so document injection and the advisory eval gate behave identically.
+  let monitoring: MonitoringContext | undefined;
+  if (options.topicId) {
+    const topic = MISINFO_TOPICS.find((t) => t.id === options.topicId);
+    if (!topic) throw new Error(`Unknown topic id: ${options.topicId}`);
+    monitoring = {
+      topicId: topic.id,
+      topicTitle: topic.title,
+      documentUrl: topic.documentUrl,
+      document: topic.document,
+    };
+    console.log(`[${scriptName}] Curated-topic mode: "${topic.title}" (${topic.id}) — grounding document injected, eval gate advisory`);
+  }
 
   let logger: SupabaseLogger | null = null;
   try {
@@ -462,12 +492,14 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
         log.set("tweet.total", inputs.length);
         const result = await withTweetLog(log, () =>
           withBotConfig(config, () =>
-            withCostTracker(() => {
-              log.set("bot.id", config.botId);
-              log.set("bot.picks", picks);
-              log.set("bot.config", config);
-              return processSingleTweet({ post, bot, logger });
-            }),
+            withMonitoringContext(monitoring, () =>
+              withCostTracker(() => {
+                log.set("bot.id", config.botId);
+                log.set("bot.picks", picks);
+                log.set("bot.config", config);
+                return processSingleTweet({ post, bot, logger });
+              }),
+            ),
           ),
         );
 

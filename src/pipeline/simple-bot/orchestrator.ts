@@ -23,7 +23,9 @@ import {
 } from "../prompts/simple-bot/correctionExtractor";
 import { runSearch } from "./search";
 import { runCorrectionExtractor } from "./correctionExtractor";
+import { runTimingStage } from "./timingStage";
 import { runWriter } from "./writer";
+import { topicSourcelessRejection } from "../utils/noteLint";
 
 export async function runSimpleBotPipeline(
   post: Post,
@@ -48,6 +50,17 @@ async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterS
     return { kind: "early_exit", outcome: { type: "no_correction", reason: search.findings } };
   }
 
+  // Timing stage (timing_context ON arm — independent of the time_travel_prompt
+  // instruction test; the two compose as a 2x2): settled-event posts pass
+  // through untouched; fog-window posts (published within 6h of their event,
+  // or mid-event) get a timing-context block piped into the writer's user
+  // message. Information, not a gate — the writer decides.
+  let timingContext: string | undefined;
+  if (getBotConfig().timing_context) {
+    const timing = await runTimingStage({ userMessage, findings: search.findings, postCreatedAt: post.created_at });
+    if (timing.action === "inform") timingContext = timing.contextBlock;
+  }
+
   let writerFindings = search.findings;
   if (getBotConfig().correction_extraction) {
     const corrections = await runCorrectionExtractor(search.findings);
@@ -64,7 +77,7 @@ async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterS
     writerFindings = formatCorrectionsForWriter(highValue);
   }
 
-  const note = await runWriter(userMessage, writerFindings);
+  const note = await runWriter(userMessage, writerFindings, { timingContext });
   return {
     kind: "writer_done",
     userMessage,
@@ -91,6 +104,12 @@ async function runGates(stage: Extract<WriterStageResult, { kind: "writer_done" 
   });
 
   if (verification.accepted) {
+    // Curated-topic notes must keep ≥1 verified source (the classic verifier
+    // can accept while classifying every URL bad — see topicSourcelessRejection).
+    const sourceless = topicSourcelessRejection(verification.good_sources);
+    if (sourceless) {
+      return { type: "verification_failed", noteText, sources, reason: sourceless, searchResults: findings };
+    }
     // Drop URLs the verifier classified as bad — they don't support any claim
     // (or failed to fetch), so we don't want them in the published note.
     const goodSet = new Set(verification.good_sources);

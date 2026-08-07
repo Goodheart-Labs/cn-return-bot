@@ -1,0 +1,20 @@
+[
+  {
+    "claimId": "fa6d0aa4-f3f9-4933-8b6c-7e6908dd3ed1",
+    "highlighted": "(image-only claim fa6d0aa4)",
+    "oldNote": "This dataset was actually compiled by Stat Significant, which built it by pulling track data directly from \"karaoke\" playlists on Spotify and Apple Music, not from Chartmetric.",
+    "newNote": "This chart's data isn't from Chartmetric. It originates from an April 2025 Stat Significant essay, 'What Are the Greatest Karaoke Songs of All Time?', which tallied songs from Spotify and Apple Music karaoke playlists by decade. No evidence links Chartmetric to this chart."
+  },
+  {
+    "claimId": "692de593-376d-4262-9161-8de3315863e3",
+    "highlighted": "(image-only claim 692de593)",
+    "oldNote": "Artificial Analysis's own current models page states the Intelligence Index evaluates 145 models, not 572. Other snapshots have shown roughly 100–316 models depending on date, but none matches 572.",
+    "newNote": "The \"572\" figure is the total models available in Artificial Analysis' model picker, not the number ranked on the Intelligence Index. Artificial Analysis' own comparison page says the index evaluated about 150 models; a third-party tracker puts it at roughly 165."
+  },
+  {
+    "claimId": "7d1afad6-0dc4-4389-a6f7-3f056fb368f7",
+    "highlighted": "(image-only claim 7d1afad6)",
+    "oldNote": "Graetz & Michaels (2018) 'Robots at Work' analyzed panel data on industrial robots across 17 countries from 1993 to 2007, not 1980-2000 as the slide states.",
+    "newNote": "The 0.37 pp/yr GDP figure is correctly attributed to Graetz & Michaels (2018), but their study analyzed robot adoption across 17 countries and 14 industries from 1993 to 2007, not 1980-2000."
+  }
+]

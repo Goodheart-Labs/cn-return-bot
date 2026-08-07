@@ -29,18 +29,98 @@ async function fetchPublicationSubdomain(handle: string): Promise<string> {
 // Fetch more than needed: paywalled and podcast-type posts are filtered out.
 const ARCHIVE_FETCH_LIMIT = 20;
 
-/** Latest N free text posts of a profile ("https://substack.com/@handle/posts"). */
-export async function fetchLatestFreePostUrls(profileUrl: string, n: number): Promise<string[]> {
-  const handle = parseProfileHandle(profileUrl);
-  if (!handle) throw new Error(`Not a substack profile URL: ${profileUrl}`);
-  const subdomain = await fetchPublicationSubdomain(handle);
-  const archive = await fetchJson(
-    `https://${subdomain}.substack.com/api/v1/archive?sort=new&limit=${ARCHIVE_FETCH_LIMIT}`,
-  );
+export interface ArchivePost {
+  url: string;
+  title: string;
+  /** ISO timestamp of publication (the archive API's post_date). */
+  postDate: string;
+}
+
+/** Latest N free text posts of a publication ("https://thezvi.substack.com"), newest first. */
+export async function fetchArchivePosts(publicationUrl: string, n: number): Promise<ArchivePost[]> {
+  const archive = await fetchJson(`${publicationUrl.replace(/\/$/, "")}/api/v1/archive?sort=new&limit=${ARCHIVE_FETCH_LIMIT}`);
   return (archive as any[])
     .filter((p) => p.audience === "everyone" && p.type !== "podcast")
     .slice(0, n)
-    .map((p) => p.canonical_url as string);
+    .map((p) => ({ url: p.canonical_url as string, title: p.title as string, postDate: p.post_date as string }));
+}
+
+/** Latest N free text posts of a profile ("https://substack.com/@handle/posts"), newest first. */
+export async function fetchLatestFreePosts(profileUrl: string, n: number): Promise<ArchivePost[]> {
+  const handle = parseProfileHandle(profileUrl);
+  if (!handle) throw new Error(`Not a substack profile URL: ${profileUrl}`);
+  const subdomain = await fetchPublicationSubdomain(handle);
+  return fetchArchivePosts(`https://${subdomain}.substack.com`, n);
+}
+
+export interface FeedPost {
+  url: string;
+  title: string;
+  /** ISO timestamp of publication (the feed's pubDate). */
+  publishedAt: string;
+  /** Full post HTML (RSS content:encoded). */
+  bodyHtml: string;
+  /** True for paid posts: their RSS body is only the free preview, ending in a
+   *  "Read more" link back to the post. */
+  paywalled: boolean;
+}
+
+const PAYWALL_TRAILER = /<a href="[^"]*">\s*Read more\s*<\/a>\s*<\/p>\s*$/;
+
+/** Substack blocks datacenter IPs (403), so in CI the RSS fetch goes through
+ *  our Cloudflare Worker relay (src/everything/substack-proxy-worker) — its
+ *  egress is served reliably. Locally the env vars are unset → direct fetch. */
+function feedRequest(feedUrl: string): { url: string; headers?: Record<string, string> } {
+  const proxyUrl = process.env.SUBSTACK_PROXY_URL;
+  if (!proxyUrl) return { url: feedUrl };
+  return {
+    url: `${proxyUrl}?url=${encodeURIComponent(feedUrl)}`,
+    headers: { "X-Proxy-Key": process.env.SUBSTACK_PROXY_KEY ?? "" },
+  };
+}
+
+const cdataUnwrap = (raw: string): string =>
+  raw
+    .trim()
+    .replace(/^<!\[CDATA\[/, "")
+    .replace(/\]\]>$/, "")
+    // a "]]>" inside CDATA is encoded by splitting the section — rejoin it
+    .replace(/\]\]><!\[CDATA\[/g, "");
+
+function tagContent(item: string, tag: string): string {
+  return item.match(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`))?.[1] ?? "";
+}
+
+/** The proxy serves feeds from a background-refreshed cache; a stale cache
+ *  means its live fetches have been failing for a long time — fail loudly
+ *  instead of quietly re-reading frozen data forever. */
+const MAX_PROXY_CACHE_AGE_SECONDS = 24 * 3600;
+
+/** A publication's RSS feed ("https://thezvi.substack.com" → /feed): its ~20
+ *  latest posts, newest first, each with the full post HTML. This is the only
+ *  Substack endpoint the automated pipeline uses — feed-reader traffic is the
+ *  one kind Substack serves to non-residential IPs. */
+export async function fetchFeedPosts(publicationUrl: string): Promise<FeedPost[]> {
+  const { url, headers } = feedRequest(`${publicationUrl.replace(/\/$/, "")}/feed`);
+  const res = await fetch(url, { headers });
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText} for ${url}`);
+  const cacheAgeSeconds = Number(res.headers.get("X-Cache-Age-Seconds") ?? 0);
+  if (cacheAgeSeconds > MAX_PROXY_CACHE_AGE_SECONDS) {
+    throw new Error(`Proxy cache for ${url} is ${Math.round(cacheAgeSeconds / 3600)}h old — its Substack fetches must be failing`);
+  }
+  const xml = await res.text();
+  return [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)]
+    .map(([, item]) => {
+      const bodyHtml = cdataUnwrap(tagContent(item!, "content:encoded"));
+      return {
+        url: tagContent(item!, "link").trim(),
+        title: decodeHtmlEntities(cdataUnwrap(tagContent(item!, "title"))),
+        publishedAt: new Date(tagContent(item!, "pubDate").trim()).toISOString(),
+        bodyHtml,
+        paywalled: PAYWALL_TRAILER.test(bodyHtml),
+      };
+    })
+    .filter((p) => p.url && p.bodyHtml);
 }
 
 /** Inline image placeholder left in the plain text so the extractor can render

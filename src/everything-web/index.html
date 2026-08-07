@@ -13,6 +13,12 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://commonnotes.net/og.png" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    /* Shared components carry dark: variants for the browser extension (which
+     * follows the system theme); the site keeps its own DesignMenu theming, so
+     * dark: stays inert here unless a .dark class is ever set. */
+    tailwind.config = { darkMode: "class" };
+  </script>
   <style>
     /* System font stack. NOTE: we deliberately do NOT lead with X's proprietary
      * "TwitterChirp" webfont. The assumption that Chirp "resolves to the system
@@ -21,7 +27,6 @@
      * the whole site in Chirp, and mismapped local weight files make it read
      * heavy/bold. The system font is what ~all visitors already saw anyway. */
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-    @keyframes cn-countdown { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 44; } }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-900 min-h-screen">

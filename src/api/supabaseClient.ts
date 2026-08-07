@@ -1,6 +1,7 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { fetchAllRows as fetchAllRowsShared } from "./paging";
 import type { Post } from "./fetchEligiblePosts";
+import type { FeedSize } from "../pipeline/orchestration/utils/feedSizeStrategy";
 import { stripNullChars } from "../utils/stripNullChars";
 
 // A note that an --incremental scrape scrolled past without capturing this many
@@ -126,6 +127,9 @@ export function getSupabaseClient(): SupabaseClient {
 // Rows with raw_tweet blobs are large — keep write batches small enough that a
 // single PostgREST request stays well under body-size/time limits.
 const FEED_TWEETS_WRITE_CHUNK = 500;
+// Id-only existence checks go in the URL (`tweet_id=in.(...)`), so the chunk
+// is bounded by URL length, not payload size.
+const FEED_TWEETS_ID_CHUNK = 200;
 
 function chunked<T>(items: T[], size: number): T[][] {
   const chunks: T[][] = [];
@@ -511,20 +515,43 @@ export class SupabaseLogger {
   }
 
   /**
-   * Save every post from a full eligible-feed pull into feed_tweets.
-   * First-seen tweets get a full row (incl. the large raw_tweet blob);
-   * already-known tweets get only their engagement metrics, author counts and
-   * last_seen_at refreshed — the big JSONB/text columns are never rewritten.
-   * Returns { inserted, updated } for run logging.
+   * Insert first-sight rows into feed_tweets, freezing first_seen_impressions
+   * and first_seen_feed_size — the inputs floor analyses need to reconstruct
+   * each post's velocity when the feed first surfaced it (the plain
+   * `impressions` column is refreshed on re-sighting, so it can't serve).
+   * Already-known tweet_ids are filtered out with cheap id-only reads BEFORE
+   * anything is sent: the feed ladder re-surfaces the same below-floor posts
+   * every 15-minute run, and re-sending their raw_tweet blobs just for the
+   * server to skip them would dwarf the actual new-post payload.
+   * Returns the ids actually inserted.
    */
-  async bulkSaveFeedTweets(posts: Post[]): Promise<{ inserted: number; updated: number }> {
-    if (!posts.length) return { inserted: 0, updated: 0 };
-    const now = new Date().toISOString();
+  async insertNewFeedTweets(sightings: { post: Post; feedSize: FeedSize }[]): Promise<Set<string>> {
+    if (!sightings.length) return new Set();
 
-    // Pass 1: insert full rows for tweets not seen before (DO NOTHING on
-    // conflict); .select() returns only the actually-inserted rows.
+    const known = new Set<string>();
+    for (const chunk of chunked(sightings.map((s) => s.post.id), FEED_TWEETS_ID_CHUNK)) {
+      const { data, error } = await this.client.from("feed_tweets").select("tweet_id").in("tweet_id", chunk);
+      if (error) {
+        console.error(`[SupabaseLogger] Error checking ${chunk.length} feed tweet ids:`, error);
+        throw error;
+      }
+      for (const row of data ?? []) known.add(row.tweet_id);
+    }
+
+    const now = new Date().toISOString();
+    const fullRows = sightings
+      .filter((s) => !known.has(s.post.id))
+      .map(({ post, feedSize }) => ({
+        ...postToTweetRow(post),
+        first_seen_at: now,
+        last_seen_at: now,
+        first_seen_impressions: post.public_metrics?.impression_count,
+        first_seen_feed_size: feedSize,
+      }));
+
+    // DO NOTHING on conflict (a concurrent writer may have won the race);
+    // .select() returns only the actually-inserted rows.
     const insertedIds = new Set<string>();
-    const fullRows = posts.map((post) => ({ ...postToTweetRow(post), first_seen_at: now, last_seen_at: now }));
     for (const chunk of chunked(fullRows, FEED_TWEETS_WRITE_CHUNK)) {
       const { data, error } = await this.client
         .from("feed_tweets")
@@ -536,6 +563,21 @@ export class SupabaseLogger {
       }
       for (const row of data ?? []) insertedIds.add(row.tweet_id);
     }
+    return insertedIds;
+  }
+
+  /**
+   * Save every post from a full eligible-feed pull into feed_tweets.
+   * First-seen tweets get a full row (incl. the large raw_tweet blob) via
+   * insertNewFeedTweets; already-known tweets get only their engagement
+   * metrics, author counts and last_seen_at refreshed — the big JSONB/text
+   * columns are never rewritten. Returns { inserted, updated } for run logging.
+   */
+  async bulkSaveFeedTweets(posts: Post[], feedSize: FeedSize): Promise<{ inserted: number; updated: number }> {
+    if (!posts.length) return { inserted: 0, updated: 0 };
+    const now = new Date().toISOString();
+
+    const insertedIds = await this.insertNewFeedTweets(posts.map((post) => ({ post, feedSize })));
 
     // Pass 2: for the pre-existing rest, refresh only the volatile columns.
     const metricRows = posts
@@ -875,15 +917,46 @@ export class SupabaseLogger {
   }
 
   /**
-   * All sightings recorded so far, keyed "<tweetId>:<topicId>". One read per
-   * run so the pre-pass can tell which keyword-matched posts are *new* (worth
-   * upserting + evaluating with the selection LLM) versus already-seen.
+   * All JUDGED sightings, keyed "<tweetId>:<topicId>". One read per pass so
+   * callers can tell which keyword-matched posts are *new* (worth upserting +
+   * evaluating with the selection LLM) versus already-judged. Rows with a null
+   * needs_note are deliberately EXCLUDED: they were upserted but the selection
+   * LLM never returned a verdict (e.g. it crashed after the upsert), and
+   * treating them as "seen" would silently drop them forever — excluding them
+   * lets the next run re-evaluate, which is what the sightings-first ordering
+   * was designed for (and what migration 043's needs_note-IS-NULL partial
+   * index anticipated). The table grows unboundedly and this paginates the
+   * whole thing; fine at current scale, revisit if reads get slow.
    */
   async getMisinfoSightingKeys(): Promise<Set<string>> {
     const rows = await this.fetchAllRows<{ tweet_id: string; topic_id: string }>(
-      (client) => client.from("misinfo_monitoring_sightings").select("id, tweet_id, topic_id"),
+      (client) => client
+        .from("misinfo_monitoring_sightings")
+        .select("id, tweet_id, topic_id")
+        .not("needs_note", "is", null),
       "id",
       "getMisinfoSightingKeys",
+    );
+    return new Set(rows.map((r) => `${r.tweet_id}:${r.topic_id}`));
+  }
+
+  /**
+   * Sightings judged note-worthy but never processed (needs_note = true,
+   * processed_run_id IS NULL — served by migration 043's partial index), keyed
+   * "<tweetId>:<topicId>". When such a post re-surfaces in a later fetch, the
+   * stored verdict is reused instead of re-spending a selection-LLM call.
+   */
+  async getPendingMisinfoSightings(topicIds: string[]): Promise<Set<string>> {
+    if (!topicIds.length) return new Set();
+    const rows = await this.fetchAllRows<{ tweet_id: string; topic_id: string }>(
+      (client) => client
+        .from("misinfo_monitoring_sightings")
+        .select("id, tweet_id, topic_id")
+        .eq("needs_note", true)
+        .is("processed_run_id", null)
+        .in("topic_id", topicIds),
+      "id",
+      "getPendingMisinfoSightings",
     );
     return new Set(rows.map((r) => `${r.tweet_id}:${r.topic_id}`));
   }
@@ -1286,10 +1359,11 @@ export class SupabaseLogger {
 
   /**
    * Count misinfo-monitoring notes we've SUBMITTED in the last `hours`. Bounds
-   * the misinfo submit-priority reserve to ~10% of the daily cap. Misinfo notes
+   * the misinfo submit-priority reserve (see submitCandidates). Misinfo notes
    * are identified via their processed sightings (processed_at within a slightly
-   * wider window) joined to notes we actually submitted. Throws on a query error
-   * so the caller falls back to no-boost (the safe direction).
+   * wider window) joined to notes we actually submitted — so curated-topic posts
+   * found by the regular pass count too, not just the pre-pass's. Throws on a
+   * query error so the caller falls back to no priority (the safe direction).
    */
   async countRecentMisinfoSubmissions(hours: number): Promise<number> {
     const submitSince = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();

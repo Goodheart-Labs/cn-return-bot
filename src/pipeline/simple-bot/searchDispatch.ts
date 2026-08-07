@@ -17,6 +17,7 @@ import {
   buildSearchSystemPrompt,
   SEARCH_SYSTEM_PROMPT_CLAIM,
   SEARCH_POLITICAL_SOURCES_INSTRUCTION,
+  SEARCH_TIME_TRAVEL_INSTRUCTION,
   SEARCH_RESPONSE_FORMAT,
   SEARCH_INLINE_RESPONSE_SCHEMA,
   SEARCH_PROMPTED_JSON_INSTRUCTION,
@@ -63,12 +64,12 @@ export function getSearchSystemPrompt(): string {
   // the dedicated claim-check prompt and skip the X-only assembly below.
   if (config.search_claim) return SEARCH_SYSTEM_PROMPT_CLAIM;
   const monitoring = getMonitoringContext();
-  const base = buildSearchSystemPrompt({
+  let prompt = buildSearchSystemPrompt({
     referenceBlock: monitoring ? buildReferenceBlock(monitoring) : null,
-    simple: config.simple_prompts ?? false,
-    antiPedantic: config.search_anti_pedantic ?? false,
   });
-  return config.search_political_sources ? base + SEARCH_POLITICAL_SOURCES_INSTRUCTION : base;
+  if (config.time_travel_prompt) prompt += SEARCH_TIME_TRAVEL_INSTRUCTION;
+  if (config.search_political_sources) prompt += SEARCH_POLITICAL_SOURCES_INSTRUCTION;
+  return prompt;
 }
 
 // --- Public types ---
@@ -192,7 +193,11 @@ async function searchWithAnthropicNative(
       },
       { role: "user" as const, content: userMessage },
     ],
-    createOptions: { model, tools: [WEB_SEARCH_TOOL] },
+    createOptions: {
+      model,
+      tools: [WEB_SEARCH_TOOL],
+      ...(config.search_reasoning_effort ? { reasoning_effort: config.search_reasoning_effort } : {}),
+    },
     extractJson: extractJsonObject,
   });
   log?.set(`${STEP.search}.messages.1`, { content: { findings, correction_needed: correctionNeeded } });

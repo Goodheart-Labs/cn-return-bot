@@ -65,7 +65,7 @@ import { generateCandidates, type TweetProcessedEvent } from "../pipeline/orches
 import { generatePangramCandidates } from "../pipeline/pangram-monitoring/generatePangramCandidates";
 import { generateMisinfoCandidates } from "../pipeline/misinfo-monitoring/generateMisinfoCandidates";
 import type { MisinfoTopicId } from "../pipeline/misinfo-monitoring/topicIds";
-import { submitCandidates, type Candidate } from "../pipeline/orchestration/submitCandidates";
+import { submitCandidates, misinfoReserveRemaining, type Candidate } from "../pipeline/orchestration/submitCandidates";
 import { computeMaxPosts } from "../pipeline/orchestration/computeMaxPosts";
 import { probeWritingLimitAfterCooldown } from "../pipeline/orchestration/writingLimit";
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
@@ -138,18 +138,18 @@ async function main() {
       }
     }
 
-    let { maxPosts, estimate } = isLocal
-      ? { maxPosts: MAX_POSTS_LOCAL, estimate: MAX_POSTS_LOCAL }
+    let { maxPosts } = isLocal
+      ? { maxPosts: MAX_POSTS_LOCAL }
       : supabaseLogger
         ? await computeMaxPosts(supabaseLogger)
-        : { maxPosts: MAX_POSTS_FALLBACK, estimate: MAX_POSTS_FALLBACK };
+        : { maxPosts: MAX_POSTS_FALLBACK };
 
     // We'd skip (writing limit reached), but X's cap may have risen since it last
     // rejected us. If the cooldown has elapsed, probe by nudging the limit up 1
     // and re-budgeting, so we attempt a note instead of skipping outright.
     if (maxPosts === 0 && supabaseLogger) {
       const probed = await probeWritingLimitAfterCooldown(supabaseLogger);
-      if (probed) ({ maxPosts, estimate } = await computeMaxPosts(supabaseLogger));
+      if (probed) ({ maxPosts } = await computeMaxPosts(supabaseLogger));
     }
 
     if (maxPosts === 0) {
@@ -182,6 +182,16 @@ async function main() {
       }
     }
 
+    // Track every tweet a pre-pass processes so the regular pass (whose
+    // known-set was snapshotted above, BEFORE the pre-passes ran) can never
+    // re-process the same tweet within this run. knownTweetIds can be
+    // undefined if the pre-fetch failed — that path self-heals (fetchPosts
+    // re-queries the DB after the pre-passes' bulkInsertNewTweets).
+    const trackPrePassProcessed = (event: TweetProcessedEvent) => {
+      knownTweetIds?.add(event.post.id);
+      return onTweetProcessed?.(event);
+    };
+
     // XXL-feed Pangram AI-detection pre-pass runs first. Fail-soft to []: a
     // pre-pass failure (crawl error, missing Pangram key, etc.) must never take
     // down regular note-writing. Its candidates and the regular pipeline's share
@@ -191,7 +201,7 @@ async function main() {
       try {
         pangramCandidates = await generatePangramCandidates(supabaseLogger, {
           skipPostIds: skipPostIds ?? new Set<string>(),
-          onTweetProcessed,
+          onTweetProcessed: trackPrePassProcessed,
         });
       } catch (err) {
         console.warn("[pipeline] Pangram pre-pass failed; continuing with regular pipeline only:", err);
@@ -208,7 +218,7 @@ async function main() {
       try {
         misinfoCandidates = await generateMisinfoCandidates(supabaseLogger, {
           skipPostIds: skipPostIds ?? new Set<string>(),
-          onTweetProcessed,
+          onTweetProcessed: trackPrePassProcessed,
           topicIds: MISINFO_ACTIVE_TOPIC_IDS,
         });
       } catch (err) {
@@ -220,13 +230,26 @@ async function main() {
 
     const regularCandidates = await generateCandidates(supabaseLogger, {
       maxPosts,
-      estimate,
       skipPostIds,
       knownTweetIds,
       onTweetProcessed,
+      // Curated-topic matching also runs on the regular pool: confirmed topic
+      // posts get the monitoring treatment + a bounded share of maxPosts
+      // (regularFeedTopicCuration.ts). Pass [] to disable.
+      topicIds: MISINFO_ACTIVE_TOPIC_IDS,
     });
 
-    const candidates = [...pangramCandidates, ...misinfoCandidates, ...regularCandidates];
+    // Submission order — submitCandidates does not re-sort. Misinfo notes get
+    // BOUNDED priority: the first few (whatever the 24h reserve has left, and
+    // they arrive velocity-ranked) submit ahead of the regular notes; the rest
+    // fall in behind them, so a heavy topic day can't eat the whole daily cap.
+    const misinfoReserve = supabaseLogger ? await misinfoReserveRemaining(supabaseLogger) : 0;
+    const candidates = [
+      ...misinfoCandidates.slice(0, misinfoReserve),
+      ...regularCandidates,
+      ...misinfoCandidates.slice(misinfoReserve),
+      ...pangramCandidates,
+    ];
     if (candidates.length > 0 && supabaseLogger) {
       const submitted = await submitCandidates(candidates, supabaseLogger, isLocal);
       console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates (${pangramCandidates.length} pangram, ${misinfoCandidates.length} misinfo, ${regularCandidates.length} regular)`);

@@ -9,10 +9,26 @@
 
 import type { Post } from "../../../api/fetchEligiblePosts";
 import type { GeminiMediaItem } from "../../media/mediaAnalysisGemini";
-import type { AuthorNoteHistory } from "../../input/authorHistory";
+import type { AuthorNote, AuthorNoteHistory } from "../../input/authorHistory";
 import type { BotInput } from "../../input/createBotInput";
+import { getBotConfig } from "../../ab-testing/botConfig";
 
 type ReferenceKind = "quoted" | "retweeted";
+
+// X's standard post limit, so an ordinary post is quoted whole. Longer
+// (Premium) posts still get cut — 23% of noted posts run past it — but the
+// opening is enough to place the topic, which is all this block is for.
+const MAX_HISTORY_POST_CHARS = 280;
+// Notes run to ~930 chars, so this does cut most of them. The claim leads and
+// the sources trail, so what's lost is mostly URLs we don't want copied anyway.
+const MAX_HISTORY_NOTE_CHARS = 300;
+
+function formatAuthorNotes(notes: AuthorNote[], noteLabel: string): string[] {
+  return notes.flatMap((n, i) => [
+    `${i + 1}. Post: "${n.tweetText.slice(0, MAX_HISTORY_POST_CHARS)}"`,
+    `   ${noteLabel}: "${n.noteText.slice(0, MAX_HISTORY_NOTE_CHARS)}"`,
+  ]);
+}
 
 function getReferenceKind(post: Post): ReferenceKind | undefined {
   if (!post.referenced_tweet_data) return undefined;
@@ -27,6 +43,8 @@ export function buildUserMessage(params: {
   tweetMedia: GeminiMediaItem[];
   quotedTweetMedia: GeminiMediaItem[];
   authorNoteHistory?: AuthorNoteHistory;
+  /** Also show the author's rejected notes — the `on_with_unhelpful` A/B arm. */
+  showUnhelpfulHistory?: boolean;
   comments?: string;
   mediaMadeWithAiLabel?: boolean;
 }): string {
@@ -38,6 +56,15 @@ export function buildUserMessage(params: {
   parts.push(`Current date: ${now.toISOString().split("T")[0]}`);
   parts.push(`Current time: ${now.toISOString().split("T")[1]!.slice(0, 5)} UTC`);
   parts.push(`Tweet posted: ${post.created_at}`);
+  // Pre-computed age (timing_context arm): the timing machinery turns on the
+  // post's age, and models are unreliable at timestamp arithmetic — hand them
+  // the operative number. Gated on the same flag so the A/B arms stay clean.
+  if (getBotConfig().timing_context && post.created_at) {
+    const ageMs = now.getTime() - Date.parse(post.created_at);
+    if (Number.isFinite(ageMs) && ageMs >= 0) {
+      parts.push(`Post age: ${(ageMs / 3_600_000).toFixed(1)} hours`);
+    }
+  }
   // Only real (numeric) tweet ids form a valid URL. Synthetic posts — e.g. the
   // everything pipeline's `${itemId}-${index}` claim ids — would otherwise emit
   // a bogus link that confuses the model, so omit it for them.
@@ -64,14 +91,23 @@ export function buildUserMessage(params: {
   }
 
   // Author note history
-  if (params.authorNoteHistory && params.authorNoteHistory.totalHelpful > 0) {
-    const h = params.authorNoteHistory;
-    parts.push(`\n## Past corrections to this author's posts (${h.totalHelpful} helpful community notes on record)\n`);
-    for (let i = 0; i < h.helpfulNotes.length; i++) {
-      const n = h.helpfulNotes[i]!;
-      parts.push(`${i + 1}. Post: "${n.tweetText.slice(0, 200)}"`);
-      parts.push(`   Correction: "${n.noteText.slice(0, 300)}"`);
-    }
+  const history = params.authorNoteHistory;
+  if (history && history.totalHelpful > 0) {
+    parts.push(
+      `\n## Past corrections to this author's posts (${history.totalHelpful} helpful community notes on record)\n`,
+    );
+    parts.push(...formatAuthorNotes(history.helpfulNotes, "Correction"));
+  }
+  // Optional-chained because runs logged before this arm existed replay without
+  // the field.
+  if (params.showUnhelpfulHistory && history?.unhelpfulNotes?.length) {
+    parts.push(
+      `\n## Past notes on this author's posts that raters REJECTED (${history.totalUnhelpful} rated not helpful vs ${history.totalHelpful} rated helpful on record)\n`,
+    );
+    parts.push(
+      `Raters saw these notes and voted them down. Ask why before noting this post: the author may write satire, opinion, or commentary that reads as a factual claim but that raters do not think needs correcting. One rejection is weak evidence; several with no helpful notes is strong evidence a note here would be rejected too.\n`,
+    );
+    parts.push(...formatAuthorNotes(history.unhelpfulNotes, "Note rated not helpful"));
   }
 
   // Post + referenced post
@@ -113,13 +149,18 @@ export function buildUserMessage(params: {
   return parts.join("\n");
 }
 
-/** Render the user message for the bots' shared `BotInput`. */
+/**
+ * Render the user message for the bots' shared `BotInput`. Resolves the
+ * author-history arm here rather than at lookup time so a cached `BotInput`
+ * (big_eval's input cache) carries the full history and serves every arm.
+ */
 export function buildUserMessageFromInput(post: Post, input: BotInput): string {
   return buildUserMessage({
     post,
     tweetMedia: input.mediaResult.tweetMedia,
     quotedTweetMedia: input.mediaResult.quotedTweetMedia,
     authorNoteHistory: input.authorHistory,
+    showUnhelpfulHistory: getBotConfig().author_history_unhelpful,
     comments: input.comments,
     mediaMadeWithAiLabel: input.mediaMadeWithAiLabel,
   });

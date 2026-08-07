@@ -18,8 +18,6 @@ const NORMALIZATION_PERCENTILE = 95;
 /** Relative importance of each ranking signal; the weights need not sum to 1. */
 export type SortWeights = { recency: number; length: number; impressions: number };
 
-const RECENCY_AND_IMPRESSIONS: SortWeights = { recency: 0.8, length: 0, impressions: 0.2 };
-
 export function ageInHours(post: Post): number {
   if (!post.created_at) return MAX_AGE_HOURS;
   const createdMs = new Date(post.created_at).getTime();
@@ -77,8 +75,4 @@ export function sortByWeightedScore(posts: Post[], weights: SortWeights): Post[]
     weights.impressions * impressionScore(post, logImpDenom);
 
   return [...posts].sort((a, b) => score(b) - score(a));
-}
-
-export function sortByRecencyAndImpressions(posts: Post[]): Post[] {
-  return sortByWeightedScore(posts, RECENCY_AND_IMPRESSIONS);
 }

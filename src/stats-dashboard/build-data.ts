@@ -18,10 +18,7 @@ import { createClient } from "@supabase/supabase-js";
 import { writeFileSync, mkdirSync } from "fs";
 import { dirname, join } from "path";
 import dotenv from "dotenv";
-import {
-  fetchAllRows,
-  fetchInBatches,
-} from "../dashboard-shared/supabasePaging";
+import { fetchAllRows, fetchInBatches } from "../api/paging";
 import { buildAbTestSlots } from "../dashboard-shared/abFilters";
 import type {
   StatsSnapshot,
@@ -97,6 +94,7 @@ interface RawPipelineRunRow {
 }
 
 interface RawAnnotationRow {
+  id: string; // keyset cursor only
   target_id: string; // raw note_id for note annotations (other kinds are prefixed)
   failure_modes: string[] | null;
   seen: boolean;
@@ -201,9 +199,13 @@ function joinNotes(
   publicRatings: RawPublicDumpRatingRow[],
   annotations: RawAnnotationRow[],
 ): NoteRecord[] {
+  // Keep the most recent run per note_id. Explicit rather than relying on the
+  // fetch order — the paginator sorts by primary key, not created_at.
   const submittedRunByNoteId = new Map<string, RawPipelineRunRow>();
   for (const run of runs) {
-    if (run.note_id) submittedRunByNoteId.set(run.note_id, run);
+    if (!run.note_id) continue;
+    const previous = submittedRunByNoteId.get(run.note_id);
+    if (!previous || run.created_at > previous.created_at) submittedRunByNoteId.set(run.note_id, run);
   }
   const tweetById = new Map<string, RawTweetRow>();
   for (const t of tweets) tweetById.set(t.tweet_id, t);
@@ -265,11 +267,9 @@ function joinNotes(
 
 async function loadAllPipelineRuns(): Promise<RawPipelineRunRow[]> {
   const rows = await fetchAllRows<RawPipelineRunRow>(
-    supabase
-      .from("pipeline_runs")
-      .select(PIPELINE_RUN_COLUMNS)
-      .order("created_at", { ascending: true }),
-    "pipeline_runs",
+    () => supabase.from("pipeline_runs").select(PIPELINE_RUN_COLUMNS),
+    "id",
+    { label: "pipeline_runs" },
   );
   // Fill AB-test defaults at the boundary so every downstream consumer
   // (aggregates, day buckets, slot index, note records) sees a uniform shape
@@ -282,53 +282,51 @@ async function loadAllPipelineRuns(): Promise<RawPipelineRunRow[]> {
 
 async function loadNotes(): Promise<RawNoteRow[]> {
   return fetchAllRows<RawNoteRow>(
-    supabase
-      .from("notes")
-      .select(NOTE_COLUMNS)
-      .not("submitted_at", "is", null)
-      .order("submitted_at", { ascending: true }),
-    "notes",
+    () => supabase.from("notes").select(NOTE_COLUMNS).not("submitted_at", "is", null),
+    "note_id",
+    { label: "notes" },
   );
 }
 
 async function loadTweets(tweetIds: string[]): Promise<RawTweetRow[]> {
   return fetchInBatches<RawTweetRow>(
-    supabase,
-    "tweets",
-    TWEET_COLUMNS,
-    "tweet_id",
+    (chunk) => supabase.from("tweets").select(TWEET_COLUMNS).in("tweet_id", chunk),
     tweetIds,
-    undefined,
-    "tweets",
+    { label: "tweets" },
   );
 }
 
 async function loadPublicRatings(): Promise<RawPublicDumpRatingRow[]> {
   return fetchAllRows<RawPublicDumpRatingRow>(
-    supabase
-      .from("note_ratings_from_public_dump")
-      .select("note_id, helpful_count, somewhat_helpful_count, not_helpful_count, helpful_tag_counts, not_helpful_tag_counts, dump_date"),
-    "note_ratings_from_public_dump",
+    () =>
+      supabase
+        .from("note_ratings_from_public_dump")
+        .select("note_id, helpful_count, somewhat_helpful_count, not_helpful_count, helpful_tag_counts, not_helpful_tag_counts, dump_date"),
+    "note_id",
+    { label: "note_ratings_from_public_dump" },
   );
 }
 
 async function loadAnnotations(): Promise<RawAnnotationRow[]> {
   return fetchAllRows<RawAnnotationRow>(
-    supabase
-      .from("review_dashboard_annotations")
-      .select("target_id, failure_modes, seen")
-      .eq("source", "production"),
-    "review_dashboard_annotations",
+    () =>
+      supabase
+        .from("review_dashboard_annotations")
+        .select("id, target_id, failure_modes, seen")
+        .eq("source", "production"),
+    "id",
+    { label: "review_dashboard_annotations" },
   );
 }
 
 async function loadDailyOriginCounts(): Promise<DailyOriginCount[]> {
   return fetchAllRows<DailyOriginCount>(
-    supabase
-      .from("daily_note_origin_counts")
-      .select("day, helpful_total, helpful_ours, helpful_other_ai")
-      .order("day", { ascending: true }),
-    "daily_note_origin_counts",
+    () =>
+      supabase
+        .from("daily_note_origin_counts")
+        .select("day, helpful_total, helpful_ours, helpful_other_ai"),
+    "day",
+    { label: "daily_note_origin_counts" },
   );
 }
 

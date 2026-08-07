@@ -16,8 +16,7 @@
 
 import { fetchEligiblePosts } from "../api/fetchEligiblePosts";
 import { SupabaseLogger } from "../api/supabaseClient";
-import { buildPostSelection } from "../pipeline/orchestration/utils/feedSizeStrategy";
-import type { FeedSize } from "../pipeline/ab-testing/botConfig";
+import { buildPostSelection, type FeedSize } from "../pipeline/orchestration/utils/feedSizeStrategy";
 
 if (process.argv.includes("--local")) {
   process.env.X_API_KEY = process.env.LOCAL_X_API_KEY;
@@ -39,7 +38,7 @@ async function main() {
     MAX_PAGES,
     buildPostSelection(FEED_SIZE),
   );
-  const { inserted, updated } = await new SupabaseLogger().bulkSaveFeedTweets(posts);
+  const { inserted, updated } = await new SupabaseLogger().bulkSaveFeedTweets(posts, FEED_SIZE);
   console.log(`[capture-feed] feed=${FEED_SIZE} crawled=${posts.length} new=${inserted} updated=${updated}`);
 }
 

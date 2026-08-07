@@ -58,6 +58,41 @@ const ELECTION_OBJECT =
 const ELECTION_2020_ANCHOR =
   /(\b20(16|20|22|24)\b|dominion|smartmatic|raffensperger|voting machines?|voter files?|voter rolls?|non-?citizens?|declassif|220 ?million|deep state|decertif|overturn|stolen election|election was stolen|rigged election|chin(a|ese)|foreign (interference|meddl|power)|mail-?in ballot)/;
 
+// ── trump_election_security sub-patterns ────────────────────────────────────
+// Split out of the inline predicate so each half can be read and changed on
+// its own. All three are applied to the lowercased blob (see keywordFilter).
+
+/** Does the post talk about voting at all? The context gate for ELECTION_SIGNAL. */
+const ELECTION_TERM =
+  /\b(elections?|elected|voters?|voting|votes?|voted|ballots?|registrations?|registered to vote|polling|poll watchers?|swing states?)\b/;
+
+/** Claims that read as election-integrity claims once ELECTION_TERM is present.
+ *  Every entry is a CLAIM marker, not merely a topic marker — "2020 election"
+ *  on its own is most of the feed's political commentary, so it is admitted
+ *  only in the false-victory form ("won the 2020 election"). */
+const ELECTION_SIGNAL =
+  /(rigged|stolen|\bstole\b|\bsteal\b|fraud|cheat|hacked|compromis|non-? ?citizens?|illegals? (are|can|can'?t|cannot|vot|regist)|illegal (aliens?|immigrants?|voters?) [a-z ]{0,20}(vot|regist)|illegal (vote|ballot)|dominion|smartmatic|maduro|venezuela|decertif|declassif|deep state|mail[- ]?in|through the mail|voter (roll|file|data|id)|voting machine|tabulator|dead voters?|duplicate registration|proof of citizenship|birth certificate|driver'?s licen[sc]e|election (security|integrity|monitors?|observers?)|monitoring elections|polling (site|place)|220 ?million|(won|winning) the 20(20|24) election|\b2[5-8]\d,?\d{3}\b|\b2[5-8]\d ?thousand\b|quarter[- ](of a )?million|cover[- ]?up|covered (it|this|that) up|cover story|to count the votes?|third world country)/;
+
+/** Specific enough to need no election term — these phrases have one subject.
+ *  The last three are the speech's coverup-lore specifics (7/24 claim-coverage
+ *  audit: 29 posts / 3.4M impressions missed because these posts often carry
+ *  no voting word at all — "an fbi official admitted running a shadow
+ *  government"). Generic non-speech uses of the phrases slip through here;
+ *  Stage 2 is the precision gate, and the observed volume is ~4/day. */
+const ELECTION_STANDALONE =
+  /(save america act|\bsave act\b|dominion voting|smartmatic|220 ?million|278,?000|burn bags?|shadow government|presidential daily brief)/;
+
+/** The speech's China-acquired-voter-files claim; paired with ELECTION_TERM
+ *  because these words alone are nowhere near specific enough. */
+const ELECTION_CHINA = /(china|chinese|beijing|\bccp\b|people's republic)/;
+
+/** The speech's 2018–19 China influence-ops claims (paying US journalists for
+ *  negative coverage, pressuring business leaders to turn against the
+ *  president). These posts routinely carry no voting word, so ELECTION_TERM
+ *  can't be the gate — instead require China + a target + an ops verb. */
+const CHINA_INFLUENCE_TARGET = /(journalists?|business leaders?|\bceos?\b)/;
+const CHINA_INFLUENCE_VERB = /(\bpaid?\b|\bpay(ing)?\b|large sums|pressur|influenc|turn against|hit pieces?|negative (stories|articles|coverage))/;
+
 interface TopicSpec {
   id: MisinfoTopicId;
   title: string;
@@ -136,18 +171,20 @@ const SPECS: TopicSpec[] = [
     // Trump's July 2026 primetime election-security speech (China stole voter
     // files, machines "easily compromised", noncitizen/dead voters, mail-in
     // fraud, SAVE Act). Loose high-recall net — Stage-2 selection is the
-    // precision gate. Structure mirrors the old capture predicate: an
-    // election/voting term AND (a fraud/machine/speech signal OR a China signal).
-    // No documentUrl: the document is hand-authored and carries its own
-    // per-claim in-group sources — the note-writer cites from within it.
+    // precision gate. No documentUrl: the document is hand-authored and carries
+    // its own per-claim in-group sources — the note-writer cites from within it.
+    //
+    // Shape: an unambiguous standalone phrase, OR an election/voting term paired
+    // with a fraud/machine/speech signal or a China signal. The standalone
+    // branch exists because the pairing rule alone silently drops posts that
+    // name this subject without ever using a voting word ("...doesn't want the
+    // Save America Act") or that misspell the one voting word they have.
     id: "trump_election_security",
     title: "Trump election-security speech",
     matches: (t) =>
-      /\b(elections?|voters?|voting|votes?|ballots?)\b/.test(t) &&
-      (/(rigged|stolen|\bstole\b|\bsteal\b|fraud|cheat|hacked|compromised|noncitizen|non-citizen|dominion|smartmatic|maduro|venezuela|decertif|declassif|deep state|mail-?in|voter (roll|file|data)|voting machine|dead voter|illegal (vote|ballot)|220 ?million|278,?000|save america act|\bsave act\b|proof of citizenship|election (security|integrity))/.test(
-        t,
-      ) ||
-        /(china|chinese|\bccp\b|people's republic)/.test(t)),
+      ELECTION_STANDALONE.test(t) ||
+      (ELECTION_TERM.test(t) && (ELECTION_SIGNAL.test(t) || ELECTION_CHINA.test(t))) ||
+      (ELECTION_CHINA.test(t) && CHINA_INFLUENCE_TARGET.test(t) && CHINA_INFLUENCE_VERB.test(t)),
   },
   {
     // The "2020 (or 2022/2024) election was stolen/rigged/flipped" narrative,

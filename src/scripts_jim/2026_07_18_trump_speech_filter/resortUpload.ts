@@ -12,8 +12,8 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Post } from "../../api/fetchEligiblePosts";
 import { fetchInBatches } from "../../api/paging";
-import { sortByRecencyAndImpressions } from "../../pipeline/orchestration/utils/tweetSorting";
-import { applyRankOrder } from "./run";
+import { sortByWeightedScore } from "../../pipeline/orchestration/utils/tweetSorting";
+import { applyRankOrder, RECENCY_AND_IMPRESSIONS_WEIGHTS } from "./run";
 
 const uploadId = process.argv[2];
 if (!uploadId) {
@@ -43,6 +43,6 @@ const posts = rows.map(
       public_metrics: { impression_count: r.impressions ?? 0 },
     }) as Post,
 );
-const ranked = sortByRecencyAndImpressions(posts).map((p) => p.id);
+const ranked = sortByWeightedScore(posts, RECENCY_AND_IMPRESSIONS_WEIGHTS).map((p) => p.id);
 await applyRankOrder(client, uploadId, ranked);
 console.log(`[resort] re-ranked ${ranked.length} of ${items?.length ?? 0} item(s) in upload ${uploadId}`);

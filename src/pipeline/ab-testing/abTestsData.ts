@@ -75,33 +75,45 @@ export const BOT_TEST: ABTest = {
   ],
 };
 
-// Variants for simple-bot ship at the existing 100% sonnet46-native split.
-// Other archs land variant-by-variant in commits 4-7 with non-zero weights.
 const SIMPLE_BOT_SEARCH_TEST: ABTest = {
   name: "simple_bot_search",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    // Only sonnet5-native is active — every other arm is pinned to 0 (still
-    // declared so their historical picks resolve).
+    // Diverse multi-model split (Aug 2026). Sonnet 5 stays the primary arm;
+    // the rest carry exploratory weights. Weights are relative (sum 19).
+    // Retired arms stay declared at 0 so their historical picks resolve.
     { variant: { name: "sonnet46-native",         overrides: { search_model: "anthropic/claude-sonnet-4.6",       web_search: "native" }},        weight: 0 },
-    { variant: { name: "sonnet5-native",          overrides: { search_model: "anthropic/claude-sonnet-5",         web_search: "native" }},        weight: 100 },
+    // The Claude arms pair each model with and without test-time reasoning
+    // (search_reasoning_effort medium vs unset — Claude defaults to none).
+    { variant: { name: "sonnet5-native",          overrides: { search_model: "anthropic/claude-sonnet-5",         web_search: "native" }},        weight: 4 },
+    { variant: { name: "sonnet5-native-medium",   overrides: { search_model: "anthropic/claude-sonnet-5",         web_search: "native", search_reasoning_effort: "medium" }}, weight: 2 },
+    // opus48-native garbled ~80% of runs (web_search + json_schema collision);
+    // the Opus arms are now Opus 5, watched for the same failure mode.
     { variant: { name: "opus48-native",           overrides: { search_model: "anthropic/claude-opus-4.8",         web_search: "native" }},        weight: 0 },
+    { variant: { name: "opus5-native",            overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native" }},        weight: 1 },
+    { variant: { name: "opus5-native-medium",     overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native", search_reasoning_effort: "medium" }}, weight: 1 },
     { variant: { name: "haiku45-native",          overrides: { search_model: "anthropic/claude-haiku-4.5",        web_search: "native" }},        weight: 0 },
-    { variant: { name: "grok43-native",           overrides: { search_model: "x-ai/grok-4.3",                     web_search: "native_grok" }},   weight: 0 },
-    { variant: { name: "gemini3flash-native",     overrides: { search_model: "google/gemini-3-flash-preview",     web_search: "native_gemini" }}, weight: 0 },
+    { variant: { name: "grok43-native",           overrides: { search_model: "x-ai/grok-4.3",                     web_search: "native_grok" }},   weight: 2 },
+    { variant: { name: "grok45-native",           overrides: { search_model: "x-ai/grok-4.5",                     web_search: "native_grok" }},   weight: 2 },
+    { variant: { name: "gemini3flash-native",     overrides: { search_model: "google/gemini-3-flash-preview",     web_search: "native_gemini" }}, weight: 1 },
     { variant: { name: "gemini35flash-native",    overrides: { search_model: "google/gemini-3.5-flash",           web_search: "native_gemini" }}, weight: 0 },
-    { variant: { name: "gemini31pro-native",      overrides: { search_model: "google/gemini-3.1-pro-preview",      web_search: "native_gemini" }}, weight: 0 },
+    { variant: { name: "gemini36flash-native",    overrides: { search_model: "google/gemini-3.6-flash",           web_search: "native_gemini" }}, weight: 2 },
+    { variant: { name: "gemini31pro-native",      overrides: { search_model: "google/gemini-3.1-pro-preview",      web_search: "native_gemini" }}, weight: 1 },
     { variant: { name: "sonar-reasoning-pro",     overrides: { search_model: "perplexity/sonar-reasoning-pro",    web_search: "bundled" }},       weight: 0 },
     { variant: { name: "sonar-pro",               overrides: { search_model: "perplexity/sonar-pro",              web_search: "bundled" }},       weight: 0 },
     { variant: { name: "kimi-k26-searxng",        overrides: { search_model: "moonshotai/kimi-k2.6",              web_search: "searxng" }},       weight: 0 },
+    { variant: { name: "kimi-k3-searxng",         overrides: { search_model: "moonshotai/kimi-k3",                web_search: "searxng" }},       weight: 2 },
     { variant: { name: "deepseek-v4pro-searxng",  overrides: { search_model: "deepseek/deepseek-v4-pro",          web_search: "searxng" }},       weight: 0 },
     { variant: { name: "deepseek-v4flash-searxng",overrides: { search_model: "deepseek/deepseek-v4-flash",        web_search: "searxng" }},       weight: 0 },
     { variant: { name: "glm5-searxng",            overrides: { search_model: "z-ai/glm-5",                        web_search: "searxng" }},       weight: 0 },
-    { variant: { name: "glm52-searxng",           overrides: { search_model: "z-ai/glm-5.2",                      web_search: "searxng" }},       weight: 0 },
+    { variant: { name: "glm52-searxng",           overrides: { search_model: "z-ai/glm-5.2",                      web_search: "searxng" }},       weight: 2 },
     { variant: { name: "deepseek-v32exp-searxng", overrides: { search_model: "deepseek/deepseek-v3.2-exp",        web_search: "searxng" }},       weight: 0 },
     { variant: { name: "qwen3max-searxng",        overrides: { search_model: "qwen/qwen3-max",                    web_search: "searxng" }},       weight: 0 },
     { variant: { name: "gpt5_4mini-native",       overrides: { search_model: "openai/gpt-5.4-mini",               web_search: "native_openai" }}, weight: 0 },
     { variant: { name: "gpt5-native",             overrides: { search_model: "openai/gpt-5",                      web_search: "native_openai" }}, weight: 0 },
+    { variant: { name: "gpt5_6luna-native",       overrides: { search_model: "openai/gpt-5.6-luna",               web_search: "native_openai" }}, weight: 2 },
+    { variant: { name: "gpt5_6terra-native",      overrides: { search_model: "openai/gpt-5.6-terra",              web_search: "native_openai" }}, weight: 2 },
+    { variant: { name: "gpt5_6sol-native",        overrides: { search_model: "openai/gpt-5.6-sol",                web_search: "native_openai" }}, weight: 1 },
     { variant: { name: "mistral-large-3-searxng", overrides: { search_model: "mistralai/mistral-large-2512",      web_search: "searxng" }},       weight: 0 },
   ],
 };
@@ -131,19 +143,6 @@ const SIMPLE_BOT_VERIFIER_TEST: ABTest = {
   ],
 };
 
-// Swap simple-bot's search + writer system prompts for maximally-terse variants
-// (the shared verifier / user-message prompts are untouched). Tests whether the
-// long criteria lists pull their weight. Live 50/50 on simple-bot. Prereq-gated
-// to simple-bot, so no defaultVariant.
-const SIMPLE_BOT_PROMPTS_TEST: ABTest = {
-  name: "simple_bot_prompts",
-  prerequisites: { botId: "simple-bot" },
-  variants: [
-    { variant: { name: "detailed", overrides: { simple_prompts: false } }, weight: 50 },
-    { variant: { name: "simple",   overrides: { simple_prompts: true  } }, weight: 50 },
-  ],
-};
-
 // Append an instruction to simple-bot's SEARCH prompt to prefer, for political
 // posts, sources associated with the post author's own political side — the
 // bridging bet that a correction cited to the author's own trusted outlets is
@@ -162,14 +161,63 @@ const SIMPLE_BOT_POLITICAL_SOURCES_TEST: ABTest = {
 // Swap simple-bot's SEARCH prompt for an "anti-pedantic" variant that only
 // flags a correction when the post's main claim / argument is wrong, never a
 // minor side error — the bet that pedantic nitpicks hurt the helpful/FP rate.
-// Composes with SIMPLE_BOT_PROMPTS_TEST (the terse base has its own variant).
-// Live 50/50 on simple-bot. Prereq-gated to simple-bot, so no defaultVariant.
+// Prereq-gated to simple-bot, so no defaultVariant.
+// CLOSED 2026-08-06 → on (Jim). CN statuses settle within ~48h, so the audit
+// uses a 48h maturity cutoff instead of 2 weeks — that keeps the freshest
+// weeks, where "on" led. Era-fair (both arms live, Jun 24–Aug 3), settled
+// notes: on +7.1% net (n=945, 76% H-of-rated) vs off +6.1% (n=918, 73%).
+// The winning anti-pedantic prompt is folded into SEARCH_SYSTEM_PROMPT, so
+// the flag is dead; declared fully retired (all weights 0, skipped in live
+// sampling) so historical picks still resolve. Reopen trigger: settled
+// outcomes reversing the gap once the recent weeks fully mature.
 const SIMPLE_BOT_ANTI_PEDANTIC_TEST: ABTest = {
   name: "simple_bot_anti_pedantic",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "off", overrides: { search_anti_pedantic: false } }, weight: 50 },
-    { variant: { name: "on",  overrides: { search_anti_pedantic: true  } }, weight: 50 },
+    { variant: { name: "off", overrides: { search_anti_pedantic: false } }, weight: 0 },
+    { variant: { name: "on",  overrides: { search_anti_pedantic: true  } }, weight: 0 },
+  ],
+};
+
+// Add the time-travel test to simple-bot's search AND writer prompts (one flag,
+// both steps — the mechanisms overlap): a correction must have been accurate
+// and fair at the moment the post was published; a claim outdated only by later
+// events is not an error. Backtested 2026-07-28 on 398 rated notes — flags
+// 9 NH vs ~3 real H (−11–15% of NH at ~1% H cost); the absence-of-reports
+// companion rule tested INVERTED (9H/5NH) and is excluded. Read on process
+// metrics first (abstention-rate guard, then Nathan's breaking-news tag rate);
+// cn_status per arm is underpowered for months. docs/improvement-menu-2026-07-25.md
+// (T2). Prereq-gated to simple-bot, so no defaultVariant.
+// One three-arm test for the time-travel problem (Nathan, 2026-08-05: the
+// instruction and the context are competing treatments, not composable ones —
+// the both-on cell is a configuration we would never ship, and double-dosing
+// the writer risks over-abstention exactly on fog-window posts). Arms:
+//   off         — neither treatment
+//   instruction — the always-on searcher+writer time-travel instruction (v1)
+//   context     — extractor names event_time_utc → code computes the gap →
+//                 fog-window posts (<=6h) get the timing-context paragraph
+//                 piped into the writer's user message. No gate.
+// Supersedes TIME_TRAVEL_PROMPT_TEST (below, retired to weight 0 so historical
+// picks resolve). Reads: logs.timing.* per run + tag rate per arm. Prereq-gated
+// to simple-bot, so no defaultVariant.
+const TIMING_TREATMENT_TEST: ABTest = {
+  name: "timing_treatment",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off",         overrides: { time_travel_prompt: false, timing_context: false } }, weight: 34 },
+    { variant: { name: "instruction", overrides: { time_travel_prompt: true,  timing_context: false } }, weight: 33 },
+    { variant: { name: "context",     overrides: { time_travel_prompt: false, timing_context: true  } }, weight: 33 },
+  ],
+};
+
+// RETIRED 2026-08-05 in favour of TIMING_TREATMENT_TEST (its "instruction"
+// arm). Declared at weight 0 so historical picks resolve.
+const TIME_TRAVEL_PROMPT_TEST: ABTest = {
+  name: "time_travel_prompt",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off", overrides: { time_travel_prompt: false } }, weight: 0 },
+    { variant: { name: "on",  overrides: { time_travel_prompt: true  } }, weight: 0 },
   ],
 };
 
@@ -219,18 +267,39 @@ const SIMPLE_BOT_CORRECTION_EXTRACTION_TEST: ABTest = {
   ],
 };
 
+// Blocked-topic gate that runs BEFORE everything else (even the note-needed
+// prefilter): one deepseek-v4-flash call (reasoning, no tools) checks the post
+// against BLOCKED_TOPICS and skips the run as rejected / blocked_topic on a
+// hit. Mostly-on, with a 33% "off" holdout to measure what notes we forgo on
+// the blocked topics. Not prereq-gated (the gate runs for every bot);
+// defaultVariant "off" so historical rows resolve to no-filter.
+const TOPIC_FILTER_TEST: ABTest = {
+  name: "topic_filter",
+  defaultVariant: "off",
+  variants: [
+    { variant: { name: "off", overrides: { topic_filter: false } }, weight: 33 },
+    { variant: { name: "on",  overrides: { topic_filter: true  } }, weight: 67 },
+  ],
+};
+
 // Cheap deepseek-v4-flash note-needed prefilter that runs BEFORE the bot and
 // skips it when no note is warranted (recorded as rejected / prefilter_no_note).
-// This is what makes the large feed affordable. Mostly-on, with a 20% "off"
-// holdout so we can measure in prod how often the bot writes a note on posts the
-// prefilter would have cut (the real false-negative rate). defaultVariant "off"
-// so historical rows (no pick) resolve to no-prefilter via resolvePicks.
+// This is what makes the large feed affordable. Now a 50/50 split so we can
+// measure in prod how often the bot writes a note on posts the prefilter would
+// have cut (the real false-negative rate). defaultVariant "off" so historical
+// rows (no pick) resolve to no-prefilter via resolvePicks.
+// CLOSED 2026-08-06 → deepseek 100. Era-fair, 48h-settled: deepseek +7.0%
+// net (n=2085, 75% H-of-rated) vs off +6.6% (n=774, 73%) — quality identical,
+// prefilter saves the search cost, nothing left for the off arm to teach.
+// Off-arm observability replaced by a scheduled discard audit: sample
+// prefilter-rejected tweets, dry-run the full pipeline (null logger), inspect
+// would-have-been notes. Reopen trigger: audit finds real notes being lost.
 const NOTE_PREFILTER_TEST: ABTest = {
   name: "note_prefilter",
   defaultVariant: "off",
   variants: [
-    { variant: { name: "off",      overrides: { note_prefilter: false } }, weight: 20 },
-    { variant: { name: "deepseek", overrides: { note_prefilter: true  } }, weight: 80 },
+    { variant: { name: "off",      overrides: { note_prefilter: false } }, weight: 0 },
+    { variant: { name: "deepseek", overrides: { note_prefilter: true  } }, weight: 100 },
   ],
 };
 
@@ -329,17 +398,24 @@ const VERIFIER_CITATIONS_TEST: ABTest = {
   ],
 };
 
-// Pseudo A/B test: records the feed size in `pipeline_runs.ab_test_picks.feed_size`.
-// `generateCandidates` forces the pick to the size the fetch actually used.
-// Pre-existing rows (no `feed_size` key) resolve to "small".
+// Pseudo A/B test: records which feed tier the post came from, so note
+// outcomes can be sliced by tier (the small feed is X's curated subset; each
+// larger tier is a lower-quality superset). Not sampled — `processPosts`
+// forces the pick from the item's `feedSize`, which the ladder in
+// `collectFastPosts` (and the pre-passes' crawls) already tracks per post.
+// Empty overrides: this records only, the tier is decided at fetch time.
+// Historical rows with no pick resolve to `small` — true before the ladder
+// landed (2026-06-06), and the fallback for the 2026-07-21..22 window where
+// the pick was accidentally dropped (small dominates there too, since the
+// ladder only broadens when small can't fill the run).
 const FEED_SIZE_TEST: ABTest = {
   name: "feed_size",
   defaultVariant: "small",
   variants: [
-    { variant: { name: "small", overrides: { feed_size: "small" }}, weight: 100 },
-    { variant: { name: "large", overrides: { feed_size: "large" }}, weight: 0 },
-    { variant: { name: "xl",    overrides: { feed_size: "xl"    }}, weight: 0 },
-    { variant: { name: "xxl",   overrides: { feed_size: "xxl"   }}, weight: 0 },
+    { variant: { name: "small", overrides: {} }, weight: 100 },
+    { variant: { name: "large", overrides: {} }, weight: 0 },
+    { variant: { name: "xl",    overrides: {} }, weight: 0 },
+    { variant: { name: "xxl",   overrides: {} }, weight: 0 },
   ],
 };
 
@@ -430,16 +506,17 @@ const CHEAP_BOT_TEMPERATURE_TEST: ABTest = {
 };
 
 // Eval-score cutoff for submission. The X eval gate keeps a note iff
-// `claim_opinion_score >= eval_submit_threshold`. Fixed at the 0 cutoff so every
-// note scoring below zero is filtered out; the looser -6 arm is pinned to 0
-// (still declared so its historical picks resolve). Not prereq-gated (the eval
-// gate runs for every bot in processTweet), so defaultVariant "0" lets
-// pre-existing rows resolve to the same cutoff.
+// `claim_opinion_score >= eval_submit_threshold`. Fixed at the -3 cutoff so every
+// note scoring below -3 is filtered out; the old 0 and -6 arms are pinned to
+// weight 0 (still declared so their historical picks resolve). Not prereq-gated
+// (the eval gate runs for every bot in processTweet), so defaultVariant "0" lets
+// pre-existing rows resolve to the original cutoff.
 const EVAL_SUBMIT_THRESHOLD_TEST: ABTest = {
   name: "eval_submit_threshold",
   defaultVariant: "0",
   variants: [
-    { variant: { name: "0",  overrides: { eval_submit_threshold: 0  } }, weight: 100 },
+    { variant: { name: "-3", overrides: { eval_submit_threshold: -3 } }, weight: 100 },
+    { variant: { name: "0",  overrides: { eval_submit_threshold: 0  } }, weight: 0   },
     { variant: { name: "-6", overrides: { eval_submit_threshold: -6 } }, weight: 0   },
   ],
 };
@@ -447,17 +524,30 @@ const EVAL_SUBMIT_THRESHOLD_TEST: ABTest = {
 // Inject the post author's past helpful community notes (ours + competing notes
 // on tweets we've noted) into the writer's user message — see
 // getAuthorNoteHistory. The lookup was silently broken from migration 033 until
-// June 2026 (queried the dropped pipeline_runs.author_id), so this input has been
-// effectively off the whole time. Now a clean 50/50 to measure whether the
-// author-history context helps. Not prereq-gated (the input is gathered for every
-// bot in createBotInput); defaultVariant "off" so historical rows resolve to the
-// no-context behaviour they actually had.
+// June 2026 (queried the dropped pipeline_runs.author_id), so this input was
+// effectively off the whole time. Not prereq-gated (the input is gathered for
+// every bot in createBotInput); defaultVariant "off" so historical rows resolve
+// to the no-context behaviour they actually had.
+//
+// Now a 50/50 on the only open question: does adding the author's REJECTED notes
+// to that block help? Roughly 10% of the posts we process are by an author with
+// at least one not-helpful note on record, and those rejections are the signal a
+// satire/opinion account gives off — the writer and the note-needed prefilter
+// both see it. The no-history arm is pinned to weight 0 (still declared so its
+// historical picks — and defaultVariant — resolve).
 const AUTHOR_HISTORY_TEST: ABTest = {
   name: "author_history",
   defaultVariant: "off",
   variants: [
-    { variant: { name: "off", overrides: { author_history: false } }, weight: 50 },
+    { variant: { name: "off", overrides: { author_history: false } }, weight: 0  },
     { variant: { name: "on",  overrides: { author_history: true  } }, weight: 50 },
+    {
+      variant: {
+        name: "on_with_unhelpful",
+        overrides: { author_history: true, author_history_unhelpful: true },
+      },
+      weight: 50,
+    },
   ],
 };
 
@@ -466,12 +556,14 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_SEARCH_TEST,
   SIMPLE_BOT_WRITER_TEST,
   SIMPLE_BOT_VERIFIER_TEST,
-  SIMPLE_BOT_PROMPTS_TEST,
   SIMPLE_BOT_ANTI_PEDANTIC_TEST,
+  TIME_TRAVEL_PROMPT_TEST,
+  TIMING_TREATMENT_TEST,
   SIMPLE_BOT_CLAIM_TEST,
   SIMPLE_BOT_WRITER_EXAMPLES_TEST,
   SIMPLE_BOT_POLITICAL_SOURCES_TEST,
   SIMPLE_BOT_CORRECTION_EXTRACTION_TEST,
+  TOPIC_FILTER_TEST,
   NOTE_PREFILTER_TEST,
   CHEAP_BOT_JUDGE_MODEL_TEST,
   CHEAP_BOT_GEMINI_STEPS_TEST,

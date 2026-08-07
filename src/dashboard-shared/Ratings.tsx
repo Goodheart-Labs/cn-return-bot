@@ -83,17 +83,25 @@ export function Ratings({
 export type VoteValue = 1 | 0 | -1;
 
 const VOTE_OPTIONS: { value: VoteValue; label: string; active: string; idle: string }[] = [
-  { value: 1, label: "Helpful", active: "bg-green-100 text-green-800 border-green-300", idle: "text-green-700 border-gray-200 hover:bg-green-50" },
-  { value: 0, label: "Somewhat helpful", active: "bg-amber-100 text-amber-800 border-amber-300", idle: "text-amber-700 border-gray-200 hover:bg-amber-50" },
-  { value: -1, label: "Not helpful", active: "bg-red-100 text-red-800 border-red-300", idle: "text-red-700 border-gray-200 hover:bg-red-50" },
+  { value: 1, label: "Helpful", active: "bg-green-100 text-green-800 border-green-300 dark:bg-green-900/50 dark:text-green-300 dark:border-green-700", idle: "text-green-700 border-gray-200 hover:bg-green-50 dark:text-green-400 dark:border-gray-600 dark:hover:bg-green-950/40" },
+  { value: 0, label: "Somewhat helpful", active: "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900/50 dark:text-amber-300 dark:border-amber-700", idle: "text-amber-700 border-gray-200 hover:bg-amber-50 dark:text-amber-400 dark:border-gray-600 dark:hover:bg-amber-950/40" },
+  { value: -1, label: "Not helpful", active: "bg-red-100 text-red-800 border-red-300 dark:bg-red-900/50 dark:text-red-300 dark:border-red-700", idle: "text-red-700 border-gray-200 hover:bg-red-50 dark:text-red-400 dark:border-gray-600 dark:hover:bg-red-950/40" },
 ];
 
-export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVote }: {
+/** Every vote, in display order — so callers that need to enumerate the type
+ *  (scoring every option, ranking a feed) don't hand-write the literal. */
+export const VOTE_VALUES: readonly VoteValue[] = VOTE_OPTIONS.map((o) => o.value);
+
+export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVote, showCounts = myVote !== undefined }: {
   helpful: number;
   somewhatHelpful: number;
   notHelpful: number;
   myVote?: VoteValue;
   onVote: (vote: VoteValue) => void;
+  /** Tallies stay hidden until the viewer has cast their own vote, so the
+   *  crowd doesn't anchor it (aria included — no leaking via screen reader).
+   *  Callers can widen the rule (e.g. reveal on old notes). */
+  showCounts?: boolean;
 }) {
   const counts: Record<VoteValue, number> = { 1: helpful, 0: somewhatHelpful, [-1]: notHelpful };
   return (
@@ -103,12 +111,12 @@ export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVo
           key={value}
           type="button"
           aria-pressed={myVote === value}
-          aria-label={`${label}: ${counts[value]} ratings`}
+          aria-label={showCounts ? `${label}: ${counts[value]} ratings` : label}
           onClick={() => onVote(value)}
           className={`text-xs px-2 py-0.5 rounded-full border cursor-pointer transition-colors ${myVote === value ? active : idle}`}
         >
           {label}
-          {counts[value] > 0 && <span className="ml-1 font-semibold">{counts[value].toLocaleString("en-US")}</span>}
+          {showCounts && counts[value] > 0 && <span className="ml-1 font-semibold">{counts[value].toLocaleString("en-US")}</span>}
         </button>
       ))}
     </span>

@@ -1,0 +1,38 @@
+[
+  {
+    "claimId": "d70b1781-d19e-47d6-8f0f-bc7a9c9ce9bb",
+    "highlighted": "I built an interactive model from her own gift database: ~70,000 QALYs weighting each study by causal credibility, ~200,000 taking every effect at face value.",
+    "oldNote": "These figures are Ghenis's pre-correction numbers, not post-correction as claimed. After fixing an error that mispriced international gifts at US cost anchors, his updated estimates are ~205,000 QALYs (credibility-weighted) and ~420,000 (face value), not ~70,000/~200,000.",
+    "newNote": "These are Ghenis's ORIGINAL pre-correction figures, not post-correction. A reader flagged non-US effects used US dollar anchors, understating them. Corrected figures: ~205,000 QALYs (credibility-weighted), ~420,000 (face value) — about 2-3x higher than claimed."
+  },
+  {
+    "claimId": "5c32c919-25d2-4755-bd7c-b879b82f7672",
+    "highlighted": "the algorithm had already been adjusted in between by the release of 'Phoenix' around April 1.",
+    "oldNote": "Phoenix, X's algorithm, was released January 20, 2026, not around April 1. Its next major update didn't occur until May 15, 2026; no confirmed changes happened between April and June.",
+    "newNote": "Phoenix, the X algorithm component referenced, was released on January 20, 2026, not around April 1. Multiple sources confirm no confirmed ranking/distribution changes occurred between April and June 2026."
+  },
+  {
+    "claimId": "6d436935-b42b-4788-88fa-4840cbd86b90",
+    "highlighted": "Terabit Fountainlink: Sol puts GPT back in the lead for math imo. Both 4.8 and Fable edged out 5.5 but 5.6 is on a new level",
+    "oldNote": "Opus 4.8 and Fable are Anthropic (Claude) models, not GPT models. GPT-5.5 and GPT-5.6 Sol are OpenAI's models; the comparison being discussed is between Anthropic's Claude line and OpenAI's GPT line, not different GPT versions.",
+    "newNote": "Fable 5 and Opus 4.8 are Anthropic Claude models, not GPT models. Claude Opus 4.8 launched May 28, 2026, and Claude Fable 5 is Anthropic's frontier model, both distinct from OpenAI's GPT line."
+  },
+  {
+    "claimId": "274c5b80-d41a-499f-b33b-b6133e01f986",
+    "highlighted": "It has 1.5 trillion parameters. Price is $2/$6, or $4/$18 for the fast version.",
+    "oldNote": "No 'Grok 4.5 Fast' tier exists. Grok 4.5 flagship API pricing is $2/$6 per million tokens. xAI's 'fast' models (Grok 4/4.1 Fast) are cheaper, ~$0.20/$0.50. The closest real premium option is priority processing, a 2x multiplier = $4/$12, not $4/$18.",
+    "newNote": "Grok 4.5's base pricing is $2/$6 per million tokens, but there is no $4/$18 \"fast version.\" xAI's priority/long-context tier doubles to $4 input/$12 output, not $18; no official Grok 4.5 variant uses $18 output pricing."
+  },
+  {
+    "claimId": "241ec04b-6748-43bf-b1af-84c29caf6729",
+    "highlighted": "It is very clearly substantially behind the level of GPT-5.5 and Opus 4.8, including on cyber.",
+    "oldNote": "GLM-5.2 is not clearly substantially behind on cyber. Semgrep found it beat Opus 4.8 in prompt-only testing, and Graphistry found it matched Opus on CTF solve rate and tied frontier models on an agentic cyber benchmark. GPT-5.5/Opus led only with specialized scaffolding.",
+    "newNote": "Independent cyber benchmarks contradict the 'substantially behind on cyber' claim. Semgrep testing found GLM-5.2 scored 39% F1 detecting vulnerabilities vs Claude Code's 32%. Graphistry's CyBT-CTF eval found GLM-5.2 matched Opus 4.8's quality, top open-weight result."
+  },
+  {
+    "claimId": "c2ebdad5-9336-4d86-af3b-43c6bcefe0a7",
+    "highlighted": "They conclude it is about enough to pay for infrastructure investments given 6 year depreciation of chips, and is growing at ~60% year over year, and that as tokens drop in price overall spending rises per Jevons Paradox.",
+    "oldNote": "Exponential View's report states AI economy revenue growth is running near 200% year-over-year, roughly 3x faster than any historical IT platform upgrade, not ~60%. Recent quarterly growth of ~35% QoQ annualizes to about 220%.",
+    "newNote": "Exponential View's report actually cites AI revenue growing at roughly 200% year-over-year (about 3x faster than prior IT platform waves), not ~60%. The ~60% figure refers to long-run compute growth, not revenue growth."
+  }
+]

@@ -153,8 +153,12 @@ enabled = true
 # in emails.
 site_url = "http://localhost:8003"
 # A list of URLs (globs allowed) auth providers may redirect to post authentication.
-# Add the deployed GitHub Pages notes URL here for prod magic-link / X sign-in.
-additional_redirect_urls = ["http://localhost:8003", "http://localhost:8003/**", "http://localhost:8004", "http://localhost:8004/**", "https://*.github.io/**", "https://commonnotes.net/**"]
+# Add the deployed GitHub Pages notes URL here for prod X sign-in. (Email
+# sign-in is a typed 8-digit code on both surfaces — no redirects involved.)
+# The chromiumapp.org / allizom.org wildcards are the browser-extension OAuth
+# redirect URLs (launchWebAuthFlow); mirror them in the prod dashboard's
+# allow-list, with the real extension IDs, for X sign-in from the extension.
+additional_redirect_urls = ["http://localhost:8003", "http://localhost:8003/**", "http://localhost:8004", "http://localhost:8004/**", "https://*.github.io/**", "https://commonnotes.net/**", "https://*.chromiumapp.org/**", "https://*.extensions.allizom.org/**"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
 # JWT issuer URL. If not set, defaults to the local API URL (http://127.0.0.1:<port>/auth/v1).
@@ -212,8 +216,9 @@ enable_confirmations = false
 secure_password_change = false
 # Controls the minimum amount of time that must pass before sending another signup confirmation or password reset email.
 max_frequency = "1s"
-# Number of characters used in the email OTP.
-otp_length = 6
+# Number of characters used in the email OTP. Matches prod's standard 8 —
+# the UI gates on EMAIL_OTP_LENGTH in everything-shared/auth.ts.
+otp_length = 8
 # Number of seconds before the email OTP expires (defaults to 1 hour).
 otp_expiry = 3600
 
@@ -227,8 +232,10 @@ otp_expiry = 3600
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
 
-# Branded Common Notes auth emails. Mirror these in the prod project's
-# dashboard (Auth → Email Templates) — config.toml only applies to local dev.
+# Branded Common Notes auth emails — code-only ({{ .Token }}, no
+# {{ .ConfirmationURL }}): website and extension both take the typed code.
+# Mirror these in the prod project's dashboard (Auth → Email Templates) —
+# config.toml only applies to local dev.
 [auth.email.template.confirmation]
 subject = "Confirm your email for Common Notes"
 content_path = "./supabase/templates/confirmation.html"
