@@ -66,7 +66,6 @@ export function getSearchSystemPrompt(): string {
   const monitoring = getMonitoringContext();
   let prompt = buildSearchSystemPrompt({
     referenceBlock: monitoring ? buildReferenceBlock(monitoring) : null,
-    antiPedantic: config.search_anti_pedantic ?? false,
   });
   if (config.time_travel_prompt) prompt += SEARCH_TIME_TRAVEL_INSTRUCTION;
   if (config.search_political_sources) prompt += SEARCH_POLITICAL_SOURCES_INSTRUCTION;

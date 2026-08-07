@@ -1,0 +1,10 @@
+name = "substack-feed-proxy"
+main = "index.ts"
+compatibility_date = "2026-08-01"
+
+[triggers]
+crons = ["*/5 * * * *"]
+
+[[kv_namespaces]]
+binding = "FEEDS"
+id = "6534a027268c4e9682f7ea45a80e4810"

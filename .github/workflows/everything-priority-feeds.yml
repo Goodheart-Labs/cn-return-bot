@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 # Triggered by Supabase pg_cron via workflow_dispatch (GitHub's own scheduler
-# delays/drops runs) — see migrations/067_schedule_everything_dispatch.sql.
+# delays/drops runs) — see migrations/071_reschedule_everything_dispatch.sql.
 # Fires at :03/:33, offset from the create-notes routine's :18/:48.
 #
 # Never run two workers at once: the queue claim has no locking, and the
@@ -17,7 +17,7 @@ concurrency:
 jobs:
   enqueue-and-process:
     runs-on: ubuntu-latest
-    # Two large items (a Zvi post / a podcast episode) can take well over an
+    # A large item (a Zvi post / a podcast episode) can take well over an
     # hour of claim checks; queued dispatch ticks cover the cadence meanwhile.
     timeout-minutes: 120
     env:
@@ -34,6 +34,9 @@ jobs:
       XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
       # Brave Search API key — fallback search provider
       BRAVE_API_KEY: ${{ secrets.BRAVE_API_KEY }}
+      # Cloudflare Worker relaying Substack RSS fetches (Substack 403s runner IPs)
+      SUBSTACK_PROXY_URL: ${{ secrets.SUBSTACK_PROXY_URL }}
+      SUBSTACK_PROXY_KEY: ${{ secrets.SUBSTACK_PROXY_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

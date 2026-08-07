@@ -11,14 +11,16 @@ import { withBotConfig } from "../../pipeline/ab-testing/botConfig";
 import { withCostTracker } from "../../pipeline/cost-tracking/costTracker";
 import { runABTests, withForcedPicks } from "../../pipeline/ab-testing/abTests";
 import { AB_TESTS } from "../../pipeline/ab-testing/abTestsData";
-import { createTweetLog, withTweetLog } from "../../pipeline/utils/tweetLog";
+import { createTweetLog, getLoggedBotIdentity, nestDotKeys, withTweetLog, type TweetLogMap } from "../../pipeline/utils/tweetLog";
+import type { TokenCost } from "../../pipeline/cost-tracking/pricing";
 import type { EvaluatedSource } from "../../pipeline/prompts/verify/citations";
+import { insertClaimPipelineRun } from "../db";
 import type { ClaimCheck, ExtractedClaim, NoteSourceCitation, SourceKind } from "../types";
 
 // simple-bot with the note-needed prefilter OFF (every checked claim goes through
 // full search + write; the prefilter was dropping too many checkable claims) and
 // the claim-check search prompt (each claim is a transcript/article excerpt, not an X post).
-// Pinned models: search on Opus 4.8 (opus48-native), writer on Sonnet 5 (the
+// Pinned models: search on Opus 5 (opus5-native), writer on Sonnet 5 (the
 // sonnet5 writer arm), verifier on Gemini 3 Flash. verifier_citations ON so
 // accepted sources carry a verbatim supporting quote + explanation (persisted
 // per source). verifier_claim_based "classic" pins the single-call accept/reject
@@ -28,7 +30,7 @@ const FORCED_PICKS: Record<string, string> = {
   bot: "simple-bot",
   note_prefilter: "off",
   search_claim: "on",
-  simple_bot_search: "opus48-native",
+  simple_bot_search: "opus5-native",
   simple_bot_writer: "sonnet5",
   simple_bot_verifier: "gemini-flash",
   verifier_citations: "on",
@@ -40,6 +42,9 @@ export interface ClaimPostParams {
   source: SourceKind;
   /** everything_items.id — hyphenated in the post id so it never looks like a real tweet id. */
   itemId: string;
+  /** everything_claims.id — the run record (logs + cost) is keyed to it.
+   *  null (debug harnesses / ad-hoc scripts) skips recording the run. */
+  claimId: string | null;
   index: number;
   /** Content publication date; the claim's "posted" date (mirrors the tweet pipeline). */
   publishedAt?: string;
@@ -91,6 +96,8 @@ export async function checkClaim(params: ClaimPostParams): Promise<ClaimCheck> {
     ),
   );
 
+  if (params.claimId) await recordClaimRun(params.claimId, result, log);
+
   if (result.outcome === "candidate") {
     return {
       kind: "note",
@@ -102,6 +109,31 @@ export async function checkClaim(params: ClaimPostParams): Promise<ClaimCheck> {
     };
   }
   return { kind: "no_note", outcome: result.outcome, reason: result.outcomeReason ?? null };
+}
+
+/** Persist the run's tweet log + LLM cost to everything_pipeline_runs.
+ *  Best-effort: a logging failure must not error the claim itself. */
+async function recordClaimRun(
+  claimId: string,
+  result: Awaited<ReturnType<typeof processSingleTweet>>,
+  log: TweetLogMap,
+): Promise<void> {
+  const bot = getLoggedBotIdentity("simple-bot", log);
+  try {
+    await insertClaimPipelineRun({
+      claim_id: claimId,
+      bot_name: bot.name,
+      outcome: result.outcome,
+      outcome_reason: result.outcomeReason ?? null,
+      final_stage: result.finalStage ?? null,
+      ab_test_picks: bot.picks ?? null,
+      bot_config: bot.config ?? null,
+      logs: nestDotKeys(Object.fromEntries(log)),
+      cost: (log.get("costs.total") as TokenCost | undefined)?.cost ?? null,
+    });
+  } catch (err: any) {
+    console.warn(`  [checkClaim] failed to record pipeline run for claim ${claimId}: ${err?.message}`);
+  }
 }
 
 /** Expand each cited URL into one entry per supporting snippet the verifier

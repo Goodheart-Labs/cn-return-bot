@@ -348,6 +348,21 @@ export async function generateCandidates(
 
   const { selected, fresh } = await fetchPosts(supabaseLogger, maxPosts, skipPostIds, knownTweetIds);
 
+  // Archive every new post the ladder surfaced — below-floor included — into
+  // feed_tweets, freezing first-sight impressions + tier. This is the supply
+  // record floor analyses replay (what COULD have been selected under a
+  // different floor); the tweets table can't hold it because it doubles as the
+  // don't-fetch-again ledger. Fail-soft: an archive failure (visible in the
+  // run log) must never cost a note run.
+  if (supabaseLogger && fresh.length) {
+    try {
+      const archived = await supabaseLogger.insertNewFeedTweets(fresh);
+      console.log(`[generate] Archived ${archived.size} new feed post(s) to feed_tweets`);
+    } catch (err) {
+      console.warn("[generate] feed_tweets archive failed; continuing:", err);
+    }
+  }
+
   // Curated-topic matching over the whole fresh pool — below-REGULAR-floor
   // posts included, because confirmed topic posts answer to the lower topic
   // floor (applied in fillWithTopicPriority), not the regular 30k one. A
