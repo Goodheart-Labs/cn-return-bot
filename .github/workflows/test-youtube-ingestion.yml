@@ -10,7 +10,7 @@ on:
 jobs:
   test-youtube-ingestion:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,6 +27,47 @@ jobs:
           sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
           pipx install yt-dlp
           yt-dlp --version
+
+      # YouTube's bot check blocks video fetches from datacenter IPs. Try every
+      # player client to see which, if any, gets metadata and subtitles through.
+      - name: Try player-client strategies against the bot check
+        run: |
+          VIDEO="https://www.youtube.com/watch?v=oZBGAuANX6I"
+          try() {
+            local name="$1"; shift
+            echo "=== $name"
+            rm -rf /tmp/subs && mkdir -p /tmp/subs
+            if yt-dlp --no-warnings --skip-download --print "%(title)s" "$@" "$VIDEO" > /tmp/meta.out 2>/tmp/meta.err; then
+              echo "meta: PASS ($(cat /tmp/meta.out))"
+            else
+              echo "meta: FAIL ($(tail -1 /tmp/meta.err))"
+            fi
+            if yt-dlp --no-warnings --write-subs --write-auto-subs --sub-lang en --skip-download -o "/tmp/subs/%(id)s.%(ext)s" "$@" "$VIDEO" >/dev/null 2>/tmp/subs.err && ls /tmp/subs/* >/dev/null 2>&1; then
+              echo "subs: PASS ($(ls /tmp/subs))"
+            else
+              echo "subs: FAIL ($(tail -1 /tmp/subs.err))"
+            fi
+          }
+          try "default"
+          try "tv_embedded" --extractor-args "youtube:player_client=tv_embedded"
+          try "web_embedded" --extractor-args "youtube:player_client=web_embedded"
+          try "android" --extractor-args "youtube:player_client=android"
+          try "ios" --extractor-args "youtube:player_client=ios"
+          try "mweb" --extractor-args "youtube:player_client=mweb"
+          try "tv" --extractor-args "youtube:player_client=tv"
+          try "android_vr" --extractor-args "youtube:player_client=android_vr"
+
+      # The community solution for datacenter IPs: a local server that mints the
+      # PO tokens YouTube demands, picked up by a yt-dlp plugin automatically.
+      - name: Try the bgutil PO token provider
+        run: |
+          docker run -d --name bgutil-provider -p 4416:4416 brainicism/bgutil-ytdlp-pot-provider
+          pipx inject yt-dlp bgutil-ytdlp-pot-provider
+          sleep 10
+          VIDEO="https://www.youtube.com/watch?v=oZBGAuANX6I"
+          rm -rf /tmp/subs && mkdir -p /tmp/subs
+          yt-dlp --skip-download --print "%(title)s" "$VIDEO" && echo "bgutil meta: PASS" || echo "bgutil meta: FAIL"
+          yt-dlp --write-subs --write-auto-subs --sub-lang en --skip-download -o "/tmp/subs/%(id)s.%(ext)s" "$VIDEO" && ls /tmp/subs && echo "bgutil subs: PASS" || echo "bgutil subs: FAIL"
 
       - name: List channel and fetch one video's metadata and cues
         run: bun run src/everything/debug/testYoutubeIngestion.ts
