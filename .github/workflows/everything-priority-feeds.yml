@@ -49,7 +49,13 @@ jobs:
         run: bun install
 
       - name: Install FFmpeg and yt-dlp for YouTube ingestion
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg yt-dlp
+        # Ubuntu's packaged yt-dlp is years old and silently returns an empty
+        # channel listing on today's YouTube, so install the current release
+        # from PyPI instead.
+        run: |
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
+          pipx install yt-dlp
+          yt-dlp --version
 
       - name: Get Playwright version
         id: playwright-version
