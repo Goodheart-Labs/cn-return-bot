@@ -56,7 +56,7 @@ export function fetchChannelVideos(channelUrl: string, limit: number): ChannelVi
     ],
     { encoding: "utf8", timeout: 120_000 },
   );
-  return out
+  const videos = out
     .trim()
     .split("\n")
     .filter(Boolean)
@@ -69,6 +69,13 @@ export function fetchChannelVideos(channelUrl: string, limit: number): ChannelVi
         durationSeconds: /^\d/.test(duration) ? Number.parseFloat(duration) : null,
       };
     });
+  // A channel's videos tab is never empty, so an empty listing means yt-dlp
+  // failed silently. An outdated yt-dlp does exactly this: it exits with code
+  // zero and prints nothing. Fail loudly instead of treating it as "no videos".
+  if (videos.length === 0) {
+    throw new Error(`yt-dlp listed zero videos for ${channelUrl} — it is probably outdated or blocked`);
+  }
+  return videos;
 }
 
 const TRANSCRIPT_LANG = "en";

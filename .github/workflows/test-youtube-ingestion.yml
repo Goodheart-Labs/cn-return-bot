@@ -1,0 +1,32 @@
+name: Test YouTube Ingestion
+
+# Temporary verification workflow: checks that the yt-dlp installed the same
+# way as in everything-priority-feeds.yml can list a channel and fetch a
+# video's metadata and transcript cues from a GitHub runner. Delete together
+# with src/everything/debug/testYoutubeIngestion.ts once verified.
+on:
+  workflow_dispatch:
+
+jobs:
+  test-youtube-ingestion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Install FFmpeg and yt-dlp (same as everything-priority-feeds.yml)
+        run: |
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
+          pipx install yt-dlp
+          yt-dlp --version
+
+      - name: List channel and fetch one video's metadata and cues
+        run: bun run src/everything/debug/testYoutubeIngestion.ts
