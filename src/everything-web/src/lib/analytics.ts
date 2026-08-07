@@ -9,7 +9,7 @@ import { setAnalyticsSink } from "../../../everything-shared/analytics";
 // secret is set — no sink is registered, so the app runs untouched and no
 // build ever breaks for lack of it.
 const KEY = import.meta.env.VITE_PUBLIC_POSTHOG_KEY;
-const HOST = import.meta.env.VITE_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com";
+const HOST = import.meta.env.VITE_PUBLIC_POSTHOG_HOST ?? "https://eu.i.posthog.com";
 
 export function initAnalytics() {
   if (!KEY) return;

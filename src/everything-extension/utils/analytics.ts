@@ -13,7 +13,7 @@ import { setAnalyticsSink } from "../../everything-shared/analytics";
 // a runtime message; the background does the actual fetch. Like the website,
 // everything is a no-op while the build-time key is absent.
 const KEY = import.meta.env.VITE_PUBLIC_POSTHOG_KEY;
-const HOST = import.meta.env.VITE_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com";
+const HOST = import.meta.env.VITE_PUBLIC_POSTHOG_HOST ?? "https://eu.i.posthog.com";
 
 const MESSAGE_TYPE = "cn-analytics";
 const DEVICE_ID_KEY = "cn-ph-device-id";
