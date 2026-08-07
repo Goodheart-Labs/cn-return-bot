@@ -16,10 +16,15 @@ export async function fetchMyVotes(): Promise<Map<string, Vote>> {
  *  That read is a separate query so the vote itself never depends on the new
  *  column. Against an older backend the read returns null and the donation box
  *  stays shut. */
-export async function castVote(noteId: string, voterId: string, vote: Vote): Promise<string | null> {
+export async function castVote(
+  noteId: string,
+  voterId: string,
+  vote: Vote,
+  platform: "web" | "extension",
+): Promise<string | null> {
   const { error } = await supabase
     .from("everything_votes")
-    .upsert({ note_id: noteId, voter_id: voterId, vote }, { onConflict: "note_id,voter_id" });
+    .upsert({ note_id: noteId, voter_id: voterId, vote, platform }, { onConflict: "note_id,voter_id" });
   if (error) {
     console.error("[common-notes] vote failed:", error.message);
     return null;

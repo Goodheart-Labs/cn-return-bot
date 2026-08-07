@@ -3,6 +3,7 @@ import type { Session } from "@supabase/supabase-js";
 import { supabase } from "../../../everything-shared/supabase";
 import { displayName } from "../../../everything-shared/session";
 import { postImprovement } from "../../../everything-shared/postNote";
+import { track } from "../../../everything-shared/analytics";
 import { postNnn } from "../../../everything-shared/noteNotNeeded";
 import type { NoteRow } from "../../../everything-shared/types";
 import { AutoGrowTextarea, PostAsCheckbox, RejectedNotice, useSignedByline } from "./editorBits";
@@ -313,7 +314,11 @@ function ImproveEditor({ note, session, text, onTextChange, onAuthored, onClose 
     setRejected(false);
     const outcome = await postImprovement({ note, text, session, signed });
     setBusy(false);
-    if (outcome.type === "rejected") return setRejected(true);
+    if (outcome.type === "rejected") {
+      // The earnest-gate judge stores nothing, so rejections exist only as events.
+      track("improvement_write_rejected", { note_id: note.id });
+      return setRejected(true);
+    }
     if (outcome.type === "error") return setError(outcome.message);
     onTextChange("");
     onAuthored(outcome.noteId);

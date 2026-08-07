@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { browser } from "#imports";
 import { EMAIL_OTP_LENGTH, signInWithEmailCode, verifyEmailCode } from "../../everything-shared/auth";
+import { track } from "../../everything-shared/analytics";
 
 // The popup closes when the user switches to their mail client to fetch the
 // code, and that wipes all React state. So we store the email we are waiting on
@@ -42,6 +43,7 @@ export function LoginPanel() {
   const sendCode = async () => {
     setBusy(true);
     setError(null);
+    track("sign_in_started", { method: "email" });
     const { error } = await signInWithEmailCode(email.trim());
     setBusy(false);
     if (error) return setError(error.message);
@@ -61,6 +63,7 @@ export function LoginPanel() {
   const signInWithX = async () => {
     setBusy(true);
     setError(null);
+    track("sign_in_started", { method: "twitter" });
     const result = await browser.runtime.sendMessage({ type: "cn-signin-x" }) as { ok: boolean; error?: string };
     setBusy(false);
     if (!result?.ok) setError(result?.error ?? "X sign-in failed");
