@@ -3,8 +3,9 @@ name: Everything Priority Feeds
 on:
   workflow_dispatch:
 
-# Manual-only: the Supabase pg_cron dispatch (migration 067, :03/:33) was
-# unscheduled by migration 070. Re-run migration 067 to resume automated runs.
+# Triggered by Supabase pg_cron via workflow_dispatch (GitHub's own scheduler
+# delays/drops runs) — see migrations/071_reschedule_everything_dispatch.sql.
+# Fires at :03/:33, offset from the create-notes routine's :18/:48.
 #
 # Never run two workers at once: the queue claim has no locking, and the
 # auto-enqueue's orphan cleanup assumes no worker is live. Queue (don't cancel)
@@ -16,7 +17,7 @@ concurrency:
 jobs:
   enqueue-and-process:
     runs-on: ubuntu-latest
-    # Two large items (a Zvi post / a podcast episode) can take well over an
+    # A large item (a Zvi post / a podcast episode) can take well over an
     # hour of claim checks; queued dispatch ticks cover the cadence meanwhile.
     timeout-minutes: 120
     env:
