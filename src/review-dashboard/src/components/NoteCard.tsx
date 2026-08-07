@@ -129,7 +129,9 @@ export function NoteCard({
 
   return (
     <CardErrorBoundary>
-    <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-4 ${seen ? "opacity-60" : ""}`}>
+    {/* Drafts (written, not posted) get a slate left-edge stripe on top of the
+        "Draft (not posted)" header chip, so they read as drafts at a glance. */}
+    <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-4 ${seen ? "opacity-60" : ""} ${item.isDraft ? "border-l-4 border-l-slate-400" : ""}`}>
       {/* Header row */}
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex items-center gap-2 flex-wrap">

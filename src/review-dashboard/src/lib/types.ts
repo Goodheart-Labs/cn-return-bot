@@ -59,6 +59,11 @@ export interface ReviewItem {
   topic?: string;
   topicSet?: import("../../../dashboard-shared/topicSets").TopicSet;
 
+  // A note the bot WROTE but never submitted (daily cap hit, or a pre-submit
+  // check failed) — recovered from its pipeline_run. Rendered with a "draft —
+  // not posted" tag and hidden by default (the draft_not_posted pill is off).
+  isDraft?: boolean;
+
   // For filter categorization
   failureType: FailureType;
 }
@@ -87,7 +92,9 @@ export type ProductionFailureType =
   | "missed_opportunity"
   | "needs_more_ratings"
   | "underwater"
-  | "filtered_low_eval_score";
+  | "filtered_low_eval_score"
+  | "filtered_no_slot"
+  | "draft_check_failed";
 
 // V2 dataset run categories (from evaluateResults categorizeRowV2)
 export type DatasetCategoryV2 =
@@ -147,6 +154,11 @@ export const FAILURE_TYPE_CONFIG: Record<FailureType, FailureTypeConfig> = {
   // the same way lost_to_competitor is, so the two pills stay disjoint.
   underwater: { label: "Underwater", defaultOn: true, production: true, datasetRun: false, color: "bg-indigo-100 text-indigo-800" },
   filtered_low_eval_score: { label: "Filtered (low eval score)", defaultOn: false, production: true, datasetRun: false, color: "bg-teal-100 text-teal-800" },
+  // Notes the bot WROTE but never submitted. Split by why: the cap was full (a
+  // good note that just lost the daily slot) vs a pre-submit check failed. Both
+  // off by default — you filter them in when you want to see the drafts.
+  filtered_no_slot: { label: "Filtered (no posting slots)", defaultOn: false, production: true, datasetRun: false, color: "bg-slate-100 text-slate-600" },
+  draft_check_failed: { label: "Draft (check failed)", defaultOn: false, production: true, datasetRun: false, color: "bg-stone-100 text-stone-600" },
 
   // --- V2 dataset categories: noteworthy ---
   nw_success:                   { label: "Success",              defaultOn: true,  production: false, datasetRun: true, color: "bg-green-100 text-green-800",  group: "noteworthy" },
