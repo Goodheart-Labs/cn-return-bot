@@ -187,10 +187,10 @@ async function main() {
   console.log(`  Via snowflake ID: ${results.filter(r => r.source === "snowflake").length}`);
 
   if (hours.length > 0) {
-    const median = hours[Math.floor(hours.length / 2)];
+    const median = hours[Math.floor(hours.length / 2)]!;
     const mean = hours.reduce((a, b) => a + b, 0) / hours.length;
-    const p10 = hours[Math.floor(hours.length * 0.1)];
-    const p90 = hours[Math.floor(hours.length * 0.9)];
+    const p10 = hours[Math.floor(hours.length * 0.1)]!;
+    const p90 = hours[Math.floor(hours.length * 0.9)]!;
 
     console.log(`\nResponse time (tweet created → note submitted):`);
     console.log(`  Median: ${median.toFixed(1)} hours`);
@@ -228,7 +228,7 @@ async function main() {
     const subset = results.filter((r) => r.cn_status === status);
     if (subset.length === 0) continue;
     const h = subset.map((r) => r.responseHours).sort((a, b) => a - b);
-    const med = h[Math.floor(h.length / 2)];
+    const med = h[Math.floor(h.length / 2)]!;
     const avg = h.reduce((a, b) => a + b, 0) / h.length;
     const fast = subset.filter((r) => r.responseHours < 12).length;
     const fastPct = ((fast / subset.length) * 100).toFixed(0) + "%";
@@ -239,7 +239,7 @@ async function main() {
   const nullStatus = results.filter((r) => !r.cn_status || !statuses.includes(r.cn_status));
   if (nullStatus.length > 0) {
     const h = nullStatus.map((r) => r.responseHours).sort((a, b) => a - b);
-    const med = h[Math.floor(h.length / 2)];
+    const med = h[Math.floor(h.length / 2)]!;
     const avg = h.reduce((a, b) => a + b, 0) / h.length;
     const fast = nullStatus.filter((r) => r.responseHours < 12).length;
     const fastPct = ((fast / nullStatus.length) * 100).toFixed(0) + "%";
@@ -251,14 +251,14 @@ async function main() {
   if (deletedCount > 0) {
     const deletedHours = results.filter((r) => deleted.has(r.tweet_id)).map((r) => r.responseHours).sort((a, b) => a - b);
     console.log(`\nDeleted tweets (${deletedCount}, using snowflake timestamps):`);
-    console.log(`  Median response time: ${deletedHours[Math.floor(deletedHours.length / 2)].toFixed(1)} hours`);
+    console.log(`  Median response time: ${deletedHours[Math.floor(deletedHours.length / 2)]!.toFixed(1)} hours`);
   }
 
   console.log(`\n${"=".repeat(60)}`);
   console.log("PITCH SUMMARY");
   console.log(`${"=".repeat(60)}`);
   if (hours.length > 0) {
-    const median = hours[Math.floor(hours.length / 2)];
+    const median = hours[Math.floor(hours.length / 2)]!;
     const fastCount = results.filter((r) => r.responseHours < 12).length;
     const fastPct = ((fastCount / results.length) * 100).toFixed(0);
     console.log(`Our median response time: ${median.toFixed(1)} hours`);

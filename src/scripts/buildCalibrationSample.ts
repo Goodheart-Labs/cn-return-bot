@@ -314,7 +314,7 @@ async function scoreLLM(
   prompt: string,
   model: string = "anthropic/claude-sonnet-4"
 ): Promise<{ score: number; reasoning: string }> {
-  const { llm } = await import("../pipeline/llm");
+  const { llm } = await import("../pipeline/llm/llm");
   const result = await llm.create({
     model,
     temperature: 0.2,
@@ -399,7 +399,9 @@ Return ONLY a JSON object with: score (number 0-1), reasoning (one sentence).`);
 }
 
 async function scoreAllNotes(sample: SampledNote[]): Promise<ScoredNote[]> {
-  const { scoreSourceTrustworthiness } = await import("../pipeline/sourceTrustworthiness");
+  // sourceTrustworthiness was deleted from the pipeline (legacy bot cleanup, f83f068);
+  // a re-run now scores every source at the neutral fallback the missing-URL path already used.
+  const scoreSourceTrustworthiness = (_url: string) => ({ score: 0.5, tier: "unknown" as const });
 
   const results: ScoredNote[] = [];
   const total = sample.length;
@@ -613,7 +615,6 @@ async function main() {
     .sort((a, b) => (b[1].h + b[1].nh) - (a[1].h + a[1].nh))
     .slice(0, 20);
   for (const [domain, counts] of sortedDomains) {
-    const inList = existsSync("") ? "?" : ""; // placeholder
     console.log(`  ${domain}: ${counts.h} H / ${counts.nh} NH`);
   }
 
