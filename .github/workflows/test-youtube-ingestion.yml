@@ -62,16 +62,18 @@ jobs:
               echo "subs: FAIL ($(tail -1 /tmp/subs.err))"
             fi
           }
-          try "default"
-          try "web" --extractor-args "youtube:player_client=web"
-          try "mweb" --extractor-args "youtube:player_client=mweb"
-          try "tv" --extractor-args "youtube:player_client=tv"
-          try "web_embedded" --extractor-args "youtube:player_client=web_embedded"
+          try "default" --extractor-args "youtube:fetch_pot=always"
+          try "web" --extractor-args "youtube:player_client=web;fetch_pot=always"
+          try "mweb" --extractor-args "youtube:player_client=mweb;fetch_pot=always"
+          try "tv" --extractor-args "youtube:player_client=tv;fetch_pot=always"
+          try "web_embedded" --extractor-args "youtube:player_client=web_embedded;fetch_pot=always"
 
       - name: Verbose run to see PO token and challenge activity
         if: always()
         run: |
-          yt-dlp -v --skip-download --print "%(title)s" "https://www.youtube.com/watch?v=oZBGAuANX6I" 2>&1 | grep -iE "pot|jsc|challenge|client|ERROR|WARNING" || true
+          yt-dlp -v --extractor-args "youtube:pot_trace=true;fetch_pot=always" --skip-download --print "%(title)s" "https://www.youtube.com/watch?v=oZBGAuANX6I" 2>&1 | tail -60 || true
+          echo "=== provider logs"
+          docker logs bgutil-provider 2>&1 | tail -20
 
       - name: List channel and fetch one video's metadata and cues
         run: bun run src/everything/debug/testYoutubeIngestion.ts
