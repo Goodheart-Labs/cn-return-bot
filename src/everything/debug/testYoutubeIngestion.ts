@@ -1,8 +1,8 @@
 /**
- * Temporary CI test for YouTube ingestion — run by the Test YouTube Ingestion
- * workflow to verify that the yt-dlp installed on the runner can list a
- * channel and fetch a video's metadata and transcript cues. Delete together
- * with .github/workflows/test-youtube-ingestion.yml once verified.
+ * Temporary CI test for YouTube ingestion. The Test YouTube Ingestion workflow
+ * runs it to verify that the yt-dlp installed on the runner can list a channel
+ * and fetch a video's metadata and transcript cues. Delete this file together
+ * with .github/workflows/test-youtube-ingestion.yml once that is verified.
  *
  * Usage: bun run src/everything/debug/testYoutubeIngestion.ts
  */

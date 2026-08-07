@@ -1,7 +1,8 @@
 import { browser } from "#imports";
 
-// Hosts whose grant.html offer the user declined with "Not now" — never
-// redirect them there again (redirect mode only).
+// The hosts where the user answered "Do not ask again" on the grant.html page. We
+// never send them to that page again. This only applies in the redirect permission
+// model.
 const GRANT_DISMISSED_KEY = "cn:grantDismissed";
 
 export async function getDismissedGrantHosts(): Promise<string[]> {
@@ -12,16 +13,16 @@ export async function addDismissedGrantHost(hostname: string): Promise<void> {
   await browser.storage.sync.set({ [GRANT_DISMISSED_KEY]: [...new Set([...(await getDismissedGrantHosts()), hostname])] });
 }
 
-/** The un-dismiss escape hatch: granting a site from the popup's "Show notes
- *  on this site" button clears an earlier "Do not ask again". */
+/** The way back in for a user who changed their mind. Granting a site from the
+ *  popup's "Show notes on this site" button clears an earlier "Do not ask again". */
 export async function removeDismissedGrantHost(hostname: string): Promise<void> {
   await browser.storage.sync.set({ [GRANT_DISMISSED_KEY]: (await getDismissedGrantHosts()).filter((h) => h !== hostname) });
 }
 
-// Pages the user already asked us to cover ("Request notes on this page") —
-// reopening the popup shows the done state instead of minting a duplicate
-// request. Rolling window: sync storage has an ~8KB per-key quota, so only
-// the most recent requests are remembered.
+// The pages the user has already asked us to cover with "Request notes on this
+// page". Reopening the popup on such a page shows the done state instead of creating
+// a second request. The list is a rolling window. Sync storage allows about 8KB per
+// key, so we only remember the most recent requests.
 const REQUESTED_PAGES_KEY = "cn:requestedPages";
 const REQUESTED_PAGES_MAX = 50;
 
@@ -34,9 +35,9 @@ export async function addRequestedPage(pageUrl: string): Promise<void> {
   await browser.storage.sync.set({ [REQUESTED_PAGES_KEY]: pages.slice(-REQUESTED_PAGES_MAX) });
 }
 
-// Which note statuses render on pages: helpful notes always show, the other
-// two are the popup's tickboxes (synced across devices like the origin
-// opt-ins).
+// Which note statuses are rendered on a page. Notes rated helpful always show. The
+// other two statuses are controlled by tickboxes in the popup. The setting lives in
+// sync storage, so it follows the user across devices.
 const NOTE_FILTERS_KEY = "cn:noteFilters";
 
 export type NoteFilters = { showNeedsRatings: boolean; showUnhelpful: boolean };
@@ -51,8 +52,8 @@ export async function updateNoteFilters(patch: Partial<NoteFilters>): Promise<vo
   await browser.storage.sync.set({ [NOTE_FILTERS_KEY]: { ...(await getNoteFilters()), ...patch } });
 }
 
-/** Returns an unsubscribe — content-script mounts come and go with SPA
- *  navigation and must not leak listeners. */
+/** Returns a function that removes the listener again. Content-script mounts come and
+ *  go as the user navigates a single-page app, and they must not leak listeners. */
 export function onNoteFiltersChanged(callback: () => void): () => void {
   const listener = (changes: Record<string, unknown>, area: string) => {
     if (area === "sync" && changes[NOTE_FILTERS_KEY]) callback();

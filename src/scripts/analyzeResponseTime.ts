@@ -1,7 +1,8 @@
 /**
- * Analyze how quickly we submit notes after tweets are created.
- * Uses X API to look up tweet creation times, then compares to our submission times.
- * Maps results against Slaughter et al. (PNAS 2025) effectiveness quartiles.
+ * Works out how quickly we submit a note after the tweet it is about was
+ * posted. It asks the X API when each tweet was created and compares that to
+ * the time we submitted our note. It then sorts the results into the
+ * effectiveness quartiles from Slaughter et al. (PNAS 2025).
  */
 import dotenv from "dotenv";
 dotenv.config();
@@ -15,7 +16,8 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY!
 );
 
-// Nathan's personal X API keys (bot account doesn't have tweet read access)
+// These are Nathan's personal X API keys. We need them because the bot account
+// is not allowed to read tweets.
 const apiKey = process.env.X_NATHANPMYOUNG_API_KEY!;
 const apiSecret = process.env.X_NATHANPMYOUNG_API_KEY_SECRET!;
 const accessToken = process.env.X_NATHANPMYOUNG_ACCESS_TOKEN!;
@@ -84,7 +86,7 @@ async function lookupTweets(tweetIds: string[]): Promise<{ found: Map<string, Da
       }
     }
 
-    // Rate limit courtesy
+    // Pause between batches so we do not run into X's rate limits.
     if (i + 100 < tweetIds.length) {
       await new Promise((r) => setTimeout(r, 1000));
     }
@@ -93,7 +95,8 @@ async function lookupTweets(tweetIds: string[]): Promise<{ found: Map<string, Da
   return { found, deleted };
 }
 
-// Twitter snowflake ID → creation timestamp
+// A tweet id encodes the time the tweet was posted, so we can recover that time
+// from the id alone. This is how we date a tweet that the API will not return.
 function snowflakeToDate(id: string): Date {
   const TWITTER_EPOCH = 1288834974657n;
   const snowflake = BigInt(id);
@@ -102,7 +105,7 @@ function snowflakeToDate(id: string): Date {
 }
 
 async function main() {
-  // 1. Get all submitted notes with their tweet_id and submitted_at
+  // Load every note. Notes that were never submitted are dropped later on.
   const notes = await fetchAllRows<{
     tweet_id: string;
     submitted_at: string | null;
@@ -112,7 +115,9 @@ async function main() {
   );
   console.log(`Found ${notes.length} submitted notes`);
 
-  // 2. Get pipeline_runs for fallback timing (when we first saw each tweet)
+  // Work out when the pipeline first saw each tweet. This was meant as a
+  // fallback for tweets whose creation time we cannot get, but nothing reads the
+  // result at the moment.
   const pipelineRuns = await fetchAllRows<{
     tweet_id: string;
     created_at: string;
@@ -128,12 +133,13 @@ async function main() {
     }
   }
 
-  // 3. Try X API first, fall back to snowflake IDs
+  // Ask the X API for the creation time of every tweet we wrote a note about.
   const tweetIds = [...new Set(notes.map((n) => n.tweet_id))];
   console.log(`Looking up ${tweetIds.length} unique tweets via X API...`);
   const { found: tweetCreatedAt, deleted } = await lookupTweets(tweetIds);
 
-  // For any tweets not found via API, use snowflake ID timestamp
+  // A tweet the API did not return has usually been deleted. We can still read
+  // its creation time out of its id.
   let snowflakeCount = 0;
   for (const id of tweetIds) {
     if (!tweetCreatedAt.has(id)) {
@@ -143,7 +149,7 @@ async function main() {
   }
   console.log(`API: ${tweetCreatedAt.size - snowflakeCount}, Snowflake fallback: ${snowflakeCount}, Deleted: ${deleted.size}`);
 
-  // 4. Compute response times
+  // How long each note took, measured from when the tweet was posted.
   type NoteResult = {
     tweet_id: string;
     tweetCreated: Date;
@@ -175,7 +181,6 @@ async function main() {
     }
   }
 
-  // 5. Stats
   results.sort((a, b) => a.responseHours - b.responseHours);
   const hours = results.map((r) => r.responseHours);
 
@@ -198,7 +203,6 @@ async function main() {
     console.log(`  P10:    ${p10.toFixed(1)} hours`);
     console.log(`  P90:    ${p90.toFixed(1)} hours`);
 
-    // Quartile buckets (Slaughter et al.)
     console.log(`\nSlaughter et al. (PNAS 2025) effectiveness quartiles:`);
     console.log(`${"Quartile".padEnd(16)} ${"Count".padEnd(8)} ${"% Ours".padEnd(10)} ${"Overall repost reduction".padEnd(28)}`);
     console.log(`${"-".repeat(62)}`);
@@ -212,7 +216,6 @@ async function main() {
     }
   }
 
-  // Breakdown by outcome
   const statuses = ["CURRENTLY_RATED_HELPFUL", "CURRENTLY_RATED_NOT_HELPFUL", "NEEDS_MORE_RATINGS"];
   const statusLabels: Record<string, string> = {
     "CURRENTLY_RATED_HELPFUL": "Helpful",
@@ -235,7 +238,7 @@ async function main() {
     console.log(`${(statusLabels[status] || status).padEnd(16)} ${String(subset.length).padEnd(8)} ${med.toFixed(1).padEnd(12)} ${avg.toFixed(1).padEnd(12)} ${fastPct.padEnd(8)}`);
   }
 
-  // Also show null/unknown status
+  // Notes whose status we do not have, or do not recognise, get their own row.
   const nullStatus = results.filter((r) => !r.cn_status || !statuses.includes(r.cn_status));
   if (nullStatus.length > 0) {
     const h = nullStatus.map((r) => r.responseHours).sort((a, b) => a - b);
@@ -246,7 +249,6 @@ async function main() {
     console.log(`${"Unknown".padEnd(16)} ${String(nullStatus.length).padEnd(8)} ${med.toFixed(1).padEnd(12)} ${avg.toFixed(1).padEnd(12)} ${fastPct.padEnd(8)}`);
   }
 
-  // Deleted tweet stats
   const deletedCount = results.filter((r) => deleted.has(r.tweet_id)).length;
   if (deletedCount > 0) {
     const deletedHours = results.filter((r) => deleted.has(r.tweet_id)).map((r) => r.responseHours).sort((a, b) => a - b);

@@ -1,21 +1,23 @@
 /**
  * XXL-feed misinfo-monitoring pre-pass.
  *
- * Runs before the regular pipeline. Crawls the big feed (XXL → XL → large),
- * keyword-matches posts against the fixed misinfo topics, asks a selection LLM
- * which matched posts actually carry a misleading claim, and processes those
- * first — injecting the topic's ground-truth article into the bot's research
- * step (via MonitoringContext) so the resulting note is well-sourced.
+ * This runs before the regular pipeline. It crawls the big feed, trying the XXL
+ * size first and falling back to XL and then to large. It keyword-matches the
+ * crawled posts against the fixed misinfo topics. A selection LLM then judges which
+ * of the matched posts really carry a misleading claim, and those posts are
+ * processed first. The topic's ground-truth article is injected into the bot's
+ * research step through MonitoringContext, so the resulting note is well sourced.
  *
- * Sightings live in their own table (misinfo_monitoring_sightings), disjoint
- * from the skip logic, so merely *seeing* a post here never makes the regular
- * pipeline skip it later when it enters the small feed. Selection-LLM cost is
- * bounded to genuinely new keyword matches; processing is capped per run.
+ * Sightings live in their own table, misinfo_monitoring_sightings, which the skip
+ * logic never reads. Seeing a post here therefore never makes the regular pipeline
+ * skip it later, when the same post enters the small feed. The selection LLM only
+ * ever judges keyword matches it has not seen before, which bounds its cost. The
+ * number of posts processed per run is capped.
  *
- * Each run processes only posts newly selected in that run — there is no
- * carry-over queue. The sightings ledger is a dedupe record ("already judged"),
- * not a backlog: a selected post that misses the per-run cap is dropped, not
- * saved for later.
+ * A run only processes the posts it selected in that same run. There is no
+ * carry-over queue. The sightings ledger records that a post has already been
+ * judged, and it is not a backlog. A selected post that does not fit under the
+ * per-run cap is dropped rather than saved for later.
  */
 
 import { fetchEligiblePosts, type Post } from "../../api/fetchEligiblePosts";
@@ -38,36 +40,40 @@ import {
 const MISINFO_MAX_RESULTS = 5000;
 const MISINFO_MAX_PAGES = 100;
 const MISINFO_FEED_SIZES: FeedSize[] = ["xxl", "xl", "large"];
-// Ceiling on misinfo posts processed (and thus notes written/submitted) per run,
-// so a heavy misinfo day can't starve the regular pipeline or eat the shared
-// daily submission cap. Selected posts beyond it are dropped (highest-velocity
-// posts win the cap), not queued for later.
+// The most misinfo posts we process in one run, and therefore the most notes this
+// pre-pass can write and submit. The ceiling stops a heavy misinfo day from starving
+// the regular pipeline or eating the shared daily submission cap. Selected posts
+// beyond the ceiling are dropped rather than queued for later. The posts with the
+// highest velocity are the ones kept.
 const MISINFO_MAX_PROCESS = 10;
 
-// Topic velocity floor: shared MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR (see
-// utils/velocity.ts for the rationale). Applied BEFORE the cap; below-floor
-// selected posts are dropped and logged, not queued (same semantics as the
-// cap-drop; their sighting verdict is already recorded, so the selection LLM
-// never re-judges them). The regular-pool curation route applies the SAME
-// floor in fillWithTopicPriority — a floor-dropped post here must not re-enter
-// through the stored-verdict rescue there.
+// The topic velocity floor is the shared MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR, and
+// utils/velocity.ts explains why it exists. We apply it before the cap above. A
+// selected post below the floor is dropped and logged rather than queued, which is
+// the same treatment a post dropped by the cap gets. Its sighting verdict is already
+// recorded, so the selection LLM never judges it again. The regular-pool curation
+// route applies the same floor in fillWithTopicPriority. A post dropped here for
+// being too slow must not come back in through the stored-verdict rescue there.
 
 export interface MisinfoCandidatesOptions {
-  /** Shared with generateCandidates so already-noted / cooling-down tweets are
-   *  not re-handled by the crawl. */
+  /** Post ids the crawl must leave alone. This set is shared with generateCandidates,
+   *  so a tweet we have already noted, or one that is cooling down, is not handled
+   *  twice. */
   skipPostIds: Set<string>;
   onTweetProcessed?: (event: TweetProcessedEvent) => void | Promise<void>;
-  /** Local-testing only: read posts from this JSONL dump instead of crawling
-   *  the live XXL feed (which is GH-Actions-only). See loadDumpFeed. */
+  /** For local testing only. When this is set we read posts from the given JSONL dump
+   *  instead of crawling the live XXL feed, which is only reachable from GitHub
+   *  Actions. See loadDumpFeed. */
   dumpPath?: string;
-  /** Restrict the pre-pass to these topics only; omit for all MISINFO_TOPICS.
-   *  Lets us activate a single campaign (e.g. trump_election_security) without
-   *  running the evergreen topics. */
+  /** Restricts the pre-pass to these topics. Omit it to run every topic in
+   *  MISINFO_TOPICS. This lets us activate a single campaign, such as
+   *  trump_election_security, without also running the evergreen topics. */
   topicIds?: MisinfoTopicId[];
 }
 
-/** Try each feed size in turn; on any error fall through to the next. Returns
- *  null (fail-soft) if all sizes fail, so a feed blip never breaks the run. */
+/** Tries each feed size in turn, and falls through to the next one on any error.
+ *  Returns null when every size fails, so a passing feed problem never breaks the
+ *  whole run. */
 async function crawlFeed(
   skipPostIds: Set<string>,
 ): Promise<{ feedSize: FeedSize; posts: Post[] } | null> {
@@ -89,9 +95,10 @@ async function crawlFeed(
   return null;
 }
 
-/** Sight new keyword matches, run the selection LLM per topic, write back each
- *  post's needs_note verdict, and return the posts selected for a note. Bounds
- *  LLM cost to genuinely new matches: a post is judged once, ever. */
+/** Records the keyword matches we have not seen before, runs the selection LLM once
+ *  per topic, writes back each post's needs_note verdict, and returns the posts
+ *  chosen for a note. Only genuinely new matches reach the LLM, so a post is judged
+ *  once and never again. */
 async function evaluateNewMatches(
   supabaseLogger: SupabaseLogger,
   feedSize: FeedSize,
@@ -106,8 +113,9 @@ async function evaluateNewMatches(
     const newPosts = topicPosts.filter((p) => !sightingKeys.has(`${p.id}:${topic.id}`));
     if (!newPosts.length) continue;
 
-    // Record sightings first (needs_note=null): a crash mid-evaluation leaves
-    // them to be re-evaluated next run rather than lost.
+    // Record the sightings first, with needs_note left null. getMisinfoSightingKeys
+    // ignores rows whose needs_note is still null, so a crash part-way through the
+    // evaluation leaves these posts to be judged again on the next run.
     await supabaseLogger.upsertMisinfoSightings(
       newPosts.map((p) => ({
         tweet_id: p.id,
@@ -138,10 +146,11 @@ async function evaluateNewMatches(
 }
 
 /**
- * Build the work list from this run's freshly-selected posts. Deduped across
- * topics (a post matching two topics is processed once under its first topic),
- * then floored and ranked by velocity (impressions/hour — see the floor above)
- * so the cap keeps the posts whose notes can actually get rated.
+ * Builds the work list from the posts this run selected. A post that matched two
+ * topics is processed once, under the first topic it matched. The surviving posts
+ * are then filtered by the velocity floor described above and sorted by velocity,
+ * which is impressions per hour. That way the cap keeps the posts whose notes stand
+ * a real chance of being rated.
  */
 function buildWorkList(
   selectedNew: Array<{ post: Post; topic: MisinfoTopic }>,
@@ -154,7 +163,8 @@ function buildWorkList(
     return true;
   });
 
-  // Velocity floor: unknown velocity fails open (never drop on missing data).
+  // A post whose velocity we cannot work out counts as being above the floor. We
+  // never drop a post just because its data is missing.
   const floored = deduped.filter(({ post }) =>
     isAboveFloor(velocityPerHour(post), MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR),
   );
@@ -187,8 +197,9 @@ function buildWorkList(
       },
     },
   }));
-  // Run same-topic posts consecutively so the injected reference document forms
-  // a stable prompt prefix across calls, maximizing provider prefix-cache hits.
+  // Posts on the same topic run one after another. The injected reference document
+  // then forms the same prompt prefix on consecutive calls, which is what the
+  // provider's prefix cache needs in order to hit.
   return work.sort((a, b) => a.topicId.localeCompare(b.topicId));
 }
 
@@ -196,8 +207,8 @@ export async function generateMisinfoCandidates(
   supabaseLogger: SupabaseLogger | null,
   { skipPostIds, onTweetProcessed, dumpPath, topicIds }: MisinfoCandidatesOptions,
 ): Promise<Candidate[]> {
-  // The sightings table is the dedupe ledger; without it we can't run the
-  // pre-pass without re-evaluating the whole crawl every time.
+  // The sightings table is the ledger that stops us judging the same post twice.
+  // Without it every run would re-evaluate the whole crawl.
   if (!supabaseLogger) {
     console.log("[misinfo] No Supabase logger; skipping misinfo pre-pass");
     return [];
@@ -232,11 +243,11 @@ export async function generateMisinfoCandidates(
   }
   console.log(`[misinfo] Processing ${work.length} selected post(s)`);
 
-  // Persist the tweets we're about to note so the review dashboard (and any
-  // tweet-joined view) has their content — generateCandidates and the pangram
-  // pre-pass both do this; the misinfo pre-pass previously skipped it, so misinfo
-  // notes showed blank tweet cards. Fail-soft: a store failure must not stop
-  // note-writing.
+  // Store the tweets we are about to note, so the review dashboard and any other
+  // view that joins on tweets has their content. generateCandidates and the pangram
+  // pre-pass both do this. The misinfo pre-pass used to skip it, which made misinfo
+  // notes show blank tweet cards. A failure here is only logged, because it must not
+  // stop us writing notes.
   try {
     await supabaseLogger.bulkInsertNewTweets(work.map((w) => w.item.post));
   } catch (err) {
@@ -260,8 +271,9 @@ export async function generateMisinfoCandidates(
     onTweetProcessed: onProcessed,
     label: "misinfo",
   });
-  // Tag as misinfo so submitCandidates exempts them from its velocity-floor
-  // backstop (this pre-pass already applied the lower topic floor). These are
-  // returned first to runPipeline, so they also submit first.
+  // Tag these as misinfo so submitCandidates exempts them from its own velocity-floor
+  // backstop. This pre-pass has already applied the lower topic floor to them. They
+  // are also handed back to runPipeline ahead of the regular candidates, so they
+  // submit first.
   return candidates.map((c) => ({ ...c, isMisinfo: true }));
 }

@@ -1,21 +1,26 @@
 /**
- * Substack feed proxy — a Cloudflare Worker relaying RSS fetches for the
- * everything pipeline. Substack 403s GitHub Actions' datacenter IPs outright
- * and rate-limits Cloudflare Workers' shared egress IPs (success per live
- * fetch swings between ~100% and ~10% with ambient congestion), so the
- * worker doesn't just relay: a cron trigger keeps a KV-cached copy of every
- * requested feed fresh in the background, and requests are served from that
- * cache instantly. A minutes-stale feed is irrelevant at our cadence
- * (authors post ~daily, the pipeline polls every 30 min); the client throws
- * if the cache is older than a day, so a fully-blocked worker fails loudly
- * rather than quietly serving frozen data.
+ * Substack feed proxy. This is a Cloudflare Worker that relays RSS fetches for
+ * the everything pipeline.
+ *
+ * Substack refuses GitHub Actions' datacenter IPs outright with a 403. It also
+ * rate-limits the shared egress IPs that Cloudflare Workers go out through. The
+ * success rate of a live fetch swings between roughly 100% and roughly 10%
+ * depending on how congested those shared IPs are. So this worker does more
+ * than relay. A cron trigger keeps a copy of every requested feed fresh in KV
+ * storage in the background, and a request is answered from that copy straight
+ * away. A feed that is a few minutes out of date does not matter at our
+ * cadence. Authors post about once a day and the pipeline polls every 30
+ * minutes. The client throws when the cached copy is more than a day old, so a
+ * worker that is blocked completely fails loudly instead of quietly serving
+ * frozen data.
  *
  * GET <worker-url>?url=https://<pub>.substack.com/feed
  * with header X-Proxy-Key: <PROXY_KEY secret>
  *
- * Only exact /feed URLs are relayed, and only with the shared key, so this
- * is not usable as an open proxy. A feed requested once is auto-refreshed
- * until nobody has asked for it for a week. Deploy: see README.md.
+ * Only exact /feed URLs are relayed, and only when the request carries the
+ * shared key. That stops this from being usable as an open proxy. Once a feed
+ * has been requested it is refreshed automatically, until nobody has asked for
+ * it for a week. See README.md for how to deploy it.
  */
 
 interface KVNamespace {
@@ -32,7 +37,8 @@ interface Env {
 const ALLOWED_TARGET = /^https:\/\/[\w-]+\.substack\.com\/feed$/;
 const LIVE_RETRIES = 3;
 const RETRY_GAP_MS = 2000;
-/** Cron refreshes a cache entry older than this (cron runs every 5 min). */
+/** The cron refreshes a cached feed once it is older than this. The cron itself
+ *  runs every 5 minutes. */
 const REFRESH_AGE_MS = 4 * 60_000;
 /** Stop refreshing a feed nobody has requested for this long. */
 const WANTED_TTL_MS = 7 * 24 * 3600_000;
@@ -79,8 +85,9 @@ export default {
       const { fetchedAt, xml } = JSON.parse(cached) as CachedFeed;
       return feedResponse(xml, Date.now() - fetchedAt);
     }
-    // Cold start (first-ever request for this feed): try live; the cron warms
-    // the cache within minutes either way.
+    // This is the first request we have ever seen for this feed, so nothing is
+    // cached yet. We try a live fetch. Either way the cron warms the cache
+    // within minutes.
     const live = await fetchFeedLive(target, LIVE_RETRIES);
     if (live) {
       await cacheFeed(env, target, live);

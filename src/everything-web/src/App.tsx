@@ -44,7 +44,7 @@ const NO_NNN: NnnRow[] = [];
 /** The three vote counts a note's feed position is derived from. */
 type RankTally = Pick<NoteRow, "helpful_count" | "somewhat_helpful_count" | "not_helpful_count">;
 
-/** A labelled band of the feed. Rendered only when it has notes, so a project
+/** A labelled band of the feed. It renders only when it holds notes, so a project
  *  with nothing rated yet shows no dividers at all. */
 function NoteSection({ label, notes, render }: {
   label: string;
@@ -68,14 +68,15 @@ export function App() {
   const { projects, items, notes, nnn, loaded } = useLiveData();
   const { session } = useSession();
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  // Which top-level view — the note feed or the rating leaderboard.
+  // Which top-level view is showing: the note feed or the rating leaderboard.
   const [view, setView] = useState<View>(() => readRoute().view);
-  // Item filter within the project (episode / post / page) — null = all items.
+  // Which item inside the project the feed is narrowed to. An item is one
+  // episode, one post or one page. Null means every item.
   const [itemFilter, setItemFilter] = useState<string | null>(() => readRoute().item);
   const [myVotes, setMyVotes] = useState<Map<string, Vote>>(new Map());
   const [myNnnVotes, setMyNnnVotes] = useState<Map<string, Vote>>(new Map());
-  // A fresh vote's donation starts at the remembered charity; the donation
-  // box lets the voter redirect it afterwards.
+  // A new vote's donation goes to the charity we remembered for this user. The
+  // donation box lets them redirect it afterwards.
   const [preferredCharity] = usePreferredCharity();
   const [loginOpen, setLoginOpen] = useState(false);
   const [writeOpen, setWriteOpen] = useState(false);
@@ -90,10 +91,11 @@ export function App() {
     }
   }, [session?.user.id]);
 
-  // Every note is its own card — AI note, user note, improvement alike; the
-  // feed ranking below treats them uniformly. An improvement is tied to its
-  // original only by a jump-link (improvementsByOriginal is the reverse index
-  // of improved_from_note_id).
+  // Every note gets its own card, whether the AI wrote it, a user wrote it, or it
+  // improves another note. The feed ranking below treats all three the same. The
+  // only thing tying an improvement to its original is a jump-link, and
+  // improvementsByOriginal is the reverse index of improved_from_note_id that
+  // the jump-link is built from.
   const { notesByItem, improvementsByOriginal } = useMemo(() => {
     const byItem = new Map<string, NoteRow[]>();
     const improvements = new Map<string, NoteRow[]>();
@@ -113,8 +115,9 @@ export function App() {
     return { notesByItem: byItem, improvementsByOriginal: improvements };
   }, [notes]);
 
-  // Claim id → its note-not-needed entries, oldest first (age order, not
-  // votes — no teleporting). The same list renders under every note card on
+  // Maps a claim id to that claim's note-not-needed entries, oldest first. They
+  // are ordered by age and not by votes, so an entry never jumps position while
+  // the reader is looking at it. The same list renders under every note card on
   // that claim.
   const nnnByClaim = useMemo(() => {
     const byClaim = new Map<string, NnnRow[]>();
@@ -127,8 +130,9 @@ export function App() {
     return byClaim;
   }, [nnn]);
 
-  // Initial project: the ?project= slug from the URL, else the first project
-  // (by sort order) that actually has content.
+  // The project we open on is the one named by the ?project= slug in the URL. If
+  // there is no such slug, we take the first project in sort order that actually
+  // has content.
   useEffect(() => {
     if (selectedId || projects.length === 0) return;
     const fromUrl = projects.find((p) => p.slug === readRoute().project);
@@ -137,7 +141,8 @@ export function App() {
     setSelectedId(projects.find((p) => withItems.has(p.id))?.id ?? projects[0]!.id);
   }, [projects, items, selectedId]);
 
-  // Selecting a project updates the URL; Back/Forward restores the selection.
+  // Selecting a project updates the URL. Back and Forward then restore the
+  // selection.
   const selectProject = (id: string) => {
     setView("notes");
     setSelectedId(id);
@@ -166,8 +171,9 @@ export function App() {
     return () => window.removeEventListener("popstate", onPop);
   }, [projects]);
 
-  // On a shared ?note= link, scroll to that note once its card has rendered.
-  // Re-fire a few times as the YouTube iframes load and shift layout beneath it.
+  // When the URL carries a shared ?note= link, scroll to that note once its card
+  // has rendered. We scroll again a few times over the next two seconds, because
+  // the YouTube iframes load late and shift the layout underneath it.
   const scrolledRef = useRef(false);
   useEffect(() => {
     if (scrolledRef.current || !loaded) return;
@@ -176,17 +182,20 @@ export function App() {
       scrolledRef.current = true;
       return;
     }
-    if (!document.getElementById(`note-${note}`)) return; // wait for its card
+    if (!document.getElementById(`note-${note}`)) return; // Wait for its card.
     scrolledRef.current = true;
     for (const ms of [0, 400, 1000, 1800]) {
       setTimeout(() => document.getElementById(`note-${note}`)?.scrollIntoView({ block: "start" }), ms);
     }
   }, [loaded, notes, selectedId]);
 
-  // Casts the vote and mints its donation: the outcome-contingent pair is
-  // computed from the pre-vote tally (frozen at vote time) and upserted keyed
-  // to the vote row. Returns the cast (null on retract / signed-out / own
-  // note — retracting cascades the donation away, own-note votes mint none).
+  // Casts the vote and mints its donation. The outcome-contingent pair is
+  // computed from the tally as it stood before this vote. It is frozen at that
+  // moment and stored against the vote row. The function returns the minted
+  // donation, and returns null in three cases. Retracting a vote returns null,
+  // and the database cascade removes the donation with it. A signed-out visitor
+  // returns null, since no vote is cast at all. A vote on your own note returns
+  // null, because it mints no donation.
   const handleVote = async (note: NoteRow, vote: Vote): Promise<MintedDonation | null> => {
     if (!session) {
       setLoginOpen(true);
@@ -205,8 +214,9 @@ export function App() {
     const voteId = await castVote(note.id, session.user.id, vote);
     if (!voteId || note.author_id === session.user.id) return null;
     const pair = donationPair(priorTally(note, current), vote);
-    // A backend without migration 061 rejects the pair columns — keep the vote,
-    // just don't promise a donation the ledger didn't record.
+    // A backend without migration 061 rejects the pair of amount columns. We
+    // keep the vote in that case. We just do not promise the user a donation the
+    // ledger never recorded.
     const { error } = await saveDonation(voteId, preferredCharity, pair);
     return error ? null : { voteId, charity: preferredCharity, pair };
   };
@@ -229,9 +239,9 @@ export function App() {
     }
   };
 
-  // The DB self-vote triggers make a just-posted note/entry start with its
-  // author's helpful vote — mirror that into the local vote maps so the pills
-  // light up without a refetch.
+  // A database trigger casts the author's own helpful vote on a note or an entry
+  // the moment they post it. We mirror that into the local vote maps, so the
+  // rating pills light up without refetching anything.
   const nnnApi = {
     myVotes: myNnnVotes,
     onVote: handleNnnVote,
@@ -241,17 +251,21 @@ export function App() {
   const noteAuthored = (noteId: string) => setMyVotes((m) => new Map(m).set(noteId, 1));
 
   const selected = projects.find((p) => p.id === selectedId) ?? null;
-  // The project's items that actually have notes, newest first — feeds both the
-  // chip row and the note feed.
+  // The project's items that actually have notes, newest first. This list feeds
+  // both the chip row and the note feed.
   const projectItems = [...items.values()]
     .filter((i) => i.project_id === selectedId && (notesByItem.get(i.id)?.length ?? 0) > 0)
     .sort((a, b) => (b.published_at ?? b.created_at).localeCompare(a.published_at ?? a.created_at));
   const itemNoteCounts = new Map(projectItems.map((i) => [i.id, notesByItem.get(i.id)!.length]));
-  // Ignore a stale/foreign ?item= param rather than show an empty feed.
+  // Ignore an ?item= parameter that is stale or belongs to another project.
+  // Showing the whole project is better than showing an empty feed.
   const activeItem = projectItems.some((i) => i.id === itemFilter) ? itemFilter : null;
-  // Keep an improvement chain grouped behind its root note in content order:
-  // co-claim notes share start_seconds, so tie-break on the chain root's age,
-  // originals before improvements, then own age — deterministic for contentIdx.
+  // Keeps an improvement chain grouped behind the note it descends from when the
+  // feed is put in content order. Notes on the same claim all share one
+  // start_seconds value, so that alone cannot order them. We break the tie on the
+  // age of the chain's root note, then put originals before improvements, then
+  // fall back to the note's own age. The result is deterministic, which is what
+  // contentIdx relies on.
   const rootCreatedAt = (n: NoteRow): string => {
     let cur = n;
     const seen = new Set<string>();
@@ -263,9 +277,10 @@ export function App() {
     }
     return cur.created_at;
   };
-  // A project is just its notes — no per-item headers. Newest content first,
-  // then in content order (clip timestamp) within an item. The item chips
-  // narrow this to one item; ranking below applies unchanged to the subset.
+  // A project renders as a plain list of notes with no per-item headers. The
+  // newest item comes first, and inside an item the notes follow the content in
+  // clip-timestamp order. The item chips narrow this down to a single item, and
+  // the ranking below applies to that subset unchanged.
   const orderedNotes = projectItems
     .filter((i) => !activeItem || i.id === activeItem)
     .flatMap((item) =>
@@ -278,11 +293,11 @@ export function App() {
       ),
     );
   const rankTallies = useRef(new Map<string, RankTally>());
-  // Ranking is frozen per page load: a note is ranked by the vote tally it
-  // carried when it first appeared, so no card ever moves under the reader —
-  // least of all the one they just voted on. The card itself stays live (its
-  // badge, counts and donation all read the real tally); reloading drops the
-  // freeze and the feed re-sorts.
+  // Ranking is frozen for the whole page load. A note is ranked by the vote tally
+  // it carried when it first appeared, so no card ever moves underneath the
+  // reader. That matters most for the card they have just voted on. The card
+  // itself stays live, because its badge, its counts and its donation all read
+  // the real tally. Reloading the page drops the freeze and the feed re-sorts.
   const effective = (n: NoteRow): NoteRow => {
     const frozen = rankTallies.current.get(n.id);
     if (frozen) return { ...n, ...frozen };
@@ -294,12 +309,13 @@ export function App() {
     return n;
   };
   const contentIdx = new Map(orderedNotes.map((n, i) => [n.id, i]));
-  // p is a continued-fraction evaluation, so derive each note's ranking inputs
-  // once here rather than inside the comparators below — a comparator would
-  // re-evaluate it O(n log n) times on every render.
+  // Computing p evaluates a continued fraction, so each note's ranking inputs are
+  // derived once here instead of inside the comparators below. A comparator would
+  // recompute them O(n log n) times on every render.
   //
-  // One predicate decides the badge, the section and the donation payout:
-  // noteStatus (lib/noteScore.ts), the p-based rating rule.
+  // One predicate decides the badge, the feed section and the donation payout.
+  // That is noteStatus in everything-shared/noteScore.ts, the p-based rating
+  // rule.
   const ranking = new Map(
     orderedNotes.map((n) => {
       const e = effective(n);
@@ -316,8 +332,9 @@ export function App() {
   );
   const rankOf = (n: NoteRow) => ranking.get(n.id)!;
   // A note written against source text the author has since edited may no longer
-  // apply, whatever its rating — so it drops below everything else rather than
-  // sitting among notes about the live text. Outranks the rating status.
+  // apply, whatever its rating. So it drops below everything else instead of
+  // sitting among the notes about the text as it reads now. This beats the
+  // rating status whenever the two disagree.
   const staleSource = (n: NoteRow) => n.claim?.updated_quote != null;
   const current = orderedNotes.filter((n) => !staleSource(n));
   const needRatings = current.filter((n) => rankOf(n).status === "needs_ratings");
@@ -325,26 +342,30 @@ export function App() {
   const unhelpfulNotes = current.filter((n) => rankOf(n).status === "not_helpful");
   const staleSourceNotes = orderedNotes.filter(staleSource);
   // Every group is ordered by p, the latent-quality model's estimate that the
-  // note ends up rated helpful (see lib/noteBelief.ts) — so the whole feed reads
-  // as one gradient, most-uncertain at the top down to most-settled.
-  // Needs ratings: lead with the note a single Helpful vote would carry
-  // furthest — the closest to resolving — so attention lands where it settles
-  // something. Equal p (identical tallies) → oldest first, they've waited longest.
+  // note ends up rated helpful. See everything-shared/noteBelief.ts. The whole
+  // feed therefore reads as one gradient, from the most uncertain notes at the
+  // top down to the most settled ones.
+  // The group needing ratings leads with the note a single Helpful vote would
+  // carry furthest, because that note is the closest to resolving. Attention then
+  // lands where it settles something. Two notes with equal p have identical
+  // tallies, and the older of them goes first because it has waited longest.
   needRatings.sort(
     (a, b) =>
       rankOf(b).pAfterOneHelpful - rankOf(a).pAfterOneHelpful ||
       a.created_at.localeCompare(b.created_at) ||
       contentIdx.get(a.id)! - contentIdx.get(b.id)!,
   );
-  // Rated helpful: ascending p, so the most confidently helpful sits lowest.
+  // The notes rated helpful are ordered by ascending p, so the most confidently
+  // helpful one sits lowest.
   helpfulNotes.sort(
     (a, b) =>
       rankOf(a).p - rankOf(b).p ||
       rankOf(a).votes - rankOf(b).votes ||
       contentIdx.get(a.id)! - contentIdx.get(b.id)!,
   );
-  // Rated unhelpful: descending p, so the least helpful sinks lowest — the
-  // mirror of the helpful group, continuing the same gradient.
+  // The notes rated unhelpful are ordered by descending p, so the least helpful
+  // one sinks lowest. That mirrors the helpful group and continues the same
+  // gradient.
   const bestFirst = (a: NoteRow, b: NoteRow) =>
     rankOf(b).p - rankOf(a).p || contentIdx.get(a.id)! - contentIdx.get(b.id)!;
   unhelpfulNotes.sort(bestFirst);

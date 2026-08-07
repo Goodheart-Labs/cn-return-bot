@@ -1,17 +1,20 @@
-// Forest-plot pieces for the A/B comparison panel: a shared x-axis (CiAxis) and
-// one CI block per row (CiBar). Both use the same x-scale so rows line up.
-// Hand-rolled SVG, no chart library (BarChart.tsx is unrelated and untouched).
+// The forest plot in the A/B comparison panel is built from two pieces. CiAxis
+// draws the x-axis that all the rows share. CiBar draws one confidence interval
+// block per row. Both use the same scale, so every block lines up under the
+// axis. The SVG is written by hand because this repo has no chart library.
+// BarChart in the same folder is a separate chart and shares nothing with these.
 
 import type { Interval } from "../lib/confidenceIntervals";
 import type { AbStatKind } from "../lib/abComparison";
 
-const COLOR_BLOCK = "#10b981"; // helpful green, matches BarChart
-const COLOR_BLOCK_FILL = "#a7f3d0"; // lighter green fill for the CI span
+const COLOR_BLOCK = "#10b981"; // The same green BarChart uses for helpful notes.
+const COLOR_BLOCK_FILL = "#a7f3d0"; // A lighter green, filling the interval.
 const COLOR_AXIS = "#d1d5db";
 const COLOR_LABEL = "#6b7280";
 const COLOR_ZERO = "#9ca3af";
 
-// Horizontal inset so block edges / end caps don't clip at the SVG borders.
+// Keep this much space free at each side, so a block edge is never clipped by
+// the border of the SVG.
 const AXIS_INSET = 8;
 const ROW_HEIGHT = 22;
 const AXIS_HEIGHT = 22;
@@ -27,7 +30,8 @@ function scaleX(value: number, domain: Domain, width: number): number {
   return AXIS_INSET + t * inner;
 }
 
-/** Pick a round tick step for a fractional range (e.g. 0.4 → 0.1). */
+/** Pick a round step between ticks for a fractional range. A range of 0.4 gets
+ *  a step of 0.1. */
 function niceStep(rough: number): number {
   if (rough <= 0) return 1;
   const exp = Math.floor(Math.log10(rough));
@@ -46,9 +50,11 @@ function niceTicks(domain: Domain, count = 5): number[] {
 }
 
 /**
- * Shared domain across all visible rows. Percent and cost stats fit the data
- * (clamped ≥ 0; percent also ≤ 1); the diff stat is symmetric around 0. Padded
- * so blocks don't touch the edges.
+ * Work out the x-axis range that all the visible rows share.
+ * For a percent or a cost metric the range follows the data. It never drops
+ * below zero, and a percent never goes above one.
+ * For a difference metric the range is symmetric around zero.
+ * Either way a little padding is added, so the blocks never touch the edges.
  */
 export function computeDomain(intervals: Interval[], kind: AbStatKind): Domain {
   if (intervals.length === 0) return kind === "diff" ? { min: -0.1, max: 0.1 } : { min: 0, max: 1 };
@@ -120,7 +126,7 @@ export function CiBar({
           strokeDasharray="2 2"
         />
       )}
-      {/* CI span — width is the size of the confidence interval */}
+      {/* The block. Its width is the size of the confidence interval. */}
       <rect
         x={Math.min(xLo, xHi)}
         y={midY - blockHeight / 2}
@@ -131,7 +137,7 @@ export function CiBar({
         stroke={COLOR_BLOCK}
         strokeWidth={1}
       />
-      {/* point estimate marker */}
+      {/* The tick marking the point estimate. */}
       <line x1={xPoint} y1={midY - blockHeight / 2 - 2} x2={xPoint} y2={midY + blockHeight / 2 + 2} stroke={COLOR_BLOCK} strokeWidth={2} />
     </svg>
   );

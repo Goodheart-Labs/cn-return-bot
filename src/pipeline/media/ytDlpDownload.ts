@@ -1,11 +1,11 @@
 /**
  * yt-dlp Download
  *
- * Shared helper for downloading videos + metadata from any platform yt-dlp
- * supports (X, YouTube, TikTok, Vimeo, Twitch, etc.). Used both by the local
- * runOnVideos harness (combined `downloadWithYtDlp`) and by the source
- * verifier (granular `fetchYtDlpMetadata`, `downloadVideoWithYtDlp`,
- * `fetchAutoSubs`).
+ * Shared helpers for downloading videos and their metadata from any platform
+ * yt-dlp supports, such as X, YouTube, TikTok, Vimeo and Twitch.
+ * The local runOnVideos harness uses the combined `downloadWithYtDlp`.
+ * The source verifier uses the granular `fetchYtDlpMetadata`,
+ * `downloadVideoWithYtDlp` and `fetchAutoSubs` instead.
  */
 
 import { execSync } from "child_process";
@@ -68,9 +68,9 @@ function quote(s: string): string {
 }
 
 /**
- * Combined metadata + default-quality download in one yt-dlp invocation.
- * Used by runOnVideos. The verifier uses the granular functions below
- * because it wants to decide quality/auto-sub strategy based on duration.
+ * Fetches the metadata and downloads the media at the default quality. runOnVideos
+ * uses this. The source verifier uses the granular functions below instead, because
+ * it decides the download quality and the transcript source from the duration.
  */
 export function downloadWithYtDlp(url: string, outputDir: string): YtDlpResult {
   const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
@@ -92,7 +92,8 @@ export function downloadWithYtDlp(url: string, outputDir: string): YtDlpResult {
   }
 }
 
-/** Metadata-only — no download. Used to size the download up front. */
+/** Fetches the metadata without downloading anything. The caller uses it to decide
+ *  how large a download to ask for. */
 export function fetchYtDlpMetadata(url: string): YtDlpMetadata {
   try {
     const metadataJson = execSync(
@@ -106,9 +107,10 @@ export function fetchYtDlpMetadata(url: string): YtDlpMetadata {
 }
 
 /**
- * Download only — assumes metadata was already fetched. `quality: "low"`
- * forces ≤240p (lowest available stream). For videos where we only need a
- * few sampled frames, this dramatically shrinks the byte count.
+ * Downloads the media and assumes the metadata was already fetched. Passing
+ * `quality: "low"` asks for a stream of 240p or less, and falls back to the worst
+ * stream on offer. When we only need a few sampled frames from a video, this shrinks
+ * the download by a large factor.
  */
 export function downloadVideoWithYtDlp(
   url: string,
@@ -130,9 +132,9 @@ export function downloadVideoWithYtDlp(
 }
 
 /**
- * Fetch auto-generated captions and return the plain text. Returns null when
- * the URL has no auto-subs available (e.g. uploader disabled them, or the
- * video is in a language we didn't request).
+ * Fetches the automatically generated captions and returns them as plain text.
+ * Returns null when the URL has no auto-subs. That happens when the uploader turned
+ * them off, or when the video is in a language we did not ask for.
  */
 export function fetchAutoSubs(url: string, outputDir: string, lang: string = "en"): string | null {
   const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
@@ -142,10 +144,12 @@ export function fetchAutoSubs(url: string, outputDir: string, lang: string = "en
       { timeout: YT_DLP_TIMEOUT_MS, stdio: ["pipe", "pipe", "pipe"] },
     );
   } catch {
-    // yt-dlp errors when no subs are available — treat as "no subs" rather than throw.
+    // yt-dlp errors when no subs are available. We treat that as "no subs" instead
+    // of throwing.
     return null;
   }
-  // yt-dlp writes the sub file as <id>.<lang>.vtt (sometimes ttml). Pick the first one.
+  // yt-dlp writes the subtitle file as <id>.<lang>.vtt, and sometimes as ttml. We
+  // take the first one we find.
   const matches = fs.readdirSync(outputDir).filter((f) => f.endsWith(".vtt") || f.endsWith(".ttml"));
   if (!matches.length) return null;
   const subPath = path.join(outputDir, matches[0]!);
@@ -180,7 +184,8 @@ function resolveDownloadedFile(meta: YtDlpMetadata, outputDir: string): { filePa
   if (fs.existsSync(expected)) {
     return { filePath: expected, kind: classifyByExtension(expected) };
   }
-  // Quality filter or extension fallback: scan the directory for any media file.
+  // A quality filter or an unexpected extension can change the file name, so we scan
+  // the directory for any media file instead.
   for (const file of fs.readdirSync(outputDir)) {
     const full = path.join(outputDir, file);
     const kind = classifyByExtension(full);
@@ -197,16 +202,17 @@ export interface SubtitleCue {
   text: string;
 }
 
-/** "00:01:23.456" / "01:23,456" / "83.4" → seconds. */
+/** Converts a subtitle timecode to seconds. It accepts forms such as "00:01:23.456",
+ *  "01:23,456" and "83.4". */
 function parseTimecode(tc: string): number {
   return tc.replace(",", ".").split(":").reduce((acc, part) => acc * 60 + Number(part), 0);
 }
 
 /**
- * Parse a WEBVTT/SRT subtitle file into timestamped cues. Applies the same
- * cleaning + consecutive-duplicate dedup the plain-text path needs for
- * YouTube's rolling auto-subs, but tags each surviving line with the start/end
- * of its enclosing cue.
+ * Parses a WEBVTT or SRT subtitle file into timestamped cues. It applies the same
+ * cleaning and consecutive-duplicate removal that the plain-text path needs for
+ * YouTube's rolling auto-subs. Each surviving line is tagged with the start and end
+ * time of the cue it came from.
  */
 export function parseSubtitleToCues(content: string): SubtitleCue[] {
   const cues: SubtitleCue[] = [];
@@ -221,17 +227,16 @@ export function parseSubtitleToCues(content: string): SubtitleCue[] {
     if (line.startsWith("NOTE ")) continue;
     const arrow = line.indexOf("-->");
     if (arrow !== -1) {
-      // "00:00:00.000 --> 00:00:02.000 align:start position:0%"
+      // A timing line looks like "00:00:00.000 --> 00:00:02.000 align:start position:0%".
       curStart = parseTimecode(line.slice(0, arrow).trim().split(/\s+/).pop() ?? "0");
       curEnd = parseTimecode(line.slice(arrow + 3).trim().split(/\s+/)[0] ?? "0");
       continue;
     }
     if (/^\d+$/.test(line)) continue; // SRT sequence numbers
-    // Strip cue tags, decode HTML entities, collapse the resulting whitespace.
     const cleaned = decodeHtmlEntities(line.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ").trim();
     if (!cleaned) continue;
-    // YouTube auto-subs duplicate every line as they build up word-by-word.
-    // Skip a line if it's identical to the immediately preceding one.
+    // YouTube auto-subs repeat every line as it builds up word by word, so a line
+    // identical to the one before it carries nothing new.
     if (cleaned === prev) continue;
     cues.push({ start: curStart, end: curEnd, text: cleaned });
     prev = cleaned;

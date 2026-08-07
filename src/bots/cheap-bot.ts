@@ -1,10 +1,18 @@
 /**
  * cheap-bot
  *
- * 5-stage hill-climbing target: query writer → searXNG → note writer →
- * note-needed judge → source verifier. All LLM stages run on DeepSeek v4 Flash.
- * Dedicated to iteration against datasets/big_eval/splits/val.csv — simple-bot
- * stays untouched and serves production traffic.
+ * The pipeline has five stages. A query writer turns the post into search
+ * queries. SearXNG fetches results for those queries. A note writer drafts the
+ * note. A note-needed judge decides whether the note is warranted. A source
+ * verifier checks the sources the note cites.
+ *
+ * Most stages run on DeepSeek v4 Flash. The note-needed judge runs on Gemini 3
+ * Flash. The models come from the cheap-bot variant of BOT_TEST in
+ * src/pipeline/ab-testing/abTestsData.ts.
+ *
+ * This bot exists so we can hill-climb against
+ * datasets/big_eval/splits/val.csv. simple-bot stays untouched and serves
+ * production traffic.
  */
 
 import { Bot, PipelineResult, outcomeToResult } from "./types";

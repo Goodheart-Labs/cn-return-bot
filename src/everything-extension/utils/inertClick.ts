@@ -1,8 +1,10 @@
-// "Did this click do something?" has no true oracle — the browser exposes no
-// way to ask an element whether it has click listeners. Affordance signals
-// are the proxy: interactive tags/roles, focusability, contenteditable, and
-// computed cursor:pointer (the visual signal users read as clickable). A
-// click with none of these anywhere in its path landed on empty surface.
+// There is no way to answer "did this click do something?" for certain,
+// because the browser will not tell you whether an element has click
+// listeners. So we look for the signs that an element is meant to be
+// interactive instead. Those signs are an interactive tag or role, being
+// focusable, being contenteditable, and a computed cursor of `pointer`, which
+// is the visual signal a user reads as clickable. A click with none of these
+// anywhere in its path landed on empty surface.
 
 const INTERACTIVE_TAGS = new Set([
   "A", "AUDIO", "BUTTON", "DETAILS", "EMBED", "IFRAME", "INPUT", "LABEL",
@@ -16,10 +18,11 @@ const INTERACTIVE_ROLES = new Set([
 
 const ELEMENT_NODE = 1;
 
-/** True when the click landed on empty surface — nothing in its path
- *  advertises interactivity. Used to decide whether an outside click should
- *  close an open note: clicks that do something (video play/pause, like,
- *  a link) keep it open. */
+/** True when the click landed on empty surface, meaning nothing in its path
+ *  advertises itself as interactive. This decides whether a click outside an
+ *  open note should close it. A click that does something, such as playing or
+ *  pausing the video, pressing like, or following a link, keeps the note
+ *  open. */
 export function isInertClick(e: MouseEvent): boolean {
   for (const node of e.composedPath()) {
     const el = node as HTMLElement;
@@ -35,9 +38,10 @@ export function isInertClick(e: MouseEvent): boolean {
   return true;
 }
 
-/** Whether the event passed through any of our shadow hosts
- *  (common-notes-ui / -inline / -yt) — events bubbling out of
- *  a shadow root retarget to the host, but composedPath keeps the hosts. */
+/** Whether the event passed through one of our own shadow hosts. Those are
+ *  common-notes-ui, common-notes-inline, and common-notes-yt. An event
+ *  bubbling out of a shadow root is retargeted to its host, but composedPath
+ *  still lists the hosts. */
 export function insideCommonNotesUi(e: Event): boolean {
   return e.composedPath().some((n) => ((n as Element).tagName ?? "").startsWith("COMMON-NOTES"));
 }

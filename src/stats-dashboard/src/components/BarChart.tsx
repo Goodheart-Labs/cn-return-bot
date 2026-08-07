@@ -14,7 +14,8 @@ const COLOR_HELPFUL = "#10b981";
 const COLOR_UNHELPFUL = "#ef4444";
 const COLOR_NMR = "#9ca3af";
 const COLOR_NON_CANDIDATE = "#111827";
-// "% of all" blue ramp: ours (strong) → other AI (medium) → human (light).
+// The "% of all" chart gives each origin its own blue. Our notes get the
+// strongest one, other AI notes a medium one, and human notes the lightest.
 const COLOR_OURS = "#2563eb";
 const COLOR_OTHER_AI = "#60a5fa";
 const COLOR_HUMAN = "#bfdbfe";
@@ -53,18 +54,19 @@ function niceTicks(maxValue: number, count = 4): number[] {
   return ticks;
 }
 
-// Pick the bar interval at which to render an x-axis label so the user sees
-// ~TARGET_LABELS_IN_VIEW labels in any scrolled slice of the chart. Density
-// is measured against the smaller of the dataset and the viewport — for
-// datasets shorter than the viewport we show ~7 labels overall; for longer
-// scrolling datasets we show ~7 labels in any 28-bar window.
+// Decide how many bars to skip between x-axis labels, so that the user always
+// sees roughly TARGET_LABELS_IN_VIEW of them. The spacing is measured against
+// the smaller of the whole dataset and the visible window. A dataset that fits
+// on screen therefore gets about seven labels in total. A longer dataset that
+// has to be scrolled gets about seven labels in every window of
+// MAX_VISIBLE_BARS bars.
 const TARGET_LABELS_IN_VIEW = 7;
 function tickLabelEvery(numBars: number): number {
   const effectiveBars = Math.min(numBars, MAX_VISIBLE_BARS);
   return Math.max(1, Math.ceil(effectiveBars / TARGET_LABELS_IN_VIEW));
 }
 
-// ─── 100%-stacked model (shared by ratio + share modes) ──────────────────────
+// ─── The 100%-stacked model, used by the ratio mode and the share mode ───────
 
 interface StackSegment {
   key: string;
@@ -82,8 +84,10 @@ function stackTotal(b: StackBucket): number {
   return b.segments.reduce((sum, seg) => sum + seg.value, 0);
 }
 
-// Ratio mode: helpful / not-helpful / NMR (/ non-candidate). When the
-// non-candidate toggle is off that segment is dropped so the rest sums to 100%.
+// In ratio mode each bar is split into helpful notes, not-helpful notes, and
+// notes that need more ratings. Non-candidate runs are a fourth segment, shown
+// only while their toggle is on. When it is off that segment is left out
+// altogether, so the remaining three add up to 100%.
 function ratioToStacks(buckets: ChartBucket[], showNonCandidate: boolean): StackBucket[] {
   return buckets.map((b) => {
     const segments: StackSegment[] = [
@@ -98,7 +102,8 @@ function ratioToStacks(buckets: ChartBucket[], showNonCandidate: boolean): Stack
   });
 }
 
-// Share mode: of rated-helpful notes, ours / top other AI / human-written.
+// In share mode each bar takes the notes rated helpful and splits them three
+// ways: ours, the largest other AI note writer, and everyone writing by hand.
 function shareToStacks(buckets: ShareBucket[]): StackBucket[] {
   return buckets.map((b) => ({
     key: b.key,
@@ -112,7 +117,8 @@ function shareToStacks(buckets: ShareBucket[]): StackBucket[] {
 }
 
 interface HoverState {
-  /** Bar center in SVG coordinates (before subtracting scrollLeft). */
+  /** The centre of the bar in SVG coordinates. The scroll offset has not been
+   *  subtracted yet. */
   slotCenter: number;
   absolute?: ChartBucket;
   stacked?: StackBucket;
@@ -135,9 +141,10 @@ export function BarChart({ buckets, shareBuckets, granularity, mode, width, show
   const innerHeight = CHART_HEIGHT - PAD_TOP - PAD_BOTTOM;
   const barWidth = slotWidth * (1 - BAR_GAP_FRAC);
 
-  // Latest bucket is rightmost; jump to it whenever the axis reshapes (bar
-  // count, granularity, or switching to/from the share axis). Clear any stale
-  // hover so a wrong-mode tooltip doesn't linger.
+  // The newest bucket sits on the right, so scroll all the way there whenever
+  // the axis changes shape. That happens when the number of bars changes, when
+  // the granularity changes, and when the mode changes. Any hover state is
+  // cleared at the same time, so a tooltip from the old mode cannot linger.
   useEffect(() => {
     setHovered(null);
     const el = scrollRef.current;
@@ -208,10 +215,10 @@ interface AbsoluteChartProps {
 }
 
 function AbsoluteChart({ buckets, granularity, width, innerHeight, slotWidth, barWidth, showNmr, onHover }: AbsoluteChartProps) {
-  // When "show needs more ratings" is on, NMR notes stack in gray above the
-  // green helpful bars, so the upward bar height becomes total posted (minus
-  // the not-helpful that hang below the zero line). The upper axis rescales to
-  // fit that taller stack.
+  // When the notes that need more ratings are shown, they stack in grey above
+  // the green helpful bars. The upward part of a bar then measures every note
+  // posted except the not-helpful ones, which hang below the zero line. The
+  // upper axis is rescaled to fit that taller stack.
   const maxUpper = Math.max(0, ...buckets.map((b) => b.helpful + (showNmr ? b.nmr : 0)));
   const maxUnhelpful = Math.max(0, ...buckets.map((b) => b.unhelpful));
   const upperTicks = niceTicks(Math.max(maxUpper, 1));
@@ -356,10 +363,10 @@ function StackedBars({ stacks, granularity, width, innerHeight, slotWidth, barWi
   );
 }
 
-// Approximate tooltip width used to clamp the anchored x-position against
-// the chart edges. Smaller than the actual rendered width so we err on the
-// side of "tooltip slightly off-screen" rather than "tooltip jumps away
-// from the bar".
+// Half of the tooltip's width, used to keep it inside the chart. The value is
+// smaller than the tooltip really is, and that is deliberate. It is better for
+// the tooltip to hang a little off the edge than for it to jump away from the
+// bar it belongs to.
 const TOOLTIP_HALF_WIDTH = 90;
 const TOOLTIP_EDGE_MARGIN = 4;
 

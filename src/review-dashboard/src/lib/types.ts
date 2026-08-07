@@ -1,4 +1,5 @@
-// Unified item type rendered by NoteCard — works for both production and dataset run items
+// The single item type NoteCard renders. It covers production items and
+// dataset-run items alike.
 export interface ReviewItem {
   id: string;
   source: "production" | "dataset_run";
@@ -8,9 +9,10 @@ export interface ReviewItem {
   hasPhoto?: boolean;
   hasVideo?: boolean;
   mediaCount?: number;
-  // Raw X-API media arrays from the tweets table — used to render images/videos
-  // without going through the legacy log-shape parser. Each entry has at least
-  // {type: "photo"|"video"|"animated_gif", url}.
+  // The raw media arrays from X's API, as stored on the tweets table. We render
+  // images and videos straight from these, instead of going through the old
+  // parser for the log shape. Every entry carries at least a `type`, which is
+  // "photo", "video" or "animated_gif".
   tweetMedia?: Array<{ type: string; url?: string; preview_image_url?: string; [k: string]: unknown }>;
   referencedTweetData?: { text?: string; media?: Array<{ type: string; url?: string; [k: string]: unknown }> };
 
@@ -36,7 +38,8 @@ export interface ReviewItem {
   botId?: string;
   abTestPicks?: Record<string, string>;
 
-  // Comparison notes (competing notes for production, ground truth for dataset runs)
+  // Notes to compare ours against. For a production item these are the competing
+  // notes on the same tweet. For a dataset run it is the ground-truth note.
   comparisonNotes?: ComparisonNote[];
 
   // Dataset run specific
@@ -51,17 +54,20 @@ export interface ReviewItem {
   // Annotation state
   annotation?: Annotation;
 
-  // Auto-computed competitor lead time tag (not persisted)
+  // A tag saying how far ahead of us the first helpful competitor note was. It is
+  // computed while building the item and is never stored.
   competitorLeadTag?: string;
 
-  // Misinfo fact-check topic (granular topic_id from misinfo_monitoring_sightings)
-  // and its derived review set. Undefined for regular (non-misinfo) notes.
+  // The fact-check topic this item was sighted under. It is the fine-grained
+  // topic_id from misinfo_monitoring_sightings, plus the review set derived from
+  // it. Both stay undefined on a regular note that has no sighting.
   topic?: string;
   topicSet?: import("../../../dashboard-shared/topicSets").TopicSet;
 
-  // A note the bot WROTE but never submitted (daily cap hit, or a pre-submit
-  // check failed) — recovered from its pipeline_run. Rendered with a "draft —
-  // not posted" tag and hidden by default (the draft_not_posted pill is off).
+  // A note the bot wrote but never submitted, because the daily cap was full or a
+  // pre-submit check failed. We recover it from its pipeline_run. The card marks
+  // it as a draft. Such notes are hidden by default, because both draft pills,
+  // filtered_no_slot and draft_check_failed, start switched off.
   isDraft?: boolean;
 
   // For filter categorization
@@ -84,7 +90,9 @@ export interface Annotation {
   highValue?: boolean;
 }
 
-// Production failure types (derived from CN status)
+// The failure types a production item can carry. Most of them come from the
+// note's Community Notes status. The rest describe notes we never submitted, and
+// notes someone else wrote on a tweet we passed on.
 export type ProductionFailureType =
   | "rated_helpful"
   | "rated_unhelpful"
@@ -96,7 +104,8 @@ export type ProductionFailureType =
   | "filtered_no_slot"
   | "draft_check_failed";
 
-// V2 dataset run categories (from evaluateResults categorizeRowV2)
+// The version-2 categories for dataset runs. They are produced by
+// categorizeRowV2 in evaluateResults.ts.
 export type DatasetCategoryV2 =
   | "nw_success"
   | "nw_published_directional"
@@ -123,13 +132,16 @@ export interface FilterState {
   seen: "all" | "seen" | "unseen";
   failureTypes: Set<FailureType>;
   failureModes: Set<string>;
-  // Misinfo topic-set filter (AI / animal-welfare / EA / politics). Empty = no
-  // topic narrowing (show all). AND-combined with the other filters.
+  // The topic-set filter for misinformation monitoring. The sets are AI, animal
+  // welfare, effective altruism and politics. An empty set means no narrowing by
+  // topic, so everything shows. It combines with the other filters using AND.
   topicSets: Set<string>;
-  // When on, the list is the high-value (starred ★) notes, all-time. The other
-  // filters still apply within it, but toggling ★ on resets them to
-  // non-restrictive (seen "all", no pills, no tags) so narrowing is opt-in and
-  // always visible in the filter bar — nothing is overridden behind the UI.
+  // When this is on, the list shows the notes starred as high value, over all
+  // time. The other filters still narrow within that set. Switching the star on
+  // resets them so they restrict nothing. Seen goes back to "all", and the pills
+  // and tags are cleared. Narrowing is then something the reviewer opts into, and
+  // it is always visible in the filter bar. Nothing is overridden behind the
+  // interface.
   highValueOnly: boolean;
 }
 
@@ -149,14 +161,17 @@ export const FAILURE_TYPE_CONFIG: Record<FailureType, FailureTypeConfig> = {
   lost_to_competitor: { label: "Lost to competitor", defaultOn: false, production: true, datasetRun: false, color: "bg-orange-100 text-orange-800" },
   missed_opportunity: { label: "Missed opportunity", defaultOn: false, production: true, datasetRun: false, color: "bg-yellow-100 text-yellow-800" },
   needs_more_ratings: { label: "Needs More Ratings", defaultOn: false, production: true, datasetRun: false, color: "bg-blue-100 text-blue-800" },
-  // NEEDS_MORE_RATINGS notes whose rating counts run net negative (not-helpful >
-  // helpful) — still undecided by CN, but sinking. Split out of needs_more_ratings
-  // the same way lost_to_competitor is, so the two pills stay disjoint.
+  // A note that Community Notes still calls NEEDS_MORE_RATINGS, but whose ratings
+  // are already bad enough that it is unlikely to recover. isUnderwaterNote in
+  // lib/data.ts holds the exact rule. It is still undecided, but it is sinking.
+  // This type is split out of needs_more_ratings the same way lost_to_competitor
+  // is, so the two pills never show the same note.
   underwater: { label: "Underwater", defaultOn: true, production: true, datasetRun: false, color: "bg-indigo-100 text-indigo-800" },
   filtered_low_eval_score: { label: "Filtered (low eval score)", defaultOn: false, production: true, datasetRun: false, color: "bg-teal-100 text-teal-800" },
-  // Notes the bot WROTE but never submitted. Split by why: the cap was full (a
-  // good note that just lost the daily slot) vs a pre-submit check failed. Both
-  // off by default — you filter them in when you want to see the drafts.
+  // Notes the bot wrote but never submitted, split by the reason. Either the
+  // daily cap was full, so a perfectly good note lost its slot, or a pre-submit
+  // check failed. Both types are off by default. You filter them in when you want
+  // to look at the drafts.
   filtered_no_slot: { label: "Filtered (no posting slots)", defaultOn: false, production: true, datasetRun: false, color: "bg-slate-100 text-slate-600" },
   draft_check_failed: { label: "Draft (check failed)", defaultOn: false, production: true, datasetRun: false, color: "bg-stone-100 text-stone-600" },
 
@@ -186,7 +201,7 @@ export const FAILURE_TYPE_CONFIG: Record<FailureType, FailureTypeConfig> = {
   uncategorized: { label: "Uncategorized", defaultOn: false, production: true, datasetRun: true, color: "bg-gray-100 text-gray-500" },
 };
 
-// V2 category strings that map directly to FailureType
+// The version-2 category strings that are already valid FailureType values.
 const V2_CATEGORIES: Set<string> = new Set([
   "nw_success", "nw_published_directional", "nw_published_bad",
   "nw_miss_judge_killed_good", "nw_miss_judge_killed_bad",
@@ -197,8 +212,9 @@ const V2_CATEGORIES: Set<string> = new Set([
   "nnw_fp_harmless", "nnw_fp_published", "nnw_eval_disagrees",
 ]);
 
-// Map the `result` column from the AI judge to dashboard failure types.
-// Handles both V1 labels ("correct", "missed", ...) and V2 category strings.
+// Maps the `result` column written by the AI judge onto a dashboard failure type.
+// It handles the version-1 labels, such as "correct" and "missed", as well as the
+// version-2 category strings.
 export function resultToFailureType(result: string | undefined | null): FailureType {
   if (!result) return "uncategorized";
   if (V2_CATEGORIES.has(result)) return result as DatasetCategoryV2;

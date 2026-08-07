@@ -1,7 +1,8 @@
 /**
  * Bot Input
  *
- * Gathers shared inputs (media, author history, comments) for agent-family bots.
+ * Gathers the inputs that agent-family bots share: the media analysis, the
+ * author's note history, and the comments under the post.
  */
 
 import type { Post } from "../../api/fetchEligiblePosts";
@@ -25,9 +26,10 @@ export interface BotInput {
 const MIN_TEXT_LENGTH_FOR_SEARCH = 20;
 
 /**
- * True if the post has too little text to fact-check on its own — i.e. the
- * media is the only meaningful signal. Combines wrapping + referenced text and
- * strips @handles/URLs before measuring.
+ * True when the post has too little text to fact-check on its own, which means
+ * the media is the only meaningful signal. The check joins the post's own text
+ * with the text of any post it references. It removes @handles and URLs before
+ * measuring the length, because neither is something we can search on.
  */
 function isMediaOnlyPost(post: Post): boolean {
   const wrapping = post.text ?? "";
@@ -42,7 +44,9 @@ function isMediaOnlyPost(post: Post): boolean {
 export async function createBotInput(post: Post, logTag: string): Promise<BotInput> {
   const config = getBotConfig();
   const strategy = config.video_description_strategy;
-  // In-memory first (prefilter built it this run), then the file cache (eval).
+  // Try the in-memory cache first, because the note-needed prefilter may have
+  // built this input earlier in the same run. Then try the file cache, which only
+  // the eval runs ever fill.
   const memCached = readInputCacheMem(post.id, strategy);
   if (memCached) return memCached;
   const cached = readInputCache(post.id, strategy);
@@ -77,17 +81,19 @@ export async function createBotInput(post: Post, logTag: string): Promise<BotInp
     }
   }
 
-  // Only posts with media can carry the "Made with AI" label, so gate the
-  // (browser-based) check on media presence to keep the page-load off text-only
-  // posts. Everything-pipeline synthetic posts (hyphenated ids by design — see
-  // buildClaimPost) have no X status page to load, so skip the check instead of
-  // burning its 15s timeout per image-backed claim. Fails open — never blocks
-  // note generation.
+  // Only media can carry the "Made with AI" label, and the check has to load the
+  // post's page in a browser. So we only run it when the post has media, and a
+  // text-only post never pays for a page load.
+  // Posts from the everything pipeline are synthetic and are given hyphenated ids
+  // on purpose, see buildClaimPost. There is no X status page for them, so we skip
+  // the check rather than wait out its page-load timeout on every image-backed
+  // claim. The check fails open and never blocks note generation.
   const isRealTweetId = /^\d+$/.test(post.id);
   const mediaMadeWithAiLabel = hasMedia && isRealTweetId ? await detectMadeWithAiLabel(post.id, logTag) : false;
 
-  // Author history (best-effort; gated by the author_history A/B test). When
-  // off, skip the lookup entirely so the writer gets no author-history block.
+  // The author_history A/B test decides whether we look this up at all. When the
+  // arm is off we skip the query, and the writer gets no author-history block.
+  // A failed lookup is not fatal. We warn and carry on without the history.
   let authorHistory: AuthorNoteHistory | undefined;
   if (config.author_history) {
     try {
@@ -97,7 +103,7 @@ export async function createBotInput(post: Post, logTag: string): Promise<BotInp
     }
   }
 
-  // Comments (best-effort)
+  // The comments are optional. A failed fetch just means the writer sees none.
   let comments: string | undefined;
   try {
     const text = await fetchTweetComments(post.id, post.text);

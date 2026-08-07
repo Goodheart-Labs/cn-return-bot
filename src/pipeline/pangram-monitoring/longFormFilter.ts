@@ -1,9 +1,11 @@
 /**
- * Long-form filter: keep only posts longer than the free tweet limit (Premium
- * long posts) or X Articles — the "paid" content we run AI-detection on.
+ * The long-form filter. It keeps only the posts we run AI detection on, which is
+ * the paid content. That means the long posts Premium accounts can write and X
+ * Articles.
  *
- * X caps free posts at 280 characters; `Post.text` already resolves to the full
- * note_tweet body (never the truncated form), so its length is the signal.
+ * X caps a free post at 280 characters, so length alone tells the two apart.
+ * `Post.text` always holds the full note_tweet body and never the truncated
+ * form, so its length is the signal we can rely on.
  */
 import type { Post } from "../../api/fetchEligiblePosts";
 

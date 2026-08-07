@@ -1,28 +1,34 @@
 /**
  * Structured claim map for the `trump_election_fraud` topic.
  *
- * WHY THIS EXISTS
- * The prose grounding document (documents/trump_election_fraud.md) grounds the
- * note-writer's *research*, but the bot still runs a live web search + source
- * verification per note. For a topic like this one, most tweets recycle a SMALL
- * set of claims (China-220M, 278k noncitizens, machines-hacked, Georgia). Those
- * shouldn't be re-researched from scratch every time.
+ * Why this exists.
+ * The prose grounding document in documents/trump_election_fraud.md grounds the
+ * note-writer's research, but the bot still runs a live web search and a source
+ * verification for every note. On a topic like this one most tweets recycle the
+ * same small set of claims. Examples are the 220 million voter files taken by
+ * China, the 278,000 noncitizens, the hacked voting machines, and Georgia. Those
+ * claims should not be researched from scratch every time.
  *
- * This map fingerprints each recurring claim → its grain of truth, correction,
- * PRE-VETTED sources (vetted once, by a human), and a ready-to-post note. The
- * intended flow (not yet wired): match a tweet to a claim via `match`; if it
- * hits, hand the note-writer this entry (skip/short-circuit live search, cite
- * the vetted sources directly); if it misses, fall back to the current live
- * search for the novel long tail.
+ * Each recurring claim gets one entry here. An entry records the claim's grain of
+ * truth, its correction, the sources a human has already vetted, and a note that
+ * is ready to post.
  *
- * Sources here were gathered + fetched during research on 2026-07-17; Nathan
- * vets them. The exclusion logic (debunks/opinion are NOT misleading) stays in
- * briefs/trump_election_fraud.md — this map is only for correctable claims.
+ * The intended flow is not wired up yet. A tweet would be matched to a claim
+ * through the entry's `match` keywords. On a hit the note-writer would be handed
+ * the entry, would skip the live search, and would cite the vetted sources
+ * directly. On a miss it would fall back to the live search the bot runs today,
+ * which covers the long tail of novel claims.
+ *
+ * The sources here were gathered and read during research on 2026-07-17, and
+ * Nathan vets them. This map only holds claims that can be corrected. The rule for
+ * what counts as misleading in the first place lives in
+ * briefs/trump_election_fraud.md, and that is where the exclusions for debunks and
+ * opinion stay.
  */
 
 export interface ClaimSource {
   url: string;
-  /** One line on what this source establishes — the reviewer's audit trail. */
+  /** One line on what this source establishes. It is the reviewer's audit trail. */
   supports: string;
 }
 
@@ -30,17 +36,21 @@ export interface ClaimEntry {
   id: string;
   /** Canonical statement of the misleading claim. */
   claim: string;
-  /** Lowercase keywords/phrases that fingerprint a tweet to this claim. A tweet
-   *  is a candidate for this entry if it hits several of these (matcher's call). */
+  /** Lowercase keywords and phrases that identify a tweet as making this claim. A
+   *  tweet is a candidate for this entry when it hits several of them. How many
+   *  count as several is the matcher's decision. */
   match: string[];
-  /** What IS actually true — keeps the correction honest rather than a blanket
-   *  "false", and pre-empts the "but the grain of truth!" reply. Optional. */
+  /** The part of the claim that is actually true. Saying it keeps the correction
+   *  honest instead of a blanket "false". It also answers the reader who would
+   *  otherwise reply that the claim has something to it. Optional. */
   grainOfTruth?: string;
   /** The core factual rebuttal, in plain language. */
   correction: string;
-  /** Pre-vetted citations. The note cites these directly — no live discovery. */
+  /** Citations a human has already vetted. The note cites these directly, and no
+   *  live search runs. */
   sources: ClaimSource[];
-  /** Ready-to-post Community Note: correction + inline source URL(s). Kept tight. */
+  /** A Community Note that is ready to post. It is the correction followed by the
+   *  source URLs, and it is kept short. */
   note: string;
 }
 

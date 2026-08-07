@@ -6,16 +6,17 @@ import type { NoteRow } from "./types";
 
 export type PostOutcome =
   | { type: "posted"; claimId: string; noteId: string }
-  | { type: "rejected" } // judge-note said not an earnest note
+  | { type: "rejected" } // The judge-note check decided the text was not an earnest note.
   | { type: "error"; message: string };
 
-// A user claim's `claim` column is a preview of the anchor text, not the
-// full quote (that lives in context_quote).
+// On a claim a user created, the `claim` column holds only a preview of the
+// anchor text. The full text lives in `context_quote`.
 const CLAIM_PREVIEW_CHARS = 300;
 
-/** Write a brand-new note anchored to a text span: judge earnest-vs-trolling
- *  FIRST (a rejected note leaves no orphan claim), then insert the user claim
- *  and the draft note on it. */
+/** Writes a brand-new note anchored to a span of text. The earnest-note judge
+ *  runs first, before anything is inserted, so a rejected note never leaves an
+ *  orphan claim behind. Only after it passes do we insert the user's claim and
+ *  the draft note on it. */
 export async function postClaimWithNote(params: {
   itemId: string;
   itemUrl: string;
@@ -62,9 +63,10 @@ export async function postClaimWithNote(params: {
   }
 }
 
-/** Post an improved version of an existing note as your own draft note on the
- *  same claim, linked to the original via improved_from_note_id (it shows as
- *  its own card, it does not replace it), judge-gated the same way. */
+/** Posts an improved version of an existing note as the user's own draft note on
+ *  the same claim. The `improved_from_note_id` column links it back to the
+ *  original. The improvement shows as its own card and never replaces the note it
+ *  improves. The earnest-note judge gates it the same way. */
 export async function postImprovement(params: {
   note: NoteRow;
   text: string;

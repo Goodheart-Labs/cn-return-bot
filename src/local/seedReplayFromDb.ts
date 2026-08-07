@@ -1,19 +1,25 @@
 /**
- * Seed the cheap-bot replay caches from a historical pipeline_runs row.
+ * Seed the replay caches from a historical `pipeline_runs` row.
  *
- * Lets tryoutNotes re-run a past run locally while reusing data from its prod
- * logs, choosing how deep to replay via nested levels (each includes the
- * previous):
- *   - "tweet": reuse the Post (skip the X fetch); rebuild input/search/writer/gates.
- *   - "input": also reuse the full BotInput (seed BIG_EVAL_INPUT_CACHE) so
- *              createBotInput short-circuits — no comment/media/author fetch.
- *   - "note":  also reuse the written note (seed WRITER_CACHE) so the
- *              orchestrator replays from the two gates (judge + verifier).
+ * This lets tryoutNotes re-run a past run locally while reusing data from that
+ * run's production logs. The caller says how deep to replay by naming a level,
+ * and each level also reuses everything the shallower levels reuse.
  *
- * Pure cache-seeding — no pipeline code changes. The existing cache-read paths
- * (createBotInput → readInputCache, orchestrator → readWriterCache) do the
- * short-circuiting. Reads from PROD Supabase (where production runs are logged),
- * independent of the local Supabase the pipeline writes to.
+ * At level "tweet" we reuse the Post, so there is no X fetch. The input, the
+ * search, the writer and the gates are all rebuilt.
+ * At level "input" we also reuse the whole BotInput by seeding the input cache
+ * named in BIG_EVAL_INPUT_CACHE. createBotInput then returns straight away and
+ * nothing is fetched for comments, media or author history.
+ * At level "note" we also reuse the note the writer produced by seeding the
+ * cache named in WRITER_CACHE. The orchestrator then replays from the two
+ * gates, which are the note-needed judge and the source verifier.
+ *
+ * This module only seeds caches, so a replay needs no pipeline code changes.
+ * The cache reads that already exist do the skipping. createBotInput calls
+ * readInputCache, and the orchestrator calls readWriterCache. The run itself is
+ * read from the production Supabase, because that is where production runs are
+ * logged. That is a different database from the local Supabase the pipeline
+ * writes to.
  */
 
 import { getProdSupabaseCreds } from "./prodSupabaseCreds";
@@ -22,17 +28,18 @@ import { writeInputCache } from "../pipeline/input/inputCache";
 import type { Post } from "../api/fetchEligiblePosts";
 import type { BotInput } from "../pipeline/input/createBotInput";
 
-/** Replay depth, ordered shallow → deep. Each level seeds its own cache plus
- *  every shallower level's. */
+/** The replay depths, listed from the shallowest to the deepest. A level seeds
+ *  its own cache and the cache of every shallower level. */
 export const REPLAY_LEVELS = ["tweet", "input", "note"] as const;
 export type ReplayLevel = (typeof REPLAY_LEVELS)[number];
 function rank(level: ReplayLevel): number {
   return REPLAY_LEVELS.indexOf(level);
 }
 
-/** How runWriter joins the post context and the research brief into one user
- *  message (src/pipeline/simple-bot/writer.ts). We split on it to recover the
- *  bare post context the verifier needs as `postContext`. */
+/** The text runWriter puts between the post context and the research findings
+ *  when it joins them into one user message. See src/pipeline/simple-bot/writer.ts.
+ *  We split the logged message on it to recover the bare post context, which the
+ *  verifier needs as its `postContext`. */
 const WRITER_FINDINGS_SEPARATOR = "\n\n## Research findings\n\n";
 
 const DEFAULT_VIDEO_STRATEGY = "frames";
@@ -53,15 +60,17 @@ export interface SeedResult {
   botName: string | null;
   outcome: string | null;
   level: ReplayLevel;
-  /** The post as the original run saw it (from logs.tweet.post). */
+  /** The post as the original run saw it. It comes from logs.tweet.post. */
   post: Post;
-  /** video_description_strategy the input cache was written under (level ≥ input). */
+  /** The video_description_strategy the input cache was written under. It is
+   *  set at level "input" and at every deeper level. */
   inputStrategy?: string;
-  /** Reconstructed writer note (level = note). */
+  /** The note we rebuilt from the logs. It is set at level "note". */
   noteText?: string;
   sources?: string[];
-  /** True when the reconstructed post context carried verifier-revision
-   *  feedback (the run rewrote its note after a failed verification). */
+  /** True when the post context we recovered carried the verifier's feedback.
+   *  That means the original run rewrote its note after the source verifier
+   *  rejected the first one. */
   fromRevisedNote?: boolean;
 }
 
@@ -86,15 +95,16 @@ async function fetchLatestRun(tweetId: string): Promise<PipelineRunRow | null> {
   return rows[0] ?? null;
 }
 
-/** The post the run saw, logged verbatim by processTweet (`tweet.post`). */
+/** Return the post the run saw. processTweet logs it verbatim under `tweet.post`. */
 function reconstructPost(logs: any): Post | null {
   const post = logs?.tweet?.post;
   return post && typeof post.id === "string" ? (post as Post) : null;
 }
 
-/** Rebuild the full BotInput from the per-step logs. Structured media analysis
- *  lives under media.gemini.*, the rest under inputs.*. Returns null if the run
- *  never logged the inputs block (e.g. an early-exit before input was built). */
+/** Rebuild the full BotInput from the per-step logs. The structured media
+ *  analysis is logged under media.gemini, and everything else under inputs.
+ *  Returns null when the run never logged the inputs block. That happens when a
+ *  run exited early, before it built its input. */
 function reconstructBotInput(logs: any): BotInput | null {
   const inputs = logs?.inputs;
   if (!inputs) return null;
@@ -110,9 +120,10 @@ function reconstructBotInput(logs: any): BotInput | null {
   };
 }
 
-/** Reconstruct the writer-stage output (note + post context) from a run's logs.
- *  Returns null when the logs lack a note_writer step (e.g. an opus bot whose
- *  log layout differs, or a run that early-exited before the writer). */
+/** Rebuild the output of the writer stage from a run's logs. That output is the
+ *  note itself together with the post context it was written against. Returns
+ *  null when the logs hold no note_writer step. An opus bot writes a different
+ *  log layout, and a run that exited early never reached the writer. */
 function buildWriterStage(
   logs: any,
 ): { stage: Extract<WriterStageResult, { kind: "writer_done" }>; fromRevisedNote: boolean } | null {
@@ -125,8 +136,9 @@ function buildWriterStage(
     .sort((a, b) => a - b);
   if (indices.length === 0) return null;
 
-  // The note the verifier ran on is the final logged writer response. The user
-  // message is identical across char-limit retries, so attempt 0 carries it.
+  // The note the verifier ran on is the last writer response in the log. Every
+  // retry re-asks the writer on the same thread, so the first user message is
+  // the same in all of them. That is why attempt 0 is the one we read it from.
   const firstAttempt = attempts[String(indices[0])];
   let response: { note_text?: string; sources?: string[] } | undefined;
   for (const i of indices) {
@@ -152,19 +164,22 @@ function buildWriterStage(
       queries: Array.isArray(queries) ? queries : [],
       noteText: response.note_text,
       sources: Array.isArray(response.sources) ? response.sources : [],
-      // Snippets are only a verifier fetch-fallback; native-search runs never
-      // had them and they aren't logged, so replay fetches sources live.
+      // Snippets only serve as a fallback for when the verifier cannot fetch a
+      // source itself. Runs that used native search never had any, and snippets
+      // are not logged either way. So a replay fetches the sources live.
       snippets: [],
     },
-    // A revision rewrites the writer's user message to include verifier
-    // feedback; if we see that marker the reconstructed note is post-revision.
+    // When the source verifier rejects a note, the orchestrator asks the writer
+    // for a new one and passes the verifier's feedback along in the user
+    // message. Finding that heading tells us the note we recovered is the
+    // rewritten one.
     fromRevisedNote: postContext.includes("## Verifier feedback"),
   };
 }
 
-/** Look up the latest run for `tweetId` and seed the caches up to `level`.
- *  Cache dirs are read from BIG_EVAL_INPUT_CACHE / WRITER_CACHE (set
- *  by the caller). */
+/** Look up the latest run for `tweetId` and seed the caches up to `level`. The
+ *  cache directories are read from the BIG_EVAL_INPUT_CACHE and WRITER_CACHE
+ *  environment variables, which the caller sets. */
 export async function seedReplayFromDb(tweetId: string, level: ReplayLevel): Promise<SeedResult> {
   const run = await fetchLatestRun(tweetId);
   if (!run) throw new Error(`No pipeline_runs row found for tweet ${tweetId}`);

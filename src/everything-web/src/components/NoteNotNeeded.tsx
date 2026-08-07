@@ -6,20 +6,23 @@ import { deleteNnn } from "../../../everything-shared/noteNotNeeded";
 import { tallyVisible } from "../../../everything-shared/noteScore";
 import { MenuItem, TrashIcon } from "./NoteMenu";
 
-/** Entry voting + authored-entry bookkeeping, owned by App and shared by
- *  every list on the page. */
+/** Voting on entries, and keeping track of the entries you wrote. App owns this
+ *  state and hands the same object to every list on the page. */
 export interface NnnApi {
   myVotes: Map<string, Vote>;
   onVote: (entry: NnnRow, vote: Vote) => void;
-  /** Mirror the DB self-upvote of a just-posted entry into local state. */
+  /** Mirror the helpful vote the database casts on your own new entry into
+   *  local state. */
   onAuthored: (entryId: string) => void;
-  /** An entry was deleted. The website's realtime channel already removes it;
-   *  the extension (no realtime) refreshes on this. */
+  /** Called after an entry was deleted. The website's realtime channel already
+   *  drops it, so only the extension needs this. The extension has no realtime
+   *  connection and refreshes when this fires. */
   onDeleted?: (entryId: string) => void;
 }
 
-/** Compact relative timestamp for entry meta ("now", "5m", "3h", "2d", then
- *  a short date). Entries are conversation — age matters, precision doesn't. */
+/** A short relative timestamp for an entry, such as "now", "5m", "3h" or "2d".
+ *  Anything older than a month shows a short date instead. Entries read as
+ *  conversation, so a rough age is enough and an exact time would be noise. */
 function timeAgo(iso: string): string {
   const seconds = (Date.now() - new Date(iso).getTime()) / 1000;
   if (seconds < 60) return "now";
@@ -35,9 +38,10 @@ const VOTE_ICON_PROPS = {
   strokeLinecap: "round", strokeLinejoin: "round",
 } as const;
 
-/** Entries are secondary surface — votes shrink to icon chips (✓ ~ ✕) so the
- *  text stays the loudest thing in the list. Same three-way scale and
- *  toggle/switch semantics as the note pills; labels live in tooltips/aria. */
+/** Entries are a secondary surface, so their vote buttons shrink to small icon
+ *  chips and the entry text stays the loudest thing in the list. The scale is
+ *  the same three-way one the note pills use, and voting behaves the same way.
+ *  The written labels move into the tooltip and the aria label. */
 const COMPACT_VOTES: { value: Vote; label: string; active: string; hover: string; icon: React.ReactNode }[] = [
   {
     value: 1, label: "Helpful",
@@ -69,8 +73,8 @@ function CompactVoteRatings({ entry, myVote, onVote }: {
     0: entry.somewhat_helpful_count,
     [-1]: entry.not_helpful_count,
   };
-  // Same rule as the note pills: tallies show once you've voted or the
-  // entry has aged past the reveal window.
+  // Tallies follow the same rule as the note pills. They show once you have
+  // voted, or once the entry is older than the reveal window.
   const showCounts = tallyVisible(myVote, entry.created_at);
   return (
     <span className="inline-flex items-center gap-0.5">
@@ -94,8 +98,8 @@ function CompactVoteRatings({ entry, myVote, onVote }: {
   );
 }
 
-/** ⋯ overflow on your own entries — destructive Delete lives here, one step
- *  removed from a stray tap (mirrors the note card's own-menu pattern). */
+/** The ⋯ menu shown on entries you wrote. Delete lives in here so that a stray
+ *  tap cannot trigger it. The note card hides its own Delete the same way. */
 function OwnEntryMenu({ onDelete }: { onDelete: () => void }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLSpanElement>(null);
@@ -125,11 +129,11 @@ function OwnEntryMenu({ onDelete }: { onDelete: () => void }) {
   );
 }
 
-/** The claim's "note not needed" arguments — the same flat list renders under
- *  every note card on that claim. Collapsed by default; the header row is the
- *  toggle. */
+/** The arguments that a claim needs no note. The list is flat, and the same
+ *  list renders under every note card on that claim. It starts collapsed, and
+ *  the header row is the toggle. */
 export function NoteNotNeeded({ entries, api, session }: {
-  entries: NnnRow[]; // this claim's entries, oldest first (App pre-sorts)
+  entries: NnnRow[]; // This claim's entries. App sorts them oldest first.
   api: NnnApi;
   session: Session | null;
 }) {

@@ -1,13 +1,14 @@
 /**
  * gallery-dl Download
  *
- * Image-focused complement to yt-dlp. Used by the source verifier when
- * yt-dlp fails on a media-host URL, and as the primary tool for
- * gallery-only hosts (Reddit / Tumblr / Imgur).
+ * gallery-dl complements yt-dlp and is focused on images. The source verifier
+ * falls back to it when yt-dlp fails on a media-host URL. It is also the first
+ * choice for hosts that only serve galleries, such as Reddit, Tumblr and Imgur.
  *
- * gallery-dl's metadata is per-extractor and shallow; we project a small
- * subset onto the YtDlpMetadata shape so downstream code (verifier
- * formatting) can be agnostic to which tool produced the result.
+ * The metadata gallery-dl returns differs from one extractor to the next and is
+ * shallow. We copy a small part of it onto the YtDlpMetadata shape, so the code
+ * downstream that formats verifier output does not have to know which tool
+ * produced the result.
  */
 
 import { execSync } from "child_process";
@@ -28,16 +29,18 @@ function quote(s: string): string {
 }
 
 /**
- * gallery-dl's FacebookSetExtractor crashes on slug-form post URLs (the
- * `/posts/<slug>-<id>/` form). Normalizing to `/posts/<id>` triggers the
- * working PhotoExtractor path. Conservative: only touches Facebook URLs.
+ * gallery-dl's FacebookSetExtractor crashes on a post URL that carries a slug,
+ * meaning the `/posts/<slug>-<id>/` form. Rewriting such a URL to `/posts/<id>`
+ * makes gallery-dl use its PhotoExtractor instead, which works. This function
+ * only touches Facebook URLs and returns everything else unchanged.
  */
 export function normalizeUrlForGalleryDl(url: string): string {
   try {
     const u = new URL(url);
     const host = u.hostname.toLowerCase().replace(/^www\./, "");
     if (host === "facebook.com" || host.endsWith(".facebook.com")) {
-      // /<user>/posts/<slug>-<digits>/?...  →  /<user>/posts/<digits>
+      // Turn /<user>/posts/<slug>-<digits>/ with any query string it has into
+      // /<user>/posts/<digits>.
       const m = u.pathname.match(/^(\/[^/]+\/posts\/)(?:[^/]*?-)?(\d+)\/?$/);
       if (m) {
         u.pathname = `${m[1]}${m[2]}`;
@@ -52,15 +55,16 @@ export function normalizeUrlForGalleryDl(url: string): string {
 }
 
 /**
- * Download with gallery-dl. Returns the first downloaded file (gallery-dl
- * may produce several for a gallery; we only need one to feed Gemini).
- * Throws if gallery-dl errors or produces no files.
+ * Downloads with gallery-dl and returns the first file it produced. A gallery can
+ * yield several files, but one is enough to feed Gemini. This throws when
+ * gallery-dl fails and when it produces no files at all.
  */
 export function downloadWithGalleryDl(url: string, outputDir: string): GalleryDlResult {
   const normalizedUrl = normalizeUrlForGalleryDl(url);
   try {
     execSync(
-      // Flatten output: no nested platform/user directories; just <id>.<ext>.
+      // Flatten the output so gallery-dl creates no nested platform or user
+      // directories. Files land straight in outputDir as <number>.<extension>.
       `gallery-dl -D "${quote(outputDir)}" -o directory="[]" -o filename="{num}.{extension}" --no-mtime "${quote(normalizedUrl)}"`,
       { timeout: GALLERY_DL_TIMEOUT_MS, stdio: ["pipe", "pipe", "pipe"] },
     );
@@ -72,13 +76,13 @@ export function downloadWithGalleryDl(url: string, outputDir: string): GalleryDl
   if (!files.length) {
     throw new Error(`gallery-dl produced no files for ${normalizedUrl}`);
   }
-  // Sort to make the "first" stable across runs.
+  // Sorting makes "the first file" mean the same thing on every run.
   files.sort();
   const filePath = path.join(outputDir, files[0]!);
 
-  // gallery-dl doesn't write rich metadata by default. The verifier uses
-  // these fields when present (title, uploader, description, timestamp); we
-  // set what we can from the URL.
+  // gallery-dl does not write rich metadata by default. The verifier reads the
+  // title, uploader, description and timestamp fields when they are there. We fill
+  // in only what the URL and the downloaded file name give us.
   const meta: YtDlpMetadata = {
     id: path.basename(filePath, path.extname(filePath)),
     title: "",

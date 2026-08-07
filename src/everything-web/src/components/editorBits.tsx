@@ -2,9 +2,10 @@ import type { Session } from "@supabase/supabase-js";
 import { createLocalPreference } from "../lib/preference";
 import { displayName } from "../../../everything-shared/session";
 
-/** Shared pieces of the small inline editors (improve a note, argue a note
- *  isn't needed): auto-growing textarea, the opt-in byline checkbox, and the
- *  judge-rejected notice. */
+/** The pieces shared by the two small inline editors, which are suggesting an
+ *  improvement and arguing that a claim needs no note. There is an auto-growing
+ *  textarea, the opt-in byline checkbox, and the notice shown when the judge
+ *  rejects the text. */
 
 export function AutoGrowTextarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   const { className, ...rest } = props;
@@ -22,10 +23,12 @@ export function AutoGrowTextarea(props: React.TextareaHTMLAttributes<HTMLTextAre
   );
 }
 
-/** Bylines are opt-in (Nathan, 2026-07-14): default anonymous, X-CN style —
- *  note-writing is adversarial work and auto-bylines were a consent gap.
- *  The choice persists (Jim, 2026-07-17): tick it once and every later editor
- *  opens pre-ticked; untick and they open unticked. */
+/** Bylines are opt-in, so posting is anonymous by default, the way X's own
+ *  Community Notes work. Nathan made this change on 2026-07-14, because note
+ *  writing is adversarial work and attaching a name without being asked was a
+ *  consent gap. Jim made the choice persist on 2026-07-17. Tick the box once
+ *  and every later editor opens with it ticked. Untick it and they open
+ *  unticked. */
 export const useSignedByline = createLocalPreference<boolean>("cn-signed-byline", {
   parse: (raw) => raw === "1",
   serialize: (signed) => (signed ? "1" : "0"),

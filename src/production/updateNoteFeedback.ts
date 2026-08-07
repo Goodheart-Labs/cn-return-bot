@@ -7,23 +7,30 @@ import { execSync } from "child_process";
 import { join } from "path";
 
 /**
- * Cron job: refresh `notes`, `competing_notes`, and `public_data_snapshots`
- * from the X API + the CN public data dumps.
+ * This is a cron job. It refreshes our note tables from two sources. One is the X API.
+ * The other is the public Community Notes data dump.
  *
- * Stages:
- *   A. Fetch our notes from X API (primary source for status/text)
- *   B. Download public dump (competing & missed-opportunity notes; status fallback)
- *   C. Parse dump (single pass; tweetId→noteId map kills the prior O(n·m) find)
- *   D. Fetch existing DB state (rejected runs + existing note_ids/submitted_at/cn_status)
- *   E. Batched upsert into `notes`
- *   F. Batched upsert into `competing_notes`
- *   G. Replace missed-opportunity rows in `competing_notes` (helpful only)
- *   H. Batched upsert into `public_data_snapshots`
- *   I. Batched upsert into `note_rating_tag_counts` (only for notes with has_access)
- *   J. Cleanup downloaded files
+ * The run has these stages.
+ *   A. Fetch our own notes from the X API. This is the primary source for a note's
+ *      status and text.
+ *   B. Download the public dump. It supplies the competing notes, the missed
+ *      opportunities, and a fallback status for our own notes.
+ *   C. Parse the dump. A map from tweet id to note id keeps the work linear in the
+ *      number of rows.
+ *   D. Fetch the state we already hold in the database. That is the rejected pipeline
+ *      runs, plus the note ids, submission times and statuses of the notes we know.
+ *   E. Upsert our notes into `notes` in batches.
+ *   F. Upsert the competing notes into `competing_notes` in batches.
+ *   G. Replace the missed-opportunity rows in `competing_notes`. Only notes that are
+ *      currently rated helpful are kept.
+ *   H. Upsert into `public_data_snapshots` in batches.
+ *   I. Upsert into `note_rating_tag_counts` in batches. Only notes whose ratings X lets
+ *      us read produce rows here.
+ *   K. Upsert the daily origin counts into `daily_note_origin_counts`.
+ *   J. Delete the files we downloaded.
  *
- * ~10 Supabase round-trips per run (was ~1300 — prior versions of stages 7
- * and 8 did per-row writes).
+ * A run costs about 10 Supabase round-trips. Earlier versions of two of these stages
+ * wrote one row per request and cost about 1300.
  */
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -32,20 +39,23 @@ const CN_DATA_BASE_URL = "https://ton.twimg.com/birdwatch-public-data";
 const DATA_DIR = "./cn-data";
 const OUR_AUTHOR = "813EB394B10809EBA8D09BCFA8E2E1C25A2DA0085186867F9E9C00696951C447";
 const PAGE_SIZE = 1000;
-// public_data_snapshots is large (400k+ rows); smaller upsert batches keep each
-// statement under the DB timeout.
+// The public_data_snapshots table is large. It holds more than 400 thousand rows.
+// Smaller upsert batches keep each statement under the database timeout.
 const SNAPSHOT_PAGE_SIZE = 500;
 const MAX_DAYS_BACK_FOR_CN_DATA = 7;
-// The dump splits each file across an unknown, growing number of zero-padded
-// partitions (notes-00000.zip, -00001.zip, …). We discover them dynamically —
-// fetch until one 404s — rather than hardcoding a list that goes stale when X
-// adds a partition. This cap is just a runaway guard.
+// The dump splits each file across a growing number of partitions. Their names are
+// zero padded, such as notes-00000.zip and notes-00001.zip. We do not know how many
+// there are, so we keep fetching partitions until one comes back as a 404. A hardcoded
+// list would go stale as soon as X adds a partition. This constant only stops a
+// runaway loop.
 const MAX_PARTITIONS = 100;
 const STATUS_HELPFUL = "CURRENTLY_RATED_HELPFUL";
 const STATUS_NMR = "NEEDS_MORE_RATINGS";
 
-// AI-notewriter author IDs (hashed noteAuthorParticipantId), incl. OUR_AUTHOR.
-// "Other AI" = this set minus ours; we keep the top N by helpful-note count.
+// This file holds the author ids of the known AI notewriters. They are hashed
+// noteAuthorParticipantId values, and our own id is one of them. The other AI writers
+// are this list without ours. We keep only the most productive of them, ranked by how
+// many helpful notes they have written.
 const AI_AUTHOR_IDS_FILE = join(import.meta.dir, "../../datasets/big_eval/ai_author_ids.txt");
 const TOP_OTHER_AI_AUTHORS = 9;
 
@@ -88,8 +98,9 @@ type NoteColumnIndex = {
   summary: number;
 };
 
-// One row of daily_note_origin_counts: origin split of helpful notes created
-// that UTC day. Human-written = helpful_total - helpful_ours - helpful_other_ai.
+// One row of daily_note_origin_counts. It splits the helpful notes created on one UTC
+// day by who wrote them. The number written by humans is not stored. Readers derive it
+// as helpful_total minus helpful_ours minus helpful_other_ai.
 type DailyOriginCount = {
   day: string;
   helpful_total: number;
@@ -112,7 +123,9 @@ type ParsedDump = {
 };
 
 type ExistingState = {
-  // tweetId → pipelineRunId for the most recent rejected run on that tweet.
+  // This maps a tweet id to the id of a rejected pipeline run on that tweet. A tweet
+  // can have several rejected runs. We keep only one of them, and which one we keep
+  // depends on the order the rows came back in, so it is effectively arbitrary.
   rejectedTweetIds: Map<string, string>;
   existingNoteIds: Set<string>;
   existingSubmittedAt: Map<string, string | null>;
@@ -120,7 +133,7 @@ type ExistingState = {
 };
 
 // ─── Generic helpers ─────────────────────────────────────────────────────────
-// Pagination lives in src/api/paging.ts (fetchAllRows). No local copy.
+// Pagination lives in fetchAllRows in src/api/paging.ts. This file has no copy of it.
 
 function formatDateForUrl(date: Date): string {
   const y = date.getUTCFullYear();
@@ -137,9 +150,10 @@ async function downloadFile(url: string, outputPath: string): Promise<void> {
   writeFileSync(outputPath, Buffer.from(await response.arrayBuffer()));
 }
 
-/** Postgres text columns can't hold NUL bytes — a single one rejects the whole
- *  upsert batch ("unsupported Unicode escape sequence"), taking 999 good rows
- *  with it. Strip them from any dump/API text before it reaches the DB. */
+/** Postgres text columns cannot hold NUL bytes. A single one makes the whole upsert
+ *  batch fail with "unsupported Unicode escape sequence", and the 999 good rows in
+ *  that batch are lost with it. So we remove NUL bytes from every piece of text that
+ *  comes out of the dump or the API before it reaches the database. */
 function stripNulBytes(s: string): string {
   return s.replace(/\u0000/g, "");
 }
@@ -173,12 +187,14 @@ async function downloadCNFile(
     const firstZip = `${DATA_DIR}/${fileType}-00000.zip`;
 
     try {
-      // Partition 00000 must exist; its absence means this day isn't published.
+      // Every published day has a partition 00000. If it is missing, X has not
+      // published this day yet.
       await downloadFile(partitionUrl("00000"), firstZip);
       execSync(`unzip -o "${firstZip}" -d "${DATA_DIR}"`, { stdio: "pipe" });
       unlinkSync(firstZip);
 
-      // Then keep pulling 00001, 00002, … until one 404s (no more partitions).
+      // Then keep pulling partition 00001, 00002 and so on. The first one that fails
+      // to download marks the end of the list.
       const paths = [firstTsv];
       for (let i = 1; i < MAX_PARTITIONS; i++) {
         const partition = String(i).padStart(5, "0");
@@ -233,7 +249,8 @@ function parsePublicDump(
     summary: nh.indexOf("summary"),
   };
 
-  // Pass 1: identify our notes; build tweetId→noteId map; track our earliest day.
+  // The first pass picks out our own notes. It builds a map from tweet id to note id,
+  // and it remembers the day our earliest note was created.
   const ourNotesFromDump = new Map<string, OurNoteFromDump>();
   const ourTweetIdToNoteId = new Map<string, string>();
   let ourEarliestMillis = Infinity;
@@ -252,7 +269,8 @@ function parsePublicDump(
   const ourEarliestDay =
     ourEarliestMillis === Infinity ? null : new Date(ourEarliestMillis).toISOString().slice(0, 10);
 
-  // Pass 2: competing + missed-opportunity in one walk.
+  // The second pass collects the competing notes and the missed opportunities in one
+  // walk over the same rows.
   const competing: CompetingNote[] = [];
   const missed: MissedNote[] = [];
   for (const line of nLines) {
@@ -294,8 +312,9 @@ function parsePublicDump(
     ...missed.map((m) => m.noteId),
   ]);
 
-  // Status of relevant notes (for the upsert stages) plus the set of every
-  // note that is currently rated helpful (for the origin counts below).
+  // This pass records the status of every note the upsert stages care about. It also
+  // collects every note on the platform that is currently rated helpful, because the
+  // origin counts below need all of them.
   const statusMap = new Map<string, StatusRecord>();
   const helpfulNoteIds = new Set<string>();
   for (const line of sLines) {
@@ -316,8 +335,8 @@ function parsePublicDump(
   return { ourNotesFromDump, competing, missed, statusMap, originCounts };
 }
 
-// Rank the "other AI" notewriters by their total helpful-note count in the dump
-// and return the top N author IDs — these get their own dashboard segment.
+// Rank the other AI notewriters by how many helpful notes they have in the dump. The
+// top few author ids are returned. Those authors get their own segment on the dashboard.
 function rankTopOtherAiAuthors(
   nLines: string[],
   nIdx: NoteColumnIndex,
@@ -342,9 +361,10 @@ function rankTopOtherAiAuthors(
   return new Set(top.map(([author]) => author));
 }
 
-// Tally helpful notes by UTC creation day and origin (ours / top other AI /
-// other), bounded to days on/after our first note. Human-written is derived
-// downstream as helpful_total - helpful_ours - helpful_other_ai.
+// Tally the helpful notes by the UTC day they were created and by who wrote them. A
+// note is either ours, or from one of the top other AI notewriters, or from someone
+// else. Days before our own first note are skipped. The number written by humans is
+// derived later as helpful_total minus helpful_ours minus helpful_other_ai.
 function tallyDailyOriginCounts(
   nLines: string[],
   nIdx: NoteColumnIndex,
@@ -373,7 +393,8 @@ function tallyDailyOriginCounts(
   return [...byDay.values()].sort((a, b) => a.day.localeCompare(b.day));
 }
 
-// Load the AI-notewriter author IDs, excluding ours (which is tracked separately).
+// Load the author ids of the AI notewriters. Our own id is left out because our notes
+// are counted separately.
 function loadOtherAiAuthorIds(): Set<string> {
   const ids = readFileSync(AI_AUTHOR_IDS_FILE, "utf-8")
     .split("\n")
@@ -443,15 +464,17 @@ async function upsertOurNotes(
     const tweetId = api?.post_id ?? dump?.tweetId;
     if (!tweetId) continue;
 
-    // API uses lowercase enum values (`currently_rated_helpful`); the rest of
-    // the system stores uppercase (from the public dump). Normalize on the way in.
+    // The X API returns its status values in lowercase, for example
+    // `currently_rated_helpful`. The rest of the system stores the uppercase form that
+    // the public dump uses. So we uppercase the API value here.
     const apiStatus = api?.status?.toUpperCase();
     const cn_status = apiStatus || status?.currentStatus || STATUS_NMR;
 
     const wasHelpful = existing.existingStatuses.get(noteId) === STATUS_HELPFUL;
     if (cn_status === STATUS_HELPFUL && !wasHelpful) newlyHelpful++;
 
-    // dump.summary is already NUL-stripped in readTsvLines; the API text isn't.
+    // readTsvLines already stripped the NUL bytes out of dump.summary. The text from
+    // the API has not been stripped yet.
     const rawNoteText = api?.info?.text ?? dump?.summary ?? null;
     const noteText = rawNoteText === null ? null : stripNulBytes(rawNoteText);
     const submittedAt = dump?.createdAtMillis
@@ -473,9 +496,10 @@ async function upsertOurNotes(
     }
   }
 
-  // Split because PostgREST normalizes columns across a batch — mixing rows
-  // with/without first_seen_at would set it to NULL on existing rows
-  // (NOT NULL violation).
+  // New rows and existing rows go in separate batches. PostgREST makes every row in a
+  // batch carry the same set of columns. A batch that mixed rows with first_seen_at and
+  // rows without it would write NULL into that column on the existing rows, and the NOT
+  // NULL constraint would reject the whole batch.
   let upserted = 0;
   let errors = 0;
   for (const rows of [newRows, existingRows]) {
@@ -578,8 +602,9 @@ async function snapshotPublicData(
 ): Promise<number> {
   const rows: Record<string, any>[] = [];
 
-  // Our notes — union of API and dump, deduped by noteId. Dump wins if both
-  // have the same note (it has createdAtMillis, the API doesn't).
+  // Our own notes come from the API and from the dump, deduplicated by note id. When
+  // both sources have the same note we keep the dump's version. The dump carries
+  // createdAtMillis and the API response does not.
   const seen = new Set<string>();
   for (const [noteId, d] of dumpNotes) {
     seen.add(noteId);
@@ -603,7 +628,7 @@ async function snapshotPublicData(
     });
   }
 
-  // Competing notes — only snapshot when currently helpful.
+  // A competing note is snapshotted only while it is currently rated helpful.
   for (const cn of competing) {
     const status = statusMap.get(cn.noteId);
     if (status?.currentStatus !== STATUS_HELPFUL) continue;
@@ -756,7 +781,7 @@ async function main() {
 
   const now = new Date().toISOString();
 
-  // A. X API.
+  // Stage A fetches our notes from the X API.
   console.log("[updateFeedback] Fetching our notes from X API...");
   let apiNotes: WrittenNote[] = [];
   try {
@@ -766,19 +791,19 @@ async function main() {
     console.warn(`[updateFeedback] API fetch failed (non-fatal, falling back to dump): ${err.message || err}`);
   }
 
-  // B. Public dump.
+  // Stage B downloads the public dump.
   const files = await downloadPublicDump();
   if (!files) process.exit(1);
   const snapshotDate = files.dateStr.replace(/\//g, "-");
 
-  // D. Existing DB state (must precede C — parse uses rejected tweet IDs).
+  // Stage D runs before stage C because parsing the dump needs the rejected tweet ids.
   const existing = await fetchExistingState();
 
-  // C. Parse dump.
+  // Stage C parses the dump.
   const otherAiAuthorIds = loadOtherAiAuthorIds();
   const dump = parsePublicDump(files, existing.rejectedTweetIds, otherAiAuthorIds);
 
-  // E. Upsert our notes.
+  // Stage E upserts our own notes.
   const upsertResult = await upsertOurNotes(
     apiNotes,
     dump.ourNotesFromDump,
@@ -790,25 +815,26 @@ async function main() {
     console.log(`[updateFeedback] ${upsertResult.newlyHelpful} notes newly rated HELPFUL!`);
   }
 
-  // F.
+  // Stage F upserts the competing notes.
   await upsertCompetingNotes(dump.competing, dump.statusMap, now);
 
-  // G.
+  // Stage G replaces the missed-opportunity notes.
   const missedInserted = await replaceMissedOpportunityNotes(dump.missed, dump.statusMap, now);
 
-  // H. Snapshots.
+  // Stage H writes the snapshots.
   await snapshotPublicData(apiNotes, dump.ourNotesFromDump, dump.competing, dump.statusMap, snapshotDate);
 
-  // I. Rating tag counts (no-op when no API note has has_access=true).
+  // Stage I writes the rating tag counts. It writes nothing when X grants us no rating
+  // access on any of the notes the API returned.
   await upsertRatingTagCounts(apiNotes, now);
 
-  // K. Daily helpful-note origin counts (stats-dashboard "% of all" view).
+  // Stage K writes the daily counts of helpful notes by origin. The stats dashboard
+  // uses them for its "% of all" view.
   await upsertDailyOriginCounts(dump.originCounts, now);
 
-  // J. Cleanup.
+  // Stage J deletes the files we downloaded.
   cleanupFiles([...files.notesPaths, ...files.statusPaths]);
 
-  // Summary.
   const helpfulCompeting = dump.competing.filter(
     (cn) => dump.statusMap.get(cn.noteId)?.currentStatus === STATUS_HELPFUL,
   );

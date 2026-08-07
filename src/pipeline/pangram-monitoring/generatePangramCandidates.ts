@@ -1,20 +1,25 @@
 /**
- * XXL-feed Pangram AI-detection pre-pass.
+ * The Pangram AI-detection pre-pass over the biggest feeds.
  *
- * Runs before the regular pipeline. Crawls the big feed (XXL → XL → large),
- * keeps only long-form (paid/premium) posts we haven't checked yet, ranks them
- * by a views-weighted blend (70% views, 20% length, 10% recency), takes the top
- * N, and runs each through Pangram. Posts Pangram calls fully AI-generated become candidates whose note
- * cites the Pangram report link as its source (wording is a 50/50 A/B test,
- * PANGRAM_NOTE_TEST). Candidates flow through the same submitCandidates path as
- * the regular pipeline (shared daily cap, dashboards); each candidate run is
- * tagged pangram_monitoring=yes.
+ * It runs before the regular pipeline. It crawls the big feed, trying XXL first,
+ * then XL, then large. It keeps only the long-form posts we have not checked yet,
+ * which are the paid and premium ones. It ranks them by a blend that is mostly
+ * views: 70% views, 20% length and 10% recency. It takes the top few and sends
+ * each one to Pangram.
  *
- * Dedup (exactly-once): every checked post is recorded in
- * pangram_monitoring_sightings and excluded from future crawls — so a viral
- * long-form post is Pangram-classified once, not every run. That ledger is
- * disjoint from the regular skip logic, so a Pangram check never makes the
- * regular pipeline skip a post. Errors are NOT recorded, so they retry.
+ * A post that Pangram calls fully AI-generated becomes a candidate. Its note
+ * cites the Pangram report link as its source. The wording of that note is a
+ * 50/50 A/B test called PANGRAM_NOTE_TEST. These candidates go through the same
+ * submitCandidates path as the regular pipeline, so they share its daily cap and
+ * show up in the same dashboards. Every candidate run is tagged with
+ * pangram_monitoring=yes.
+ *
+ * Each post is classified exactly once. Every checked post is recorded in
+ * pangram_monitoring_sightings and left out of later crawls, so a viral long-form
+ * post is sent to Pangram once instead of on every run. That ledger is separate
+ * from the regular pipeline's skip logic, so a Pangram check never makes the
+ * regular pipeline skip a post. A post whose classification errored is not
+ * recorded, so the next run tries it again.
  */
 import PQueue from "p-queue";
 import { fetchEligiblePosts, type Post } from "../../api/fetchEligiblePosts";
@@ -35,12 +40,13 @@ const PANGRAM_MAX_RESULTS = 5000;
 const PANGRAM_MAX_PAGES = 100;
 const PANGRAM_TOP_N = 10;
 const PANGRAM_CONCURRENCY = 4;
-// Prioritize reach: rank long-form posts mostly by views, then length, then recency.
+// We rank for reach. Views count most, then length, then recency.
 const PANGRAM_SORT_WEIGHTS: SortWeights = { recency: 0.1, length: 0.2, impressions: 0.7 };
 
 const PANGRAM_BOT_ID = "pangram-monitoring";
-// X has no AI-generated tag; missing context is the closest fit (the post
-// doesn't disclose it's AI-written). See buildPangramNote for the wording.
+// X has no tag for AI-generated content. Missing context is the closest fit,
+// because the post does not disclose that it was written by an AI. See
+// buildPangramNote for the wording of the note itself.
 const PANGRAM_MISLEADING_TAGS = ["missing_important_context"];
 
 type PangramSighting = {
@@ -55,15 +61,17 @@ type PangramSighting = {
 };
 
 export interface PangramCandidatesOptions {
-  /** Shared with generateCandidates so already-noted / cooling-down tweets are
-   *  not re-crawled. (Exactly-once dedup is handled separately via the
-   *  pangram_monitoring_sightings ledger.) */
+  /** The same set generateCandidates uses, so we do not crawl tweets we have
+   *  already noted or that are still cooling down. It is not what keeps us from
+   *  classifying a post twice. The pangram_monitoring_sightings ledger does
+   *  that. */
   skipPostIds: Set<string>;
   onTweetProcessed?: (event: TweetProcessedEvent) => void | Promise<void>;
 }
 
-/** Try each feed size in turn; on any error fall through to the next. Returns
- *  null (fail-soft) if all sizes fail, so a feed blip never breaks the run. */
+/** Tries each feed size in turn and moves on to the next one after any error. It
+ *  returns null when every size fails, so a temporary problem with the feed never
+ *  breaks the run. */
 async function crawlFeed(skipPostIds: Set<string>): Promise<{ feedSize: FeedSize; posts: Post[] } | null> {
   for (const size of PANGRAM_FEED_SIZES) {
     try {
@@ -96,8 +104,9 @@ function selectTopLongForm(posts: Post[], checkedIds: Set<string>): Post[] {
 }
 
 function candidateResult(pipelineRunId: string, noteText: string): ProcessTweetResult {
-  // evaluationScore left unset → submitCandidates sorts these after the
-  // eval-scored regular candidates (they use whatever daily cap is left).
+  // We leave evaluationScore unset. Nothing evaluates a Pangram note, so there
+  // is no score to compare with the regular candidates. runPipeline puts the
+  // Pangram candidates last, so they only use whatever daily cap is left over.
   return {
     pipelineResult: null,
     outcome: "candidate",
@@ -109,7 +118,8 @@ function candidateResult(pipelineRunId: string, noteText: string): ProcessTweetR
   };
 }
 
-/** A non-candidate result, only used for the onTweetProcessed hook (no run created). */
+/** Builds a result for a post that did not become a candidate. It exists only to
+ *  feed the onTweetProcessed hook. No pipeline run row was created for it. */
 function syntheticResult(outcome: "rejected" | "failed", reason: string): ProcessTweetResult {
   return { pipelineResult: null, outcome, outcomeReason: reason, finalStage: "pangram", scores: [], pipelineRunId: null };
 }
@@ -130,9 +140,11 @@ async function createRun(logger: SupabaseLogger, post: Post, picks: Record<strin
 
 type PostOutcome = { candidate: Candidate | null; tweetResult: ProcessTweetResult; sighting: PangramSighting | null };
 
-/** Classify one post; return a Candidate iff Pangram says fully AI-generated
- *  (and the note fits). Records a sighting for every classified post (AI or
- *  not); errors return no sighting so they're retried next run. */
+/** Classifies one post. It returns a Candidate only when Pangram says the post is
+ *  fully AI-generated and the note we would submit fits within X's length limit.
+ *  It returns a sighting for every post that was classified, whether Pangram
+ *  called it AI or not. A post whose classification failed gets no sighting, so
+ *  the next run tries it again. */
 async function processPost(logger: SupabaseLogger, post: Post, feedSize: FeedSize): Promise<PostOutcome> {
   const verdict = await classifyText(post.text);
   if (verdict.type === "error") {
@@ -199,7 +211,8 @@ export async function generatePangramCandidates(
   const top = selectTopLongForm(crawl.posts, checkedIds);
   if (!top.length) return [];
 
-  // Populate the tweets table for the runs we may create (insert-only).
+  // The tweets table needs a row for every pipeline run we may create below.
+  // This call only inserts rows that are missing and never overwrites one.
   try {
     await logger.bulkInsertNewTweets(top);
   } catch (err) {
@@ -226,7 +239,8 @@ export async function generatePangramCandidates(
     ),
   );
 
-  // Record checks so these posts are never re-classified (exactly-once).
+  // Recording the checks is what stops a later run from classifying these posts
+  // a second time.
   try {
     await logger.recordPangramChecks(sightings);
   } catch (err) {

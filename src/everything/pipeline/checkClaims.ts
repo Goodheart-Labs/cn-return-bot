@@ -1,7 +1,7 @@
 /**
- * Fact-check one extracted claim by running it through the normal note
- * pipeline (simple-bot + note-needed prefilter + claim-check search prompt)
- * as a synthetic post.
+ * Fact-checks one extracted claim. The claim is wrapped in a synthetic post and
+ * that post runs through the normal note pipeline. We run it on simple-bot with
+ * the claim-check search prompt and with the note-needed prefilter turned off.
  */
 
 import type { Post } from "../../api/fetchEligiblePosts";
@@ -17,15 +17,18 @@ import type { EvaluatedSource } from "../../pipeline/prompts/verify/citations";
 import { insertClaimPipelineRun } from "../db";
 import type { ClaimCheck, ExtractedClaim, NoteSourceCitation, SourceKind } from "../types";
 
-// simple-bot with the note-needed prefilter OFF (every checked claim goes through
-// full search + write; the prefilter was dropping too many checkable claims) and
-// the claim-check search prompt (each claim is a transcript/article excerpt, not an X post).
-// Pinned models: search on Opus 5 (opus5-native), writer on Sonnet 5 (the
-// sonnet5 writer arm), verifier on Gemini 3 Flash. verifier_citations ON so
-// accepted sources carry a verbatim supporting quote + explanation (persisted
-// per source). verifier_claim_based "classic" pins the single-call accept/reject
-// flow (non-claim-based) — otherwise the 50/50 AB test would send half the claims
-// through the two-call claim-based verifier.
+// We run simple-bot with the note-needed prefilter turned off, so every checked
+// claim goes through the full search and write path. The prefilter was dropping
+// too many claims that were worth checking. We also force the claim-check search
+// prompt, because a claim here is an excerpt from a transcript or an article and
+// not an X post.
+// The models are pinned. Search runs on Opus 5, the writer on Sonnet 5, and the
+// source verifier on Gemini 3 Flash.
+// verifier_citations is on, so every accepted source carries a verbatim
+// supporting quote and an explanation. We save those per source.
+// verifier_claim_based is pinned to "classic", the single-call flow that accepts
+// or rejects a source in one go. Without pinning it the 50/50 AB test would send
+// half the claims through the two-call claim-based verifier instead.
 const FORCED_PICKS: Record<string, string> = {
   bot: "simple-bot",
   note_prefilter: "off",
@@ -40,26 +43,32 @@ const FORCED_PICKS: Record<string, string> = {
 export interface ClaimPostParams {
   claim: ExtractedClaim;
   source: SourceKind;
-  /** everything_items.id — hyphenated in the post id so it never looks like a real tweet id. */
+  /** The everything_items.id. The synthetic post id built from it contains a
+   *  hyphen, so it can never be mistaken for a real tweet id. */
   itemId: string;
-  /** everything_claims.id — the run record (logs + cost) is keyed to it.
-   *  null (debug harnesses / ad-hoc scripts) skips recording the run. */
+  /** The everything_claims.id. The run record with its logs and cost is keyed to
+   *  it. Passing null skips recording the run, which is what the debug harnesses
+   *  and ad-hoc scripts do. */
   claimId: string | null;
   index: number;
-  /** Content publication date; the claim's "posted" date (mirrors the tweet pipeline). */
+  /** The date the content was published. It becomes the synthetic post's posting
+   *  date, the same way the tweet pipeline uses a tweet's date. */
   publishedAt?: string;
 }
 
-// Fact-check the verbatim highlighted span plus its surrounding passage (and any
-// images the claim rests on) — NOT Opus's neutral restatement. The paraphrase is
-// useful during extraction (it forces Opus to state the claim) but it can drift
-// from the source, so we keep it out of the fact-check input and let the search
-// model read the author's actual words. The paragraph contains the highlighted
-// span verbatim; labelling the span separately tells the model which part to
-// check. Exception: a claim with no highlighted span is grounded in an image,
-// and one image (say, an infographic) can carry several claims — there the
-// paraphrase is the only thing naming which one to check, so it goes back in.
-// The image(s) themselves reach the model via the pipeline's media analysis.
+// We fact-check the author's own words. The synthetic post carries the verbatim
+// highlighted span, the passage around it, and any images the claim rests on. It
+// does not carry Opus's neutral restatement of the claim. That restatement is
+// useful during extraction, because it forces Opus to state the claim, but it
+// can drift away from the source. So we keep it out of the fact-check input and
+// let the search model read what the author actually wrote. The surrounding
+// passage contains the highlighted span word for word, and labelling the span
+// separately tells the model which part of the passage to check.
+// There is one exception. A claim with no highlighted span is grounded in an
+// image, and a single image such as an infographic can carry several claims. In
+// that case the restatement is the only thing that says which claim to check, so
+// it goes back in. The images themselves reach the model through the pipeline's
+// media analysis.
 export function buildClaimPost(params: ClaimPostParams): Post {
   const { claim, source, itemId, index, publishedAt } = params;
   const origin = source === "youtube" ? "Transcript" : "Article";
@@ -111,8 +120,8 @@ export async function checkClaim(params: ClaimPostParams): Promise<ClaimCheck> {
   return { kind: "no_note", outcome: result.outcome, reason: result.outcomeReason ?? null };
 }
 
-/** Persist the run's tweet log + LLM cost to everything_pipeline_runs.
- *  Best-effort: a logging failure must not error the claim itself. */
+/** Saves the run's tweet log and LLM cost to everything_pipeline_runs. This is
+ *  best effort. A failure to record must never make the claim itself fail. */
 async function recordClaimRun(
   claimId: string,
   result: Awaited<ReturnType<typeof processSingleTweet>>,
@@ -136,9 +145,10 @@ async function recordClaimRun(
   }
 }
 
-/** Expand each cited URL into one entry per supporting snippet the verifier
- *  extracted; a URL with no snippet (verifier_citations off, or nothing quoted)
- *  becomes a single bare-URL entry so the note still shows its source. */
+/** Expands each cited URL into one entry per supporting snippet the verifier
+ *  extracted. A URL with no snippet becomes a single entry holding just the URL,
+ *  so the note still shows its source. That happens when verifier_citations is
+ *  off, or when the verifier quoted nothing from that source. */
 function buildSourceCitations(citedUrls: string[], evaluations: EvaluatedSource[]): NoteSourceCitation[] {
   const byUrl = new Map(evaluations.map((e) => [e.url, e]));
   return citedUrls.flatMap((url): NoteSourceCitation[] => {

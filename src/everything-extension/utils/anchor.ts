@@ -1,33 +1,39 @@
 import { normalizeText } from "../../everything-shared/normalizeText";
 
 /**
- * Quote → DOM-Range anchoring.
+ * Anchoring a claim's quote to a DOM Range.
  *
- * Claim quotes are LLM-captured "verbatim" excerpts — near-verbatim in
- * practice (markdown artifacts, smart quotes, footnote markers), so exact
- * substring search over the page fails routinely. Instead both sides are
- * reduced with the shared normalizeText (lowercase, non-alphanumerics → space,
- * collapse) and matched in normalized space; a per-character index map carries
- * the match back to raw text offsets, and a binary search over the text-node
- * segments turns those into a Range.
+ * A claim's quote is an excerpt an LLM captured as verbatim, but in practice it
+ * is only close to verbatim. Markdown artifacts, smart quotes, and footnote
+ * markers all creep in. So searching the page for the quote as a plain
+ * substring fails routinely.
+ * Instead both the page and the quote are reduced with the shared normalizeText
+ * helper, which lowercases the text, turns every non-alphanumeric character
+ * into a space, and collapses runs of spaces. The match is then found in that
+ * normalized text. A per-character index maps the match back to offsets in the
+ * raw text, and a binary search over the text-node segments turns those offsets
+ * into a Range.
  */
 
 export interface TextIndex {
-  /** Text nodes in document order with their start offset in the raw concat. */
+  /** The text nodes in document order, each with its start offset in the
+   *  concatenated raw text. */
   segments: { node: Text; start: number }[];
   norm: string;
-  /** normToRaw[i] = offset in the raw concat of the char behind norm[i]. */
+  /** normToRaw[i] is the offset in the concatenated raw text of the character
+   *  behind norm[i]. */
   normToRaw: number[];
 }
 
 const SKIPPED_TAGS = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "TEMPLATE"]);
 
-// NodeFilter.SHOW_TEXT inlined: the global isn't defined outside real
-// browsers (e.g. under bun test with linkedom).
+// This is the value of NodeFilter.SHOW_TEXT, written out because the
+// NodeFilter global does not exist outside a real browser. Under bun test with
+// linkedom it is missing.
 const SHOW_TEXT = 0x4;
 
-// The skip check runs inside the walk loop, not as a TreeWalker filter —
-// linkedom (the test environment) ignores filter callbacks.
+// The skip check runs inside the walk loop rather than as a TreeWalker filter,
+// because linkedom, which the tests run on, ignores filter callbacks.
 function isSkipped(node: Text): boolean {
   const parent = node.parentElement;
   return !parent || SKIPPED_TAGS.has(parent.tagName) || !!parent.closest("[hidden]");
@@ -42,8 +48,9 @@ export function indexContainer(container: Element): TextIndex {
   let norm = "";
   const normToRaw: number[] = [];
   let rawLength = 0;
-  // Raw offset of the first char of the currently open "gap" (a run of
-  // non-alphanumerics that will collapse into a single space).
+  // The raw offset of the first character of the gap that is currently open. A
+  // gap is a run of non-alphanumeric characters that collapses into a single
+  // space.
   let gapStart = -1;
 
   for (let node = walker.nextNode() as Text | null; node; node = walker.nextNode() as Text | null) {
@@ -65,19 +72,22 @@ export function indexContainer(container: Element): TextIndex {
         gapStart = rawLength + i;
       }
     }
-    // No forced gap at node boundaries: inline elements can split a word
-    // mid-run (`foo<em>bar</em>` renders "foobar"), and block boundaries
-    // almost always carry punctuation/whitespace that opens a gap anyway.
+    // We do not force a gap at a node boundary. An inline element can split a
+    // word in the middle, so `foo<em>bar</em>` renders as "foobar". A block
+    // boundary almost always carries punctuation or whitespace that opens a
+    // gap by itself.
     rawLength += text.length;
   }
 
   return { segments, norm, normToRaw };
 }
 
-// Below this many normalized chars a quote is too generic to anchor safely.
+// A quote with fewer normalized characters than this is too generic to anchor
+// safely.
 const MIN_MATCH_CHARS = 12;
-// textFragment.ts-style fallback: match the first/last EDGE_WORDS words when
-// the middle of the quote has drifted from the rendered text.
+// A fallback for when the middle of the quote has drifted from the rendered
+// text. We then match only the first and last EDGE_WORDS words. This is the
+// approach textFragment.ts takes.
 const EDGE_WORDS = 6;
 // The edge match's end must land within this factor of the quote's own length.
 const EDGE_SLACK = 1.5;
@@ -95,7 +105,8 @@ function edgeMatch(norm: string, normQuote: string): { start: number; length: nu
   return { start, length: suffixAt + suffix.length - start };
 }
 
-/** Segment containing the raw offset (greatest start <= offset). */
+/** The segment that contains the raw offset. That is the segment with the
+ *  greatest start offset that is not past it. */
 function locate(segments: TextIndex["segments"], rawOffset: number): { node: Text; offset: number } {
   let lo = 0;
   let hi = segments.length - 1;
@@ -110,12 +121,14 @@ function locate(segments: TextIndex["segments"], rawOffset: number): { node: Tex
 
 export interface QuoteMatch {
   start: { node: Text; offset: number };
-  /** Position of the match's LAST character (inclusive). */
+  /** The position of the match's last character. This position is
+   *  inclusive. */
   end: { node: Text; offset: number };
 }
 
-/** Find a quote in the indexed container. Exact normalized match first, then
- *  the edge-words fallback. Null when the quote can't be located. */
+/** Find a quote in the indexed container. An exact match on the normalized text
+ *  is tried first, then the edge-words fallback. This returns null when the
+ *  quote cannot be located. */
 export function findQuoteMatch(index: TextIndex, quote: string): QuoteMatch | null {
   if (index.segments.length === 0) return null;
   const normQuote = normalizeText(quote);
@@ -135,7 +148,7 @@ export function findQuoteMatch(index: TextIndex, quote: string): QuoteMatch | nu
   };
 }
 
-/** findQuoteMatch as a live DOM Range. */
+/** The same as findQuoteMatch, but returned as a live DOM Range. */
 export function findQuoteRange(index: TextIndex, quote: string): Range | null {
   const match = findQuoteMatch(index, quote);
   if (!match) return null;

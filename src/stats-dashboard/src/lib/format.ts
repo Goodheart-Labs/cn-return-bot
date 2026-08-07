@@ -14,7 +14,7 @@ export function formatUsd(n: number, fractionDigits = 2): string {
 }
 
 export function formatUsdMicro(n: number): string {
-  // Cost per view is fractions of a cent — render as e.g. "$0.000012".
+  // A cost per view is a small fraction of a cent, so it needs six decimals.
   if (n === 0) return "$0";
   return `$${n.toFixed(6)}`;
 }

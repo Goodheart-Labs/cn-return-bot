@@ -1,5 +1,6 @@
 /**
- * Main report generator — see docs/main-report.md for documentation.
+ * This script generates the main report. The documentation for it is in
+ * docs/main-report.md.
  */
 import "dotenv/config";
 
@@ -27,8 +28,9 @@ const client = getSupabaseClient();
 
 console.log("Fetching data...");
 
-// 1. All notes (primary data source). Post-merge, this is the unified
-// notes table — submission metadata + ratings + status all on one row.
+// 1. Every note. This is the report's primary data source. The notes table was merged
+// with the old canonical table, so submission metadata, ratings and status now all sit
+// on one row.
 const scrapedNotes = await fetchAllRows<{
   note_id: string;
   tweet_id: string;
@@ -41,11 +43,12 @@ const scrapedNotes = await fetchAllRows<{
   helpful_count: number | null;
   not_helpful_count: number | null;
 }>(
-  // data_tier IS NULL means the note came from public-data ingest only and
-  // was never reconciled by the scraper — those are real submitted notes,
-  // include them. Pre-merge this filter was just .neq("junk") on canonical,
-  // which never had NULL because the scraper always set it; post-merge the
-  // notes table includes public-data-only rows that legitimately have NULL.
+  // A NULL data_tier means the note reached us through the public-data ingest and the
+  // scraper never reconciled it. Those are real submitted notes, so the filter has to
+  // keep them. Before the tables were merged this filter only had to exclude the junk
+  // tier, because the scraper set data_tier on every canonical row. The merged notes
+  // table also holds rows that only ever came from public data, and those rows are
+  // allowed to have NULL there.
   () => client.from("notes")
     .select("note_id, tweet_id, cn_status, view_count, data_tier, first_seen_at, submitted_at, rating_count, helpful_count, not_helpful_count")
     .or("data_tier.neq.junk,data_tier.is.null"),
@@ -54,8 +57,8 @@ const scrapedNotes = await fetchAllRows<{
 );
 console.log(`  ${scrapedNotes.length} notes (non-junk)`);
 
-// 2. Bot name lookup. Comes from the pipeline_runs row that produced
-// each note (we no longer duplicate bot_name onto notes).
+// 2. The bot name for each note. It comes from the pipeline_runs row that produced the
+// note. The notes table no longer carries a copy of bot_name.
 const botRuns = await fetchAllRows<{
   id: string;
   note_id: string;
@@ -67,9 +70,11 @@ const botRuns = await fetchAllRows<{
 );
 console.log(`  ${botRuns.length} submitted runs (for bot_name mapping)`);
 
-// 3. Pipeline runs (single query with all needed fields)
-// We group/render by a synthetic variant label "<bot>_<v1>-<v2>-..." derived
-// from ab_test_picks so per-variant breakdowns work post-migration-039.
+// 3. Every pipeline run, fetched in one query with all the fields the report needs.
+// The report groups runs under a made-up variant label of the form
+// "<bot>_<variant1>-<variant2>-...", built from ab_test_picks. Migration 039 removed
+// the stored long bot name, so this label is what makes the per-variant breakdowns
+// possible.
 const rawPipelineRunsFull = await fetchAllRows<{
   id: string;
   bot_name: string | null;
@@ -83,8 +88,8 @@ const rawPipelineRunsFull = await fetchAllRows<{
   "id",
   { label: "report.allPipelineRuns" },
 );
-// Fill AB-test defaults so variant labels stay consistent across rows written
-// before vs. after a test was introduced.
+// Fill in the default pick for every A/B test. Without this a row written before a test
+// existed would get a different variant label from a row written after it.
 for (const r of rawPipelineRunsFull) {
   r.ab_test_picks = resolvePicks(r.ab_test_picks);
 }
@@ -99,7 +104,8 @@ function variantLabel(bot_name: string | null, picks: Record<string, string> | n
   return variantTags.length === 0 ? bot_name : `${bot_name}_${variantTags.join("-")}`;
 }
 
-// Compute is_retry: for each tweet_id, the earliest created_at is first try, rest are retries
+// Work out which runs are retries. For a given tweet the run with the earliest
+// created_at is the first try. Every later run on that tweet is a retry.
 const firstSeenByTweet = new Map<string, string>();
 for (const r of rawPipelineRunsFull) {
   const prev = firstSeenByTweet.get(r.tweet_id);
@@ -113,9 +119,9 @@ const pipelineRuns = rawPipelineRunsFull.map(r => ({
   is_retry: r.created_at !== firstSeenByTweet.get(r.tweet_id),
 }));
 
-// 5. Video info from tweets table (was on pipeline_runs pre-refactor).
-// Filter to tweet_ids that actually had a submitted run. Fetch in batches to
-// keep the IN clause under URI length limits.
+// 5. The video information, which now lives on the tweets table. It used to sit on
+// pipeline_runs. Only tweets that had a submitted run are of interest here. The fetch
+// runs in batches so that the IN clause stays under the URI length limit.
 const submittedTweetIds = new Set(
   rawPipelineRunsFull.filter(r => r.outcome === "submitted").map(r => r.tweet_id)
 );
@@ -133,7 +139,6 @@ for (const r of videoRuns) {
 }
 console.log(`  ${videoRuns.length} tweets with video info`);
 
-// 6. Competing notes summary
 const competingData = await fetchAllRows<{
   id: string;
   tweet_id: string;
@@ -149,16 +154,15 @@ const totalCompeting = competingData.length;
 const helpfulCompeting = competingData.filter(c => c.current_status === "CURRENTLY_RATED_HELPFUL").length;
 console.log(`  ${totalCompeting} competing notes (${helpfulCompeting} helpful)`);
 
-// Build bot_name lookup from pipeline_runs (one row per submission attempt;
-// last writer wins for retries — fine for "what bot owns this note" purposes).
+// Build the note id to bot name lookup out of the submitted pipeline runs. There is one
+// run per submission attempt, so a note that was retried can appear more than once. The
+// last run we walk over wins. That is good enough for deciding which bot owns a note.
 const botNameByNoteId = new Map<string, string>();
 for (const r of botRuns) {
   if (r.note_id && r.bot_name) botNameByNoteId.set(r.note_id, r.bot_name);
 }
 
-// Enrich notes with bot_name and date
 const notes = scrapedNotes.map((n) => {
-  // Use submitted_at from notes, or derive from Snowflake ID
   let noteDate: string;
   if (n.submitted_at) {
     noteDate = n.submitted_at;
@@ -180,10 +184,9 @@ const notes = scrapedNotes.map((n) => {
   };
 });
 
-// Define active vs legacy bots
 const activeBots = ["multi-agent", "simple-bot", "agent", "cheap-bot"];
 const legacyBots = [
-  "claude-simple",  // renamed to "simple-bot" in commit 1; historical rows keep the old name until migration 038
+  "claude-simple",  // Renamed to "simple-bot" by migration 039, which also renamed every existing row.
   "opus-main", "opus-main-v2", "opus-direct", "opus-direct-grok",
   "opus-main-v2-grok", "opus-main-no-source-check", "opus-multi-source",
   "opus-bridging", "opus-4.6", "sonar-pro", "kimi-k2", "opus-research",
@@ -191,7 +194,6 @@ const legacyBots = [
   "gemini-flash", "multi-search", "gemini-3-flash", "deepseek", "pre-tracking",
 ];
 
-// Check for notes from unknown bots
 const knownBots = new Set([...activeBots, ...legacyBots]);
 const unknownBotNotes = notes.filter((n) => !knownBots.has(n.bot_name));
 if (unknownBotNotes.length > 0) {
@@ -201,7 +203,6 @@ if (unknownBotNotes.length > 0) {
   );
 }
 
-// Aggregate pipeline outcomes by bot
 const pipelineOutcomesByBot: Record<string, { note_not_needed: number; failed_to_write: number }> = {};
 for (const row of pipelineRuns) {
   const bot = row.bot_id || "unknown";
@@ -210,10 +211,10 @@ for (const row of pipelineRuns) {
   if (row.outcome === "failed") pipelineOutcomesByBot[bot].failed_to_write++;
 }
 
-// Total views across ALL scraped notes (global, not filtered)
+// This total covers every note. The filters the page offers never narrow it.
 const globalTotalViews = scrapedNotes.reduce((sum, n) => sum + (n.view_count || 0), 0);
 
-// Format notes data for client-side rendering
+// These are the only note fields the page embeds. The charts in the browser read them.
 const notesData = notes.map((n) => ({
   bot_name: n.bot_name,
   submitted_at: n.submitted_at,
@@ -223,15 +224,12 @@ const notesData = notes.map((n) => ({
   video_duration_ms: n.video_duration_ms,
 }));
 
-// Bot color palette
 const botColors: Record<string, string> = {
-  // Active bots (solid)
   "opus-main": "rgba(59, 130, 246, 0.8)",
   "opus-main-v2": "rgba(99, 102, 241, 0.8)",
   "opus-direct": "rgba(234, 88, 12, 0.8)",
   "opus-direct-grok": "rgba(220, 38, 38, 0.8)",
   "opus-main-v2-grok": "rgba(20, 184, 166, 0.8)",
-  // Legacy bots (faded)
   "opus-4.6": "rgba(99, 102, 241, 0.5)",
   "sonar-pro": "rgba(20, 184, 166, 0.5)",
   "kimi-k2": "rgba(245, 158, 11, 0.5)",
@@ -1064,7 +1062,6 @@ const html = `<!DOCTYPE html>
 </body>
 </html>`;
 
-// Ensure output directory exists
 if (!existsSync("tmp/reports")) {
   mkdirSync("tmp/reports", { recursive: true });
 }
@@ -1072,7 +1069,6 @@ if (!existsSync("tmp/reports")) {
 writeFileSync("tmp/reports/full-bot-report.html", html);
 console.log("Report generated: tmp/reports/full-bot-report.html");
 
-// Open in browser
 try {
   execSync("open tmp/reports/full-bot-report.html");
 } catch {}

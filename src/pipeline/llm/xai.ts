@@ -14,7 +14,8 @@ export const xai = createXai({
 });
 
 function isRetryableError(err: any): boolean {
-  // Vercel AI SDK error shapes: { statusCode } (APICallError) and { code } (network).
+  // The Vercel AI SDK reports an APICallError with a statusCode field, and a
+  // network failure with a code field.
   const status = err?.statusCode ?? err?.status ?? err?.response?.status;
   if (status === 429 || status === 500 || status === 502 || status === 503 || status === 504) return true;
   if (err?.code === "ECONNRESET" || err?.code === "ETIMEDOUT" || err?.code === "ENETUNREACH") return true;
@@ -38,10 +39,10 @@ export interface XaiNativeParams {
   userMessage: string;
   enableXSearch?: boolean;
   /**
-   * JSON shape the model is asked to produce. The Vercel AI SDK doesn't pair
-   * structured output with tool use cleanly, so we describe the schema in the
-   * prompt and JSON.parse the result. Grok-4 reliably returns parseable JSON
-   * when asked.
+   * The JSON shape the model is asked to produce. The Vercel AI SDK does not
+   * combine structured output with tool use cleanly. So we describe the schema in
+   * the prompt and parse the answer ourselves. Grok 4 reliably returns parseable
+   * JSON when asked this way.
    */
   responseSchema?: object;
 }
@@ -104,7 +105,7 @@ export async function xaiNativeGenerate(p: XaiNativeParams): Promise<XaiNativeRe
     try {
       parsed = JSON.parse(cleaned);
     } catch {
-      // caller handles missing parsed
+      // The caller deals with a missing parsed value.
     }
   }
 

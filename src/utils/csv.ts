@@ -1,4 +1,4 @@
-/** Parse CSV content handling multiline quoted fields. */
+/** Parses CSV content. A quoted field may span several lines. */
 export function parseCsvRecords(content: string): string[][] {
   const records: string[][] = [];
   let fields: string[] = [];
@@ -31,7 +31,10 @@ export function parseCsvRecords(content: string): string[][] {
       current += char;
     }
   }
-  // Last record (no trailing newline)
+  // The loop only finishes a record when it reaches a newline, so the last line
+  // of a file that has no trailing newline is still pending here. When the file
+  // did end with a newline there is nothing left, and the emptiness check below
+  // throws the blank leftover away.
   fields.push(current);
   if (fields.some((f) => f.length > 0)) {
     records.push(fields);

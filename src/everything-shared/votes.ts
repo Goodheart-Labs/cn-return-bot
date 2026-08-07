@@ -3,16 +3,19 @@ import { supabase } from "./supabase";
 
 export type Vote = VoteValue;
 
-/** The signed-in user's own votes (RLS returns only their rows). */
+/** Fetches the signed-in user's own votes. Row level security returns only their
+ *  rows. */
 export async function fetchMyVotes(): Promise<Map<string, Vote>> {
   const { data } = await supabase.from("everything_votes").select("note_id, vote");
   return new Map((data ?? []).map((v) => [v.note_id as string, v.vote as Vote]));
 }
 
-/** Cast or change a vote; the counter trigger updates the note live for
- *  everyone. Returns the vote row's id (059) — the key the donation
- *  hangs off — as a separate read so the vote itself never depends on the new
- *  column (an older backend just returns null and the donation box stays shut). */
+/** Casts a vote or changes an existing one. A database trigger updates the note's
+ *  counters, so the new tally shows for everyone. The function then reads back
+ *  the vote row's id, which migration 059 added and which a donation hangs off.
+ *  That read is a separate query so the vote itself never depends on the new
+ *  column. Against an older backend the read returns null and the donation box
+ *  stays shut. */
 export async function castVote(noteId: string, voterId: string, vote: Vote): Promise<string | null> {
   const { error } = await supabase
     .from("everything_votes")
@@ -25,7 +28,8 @@ export async function castVote(noteId: string, voterId: string, vote: Vote): Pro
   return (data as { id?: string } | null)?.id ?? null;
 }
 
-/** Un-vote (RLS restricts deletion to the caller's own row). */
+/** Retracts the caller's vote. Row level security lets them delete only their own
+ *  row. */
 export async function clearVote(noteId: string) {
   const { error } = await supabase.from("everything_votes").delete().eq("note_id", noteId);
   if (error) console.error("[common-notes] vote retract failed:", error.message);

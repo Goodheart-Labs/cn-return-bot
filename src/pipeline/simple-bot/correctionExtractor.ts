@@ -1,10 +1,11 @@
 /**
- * Simple Bot — Correction Extractor
+ * The simple bot's correction extractor.
  *
- * One LLM call that decomposes the search findings into discrete atomic
- * corrections, each graded by importance. The orchestrator filters to the
- * high-value grades and feeds only those to the writer. Runs only when
- * `config.correction_extraction` is on (SIMPLE_BOT_CORRECTION_EXTRACTION_TEST).
+ * It makes one LLM call that breaks the search findings into separate atomic
+ * corrections and grades each one by importance. The orchestrator keeps only
+ * the high-value grades and passes those to the writer. The stage runs only
+ * when `config.correction_extraction` is on, which is the
+ * SIMPLE_BOT_CORRECTION_EXTRACTION_TEST arm.
  */
 
 import { getBotConfig } from "../ab-testing/botConfig";
@@ -23,7 +24,8 @@ export interface AtomicCorrection {
   explanation: string;
 }
 
-/** Input is the search findings only — no post context, by design. */
+/** This stage sees only the search findings. Withholding the post context is
+ *  deliberate. */
 export async function runCorrectionExtractor(findings: string): Promise<AtomicCorrection[]> {
   const log = getTweetLog();
   const config = getBotConfig();

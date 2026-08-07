@@ -1,9 +1,9 @@
 /**
  * Cost Tracker
  *
- * Append-only cost tracking via AsyncLocalStorage. Each LLM call appends an entry
- * with a dot-notation name. One aggregation function at the end builds the tree
- * and logs everything.
+ * Append-only cost tracking through AsyncLocalStorage. Each LLM call appends an
+ * entry with a dot-notation name. One aggregation function at the end builds the
+ * tree and logs everything.
  */
 
 import { AsyncLocalStorage } from "node:async_hooks";
@@ -51,8 +51,9 @@ export async function trackedLlmCreate(
   name: string,
   params: Parameters<typeof llm.create>[0],
 ): Promise<{ response: any; costEntry: LlmCallCost }> {
-  // Any non-tooling gemini call prefers the free native key; null = not routable
-  // or free key failed, so fall through to OpenRouter.
+  // A Gemini call that uses no tools prefers Google's free native key. A null
+  // result means the call was not routable that way, or that the free key
+  // failed. In both cases we fall through to OpenRouter.
   const native = await tryGeminiFreeChat(params);
   if (native) {
     return { response: native.response, costEntry: { name, ...native.cost, tools: [] } };
@@ -86,7 +87,8 @@ export function aggregateAndLogCosts(): TokenCost | null {
   const entries = getCostTracker();
   if (!entries.length) return null;
 
-  // Group by first path segment of the entry name (e.g. "search", "writer", "agent.turn3").
+  // Group the entries by the first segment of their dot-notation name. An entry
+  // named "agent.turn3" lands in the "agent" group.
   const groups: Record<string, TokenCost> = {};
   const total = emptyTokenCost();
 

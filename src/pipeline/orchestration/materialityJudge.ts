@@ -1,13 +1,17 @@
 /**
- * Materiality / persuasion judge — SHADOW scorer.
+ * The materiality and persuasion judge. It is a shadow scorer.
  *
- * Runs on every written correction, logs four pipeline_scores rows, gates
- * NOTHING. Gating waits for a benchmark against the review-dashboard tags
- * (the "did not engage" / "pedantic" hand labels are ~100% predictive of
- * not-helpful; the judge must prove it catches them at an acceptable
- * false-positive rate on helpful notes first). Predecessor rubric scorers
- * (note_not_needed AUC 0.70, helpfulness 0.715) were retired for cost in #154;
- * this revives the signal at one cheap call per WRITTEN note (~35/day).
+ * It runs on every correction we write and logs four rows into pipeline_scores.
+ * It gates nothing. Before it may gate anything it has to be benchmarked against
+ * the hand labels in the review dashboard. The labels "did not engage" and
+ * "pedantic" almost always mean the note ended up rated not helpful. The judge
+ * has to show that it catches those notes without rejecting too many helpful
+ * ones.
+ *
+ * Two earlier rubric scorers were retired in issue #154 because they cost too
+ * much. They reached an AUC of 0.70 for note_not_needed and 0.715 for
+ * helpfulness. This judge brings that signal back for one cheap call per written
+ * note, which is about 35 calls a day.
  */
 
 import { runJsonLlmCall } from "../utils/jsonLlmCall";
@@ -18,8 +22,9 @@ import {
   buildMaterialityJudgeUserMessage,
 } from "../prompts/simple-bot/materialityJudge";
 
-// Cheap judge model, same pick as the cheap-bot note judge (big_eval: halved
-// hard-FP rate vs deepseek while gaining coverage).
+// This is a cheap judge model. The cheap-bot note judge uses the same one. In
+// the big_eval run it halved the rate of hard false positives compared with
+// deepseek, and it still covered more cases.
 const MATERIALITY_JUDGE_MODEL = "google/gemini-3-flash-preview";
 
 export interface MaterialityVerdict {
@@ -37,9 +42,10 @@ export interface MaterialityScoreEntry {
   metadata: Record<string, unknown>;
 }
 
-/** Run the judge; returns pipeline_scores-shaped entries. Throws on LLM/parse
- *  failure — the caller catches and continues (shadow scorer must never block
- *  a run). */
+/** Runs the judge and returns entries shaped like pipeline_scores rows. It
+ *  throws when the LLM call fails or its answer cannot be parsed. The caller
+ *  catches that error and carries on, because a shadow scorer must never stop a
+ *  run. */
 export async function runMaterialityJudge(params: {
   postText: string;
   findings: string;

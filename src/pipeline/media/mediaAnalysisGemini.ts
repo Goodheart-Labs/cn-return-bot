@@ -1,13 +1,16 @@
 /**
  * Gemini 3 Flash Media Analysis
  *
- * Analyzes tweet media using Gemini 3 Flash via the native Google Gen AI API
- * (so it shares the free→paid key routing in ../llm/gemini).
- * - Images: direct vision call with structured JSON (description + OCR)
- * - Short videos (<= 3.5 min): pass entire video as inline base64 bytes
- * - Frame-sampled videos: extract 5 equally-spaced frames across the clip via
- *   ffmpeg (works for any length, including sub-5s clips)
- * - Audio: extract and transcribe with Groq Whisper
+ * Analyzes tweet media with Gemini 3 Flash through the native Google Gen AI
+ * API. Calling Google natively is what lets these calls share the free-key
+ * first, paid-key second routing in ../llm/gemini.
+ *
+ * An image goes straight to a vision call that returns structured JSON with a
+ * description and the text read off the image.
+ * A video of 3.5 minutes or less is sent whole as inline base64 bytes.
+ * Every other video is sampled into 5 equally-spaced frames with ffmpeg. That
+ * path works for a clip of any length, including one under 5 seconds.
+ * Audio is extracted from the video and transcribed by Groq Whisper.
  */
 
 import { exec } from "child_process";
@@ -35,13 +38,14 @@ import { getBestMediaUrl } from "./bestMediaUrl";
 const execAsync = promisify(exec);
 // Native Gemini API takes the model id without the OpenRouter "google/" prefix.
 const GEMINI_NATIVE_MODEL = GEMINI_MODEL.replace(/^google\//, "");
-// Vision fallback when Gemini is unavailable (e.g. 503 high-demand). Routed via
-// OpenRouter, so it stays up when Google's native API is overloaded.
+// The vision model we fall back to when Gemini is unavailable, for example when
+// it returns a 503 because demand is high. This call goes through OpenRouter,
+// so it keeps working while Google's native API is overloaded.
 const HAIKU_FALLBACK_MODEL = "anthropic/claude-haiku-4.5";
-const FRAME_SAMPLE_COUNT = 5;              // equally-spaced frames sent for frame-sampled videos
-const LONG_VIDEO_THRESHOLD_MS = 210_000;   // 3.5 minutes — short videos go to Gemini whole; long videos get frame sampling
-const AUTO_SUBS_THRESHOLD_MS = 300_000;    // 5 minutes — above this we use auto-subs as the transcript and never run Whisper
-const LOW_QUALITY_THRESHOLD_MS = 900_000;  // 15 minutes — above this we request the lowest-resolution stream to cap download bytes
+const FRAME_SAMPLE_COUNT = 5;              // How many frames we sample from a video, spaced evenly across it.
+const LONG_VIDEO_THRESHOLD_MS = 210_000;   // 3.5 minutes. A video this long or shorter can be sent to Gemini whole.
+const AUTO_SUBS_THRESHOLD_MS = 300_000;    // 5 minutes. Above this the transcript comes from auto-subs, and Whisper never runs.
+const LOW_QUALITY_THRESHOLD_MS = 900_000;  // 15 minutes. Above this we ask for the lowest-resolution stream to limit download size.
 
 // --- Types ---
 
@@ -62,14 +66,15 @@ export interface GeminiMediaResult {
   quotedTweetMedia: GeminiMediaItem[];
 }
 
-// Entities X tagged on the post (people, orgs, topics) — given to Gemini as a hint
-// to identify who/what is shown, since vision models often can't name people unaided.
+// X tags a post with entities such as people, organisations and topics. We pass them
+// to Gemini as a hint for working out who or what the media shows. Vision models are
+// often unable to name a person without such a hint.
 function entityHint(entities?: string[]): string {
   if (!entities?.length) return "";
   return `\n\nThe post is tagged with these entities (may appear in the media): ${entities.join(", ")}`;
 }
 
-// Gemini-flavoured schema (uppercase types) for the native responseSchema.
+// The native Gemini API expects a response schema whose type names are uppercase.
 const MEDIA_RESPONSE_SCHEMA = {
   type: "OBJECT",
   properties: {
@@ -81,9 +86,10 @@ const MEDIA_RESPONSE_SCHEMA = {
 
 // --- Helpers ---
 
-/** Readable view of the parts sent to a media call: text (prompt + entity hint)
- *  verbatim, binary parts as a `[media: mime, N b64 chars]` placeholder so the
- *  base64 bytes never bloat the log. */
+/** Builds a readable view of the parts sent to a media call. Text parts, which are
+ *  the prompt and the entity hint, are kept word for word. A binary part is replaced
+ *  by a short placeholder naming its mime type and size. That keeps the base64 bytes
+ *  out of the log. */
 function formatMediaParts(parts: GeminiContentPart[]): string {
   return parts
     .map((part) =>
@@ -94,9 +100,9 @@ function formatMediaParts(parts: GeminiContentPart[]): string {
     .join("\n");
 }
 
-/** One native-Gemini media call: send the parts, record cost, map the JSON.
- *  Logs input (prompt + entity hint + media placeholders) and output under the
- *  call's cost name so every media description's I/O is inspectable. */
+/** Makes one native Gemini media call. It sends the parts, records the cost and maps
+ *  the JSON response. Both the input and the output are logged under the call's cost
+ *  name, so every media description can be inspected afterwards. */
 async function analyzeMediaParts(parts: GeminiContentPart[], costName: string): Promise<GeminiMediaDescription> {
   const log = getTweetLog();
   log?.set(`${costName}.input`, formatMediaParts(parts));
@@ -154,8 +160,9 @@ async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
 
 // --- Image analysis ---
 
-/** Claude Haiku vision fallback (via OpenRouter) for when the native Gemini call
- *  is unavailable. Same prompt; JSON-object output mapped to the Gemini shape. */
+/** Describes an image with Claude Haiku through OpenRouter, for when the native Gemini
+ *  call is unavailable. It sends the same prompt and asks for a JSON object, which is
+ *  then mapped onto the shape Gemini would have returned. */
 async function describeImageWithHaiku(
   inline: { mimeType: string; data: string },
   promptText: string,
@@ -188,9 +195,9 @@ async function describeImageWithHaiku(
   return description;
 }
 
-/** Gemini vision, falling back to Haiku when Gemini errors or returns nothing
- *  usable. A successful description is never empty, so an empty result is
- *  treated as a Gemini miss and retried on Haiku. */
+/** Describes an image with Gemini vision, and falls back to Haiku when Gemini throws
+ *  or returns nothing usable. A successful description is never empty. So an empty
+ *  result counts as a Gemini failure and is retried on Haiku. */
 async function describeImage(
   inline: { mimeType: string; data: string },
   url: string,
@@ -202,7 +209,7 @@ async function describeImage(
   try {
     const description = await analyzeMediaParts([{ text: promptText }, { inlineData: inline }], costName);
     if (description.description !== "") return { type: "image", url, description };
-    // Empty output — treat as a Gemini miss and fall through to Haiku.
+    // Gemini returned an empty description, so we fall through to Haiku.
   } catch (err: any) {
     console.error("[mediaAnalysisGemini] Gemini image analysis failed, falling back to Haiku:", err.message);
   }
@@ -226,8 +233,9 @@ async function downloadVideo(videoUrl: string, tmpDir: string): Promise<string> 
   return videoPath;
 }
 
-/** True iff the clip carries an audio stream. Silent videos (common on X) make
- *  the audio-extraction ffmpeg call error out, so we check first and skip it. */
+/** Reports whether the clip carries an audio stream. Silent videos are common on X,
+ *  and the ffmpeg audio-extraction call errors out on them. So we check first and skip
+ *  the extraction when there is no audio. */
 async function hasAudioStream(videoPath: string): Promise<boolean> {
   try {
     const { stdout } = await execAsync(
@@ -261,7 +269,8 @@ async function analyzeShortVideo(videoPath: string, costName: string, entities?:
   );
 }
 
-/** ffprobe a clip's duration in seconds; null if it can't be determined. */
+/** Returns the clip's duration in seconds as reported by ffprobe. Returns null when
+ *  the duration cannot be determined. */
 async function probeDurationSeconds(videoPath: string): Promise<number | null> {
   try {
     const { stdout } = await execAsync(
@@ -275,10 +284,10 @@ async function probeDurationSeconds(videoPath: string): Promise<number | null> {
   }
 }
 
-/** Extract FRAME_SAMPLE_COUNT equally-spaced frames across the whole clip and
- *  send them to Gemini. The sampling rate is derived from the duration
- *  (count / duration) so it works for any length — including sub-5s clips,
- *  which a fixed "1 frame per 5s" rate would miss entirely. */
+/** Extracts FRAME_SAMPLE_COUNT equally-spaced frames from across the whole clip and
+ *  sends them to Gemini. The sampling rate is the frame count divided by the duration,
+ *  so the frames spread evenly however long the clip is. A fixed rate of one frame
+ *  every five seconds would miss a clip shorter than five seconds entirely. */
 async function analyzeVideoFrames(
   videoPath: string,
   tmpDir: string,
@@ -288,8 +297,8 @@ async function analyzeVideoFrames(
 ): Promise<GeminiMediaDescription> {
   const durationSec =
     (durationMs && durationMs > 0 ? durationMs / 1000 : null) ?? (await probeDurationSeconds(videoPath));
-  // count / duration spreads FRAME_SAMPLE_COUNT frames evenly over the clip.
-  // Unknown duration → fall back to 1 fps (still yields frames; `-frames:v` caps).
+  // When the duration is unknown we sample one frame per second instead. That still
+  // produces frames, and the -frames:v flag caps how many of them we keep.
   const fps = durationSec ? FRAME_SAMPLE_COUNT / durationSec : 1;
 
   await execAsync(
@@ -340,10 +349,12 @@ async function analyzeVideo(
   costName: string,
   strategy: "full_video" | "frames" = "frames",
   /**
-   * Transcript decision made by the caller.
-   * - undefined: caller didn't decide — extract audio + Whisper (default behavior).
-   * - string: use this as the transcript verbatim (e.g. auto-subs).
-   * - null: explicit "no transcript available, do NOT fall back to Whisper" (used for long videos to cap cost).
+   * The transcript decision the caller has already made.
+   * When this is undefined the caller made no decision. We then extract the audio and
+   * transcribe it with Whisper, which is the default behaviour.
+   * When it is a string we use that string as the transcript, for example auto-subs.
+   * When it is null the caller is saying no transcript is available and Whisper must
+   * not run anyway. Long videos use this so the run stays cheap.
    */
   precomputedTranscript?: string | null,
   entities?: string[],
@@ -387,7 +398,8 @@ async function resolveTranscription(
   tmpDir: string,
   precomputed: string | null | undefined,
 ): Promise<string> {
-  // Caller forced "no Whisper" — used for long videos where auto-subs are the only allowed transcript source.
+  // The caller already settled the transcript, so Whisper must not run. A long video
+  // takes this path, because auto-subs are its only allowed transcript source.
   if (precomputed !== undefined) {
     return precomputed ?? "(no auto-subs available)";
   }
@@ -466,15 +478,18 @@ async function describeImageFromLocalFile(filePath: string, costName: string): P
 }
 
 /**
- * Cascading dispatch for cited media URLs:
- *   yt-dlp (videos + most image posts) → gallery-dl (Facebook / IG / Reddit
- *   / Tumblr / Imgur image posts that yt-dlp can't extract) → throw.
- * The caller catches the throw and falls back to fetchWebPage.
+ * Downloads and describes a media URL that a source cites. We try yt-dlp first,
+ * which handles videos and most image posts. If yt-dlp fails we try gallery-dl,
+ * which covers the Facebook, Instagram, Reddit, Tumblr and Imgur image posts that
+ * yt-dlp cannot extract. If both fail this throws. The caller catches that error
+ * and falls back to fetchWebPage.
  *
- * For videos, the strategy adapts to duration to control cost:
- *   - ≥ 5 min: auto-subs only as the transcript; no Whisper fallback.
- *   - ≥ 15 min: download the lowest-resolution stream (frames are scaled
- *     to 640px anyway, so HD bytes are wasted).
+ * For a video the strategy adapts to its duration to keep the cost down.
+ * A video longer than 5 minutes takes its transcript from auto-subs only, and never
+ * falls back to Whisper.
+ * A video longer than 15 minutes is downloaded at the lowest available resolution.
+ * The frames we sample are scaled down to 640px anyway, so the extra bytes of an HD
+ * stream would be wasted.
  */
 export async function describeMediaFromUrl(
   url: string,
@@ -507,8 +522,9 @@ async function describeWithYtDlp(
   try {
     let precomputedTranscript: string | null | undefined;
     if (isLongAudio) {
-      // Videos ≥ 5 min: auto-subs only. If they're missing, we accept "no
-      // transcript" rather than running Whisper on hours of audio.
+      // A video longer than 5 minutes takes its transcript from auto-subs only.
+      // When it has none we accept having no transcript at all. Running Whisper
+      // over hours of audio would cost far more than the transcript is worth.
       precomputedTranscript = fetchAutoSubs(url, tmpDir, "en") ?? null;
     }
 

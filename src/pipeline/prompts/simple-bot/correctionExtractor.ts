@@ -1,10 +1,12 @@
 /**
  * Prompt — simple-bot correction extractor.
  *
- * Runs between search and writer (when `config.correction_extraction` is on).
- * Decomposes the search findings into discrete atomic corrections, grades each,
- * and — via formatCorrectionsForWriter — feeds the writer only the high-value
- * ones. See runCorrectionExtractor in src/pipeline/simple-bot/correctionExtractor.ts.
+ * The extractor runs between the search and the writer, and only when
+ * `config.correction_extraction` is on. It breaks the search findings into
+ * separate atomic corrections and grades each one. The orchestrator keeps the
+ * high-value grades and passes them through formatCorrectionsForWriter, so the
+ * writer sees only those. See runCorrectionExtractor in
+ * src/pipeline/simple-bot/correctionExtractor.ts.
  */
 
 import { jsonSchemaResponseFormat } from "../responseFormat";
@@ -16,7 +18,8 @@ export type CorrectionCategory =
   | "useful_context"
   | "not_useful";
 
-/** Only these reach the writer. Empty high-value set => no correction needed. */
+/** Only corrections in these categories reach the writer. When no correction
+ *  lands in one of them, the post needs no correction at all. */
 export const HIGH_VALUE_CATEGORIES: CorrectionCategory[] = ["clear_error", "critical_context"];
 
 export const CORRECTION_EXTRACTOR_SYSTEM_PROMPT = `You analyze research findings about an X/Twitter post and extract every atomic correction — each a single, self-contained way the post is factually wrong or would leave a reader with a worse understanding of the world.
@@ -79,11 +82,13 @@ export const CORRECTION_EXTRACTOR_RESPONSE_FORMAT = jsonSchemaResponseFormat(
   },
 );
 
-/** Turn the high-value corrections into the findings-shaped string the writer
- *  receives in place of the raw search dump. One block per correction: the
- *  correction's `name` as the heading, then the explanation. The category is used
- *  only to filter (upstream) — the writer doesn't see it. The extractor's own
- *  user message is just the raw findings, so there's no buildUserMessage helper. */
+/** Turns the high-value corrections into the string the writer receives in place
+ *  of the raw search dump. The string has the same shape as the findings. Each
+ *  correction becomes one block, with its `name` as the heading and its
+ *  explanation below. The category only serves to filter the corrections
+ *  upstream, and the writer never sees it. The extractor's own user message is
+ *  nothing but the raw findings, which is why this file has no buildUserMessage
+ *  helper. */
 export function formatCorrectionsForWriter(
   corrections: { name: string; explanation: string }[],
 ): string {

@@ -1,12 +1,14 @@
 /**
- * Disk-backed writer-output cache for pipeline replay. Saves everything the
- * gates (note-needed judge + source verifier) need, keyed by tweet id, so a run
- * can replay just the gates without re-running search and the note writer.
- * Shared by simple-bot, cheap-bot, and the seedReplayFromDb tooling.
+ * A cache of the writer's output on disk, used to replay a pipeline run. It
+ * saves everything the gates need, keyed by tweet id. The gates are the
+ * note-needed judge and the source verifier. With the cache in place a run can
+ * replay just the gates and skip the search and the note writer. The simple
+ * bot, the cheap bot, and the seedReplayFromDb tooling all use it.
  *
- * Gated by the WRITER_CACHE env var (path to a directory). Unset = no caching
- * (full pipeline, no read/write). On a populated cache, a run starts "from the
- * gates".
+ * The WRITER_CACHE environment variable turns the cache on, and its value is
+ * the path to the cache directory. When the variable is unset nothing is read
+ * or written and the full pipeline runs. When the cache already holds an entry
+ * for the tweet, the run starts at the gates.
  */
 import * as fs from "fs";
 import * as path from "path";
@@ -16,14 +18,17 @@ import { STEP, ANALYSIS_LOG_MAX_CHARS } from "../utils/noteWriterSteps";
 
 const CACHE_ENV = "WRITER_CACHE";
 
-/** A search-result projection (title + snippet) kept for the verifier's
- *  fetch fallback. Shared between live search output and the cache. */
+/** The part of a search result we keep, which is its title and its snippet. The
+ *  verifier falls back to it when it cannot fetch a source. Live search output
+ *  and the cache both use this type. */
 export type Snippet = { title: string; snippet: string };
 
 /**
- * Result of the pre-gate stages. Either the pipeline terminated before the
- * writer produced a note (early_exit, replayable verbatim with no LLM calls),
- * or the writer produced a note and the gates still need to run (writer_done).
+ * The result of the stages that run before the gates. There are two cases.
+ * In the early_exit case the pipeline stopped before the writer produced a
+ * note, and the stored outcome can be replayed word for word with no LLM call
+ * at all. In the writer_done case the writer produced a note and the gates
+ * still need to run on it.
  */
 export type WriterStageResult =
   | { kind: "early_exit"; outcome: PipelineOutcome }
@@ -34,7 +39,8 @@ export type WriterStageResult =
       queries: string[];
       noteText: string;
       sources: string[];
-      /** Serialized snippetsByUrl Map entries (verifier fetch fallback). */
+      /** The entries of the snippetsByUrl map, serialized. The verifier uses
+       *  them when it cannot fetch a source. */
       snippets: [string, Snippet][];
     };
 
@@ -63,10 +69,10 @@ export function writeWriterCache(tweetId: string, stage: WriterStageResult): voi
   fs.writeFileSync(path.join(dir, `${tweetId}.json`), JSON.stringify(payload, null, 2));
 }
 
-/** Read-or-produce wrapper for the writer stage. On a cache hit, restore the
- *  writer-stage logs the result categorizer + dashboard expect, then return the
- *  cached stage. On a miss (or unset env), run `produce`, persist it (no-op when
- *  the env is unset), and return it. */
+/** Reads the writer stage from the cache, or produces it. On a cache hit it
+ *  restores the writer-stage logs that the result categorizer and the dashboard
+ *  expect, then returns the cached stage. On a miss it runs `produce`, saves the
+ *  result, and returns it. Saving does nothing when WRITER_CACHE is unset. */
 export async function withWriterCache(
   tweetId: string,
   produce: () => Promise<WriterStageResult>,
@@ -82,9 +88,11 @@ export async function withWriterCache(
   return stage;
 }
 
-/** On a cache replay, the pre-gate stages don't run, so re-log the queries +
- *  writer note that the result categorizer (extractProposedNote, inferStageBlock)
- *  and the dashboard expect to find. */
+/** On a cache replay the stages before the gates never run, so nothing writes
+ *  their log entries. This writes the queries and the writer's note back into
+ *  the log, because the result categorizer and the dashboard both expect to
+ *  find them. The categorizer reads them in extractProposedNote and
+ *  inferStageBlock. */
 export function restoreWriterLogs(stage: WriterStageResult): void {
   if (stage.kind !== "writer_done") return;
   const log = getTweetLog();

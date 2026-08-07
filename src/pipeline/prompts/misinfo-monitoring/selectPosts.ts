@@ -1,9 +1,11 @@
 /**
  * Prompt — misinfo pre-pass post selection.
  *
- * Given a topic's debunking brief + keyword-matched posts, returns the IDs of
- * posts with a misleading claim the brief can correct. Free-form JSON output
- * (json_object). See selectPostsNeedingNote in
+ * The model receives a topic's debunking brief and the posts that matched the
+ * topic's keywords. It returns the ids of the posts that carry a misleading
+ * claim the brief can correct. The output is free-form JSON, requested through
+ * response_format json_object rather than a strict schema. See
+ * selectPostsNeedingNote in
  * src/pipeline/misinfo-monitoring/selectPostsNeedingNote.ts.
  */
 

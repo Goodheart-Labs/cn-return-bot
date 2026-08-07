@@ -21,9 +21,10 @@ export async function fetchAllRows<T>(query: any, label?: string): Promise<T[]> 
 }
 
 const ID_BATCH = 200;
-// How many batch requests to run concurrently. Loading ALL notes (~6k) means
-// ~30 batches per satellite table; running them serially is ~30 round-trips of
-// latency. Fire them in waves so the whole load is a handful of round-trips.
+// How many batch requests run at the same time. Loading every note, about six
+// thousand of them, takes roughly thirty batches per satellite table. Running
+// those one after another would cost thirty round-trips of latency. Sending them
+// in waves brings the whole load down to a handful of round-trips.
 const BATCH_CONCURRENCY = 8;
 
 export async function fetchInBatches<T>(

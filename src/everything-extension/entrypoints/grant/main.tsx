@@ -5,22 +5,23 @@ import { browser } from "#imports";
 import { hostnamePattern, registerGenericScripts } from "../../utils/genericScript";
 import { addDismissedGrantHost } from "../../utils/settings";
 
-// Redirect-mode consent page: the background detours a navigation to a noted
-// site here, because a permission request needs a user gesture — the Allow
-// click below is that gesture. Either choice returns to the page the user
-// was headed to.
+// This is the consent page used in redirect mode. The background detours a
+// navigation to a noted site here, because a permission request needs a user
+// gesture. The click on the Allow button below is that gesture. Either button
+// returns the user to the page they were headed to.
 const params = new URLSearchParams(location.search);
 const host = params.get("host") ?? "";
 
-/** Only ever bounce back to an http(s) URL on the host being asked about —
- *  the `back` param rides an extension-page URL and must not become an open
- *  redirect to javascript: or another site. */
+/** We only ever bounce back to an http or https URL on the host we are asking
+ *  about. The `back` parameter arrives on an extension page URL, so it must
+ *  not be able to send the user anywhere else, such as a javascript: URL or
+ *  another site. */
 const back = (() => {
   try {
     const url = new URL(params.get("back") ?? "");
     if (/^https?:$/.test(url.protocol) && url.hostname === host) return url.toString();
   } catch {
-    // fall through to the host's front page
+    // The parameter is unusable, so we fall through to the host's front page.
   }
   return `https://${host}/`;
 })();
@@ -33,9 +34,10 @@ function GrantApp() {
     setBusy(true);
     setError(null);
     try {
-      // A rejection here is a real bug (e.g. the missing MV2
-      // optional_permissions), not a user choice — surface it, never
-      // swallow it into a dead-looking button.
+      // A thrown error here is a real bug, not the user declining. One cause
+      // is an MV2 manifest without optional_permissions. We show it rather
+      // than swallow it, because a swallowed error leaves a button that looks
+      // dead.
       const granted = await browser.permissions.request({ origins: [hostnamePattern(host)] });
       if (granted) {
         await registerGenericScripts([host]);
@@ -45,8 +47,8 @@ function GrantApp() {
     } catch (err) {
       setError((err as Error).message);
     }
-    // Native prompt denied/closed — stay so they can retry or pick the
-    // other button.
+    // The browser's own prompt was denied or closed. We stay on this page so
+    // the user can retry or pick the other button.
     setBusy(false);
   };
 

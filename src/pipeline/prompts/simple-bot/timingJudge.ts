@@ -1,23 +1,27 @@
 /**
- * Prompts — timing stage (Nathan's conditional design, supersedes the
- * always-on time-travel instruction).
+ * Prompts — timing stage. This is Nathan's conditional design, and it
+ * supersedes the always-on time-travel instruction.
  *
- * Stage A (extractor): when did the event the post describes actually happen?
- * Stage B (judge, ONLY when the event is within the live window): given the
- * event was still live, does this post need a fact check at all? The main
- * prompts stay untouched for the ~90% of posts about settled events; the
- * writer gains one section only when a live event passes the judge.
- * See runTimingStage in src/pipeline/simple-bot/timingStage.ts.
+ * One extractor call answers a single question. When did the event the post
+ * describes actually happen? The code then works out how long after that event
+ * the post was published.
+ * Roughly 90% of posts are about settled events, and for them nothing changes.
+ * Their prompts stay exactly as they are. Only a post that falls inside the live
+ * window makes the writer's user message gain the timing-context block below.
+ * There is no second judging call and no gate. The writer's own rules decide
+ * what to do with the extra context. See runTimingStage in
+ * src/pipeline/simple-bot/timingStage.ts.
  */
 
 import { jsonSchemaResponseFormat } from "../responseFormat";
 
-/** Posts written within this many hours of their event (or while it was still
- *  unfolding) get the timing-context block. The gap is EVENT-to-POST, not
- *  event-to-now (Nathan, 2026-08-05): the tweet's epistemic position — was it
- *  written in the fog of a live event — must not depend on how long the note
- *  sat in our queue. The model only NAMES the event time; the gap arithmetic
- *  is code (timingStage.ts). */
+/** A post written within this many hours of the event it describes gets the
+ *  timing-context block. A post written while that event was still unfolding
+ *  gets it too. The gap is measured from the event to the post, not from the
+ *  event to now. Nathan decided this on 2026-08-05. What we want to know is
+ *  whether the post was written in the fog of a live event, and that must not
+ *  depend on how long the note then sat in our queue. The model only names the
+ *  time of the event. The subtraction happens in code, in timingStage.ts. */
 export const LIVE_EVENT_WINDOW_HOURS = 6;
 
 export const TIMING_EXTRACTOR_SYSTEM_PROMPT = `You read an X post and research findings about it, and answer one narrow question: WHEN did the event the post describes happen?
@@ -42,13 +46,15 @@ export const TIMING_EXTRACTOR_SCHEMA_HINT =
   '{ "event_time_utc": string | null, "why": string }';
 
 /**
- * Timing context piped into the writer's USER message when the post was
- * published within the fog window (Nathan's design, 2026-08-05: no judge, no
- * gate — give the writer the fact and the known regularity, let its normal
- * rules and empty-note path do the deciding).
+ * The timing context that is piped into the writer's user message when the post
+ * was published inside the fog window. Nathan designed it this way on
+ * 2026-08-05. There is no judge and no gate. We hand the writer the fact and the
+ * regularity we know about, and its normal rules and its empty-note path do the
+ * deciding.
  */
 export function buildTimingContextBlock(params: {
-  /** Computed in code: post.created_at minus the extractor's event time. */
+  /** Computed in code as post.created_at minus the event time the extractor
+   *  named. */
   hoursEventToPost: number;
   why: string;
 }): string {

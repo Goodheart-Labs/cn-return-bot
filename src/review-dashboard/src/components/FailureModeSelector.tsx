@@ -31,7 +31,7 @@ export function FailureModeSelector({
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // Focus the search box on open; clear the query on close.
+  // Focus the search box when the menu opens. Clear the query when it closes.
   useEffect(() => {
     if (open) searchRef.current?.focus();
     else setQuery("");
@@ -48,8 +48,8 @@ export function FailureModeSelector({
 
   const filteredCatalog = useMemo(() => {
     const q = query.trim().toLowerCase();
-    // Fixed modes are hidden from the default menu, but a live search surfaces
-    // them (with their strikethrough marker) so you can still re-apply one.
+    // Failure modes marked as fixed are hidden from the menu by default. Typing a
+    // search brings them back, still struck through, so you can re-apply one.
     if (!q) return showFixed ? sortedCatalog : sortedCatalog.filter((m) => !m.fixed);
     return sortedCatalog.filter((m) => m.name.toLowerCase().includes(q));
   }, [sortedCatalog, query, showFixed]);

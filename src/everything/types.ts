@@ -6,9 +6,10 @@ export type SourceKind = "youtube" | "substack";
 export type FetchedContent =
   | { kind: "youtube"; url: string; videoId: string; title: string; publishedAt?: string; cues: SubtitleCue[] }
   | { kind: "substack"; url: string; title: string; publishedAt?: string; text: string }
-  // A YouTube video whose claims are extracted from a caller-supplied transcript
-  // (e.g. an author's clean published transcript) but whose timestamps are still
-  // snapped against the video's own cues. Same anchoring as `youtube`.
+  // A YouTube video whose claims come from a transcript the caller supplied.
+  // That is usually the author's own clean published transcript. Timestamps are
+  // still snapped against the video's own cues, so anchoring works exactly as
+  // it does for `youtube`.
   | {
       kind: "youtube-transcript";
       url: string;
@@ -27,35 +28,40 @@ export type ClaimAnchor =
 export interface ExtractedClaim {
   /** Neutral, self-contained restatement of the claim. */
   claim: string;
-  /** Opus's truth judgement from its own knowledge (7-point scale). */
+  /** How true Opus thinks the claim is, judged from its own knowledge alone.
+   *  It is one of seven levels, from "certainly true" to "certainly false". */
   judgement: string;
   /** Verbatim excerpt with all the context needed to evaluate the claim.
    *  Empty for an image-only claim that carries no supporting text. */
   context: string;
-  /** Wider verbatim excerpt (surrounding paragraph[s]) containing `context`
-   *  word-for-word — shown to readers as the passage around the claim. Empty
-   *  when the claim has no surrounding text (image-only). */
+  /** Wider verbatim excerpt, usually the paragraph or paragraphs around the
+   *  claim. It contains `context` word for word. Readers see it as the passage
+   *  the claim sits in. It is empty when the claim rests only on an image and
+   *  has no surrounding text. */
   contextParagraph: string;
-  /** Article images the claim is grounded in (Substack only). A claim can rest
-   *  on text, image(s), or both. */
+  /** Article images the claim is grounded in. Only Substack articles supply
+   *  these. A claim can rest on text, on images, or on both. */
   imageUrls: string[];
-  /** True when the claim describes a hypothetical/future scenario rather than
-   *  the present or past — these are filtered out before fact-checking. */
+  /** True when the claim describes a hypothetical or future scenario rather
+   *  than the present or the past. Such claims are filtered out before
+   *  fact-checking. */
   speculation: boolean;
   anchor: ClaimAnchor;
 }
 
-/** One cited source of a note, with the verbatim passage that supports it (when
- *  the verifier extracted one) and a plain-language explanation. */
+/** One cited source of a note. It carries the verbatim passage that supports the
+ *  note, when the verifier managed to extract one, and a plain-language
+ *  explanation of why the source supports it. */
 export interface NoteSourceCitation {
   url: string;
   quote: string | null;
   explanation: string | null;
 }
 
-/** Outcome of running one claim through the note pipeline. (Claims skipped as
- *  confident-true or erroring never reach the pipeline — the worker records
- *  those directly on the claim row.) */
+/** Outcome of running one claim through the note pipeline. A claim that was
+ *  skipped because Opus is confident it is true never reaches the pipeline, and
+ *  neither does a claim that errored. The worker records those two outcomes
+ *  directly on the claim row instead. */
 export type ClaimCheck =
   | { kind: "no_note"; outcome: string; reason: string | null }
   | { kind: "note"; note: string; sources: NoteSourceCitation[] };

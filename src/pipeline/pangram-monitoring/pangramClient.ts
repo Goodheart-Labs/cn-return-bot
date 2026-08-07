@@ -1,14 +1,17 @@
 /**
- * Pangram AI-text-detection client (v3 API — asynchronous task model).
+ * The client for Pangram's AI-text-detection API. Version 3 of that API is
+ * asynchronous. A classification is a task we create and then poll.
  *
  * 1. POST https://text.external-api.pangram.com/task  { text, public_dashboard_link }
  *      -> { task_id, stage }
  * 2. GET  https://text.external-api.pangram.com/task/{task_id}   (poll)
  *      -> { stage, prediction_short, fraction_ai, fraction_human, headline, dashboard_link, ... }
- *    Poll until `stage` is terminal (STAGE_SUCCESS | STAGE_FAILED).
- * Both calls send the key in the `x-api-key` header. `public_dashboard_link`
- * makes the response carry a shareable pangram.com/history/<id> report URL that
- * we use as the note's source.
+ *
+ * We repeat the second call until `stage` reaches a final value. There are two
+ * final values, STAGE_SUCCESS and STAGE_FAILED. Both calls send the API key in
+ * the `x-api-key` header. Asking for `public_dashboard_link` makes the response
+ * carry a shareable report URL of the form pangram.com/history/<id>, and that URL
+ * is what our note cites as its source.
  */
 import axios from "axios";
 
@@ -21,12 +24,12 @@ const POLL_TIMEOUT_MS = 90_000;
 export type PangramVerdict =
   | {
       type: "classified";
-      predictionShort: string; // "AI" | "AI-Assisted" | "Human" | "Mixed"
+      predictionShort: string; // One of "AI", "AI-Assisted", "Human" or "Mixed".
       fractionAi: number;
       fractionAiAssisted: number;
       fractionHuman: number;
       headline: string;
-      dashboardLink: string; // pangram.com/history/<id> — the note's source link
+      dashboardLink: string; // The pangram.com/history/<id> report. Our note cites it.
       raw: unknown;
     }
   | { type: "error"; error: string };

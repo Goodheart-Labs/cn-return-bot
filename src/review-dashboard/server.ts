@@ -19,17 +19,18 @@ const supabaseKey = useLocal ? process.env.LOCAL_SUPABASE_SERVICE_KEY : process.
 const PORT = 8001;
 
 // ─── Server-side default-view prefetch ───────────────────────────────────────
-// The client's first paint is the default review view: ALL default-status notes
-// (the standard selection — today rated-unhelpful), no date window. Fetching that
-// from the browser costs a cold connection + a couple of round-trips (~1–4s).
-// Instead the server fetches it once at startup (paying the one cold hit before the
-// page is ever opened) and injects it into the HTML, so the page paints from data
-// already in the document — zero client round-trips. The client then re-loads the
-// full default set (with ab_test_picks) + the windowed rest and replaces this, so a
-// slightly stale, ab-pick-less snapshot here only affects the first instant.
+// The first thing the client paints is the default review view. That view holds every
+// note in the default statuses, which today means the notes rated unhelpful, with no
+// date window. Fetching it from the browser costs a cold connection and a couple of
+// round-trips, which takes one to four seconds. So the server fetches it once at
+// startup instead and injects it into the HTML. The page then paints from data that is
+// already in the document and makes no request of its own. The client afterwards
+// reloads the full default set, this time including ab_test_picks, along with the
+// windowed rest, and replaces this snapshot. So a snapshot that is slightly stale and
+// carries no A/B picks only shows for the first instant.
 //
-// Status and column lists come from productionView (shared with the client loader)
-// so the prefetch can't drift from what the client renders.
+// The status list and the column lists come from productionView, which the client
+// loader also uses. That way the prefetch cannot drift from what the client renders.
 const CANONICAL_COLS = CANONICAL_LIST_COLS.join(",");
 const TWEET_COLS = TWEET_LIST_COLS.join(",");
 const RATING_COLS = PUBLIC_DUMP_RATING_COLS.join(",");
@@ -46,9 +47,10 @@ function inList(values: string[]): string {
   return `(${values.map((v) => `"${v}"`).join(",")})`;
 }
 
-// Returns a DashboardData-shaped object (competing/runs empty — the client's
-// windowed load fills those in when it replaces this), or null if the prefetch
-// fails (the client then fetches the window for itself).
+// This returns an object shaped like DashboardData. The competing notes and the
+// pipeline runs are left empty, because the client's windowed load fills them in when
+// it replaces this snapshot. It returns null when the prefetch fails, and the client
+// then fetches the window for itself.
 async function fetchDefaultView(): Promise<any | null> {
   if (!supabaseUrl || !supabaseKey) return null;
   try {
@@ -79,7 +81,8 @@ let defaultView: any | null = null;
 // WARNING: This injects the Supabase service role key (full DB access) into the page.
 // This server must only run on localhost. Never expose it to the network or deploy it.
 function injectCredentials(html: string): string {
-  // Escape `<` so note/tweet text can't break out of the <script> tag.
+  // Every `<` is escaped so that text from a note or a tweet cannot break out of the
+  // script tag.
   const dvJson = defaultView ? JSON.stringify(defaultView).replace(/</g, "\\u003c") : "null";
   const script = `
     <script>
@@ -98,7 +101,6 @@ serve({
   async fetch(req) {
     const url = new URL(req.url);
 
-    // Serve static files from dist
     if (url.pathname !== "/" && url.pathname !== "/index.html") {
       const filePath = join(import.meta.dir, "dist", url.pathname);
       try {
@@ -109,21 +111,22 @@ serve({
       } catch {}
     }
 
-    // Serve index.html with injected credentials + prefetched default view.
-    // Refresh the snapshot in the background so the next load is current; this
-    // request still serves the snapshot already in hand (instant).
+    // The snapshot is refreshed in the background so that the next load is current.
+    // This request does not wait for it. It serves the snapshot already in hand, which
+    // makes the response instant.
     fetchDefaultView().then((dv) => { if (dv) defaultView = dv; });
     const html = injectCredentials(readFileSync(join(import.meta.dir, "dist/index.html"), "utf-8"));
-    // Never cache the HTML: it references content-hashed JS/CSS, so a plain
-    // refresh must always re-read index.html to pick up a new build's hashes.
+    // The HTML must never be cached. It points at JavaScript and CSS files whose names
+    // contain a content hash. A plain refresh therefore has to re-read index.html to
+    // learn the hashes a new build produced.
     return new Response(html, {
       headers: { "Content-Type": "text/html", "Cache-Control": "no-store, must-revalidate" },
     });
   },
 });
 
-// Pay the one cold Supabase hit at startup, before the page is opened, so the
-// first paint comes from data already in the HTML.
+// The one slow Supabase request happens here at startup, before anyone opens the page.
+// The first paint then comes from data that is already in the HTML.
 console.log("Prefetching default view…");
 defaultView = await fetchDefaultView();
 console.log(

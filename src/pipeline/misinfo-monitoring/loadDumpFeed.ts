@@ -1,13 +1,13 @@
 /**
- * Local-testing affordance for the misinfo pre-pass.
+ * Local testing helper for the misinfo pre-pass.
  *
- * The live XXL feed is only accessible from GitHub Actions (the prod secret
- * account); locally it 403s. To exercise the pre-pass on real XXL data, point
- * it at an already-pulled feed dump (e.g. the investigation's
- * scripts_jim/2026_05_29_xxl_feed_monitor/from_actions/feed_dump.jsonl).
+ * The live XXL feed is only reachable from GitHub Actions, which holds the
+ * production account's credentials. A local run gets a 403 instead. To exercise the
+ * pre-pass on real XXL data, point it at a feed dump that was pulled earlier. One
+ * such dump is scripts_jim/2026_05_29_xxl_feed_monitor/from_actions/feed_dump.jsonl.
  *
- * Maps the dump's record schema onto the production Post shape. Media URLs
- * aren't in the dump, so posts are treated as text-only (media: []).
+ * This maps the dump's record shape onto the production Post shape. The dump holds
+ * no media URLs, so every post is treated as text only and gets an empty media list.
  */
 
 import { readFileSync } from "node:fs";

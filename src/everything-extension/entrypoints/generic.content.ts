@@ -3,10 +3,10 @@ import { defineContentScript } from "#imports";
 import { mountInlineNotes } from "../utils/mountInlineNotes";
 import { registerDevReloadHook } from "../utils/devReload";
 
-// Registered at runtime (scripting.registerContentScripts) for covered
-// hostnames by the background's sync, and ALSO injected directly
-// (executeScript) by the sync's open-tab pass, the popup, and the write-menu
-// click — the window flag makes whichever copy arrives second a no-op.
+// The background's sync registers this script at runtime for every covered
+// hostname. It is also injected directly by the sync's pass over open tabs, by
+// the popup, and by the write-menu click. The flag it sets on `window` makes
+// whichever copy arrives second do nothing.
 export default defineContentScript({
   registration: "runtime",
   cssInjectionMode: "ui",

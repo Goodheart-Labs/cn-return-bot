@@ -2,16 +2,20 @@ import { useEffect, useState } from "react";
 import { browser } from "#imports";
 import { EMAIL_OTP_LENGTH, signInWithEmailCode, verifyEmailCode } from "../../everything-shared/auth";
 
-// The popup CLOSES when the user switches to their mail client to fetch the
-// code, wiping React state — persist the awaiting-code email so reopening the
-// popup lands back on the code input. storage.session dies with the browser
-// (no stale pending logins); older Firefox lacks it, hence the local fallback.
+// The popup closes when the user switches to their mail client to fetch the
+// code, and that wipes all React state. So we store the email we are waiting on
+// a code for, and reopening the popup lands back on the code input.
+// storage.session is cleared when the browser quits, so a pending login can
+// never go stale. Older Firefox versions do not have it, hence the fallback to
+// storage.local.
 const PENDING_EMAIL_KEY = "cn-login-pending-email";
 const pendingStore = () => browser.storage.session ?? browser.storage.local;
 
-/** Popup sign-in: email → 8-digit code (no redirects), or X OAuth via the
- *  background's launchWebAuthFlow. Session lands in chrome.storage.local and
- *  reaches every context through useSession's storage listener. */
+/** Sign-in inside the popup. The user either types their email and then the
+ *  8-digit code we send them, which needs no redirect, or signs in with X. The X
+ *  flow runs launchWebAuthFlow in the background. Either way the session ends up
+ *  in chrome.storage.local, and it reaches every other context through
+ *  useSession's storage listener. */
 export function LoginPanel() {
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
