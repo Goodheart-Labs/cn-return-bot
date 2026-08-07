@@ -17,7 +17,17 @@
  */
 
 import "dotenv/config";
-import { enqueueItems, fetchItemUrlsContaining, fetchItemUrlsIn, markOrphanedProcessingAsError, resolveProjectId, type EnqueueRow } from "./db";
+import {
+  enqueueItems,
+  fetchItemClaims,
+  fetchItemUrlsContaining,
+  fetchItemUrlsIn,
+  fetchOrphanedProcessingItems,
+  markItemError,
+  requeueItem,
+  resolveProjectId,
+  type EnqueueRow,
+} from "./db";
 import { BATCH_SIZE, PRIORITY_FEEDS, type PriorityFeed } from "./priorityFeeds";
 import { fetchFeedPosts, htmlToText } from "./sources/substack";
 import { ensureYtDlp, fetchChannelVideos } from "./sources/youtube";
@@ -77,14 +87,36 @@ async function unprocessedEntries(feed: PriorityFeed, entries: FeedEntry[]): Pro
   return entries.filter((e) => !knownUrls.some((url) => url.includes(e.matchKey))).reverse();
 }
 
-async function main() {
-  const dryRun = process.argv.includes("--dry-run");
-  ensureYtDlp();
-
-  if (!dryRun) {
-    const orphaned = await markOrphanedProcessingAsError();
-    for (const url of orphaned) console.log(`Orphaned in processing → error: ${url}`);
+/** Decide what happens to items that a killed run left behind in "processing".
+ *
+ *  If the item already has claims in the database, the expensive extraction
+ *  step finished before the kill, and every claim that completed its check is
+ *  already saved. We put such an item back in the queue, and the worker will
+ *  redo only the unfinished claims.
+ *
+ *  If the item has no claims yet, the run died during extraction. Requeueing
+ *  it would repeat the whole extraction, and if extraction is what killed the
+ *  run, that could repeat forever. So we mark it as an error instead — a
+ *  human sees it and can put it back in the queue by hand.
+ *
+ *  This only runs while no worker is active. Inside the workflow that is
+ *  guaranteed by its concurrency group; for local runs see the warning in
+ *  CLAUDE.md. */
+async function triageOrphanedItems(): Promise<void> {
+  for (const item of await fetchOrphanedProcessingItems()) {
+    if ((await fetchItemClaims(item.id)).length > 0) {
+      await requeueItem(item.id);
+      console.log(`Orphaned in processing → requeued for resume: ${item.url}`);
+    } else {
+      await markItemError(item.id, "orphaned in processing before claim extraction finished");
+      console.log(`Orphaned in processing (no claims) → error: ${item.url}`);
+    }
   }
+}
+
+/** One triage + selection + enqueue pass; returns how many items were enqueued. */
+export async function runAutoEnqueue(dryRun = false): Promise<number> {
+  if (!dryRun) await triageOrphanedItems();
 
   const picks: { feed: PriorityFeed; entry: FeedEntry }[] = [];
   for (const feed of PRIORITY_FEEDS) {
@@ -97,12 +129,12 @@ async function main() {
 
   if (picks.length === 0) {
     console.log("All priority feeds are caught up — nothing to enqueue");
-    return;
+    return 0;
   }
   for (const { feed, entry } of picks) console.log(`  → [${feed.project}] ${entry.label} — ${entry.url}`);
   if (dryRun) {
     console.log("Dry run — nothing enqueued");
-    return;
+    return 0;
   }
 
   const rows: EnqueueRow[] = [];
@@ -118,9 +150,13 @@ async function main() {
   }
   const inserted = await enqueueItems(rows);
   console.log(`Enqueued ${inserted} item(s)`);
+  return inserted;
 }
 
-main().catch((err) => {
-  console.error("[autoEnqueue] Fatal error:", err);
-  process.exit(1);
-});
+if (import.meta.main) {
+  ensureYtDlp();
+  runAutoEnqueue(process.argv.includes("--dry-run")).catch((err) => {
+    console.error("[autoEnqueue] Fatal error:", err);
+    process.exit(1);
+  });
+}

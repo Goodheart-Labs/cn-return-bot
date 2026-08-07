@@ -13,8 +13,8 @@
 
 import "dotenv/config";
 import { closeBrowser } from "../pipeline/utils/browserManager";
-import { claimNextQueuedItem, markItemDone, markItemError, type EverythingItem } from "./db";
-import { processFetchedContent } from "./pipeline/processContent";
+import { claimNextQueuedItem, fetchItemClaims, markItemDone, markItemError, type EverythingItem } from "./db";
+import { processFetchedContent, resumeItemClaims } from "./pipeline/processContent";
 import { fetchSubstackPost } from "./sources/substack";
 import { ensureYtDlp, fetchYoutubeContent, fetchYoutubeTranscriptContent } from "./sources/youtube";
 import type { FetchedContent } from "./types";
@@ -41,15 +41,18 @@ async function fetchContent(item: EverythingItem): Promise<FetchedContent> {
   }
 }
 
-async function main() {
-  ensureYtDlp();
+/** Process queued items until the queue is empty; returns how many were taken. */
+export async function drainQueue(): Promise<number> {
   let processed = 0;
   while (true) {
     const item = await claimNextQueuedItem();
     if (!item) break;
     console.log(`\n=== [${item.source}] ${item.url}`);
     try {
-      await processFetchedContent(item, await fetchContent(item));
+      // Existing claims mean a killed run already extracted this item — resume
+      // its unfinished claims instead of refetching and re-extracting.
+      if ((await fetchItemClaims(item.id)).length > 0) await resumeItemClaims(item);
+      else await processFetchedContent(item, await fetchContent(item));
       await markItemDone(item.id);
     } catch (err: any) {
       console.error(`  Item failed: ${err?.message}`);
@@ -58,12 +61,15 @@ async function main() {
     processed++;
   }
   console.log(processed ? `\nDone — processed ${processed} item(s)` : "Queue empty — nothing to do");
-  try {
-    await closeBrowser();
-  } catch {}
+  return processed;
 }
 
-main().catch((err) => {
-  console.error("[worker] Fatal error:", err);
-  process.exit(1);
-});
+if (import.meta.main) {
+  ensureYtDlp();
+  drainQueue()
+    .then(() => closeBrowser())
+    .catch((err) => {
+      console.error("[worker] Fatal error:", err);
+      process.exit(1);
+    });
+}
