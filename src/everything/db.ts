@@ -105,19 +105,39 @@ export async function fetchItemUrlsContaining(fragments: string[]): Promise<stri
   return rows.map((r) => r.url);
 }
 
-/** Fail items stranded in `processing` by a killed run. The caller must know no
- *  worker is live (the workflow's concurrency group guarantees that); marking
- *  error instead of re-queueing avoids duplicate claims from a partial run.
- *  Returns the failed items' urls. */
-export async function markOrphanedProcessingAsError(): Promise<string[]> {
-  const rows = throwOnError(
+/** Items stranded in `processing` by a killed run. Only meaningful when no
+ *  worker is live (the workflow's concurrency group guarantees that). */
+export async function fetchOrphanedProcessingItems(): Promise<{ id: string; url: string }[]> {
+  return throwOnError(
+    await getSupabaseClient().from("everything_items").select("id, url").eq("status", "processing"),
+  ) as { id: string; url: string }[];
+}
+
+/** Put a stranded item back in the queue so the worker resumes it (its claims
+ *  already exist; only the unfinished ones are redone). */
+export async function requeueItem(id: string): Promise<void> {
+  throwOnError(await getSupabaseClient().from("everything_items").update({ status: "queued" }).eq("id", id));
+}
+
+export interface ItemClaimRow {
+  id: string;
+  claim: string;
+  judgement: string;
+  context_quote: string | null;
+  context_paragraph: string | null;
+  image_urls: string[];
+  status: ClaimStatus;
+}
+
+/** All claims of an item, in insertion order (non-empty ⇒ extraction completed). */
+export async function fetchItemClaims(itemId: string): Promise<ItemClaimRow[]> {
+  return throwOnError(
     await getSupabaseClient()
-      .from("everything_items")
-      .update({ status: "error", error: "orphaned in processing by a killed run", processed_at: new Date().toISOString() })
-      .eq("status", "processing")
-      .select("url"),
-  ) as { url: string }[];
-  return rows.map((r) => r.url);
+      .from("everything_claims")
+      .select("id, claim, judgement, context_quote, context_paragraph, image_urls, status")
+      .eq("item_id", itemId)
+      .order("created_at"),
+  ) as ItemClaimRow[];
 }
 
 /** Oldest queued item → processing (single worker, so no locking needed). */
@@ -194,6 +214,18 @@ export interface ClaimPipelineRun {
  *  OCR) can emit U+0000, which Postgres rejects with 22P05. */
 export async function insertClaimPipelineRun(run: ClaimPipelineRun): Promise<void> {
   throwOnError(await getSupabaseClient().from("everything_pipeline_runs").insert(stripNullChars(run)));
+}
+
+/** Of the given claims, the ones that already have an AI note (author_id null —
+ *  user drafts don't count). Used on resume to spot a kill that landed between
+ *  insertNote and setClaimStatus, so the claim is finalized instead of
+ *  rechecked (which would insert a duplicate note). */
+export async function fetchClaimIdsWithAiNotes(claimIds: string[]): Promise<Set<string>> {
+  if (claimIds.length === 0) return new Set();
+  const rows = throwOnError(
+    await getSupabaseClient().from("everything_notes").select("claim_id").is("author_id", null).in("claim_id", claimIds),
+  ) as { claim_id: string }[];
+  return new Set(rows.map((r) => r.claim_id));
 }
 
 /** Insert an AI note plus one everything_note_sources row per cited snippet. */

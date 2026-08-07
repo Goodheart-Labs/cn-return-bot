@@ -13,8 +13,8 @@
 
 import "dotenv/config";
 import { closeBrowser } from "../pipeline/utils/browserManager";
-import { claimNextQueuedItem, markItemDone, markItemError, type EverythingItem } from "./db";
-import { processFetchedContent } from "./pipeline/processContent";
+import { claimNextQueuedItem, fetchItemClaims, markItemDone, markItemError, type EverythingItem } from "./db";
+import { processFetchedContent, resumeItemClaims } from "./pipeline/processContent";
 import { fetchSubstackPost } from "./sources/substack";
 import { ensureYtDlp, fetchYoutubeContent, fetchYoutubeTranscriptContent } from "./sources/youtube";
 import type { FetchedContent } from "./types";
@@ -49,7 +49,10 @@ async function main() {
     if (!item) break;
     console.log(`\n=== [${item.source}] ${item.url}`);
     try {
-      await processFetchedContent(item, await fetchContent(item));
+      // Existing claims mean a killed run already extracted this item — resume
+      // its unfinished claims instead of refetching and re-extracting.
+      if ((await fetchItemClaims(item.id)).length > 0) await resumeItemClaims(item);
+      else await processFetchedContent(item, await fetchContent(item));
       await markItemDone(item.id);
     } catch (err: any) {
       console.error(`  Item failed: ${err?.message}`);

@@ -10,12 +10,15 @@
 import PQueue from "p-queue";
 import { checkClaim } from "./checkClaims";
 import {
+  fetchClaimIdsWithAiNotes,
+  fetchItemClaims,
   insertClaims,
   insertNote,
   isSyntheticDocUrl,
   setClaimStatus,
   updateItemMeta,
   type EverythingItem,
+  type ItemClaimRow,
   type NewClaimRow,
 } from "../db";
 import { dropSpeculation, extractClaims, shouldFactCheck } from "./extractClaims";
@@ -115,6 +118,56 @@ export async function processFetchedContent(item: EverythingItem, content: Fetch
     extracted: extracted.length,
     speculation,
     skipped: claims.length - toCheck,
+    notes: outcomes.filter((o) => o === "note").length,
+    no_note: outcomes.filter((o) => o === "no_note").length,
+    errors: outcomes.filter((o) => o === "error").length,
+  };
+}
+
+/** The check path only reads the claim text and its context; anchor fields
+ *  were already persisted by the original run and are never re-inserted. */
+function toExtractedClaim(row: ItemClaimRow): ExtractedClaim {
+  return {
+    claim: row.claim,
+    judgement: row.judgement,
+    context: row.context_quote ?? "",
+    contextParagraph: row.context_paragraph ?? "",
+    imageUrls: row.image_urls ?? [],
+    speculation: false,
+    anchor: { kind: "substack", url: "" },
+  };
+}
+
+/** Finish an item whose claims already exist (a previous run was killed
+ *  mid-checking): redo only its `pending` and `error` claims — an error on an
+ *  orphaned item is likely a kill artifact (aborted fetch), not a verdict —
+ *  and keep every completed claim untouched. A redo claim that already has an
+ *  AI note was killed between insertNote and setClaimStatus: finalize it
+ *  instead of rechecking, which would insert a duplicate note. */
+export async function resumeItemClaims(item: EverythingItem): Promise<ItemTally> {
+  const allClaims = await fetchItemClaims(item.id);
+  const redo = allClaims.filter((c) => c.status === "pending" || c.status === "error");
+  const alreadyNoted = await fetchClaimIdsWithAiNotes(redo.map((c) => c.id));
+  console.log(`  resuming "${item.title ?? item.url}" — redoing ${redo.length} of ${allClaims.length} claims`);
+
+  const outcomes: Array<"note" | "no_note" | "error"> = [];
+  const queue = new PQueue({ concurrency: CHECK_CONCURRENCY });
+  redo.forEach((row, i) => {
+    queue.add(async () => {
+      if (alreadyNoted.has(row.id)) {
+        await setClaimStatus(row.id, "note", null);
+        outcomes.push("note");
+        return;
+      }
+      outcomes.push(await checkAndRecordClaim(row.id, toExtractedClaim(row), item, i, item.published_at ?? undefined));
+    });
+  });
+  await queue.onIdle();
+
+  return {
+    extracted: allClaims.length,
+    speculation: 0,
+    skipped: allClaims.filter((c) => c.status === "skipped").length,
     notes: outcomes.filter((o) => o === "note").length,
     no_note: outcomes.filter((o) => o === "no_note").length,
     errors: outcomes.filter((o) => o === "error").length,

@@ -17,7 +17,17 @@
  */
 
 import "dotenv/config";
-import { enqueueItems, fetchItemUrlsContaining, fetchItemUrlsIn, markOrphanedProcessingAsError, resolveProjectId, type EnqueueRow } from "./db";
+import {
+  enqueueItems,
+  fetchItemClaims,
+  fetchItemUrlsContaining,
+  fetchItemUrlsIn,
+  fetchOrphanedProcessingItems,
+  markItemError,
+  requeueItem,
+  resolveProjectId,
+  type EnqueueRow,
+} from "./db";
 import { BATCH_SIZE, PRIORITY_FEEDS, type PriorityFeed } from "./priorityFeeds";
 import { fetchFeedPosts, htmlToText } from "./sources/substack";
 import { ensureYtDlp, fetchChannelVideos } from "./sources/youtube";
@@ -77,14 +87,29 @@ async function unprocessedEntries(feed: PriorityFeed, entries: FeedEntry[]): Pro
   return entries.filter((e) => !knownUrls.some((url) => url.includes(e.matchKey))).reverse();
 }
 
+/** An item stranded in `processing` by a killed run keeps its already-checked
+ *  claims — requeue it so the worker finishes the rest (safe: the workflow's
+ *  concurrency group guarantees no worker is live during triage). No claims
+ *  means the kill landed mid-extraction; requeueing would re-run the whole
+ *  extraction on an item that may kill the run again, so surface it as an
+ *  error instead (manually requeueable). */
+async function triageOrphanedItems(): Promise<void> {
+  for (const item of await fetchOrphanedProcessingItems()) {
+    if ((await fetchItemClaims(item.id)).length > 0) {
+      await requeueItem(item.id);
+      console.log(`Orphaned in processing → requeued for resume: ${item.url}`);
+    } else {
+      await markItemError(item.id, "orphaned in processing before claim extraction finished");
+      console.log(`Orphaned in processing (no claims) → error: ${item.url}`);
+    }
+  }
+}
+
 async function main() {
   const dryRun = process.argv.includes("--dry-run");
   ensureYtDlp();
 
-  if (!dryRun) {
-    const orphaned = await markOrphanedProcessingAsError();
-    for (const url of orphaned) console.log(`Orphaned in processing → error: ${url}`);
-  }
+  if (!dryRun) await triageOrphanedItems();
 
   const picks: { feed: PriorityFeed; entry: FeedEntry }[] = [];
   for (const feed of PRIORITY_FEEDS) {
