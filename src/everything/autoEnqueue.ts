@@ -87,12 +87,21 @@ async function unprocessedEntries(feed: PriorityFeed, entries: FeedEntry[]): Pro
   return entries.filter((e) => !knownUrls.some((url) => url.includes(e.matchKey))).reverse();
 }
 
-/** An item stranded in `processing` by a killed run keeps its already-checked
- *  claims — requeue it so the worker finishes the rest (safe: the workflow's
- *  concurrency group guarantees no worker is live during triage). No claims
- *  means the kill landed mid-extraction; requeueing would re-run the whole
- *  extraction on an item that may kill the run again, so surface it as an
- *  error instead (manually requeueable). */
+/** Decide what happens to items that a killed run left behind in "processing".
+ *
+ *  If the item already has claims in the database, the expensive extraction
+ *  step finished before the kill, and every claim that completed its check is
+ *  already saved. We put such an item back in the queue, and the worker will
+ *  redo only the unfinished claims.
+ *
+ *  If the item has no claims yet, the run died during extraction. Requeueing
+ *  it would repeat the whole extraction, and if extraction is what killed the
+ *  run, that could repeat forever. So we mark it as an error instead — a
+ *  human sees it and can put it back in the queue by hand.
+ *
+ *  This only runs while no worker is active. Inside the workflow that is
+ *  guaranteed by its concurrency group; for local runs see the warning in
+ *  CLAUDE.md. */
 async function triageOrphanedItems(): Promise<void> {
   for (const item of await fetchOrphanedProcessingItems()) {
     if ((await fetchItemClaims(item.id)).length > 0) {

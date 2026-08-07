@@ -138,12 +138,15 @@ function toExtractedClaim(row: ItemClaimRow): ExtractedClaim {
   };
 }
 
-/** Finish an item whose claims already exist (a previous run was killed
- *  mid-checking): redo only its `pending` and `error` claims — an error on an
- *  orphaned item is likely a kill artifact (aborted fetch), not a verdict —
- *  and keep every completed claim untouched. A redo claim that already has an
- *  AI note was killed between insertNote and setClaimStatus: finalize it
- *  instead of rechecking, which would insert a duplicate note. */
+/** Finish an item whose claims already exist because a previous run was
+ *  killed while checking them. Claims that reached "note" or "no_note" are
+ *  kept as they are. Claims still "pending" are checked now. Claims marked
+ *  "error" are also rechecked, because on a killed run the error usually just
+ *  means the check was cut off mid-flight, not that the claim is truly
+ *  uncheckable. One special case: if a claim already has an AI note but was
+ *  never marked "note", the kill happened between writing the note and
+ *  updating the status — we then only fix the status, because rechecking
+ *  would write a second note for the same claim. */
 export async function resumeItemClaims(item: EverythingItem): Promise<ItemTally> {
   const allClaims = await fetchItemClaims(item.id);
   const redo = allClaims.filter((c) => c.status === "pending" || c.status === "error");
