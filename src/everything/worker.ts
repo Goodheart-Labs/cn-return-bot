@@ -41,8 +41,8 @@ async function fetchContent(item: EverythingItem): Promise<FetchedContent> {
   }
 }
 
-async function main() {
-  ensureYtDlp();
+/** Process queued items until the queue is empty; returns how many were taken. */
+export async function drainQueue(): Promise<number> {
   let processed = 0;
   while (true) {
     const item = await claimNextQueuedItem();
@@ -61,12 +61,15 @@ async function main() {
     processed++;
   }
   console.log(processed ? `\nDone — processed ${processed} item(s)` : "Queue empty — nothing to do");
-  try {
-    await closeBrowser();
-  } catch {}
+  return processed;
 }
 
-main().catch((err) => {
-  console.error("[worker] Fatal error:", err);
-  process.exit(1);
-});
+if (import.meta.main) {
+  ensureYtDlp();
+  drainQueue()
+    .then(() => closeBrowser())
+    .catch((err) => {
+      console.error("[worker] Fatal error:", err);
+      process.exit(1);
+    });
+}

@@ -66,8 +66,5 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
-      - name: Enqueue next priority-feed items
-        run: bun run everything-auto-enqueue
-
-      - name: Process the queue
-        run: bun run everything-worker
+      - name: Enqueue and process in time-budgeted cycles
+        run: bun run everything-auto-run

@@ -105,10 +105,8 @@ async function triageOrphanedItems(): Promise<void> {
   }
 }
 
-async function main() {
-  const dryRun = process.argv.includes("--dry-run");
-  ensureYtDlp();
-
+/** One triage + selection + enqueue pass; returns how many items were enqueued. */
+export async function runAutoEnqueue(dryRun = false): Promise<number> {
   if (!dryRun) await triageOrphanedItems();
 
   const picks: { feed: PriorityFeed; entry: FeedEntry }[] = [];
@@ -122,12 +120,12 @@ async function main() {
 
   if (picks.length === 0) {
     console.log("All priority feeds are caught up — nothing to enqueue");
-    return;
+    return 0;
   }
   for (const { feed, entry } of picks) console.log(`  → [${feed.project}] ${entry.label} — ${entry.url}`);
   if (dryRun) {
     console.log("Dry run — nothing enqueued");
-    return;
+    return 0;
   }
 
   const rows: EnqueueRow[] = [];
@@ -143,9 +141,13 @@ async function main() {
   }
   const inserted = await enqueueItems(rows);
   console.log(`Enqueued ${inserted} item(s)`);
+  return inserted;
 }
 
-main().catch((err) => {
-  console.error("[autoEnqueue] Fatal error:", err);
-  process.exit(1);
-});
+if (import.meta.main) {
+  ensureYtDlp();
+  runAutoEnqueue(process.argv.includes("--dry-run")).catch((err) => {
+    console.error("[autoEnqueue] Fatal error:", err);
+    process.exit(1);
+  });
+}
