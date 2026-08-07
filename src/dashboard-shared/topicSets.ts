@@ -39,3 +39,12 @@ export function topicSetFor(topicId: string | null | undefined): TopicSet | unde
   if (!topicId) return undefined;
   return TOPIC_TO_SET[topicId];
 }
+
+/** The granular topic ids belonging to any of the given sets — the shape the
+ * review dashboard's server-side topic filter takes. */
+export function topicIdsForSets(sets: Iterable<string>): string[] {
+  const wanted = new Set(sets);
+  return Object.entries(TOPIC_TO_SET)
+    .filter(([, set]) => wanted.has(set))
+    .map(([topicId]) => topicId);
+}
