@@ -28,6 +28,20 @@ jobs:
           pipx install yt-dlp
           yt-dlp --version
 
+      # yt-dlp needs a JavaScript runtime to solve YouTube's player challenges.
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      # The community solution for datacenter IPs: a local server that mints the
+      # PO tokens YouTube demands, picked up by a yt-dlp plugin automatically.
+      - name: Start the bgutil PO token provider
+        run: |
+          docker run -d --name bgutil-provider -p 4416:4416 brainicism/bgutil-ytdlp-pot-provider
+          pipx inject yt-dlp bgutil-ytdlp-pot-provider
+          sleep 10
+
       # YouTube's bot check blocks video fetches from datacenter IPs. Try every
       # player client to see which, if any, gets metadata and subtitles through.
       - name: Try player-client strategies against the bot check
@@ -49,25 +63,15 @@ jobs:
             fi
           }
           try "default"
-          try "tv_embedded" --extractor-args "youtube:player_client=tv_embedded"
-          try "web_embedded" --extractor-args "youtube:player_client=web_embedded"
-          try "android" --extractor-args "youtube:player_client=android"
-          try "ios" --extractor-args "youtube:player_client=ios"
+          try "web" --extractor-args "youtube:player_client=web"
           try "mweb" --extractor-args "youtube:player_client=mweb"
           try "tv" --extractor-args "youtube:player_client=tv"
-          try "android_vr" --extractor-args "youtube:player_client=android_vr"
+          try "web_embedded" --extractor-args "youtube:player_client=web_embedded"
 
-      # The community solution for datacenter IPs: a local server that mints the
-      # PO tokens YouTube demands, picked up by a yt-dlp plugin automatically.
-      - name: Try the bgutil PO token provider
+      - name: Verbose run to see PO token and challenge activity
+        if: always()
         run: |
-          docker run -d --name bgutil-provider -p 4416:4416 brainicism/bgutil-ytdlp-pot-provider
-          pipx inject yt-dlp bgutil-ytdlp-pot-provider
-          sleep 10
-          VIDEO="https://www.youtube.com/watch?v=oZBGAuANX6I"
-          rm -rf /tmp/subs && mkdir -p /tmp/subs
-          yt-dlp --skip-download --print "%(title)s" "$VIDEO" && echo "bgutil meta: PASS" || echo "bgutil meta: FAIL"
-          yt-dlp --write-subs --write-auto-subs --sub-lang en --skip-download -o "/tmp/subs/%(id)s.%(ext)s" "$VIDEO" && ls /tmp/subs && echo "bgutil subs: PASS" || echo "bgutil subs: FAIL"
+          yt-dlp -v --skip-download --print "%(title)s" "https://www.youtube.com/watch?v=oZBGAuANX6I" 2>&1 | grep -iE "pot|jsc|challenge|client|ERROR|WARNING" || true
 
       - name: List channel and fetch one video's metadata and cues
         run: bun run src/everything/debug/testYoutubeIngestion.ts
