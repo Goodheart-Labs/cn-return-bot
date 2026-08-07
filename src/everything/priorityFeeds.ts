@@ -7,7 +7,7 @@ export type PriorityFeed =
   | { project: string; type: "youtube"; channelUrl: string };
 
 /** Items enqueued (and thus processed) per run, across all feeds. */
-export const BATCH_SIZE = 2;
+export const BATCH_SIZE = 1;
 
 export const PRIORITY_FEEDS: PriorityFeed[] = [
   { project: "zvi", type: "substack", publicationUrl: "https://thezvi.substack.com" },
