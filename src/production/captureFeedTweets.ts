@@ -38,7 +38,7 @@ async function main() {
     MAX_PAGES,
     buildPostSelection(FEED_SIZE),
   );
-  const { inserted, updated } = await new SupabaseLogger().bulkSaveFeedTweets(posts);
+  const { inserted, updated } = await new SupabaseLogger().bulkSaveFeedTweets(posts, FEED_SIZE);
   console.log(`[capture-feed] feed=${FEED_SIZE} crawled=${posts.length} new=${inserted} updated=${updated}`);
 }
 
