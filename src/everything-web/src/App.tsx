@@ -9,6 +9,7 @@ import { noteTally, probabilityHelpful, probabilityHelpfulAfter } from "../../ev
 import { saveDonation, usePreferredCharity, type MintedDonation } from "./lib/donations";
 import { readRoute, pushProject, pushItem, pushLeaderboard, type View } from "./lib/routing";
 import { identifyUser, resetAnalytics, track } from "../../everything-shared/analytics";
+import { capturePageview } from "./lib/analytics";
 import { Sidebar } from "./components/Sidebar";
 
 function AuthCorner({ session, onSignIn, onSignOut }: {
@@ -178,22 +179,22 @@ export function App() {
     setItemFilter(null);
     const slug = projects.find((p) => p.id === id)?.slug;
     if (slug) pushProject(slug);
-    track("$pageview");
+    capturePageview();
   };
   const selectItem = (itemId: string | null) => {
     setItemFilter(itemId);
     const slug = projects.find((p) => p.id === selectedId)?.slug;
     if (slug) pushItem(slug, itemId);
-    track("$pageview");
+    capturePageview();
   };
   const selectLeaderboard = () => {
     setView("leaderboard");
     pushLeaderboard();
-    track("$pageview");
+    capturePageview();
   };
   useEffect(() => {
     const onPop = () => {
-      track("$pageview");
+      capturePageview();
       const route = readRoute();
       setView(route.view);
       const p = projects.find((pp) => pp.slug === route.project);
