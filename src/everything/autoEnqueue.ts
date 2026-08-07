@@ -43,7 +43,15 @@ interface FeedEntry {
 async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedEntry[]> {
   if (feed.type === "substack") {
     const posts = await fetchFeedPosts(feed.publicationUrl);
-    return posts.map((p) => ({
+    // A paid post's RSS body is only the free preview — fact-checking a
+    // fragment misfires, so the automated path leaves paid posts out. They are
+    // enqueued separately with the full text from a subscriber inbox
+    // (everything-enqueue --doc <canonical-url> <file>), whose item row then
+    // marks them processed here.
+    for (const p of posts.filter((p) => p.paywalled)) {
+      console.log(`[${feed.project}] paid post awaits the subscriber-inbox path: ${p.title}`);
+    }
+    return posts.filter((p) => !p.paywalled).map((p) => ({
       source: "substack" as const,
       url: p.url,
       matchKey: p.url,
