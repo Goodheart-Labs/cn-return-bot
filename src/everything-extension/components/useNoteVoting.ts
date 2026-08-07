@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "../../everything-shared/auth";
 import { supabase } from "../../everything-shared/supabase";
 import { castVote, clearVote, fetchMyVotes, type Vote } from "../../everything-shared/votes";
+import { track } from "../../everything-shared/analytics";
 import { castNnnVote, clearNnnVote, fetchMyNnnVotes, fetchNnnEntry } from "../../everything-shared/noteNotNeeded";
 import { fetchNote } from "../../everything-shared/notesQuery";
 import type { NnnRow, NoteRow } from "../../everything-shared/types";
@@ -46,6 +47,8 @@ export function useNoteVoting(onNoteUpdated: (note: NoteRow) => void, onNnnUpdat
   const handleVote = async (note: NoteRow, vote: Vote): Promise<MintedDonation | null> => {
     const user = await currentUser();
     if (!user) {
+      // An anonymous reader hit the vote wall — the funnel's sign-in prompt.
+      track("vote_gated_login", { note_id: note.id });
       onNeedLogin();
       return null;
     }
@@ -59,7 +62,19 @@ export function useNoteVoting(onNoteUpdated: (note: NoteRow) => void, onNnnUpdat
     } else {
       next.set(note.id, vote);
       setMyVotes(next);
-      const voteId = await castVote(note.id, user.id, vote);
+      const voteId = await castVote(note.id, user.id, vote, "extension");
+      if (voteId) {
+        // The vote funnel step. distinct_notes_voted is the count AFTER this
+        // cast (myVotes holds ALL the caller's votes via RLS, like the website),
+        // so the "voted on ≥ N notes" steps filter on distinct_notes_voted >= N.
+        track("note_voted", {
+          note_id: note.id,
+          vote, // 1 helpful · 0 somewhat · -1 not helpful
+          changed_vote: current != null,
+          own_note: note.author_id === user.id,
+          distinct_notes_voted: next.size,
+        });
+      }
       if (voteId && note.author_id !== user.id) {
         const pair = donationPair(priorTally(note, current), vote);
         // A backend without migration 061 rejects the pair columns — keep the

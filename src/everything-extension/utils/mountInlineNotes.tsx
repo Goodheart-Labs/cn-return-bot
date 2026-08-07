@@ -10,6 +10,7 @@ import { mountWriteAnywhere } from "./mountWriteAnywhere";
 import { onNoteFiltersChanged } from "./settings";
 import { isPageDark, observePageTheme } from "./pageTheme";
 import { InlineNotesApp, type AnchoredGroup } from "../components/InlineNotes";
+import { track } from "../../everything-shared/analytics";
 
 const HIGHLIGHT_NAME = "common-note";
 const REANCHOR_DEBOUNCE_MS = 600;
@@ -91,6 +92,16 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   // Mount even with zero notes: the write-from-selection flow works on any
   // ingested page, and its first note appears via refresh().
   let groups = await fetchClaimGroups(item.id);
+  // The extension's top of funnel: notes were actually displayed to a reader.
+  // Once per page by construction — mountForUrl runs once per URL.
+  if (groups.length > 0) {
+    track("notes_shown", {
+      surface: "inline",
+      item_id: item.id,
+      claim_count: groups.length,
+      note_count: groups.reduce((n, g) => n + g.notes.length, 0),
+    });
+  }
 
   let reactRoot: Root | null = null;
   let themeRoot: HTMLElement | null = null;

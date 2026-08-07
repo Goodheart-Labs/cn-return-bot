@@ -8,6 +8,8 @@ import { getCoveredPageUrls, pageIsCovered } from "../utils/coveredPages";
 import { YoutubeOverlayApp, DEFAULT_CLIP_SECONDS, type TimedGroup } from "../components/YoutubeOverlay";
 import { isPageDark, observePageTheme } from "../utils/pageTheme";
 import { registerDevReloadHook } from "../utils/devReload";
+import { initUiAnalytics } from "../utils/analytics";
+import { track } from "../../everything-shared/analytics";
 
 // YouTube's DOM churns; every selector we depend on lives here.
 const PLAYER_SELECTOR = "#movie_player";
@@ -15,6 +17,8 @@ const VIDEO_SELECTOR = "video.html5-main-video";
 
 const PLAYER_WAIT_MS = 15_000;
 const PLAYER_POLL_MS = 500;
+
+let lastShownUrl: string | null = null;
 
 function waitFor<T extends Element>(selector: string): Promise<T | null> {
   return new Promise((resolve) => {
@@ -87,6 +91,17 @@ async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | n
     },
   });
   ui.mount();
+  // Counted only after the overlay is really up — waitFor(player) can time
+  // out — and once per video (yt-navigate-finish re-fires on the same URL).
+  if (lastShownUrl !== location.href) {
+    lastShownUrl = location.href;
+    track("notes_shown", {
+      surface: "youtube",
+      item_id: item.id,
+      claim_count: groups.length,
+      note_count: groups.reduce((n, g) => n + 1 + g.alternatives.length, 0),
+    });
+  }
   // YouTube's appearance toggle flips html[dark] without a reload.
   const stopTheme = observePageTheme((dark) => themeRoot?.classList.toggle("dark", dark));
   return () => {
@@ -99,6 +114,7 @@ export default defineContentScript({
   matches: ["*://*.youtube.com/*"],
   cssInjectionMode: "ui",
   async main(ctx) {
+    initUiAnalytics();
     registerDevReloadHook(ctx);
     let cleanup: (() => void) | null = null;
     const init = async () => {

@@ -8,6 +8,7 @@ import { donationPair, priorTally } from "./lib/donationScoring";
 import { noteTally, probabilityHelpful, probabilityHelpfulAfter } from "../../everything-shared/noteBelief";
 import { saveDonation, usePreferredCharity, type MintedDonation } from "./lib/donations";
 import { readRoute, pushProject, pushItem, pushLeaderboard, type View } from "./lib/routing";
+import { identifyUser, resetAnalytics, track } from "../../everything-shared/analytics";
 import { Sidebar } from "./components/Sidebar";
 
 function AuthCorner({ session, onSignIn, onSignOut }: {
@@ -66,7 +67,7 @@ function NoteSection({ label, notes, render }: {
 
 export function App() {
   const { projects, items, notes, nnn, loaded } = useLiveData();
-  const { session } = useSession();
+  const { session, event: authEvent } = useSession();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   // Which top-level view — the note feed or the rating leaderboard.
   const [view, setView] = useState<View>(() => readRoute().view);
@@ -89,6 +90,35 @@ export function App() {
       setMyNnnVotes(new Map());
     }
   }, [session?.user.id]);
+
+  // Attribute analytics to the person once signed in; drop the link on sign-out.
+  // Reset ONLY on a real sign-out transition — the session is also null on
+  // every anonymous page load and briefly on signed-in reloads, and resetting
+  // then would mint a fresh anonymous id each time (inflating visitor counts
+  // and breaking the anonymous→person merge).
+  const signedInFor = useRef<string | null>(null);
+  const identifiedAs = useRef<string | null>(null);
+  useEffect(() => {
+    if (session) {
+      identifiedAs.current = session.user.id;
+      identifyUser(session.user.id, { auth_provider: session.user.app_metadata?.provider });
+    } else if (identifiedAs.current) {
+      identifiedAs.current = null;
+      resetAnalytics();
+      signedInFor.current = null; // allow a fresh sign_in if they log back in
+    }
+  }, [session?.user.id]);
+
+  // The sign-in funnel step. SIGNED_IN fires on a real sign-in (email link /
+  // OAuth return), not on a returning user's restored session (INITIAL_SESSION);
+  // the per-user guard drops the duplicate SIGNED_IN supabase-js emits on tab
+  // refocus, so the count stays one-per-sign-in.
+  useEffect(() => {
+    if (authEvent === "SIGNED_IN" && session && signedInFor.current !== session.user.id) {
+      signedInFor.current = session.user.id;
+      track("signed_in", { provider: session.user.app_metadata?.provider });
+    }
+  }, [authEvent, session?.user.id]);
 
   // Every note is its own card — AI note, user note, improvement alike; the
   // feed ranking below treats them uniformly. An improvement is tied to its
@@ -138,24 +168,32 @@ export function App() {
   }, [projects, items, selectedId]);
 
   // Selecting a project updates the URL; Back/Forward restores the selection.
+  // Each capture comes AFTER the pushState so the event carries the new URL —
+  // posthog's own pageview detection only fires on pathname changes and our
+  // routing is all query params, so these manual captures are the only way
+  // in-app navigation gets counted.
   const selectProject = (id: string) => {
     setView("notes");
     setSelectedId(id);
     setItemFilter(null);
     const slug = projects.find((p) => p.id === id)?.slug;
     if (slug) pushProject(slug);
+    track("$pageview");
   };
   const selectItem = (itemId: string | null) => {
     setItemFilter(itemId);
     const slug = projects.find((p) => p.id === selectedId)?.slug;
     if (slug) pushItem(slug, itemId);
+    track("$pageview");
   };
   const selectLeaderboard = () => {
     setView("leaderboard");
     pushLeaderboard();
+    track("$pageview");
   };
   useEffect(() => {
     const onPop = () => {
+      track("$pageview");
       const route = readRoute();
       setView(route.view);
       const p = projects.find((pp) => pp.slug === route.project);
@@ -189,6 +227,8 @@ export function App() {
   // note — retracting cascades the donation away, own-note votes mint none).
   const handleVote = async (note: NoteRow, vote: Vote): Promise<MintedDonation | null> => {
     if (!session) {
+      // An anonymous reader hit the vote wall — the funnel's sign-in prompt.
+      track("vote_gated_login", { note_id: note.id });
       setLoginOpen(true);
       return null;
     }
@@ -202,8 +242,19 @@ export function App() {
     }
     next.set(note.id, vote);
     setMyVotes(next);
-    const voteId = await castVote(note.id, session.user.id, vote);
-    if (!voteId || note.author_id === session.user.id) return null;
+    const voteId = await castVote(note.id, session.user.id, vote, "web");
+    if (!voteId) return null;
+    const ownNote = note.author_id === session.user.id;
+    // The vote funnel step. distinct_notes_voted is the count AFTER this cast,
+    // so the "voted on ≥ N notes" steps filter on distinct_notes_voted >= N.
+    track("note_voted", {
+      note_id: note.id,
+      vote, // 1 helpful · 0 somewhat · -1 not helpful
+      changed_vote: current != null,
+      own_note: ownNote,
+      distinct_notes_voted: next.size,
+    });
+    if (ownNote) return null;
     const pair = donationPair(priorTally(note, current), vote);
     // A backend without migration 061 rejects the pair columns — keep the vote,
     // just don't promise a donation the ledger didn't record.
@@ -383,7 +434,12 @@ export function App() {
           </h2>
           <div className="flex items-center gap-4">
             <button
-              onClick={() => setWriteOpen(true)}
+              onClick={() => {
+                setWriteOpen(true);
+                // The modal is a "get the extension" teaser — each open is a
+                // web user asking for a write flow, i.e. extension demand.
+                track("write_note_teaser_shown");
+              }}
               className="text-sm font-medium text-blue-600 hover:underline shrink-0"
             >
               Write a note
