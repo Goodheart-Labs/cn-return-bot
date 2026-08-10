@@ -1,38 +1,44 @@
 #!/usr/bin/env python3
-"""Daily note-review quota + trendline — "how many do I review today?"
+"""Daily note-review quota and trendline. It answers "how many do I review today?".
 
-Turns Nathan's note-review backlog into one task-shaped number: review N today
-(a weekday amount) and you stay on the glide path to 0 unseen by the deadline.
-Also writes an HTML trendline (actual pile vs the target line to zero) and, if
-run with no --no-open, opens it.
+It turns Nathan's note-review backlog into a single number to work against.
+Review that many notes today, which is a weekday amount, and you stay on the
+glide path to zero unseen notes by the deadline. It also writes an HTML
+trendline that shows the actual pile against the target line down to zero, and
+it opens that page unless you pass --no-open.
 
-Pile = UNSEEN notes across the three pills Nathan reviews on Jim's dashboard:
-Rated-helpful, Rated-not-helpful, Underwater. "Unseen" = no review_dashboard_
-annotations row with seen=true. Category + underwater logic mirror the dashboard
-exactly (src/review-dashboard/src/lib/data.ts, tuned 2026-07-14):
+The pile is the number of UNSEEN notes across the three pills Nathan reviews on
+Jim's dashboard. Those pills are rated helpful, rated not helpful, and
+underwater. A note is unseen when it has no review_dashboard_annotations row
+with seen=true. The category and the underwater rule mirror the dashboard
+exactly, as it stood on 2026-07-14 in src/review-dashboard/src/lib/data.ts:
   underwater = NEEDS_MORE_RATINGS, >=5 total ratings, (helpful+0.5*somewhat)/total < 0.2
-Rating counts resolve public-dump-first, scraped-fallback (resolveRatingCounts).
+Rating counts come from the public dump when it has them, and fall back to the
+scraped counts. That is what resolveRatingCounts does.
 
-Model — self-correcting weekday glide path with inflow:
+The model is a weekday glide path that corrects itself and allows for new notes
+arriving:
   weekdays_left = Mon-Fri between today and DEADLINE (today included if a weekday)
-  future_inflow = recent notes-arriving/day * calendar days left   (weekend
-                  arrivals pile up for weekday review)
+  future_inflow = recent notes arriving per day * calendar days left
   quota/weekday = ceil((pile + future_inflow) / weekdays_left)
   left_today    = quota - reviewed_today
-Recomputes from LIVE data each run, so it self-corrects: get ahead → tomorrow's
-number drops; fall behind or inflow rises → it climbs to hold the deadline.
+Notes that arrive at the weekend wait for review on a weekday. That is why the
+inflow is counted over calendar days but spread over weekdays only. Every run
+recomputes from live data, so the number corrects itself. Get ahead and
+tomorrow's number falls. Fall behind, or watch more notes arrive, and it climbs
+to hold the deadline.
 
-Run: `set -a && source .env && set +a`, then `python3 scripts/note_quota.py`.
+To run it: `set -a && source .env && set +a`, then `python3 scripts/note_quota.py`.
 """
 import os, sys, json, math, webbrowser, urllib.request, datetime as dt
 from collections import Counter
 from statistics import median
 
 # ── Config (edit to move the goalposts) ──────────────────────────────────────
-START_DATE = dt.date(2026, 7, 1)    # Nathan started rating ~2 weeks ago; the 100-day clock starts here
-HORIZON    = 100                    # days to reach 0 unseen
+START_DATE = dt.date(2026, 7, 1)    # The clock starts on the day Nathan began rating.
+HORIZON    = 100                    # Days allowed to reach zero unseen notes.
 DEADLINE   = START_DATE + dt.timedelta(days=HORIZON)   # 2026-10-09
-INFLOW_WINDOW = 5                   # full days used for the robust recent-inflow estimate (median)
+INFLOW_WINDOW = 5                   # Days of arrivals behind us that the median inflow is taken over.
 
 UNDERWATER_MIN_RATINGS = 5
 UNDERWATER_RATIO_THRESHOLD = 0.2
@@ -65,7 +71,8 @@ def fetch(table, select, extra="", order="note_id.asc"):
 
 
 def resolve_counts(pub, fh, fn):
-    """resolveRatingCounts: public-dump value if present (not null), else scraped."""
+    """Mirror the dashboard's resolveRatingCounts. Use the public dump's count
+    when it is not null, and otherwise the scraped count."""
     h = pub.get("helpful_count") if pub and pub.get("helpful_count") is not None else fh
     n = pub.get("not_helpful_count") if pub and pub.get("not_helpful_count") is not None else fn
     return (h or 0), (n or 0)
@@ -95,14 +102,18 @@ def classify(note, pub_by_id, lost_ids):
 
 
 def weekdays_between(a, b):
-    """Count Mon-Fri in [a, b)."""
+    """Count the Monday to Friday days in the range [a, b)."""
     return sum(1 for k in range((b - a).days) if (a + dt.timedelta(days=k)).weekday() < 5)
 
 
 def local_date(iso):
-    """updated_at is stored UTC (…+00:00); "today" must be Nathan's LOCAL day,
-    or an evening-Pacific review (already tomorrow in UTC) is missed. Convert the
-    aware timestamp to the system timezone before taking the date."""
+    """Return the date of a stored timestamp in the machine's own timezone.
+
+    updated_at is stored in UTC. "Today" has to mean Nathan's local day. A
+    review he does on a Pacific evening is already tomorrow in UTC, and would
+    otherwise be counted against the wrong day. So the timestamp is converted to
+    the system timezone before the date is taken.
+    """
     try:
         return dt.datetime.fromisoformat(iso).astimezone().date().isoformat()
     except Exception:
@@ -123,7 +134,8 @@ def main():
     lost_ids  = {c["our_note_id"] for c in comp}
     seen_day  = {a["target_id"]: local_date(a["updated_at"]) for a in ann if a.get("seen")}
 
-    # Tracked notes only: category + entry date.
+    # Keep only the notes in a tracked category, with their category and the
+    # date they entered.
     entry, catof = {}, {}
     for note in notes:
         c = classify(note, pub_by_id, lost_ids)
@@ -135,16 +147,18 @@ def main():
     tstr = today.isoformat()
     reviewed_today = sum(1 for nid, d in seen_day.items() if d == tstr and nid in catof)
 
-    # Current unseen pile, per category.
+    # Count the notes that are still unseen right now, per category.
     remaining = Counter()
     for nid, c in catof.items():
         if nid not in seen_day:
             remaining[c] += 1
     pile = sum(remaining.values())
 
-    # ── Reconstruct unseen-on-day (current classification applied backward;
-    # underwater is approximate before a note reached its ratings, but it's the
-    # best we have without daily snapshots). Delta method for the whole series.
+    # ── Reconstruct how many notes were unseen on each past day. Each note's
+    # current classification is applied backward through history. Underwater is
+    # therefore only approximate for the days before a note had collected its
+    # ratings, but without daily snapshots it is the best we have. The whole
+    # series is built from one delta per day.
     delta = Counter()
     for nid, e in entry.items():
         if not e:
@@ -155,7 +169,8 @@ def main():
             delta[max(sd, e)] -= 1
 
     def series(a, b):
-        """Daily unseen from a to b inclusive, seeded with everything before a."""
+        """Return the unseen count for every day from a to b inclusive. The
+        count starts from everything that happened before day a."""
         run = sum(v for d, v in delta.items() if d < a.isoformat())
         out, d = [], a
         while d <= b:
@@ -172,7 +187,8 @@ def main():
     target_today = P0 * (total_wd - elapsed_wd) / total_wd if total_wd else 0
     above = pile - target_today
 
-    # ── Inflow: new tracked notes entering per calendar day, robust recent rate.
+    # ── Inflow is how many new tracked notes arrive per calendar day. It is the
+    # median over the last few days, so one unusually busy day cannot dominate.
     entered_by_day = Counter(e for e in entry.values() if e)
     recent = [entered_by_day[(today - dt.timedelta(days=k)).isoformat()]
               for k in range(1, INFLOW_WINDOW + 1)]
@@ -232,13 +248,13 @@ def write_chart(actual, start, deadline, P0, today, pile, target_today, quota, l
 
     p = [f'<svg viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg" '
          f'font-family="ui-sans-serif,system-ui,-apple-system,sans-serif">']
-    # gridlines + y labels
+    # Draw the horizontal gridlines and their y-axis labels.
     for k in range(6):
         v = ymax * k / 5
         y = Y(v)
         p.append(f'<line x1="{PL}" y1="{y:.1f}" x2="{PL+pw}" y2="{y:.1f}" stroke="#eceef1" stroke-width="1"/>')
         p.append(f'<text x="{PL-8}" y="{y+4:.1f}" text-anchor="end" font-size="11" fill="#98a2b3">{int(v)}</text>')
-    # month ticks
+    # Draw a tick at the start of each month.
     d = start.replace(day=1)
     while d <= deadline:
         if d >= start:
@@ -246,15 +262,16 @@ def write_chart(actual, start, deadline, P0, today, pile, target_today, quota, l
             p.append(f'<line x1="{x:.1f}" y1="{PT+ph}" x2="{x:.1f}" y2="{PT+ph+5}" stroke="#cbd2d9"/>')
             p.append(f'<text x="{x:.1f}" y="{PT+ph+18}" text-anchor="middle" font-size="10" fill="#98a2b3">{d.strftime("%b %-d")}</text>')
         d = (d.replace(day=28) + dt.timedelta(days=7)).replace(day=1)
-    # target glide path (dashed grey): today's-pile is NOT the anchor; the anchor
-    # is P0 at start so the line shows the plan you signed up for.
+    # Draw the target glide path as a dashed grey line. It is anchored at P0 on
+    # the start date, not at today's pile, so the line always shows the plan you
+    # signed up for.
     p.append(f'<line x1="{X(start):.1f}" y1="{Y(P0):.1f}" x2="{X(deadline):.1f}" y2="{Y(0):.1f}" '
              f'stroke="#9aa5b1" stroke-width="2" stroke-dasharray="6 5"/>')
     p.append(f'<text x="{X(deadline):.1f}" y="{Y(0)-8:.1f}" text-anchor="end" font-size="11" fill="#9aa5b1">target → 0 by {deadline.strftime("%b %-d")}</text>')
-    # actual line (solid dark) + area
+    # Draw the actual unseen pile as a solid dark line.
     pts = " ".join(f"{X(dd):.1f},{Y(v):.1f}" for dd, v in actual)
     p.append(f'<polyline points="{pts}" fill="none" stroke="#111827" stroke-width="2.4" stroke-linejoin="round"/>')
-    # today marker + gap
+    # Draw today's marker and the amber bar showing the gap to the target.
     xt, ya, yt = X(today), Y(pile), Y(target_today)
     p.append(f'<line x1="{xt:.1f}" y1="{ya:.1f}" x2="{xt:.1f}" y2="{yt:.1f}" stroke="#f59e0b" stroke-width="2"/>')
     p.append(f'<circle cx="{xt:.1f}" cy="{ya:.1f}" r="4" fill="#111827"/>')

@@ -5,21 +5,24 @@ import { humanizeTagName } from "./ratingReasons";
 type TagBucket = "helpful" | "not_helpful";
 
 interface Props {
-  // Public-dump-derived data; carries the only source of tag distribution.
+  // Data taken from X's public ratings dump. It is the only source we have for
+  // how the rating tags are distributed.
   publicDumpRatings: PublicDumpRatings | null | undefined;
-  // Optional fallback when public-dump data is missing (e.g. scraped
-  // notewriter counts). Click-to-reveal is auto-disabled in that case.
+  // Counts to fall back on when there is no public-dump data, for example the
+  // counts scraped from the notewriter page. Those counts carry no tags, so the
+  // buttons stop expanding when they are used.
   fallbackHelpfulCount?: number | null;
   fallbackNotHelpfulCount?: number | null;
-  // If false, the buttons render but are inert (no tag expansion). Use this
-  // to hide tag-level data on a deployed dashboard while keeping the counts
-  // visible. Defaults to true.
+  // When this is false the buttons still render but clicking them does nothing,
+  // so no tags are shown. Use it to hide tag-level data on a deployed dashboard
+  // while keeping the counts visible. It defaults to true.
   allowExpand?: boolean;
 }
 
-// The counts the badge shows — public-dump first, scraped fallback otherwise.
-// Exported so callers can ask "does this note have ratings?" with the exact rule
-// the badge uses: a note has ratings iff helpful + notHelpful > 0.
+// Works out the counts the badge shows. The public-dump numbers win, and the
+// scraped fallback counts are used when there are none. This is exported so a
+// caller can ask "does this note have ratings?" by the same rule the badge uses.
+// A note has ratings when helpful plus notHelpful is above zero.
 export function resolveRatingCounts(
   publicDumpRatings: PublicDumpRatings | null | undefined,
   fallbackHelpfulCount?: number | null,
@@ -74,12 +77,13 @@ export function Ratings({
   );
 }
 
-/** Interactive twin of Ratings: labeled pills instead of ▲/▼ — Common Notes
- *  uses X's three-way rating scale (helpful / somewhat helpful / not helpful;
- *  somewhat carries 0.5 weight at scoring time). Clicking casts a vote, active
- *  = the viewer's own vote. The dashboards keep the display-only Ratings;
- *  unlike Ratings this renders at zero counts — you must be able to cast the
- *  first vote. */
+/** The interactive twin of Ratings. It draws labelled pills instead of the ▲ and
+ *  ▼ arrows. Common Notes uses X's three-way rating scale, so a rating is either
+ *  helpful, somewhat helpful, or not helpful. A somewhat-helpful rating counts
+ *  half as much when the note is scored. Clicking a pill casts a vote, and the
+ *  highlighted pill is the viewer's own vote. The dashboards keep the
+ *  display-only Ratings instead. Unlike Ratings this still renders when every
+ *  count is zero, because somebody has to be able to cast the first vote. */
 export type VoteValue = 1 | 0 | -1;
 
 const VOTE_OPTIONS: { value: VoteValue; label: string; active: string; idle: string }[] = [
@@ -88,8 +92,9 @@ const VOTE_OPTIONS: { value: VoteValue; label: string; active: string; idle: str
   { value: -1, label: "Not helpful", active: "bg-red-100 text-red-800 border-red-300 dark:bg-red-900/50 dark:text-red-300 dark:border-red-700", idle: "text-red-700 border-gray-200 hover:bg-red-50 dark:text-red-400 dark:border-gray-600 dark:hover:bg-red-950/40" },
 ];
 
-/** Every vote, in display order — so callers that need to enumerate the type
- *  (scoring every option, ranking a feed) don't hand-write the literal. */
+/** Every vote value, in the order the pills are drawn. Callers that have to walk
+ *  all three values, such as scoring each option or ranking a feed, use this
+ *  instead of writing the literals out again. */
 export const VOTE_VALUES: readonly VoteValue[] = VOTE_OPTIONS.map((o) => o.value);
 
 export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVote, showCounts = myVote !== undefined }: {
@@ -98,9 +103,10 @@ export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVo
   notHelpful: number;
   myVote?: VoteValue;
   onVote: (vote: VoteValue) => void;
-  /** Tallies stay hidden until the viewer has cast their own vote, so the
-   *  crowd doesn't anchor it (aria included — no leaking via screen reader).
-   *  Callers can widen the rule (e.g. reveal on old notes). */
+  /** Tallies stay hidden until the viewer has cast their own vote, so the crowd
+   *  cannot anchor them. The aria labels drop the counts too, so a screen reader
+   *  does not leak them either. Callers can widen the rule, for example to show
+   *  the counts on old notes. */
   showCounts?: boolean;
 }) {
   const counts: Record<VoteValue, number> = { 1: helpful, 0: somewhatHelpful, [-1]: notHelpful };

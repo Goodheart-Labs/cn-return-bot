@@ -11,8 +11,9 @@ import { addRequestedPage, getNoteFilters, getRequestedPages, removeDismissedGra
 import { STATIC_SITE_HOSTNAME } from "../../utils/staticSites";
 import { LoginPanel } from "../../components/LoginPanel";
 
-// Pages where "request notes" makes no sense — searches and portals, not
-// content (non-http pages are already excluded as kind "unsupported").
+// Requesting notes makes no sense on these pages. They are searches and
+// portals rather than content. Pages that are not http or https are already
+// excluded as the "unsupported" kind.
 const NON_CONTENT_HOSTNAME = /(^|\.)google\.[a-z.]+$|(^|\.)bing\.com$|(^|\.)duckduckgo\.com$|(^|\.)ecosia\.org$|(^|\.)startpage\.com$|(^|\.)search\.brave\.com$/;
 
 const PRIMARY_BUTTON = "w-full bg-blue-600 text-white rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-blue-700 disabled:opacity-40";
@@ -20,7 +21,7 @@ const SECONDARY_BUTTON = "w-full border border-gray-300 rounded-lg px-3 py-1.5 t
 
 type PageState =
   | { kind: "loading" }
-  | { kind: "unsupported" } // not http(s)
+  | { kind: "unsupported" } // The page is not http or https.
   | { kind: "no_item"; origin: string }
   | { kind: "item"; origin: string; item: PageItem; notes: NoteRow[] };
 
@@ -47,8 +48,9 @@ function usePageState(): PageState {
   return state;
 }
 
-/** The popup's two tickboxes; writes go to synced storage, which the content
- *  scripts watch to re-render the open pages live. */
+/** The popup's two tickboxes. A change is written to synced storage, and the
+ *  content scripts watch that storage so open pages re-render straight
+ *  away. */
 function useNoteFilters(): [NoteFilters | null, (patch: Partial<NoteFilters>) => void] {
   const [filters, setFilters] = useState<NoteFilters | null>(null);
   useEffect(() => {
@@ -84,9 +86,10 @@ function NoteFilterToggles({ filters, onToggle }: { filters: NoteFilters; onTogg
   );
 }
 
-/** Whether this page's content script has already jumped once — decides the
- *  "first" vs "next" button label. An unreachable script (not injected,
- *  orphaned) reads as never-jumped. */
+/** Whether this page's content script has already jumped to a note once. This
+ *  decides whether the button says "first" or "next". A script we cannot
+ *  reach, because it was never injected or because it is orphaned, counts as
+ *  never having jumped. */
 function useJumped(state: PageState): boolean {
   const [jumped, setJumped] = useState(false);
   useEffect(() => {
@@ -98,19 +101,21 @@ function useJumped(state: PageState): boolean {
         const response = await browser.tabs.sendMessage(tab.id, { type: "cn-jump-state" });
         setJumped(!!(response as { jumped?: boolean })?.jumped);
       } catch {
-        // no listener in the tab — nothing jumped yet
+        // There is no listener in the tab, so nothing has jumped yet.
       }
     })();
   }, [state]);
   return jumped;
 }
 
-/** How this page's origin stands with the extension: script guaranteed
- *  (static/registered), injectable without asking (granted), or needing the
- *  user's grant (ungranted — redirect mode only; all-urls installs always
- *  read as granted). Precomputed so the enable button can call
- *  permissions.request FIRST in its click handler — an await before it can
- *  void the user gesture the API requires. */
+/** How this page's origin stands with the extension. A "static" or
+ *  "registered" origin is guaranteed to have the content script. A "granted"
+ *  origin can be injected into without asking. An "ungranted" origin still
+ *  needs the user's permission, which only happens in redirect mode, because
+ *  an install that requires <all_urls> always reads as granted.
+ *  This is worked out ahead of time so that the enable button can call
+ *  permissions.request as the very first thing in its click handler. Any await
+ *  before that call would void the user gesture the API requires. */
 type PageAccess = "static" | "registered" | "granted" | "ungranted";
 
 function usePageAccess(state: PageState): PageAccess | null {
@@ -138,16 +143,17 @@ async function retryJumpMessage(tabId: number) {
     try {
       return await browser.tabs.sendMessage(tabId, { type: "cn-jump-note" });
     } catch {
-      // script not up yet — keep trying
+      // The script is not up yet, so we try again.
     }
   }
 }
 
-/** A tab that predates the last extension reload/update holds an ORPHANED
- *  content script: its DOM (badges) still renders, but its message listener
- *  is cut off from the new extension instance, so sendMessage throws with no
- *  receiver. Heal by reloading the tab (only when a registration would
- *  re-inject on load) and re-sending until the fresh script answers. */
+/** A tab that was open before the last extension reload or update still holds
+ *  an orphaned content script. Its DOM, the badges included, still renders,
+ *  but its message listener is cut off from the new extension instance, so
+ *  sendMessage throws because there is no receiver. We heal that by reloading
+ *  the tab and re-sending until the fresh script answers. We only reload when
+ *  a registration exists to re-inject the script on load. */
 async function sendJumpToNote(tabId: number, scriptWasRegistered: boolean) {
   try {
     return await browser.tabs.sendMessage(tabId, { type: "cn-jump-note" });
@@ -157,10 +163,11 @@ async function sendJumpToNote(tabId: number, scriptWasRegistered: boolean) {
   }
 }
 
-/** "Request notes on this page" for uncovered content pages — the page-level
- *  successor of the old text-selection request flow. Requested pages are
- *  remembered (storage, not component state) so closing and reopening the
- *  popup can't submit the same page twice. */
+/** The "Request notes on this page" button, shown on uncovered content pages.
+ *  It works on the whole page and replaced an older flow that requested notes
+ *  on a text selection. Requested pages are remembered in storage rather than
+ *  in component state, so closing and reopening the popup cannot submit the
+ *  same page twice. */
 function RequestNoteButton() {
   const [phase, setPhase] = useState<"loading" | "idle" | "busy" | "done" | "error">("loading");
 
@@ -179,7 +186,7 @@ function RequestNoteButton() {
       if (!tab?.url) throw new Error("no page");
       const pageUrl = normalizePageUrl(tab.url);
       await submitNoteRequest({ pageUrl, pageTitle: tab.title ?? "", selection: null });
-      // Best-effort memory — the request itself is already saved.
+      // This is only a local reminder. The request itself is already saved.
       await addRequestedPage(pageUrl).catch(() => {});
       setPhase("done");
     } catch {
@@ -200,9 +207,10 @@ function RequestNoteButton() {
   );
 }
 
-/** The popup's one action button: on a page with visible notes, jump to them
- *  (enabling the site first when the user never granted it); on an uncovered
- *  content page, request notes; anywhere else, open a random noted page. */
+/** The popup's single action button. On a page with visible notes it jumps to
+ *  them, first enabling the site if the user never granted it. On an uncovered
+ *  content page it requests notes. Anywhere else it opens a random page that
+ *  has notes. */
 function PrimaryAction({ state, visibleNoteCount, jumped, access }: {
   state: PageState;
   visibleNoteCount: number;
@@ -222,9 +230,10 @@ function PrimaryAction({ state, visibleNoteCount, jumped, access }: {
         setEnableError(null);
         const hostname = new URL(state.origin).hostname;
         try {
-          // permissions.request comes FIRST — the click is its user gesture.
-          // A rejection is a real bug (e.g. missing optional permissions in
-          // the manifest), not a user choice — show it, don't swallow it.
+          // permissions.request has to come first, because the click is the
+          // user gesture it needs. A thrown error is a real bug, such as
+          // optional permissions missing from the manifest. It is not the user
+          // declining, so we show it instead of swallowing it.
           const granted = await browser.permissions.request({ origins: [hostnamePattern(hostname)] });
           if (!granted) return;
         } catch (err) {
@@ -252,9 +261,10 @@ function PrimaryAction({ state, visibleNoteCount, jumped, access }: {
       const tab = await activeTab();
       if (tab?.id != null) {
         if (access === "granted") {
-          // Consent given but the sync hasn't registered this origin yet —
-          // bridge directly for this tab. Retry-only heal: a reload would
-          // land scriptless (nothing registered to re-inject).
+          // The user has granted this origin but the sync has not registered
+          // it yet, so we inject into this tab directly. Healing can only
+          // retry here. A reload would land on a page with no script, because
+          // nothing is registered that would re-inject it.
           await browser.scripting.executeScript({ target: { tabId: tab.id }, files: ["/content-scripts/generic.js"] }).catch(() => {});
         }
         await sendJumpToNote(tab.id, access !== "granted");

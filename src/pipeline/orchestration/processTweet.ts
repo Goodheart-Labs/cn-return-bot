@@ -1,13 +1,14 @@
 /**
  * Process Single Tweet
  *
- * Core per-tweet pipeline logic extracted from generateCandidates.ts.
- * Split into three layers:
- *   1. runBotPipeline()    — runs the bot, returns raw output
- *   2. scorePipelineResult() — records scores (incl. the X eval score)
- *   3. determineOutcome()  — pure function, decides outcome from result + scores
+ * This file holds the per-tweet pipeline logic. It used to live in
+ * generateCandidates.ts. The work is split into three layers.
+ *   1. runBotPipeline() runs the bot and returns its raw output.
+ *   2. scorePipelineResult() computes the scores, including X's evaluation score.
+ *   3. determineOutcome() is a pure function. It decides the outcome from the
+ *      pipeline result and the scores.
  *
- * processSingleTweet() is the thin orchestrator that glues them together.
+ * processSingleTweet() is the thin orchestrator that glues the three together.
  */
 
 import type { Post } from "../../api/fetchEligiblePosts";
@@ -71,7 +72,7 @@ export interface ProcessTweetResult {
 }
 
 // ---------------------------------------------------------------------------
-// Layer 1: Run bot pipeline (no DB, no scoring)
+// Layer 1: Run the bot pipeline. No database writes and no scoring.
 // ---------------------------------------------------------------------------
 
 async function runBotPipeline(
@@ -98,9 +99,11 @@ async function runBotPipeline(
   return { result, content };
 }
 
-/** Warnings collected this run (e.g. media Haiku fallback). Mirrors them into
- *  the tweet log so they also appear in the logs dump, and returns the array
- *  (undefined when none) for the pipeline_runs.warnings column. */
+/** Returns the non-fatal warnings collected during this run. One example is the
+ *  media analysis falling back to Haiku. The warnings are also copied into the
+ *  tweet log so they show up in the logs dump. The return value is undefined
+ *  when there were none, which is what the pipeline_runs.warnings column
+ *  expects. */
 function collectWarnings(): string[] | undefined {
   const warnings = getWarnings();
   if (!warnings.length) return undefined;
@@ -109,7 +112,7 @@ function collectWarnings(): string[] | undefined {
 }
 
 // ---------------------------------------------------------------------------
-// Layer 2: Score pipeline result (computes scores, no outcome decisions)
+// Layer 2: Score the pipeline result. No outcome decisions are made here.
 // ---------------------------------------------------------------------------
 
 interface EvalGateDecision {
@@ -117,9 +120,10 @@ interface EvalGateDecision {
   score?: number;
   shouldSubmit?: boolean;
   error?: string;
-  /** When true the score is recorded but never vetoes submission. Set for
-   *  misinfo-monitoring posts: we hand-curate those topics, so we keep the eval
-   *  signal for visibility but let our note through regardless. */
+  /** When this is true we still record the score, but it never vetoes a
+   *  submission. We set it for misinfo-monitoring posts. We curate those topics
+   *  by hand, so we keep the evaluation score for visibility and let our note
+   *  through whatever the score says. */
   advisory?: boolean;
 }
 
@@ -175,16 +179,15 @@ async function scorePipelineResult(
   log?.set("eval.threshold", evalGate.threshold);
   log?.set("eval.advisory", evalGate.advisory);
 
-  // Source verification
   const svScore = extractSourceVerificationScore(result);
   if (svScore) scores.push(svScore);
 
-  // Bot scoring filter results
   scores.push(...extractBotScoringFilterScores(result));
 
-  // Materiality / persuasion judge — SHADOW: scores logged, nothing gated.
-  // Only on real corrections (empty notes have nothing to judge); fail-soft —
-  // a judge error must never block the run.
+  // The materiality judge is a shadow scorer. We log what it says and gate
+  // nothing on it. It only runs when the bot actually wrote a correction,
+  // because an empty note has nothing to judge. A judge failure must never stop
+  // the run, so we swallow the error and continue.
   if (result.noteResult.status === CORRECTION_STATUS && result.noteResult.note) {
     try {
       const materialityScores = await runMaterialityJudge({
@@ -201,7 +204,6 @@ async function scorePipelineResult(
     }
   }
 
-  // Evaluation score
   const evalResult = await getEvaluationScore(result.post.id, noteText);
   if (evalResult.error) {
     evalGate.error = evalResult.error;
@@ -222,7 +224,7 @@ async function scorePipelineResult(
 }
 
 // ---------------------------------------------------------------------------
-// Layer 3: Determine outcome (pure function, no side effects)
+// Layer 3: Determine the outcome. This layer is pure and has no side effects.
 // ---------------------------------------------------------------------------
 
 const STATUS_REJECTION_MAP: Record<string, { reason: string; stage: string }> = {
@@ -233,18 +235,17 @@ const STATUS_REJECTION_MAP: Record<string, { reason: string; stage: string }> = 
 const CORRECTION_STATUS = "CORRECTION WITH TRUSTWORTHY CITATION";
 
 function determineOutcome(result: PipelineResult, scoring: ScoringOutput): Outcome {
-  // Status-based rejections
   const statusRejection = STATUS_REJECTION_MAP[result.noteResult.status];
   if (statusRejection) {
     return { outcome: "rejected", outcomeReason: statusRejection.reason, finalStage: statusRejection.stage };
   }
 
-  // No correction needed
   if (result.noteResult.status !== CORRECTION_STATUS) {
     return { outcome: "rejected", outcomeReason: "no_correction_needed", finalStage: "note_writing" };
   }
 
-  // Source verification
+  // The source verifier is allowed to be skipped entirely. A missing checkResult
+  // therefore counts as a pass, not as a failure.
   const checkRaw = result.checkResult?.trim().toUpperCase() ?? "";
   const checkSkipped = result.checkResult == null;
   const checkPassed = checkSkipped || checkRaw === "YES";
@@ -259,9 +260,11 @@ function determineOutcome(result: PipelineResult, scoring: ScoringOutput): Outco
     };
   }
 
-  // Evaluation score rejection. If the eval API failed or returned no numeric
-  // score, skip this gate rather than rejecting a potentially good note. For
-  // advisory (misinfo) posts the score is recorded but never vetoes.
+  // This gate rejects a note whose evaluation score is below the threshold. If
+  // the evaluation call failed or returned no number, shouldSubmit stays
+  // undefined and we skip the gate rather than reject a note that may be good.
+  // On advisory posts, which are the misinfo-monitoring ones, the score is
+  // recorded but never rejects anything.
   if (scoring.evalGate.shouldSubmit === false && !scoring.evalGate.advisory) {
     const { score, threshold } = scoring.evalGate;
     return {
@@ -272,7 +275,6 @@ function determineOutcome(result: PipelineResult, scoring: ScoringOutput): Outco
     };
   }
 
-  // All checks passed
   return { outcome: "candidate", finalStage: "candidate" };
 }
 
@@ -302,8 +304,8 @@ async function initPipelineRun(
   post: Post,
   commitSha?: string
 ): Promise<string | null> {
-  // Note: the tweets row is upserted in bulk at fetch time
-  // (see generateCandidates.fetchPosts), so we don't need to do it here.
+  // The tweets row is already written in bulk when the posts are fetched. See
+  // fetchPosts in generateCandidates.ts. So there is nothing to insert here.
   try {
     return await logger.createPipelineRun({
       tweet_id: post.id,
@@ -400,8 +402,8 @@ async function recordFailedRun(
   };
 }
 
-/** Complete the run as rejected at an early gate (before the bot ran) and
- *  build the ProcessTweetResult the caller returns. */
+/** Completes the run as rejected at one of the early gates, before the bot ever
+ *  ran, and builds the ProcessTweetResult the caller returns. */
 async function recordGateRejection(
   logger: SupabaseLogger | null,
   pipelineRunId: string | null,
@@ -445,11 +447,12 @@ async function recordGateRejection(
 }
 
 /**
- * Blocked-topic gate — when `config.topic_filter` is on (TOPIC_FILTER_TEST),
- * runs before everything else (even the note-needed prefilter). One cheap
- * deepseek call, no tools; if the post is on a blocked topic the run is
- * completed as rejected/blocked_topic and the bot never runs. Returns null
- * when the filter is off or the post is clean (proceed).
+ * The blocked-topic gate. It runs when `config.topic_filter` is on, which the
+ * TOPIC_FILTER_TEST decides. It runs before everything else, even before the
+ * note-needed prefilter. It is one cheap deepseek call with no tools. When the
+ * post is on a blocked topic the run is completed as rejected with the reason
+ * blocked_topic and the bot never runs. It returns null when the filter is off
+ * or the post is clean, and the caller then carries on.
  */
 async function runTopicFilterGate(
   logger: SupabaseLogger | null,
@@ -459,18 +462,20 @@ async function runTopicFilterGate(
 ): Promise<ProcessTweetResult | null> {
   if (!getBotConfig().topic_filter) return null;
 
-  // runBlockedTopicFilter logs its messages + verdict under topic_filter.*.
+  // runBlockedTopicFilter writes its own messages and its verdict onto the
+  // ambient tweet log under the topic_filter prefix.
   const verdict = await runBlockedTopicFilter(userMessage);
   if (!verdict.blocked) return null;
   return recordGateRejection(logger, pipelineRunId, bot, "blocked_topic", "topic_filter");
 }
 
 /**
- * Cheap note-needed prefilter gate. When `config.note_prefilter` is on (and this
- * isn't the misinfo pre-pass), run the deepseek prefilter before the bot. If it
- * says no note is needed, complete the run as rejected/prefilter_no_note and
- * return that result so the caller skips the (expensive) bot. Returns null when
- * the prefilter is off or says a note may be needed (proceed to the bot).
+ * The cheap note-needed prefilter gate. It runs the deepseek prefilter before
+ * the bot when `config.note_prefilter` is on and this is not the misinfo
+ * pre-pass. When the prefilter says no note is needed, the run is completed as
+ * rejected with the reason prefilter_no_note. Returning that result lets the
+ * caller skip the bot, which is the expensive part. It returns null when the
+ * prefilter is off or says a note may be needed, and the bot then runs.
  */
 async function runPrefilterGate(
   logger: SupabaseLogger | null,
@@ -480,10 +485,11 @@ async function runPrefilterGate(
 ): Promise<ProcessTweetResult | null> {
   if (!getBotConfig().note_prefilter || getMonitoringContext()) return null;
 
-  // runNoteNeededPrefilter logs its own steps under note_prefilter_steps.* (incl.
-  // the verdict) and folds its cost into the run total.
+  // runNoteNeededPrefilter writes its own steps and its verdict onto the tweet
+  // log under the note_prefilter_steps prefix. It also folds its cost into the
+  // run total.
   const verdict = await runNoteNeededPrefilter(userMessage);
-  if (verdict.needsNote) return null; // proceed to the bot; bot reuses cached input
+  if (verdict.needsNote) return null;
   return recordGateRejection(logger, pipelineRunId, bot, "prefilter_no_note", "prefilter");
 }
 
@@ -502,8 +508,10 @@ export async function processSingleTweet(
   }
 
   try {
-    // Build the shared bot input ONCE. Both gates consume the resulting user
-    // message directly; the bot rebuilds it from the in-memory input cache.
+    // The shared bot input is built exactly once, here. Both gates below read
+    // the resulting user message directly. The bot asks for the input again
+    // later, but the in-memory input cache hands it this same one, so nothing is
+    // built twice.
     const input = await createBotInput(post, `processTweet:${post.id}`);
     const userMessage = buildUserMessageFromInput(post, input);
 

@@ -1,10 +1,11 @@
 /**
  * Prompt — shared bot user message.
  *
- * Renders the post (with author, engagement, media, comments, and prior
- * corrections to the author) into the user message every bot's pipeline reads.
- * `buildUserMessage` stays available for callers (e.g. eval harnesses) that
- * assemble media from somewhere other than a `BotInput`.
+ * This file renders a post into the user message that every bot's pipeline
+ * reads. The rendering covers the author, the engagement numbers, the media, the
+ * comments, and the corrections written on this author's earlier posts.
+ * `buildUserMessage` stays exported for callers that assemble their media
+ * somewhere other than a `BotInput`, such as the eval harnesses.
  */
 
 import type { Post } from "../../../api/fetchEligiblePosts";
@@ -15,12 +16,13 @@ import { getBotConfig } from "../../ab-testing/botConfig";
 
 type ReferenceKind = "quoted" | "retweeted";
 
-// X's standard post limit, so an ordinary post is quoted whole. Longer
-// (Premium) posts still get cut — 23% of noted posts run past it — but the
-// opening is enough to place the topic, which is all this block is for.
+// This is X's standard post limit, so an ordinary post is quoted whole. Longer
+// Premium posts still get cut, and 23% of the posts we note run past the limit.
+// The opening is enough to place the topic, which is all this block is for.
 const MAX_HISTORY_POST_CHARS = 280;
-// Notes run to ~930 chars, so this does cut most of them. The claim leads and
-// the sources trail, so what's lost is mostly URLs we don't want copied anyway.
+// Notes run to about 930 characters, so this limit does cut most of them. The
+// claim comes first and the sources come last. What gets lost is mostly source
+// URLs, which we do not want the model copying anyway.
 const MAX_HISTORY_NOTE_CHARS = 300;
 
 function formatAuthorNotes(notes: AuthorNote[], noteLabel: string): string[] {
@@ -43,7 +45,8 @@ export function buildUserMessage(params: {
   tweetMedia: GeminiMediaItem[];
   quotedTweetMedia: GeminiMediaItem[];
   authorNoteHistory?: AuthorNoteHistory;
-  /** Also show the author's rejected notes — the `on_with_unhelpful` A/B arm. */
+  /** Also show the notes on this author that raters rejected. This is the
+   *  `on_with_unhelpful` A/B arm. */
   showUnhelpfulHistory?: boolean;
   comments?: string;
   mediaMadeWithAiLabel?: boolean;
@@ -52,25 +55,25 @@ export function buildUserMessage(params: {
   const now = new Date();
   const parts: string[] = [];
 
-  // Timestamps
   parts.push(`Current date: ${now.toISOString().split("T")[0]}`);
   parts.push(`Current time: ${now.toISOString().split("T")[1]!.slice(0, 5)} UTC`);
   parts.push(`Tweet posted: ${post.created_at}`);
-  // Pre-computed age (timing_context arm): the timing machinery turns on the
-  // post's age, and models are unreliable at timestamp arithmetic — hand them
-  // the operative number. Gated on the same flag so the A/B arms stay clean.
+  // The timing machinery turns on how old the post is, and models are unreliable
+  // at timestamp arithmetic. So we work the age out here and hand them the
+  // number. It is gated on the timing_context flag, the same flag the timing
+  // stage uses, so the A/B arms stay clean.
   if (getBotConfig().timing_context && post.created_at) {
     const ageMs = now.getTime() - Date.parse(post.created_at);
     if (Number.isFinite(ageMs) && ageMs >= 0) {
       parts.push(`Post age: ${(ageMs / 3_600_000).toFixed(1)} hours`);
     }
   }
-  // Only real (numeric) tweet ids form a valid URL. Synthetic posts — e.g. the
-  // everything pipeline's `${itemId}-${index}` claim ids — would otherwise emit
-  // a bogus link that confuses the model, so omit it for them.
+  // Only a real numeric tweet id forms a valid URL. Synthetic posts would
+  // produce a bogus link that confuses the model, so we leave the URL out for
+  // them. The everything pipeline's claim ids are such synthetic posts, since
+  // they are built as an item id followed by an index.
   if (/^\d+$/.test(post.id)) parts.push(`Tweet URL: https://x.com/i/status/${post.id}`);
 
-  // Author info
   const authorParts: string[] = [];
   if (post.author_name) authorParts.push(post.author_name);
   if (post.author_followers != null) authorParts.push(`${post.author_followers.toLocaleString()} followers`);
@@ -78,7 +81,6 @@ export function buildUserMessage(params: {
   if (authorParts.length) parts.push(`\nAuthor: ${authorParts.join(" — ")}`);
   if (post.author_description) parts.push(`Author bio: ${post.author_description}`);
 
-  // Engagement metrics
   const m = post.public_metrics;
   if (m) {
     const metricParts: string[] = [];
@@ -90,7 +92,6 @@ export function buildUserMessage(params: {
     if (metricParts.length) parts.push(`Engagement: ${metricParts.join(" — ")}`);
   }
 
-  // Author note history
   const history = params.authorNoteHistory;
   if (history && history.totalHelpful > 0) {
     parts.push(
@@ -98,8 +99,8 @@ export function buildUserMessage(params: {
     );
     parts.push(...formatAuthorNotes(history.helpfulNotes, "Correction"));
   }
-  // Optional-chained because runs logged before this arm existed replay without
-  // the field.
+  // The optional chaining matters because a run that was logged before this arm
+  // existed replays without the field.
   if (params.showUnhelpfulHistory && history?.unhelpfulNotes?.length) {
     parts.push(
       `\n## Past notes on this author's posts that raters REJECTED (${history.totalUnhelpful} rated not helpful vs ${history.totalHelpful} rated helpful on record)\n`,
@@ -110,9 +111,9 @@ export function buildUserMessage(params: {
     parts.push(...formatAuthorNotes(history.unhelpfulNotes, "Note rated not helpful"));
   }
 
-  // Post + referenced post
-  // For retweets, post.text is "RT @user: <truncated>" — show only the original.
-  // For quote tweets, show the user's commentary AND the quoted post separately.
+  // For a retweet, post.text is "RT @user: <truncated>", so we show only the
+  // original post. For a quote tweet, we show the user's own commentary and the
+  // quoted post separately.
   const refKind = getReferenceKind(post);
   if (refKind === "retweeted") {
     parts.push(`\n## Post (retweet)\n\n${post.referenced_tweet_data!.text}`);
@@ -123,25 +124,23 @@ export function buildUserMessage(params: {
     }
   }
 
-  // Media on post
   if (params.tweetMedia.length) {
     parts.push(`\n## Media on post`);
     parts.push(formatMediaItems(params.tweetMedia));
   }
 
-  // Media on quoted/retweeted post
   if (params.quotedTweetMedia.length) {
     const heading = refKind === "retweeted" ? "Media on retweeted post" : "Media on quoted post";
     parts.push(`\n## ${heading}`);
     parts.push(formatMediaItems(params.quotedTweetMedia));
   }
 
-  // X's synthetic-media provenance label, scraped from the post page.
+  // This is X's own provenance label for synthetic media. We scrape it from the
+  // post page.
   if (params.mediaMadeWithAiLabel) {
     parts.push(`\nMedia was tagged with "Made with AI" on x.com`);
   }
 
-  // Comments and replies
   if (params.comments) {
     parts.push(`\n## Comments and replies\n\n${params.comments}`);
   }
@@ -150,9 +149,10 @@ export function buildUserMessage(params: {
 }
 
 /**
- * Render the user message for the bots' shared `BotInput`. Resolves the
- * author-history arm here rather than at lookup time so a cached `BotInput`
- * (big_eval's input cache) carries the full history and serves every arm.
+ * Renders the user message from the bots' shared `BotInput`. The author-history
+ * arm is resolved here rather than when the history is looked up. That way a
+ * cached `BotInput` carries the full history and can serve every arm. big_eval's
+ * input cache holds such cached inputs.
  */
 export function buildUserMessageFromInput(post: Post, input: BotInput): string {
   return buildUserMessage({

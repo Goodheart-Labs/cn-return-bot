@@ -33,8 +33,8 @@ import type { ConfidenceLevel } from "./lib/confidenceIntervals";
 import { WritingLimitPanel } from "./components/WritingLimitPanel";
 import { useResizeWidth } from "./lib/useResizeWidth";
 
-// Stable reference so the downstream useMemos don't invalidate every render
-// when developer mode is off.
+// One shared empty object. Handing the useMemos below a fresh {} on every render
+// would make them all recompute whenever developer mode is off.
 const EMPTY_FILTERS: ABFilters = {};
 
 export function App() {
@@ -45,8 +45,9 @@ export function App() {
   const [sort, setSort] = useState<NoteSort>("latest_helpful");
   const [devMode, setDevMode] = useState(false);
   const [showNonCandidate, setShowNonCandidate] = useState(false);
-  // The "Posted" mode is the "Helpful / unhelpful" chart with the pending
-  // (needs-more-ratings) notes stacked in, so the bar shows total volume.
+  // The "Posted" mode draws the same helpful and unhelpful chart, but stacks the
+  // notes that still need more ratings on top. Each bar then shows how many
+  // notes were posted in total.
   const showNmr = mode === "posted";
   const [abFilters, setAbFilters] = useState<ABFilters>({});
   const [cmpDims, setCmpDims] = useState<string[]>([]);
@@ -79,8 +80,8 @@ export function App() {
       ),
     [filteredNotes, granularity, useNonCandidate, snapshot, filtersForData],
   );
-  // "% of all" share buckets: platform-wide, so independent of the AB filters
-  // (those only scope our own notes).
+  // The "% of all" buckets count notes across the whole platform, so the A/B
+  // filters do not apply to them. Those filters only narrow down our own notes.
   const shareBuckets = useMemo(
     () => dropInProgressWeek(bucketizeOrigin(snapshot?.daily_note_origin_counts ?? [], granularity), granularity),
     [snapshot, granularity],
@@ -99,8 +100,9 @@ export function App() {
         : [],
     [devMode, snapshot, cmpDims, filtersForData, cmpWindowDays],
   );
-  // Metric-submenu catalogs come from the full snapshot (not the windowed
-  // combos), so the tag/reason lists are stable as filters change.
+  // The metric submenus list every failure mode and every rating reason in the
+  // whole snapshot, not only the ones inside the chosen window. That keeps the
+  // lists from shifting around as the user changes filters.
   const failureModeCatalog = useMemo(
     () => (snapshot ? buildFailureModeCatalog(snapshot.notes) : []),
     [snapshot],
@@ -217,10 +219,11 @@ function DevModeToggle({
   devMode: boolean;
   onChange: (next: boolean) => void;
 }) {
-  // One button captures clicks on both the label text and the visual switch.
-  // The previous label + nested span + sr-only checkbox double-fired when the
-  // user clicked the visual switch (span onClick toggled, label-associated
-  // checkbox also toggled — canceling each other).
+  // A single button handles clicks on the label text and on the switch alike.
+  // The earlier version used a label with a nested span and a hidden checkbox.
+  // Clicking the switch then fired twice. The span's own click handler flipped
+  // the state, and the label flipped the checkbox as well, so the two changes
+  // cancelled each other out.
   return (
     <button
       type="button"

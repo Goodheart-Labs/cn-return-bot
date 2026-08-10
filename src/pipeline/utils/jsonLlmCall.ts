@@ -1,13 +1,16 @@
 /**
- * Shared JSON LLM call for the cheap-bot pipeline (and the simple-bot stages it
- * reuses). Wraps trackedLlmCreate with the provider-quirk tolerance every JSON
- * stage needs: strip ```json fences, parse, and — because loosely-enforcing
- * providers (DeepSeek v4 Flash) occasionally answer in prose/markdown despite a
- * json_schema response_format — re-ask for JSON rather than crashing the row.
+ * The shared JSON LLM call for the cheap-bot pipeline and for the simple-bot
+ * stages that reuse it. It wraps `trackedLlmCreate` and adds the tolerance for
+ * provider quirks that every JSON stage needs. It strips ```json fences and then
+ * parses the output. Some providers enforce the schema loosely and answer in
+ * prose or markdown even though a json_schema response_format was set. DeepSeek
+ * v4 Flash does this now and then. When it happens we ask the model again for
+ * JSON instead of crashing the row.
  *
- * `require_parameters` (llm.ts) reduces but does not eliminate this: it only
- * guarantees the provider accepts response_format, not that it constrains
- * decoding to the schema. So every JSON stage needs this fallback.
+ * The `require_parameters` option in llm.ts makes this rarer but does not remove
+ * it. It only guarantees that the provider accepts a response_format. It does not
+ * guarantee that the provider constrains its decoding to the schema. So every
+ * JSON stage still needs this fallback.
  */
 
 import { getBotConfig, llmTuningParams } from "../ab-testing/botConfig";
@@ -23,27 +26,31 @@ export interface ChatMessage {
 }
 
 /**
- * Corrective-retry loop shared by every JSON LLM stage — the prompted-JSON
- * search paths and `runJsonLlmCall` alike. Repeatedly runs `call`, parses its
- * output, and on a parse/shape failure re-asks the model for clean JSON (echoing
- * its own bad reply back) up to `maxAttempts` times before throwing
- * `ModelOutputInvalidError`. The provider-specific bits — how the request is
- * made, how the raw text is extracted, cost tracking — live in the caller's
- * `call`; only the retry mechanics live here.
+ * The corrective retry loop that every JSON LLM stage shares. Both the search
+ * paths that prompt for JSON and `runJsonLlmCall` use it. It runs `call`, parses
+ * the output, and on a parse or shape failure asks the model again for clean
+ * JSON. The re-ask echoes the model's own bad reply back to it. After
+ * `maxAttempts` tries it gives up and throws `ModelOutputInvalidError`.
+ * Everything that depends on the provider stays in the caller's `call`. That
+ * covers how the request is made, how the raw text is pulled out of the reply,
+ * and how the cost is tracked. Only the retry mechanics live here.
  */
 export async function parseJsonWithRetry<T>(params: {
   /** Label used only in the thrown error message. */
   source: string;
-  /** Mutated with the model's reply + a corrective prompt on each failure. */
+  /** On every failure the model's reply and a corrective prompt are appended to
+   *  this array. */
   messages: any[];
-  /** Shape echoed back in the re-ask, e.g. `{ "queries": string[] }`. */
+  /** The shape echoed back to the model in the re-ask. An example is
+   *  `{ "queries": string[] }`. */
   schemaHint: string;
   maxAttempts?: number;
-  /** One LLM call with the current messages. Returns the text to parse plus the
-   *  raw assistant reply to echo back on retry (they differ when the caller
-   *  extracts JSON out of a reasoning preamble). */
+  /** Makes one LLM call with the current messages. It returns the text to parse
+   *  and the raw assistant reply to echo back on a retry. The two differ when the
+   *  caller has to dig the JSON out of a reasoning preamble. */
   call: (messages: any[], attempt: number) => Promise<{ toParse: string; assistantEcho: string }>;
-  /** Parse + validate; throw on invalid or mis-shaped output. */
+  /** Parses and validates the text. It throws when the output is invalid or has
+   *  the wrong shape. */
   parse: (toParse: string) => T;
 }): Promise<T> {
   const maxAttempts = params.maxAttempts ?? DEFAULT_MAX_ATTEMPTS;
@@ -69,16 +76,18 @@ export async function parseJsonWithRetry<T>(params: {
 }
 
 export async function runJsonLlmCall<T>(params: {
-  /** Cost-tracker name. The first attempt keeps it verbatim so existing cost
-   *  lookups still hit; retries append `.retry.N`. */
+  /** The name the cost tracker records. The first attempt uses it unchanged so
+   *  that existing cost lookups still find it. Every retry appends `.retry.N`. */
   costName: string;
   model: string;
-  /** Mutated with the model's reply + a corrective prompt on each parse failure,
-   *  so a caller can layer its own content validation (e.g. the writer's length
-   *  retry) by appending to the same array and calling again. */
+  /** On every parse failure the model's reply and a corrective prompt are
+   *  appended to this array. A caller can add its own content validation on top
+   *  by appending to the same array and calling again. The writer's length retry
+   *  works that way. */
   messages: ChatMessage[];
   responseFormat: object;
-  /** Shape echoed back in the re-ask, e.g. `{ "queries": string[] }`. */
+  /** The shape echoed back to the model in the re-ask. An example is
+   *  `{ "queries": string[] }`. */
   schemaHint: string;
   maxAttempts?: number;
 }): Promise<T> {

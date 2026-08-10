@@ -1,13 +1,14 @@
-// Deep-linking via query params on the static Pages path (no server rewrites,
-// no clash with Supabase's auth hash):
-// ?project=<slug>&note=<id>&item=<item-id> for the note feed, or ?view=leaderboard.
+/* Deep links use query parameters on the static GitHub Pages path. That needs no
+ * server rewrites, and it does not clash with the hash Supabase's auth flow
+ * uses. The note feed reads ?project=<slug>&note=<id>&item=<item-id>. The
+ * leaderboard is ?view=leaderboard. */
 
 /** Which top-level view the app is showing. */
 export type View = "notes" | "leaderboard";
 
 export function readRoute(): { project: string | null; note: string | null; item: string | null; view: View } {
   const q = new URLSearchParams(window.location.search);
-  // `episode` is the pre-generalization param name — still honored for old links.
+  // `episode` is the old name for `item`. Links made before the rename still use it.
   return {
     project: q.get("project"),
     note: q.get("note"),
@@ -16,18 +17,21 @@ export function readRoute(): { project: string | null; note: string | null; item
   };
 }
 
-/** Push a project selection into the URL (keeps the path, so Pages still serves index.html). */
+/** Put a project selection into the URL. The path is left alone, so GitHub
+ *  Pages still serves index.html. */
 export function pushProject(slug: string): void {
   window.history.pushState(null, "", `${window.location.pathname}?project=${slug}`);
 }
 
-/** Push an item filter within the current project (null clears it). */
+/** Put an item filter for the current project into the URL. Passing null clears
+ *  the filter. */
 export function pushItem(slug: string, itemId: string | null): void {
   const suffix = itemId ? `&item=${itemId}` : "";
   window.history.pushState(null, "", `${window.location.pathname}?project=${slug}${suffix}`);
 }
 
-/** Show the leaderboard (a global view — drops any project/item selection). */
+/** Show the leaderboard. It is a global view, so it drops any project or item
+ *  selection. */
 export function pushLeaderboard(): void {
   window.history.pushState(null, "", `${window.location.pathname}?view=leaderboard`);
 }

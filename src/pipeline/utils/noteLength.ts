@@ -9,26 +9,30 @@ export function countNoteLength(note: string): number {
 }
 
 /**
- * The note exactly as submitted to X: the body followed by its source URLs.
- * `outcomeToResult` joins sources with spaces into `noteResult.url`, and the
- * submitted text is `note + " " + url`, so this mirrors that. The writer's
- * length budget must count THIS, not the body alone — a 280-char body becomes
- * 284 once two sources are appended (each URL counts as 1 char).
+ * Builds the note exactly as it is submitted to X. That is the body followed by
+ * its source URLs. `outcomeToResult` joins the sources with spaces into
+ * `noteResult.url`, and the submitted text is `note + " " + url`, so this
+ * function mirrors that. The writer's length budget has to count this whole
+ * string and not the body alone. A body of 280 characters becomes 284 once two
+ * sources are appended, because each URL counts as one character and each
+ * separating space adds one more.
  */
 export function joinNoteWithSources(noteBody: string, sources: string[]): string {
   return sources.length ? `${noteBody} ${sources.join(" ")}` : noteBody;
 }
 
-/** countNoteLength of the note as it will actually be submitted (body + sources). */
+/** Counts the length of the note as it will actually be submitted, which is the
+ *  body together with its sources. */
 export function countSubmittedNoteLength(noteBody: string, sources: string[]): number {
   return countNoteLength(joinNoteWithSources(noteBody, sources));
 }
 
 /**
- * The submitted note text from a `noteResult`'s pre-joined fields: `note` is the
- * body and `url` is already `sources.join(" ")`. The `joinNoteWithSources`
- * counterpart for code that holds the post-`outcomeToResult` shape (processTweet)
- * rather than the raw sources array.
+ * Builds the submitted note text from the fields a `noteResult` already holds.
+ * There `note` is the body and `url` is the sources joined with spaces. This is
+ * the counterpart of `joinNoteWithSources` for code that works with the shape
+ * `outcomeToResult` produced, such as `processTweet`, rather than with the raw
+ * sources array.
  */
 export function joinNoteAndUrl(note: string, url: string): string {
   return url ? `${note} ${url}` : note;

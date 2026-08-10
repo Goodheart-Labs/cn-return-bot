@@ -1,9 +1,3 @@
-/**
- * Bot Types
- *
- * Defines the interface that all bots must implement.
- */
-
 import type { EvaluatedSource } from "../pipeline/prompts/verify/citations";
 
 export interface PipelineResult {
@@ -20,8 +14,8 @@ export interface PipelineResult {
     url: string;
     status: string;
   };
-  /** Per-source snippets + explanation for the note's accepted sources. Set only
-   *  when the source verifier ran with verifier_citations on. */
+  /** One supporting snippet and explanation for each source the note cites. This
+   *  is only set when the source verifier ran with verifier_citations turned on. */
   sourceEvaluations?: EvaluatedSource[];
   checkResult?: string;
 }
@@ -81,24 +75,23 @@ export interface MediaItem {
 
 export interface PostContent {
   text: string;
-  /** Image/preview URLs for passing to LLM vision (backward compat) */
+  /** Image and preview URLs that we hand to the vision models. This flat list is
+   *  kept for the older code paths that only understand a list of URLs. */
   media: string[];
-  /** Full media objects with type, variants, etc. for media analysis */
+  /** The full media objects, with their type and their video variants. The media
+   *  analysis step needs these. */
   mediaItems?: MediaItem[];
   quotedPostContext?: string;
   isQuoteTweet: boolean;
 }
 
 export interface Bot {
-  /** Unique identifier for the bot */
   id: string;
 
-  /** Human-readable name */
   name: string;
 
-  /** Description of what makes this bot different */
+  /** Says what makes this bot different from the other bots. */
   description: string;
 
-  /** Run the full pipeline for a post */
   runPipeline(post: any, content: PostContent): Promise<PipelineResult | null>;
 }

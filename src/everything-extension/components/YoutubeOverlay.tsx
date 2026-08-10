@@ -7,8 +7,9 @@ import { ABSORB_KEYS, ClaimNoteStack, NOTE_POPOVER_WIDTH, SignInHint } from "./C
 import { ScrubberPins } from "./ScrubberPins";
 import { useNoteVoting, replaceNoteInGroup } from "./useNoteVoting";
 
-/** A claim pinned to a span of the video timeline, with its notes and
- *  note-not-needed entries (same shape the Substack popover renders). */
+/** A claim pinned to a span of the video timeline, together with its notes and
+ *  its note-not-needed entries. This is the same shape the Substack popover
+ *  renders. */
 export interface TimedGroup {
   claimId: string;
   primary: NoteRow;
@@ -20,11 +21,13 @@ export interface TimedGroup {
 
 // A claim without end_seconds stays up this long past its start.
 export const DEFAULT_CLIP_SECONDS = 30;
-// Opacity transition length; the card unmounts when the fade completes.
+// How long the opacity transition runs. The card unmounts once the fade
+// completes.
 const FADE_MS = 400;
-// A fresh interaction (vote click, typing in a composer) holds the card past
-// its window — long enough to outlive the donation notice's own 6.5s
-// dwell-and-fade, so post-vote feedback is never ripped away with the clip.
+// A fresh interaction holds the card open past the claim's window. A vote
+// click or typing in a composer both count as one. The hold outlasts the 6.5
+// seconds the donation notice takes to dwell and fade, so post-vote feedback
+// is never taken away together with the clip.
 const HOLD_AFTER_INTERACTION_MS = 10_000;
 
 const QUOTE_PREVIEW_CHARS = 160;
@@ -35,26 +38,31 @@ function quotePreview(group: TimedGroup): string | null {
   return quote.length > QUOTE_PREVIEW_CHARS ? `${quote.slice(0, QUOTE_PREVIEW_CHARS)}…` : quote;
 }
 
-/** Timestamp-triggered community note over the YouTube player: the full note
- *  card (Substack-sized, right edge, vertically centered) shown only while the
- *  video plays through the claim's span — it fades out the moment playback
- *  leaves the window, unless the pointer is on the card mid-interaction.
- *  Scrub-bar pins mark every claim and seek into its window on click. */
+/** A community note shown over the YouTube player when the video reaches the
+ *  claim. The card is the same size as the Substack popover and sits at the
+ *  right edge, vertically centered. It only shows while playback is inside the
+ *  claim's span, and it fades out as soon as playback leaves that span. It
+ *  stays up while the pointer is on it and the reader is mid-interaction.
+ *  Pins on the scrub bar mark every claim, and clicking one seeks into that
+ *  claim's span. */
 export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, player, refetch }: {
   groups: TimedGroup[];
   projectSlug: string | null;
   video: HTMLVideoElement;
   player: HTMLElement;
-  /** Re-fetch the item's groups (no realtime here) after a post or delete. */
+  /** Re-fetch the item's groups after a note is posted or deleted. There is no
+   *  realtime subscription here. */
   refetch: () => Promise<TimedGroup[]>;
 }) {
   const [groups, setGroups] = useState(initialGroups);
-  // displayed = which claim's card is mounted; visible = drives the opacity
-  // transition. Hiding is two-step: visible=false starts the fade, the timer
-  // unmounts after FADE_MS.
+  // `displayed` is the claim whose card is mounted. `visible` drives the
+  // opacity transition. Hiding happens in two steps. Setting `visible` to
+  // false starts the fade, and a timer unmounts the card after FADE_MS.
   const [displayed, setDisplayed] = useState<string | null>(null);
   const [visible, setVisible] = useState(false);
-  const dismissed = useRef(new Set<string>()); // per-video-session
+  // The claims the reader dismissed. This set is dropped when the page moves
+  // on to another video.
+  const dismissed = useRef(new Set<string>());
   const hovered = useRef(false);
   const inWindow = useRef(false);
   const lastInteraction = useRef(0);
@@ -67,11 +75,12 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
     }))),
   );
 
-  // `shown` mirrors displayed/hiding for the event handlers (timeupdate fires
-  // ~4×/s — reading state through a closure would go stale, and re-arming the
-  // unmount timer on every tick would keep an invisible card mounted forever,
-  // shielding the player from clicks). beginHide is idempotent: the first call
-  // starts the fade, later calls while it runs are no-ops.
+  // `shown` mirrors the displayed and hiding state for the event handlers.
+  // The timeupdate event fires about four times a second, and reading React
+  // state through a closure there would go stale. Re-arming the unmount timer
+  // on every tick would also keep an invisible card mounted forever, which
+  // would shield the player from clicks. So beginHide is idempotent. The first
+  // call starts the fade, and later calls while it runs do nothing.
   const shown = useRef<"visible" | "hiding" | "none">("none");
   const show = (claimId: string) => {
     clearTimeout(hideTimer.current);
@@ -89,10 +98,12 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
     }, FADE_MS);
   };
 
-  // The card outlives its window only while the reader is engaged with it:
-  // pointer on the card, or an interaction (click/keystroke) fresher than the
-  // hold. The playing video's timeupdate stream re-evaluates as holds expire;
-  // on a paused video the card simply stays — paused means reading.
+  // The card outlives its window only while the reader is engaged with it.
+  // That means the pointer is on the card, or there was a click or keystroke
+  // more recently than the hold allows. A playing video re-evaluates this on
+  // every timeupdate, so the card goes once the hold expires. On a paused
+  // video the card simply stays, because a paused video means someone is
+  // reading.
   const engaged = () => hovered.current || Date.now() - lastInteraction.current < HOLD_AFTER_INTERACTION_MS;
 
   useEffect(() => {
@@ -101,8 +112,9 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
       const hit = groups.find((g) => !dismissed.current.has(g.claimId) && t >= g.startSeconds && t <= g.endSeconds);
       inWindow.current = !!hit;
       if (hit) show(hit.claimId);
-      // The moment playback leaves the window the card fades — unless the
-      // reader is engaged (mid-vote, mid-donation-pick, mid-composition).
+      // The card fades the moment playback leaves the window. It stays if the
+      // reader is engaged, for example mid-vote, picking a charity, or typing
+      // a note.
       else if (!engaged()) beginHide();
     };
     video.addEventListener("timeupdate", onTime);
@@ -118,10 +130,12 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
     if (group) dismissed.current.add(group.claimId);
     beginHide();
   };
-  // An empty-surface click outside the card dismisses it, same strength as
-  // the ✕ (a plain beginHide would re-show on the next in-window timeupdate).
-  // Clicks that do something — the video (play/pause), like, comments — keep
-  // the card up; isInertClick tells them apart by interactive affordance.
+  // A click on empty surface outside the card dismisses it, just as the ✕
+  // does. A plain beginHide would not be enough, because the next timeupdate
+  // inside the window would show the card again. Clicks that actually do
+  // something keep the card up, such as clicking the video to play or pause
+  // it, or the like button, or the comments. isInertClick tells the two apart
+  // by looking for the signs that an element is interactive.
   useEffect(() => {
     if (!group) return;
     const onClick = (e: MouseEvent) => {
@@ -132,16 +146,17 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
     document.addEventListener("click", onClick);
     return () => document.removeEventListener("click", onClick);
   }, [group]);
-  // A pin click is explicit intent: un-dismiss and seek into the window — the
-  // resulting timeupdate shows the card.
+  // Clicking a pin is explicit intent, so we undo any dismissal and seek into
+  // the claim's window. The resulting timeupdate shows the card.
   const jumpToPin = (target: TimedGroup) => {
     dismissed.current.delete(target.claimId);
     video.currentTime = target.startSeconds + 0.01;
   };
 
-  // The popup's jump button: bring the player on screen and step through the
-  // claims in time order (wrapping), same as clicking their pins. The cursor
-  // lives here so "next" survives popup reopenings; it resets with the page.
+  // The popup's jump button brings the player on screen and steps through the
+  // claims in time order, wrapping around at the end. This is the same as
+  // clicking their pins. The cursor lives here so that "next" keeps its place
+  // when the popup is closed and reopened. It resets when the page reloads.
   const jumpCursor = useRef(-1);
   useEffect(() => {
     const listener = (message: unknown, _sender: unknown, sendResponse: (response?: unknown) => void) => {
@@ -159,7 +174,8 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
     return () => runtime?.onMessage.removeListener(listener);
   }, [groups, video]);
   const refresh = async () => setGroups(await refetch());
-  // Popup tickbox flips re-fetch through the new filters, live.
+  // Flipping a tickbox in the popup re-fetches the notes through the new
+  // filters straight away.
   useEffect(() => onNoteFiltersChanged(() => void refresh()), []);
   const handleAuthored = (noteId: string) => {
     recordAuthored(noteId);
@@ -177,12 +193,13 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
       {group && (
         <div
           {...ABSORB_KEYS}
-          // Clicks on the card must not fall through to the player's own
-          // handlers either (retargeted to the host element, they look like
-          // player-chrome clicks to YouTube).
+          // Clicks on the card must not reach the player's own handlers
+          // either. They are retargeted to the shadow host element, so
+          // YouTube reads them as clicks on the player's own controls.
           onMouseDown={(e) => e.stopPropagation()}
           onClick={(e) => e.stopPropagation()}
-          // Capture phase so ABSORB_KEYS' stopPropagation can't starve them.
+          // These run in the capture phase. Otherwise the stopPropagation in
+          // ABSORB_KEYS would stop them from ever firing.
           onClickCapture={() => { lastInteraction.current = Date.now(); }}
           onKeyDownCapture={() => { lastInteraction.current = Date.now(); }}
           onMouseEnter={() => { hovered.current = true; }}
@@ -191,10 +208,11 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
             if (!inWindow.current && !engaged()) beginHide();
           }}
           style={{ width: NOTE_POPOVER_WIDTH }}
-          // select-text: user-select resets to `auto` in the shadow root,
-          // which resolves from the PARENT's used value — inside #movie_player
-          // that's YouTube's chrome-wide `none`, making the note text
-          // uncopyable unless we opt back in explicitly.
+          // The select-text class is needed. Inside the shadow root
+          // `user-select` resets to `auto`, which resolves to the parent's
+          // used value. The parent here is #movie_player, where YouTube sets
+          // `none` across the whole player. Without opting back in explicitly
+          // the note text could not be copied.
           className={`select-text max-w-[85vw] max-h-[70vh] overflow-y-auto overscroll-contain bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-2xl p-3 transition-opacity duration-[400ms] ease-out ${visible ? "opacity-100" : "opacity-0"}`}
         >
           {signInHint && <SignInHint onDismiss={dismissSignInHint} className="mb-2" />}

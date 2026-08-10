@@ -1,28 +1,30 @@
-// Confidence-interval math for the A/B comparison panel. Pure functions, no
-// React — see confidenceIntervals.test.ts for worked examples.
+// Confidence-interval maths for the A/B comparison panel. These are pure
+// functions with no React in them. See confidenceIntervals.test.ts for worked
+// examples.
 //
-// Two metric shapes need two formulas:
-//   - a simple proportion (k of n)        → Wilson score interval
-//   - a difference of two proportions     → score-mean interval
-//     drawn from the SAME sample (helpful − unhelpful)
+// Two shapes of metric need two formulas. A plain proportion of k out of n uses
+// the Wilson score interval. A difference between two proportions drawn from
+// the same sample, such as helpful minus unhelpful, uses an interval on the
+// mean score instead.
 
 export interface Interval {
-  point: number; // point estimate
-  lo: number; // lower bound
-  hi: number; // upper bound
+  point: number; // The point estimate.
+  lo: number; // The lower bound.
+  hi: number; // The upper bound.
 }
 
-// z multipliers for the supported two-sided confidence levels.
+// The z multiplier for each two-sided confidence level we support.
 export const Z_BY_LEVEL = { 90: 1.645, 95: 1.96, 99: 2.576 } as const;
 export type ConfidenceLevel = keyof typeof Z_BY_LEVEL;
 
 const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
 
 /**
- * Wilson score interval for a binomial proportion `k / n`. Stays within [0, 1]
- * and behaves at small n / extreme p where the normal approximation breaks.
- * Returns a zero-width interval at the raw rate when n === 0 (caller should
- * treat n === 0 as "no data" upstream).
+ * The Wilson score interval for a binomial proportion of k out of n. It always
+ * stays inside 0 and 1. It also behaves well for a small n or an extreme p,
+ * where the normal approximation falls apart.
+ * When n is zero it returns an interval of zero width. Callers are expected to
+ * treat that case as "no data" before ever getting here.
  */
 export function proportionCI(k: number, n: number, z: number): Interval {
   if (n <= 0) return { point: 0, lo: 0, hi: 0 };
@@ -35,17 +37,19 @@ export function proportionCI(k: number, n: number, z: number): Interval {
 }
 
 /**
- * Interval for the difference `(kA − kB) / n` where A and B are two mutually
- * exclusive categories of the SAME n observations (e.g. helpful vs unhelpful
- * among the same notes). Each observation scores +1 (A), −1 (B), or 0 (neither);
- * the metric is the mean score, so this is a normal interval on that mean. Its
- * variance equals the multinomial difference-of-proportions variance
- * [pA(1−pA) + pB(1−pB) + 2·pA·pB] / n. Bounds clamp to [−1, 1].
+ * The interval for the difference `(kA − kB) / n`. A and B are two categories
+ * that exclude each other, counted over the same n observations. Helpful versus
+ * unhelpful among one set of notes is the case we use it for.
+ * Score every observation +1 for A, −1 for B, and 0 for neither. The metric is
+ * then the mean of those scores, so this is a normal interval on that mean. Its
+ * variance works out to the multinomial variance of a difference of
+ * proportions, which is [pA(1−pA) + pB(1−pB) + 2·pA·pB] / n.
+ * The bounds are clamped to the range −1 to 1.
  */
 export function proportionDiffCI(kA: number, kB: number, n: number, z: number): Interval {
   if (n <= 0) return { point: 0, lo: 0, hi: 0 };
   const d = (kA - kB) / n;
-  const variance = (kA + kB) / n - d * d; // sample variance of the ±1/0 scores
+  const variance = (kA + kB) / n - d * d; // The sample variance of those scores.
   const se = Math.sqrt(Math.max(0, variance) / n);
   const halfWidth = z * se;
   return {
@@ -56,12 +60,14 @@ export function proportionDiffCI(kA: number, kB: number, n: number, z: number): 
 }
 
 /**
- * Interval for a "total cost / count" ratio (e.g. cost per helpful note). The
- * count is the rare, random quantity, so we treat it as Poisson (variance ≈
- * count) and propagate to the ratio via the delta method on the log scale,
- * holding total cost fixed. That gives an always-positive, asymmetric interval:
- * (C/k) · exp(±z/√k). Returns a zero interval when count or cost is non-positive
- * (caller should gate those as "no data").
+ * The interval for a ratio of a total cost to a count, such as the cost per
+ * helpful note. The count is the rare and random part, so we treat it as
+ * Poisson, where the variance is about equal to the count itself. We then carry
+ * that uncertainty over to the ratio with the delta method on the log scale,
+ * holding the total cost fixed. The result is the always-positive and
+ * asymmetric interval (C/k) · exp(±z/√k).
+ * When the count or the cost is not positive it returns an interval of zero
+ * width. Callers are expected to treat those cases as "no data".
  */
 export function costPerCountCI(totalCost: number, count: number, z: number): Interval {
   if (count <= 0 || totalCost <= 0) return { point: 0, lo: 0, hi: 0 };

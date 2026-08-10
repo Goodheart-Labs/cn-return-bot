@@ -1,11 +1,12 @@
 /**
- * Everything-pipeline worker: drain the queue and exit.
+ * Worker for the everything pipeline. It drains the queue and then exits.
  *
- * Takes the oldest queued item, fetches its content (YouTube transcript or
- * Substack article), then hands it to processFetchedContent — extract claims,
- * drop speculation, fact-check the non-confident ones, and stream every step
- * into the everything_* tables. One item at a time; item failures don't stop
- * the queue.
+ * It takes the oldest queued item and fetches its content, which is either a
+ * YouTube transcript or a Substack article. It then hands that content to
+ * processFetchedContent. That step extracts the claims, drops the speculative
+ * ones, fact-checks the ones Opus is not already confident about, and streams
+ * every step into the everything_* tables. Items are processed one at a time.
+ * An item that fails does not stop the rest of the queue.
  *
  * Usage:
  *   bun run src/everything/worker.ts
@@ -20,8 +21,9 @@ import { ensureYtDlp, fetchYoutubeContent, fetchYoutubeTranscriptContent } from 
 import type { FetchedContent } from "./types";
 
 async function fetchContent(item: EverythingItem): Promise<FetchedContent> {
-  // A local `--doc` item already carries its body (read from a file at enqueue).
-  // A YouTube doc still fetches the video's cues so its claims get timestamps.
+  // An item enqueued with --doc already carries its body, which was read from a
+  // local file at enqueue time. A YouTube doc still needs the video's cues
+  // fetched, so that its claims get timestamps.
   if (item.full_text !== null) {
     return item.source === "youtube"
       ? fetchYoutubeTranscriptContent(item.url, item.full_text)
@@ -41,7 +43,7 @@ async function fetchContent(item: EverythingItem): Promise<FetchedContent> {
   }
 }
 
-/** Process queued items until the queue is empty; returns how many were taken. */
+/** Processes queued items until the queue is empty. Returns how many it took. */
 export async function drainQueue(): Promise<number> {
   let processed = 0;
   while (true) {
@@ -49,8 +51,9 @@ export async function drainQueue(): Promise<number> {
     if (!item) break;
     console.log(`\n=== [${item.source}] ${item.url}`);
     try {
-      // Existing claims mean a killed run already extracted this item — resume
-      // its unfinished claims instead of refetching and re-extracting.
+      // If the item already has claims, an earlier run was killed after it had
+      // extracted them. We resume its unfinished claims instead of fetching the
+      // content and extracting all over again.
       if ((await fetchItemClaims(item.id)).length > 0) await resumeItemClaims(item);
       else await processFetchedContent(item, await fetchContent(item));
       await markItemDone(item.id);

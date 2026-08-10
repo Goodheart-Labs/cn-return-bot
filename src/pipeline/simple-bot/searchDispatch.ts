@@ -1,9 +1,9 @@
 /**
- * Simple Bot — Search Dispatch
+ * The simple bot's search dispatch.
  *
- * Routes the search step to a provider-specific helper based on
- * config.web_search. Each helper returns the same shape so the orchestrator
- * doesn't care which provider ran.
+ * It routes the search step to a provider-specific helper, chosen by
+ * config.web_search. Every helper returns the same shape, so the orchestrator
+ * does not need to know which provider ran.
  */
 
 import LinkifyIt from "linkify-it";
@@ -33,13 +33,15 @@ import { parseJsonWithRetry } from "../utils/jsonLlmCall";
 const linkify = new LinkifyIt();
 
 /**
- * Always surface sonar's grounded URLs to the downstream note-writer.
- * Perplexity (and some OpenAI models with web_search_preview) put their
- * grounded URLs in `message.annotations[*].url_citation`; the model only
- * sometimes inlines them in the findings text. Deduplicate against what's
- * already inline, then append the rest under one of two headers:
- *   - "# Citations" if the findings text had no URL at all
- *   - "# Additional Citations" if it had some but not all
+ * Makes sure Sonar's grounded URLs always reach the note writer downstream.
+ *
+ * Perplexity puts its grounded URLs in `message.annotations[*].url_citation`,
+ * and so do some OpenAI models when web_search_preview is on. The model only
+ * sometimes repeats those URLs inside the findings text itself. This function
+ * drops the ones that are already in that text and appends the rest under a
+ * header. The header is "# Citations" when the findings text held no URL at
+ * all. It is "# Additional Citations" when the text held some of the URLs but
+ * not all of them.
  */
 function appendSonarCitations(findings: string, annotations: any[] | undefined): string {
   const annotationUrls = (annotations ?? [])
@@ -55,13 +57,15 @@ function appendSonarCitations(findings: string, annotations: any[] | undefined):
   return `${findings}\n\n${header}\n${missing.join("\n")}`;
 }
 
-/** Resolve the search system prompt for the current run, injecting the misinfo
- *  pre-pass ground-truth article when one is active (covers every simple-bot
- *  search provider, since they all build their prompt from here). */
+/** Builds the search system prompt for the current run. When a misinfo
+ *  monitoring topic is active, that topic's reference document is injected into
+ *  the prompt. Every simple-bot search provider builds its prompt here, so they
+ *  all get the same treatment. */
 export function getSearchSystemPrompt(): string {
   const config = getBotConfig();
-  // Everything-pipeline claims are an excerpt + a claim, not an X post — use
-  // the dedicated claim-check prompt and skip the X-only assembly below.
+  // A claim from the everything pipeline is an excerpt plus a claim, not an X
+  // post. It gets its own claim-checking prompt and skips the X-only assembly
+  // below.
   if (config.search_claim) return SEARCH_SYSTEM_PROMPT_CLAIM;
   const monitoring = getMonitoringContext();
   let prompt = buildSearchSystemPrompt({
@@ -98,22 +102,29 @@ function parseSearchJson(content: string, source: string): SearchOutput {
 const SEARCH_SCHEMA_HINT = `{ "findings": string, "correction_needed": boolean }`;
 
 /**
- * Shared driver for the prompted-JSON search providers (Anthropic-native,
- * OpenAI-native, Sonar). They all: run one `llm.create` with the search tool,
- * pull the raw text out, and parse `{ findings, correction_needed }` — but with
- * no `response_format` to constrain decoding, the model sometimes answers in
- * prose or doubled/empty JSON. Route the parse through `parseJsonWithRetry` so a
- * bad reply is re-asked (up to 3×) instead of failing the run — the same
- * corrective loop every `response_format` stage already gets via `runJsonLlmCall`.
- * Cost is accumulated across attempts; the successful reply's `message` is
- * returned so Sonar can harvest its `annotations`.
+ * The shared driver for the search providers that ask for JSON in the prompt.
+ * Those are the Anthropic-native path, the OpenAI-native path, and Sonar.
+ *
+ * They all do the same thing. They run one `llm.create` with the search tool,
+ * pull the raw text out of the reply, and parse
+ * `{ findings, correction_needed }` from it. None of them can pass a
+ * `response_format` to constrain the decoding, so the model sometimes answers
+ * in prose, or with doubled or empty JSON. The parse therefore goes through
+ * `parseJsonWithRetry`, which re-asks the model up to three times before it
+ * gives up instead of failing the run on the first bad reply. That is the same
+ * corrective loop every `response_format` stage already gets through
+ * `runJsonLlmCall`.
+ *
+ * The cost of every attempt is added up. The `message` of the successful reply
+ * is returned as well, so the Sonar path can read its `annotations`.
  */
 async function dispatchPromptedJsonSearch(params: {
   source: string;
   messages: any[];
   createOptions: Record<string, unknown>;
-  /** Raw text → JSON string: `extractJsonObject` for models that narrate a
-   *  preamble (Opus), `stripJsonFences` for models that emit bare JSON. */
+  /** Turns the raw reply text into the JSON string to parse. Use
+   *  `extractJsonObject` for a model that narrates a preamble first, such as
+   *  Opus. Use `stripJsonFences` for a model that emits bare JSON. */
   extractJson: (raw: string) => string;
 }): Promise<{ findings: string; correctionNeeded: boolean; message: any; cost: TokenCost }> {
   const cost = emptyTokenCost();
@@ -171,22 +182,25 @@ async function searchWithAnthropicNative(
   const config = getBotConfig();
   const model = config.search_model ?? config.model;
   // Opus 4.8 garbles its output when a server-side web_search tool and a strict
-  // json_schema response_format are attached together (Opus-specific collision;
-  // Sonnet is unaffected). Drop response_format and ask for JSON in the prompt,
-  // then parse it — same workaround as searchWithOpenaiNative / Sonar. Opus emits
-  // a reasoning preamble before the JSON, so extract the JSON object rather than
-  // parsing the whole message.
+  // json_schema response_format are attached at the same time. The collision is
+  // specific to Opus. Sonnet is not affected. So we drop the response_format,
+  // ask for JSON in the prompt, and parse it ourselves. searchWithOpenaiNative
+  // and the Sonar path use the same workaround. Opus writes a reasoning
+  // preamble before the JSON, so we extract the JSON object instead of parsing
+  // the whole message.
   const systemPrompt = `${getSearchSystemPrompt()}\n\n${SEARCH_PROMPTED_JSON_INSTRUCTION}`;
   log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage });
 
   const { findings, correctionNeeded, cost } = await dispatchPromptedJsonSearch({
     source: "searchWithAnthropicNative",
     messages: [
-      // Mark the per-topic-stable system prompt as an Anthropic prefix-cache
-      // breakpoint (passed through by OpenRouter). Anthropic doesn't cache
-      // automatically and only caches >=1024 tokens, so this is a no-op for the
-      // regular pipeline and kicks in when the misinfo reference document is
-      // injected — repeated across every post of the same topic.
+      // This marks the system prompt as an Anthropic prefix-cache breakpoint,
+      // which OpenRouter passes through. The prompt stays the same across every
+      // post of a topic. Anthropic never caches on its own, and it only caches
+      // prompts of at least 1024 tokens. So this does nothing for the regular
+      // pipeline. It starts to pay off once the misinfo reference document is
+      // injected, because that long prompt then repeats on every post of the
+      // topic.
       {
         role: "system" as const,
         content: [{ type: "text", text: systemPrompt, cache_control: { type: "ephemeral" } }],
@@ -275,11 +289,12 @@ async function searchWithGrokNative(
   };
 }
 
-// OpenAI reasoning models (gpt-5*) require max_tokens via OpenRouter (their
-// default is 64k+, which OpenRouter rejects unless your credit covers it).
-// gpt-5 burns thousands of *reasoning* tokens on top of the visible output,
-// so 4000 frequently truncated the response to empty content. 16000 gives
-// enough headroom for reasoning + a small JSON answer.
+// OpenAI's reasoning models, the gpt-5 family, need an explicit max_tokens when
+// they are called through OpenRouter. Their own default is over 64k, and
+// OpenRouter rejects that unless your credit covers it. A gpt-5 model also burns
+// thousands of reasoning tokens on top of the visible output, so a limit of 4000
+// often truncated the reply to empty content. 16000 leaves room for the
+// reasoning and a small JSON answer.
 const OPENAI_MAX_TOKENS = 16000;
 
 async function searchWithOpenaiNative(
@@ -288,18 +303,19 @@ async function searchWithOpenaiNative(
 ): Promise<SearchDispatchResult> {
   const log = getTweetLog();
   const config = getBotConfig();
-  // OpenRouter passes OpenAI's web_search_preview tool through (verified by
-  // the Phase 0 spike), so this is just an llm.create call — no native client.
+  // OpenRouter passes OpenAI's web_search_preview tool straight through. The
+  // Phase 0 spike verified that. So a plain llm.create call is enough here and
+  // we need no native OpenAI client.
   const model = config.search_model ?? config.model;
   const systemPrompt = getSearchSystemPrompt();
   log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage, model });
 
-  // OpenAI's web_search_preview tool via OpenRouter rejects
-  // response_format=json_schema (returns 500 on production-sized prompts).
-  // Ask for JSON in the prompt and parse the result; gpt-5.x reliably emits
-  // valid JSON when explicitly instructed. When gpt-5 burns its budget on
-  // reasoning and returns empty content, the retry loop re-asks rather than
-  // failing the run outright.
+  // Called through OpenRouter, OpenAI's web_search_preview tool rejects
+  // response_format=json_schema. It returns a 500 on production-sized prompts.
+  // So we ask for JSON in the prompt and parse the reply. A gpt-5.x model emits
+  // valid JSON reliably when it is told to. If gpt-5 spends its whole budget on
+  // reasoning and returns empty content, the retry loop asks again instead of
+  // failing the run.
   const { findings, correctionNeeded, cost } = await dispatchPromptedJsonSearch({
     source: "searchWithOpenaiNative",
     messages: [
@@ -320,15 +336,16 @@ async function searchWithSonarBundled(
   const log = getTweetLog();
   const config = getBotConfig();
   const model = config.search_model ?? config.model;
-  // Perplexity Sonar honors response_format=json_schema, but no Sonar endpoint
-  // advertises it, so the global provider.require_parameters routing 404s the
-  // request ("No endpoints found that can handle the requested parameters").
-  // Ask for JSON in the prompt and parse it instead — Sonar reliably emits
-  // valid JSON when instructed.
+  // Perplexity Sonar does honour response_format=json_schema, but no Sonar
+  // endpoint advertises that it does. Our global provider.require_parameters
+  // routing therefore 404s the request with "No endpoints found that can handle
+  // the requested parameters". So we ask for JSON in the prompt and parse it
+  // ourselves. Sonar emits valid JSON reliably when it is told to.
   const systemPrompt = `${getSearchSystemPrompt()}\n\n${SEARCH_PROMPTED_JSON_INSTRUCTION}`;
   log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage, model });
 
-  // Sonar models ground the response in web search automatically; no tool needed.
+  // Sonar models ground their answer in a web search on their own, so we attach
+  // no search tool here.
   const result = await dispatchPromptedJsonSearch({
     source: "searchWithSonarBundled",
     messages: [
@@ -351,10 +368,10 @@ async function searchWithSonarBundled(
 const SEARXNG_MAX_TURNS = 6;
 
 /**
- * Tool-calling loop for models without native web search (Kimi, GLM, DeepSeek,
- * Qwen). The model issues google_search calls (which dispatch to SearXNG) and
- * eventually returns the findings as JSON. Reuses executeToolCall from the
- * agent flow rather than forking it.
+ * The tool-calling loop for models that have no native web search, such as
+ * Kimi, GLM, DeepSeek, and Qwen. The model issues google_search calls, which we
+ * dispatch to SearXNG, and eventually returns its findings as JSON. It reuses
+ * executeToolCall from the agent flow rather than forking it.
  */
 async function searchWithSearxngLoop(
   userMessage: string,
@@ -377,13 +394,15 @@ You have access to a google_search tool. Issue search queries to gather evidence
   const toolCosts: ToolCallCost[] = [];
 
   for (let turn = 1; turn <= SEARXNG_MAX_TURNS; turn++) {
-    // Force a tool call on turn 1: without this, some models (DeepSeek v4
-    // Flash, observed 2026-05-23) prefer the JSON schema and short-circuit
-    // with empty findings + correction_needed=false, never searching.
+    // Turn 1 forces a tool call. Without that, some models prefer the JSON
+    // schema and stop straight away with empty findings and
+    // correction_needed=false, without ever searching. We saw DeepSeek v4 Flash
+    // do this on 2026-05-23.
     //
-    // When forcing the tool the model must emit a tool call, not JSON, so the
-    // response_format is moot — and some providers (Mistral) reject json_schema
-    // unless tool_choice is "auto". Attach the schema only on the "auto" turns.
+    // On a forced turn the model has to emit a tool call rather than JSON, so
+    // the response_format would have no effect anyway. Some providers, Mistral
+    // among them, also reject json_schema unless tool_choice is "auto". So we
+    // attach the schema only on the turns that use "auto".
     const forceToolCall = turn === 1;
     const response = await llm.create({
       model,
@@ -436,10 +455,10 @@ You have access to a google_search tool. Issue search queries to gather evidence
     };
   }
 
-  // Loop exhausted: some models (e.g. deepseek-v3.2-exp) keep searching past
-  // the turn limit without ever producing a final answer on their own. Force
-  // synthesis with one more call that has no tools — the model has all the
-  // accumulated search results in messages already.
+  // The loop ran out of turns. Some models, deepseek-v3.2-exp for one, keep
+  // searching past the turn limit and never produce a final answer on their
+  // own. One more call with no tools attached forces them to write one. Every
+  // search result they gathered is already in the message list.
   log?.set(`${STEP.search}.forced_synthesis`, true);
   const finalResp = await llm.create({
     model,

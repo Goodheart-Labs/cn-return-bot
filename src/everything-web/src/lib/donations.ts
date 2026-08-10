@@ -2,7 +2,8 @@ import type { DonationPair } from "./donationScoring";
 import { createLocalPreference } from "./preference";
 import { supabase } from "../../../everything-shared/supabase";
 
-/** The charities a voter can direct their donation to. First entry is the default. */
+/** The charities a voter can direct their donation to. The first entry is the
+ *  default. */
 export const CHARITIES = [
   { id: "give_directly", label: "GiveDirectly" },
   { id: "givewell", label: "GiveWell Recommended Charities" },
@@ -14,26 +15,28 @@ export type CharityId = (typeof CHARITIES)[number]["id"];
 
 const isCharityId = (v: unknown): v is CharityId => CHARITIES.some((c) => c.id === v);
 
-/** Persisted charity preference: the default future donations are minted with.
- *  Each donation box displays its OWN row's charity, not this — the box must
- *  never show a charity the ledger doesn't hold. */
+/** The stored charity preference. Future donations are minted with it. A
+ *  donation box never displays this value. It displays the charity on its own
+ *  ledger row, because the box must never show a charity the ledger does not
+ *  hold. */
 export const usePreferredCharity = createLocalPreference<CharityId>("cn-preferred-charity", {
   parse: (raw) => (isCharityId(raw) ? raw : CHARITIES[0].id),
   serialize: (charity) => charity,
 });
 
-/** A cast vote's minted donation: the vote id, the charity the ledger row was
- *  written with, and the frozen outcome-contingent pair. Null carrier = retract
- *  or a vote that mints no donation, e.g. on your own note. */
+/** The donation a cast vote minted. It carries the vote id, the charity the
+ *  ledger row was written with, and the frozen pair of amounts. Callers hold
+ *  null instead when the vote was retracted, or when the vote mints no donation
+ *  at all, which is what happens on your own note. */
 export interface MintedDonation {
   voteId: string;
   charity: CharityId;
   pair: DonationPair;
 }
 
-/** Mint the donation a vote earns: the outcome-contingent pair frozen at vote
- *  time. unique(vote_id) makes this an update on a re-vote — one vote can
- *  never mint two donations. */
+/** Mint the donation a vote earns, which is the pair of amounts frozen at vote
+ *  time. The unique constraint on vote_id turns this into an update when someone
+ *  votes again, so one vote can never mint two donations. */
 export function saveDonation(voteId: string, charity: CharityId, pair: DonationPair) {
   return supabase.from("everything_donations").upsert(
     {
@@ -46,11 +49,11 @@ export function saveDonation(voteId: string, charity: CharityId, pair: DonationP
   );
 }
 
-/** Redirect an already-minted donation to a different charity. Resolves true
- *  only when the ledger row verifiably changed — the `.select()` echo turns a
- *  silently-matched-zero-rows update (or any transient failure) into `false`
- *  so the caller can roll the UI back instead of showing a charity the ledger
- *  doesn't hold (Jim hit exactly that on 2026-07-21). */
+/** Redirect an already-minted donation to a different charity. It resolves true
+ *  only when the ledger row really changed. Asking for the updated row back
+ *  turns an update that matched no rows, or any other transient failure, into
+ *  false. The caller can then roll the display back instead of showing a charity
+ *  the ledger does not hold. Jim hit exactly that on 2026-07-21. */
 export async function setDonationCharity(voteId: string, charity: CharityId): Promise<boolean> {
   const { data, error } = await supabase
     .from("everything_donations")

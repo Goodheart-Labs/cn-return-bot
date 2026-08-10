@@ -14,23 +14,27 @@ import { NoteMenu } from "./NoteMenu";
 import { NoteNotNeeded, type NnnApi } from "./NoteNotNeeded";
 import { VoteDonation } from "./VoteDonation";
 
-/** Community-Notes rating states: icon, copy, box tint, and the footer ask.
- *  Halfway to X-CN grammar (Nathan, 2026-07-14): our own badge + wording, but
- *  the vote row is a one-verb ask and shown notes carry a trust line. */
+/** The rating states, in the style of Community Notes. Each one carries the
+ *  colour of its icon, the copy on its badge, the tint of the note box, and the
+ *  question asked in the footer. The design sits halfway to X's own Community
+ *  Notes grammar (Nathan, 2026-07-14). The badge and the wording are ours, and
+ *  the vote row asks one plain question. */
 const STATUS: Record<NoteStatus, { label: string; color: string; box: string; ask: string }> = {
   helpful: { label: "Currently rated helpful", color: "#22c55e", box: "bg-blue-50 border-blue-100 dark:bg-blue-950/50 dark:border-blue-900", ask: "Do you find this helpful?" },
   not_helpful: { label: "Currently rated not helpful", color: "#ef4444", box: "bg-gray-50 border-gray-200 dark:bg-gray-800/60 dark:border-gray-700", ask: "Do you find this helpful?" },
   needs_ratings: { label: "Needs more ratings", color: "#9ca3af", box: "bg-blue-50 border-blue-100 dark:bg-blue-950/50 dark:border-blue-900", ask: "Is this note helpful?" },
 };
 
-/** The status badge shown above a note: a filled circle (with a ✓/✕ glyph for
- *  the decided states) and its Community-Notes copy. */
+/** The status badge shown above a note. It is a filled circle followed by the
+ *  Community Notes copy for that status. A status that has been decided also
+ *  draws a ✓ or a ✕ inside the circle. */
 export function StatusBadge({ status }: { status: NoteStatus }) {
   const { label, color } = STATUS[status];
   return (
     <div className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 dark:text-gray-200">
-      {/* em-sized so the icon scales with the font-size experiment; the
-          cn-badge-* class lets color schemes restyle the inline fills */}
+      {/* The size is given in em so the icon scales with the font-size
+          experiment. The cn-badge-* class lets a color scheme restyle the fills
+          that are set inline here. */}
       <svg viewBox="0 0 20 20" width="1.05em" height="1.05em" aria-hidden className={`shrink-0 cn-badge-${status}`}>
         <circle cx="10" cy="10" r="10" fill={color} />
         {status === "helpful" && (
@@ -45,22 +49,24 @@ export function StatusBadge({ status }: { status: NoteStatus }) {
   );
 }
 
-/** Common Notes keeps citations in a separate column; append them so they
- *  render as linkified URLs inline in the note text, like the review/stats
- *  dashboards. */
+/** Common Notes keeps a note's citations in a separate column. We append their
+ *  URLs to the note text so they render as links inside it, the way the review
+ *  dashboard and the stats dashboard render a note. */
 function noteText(note: NoteRow): string {
   const urls = note.sources.map((s) => s.url);
   return urls.length > 0 ? `${note.note} ${urls.join(" ")}` : note.note;
 }
 
-/** Does any source carry a supporting quote worth a details reveal? */
+/** Tells whether any source carries a supporting quote. That is the only content
+ *  the source-details reveal has to show. */
 function hasSourceDetails(sources: NoteSourceRow[]): boolean {
   return sources.some((s) => s.quote);
 }
 
-/** Per-source supporting quote + explanation, revealed by "Show source
- *  details". The source URLs already sit inline in the note text, so this
- *  shows only the citation body (deep-linked quote + explanation). */
+/** The supporting quote and the explanation for each source, revealed by the
+ *  "Show source details" button. The source URLs already sit inline in the note
+ *  text, so this shows only the body of each citation. Each quote links out to
+ *  that passage in the source. */
 function SourceDetails({ open, sources }: { open: boolean; sources: NoteSourceRow[] }) {
   const detailed = [...sources].sort((a, b) => a.sort_order - b.sort_order).filter((s) => s.quote);
   return (
@@ -84,15 +90,17 @@ function SourceDetails({ open, sources }: { open: boolean; sources: NoteSourceRo
   );
 }
 
-/** Map a claim's context to the shared ContentCard shape: a YouTube clip when
- *  the context URL is a video (embedded at its timestamp span), else an
- *  article citation. Decided by URL, not item.source — a podcast item with a
- *  YouTube deep-link renders as a clip.
+/** Maps a claim's context onto the shared ContentCard shape. A context URL that
+ *  points at a video becomes a YouTube clip, embedded at the claim's timestamp
+ *  span. Anything else becomes an article citation. The URL decides this, not
+ *  item.source, so a podcast item whose context is a YouTube deep-link still
+ *  renders as a clip.
  *
- *  The citation line is the verbatim `context_quote` excerpt — the `claim`
- *  column is a self-contained restatement written for isolated fact-checking,
- *  not source text. An image-grounded claim has no excerpt and falls back to
- *  the restated claim, rendered unquoted with an image-sourced caption. */
+ *  The citation line is the verbatim `context_quote` excerpt. The `claim` column
+ *  is not source text. It is a self-contained restatement, written so the claim
+ *  can be fact-checked on its own. A claim grounded in an image has no excerpt,
+ *  so it falls back to that restatement, which is rendered without quote marks
+ *  and captioned as coming from the image. */
 function claimContent(claim: ClaimRef): NotedContent {
   const url = claim.context_url;
   const quote = claim.context_quote || claim.claim;
@@ -114,8 +122,9 @@ function claimContent(claim: ClaimRef): NotedContent {
   return { kind: "article", url, quote, fragmentText, updatedQuote, imageGrounded };
 }
 
-/** Images a claim is grounded in (Substack charts / screenshots), shown above
- *  its context. Each links out to the full-resolution source. */
+/** The images a claim is grounded in, which are usually Substack charts or
+ *  screenshots. They sit above the claim's context. Each one links out to the
+ *  full-resolution original. */
 function ClaimImages({ urls }: { urls: string[] }) {
   return (
     <div className="flex flex-wrap gap-2 mb-2">
@@ -133,15 +142,16 @@ function ClaimImages({ urls }: { urls: string[] }) {
   );
 }
 
-/** The claim's surrounding paragraph, with the quoted excerpt bolded. Shown
+/** The paragraph surrounding the claim, with the quoted excerpt in bold. It sits
  *  beside the note card so the correction can be read in its original context. */
 function ContextParagraph({ paragraph, quote, bare, fitTo }: {
   paragraph: string;
   quote: string;
   bare?: boolean;
-  /** Clamp to this element's height (the note card beside us) instead of a
-   *  fixed line count — short contexts get no clamp/button at all; only ones
-   *  that would outgrow the card fold (Nathan, 2026-07-14). */
+  /** Clamps the paragraph to this element's height rather than to a fixed number
+   *  of lines. The element is the note card beside it. A short context is not
+   *  clamped at all and gets no button. Only a context that would grow taller
+   *  than the card is folded (Nathan, 2026-07-14). */
   fitTo?: React.RefObject<HTMLDivElement | null>;
 }) {
   const [expanded, setExpanded] = useState(false);
@@ -152,10 +162,11 @@ function ContextParagraph({ paragraph, quote, bare, fitTo }: {
     const target = fitTo?.current;
     if (!target) return;
     const measure = () => {
-      const cap = Math.max(160, target.offsetHeight - 28); // leave room for the button
+      const cap = Math.max(160, target.offsetHeight - 28); // Leave room for the button.
       setCapPx(cap);
-      // Only re-judge overflow while the FULL paragraph is in the DOM — once
-      // clamped we render a slice, whose height says nothing about the whole.
+      // We can only judge overflow while the full paragraph is in the DOM. Once
+      // it is clamped we render a slice of it, and the height of that slice says
+      // nothing about the height of the whole paragraph.
       if (bodyRef.current && (expanded || !overflows)) {
         setOverflows(bodyRef.current.scrollHeight > cap + 12);
       }
@@ -166,13 +177,15 @@ function ContextParagraph({ paragraph, quote, bare, fitTo }: {
     if (bodyRef.current) ro.observe(bodyRef.current);
     return () => ro.disconnect();
   }, [fitTo, paragraph, expanded, overflows]);
-  // Height-fit only where a neighboring card exists to measure against (the
-  // xl side column). The mobile rendering sits behind its own "Show
-  // surrounding context" toggle — the reader asked for it, show all of it.
+  // We only fit to a height where there is a neighbouring card to measure
+  // against, which is the side column at the xl breakpoint. The mobile rendering
+  // sits behind its own "Show surrounding context" toggle. The reader asked for
+  // the context there, so all of it is shown.
   const clampable = fitTo ? overflows : false;
   const fullIdx = paragraph.toLowerCase().indexOf(quote.toLowerCase());
-  // When clamped, open the window just before the quote so the bolded span is
-  // what the reader actually sees; expanding restores the full paragraph.
+  // When the paragraph is clamped, the visible window starts just before the
+  // quote, so the bolded span is what the reader actually sees. Expanding it
+  // restores the full paragraph.
   let text = paragraph;
   let idx = fullIdx;
   let ellipsis = false;
@@ -212,9 +225,9 @@ function ContextParagraph({ paragraph, quote, bare, fitTo }: {
   );
 }
 
-/** The note as one self-contained unit, X-CN style: a rating-status badge on
- *  top, the note text, and the rating pills inside the same box; the box tint
- *  follows the status (helpful/needs-ratings/not-helpful). */
+/** The note as one self-contained unit, in the style of X's Community Notes. The
+ *  rating-status badge sits on top, then the note text, then the rating pills,
+ *  all inside the same box. The tint of the box follows the note's status. */
 export function NoteBox({ note, status, sourcesOpen, children }: {
   note: NoteRow;
   status: NoteStatus;
@@ -240,9 +253,9 @@ export function NoteBox({ note, status, sourcesOpen, children }: {
   );
 }
 
-/** Scroll to another note's card. The target may sit inside the collapsed
- *  "rated unhelpful" <details> drawer, where scrollIntoView silently no-ops —
- *  open it first. */
+/** Scrolls to another note's card. If that card sits inside a collapsed
+ *  <details> element, scrollIntoView silently does nothing, so we open the
+ *  <details> first. */
 function jumpToNote(noteId: string) {
   const el = document.getElementById(`note-${noteId}`);
   if (!el) return;
@@ -256,8 +269,8 @@ const JUMP_ARROW_PROPS = {
   strokeLinecap: "round", strokeLinejoin: "round",
 } as const;
 
-/** Icon chip that scrolls to a related note; the explanation lives in the
- *  hover tooltip (title) + aria-label so the card stays quiet. */
+/** An icon chip that scrolls to a related note. The explanation lives in the
+ *  hover tooltip and in the aria-label, so the card itself stays quiet. */
 function JumpChip({ targetNoteId, explain, direction, count }: {
   targetNoteId: string;
   explain: string;
@@ -284,9 +297,11 @@ function JumpChip({ targetNoteId, explain, direction, count }: {
   );
 }
 
-/** Jump-links between an improvement and its original — the only remaining tie
- *  between them now that every note is its own card. Icon-only; hover explains.
- *  Rides in the note's action row (NoteMenu slot, between Share and ⋯). */
+/** The jump-links between an improvement and the note it improves. They are the
+ *  only tie left between the two now that every note renders as its own card.
+ *  The links are icons alone, and hovering one explains it. They sit in the
+ *  note's action row, in the slot NoteMenu leaves between Share and the ⋯
+ *  button. */
 function ImprovementLinks({ note, improvements }: { note: NoteRow; improvements: NoteRow[] }) {
   if (!note.improved_from_note_id && improvements.length === 0) return null;
   return (
@@ -314,39 +329,46 @@ function ImprovementLinks({ note, improvements }: { note: NoteRow; improvements:
   );
 }
 
-// Mirrors the review-dashboard card composition: content → note → stats row,
-// with voting live and an improve-note affordance.
+// Composed the same way as a card in the review dashboard. The content comes
+// first, then the note, then the stats row. Here the voting is live and the
+// reader can suggest an improvement.
 export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug, myVote, onVote, onAuthored, session, onNeedLogin }: {
   note: NoteRow;
-  /** Notes that improve this one (reverse of improved_from_note_id). */
+  /** The notes that improve this one. This is the reverse of
+   *  improved_from_note_id. */
   improvements: NoteRow[];
-  /** The claim's note-not-needed entries, oldest first — shared by every note
-   *  on the same text. */
+  /** The claim's note-not-needed entries, oldest first. Every note on the same
+   *  text shares this list. */
   nnnEntries: NnnRow[];
   nnnApi: NnnApi;
   projectSlug: string;
   myVote: Vote | undefined;
-  /** Casts the vote and mints its donation; resolves to the minted donation
-   *  (vote id + charity + frozen pair), or null on retract / own note / error. */
+  /** Casts the vote and mints its donation. It resolves to the minted donation,
+   *  which carries the vote id, the charity and the frozen pair. It resolves to
+   *  null when the vote was retracted, when it was cast on the user's own note,
+   *  or when something failed. */
   onVote: (note: NoteRow, vote: Vote) => Promise<MintedDonation | null>;
-  /** A note was just posted by this user (mirror its auto-upvote locally). */
+  /** Called when this user has just posted a note. The caller mirrors the note's
+   *  automatic self-vote into its local state. */
   onAuthored: (noteId: string) => void;
   session: Session | null;
   onNeedLogin: () => void;
 }) {
   const [ctxOpen, setCtxOpen] = useState(false);
-  // Set right after casting a vote — the just-minted donation, which shows the
-  // donation notice beneath the pills. Its charity is the ledger's value; a
-  // successful redirect updates it here. Cleared on retract.
+  // Set right after a vote is cast. It holds the donation just minted, and its
+  // presence is what shows the donation notice beneath the rating pills. The
+  // charity on it is the value in the ledger, and a successful redirect updates
+  // it here too. Retracting the vote clears it.
   const [cast, setCast] = useState<MintedDonation | null>(null);
   const cardColRef = useRef<HTMLDivElement>(null);
   const [sourcesOpen, setSourcesOpen] = useState(false);
-  // One evaluation per card: the badge tint, the counts reveal and the donation
-  // payout all read the same status.
+  // The status is computed once per card. The badge, the box tint, the reveal of
+  // the counts and the donation payout all read this same value.
   const status = noteStatus(note);
   const claim = note.claim;
-  // Data invariant (enforced at ingest, NOT here): a stored context_paragraph
-  // always contains its context_quote word-for-word, so the bold always lands.
+  // A stored context_paragraph always contains its context_quote word for word.
+  // Ingest enforces that, not this component. It is why the bolding below always
+  // finds its span.
   const paragraph = claim?.context_paragraph;
   const quoteInParagraph = claim?.context_quote ?? claim?.claim ?? "";
   return (

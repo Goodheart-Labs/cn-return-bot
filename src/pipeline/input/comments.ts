@@ -1,7 +1,7 @@
 /**
  * Tweet Comments
  *
- * Fetches representative comments/replies under a tweet via Grok.
+ * Asks Grok for a handful of representative replies under a tweet.
  */
 
 import { generateText } from "ai";

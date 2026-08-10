@@ -1,8 +1,9 @@
 /**
- * Prompt — source verifier claim extraction (claim-based flow, call 1).
+ * Prompt for claim extraction in the source verifier. This is the first of the
+ * two calls the claim-based flow makes.
  *
- * Breaks a proposed note into its distinct atomic claims. See extractClaims in
- * src/pipeline/verify/sourceVerifier.ts.
+ * It breaks a proposed note into its distinct atomic claims. The caller is
+ * extractClaims in src/pipeline/verify/sourceVerifier.ts.
  */
 
 import { jsonSchemaResponseFormat } from "../responseFormat";

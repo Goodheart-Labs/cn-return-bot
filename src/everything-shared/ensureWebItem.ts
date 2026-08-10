@@ -3,11 +3,12 @@ import { supabase } from "./supabase";
 const WEB_PROJECT_SLUG = "web";
 const POSTGRES_UNIQUE_VIOLATION = "23505";
 
-/** Find-or-create the everything_items row for an arbitrary web page — the
- *  write-anywhere flow's precursor (a note needs a claim, a claim needs an
- *  item). Client inserts are RLS-constrained to source='web' under the
- *  catch-all project (migration 068); `url` is unique, so a losing race
- *  simply re-selects the winner's row. Returns the item id. */
+/** Finds or creates the everything_items row for any web page, and returns its id.
+ *  The write-anywhere flow needs this first, because a note hangs off a claim and a
+ *  claim hangs off an item. Row level security only lets a client insert rows with
+ *  source='web' under the catch-all project, which migration 068 set up. The `url`
+ *  column is unique, so when two clients race, the loser simply reads the winner's
+ *  row. */
 export async function ensureWebItem(params: { url: string; title: string }): Promise<string> {
   const url = params.url.replace(/\/$/, "");
   const existing = await supabase

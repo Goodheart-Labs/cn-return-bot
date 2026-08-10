@@ -1,12 +1,14 @@
 /**
- * File cache for bot inputs (media description, comments, author history), keyed by
- * tweet id + video_description_strategy. Gated by the BIG_EVAL_INPUT_CACHE env var
- * (path to a directory) — unset in production, so behavior is unchanged there.
+ * File cache for bot inputs: the media description, the comments and the author
+ * history. An entry is keyed by tweet id and by video_description_strategy.
+ * The cache only exists when BIG_EVAL_INPUT_CACHE holds a directory path. That
+ * variable is unset in production, so production behaviour is unchanged.
  *
- * Used by createBotInput: read at the top (hill-climbing reuses cached inputs so it
- * doesn't re-pay X/Gemini/Grok fetch cost), write before returning (populates the
- * cache). The big_eval Phase-5 script drives createBotInput over the selected tweets
- * purely to fill this cache.
+ * createBotInput reads the cache before it does any work and writes it before it
+ * returns. A hill-climbing run therefore reuses the cached inputs instead of
+ * paying the X, Gemini and Grok fetch costs again. The Phase 5 script of big_eval
+ * runs createBotInput over the selected tweets for no other reason than to fill
+ * this cache.
  */
 import * as fs from "fs";
 import * as path from "path";
@@ -27,11 +29,12 @@ function cacheDir(): string | null {
   return process.env[CACHE_ENV] || null;
 }
 
-// In-memory cache, always on. The note-needed prefilter builds the input first;
-// when a post passes the prefilter the bot's createBotInput reuses it instead of
-// re-paying the Gemini media / Grok comment / author-history fetch. Keyed by
-// tweet id + video_description_strategy (so different strategies don't collide).
-// Bounded by the posts processed in one run; the process is short-lived (cron).
+// The in-memory cache is always on. The note-needed prefilter builds a post's
+// input first. When the post passes the prefilter, createBotInput reuses that
+// input instead of paying a second time for the Gemini media analysis, the Grok
+// comment fetch and the author-history query. The key includes the strategy so
+// that two strategies never collide. The map only grows with the posts processed
+// in one run, and the process is a short-lived cron job, so it needs no eviction.
 const memCache = new Map<string, BotInput>();
 const memKey = (tweetId: string, strategy: string) => `${tweetId}::${strategy}`;
 

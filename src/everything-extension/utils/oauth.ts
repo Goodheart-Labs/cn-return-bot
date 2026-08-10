@@ -1,14 +1,15 @@
 import { browser } from "#imports";
 import { supabase } from "../../everything-shared/supabase";
 
-/** X sign-in from the background: Supabase builds the provider URL
- *  (skipBrowserRedirect — we drive the window ourselves), launchWebAuthFlow
- *  runs the OAuth dance in a popup window, and the tokens come back on the
- *  extension redirect URL's hash (implicit flow) for setSession.
+/** Signs the user in with X from the background script. Supabase builds the provider
+ *  URL but does not open it, because `skipBrowserRedirect` is set and we open the
+ *  window ourselves. launchWebAuthFlow then runs the OAuth exchange in a popup
+ *  window. This is the implicit flow, so the tokens come back in the hash of the
+ *  extension's redirect URL, and we hand them to setSession.
  *
- *  Requires the extension redirect URL (browser.identity.getRedirectURL(),
- *  chromiumapp.org / extensions.allizom.org) on the Supabase redirect
- *  allow-list. */
+ *  The extension's redirect URL must be on the Supabase redirect allow-list. It is
+ *  whatever browser.identity.getRedirectURL() returns. That is an address on
+ *  chromiumapp.org in Chrome and on extensions.allizom.org in Firefox. */
 export async function signInWithXViaWebAuthFlow(): Promise<{ ok: boolean; error?: string }> {
   try {
     const redirectTo = browser.identity.getRedirectURL();

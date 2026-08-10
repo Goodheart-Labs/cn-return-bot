@@ -1,10 +1,12 @@
 /**
- * Local scripts remap SUPABASE_URL/SUPABASE_SERVICE_KEY to their LOCAL_*
- * equivalents so the pipeline writes to local Supabase. The dashboard still
- * lives on prod though, so the auto-open flow needs the original prod values.
+ * Local scripts overwrite SUPABASE_URL and SUPABASE_SERVICE_KEY with their
+ * LOCAL_ equivalents, so that the pipeline writes to the local Supabase. The
+ * review dashboard still lives on production though, so the auto-open flow
+ * needs the original production values.
  *
- * Capture the prod creds once (before any remap), then expose them via a
- * getter so consumers can't accidentally read post-remap values.
+ * A script captures the production credentials once, before it does that
+ * overwrite. Everything else reads them back through the getter, so nobody can
+ * accidentally pick up the local values instead.
  */
 
 interface ProdCreds {

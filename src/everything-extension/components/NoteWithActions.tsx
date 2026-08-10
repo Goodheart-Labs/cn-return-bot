@@ -9,30 +9,36 @@ import { noteStatus, noteTallyVisible } from "../../everything-shared/noteScore"
 import type { NoteRow } from "../../everything-shared/types";
 import type { Vote } from "../../everything-shared/votes";
 
-/** One votable note in an extension overlay: status-tinted box, rating pills,
- *  the post-vote donation notice, and the action row (improve /
- *  note-not-needed / share) — the website's vote flow, popover-sized. Every
- *  note on a claim renders as its own peer box. */
+/** One votable note inside an extension overlay. It draws the box tinted by the
+ *  note's status, the rating pills, the donation notice that appears after a
+ *  vote, and the action row. The action row offers suggesting an improvement,
+ *  saying that no note is needed, and sharing. This is the website's vote flow
+ *  at popover size. Every note on a claim renders as its own box beside the
+ *  others. */
 export function NoteWithActions({ note, myVote, onVote, session, shareUrl, onNeedLogin, onAuthored, onNnnAuthored, onDeleted }: {
   note: NoteRow;
   myVote: Vote | undefined;
-  /** Casts the vote and mints its donation; resolves to the minted donation,
-   *  or null on retract / own note / signed out. */
+  /** Casts the vote and mints its donation. It resolves to the minted donation.
+   *  It resolves to null when the vote is retracted, when the note is the
+   *  viewer's own, and when nobody is signed in. */
   onVote: (note: NoteRow, vote: Vote) => Promise<MintedDonation | null>;
   session: Session | null;
   shareUrl: string;
   onNeedLogin: () => void;
-  /** An improvement was just posted on this note (mirror its self-vote and
-   *  refresh the group so it appears). */
+  /** Called when an improvement has just been posted on this note. The handler
+   *  mirrors the author's own vote on it and refreshes the group, so the new
+   *  note appears. */
   onAuthored: (noteId: string) => void;
   /** A note-not-needed entry was just posted on this note's claim. */
   onNnnAuthored?: (entryId: string) => void;
-  /** This note was deleted (refresh the group — no realtime here). */
+  /** Called when this note has been deleted. The handler refreshes the group,
+   *  because the extension gets no realtime updates. */
   onDeleted?: () => void;
 }) {
   const [sourcesOpen, setSourcesOpen] = useState(false);
-  // The just-minted donation — shows the notice beneath the pills; cleared on
-  // retract (myVote goes undefined) or when the notice dismisses itself.
+  // The donation that was just minted. It makes the notice appear beneath the
+  // pills. It is cleared when the vote is retracted, which leaves myVote
+  // undefined, and when the notice closes itself.
   const [cast, setCast] = useState<MintedDonation | null>(null);
   const status = noteStatus(note);
   return (

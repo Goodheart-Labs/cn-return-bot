@@ -1,25 +1,32 @@
 import { browser } from "#imports";
 import { setAnalyticsSink } from "../../everything-shared/analytics";
 
-// The extension's analytics transport: plain fetches against PostHog's HTTP
-// API, registered as the sink behind everything-shared/analytics. posthog-js
-// must never enter these bundles — it lazy-loads code from PostHog's CDN
-// (remote code, a store-review rejection risk), its autocapture would run on
-// host pages, and it weighs ~50KB per content script.
+// This is the extension's analytics transport. It sends plain fetches to
+// PostHog's HTTP API and registers itself as the sink behind
+// everything-shared/analytics.
 //
-// Every event flows through the BACKGROUND: content-script fetches are
-// subject to the host page's CSP, and one writer means no races on the ids.
-// UI contexts (content scripts, popup) register a sink that fire-and-forgets
-// a runtime message; the background does the actual fetch. Like the website,
-// everything is a no-op while the build-time key is absent.
+// posthog-js must never enter these bundles. It lazy-loads code from PostHog's
+// CDN, and remote code is a good way to get rejected in a store review. Its
+// autocapture would run on the host pages the user visits. It also weighs around
+// 50KB in every content script.
+//
+// Every event flows through the background. A fetch made from a content script
+// is subject to the host page's content security policy, so it can be blocked.
+// The background is also the only writer of the stored ids, so nothing races
+// over them. The popup and the content scripts register a sink that sends a
+// runtime message and does not wait for an answer. The background does the
+// actual fetch. Just like on the website, all of this does nothing while the
+// build-time key is missing.
 const KEY = import.meta.env.VITE_PUBLIC_POSTHOG_KEY;
 const HOST = import.meta.env.VITE_PUBLIC_POSTHOG_HOST ?? "https://eu.i.posthog.com";
 
 const MESSAGE_TYPE = "cn-analytics";
 const DEVICE_ID_KEY = "cn-ph-device-id";
 const USER_ID_KEY = "cn-ph-user-id";
-// The supabase-js session in chrome.storage.local — one seam that sees every
-// sign-in (email code, X OAuth) and sign-out, without instrumenting each flow.
+// This matches the key supabase-js keeps its session under in
+// chrome.storage.local. Watching that one key catches every sign-in and every
+// sign-out, whether it came from the email code flow or from X OAuth. No
+// individual auth flow has to be instrumented.
 const SUPABASE_AUTH_STORAGE_KEY = /^sb-.*-auth-token$/;
 
 type AnalyticsMessage =
@@ -27,9 +34,10 @@ type AnalyticsMessage =
   | { type: typeof MESSAGE_TYPE; op: "identify"; userId: string; traits?: Record<string, unknown> }
   | { type: typeof MESSAGE_TYPE; op: "reset" };
 
-/** Sink for popup + content scripts: forward to the background. The .catch
- *  swallows "receiving end does not exist" — an orphaned content script after
- *  an extension reload must not throw on a stray capture. */
+/** Registers the sink the popup and the content scripts use. It forwards every
+ *  call to the background. The catch swallows the "receiving end does not exist"
+ *  error. A content script left behind by an extension reload has no background
+ *  to talk to any more, and a stray capture from it must not throw. */
 export function initUiAnalytics() {
   if (!KEY) return;
   const send = (message: AnalyticsMessage) => void browser.runtime.sendMessage(message).catch(() => {});
@@ -40,9 +48,11 @@ export function initUiAnalytics() {
   });
 }
 
-/** Background: listen for UI events, watch auth, and register a direct sink
- *  for the background's own captures (a runtime.sendMessage from here would
- *  skip its own listener and reject with no receivers). */
+/** Sets analytics up in the background. It listens for the events the popup and
+ *  the content scripts send, and it watches the stored session for sign-ins and
+ *  sign-outs. It also registers a sink that fetches directly, because the
+ *  background captures events of its own. A runtime.sendMessage sent from here
+ *  would not reach the listener below and would reject for want of a receiver. */
 export function initBackgroundAnalytics() {
   if (!KEY) return;
   setAnalyticsSink({
@@ -56,12 +66,14 @@ export function initBackgroundAnalytics() {
     if (m.op === "capture") void capture(m.event, m.props);
     if (m.op === "identify") void identify(m.userId, m.traits);
     if (m.op === "reset") void reset();
-    return undefined; // never an async response — captures are fire-and-forget
+    return undefined; // The listener never answers. Captures are fire and forget.
   });
   watchAuthChanges();
 }
 
-/** Minted lazily, only ever here in the background (single writer). */
+/** Returns this install's anonymous id and mints one the first time it is
+ *  needed. Only the background ever calls this. That single writer is what stops
+ *  two contexts from minting two different ids at once. */
 async function deviceId(): Promise<string> {
   const { [DEVICE_ID_KEY]: existing } = await browser.storage.local.get(DEVICE_ID_KEY);
   if (typeof existing === "string") return existing;
@@ -102,30 +114,34 @@ async function capture(event: string, props?: Record<string, unknown>) {
   await send(event, userId ?? (await deviceId()), {
     ...baseProps(),
     ...props,
-    // Anonymous events don't mint a person profile — mirrors the website's
-    // person_profiles: "identified_only"; identify upgrades them retroactively.
+    // An anonymous event does not create a person profile. This mirrors the
+    // website, which sets person_profiles to "identified_only". Once the user
+    // signs in, identify pulls those earlier events into the person.
     ...(userId ? {} : { $process_person_profile: false }),
   });
 }
 
-/** Attribute this install's events to the signed-in user; $anon_distinct_id
- *  merges the prior anonymous history into the person. */
+/** Attributes this install's events to the signed-in user from now on. The
+ *  $anon_distinct_id property tells PostHog to merge the anonymous history
+ *  collected under the device id into that person. */
 async function identify(userId: string, traits?: Record<string, unknown>) {
   const anonId = await deviceId();
   await browser.storage.local.set({ [USER_ID_KEY]: userId });
   await send("$identify", userId, { ...baseProps(), $anon_distinct_id: anonId, $set: traits ?? {} });
 }
 
-/** Sign-out: forget the person AND start a fresh anonymous identity, exactly
- *  what posthog.reset() does in the browser. */
+/** Forgets the signed-in person and starts a fresh anonymous identity. This is
+ *  exactly what posthog.reset() does in the browser. It runs on sign-out. */
 async function reset() {
   await browser.storage.local.remove(USER_ID_KEY);
   await browser.storage.local.set({ [DEVICE_ID_KEY]: crypto.randomUUID() });
 }
 
-/** Comparing against the stored user id turns the noisy storage stream
- *  (token refreshes rewrite the same key) into exactly one signed_in +
- *  identify per real sign-in and one reset per sign-out. */
+/** Watches the stored Supabase session and turns it into analytics calls. That
+ *  storage stream is noisy, because every token refresh rewrites the same key.
+ *  Comparing the session's user against the user id we already stored filters
+ *  the noise out. What is left is one identify and one signed_in event per real
+ *  sign-in, and one reset per sign-out. */
 function watchAuthChanges() {
   browser.storage.onChanged.addListener((changes, area) => {
     if (area !== "local") return;
@@ -141,7 +157,7 @@ async function handleAuthChange(newValue: unknown) {
     const session = typeof newValue === "string" ? JSON.parse(newValue) : newValue;
     user = session?.user ?? null;
   } catch {
-    // not a session payload — treat as signed out
+    // The value is not a session payload, so we treat the user as signed out.
   }
   const known = await knownUserId();
   if (user?.id && user.id !== known) {

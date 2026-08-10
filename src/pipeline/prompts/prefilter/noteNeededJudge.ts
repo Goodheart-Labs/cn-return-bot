@@ -1,9 +1,10 @@
 /**
  * Prompt — note-needed prefilter judge.
  *
- * Reframed cheap-bot judge: receives post + research findings (no proposed
- * note) and decides whether the post NEEDS a note. See runNoteNeededPrefilter
- * in src/pipeline/prefilter/noteNeededPrefilter.ts.
+ * This is the cheap-bot judge, reframed. It receives the post and the research
+ * findings but no proposed note, and it decides whether the post needs a note at
+ * all. See runNoteNeededPrefilter in
+ * src/pipeline/prefilter/noteNeededPrefilter.ts.
  */
 
 import { jsonSchemaResponseFormat } from "../responseFormat";

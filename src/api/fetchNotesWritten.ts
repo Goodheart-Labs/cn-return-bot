@@ -25,10 +25,10 @@ export type NoteFactorBucketCounts = {
   not_helpful_tag_counts?: { tag_name: string; tag_count: number };
 };
 
-// `rating_counts_per_model` is gated on `has_access` (only true when the
-// authenticated notewriter is currently top-performing). We request the field
-// to future-proof; today it's always missing because our notewriter doesn't
-// qualify yet.
+// X only returns `rating_counts_per_model` when `has_access` is true. That
+// happens only while the authenticated notewriter is currently top-performing.
+// We ask for the field anyway so it works the day our notewriter qualifies.
+// Until then it is always missing.
 export type NoteScoringStatus = {
   has_access?: boolean;
   rating_counts_per_model?: Record<string, {
@@ -60,7 +60,8 @@ export async function fetchNotesWritten(): Promise<WrittenNote[]> {
     });
     if (nextToken) params.append("pagination_token", nextToken);
 
-    // OAuth1 requires %20 for spaces; URLSearchParams uses +
+    // OAuth1 requires spaces to be encoded as %20, but URLSearchParams encodes
+    // them as +, so we swap them back.
     const fullUrl = `${API_URL}?${params.toString().replace(/\+/g, "%20")}`;
     const response = await axios.get(fullUrl, {
       headers: { ...getOAuth1Headers(fullUrl, "GET"), "Content-Type": "application/json" },

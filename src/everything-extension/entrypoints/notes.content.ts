@@ -4,9 +4,10 @@ import { mountInlineNotes } from "../utils/mountInlineNotes";
 import { registerDevReloadHook } from "../utils/devReload";
 import { initUiAnalytics } from "../utils/analytics";
 
-// First-class text sites, injected by the static manifest (keep in sync with
-// utils/staticSites.ts). Custom-domain newsletters and other text sites get
-// the generic script registered by the background's noted-sites sync.
+// These are the text sites the static manifest injects into. Keep the matches
+// below in sync with utils/staticSites.ts. Newsletters on custom domains and
+// every other text site get the generic script instead, which the background's
+// noted-sites sync registers.
 export default defineContentScript({
   matches: ["*://*.substack.com/*"],
   cssInjectionMode: "ui",

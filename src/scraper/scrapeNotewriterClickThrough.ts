@@ -1,29 +1,31 @@
 // @ts-nocheck
 /**
- * Click-Through Notewriter Scraper
+ * Click-through notewriter scraper.
  *
- * Connects to a local Chrome via CDP, scrolls through the notewriter page,
- * and clicks "View details" on each note to extract note IDs, statuses, and
- * view counts. If an existing notewriter tab is open, reuses it at its
- * current scroll position. Otherwise opens a new tab.
+ * This script attaches to a Chrome that is already running on your machine. It
+ * scrolls through the notewriter page and clicks "View details" on each note,
+ * because the note id, the status and the view count are only visible in that
+ * modal. If a notewriter tab is already open it carries on from wherever that
+ * tab is scrolled to. Otherwise it opens a new tab.
  *
- * USAGE:
- * 1. Start Chrome with remote debugging:
+ * How to use it:
+ * 1. Start Chrome with remote debugging turned on.
  *    /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir=$HOME/.chrome-debug-profile
  *
- * 2. Navigate to your notewriter page and log in
+ * 2. Open your notewriter page in that Chrome and log in.
  *
- * 3. Run this script:
+ * 3. Run this script.
  *    bun run scrape [maxNotes] [--fresh] [--start-from <noteId>] [--stop-at <noteId>] [--incremental]
  *
- *    --fresh: Open a new tab and start from top (otherwise reuses existing tab)
- *    --start-from <noteId>: Scroll to this note ID before scraping
- *    --stop-at <noteId>: Stop scraping when reaching this note ID (instead of BOTTOM_NOTE_ID)
- *    --incremental: Scrape from the top and auto-stop ~1 week before the oldest
- *                   known note that has not been scraped yet. If there is no
- *                   unsynced backlog, auto-stop ~1 week before the newest note
- *                   already observed by this scraper for fresh view counts.
- *                   This is the mode for the unattended daily run. Implies --fresh.
+ *    --fresh opens a new tab and starts from the top. Without it an existing
+ *    tab is reused.
+ *    --start-from <noteId> scrolls down to this note before scraping starts.
+ *    --stop-at <noteId> stops the scrape at this note instead of at
+ *    BOTTOM_NOTE_ID.
+ *    --incremental is the mode the unattended daily run uses. It scrapes from
+ *    the top and stops about a week before the oldest note that has no
+ *    snapshot yet. If every known note already has a snapshot it exits without
+ *    opening the browser at all. It implies --fresh.
  */
 
 import "dotenv/config";
@@ -33,7 +35,9 @@ import { snowflakeToMillis, snowflakeToDate, millisToSnowflakeFloor } from "../p
 
 const DEFAULT_USERNAME = "wholesome-raspberry-stilt";
 const SCROLL_PX = 600;
-const BOTTOM_NOTE_ID = 1976702059752911225n; // Oldest known note — reaching this = full coverage
+// The oldest note we know of. Reaching it means the scrape has covered the
+// whole list.
+const BOTTOM_NOTE_ID = 1976702059752911225n;
 
 async function runReconcile(): Promise<void> {
   console.log("\n🔄 Running snapshot reconciliation...");
@@ -68,17 +72,8 @@ interface ScrapedNote {
   tweet_time?: string;
 }
 
-/** Fast-scroll a page without clicking, to reach a starting position for scraping. */
-/**
- * Scroll to a target position, sampling notes along the way.
- * Replaces the old quickScroll: waits for the virtualizer at bottom,
- * and periodically clicks "View details" to read note IDs so we know
- * exactly where we are. Sampled notes get fully saved to DB.
- *
- * @param targetNoteId Stop when we find a note with ID <= this value (null = use scrollCount)
- * @param maxScrolls Safety limit on number of scrolls
- */
-// Track the CDP target ID of the active tab so reconnectToTab finds the right one
+// The CDP target id of the tab we are working in. reconnectToTab uses it to
+// pick the same tab again after Chrome drops the connection.
 let activeTargetId: string | null = null;
 
 /** Disconnect from Chrome, reconnect, and find the existing notewriter tab. */
@@ -88,7 +83,7 @@ async function reconnectToTab(
   prefix: string,
 ): Promise<{ browser: Browser; page: Page }> {
   console.log(`   ${prefix} 🔌 Reconnecting to Chrome for fresh page references...`);
-  try { oldBrowser.disconnect(); } catch { /* may already be disconnected */ }
+  try { oldBrowser.disconnect(); } catch { /* It may already be disconnected. */ }
   await new Promise(r => setTimeout(r, 800));
 
   const freshBrowser = await puppeteer.connect({
@@ -99,7 +94,8 @@ async function reconnectToTab(
 
   const allPages = await freshBrowser.pages();
 
-  // First try to find the specific tab we were using (by CDP target ID)
+  // The target id names the exact tab we were working in, so we look for that
+  // first.
   let recoveredPage: Page | undefined;
   if (activeTargetId) {
     recoveredPage = allPages.find(p => {
@@ -107,25 +103,28 @@ async function reconnectToTab(
       return target && (target as any)._targetId === activeTargetId;
     });
     if (!recoveredPage) {
-      // Fallback: find by URL, preferring the LAST match (most recently opened)
+      // That tab is gone, so we settle for any notewriter tab. We take the last
+      // one, because that is the most recently opened.
       const notewriterPages = allPages.filter(p => p.url().includes("communitynotes"));
       recoveredPage = notewriterPages[notewriterPages.length - 1];
     }
   } else {
-    // No target ID tracked — use last notewriter tab
+    // We never recorded a target id, so the most recently opened notewriter tab
+    // is the best guess.
     const notewriterPages = allPages.filter(p => p.url().includes("communitynotes"));
     recoveredPage = notewriterPages[notewriterPages.length - 1];
   }
 
   if (recoveredPage) {
-    // Update target ID in case we fell back to a different tab
+    // We may have landed on a different tab than before, so record which one we
+    // are now using.
     activeTargetId = (recoveredPage.target() as any)?._targetId ?? activeTargetId;
     const scrollPos = await recoveredPage.evaluate(() => document.documentElement.scrollTop).catch(() => -1);
     console.log(`   ${prefix} ✅ Reattached to existing tab (scrollY=${scrollPos})`);
     return { browser: freshBrowser, page: recoveredPage };
   }
 
-  // Tab gone — open a new one
+  // No notewriter tab is left at all, so we open one and load the page again.
   console.log(`   ${prefix} ⚠️ Existing tab not found — opening fresh tab...`);
   const newPage = await freshBrowser.newPage();
   activeTargetId = (newPage.target() as any)?._targetId ?? null;
@@ -134,6 +133,19 @@ async function reconnectToTab(
   return { browser: freshBrowser, page: newPage };
 }
 
+/**
+ * Scrolls the page down until it reaches a starting position for the scrape.
+ * It never clicks anything and it never writes to the database.
+ *
+ * To tell how far down it has got, it reads the tweet ids out of the links in
+ * the cells that are currently rendered. Tweet ids and note ids are both
+ * snowflakes, so the smallest visible tweet id is a good enough stand-in for
+ * the note id we are looking for.
+ *
+ * @param targetNoteId Stop once the smallest visible tweet id is at or below
+ *   this value. When it is null, scroll for maxScrolls batches instead.
+ * @param maxScrolls The most scroll steps to take, so the loop always ends.
+ */
 async function scrollToPosition(
   page: Page,
   browser: Browser,
@@ -219,7 +231,7 @@ async function scrollToPosition(
         const recovered = await reconnectToTab(currentBrowser, notewriterUrl, prefix);
         currentBrowser = recovered.browser;
         currentPage = recovered.page;
-        // Don't increment totalScrollsDone — retry this batch
+        // We leave totalScrollsDone alone so that this batch runs again.
         continue;
       }
       throw err;
@@ -286,7 +298,8 @@ async function waitForContent(page: Page): Promise<void> {
   console.log(`   [scraper] Warning: content not detected after 30s, proceeding anyway`);
 }
 
-// Incremental saving state
+// Notes are written to the database as they are found, not at the end. These
+// counters record what that writing did, so the run can print a summary.
 const supabase = new SupabaseLogger();
 let newNotes = 0;
 let updatedIds = 0;
@@ -356,7 +369,10 @@ async function saveNoteIncrementally(note: ScrapedNote): Promise<void> {
 }
 
 /**
- * Scrape notes by scrolling and clicking "View details" on each note.
+ * Scrapes notes by scrolling down the list and clicking "View details" on each
+ * one. Every note is written to the database as soon as it is read. The
+ * function returns when it reaches the note it was told to stop at, when it
+ * has collected maxNotes notes, or when it can no longer make progress.
  */
 async function scrapeTab(
   browser: Browser,
@@ -368,7 +384,8 @@ async function scrapeTab(
 ): Promise<void> {
   const prefix = `[scraper]`;
 
-  // Diagnostic: log page dimensions to help debug virtualizer issues
+  // These page dimensions are only logged. They are the first thing to look at
+  // when the virtualizer stops handing us new cells.
   const dims = await initialPage.evaluate(() => ({
     innerWidth: window.innerWidth,
     innerHeight: window.innerHeight,
@@ -383,26 +400,30 @@ async function scrapeTab(
   let scrollCount = 0;
   let stuckCount = 0;
   const stuckBeforePause = 10;
-  // Escalating wait times before each jiggle retry: quick, 30s, 30s, 60s, 60s, 60s, 180s, 180s, 180s, 180s
+  // How long to wait before each attempt at unsticking the virtualizer, in
+  // milliseconds. Each wait is twice the one before it, from under a second up
+  // to about a minute and a half.
   const jiggleWaits = [800, 1600, 3200, 6400, 12000, 24000, 48000, 96000];
   const maxRetries = jiggleWaits.length;
   let retryCount = 0;
   let currentPage = initialPage;
   let frameRecoveries = 0;
   const MAX_FRAME_RECOVERIES = 15;
-  let lastNoteDate = ''; // Track date of last scraped note for stuck messages
+  // The submission date of the last note we scraped. It goes into the log lines
+  // about being stuck, so we can see how far the run got.
+  let lastNoteDate = '';
 
   recoveryLoop:
   while (frameRecoveries <= MAX_FRAME_RECOVERIES) {
-    const page = currentPage; // Shadow for inner code — updated on recovery
+    // The inner code uses this local name. Recovery replaces currentPage, and
+    // the next turn of this loop picks the new page up here.
+    const page = currentPage;
     try {
       while (collectedNotes.size < maxNotes && retryCount <= maxRetries) {
     scrollCount++;
 
-    // Get all visible cells
     const cells = await page.$$('[data-testid="cellInnerDiv"]');
 
-    // Debug: log scroll position
     const debugInfo = await page.evaluate(() => {
       const scrollY = window.scrollY;
       const cells = document.querySelectorAll('[data-testid="cellInnerDiv"]');
@@ -414,10 +435,10 @@ async function scrapeTab(
     let foundNewNote = false;
 
     for (const cell of cells) {
-      // Check shared cap before processing each cell
       if (collectedNotes.size >= maxNotes) break;
 
-      // Generate a fingerprint for this cell to avoid reprocessing
+      // The virtualizer shows us the same cell again and again as we scroll.
+      // This fingerprint lets us recognise a cell we have already handled.
       const cellFingerprint = await cell.evaluate(el => {
         const text = (el as HTMLElement).innerText.slice(0, 100);
         const detailsLink = el.querySelector('a[href*="/communitynotes/t/"]') as HTMLAnchorElement;
@@ -432,14 +453,17 @@ async function scrapeTab(
       }
       processedCells.add(cellFingerprint);
 
-      // --- Helper: extract tweet/note IDs from cell ---
+      // Reads the id of the tweet the note was written about.
       async function readCellTweetData() {
         return cell.evaluate(el => {
           let tweetId: string | null = null;
           let tweetUrl: string | null = null;
           let noteIdFromUrl: string | null = null;
 
-          // Primary: read tweet URL from React fiber tree (role="link" div's parent has link.pathname)
+          // X renders the embedded tweet as a div with role="link" rather than
+          // an anchor, so there is no href to read. We reach into React's
+          // internal fiber tree instead. The parent of that div carries the
+          // tweet's path in its props.
           const roleLink = el.querySelector('[role="link"]') as any;
           if (roleLink) {
             const fiberKey = Object.keys(roleLink).find(k => k.startsWith('__reactFiber'));
@@ -457,7 +481,9 @@ async function scrapeTab(
             }
           }
 
-          // Fallback: look for /status/ links in the cell (rare — only when tweet text contains status links)
+          // If that did not work, fall back to any real link to a status in the
+          // cell. We skip links that sit inside the note text itself, because a
+          // note often cites other posts and those are not the tweet we want.
           if (!tweetId) {
             const allStatusLinks = [...el.querySelectorAll('a[href*="/status/"]')] as HTMLAnchorElement[];
             const noteTextContainers = el.querySelectorAll('div[dir="ltr"], span[dir="ltr"]');
@@ -488,7 +514,8 @@ async function scrapeTab(
         });
       }
 
-      // --- Helper: extract note text, views, status, and tweet info from cell ---
+      // Reads everything else the cell shows. That is the note text, the view
+      // count, the status, and the original tweet's author, text and time.
       async function readCellData() {
         return cell.evaluate(el => {
           const text = (el as HTMLElement).innerText;
@@ -510,10 +537,11 @@ async function scrapeTab(
             .map((a) => (a as HTMLAnchorElement).href)
             .filter((h) => !h.includes('x.com') && !h.includes('twitter.com'));
 
-          // NOTE: cell innerText concatenates DOM nodes without whitespace
-          // (e.g. "...GermantownCurrently rated helpful19h..."), so leading/trailing
-          // \b word boundaries fail when a phrase abuts other letters. The phrases
-          // below are distinctive enough that bare substring match is safe.
+          // The cell's innerText joins DOM nodes together with no space between
+          // them. A run of text can look like "GermantownCurrently rated
+          // helpful19h". That means a word boundary at either end of a phrase
+          // will not match. So the patterns below match bare substrings. The
+          // phrases are distinctive enough that this is safe.
           let viewCount: number | null = null;
           let shownOnX: boolean | null = null;
           if (/Not shown on X/i.test(text)) {
@@ -537,17 +565,19 @@ async function scrapeTab(
           else if (/Needs more ratings/i.test(text)) cellStatus = 'NEEDS_MORE_RATINGS';
 
           const postUnavailable = /Post unavailable/i.test(text);
-          // Sensitive-content / age-restricted preview: X hides the embedded tweet
-          // behind a "show this content" overlay, so avatar/tweetText/status link
-          // are absent from the cell DOM. Modal still works — skip cell retries.
+          // When a post is marked as sensitive or age restricted, X hides the
+          // embedded tweet behind an overlay that asks you to show the content.
+          // The avatar, the tweet text and the link to the status are then not
+          // in the cell at all. The modal still opens and still has the note id,
+          // so there is no point retrying the cell in this case.
           const hasInterstitial = !!el.querySelector('[data-testid="previewInterstitial"]');
 
-          // --- Extract original tweet info from the cell ---
           let tweetHandle: string | null = null;
           let tweetText: string | null = null;
           let tweetTime: string | null = null;
 
-          // Tweet handle: extract from UserAvatar-Container data-testid attribute
+          // The author's handle is not written out anywhere we can rely on, but
+          // X puts it into the avatar's data-testid attribute.
           const avatarEl = el.querySelector('[data-testid^="UserAvatar-Container-"]');
           if (avatarEl) {
             const testId = avatarEl.getAttribute('data-testid') || '';
@@ -557,14 +587,14 @@ async function scrapeTab(
             }
           }
 
-          // Tweet time: look for <time> elements (X uses these for timestamps)
           const timeEl = el.querySelector('time');
           if (timeEl) {
-            // Prefer the datetime attribute (ISO format) over display text
+            // The datetime attribute holds a full ISO timestamp. The text of the
+            // element is only a rough label such as "19h", so we prefer the
+            // attribute and fall back to the text.
             tweetTime = timeEl.getAttribute('datetime') || timeEl.textContent?.trim() || null;
           }
 
-          // Tweet text: use data-testid="tweetText" element (X's own tweet text container)
           const tweetTextEl = el.querySelector('[data-testid="tweetText"]');
           if (tweetTextEl) {
             const t = (tweetTextEl as HTMLElement).innerText.trim();
@@ -577,7 +607,8 @@ async function scrapeTab(
         });
       }
 
-      // --- Helper: click the cell's View details button/link ---
+      // Opens the note's details modal by clicking the cell's link or its
+      // "View details" button.
       async function clickViewDetails(): Promise<boolean> {
         try {
           return await cell.evaluate(el => {
@@ -609,7 +640,8 @@ async function scrapeTab(
         }
       }
 
-      // --- Helper: wait for modal to render, then extract data ---
+      // Waits for the details modal to render and then reads it. Returns null
+      // when no modal text could be found at all.
       type ModalData = { noteId: string | null; status: string; submittedDate: string; usedFallback?: boolean; raterTags?: string[] | null };
       async function waitAndExtractModal(maxWaitMs: number): Promise<ModalData | null> {
         for (let waitMs = 0; waitMs < maxWaitMs; waitMs += 150) {
@@ -657,9 +689,10 @@ async function scrapeTab(
             }
           }
 
-          // New modal (May 2026): the "Note ID …" footer line lives in a sibling
-          // container outside [data-testid="sheetDialog"]. If we found a modal
-          // element but it's missing the Note ID line, widen to body text.
+          // Since May 2026 the modal puts the "Note ID" footer line in a
+          // container next to the dialog rather than inside it. So a dialog we
+          // found may not contain the note id. When that happens we read the
+          // whole page body instead.
           const modalMissingNoteId = !!modalText && !/Note ID/i.test(modalText);
           if (!modalText || modalMissingNoteId) {
             const bodyText = document.body.innerText;
@@ -673,9 +706,11 @@ async function scrapeTab(
           const noteIdMatch = modalText.match(/Note ID[:\s]*(\d{18,20})/i);
           const noteId = noteIdMatch ? (noteIdMatch[1] ?? null) : null;
 
-          // In the new modal UI (May 2026+), the label appears on its own line
-          // directly under a "Current Status" header: "Helpful" / "Not Helpful" /
-          // "Needs More Ratings". Fall back to the older "Currently rated ..." copy.
+          // The modal has shown the status in two different ways. Since May 2026
+          // it puts a "Current Status" header above a line that reads "Helpful",
+          // "Not Helpful" or "Needs More Ratings". Older pages wrote it out as
+          // "Currently rated helpful" and so on. We look for the newer wording
+          // first and fall back to the older one.
           const parseStatus = (text: string): string => {
             const headerMatch = text.match(/Current Status\s+(Not Helpful|Helpful|Needs More Ratings)\b/i);
             if (headerMatch) {
@@ -684,7 +719,8 @@ async function scrapeTab(
               if (label === 'helpful') return 'CURRENTLY_RATED_HELPFUL';
               if (label === 'needs more ratings') return 'NEEDS_MORE_RATINGS';
             }
-            // No leading \b — body-fallback text concatenates DOM without spaces.
+            // These patterns have no word boundary at the start, because the
+            // page body text runs DOM nodes together without spaces.
             if (/Currently rated not helpful/i.test(text)) return 'CURRENTLY_RATED_NOT_HELPFUL';
             if (/Currently rated helpful/i.test(text)) return 'CURRENTLY_RATED_HELPFUL';
             if (/Needs more ratings/i.test(text)) return 'NEEDS_MORE_RATINGS';
@@ -695,8 +731,10 @@ async function scrapeTab(
           if (usedFallback && noteId) {
             const noteIdPos = modalText.indexOf('Note ID');
             if (noteIdPos !== -1) {
-              // New UI puts "Current Status" ABOVE "Note ID"; old fallback only looked after.
-              // Search the whole text once we've confirmed Note ID is present.
+              // In the current page the "Current Status" header sits above the
+              // "Note ID" line. An older version of this code only searched the
+              // text after the note id and so missed it. Once we know the note
+              // id is present we search the whole text.
               status = parseStatus(modalText);
             }
           } else {
@@ -720,10 +758,10 @@ async function scrapeTab(
         });
       }
 
-      // ============================================================
-      // OUTER CONFLICT RETRY LOOP: cell scrape → modal → conflict check
-      // Retries everything up to 2 more times if cross-source data conflicts
-      // ============================================================
+      // We read the same note from two places, the cell in the list and the
+      // details modal. The loop below reads the cell, opens the modal, and then
+      // checks that the two agree. If they do not, it throws the reading away
+      // and starts again, up to two more times.
       let tweetData: Awaited<ReturnType<typeof readCellTweetData>> = { tweetId: null, tweetUrl: null, noteIdFromUrl: null };
       let cellData: Awaited<ReturnType<typeof readCellData>> = { noteText: '', sourceUrl: null, viewCount: null, shownOnX: null, cellStatus: null, postUnavailable: false, hasInterstitial: false, tweetHandle: null, tweetText: null, tweetTime: null };
       let modalData: ModalData | null = null;
@@ -736,23 +774,24 @@ async function scrapeTab(
           await new Promise(r => setTimeout(r, 1600));
         }
 
-        // --- CELL SCRAPE with retries (up to MAX_CELL_ATTEMPTS attempts) ---
-        // If any tweet info is present (handle, text, time), the tweet exists —
-        // keep retrying until all tweet fields are populated
+        // Read the cell, and read it again if a field we expect is missing.
         const MAX_CELL_ATTEMPTS = 2;
         for (let cellAttempt = 0; cellAttempt < MAX_CELL_ATTEMPTS; cellAttempt++) {
           tweetData = await readCellTweetData();
           cellData = await readCellData();
           const cellMissing: string[] = [];
-          // When the original post is unavailable or hidden behind a sensitive-content
-          // interstitial, the embedded tweet DOM doesn't exist in the cell at all —
-          // tweet_id/handle/text will never appear, so don't waste retries on them.
-          // The modal still has the noteId.
+          // Sometimes the embedded tweet is not in the cell at all. That happens
+          // when the original post has been taken down, and when X hides it
+          // behind a sensitive content overlay. The tweet id, the handle and the
+          // tweet text will never turn up in those cases, so retrying for them
+          // only wastes time. The modal still gives us the note id.
           const embeddedTweetAbsent = cellData.postUnavailable || cellData.hasInterstitial;
           if (!embeddedTweetAbsent && !tweetData.tweetId) cellMissing.push('tweet_id');
           if (!cellData.noteText) cellMissing.push('note_text');
           if (!cellData.cellStatus) cellMissing.push('status');
-          // If we see ANY tweet info, the tweet is present — retry for all tweet fields
+          // If we can see any part of the tweet, the tweet is really there. In
+          // that case we expect all three of its fields and retry until we have
+          // them.
           const hasSomeTweetInfo = cellData.tweetHandle || cellData.tweetText || cellData.tweetTime;
           if (!embeddedTweetAbsent && hasSomeTweetInfo) {
             if (!cellData.tweetHandle) cellMissing.push('tweet_handle');
@@ -764,7 +803,8 @@ async function scrapeTab(
             console.log(`   ${prefix} 🔄 Cell retry ${cellAttempt + 1}/${MAX_CELL_ATTEMPTS}: missing ${cellMissing.join(', ')}`);
             await randomDelay(400, 800);
           } else {
-            // Final attempt failed — dump cell innerText so we can diagnose the layout.
+            // The last attempt failed too. We print the cell's text, links and
+            // test ids so that a person can see how X's layout has changed.
             const dump = await cell.evaluate(el => {
               const text = (el as HTMLElement).innerText || '';
               const links = [...el.querySelectorAll('a[href]')].map(a => (a as HTMLAnchorElement).getAttribute('href')).slice(0, 10);
@@ -779,18 +819,18 @@ async function scrapeTab(
           }
         }
 
-        // Skip if we already have this tweet
+        // We have already scraped a note on this tweet in this run, so there is
+        // nothing left to do for this cell.
         if (tweetData.tweetId && [...collectedNotes.values()].some(n => n.tweet_id === tweetData.tweetId)) {
           break conflictLoop;
         }
 
-        // Scroll cell into view
+        // The click below only lands if the cell is actually on screen.
         await cell.evaluate(el => {
           el.scrollIntoView({ behavior: 'instant', block: 'center' });
         });
         await randomDelay(80, 160);
 
-        // Check if cell has a clickable "View details" button
         const hasViewDetails = await cell.evaluate(el => {
           const noteLink = el.querySelector('a[href*="/communitynotes/t/"]');
           if (noteLink) return 'A';
@@ -807,7 +847,8 @@ async function scrapeTab(
           console.log(`   ${prefix} 🖱️ Clicking View details [${hasViewDetails}]`);
         }
 
-        // --- MODAL EXTRACTION with quality retries (up to 6 attempts) ---
+        // Open the modal and read it. If a field is missing we close it and try
+        // again, waiting longer each time.
         const maxQualityRetries = 2;
         const modalWaits = [3000, 5000, 8000];
 
@@ -817,11 +858,13 @@ async function scrapeTab(
         let accRaterTags: string[] | null = null;
         let finalModalData: ModalData | null = null;
 
-        // Only check fields the modal can provide (status, submittedDate).
-        // Cell-only fields (tweet_id, note_text, view_count) can't be fixed by modal retries.
-        // Rater tags are NOT required: X only shows the "Top tags selected by raters"
-        // section when raters have agreed on tags. Many Helpful notes have no tags section
-        // in the modal at all — requiring it caused 5 useless retries per such note.
+        // Only the status and the submission date are worth retrying for. The
+        // tweet id, the note text and the view count come from the cell, so
+        // reopening the modal cannot fix them.
+        // Rater tags are not required. X only shows the "Top tags selected by
+        // raters" section once raters have agreed on some tags, and many helpful
+        // notes have no such section at all. Treating them as required made
+        // every one of those notes burn five pointless retries.
         function checkModalMissingFields(): string[] {
           const missing: string[] = [];
           if (accStatus === 'UNKNOWN') missing.push('status');
@@ -857,9 +900,11 @@ async function scrapeTab(
             continue;
           }
 
-          // Accumulate modal data (use latest if modal-vs-modal conflicts)
+          // We keep the best answer we have seen so far across the retries. A
+          // retry that returns a different note id means the modal has loaded
+          // some other note, so everything we kept belongs to the wrong note and
+          // we start again from this reading.
           if (accNoteId && md.noteId && accNoteId !== md.noteId) {
-            // Different note loaded — use latest
             accNoteId = md.noteId;
             accStatus = md.status !== 'UNKNOWN' ? md.status : 'UNKNOWN';
             accSubmittedDate = md.submittedDate;
@@ -877,8 +922,9 @@ async function scrapeTab(
           const missingFields = checkModalMissingFields();
           if (missingFields.length === 0) break;
 
-          // On the FINAL retry, dump while the modal is still open so we can see
-          // what the layout actually looks like for the missing field.
+          // On the last retry we print the modal before closing it. That is the
+          // only chance to see what the layout looks like where the missing
+          // field should have been.
           if (qualityAttempt >= maxQualityRetries) {
             const dump = await page.evaluate(() => {
               const modal = document.querySelector('[data-testid="sheetDialog"]') ||
@@ -904,9 +950,10 @@ async function scrapeTab(
             qualityRetryCount++;
             await new Promise(r => setTimeout(r, retryWait));
           }
-        } // end quality retry loop
+        }
 
-        // Build modalData from accumulated
+        // The last reading is the base, and the fields we kept along the way
+        // overwrite it.
         modalData = finalModalData;
         if (accNoteId && modalData) {
           modalData.noteId = accNoteId;
@@ -915,9 +962,10 @@ async function scrapeTab(
           if (accRaterTags) modalData.raterTags = accRaterTags;
         }
 
-        if (!modalData?.noteId) break conflictLoop; // No modal data — nothing to conflict-check
+        // Without a note id there is nothing to compare the cell against.
+        if (!modalData?.noteId) break conflictLoop;
 
-        // --- CROSS-SOURCE CONFLICT CHECK ---
+        // Check that the cell and the modal tell the same story.
         const crossConflicts: string[] = [];
         if (tweetData.noteIdFromUrl && modalData.noteId && tweetData.noteIdFromUrl !== modalData.noteId) {
           crossConflicts.push(`note_id: URL=${tweetData.noteIdFromUrl} modal=${modalData.noteId}`);
@@ -926,7 +974,8 @@ async function scrapeTab(
           crossConflicts.push(`status: cell=${cellData.cellStatus} modal=${modalData.status}`);
         }
 
-        if (crossConflicts.length === 0) break conflictLoop; // All good
+        // The two sources agree, so we can keep this note.
+        if (crossConflicts.length === 0) break conflictLoop;
 
         console.log(`   ${prefix} ⚠️ CROSS-SOURCE CONFLICT: ${crossConflicts.join(', ')}`);
         if (conflictRetry >= 2) {
@@ -935,7 +984,7 @@ async function scrapeTab(
           break conflictLoop;
         }
         qualityRetryCount++;
-      } // end conflict retry loop
+      }
 
       if (!modalData || !modalData.noteId) {
         console.log(`   ${prefix} ⚠️ Could not extract valid data for this cell`);
@@ -944,7 +993,7 @@ async function scrapeTab(
         continue;
       }
 
-      // Skip if another tab already got this note
+      // We have already collected this note earlier in the run.
       if (collectedNotes.has(modalData.noteId)) {
         await page.keyboard.press('Escape');
         await randomDelay(80, 160);
@@ -953,11 +1002,15 @@ async function scrapeTab(
 
       const noteIdBigInt = BigInt(modalData.noteId);
 
-      // Use cell status as fallback when modal gives UNKNOWN
+      // The modal is the better source for the status. We only fall back to the
+      // status shown in the cell when the modal did not give us one.
       const finalStatus = modalData.status !== 'UNKNOWN' ? modalData.status
         : (cellData.cellStatus || 'UNKNOWN');
 
-      // Determine tweet_id: real link > post_unavailable > unavailable_noteId
+      // A real tweet id is always preferred. When the post has been taken down
+      // we record "post_unavailable", because that is a fact worth keeping.
+      // Otherwise we store a placeholder built from the note id, so the row
+      // still has a unique value in this column.
       const finalTweetId = tweetData.tweetId
         || (cellData.postUnavailable ? 'post_unavailable' : `unavailable_${modalData.noteId}`);
 
@@ -991,21 +1044,23 @@ async function scrapeTab(
       foundNewNote = true;
       if (modalData.submittedDate) lastNoteDate = modalData.submittedDate;
 
-      // Save before honoring stop-at/bottom. Otherwise the boundary note is
-      // counted in-memory but never gets a snapshot.
+      // We work out here whether this note is the one we stop at, but we do not
+      // act on it until after the save below. Stopping first would leave the
+      // boundary note counted in memory with no snapshot in the database.
       const effectiveBottom = stopAtNoteId ?? BOTTOM_NOTE_ID;
       const reachedStopPoint = noteIdBigInt <= effectiveBottom;
 
       console.log(`   ${prefix} ✓ Total ${collectedNotes.size}: ${modalData.noteId} (${modalData.status})`);
 
-      // Save to DB immediately so data isn't lost if process is killed
+      // Saving each note as we go means a killed run still keeps its work.
       await saveNoteIncrementally(note);
       if (reachedStopPoint) {
         const label = stopAtNoteId ? 'stop-at target' : 'bottom note';
         console.log(`\n   ${prefix} 🎉 Reached the ${label} (${modalData.noteId})! Scrape complete.`);
       }
 
-      // Close the modal
+      // Close the modal. We try a few likely close buttons, and if none of them
+      // is there we look for any small button that reads as a close control.
       const closed = await page.evaluate(() => {
         const closeSelectors = [
           '[aria-label="Close"]',
@@ -1038,7 +1093,8 @@ async function scrapeTab(
         await page.keyboard.press('Escape');
       }
 
-      // Wait for modal to actually leave the DOM before continuing
+      // The next cell must not be clicked while the old modal is still up, so we
+      // wait for it to leave the page.
       try {
         await page.waitForFunction(() => {
           return !document.querySelector('[role="dialog"]') &&
@@ -1046,15 +1102,16 @@ async function scrapeTab(
                  !document.querySelector('[data-testid="sheetDialog"]');
         }, { timeout: 3000 });
       } catch {
-        // Timeout is non-fatal — press Escape again and continue
+        // Running out of time here is not fatal. We press Escape once more and
+        // carry on.
         await page.keyboard.press('Escape');
         await randomDelay(300, 500);
       }
 
-      // Cooldown after modal close — reduces burst failures on next click
+      // A short pause after closing the modal. Clicking again straight away
+      // makes the next click fail far more often.
       await randomDelay(160, 320);
 
-      // Early exit if we've reached the stop point or the very bottom of the list
       if (reachedStopPoint) {
         break recoveryLoop;
       }
@@ -1068,31 +1125,37 @@ async function scrapeTab(
           console.log(`\n   ${prefix} 🛑 Scroll stuck${lastNoteDate ? ` (last note: ${lastNoteDate})` : ''}. Exhausted ${maxRetries} jiggle retries — done.`);
           break;
         }
-        // Unstick the virtualizer: escalating wait, then scroll up a big chunk, wait, scroll back down
+        // The virtualizer has stopped giving us new cells. We wait, scroll a
+        // long way back up, wait again, and then scroll past where we were. That
+        // usually makes it render fresh cells.
         const waitMs = jiggleWaits[retryCount - 1] || 0;
         if (waitMs > 0) {
           console.log(`\n   ${prefix} ⏳ Scroll stuck${lastNoteDate ? ` (last note: ${lastNoteDate})` : ''}. Waiting ${waitMs / 1000}s before jiggle ${retryCount}/${maxRetries}...`);
           await new Promise(r => setTimeout(r, waitMs));
         }
         console.log(`\n   ${prefix} 🔄 Jiggling virtualizer (retry ${retryCount}/${maxRetries})...`);
-        const jiggleDistance = 3000 + (retryCount * 2000); // Scroll up further each retry
+        // Each retry reaches further up the page than the one before.
+        const jiggleDistance = 3000 + (retryCount * 2000);
         await page.evaluate((dist) => {
           const html = document.documentElement;
           html.scrollTop = Math.max(0, html.scrollTop - dist);
           html.dispatchEvent(new Event('scroll', { bubbles: true }));
           window.dispatchEvent(new Event('scroll', { bubbles: true }));
         }, jiggleDistance);
-        await new Promise(r => setTimeout(r, 1600)); // Let virtualizer re-render
-        // Scroll back down past where we were
+        // Give the virtualizer time to render the cells up here.
+        await new Promise(r => setTimeout(r, 1600));
         await page.evaluate((dist) => {
           const html = document.documentElement;
-          html.scrollTop += dist + 600; // Go slightly past original position
+          // Land a little past where we started, so the cells are new ones.
+          html.scrollTop += dist + 600;
           html.dispatchEvent(new Event('scroll', { bubbles: true }));
           window.dispatchEvent(new Event('scroll', { bubbles: true }));
         }, jiggleDistance);
         await new Promise(r => setTimeout(r, 800));
         stuckCount = 0;
-        processedCells.clear(); // Clear fingerprints since we're in shifted territory
+        // The jiggle has moved us somewhere else in the list, so the
+        // fingerprints we collected no longer tell us anything useful.
+        processedCells.clear();
         console.log(`   ${prefix} ▶️  Resuming after jiggle...`);
       }
     } else {
@@ -1100,7 +1163,6 @@ async function scrapeTab(
       retryCount = 0;
     }
 
-    // Scroll down
     try {
       const scrollResult = await page.evaluate((px) => {
         const html = document.documentElement;
@@ -1119,7 +1181,8 @@ async function scrapeTab(
 
       if (scrollResult.atBottom) {
         console.log(`   ${prefix} 📍 At bottom${lastNoteDate ? ` (last note: ${lastNoteDate})` : ''}`);
-        // Wait longer at bottom — the virtualizer needs time to extend the page
+        // At the bottom the virtualizer has to fetch more notes and make the
+        // page taller, which takes longer than a normal scroll step.
         await new Promise(r => setTimeout(r, 1600));
       }
     } catch (scrollErr: unknown) {
@@ -1129,12 +1192,14 @@ async function scrapeTab(
 
     await randomDelay(240, 400);
       }
-      // Normal completion — exit recovery loop
+      // The scrape loop finished on its own terms, so there is nothing to
+      // recover from.
       break recoveryLoop;
     } catch (loopErr: unknown) {
       const errMsg = loopErr instanceof Error ? loopErr.message : String(loopErr);
 
-      // Recoverable frame detach — open new tab and scroll back
+      // Chrome sometimes drops the frame or the whole connection out from under
+      // us. We can come back from that by reattaching to the tab.
       if (errMsg.toLowerCase().includes('detached frame') || errMsg.includes('Execution context') || errMsg.includes('Target closed') || errMsg.includes('Session closed') || errMsg.includes('Connection closed')) {
         frameRecoveries++;
         if (frameRecoveries > MAX_FRAME_RECOVERIES) {
@@ -1161,40 +1226,41 @@ async function scrapeTab(
         }
       }
 
-      // Non-recoverable error
+      // Any other error is one we cannot come back from.
       console.log(`\n${prefix} ⚠️ Scraping interrupted: ${errMsg.slice(0, 100)}`);
       console.log(`   ${prefix} Collected ${collectedNotes.size} notes so far`);
       break recoveryLoop;
     }
-  } // end recoveryLoop
+  }
 
   console.log(`\n${prefix} ✅ Tab finished. Total notes across all tabs: ${collectedNotes.size}`);
 }
 
 
 /**
- * Query DB for note IDs at specific percentile positions.
- * Returns a map from fraction (e.g. 0.33) to the note ID at that position.
- * Uses paginated query to avoid the 1000-row limit.
+ * Reads the command line, gets a Chrome tab on the notewriter page, and runs
+ * the scrape. It restarts the scrape by itself when a run stops early, and
+ * reconciles the snapshots once everything is done.
  */
 async function main() {
-  // Parse args
   const args = process.argv.slice(2);
   let freshStart = args.includes('--fresh');
 
-  // Parse --start-from <noteId> to resume from a previous run's last position
+  // --start-from names the note a previous run stopped at, so this run can pick
+  // up where that one left off.
   const startFromIdx = args.indexOf('--start-from');
   const startFromNoteId = startFromIdx !== -1 && args[startFromIdx + 1]
     ? BigInt(args[startFromIdx + 1]!)
     : null;
 
-  // Parse --stop-at <noteId> to stop scraping at a specific note instead of BOTTOM_NOTE_ID
+  // --stop-at names the note to stop at, in place of BOTTOM_NOTE_ID.
   const stopAtIdx = args.indexOf('--stop-at');
   let stopAtNoteId = stopAtIdx !== -1 && args[stopAtIdx + 1]
     ? BigInt(args[stopAtIdx + 1]!)
     : null;
 
-  // Filter out flag args and their values
+  // Drop the flags and the values that belong to them, so that what is left is
+  // only the positional arguments.
   const flagValueIndices = new Set<number>();
   if (startFromIdx !== -1) {
     flagValueIndices.add(startFromIdx);
@@ -1206,7 +1272,8 @@ async function main() {
   }
   const nonFlagArgs = args.filter((a, i) => !a.startsWith('--') && !flagValueIndices.has(i));
 
-  // Smart arg parsing: if first non-flag arg is a number, treat it as maxNotes
+  // A single positional argument that is a number is the note limit. Otherwise
+  // the first one is the notewriter name and the second is the limit.
   let username = DEFAULT_USERNAME;
   let maxNotes = 500;
   if (nonFlagArgs.length === 1 && /^\d+$/.test(nonFlagArgs[0]!)) {
@@ -1217,11 +1284,12 @@ async function main() {
   }
   const notewriterUrl = `https://x.com/i/communitynotes/u/${username}`;
 
-  // --incremental: unattended daily mode. Catch up known notes that have no
-  // scraper snapshot yet by scraping from the top until ~1 week before the
-  // oldest unsynced note. That same pass re-samples every note above the cutoff,
-  // giving recent notes repeated view-count datapoints over time. If nothing is
-  // unsynced there is nothing to do, so exit without touching the browser.
+  // --incremental is the unattended daily mode. It catches up on the notes that
+  // have no snapshot yet. To do that it scrapes from the top of the list down to
+  // about a week before the oldest note that is still missing one. On the way it
+  // passes every newer note again, which is how recent notes build up a series
+  // of view counts over time. If no note is missing a snapshot there is nothing
+  // to catch up on, so the run exits before it opens the browser.
   if (args.includes('--incremental')) {
     const RESAMPLE_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
     const INCREMENTAL_MAX_NOTES = 100_000;
@@ -1247,7 +1315,9 @@ async function main() {
     browser = await puppeteer.connect({
       browserURL: "http://127.0.0.1:9222",
       protocolTimeout: 120000,
-      defaultViewport: null, // Use browser's actual window size, not Puppeteer's 800x600 default
+      // Keep the browser window's own size. Puppeteer would otherwise force it
+      // to 800 by 600, which shows far fewer notes at a time.
+      defaultViewport: null,
     });
   } catch (err) {
     console.error("❌ Failed to connect to Chrome.");
@@ -1263,13 +1333,14 @@ async function main() {
   }
   console.log();
 
-  // Find or create the notewriter tab
   let page: Page;
   const existingPages = await browser.pages();
   const existingNotewriterTabs = existingPages.filter(p => p.url().includes("communitynotes"));
 
   if (freshStart) {
-    // Fresh start: open a new tab (avoids stale virtualizer state)
+    // A new tab starts the virtualizer from scratch. Reusing a tab that has been
+    // scrolled around for a while often leaves it in a state where it stops
+    // rendering new cells.
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
         console.log(`📄 Opening fresh tab: ${notewriterUrl}${attempt > 0 ? ` (retry ${attempt})` : ''}`);
@@ -1286,7 +1357,8 @@ async function main() {
     }
     page = page!;
   } else if (existingNotewriterTabs.length > 0) {
-    // Pick the tab scrolled furthest down (highest scrollTop = most progress)
+    // The tab that is scrolled furthest down is the one that got furthest
+    // through the list, so it is the best place to carry on from.
     let bestTab = existingNotewriterTabs[0]!;
     let bestScroll = await bestTab.evaluate(() => document.documentElement.scrollTop).catch(() => -1);
     for (let i = 1; i < existingNotewriterTabs.length; i++) {
@@ -1300,14 +1372,14 @@ async function main() {
     activeTargetId = (page.target() as any)?._targetId ?? null;
     console.log(`📄 Reusing furthest-scrolled tab (scrollY=${bestScroll}, ${existingNotewriterTabs.length} tab${existingNotewriterTabs.length > 1 ? "s" : ""} found): ${page.url().slice(0, 80)}`);
   } else {
-    // No existing tabs — open a new one
+    // There is no notewriter tab open, so we have to make one.
     console.log(`📄 Opening new tab: ${notewriterUrl}`);
     page = await browser.newPage();
     activeTargetId = (page.target() as any)?._targetId ?? null;
     await page.goto(notewriterUrl, { waitUntil: "networkidle2", timeout: 60000 });
   }
 
-  // If fresh start, scroll to top
+  // A fresh run always begins at the newest note.
   if (freshStart) {
     await page.evaluate(() => {
       window.scrollTo(0, 0);
@@ -1319,25 +1391,25 @@ async function main() {
 
   await waitForContent(page);
 
-  // Shared map — create before positioning so scrollToPosition can save sampled notes
+  // Every note found in this run, across all the restarts below.
   const collectedNotes = new Map<string, ScrapedNote>();
 
-  // The oldest known note — reaching this means we've covered the full list (also used in scrapeTab)
-  // BOTTOM_NOTE_ID is defined at module scope
-  const OCT_23_NOTE_ID = 1985806966241812487n; // Must reach at least this far to justify restarting
+  // A run that did not even get back as far as this note has gone wrong in some
+  // basic way, and restarting it is not worth the time.
+  const OCT_23_NOTE_ID = 1985806966241812487n;
   const MAX_AUTO_RESTARTS = 20;
   let autoRestartCount = 0;
   let currentStartFrom = startFromNoteId;
 
-  // Auto-restart loop: if scraping stops before reaching the bottom,
-  // automatically open a fresh tab and resume from the last position
+  // When a scrape stops before it reaches the bottom of the list, this loop
+  // opens a fresh tab and starts again from the oldest note it managed to get.
   autoRestartLoop:
   while (autoRestartCount <= MAX_AUTO_RESTARTS) {
     if (autoRestartCount > 0) {
       console.log(`\n${"=".repeat(60)}`);
       console.log(`🔄 Auto-restart ${autoRestartCount}/${MAX_AUTO_RESTARTS} — reconnecting and opening fresh tab...`);
       try {
-        try { browser.disconnect(); } catch { /* may already be disconnected */ }
+        try { browser.disconnect(); } catch { /* It may already be disconnected. */ }
         await new Promise(r => setTimeout(r, 800));
         browser = await puppeteer.connect({
           browserURL: "http://127.0.0.1:9222",
@@ -1355,7 +1427,6 @@ async function main() {
       }
     }
 
-    // Scroll to start position if resuming
     if (currentStartFrom) {
       console.log(`\n📍 ${autoRestartCount > 0 ? 'Resuming' : 'Starting'} from note ${currentStartFrom} — scrolling to position...`);
       try {
@@ -1369,18 +1440,17 @@ async function main() {
           const recovered = await reconnectToTab(browser, notewriterUrl, "[scraper]");
           page = recovered.page;
           browser = recovered.browser;
-        } catch { /* will fail at scrapeTab start if still broken */ }
+        } catch { /* If reattaching fails too, scrapeTab will report the problem. */ }
         console.log(`   📍 Starting from current scroll position instead`);
       }
     }
 
-    // Start scraping
     console.log(`\n${"=".repeat(60)}`);
     console.log(`🏁 ${autoRestartCount > 0 ? `Restart ${autoRestartCount}: scraping` : 'Starting scrape'}...\n`);
 
     await scrapeTab(browser, page, collectedNotes, maxNotes, notewriterUrl, stopAtNoteId);
 
-    // Check if we reached the bottom
+    // The oldest note we captured tells us how far down the list we reached.
     const scrapedNoteIds = [...collectedNotes.keys()]
       .filter(id => /^\d+$/.test(id))
       .map(id => BigInt(id));
@@ -1400,13 +1470,14 @@ async function main() {
       break autoRestartLoop;
     }
 
-    // Don't restart if we haven't even reached Oct 23 — something is fundamentally broken
+    // Stopping this early means something is badly wrong, and another attempt
+    // would very likely fail in the same place.
     if (oldestScraped !== null && oldestScraped > OCT_23_NOTE_ID) {
       console.log(`\n⚠️ Didn't reach Oct 23 (oldest scraped: ${oldestScraped}). Not restarting.`);
       break autoRestartLoop;
     }
 
-    // Not at bottom yet — auto-restart from where we stopped
+    // There is still list left, so start again from where this attempt stopped.
     if (oldestScraped !== null) {
       currentStartFrom = oldestScraped;
       autoRestartCount++;
@@ -1415,7 +1486,7 @@ async function main() {
       console.log(`\n⚠️ No notes scraped in this run — stopping.`);
       break autoRestartLoop;
     }
-  } // end autoRestartLoop
+  }
 
   if (autoRestartCount > MAX_AUTO_RESTARTS) {
     console.log(`\n⚠️ Hit auto-restart limit (${MAX_AUTO_RESTARTS}). Stopping.`);
@@ -1428,9 +1499,12 @@ async function main() {
     process.exit(0);
   }
 
-  // --incremental: notes the scrape scrolled past but never captured (still no
-  // snapshot, id >= the oldest captured this run) accrue a "miss"; after the miss
-  // limit they're given up so a permanently-deleted note can't pin the anchor.
+  // In incremental mode we record a miss against every note the scrape scrolled
+  // past without capturing. Those are the notes that still have no snapshot and
+  // whose id is at or above the oldest note this run did capture. A note that
+  // has been missed enough times is given up on. Without that, a note that was
+  // deleted and can never be captured would hold the daily scrape at its date
+  // forever.
   if (args.includes('--incremental')) {
     const capturedIds = [...collectedNotes.keys()].filter(id => /^\d+$/.test(id)).map(id => BigInt(id));
     if (capturedIds.length > 0) {
@@ -1440,7 +1514,6 @@ async function main() {
     }
   }
 
-  // Notes were already saved incrementally during scraping
   console.log("\n" + "=".repeat(60));
   console.log("✅ Scrape & import complete!");
   console.log(`   • New notes:         ${newNotes}`);
@@ -1450,7 +1523,8 @@ async function main() {
   console.log(`   • Errors:            ${errorCount}`);
   console.log("=".repeat(60));
 
-  // Coverage check
+  // Compare what this run captured against the notes we already knew about in
+  // the same id range. That tells us whether the scrape missed anything.
   const scrapedIds = [...collectedNotes.keys()].filter(id => /^\d+$/.test(id)).sort();
   if (scrapedIds.length >= 2) {
     const minId = scrapedIds[0]!;
@@ -1482,13 +1556,12 @@ async function main() {
     }
   }
 
-  // Final reconciliation (tier classification, collision resolution, canonical data).
-  // Snapshots are persisted per-note already, so a hard Ctrl+C / crash mid-run
-  // is recoverable: a future clean run's end-of-script reconcile rebuilds the
-  // canonical state from the full snapshot history.
+  // Turn the snapshots into one trusted row per note. Every snapshot was already
+  // written to the database as it was found, so a crash or a Ctrl+C in the
+  // middle of a run loses nothing here. The next run that finishes reconciles
+  // the whole snapshot history again and catches up.
   await runReconcile();
 
-  // Print resume command based on oldest note scraped
   const scrapedNoteIds = [...collectedNotes.keys()]
     .filter(id => /^\d+$/.test(id))
     .map(id => BigInt(id));

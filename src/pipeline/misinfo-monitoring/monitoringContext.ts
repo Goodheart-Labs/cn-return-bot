@@ -1,12 +1,13 @@
 /**
  * Per-post monitoring context for the XXL-feed misinfo pre-pass.
  *
- * Mirrors the withBotConfig / withTweetLog AsyncLocalStorage pattern. Kept
- * separate from BotConfig because the reference document is per-post run
- * context (which misinfo topic this post matched), not an A/B variant.
+ * This follows the same AsyncLocalStorage pattern as withBotConfig and withTweetLog.
+ * It is kept apart from BotConfig because the reference document belongs to a single
+ * post's run. It records which misinfo topic that post matched, and it is not an A/B
+ * variant.
  *
- * Regular small-feed posts run with no monitoring context (getMonitoringContext
- * returns undefined → no document injection).
+ * A regular small-feed post runs with no monitoring context at all.
+ * getMonitoringContext then returns undefined and no document is injected.
  */
 
 import { AsyncLocalStorage } from "node:async_hooks";
@@ -15,11 +16,12 @@ import type { MisinfoTopicId } from "./topicIds";
 export interface MonitoringContext {
   topicId: MisinfoTopicId;
   topicTitle: string;
-  /** Canonical source URL of the reference article — leads the injected block
-   *  so the bot can cite it directly in the note. Absent for hand-authored
-   *  documents that carry their own per-claim sources. */
+  /** The reference article's canonical source URL. It leads the injected block, so
+   *  the bot can cite it directly in the note. A hand-authored document that carries
+   *  its own sources for each claim has no such URL. */
   documentUrl?: string;
-  /** Full undistilled article, injected into the bot's research step. */
+  /** The whole article, with nothing summarised away. It is injected into the bot's
+   *  research step. */
   document: string;
 }
 
@@ -33,11 +35,11 @@ export function getMonitoringContext(): MonitoringContext | undefined {
   return storage.getStore();
 }
 
-/** The reference-document block injected into the research step. Leads with the
- *  source URL (when the document has one canonical source) so the bot can cite
- *  the article directly; documents carrying their own per-claim sources render
- *  without it. Shared by simple-bot's search prompt and cheap-bot's search
- *  analyzer so the format stays identical. */
+/** Builds the reference-document block that is injected into the research step. It
+ *  leads with the source URL when the document has one canonical source, so the bot
+ *  can cite the article directly. A document that carries its own sources for each
+ *  claim renders without that line. Both simple-bot's search prompt and cheap-bot's
+ *  search analyzer call this, so the format stays identical in both. */
 export function buildReferenceBlock(ctx: MonitoringContext): string {
   const sourceLine = ctx.documentUrl ? `Source URL: ${ctx.documentUrl}\n` : "";
   return `## Reference document (ground truth on "${ctx.topicTitle}")

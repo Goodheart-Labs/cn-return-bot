@@ -1,19 +1,22 @@
 /**
- * Note-needed prefilter — a cheap deepseek-v4-flash gate that decides whether a
- * post is worth running the full (expensive) bot on. Reuses the cheap-bot steps
- * — query writer → SearXNG → search analyzer — then a reframed note-needed judge
- * (no proposed note: post + research brief → needs a note?). No note-writing, no
- * source verification.
+ * The note-needed prefilter is a cheap deepseek-v4-flash gate. It decides
+ * whether a post is worth running the full and expensive bot on. It reuses the
+ * cheap-bot steps in order: the query writer, then SearXNG, then the search
+ * analyzer. Last comes a reframed note-needed judge. That judge sees the post
+ * and the research brief but no proposed note, and answers whether the post
+ * needs a note at all. The prefilter never writes a note and never verifies
+ * sources.
  *
- * Runs on a large feed (see generateCandidates): the prefilter screens many
- * posts cheaply and only the ones it flags reach the bot. Validated offline at
- * ~10% false-negative / 72% correctly-filtered vs simple-bot's own decisions
- * (see src/scripts_jim/2026_06_06_deepseek_note_filter).
+ * It runs on a large feed, which generateCandidates assembles. It screens many
+ * posts cheaply, and only the ones it flags reach the bot. We validated it
+ * offline against simple-bot's own decisions. It missed about 10% of the posts
+ * simple-bot would have noted, and it correctly filtered out 72% of the rest.
+ * See src/scripts_jim/2026_06_06_deepseek_note_filter.
  *
- * The query writer is non-deterministic even at temp 0 (it flips between [] and
- * real queries on identical input), so we retry-on-empty: re-roll only while it
- * returns [], stop on the first non-empty result, accept "no queries" only after
- * QUERY_WRITER_MAX_ATTEMPTS empties.
+ * The query writer is not deterministic even at temperature 0. On identical
+ * input it flips between an empty list and real queries. So we retry while it
+ * returns an empty list. We stop at the first non-empty result, and we accept
+ * "no queries" only after QUERY_WRITER_MAX_ATTEMPTS empty answers.
  */
 import { withBotConfig, type BotConfig } from "../ab-testing/botConfig";
 import {
@@ -33,11 +36,12 @@ const DEEPSEEK = "deepseek/deepseek-v4-flash";
 const MAX_RESULTS_PER_QUERY = 6;
 const QUERY_WRITER_MAX_ATTEMPTS = 3;
 
-/** Self-contained config for the prefilter's own steps — every call on
- *  deepseek-v4-flash, SearXNG, reasoning high + temp 0 (matches cheap-bot's
- *  deterministic settings). Entered with withBotConfig so the picked bot's
- *  config is untouched. video_description_strategy is required by the type but
- *  unused — the bot input is built by the caller, not here. */
+/** The self-contained config for the prefilter's own steps. Every call runs on
+ *  deepseek-v4-flash and searches through SearXNG, with reasoning effort high
+ *  and temperature 0. Those are cheap-bot's deterministic settings. We enter it
+ *  with withBotConfig so the config of the bot that was picked stays untouched.
+ *  The video_description_strategy field is required by the type but unused here,
+ *  because the caller builds the bot input, not this file. */
 const PREFILTER_CONFIG: BotConfig = {
   botId: "note-needed-prefilter",
   model: DEEPSEEK,
@@ -57,8 +61,9 @@ export interface PrefilterVerdict {
   reasoning: string;
 }
 
-/** Query writer with retry-on-empty (see file header). runQueryWriter logs its
- *  own messages.0/1 + cost under the query_writer step; we add the attempt count. */
+/** Runs the query writer and retries it while it returns no queries. The file
+ *  header explains why. runQueryWriter logs its own messages.0 and messages.1
+ *  and its cost under the query_writer step. Here we add the attempt count. */
 async function runQueryWriterRetryOnEmpty(userMessage: string): Promise<{ queries: string[]; attempts: number }> {
   let queries: string[] = [];
   let attempts = 0;
@@ -71,7 +76,9 @@ async function runQueryWriterRetryOnEmpty(userMessage: string): Promise<{ querie
   return { queries, attempts };
 }
 
-/** SearXNG fetch over all queries → search analyzer brief. Null if no results. */
+/** Fetches SearXNG results for every query and hands them to the search
+ *  analyzer, which turns them into a research brief. Returns null when not a
+ *  single query produced a result. */
 async function gatherFindings(userMessage: string, queries: string[]): Promise<string | null> {
   const sections: string[] = [];
   let total = 0;
@@ -80,7 +87,7 @@ async function gatherFindings(userMessage: string, queries: string[]): Promise<s
     try {
       results = await fetchSearxngResults(q);
     } catch {
-      // a single failed query shouldn't sink the prefilter
+      // One failed query should not sink the whole prefilter.
     }
     const top = results.slice(0, MAX_RESULTS_PER_QUERY);
     total += top.length;
@@ -91,7 +98,8 @@ async function gatherFindings(userMessage: string, queries: string[]): Promise<s
   log?.set(`${STEP.fetchAndFormatSearch}.findings`, rawFindings.slice(0, 4000));
   log?.set(`${STEP.fetchAndFormatSearch}.resultCount`, total);
   if (total === 0) return null;
-  // runSearchAnalyzer logs its own messages.0/1 + cost under the search_analyzer step.
+  // runSearchAnalyzer logs its own messages.0 and messages.1 and its cost under
+  // the search_analyzer step.
   return runSearchAnalyzer(userMessage, rawFindings);
 }
 
@@ -113,10 +121,11 @@ async function runPrefilterJudge(postContext: string, findings: string): Promise
   return { needsNote: !!parsed.note_needed, reasoning: parsed.reasoning ?? "" };
 }
 
-/** The prefilter's steps, run under the deepseek config. Each shared step
- *  (query writer, search, analyzer, judge) logs its own messages.0/1 + cost to
- *  the active tweet-log/cost-tracker — which the caller isolates so they land in
- *  the prefilter's own namespace, not the bot's. */
+/** Runs the prefilter's steps under the deepseek config. The shared steps are
+ *  the query writer, the search, the analyzer and the judge. Each of them logs
+ *  its own messages.0 and messages.1 and its cost to the active tweet log and
+ *  cost tracker. The caller isolates that log and that tracker, so the entries
+ *  land in the prefilter's own namespace instead of the bot's. */
 async function runPrefilterSteps(userMessage: string): Promise<PrefilterVerdict> {
   const { queries } = await runQueryWriterRetryOnEmpty(userMessage);
   if (queries.length === 0) {
@@ -133,12 +142,15 @@ async function runPrefilterSteps(userMessage: string): Promise<PrefilterVerdict>
 }
 
 /**
- * Decide whether the post in `userMessage` (the shared bot-input user message,
- * built once in processSingleTweet) needs a note. Runs under its own deepseek
- * config, in an ISOLATED tweet-log + cost-tracker, then grafts the step logs
- * onto the caller's log under `note_prefilter_steps.*` (parallel to the bot's
- * `note_writer_steps.*`, so the two never collide) and re-emits the cost
- * entries namespaced under `note_prefilter.*` (one cost group for the prefilter).
+ * Decides whether the post in `userMessage` needs a note. That message is the
+ * shared bot-input user message, which processSingleTweet builds once.
+ * The steps run under their own deepseek config, and in a tweet log and a cost
+ * tracker that are isolated from the caller's.
+ * Afterwards the step logs are grafted onto the caller's log under
+ * `note_prefilter_steps.*`. That sits parallel to the bot's own
+ * `note_writer_steps.*`, so the two can never collide.
+ * The cost entries are re-emitted under `note_prefilter.*`, so the whole
+ * prefilter shows up as a single cost group.
  */
 export async function runNoteNeededPrefilter(userMessage: string): Promise<PrefilterVerdict> {
   const outerLog = getTweetLog();
@@ -161,8 +173,9 @@ export async function runNoteNeededPrefilter(userMessage: string): Promise<Prefi
     outerLog.set("note_prefilter_steps.verdict", verdict);
   }
 
-  // Fold the prefilter's costs into the run total, namespaced so they group
-  // under "note_prefilter" instead of colliding with the bot's same-named steps.
+  // Fold the prefilter's costs into the run total. Each entry name gets the
+  // "note_prefilter" prefix, so the entries group together instead of colliding
+  // with the bot's steps of the same name.
   for (const entry of costs) {
     trackLlmCall({ ...entry, name: `note_prefilter.${entry.name}` });
   }

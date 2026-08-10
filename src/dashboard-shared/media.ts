@@ -17,8 +17,9 @@ function pushMedia(
   imagesOut: MediaImage[],
   videosOut: MediaVideo[],
 ): void {
-  // Videos have no `url` in the API payload — getBestMediaUrl picks the
-  // highest-bitrate mp4 variant so we link the video, not its thumbnail.
+  // A video carries no `url` in the API payload. getBestMediaUrl picks the mp4
+  // variant with the highest bitrate, so the link points at the video itself and
+  // not at its thumbnail.
   const url = getBestMediaUrl(m);
   if (!url) return;
   if (m.type === "photo") imagesOut.push({ url });

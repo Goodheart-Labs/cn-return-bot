@@ -6,9 +6,9 @@ import { useSession } from "../../everything-shared/auth";
 import { WriteNoteOverlay } from "../components/WriteNoteOverlay";
 import { isPageDark } from "./pageTheme";
 
-/** The write-anywhere shell for UNCOVERED pages: nothing renders until the
- *  background forwards a "Write a Common Note on this" click, then the
- *  standard overlay opens with a lazily-created item. */
+/** The write-anywhere shell for pages we do not cover. It renders nothing until the
+ *  background forwards a click on "Write a Common Note on this". Then the standard
+ *  overlay opens, and the page's item is only created at that point. */
 function WriteAnywhereApp({ pageUrl, onPosted }: { pageUrl: string; onPosted: () => void }) {
   const { session } = useSession();
   const [selection, setSelection] = useState<string | null>(null);
@@ -39,12 +39,11 @@ function WriteAnywhereApp({ pageUrl, onPosted }: { pageUrl: string; onPosted: ()
   );
 }
 
-/** Mounted instead of the notes UI when the local coverage check says this
- *  page has no item — costs no backend traffic until the user actually
- *  writes. After a successful post the page IS covered: sync the background
- *  (so the covered list includes it) and hand control back via
- *  `onCoverageChanged`, which remounts the full notes flow — the fresh note
- *  appears without a reload. */
+/** Mounted in place of the notes UI when the local coverage check says this page has
+ *  no item. It causes no backend traffic until the user actually writes something.
+ *  Once a note is posted the page is covered. We then ask the background to sync, so
+ *  that the covered list includes this page, and we call `onCoverageChanged`. The
+ *  caller remounts the full notes flow, so the new note appears without a reload. */
 export async function mountWriteAnywhere(
   ctx: ContentScriptContext,
   pageUrl: string,

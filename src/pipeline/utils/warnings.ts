@@ -1,16 +1,18 @@
 /**
  * Run-scoped warning collector.
  *
- * Non-fatal warnings (a media item that failed analysis, a fallback model being
- * used, etc.) can originate deep in the call stack — e.g. inside per-item media
- * analysis — far from the code that persists the pipeline run. Threading a
- * warnings array through every function in between is exactly the coupling we
- * avoid elsewhere, so warnings ride an AsyncLocalStorage sink, the same pattern
- * as tweetLog / costTracker.
+ * Warnings that are not fatal can come from deep in the call stack. Examples
+ * are a media item that failed analysis, or a fallback model being used. The
+ * code that raises them, such as per-item media analysis, sits far from the
+ * code that persists the pipeline run. Threading a warnings array through every
+ * function in between is exactly the coupling we avoid elsewhere. So warnings
+ * ride an AsyncLocalStorage sink instead, the same pattern tweetLog and
+ * costTracker use.
  *
- * Any function under withWarnings() calls addWarning(); processTweet reads
- * getWarnings() at completion and writes them to pipeline_runs.warnings.
- * addWarning outside a scope (e.g. local one-off tools) is a safe no-op.
+ * Any function running under withWarnings() can call addWarning(). When
+ * processTweet finishes it reads getWarnings() and writes the result to
+ * pipeline_runs.warnings. Calling addWarning outside a scope is a safe no-op,
+ * which is what local one-off tools do.
  */
 
 import { AsyncLocalStorage } from "node:async_hooks";
@@ -23,12 +25,14 @@ export function withWarnings<T>(fn: () => T): T {
   return warningStorage.run([], fn);
 }
 
-/** Record a non-fatal warning for the current run (no-op outside a scope). */
+/** Records a warning that is not fatal for the current run. Outside a scope
+ *  this does nothing. */
 export function addWarning(message: string): void {
   warningStorage.getStore()?.push(message);
 }
 
-/** All warnings collected so far in the current run ([] outside a scope). */
+/** Returns all warnings collected so far in the current run. Outside a scope it
+ *  returns an empty array. */
 export function getWarnings(): string[] {
   return warningStorage.getStore() ?? [];
 }

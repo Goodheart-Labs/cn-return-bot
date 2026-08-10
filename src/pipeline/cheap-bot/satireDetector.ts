@@ -1,19 +1,21 @@
 /**
- * cheap-bot — Stage 0: Satire detector
+ * cheap-bot stage 0: satire detector
  *
- * Pre-search gate. Reads the post + comments + author profile WITHOUT the
- * proposed note and decides whether the post is overt satire the audience is
- * in on. A positive verdict early-exits the pipeline (no_correction) before the
- * query writer, so we never spend search/writer/judge calls fact-checking a
- * joke.
+ * A gate that runs before search. It reads the post, the comments, and the
+ * author profile without the proposed note, and decides whether the post is
+ * overt satire the audience is in on. A positive verdict exits the pipeline
+ * early with no_correction, before the query writer runs. That way we never
+ * spend search, writer, or judge calls fact-checking a joke.
  *
- * High-precision by design: it must fire ONLY when the room is clearly in on
- * the joke (comedian/parody account, audience laughter, replies treating it as
- * comedy). It must NOT fire on fabricated content built to imitate real media
- * (fake headlines, doctored quotes, deepfakes) — those deceive and still need a
- * note. Misses are acceptable; false "satire" verdicts are not.
+ * The detector is high-precision by design. It must fire only when the room is
+ * clearly in on the joke. Examples are a comedian or parody account, audience
+ * laughter, and replies that treat the post as comedy. It must not fire on
+ * fabricated content built to imitate real media, such as fake headlines,
+ * doctored quotes, or deepfakes. Those deceive people and still need a note.
+ * Misses are acceptable. False "satire" verdicts are not.
  *
- * Reasoning precedes the verdict so the boolean is conditioned on the analysis.
+ * The response asks for the reasoning before the verdict, so the boolean is
+ * conditioned on the analysis.
  */
 
 import { getBotConfig } from "../ab-testing/botConfig";

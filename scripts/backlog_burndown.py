@@ -1,26 +1,30 @@
 #!/usr/bin/env python3
 """Backlog burndown for Nathan's daily note review.
 
-Answers "am I getting through the backlog?" by plotting the number of UNREVIEWED
-notes over time, per category (rated-helpful / rated-not-helpful / underwater) —
-the three pills Nathan reviews on Jim's Note Review Dashboard.
+This answers the question "am I getting through the backlog?". It plots how many
+UNREVIEWED notes there are over time, split by category. The three categories
+are rated helpful, rated not helpful, and underwater. They are the three pills
+Nathan reviews on Jim's Note Review Dashboard.
 
-A note is "reviewed" when it has a `review_dashboard_annotations` row with
-seen=true; that row's `updated_at` is the review timestamp (exact). A note's
-entry date is `notes.first_seen_at` (fallback `submitted_at`).
+A note counts as reviewed once it has a `review_dashboard_annotations` row with
+seen=true. That row's `updated_at` is the exact time of the review. A note enters
+the backlog on `notes.first_seen_at`, or on `submitted_at` when the first is
+missing.
 
     backlog(day, cat) = (notes in cat entered <= day)
                         - (notes in cat reviewed <= day)
 
-CAVEAT (baked into the chart): category is each note's CURRENT cn_status applied
-backward through all of history — Supabase keeps no per-day status snapshots, so
-a note now "underwater" is treated as underwater since it first appeared. That
-makes the reconstructed line approximate. To fix this going forward, every run
-appends today's EXACT unreviewed counts to tmp/backlog_snapshots.csv; once enough
-days accumulate, that file is the ground-truth series.
+The chart has one caveat baked into it. Each note's category is its CURRENT
+cn_status applied backward through the whole of history. Supabase keeps no
+per-day status snapshots, so a note that is underwater now is treated as
+underwater from the day it first appeared. That makes the reconstructed line
+approximate. To fix this going forward, every run appends today's exact
+unreviewed counts to tmp/backlog_snapshots.csv. Once enough days have
+accumulated, that file becomes the ground truth series.
 
-Run: source cn-return-bot/.env, then `python3 scripts/backlog_burndown.py`.
-Outputs tmp/backlog_burndown.html (+ tmp/backlog_snapshots.csv) and prints paths.
+To run it, source cn-return-bot/.env and then run
+`python3 scripts/backlog_burndown.py`. It writes tmp/backlog_burndown.html and
+tmp/backlog_snapshots.csv, and prints both paths.
 """
 import os, sys, json, csv, urllib.request, datetime as dt
 from collections import Counter, defaultdict
@@ -58,9 +62,17 @@ def fetch_all(table, select, extra="", order="note_id.asc"):
 
 
 def classify(notes, pub_by_id, lost_ids):
-    """Mirror src/review-dashboard/src/lib/data.ts cnStatusToFailureType +
-    isUnderwaterNote (public-dump counts first, scraped fallback; underwater =
-    not_helpful > helpful)."""
+    """Give every note the category the dashboard would show for it.
+
+    The statuses follow cnStatusToFailureType in
+    src/review-dashboard/src/lib/data.ts. Rating counts come from the public
+    dump when it has them, and fall back to the scraped counts on the note.
+    A note counts as underwater when it has more not-helpful ratings than
+    helpful ones. Note that the dashboard's isUnderwaterNote has since moved to
+    a stricter rule, which needs at least five ratings and a weighted helpful
+    share below 0.2. scripts/note_quota.py follows the newer rule, this script
+    does not, so the two disagree on which notes are underwater.
+    """
     def resolve(nid, h, n):
         p = pub_by_id.get(nid)
         if p and (p.get("helpful_count") is not None or p.get("not_helpful_count") is not None):
@@ -88,13 +100,15 @@ def day(iso):
 
 
 def build_series(notes, cat_by_id, reviewed_day_by_id):
-    """Per-category daily remaining-backlog series over [start, today]."""
+    """Build the daily remaining-backlog series for each category, from the start
+    date up to today."""
     entry = {}   # nid -> entry date str
     for note in notes:
         entry[note["note_id"]] = day(note["first_seen_at"] or note["submitted_at"])
 
-    # Daily deltas: +1 to backlog on entry day, -1 on review day (only for notes
-    # currently in one of the three tracked categories).
+    # Each note moves the backlog on two days. It adds one on the day it
+    # entered, and takes one away on the day it was reviewed. Only notes that
+    # are currently in one of the three tracked categories are counted.
     add = defaultdict(lambda: Counter())   # date -> cat -> count entering
     rem = defaultdict(lambda: Counter())   # date -> cat -> count reviewed
     review_dates, entry_dates = [], []
@@ -108,21 +122,24 @@ def build_series(notes, cat_by_id, reviewed_day_by_id):
         entry_dates.append(e)
         r = reviewed_day_by_id.get(nid)
         if r:
-            # Guard: a review logged before the note's own entry date would make
-            # backlog dip early; clamp review no earlier than entry.
+            # A review logged before the note's own entry date would make the
+            # backlog dip before the note ever arrived. So the review date is
+            # never allowed to fall earlier than the entry date.
             r = max(r, e)
             rem[r][cat] += 1
             review_dates.append(r)
 
     today = dt.date.today()
-    # Start the x-axis a touch before reviewing began, so the "burn" era is the focus.
+    # The x-axis starts a little before reviewing began, so the chart focuses on
+    # the period where the backlog is being burned down.
     first_review = min(review_dates) if review_dates else min(entry_dates)
     start = dt.date.fromisoformat(first_review) - dt.timedelta(days=3)
 
     dates, series = [], {c: [] for c in CAT_KEYS}
     running = Counter()
     d = start
-    # Seed running backlog with everything entered/reviewed strictly before start.
+    # Seed the running backlog with every note that entered, and every review
+    # that happened, strictly before the start date.
     for date_str, c in add.items():
         if dt.date.fromisoformat(date_str) < start:
             running.update(c)
@@ -143,7 +160,8 @@ def build_series(notes, cat_by_id, reviewed_day_by_id):
 
 
 def current_snapshot(cat_by_id, reviewed_seen_ids):
-    """Exact unreviewed counts right now, per tracked category."""
+    """Count how many notes are unreviewed right now, for each tracked category.
+    These counts are exact, unlike the reconstructed history."""
     total = Counter()
     reviewed = Counter()
     for nid, cat in cat_by_id.items():
@@ -162,7 +180,8 @@ def append_snapshot(snap):
     if os.path.exists(CSV_PATH):
         with open(CSV_PATH) as f:
             existing = [r for r in csv.reader(f)][1:]
-    existing = [r for r in existing if r and r[0] != today]  # overwrite today
+    # Drop any rows an earlier run wrote today, so this run replaces them.
+    existing = [r for r in existing if r and r[0] != today]
     for c in CAT_KEYS:
         s = snap[c]
         existing.append([today, c, s["total"], s["reviewed"], s["remaining"]])
@@ -188,7 +207,7 @@ def svg_chart(dates, series, w=920, h=440, pad_l=54, pad_r=140, pad_t=28, pad_b=
 
     parts = [f'<svg viewBox="0 0 {w} {h}" xmlns="http://www.w3.org/2000/svg" '
              f'font-family="ui-sans-serif,system-ui,-apple-system,sans-serif">']
-    # y gridlines + labels
+    # Draw the horizontal gridlines and their y-axis labels.
     steps = 5
     for k in range(steps + 1):
         v = ymax * k / steps
@@ -197,7 +216,8 @@ def svg_chart(dates, series, w=920, h=440, pad_l=54, pad_r=140, pad_t=28, pad_b=
                      f'stroke="#e5e7eb" stroke-width="1"/>')
         parts.append(f'<text x="{pad_l-8}" y="{y+4:.1f}" text-anchor="end" '
                      f'font-size="11" fill="#6b7280">{int(v)}</text>')
-    # x ticks: roughly weekly
+    # Draw the x-axis ticks. There are about twelve of them, so on a long series
+    # they land roughly a week apart.
     tick_every = max(1, n // 12)
     for i in range(0, n, tick_every):
         x = X(i)
@@ -205,7 +225,7 @@ def svg_chart(dates, series, w=920, h=440, pad_l=54, pad_r=140, pad_t=28, pad_b=
                      f'stroke="#9ca3af" stroke-width="1"/>')
         parts.append(f'<text x="{x:.1f}" y="{pad_t+plot_h+20}" text-anchor="middle" '
                      f'font-size="10" fill="#6b7280">{dates[i][5:]}</text>')
-    # series lines
+    # Draw one line per category, with a labelled dot at its latest value.
     for key, label, color in CATS:
         pts = " ".join(f"{X(i):.1f},{Y(v):.1f}" for i, v in enumerate(series[key]))
         parts.append(f'<polyline points="{pts}" fill="none" stroke="{color}" '
