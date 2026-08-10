@@ -1,14 +1,14 @@
 /**
  * yt-dlp Download
  *
- * Shared helpers for downloading videos and their metadata from any platform
- * yt-dlp supports, such as X, YouTube, TikTok, Vimeo and Twitch.
- * The local runOnVideos harness uses the combined `downloadWithYtDlp`.
- * The source verifier uses the granular `fetchYtDlpMetadata`,
- * `downloadVideoWithYtDlp` and `fetchAutoSubs` instead.
+ * Shared helper for downloading videos + metadata from any platform yt-dlp
+ * supports (X, YouTube, TikTok, Vimeo, Twitch, etc.). Used both by the local
+ * runOnVideos harness (combined `downloadWithYtDlp`) and by the source
+ * verifier (granular `fetchYtDlpMetadata`, `downloadVideoWithYtDlp`,
+ * `fetchAutoSubs`).
  */
 
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import { decodeHtmlEntities } from "../utils/html";
@@ -63,46 +63,53 @@ const LOW_QUALITY_FORMAT = "worst[height<=240]/worst";
 
 export type YtDlpQuality = "default" | "low";
 
-function quote(s: string): string {
-  return s.replace(/(["\\$`])/g, "\\$1");
-}
-
 const YOUTUBE_URL_RE = /^https?:\/\/([\w-]+\.)?(youtube\.com|youtu\.be)\//i;
 
-/** YouTube refuses video requests that come from a datacenter IP and answers
- *  with "Sign in to confirm you're not a bot". CI therefore routes those
- *  requests through a residential proxy. Set YTDLP_PROXY_URL to turn that on.
- *  Every other site is fetched directly, because those work without a proxy and
- *  proxy traffic is paid for by the gigabyte. */
-export function ytDlpProxyArgs(url: string): string[] {
+/** YouTube refuses video requests from datacenter IPs ("Sign in to confirm
+ *  you're not a bot"), so CI routes them through a residential proxy. Set
+ *  YTDLP_PROXY_URL to enable. Other sites are always fetched directly —
+ *  they work without a proxy and proxy traffic is paid per GB. */
+function ytDlpProxyArgs(url: string): string[] {
   const proxy = process.env.YTDLP_PROXY_URL;
   return proxy && YOUTUBE_URL_RE.test(url) ? ["--proxy", proxy] : [];
 }
 
-function ytDlpProxyFlag(url: string): string {
-  return ytDlpProxyArgs(url)
-    .map((arg) => `"${quote(arg)}"`)
-    .join(" ");
+const PROXY_RETRY_ATTEMPTS = 3;
+
+/** Run yt-dlp, adding the proxy flag when the URL needs it. Proxied calls are
+ *  retried: the proxy pool rotates its egress IP per connection, and it
+ *  occasionally hands out an IP YouTube has already flagged. A retry simply
+ *  draws a fresh IP. Direct calls run once. */
+export function execYtDlp(url: string, args: string[]): string {
+  const proxyArgs = ytDlpProxyArgs(url);
+  const attempts = proxyArgs.length > 0 ? PROXY_RETRY_ATTEMPTS : 1;
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      return execFileSync("yt-dlp", [...proxyArgs, ...args], {
+        timeout: YT_DLP_TIMEOUT_MS,
+        encoding: "utf8",
+        stdio: ["pipe", "pipe", "pipe"],
+      });
+    } catch (err) {
+      lastError = err;
+      if (attempt < attempts) console.warn(`yt-dlp attempt ${attempt}/${attempts} failed for ${url}, retrying with a fresh proxy IP`);
+    }
+  }
+  throw lastError;
 }
 
 /**
- * Fetches the metadata and downloads the media at the default quality. runOnVideos
- * uses this. The source verifier uses the granular functions below instead, because
- * it decides the download quality and the transcript source from the duration.
+ * Combined metadata + default-quality download in one yt-dlp invocation.
+ * Used by runOnVideos. The verifier uses the granular functions below
+ * because it wants to decide quality/auto-sub strategy based on duration.
  */
 export function downloadWithYtDlp(url: string, outputDir: string): YtDlpResult {
   const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
   try {
-    const metadataJson = execSync(
-      `yt-dlp ${ytDlpProxyFlag(url)} -J -o "${quote(outputTemplate)}" "${quote(url)}"`,
-      { timeout: YT_DLP_TIMEOUT_MS, encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] },
-    );
-    const meta: YtDlpMetadata = JSON.parse(metadataJson);
+    const meta: YtDlpMetadata = JSON.parse(execYtDlp(url, ["-J", "-o", outputTemplate, url]));
 
-    execSync(
-      `yt-dlp ${ytDlpProxyFlag(url)} -o "${quote(outputTemplate)}" "${quote(url)}"`,
-      { timeout: YT_DLP_TIMEOUT_MS, stdio: ["pipe", "pipe", "pipe"] },
-    );
+    execYtDlp(url, ["-o", outputTemplate, url]);
 
     return { meta, ...resolveDownloadedFile(meta, outputDir) };
   } catch (err: any) {
@@ -110,25 +117,19 @@ export function downloadWithYtDlp(url: string, outputDir: string): YtDlpResult {
   }
 }
 
-/** Fetches the metadata without downloading anything. The caller uses it to decide
- *  how large a download to ask for. */
+/** Metadata-only — no download. Used to size the download up front. */
 export function fetchYtDlpMetadata(url: string): YtDlpMetadata {
   try {
-    const metadataJson = execSync(
-      `yt-dlp ${ytDlpProxyFlag(url)} -J --skip-download "${quote(url)}"`,
-      { timeout: YT_DLP_TIMEOUT_MS, encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] },
-    );
-    return JSON.parse(metadataJson);
+    return JSON.parse(execYtDlp(url, ["-J", "--skip-download", url]));
   } catch (err: any) {
     throw new Error(`yt-dlp metadata failed for ${url}: ${err?.message}`);
   }
 }
 
 /**
- * Downloads the media and assumes the metadata was already fetched. Passing
- * `quality: "low"` asks for a stream of 240p or less, and falls back to the worst
- * stream on offer. When we only need a few sampled frames from a video, this shrinks
- * the download by a large factor.
+ * Download only — assumes metadata was already fetched. `quality: "low"`
+ * forces ≤240p (lowest available stream). For videos where we only need a
+ * few sampled frames, this dramatically shrinks the byte count.
  */
 export function downloadVideoWithYtDlp(
   url: string,
@@ -137,12 +138,9 @@ export function downloadVideoWithYtDlp(
   quality: YtDlpQuality = "default",
 ): { filePath: string | null; kind: YtDlpKind | null } {
   const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
-  const formatArg = quality === "low" ? `-f "${LOW_QUALITY_FORMAT}"` : "";
+  const formatArgs = quality === "low" ? ["-f", LOW_QUALITY_FORMAT] : [];
   try {
-    execSync(
-      `yt-dlp ${ytDlpProxyFlag(url)} ${formatArg} -o "${quote(outputTemplate)}" "${quote(url)}"`.trim(),
-      { timeout: YT_DLP_TIMEOUT_MS, stdio: ["pipe", "pipe", "pipe"] },
-    );
+    execYtDlp(url, [...formatArgs, "-o", outputTemplate, url]);
     return resolveDownloadedFile(meta, outputDir);
   } catch (err: any) {
     throw new Error(`yt-dlp download failed for ${url}: ${err?.message}`);
@@ -150,24 +148,19 @@ export function downloadVideoWithYtDlp(
 }
 
 /**
- * Fetches the automatically generated captions and returns them as plain text.
- * Returns null when the URL has no auto-subs. That happens when the uploader turned
- * them off, or when the video is in a language we did not ask for.
+ * Fetch auto-generated captions and return the plain text. Returns null when
+ * the URL has no auto-subs available (e.g. uploader disabled them, or the
+ * video is in a language we didn't request).
  */
 export function fetchAutoSubs(url: string, outputDir: string, lang: string = "en"): string | null {
   const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
   try {
-    execSync(
-      `yt-dlp ${ytDlpProxyFlag(url)} --write-auto-sub --sub-lang ${quote(lang)} --skip-download -o "${quote(outputTemplate)}" "${quote(url)}"`,
-      { timeout: YT_DLP_TIMEOUT_MS, stdio: ["pipe", "pipe", "pipe"] },
-    );
+    execYtDlp(url, ["--write-auto-sub", "--sub-lang", lang, "--skip-download", "-o", outputTemplate, url]);
   } catch {
-    // yt-dlp errors when no subs are available. We treat that as "no subs" instead
-    // of throwing.
+    // yt-dlp errors when no subs are available — treat as "no subs" rather than throw.
     return null;
   }
-  // yt-dlp writes the subtitle file as <id>.<lang>.vtt, and sometimes as ttml. We
-  // take the first one we find.
+  // yt-dlp writes the sub file as <id>.<lang>.vtt (sometimes ttml). Pick the first one.
   const matches = fs.readdirSync(outputDir).filter((f) => f.endsWith(".vtt") || f.endsWith(".ttml"));
   if (!matches.length) return null;
   const subPath = path.join(outputDir, matches[0]!);
@@ -183,10 +176,7 @@ export function fetchAutoSubs(url: string, outputDir: string, lang: string = "en
 export function fetchTimedTranscript(url: string, outputDir: string, lang: string = "en"): SubtitleCue[] | null {
   const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
   try {
-    execSync(
-      `yt-dlp ${ytDlpProxyFlag(url)} --write-subs --write-auto-subs --sub-lang ${quote(lang)} --skip-download -o "${quote(outputTemplate)}" "${quote(url)}"`,
-      { timeout: YT_DLP_TIMEOUT_MS, stdio: ["pipe", "pipe", "pipe"] },
-    );
+    execYtDlp(url, ["--write-subs", "--write-auto-subs", "--sub-lang", lang, "--skip-download", "-o", outputTemplate, url]);
   } catch {
     return null;
   }
@@ -202,8 +192,7 @@ function resolveDownloadedFile(meta: YtDlpMetadata, outputDir: string): { filePa
   if (fs.existsSync(expected)) {
     return { filePath: expected, kind: classifyByExtension(expected) };
   }
-  // A quality filter or an unexpected extension can change the file name, so we scan
-  // the directory for any media file instead.
+  // Quality filter or extension fallback: scan the directory for any media file.
   for (const file of fs.readdirSync(outputDir)) {
     const full = path.join(outputDir, file);
     const kind = classifyByExtension(full);
@@ -220,17 +209,16 @@ export interface SubtitleCue {
   text: string;
 }
 
-/** Converts a subtitle timecode to seconds. It accepts forms such as "00:01:23.456",
- *  "01:23,456" and "83.4". */
+/** "00:01:23.456" / "01:23,456" / "83.4" → seconds. */
 function parseTimecode(tc: string): number {
   return tc.replace(",", ".").split(":").reduce((acc, part) => acc * 60 + Number(part), 0);
 }
 
 /**
- * Parses a WEBVTT or SRT subtitle file into timestamped cues. It applies the same
- * cleaning and consecutive-duplicate removal that the plain-text path needs for
- * YouTube's rolling auto-subs. Each surviving line is tagged with the start and end
- * time of the cue it came from.
+ * Parse a WEBVTT/SRT subtitle file into timestamped cues. Applies the same
+ * cleaning + consecutive-duplicate dedup the plain-text path needs for
+ * YouTube's rolling auto-subs, but tags each surviving line with the start/end
+ * of its enclosing cue.
  */
 export function parseSubtitleToCues(content: string): SubtitleCue[] {
   const cues: SubtitleCue[] = [];
@@ -245,16 +233,17 @@ export function parseSubtitleToCues(content: string): SubtitleCue[] {
     if (line.startsWith("NOTE ")) continue;
     const arrow = line.indexOf("-->");
     if (arrow !== -1) {
-      // A timing line looks like "00:00:00.000 --> 00:00:02.000 align:start position:0%".
+      // "00:00:00.000 --> 00:00:02.000 align:start position:0%"
       curStart = parseTimecode(line.slice(0, arrow).trim().split(/\s+/).pop() ?? "0");
       curEnd = parseTimecode(line.slice(arrow + 3).trim().split(/\s+/)[0] ?? "0");
       continue;
     }
     if (/^\d+$/.test(line)) continue; // SRT sequence numbers
+    // Strip cue tags, decode HTML entities, collapse the resulting whitespace.
     const cleaned = decodeHtmlEntities(line.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ").trim();
     if (!cleaned) continue;
-    // YouTube auto-subs repeat every line as it builds up word by word, so a line
-    // identical to the one before it carries nothing new.
+    // YouTube auto-subs duplicate every line as they build up word-by-word.
+    // Skip a line if it's identical to the immediately preceding one.
     if (cleaned === prev) continue;
     cues.push({ start: curStart, end: curEnd, text: cleaned });
     prev = cleaned;
