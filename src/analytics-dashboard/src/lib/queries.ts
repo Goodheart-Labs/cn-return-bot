@@ -1,6 +1,6 @@
 import { supabase } from "../../../everything-shared/supabase";
 
-// Both queries run through security-definer RPCs (migration 073) — the anon
+// Both queries run through security-definer RPCs (migration 074) — the anon
 // key cannot read everything_events or everything_votes directly, and the
 // RPCs return only aggregate counts.
 

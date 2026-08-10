@@ -1,5 +1,5 @@
--- 074: PostHog is gone — analytics events now live in everything_events
--- (migration 073) and the dashboard reads Supabase directly. Remove the
+-- 075: PostHog is gone — analytics events now live in everything_events
+-- (migration 074) and the dashboard reads Supabase directly. Remove the
 -- posthog_reader role and the per-table read policies migration 070 created
 -- for it. Guarded so this is a no-op on databases that never had the role
 -- (e.g. fresh local stacks).
