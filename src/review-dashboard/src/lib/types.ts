@@ -162,10 +162,11 @@ export const FAILURE_TYPE_CONFIG: Record<FailureType, FailureTypeConfig> = {
   missed_opportunity: { label: "Missed opportunity", defaultOn: false, production: true, datasetRun: false, color: "bg-yellow-100 text-yellow-800" },
   needs_more_ratings: { label: "Needs More Ratings", defaultOn: false, production: true, datasetRun: false, color: "bg-blue-100 text-blue-800" },
   // A note that Community Notes still calls NEEDS_MORE_RATINGS, but whose ratings
-  // are already bad enough that it is unlikely to recover. isUnderwaterNote in
-  // lib/data.ts holds the exact rule. It is still undecided, but it is sinking.
-  // This type is split out of needs_more_ratings the same way lost_to_competitor
-  // is, so the two pills never show the same note.
+  // are already bad enough that it is unlikely to recover. The exact rule now
+  // lives in the review_dashboard_items_v view, added in migration 073. It is
+  // still undecided, but it is sinking. This type is split out of
+  // needs_more_ratings the same way lost_to_competitor is, so the two pills never
+  // show the same note.
   underwater: { label: "Underwater", defaultOn: true, production: true, datasetRun: false, color: "bg-indigo-100 text-indigo-800" },
   filtered_low_eval_score: { label: "Filtered (low eval score)", defaultOn: false, production: true, datasetRun: false, color: "bg-teal-100 text-teal-800" },
   // Notes the bot wrote but never submitted, split by the reason. Either the

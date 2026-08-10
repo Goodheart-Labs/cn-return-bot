@@ -69,10 +69,11 @@ function quote(s: string): string {
 
 const YOUTUBE_URL_RE = /^https?:\/\/([\w-]+\.)?(youtube\.com|youtu\.be)\//i;
 
-/** YouTube refuses video requests from datacenter IPs ("Sign in to confirm
- *  you're not a bot"), so CI routes them through a residential proxy. Set
- *  YTDLP_PROXY_URL to enable. Other sites are always fetched directly —
- *  they work without a proxy and proxy traffic is paid per GB. */
+/** YouTube refuses video requests that come from a datacenter IP and answers
+ *  with "Sign in to confirm you're not a bot". CI therefore routes those
+ *  requests through a residential proxy. Set YTDLP_PROXY_URL to turn that on.
+ *  Every other site is fetched directly, because those work without a proxy and
+ *  proxy traffic is paid for by the gigabyte. */
 export function ytDlpProxyArgs(url: string): string[] {
   const proxy = process.env.YTDLP_PROXY_URL;
   return proxy && YOUTUBE_URL_RE.test(url) ? ["--proxy", proxy] : [];

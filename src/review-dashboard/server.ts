@@ -15,8 +15,9 @@ if (!supabaseUrl || !supabaseKey) {
 
 const PORT = 8001;
 
-// WARNING: This injects the Supabase service role key (full DB access) into the page.
-// This server must only run on localhost. Never expose it to the network or deploy it.
+// WARNING: This injects the Supabase service role key into the page. That key has
+// full access to the database. So this server must only ever run on localhost.
+// Never expose it to the network and never deploy it.
 function injectCredentials(html: string): string {
   const script = `
     <script>
@@ -34,7 +35,6 @@ serve({
   async fetch(req) {
     const url = new URL(req.url);
 
-    // Serve static files from dist
     if (url.pathname !== "/" && url.pathname !== "/index.html") {
       const filePath = join(import.meta.dir, "dist", url.pathname);
       try {
@@ -46,8 +46,9 @@ serve({
     }
 
     const html = injectCredentials(readFileSync(join(import.meta.dir, "dist/index.html"), "utf-8"));
-    // Never cache the HTML: it references content-hashed JS/CSS, so a plain
-    // refresh must always re-read index.html to pick up a new build's hashes.
+    // The HTML must never be cached. It points at JavaScript and CSS files whose
+    // names contain a hash of their contents. A plain refresh therefore has to
+    // re-read index.html to learn the file names a new build produced.
     return new Response(html, {
       headers: { "Content-Type": "text/html", "Cache-Control": "no-store, must-revalidate" },
     });
