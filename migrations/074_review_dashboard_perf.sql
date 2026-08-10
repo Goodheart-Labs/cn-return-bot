@@ -43,7 +43,11 @@ language sql stable security definer set search_path = public as $$
       case when p_filters ? 'seen' then (p_filters->>'seen')::boolean end as seen_filter,
       case when p_filters ? 'ab' then p_filters->'ab' end                 as ab
   ),
-  v as (select * from review_dashboard_items_v),
+  -- Only the columns the aggregations read — materializing the full view
+  -- row (all hydration columns) into the CTE tuplestore costs ~1s on prod.
+  v as (select failure_type, seen, ab_test_picks, item_date, item_kind,
+               failure_modes, topic
+        from review_dashboard_items_v),
   by_type as (
     select
       failure_type,
@@ -114,3 +118,12 @@ exception when insufficient_privilege then
 end $$;
 
 notify pgrst, 'reload schema';
+
+-- 4. JIT off for the two hot RPCs — the dominant remaining cost was Postgres
+--    JIT-compiling the big view query on EVERY execution (5-12s calls that
+--    dropped to <1s once compiled). These queries are index-lookup-bound, not
+--    compute-bound; JIT buys nothing and its compile time is the whole bill.
+alter function review_dashboard_counts(jsonb) set jit = off;
+alter function review_dashboard_page(jsonb, timestamptz, text, int) set jit = off;
+
+notify pgrst, 'reload config';
