@@ -29,4 +29,6 @@ jobs:
           yt-dlp --version
 
       - name: List channel and fetch one video's metadata and cues
+        env:
+          YTDLP_PROXY_URL: ${{ secrets.YTDLP_PROXY_URL }}
         run: bun run src/everything/debug/testYoutubeIngestion.ts

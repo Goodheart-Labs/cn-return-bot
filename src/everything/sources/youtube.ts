@@ -2,7 +2,7 @@ import { execFileSync, execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import { tmpdir } from "os";
-import { fetchTimedTranscript, type SubtitleCue } from "../../pipeline/media/ytDlpDownload";
+import { fetchTimedTranscript, ytDlpProxyArgs, type SubtitleCue } from "../../pipeline/media/ytDlpDownload";
 import type { FetchedContent } from "../types";
 
 export function ensureYtDlp(): void {
@@ -26,7 +26,7 @@ function fetchVideoMeta(url: string): { id: string; title: string; uploadDate?: 
   // without swallowing the other fields.
   const out = execFileSync(
     "yt-dlp",
-    ["--skip-download", "--no-warnings", "--print", "%(upload_date)s", "--print", "%(id)s", "--print", "%(title)s", url],
+    [...ytDlpProxyArgs(url), "--skip-download", "--no-warnings", "--print", "%(upload_date)s", "--print", "%(id)s", "--print", "%(title)s", url],
     { encoding: "utf8", timeout: 120_000 },
   );
   const [uploadDate = "", id = "", ...titleParts] = out.trim().split("\n");
@@ -46,6 +46,7 @@ export function fetchChannelVideos(channelUrl: string, limit: number): ChannelVi
   const out = execFileSync(
     "yt-dlp",
     [
+      ...ytDlpProxyArgs(channelUrl),
       "--flat-playlist",
       "--no-warnings",
       "--playlist-items",

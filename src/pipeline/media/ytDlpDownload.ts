@@ -67,6 +67,23 @@ function quote(s: string): string {
   return s.replace(/(["\\$`])/g, "\\$1");
 }
 
+const YOUTUBE_URL_RE = /^https?:\/\/([\w-]+\.)?(youtube\.com|youtu\.be)\//i;
+
+/** YouTube refuses video requests from datacenter IPs ("Sign in to confirm
+ *  you're not a bot"), so CI routes them through a residential proxy. Set
+ *  YTDLP_PROXY_URL to enable. Other sites are always fetched directly —
+ *  they work without a proxy and proxy traffic is paid per GB. */
+export function ytDlpProxyArgs(url: string): string[] {
+  const proxy = process.env.YTDLP_PROXY_URL;
+  return proxy && YOUTUBE_URL_RE.test(url) ? ["--proxy", proxy] : [];
+}
+
+function ytDlpProxyFlag(url: string): string {
+  return ytDlpProxyArgs(url)
+    .map((arg) => `"${quote(arg)}"`)
+    .join(" ");
+}
+
 /**
  * Combined metadata + default-quality download in one yt-dlp invocation.
  * Used by runOnVideos. The verifier uses the granular functions below
@@ -76,13 +93,13 @@ export function downloadWithYtDlp(url: string, outputDir: string): YtDlpResult {
   const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
   try {
     const metadataJson = execSync(
-      `yt-dlp -J -o "${quote(outputTemplate)}" "${quote(url)}"`,
+      `yt-dlp ${ytDlpProxyFlag(url)} -J -o "${quote(outputTemplate)}" "${quote(url)}"`,
       { timeout: YT_DLP_TIMEOUT_MS, encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] },
     );
     const meta: YtDlpMetadata = JSON.parse(metadataJson);
 
     execSync(
-      `yt-dlp -o "${quote(outputTemplate)}" "${quote(url)}"`,
+      `yt-dlp ${ytDlpProxyFlag(url)} -o "${quote(outputTemplate)}" "${quote(url)}"`,
       { timeout: YT_DLP_TIMEOUT_MS, stdio: ["pipe", "pipe", "pipe"] },
     );
 
@@ -96,7 +113,7 @@ export function downloadWithYtDlp(url: string, outputDir: string): YtDlpResult {
 export function fetchYtDlpMetadata(url: string): YtDlpMetadata {
   try {
     const metadataJson = execSync(
-      `yt-dlp -J --skip-download "${quote(url)}"`,
+      `yt-dlp ${ytDlpProxyFlag(url)} -J --skip-download "${quote(url)}"`,
       { timeout: YT_DLP_TIMEOUT_MS, encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] },
     );
     return JSON.parse(metadataJson);
@@ -120,7 +137,7 @@ export function downloadVideoWithYtDlp(
   const formatArg = quality === "low" ? `-f "${LOW_QUALITY_FORMAT}"` : "";
   try {
     execSync(
-      `yt-dlp ${formatArg} -o "${quote(outputTemplate)}" "${quote(url)}"`.trim(),
+      `yt-dlp ${ytDlpProxyFlag(url)} ${formatArg} -o "${quote(outputTemplate)}" "${quote(url)}"`.trim(),
       { timeout: YT_DLP_TIMEOUT_MS, stdio: ["pipe", "pipe", "pipe"] },
     );
     return resolveDownloadedFile(meta, outputDir);
@@ -138,7 +155,7 @@ export function fetchAutoSubs(url: string, outputDir: string, lang: string = "en
   const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
   try {
     execSync(
-      `yt-dlp --write-auto-sub --sub-lang ${quote(lang)} --skip-download -o "${quote(outputTemplate)}" "${quote(url)}"`,
+      `yt-dlp ${ytDlpProxyFlag(url)} --write-auto-sub --sub-lang ${quote(lang)} --skip-download -o "${quote(outputTemplate)}" "${quote(url)}"`,
       { timeout: YT_DLP_TIMEOUT_MS, stdio: ["pipe", "pipe", "pipe"] },
     );
   } catch {
@@ -162,7 +179,7 @@ export function fetchTimedTranscript(url: string, outputDir: string, lang: strin
   const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
   try {
     execSync(
-      `yt-dlp --write-subs --write-auto-subs --sub-lang ${quote(lang)} --skip-download -o "${quote(outputTemplate)}" "${quote(url)}"`,
+      `yt-dlp ${ytDlpProxyFlag(url)} --write-subs --write-auto-subs --sub-lang ${quote(lang)} --skip-download -o "${quote(outputTemplate)}" "${quote(url)}"`,
       { timeout: YT_DLP_TIMEOUT_MS, stdio: ["pipe", "pipe", "pipe"] },
     );
   } catch {
