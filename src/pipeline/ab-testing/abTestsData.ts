@@ -257,13 +257,14 @@ const SIMPLE_BOT_WRITER_EXAMPLES_TEST: ABTest = {
 // the "off" arm sees the document exactly as it was before the experiment.
 // Rating analysis of this topic's notes found the worst-rejected one (73%
 // "missing key points") sidestepped the true core of the post's claim; raters
-// read the omission as evasive. The pick is sampled for every simple-bot run
-// but only changes behaviour on misinfo runs whose document opts in via
-// CONCEDE_SHAPE_MARKER — analyse it filtered to those runs. Prereq-gated to
-// simple-bot, so no defaultVariant.
+// read the omission as evasive. Only misinfo-monitoring runs sample a pick
+// (the misinfo_monitoring prerequisite reads the config field
+// MISINFO_MONITORING_TEST records, so this test must come after it in
+// AB_TESTS); the pick only changes behaviour on topics whose document opts in
+// via CONCEDE_SHAPE_MARKER. Prereq-gated, so no defaultVariant.
 const MISINFO_CONCEDE_SHAPE_TEST: ABTest = {
   name: "misinfo_concede_shape",
-  prerequisites: { botId: "simple-bot" },
+  prerequisites: { botId: "simple-bot", misinfo_monitoring: true },
   variants: [
     { variant: { name: "off", overrides: { concede_shape: false } }, weight: 50 },
     { variant: { name: "on",  overrides: { concede_shape: true  } }, weight: 50 },
@@ -442,15 +443,17 @@ const FEED_SIZE_TEST: ABTest = {
 // Pseudo A/B tests: record whether a run came from the XXL-feed misinfo
 // pre-pass and, if so, which topic it matched. `processPosts` forces both picks
 // from the item's MonitoringContext; regular runs carry no monitoring, so they
-// sample the default arm (`no` / `none`). Empty overrides — these record only,
-// they drive no behaviour (the reference document is injected via
+// sample the default arm (`no` / `none`). The monitoring test also records its
+// outcome into the config (misinfo_monitoring), so tests declared after it can
+// prerequisite-gate on monitoring runs — MISINFO_CONCEDE_SHAPE_TEST does. It
+// still drives no behaviour itself (the reference document is injected via
 // MonitoringContext, independent of BotConfig).
 const MISINFO_MONITORING_TEST: ABTest = {
   name: "misinfo_monitoring",
   defaultVariant: "no",
   variants: [
-    { variant: { name: "no",  overrides: {} }, weight: 100 },
-    { variant: { name: "yes", overrides: {} }, weight: 0 },
+    { variant: { name: "no",  overrides: { misinfo_monitoring: false } }, weight: 100 },
+    { variant: { name: "yes", overrides: { misinfo_monitoring: true  } }, weight: 0 },
   ],
 };
 
@@ -582,7 +585,6 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_CLAIM_TEST,
   SIMPLE_BOT_WRITER_EXAMPLES_TEST,
   SIMPLE_BOT_POLITICAL_SOURCES_TEST,
-  MISINFO_CONCEDE_SHAPE_TEST,
   SIMPLE_BOT_CORRECTION_EXTRACTION_TEST,
   TOPIC_FILTER_TEST,
   NOTE_PREFILTER_TEST,
@@ -599,6 +601,9 @@ export const AB_TESTS: ABTest[] = [
   FEED_SIZE_TEST,
   MISINFO_MONITORING_TEST,
   MISINFO_TOPIC_TEST,
+  // Must come after MISINFO_MONITORING_TEST: its prerequisite reads the
+  // misinfo_monitoring config field that test records.
+  MISINFO_CONCEDE_SHAPE_TEST,
   PANGRAM_MONITORING_TEST,
   PANGRAM_NOTE_TEST,
   AUTHOR_HISTORY_TEST,

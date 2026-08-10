@@ -169,6 +169,13 @@ export interface BotConfig {
    */
   writer_examples?: boolean;
   /**
+   * True when the run came from the XXL-feed misinfo pre-pass (a
+   * MonitoringContext is present). Mirrors the forced misinfo_monitoring pick
+   * into the config so later tests can prerequisite-gate on it. Set by
+   * MISINFO_MONITORING_TEST; defaults false.
+   */
+  misinfo_monitoring?: boolean;
+  /**
    * When true, the run is on the "on" arm of the concede-then-correct
    * experiment for curated misinfo topics. The reference document keeps its
    * marker-wrapped experiment additions (the "Note shape — concede the true
