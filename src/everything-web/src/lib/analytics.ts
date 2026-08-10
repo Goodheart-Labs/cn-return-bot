@@ -22,6 +22,15 @@ function deviceId(): string {
   return fresh;
 }
 
+/** The page URL without its fragment. The auth return (magic link, X OAuth)
+ *  lands with access and refresh tokens in the fragment, so the fragment must
+ *  never be stored; dropping it also stops the app's post-auth hash cleanup
+ *  from counting as a second pageview. Routing is query-param based, so the
+ *  fragment carries no navigation information anyway. */
+function pageUrl(): string {
+  return window.location.origin + window.location.pathname + window.location.search;
+}
+
 export function initAnalytics() {
   setAnalyticsSink({
     capture: (event, props) =>
@@ -44,18 +53,21 @@ export function initAnalytics() {
   // The initial load fires immediately. PostHog used to defer this until the
   // tab became visible; a background-tab load now counts as a pageview, which
   // we accept for simplicity.
-  track("pageview", { url: window.location.href });
+  capturePageviewNow();
 }
 
-// The URL of the last counted pageview, starting with the landing URL that
-// initAnalytics captures.
-let lastPageviewUrl = window.location.href;
+// The URL of the last counted pageview.
+let lastPageviewUrl: string | null = null;
+
+function capturePageviewNow() {
+  lastPageviewUrl = pageUrl();
+  track("pageview", { url: lastPageviewUrl });
+}
 
 /** Capture a pageview for an in-app navigation, but only if the URL actually
  *  changed. Route handlers can then call this unconditionally after their
  *  pushState — re-selecting the current filter doesn't inflate the count. */
 export function capturePageview() {
-  if (window.location.href === lastPageviewUrl) return;
-  lastPageviewUrl = window.location.href;
-  track("pageview", { url: window.location.href });
+  if (pageUrl() === lastPageviewUrl) return;
+  capturePageviewNow();
 }
