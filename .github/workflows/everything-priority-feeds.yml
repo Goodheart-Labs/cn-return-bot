@@ -37,6 +37,8 @@ jobs:
       # Cloudflare Worker relaying Substack RSS fetches (Substack 403s runner IPs)
       SUBSTACK_PROXY_URL: ${{ secrets.SUBSTACK_PROXY_URL }}
       SUBSTACK_PROXY_KEY: ${{ secrets.SUBSTACK_PROXY_KEY }}
+      # Residential proxy for yt-dlp YouTube fetches (YouTube bot-checks runner IPs)
+      YTDLP_PROXY_URL: ${{ secrets.YTDLP_PROXY_URL }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
