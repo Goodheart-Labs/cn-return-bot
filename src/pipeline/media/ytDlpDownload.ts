@@ -69,9 +69,34 @@ const YOUTUBE_URL_RE = /^https?:\/\/([\w-]+\.)?(youtube\.com|youtu\.be)\//i;
  *  you're not a bot"), so CI routes them through a residential proxy. Set
  *  YTDLP_PROXY_URL to enable. Other sites are always fetched directly —
  *  they work without a proxy and proxy traffic is paid per GB. */
-export function ytDlpProxyArgs(url: string): string[] {
+function ytDlpProxyArgs(url: string): string[] {
   const proxy = process.env.YTDLP_PROXY_URL;
   return proxy && YOUTUBE_URL_RE.test(url) ? ["--proxy", proxy] : [];
+}
+
+const PROXY_RETRY_ATTEMPTS = 3;
+
+/** Run yt-dlp, adding the proxy flag when the URL needs it. Proxied calls are
+ *  retried: the proxy pool rotates its egress IP per connection, and it
+ *  occasionally hands out an IP YouTube has already flagged. A retry simply
+ *  draws a fresh IP. Direct calls run once. */
+export function execYtDlp(url: string, args: string[]): string {
+  const proxyArgs = ytDlpProxyArgs(url);
+  const attempts = proxyArgs.length > 0 ? PROXY_RETRY_ATTEMPTS : 1;
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      return execFileSync("yt-dlp", [...proxyArgs, ...args], {
+        timeout: YT_DLP_TIMEOUT_MS,
+        encoding: "utf8",
+        stdio: ["pipe", "pipe", "pipe"],
+      });
+    } catch (err) {
+      lastError = err;
+      if (attempt < attempts) console.warn(`yt-dlp attempt ${attempt}/${attempts} failed for ${url}, retrying with a fresh proxy IP`);
+    }
+  }
+  throw lastError;
 }
 
 /**
@@ -82,18 +107,9 @@ export function ytDlpProxyArgs(url: string): string[] {
 export function downloadWithYtDlp(url: string, outputDir: string): YtDlpResult {
   const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
   try {
-    const metadataJson = execFileSync(
-      "yt-dlp",
-      [...ytDlpProxyArgs(url), "-J", "-o", outputTemplate, url],
-      { timeout: YT_DLP_TIMEOUT_MS, encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] },
-    );
-    const meta: YtDlpMetadata = JSON.parse(metadataJson);
+    const meta: YtDlpMetadata = JSON.parse(execYtDlp(url, ["-J", "-o", outputTemplate, url]));
 
-    execFileSync(
-      "yt-dlp",
-      [...ytDlpProxyArgs(url), "-o", outputTemplate, url],
-      { timeout: YT_DLP_TIMEOUT_MS, stdio: ["pipe", "pipe", "pipe"] },
-    );
+    execYtDlp(url, ["-o", outputTemplate, url]);
 
     return { meta, ...resolveDownloadedFile(meta, outputDir) };
   } catch (err: any) {
@@ -104,12 +120,7 @@ export function downloadWithYtDlp(url: string, outputDir: string): YtDlpResult {
 /** Metadata-only — no download. Used to size the download up front. */
 export function fetchYtDlpMetadata(url: string): YtDlpMetadata {
   try {
-    const metadataJson = execFileSync(
-      "yt-dlp",
-      [...ytDlpProxyArgs(url), "-J", "--skip-download", url],
-      { timeout: YT_DLP_TIMEOUT_MS, encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] },
-    );
-    return JSON.parse(metadataJson);
+    return JSON.parse(execYtDlp(url, ["-J", "--skip-download", url]));
   } catch (err: any) {
     throw new Error(`yt-dlp metadata failed for ${url}: ${err?.message}`);
   }
@@ -129,11 +140,7 @@ export function downloadVideoWithYtDlp(
   const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
   const formatArgs = quality === "low" ? ["-f", LOW_QUALITY_FORMAT] : [];
   try {
-    execFileSync(
-      "yt-dlp",
-      [...ytDlpProxyArgs(url), ...formatArgs, "-o", outputTemplate, url],
-      { timeout: YT_DLP_TIMEOUT_MS, stdio: ["pipe", "pipe", "pipe"] },
-    );
+    execYtDlp(url, [...formatArgs, "-o", outputTemplate, url]);
     return resolveDownloadedFile(meta, outputDir);
   } catch (err: any) {
     throw new Error(`yt-dlp download failed for ${url}: ${err?.message}`);
@@ -148,11 +155,7 @@ export function downloadVideoWithYtDlp(
 export function fetchAutoSubs(url: string, outputDir: string, lang: string = "en"): string | null {
   const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
   try {
-    execFileSync(
-      "yt-dlp",
-      [...ytDlpProxyArgs(url), "--write-auto-sub", "--sub-lang", lang, "--skip-download", "-o", outputTemplate, url],
-      { timeout: YT_DLP_TIMEOUT_MS, stdio: ["pipe", "pipe", "pipe"] },
-    );
+    execYtDlp(url, ["--write-auto-sub", "--sub-lang", lang, "--skip-download", "-o", outputTemplate, url]);
   } catch {
     // yt-dlp errors when no subs are available — treat as "no subs" rather than throw.
     return null;
@@ -173,11 +176,7 @@ export function fetchAutoSubs(url: string, outputDir: string, lang: string = "en
 export function fetchTimedTranscript(url: string, outputDir: string, lang: string = "en"): SubtitleCue[] | null {
   const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
   try {
-    execFileSync(
-      "yt-dlp",
-      [...ytDlpProxyArgs(url), "--write-subs", "--write-auto-subs", "--sub-lang", lang, "--skip-download", "-o", outputTemplate, url],
-      { timeout: YT_DLP_TIMEOUT_MS, stdio: ["pipe", "pipe", "pipe"] },
-    );
+    execYtDlp(url, ["--write-subs", "--write-auto-subs", "--sub-lang", lang, "--skip-download", "-o", outputTemplate, url]);
   } catch {
     return null;
   }
