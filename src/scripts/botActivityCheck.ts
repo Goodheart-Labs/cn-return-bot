@@ -1,4 +1,4 @@
-/** Throwaway: which bots actually ran in the last N days? */
+/** A throwaway script. It shows which bots actually ran in the last N days. */
 import "dotenv/config";
 import { getSupabaseClient } from "../api/supabaseClient";
 import { fetchAllRows } from "../api/paging";
@@ -9,7 +9,8 @@ const since = new Date();
 since.setUTCDate(since.getUTCDate() - DAYS);
 const sinceIso = since.toISOString();
 
-// Notes submitted in window, mapped to bot via submitted pipeline_runs.
+// The notes table does not say which bot wrote a note. The pipeline run that
+// submitted the note does, so we load both and join them on the note id.
 const notes = await fetchAllRows<{ note_id: string; cn_status: string | null; submitted_at: string | null }>(
   () => client.from("notes").select("note_id, cn_status, submitted_at").gte("submitted_at", sinceIso),
   "note_id", { label: "act.notes" },

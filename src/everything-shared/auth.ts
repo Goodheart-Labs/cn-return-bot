@@ -10,14 +10,15 @@ export function useSession(): { session: Session | null; ready: boolean; event: 
   const [event, setEvent] = useState<AuthChangeEvent | null>(null);
 
   useEffect(() => {
-    // Extension contexts (popup, content scripts, background) each run their
-    // own supabase-js instance over one chrome.storage.local session, and
-    // onAuthStateChange only fires in the context that changed it — watch the
-    // shared storage so a login in the popup reaches every open page.
+    // The popup, the content scripts and the background each run their own
+    // supabase-js instance, and all of them share one session in
+    // chrome.storage.local. onAuthStateChange only fires in the context that made
+    // the change. So we also watch the shared storage, and a login in the popup then
+    // reaches every open page.
     const ext = (globalThis as unknown as { browser?: any; chrome?: any }).browser?.storage
       ?? (globalThis as unknown as { chrome?: any }).chrome?.storage;
     const logSession = (label: string, s: Session | null) => {
-      if (!ext) return; // extension-only diagnostics; keep the website console clean
+      if (!ext) return; // These diagnostics are for the extension only. The website's console stays clean.
       console.debug(`[common-notes] session (${label}): ${s ? s.user.email ?? s.user.id : "none"}`);
     };
 
@@ -27,7 +28,8 @@ export function useSession(): { session: Session | null; ready: boolean; event: 
       logSession("mount", data.session);
       if (error) console.debug(`[common-notes] getSession error: ${error.message}`);
     });
-    // What the shared storage itself holds, independent of supabase-js's view.
+    // This logs what the shared storage itself holds. It can differ from what
+    // supabase-js believes the session to be.
     ext?.local?.get?.(null)?.then((all: Record<string, unknown>) => {
       const key = Object.keys(all).find((k) => k.startsWith("sb-") && k.endsWith("-auth-token"));
       console.debug(`[common-notes] auth storage: ${key ? "present" : "absent"}`);
@@ -58,18 +60,19 @@ export function useSession(): { session: Session | null; ready: boolean; event: 
   return { session, ready, event };
 }
 
-/** Supabase's standard email OTP length (mirrored by config.toml's
- *  auth.email.otp_length for local dev). */
+/** The length of the one-time code Supabase sends by email. Local development
+ *  mirrors it in config.toml under auth.email.otp_length. */
 export const EMAIL_OTP_LENGTH = 8;
 
-/** Email sign-in, step 1 (website + extension): the email carries an 8-digit
- *  code ({{ .Token }} in the templates) — no magic link, so email auth never
- *  touches the redirect allow-list and works across devices. */
+/** Step one of email sign-in, used by both the website and the extension. The email
+ *  carries an 8-digit code, which the templates render as {{ .Token }}. There is no
+ *  magic link. That means email sign-in never touches the redirect allow-list, and
+ *  the code can be typed on a different device. */
 export function signInWithEmailCode(email: string) {
   return supabase.auth.signInWithOtp({ email });
 }
 
-/** Email sign-in, step 2: verify the typed code. */
+/** Step two of email sign-in. It verifies the code the user typed. */
 export function verifyEmailCode(email: string, code: string) {
   return supabase.auth.verifyOtp({ email, token: code, type: "email" });
 }

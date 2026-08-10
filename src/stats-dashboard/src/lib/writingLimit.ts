@@ -27,11 +27,14 @@ export interface WlInputs {
   WL_L: number;
 }
 
-// Case definitions for the WL_L cascade. Each case carries:
-//   - upperBound: the threshold for "If HR_L < upperBound" (Infinity = "else")
-//   - conditionLabel / formulaLabel: static display text (matches the spec)
-//   - resolve: numeric computation + the resolved-with-numbers label string
-// Single source of truth so computeWlL and the dashboard cannot drift.
+// One case of the WL_L cascade. These cases are the single source of truth, so
+// the number we compute and the formula the dashboard prints cannot drift apart.
+// upperBound is the threshold in "If HR_L < upperBound". The last case sets it
+// to Infinity, which stands for the closing "else".
+// conditionLabel and formulaLabel are the fixed text the dashboard shows, and
+// they are worded to match the writing-limit spec.
+// resolve does the arithmetic. It also returns the same formula with the actual
+// numbers filled in.
 export interface WlLCase {
   branch: WlLBranch;
   upperBound: number;
@@ -103,11 +106,13 @@ export const WL_L_CASES: readonly WlLCase[] = [
 ];
 
 function pickWlLCase(hrL: number): WlLCase {
-  // Cases are ordered by ascending upperBound; the last has Infinity, so .find always matches.
+  // The cases are ordered by ascending upperBound and the last one is Infinity.
+  // So find always returns a case and the non-null assertion is safe.
   return WL_L_CASES.find((c) => hrL < c.upperBound)!;
 }
 
-// Case definitions for the outer WL cascade.
+// One case of the outer WL cascade. It works like a WL_L case, except that each
+// case tests the inputs itself instead of comparing one value to an upper bound.
 export interface WlCase {
   key: WlBranch;
   conditionLabel: string;
@@ -184,10 +189,10 @@ export interface WritingLimitMetrics {
   NH_10: number;
   HR_R: number;
   HR_100: number;
-  HR_14d: number | null;            // null when we lack ratings in the last 14d window
+  HR_14d: number | null;            // Null when no note from the last 14 days has any ratings.
   HR_14dHasRatings: boolean;
   HR_L: number;
-  WL_L: number;                     // always computed (even when an early branch short-circuits WL)
+  WL_L: number;                     // Always computed, even when an earlier branch already decided WL.
   wlLBranch: WlLBranch;
   WL: number;
   wlBranch: WlBranch;
@@ -200,7 +205,7 @@ export interface WritingLimitMetrics {
 export function computeWritingLimitMetrics(notes: NoteRecord[]): WritingLimitMetrics | null {
   if (!notes.length) return null;
 
-  // Most recent first.
+  // The notes are sorted most recent first.
   const sorted = [...notes].sort((a, b) => b.submitted_at.localeCompare(a.submitted_at));
   const now = Date.now();
   const T = sorted.length;
@@ -225,11 +230,12 @@ export function computeWritingLimitMetrics(notes: NoteRecord[]): WritingLimitMet
   const HR_R = hitRate(last20) ?? 0;
   const HR_100 = hitRate(last100) ?? 0;
 
-  // HR_14d: exclude notes with <10 ratings that haven't been assigned a helpful
-  // or not-helpful status. We only have rating counts when X has listed our
-  // notewriter as high-performing (the public data dump only covers those).
-  // Without rating counts the exclusion criterion can't be applied, so the
-  // algorithm's output isn't meaningful — hide it.
+  // HR_14d leaves out a note that has fewer than ten ratings and has not been
+  // rated helpful or not helpful. We only know a note's rating count while X
+  // lists our notewriter as high-performing, because the public data dump covers
+  // only those writers. Without rating counts we cannot apply that exclusion, so
+  // the number the algorithm produces would not mean anything. In that case we
+  // report null and the dashboard hides it.
   const has14dRatings = notes14d.some((n) => n.rating_count > 0);
   const qualifying14d = notes14d.filter(
     (n) => n.rating_count >= HR_14D_MIN_RATINGS || n.cn_status === CRH || n.cn_status === CRNH,
@@ -237,8 +243,8 @@ export function computeWritingLimitMetrics(notes: NoteRecord[]): WritingLimitMet
   const HR_14d = has14dRatings ? hitRate(qualifying14d) : null;
   const HR_L = HR_14d == null ? HR_100 : Math.max(HR_100, HR_14d);
 
-  // Always compute WL_L so the dashboard can show what it would have been even
-  // when an early branch short-circuits the WL cascade.
+  // We always compute WL_L. That way the dashboard can still show it even when
+  // an earlier branch of the WL cascade decided the limit on its own.
   const wlLCase = pickWlLCase(HR_L);
   const { value: WL_L } = wlLCase.resolve(HR_L, HR_R);
 

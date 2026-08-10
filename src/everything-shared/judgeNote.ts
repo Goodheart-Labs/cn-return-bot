@@ -1,10 +1,11 @@
 import { supabase } from "./supabase";
 
-/** Ask the judge-note edge function whether a proposed note (a new note or an
- *  improvement) is an earnest good-faith note vs trolling. The OpenRouter key
- *  stays server-side; the caller posts the note only when this returns true.
- *  Requires a signed-in user. `context` is the claim/anchor being noted;
- *  `currentNote` is the existing note when this is an improvement. */
+/** Asks the judge-note edge function whether a proposed note is written in good faith
+ *  or is trolling. The proposed note can be a new note or an improvement to an
+ *  existing one. The judge runs on the server, so the OpenRouter key stays there. The
+ *  caller posts the note only when this returns true. The user must be signed in.
+ *  `context` is the claim the note is written against. `currentNote` holds the
+ *  existing note when this is an improvement. */
 export async function isEarnestNote(
   note: string,
   context: string,
@@ -14,7 +15,8 @@ export async function isEarnestNote(
     body: { note, context, current_note: currentNote ?? "" },
   });
   if (error) {
-    // Edge functions surface non-2xx as FunctionsHttpError; dig out the message.
+    // An edge function reports any non-2xx response as a FunctionsHttpError, so we
+    // have to read the real message out of the response body.
     const detail = await (error as any).context?.json?.().catch(() => null);
     throw new Error(detail?.error ?? error.message);
   }

@@ -1,47 +1,51 @@
 /**
- * Shared keyset-paginated fetch helper.
+ * Shared helper for fetching every row of a query, one page at a time.
  *
- * Supabase's REST layer caps any single response at 1000 rows, so to fetch
- * "everything matching X" we have to make multiple HTTP requests. This module
- * is the single source of truth for that loop.
+ * Supabase's REST layer never returns more than 1000 rows in one response. To
+ * fetch everything that matches a filter we therefore have to make several HTTP
+ * requests. This module is the one place that loop lives.
  *
- * Why keyset and not OFFSET: OFFSET pagination forces Postgres to walk past
- * every skipped row even with an index, so per-page cost grows linearly with
- * page depth. Past ~30k matching rows the deepest pages exceed Postgres's
- * statement_timeout (`canceling statement due to statement timeout`, code
- * 57014). Keyset pagination uses `WHERE keyCol > <last>` ORDER BY keyCol —
- * an index range scan from the last row, ~constant time per page regardless
- * of depth.
+ * We page by key rather than by OFFSET. With OFFSET, Postgres still has to walk
+ * past every skipped row even when there is an index, so each page costs more
+ * than the one before it. Past roughly 30k matching rows the deepest pages run
+ * into Postgres's statement_timeout and fail with `canceling statement due to
+ * statement timeout`, error code 57014. Keyset paging instead asks for
+ * `WHERE keyCol > <last value>` and orders by that column. That is an index
+ * range scan starting at the last row we saw, so every page costs about the
+ * same however deep it is.
  *
- * Cost: callers must pass a unique, indexed `keyCol`. In practice this is
- * always the table's primary key (every Postgres table has one, and PKs are
- * indexed by definition).
+ * The price is that the caller has to pass a `keyCol` that is unique and
+ * indexed. In practice that is always the table's primary key. Every Postgres
+ * table has one, and primary keys are indexed by definition.
  */
 
 const PAGE_SIZE = 1000;
 
 export interface FetchAllOptions {
-  /** Used in error messages; helps locate the failing call site. */
+  /** Shown in error messages so you can tell which call site failed. */
   label?: string;
   /** Override the default 1000-row page size. Rarely needed. */
   pageSize?: number;
 }
 
 /**
- * Fetch every row matching `buildQuery()`, paginated by `keyCol` ascending.
+ * Fetch every row that `buildQuery()` matches, paging by `keyCol` in ascending
+ * order.
  *
- * `buildQuery` is invoked once per page so the caller's filters / select
- * shape get reused. The helper appends `.order(keyCol).limit(PAGE_SIZE)` and,
- * on subsequent pages, `.gt(keyCol, lastSeenKey)`.
+ * The helper calls `buildQuery` once per page, so the caller's filters and
+ * selected columns are reused for every request. It then adds
+ * `.order(keyCol).limit(PAGE_SIZE)`, and on every page after the first it also
+ * adds `.gt(keyCol, lastSeenKey)`.
  *
- * Gotchas:
- *  1. `keyCol` must be UNIQUE and INDEXED (in practice: always the table's PK).
- *     Non-unique columns can drop or duplicate rows at page boundaries.
- *  2. `keyCol` must appear in your `select(...)` columns — the helper reads
- *     `data[i][keyCol]` to advance the cursor.
- *  3. Any `.order()` your buildQuery sets is OVERRIDDEN by the keyset's
- *     `.order(keyCol, ascending)`. If you need a different sort order in the
- *     final result, sort the array in JS after the fetch returns.
+ * Three things can catch you out.
+ *  1. `keyCol` must be unique and indexed. In practice it is always the table's
+ *     primary key. A column that is not unique can drop or repeat rows where
+ *     one page ends and the next begins.
+ *  2. `keyCol` must be one of the columns you select. The helper reads
+ *     `data[i][keyCol]` to move the cursor forward.
+ *  3. Any `.order()` your `buildQuery` sets is overridden by the ordering on
+ *     `keyCol`. If you need the final result in a different order, sort the
+ *     array in JavaScript after the fetch returns.
  */
 export async function fetchAllRows<T extends Record<string, any>>(
   buildQuery: () => any,
@@ -59,9 +63,10 @@ export async function fetchAllRows<T extends Record<string, any>>(
     const { data, error } = await q;
     if (error) throw enrichError(error, options.label, pageIdx, keyCol, lastKey);
     if (!data || data.length === 0) break;
-    // Guard the silent-truncation footgun (gotcha #2): if keyCol isn't in the
-    // selected columns, the cursor reads `undefined` and pagination stops after
-    // one page — quietly capping at pageSize. Turn that into a loud error.
+    // This guards the second gotcha above. If keyCol is not among the selected
+    // columns, the cursor reads `undefined` and the loop stops after one page.
+    // That would quietly cap the result at pageSize rows, so we fail loudly
+    // instead.
     if (pageIdx === 0 && !(keyCol in data[0])) {
       const where = options.label ? `[paging:${options.label}]` : "[paging]";
       throw new Error(
@@ -92,10 +97,11 @@ function enrichError(error: any, label: string | undefined, pageIdx: number, key
 }
 
 /**
- * Batch-IN fetcher: fetch rows where some column is IN a list of values.
- * Supabase generates a URL query param for `.in()`, which gets too long past
- * ~250 ids and starts hitting nginx URL-length caps. Chunks the list into
- * groups of 200.
+ * Fetch rows where some column matches any value in a list.
+ *
+ * Supabase turns `.in()` into a URL query parameter. Past roughly 250 ids that
+ * URL grows long enough to hit nginx's cap on URL length. So the list is split
+ * into chunks of 200 and each chunk is fetched with its own request.
  */
 export async function fetchInBatches<T>(
   buildQuery: (chunk: string[]) => any,

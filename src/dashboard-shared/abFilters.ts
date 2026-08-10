@@ -1,27 +1,29 @@
-// Shared A/B test filter primitives used by both stats-dashboard and
-// review-dashboard. Keeping the matching logic, slot derivation, and the
-// `ABFilters` shape in one place lets the two dashboards stay consistent.
+// Shared A/B test filter helpers, used by both the stats dashboard and the
+// review dashboard. The matching logic, the slot derivation, and the `ABFilters`
+// shape all live here, so the two dashboards cannot drift apart.
 
 export type ABFilters = Record<string, string | undefined>;
 
 export interface ABTestSlotInfo {
   name: string;
   variants: string[];
-  // True when some pick within the recency window differed from the test's
-  // default — i.e. the test was actively varied lately. Dashboards show these
-  // by default and hide the rest behind a "show older tests" toggle.
+  // True when at least one pick inside the recency window used something other
+  // than the test's default variant. That means the test was being varied
+  // lately. The dashboards show those tests by default and hide the rest behind
+  // a "show older tests" toggle.
   recentlyVaried: boolean;
 }
 
-// A pick record paired with when it was produced, so slot derivation can tell
-// which tests were varied recently. `at` is an ISO timestamp; records without
-// one never count toward recency.
+// One set of A/B picks together with the time it was produced. The slot
+// derivation needs that time to tell which tests were varied recently. `at` is
+// an ISO timestamp. A record without one never counts towards recency.
 export interface AbPickRecord {
   picks: Record<string, string> | null | undefined;
   at?: string | null;
 }
 
-// Duck-typed AB_TESTS shape so the dashboards don't import pipeline-side types.
+// The part of the AB_TESTS shape we actually read. It is declared here so the
+// dashboards never have to import a pipeline-side type.
 interface AbTestLike {
   name: string;
   defaultVariant?: string;
@@ -32,9 +34,10 @@ const RECENT_NON_DEFAULT_WINDOW_DAYS = 3;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 /**
- * Returns true iff every set filter slot matches the corresponding entry in
- * `picks`. Unset filter slots are ignored. Works for any record that carries
- * an `ab_test_picks` dict — notes, aggregates, day buckets, review items.
+ * Returns true when every filter slot that is set matches the matching entry in
+ * `picks`. Filter slots that are not set are ignored. This works for any record
+ * that carries an `ab_test_picks` dictionary, such as a note, an aggregate, a
+ * day bucket, or a review item.
  */
 export function matchesAbFilters(
   picks: Record<string, string> | null | undefined,
@@ -48,9 +51,10 @@ export function matchesAbFilters(
 }
 
 /**
- * The variant a test sits at when it isn't being actively varied: its declared
- * defaultVariant, or — for prereq-gated tests that declare none — the
- * highest-weight arm (the de-facto control).
+ * Works out the variant a test sits at when nobody is varying it. That is the
+ * test's declared `defaultVariant`. Some tests are gated on a prerequisite and
+ * declare no default. For those we take the arm with the highest weight, which
+ * is the control in practice.
  */
 function defaultVariantByTest(tests: readonly AbTestLike[]): Map<string, string> {
   return new Map(
@@ -63,11 +67,11 @@ function defaultVariantByTest(tests: readonly AbTestLike[]): Map<string, string>
 }
 
 /**
- * Derive the slots-and-variants list for the filter UI from a stream of
- * observed pick records. Slots and variants are ordered to match the AB_TESTS
- * declaration; any that exist in historical picks but no longer in AB_TESTS are
- * appended alphabetically. Each slot is flagged `recentlyVaried` when some
- * record within the trailing window picked a non-default arm.
+ * Builds the list of slots and variants the filter UI offers, out of a stream of
+ * observed pick records. Slots and variants come out in the order AB_TESTS
+ * declares them. Anything that appears in old picks but no longer in AB_TESTS is
+ * appended at the end in alphabetical order. A slot is marked `recentlyVaried`
+ * when some record inside the trailing window picked a non-default arm.
  */
 export function buildAbTestSlots(
   records: Iterable<AbPickRecord>,

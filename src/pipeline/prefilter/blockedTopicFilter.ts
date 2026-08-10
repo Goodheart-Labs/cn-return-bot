@@ -1,10 +1,12 @@
 /**
- * Blocked-topic filter — a single deepseek-v4-flash call (reasoning, no tools,
- * no search) that checks whether a post is on one of the BLOCKED_TOPICS we
- * never write notes on. Gated by `config.topic_filter` (TOPIC_FILTER_TEST) and
- * runs before everything else — even the note-needed prefilter. Receives the
- * shared bot-input user message (the same one the prefilter and the bot's
- * search step see), built once in processSingleTweet.
+ * The blocked-topic filter checks whether a post is about one of the
+ * BLOCKED_TOPICS we never write notes on. It is a single deepseek-v4-flash call
+ * with reasoning turned on, no tools and no search.
+ * It only runs when `config.topic_filter` is on, which is the TOPIC_FILTER_TEST
+ * arm. It runs before every other step, including the note-needed prefilter.
+ * It receives the shared bot-input user message that processSingleTweet builds
+ * once. The note-needed prefilter and the bot's search step read the same
+ * message.
  */
 import { withBotConfig, type BotConfig } from "../ab-testing/botConfig";
 import {
@@ -17,9 +19,10 @@ import { getTweetLog } from "../utils/tweetLog";
 const DEEPSEEK = "deepseek/deepseek-v4-flash";
 const STEP = "topic_filter";
 
-/** Config for the filter's one LLM call — deepseek-v4-flash, reasoning high +
- *  temp 0 (matches the note-needed prefilter's deterministic settings).
- *  web_search/video fields are required by the type but unused. */
+/** The config for the filter's one LLM call. It runs deepseek-v4-flash with
+ *  reasoning effort high and temperature 0, the same deterministic settings the
+ *  note-needed prefilter uses. The web_search and video_description_strategy
+ *  fields are required by the type, but this filter never uses them. */
 const TOPIC_FILTER_CONFIG: BotConfig = {
   botId: "blocked-topic-filter",
   model: DEEPSEEK,
@@ -35,10 +38,10 @@ export interface TopicFilterVerdict {
   reasoning: string;
 }
 
-/** Decide whether the post in `userMessage` is on a blocked topic. Logs its
- *  messages + verdict under `topic_filter.*` on the ambient tweet log; the
- *  call's cost lands in the ambient cost tracker under the `topic_filter`
- *  group. */
+/** Decides whether the post in `userMessage` is about a blocked topic. It logs
+ *  its messages and its verdict under `topic_filter.*` on the ambient tweet log.
+ *  The cost of the call lands in the ambient cost tracker under the
+ *  `topic_filter` group. */
 export async function runBlockedTopicFilter(userMessage: string): Promise<TopicFilterVerdict> {
   const log = getTweetLog();
   log?.set(`${STEP}.messages.0`, { systemPrompt: TOPIC_FILTER_SYSTEM_PROMPT, userMessage, model: DEEPSEEK });

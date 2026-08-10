@@ -1,13 +1,14 @@
 /**
  * Simple Bot
  *
- * Linear three-stage pipeline: search → notewriter → source verifier. Search
- * step dispatches to one of several provider-specific helpers based on
- * config.web_search (Anthropic native, Gemini native, Grok native, OpenAI
- * native, Perplexity Sonar bundled, or a SearXNG tool-calling loop).
+ * The pipeline runs three stages in a line: search, note writer, source
+ * verifier. The search stage hands the work to one of several provider
+ * helpers, picked by config.web_search. The choices are Anthropic native
+ * search, Gemini native search, Grok native search, OpenAI native search,
+ * Perplexity Sonar with its bundled search, and a SearXNG tool-calling loop.
  *
- * Config is set on AsyncLocalStorage by generateCandidates.ts before this
- * runs; cost tracking is also already wrapped. Just runs the pipeline.
+ * generateCandidates.ts puts the bot config on AsyncLocalStorage and starts
+ * cost tracking before this runs, so there is nothing left to set up here.
  */
 
 import { Bot, PipelineResult, outcomeToResult } from "./types";

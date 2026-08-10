@@ -1,8 +1,9 @@
 /**
- * Prompt — source verifier claim support (claim-based flow, call 2).
+ * Prompt for claim support in the source verifier. This is the second of the
+ * two calls the claim-based flow makes.
  *
- * Maps each extracted claim to the cited source URLs that support it. See
- * runClaimBasedVerification in src/pipeline/verify/sourceVerifier.ts.
+ * It maps each extracted claim to the cited source URLs that support it. The
+ * caller is runClaimBasedVerification in src/pipeline/verify/sourceVerifier.ts.
  */
 
 import { jsonSchemaResponseFormat } from "../responseFormat";
@@ -67,10 +68,11 @@ export const CLAIM_SUPPORT_RESPONSE_FORMAT = jsonSchemaResponseFormat("claim_sup
   additionalProperties: false,
 });
 
-/** Citations-mode claim-support schema: each claim carries an evaluated-source
- *  list (citations before verdict) instead of a bare URL list. A source is
- *  listed under a claim only when relevant; a source supports the claim iff its
- *  verdict is "good". */
+/** The claim-support schema used in citations mode. Each claim carries a list of
+ *  evaluated sources instead of a bare list of URLs. Each evaluated source
+ *  states its citations before its verdict. A source is listed under a claim
+ *  only when it is relevant to that claim. A source supports the claim exactly
+ *  when its verdict is "good". */
 export const CLAIM_SUPPORT_CITATIONS_RESPONSE_FORMAT = jsonSchemaResponseFormat("claim_support_cited", {
   type: "object",
   properties: {

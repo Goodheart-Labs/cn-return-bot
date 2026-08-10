@@ -4,10 +4,11 @@ import { fetchPostingLimitData, type PostingLimitData, type CapWindow } from "..
 const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
 
 /**
- * Collapsed-by-default "Posting limit" drawer. Explains the current daily
- * writing cap: the observed number, X's formula, the live inputs, the tier
- * ladder, and which window the cap is currently resting on. Lazy-loads on first
- * open (a full-notes scan) so it costs nothing until opened.
+ * The "Posting limit" drawer, which starts collapsed. It explains the current daily
+ * writing cap. It shows the cap we observe, the formula X applies, the live inputs
+ * to that formula, the ladder of tiers, and which time window the cap is currently
+ * resting on. The data behind it is a scan of every note, so we only fetch it the
+ * first time the drawer is opened. Until then the drawer costs nothing.
  */
 export function PostingLimitDrawer() {
   const [open, setOpen] = useState(false);
@@ -87,7 +88,7 @@ WL_L = tiered on  HR_L = max(HR_100, HR_14d)
 cliffs:  NH_5 ≥ 3 → 5    NH_10 ≥ 8 → 2`}</pre>
       </div>
 
-      {/* The inputs — the bits lifted out */}
+      {/* The live inputs to the formula */}
       <div>
         <Label>The inputs (live)</Label>
         <div className="text-[11px] text-gray-500 mb-1.5 px-2">
@@ -115,7 +116,7 @@ cliffs:  NH_5 ≥ 3 → 5    NH_10 ≥ 8 → 2`}</pre>
         </div>
       </div>
 
-      {/* The tiers — the parts of the formula */}
+      {/* The tiers the formula steps through */}
       <div>
         <Label>WL_L tiers · HR_L = {pct(d.hrL)}</Label>
         <div className="space-y-0.5">

@@ -35,8 +35,8 @@ function MediaBlock({ images, videos }: { images: MediaImage[]; videos: MediaVid
   );
 }
 
-// "View on <domain>" label: nicer names for the common hosts, bare hostname
-// otherwise.
+// Builds the label of the "View on <domain>" link. The common hosts get a nicer
+// name and every other host is shown by its bare hostname.
 function sourceLinkLabel(url: string): string {
   let host: string;
   try {
@@ -51,9 +51,10 @@ function sourceLinkLabel(url: string): string {
 
 export function TweetCard({ tweet }: { tweet: Tweet }) {
   const media = extractMedia(tweet.media, tweet.referencedTweetData);
-  // Prefer an explicit source link (e.g. timestamped YouTube for podcast items);
-  // otherwise fall back to the X status URL. Hide the link entirely when neither
-  // is available (e.g. a podcast item whose link hasn't been backfilled yet).
+  // An explicit source link wins, for example the timestamped YouTube URL of a
+  // podcast item. Without one we link to the post on X. When there is neither we
+  // show no link at all. That happens for a podcast item whose source link has
+  // not been backfilled yet.
   const sourceUrl = tweet.sourceUrl?.trim()
     ? tweet.sourceUrl
     : tweet.tweetId
@@ -99,30 +100,35 @@ export function TweetCard({ tweet }: { tweet: Tweet }) {
   );
 }
 
-/** "https://www.youtube.com/watch?v=ID&t=42s" / "youtu.be/ID" → "ID". */
+/** Pulls the video id out of a YouTube URL. Both the "watch?v=ID" form and the
+ *  short "youtu.be/ID" form are understood. */
 function youtubeVideoId(url: string): string | null {
   return url.match(/(?:[?&]v=|youtu\.be\/)([\w-]{6,})/)?.[1] ?? null;
 }
 
-/** Quote citation from an article/post, with the source link pinned to the
- *  upper right — mirroring TweetCard's "View on <host> ↗" header placement.
- *  When `fragmentText` is set, the displayed text is a restatement (a claim),
- *  not verbatim source text — so it renders as regular body text, not as a
- *  quote block; the deep-link still targets the verbatim passage. */
+/** Shows a quotation from an article or post. The source link sits in the upper
+ *  right, in the same place as TweetCard's "View on <host> ↗" link. When
+ *  `fragmentText` is set, the displayed text is a restatement of the source and
+ *  not the source's own words. Such text renders as ordinary body text instead
+ *  of as a quote block. The deep link still points at the verbatim passage. */
 function CitationBlock({ quote, url, linkText, fragmentText, updatedQuote, imageGrounded }: {
   quote: string;
   url: string | null;
   linkText: string;
-  /** Verbatim source passage for the #:~:text= deep-link, when the displayed
-   *  `quote` isn't itself verbatim in the source. Defaults to `quote`. */
+  /** The passage exactly as it appears in the source. It is what the `#:~:text=`
+   *  deep link targets when the displayed `quote` is not itself verbatim. It
+   *  defaults to `quote`. */
   fragmentText?: string;
-  /** Current live wording when the source has changed since capture — the
-   *  captured quote stays displayed; this renders as "source now reads" and
-   *  becomes the deep-link target (it's what a click-through can find). */
+  /** The wording the source carries now. It is set when the source changed after
+   *  we captured the quote. The captured quote is still the one displayed, and
+   *  this text is shown below it as what the source now reads. It also becomes
+   *  the deep link's target, because it is the only wording a reader who follows
+   *  the link can still find. */
   updatedQuote?: string;
-  /** The claim rests on an image, not source text — the restated wording is
-   *  expected to be absent from the text, so no "not found" warning; the link
-   *  goes to the page without a text fragment (there is nothing to target). */
+  /** True when the claim rests on an image rather than on source text. The
+   *  restated wording is then expected to be missing from the text, so we show
+   *  no warning about it. The link goes to the plain page with no text fragment,
+   *  because there is no passage to target. */
   imageGrounded?: boolean;
 }) {
   const verbatim = !fragmentText;
@@ -184,7 +190,8 @@ declare global {
   }
 }
 
-// Load the IFrame Player API once for the whole app; resolves when YT is ready.
+// Loads YouTube's IFrame Player API once for the whole app. The promise resolves
+// when the API is ready to use.
 let youtubeApiReady: Promise<void> | null = null;
 function loadYouTubeApi(): Promise<void> {
   if (youtubeApiReady) return youtubeApiReady;
@@ -204,9 +211,10 @@ function loadYouTubeApi(): Promise<void> {
 
 const CLIP_END_POLL_MS = 200;
 
-/** Embed a YouTube clip via the IFrame Player API so that reaching the clip's
- *  end rewinds to its start and pauses — instead of YouTube's native end screen,
- *  whose replay button restarts the whole video from 0:00. */
+/** Embeds a YouTube clip through the IFrame Player API. When playback reaches
+ *  the end of the clip we rewind to its start and pause. Otherwise YouTube's own
+ *  end screen takes over, and its replay button restarts the whole video from
+ *  0:00. */
 function YouTubeClip({ url, quote, fragmentText, updatedQuote, imageGrounded, startSeconds, endSeconds }: {
   url: string;
   quote?: string;
@@ -231,7 +239,7 @@ function YouTubeClip({ url, quote, fragmentText, updatedQuote, imageGrounded, st
       if (cancelled || !hostRef.current) return;
       player = new window.YT!.Player(hostRef.current, {
         videoId,
-        playerVars: { start }, // no `end` param — we stop precisely, ourselves
+        playerVars: { start }, // We stop at the right moment ourselves.
         events: {
           onStateChange: (e) => {
             clearInterval(endPoll);
@@ -269,9 +277,9 @@ function YouTubeClip({ url, quote, fragmentText, updatedQuote, imageGrounded, st
 }
 
 /**
- * Renders whatever piece of content a note is about: an X post (the classic
- * TweetCard), a YouTube clip embedded at its [start, end] timestamp span, or a
- * verbatim citation from an article/post linking back to the source.
+ * Renders whatever piece of content a note is about. An X post is drawn by
+ * TweetCard. A YouTube clip is embedded at its start and end timestamps. An
+ * article or post is shown as a verbatim citation that links back to the source.
  */
 export function ContentCard({ content }: { content: NotedContent }) {
   switch (content.kind) {

@@ -8,16 +8,17 @@ import { postNnn } from "../../../everything-shared/noteNotNeeded";
 import type { NoteRow } from "../../../everything-shared/types";
 import { AutoGrowTextarea, PostAsCheckbox, RejectedNotice, useSignedByline } from "./editorBits";
 
-/** One row of the ⋯ dropdown: muted icon, medium-weight label, rounded hover;
- *  danger rows go red with a red hover wash. */
+/** One row of the ⋯ dropdown menu. A row marked as danger turns red, which is
+ *  how a destructive action such as Delete is set apart from the rest. */
 export function MenuItem({ onClick, icon, label, danger, autoFocus }: {
   onClick: () => void;
   icon: React.ReactNode;
   label: string;
   danger?: boolean;
-  /** Focus on mount — the native focus-scroll is what reveals a menu that
-   *  opens below the popover's fold (same snap the composers get from their
-   *  autoFocus textarea; no separate scroll mechanism). */
+  /** Focus this row as soon as it mounts. The browser scrolls a newly focused
+   *  element into view, and that is what reveals a menu opening below the fold
+   *  of the extension's popover. There is no separate scrolling code. The two
+   *  composers get the same effect from their auto-focused textarea. */
   autoFocus?: boolean;
 }) {
   const tone = danger
@@ -85,34 +86,39 @@ function SpeechBubbleIcon() {
   );
 }
 
-/** The note's action row: argue the claim needs no note, suggest an
- *  improvement (posts your own draft note on the same claim, shown alongside
- *  the original), share a deep link, and — on notes you wrote — a ⋯ menu with
- *  delete. */
+/** The row of actions under a note. You can argue that the claim needs no note.
+ *  You can suggest an improvement, which posts your rewrite as your own draft
+ *  note on the same claim and shows it beside the original. You can copy a deep
+ *  link to the note. On a note you wrote yourself there is also a ⋯ menu, and
+ *  it holds Delete. */
 export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onNnnAuthored, onDeleted, sourcesOpen, onToggleSources, children }: {
   note: NoteRow;
-  /** Absolute deep link to this note (the website computes it from the project
-   *  slug; the extension passes the public site's URL). */
+  /** The absolute deep link to this note. The website builds it from the
+   *  project slug. The extension passes the public site's URL instead. */
   shareUrl: string;
   session: Session | null;
   onNeedLogin: () => void;
-  /** A note was just posted by this user (mirror its auto-upvote locally). */
+  /** Called when this user has just posted a note. The database casts the
+   *  author's own helpful vote by trigger, and this mirrors it into local
+   *  state. */
   onAuthored: (noteId: string) => void;
-  /** A note-not-needed entry was just posted by this user (mirror its
-   *  auto-upvote locally). */
+  /** Called when this user has just posted a note-not-needed entry. It mirrors
+   *  the author's automatic helpful vote into local state. */
   onNnnAuthored: (entryId: string) => void;
-  /** The note was deleted. The website's realtime channel already removes it
-   *  from state; the extension (no realtime) refreshes on this. */
+  /** Called after the note was deleted. The website does not need it, because
+   *  its realtime channel already drops the note from state. The extension has
+   *  no realtime connection, so it refreshes when this fires. */
   onDeleted?: () => void;
   sourcesOpen?: boolean;
   onToggleSources?: () => void;
-  /** Extra actions slotted between Share and the ⋯ (e.g. improvement jump chips). */
+  /** Extra actions rendered between Share and the ⋯ button. The feed uses this
+   *  for the chips that jump between a note and its improvement. */
   children?: React.ReactNode;
 }) {
-  // One expanded block at a time — the ⋯ menu and the two composers replace
-  // each other (source details stay independent of this group). Drafts
-  // survive switches: the editors unmount when hidden, so their text lives
-  // here in the parent.
+  /* Only one block is expanded at a time. The ⋯ menu and the two composers
+   * replace each other. The source details toggle is not part of this group and
+   * opens on its own. A hidden editor unmounts, so its draft text is held here
+   * in the parent and survives a switch to the other composer. */
   const [expanded, setExpanded] = useState<"menu" | "improve" | "nnn" | null>(null);
   const [improveDraft, setImproveDraft] = useState("");
   const [nnnDraft, setNnnDraft] = useState("");
@@ -120,11 +126,12 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
   const ref = useRef<HTMLDivElement>(null);
   const mine = !!session && session.user.id === note.author_id;
 
-  // Close the menu when a press lands anywhere outside the action row —
-  // including elsewhere on the note (composers stay put; only an explicit
-  // action closes those). Capture phase + composedPath: the extension's
-  // popover absorbs bubbling mousedowns so the host page never sees them,
-  // which would also shield in-card clicks from a bubble-phase listener.
+  /* Close the ⋯ menu when a press lands anywhere outside the action row, which
+   * includes the rest of the note. The composers are not closed this way. Only
+   * an explicit action closes those. The listener runs in the capture phase and
+   * checks composedPath, because the extension's popover swallows bubbling
+   * mousedown events so the host page never sees them. A bubble-phase listener
+   * would therefore never learn about a press inside the card either. */
   useEffect(() => {
     if (expanded !== "menu") return;
     const onDown = (e: MouseEvent) => {
@@ -142,8 +149,9 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
   };
   const del = async () => {
     setExpanded(null);
-    // The `.select()` echo distinguishes a real delete from an RLS
-    // silently-matched-zero-rows no-op (only own draft notes are deletable).
+    /* Asking for the deleted ids back tells a real delete apart from one that
+     * matched no rows. Row level security only lets you delete your own draft
+     * notes, and a delete it blocks still succeeds, just with zero rows. */
     const { data, error } = await supabase.from("everything_notes").delete().eq("id", note.id).select("id");
     if (error || (data ?? []).length === 0) {
       console.error("[common-notes] note delete failed:", error?.message ?? "no row deleted (RLS: only your own draft notes)");
@@ -159,16 +167,17 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
     if (!session) return onNeedLogin();
     setExpanded((prev) => (prev === "nnn" ? null : "nnn"));
   };
-  // The source links sit inline on every card; this toggle only reveals the
-  // per-source quote + explanation, so it appears only when a quote exists.
+  // Every card already shows its source links. This toggle only reveals the
+  // quote and explanation for each source, so it appears only if a quote exists.
   const showSourcesButton = !!onToggleSources && note.sources.some((s) => s.quote);
 
   return (
     <div className="mt-1">
       <div ref={ref} className="relative flex flex-wrap justify-end items-center gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
-        {/* Sources + improve + share ride visibly on every card; the ⋯ menu
-            only exists for delete on your own notes (Nathan, 2026-07-14 — the
-            menu was hiding the whole improve flow). */}
+        {/* The sources, improve and share actions are visible on every card.
+            The ⋯ menu only holds Delete, and only on your own notes. Nathan
+            moved the other actions out of it on 2026-07-14, because the menu
+            was hiding the whole improvement flow. */}
         {showSourcesButton && (
           <button onClick={onToggleSources} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
             <QuoteIcon /> {sourcesOpen ? "Hide source details" : "Show source details"}
@@ -197,11 +206,12 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
           </button>
         )}
         {expanded === "menu" && mine && (
-          // In-flow (w-full wraps to its own line), NOT absolutely positioned:
-          // in the extension the card sits in a max-h scroll popover, and a
-          // dropdown hanging below the bottom action row spilled past the edge
-          // — revealing a scrollbar instead of the menu. In-flow grows the
-          // card, same as the improve/NNN composers.
+          /* The menu sits in the normal flow and wraps onto its own line. It is
+           * deliberately not positioned absolutely. In the extension the card
+           * lives inside a scrolling popover with a maximum height, and a
+           * dropdown hanging below the action row spilled past that edge. The
+           * reader then saw a scrollbar instead of the menu. Sitting in the
+           * flow grows the card instead, the same way the two composers do. */
           <div className="w-full flex justify-end mt-1">
             <div className="cn-menu w-56 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-1.5 text-sm">
               <MenuItem onClick={del} icon={<TrashIcon />} label="Delete" danger autoFocus />
@@ -219,9 +229,10 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
   );
 }
 
-/** Post a "note not needed" argument on the note's claim (ungated, like the
- *  plain discussion it replaces). Claim-keyed, so it shows under every note
- *  on the same text. */
+/** Post an argument that the note's claim needs no note at all. The earnest
+ *  gate does not apply here, just as it did not apply to the discussion this
+ *  replaced. The entry is stored against the claim, so it shows under every
+ *  note written on that same text. */
 function NnnComposer({ note, session, text, onTextChange, onAuthored, onClose }: {
   note: NoteRow;
   session: Session;
@@ -280,10 +291,10 @@ function NnnComposer({ note, session, text, onTextChange, onAuthored, onClose }:
   );
 }
 
-/** Post an improved version as your own draft note on the same claim. It shows
- *  as its own card, jump-linked to the original (both are rated); it does not
- *  replace it. The judge-note edge function gates it earnest-vs-trolling
- *  before it posts. */
+/** Post an improved version as your own draft note on the same claim. It does
+ *  not replace the original. It appears as its own card with jump links to and
+ *  from the original, and both notes are rated separately. The judge-note edge
+ *  function checks that the text is a genuine attempt before it is posted. */
 function ImproveEditor({ note, session, text, onTextChange, onAuthored, onClose }: {
   note: NoteRow;
   session: Session;

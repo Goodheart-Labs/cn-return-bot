@@ -1,6 +1,7 @@
 /**
- * Shared output utilities for writing pipeline results to dataset_runs/.
- * Used by both localPipelineRunner (tryoutNotes) and generateCandidates (--local).
+ * Shared helpers for writing pipeline results into dataset_runs/. The local
+ * runner behind tryoutNotes, runOnVideos and runOnClaims uses them, and so does
+ * the production runPipeline when it is started with --local.
  */
 
 import * as fs from "fs";
@@ -50,9 +51,10 @@ export function initOutputFolder(
   runName?: string,
 ): OutputFolder {
   const baseDir = path.join(process.cwd(), "dataset_runs");
-  // YYYY-MM-DD-HHMM (e.g. 2026-04-19-0850) — human-readable folder names.
-  // Collisions within a minute resolved by appending -2, -3, …
-  const iso = new Date().toISOString(); // 2026-04-19T08:50:12.345Z
+  // Folder names are stamped YYYY-MM-DD-HHMM, for example 2026-04-19-0850, so a
+  // human can read them at a glance. Two runs started in the same minute would
+  // collide, so the second one gets -2 appended, the third -3, and so on.
+  const iso = new Date().toISOString();
   const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/)!;
   const stamp = `${m[1]}-${m[2]}-${m[3]}-${m[4]}${m[5]}`;
   const base = runName ? `${prefix}-${runName}-${stamp}` : `${prefix}-${stamp}`;

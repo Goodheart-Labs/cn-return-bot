@@ -1,9 +1,9 @@
 /**
- * Simple Bot — Writer
+ * The simple bot's writer.
  *
- * Single LLM call that produces one community note + its cited sources. The
- * writer trusts the upstream search decision that a correction IS needed; it
- * does not re-check that here.
+ * It asks the model for one community note together with the sources that note
+ * cites. The writer trusts the earlier search step's decision that a correction
+ * is needed. It does not check that again here.
  */
 
 import { getBotConfig } from "../ab-testing/botConfig";
@@ -46,10 +46,11 @@ export async function runWriter(
   if (config.time_travel_prompt) systemPrompt += WRITER_TIME_TRAVEL_RULE;
   if (opts?.timingContext) log?.set("writer.timingContext", true);
 
-  // Curated misinfo topic: prepend the topic's vetted in-group / primary sources
-  // to the findings (so the writer can actually cite them), steer it to prefer
-  // them over mainstream outlets this audience distrusts, and constrain the
-  // note's shape (one correction, 1-2 sources). Regular notes: untouched.
+  // On a curated misinfo topic we prepend the topic's vetted in-group and
+  // primary sources to the findings, so the writer can actually cite them. We
+  // also tell the writer to prefer them over the mainstream outlets this
+  // audience distrusts, and we constrain the shape of the note to one
+  // correction with one or two sources. A regular note is left untouched.
   let effectiveFindings = findings;
   if (monitoring) {
     systemPrompt += MISINFO_SOURCING_RULE + MISINFO_NOTE_SHAPE_RULE;
@@ -69,14 +70,16 @@ export async function runWriter(
     { role: "user", content: buildWriterUserMessage(userMessage, effectiveFindings) + (opts?.timingContext ?? "") },
   ];
 
-  // The helper owns the JSON parse + re-ask loop; this loop layers the note's
-  // own validation on top, re-asking the writer on the same thread. Length is
-  // counted as the note will actually be submitted: body + appended source
-  // URLs (each URL counts as 1 char) — the body alone can be ≤280 yet overflow
-  // once sources are appended. An empty note (no dispute found) is never
-  // linted and returns below. Curated topics get the additional shape checks
-  // (source count / URL form / bare domains); regular notes keep the length
-  // rule only, with unchanged feedback and error text.
+  // runJsonLlmCall owns the JSON parse and its own re-ask loop. This loop adds
+  // the note's own validation on top and re-asks the writer on the same thread.
+  // The length is counted the way the note will actually be submitted, which is
+  // the body plus the appended source URLs, with each URL counting as one
+  // character. So a body of 280 characters or fewer can still overflow once the
+  // sources are appended. An empty note means the writer found no dispute. It
+  // is never linted and returns below. On a curated topic the lint also checks
+  // the number of sources, the form of each URL, and bare domains in the body.
+  // A regular note keeps only the length rule, and its feedback and error text
+  // are unchanged.
   for (let attempt = 1; attempt <= MAX_WRITER_ATTEMPTS; attempt++) {
     const logPrefix = `${STEP.noteWriter}.attempts.${attempt - 1}`;
     log?.set(`${logPrefix}.messages`, messages);

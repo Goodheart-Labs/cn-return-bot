@@ -1,4 +1,5 @@
-/** Throwaway: what is the null-bot_name process doing, and is it live? */
+/** A throwaway probe. Some pipeline runs carry no bot_name. This script shows
+ *  what that process has been doing, and whether it is still running. */
 import "dotenv/config";
 import { getSupabaseClient } from "../api/supabaseClient";
 import { fetchAllRows } from "../api/paging";

@@ -1,8 +1,9 @@
 /**
- * Prompt — simple-bot writer.
+ * Prompts for the simple-bot writer.
  *
- * Produces one community note + cited sources, trusting the upstream search
- * decision that a correction is needed. See runWriter in
+ * The writer produces one community note together with the sources it cites.
+ * It trusts the earlier search step's decision that a correction is needed.
+ * The code that uses these prompts is runWriter in
  * src/pipeline/simple-bot/writer.ts.
  */
 
@@ -43,16 +44,20 @@ Empty note means: \`note_text\` = "" and \`sources\` = []. The downstream judge 
 - Pull source URLs from the research findings — do not invent URLs`;
 
 /**
- * Appended to the writer system prompt for curated misinfo-monitoring topics
- * (when a MonitoringContext is present). The topic's reference document — with
- * its vetted in-group / primary sources — is also prepended to the findings so
- * those URLs are actually citable. Soft, per-tweet preference (not a hard block):
- * a correction the post's audience won't rate "Helpful" changes no minds and
- * dents our writing reputation, so lean in-group when the audience distrusts the
- * mainstream press. Nathan, 2026-07-19. Sharpened 2026-07-22 from the rubric
- * scoring of our first 14 topic notes: doc-first sourcing, and branded
- * fact-checkers demoted to last resort (they appeared in 5/14 of our notes and
- * 0 of the 4 ecosystem notes that reached Helpful on this topic).
+ * This block is appended to the writer system prompt for curated
+ * misinfo-monitoring topics, which means whenever a MonitoringContext is
+ * present. The topic's reference document is also prepended to the findings,
+ * so the vetted in-group and primary sources it lists are actually citable.
+ * The rule is a soft preference the writer applies per tweet. It is not a hard
+ * block. A correction that the post's audience will not rate "Helpful" changes
+ * no minds and dents our writing reputation. So we lean towards in-group
+ * sources when that audience distrusts the mainstream press.
+ * Nathan wrote this on 2026-07-19. It was sharpened on 2026-07-22 after we
+ * scored our first 14 topic notes against a rubric. That scoring produced two
+ * changes. The writer now looks in the reference document first. Branded
+ * fact-checkers were demoted to a last resort, because they appeared in 5 of
+ * our 14 notes and in none of the 4 ecosystem notes that reached Helpful on
+ * this topic.
  */
 export const MISINFO_SOURCING_RULE = `
 
@@ -60,13 +65,15 @@ export const MISINFO_SOURCING_RULE = `
 The findings begin with a reference document listing vetted in-group / primary sources for this topic. If the reference document already contains a source for your correction, cite that source rather than searching for another. Judge each post on its own — but posts on this topic often come from an audience that distrusts mainstream outlets, and a note they won't rate "Helpful" changes no minds and hurts our standing. Prefer in-group / primary sources (official .gov records, court filings, the subject's own government and agencies, state officials, outlets like Fox News, National Review, The Daily Signal, Deseret News). Cite CNN, NBC, ABC and similar mainstream outlets less — acceptable when they are the only proof — and treat branded fact-checkers (PolitiFact, FactCheck.org, Snopes) as a last resort: on this topic the brand itself reads as taking a side. Still only cite URLs that actually appear in the findings (including the reference document) and that engage with the central argument of the post; never invent any.`;
 
 /**
- * Appended alongside MISINFO_SOURCING_RULE for curated topics. From the 7/22
- * rubric scoring: 9 of our 14 topic notes appended a second correction or
- * context clause ("one claim only" was the worst-scoring rubric column at
- * -4/14), while every ecosystem note that reached Helpful on this topic makes
- * exactly one blunt correction and stops. "The claim the argument rests on"
- * tie-break targets the other top failure mode (pedantic-but-checkable side
- * details — Nathan's two most-used review tags).
+ * This block is appended next to MISINFO_SOURCING_RULE for curated topics.
+ * The 2026-07-22 rubric scoring found that 9 of our 14 topic notes added a
+ * second correction or a context clause. "One claim only" was the worst
+ * scoring rubric column, at -4 out of 14. Every ecosystem note that reached
+ * Helpful on this topic makes exactly one blunt correction and then stops.
+ * The rule also tells the writer to pick the claim the post's argument rests
+ * on. That targets the other main failure mode, which is correcting a side
+ * detail that is pedantic but easy to source. Those were Nathan's two
+ * most-used review tags.
  */
 export const MISINFO_NOTE_SHAPE_RULE = `
 
@@ -98,11 +105,12 @@ export const MISINFO_CONCEDE_SHAPE_RULE = `
 The reference document has a "Note shape — concede the true core first" section with a "True core:" line per claim. When the post's central claim contains a component a True core line affirms, OPEN the note with that concession in one short impersonal clause ("The raid did occur —", "The released files are real —"), then make your single correction of the false extension and stop. This concession is part of the one-claim shape, not extra background: concede only what a True core line affirms, never improvise balance, never address the poster ("you're right…"). If no True core line applies, or the concession would crowd out the correction, write the correction straight.`;
 
 /**
- * Appended to the writer system prompt when `config.time_travel_prompt` is on
- * (TIME_TRAVEL_PROMPT_TEST). Companion of SEARCH_TIME_TRAVEL_INSTRUCTION: the
- * writer is the second chance to catch a correction that is only true because
- * events moved on after the post was published. Backtested 2026-07-28; see
- * docs/improvement-menu-2026-07-25.md (T2).
+ * This block is appended to the writer system prompt when
+ * `config.time_travel_prompt` is on. That is the TIME_TRAVEL_PROMPT_TEST arm.
+ * It is the companion of SEARCH_TIME_TRAVEL_INSTRUCTION. The writer is the
+ * second chance to catch a correction that is only true because events moved
+ * on after the post was published. It was backtested on 2026-07-28. See item
+ * T2 in docs/improvement-menu-2026-07-25.md.
  */
 export const WRITER_TIME_TRAVEL_RULE = `
 
@@ -110,14 +118,16 @@ export const WRITER_TIME_TRAVEL_RULE = `
 The post context states when the post was published. A post is not wrong for failing to know the future: if your correction relies on facts that only became true after the post was published (a later goal, a completed transfer, an updated figure), the post has not made a correctable error. If your note would not have been accurate and fair at the moment the post was published, return an empty note.`;
 
 /**
- * Few-shot block appended to the writer system prompt when
- * `config.writer_examples` is on (SIMPLE_BOT_WRITER_EXAMPLES_TEST). Real notes
- * that performed well — picked because they are simple, direct, and far shorter
- * than the limit. Each example shows the full post context the writer saw
- * (tweet text, any quoted tweet, any media description — genuine tweet text +
- * Gemini media analysis, fetched via fetchTweetById + analyzeMediaGemini).
- * `note_text` excludes the URLs (they live in `sources`), matching the writer's
- * output schema.
+ * A few-shot block appended to the writer system prompt when
+ * `config.writer_examples` is on. That is the SIMPLE_BOT_WRITER_EXAMPLES_TEST
+ * arm. The examples are real notes that performed well. They were picked
+ * because they are simple, direct, and far shorter than the character limit.
+ * Each example shows the full post context the writer saw. That is the tweet
+ * text, any quoted tweet, and any media description. The tweet text is genuine
+ * and the media descriptions are real Gemini analyses, fetched with
+ * fetchTweetById and analyzeMediaGemini.
+ * `note_text` leaves the URLs out because they belong in `sources`. That
+ * matches the writer's output schema.
  */
 export const WRITER_FEWSHOT_EXAMPLES = `
 
@@ -184,7 +194,8 @@ export function buildWriterUserMessage(userMessage: string, findings: string): s
   return `${userMessage}\n\n## Research findings\n\n${findings}`;
 }
 
-/** Re-ask the writer on the same thread after a length overflow. */
+/** Builds the message that re-asks the writer on the same thread after the note
+ *  came out too long. */
 export function buildWriterRetryMessage(params: {
   charCount: number;
   maxChars: number;
@@ -196,7 +207,8 @@ export function buildWriterRetryMessage(params: {
   );
 }
 
-/** Re-ask the writer after curated-topic lint problems (may include length). */
+/** Builds the message that re-asks the writer after the curated-topic lint found
+ *  problems. The problem list can also include a length overflow. */
 export function buildWriterLintMessage(params: {
   problems: string[];
   noteText: string;

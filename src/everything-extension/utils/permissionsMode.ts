@@ -1,12 +1,15 @@
-// The one switch between the two permission models (imported by BOTH
-// wxt.config.ts — it shapes the manifest — and the runtime code):
+// The single switch between our two permission models. Both wxt.config.ts and the
+// runtime code import it, so it shapes the manifest as well as the behaviour.
 //
-//   true  — <all_urls> is REQUIRED at install; the background silently
-//           registers the generic content script for every noted hostname.
-//           One big install warning, zero per-site friction.
-//   false — <all_urls> stays OPTIONAL; navigating to a noted site without
-//           the grant redirects through grant.html, which asks and requests
-//           just that origin. Store-review-friendly; per-site consent.
+// When it is true, access to all URLs is required at install time. The background
+// then registers the generic content script for every hostname that has notes,
+// without asking. The user sees one broad install warning and no further prompts.
 //
-// Pure constant module: no browser imports, so the build config can load it.
+// When it is false, access to all URLs stays optional. Navigating to a site that has
+// notes but no grant yet detours through grant.html, which asks the user and then
+// requests that one origin. This model is easier to get through store review and
+// lets the user consent one site at a time.
+//
+// This module holds nothing but the constant. It imports no browser APIs, so the
+// build config can load it.
 export const ASSUME_ALL_URLS = false;

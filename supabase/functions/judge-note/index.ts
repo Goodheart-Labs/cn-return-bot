@@ -1,11 +1,16 @@
-// @ts-nocheck — Deno edge function (Deno globals + esm.sh imports); types resolve
-// at deploy on Supabase's Deno runtime, not under the repo's Node tsc.
-// judge-note: gates BOTH flows where a signed-in user writes a note on Common
-// Notes — writing a new note and suggesting an improvement (both post an
-// ordinary draft note). An LLM decides whether the note is spam; only non-spam
-// notes are posted (the client inserts on an "accepted" verdict). Runs
-// server-side so the OpenRouter key never touches the browser, and rejects
-// anonymous callers before any LLM cost is incurred. It writes nothing itself.
+// @ts-nocheck
+// This file is a Deno edge function. It uses Deno globals and imports from
+// esm.sh, and those only resolve on Supabase's Deno runtime once the function is
+// deployed. The repo's Node tsc cannot check them, which is why checking is
+// turned off above.
+//
+// judge-note guards both of the flows in which a signed-in user writes a note on
+// Common Notes. Those flows are writing a new note and suggesting an improvement
+// to an existing one. Both of them post an ordinary draft note. An LLM decides
+// whether the submitted text is spam. The client only inserts the note when this
+// function answers "accepted". Doing the check here keeps the OpenRouter key out
+// of the browser. Anonymous callers are turned away before we spend anything on
+// the LLM. The function itself writes nothing to the database.
 //
 // Local:  supabase functions serve judge-note --env-file .env
 // Deploy: supabase functions deploy judge-note  (then: supabase secrets set OPENROUTER_API_KEY=...)
@@ -51,8 +56,9 @@ async function isSpam(context: string, currentNote: string, proposal: string): P
   });
   if (!res.ok) throw new Error(`OpenRouter ${res.status}: ${await res.text()}`);
   const data = await res.json();
-  // We only need the boolean, so pull it out directly — robust to code fences,
-  // trailing prose, or duplicated objects that break strict JSON.parse.
+  // We only need the boolean, so we read it straight out of the raw text with a
+  // regex. JSON.parse would throw on the shapes a model sometimes returns, such
+  // as code fences around the object, prose after it, or the object twice.
   const content: string = data.choices?.[0]?.message?.content ?? "";
   const match = content.match(/"spam"\s*:\s*(true|false)/i);
   if (!match) throw new Error(`no spam verdict in model output: ${content.slice(0, 120)}`);
@@ -63,7 +69,8 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return json({ error: "POST only" }, 405);
 
-  // Verify the caller is a logged-in user (not the bare anon key).
+  // Check that the caller is a signed-in user. Holding the anon key on its own
+  // is not enough.
   const asUser = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, {
     global: { headers: { Authorization: req.headers.get("Authorization") ?? "" } },
   });

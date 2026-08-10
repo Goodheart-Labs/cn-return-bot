@@ -1,12 +1,14 @@
-/** Percent-encode a string for use inside a `#:~:text=` directive. Beyond
- *  encodeURIComponent, dashes must be escaped — `-` is directive syntax
- *  (the prefix-/-suffix markers). */
+/** Percent-encodes a string so it can sit inside a `#:~:text=` directive. On top
+ *  of what encodeURIComponent does, dashes have to be escaped as well. A dash is
+ *  part of the directive's own syntax, where it separates the prefix and suffix
+ *  markers from the text. */
 function encodeFragmentText(s: string): string {
   return encodeURIComponent(s).replace(/-/g, "%2D");
 }
 
-/** Claim quotes come from scraped markdown, but the live page renders plain
- *  text — strip markdown syntax so the fragment matches what the browser sees. */
+/** Claim quotes are taken from scraped markdown, while the live page shows plain
+ *  text. Stripping the markdown syntax makes the fragment match what the browser
+ *  actually sees. */
 function stripMarkdown(s: string): string {
   return s
     .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
@@ -21,10 +23,12 @@ function stripMarkdown(s: string): string {
 const EDGE_WORDS = 6;
 
 /**
- * Deep-link an article URL to its quoted passage via a scroll-to-text fragment
- * (`#:~:text=`). Long quotes use the `textStart,textEnd` form so footnote
- * markers or formatting mid-quote can't break the match. Browsers without
- * support ignore the fragment and land at the top of the page, as before.
+ * Builds a deep link from an article URL to its quoted passage, using a
+ * scroll-to-text fragment (`#:~:text=`). A long quote is linked by its first and
+ * its last few words, which is the `textStart,textEnd` form. A footnote marker
+ * or some formatting in the middle of the quote then cannot break the match. A
+ * browser that does not support the fragment ignores it and lands at the top of
+ * the page.
  */
 export function quoteFragmentUrl(url: string, quote: string): string {
   const text = stripMarkdown(quote);
@@ -34,6 +38,7 @@ export function quoteFragmentUrl(url: string, quote: string): string {
     words.length <= EDGE_WORDS * 2
       ? encodeFragmentText(text)
       : `${encodeFragmentText(words.slice(0, EDGE_WORDS).join(" "))},${encodeFragmentText(words.slice(-EDGE_WORDS).join(" "))}`;
-  // ":~:" must live inside the fragment, so reuse an existing "#" if present.
+  // The ":~:" part must sit inside the URL's fragment. When the URL already has
+  // a "#" we append to it instead of adding a second one.
   return `${url}${url.includes("#") ? "" : "#"}:~:text=${directive}`;
 }

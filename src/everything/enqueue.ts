@@ -1,9 +1,10 @@
 /**
- * Enqueue content for the everything pipeline — the single ingestion front door.
+ * Enqueue content for the everything pipeline. This is the single front door
+ * for ingestion.
  *
- * Everything lands under a project (`--project <slug>`, created if new) as one
- * item per source document. An item is either a live URL the worker fetches, or
- * a local document whose text you supply.
+ * Everything lands under a project, named by `--project <slug>` and created if
+ * it is new. Each source document becomes one item. An item is either a live
+ * URL that the worker fetches, or a local document whose text you supply.
  *
  * Usage:
  *   bun run src/everything/enqueue.ts --project <slug> [args...]
@@ -12,11 +13,11 @@
  *   <url>                     live YouTube video, Substack post, or Substack
  *                             profile (expands to its --latest N free posts)
  *   --doc [<url>] <file>      a local .md/.txt <file> whose text is the extraction
- *                             body. With a source <url>: a YouTube url still
- *                             fetches the video's cues for timestamps; any other
- *                             url becomes the article's source link. Without a
- *                             url (`--doc <file>`): a url-less document — no
- *                             source link is shown.
+ *                             body. If you also give a source <url>, a YouTube
+ *                             url still makes the worker fetch the video's cues
+ *                             for timestamps. Any other url becomes the
+ *                             article's source link. If you give no url, the
+ *                             document has no source link and none is shown.
  *   --manifest <dir>          expand a folder's README.md manifest into --doc
  *                             pairs (one item per page)
  *   --latest N                posts to pull from a Substack profile (default 5)
@@ -36,12 +37,15 @@ import type { SourceKind } from "./types";
 
 const DEFAULT_LATEST_POSTS = 5;
 
-/** A YouTube link snaps to video cues; anything else is treated as an article. */
+/** A YouTube link has its claims snapped onto the video's cues. Anything else is
+ *  treated as an article. */
 function classifyUrl(url: string): SourceKind {
   return /youtube\.com|youtu\.be/.test(url) ? "youtube" : "substack";
 }
 
-/** Live URLs: YouTube video, Substack post, or a Substack profile → its latest posts. */
+/** Expands a live URL into the items it stands for. A YouTube video and a
+ *  Substack post are one item each. A Substack profile expands to its latest
+ *  posts. */
 async function expandLiveUrl(url: string, latest: number): Promise<{ source: SourceKind; url: string }[]> {
   if (/youtube\.com|youtu\.be/.test(url)) return [{ source: "youtube", url }];
   if (/\.substack\.com\/p\//.test(url)) return [{ source: "substack", url }];
@@ -53,26 +57,31 @@ async function expandLiveUrl(url: string, latest: number): Promise<{ source: Sou
   throw new Error(`Unsupported URL (need a YouTube video, Substack post, or Substack profile): ${url}`);
 }
 
-/** "/supplements/alignment-roadmap" → "Alignment Roadmap"; "" → "Untitled". */
+/** Turns a page path into a title. "/supplements/alignment-roadmap" becomes
+ *  "Alignment Roadmap". An empty path becomes "Untitled". */
 function titleFromPath(pagePath: string): string {
   const segment = pagePath.split("/").filter(Boolean).pop();
   if (!segment) return "Untitled";
   return segment.replace(/[-_]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-/** A local doc's title: its first Markdown heading, else the filename. */
+/** A local doc's title is its first Markdown heading. If it has no heading we
+ *  build the title from the filename. */
 function titleFromDoc(text: string, file: string): string {
   const heading = text.match(/^#\s+(.+)$/m)?.[1]?.trim();
   return heading || titleFromPath(path.basename(file, path.extname(file)));
 }
 
-/** Drop a trailing "### Links on this page" navigation block (manifest pages). */
+/** Drops the trailing "### Links on this page" navigation block that manifest
+ *  pages carry. */
 function stripNav(text: string): string {
   return text.split(/\n#{2,3} Links on this page/)[0]!.trim();
 }
 
-/** One local document → an enqueue row. YouTube docs let the worker fetch the
- *  real title; article docs carry a title now since nothing re-fetches them. */
+/** Turns one local document into an enqueue row. A YouTube document gets no
+ *  title here, because the worker fetches the real one from the video. An
+ *  article document carries its title right away, because nothing fetches that
+ *  document again later. */
 function docRow(projectId: string, url: string, text: string, title: string): EnqueueRow {
   const source = classifyUrl(url);
   const row: EnqueueRow = { project_id: projectId, source, url, full_text: text };
@@ -80,8 +89,9 @@ function docRow(projectId: string, url: string, text: string, title: string): En
   return row;
 }
 
-/** Expand a folder's README.md manifest — a "Source: <base-url>" line and
- *  "- [title](file.md) — `/path`" rows — into one article doc per page. */
+/** Expands a folder's README.md manifest into one article document per page.
+ *  Such a manifest has a "Source: <base-url>" line and rows of the form
+ *  "- [title](file.md) — `/path`". */
 function manifestRows(projectId: string, dir: string): EnqueueRow[] {
   const readme = fs.readFileSync(path.join(dir, "README.md"), "utf8");
   const baseUrl = readme.match(/Source:\s*(https?:\/\/[^\s·]+)/)?.[1]?.replace(/\/$/, "");
@@ -111,8 +121,9 @@ async function main() {
     if (a === "--project") projectSlug = args[++i];
     else if (a === "--manifest") manifestDir = args[++i];
     else if (a === "--latest") latest = Number(args[++i]);
-    // --doc takes a file, optionally preceded by its source url: `--doc <url> <file>`
-    // pairs the two; `--doc <file>` is a url-less local document.
+    // --doc takes a file, and an optional source url may come before it. So
+    // `--doc <url> <file>` pairs the two, and `--doc <file>` is a local
+    // document with no url.
     else if (a === "--doc") {
       const first = args[++i]!;
       if (/^https?:\/\//.test(first)) docs.push({ url: first, file: args[++i]! });

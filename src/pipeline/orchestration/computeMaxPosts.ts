@@ -1,6 +1,7 @@
 /**
- * Compute how many tweets to process this run, based on remaining writing slots
- * and the recent rate at which processed tweets become candidates/submissions.
+ * Work out how many tweets to process this run. The budget comes from the
+ * writing slots we have left and from the recent rate at which processed tweets
+ * turn into candidates or submissions.
  */
 
 import type { SupabaseLogger } from "../../api/supabaseClient";
@@ -12,19 +13,21 @@ export const MAX_POSTS_CAP = 20;
 const SAFETY_MULTIPLIER = 1.25;
 const FALLBACK_MAX_POSTS = 5;
 const MIN_RUNS_FOR_RATE = 20;
-// Only budget posts against the writing limit while we're confident it's binding
-// (hit within this window). Past it, the limit is stale — a probed-upward guess,
-// not a proven cap — so we stop rationing and process the full per-run max.
+// We only ration posts against the writing limit while we are confident the
+// limit really binds, which means we hit it inside this window. Once the window
+// has passed the stored limit is stale. It is then a guess we probed upward to,
+// not a proven cap. So we stop rationing and process the full per-run maximum.
 const CONFIDENT_LIMIT_WINDOW_HOURS = 12;
 const CONVERTED_OUTCOMES = ["candidate", "submitted"];
 
 export interface MaxPostsResult {
-  /** How many posts to actually process this run (capped at MAX_POSTS_CAP). */
+  /** How many posts to actually process this run. It is capped at
+   *  MAX_POSTS_CAP. */
   maxPosts: number;
-  /** Uncapped estimate of how many posts we'd need to process to hit the
-   *  writing limit. Drives feed breadth (broaden past the small feed only when
-   *  demand is high). Equals maxPosts on the fallback paths, where no rate-based
-   *  estimate is available. */
+  /** An uncapped estimate of how many posts we would need to process to reach
+   *  the writing limit. Nothing acts on it today. It is only logged, so a run
+   *  shows what the rate-based budget looked like before the cap. On the
+   *  fallback paths there is no rate-based estimate, so it equals maxPosts. */
   estimate: number;
 }
 
@@ -32,8 +35,9 @@ export async function computeMaxPosts(logger: SupabaseLogger): Promise<MaxPostsR
   const budget = await estimateWritingBudget(logger);
 
   // Past the confidence window the stored limit is stale, so stop rationing and
-  // process the full per-run max — but still surface the estimate we'd otherwise
-  // have used, so the logs show what the rate-based budget looked like.
+  // process the full per-run maximum. Still return the estimate we would
+  // otherwise have used, so the logs show what the rate-based budget looked
+  // like.
   if (!(await hitWritingLimitRecently(logger, CONFIDENT_LIMIT_WINDOW_HOURS))) {
     console.log(
       `[max-posts] no binding writing-limit hit in last ${CONFIDENT_LIMIT_WINDOW_HOURS}h` +

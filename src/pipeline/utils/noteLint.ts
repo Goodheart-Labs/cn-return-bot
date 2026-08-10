@@ -1,16 +1,18 @@
 /**
- * Writer-output lint. The length rule applies to every note; the stricter
- * shape rules (source count, URL form, no bare-domain citations) apply only to
- * curated-topic notes — the 7/22 rubric scoring of the election-topic notes
- * showed winners carry 1-2 clickable primary URLs while our failures carried
- * 3-4 or cited bare domains. Pure module so the rules are unit-testable
- * without the LLM retry loop.
+ * Lint rules for the writer's output. The length rule applies to every note. The
+ * stricter shape rules cover how many sources a note cites, the form of each
+ * source URL, and bare-domain citations. Those rules apply to curated-topic notes
+ * only. The rubric scoring of the election-topic notes on 22 July 2026 showed
+ * that the winning notes carry one or two clickable primary URLs, while our
+ * failures carried three or four or cited bare domains. This module has no side
+ * effects, so the rules can be unit tested without running the LLM retry loop.
  */
 
 import { countSubmittedNoteLength } from "./noteLength";
 import { getMonitoringContext } from "../misinfo-monitoring/monitoringContext";
 
-/** Topic notes cite one or two sources — never more (rubric s4/f5). */
+/** A topic note cites one or two sources and never more. The rubric items s4 and
+ *  f5 are the evidence for this limit. */
 export const MAX_TOPIC_SOURCES = 2;
 
 export interface LintProblem {
@@ -19,11 +21,12 @@ export interface LintProblem {
 }
 
 /**
- * Bare-domain citation inside the note body: `foxnews.com/politics/...` with a
- * path but no scheme — unclickable once the note is published. Scheme-ful URLs
- * are stripped first, so only scheme-less domain+path tokens match. A path
- * segment is required: plain prose like "the FactCheck.org article" is the
- * sourcing rule's business, not the lint's.
+ * Matches a bare-domain citation inside the note body, for example
+ * `foxnews.com/politics/...`, which has a path but no scheme. Such a citation is
+ * not clickable once the note is published. URLs that do carry a scheme are
+ * stripped before this pattern runs, so only scheme-less tokens with a domain and
+ * a path can match. The path is required on purpose. Plain prose like "the
+ * FactCheck.org article" is a matter for the sourcing rule and not for this lint.
  */
 const BARE_DOMAIN_RE = /(?:^|[\s("'“])((?:www\.)?(?:[a-z0-9-]+\.)+[a-z]{2,}\/[^\s"')”]+)/i;
 
@@ -42,10 +45,10 @@ function isFullHttpsUrl(source: string): boolean {
 }
 
 /**
- * Validate a writer response. `topicRules` turns on the curated-topic shape
- * checks; with it off, only the length rule runs (regular-pipeline behavior,
- * unchanged). The empty note (`note_text` "" + no sources) is the legitimate
- * "no dispute found" outcome and is never linted.
+ * Validates a writer response. Setting `topicRules` turns on the curated-topic
+ * shape checks. With it off only the length rule runs, which is what the regular
+ * pipeline has always done. An empty note has no text and no sources. That is the
+ * legitimate "no dispute found" outcome, so it is never linted.
  */
 export function lintWriterNote(opts: {
   noteText: string;
@@ -93,13 +96,15 @@ export function lintWriterNote(opts: {
 }
 
 /**
- * Post-verification guard: a curated-topic note must ship with at least one
- * source. The classic (non-claim-based) verifier can accept a note while
- * classifying every cited URL as bad, publishing it with zero sources — and
- * every historical Helpful note on this topic carries a URL. Reachable for
- * ~half of monitored posts via the live verifier_claim_based A/B, and called
- * from BOTH bot orchestrators so a future bot re-weight cannot bypass it.
- * Returns the rejection reason, or null when the note is fine.
+ * Guards the step that runs after verification. A curated-topic note must ship
+ * with at least one source. The classic verifier, the one that does not work
+ * claim by claim, can accept a note while classifying every cited URL as bad.
+ * That would publish the note with no sources at all. Every note on this topic
+ * that ever reached Helpful carries a URL. The live `verifier_claim_based` A/B
+ * test sends about half of the monitored posts down that classic path, so this
+ * case really does happen. Both bot orchestrators call this function, so
+ * re-weighting a bot later cannot bypass it. Returns the reason to reject the
+ * note, or null when the note is fine.
  */
 export function topicSourcelessRejection(goodSources: string[]): string | null {
   if (goodSources.length > 0 || getMonitoringContext() === undefined) return null;

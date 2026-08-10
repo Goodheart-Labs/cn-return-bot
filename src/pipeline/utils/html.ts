@@ -1,5 +1,6 @@
-/** Decode the HTML entities that leak into scraped text (YouTube auto-subs,
- *  Substack body_html): &nbsp; &#39; &amp; &#x27; … */
+/** Decodes the HTML entities that leak into scraped text, such as YouTube
+ *  auto-captions and Substack `body_html`. Examples are `&nbsp;`, `&#39;`,
+ *  `&amp;` and `&#x27;`. */
 export function decodeHtmlEntities(s: string): string {
   return s
     .replace(/&nbsp;|&#160;/gi, " ")

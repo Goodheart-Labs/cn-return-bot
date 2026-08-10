@@ -1,8 +1,10 @@
 /**
- * Substack ingestion via its public JSON API — no scraping:
- *   - substack.com/api/v1/user/<handle>/public_profile   → publication subdomain
- *   - <sub>.substack.com/api/v1/archive?sort=new&limit=N → latest posts
- *   - <sub>.substack.com/api/v1/posts/<slug>             → full body_html (free posts)
+ * Substack ingestion. Nothing here scrapes a rendered page. We read Substack's
+ * public JSON API and its RSS feed:
+ *   - substack.com/api/v1/user/<handle>/public_profile   → the publication subdomain
+ *   - <sub>.substack.com/api/v1/archive?sort=new&limit=N → the latest posts
+ *   - <sub>.substack.com/api/v1/posts/<slug>             → a free post's full body_html
+ *   - <sub>.substack.com/feed                            → the latest posts with their bodies
  */
 
 import { decodeHtmlEntities } from "../../pipeline/utils/html";
@@ -14,7 +16,8 @@ async function fetchJson(url: string): Promise<any> {
   return res.json();
 }
 
-/** "https://substack.com/@garymarcus/posts" → "garymarcus" (null if not a profile URL). */
+/** Reads the handle out of a profile URL, so "https://substack.com/@garymarcus/posts"
+ *  gives "garymarcus". A URL that is not a profile gives null. */
 export function parseProfileHandle(url: string): string | null {
   return url.match(/substack\.com\/@([\w.-]+)/)?.[1] ?? null;
 }
@@ -26,7 +29,8 @@ async function fetchPublicationSubdomain(handle: string): Promise<string> {
   return subdomain;
 }
 
-// Fetch more than needed: paywalled and podcast-type posts are filtered out.
+// We fetch more posts than we need, because paywalled posts and podcast posts
+// are filtered out afterwards.
 const ARCHIVE_FETCH_LIMIT = 20;
 
 export interface ArchivePost {
@@ -60,16 +64,17 @@ export interface FeedPost {
   publishedAt: string;
   /** Full post HTML (RSS content:encoded). */
   bodyHtml: string;
-  /** True for paid posts: their RSS body is only the free preview, ending in a
-   *  "Read more" link back to the post. */
+  /** True for a paid post. Its RSS body is only the free preview, and that
+   *  preview ends in a "Read more" link back to the post. */
   paywalled: boolean;
 }
 
 const PAYWALL_TRAILER = /<a href="[^"]*">\s*Read more\s*<\/a>\s*<\/p>\s*$/;
 
-/** Substack blocks datacenter IPs (403), so in CI the RSS fetch goes through
- *  our Cloudflare Worker relay (src/everything/substack-proxy-worker) — its
- *  egress is served reliably. Locally the env vars are unset → direct fetch. */
+/** Substack answers a datacenter IP with a 403, so in CI the RSS fetch goes
+ *  through our Cloudflare Worker relay in src/everything/substack-proxy-worker.
+ *  Substack serves that relay's traffic reliably. On a local machine the proxy
+ *  environment variables are unset and we fetch Substack directly. */
 function feedRequest(feedUrl: string): { url: string; headers?: Record<string, string> } {
   const proxyUrl = process.env.SUBSTACK_PROXY_URL;
   if (!proxyUrl) return { url: feedUrl };
@@ -84,22 +89,25 @@ const cdataUnwrap = (raw: string): string =>
     .trim()
     .replace(/^<!\[CDATA\[/, "")
     .replace(/\]\]>$/, "")
-    // a "]]>" inside CDATA is encoded by splitting the section — rejoin it
+    // A "]]>" inside CDATA is encoded by splitting the section in two. We join
+    // the two halves back together here.
     .replace(/\]\]><!\[CDATA\[/g, "");
 
 function tagContent(item: string, tag: string): string {
   return item.match(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`))?.[1] ?? "";
 }
 
-/** The proxy serves feeds from a background-refreshed cache; a stale cache
- *  means its live fetches have been failing for a long time — fail loudly
- *  instead of quietly re-reading frozen data forever. */
+/** The proxy serves feeds from a cache it refreshes in the background. A cache
+ *  older than this means the proxy's own fetches of Substack have been failing
+ *  for a long time. We then fail loudly instead of quietly reading frozen data
+ *  forever. */
 const MAX_PROXY_CACHE_AGE_SECONDS = 24 * 3600;
 
-/** A publication's RSS feed ("https://thezvi.substack.com" → /feed): its ~20
- *  latest posts, newest first, each with the full post HTML. This is the only
- *  Substack endpoint the automated pipeline uses — feed-reader traffic is the
- *  one kind Substack serves to non-residential IPs. */
+/** Reads a publication's RSS feed, so "https://thezvi.substack.com" becomes its
+ *  /feed. It returns the roughly 20 latest posts, newest first, each with the
+ *  full post HTML. This is the only Substack endpoint the automated pipeline
+ *  uses. Feed-reader traffic is the one kind Substack serves to a
+ *  non-residential IP. */
 export async function fetchFeedPosts(publicationUrl: string): Promise<FeedPost[]> {
   const { url, headers } = feedRequest(`${publicationUrl.replace(/\/$/, "")}/feed`);
   const res = await fetch(url, { headers });
@@ -123,23 +131,27 @@ export async function fetchFeedPosts(publicationUrl: string): Promise<FeedPost[]
     .filter((p) => p.url && p.bodyHtml);
 }
 
-/** Inline image placeholder left in the plain text so the extractor can render
- *  the image (and its URL) at the point it appears in the article. */
+/** The placeholder we leave in the plain text where an image stood. The
+ *  extractor later renders the image and its URL at that exact point in the
+ *  article. */
 export function imageMarker(url: string): string {
   return `[[IMAGE:${url}]]`;
 }
 export const IMAGE_MARKER_RE = /\[\[IMAGE:(.*?)\]\]/g;
 
-/** Replace each <img>/<source> with an inline image marker carrying its URL. */
+/** Replaces each <img> tag with an inline image marker carrying its URL. An
+ *  image inlined as a data URI is dropped instead, because there is no URL the
+ *  image analysis could fetch. */
 function imagesToMarkers(html: string): string {
   return html.replace(/<img\b[^>]*?\bsrc=["']([^"']+)["'][^>]*>/gi, (_m, src) =>
     src.startsWith("data:") ? "" : `\n\n${imageMarker(src)}\n\n`,
   );
 }
 
-/** Strip body_html down to blank-line-separated plain-text blocks (chunking
- *  splits on those). With `keepImages`, inline `<img>` tags survive as
- *  `[[IMAGE:url]]` markers instead of being dropped. */
+/** Strips body_html down to plain text whose blocks are separated by blank
+ *  lines. Chunking later splits the text on those blank lines. With
+ *  `keepImages` an inline `<img>` tag survives as an `[[IMAGE:url]]` marker
+ *  instead of being dropped. */
 export function htmlToText(html: string, keepImages = false): string {
   const withImages = keepImages ? imagesToMarkers(html) : html;
   const text = withImages

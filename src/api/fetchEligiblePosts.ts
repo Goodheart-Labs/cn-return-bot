@@ -27,8 +27,9 @@ export type Post = {
   id: string;
   author_id: string;
   created_at: string;
-  // Full post body: note_tweet.text for long-form (>280) posts, else the
-  // tweet's text. Never the truncated form.
+  // The full body of the post. For long-form posts over 280 characters this is
+  // note_tweet.text. For every other post it is the tweet's own text. It is
+  // never the truncated form.
   text: string;
   media: any[];
   referenced_tweets?: ReferencedTweet[];
@@ -38,20 +39,22 @@ export type Post = {
   author_name?: string;
   author_description?: string;
   author_tweet_count?: number;
-  // Named entities X tagged on the post (people, orgs, topics), from
-  // context_annotations. Always an array on X-fetched posts (empty when X
-  // tagged nothing); optional only because other Post builders omit it.
+  // The named entities X tagged on the post, such as people, organisations and
+  // topics. They come from context_annotations. A post fetched from X always
+  // carries an array here, and that array is empty when X tagged nothing. The
+  // field is optional only because other places that build a Post leave it out.
   entities?: string[];
-  // Complete, self-contained X-API tweet object (every field the endpoint
-  // returns) with its expansions resolved inline under `includes`. Persisted
-  // verbatim to tweets.raw_tweet so no field is ever lost — promote anything
-  // that becomes useful to a typed column later. Not read by the bots.
+  // A complete, self-contained copy of the X API tweet object. It holds every
+  // field the endpoint returns, with the expansions resolved inline under
+  // `includes`. We store it verbatim in tweets.raw_tweet so that no field is
+  // ever lost. If a field turns out to be useful, promote it to a typed column
+  // later. The bots never read this.
   raw?: RawTweet;
 };
 
-// The raw tweet object as returned in `data[]`, augmented with the expansion
-// objects this tweet references (so the blob is self-contained). Extra API
-// fields beyond the ones we name flow through the index signature untouched.
+// The raw tweet object as X returns it in `data[]`, together with the expansion
+// objects this tweet refers to, so that the blob stands on its own. API fields
+// we do not name here still flow through the index signature untouched.
 export type RawTweet = Record<string, unknown> & {
   includes: {
     author: Record<string, unknown> | null;
@@ -64,15 +67,18 @@ export type RawTweet = Record<string, unknown> & {
 
 const API_URL = "https://api.x.com/2/notes/search/posts_eligible_for_notes";
 
-// Request EVERY field the endpoint exposes, so tweets.raw_tweet captures the
-// complete object. Omitted on purpose: non_public_metrics / organic_metrics /
-// promoted_metrics (tweet and media) and confirmed_email / receives_your_dm
-// (user) — those are owner-only and 403 the whole request on other people's
-// posts. `attachments` in tweet.fields is required so referenced
-// (quoted/retweeted) tweets carry their attachments.media_keys in
-// includes.tweets[]; pairing it with the referenced_tweets.id.attachments.media_keys
-// expansion makes X also include those media objects in includes.media[].
-// Shared with fetchTweetById so both produce the same Post shape.
+// We request every field the endpoint exposes, so that tweets.raw_tweet holds
+// the complete object. A few fields are left out on purpose. On the tweet and
+// on media those are non_public_metrics, organic_metrics and promoted_metrics.
+// On the user they are confirmed_email and receives_your_dm. Only the owner of
+// an account may read those, and asking for them makes the whole request fail
+// with a 403 on other people's posts.
+// `attachments` has to be in tweet.fields, because that is what makes quoted
+// and retweeted tweets carry their attachments.media_keys in includes.tweets[].
+// Pairing it with the referenced_tweets.id.attachments.media_keys expansion is
+// then what makes X put those media objects in includes.media[].
+// fetchTweetById uses this same constant, so both paths produce the same Post
+// shape.
 export const POST_API_FIELD_PARAMS: Record<string, string> = {
   "tweet.fields":
     "article,attachments,author_id,card_uri,community_id,context_annotations,conversation_id,created_at,display_text_range,edit_controls,edit_history_tweet_ids,entities,geo,id,in_reply_to_user_id,lang,matched_media_notes,media_metadata,note_request_suggestions,note_tweet,paid_partnership,possibly_sensitive,public_metrics,referenced_tweets,reply_settings,scopes,source,suggested_source_links,suggested_source_links_with_counts,text,withheld",
@@ -95,7 +101,8 @@ async function fetchPage(
   if (postSelection) params.append("post_selection", postSelection);
   if (paginationToken) params.append("pagination_token", paginationToken);
 
-  // OAuth1 requires %20 for spaces; URLSearchParams uses +
+  // OAuth1 requires spaces to be encoded as %20, but URLSearchParams encodes
+  // them as +, so we swap them back.
   const fullUrl = `${API_URL}?${params.toString().replace(/\+/g, "%20")}`;
 
   return axios.get(fullUrl, {
@@ -111,7 +118,7 @@ export async function fetchEligiblePosts(
   postSelection?: string
 ): Promise<Post[]> {
   const allEligiblePosts: Post[] = [];
-  const seenPostIds = new Set<string>(skipPostIds); // Track all seen post IDs to prevent duplicates
+  const seenPostIds = new Set<string>(skipPostIds);
   let nextToken: string | undefined;
   let pageCount = 0;
   let totalDuplicatesSkipped = 0;
@@ -119,7 +126,7 @@ export async function fetchEligiblePosts(
   while (pageCount < maxPages && allEligiblePosts.length < maxResults) {
     pageCount++;
 
-    // Fetch more posts than needed to account for skipped ones
+    // Ask X for more posts than we need, because some of them will be skipped.
     const fetchMultiplier = skipPostIds.size > 0 ? 3 : 1;
     const fetchLimit = Math.min(maxResults * fetchMultiplier, 100);
 
@@ -127,7 +134,6 @@ export async function fetchEligiblePosts(
 
     const allPosts = parsePostsResponse(response.data);
 
-    // Filter out posts that have already been processed or seen
     let pageDuplicates = 0;
     const newPosts = allPosts.filter((post) => {
       if (seenPostIds.has(post.id)) {
@@ -139,20 +145,18 @@ export async function fetchEligiblePosts(
     });
     totalDuplicatesSkipped += pageDuplicates;
 
-    // Add new eligible posts to our collection
     allEligiblePosts.push(...newPosts);
 
-    // Get next token for pagination
     nextToken = response.data.meta?.next_token;
 
-    // If no more pages, break
     if (!nextToken) {
       break;
     }
 
-    // Every response reports the endpoint's remaining rate budget (500
-    // requests per 15-min window, shared by all fetches in a run). Stop
-    // BEFORE the request that would 429 instead of reacting to it.
+    // Every response reports how much of the endpoint's rate budget is left.
+    // The budget is 500 requests per 15 minute window, and every fetch in a run
+    // draws on the same budget. We stop before making the request that would be
+    // rejected with a 429, rather than reacting once it has failed.
     if (response.headers?.["x-rate-limit-remaining"] === "0") {
       console.warn(
         `[generate] Rate budget exhausted after page ${pageCount}; keeping the ${allEligiblePosts.length} posts already fetched`
@@ -165,7 +169,6 @@ export async function fetchEligiblePosts(
     `[generate] Fetched ${allEligiblePosts.length} eligible posts across ${pageCount} pages (${totalDuplicatesSkipped} duplicates skipped)`
   );
 
-  // Return only the requested number of posts
   return allEligiblePosts.slice(0, maxResults);
 }
 
@@ -219,7 +222,6 @@ export function parsePostsResponse(data: any): Post[] {
           }
         }
       }
-      // Get referenced tweet data if this is a retweet or quoted tweet
       let referencedTweetData: ReferencedTweetData | undefined;
       if (tweet.referenced_tweets?.length > 0) {
         const referencedTweet = tweet.referenced_tweets.find(
@@ -228,7 +230,6 @@ export function parsePostsResponse(data: any): Post[] {
         if (referencedTweet) {
           const referencedData = referencedTweetsMap.get(referencedTweet.id);
           if (referencedData) {
-            // Resolve media keys for the referenced tweet
             const refMedia = [];
             if (referencedData.attachments?.media_keys) {
               for (const mediaKey of referencedData.attachments.media_keys) {
@@ -259,15 +260,15 @@ export function parsePostsResponse(data: any): Post[] {
         }
       }
 
-      // Extract author follower count from user expansion
       const authorData = userMap.get(tweet.author_id);
       const authorFollowers = authorData?.public_metrics?.followers_count;
       const authorName = authorData?.name;
       const authorDescription = authorData?.description;
       const authorTweetCount = authorData?.public_metrics?.tweet_count;
 
-      // X tags posts with named entities (people, orgs, topics) in context_annotations.
-      // The same entity recurs across taxonomy domains, so dedupe by trimmed name.
+      // X tags posts with named entities such as people, organisations and
+      // topics, and returns them in context_annotations. The same entity comes
+      // back once per taxonomy domain, so we remove duplicates by trimmed name.
       const entities = [
         ...new Set<string>(
           (tweet.context_annotations ?? [])
@@ -280,10 +281,11 @@ export function parsePostsResponse(data: any): Post[] {
         id: tweet.id,
         author_id: tweet.author_id,
         created_at: tweet.created_at,
-        // Long-form (>280 char) posts truncate `text` and end it in a t.co
-        // self-link; the complete body lives in note_tweet.text. Prefer it so
-        // the bots — and tweets.text — see the whole post. The untouched API
-        // values are still preserved verbatim in `raw`.
+        // Long-form posts over 280 characters have a truncated `text` that ends
+        // in a t.co link back to the post itself. Their complete body lives in
+        // note_tweet.text, so we prefer that. It is what the bots see, and what
+        // is stored in tweets.text. The untouched API values are still kept
+        // verbatim in `raw`.
         text: tweet.note_tweet?.text ?? tweet.text,
         media,
         referenced_tweets: tweet.referenced_tweets || undefined,
@@ -293,9 +295,10 @@ export function parsePostsResponse(data: any): Post[] {
         author_name: authorName,
         author_description: authorDescription,
         author_tweet_count: authorTweetCount,
-        // Always emit the array (empty when X tagged nothing) so `tweet.post`
-        // logs `entities: []` and an absent hint is distinguishable from a
-        // dropped field. entityHint() treats [] as "no hint".
+        // We always emit the array, and it is empty when X tagged nothing. That
+        // way the `tweet.post` log shows `entities: []`, so a post with no
+        // entities looks different from a field we dropped. entityHint() reads
+        // an empty array as "no hint".
         entities,
         raw: buildRawTweet(tweet, mediaMap, userMap, referencedTweetsMap, pollMap, placeMap),
       });
@@ -304,10 +307,11 @@ export function parsePostsResponse(data: any): Post[] {
   return posts;
 }
 
-// Assemble a self-contained copy of the raw API tweet object: every field X
-// returned in data[], plus the expansion objects this tweet references resolved
-// inline under `includes` (author user, full media incl. alt_text, referenced
-// tweets, polls, place). Stored verbatim in tweets.raw_tweet.
+// Assemble a self-contained copy of the raw API tweet object. It holds every
+// field X returned in data[], plus the expansion objects this tweet refers to,
+// resolved inline under `includes`. Those are the author, the full media objects
+// including their alt_text, the referenced tweets, the polls and the place. The
+// result is stored verbatim in tweets.raw_tweet.
 function buildRawTweet(
   tweet: any,
   mediaMap: Map<string, any>,
@@ -320,7 +324,8 @@ function buildRawTweet(
     .map((rt: any) => referencedTweetsMap.get(rt.id))
     .filter(Boolean);
 
-  // This tweet's own media keys plus those of any referenced tweet.
+  // Collect this tweet's own media keys together with those of any tweet it
+  // references.
   const mediaKeys = new Set<string>(tweet.attachments?.media_keys ?? []);
   for (const ref of referenced) {
     for (const key of ref.attachments?.media_keys ?? []) mediaKeys.add(key);

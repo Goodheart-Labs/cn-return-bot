@@ -1,16 +1,20 @@
 /**
  * Capture the entire eligible-posts feed into the feed_tweets table.
  *
- * Read + save only: paginates the full feed (default xxl) and saves every post
- * via bulkSaveFeedTweets — first-seen tweets get a full row incl. raw_tweet,
- * re-seen tweets only get metrics + last_seen_at refreshed. Never drafts or
- * submits anything.
+ * This script only reads and saves. It pages through the whole feed, which
+ * defaults to the xxl size, and saves every post with bulkSaveFeedTweets. A
+ * tweet seen for the first time gets a full row, including its raw_tweet. A
+ * tweet we have seen before only gets its metrics and its last_seen_at
+ * refreshed. Nothing is ever drafted or submitted.
  *
- * Runs manually via the capture-feed-tweets GitHub Actions workflow (prod X
- * secrets → xxl access). Env: FEED_SIZE (default xxl), MAX_PAGES (default 300 —
- * enough to exhaust the feed at 100 posts/page).
+ * It runs manually through the capture-feed-tweets GitHub Actions workflow,
+ * which supplies the production X secrets. Those are the credentials with xxl
+ * feed access. Two environment variables configure it. FEED_SIZE defaults to
+ * xxl. MAX_PAGES defaults to 300, which is enough to exhaust the feed at 100
+ * posts per page.
  *
- * Local smoke test (LOCAL_X_* only has small-feed access):
+ * For a local smoke test run the command below. The LOCAL_X_* credentials only
+ * have access to the small feed.
  *   bun run src/production/captureFeedTweets.ts --local
  */
 

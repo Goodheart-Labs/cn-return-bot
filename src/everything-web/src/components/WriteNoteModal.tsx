@@ -1,8 +1,8 @@
 import { useRef } from "react";
 
-/** Writing notes moved to the browser extension (you write on the page
- *  itself, anchored to your selection) — the website's "Write a note" button
- *  stays as a teaser pointing there. */
+/** Writing notes has moved to the browser extension. There you write on the
+ *  page itself, and the note is anchored to the text you selected. The
+ *  website's "Write a note" button stays as a teaser that points at it. */
 export function WriteNoteModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const backdropPress = useRef(false);
 

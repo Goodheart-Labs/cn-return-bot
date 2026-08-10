@@ -8,11 +8,12 @@ export function stripJsonFences(content: string): string {
 }
 
 /**
- * Extract a JSON object from model output. Most models (gpt-5.x, Sonar) emit bare
- * JSON — optionally ```json-fenced — so stripJsonFences alone is enough. Opus is
- * the exception: asked for JSON without a strict response_format, it narrates a
- * reasoning preamble before the object. Strip fences; if a preamble remains, fall
- * back to the first `{` … last `}` slice.
+ * Extracts a JSON object from model output. Most models, such as gpt-5.x and
+ * Sonar, emit bare JSON, sometimes wrapped in a ```json fence. For those,
+ * stripping the fences is enough. Opus is the exception. When it is asked for
+ * JSON without a strict response_format, it narrates a reasoning preamble before
+ * the object. So we strip the fences first, and if a preamble is still in front
+ * of the object we fall back to the slice from the first `{` to the last `}`.
  */
 export function extractJsonObject(content: string): string {
   const stripped = stripJsonFences(content);
@@ -23,10 +24,10 @@ export function extractJsonObject(content: string): string {
 const MAX_URL_CHARS_IN_LOG = 150;
 
 /**
- * Shorten long URLs inside a string for error logging while leaving the rest of
- * the text intact. Use this instead of slicing the whole response: a single long
- * source URL otherwise eats the entire budget and makes a markdown-instead-of-
- * JSON failure look like a truncated response.
+ * Shortens long URLs inside a string for error logging and leaves the rest of
+ * the text intact. Use this instead of slicing the whole response. A single long
+ * source URL would otherwise fill the entire log budget. That makes a reply which
+ * was markdown instead of JSON look like a reply that was merely cut short.
  */
 export function truncateUrlsForLog(text: string): string {
   return text.replace(/https?:\/\/\S+/g, (url) =>

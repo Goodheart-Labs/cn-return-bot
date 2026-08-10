@@ -23,15 +23,16 @@ export function bucketKey(submittedAt: string, granularity: ChartGranularity): s
   if (granularity === "daily") {
     return d.toISOString().slice(0, 10);
   }
-  // Weekly: Monday-anchored ISO week start (UTC).
+  // A weekly bucket is keyed by the Monday that starts its ISO week, in UTC.
   const dayOfWeekUtc = d.getUTCDay();
   const daysSinceMonday = (dayOfWeekUtc + 6) % 7;
   const monday = new Date(d.getTime() - daysSinceMonday * ONE_DAY_MS);
   return monday.toISOString().slice(0, 10);
 }
 
-// Drop the in-progress week — a partial-week bar that drags the chart down
-// until Sunday. No-op for daily granularity. Works on any keyed bucket.
+// Drop the week that is still running. Its bar only covers the days so far, so
+// it drags the chart down until the week ends on Sunday. This does nothing when
+// the chart is showing days.
 export function dropInProgressWeek<T extends { key: string }>(
   buckets: T[],
   granularity: ChartGranularity,
@@ -64,9 +65,9 @@ export interface ChartBucket {
   unhelpful: number;
   nmr: number;
   /**
-   * Pipeline runs in this bucket that didn't end up as a submitted note.
-   * Computed by `bucketize` from `runsByDay`; `helpful + unhelpful + nmr`
-   * already accounts for all submitted notes that landed in this bucket.
+   * The pipeline runs in this bucket that never became a submitted note.
+   * `bucketize` works this out from `runsByDay`. The submitted notes are
+   * already covered by helpful, unhelpful and nmr together.
    */
   nonCandidate: number;
   total: number;
@@ -94,10 +95,12 @@ function getOrCreateBucket(
 }
 
 /**
- * Bucket submitted notes (always) and — when `runsByDay` is supplied —
- * pipeline runs that didn't produce a submitted note (rejected / filtered /
- * failed / candidate-but-not-yet-submitted). Filters re-apply against
- * `runsByDay` because each row carries its own ab_test_picks.
+ * Put the submitted notes into time buckets. When `runsByDay` is given, also
+ * count the pipeline runs that never produced a submitted note. Those are the
+ * runs that were rejected, filtered out, or failed, plus the ones that produced
+ * a candidate which has not been submitted.
+ * The A/B filters have to be applied to `runsByDay` again here, because each of
+ * its rows carries its own ab_test_picks.
  */
 export function bucketize(
   notes: NoteRecord[],
@@ -143,9 +146,11 @@ export interface ShareBucket {
 }
 
 /**
- * Bucket the per-day origin counts (helpful notes split into ours / top other
- * AI / total) into the chart's granularity. Human-written is the remainder:
- * total − ours − otherAi (clamped ≥ 0 against any dump rounding).
+ * Put the per-day origin counts into the chart's buckets. Each day carries the
+ * number of helpful notes in total, how many of them are ours, and how many
+ * came from the largest other AI note writer.
+ * The human-written count is whatever is left over. It is clamped at zero, so
+ * rounding in the public dump can never push it below zero.
  */
 export function bucketizeOrigin(
   counts: DailyOriginCount[],
@@ -178,7 +183,7 @@ export interface HeadlineMetrics {
   nmrNotes: number;
   totalViews: number;
   viewsOnHelpful: number;
-  totalCost: number | null;            // null when no AB-matching cost data
+  totalCost: number | null;            // Null when no cost data matches the filters.
   costPerHelpfulNote: number | null;
   costPerViewOnHelpful: number | null;
 }

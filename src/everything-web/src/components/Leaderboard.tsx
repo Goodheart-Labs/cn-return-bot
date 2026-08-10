@@ -8,7 +8,8 @@ import {
 } from "../lib/leaderboard";
 import { displayName } from "../../../everything-shared/session";
 
-/** Ranks people by how many notes they've rated. Listed only if they opt in. */
+/** Ranks people by how many notes they have rated. A person is listed only if
+ *  they opt in. */
 export function Leaderboard({ session, myVoteCount }: {
   session: Session | null;
   myVoteCount: number;

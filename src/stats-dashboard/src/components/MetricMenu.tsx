@@ -10,10 +10,11 @@ import { humanizeTagName } from "../../../dashboard-shared/ratingReasons";
 
 type SubKey = "failure_mode" | "rating_type";
 
-// The Metric picker. Flat rows for the base metrics, plus two parent rows whose
-// second-layer submenu opens on hover: Failure Mode (tags) and Rating Type
-// (reasons). Hand-rolled (no menu library in this repo) following the
-// FailureModeSelector open/outside-click pattern.
+// The metric picker. The base metrics are plain rows. Below them sit two rows
+// that open a submenu when the pointer rests on them. Failure Mode lists the
+// review tags, and Rating Type lists the rating reasons. The menu is written by
+// hand because this repo has no menu library. It opens and closes the same way
+// the review dashboard's FailureModeSelector does.
 export function MetricMenu({
   stat,
   onStatChange,
@@ -143,9 +144,11 @@ function MenuRow({ label, active, onClick }: { label: string; active: boolean; o
   );
 }
 
-// Parent row + its side submenu share one relative container so the pointer can
-// travel from row into submenu (left-full = flush right edge, no gap) without
-// tripping onMouseLeave. Clicking also toggles it, for keyboard/no-hover users.
+// The parent row and its submenu sit in one container. The submenu starts flush
+// against the row's right edge, with no gap in between. The pointer can
+// therefore travel from the row into the submenu without leaving the container
+// and closing it. Clicking the row toggles the submenu as well, which is what
+// people who cannot hover need.
 function ParentRow({
   label,
   active,

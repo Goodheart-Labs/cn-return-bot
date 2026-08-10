@@ -1,13 +1,13 @@
 /**
  * Build the stats-dashboard data snapshot.
  *
- * Queries Supabase, joins notes ↔ pipeline_runs ↔ tweets, aggregates costs
- * per A/B-pick combination, and writes the result to
- * src/stats-dashboard/public/stats-data.json.
+ * This script reads Supabase. It joins each note to its pipeline run and to the
+ * tweet it was written on, adds up the cost per A/B-pick combination, and
+ * writes everything to src/stats-dashboard/public/stats-data.json.
  *
- * The dashboard is a static SPA on GitHub Pages. It loads this JSON file at
- * runtime and does all filtering / aggregation client-side. We never expose
- * Supabase credentials to the browser.
+ * The dashboard is a static single-page app on GitHub Pages. It loads that JSON
+ * file at runtime and does all filtering and aggregation in the browser. That is
+ * why the browser never needs Supabase credentials.
  *
  * Run from repo root:
  *   bun run build-stats-data
@@ -94,8 +94,8 @@ interface RawPipelineRunRow {
 }
 
 interface RawAnnotationRow {
-  id: string; // keyset cursor only
-  target_id: string; // raw note_id for note annotations (other kinds are prefixed)
+  id: string; // Only used as the paging cursor.
+  target_id: string; // For a note annotation this is the plain note_id.
   failure_modes: string[] | null;
   seen: boolean;
 }
@@ -145,10 +145,12 @@ function buildPipelineAggregates(runs: RawPipelineRunRow[]): PipelineRunAggregat
   }));
 }
 
-// Per-(day, full-pick) run outcome counts for the A/B comparison panel. `total`
-// excludes only in-progress (non-terminal) runs; `candidate` counts any run
-// that produced a gate-passing note (candidate or submitted). Day-bucketed so
-// the panel can scope to a "last N days" window; the client sums across days.
+// Count run outcomes for the A/B comparison panel, one row per day and per full
+// combination of picks. `total` counts every run that has finished, so the only
+// runs left out are the ones still in progress. `candidate` counts every run
+// whose note passed the gates, which means the candidate runs and the submitted
+// ones. The rows are split by day so the panel can scope to a "last N days"
+// window. The dashboard adds the days back together itself.
 function buildAbOutcomeAggregates(runs: RawPipelineRunRow[]): AbOutcomeAggregate[] {
   const byKey = new Map<string, AbOutcomeAggregate>();
   for (const run of runs) {
@@ -170,8 +172,9 @@ function buildAbOutcomeAggregates(runs: RawPipelineRunRow[]): AbOutcomeAggregate
 }
 
 function buildPipelineRunsByDay(runs: RawPipelineRunRow[]): PipelineRunDayBucket[] {
-  // Group by (YYYY-MM-DD from created_at, ab_test_picks). Used by the
-  // dashboard to compute non-candidate counts per chart bucket.
+  // Group the runs by the day they were created and by their A/B picks. The
+  // dashboard uses these counts to work out how many runs in a chart bucket
+  // never became a submitted note.
   const byDayKey = new Map<string, PipelineRunDayBucket>();
   for (const run of runs) {
     const date = run.created_at.slice(0, 10);
@@ -199,8 +202,9 @@ function joinNotes(
   publicRatings: RawPublicDumpRatingRow[],
   annotations: RawAnnotationRow[],
 ): NoteRecord[] {
-  // Keep the most recent run per note_id. Explicit rather than relying on the
-  // fetch order — the paginator sorts by primary key, not created_at.
+  // Keep the most recent run for each note. We compare created_at ourselves
+  // instead of trusting the order the rows arrived in. The paginator sorts by
+  // primary key, not by created_at.
   const submittedRunByNoteId = new Map<string, RawPipelineRunRow>();
   for (const run of runs) {
     if (!run.note_id) continue;
@@ -211,8 +215,10 @@ function joinNotes(
   for (const t of tweets) tweetById.set(t.tweet_id, t);
   const publicRatingByNoteId = new Map<string, RawPublicDumpRatingRow>();
   for (const r of publicRatings) publicRatingByNoteId.set(r.note_id, r);
-  // For note annotations, target_id is the raw note_id; missed_/lowEval_ targets
-  // simply never match a note_id below. seen === false → not reviewed (null).
+  // For a note annotation, target_id is the plain note_id. Annotations on other
+  // kinds of item carry a "missed:" or "loweval:" prefix, so they never match a
+  // note_id below. An annotation with seen set to false means nobody has
+  // reviewed that note yet, and we record null for it.
   const failureModesByNoteId = new Map<string, string[] | null>();
   for (const a of annotations) {
     failureModesByNoteId.set(a.target_id, a.seen ? (a.failure_modes ?? []) : null);
@@ -221,7 +227,7 @@ function joinNotes(
   const records: NoteRecord[] = [];
   for (const note of notes) {
     const submittedAt = note.submitted_at;
-    if (!submittedAt) continue; // pre-tracking rows: skip from stats dashboard
+    if (!submittedAt) continue; // Notes from before we tracked submissions.
     const run = submittedRunByNoteId.get(note.note_id);
     const tweet = tweetById.get(note.tweet_id);
     const publicRating = publicRatingByNoteId.get(note.note_id);
@@ -271,9 +277,10 @@ async function loadAllPipelineRuns(): Promise<RawPipelineRunRow[]> {
     "id",
     { label: "pipeline_runs" },
   );
-  // Fill AB-test defaults at the boundary so every downstream consumer
-  // (aggregates, day buckets, slot index, note records) sees a uniform shape
-  // for old rows written before a test existed.
+  // Rows written before an A/B test existed carry no pick for that test. Fill in
+  // the default pick here, where the rows enter the program. Doing it once means
+  // the aggregates, the day buckets, the slot index and the note records all see
+  // the same shape.
   for (const row of rows) {
     row.ab_test_picks = resolvePicks(row.ab_test_picks);
   }

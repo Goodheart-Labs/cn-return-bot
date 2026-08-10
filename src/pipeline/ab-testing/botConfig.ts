@@ -5,209 +5,240 @@ import { AsyncLocalStorage } from "node:async_hooks";
 export type VideoDescriptionStrategy = "full_video" | "frames";
 
 export interface BotConfig {
-  /** Which bot to run. Set by the BOT_TEST A/B test (or forced via withForcedPicks). */
+  /** Which bot to run. The BOT_TEST A/B test sets this. A caller can also force
+   *  it with withForcedPicks. */
   botId: string;
   model: string;
   /** Step-specific model overrides. Each defaults to `model` when unset. */
   search_model?: string;
-  /** Model for the cheap-bot search analyzer. Defaults to `search_model` then
-   *  `model`. Decouples the analyzer from the query writer (which also reads
-   *  `search_model`) so they can run on different models. */
+  /** Model for the cheap-bot search analyzer. When it is unset the analyzer uses
+   *  `search_model`, and when that is unset too it uses `model`. The query writer
+   *  also reads `search_model`. This field exists so the analyzer and the query
+   *  writer can run on different models. */
   search_analyzer_model?: string;
   writer_model?: string;
-  /** Defaults to gemini-3-flash-preview via DEFAULT_CONFIG (no A/B test). */
+  /** Model for the source verifier. DEFAULT_CONFIG sets it to
+   *  gemini-3-flash-preview. No dedicated A/B test varies it, but the cheap-bot
+   *  variant of BOT_TEST overrides it. */
   verifier_model?: string;
-  /** If true, the source verifier surfaces an automated Gemini analysis (yt-dlp for video/audio/Instagram-photo, direct vision call for image URLs) for cited media URLs and treats that as the source's content. Defaults to false. */
+  /**
+   * When this is true, the source verifier can judge a cited media URL. It runs
+   * an automated Gemini analysis of the media and treats the result as the
+   * source's content. Video, audio, and Instagram photos are downloaded with
+   * yt-dlp. A plain image URL goes straight to a vision call. Defaults to false.
+   */
   verifier_accepts_media_sources?: boolean;
   /**
-   * If true, the source verifier runs the two-call claim-based flow: one call
-   * extracts the note's distinct factual claims, a second maps each claim to the
-   * cited sources that support it. A source is "good" iff it supports ≥1 claim;
-   * the note is accepted iff every claim has ≥1 supporting source. Defaults to
-   * false (the single-call accept/reject flow). Set by VERIFIER_CLAIM_BASED_TEST.
+   * When this is true, the source verifier runs a two-call claim-based flow. The
+   * first call extracts the note's distinct factual claims. The second call maps
+   * each claim to the cited sources that support it. A source counts as good when
+   * it supports at least one claim. The note is accepted when every claim has at
+   * least one supporting source. Defaults to false, which is the single-call
+   * accept-or-reject flow. VERIFIER_CLAIM_BASED_TEST sets this.
    */
   verifier_claim_based?: boolean;
   /**
-   * When true, the source verifier collects, per source, the most relevant
-   * verbatim snippets + a plain-language note on how each supports or fails to
-   * support the note BEFORE judging good/bad (reason-then-judge). Applies to both
-   * the classic and claim-based flows. Surfaced as `source_evaluations` on the
-   * result + tweet log; does not change which URLs the published note carries.
-   * Set by VERIFIER_CITATIONS_TEST; defaults false.
+   * When this is true, the source verifier first collects the most relevant
+   * verbatim snippets for each source. It also writes a plain-language note on
+   * how each source supports or fails to support the note. Only then does it
+   * judge the source good or bad. This applies to both the classic flow and the
+   * claim-based flow. The snippets are surfaced as `source_evaluations` on the
+   * result and in the tweet log. They do not change which URLs the published note
+   * carries. VERIFIER_CITATIONS_TEST sets this and it defaults to false.
    */
   verifier_citations?: boolean;
   /**
-   * When true, the pipeline runs an extra LLM step between writer and source
-   * verifier that judges whether a note is actually warranted for the post.
-   * cheap-bot's primary FP guard (always on there via BOT_TEST). Defaults to
-   * false (no judge step).
+   * When this is true, the pipeline runs an extra LLM step between the writer and
+   * the source verifier. That step judges whether a note is actually warranted
+   * for the post. It is cheap-bot's main guard against false positives, and
+   * BOT_TEST always turns it on there. Defaults to false, which means no judge
+   * step runs.
    */
   note_needed_judge?: boolean;
   /** Model for the note-needed-judge step. Defaults to `model` when unset. */
   note_judge_model?: string;
   /**
-   * When true (simple-bot only), an LLM step between search and writer extracts
-   * atomic corrections from the search findings, grades each (clear_error /
-   * minor_error / critical_context / useful_context / not_useful), and passes the
-   * writer only the high-value ones (clear_error + critical_context) instead of
-   * the raw findings. If none grade high, the run early-exits as no_correction.
-   * Set by SIMPLE_BOT_CORRECTION_EXTRACTION_TEST; defaults false.
+   * When this is true, simple-bot runs an LLM step between search and writer.
+   * That step extracts atomic corrections from the search findings and grades
+   * each one as clear_error, minor_error, critical_context, useful_context, or
+   * not_useful. The writer then receives only the high-value ones, which are the
+   * clear_error and critical_context corrections, instead of the raw findings. If
+   * none of them grade high, the run exits early as no_correction. This applies
+   * to simple-bot only. SIMPLE_BOT_CORRECTION_EXTRACTION_TEST sets it and it
+   * defaults to false.
    */
   correction_extraction?: boolean;
   /** Model for the correction-extractor step. Defaults to `model` when unset. */
   correction_extraction_model?: string;
   /**
-   * When true, a cheap deepseek-v4-flash "note-needed prefilter" runs BEFORE the
-   * bot (query writer → SearXNG → analyzer → reframed note-needed judge). If it
-   * decides no note is needed, the bot is skipped and the run is recorded as
-   * rejected / prefilter_no_note. Lets a large feed be screened cheaply. Set by
-   * NOTE_PREFILTER_TEST; defaults false.
+   * When this is true, a cheap deepseek-v4-flash note-needed prefilter runs
+   * before the bot. The prefilter is its own small chain: a query writer, then
+   * SearXNG, then the analyzer, then a reframed note-needed judge. If it decides
+   * no note is needed, the bot is skipped and the run is recorded as rejected
+   * with the reason prefilter_no_note. This is what lets us screen a large feed
+   * cheaply. NOTE_PREFILTER_TEST sets it and it defaults to false.
    */
   note_prefilter?: boolean;
   /**
-   * When true, a blocked-topic gate runs before everything else (even the
-   * note-needed prefilter): one deepseek-v4-flash call checks the post against
-   * BLOCKED_TOPICS and skips the run (rejected / blocked_topic) on a hit. Set
-   * by TOPIC_FILTER_TEST; defaults false.
+   * When this is true, a blocked-topic gate runs before everything else,
+   * including the note-needed prefilter. One deepseek-v4-flash call checks the
+   * post against BLOCKED_TOPICS. On a hit the run is skipped and recorded as
+   * rejected with the reason blocked_topic. TOPIC_FILTER_TEST sets it and it
+   * defaults to false.
    */
   topic_filter?: boolean;
-  /** Model for the cheap-bot satire detector. Defaults to `note_judge_model`
-   *  then `model`. Decouples the satire detector from the note-needed judge
-   *  (which also reads `note_judge_model`) so they can run on different models. */
+  /** Model for the cheap-bot satire detector. When it is unset the detector uses
+   *  `note_judge_model`, and when that is unset too it uses `model`. The
+   *  note-needed judge also reads `note_judge_model`. This field exists so the
+   *  satire detector and the judge can run on different models. */
   satire_model?: string;
   /**
-   * If set, passed through to OpenRouter as `reasoning_effort` for every LLM
-   * call made by this bot. Useful when the configured model supports test-time
-   * reasoning (e.g. deepseek-v4-flash with extended reasoning). Falsy = omit.
+   * When this is set, it is passed through to OpenRouter as `reasoning_effort`
+   * for every LLM call this bot makes. It is useful when the configured model
+   * supports test-time reasoning, for example deepseek-v4-flash with extended
+   * reasoning. When it is unset the parameter is left out entirely.
    */
   reasoning_effort?: "low" | "medium" | "high";
   /**
-   * If set, passed as `reasoning_effort` on the simple-bot SEARCH call only
-   * (Anthropic-native path). Unlike `reasoning_effort` this leaves the
-   * writer/verifier/judge calls untouched, so a search A/B arm can vary
-   * reasoning without confounding the other stages. Unset = model default
-   * (Claude models don't reason by default). Set by SIMPLE_BOT_SEARCH_TEST.
+   * When this is set, it is passed as `reasoning_effort` on the simple-bot search
+   * call only, which is the Anthropic-native path. Unlike `reasoning_effort` it
+   * leaves the writer, verifier, and judge calls untouched. That lets a search
+   * A/B arm vary reasoning without confounding the other stages. When it is unset
+   * the model's own default applies, and Claude models do not reason by default.
+   * SIMPLE_BOT_SEARCH_TEST sets it.
    */
   search_reasoning_effort?: "low" | "medium" | "high";
   /**
-   * If set, passed through to OpenRouter as `temperature` for every LLM call
-   * made by this bot. cheap-bot pins this to 0 (via the `cheap_bot_temperature`
-   * A/B test) so its judge/verifier/writer decisions are deterministic enough
-   * to hill-climb — at default temperature ~58% of eval rows flipped run-to-run.
-   * Unset = model default.
+   * When this is set, it is passed through to OpenRouter as `temperature` for
+   * every LLM call this bot makes. cheap-bot pins it to 0 through the
+   * `cheap_bot_temperature` A/B test, so its judge, verifier, and writer
+   * decisions are deterministic enough to hill-climb. At the model's default
+   * temperature about 58% of eval rows flipped from one run to the next. When
+   * this is unset the model's own default applies.
    */
   temperature?: number;
   web_search:
-    | "native"             // Anthropic web_search via OpenRouter
-    | "native_gemini"      // Google Gen AI native API + googleSearch tool
-    | "native_grok"        // xAI native + xSearch
-    | "native_openai"      // OpenAI Responses API + web_search_preview tool (via OpenRouter)
-    | "bundled"            // Perplexity Sonar — search baked in
-    | "perplexity"         // Perplexity-as-tool
-    | "searxng"            // tool-calling loop: model calls google_search (raw SearXNG)
-    | "searxng_summarized";// tool-calling loop: model calls google_search (SearXNG → Gemini summary)
+    | "native"             // Anthropic web_search runs through OpenRouter.
+    | "native_gemini"      // Google's native Gen AI API runs with its googleSearch tool.
+    | "native_grok"        // The native xAI API runs with xSearch.
+    | "native_openai"      // The OpenAI Responses API runs web_search_preview through OpenRouter.
+    | "bundled"            // Perplexity Sonar has search built into the model.
+    | "perplexity"         // The model calls Perplexity as a tool.
+    | "searxng"            // A tool-calling loop calls google_search for raw SearXNG results.
+    | "searxng_summarized";// A tool-calling loop calls google_search, and Gemini summarizes the SearXNG results.
   video_description_strategy: VideoDescriptionStrategy;
   parallel_research: boolean;
-  /** When true, an LLM step between search and writer distills raw search
-   *  snippets into a structured research brief. Defaults to false. */
+  /** When true, an LLM step between search and writer distills the raw search
+   *  snippets into a research brief written as free text. Defaults to false. */
   search_analyzer?: boolean;
   /**
-   * When true (cheap-bot only), a pre-search LLM gate reads the post + comments
-   * + author profile — WITHOUT the proposed note — and decides whether the post
-   * is overt satire that the audience is in on. A positive verdict early-exits
-   * the pipeline with no_correction, skipping search + writer + judge. The
-   * detector is high-precision by design (it fires only when the room is in on
-   * the joke, not on fabricated content imitating real media), so the
-   * note-needed judge keeps a lighter satire backstop for the cases it misses.
-   * Defaults to false.
+   * When this is true, cheap-bot runs an LLM gate before search. The gate reads
+   * the post, the comments, and the author profile without the proposed note, and
+   * decides whether the post is overt satire that the audience is in on. A
+   * positive verdict exits the pipeline early with no_correction and skips
+   * search, writer, and judge. The detector is high-precision by design. It fires
+   * only when the room is in on the joke, and not on fabricated content that
+   * imitates real media. Because it misses some cases, the note-needed judge
+   * keeps a lighter satire backstop. This applies to cheap-bot only and defaults
+   * to false.
    */
   satire_detector?: boolean;
   /**
-   * When true (simple-bot only), the search agent's system prompt is appended
-   * with an instruction to prefer, for political posts, sources associated with
-   * the post author's own political side — the bridging idea that a note is more
-   * likely to be rated helpful when it cites sources the author's audience
-   * already trusts. Set by SIMPLE_BOT_POLITICAL_SOURCES_TEST; defaults false.
+   * When this is true, simple-bot's search agent gets an extra instruction in its
+   * system prompt. On a political post it should prefer sources associated with
+   * the post author's own political side. The idea behind this is bridging. A
+   * note is more likely to be rated helpful when it cites sources the author's
+   * audience already trusts. This applies to simple-bot only.
+   * SIMPLE_BOT_POLITICAL_SOURCES_TEST sets it and it defaults to false.
    */
   search_political_sources?: boolean;
   /**
-   * When true (simple-bot only), the search agent uses the "anti-pedantic"
-   * prompt variant, which only flags a correction when the post's main claim /
-   * argument is wrong (not a minor side error). Set by
-   * SIMPLE_BOT_ANTI_PEDANTIC_TEST; defaults false.
+   * When this is true, simple-bot's search agent uses the "anti-pedantic" prompt
+   * variant. That variant flags a correction only when the post's main claim or
+   * argument is wrong, and not when a minor side detail is wrong. This applies to
+   * simple-bot only. SIMPLE_BOT_ANTI_PEDANTIC_TEST sets it and it defaults to
+   * false.
    */
   search_anti_pedantic?: boolean;
   /**
-   * When true (simple-bot only), the search AND writer prompts gain the
-   * time-travel test: a correction must have been accurate and fair at the
-   * moment the post was published — a claim outdated only by later events is
-   * not an error. Backtested 2026-07-28 (docs/improvement-menu-2026-07-25.md,
-   * T2). Set by TIME_TRAVEL_PROMPT_TEST; defaults false.
+   * When this is true, both simple-bot's search prompt and its writer prompt gain
+   * the time-travel test. A correction must have been accurate and fair at the
+   * moment the post was published. A claim that only later events made outdated
+   * is not an error. This was backtested on 2026-07-28. See
+   * docs/improvement-menu-2026-07-25.md, item T2. This applies to simple-bot
+   * only. TIME_TRAVEL_PROMPT_TEST sets it and it defaults to false.
    */
   time_travel_prompt?: boolean;
   /**
-   * When true (simple-bot only), a post-search extractor measures the gap
-   * between the post's event and the post's publication; fog-window posts
-   * (published within 6h of the event, or mid-event) get a timing-context
-   * block piped into the writer's user message plus a pre-computed Post-age
-   * line. Information, not a gate. Independent of time_travel_prompt (2x2).
-   * Set by TIMING_CONTEXT_TEST; defaults false.
+   * When this is true, simple-bot runs an extractor after search that measures
+   * the gap between the event the post describes and the moment the post was
+   * published. A post published within 6 hours of the event, or while the event
+   * was still going on, counts as a fog-window post. Such a post gets a
+   * timing-context block piped into the writer's user message, plus a
+   * pre-computed Post-age line. This is information for the writer, not a gate.
+   * It is independent of time_travel_prompt, so the two form a 2x2. This applies
+   * to simple-bot only. TIMING_CONTEXT_TEST sets it and it defaults to false.
    */
   timing_context?: boolean;
   /**
-   * When true (simple-bot only), the search step uses the claim-check prompt —
-   * the input is a claim extracted from a podcast, interview, or article plus
-   * surrounding context, not an X post. Forced on by the everything pipeline.
-   * Set by SIMPLE_BOT_CLAIM_TEST; defaults false.
+   * When this is true, simple-bot's search step uses the claim-check prompt. The
+   * input is then a claim extracted from a podcast, an interview, or an article,
+   * together with its surrounding context, rather than an X post. The everything
+   * pipeline forces this on. This applies to simple-bot only.
+   * SIMPLE_BOT_CLAIM_TEST sets it and it defaults to false.
    */
   search_claim?: boolean;
   /**
-   * When true, the writer's system prompt is appended with a few-shot block of
-   * real notes the community rated helpful — all simple, direct, and short — to
-   * pull the writer toward that "simple and nice" style. Set by
-   * SIMPLE_BOT_WRITER_EXAMPLES_TEST; defaults false.
+   * When this is true, the writer's system prompt gains a few-shot block of real
+   * notes the community rated helpful. They are all simple, direct, and short, so
+   * they pull the writer toward that style. SIMPLE_BOT_WRITER_EXAMPLES_TEST sets
+   * it and it defaults to false.
    */
   writer_examples?: boolean;
   /**
-   * True when the run came from the XXL-feed misinfo pre-pass (a
-   * MonitoringContext is present). Mirrors the forced misinfo_monitoring pick
-   * into the config so later tests can prerequisite-gate on it. Set by
-   * MISINFO_MONITORING_TEST; defaults false.
+   * True when the run came from the XXL-feed misinfo pre-pass, which means a
+   * MonitoringContext is present. This mirrors the forced misinfo_monitoring
+   * pick into the config, so tests declared later can gate on it through their
+   * prerequisites. MISINFO_MONITORING_TEST sets it and it defaults to false.
    */
   misinfo_monitoring?: boolean;
   /**
-   * When true, the run is on the "on" arm of the concede-then-correct
+   * When this is true, the run is on the "on" arm of the concede-then-correct
    * experiment for curated misinfo topics. The reference document keeps its
-   * marker-wrapped experiment additions (the "Note shape — concede the true
-   * core first" section and the per-claim "True core" lines), and the writer
-   * appends MISINFO_CONCEDE_SHAPE_RULE to its system prompt. When false or
-   * unset, buildReferenceBlock strips those additions, so the run sees the
-   * document exactly as it was before the experiment. Only has an effect on
-   * misinfo-monitoring runs whose topic document opts in via
-   * CONCEDE_SHAPE_MARKER. Set by MISINFO_CONCEDE_SHAPE_TEST; defaults false.
+   * marker-wrapped experiment additions, which are the "Note shape — concede
+   * the true core first" section and the "True core" line of each claim. The
+   * writer also appends MISINFO_CONCEDE_SHAPE_RULE to its system prompt. When
+   * this is false or unset, buildReferenceBlock strips those additions, and the
+   * run sees the document exactly as it was before the experiment. It only has
+   * an effect on misinfo-monitoring runs whose topic document opts in via
+   * CONCEDE_SHAPE_MARKER. MISINFO_CONCEDE_SHAPE_TEST sets it and it defaults to
+   * false.
    */
   concede_shape?: boolean;
   /**
-   * When true, the writer's user message includes a block of the post author's
-   * past helpful community notes (ours + competing notes on tweets we've noted)
-   * as context — see getAuthorNoteHistory. The lookup was silently broken from
-   * migration 033 until June 2026 (it queried the dropped pipeline_runs.author_id
-   * column), so this input was effectively off the whole time. Now a 50/50 A/B
-   * test via AUTHOR_HISTORY_TEST. Not prereq-gated — runs for every bot. Defaults false.
+   * When this is true, the writer's user message includes a block of the post
+   * author's past helpful community notes. That block holds both our own notes
+   * and competing notes on tweets we have noted. See getAuthorNoteHistory. The
+   * lookup was silently broken from migration 033 until June 2026, because it
+   * queried the pipeline_runs.author_id column after that column had been
+   * dropped. So this input was effectively off that whole time.
+   * AUTHOR_HISTORY_TEST now sets it, and both of its live arms turn it on.
+   * Nothing gates it on a prerequisite, so it runs for every bot. Defaults to
+   * false.
    */
   author_history?: boolean;
   /**
-   * When true, the author-history block ALSO lists past notes on this author's
-   * posts that raters rejected (ours + competing) — a warning that this author's
-   * posts may be satire or opinion the community doesn't want noted. Only
-   * meaningful alongside author_history; the AUTHOR_HISTORY_TEST
-   * `on_with_unhelpful` arm sets both. Defaults false.
+   * When this is true, the author-history block also lists past notes on this
+   * author's posts that raters rejected, both our own and competing ones. That is
+   * a warning that this author's posts may be satire or opinion the community
+   * does not want noted. It only means anything alongside author_history. The
+   * `on_with_unhelpful` arm of AUTHOR_HISTORY_TEST sets both. Defaults to false.
    */
   author_history_unhelpful?: boolean;
   /**
-   * Minimum X eval-score (`claim_opinion_score`) at which a note is submitted.
-   * Missing values fall back to 0, preserving older ad-hoc script configs.
-   * Set by EVAL_SUBMIT_THRESHOLD_TEST.
+   * The lowest X eval score (`claim_opinion_score`) at which a note is still
+   * submitted. A missing value falls back to 0, which preserves older ad-hoc
+   * script configs. EVAL_SUBMIT_THRESHOLD_TEST sets it.
    */
   eval_submit_threshold?: number;
 }
@@ -217,7 +248,7 @@ export interface BotConfig {
 export const DEFAULT_CONFIG: BotConfig = {
   botId: "<unset>",
   model: "anthropic/claude-sonnet-4.6",
-  verifier_model: "google/gemini-3-flash-preview", // simple-bot has always verified with gemini-flash
+  verifier_model: "google/gemini-3-flash-preview", // simple-bot has always verified with gemini-flash.
   web_search: "perplexity",
   video_description_strategy: "frames",
   parallel_research: false,
@@ -239,10 +270,10 @@ export function getBotConfig(): BotConfig {
 }
 
 /**
- * Per-call LLM tuning derived from the bot config (reasoning_effort +
- * temperature). Both are omitted when unset so the model's own defaults apply.
- * Spread into every `trackedLlmCreate` params object so a bot's tuning is
- * applied uniformly across its pipeline stages.
+ * Per-call LLM tuning derived from the bot config. It covers `reasoning_effort`
+ * and `temperature`. Each one is left out when it is unset, so the model's own
+ * default applies. Spread the result into every `trackedLlmCreate` params object
+ * so a bot's tuning applies uniformly across all of its pipeline stages.
  */
 export function llmTuningParams(config: BotConfig): {
   reasoning_effort?: "low" | "medium" | "high";

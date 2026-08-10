@@ -1,8 +1,8 @@
 import type { ItemRow } from "../../../everything-shared/types";
 
-/** Filter chips for a project's items (episodes / posts / pages) — shown only
- *  when the project has more than one item with notes. "All" restores the
- *  unfiltered feed. */
+/** Filter chips for a project's items, which are its episodes, posts or pages.
+ *  They show only when the project has more than one item with notes. The "All"
+ *  chip restores the unfiltered feed. */
 export function ItemChips({ items, noteCounts, selected, onSelect }: {
   items: ItemRow[];
   noteCounts: Map<string, number>;

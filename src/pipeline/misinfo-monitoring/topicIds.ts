@@ -1,11 +1,12 @@
 /**
- * Canonical misinfo topic IDs. Browser-safe (no fs / document loads) so the
- * A/B test registry and the dashboards can import it directly. topics.ts builds
- * the full MisinfoTopic objects (with their documents/briefs) from these IDs.
+ * The canonical misinfo topic IDs. This file is safe to import in a browser
+ * because it reads nothing from disk, so the A/B test registry and the
+ * dashboards can import it directly. topics.ts turns these IDs into the full
+ * MisinfoTopic objects, with their documents and their briefs.
  *
- * Single source of truth: the `misinfo_topic` A/B test derives a variant per ID
- * from this list, so a forced topic pick can never reference an undeclared
- * variant (which would throw in findVariantByName).
+ * This list is the single source of truth. The `misinfo_topic` A/B test derives
+ * one variant per ID from it. A forced topic pick can therefore never name a
+ * variant that was never declared, which findVariantByName would throw on.
  */
 
 export const MISINFO_TOPIC_IDS = [

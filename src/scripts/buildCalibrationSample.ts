@@ -1,13 +1,14 @@
 /**
  * Build Calibration Sample
  *
- * Downloads X's public CN data dump, samples 100 Helpful + 100 Not Helpful notes,
- * fetches tweet text via X API, runs scoring functions, and saves results.
+ * Downloads X's public Community Notes data dump. Samples 100 notes rated
+ * helpful and 100 rated not helpful. Fetches the text of the tweet each note
+ * sits on through the X API. Scores every note and saves the results.
  *
  * Usage:
- *   bun run tmp/calibration/buildCalibrationSample.ts              # Full run (download + score)
- *   bun run tmp/calibration/buildCalibrationSample.ts --score-only  # Re-score existing sample
- *   bun run tmp/calibration/buildCalibrationSample.ts --human       # Human prediction mode
+ *   bun run src/scripts/buildCalibrationSample.ts               # download and score
+ *   bun run src/scripts/buildCalibrationSample.ts --score-only  # re-score the saved sample
+ *   bun run src/scripts/buildCalibrationSample.ts --human       # add your own predictions
  */
 
 import "dotenv/config";
@@ -23,7 +24,7 @@ const OUTPUT_DIR = "./data/calibration";
 const SAMPLE_FILE = `${OUTPUT_DIR}/sample.json`;
 const RESULTS_FILE = `${OUTPUT_DIR}/results.json`;
 const CSV_FILE = `${OUTPUT_DIR}/results.csv`;
-const SAMPLE_SIZE = 100; // per status (100 H + 100 NH)
+const SAMPLE_SIZE = 100; // This many notes per status, so 200 notes in total.
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -34,10 +35,10 @@ interface SampledNote {
   noteText: string;
   classification: string;
   createdAtMillis: number;
-  // From noteStatusHistory
-  currentStatus: string; // CURRENTLY_RATED_HELPFUL or CURRENTLY_RATED_NOT_HELPFUL
+  // These two fields come from the noteStatusHistory file.
+  currentStatus: string; // Either CURRENTLY_RATED_HELPFUL or CURRENTLY_RATED_NOT_HELPFUL.
   coreNoteIntercept: number | null;
-  // Fetched via X API
+  // These two fields are filled in later from the X API.
   tweetText: string | null;
   tweetDeleted: boolean;
 }
@@ -78,7 +79,7 @@ async function downloadCNFile(
   const zipPath = `${DATA_DIR}/${zipFileName}`;
   const tsvPath = `${DATA_DIR}/${tsvFileName}`;
 
-  // Reuse if already downloaded today
+  // Reuse the copy we already have if it is less than 12 hours old.
   if (existsSync(tsvPath)) {
     const stat = Bun.file(tsvPath);
     const age = Date.now() - (await stat.lastModified);
@@ -126,8 +127,8 @@ function parseTsv(path: string): { headers: string[]; rows: string[][] } {
 }
 
 async function buildSample(): Promise<SampledNote[]> {
-  // Download both files — we need all partitions for a good sample
-  // But start with partition 00000 (most notes are here)
+  // A truly representative sample would need every partition of the dump. We
+  // only read partition 00000, which holds most of the notes.
   const notesPath = await downloadCNFile("notes", "00000");
   const statusPath = await downloadCNFile("noteStatusHistory", "00000");
   if (!notesPath || !statusPath) throw new Error("Failed to download data files");
@@ -140,7 +141,6 @@ async function buildSample(): Promise<SampledNote[]> {
     coreNoteIntercept: status.headers.indexOf("coreNoteIntercept"),
   };
 
-  // Build status map: noteId -> { status, intercept }
   const statusMap = new Map<string, { status: string; intercept: number | null }>();
   for (const row of status.rows) {
     const noteId = row[sIdx.noteId]!;
@@ -152,7 +152,6 @@ async function buildSample(): Promise<SampledNote[]> {
 
   console.log(`[sample] ${statusMap.size} notes in status history`);
 
-  // Parse notes file
   console.log("[sample] Parsing notes file...");
   const notes = parseTsv(notesPath);
   const nIdx = {
@@ -164,7 +163,6 @@ async function buildSample(): Promise<SampledNote[]> {
     summary: notes.headers.indexOf("summary"),
   };
 
-  // Collect H and NH notes
   const helpful: SampledNote[] = [];
   const notHelpful: SampledNote[] = [];
 
@@ -174,7 +172,7 @@ async function buildSample(): Promise<SampledNote[]> {
     if (!statusInfo) continue;
 
     const noteText = row[nIdx.summary] || "";
-    if (!noteText || noteText.length < 20) continue; // Skip empty/trivial notes
+    if (!noteText || noteText.length < 20) continue; // Too short to score.
 
     const tweetId = row[nIdx.tweetId]!;
     if (!tweetId || !/^\d{10,20}$/.test(tweetId)) continue;
@@ -201,7 +199,6 @@ async function buildSample(): Promise<SampledNote[]> {
 
   console.log(`[sample] Found ${helpful.length} helpful, ${notHelpful.length} not helpful notes`);
 
-  // Random sample
   const shuffle = <T>(arr: T[]) => arr.sort(() => Math.random() - 0.5);
   const sampledH = shuffle(helpful).slice(0, SAMPLE_SIZE);
   const sampledNH = shuffle(notHelpful).slice(0, SAMPLE_SIZE);
@@ -241,7 +238,7 @@ async function fetchTweetTexts(sample: SampledNote[]): Promise<void> {
   const tweetTextMap = new Map<string, string>();
   const deletedIds = new Set<string>();
 
-  // X API allows 100 tweets per lookup request
+  // The X API returns at most 100 tweets per lookup request.
   for (let i = 0; i < tweetIds.length; i += 100) {
     const batch = tweetIds.slice(i, i + 100);
     const url = `https://api.x.com/2/tweets?ids=${batch.join(",")}&tweet.fields=text`;
@@ -272,14 +269,13 @@ async function fetchTweetTexts(sample: SampledNote[]): Promise<void> {
 
       console.log(`[sample] Batch ${Math.floor(i / 100) + 1}: got ${data.data?.length ?? 0} tweets, ${data.errors?.length ?? 0} errors`);
 
-      // Rate limit courtesy
+      // Wait a second between batches so we stay well inside the rate limit.
       if (i + 100 < tweetIds.length) await new Promise((r) => setTimeout(r, 1000));
     } catch (err: any) {
       console.warn(`[sample] Tweet batch failed:`, err?.message);
     }
   }
 
-  // Apply to sample
   let found = 0, deleted = 0;
   for (const note of sample) {
     const text = tweetTextMap.get(note.tweetId);
@@ -399,21 +395,22 @@ Return ONLY a JSON object with: score (number 0-1), reasoning (one sentence).`);
 }
 
 async function scoreAllNotes(sample: SampledNote[]): Promise<ScoredNote[]> {
-  // sourceTrustworthiness was deleted from the pipeline (legacy bot cleanup, f83f068);
-  // a re-run now scores every source at the neutral fallback the missing-URL path already used.
+  // The pipeline's sourceTrustworthiness scorer was deleted in the legacy bot
+  // cleanup (commit f83f068). A re-run therefore gives every source the same
+  // neutral score that the missing-URL path already used.
   const scoreSourceTrustworthiness = (_url: string) => ({ score: 0.5, tier: "unknown" as const });
 
   const results: ScoredNote[] = [];
   const total = sample.length;
 
-  // Process in batches of 5 to avoid rate limits
+  // Score five notes at a time so we do not run into the LLM rate limits.
   for (let i = 0; i < sample.length; i += 5) {
     const batch = sample.slice(i, i + 5);
     console.log(`[score] Scoring batch ${Math.floor(i / 5) + 1}/${Math.ceil(total / 5)} (notes ${i + 1}-${i + batch.length})...`);
 
     const batchResults = await Promise.all(
       batch.map(async (note) => {
-        // Free scores
+        // These scores are computed locally and cost nothing.
         const { count: sourceCount, domains: sourceDomains } = scoreSourceCount(note.noteText);
         const urls = extractUrls(note.noteText);
         const primaryUrl = urls[0] || "";
@@ -421,7 +418,7 @@ async function scoreAllNotes(sample: SampledNote[]): Promise<ScoredNote[]> {
           ? scoreSourceTrustworthiness(primaryUrl)
           : { score: 0.5, tier: "unknown" as const };
 
-        // LLM scores (parallel)
+        // These three scores each need an LLM call, so they run at the same time.
         const [toneResult, wrongResult, bridgingResult] = await Promise.all([
           scoreTone(note.noteText),
           scoreSaysWrong(note.noteText, note.tweetText),
@@ -451,7 +448,7 @@ async function scoreAllNotes(sample: SampledNote[]): Promise<ScoredNote[]> {
 
     results.push(...batchResults);
 
-    // Save progress after each batch
+    // Save progress after each batch, so a crash does not lose the work.
     writeFileSync(RESULTS_FILE, JSON.stringify(results, null, 2));
   }
 
@@ -546,7 +543,7 @@ async function humanPredictMode(): Promise<void> {
 
     predicted++;
 
-    // Save after each prediction
+    // Save after each prediction, so quitting early keeps everything answered.
     writeFileSync(RESULTS_FILE, JSON.stringify(results, null, 2));
     saveCSV(results);
   }
@@ -573,26 +570,21 @@ async function main() {
     console.log("[sample] Loading existing sample...");
     sample = JSON.parse(readFileSync(SAMPLE_FILE, "utf-8"));
   } else {
-    // Build fresh sample
     sample = await buildSample();
 
-    // Fetch tweet texts
     await fetchTweetTexts(sample);
 
-    // Save sample (before scoring, so we can re-score later)
+    // Save the sample before scoring, so that --score-only can reuse it.
     writeFileSync(SAMPLE_FILE, JSON.stringify(sample, null, 2));
     console.log(`[sample] Saved sample to ${SAMPLE_FILE}`);
   }
 
-  // Score all notes
   console.log(`\n[score] Scoring ${sample.length} notes...`);
   const results = await scoreAllNotes(sample);
 
-  // Save results
   writeFileSync(RESULTS_FILE, JSON.stringify(results, null, 2));
   saveCSV(results);
 
-  // Summary stats
   const helpful = results.filter((r) => r.currentStatus === "CURRENTLY_RATED_HELPFUL");
   const notHelpful = results.filter((r) => r.currentStatus === "CURRENTLY_RATED_NOT_HELPFUL");
 
@@ -600,7 +592,6 @@ async function main() {
   console.log(`Total: ${results.length} (${helpful.length} H, ${notHelpful.length} NH)`);
   console.log(`Tweets found: ${results.filter((r) => r.tweetText).length}/${results.length}`);
 
-  // Domain frequency
   const domainCounts = new Map<string, { h: number; nh: number }>();
   for (const r of results) {
     for (const d of r.scores.sourceDomains) {
@@ -618,7 +609,6 @@ async function main() {
     console.log(`  ${domain}: ${counts.h} H / ${counts.nh} NH`);
   }
 
-  // Score averages by status
   const avg = (arr: number[]) => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
   console.log("\n─── Average scores (H vs NH) ───");
   console.log(`  Note length: ${avg(helpful.map((r) => r.scores.noteLength)).toFixed(0)} vs ${avg(notHelpful.map((r) => r.scores.noteLength)).toFixed(0)}`);
