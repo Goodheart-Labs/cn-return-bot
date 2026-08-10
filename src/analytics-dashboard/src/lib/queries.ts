@@ -30,16 +30,13 @@ export const WINDOWS: readonly TimeWindow[] = [
   { label: "All time", days: null },
 ];
 
-// The daily chart needs a bounded range even when the funnel shows all time.
-export const DAILY_DAYS_FOR_ALL_TIME = 90;
-
 export async function fetchFunnel(days: number | null): Promise<FunnelRow[]> {
   const { data, error } = await supabase.rpc("everything_funnel", { window_days: days });
   if (error) throw new Error(`everything_funnel failed: ${error.message}`);
   return data as FunnelRow[];
 }
 
-export async function fetchDaily(days: number): Promise<DailyRow[]> {
+export async function fetchDaily(days: number | null): Promise<DailyRow[]> {
   const { data, error } = await supabase.rpc("everything_daily_activity", { window_days: days });
   if (error) throw new Error(`everything_daily_activity failed: ${error.message}`);
   return data as DailyRow[];

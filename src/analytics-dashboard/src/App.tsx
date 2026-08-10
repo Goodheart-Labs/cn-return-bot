@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import {
-  DAILY_DAYS_FOR_ALL_TIME,
   fetchDaily,
   fetchFunnel,
   WINDOWS,
@@ -17,13 +16,11 @@ export function App() {
   const [daily, setDaily] = useState<DailyRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const dailyDays = timeWindow.days ?? DAILY_DAYS_FOR_ALL_TIME;
-
   useEffect(() => {
     setFunnel(null);
     setDaily(null);
     setError(null);
-    Promise.all([fetchFunnel(timeWindow.days), fetchDaily(dailyDays)])
+    Promise.all([fetchFunnel(timeWindow.days), fetchDaily(timeWindow.days)])
       .then(([f, d]) => {
         setFunnel(f);
         setDaily(d);
@@ -62,21 +59,14 @@ export function App() {
       {funnel && (
         <section style={{ marginBottom: 40 }}>
           <h2 style={{ fontSize: 17, marginBottom: 16 }}>Reader → voter funnel</h2>
-          <p style={{ color: "#6b7280", fontSize: 13, marginTop: -8, marginBottom: 16 }}>
-            Each stage is counted independently within the selected window: distinct devices that saw content,
-            distinct signed-in users who did anything, and voters by how many distinct notes they voted on
-            (from the votes table). "Unknown platform" holds votes from before platforms were recorded.
-          </p>
           <FunnelTable rows={funnel} />
         </section>
       )}
 
       {daily && (
         <section>
-          <h2 style={{ fontSize: 17, marginBottom: 16 }}>
-            Daily activity{timeWindow.days === null ? ` (last ${DAILY_DAYS_FOR_ALL_TIME} days)` : ""}
-          </h2>
-          <DailyChart rows={daily} days={dailyDays} />
+          <h2 style={{ fontSize: 17, marginBottom: 16 }}>Daily activity</h2>
+          <DailyChart rows={daily} days={timeWindow.days} />
         </section>
       )}
     </div>

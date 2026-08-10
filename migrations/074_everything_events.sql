@@ -93,14 +93,14 @@ revoke all on function everything_funnel(int) from public;
 grant execute on function everything_funnel(int) to anon, authenticated;
 
 -- Daily activity for the dashboard's time-series chart: pageviews and
--- notes-shown per day and platform.
-create or replace function everything_daily_activity(window_days int default 30)
+-- notes-shown per day and platform. window_days null means all time.
+create or replace function everything_daily_activity(window_days int default null)
 returns table (day date, platform text, event text, events bigint)
 language sql security definer set search_path = public as $$
   select e.created_at::date, e.platform, e.event, count(*)
   from everything_events e
   where e.event in ('pageview', 'notes_shown')
-    and e.created_at >= now() - make_interval(days => window_days)
+    and (window_days is null or e.created_at >= now() - make_interval(days => window_days))
   group by 1, 2, 3
   order by 1
 $$;

@@ -12,13 +12,18 @@ function isoDay(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
 /** Grouped daily bars for pageviews and notes-shown. Days with no data render
- *  as empty slots so gaps are visible instead of being compressed away. */
-export function DailyChart({ rows, days }: { rows: DailyRow[]; days: number }) {
+ *  as empty slots so gaps are visible instead of being compressed away.
+ *  days null means all time: the range starts at the earliest recorded day. */
+export function DailyChart({ rows, days }: { rows: DailyRow[]; days: number | null }) {
   const today = new Date();
+  const earliest = rows.length > 0 ? rows.map((r) => r.day).sort()[0]! : isoDay(today);
+  const dayCount = days ?? Math.floor((today.getTime() - new Date(earliest).getTime()) / DAY_MS) + 1;
   const allDays: string[] = [];
-  for (let i = days - 1; i >= 0; i--) {
-    allDays.push(isoDay(new Date(today.getTime() - i * 24 * 60 * 60 * 1000)));
+  for (let i = dayCount - 1; i >= 0; i--) {
+    allDays.push(isoDay(new Date(today.getTime() - i * DAY_MS)));
   }
   const total = (day: string, event: string) =>
     rows.filter((r) => r.day === day && r.event === event).reduce((sum, r) => sum + r.events, 0);
