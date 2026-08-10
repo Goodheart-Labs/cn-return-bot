@@ -188,6 +188,26 @@ const SIMPLE_BOT_WRITER_EXAMPLES_TEST: ABTest = {
   ],
 };
 
+// Concede-then-correct note shape for curated misinfo topics (2026-07-27, Rob).
+// The "on" arm sees the topic document's marker-wrapped additions (the "Note
+// shape — concede the true core first" section + per-claim "True core" lines)
+// in every step, and the writer additionally gets MISINFO_CONCEDE_SHAPE_RULE;
+// the "off" arm sees the document exactly as it was before the experiment.
+// Rating analysis of this topic's notes found the worst-rejected one (73%
+// "missing key points") sidestepped the true core of the post's claim; raters
+// read the omission as evasive. The pick is sampled for every simple-bot run
+// but only changes behaviour on misinfo runs whose document opts in via
+// CONCEDE_SHAPE_MARKER — analyse it filtered to those runs. Prereq-gated to
+// simple-bot, so no defaultVariant.
+const MISINFO_CONCEDE_SHAPE_TEST: ABTest = {
+  name: "misinfo_concede_shape",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off", overrides: { concede_shape: false } }, weight: 50 },
+    { variant: { name: "on",  overrides: { concede_shape: true  } }, weight: 50 },
+  ],
+};
+
 // Insert an LLM step between simple-bot's search and writer that extracts atomic
 // corrections from the search findings, grades each (clear_error / minor_error /
 // critical_context / useful_context / not_useful), and feeds the writer only the
@@ -477,6 +497,7 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_CLAIM_TEST,
   SIMPLE_BOT_WRITER_EXAMPLES_TEST,
   SIMPLE_BOT_POLITICAL_SOURCES_TEST,
+  MISINFO_CONCEDE_SHAPE_TEST,
   SIMPLE_BOT_CORRECTION_EXTRACTION_TEST,
   NOTE_PREFILTER_TEST,
   CHEAP_BOT_JUDGE_MODEL_TEST,

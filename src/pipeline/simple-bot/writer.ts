@@ -46,9 +46,10 @@ export async function runWriter(userMessage: string, findings: string): Promise<
   let effectiveFindings = findings;
   if (monitoring) {
     systemPrompt += MISINFO_SOURCING_RULE + MISINFO_NOTE_SHAPE_RULE;
-    // Concede-then-correct experiment: only for topics whose document opts in
+    // Concede-then-correct experiment: only on the "on" arm of the 50/50
+    // MISINFO_CONCEDE_SHAPE_TEST, and only for topics whose document opts in
     // (the one-claim rule above otherwise suppresses the concession clause).
-    if (monitoring.document.includes(CONCEDE_SHAPE_MARKER)) {
+    if (config.concede_shape && monitoring.document.includes(CONCEDE_SHAPE_MARKER)) {
       systemPrompt += MISINFO_CONCEDE_SHAPE_RULE;
       log?.set("writer.concedeShape", true);
     }

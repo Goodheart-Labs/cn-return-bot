@@ -137,6 +137,18 @@ export interface BotConfig {
    */
   writer_examples?: boolean;
   /**
+   * When true, the run is on the "on" arm of the concede-then-correct
+   * experiment for curated misinfo topics. The reference document keeps its
+   * marker-wrapped experiment additions (the "Note shape — concede the true
+   * core first" section and the per-claim "True core" lines), and the writer
+   * appends MISINFO_CONCEDE_SHAPE_RULE to its system prompt. When false or
+   * unset, buildReferenceBlock strips those additions, so the run sees the
+   * document exactly as it was before the experiment. Only has an effect on
+   * misinfo-monitoring runs whose topic document opts in via
+   * CONCEDE_SHAPE_MARKER. Set by MISINFO_CONCEDE_SHAPE_TEST; defaults false.
+   */
+  concede_shape?: boolean;
+  /**
    * When true, the writer's user message includes a block of the post author's
    * past helpful community notes (ours + competing notes on tweets we've noted)
    * as context — see getAuthorNoteHistory. The lookup was silently broken from
