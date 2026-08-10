@@ -1,4 +1,5 @@
 import { AsyncLocalStorage } from "node:async_hooks";
+import type { MisinfoTopicId } from "../misinfo-monitoring/topicIds";
 
 // --- Config type ---
 
@@ -196,12 +197,13 @@ export interface BotConfig {
    */
   writer_examples?: boolean;
   /**
-   * True when the run came from the XXL-feed misinfo pre-pass, which means a
-   * MonitoringContext is present. This mirrors the forced misinfo_monitoring
-   * pick into the config, so tests declared later can gate on it through their
-   * prerequisites. MISINFO_MONITORING_TEST sets it and it defaults to false.
+   * The misinfo topic this run matched, when it came from the XXL-feed misinfo
+   * pre-pass. This mirrors the forced misinfo_topic pick into the config, so
+   * tests declared later can gate on specific topics through their
+   * prerequisites. MISINFO_TOPIC_TEST sets it. On a regular run it stays
+   * unset.
    */
-  misinfo_monitoring?: boolean;
+  misinfo_topic?: MisinfoTopicId;
   /**
    * When this is true, the run is on the "on" arm of the concede-then-correct
    * experiment for curated misinfo topics. The reference document keeps its
@@ -209,10 +211,9 @@ export interface BotConfig {
    * the true core first" section and the "True core" line of each claim. The
    * writer also appends MISINFO_CONCEDE_SHAPE_RULE to its system prompt. When
    * this is false or unset, buildReferenceBlock strips those additions, and the
-   * run sees the document exactly as it was before the experiment. It only has
-   * an effect on misinfo-monitoring runs whose topic document opts in via
-   * CONCEDE_SHAPE_MARKER. MISINFO_CONCEDE_SHAPE_TEST sets it and it defaults to
-   * false.
+   * run sees the document exactly as it was before the experiment.
+   * MISINFO_CONCEDE_SHAPE_TEST sets it, only on the topics enrolled in
+   * CONCEDE_SHAPE_TOPIC_IDS. It defaults to false.
    */
   concede_shape?: boolean;
   /**

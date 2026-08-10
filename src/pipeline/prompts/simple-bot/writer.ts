@@ -80,24 +80,18 @@ export const MISINFO_NOTE_SHAPE_RULE = `
 ## Note shape for this curated topic
 Notes that reach Helpful on this topic correct exactly ONE claim — the claim the post's argument actually rests on, not the easiest-to-source side detail — in one or two blunt declarative sentences, then stop. Do not add a second correction, extra background, or an "also…" clause: every added assertion hands some group of raters a reason to reject the note. Cite one or two sources, never more.`;
 
-/** Marker heading a topic document uses to opt in to the concede-then-correct
- *  experiment; the writer rule below is appended only when the reference
- *  document carries this section AND the run is on the "on" arm of the 50/50
- *  MISINFO_CONCEDE_SHAPE_TEST. Removing the section from the document ends the
- *  experiment for that topic with no code change. */
-export const CONCEDE_SHAPE_MARKER = "## Note shape — concede the true core first";
-
 /**
- * Concede-then-correct experiment (2026-07-27, Rob), a 50/50 A/B test via
- * MISINFO_CONCEDE_SHAPE_TEST. Appended after MISINFO_NOTE_SHAPE_RULE on the
- * "on" arm, for topics whose reference document opts in via
- * CONCEDE_SHAPE_MARKER; the "off" arm also has the document's shape section
- * and "True core" lines stripped (see buildReferenceBlock), so it matches the
- * pre-experiment behaviour exactly. Rating analysis of this topic's notes
- * found the worst-rejected one (73% "missing key points") sidestepped the
- * true core of the post's claim; raters read the omission as evasive. The
- * concession is framed as part of the ONE-claim shape, not an exception to it
- * — the one-claim rule above otherwise suppresses it as "extra background".
+ * The concede-then-correct experiment from Rob, 2026-07-27, run as a 50/50 A/B
+ * test through MISINFO_CONCEDE_SHAPE_TEST. On the "on" arm this is appended
+ * after MISINFO_NOTE_SHAPE_RULE, for the topics enrolled in
+ * CONCEDE_SHAPE_TOPIC_IDS. On the "off" arm the document's shape section and
+ * its "True core" lines are also stripped, in buildReferenceBlock, so that arm
+ * matches the pre-experiment behaviour exactly. Rating analysis of this
+ * topic's notes found that the worst-rejected one sidestepped the true core
+ * of the post's claim, and 73% of its raters tagged it "missing key points" —
+ * they read the omission as evasive. The concession is framed as part of the
+ * ONE-claim shape rather than an exception to it, because the one-claim rule
+ * above would otherwise suppress it as extra background.
  */
 export const MISINFO_CONCEDE_SHAPE_RULE = `
 

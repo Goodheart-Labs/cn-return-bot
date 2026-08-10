@@ -9,7 +9,7 @@
  */
 
 import type { BotConfig } from "./botConfig";
-import { MISINFO_TOPIC_IDS } from "../misinfo-monitoring/topicIds";
+import { MISINFO_TOPIC_IDS, CONCEDE_SHAPE_TOPIC_IDS } from "../misinfo-monitoring/topicIds";
 
 // --- Types ---
 
@@ -291,15 +291,14 @@ const SIMPLE_BOT_WRITER_EXAMPLES_TEST: ABTest = {
 // as it was before the experiment. Rating analysis of this topic's notes found
 // that the worst-rejected one sidestepped the true core of the post's claim,
 // and 73% of its raters tagged it "missing key points" — they read the omission
-// as evasive. Only misinfo-monitoring runs sample a pick, because the
-// misinfo_monitoring prerequisite reads the config field that
-// MISINFO_MONITORING_TEST records. This test must therefore come after that one
-// in AB_TESTS. The pick only changes behaviour on topics whose document opts in
-// via CONCEDE_SHAPE_MARKER. This test has prerequisites, so it declares no
+// as evasive. Only runs on an enrolled topic sample a pick: the prerequisite
+// matches the misinfo_topic config field, which MISINFO_TOPIC_TEST records,
+// against the CONCEDE_SHAPE_TOPIC_IDS roster. This test must therefore come
+// after that one in AB_TESTS. This test has prerequisites, so it declares no
 // defaultVariant.
 const MISINFO_CONCEDE_SHAPE_TEST: ABTest = {
   name: "misinfo_concede_shape",
-  prerequisites: { botId: "simple-bot", misinfo_monitoring: true },
+  prerequisites: { botId: "simple-bot", misinfo_topic: CONCEDE_SHAPE_TOPIC_IDS },
   variants: [
     { variant: { name: "off", overrides: { concede_shape: false } }, weight: 50 },
     { variant: { name: "on",  overrides: { concede_shape: true  } }, weight: 50 },
@@ -507,30 +506,31 @@ const FEED_SIZE_TEST: ABTest = {
 // record whether a run came from the misinfo pre-pass over the XXL feed, and if
 // it did, which topic it matched. `processPosts` forces both picks from the
 // item's MonitoringContext. A regular run carries no monitoring, so it lands on
-// the default arm, which is `no` here and `none` for the topic test. The
-// monitoring test also records its outcome into the config field
-// misinfo_monitoring, so a test declared after it can gate on monitoring runs
-// through its prerequisites. MISINFO_CONCEDE_SHAPE_TEST does that. Beyond that
-// these tests change no behaviour. The reference document reaches the prompts
+// the default arm, which is `no` here and `none` for the topic test. These
+// tests change no behaviour. The reference document reaches the prompts
 // through MonitoringContext, which is separate from BotConfig.
 const MISINFO_MONITORING_TEST: ABTest = {
   name: "misinfo_monitoring",
   defaultVariant: "no",
   variants: [
-    { variant: { name: "no",  overrides: { misinfo_monitoring: false } }, weight: 100 },
-    { variant: { name: "yes", overrides: { misinfo_monitoring: true  } }, weight: 0 },
+    { variant: { name: "no",  overrides: {} }, weight: 100 },
+    { variant: { name: "yes", overrides: {} }, weight: 0 },
   ],
 };
 
 // There is one variant per topic id. The list comes from MISINFO_TOPIC_IDS,
 // which keeps it in step with topics.ts. That way a forced topic pick always
-// finds its variant in findVariantByName.
+// finds its variant in findVariantByName. Each topic variant also records its
+// ID into the misinfo_topic config field, so a test declared after this one
+// can gate on specific topics through its prerequisites.
+// MISINFO_CONCEDE_SHAPE_TEST does that. The `none` variant leaves the field
+// unset, so a topic-gated test can never fire on a regular run.
 const MISINFO_TOPIC_TEST: ABTest = {
   name: "misinfo_topic",
   defaultVariant: "none",
   variants: [
     { variant: { name: "none", overrides: {} }, weight: 100 },
-    ...MISINFO_TOPIC_IDS.map((id) => ({ variant: { name: id, overrides: {} }, weight: 0 })),
+    ...MISINFO_TOPIC_IDS.map((id) => ({ variant: { name: id, overrides: { misinfo_topic: id } }, weight: 0 })),
   ],
 };
 
@@ -675,8 +675,8 @@ export const AB_TESTS: ABTest[] = [
   FEED_SIZE_TEST,
   MISINFO_MONITORING_TEST,
   MISINFO_TOPIC_TEST,
-  // Must come after MISINFO_MONITORING_TEST: its prerequisite reads the
-  // misinfo_monitoring config field that test records.
+  // This must come after MISINFO_TOPIC_TEST, because its prerequisite reads
+  // the misinfo_topic config field that test records.
   MISINFO_CONCEDE_SHAPE_TEST,
   PANGRAM_MONITORING_TEST,
   PANGRAM_NOTE_TEST,

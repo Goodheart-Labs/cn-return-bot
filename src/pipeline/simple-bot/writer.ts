@@ -19,7 +19,6 @@ import {
   MISINFO_SOURCING_RULE,
   MISINFO_NOTE_SHAPE_RULE,
   MISINFO_CONCEDE_SHAPE_RULE,
-  CONCEDE_SHAPE_MARKER,
   buildWriterUserMessage,
   buildWriterRetryMessage,
   buildWriterLintMessage,
@@ -54,10 +53,10 @@ export async function runWriter(
   let effectiveFindings = findings;
   if (monitoring) {
     systemPrompt += MISINFO_SOURCING_RULE + MISINFO_NOTE_SHAPE_RULE;
-    // Concede-then-correct experiment: only on the "on" arm of the 50/50
-    // MISINFO_CONCEDE_SHAPE_TEST, and only for topics whose document opts in
-    // (the one-claim rule above otherwise suppresses the concession clause).
-    if (config.concede_shape && monitoring.document.includes(CONCEDE_SHAPE_MARKER)) {
+    // Concede-then-correct experiment. The flag is only ever true on the "on"
+    // arm of the 50/50 MISINFO_CONCEDE_SHAPE_TEST, which fires only on topics
+    // enrolled in CONCEDE_SHAPE_TOPIC_IDS.
+    if (config.concede_shape) {
       systemPrompt += MISINFO_CONCEDE_SHAPE_RULE;
       log?.set("writer.concedeShape", true);
     }

@@ -39,7 +39,9 @@ export function getMonitoringContext(): MonitoringContext | undefined {
 /** A topic document wraps content that belongs to the concede-then-correct
  *  experiment in these marker lines. The "on" arm of the experiment sees the
  *  wrapped content with the marker lines removed. The "off" arm sees the
- *  document exactly as it was before the experiment. */
+ *  document exactly as it was before the experiment. topics.ts checks at load
+ *  time that every enrolled topic's document contains the marker. */
+export const CONCEDE_MARKER = "<!-- concede-shape -->";
 const CONCEDE_BLOCK = /<!-- concede-shape -->\n([\s\S]*?)<!-- \/concede-shape -->\n/g;
 
 function resolveConcedeBlocks(document: string, concedeArmOn: boolean): string {

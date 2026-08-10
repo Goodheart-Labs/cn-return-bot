@@ -19,7 +19,8 @@
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import type { MisinfoTopicId } from "./topicIds";
+import { CONCEDE_SHAPE_TOPIC_IDS, type MisinfoTopicId } from "./topicIds";
+import { CONCEDE_MARKER } from "./monitoringContext";
 
 export interface MisinfoTopic {
   id: MisinfoTopicId;
@@ -230,3 +231,17 @@ export const MISINFO_TOPICS: MisinfoTopic[] = SPECS.map((spec) => ({
   document: read("documents", spec.id),
   brief: read("briefs", spec.id),
 }));
+
+// A topic enrolled in the concede-then-correct experiment must wrap the
+// experiment's additions in concede-shape marker lines in its document.
+// Without them the "on" arm's writer rule would point at a section that does
+// not exist. We check this at load time, so a mismatch fails the run loudly
+// instead of producing broken prompts.
+for (const id of CONCEDE_SHAPE_TOPIC_IDS) {
+  const topic = MISINFO_TOPICS.find((t) => t.id === id);
+  if (!topic?.document.includes(CONCEDE_MARKER)) {
+    throw new Error(
+      `Topic "${id}" is enrolled in CONCEDE_SHAPE_TOPIC_IDS but its document has no "${CONCEDE_MARKER}" block`,
+    );
+  }
+}
