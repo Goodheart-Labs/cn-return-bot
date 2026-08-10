@@ -8,7 +8,7 @@
  * `fetchAutoSubs`).
  */
 
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import { decodeHtmlEntities } from "../utils/html";
@@ -63,10 +63,6 @@ const LOW_QUALITY_FORMAT = "worst[height<=240]/worst";
 
 export type YtDlpQuality = "default" | "low";
 
-function quote(s: string): string {
-  return s.replace(/(["\\$`])/g, "\\$1");
-}
-
 const YOUTUBE_URL_RE = /^https?:\/\/([\w-]+\.)?(youtube\.com|youtu\.be)\//i;
 
 /** YouTube refuses video requests from datacenter IPs ("Sign in to confirm
@@ -78,12 +74,6 @@ export function ytDlpProxyArgs(url: string): string[] {
   return proxy && YOUTUBE_URL_RE.test(url) ? ["--proxy", proxy] : [];
 }
 
-function ytDlpProxyFlag(url: string): string {
-  return ytDlpProxyArgs(url)
-    .map((arg) => `"${quote(arg)}"`)
-    .join(" ");
-}
-
 /**
  * Combined metadata + default-quality download in one yt-dlp invocation.
  * Used by runOnVideos. The verifier uses the granular functions below
@@ -92,14 +82,16 @@ function ytDlpProxyFlag(url: string): string {
 export function downloadWithYtDlp(url: string, outputDir: string): YtDlpResult {
   const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
   try {
-    const metadataJson = execSync(
-      `yt-dlp ${ytDlpProxyFlag(url)} -J -o "${quote(outputTemplate)}" "${quote(url)}"`,
+    const metadataJson = execFileSync(
+      "yt-dlp",
+      [...ytDlpProxyArgs(url), "-J", "-o", outputTemplate, url],
       { timeout: YT_DLP_TIMEOUT_MS, encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] },
     );
     const meta: YtDlpMetadata = JSON.parse(metadataJson);
 
-    execSync(
-      `yt-dlp ${ytDlpProxyFlag(url)} -o "${quote(outputTemplate)}" "${quote(url)}"`,
+    execFileSync(
+      "yt-dlp",
+      [...ytDlpProxyArgs(url), "-o", outputTemplate, url],
       { timeout: YT_DLP_TIMEOUT_MS, stdio: ["pipe", "pipe", "pipe"] },
     );
 
@@ -112,8 +104,9 @@ export function downloadWithYtDlp(url: string, outputDir: string): YtDlpResult {
 /** Metadata-only — no download. Used to size the download up front. */
 export function fetchYtDlpMetadata(url: string): YtDlpMetadata {
   try {
-    const metadataJson = execSync(
-      `yt-dlp ${ytDlpProxyFlag(url)} -J --skip-download "${quote(url)}"`,
+    const metadataJson = execFileSync(
+      "yt-dlp",
+      [...ytDlpProxyArgs(url), "-J", "--skip-download", url],
       { timeout: YT_DLP_TIMEOUT_MS, encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] },
     );
     return JSON.parse(metadataJson);
@@ -134,10 +127,11 @@ export function downloadVideoWithYtDlp(
   quality: YtDlpQuality = "default",
 ): { filePath: string | null; kind: YtDlpKind | null } {
   const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
-  const formatArg = quality === "low" ? `-f "${LOW_QUALITY_FORMAT}"` : "";
+  const formatArgs = quality === "low" ? ["-f", LOW_QUALITY_FORMAT] : [];
   try {
-    execSync(
-      `yt-dlp ${ytDlpProxyFlag(url)} ${formatArg} -o "${quote(outputTemplate)}" "${quote(url)}"`.trim(),
+    execFileSync(
+      "yt-dlp",
+      [...ytDlpProxyArgs(url), ...formatArgs, "-o", outputTemplate, url],
       { timeout: YT_DLP_TIMEOUT_MS, stdio: ["pipe", "pipe", "pipe"] },
     );
     return resolveDownloadedFile(meta, outputDir);
@@ -154,8 +148,9 @@ export function downloadVideoWithYtDlp(
 export function fetchAutoSubs(url: string, outputDir: string, lang: string = "en"): string | null {
   const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
   try {
-    execSync(
-      `yt-dlp ${ytDlpProxyFlag(url)} --write-auto-sub --sub-lang ${quote(lang)} --skip-download -o "${quote(outputTemplate)}" "${quote(url)}"`,
+    execFileSync(
+      "yt-dlp",
+      [...ytDlpProxyArgs(url), "--write-auto-sub", "--sub-lang", lang, "--skip-download", "-o", outputTemplate, url],
       { timeout: YT_DLP_TIMEOUT_MS, stdio: ["pipe", "pipe", "pipe"] },
     );
   } catch {
@@ -178,8 +173,9 @@ export function fetchAutoSubs(url: string, outputDir: string, lang: string = "en
 export function fetchTimedTranscript(url: string, outputDir: string, lang: string = "en"): SubtitleCue[] | null {
   const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
   try {
-    execSync(
-      `yt-dlp ${ytDlpProxyFlag(url)} --write-subs --write-auto-subs --sub-lang ${quote(lang)} --skip-download -o "${quote(outputTemplate)}" "${quote(url)}"`,
+    execFileSync(
+      "yt-dlp",
+      [...ytDlpProxyArgs(url), "--write-subs", "--write-auto-subs", "--sub-lang", lang, "--skip-download", "-o", outputTemplate, url],
       { timeout: YT_DLP_TIMEOUT_MS, stdio: ["pipe", "pipe", "pipe"] },
     );
   } catch {
