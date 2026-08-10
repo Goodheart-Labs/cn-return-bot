@@ -245,17 +245,7 @@ export function App() {
     setMyVotes(next);
     const voteId = await castVote(note.id, session.user.id, vote, "web");
     if (!voteId) return null;
-    const ownNote = note.author_id === session.user.id;
-    // The vote funnel step. distinct_notes_voted is the count AFTER this cast,
-    // so the "voted on ≥ N notes" steps filter on distinct_notes_voted >= N.
-    track("note_voted", {
-      note_id: note.id,
-      vote, // 1 helpful · 0 somewhat · -1 not helpful
-      changed_vote: current != null,
-      own_note: ownNote,
-      distinct_notes_voted: next.size,
-    });
-    if (ownNote) return null;
+    if (note.author_id === session.user.id) return null;
     const pair = donationPair(priorTally(note, current), vote);
     // A backend without migration 061 rejects the pair columns — keep the vote,
     // just don't promise a donation the ledger didn't record.

@@ -1,9 +1,10 @@
 name: Deploy Pages
 
-# One artifact, two SPAs: the stats dashboard at /cn-return-bot/ and the
-# "Community Notes on Everything" site at /cn-return-bot/notes/. The cron
-# refresh only matters for the stats snapshot — the notes site reads Supabase
-# live (anon key baked into the build, locked down by migration 050).
+# One artifact, three SPAs: the stats dashboard at /cn-return-bot/, the
+# "Community Notes on Everything" site at /cn-return-bot/notes/, and the
+# analytics dashboard at /cn-return-bot/analytics/. The cron refresh only
+# matters for the stats snapshot — the other two read Supabase live (anon key
+# baked into the build, locked down by migration 050).
 
 on:
   schedule:
@@ -14,6 +15,7 @@ on:
     paths:
       - "src/stats-dashboard/**"
       - "src/everything-web/**"
+      - "src/analytics-dashboard/**"
       - "src/dashboard-shared/**"
       - "package.json"
       - "bun.lock"
@@ -63,13 +65,20 @@ jobs:
           BASE_PATH: /cn-return-bot/notes/
           VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          VITE_PUBLIC_POSTHOG_KEY: ${{ secrets.POSTHOG_KEY }}
+
+      - name: Build analytics dashboard
+        run: cd src/analytics-dashboard && bunx vite build
+        env:
+          BASE_PATH: /cn-return-bot/analytics/
+          VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
 
       - name: Assemble site
         run: |
-          mkdir -p site/notes
+          mkdir -p site/notes site/analytics
           cp -r src/stats-dashboard/dist/. site/
           cp -r src/everything-web/dist/. site/notes/
+          cp -r src/analytics-dashboard/dist/. site/analytics/
 
       - name: Build everything SPA at root path (commonnotes.net)
         run: cd src/everything-web && bunx vite build
@@ -77,7 +86,6 @@ jobs:
           BASE_PATH: /
           VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          VITE_PUBLIC_POSTHOG_KEY: ${{ secrets.POSTHOG_KEY }}
 
       - name: Deploy commonnotes.net (Cloudflare Pages)
         # Manual only (Nathan 2026-07-10): merges must NOT silently update the
