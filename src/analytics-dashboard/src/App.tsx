@@ -58,7 +58,7 @@ export function App() {
 
       {funnel && (
         <section style={{ marginBottom: 40 }}>
-          <h2 style={{ fontSize: 17, marginBottom: 16 }}>Reader → voter funnel</h2>
+          <h2 style={{ fontSize: 17, marginBottom: 16 }}>Funnel</h2>
           <FunnelTable rows={funnel} />
         </section>
       )}
