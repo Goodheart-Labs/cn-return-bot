@@ -64,6 +64,13 @@ export interface BotConfig {
    * NOTE_PREFILTER_TEST; defaults false.
    */
   note_prefilter?: boolean;
+  /**
+   * When true, a blocked-topic gate runs before everything else (even the
+   * note-needed prefilter): one deepseek-v4-flash call checks the post against
+   * BLOCKED_TOPICS and skips the run (rejected / blocked_topic) on a hit. Set
+   * by TOPIC_FILTER_TEST; defaults false.
+   */
+  topic_filter?: boolean;
   /** Model for the cheap-bot satire detector. Defaults to `note_judge_model`
    *  then `model`. Decouples the satire detector from the note-needed judge
    *  (which also reads `note_judge_model`) so they can run on different models. */
@@ -74,6 +81,14 @@ export interface BotConfig {
    * reasoning (e.g. deepseek-v4-flash with extended reasoning). Falsy = omit.
    */
   reasoning_effort?: "low" | "medium" | "high";
+  /**
+   * If set, passed as `reasoning_effort` on the simple-bot SEARCH call only
+   * (Anthropic-native path). Unlike `reasoning_effort` this leaves the
+   * writer/verifier/judge calls untouched, so a search A/B arm can vary
+   * reasoning without confounding the other stages. Unset = model default
+   * (Claude models don't reason by default). Set by SIMPLE_BOT_SEARCH_TEST.
+   */
+  search_reasoning_effort?: "low" | "medium" | "high";
   /**
    * If set, passed through to OpenRouter as `temperature` for every LLM call
    * made by this bot. cheap-bot pins this to 0 (via the `cheap_bot_temperature`
@@ -122,6 +137,23 @@ export interface BotConfig {
    * SIMPLE_BOT_ANTI_PEDANTIC_TEST; defaults false.
    */
   search_anti_pedantic?: boolean;
+  /**
+   * When true (simple-bot only), the search AND writer prompts gain the
+   * time-travel test: a correction must have been accurate and fair at the
+   * moment the post was published — a claim outdated only by later events is
+   * not an error. Backtested 2026-07-28 (docs/improvement-menu-2026-07-25.md,
+   * T2). Set by TIME_TRAVEL_PROMPT_TEST; defaults false.
+   */
+  time_travel_prompt?: boolean;
+  /**
+   * When true (simple-bot only), a post-search extractor measures the gap
+   * between the post's event and the post's publication; fog-window posts
+   * (published within 6h of the event, or mid-event) get a timing-context
+   * block piped into the writer's user message plus a pre-computed Post-age
+   * line. Information, not a gate. Independent of time_travel_prompt (2x2).
+   * Set by TIMING_CONTEXT_TEST; defaults false.
+   */
+  timing_context?: boolean;
   /**
    * When true (simple-bot only), the search step uses the claim-check prompt —
    * the input is a claim extracted from a podcast, interview, or article plus

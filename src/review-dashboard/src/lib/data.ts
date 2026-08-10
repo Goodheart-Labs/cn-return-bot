@@ -4,108 +4,24 @@ import type {
   ComparisonNote,
   Annotation,
   FailureType,
+  FilterState,
   UploadInfo,
   FailureModeInfo,
 } from "./types";
 import { resultToFailureType, FAILURE_TYPE_CONFIG } from "./types";
-import { resolveRatingCounts } from "../../../dashboard-shared/Ratings";
 import { fetchAllRows, fetchInBatches } from "../../../dashboard-shared/supabasePaging";
-import { CANONICAL_LIST_COLS, TWEET_LIST_COLS, PUBLIC_DUMP_RATING_COLS, DEFAULT_VIEW_STATUSES, DEFAULT_VIEW_LIMIT } from "../../../dashboard-shared/productionView";
 import { csvRowToReviewItemInsert } from "../../../dashboard-shared/reviewUpload";
-import { topicSetFor } from "../../../dashboard-shared/topicSets";
+import { topicSetFor, topicIdsForSets } from "../../../dashboard-shared/topicSets";
+import type { ABFilters } from "../../../dashboard-shared/abFilters";
 
 // ─── Production data ─────────────────────────────────────────────────────────
-
-// A review item's annotation `target_id` encodes which kind of item it is, so a
-// single annotations table can key three different sources without collision:
-// a bare id is a `notes.note_id` (canonical item); the prefixed forms point at a
-// `competing_notes.note_id` (missed opp — never one of our notes) or a
-// `pipeline_runs.id` (low-eval rejection — never submitted, so no note row).
-// All code that constructs or consumes an item.id MUST go through these helpers.
-const MISSED_TARGET_PREFIX = "missed:";
-const LOW_EVAL_TARGET_PREFIX = "loweval:";
-
-function missedTargetId(competingNoteId: string): string {
-  return `${MISSED_TARGET_PREFIX}${competingNoteId}`;
-}
-
-function lowEvalTargetId(pipelineRunId: string): string {
-  return `${LOW_EVAL_TARGET_PREFIX}${pipelineRunId}`;
-}
-
-type DecodedTarget =
-  | { kind: "note"; noteId: string }
-  | { kind: "missed"; competingNoteId: string }
-  | { kind: "lowEval"; runId: string };
-
-/** Inverse of missedTargetId / lowEvalTargetId. */
-function decodeTargetId(targetId: string): DecodedTarget {
-  if (targetId.startsWith(MISSED_TARGET_PREFIX))
-    return { kind: "missed", competingNoteId: targetId.slice(MISSED_TARGET_PREFIX.length) };
-  if (targetId.startsWith(LOW_EVAL_TARGET_PREFIX))
-    return { kind: "lowEval", runId: targetId.slice(LOW_EVAL_TARGET_PREFIX.length) };
-  return { kind: "note", noteId: targetId };
-}
-
-/**
- * A competing_notes row represents a missed opportunity when it has no
- * associated note from us, the competing note got rated helpful, and we have
- * a pipeline_run id to point back to the rejection.
- */
-function isMissedOppCompetingNote(cn: any): boolean {
-  return (
-    cn.our_note_id === null &&
-    cn.current_status === "CURRENTLY_RATED_HELPFUL" &&
-    !!cn.pipeline_run_id
-  );
-}
-
-function cnStatusToFailureType(
-  cnStatus: string | null,
-  hasHelpfulCompetitor: boolean,
-  isUnderwater: boolean,
-): FailureType {
-  if (cnStatus === "CURRENTLY_RATED_HELPFUL") return "rated_helpful";
-  if (cnStatus === "CURRENTLY_RATED_NOT_HELPFUL") return "rated_unhelpful";
-  if (hasHelpfulCompetitor) return "lost_to_competitor";
-  if (cnStatus === "NEEDS_MORE_RATINGS") return isUnderwater ? "underwater" : "needs_more_ratings";
-  return "uncategorized";
-}
-
-// "Underwater": a NEEDS_MORE_RATINGS note that, once it has enough ratings,
-// scores below Community Notes' own display bar. CN encodes each rating
-// Helpful=1 / Somewhat=0.5 / Not=0 and publishes a note when its
-// leniency-adjusted intercept clears 0.4. We can't see that adjusted intercept
-// (it needs the full rater matrix), so we approximate it with the raw weighted
-// average of the public rating counts. The threshold sits well below CN's 0.4
-// bar: at 0.4 at the time there were ~575 notes; 0.2
-// keeps had only ~170 (tuned by feel 2026-07-14). Tightening
-// the threshold rather than the min-ratings floor keeps the pill
-// view-count-neutral (a floor skews it toward high-traffic notes). Notes with
-// fewer than UNDERWATER_MIN_RATINGS ratings stay "Needs More Ratings" —
-// genuinely undecided, not sunk. Helpful/not-helpful use the card badge's
-// resolution rule (public-dump first, scraped fallback); somewhat comes from
-// the public dump only.
-const UNDERWATER_RATIO_THRESHOLD = 0.2;
-const UNDERWATER_MIN_RATINGS = 5;
-function isUnderwaterNote(
-  publicDumpRatings:
-    | { helpful_count?: number | null; somewhat_helpful_count?: number | null; not_helpful_count?: number | null }
-    | null
-    | undefined,
-  helpfulCount: number | null | undefined,
-  notHelpfulCount: number | null | undefined,
-): boolean {
-  const { helpful, notHelpful } = resolveRatingCounts(
-    publicDumpRatings as any,
-    helpfulCount,
-    notHelpfulCount,
-  );
-  const somewhat = publicDumpRatings?.somewhat_helpful_count ?? 0;
-  const total = helpful + somewhat + notHelpful;
-  if (total < UNDERWATER_MIN_RATINGS) return false;
-  return (helpful + 0.5 * somewhat) / total < UNDERWATER_RATIO_THRESHOLD;
-}
+//
+// The production list is served by Postgres RPCs (migration 073): the
+// review_dashboard_items_v view joins and classifies every item server-side,
+// review_dashboard_page returns one keyset-paginated screenful of fully-hydrated
+// ReviewItems, and review_dashboard_counts returns the pill/tag/burndown/A-B
+// aggregates. The client no longer joins tables or classifies notes — it
+// compiles its filter lenses into the RPCs' flat filter object and renders.
 
 const ONE_HOUR_MS = 60 * 60 * 1000;
 const COMPETITOR_LEAD_THRESHOLDS = [
@@ -136,322 +52,177 @@ function computeCompetitorLeadTag(
   return undefined;
 }
 
-// Columns needed to render the production list. After the canonical→notes
-// merge, tweet text/handle and current_core_status no longer live on this
-// table — text comes from tweets (joined by tweet_id), and we prefer
-// current_status (cn_status) per CLAUDE.md.
-const CANONICAL_LIST_COLUMNS = CANONICAL_LIST_COLS.join(", ");
+// ─── Filter compilation ──────────────────────────────────────────────────────
 
-// pipeline_runs without the logs TOAST column — used for the metadata fetch
-// that drives the list. Logs are lazy-loaded per visible card. Tweet text /
-// media flags now live on the tweets table; we fetch them separately and
-// stitch by tweet_id.
-const PIPELINE_METADATA_COLUMNS =
-  "id, tweet_id, outcome, outcome_reason, bot_name, created_at, ab_test_picks";
-
-// Low-eval-score rejections were never submitted, so the note text/source live
-// on the pipeline_runs row itself rather than on a notes row. Pull those too.
-const LOW_EVAL_RUN_COLUMNS =
-  "id, tweet_id, note_text, note_status, outcome, outcome_reason, bot_name, created_at, ab_test_picks";
-
-const TWEETS_LIST_COLUMNS = TWEET_LIST_COLS.join(", ");
-
-const PUBLIC_DUMP_RATING_COLUMNS = PUBLIC_DUMP_RATING_COLS.join(", ");
-
-export interface DashboardData {
-  canonical: any[];
-  competing: any[];
-  submittedRuns: any[];
-  missedRuns: any[];
-  lowEvalRuns: any[];
-  lowEvalScores: any[];
-  annotations: any[];
-  tweets: any[];
-  publicDumpRatings: any[];
-  // Misinfo-monitoring sightings (tweet_id → topic_id) for the visible tweets,
-  // so items can carry their fact-check topic + derived set.
-  sightings: any[];
+/** Flat filter object the page/counts RPCs take. Every key optional; an absent
+ * key means "no restriction". `draftsOn` PRESENT means draft gating is active:
+ * drafts are hidden unless their failure type is in the list. */
+export interface PageFilters {
+  failureTypes?: FailureType[];
+  draftsOn?: FailureType[];
+  seen?: boolean;
+  tags?: string[];
+  highValue?: boolean;
+  ab?: Record<string, string>;
+  topicIds?: string[];
 }
 
 /**
- * The annotation `target_id`s for a primary row set, mirroring the three item
- * shapes buildDashboardItems emits: canonical notes key on note_id, missed
- * opportunities and low-eval rejections on their prefixed encodings.
+ * Compile the filter bar's lens-precedence tree into the RPCs' flat conjunction.
+ * The precedence and per-lens semantics mirror the UI's rules exactly:
+ * - Topic lens (any topic set selected) is the primary filter: every note in the
+ *   set shows regardless of failure type; drafts stay hidden unless their own
+ *   pill is on; seen still narrows.
+ * - High-value ★ lens: starred items only. Tags (if any) narrow within it and
+ *   take precedence over the pills; an empty pill set means "all types" so
+ *   clearing pills can't strand an empty list. Drafts are NOT gated (a starred
+ *   draft shows).
+ * - Tag lens (failure-mode tags selected): tagged items only, regardless of
+ *   failure type and SEEN state — tagged items are usually already seen, so
+ *   applying those filters would hide the very items you clicked to see.
+ * - Default: pills are an allow-list (empty = all types), drafts hidden unless
+ *   their own pill is selected, seen narrows.
+ * A/B filters apply in every lens.
  */
-function annotationTargetIds(
-  canonical: any[],
-  missedOpps: any[],
-  lowEvalRuns: any[],
-): string[] {
-  return [
-    ...canonical.map((n: any) => n.note_id),
-    ...missedOpps.map((cn: any) => missedTargetId(cn.note_id)),
-    ...lowEvalRuns.map((r: any) => lowEvalTargetId(r.id)),
-  ];
-}
+export function compileFilters(filters: FilterState, abFilters: ABFilters): PageFilters {
+  const f: PageFilters = {};
 
-function fetchAnnotationsForTargets(targetIds: string[]): Promise<any[]> {
-  return fetchInBatches<any>(
-    supabase, "review_dashboard_annotations", "*", "target_id", targetIds,
-    (q) => q.eq("source", "production"), "annotations",
-  ).catch(() => [] as any[]);
-}
+  const ab: Record<string, string> = {};
+  for (const [slot, variant] of Object.entries(abFilters)) {
+    if (variant) ab[slot] = variant;
+  }
+  if (Object.keys(ab).length > 0) f.ab = ab;
 
-/**
- * Given the three "primary" row sets that anchor a production view — our notes,
- * missed-opportunity competing notes, low-eval rejection runs — fetch all the
- * satellite rows (comparisons, pipeline runs, tweets, ratings, annotations)
- * needed to render them and return the bundle buildDashboardItems consumes.
- *
- * Every satellite query is scoped to these primaries, never the full table —
- * that's what keeps loading fast. The old version pulled the entire
- * competing_notes (~13k), pipeline_runs, and public-ratings tables on every
- * page load. Shared by the date-windowed (fetchDashboardData) and tag-anchored
- * (fetchDashboardDataByTags) loaders. Logs stay the only on-demand fetch
- * (fetchLogsForRuns), per visible card.
- */
-async function assembleDashboardData(primary: {
-  canonical: any[];
-  missedOppCompeting: any[];
-  lowEvalRuns: any[];
-}): Promise<DashboardData> {
-  const { canonical, missedOppCompeting, lowEvalRuns } = primary;
-  const noteIds = canonical.map((n: any) => n.note_id);
-  const noteTweetIds = [...new Set(canonical.map((n: any) => n.tweet_id).filter(Boolean))];
-  // Only competing notes that still qualify become missed-opp items — the tag
-  // path fetches them by note_id without the qualifying filters, so re-check.
-  const missedOpps = missedOppCompeting.filter(isMissedOppCompetingNote);
+  const seen = filters.seen === "seen" ? true : filters.seen === "unseen" ? false : undefined;
 
-  const [comparisonCompeting, submittedRuns, publicDumpRatings, annotations] = await Promise.all([
-    // Competing notes attached to our notes — drives the comparison list and the
-    // lost-to-competitor classification.
-    fetchInBatches<any>(
-      supabase, "competing_notes", "*", "our_note_id", noteIds, undefined, "comparison_competing",
-    ),
-    fetchInBatches<any>(
-      supabase, "pipeline_runs", PIPELINE_METADATA_COLUMNS, "tweet_id", noteTweetIds,
-      (q) => q.eq("outcome", "submitted"), "submitted_runs",
-    ),
-    fetchInBatches<any>(
-      supabase, "note_ratings_from_public_dump", PUBLIC_DUMP_RATING_COLUMNS, "note_id", noteIds,
-      undefined, "public_dump_ratings",
-    ),
-    fetchAnnotationsForTargets(annotationTargetIds(canonical, missedOpps, lowEvalRuns)),
-  ]);
-
-  // Missed opportunities reference specific pipeline_run ids; fetch just those.
-  const missedRunIds = [
-    ...new Set(missedOpps.map((cn: any) => cn.pipeline_run_id as string)),
-  ];
-  const missedRuns = missedRunIds.length
-    ? await fetchInBatches<any>(
-        supabase, "pipeline_runs", PIPELINE_METADATA_COLUMNS, "id", missedRunIds, undefined, "missed_runs",
-      )
-    : [];
-
-  // The eval score itself lives in pipeline_scores (it isn't mirrored onto
-  // pipeline_runs), so fetch it for the low-eval runs to display.
-  const lowEvalRunIds = lowEvalRuns.map((r: any) => r.id);
-  const lowEvalScores = lowEvalRunIds.length
-    ? await fetchInBatches<any>(
-        supabase, "pipeline_scores", "pipeline_run_id, score_value", "pipeline_run_id", lowEvalRunIds,
-        (q) => q.eq("score_type", "evaluation"), "low_eval_scores",
-      )
-    : [];
-
-  const competing = [...comparisonCompeting, ...missedOppCompeting];
-
-  // Pull the tweets rows for every tweet_id referenced by the notes or the
-  // pipeline_runs we care about. tweets carries text/media/engagement.
-  const tweetIds = [
-    ...new Set([
-      ...noteTweetIds,
-      ...submittedRuns.map((r: any) => r.tweet_id).filter(Boolean),
-      ...missedRuns.map((r: any) => r.tweet_id).filter(Boolean),
-      ...lowEvalRuns.map((r: any) => r.tweet_id).filter(Boolean),
-    ]),
-  ];
-  const tweets = tweetIds.length
-    ? await fetchInBatches<any>(
-        supabase, "tweets", TWEETS_LIST_COLUMNS, "tweet_id", tweetIds, undefined, "tweets",
-      )
-    : [];
-
-  // Misinfo-monitoring sightings for these tweets → each item's fact-check topic.
-  const sightings = tweetIds.length
-    ? await fetchInBatches<any>(
-        supabase, "misinfo_monitoring_sightings", "tweet_id, topic_id", "tweet_id", tweetIds, undefined, "misinfo_sightings",
-      ).catch(() => [] as any[])
-    : [];
-
-  return { canonical, competing, submittedRuns, missedRuns, lowEvalRuns, lowEvalScores, annotations, tweets, publicDumpRatings, sightings };
-}
-
-/**
- * Date-windowed loader: every production item whose note was submitted on or
- * after `sinceIso` (plus missed opps / low-eval rejections in the same window).
- * The window anchor is `notes.submitted_at` (no nulls in that table); keeping
- * the window small is what makes the first paint fast — a 3-day window touches
- * a few hundred rows per table instead of the whole history.
- */
-export async function fetchDashboardData(sinceIso: string): Promise<DashboardData> {
-  console.log(`[data] Loading dashboard metadata since ${sinceIso}...`);
-  const sinceMillis = new Date(sinceIso).getTime();
-
-  const [canonical, missedOppCompeting, lowEvalRuns] = await Promise.all([
-    fetchAllRows<any>(
-      supabase
-        .from("notes")
-        .select(CANONICAL_LIST_COLUMNS)
-        .gte("submitted_at", sinceIso)
-        .order("submitted_at", { ascending: false, nullsFirst: false }),
-      "canonical",
-    ),
-    // Missed opportunities: helpful competitor notes on tweets we rejected.
-    // Anchored by the competitor's creation time as a window proxy (the exact
-    // item date is the pipeline_run.created_at); a recent rejection of an older
-    // competitor can fall outside the window, acceptable for this secondary type.
-    // Narrow columns (a select-* scan here can exceed the DB statement timeout
-    // under the initial load's parallel queries) and fail-soft: a missing
-    // secondary item type must degrade the view, not reject the whole load.
-    fetchAllRows<any>(
-      supabase
-        .from("competing_notes")
-        .select("note_id, our_note_id, current_status, pipeline_run_id, tweet_id, note_text, author_participant_id, created_at_millis")
-        .is("our_note_id", null)
-        .eq("current_status", "CURRENTLY_RATED_HELPFUL")
-        .not("pipeline_run_id", "is", null)
-        .gte("created_at_millis", sinceMillis),
-      "missed_opp_competing",
-    ).catch((err) => {
-      console.warn("[data] missed_opp_competing failed; continuing without missed opps:", err);
-      return [] as any[];
-    }),
-    // Notes rejected by the X eval gate — never submitted, so they aren't in
-    // `notes`. Windowed on the run's own created_at.
-    fetchAllRows<any>(
-      supabase
-        .from("pipeline_runs")
-        .select(LOW_EVAL_RUN_COLUMNS)
-        .eq("outcome_reason", "low_evaluation_score")
-        .gte("created_at", sinceIso)
-        .order("created_at", { ascending: false }),
-      "low_eval_runs",
-    ),
-  ]);
-
-  return assembleDashboardData({ canonical, missedOppCompeting, lowEvalRuns });
-}
-
-/**
- * Full default-set loader: EVERY note whose cn_status is in `cnStatuses` (the
- * default-on production statuses — today just CURRENTLY_RATED_NOT_HELPFUL), with
- * NO date window, so the reviewer's standard selection is always complete and
- * never needs "load more". Reuses assembleDashboardData, so these notes carry
- * submitted-run ab_test_picks (A/B list-filtering works out of window) and
- * competing data (lost-to-competitor reclassification). The set is small
- * (~hundreds, under one page); `limit` is just a safety cap. Missed opps / low-eval
- * aren't in the default set, so their primaries are empty.
- */
-export async function fetchDefaultStatusData(
-  cnStatuses: string[] = DEFAULT_VIEW_STATUSES,
-  limit: number = DEFAULT_VIEW_LIMIT,
-): Promise<DashboardData> {
-  console.log(`[data] Loading full default set (${cnStatuses.join("/")})…`);
-  const canonical = await fetchAllRows<any>(
-    supabase
-      .from("notes")
-      .select(CANONICAL_LIST_COLUMNS)
-      .in("cn_status", cnStatuses)
-      .order("submitted_at", { ascending: false, nullsFirst: false })
-      .limit(limit),
-    "default_status_canonical",
-  );
-  return assembleDashboardData({ canonical, missedOppCompeting: [], lowEvalRuns: [] });
-}
-
-/**
- * Tag-anchored loader: every production item ever tagged with one of `tags`,
- * ignoring the date window. Cheap because it starts from the small annotations
- * table (one row per reviewed item) and pulls only the satellite rows for those
- * specific targets — this is what lets the failure-mode pills filter across all
- * time, not just the loaded window. `overlaps` is OR semantics, matching the
- * client-side pill filter (an item matches if it carries any selected tag).
- */
-export async function fetchDashboardDataByTags(tags: string[]): Promise<DashboardData> {
-  console.log(`[data] Loading all-time items tagged: ${tags.join(", ")}`);
-
-  const taggedAnnotations = await fetchAllRows<any>(
-    supabase
-      .from("review_dashboard_annotations")
-      .select("target_id")
-      .eq("source", "production")
-      .overlaps("failure_modes", tags),
-    "tagged_annotations",
-  );
-
-  const noteIds: string[] = [];
-  const missedCompetingIds: string[] = [];
-  const lowEvalRunIds: string[] = [];
-  for (const a of taggedAnnotations) {
-    const target = decodeTargetId(a.target_id);
-    if (target.kind === "note") noteIds.push(target.noteId);
-    else if (target.kind === "missed") missedCompetingIds.push(target.competingNoteId);
-    else lowEvalRunIds.push(target.runId);
+  if (filters.topicSets.size > 0) {
+    f.topicIds = topicIdsForSets(filters.topicSets);
+    f.draftsOn = [...filters.failureTypes];
+    if (seen !== undefined) f.seen = seen;
+    return f;
   }
 
-  const [canonical, missedOppCompeting, lowEvalRuns] = await Promise.all([
-    fetchInBatches<any>(supabase, "notes", CANONICAL_LIST_COLUMNS, "note_id", noteIds, undefined, "tagged_canonical"),
-    fetchInBatches<any>(supabase, "competing_notes", "*", "note_id", missedCompetingIds, undefined, "tagged_missed_competing"),
-    fetchInBatches<any>(supabase, "pipeline_runs", LOW_EVAL_RUN_COLUMNS, "id", lowEvalRunIds, undefined, "tagged_low_eval_runs"),
-  ]);
-
-  return assembleDashboardData({ canonical, missedOppCompeting, lowEvalRuns });
-}
-
-/**
- * High-value-anchored loader: every production item ever starred high-value,
- * ignoring the date window. Same shape as fetchDashboardDataByTags — starts from
- * the small annotations table (`high_value = true`) and pulls only the satellite
- * rows for those targets — so the "Great notes" filter spans all time, not just
- * the loaded window (a starred note can be any status/age, not only the fully-
- * loaded rated-helpful set).
- */
-export async function fetchDashboardDataHighValue(): Promise<DashboardData> {
-  console.log("[data] Loading all-time high-value (starred) items");
-
-  const starredAnnotations = await fetchAllRows<any>(
-    supabase
-      .from("review_dashboard_annotations")
-      .select("target_id")
-      .eq("source", "production")
-      .eq("high_value", true),
-    "high_value_annotations",
-  );
-
-  const noteIds: string[] = [];
-  const missedCompetingIds: string[] = [];
-  const lowEvalRunIds: string[] = [];
-  for (const a of starredAnnotations) {
-    const target = decodeTargetId(a.target_id);
-    if (target.kind === "note") noteIds.push(target.noteId);
-    else if (target.kind === "missed") missedCompetingIds.push(target.competingNoteId);
-    else lowEvalRunIds.push(target.runId);
+  if (filters.highValueOnly) {
+    f.highValue = true;
+    if (filters.failureModes.size > 0) {
+      f.tags = [...filters.failureModes];
+    } else if (filters.failureTypes.size > 0) {
+      f.failureTypes = [...filters.failureTypes];
+    }
+    if (seen !== undefined) f.seen = seen;
+    return f;
   }
 
-  const [canonical, missedOppCompeting, lowEvalRuns] = await Promise.all([
-    fetchInBatches<any>(supabase, "notes", CANONICAL_LIST_COLUMNS, "note_id", noteIds, undefined, "high_value_canonical"),
-    fetchInBatches<any>(supabase, "competing_notes", "*", "note_id", missedCompetingIds, undefined, "high_value_missed_competing"),
-    fetchInBatches<any>(supabase, "pipeline_runs", LOW_EVAL_RUN_COLUMNS, "id", lowEvalRunIds, undefined, "high_value_low_eval_runs"),
-  ]);
+  if (filters.failureModes.size > 0) {
+    f.tags = [...filters.failureModes];
+    return f;
+  }
 
-  return assembleDashboardData({ canonical, missedOppCompeting, lowEvalRuns });
+  if (filters.failureTypes.size > 0) f.failureTypes = [...filters.failureTypes];
+  f.draftsOn = [...filters.failureTypes];
+  if (seen !== undefined) f.seen = seen;
+  return f;
 }
+
+// ─── Page fetch ──────────────────────────────────────────────────────────────
+
+export interface PageCursor {
+  d: string; // sortDate of the last item on the previous page
+  id: string;
+}
+
+export interface DashboardPage {
+  items: ReviewItem[];
+  nextCursor: PageCursor | null;
+  // Count of ALL items matching the filters — only computed on the first page
+  // (cursor null); null on subsequent pages.
+  totalItems: number | null;
+}
+
+export const PAGE_SIZE = 50;
+
+/** One server-joined, server-filtered, keyset-paginated page of review items. */
+export async function fetchDashboardPage(
+  filters: PageFilters,
+  cursor: PageCursor | null,
+  pageSize: number = PAGE_SIZE,
+): Promise<DashboardPage> {
+  const { data, error } = await supabase.rpc("review_dashboard_page", {
+    p_filters: filters,
+    p_cursor_date: cursor?.d ?? null,
+    p_cursor_id: cursor?.id ?? null,
+    p_page_size: pageSize,
+  });
+  if (error) throw error;
+  return {
+    items: (data.items as any[]).map(rowToReviewItem),
+    nextCursor: data.nextCursor ?? null,
+    totalItems: data.totalItems ?? null,
+  };
+}
+
+/** The RPC emits ReviewItem-shaped JSON; this attaches the two client-derived
+ * fields (competitor lead tag, topic set) and normalizes SQL nulls. */
+function rowToReviewItem(row: any): ReviewItem {
+  const item: ReviewItem = { ...row };
+  if (row.annotation === null) delete (item as any).annotation;
+  if (row.topic === null) delete (item as any).topic;
+  if (row.evaluationScore != null) item.evaluationScore = Number(row.evaluationScore);
+  if (item.topic) item.topicSet = topicSetFor(item.topic);
+  if (item.failureType === "lost_to_competitor") {
+    item.competitorLeadTag = computeCompetitorLeadTag(item.createdAt, item.comparisonNotes ?? []);
+  }
+  return item;
+}
+
+// ─── Counts fetch ────────────────────────────────────────────────────────────
+
+export interface FailureTypeCounts {
+  failureType: FailureType;
+  total: number; // all-time
+  unseen: number; // not marked seen (burndown backlog)
+  current: number; // under the seen + A/B filters
+  matured30d: number; // items dated 14–44 days ago (burndown inflow proxy)
+}
+
+export interface TagCount {
+  tag: string;
+  total: number;
+  current: number; // under the seen + A/B filters
+  last30d: number; // on notes dated in the last 30 days (card selector sort)
+}
+
+export interface AbVariantCount {
+  slot: string;
+  variant: string;
+  lastPickedAt: string;
+}
+
+export interface DashboardCounts {
+  byFailureType: FailureTypeCounts[];
+  tagCounts: TagCount[];
+  // updated_at of every seen production annotation — review pace + "done today".
+  seenAnnotationTimes: string[];
+  abVariants: AbVariantCount[];
+  topicCounts: { topic: string; count: number }[];
+}
+
+/** Pill/tag/burndown/A-B aggregates, computed server-side in one pass. Only the
+ * `seen` and `ab` filter keys apply (the pills report the whole picture). */
+export async function fetchDashboardCounts(filters: PageFilters): Promise<DashboardCounts> {
+  const { data, error } = await supabase.rpc("review_dashboard_counts", {
+    p_filters: { seen: filters.seen, ab: filters.ab },
+  });
+  if (error) throw error;
+  return data;
+}
+
+// ─── Logs (lazy, per opened card) ────────────────────────────────────────────
 
 /**
  * Fetch the full JSONB `logs` for a set of pipeline_run ids. Called by the UI
- * when a card becomes visible so we only pay the TOAST cost for rows the user
- * actually sees, not every note we've ever written.
+ * when a card's log panel is opened so we only pay the TOAST cost for rows the
+ * user actually sees, not every note we've ever written.
  */
 export async function fetchLogsForRuns(runIds: string[]): Promise<Map<string, Record<string, unknown>>> {
   if (runIds.length === 0) return new Map();
@@ -469,352 +240,12 @@ export async function fetchLogsForRuns(runIds: string[]): Promise<Map<string, Re
   return map;
 }
 
-/**
- * Compose ReviewItems from the raw metadata fetched by fetchDashboardData.
- * Pure function; no I/O. Items have a `pipelineRunId` instead of `logs`;
- * `logs` is filled in later by the caller using fetchLogsForRuns.
- */
-export function buildDashboardItems(data: DashboardData): ReviewItem[] {
-  const { canonical, competing, submittedRuns, missedRuns, lowEvalRuns, lowEvalScores, annotations, tweets, publicDumpRatings, sightings } = data;
-  const publicRatingsByNoteId = new Map<string, any>();
-  for (const r of publicDumpRatings) publicRatingsByNoteId.set(r.note_id, r);
-
-  const pipelineByTweet = new Map<string, any>();
-  for (const pr of submittedRuns) pipelineByTweet.set(pr.tweet_id, pr);
-
-  const pipelineById = new Map<string, any>();
-  for (const pr of missedRuns) pipelineById.set(pr.id, pr);
-
-  const tweetsById = new Map<string, any>();
-  for (const t of tweets) tweetsById.set(t.tweet_id, t);
-
-  const competingByOurNote = new Map<string, ComparisonNote[]>();
-  const helpfulCompetitorNoteIds = new Set<string>();
-  for (const cn of competing) {
-    if (cn.our_note_id == null) continue;
-    if (!competingByOurNote.has(cn.our_note_id)) competingByOurNote.set(cn.our_note_id, []);
-    competingByOurNote.get(cn.our_note_id)!.push({
-      noteId: cn.note_id,
-      noteText: cn.note_text,
-      status: cn.current_status,
-      authorId: cn.author_participant_id,
-      createdAtMillis: cn.created_at_millis,
-    });
-    if (cn.current_status === "CURRENTLY_RATED_HELPFUL") helpfulCompetitorNoteIds.add(cn.our_note_id);
-  }
-
-  const annotationByTarget = new Map<string, Annotation>();
-  for (const a of annotations) {
-    annotationByTarget.set(a.target_id, {
-      id: a.id,
-      seen: a.seen,
-      failureModes: a.failure_modes ?? [],
-      comment: a.comment,
-      highValue: a.high_value ?? false,
-    });
-  }
-
-  const items: ReviewItem[] = [];
-
-  for (const note of canonical) {
-    const pipeline = pipelineByTweet.get(note.tweet_id);
-    const tweet = tweetsById.get(note.tweet_id);
-    const hasHelpfulCompetitor = helpfulCompetitorNoteIds.has(note.note_id);
-    const compNotes = competingByOurNote.get(note.note_id) ?? [];
-    const publicDump = publicRatingsByNoteId.get(note.note_id);
-    const failureType = cnStatusToFailureType(
-      note.cn_status,
-      hasHelpfulCompetitor,
-      isUnderwaterNote(publicDump, note.helpful_count, note.not_helpful_count),
-    );
-    items.push({
-      id: note.note_id,
-      source: "production" as const,
-      tweetId: note.tweet_id,
-      tweetText: tweet?.text,
-      tweetHandle: tweet?.author_handle,
-      hasPhoto: tweet?.has_photo ?? false,
-      hasVideo: tweet?.has_video ?? false,
-      mediaCount: tweet?.media_count ?? 0,
-      tweetMedia: tweet?.media,
-      referencedTweetData: tweet?.referenced_tweet_data,
-      noteId: note.note_id,
-      noteText: note.note_text,
-      createdAt: note.submitted_at ?? note.first_seen_at,
-      status: note.cn_status,
-      viewCount: note.view_count,
-      ratingCount: note.rating_count,
-      helpfulCount: note.helpful_count,
-      notHelpfulCount: note.not_helpful_count,
-      publicDumpRatings: publicDump,
-      outcome: pipeline?.outcome,
-      outcomeReason: pipeline?.outcome_reason,
-      pipelineRunId: pipeline?.id,
-      botId: pipeline?.bot_name,
-      abTestPicks: pipeline?.ab_test_picks ?? undefined,
-      comparisonNotes: compNotes,
-      annotation: annotationByTarget.get(note.note_id),
-      competitorLeadTag: failureType === "lost_to_competitor"
-        ? computeCompetitorLeadTag(note.submitted_at ?? note.first_seen_at, compNotes)
-        : undefined,
-      failureType,
-    });
-  }
-
-  for (const cn of competing) {
-    if (!isMissedOppCompetingNote(cn)) continue;
-    const pr = pipelineById.get(cn.pipeline_run_id);
-    if (!pr) continue;
-    const tweet = tweetsById.get(cn.tweet_id);
-    const id = missedTargetId(cn.note_id);
-    items.push({
-      id,
-      source: "production" as const,
-      tweetId: cn.tweet_id,
-      tweetText: tweet?.text,
-      tweetMedia: tweet?.media,
-      referencedTweetData: tweet?.referenced_tweet_data,
-      noteText: undefined,
-      createdAt: pr.created_at,
-      outcome: pr.outcome,
-      outcomeReason: pr.outcome_reason,
-      pipelineRunId: pr.id,
-      abTestPicks: pr.ab_test_picks ?? undefined,
-      comparisonNotes: [
-        {
-          noteId: cn.note_id,
-          noteText: cn.note_text,
-          status: cn.current_status,
-          authorId: cn.author_participant_id,
-        },
-      ],
-      annotation: annotationByTarget.get(id),
-      failureType: "missed_opportunity" as const,
-    });
-  }
-
-  const evalScoreByRunId = new Map<string, number>();
-  for (const s of lowEvalScores) {
-    if (s.score_value != null) evalScoreByRunId.set(s.pipeline_run_id, Number(s.score_value));
-  }
-
-  for (const run of lowEvalRuns) {
-    const tweet = tweetsById.get(run.tweet_id);
-    const id = lowEvalTargetId(run.id);
-    items.push({
-      id,
-      source: "production" as const,
-      tweetId: run.tweet_id,
-      tweetText: tweet?.text,
-      tweetHandle: tweet?.author_handle,
-      hasPhoto: tweet?.has_photo ?? false,
-      hasVideo: tweet?.has_video ?? false,
-      mediaCount: tweet?.media_count ?? 0,
-      tweetMedia: tweet?.media,
-      referencedTweetData: tweet?.referenced_tweet_data,
-      noteText: run.note_text,
-      createdAt: run.created_at,
-      outcome: run.outcome,
-      outcomeReason: run.outcome_reason,
-      pipelineRunId: run.id,
-      botId: run.bot_name,
-      abTestPicks: run.ab_test_picks ?? undefined,
-      evaluationScore: evalScoreByRunId.get(run.id),
-      annotation: annotationByTarget.get(id),
-      failureType: "filtered_low_eval_score" as const,
-    });
-  }
-
-  // Attach each item's misinfo fact-check topic + derived set (one pass; covers
-  // all item sources). Regular notes have no sighting → topic stays undefined.
-  // `sightings` may be absent on the server-injected first-paint bundle (which
-  // predates this field), so default to [] rather than crash.
-  const topicByTweet = new Map<string, string>();
-  for (const s of sightings ?? []) {
-    if (s.tweet_id && s.topic_id) topicByTweet.set(String(s.tweet_id), String(s.topic_id));
-  }
-  for (const item of items) {
-    const topic = topicByTweet.get(String(item.tweetId));
-    if (topic) {
-      item.topic = topic;
-      item.topicSet = topicSetFor(topic);
-    }
-  }
-
-  return items;
-}
-
-// ─── Production pill data ────────────────────────────────────────────────────
-
-const PILL_PAGE = 1000;
-// Page requests per wave for fetchAllRowsParallel. Local to the dashboard (the
-// shared serial fetchAllRows covers everyone else) and used only for the one
-// genuinely multi-page scan below.
-const PILL_CONCURRENCY = 8;
-
-/**
- * Parallel pagination for the all-time notes scan — the bottleneck of the
- * once-per-session pill-count load. `makeQuery` returns a FRESH query each call
- * (concurrent `.range()`s can't share a builder) with a stable ORDER BY so the
- * page ranges partition the same ordered set. Worth it only for multi-page tables;
- * the other count scans are single-page and stay on serial fetchAllRows.
- */
-async function fetchAllRowsParallel<T>(makeQuery: () => any, label?: string): Promise<T[]> {
-  const all: T[] = [];
-  let offset = 0;
-  let done = false;
-  while (!done) {
-    const ranges: Array<[number, number]> = [];
-    for (let k = 0; k < PILL_CONCURRENCY; k++) {
-      ranges.push([offset, offset + PILL_PAGE - 1]);
-      offset += PILL_PAGE;
-    }
-    const pages = await Promise.all(ranges.map(([from, to]) => makeQuery().range(from, to)));
-    for (const { data, error } of pages) {
-      if (error) throw error;
-      if (data && data.length) all.push(...(data as T[]));
-      if (!data || data.length < PILL_PAGE) done = true;
-    }
-  }
-  if (label) console.log(`[data] ${label}: ${all.length} rows`);
-  return all;
-}
-
-type AbPicks = Record<string, string> | null;
-
-export interface ProductionPillData {
-  // All-time category counts for the filter-bar pills.
-  counts: Record<FailureType, number>;
-  // All-time tag usage counts for the failure-mode pills.
-  tagCounts: Map<string, number>;
-  // Per-note {noteId, failureType, seen, abTestPicks}, all-time — lets the UI
-  // recompute the rated pills under the seen + A/B filters ("how many left to
-  // review" in this variant, not the all-time total). noteId so the UI can
-  // override with live state for loaded notes.
-  notesSeen: { noteId: string; failureType: FailureType; seen: boolean; abTestPicks: AbPicks }[];
-  // Per-annotation {targetId, failureModes, seen, abTestPicks}, all-time — same,
-  // for tag pills.
-  annotationsSeen: { targetId: string; failureModes: string[]; seen: boolean; abTestPicks: AbPicks }[];
-}
-
-/**
- * All-time data behind the filter-bar pills, in one pass. Deliberately NOT
- * windowed — the list shows the last N days, but the pills report the full
- * picture, so "Rated Helpful 475" doesn't shrink to whatever happens to be
- * loaded. Carries each note's / annotation's `seen` flag so the UI can render
- * seen-aware counts without re-fetching. Cheap: only the tiny columns needed to
- * classify (no text, no TOAST). Classification mirrors buildDashboardItems via
- * `cnStatusToFailureType`.
- */
-export async function fetchProductionPillData(): Promise<ProductionPillData> {
-  const [notes, publicRatings, helpfulCompeting, missed, lowEval, annotationRows, abRuns] = await Promise.all([
-    // The notes scan is the bottleneck of this once-per-session load (~4 pages);
-    // paginate it in parallel. The others are single-page, so they stay serial.
-    // Stable ORDER BY note_id so the concurrent page ranges partition cleanly.
-    // helpful/not_helpful counts feed the underwater classification.
-    fetchAllRowsParallel<any>(
-      () => supabase.from("notes").select("note_id, cn_status, tweet_id, helpful_count, not_helpful_count").order("note_id", { ascending: true }),
-      "count_notes",
-    ),
-    // Public-dump rating counts for every note, so the underwater pill count uses
-    // the same public-dump-first resolution as the loaded cards. Counts-only
-    // columns (no tag JSONBs) keep the scan cheap.
-    fetchAllRowsParallel<any>(
-      () => supabase.from("note_ratings_from_public_dump").select("note_id, helpful_count, somewhat_helpful_count, not_helpful_count").order("note_id", { ascending: true }),
-      "count_public_ratings",
-    ),
-    fetchAllRows<any>(
-      supabase
-        .from("competing_notes")
-        .select("our_note_id")
-        .eq("current_status", "CURRENTLY_RATED_HELPFUL")
-        .not("our_note_id", "is", null),
-      "count_helpful_competing",
-    ),
-    supabase
-      .from("competing_notes")
-      .select("note_id", { count: "exact", head: true })
-      .is("our_note_id", null)
-      .eq("current_status", "CURRENTLY_RATED_HELPFUL")
-      .not("pipeline_run_id", "is", null),
-    // Estimated, not exact: an exact count is an un-indexed scan over all of
-    // pipeline_runs and reliably exceeds the DB statement timeout (the pill
-    // then silently shows 0). The planner estimate is close enough for a pill.
-    supabase
-      .from("pipeline_runs")
-      .select("id", { count: "estimated", head: true })
-      .eq("outcome_reason", "low_evaluation_score"),
-    fetchAllRows<any>(
-      supabase
-        .from("review_dashboard_annotations")
-        .select("target_id, seen, failure_modes")
-        .eq("source", "production"),
-      "production_annotations",
-    ),
-    // A/B picks per note for A/B-aware pill counts. Keyed by tweet_id off the
-    // submitted run, mirroring buildDashboardItems; only runs that carry picks,
-    // so it stays small (notes without picks just never match an A/B filter).
-    fetchAllRows<any>(
-      supabase
-        .from("pipeline_runs")
-        .select("tweet_id, ab_test_picks")
-        .eq("outcome", "submitted")
-        .not("ab_test_picks", "is", null),
-      "ab_picks",
-    ),
-  ]);
-
-  const helpfulCompetitorNoteIds = new Set(helpfulCompeting.map((c: any) => c.our_note_id));
-  const publicRatingsByNoteId = new Map<string, any>();
-  for (const r of publicRatings) publicRatingsByNoteId.set(r.note_id, r);
-  const seenByTargetId = new Map<string, boolean>();
-  for (const a of annotationRows) seenByTargetId.set(a.target_id, !!a.seen);
-  const abPicksByTweet = new Map<string, AbPicks>();
-  for (const r of abRuns) abPicksByTweet.set(r.tweet_id, r.ab_test_picks ?? null);
-  const tweetByNoteId = new Map<string, string>();
-  for (const note of notes) tweetByNoteId.set(note.note_id, note.tweet_id);
-  const picksForNoteId = (noteId: string): AbPicks => abPicksByTweet.get(tweetByNoteId.get(noteId) ?? "") ?? null;
-
-  const counts = Object.fromEntries(
-    Object.keys(FAILURE_TYPE_CONFIG).map((k) => [k, 0]),
-  ) as Record<FailureType, number>;
-  const notesSeen: ProductionPillData["notesSeen"] = [];
-  for (const note of notes) {
-    const failureType = cnStatusToFailureType(
-      note.cn_status,
-      helpfulCompetitorNoteIds.has(note.note_id),
-      isUnderwaterNote(publicRatingsByNoteId.get(note.note_id), note.helpful_count, note.not_helpful_count),
-    );
-    counts[failureType]++;
-    notesSeen.push({
-      noteId: note.note_id,
-      failureType,
-      seen: seenByTargetId.get(note.note_id) ?? false,
-      abTestPicks: abPicksByTweet.get(note.tweet_id) ?? null,
-    });
-  }
-  counts.missed_opportunity = missed.count ?? 0;
-  counts.filtered_low_eval_score = lowEval.count ?? 0;
-
-  const tagCounts = new Map<string, number>();
-  const annotationsSeen: ProductionPillData["annotationsSeen"] = [];
-  for (const a of annotationRows) {
-    const failureModes = a.failure_modes ?? [];
-    for (const m of failureModes) tagCounts.set(m, (tagCounts.get(m) ?? 0) + 1);
-    // target_id is a bare note_id for canonical notes (the common case); prefixed
-    // missed/low-eval targets have no note tweet, so no A/B picks.
-    annotationsSeen.push({ targetId: a.target_id, failureModes, seen: !!a.seen, abTestPicks: picksForNoteId(a.target_id) });
-  }
-
-  return { counts, tagCounts, notesSeen, annotationsSeen };
-}
-
 // ─── Dataset run data ────────────────────────────────────────────────────────
 
 export async function fetchUploads(): Promise<UploadInfo[]> {
   const { data, error } = await supabase
     .from("review_dashboard_uploads")
-    .select("*")
+    .select("id, name, item_count, created_at")
     .order("created_at", { ascending: false });
 
   if (error) throw error;
@@ -838,12 +269,10 @@ export async function fetchDatasetRunItems(uploadId: string): Promise<ReviewItem
   if (data.length === 0) return [];
 
   const itemIds = data.map((d: any) => d.id);
-  let annotations: any[] = [];
-  try {
-    annotations = await fetchInBatches<any>(supabase, "review_dashboard_annotations", "*", "target_id", itemIds, (q) => q.eq("source", "dataset_run"), "dataset_run_annotations");
-  } catch {
-    // Table may not exist yet
-  }
+  const annotations = await fetchInBatches<any>(
+    supabase, "review_dashboard_annotations", "*", "target_id", itemIds,
+    (q) => q.eq("source", "dataset_run"), "dataset_run_annotations",
+  );
 
   const annotationMap = new Map<string, Annotation>();
   for (const a of annotations) {
@@ -1021,4 +450,160 @@ export async function deleteUpload(id: string): Promise<void> {
     .delete()
     .eq("id", id);
   if (error) throw error;
+}
+
+// ============================================================================
+// Posting limit (X writing cap) — data for the "Posting limit" drawer.
+// The cap is observation-based (X returns a "daily limit" 403 and we record the
+// count). This reconstructs X's published AI-writer FORMULA from live note
+// statuses so we can see WHICH input the cap is resting on. Formula: X guide
+// "writing-notes" + AI-writer page; denominator includes unrated (NMR) notes —
+// confirmed by communitynotes/scoring/.../contributor_state.py.
+// ============================================================================
+
+const H_STATUS = "CURRENTLY_RATED_HELPFUL";
+const NH_STATUS = "CURRENTLY_RATED_NOT_HELPFUL";
+
+export interface CapWindow {
+  key: string; // HR_R | HR_100 | HR_14d
+  label: string;
+  rate: number; // net hit rate = (H − NH) / denom, as a fraction
+  h: number;
+  nh: number;
+  nmr: number; // unrated in-window (0 for the rated-only window)
+  denom: number;
+  binding: boolean; // is this the window currently setting WL_L?
+}
+
+export interface CapTier {
+  label: string;
+  formula: string;
+  active: boolean;
+}
+
+export interface PostingLimitData {
+  cap: number | null; // observed writing_limit (pipeline_state) — the real ceiling
+  limitHitAt: string | null;
+  modeledCap: number; // WL from the live formula inputs
+  wlL: number; // WL_L quality ceiling
+  dn30: number;
+  volTerm: number; // DN_30 × 5
+  bindingTerm: "quality" | "volume" | "cliff";
+  hrL: number; // max(HR_100, HR_14d)
+  windows: CapWindow[];
+  tiers: CapTier[];
+  nh5: number;
+  nh10: number;
+  bindingWindow: CapWindow | null;
+  slopePerPoint: number; // Δcap per +1 percentage-point of the binding window
+  ratedAtAll: number; // fraction of ALL notes ever rated (coverage)
+  totalNotes: number;
+}
+
+function computeWL(i: {
+  hr100: number; hr14d: number; hrR: number; dn30: number; nh5: number; nh10: number; t: number;
+}): { wl: number; wlL: number; binding: "quality" | "volume" | "cliff" } {
+  if (i.nh10 >= 8) return { wl: 2, wlL: 0, binding: "cliff" };
+  if (i.nh5 >= 3) return { wl: 5, wlL: 0, binding: "cliff" };
+  if (i.t < 20) return { wl: 10, wlL: 0, binding: "quality" };
+  const hrL = Math.max(i.hr100, i.hr14d);
+  let wlL: number;
+  if (hrL < 0.05) wlL = 300 * Math.max(i.hrR, hrL);
+  else if (hrL < 0.1) wlL = 15 + 700 * (hrL - 0.05);
+  else if (hrL < 0.15) wlL = 50 + 3000 * (hrL - 0.1);
+  else if (hrL < 0.2) wlL = 200 + 6000 * (hrL - 0.15);
+  else wlL = 500;
+  const vol = i.dn30 * 5;
+  const wl = Math.max(5, Math.floor(Math.min(vol, wlL)));
+  return { wl, wlL, binding: vol < wlL ? "volume" : "quality" };
+}
+
+export async function fetchPostingLimitData(): Promise<PostingLimitData> {
+  const [{ data: capRow }, { data: hitRow }, { data: noteRows, error: notesErr }] = await Promise.all([
+    supabase.from("pipeline_state").select("value").eq("key", "writing_limit").maybeSingle(),
+    supabase.from("pipeline_state").select("value").eq("key", "limit_hit_at").maybeSingle(),
+    // Every note's status + submitted_at in one RPC response (a table select
+    // would be capped at 1000 rows).
+    supabase.rpc("review_dashboard_posting_notes"),
+  ]);
+  if (notesErr) throw notesErr;
+  const cap = capRow?.value != null ? Number(capRow.value) : null;
+  const limitHitAt = (hitRow?.value as string) ?? null;
+
+  const notes = (noteRows as { cn_status: string | null; submitted_at: string | null }[])
+    .filter((n) => n.submitted_at)
+    .sort((a, b) => (a.submitted_at! < b.submitted_at! ? -1 : 1));
+
+  const now = Date.now();
+  const DAY = 86400000;
+  const isH = (s: string | null) => s === H_STATUS;
+  const isNH = (s: string | null) => s === NH_STATUS;
+  const count = (arr: typeof notes) => ({
+    h: arr.filter((n) => isH(n.cn_status)).length,
+    nh: arr.filter((n) => isNH(n.cn_status)).length,
+  });
+
+  const last20 = notes.slice(-20);
+  const last100 = notes.slice(-100);
+  const in14 = notes.filter((n) => now - Date.parse(n.submitted_at!) < 14 * DAY);
+  const rated14 = in14.filter((n) => isH(n.cn_status) || isNH(n.cn_status));
+  const in30 = notes.filter((n) => now - Date.parse(n.submitted_at!) < 30 * DAY);
+
+  const c20 = count(last20), c100 = count(last100), c14 = count(rated14);
+  const hrR = (c20.h - c20.nh) / 20;
+  const hr100 = (c100.h - c100.nh) / 100;
+  // Denominator = ALL notes written in the window, not just rated ones. X's own
+  // scoring counts NMR notes in totalNotes, and the all-written variant is the
+  // only one that has reproduced X's observed cap (rated-only inflated the rate
+  // ~6x — Nathan, 2026-08-05: "laughably wrong").
+  const hr14d = in14.length ? (c14.h - c14.nh) / in14.length : 0;
+  const dn30 = in30.length / 30;
+
+  const ratedRev = notes.filter((n) => isH(n.cn_status) || isNH(n.cn_status)).reverse();
+  const nh5 = ratedRev.slice(0, 5).filter((n) => isNH(n.cn_status)).length;
+  const nh10 = ratedRev.slice(0, 10).filter((n) => isNH(n.cn_status)).length;
+
+  const t = notes.length;
+  const cur = computeWL({ hr100, hr14d, hrR, dn30, nh5, nh10, t });
+  const hrL = Math.max(hr100, hr14d);
+
+  // Which window is carrying WL_L: below 5% the last-20 also counts (formula takes the max).
+  const basement = hrL < 0.05;
+  const pool: [string, number][] = basement
+    ? [["HR_R", hrR], ["HR_100", hr100], ["HR_14d", hr14d]]
+    : [["HR_100", hr100], ["HR_14d", hr14d]];
+  let bindKey = "HR_100";
+  let best = -Infinity;
+  for (const [k, v] of pool) if (v > best) { best = v; bindKey = k; }
+  const qualityBound = cur.binding === "quality";
+
+  const windows: CapWindow[] = [
+    { key: "HR_R", label: "Last 20 written", rate: hrR, h: c20.h, nh: c20.nh, nmr: 20 - c20.h - c20.nh, denom: 20, binding: qualityBound && bindKey === "HR_R" },
+    { key: "HR_100", label: "Last 100 written", rate: hr100, h: c100.h, nh: c100.nh, nmr: 100 - c100.h - c100.nh, denom: 100, binding: qualityBound && bindKey === "HR_100" },
+    { key: "HR_14d", label: "Last 14 days (written)", rate: hr14d, h: c14.h, nh: c14.nh, nmr: in14.length - rated14.length, denom: in14.length, binding: qualityBound && bindKey === "HR_14d" },
+  ];
+
+  const tierIdx = hrL < 0.05 ? 0 : hrL < 0.1 ? 1 : hrL < 0.15 ? 2 : hrL < 0.2 ? 3 : 4;
+  const tiers: CapTier[] = [
+    { label: "< 5%", formula: "WL_L = 300 × max(HR_R, HR_L)", active: tierIdx === 0 },
+    { label: "5–10%", formula: "WL_L = 15 + 700 × (HR_L − 5%)", active: tierIdx === 1 },
+    { label: "10–15%", formula: "WL_L = 50 + 3000 × (HR_L − 10%)", active: tierIdx === 2 },
+    { label: "15–20%", formula: "WL_L = 200 + 6000 × (HR_L − 15%)", active: tierIdx === 3 },
+    { label: "≥ 20%", formula: "WL_L = 500 (max)", active: tierIdx === 4 },
+  ];
+
+  const bump = { hr100, hr14d, hrR, dn30, nh5, nh10, t };
+  if (bindKey === "HR_100") bump.hr100 += 0.01;
+  else if (bindKey === "HR_14d") bump.hr14d += 0.01;
+  else bump.hrR += 0.01;
+  const slopePerPoint = computeWL(bump).wl - cur.wl;
+
+  const ratedTotal = notes.filter((n) => isH(n.cn_status) || isNH(n.cn_status)).length;
+
+  return {
+    cap, limitHitAt, modeledCap: cur.wl, wlL: cur.wlL, dn30, volTerm: dn30 * 5,
+    bindingTerm: cur.binding, hrL, windows, tiers, nh5, nh10,
+    bindingWindow: windows.find((w) => w.binding) ?? null,
+    slopePerPoint, ratedAtAll: t ? ratedTotal / t : 0, totalNotes: t,
+  };
 }

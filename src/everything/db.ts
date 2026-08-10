@@ -1,6 +1,7 @@
 /** Typed read/write helpers for the everything_* tables (service key). */
 
 import { getSupabaseClient } from "../api/supabaseClient";
+import { stripNullChars } from "../utils/stripNullChars";
 import type { NoteSourceCitation, SourceKind } from "./types";
 
 export interface EverythingItem {
@@ -58,24 +59,85 @@ const LOCAL_DOC_URL_PREFIX = "local:";
 export const syntheticDocUrl = (slug: string, basename: string) => `${LOCAL_DOC_URL_PREFIX}${slug}/${basename}`;
 export const isSyntheticDocUrl = (url: string | null): boolean => !!url?.startsWith(LOCAL_DOC_URL_PREFIX);
 
-/** A queued item: a live URL (worker fetches) or a local `--doc` (body supplied). */
+/** A queued item: a live URL (worker fetches) or one with its body supplied
+ *  (local `--doc` files, RSS-fed priority-feed posts). */
 export interface EnqueueRow {
   project_id: string;
   source: SourceKind;
   url: string;
-  title?: string; // known for --doc items; live URLs get their title from the worker fetch
-  full_text?: string; // pre-supplied body for --doc items; absent for live URLs
+  title?: string; // known for supplied-body items; live URLs get their title from the worker fetch
+  full_text?: string; // pre-supplied body; absent for live URLs
+  published_at?: string; // known at enqueue for RSS-fed items; else set by the worker
 }
 
-/** Insert new items into the queue; already-known URLs are ignored. Returns the inserted count. */
+/** Insert new items into the queue; already-known URLs are ignored. Returns the inserted count.
+ *  Rows are padded to a uniform key set — PostgREST rejects bulk rows with differing keys. */
 export async function enqueueItems(rows: EnqueueRow[]): Promise<number> {
+  const padded = rows.map((r) => ({ title: null, full_text: null, published_at: null, ...r }));
   const inserted = throwOnError(
     await getSupabaseClient()
       .from("everything_items")
-      .upsert(rows, { onConflict: "url", ignoreDuplicates: true })
+      .upsert(padded, { onConflict: "url", ignoreDuplicates: true })
       .select("id"),
   );
   return inserted?.length ?? 0;
+}
+
+/** Urls among the given ones that already have an item row (any status). */
+export async function fetchItemUrlsIn(urls: string[]): Promise<string[]> {
+  if (urls.length === 0) return [];
+  const rows = throwOnError(
+    await getSupabaseClient().from("everything_items").select("url").in("url", urls),
+  ) as { url: string }[];
+  return rows.map((r) => r.url);
+}
+
+/** Item urls containing any of the given fragments (e.g. YouTube video ids —
+ *  stored URL forms vary, so items are matched by id, not exact url). */
+export async function fetchItemUrlsContaining(fragments: string[]): Promise<string[]> {
+  if (fragments.length === 0) return [];
+  const rows = throwOnError(
+    await getSupabaseClient()
+      .from("everything_items")
+      .select("url")
+      .or(fragments.map((f) => `url.like.*${f}*`).join(",")),
+  ) as { url: string }[];
+  return rows.map((r) => r.url);
+}
+
+/** Items stranded in `processing` by a killed run. Only meaningful when no
+ *  worker is live (the workflow's concurrency group guarantees that). */
+export async function fetchOrphanedProcessingItems(): Promise<{ id: string; url: string }[]> {
+  return throwOnError(
+    await getSupabaseClient().from("everything_items").select("id, url").eq("status", "processing"),
+  ) as { id: string; url: string }[];
+}
+
+/** Put a stranded item back in the queue so the worker resumes it (its claims
+ *  already exist; only the unfinished ones are redone). */
+export async function requeueItem(id: string): Promise<void> {
+  throwOnError(await getSupabaseClient().from("everything_items").update({ status: "queued" }).eq("id", id));
+}
+
+export interface ItemClaimRow {
+  id: string;
+  claim: string;
+  judgement: string;
+  context_quote: string | null;
+  context_paragraph: string | null;
+  image_urls: string[];
+  status: ClaimStatus;
+}
+
+/** All claims of an item, in insertion order (non-empty ⇒ extraction completed). */
+export async function fetchItemClaims(itemId: string): Promise<ItemClaimRow[]> {
+  return throwOnError(
+    await getSupabaseClient()
+      .from("everything_claims")
+      .select("id, claim, judgement, context_quote, context_paragraph, image_urls, status")
+      .eq("item_id", itemId)
+      .order("created_at"),
+  ) as ItemClaimRow[];
 }
 
 /** Oldest queued item → processing (single worker, so no locking needed). */
@@ -133,6 +195,37 @@ export async function setClaimStatus(id: string, status: ClaimStatus, reason: st
   throwOnError(
     await getSupabaseClient().from("everything_claims").update({ status, status_reason: reason }).eq("id", id),
   );
+}
+
+/** One fact-check run of a claim — the everything counterpart of pipeline_runs. */
+export interface ClaimPipelineRun {
+  claim_id: string;
+  bot_name: string;
+  outcome: string;
+  outcome_reason: string | null;
+  final_stage: string | null;
+  ab_test_picks: Record<string, string> | null;
+  bot_config: Record<string, unknown> | null;
+  logs: Record<string, unknown> | null;
+  cost: number | null;
+}
+
+/** NUL chars are scrubbed like pipeline_runs does — model output (e.g. media
+ *  OCR) can emit U+0000, which Postgres rejects with 22P05. */
+export async function insertClaimPipelineRun(run: ClaimPipelineRun): Promise<void> {
+  throwOnError(await getSupabaseClient().from("everything_pipeline_runs").insert(stripNullChars(run)));
+}
+
+/** Of the given claims, the ones that already have an AI note (author_id null —
+ *  user drafts don't count). Used on resume to spot a kill that landed between
+ *  insertNote and setClaimStatus, so the claim is finalized instead of
+ *  rechecked (which would insert a duplicate note). */
+export async function fetchClaimIdsWithAiNotes(claimIds: string[]): Promise<Set<string>> {
+  if (claimIds.length === 0) return new Set();
+  const rows = throwOnError(
+    await getSupabaseClient().from("everything_notes").select("claim_id").is("author_id", null).in("claim_id", claimIds),
+  ) as { claim_id: string }[];
+  return new Set(rows.map((r) => r.claim_id));
 }
 
 /** Insert an AI note plus one everything_note_sources row per cited snippet. */

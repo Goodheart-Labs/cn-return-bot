@@ -15,10 +15,7 @@
  * returns [], stop on the first non-empty result, accept "no queries" only after
  * QUERY_WRITER_MAX_ATTEMPTS empties.
  */
-import type { Post } from "../../api/fetchEligiblePosts";
 import { withBotConfig, type BotConfig } from "../ab-testing/botConfig";
-import { createBotInput } from "../input/createBotInput";
-import { buildUserMessageFromInput } from "../prompts/input/userMessage";
 import {
   PREFILTER_JUDGE_SYSTEM_PROMPT,
   PREFILTER_JUDGE_RESPONSE_FORMAT,
@@ -39,7 +36,8 @@ const QUERY_WRITER_MAX_ATTEMPTS = 3;
 /** Self-contained config for the prefilter's own steps — every call on
  *  deepseek-v4-flash, SearXNG, reasoning high + temp 0 (matches cheap-bot's
  *  deterministic settings). Entered with withBotConfig so the picked bot's
- *  config is untouched. */
+ *  config is untouched. video_description_strategy is required by the type but
+ *  unused — the bot input is built by the caller, not here. */
 const PREFILTER_CONFIG: BotConfig = {
   botId: "note-needed-prefilter",
   model: DEEPSEEK,
@@ -119,10 +117,7 @@ async function runPrefilterJudge(postContext: string, findings: string): Promise
  *  (query writer, search, analyzer, judge) logs its own messages.0/1 + cost to
  *  the active tweet-log/cost-tracker — which the caller isolates so they land in
  *  the prefilter's own namespace, not the bot's. */
-async function runPrefilterSteps(post: Post): Promise<PrefilterVerdict> {
-  const input = await createBotInput(post, `prefilter:${post.id}`);
-  const userMessage = buildUserMessageFromInput(post, input);
-
+async function runPrefilterSteps(userMessage: string): Promise<PrefilterVerdict> {
   const { queries } = await runQueryWriterRetryOnEmpty(userMessage);
   if (queries.length === 0) {
     return { needsNote: false, reasoning: "query writer returned no queries — opinion/joke/non-checkable" };
@@ -138,29 +133,28 @@ async function runPrefilterSteps(post: Post): Promise<PrefilterVerdict> {
 }
 
 /**
- * Decide whether `post` needs a note. Builds the full input (createBotInput) —
- * cached in-memory so the bot reuses it when the post passes. Runs under its own
- * deepseek config, in an ISOLATED tweet-log + cost-tracker, then grafts the step
- * logs onto the caller's log under `note_prefilter_steps.*` (parallel to the
- * bot's `note_writer_steps.*`, so the two never collide) and re-emits the cost
+ * Decide whether the post in `userMessage` (the shared bot-input user message,
+ * built once in processSingleTweet) needs a note. Runs under its own deepseek
+ * config, in an ISOLATED tweet-log + cost-tracker, then grafts the step logs
+ * onto the caller's log under `note_prefilter_steps.*` (parallel to the bot's
+ * `note_writer_steps.*`, so the two never collide) and re-emits the cost
  * entries namespaced under `note_prefilter.*` (one cost group for the prefilter).
  */
-export async function runNoteNeededPrefilter(post: Post): Promise<PrefilterVerdict> {
+export async function runNoteNeededPrefilter(userMessage: string): Promise<PrefilterVerdict> {
   const outerLog = getTweetLog();
   const stepLog: TweetLogMap = createTweetLog();
 
   const { verdict, costs } = await withBotConfig(PREFILTER_CONFIG, () =>
     withTweetLog(stepLog, () =>
       withCostTracker(async () => {
-        const verdict = await runPrefilterSteps(post);
+        const verdict = await runPrefilterSteps(userMessage);
         return { verdict, costs: [...getCostTracker()] };
       }),
     ),
   );
 
   if (outerLog) {
-    // Graft the LLM step logs under note_prefilter_steps.*; input/media logs
-    // (inputs.* / media.*) keep their conventional top-level keys.
+    // Graft the LLM step logs under note_prefilter_steps.*.
     for (const [key, value] of stepLog) {
       outerLog.set(key.replace(/^note_writer_steps\b/, "note_prefilter_steps"), value);
     }

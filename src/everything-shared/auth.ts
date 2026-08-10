@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
-import type { Session } from "@supabase/supabase-js";
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
 
-export function useSession(): { session: Session | null; ready: boolean } {
+export function useSession(): { session: Session | null; ready: boolean; event: AuthChangeEvent | null } {
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
+  // The last auth transition. Lets a consumer tell an actual SIGNED_IN apart
+  // from INITIAL_SESSION (a returning user's persisted session on page load).
+  const [event, setEvent] = useState<AuthChangeEvent | null>(null);
 
   useEffect(() => {
     // Extension contexts (popup, content scripts, background) each run their
@@ -31,6 +34,7 @@ export function useSession(): { session: Session | null; ready: boolean } {
     });
     const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
       setSession(s);
+      setEvent(event);
       logSession(`event ${event}`, s);
     });
 
@@ -51,21 +55,21 @@ export function useSession(): { session: Session | null; ready: boolean } {
     };
   }, []);
 
-  return { session, ready };
+  return { session, ready, event };
 }
 
-/** Send a magic link; the user returns to this same page signed in. */
-export function signInWithEmail(email: string) {
-  return supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.href } });
-}
+/** Supabase's standard email OTP length (mirrored by config.toml's
+ *  auth.email.otp_length for local dev). */
+export const EMAIL_OTP_LENGTH = 8;
 
-/** Extension email sign-in, step 1: the same email as the magic link also
- *  carries a 6-digit code ({{ .Token }} in the template) — no redirect needed. */
+/** Email sign-in, step 1 (website + extension): the email carries an 8-digit
+ *  code ({{ .Token }} in the templates) — no magic link, so email auth never
+ *  touches the redirect allow-list and works across devices. */
 export function signInWithEmailCode(email: string) {
   return supabase.auth.signInWithOtp({ email });
 }
 
-/** Extension email sign-in, step 2: verify the typed code. */
+/** Email sign-in, step 2: verify the typed code. */
 export function verifyEmailCode(email: string, code: string) {
   return supabase.auth.verifyOtp({ email, token: code, type: "email" });
 }

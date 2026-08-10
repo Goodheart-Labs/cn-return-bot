@@ -44,6 +44,8 @@ jobs:
       PANGRAM_API_KEY: ${{ secrets.PANGRAM_API_KEY }}
       # SearXNG instance running as a Docker container (see "Start SearXNG" step)
       SEARXNG_URL: http://localhost:8080
+      # Residential proxy for yt-dlp YouTube fetches (YouTube bot-checks runner IPs)
+      YTDLP_PROXY_URL: ${{ secrets.YTDLP_PROXY_URL }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -73,7 +75,12 @@ jobs:
         run: bun install
 
       - name: Install FFmpeg, yt-dlp, and gallery-dl for media analysis
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg yt-dlp gallery-dl
+        # Ubuntu's packaged yt-dlp is years old and fails against today's
+        # YouTube, so install the current release from PyPI instead.
+        run: |
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg gallery-dl
+          pipx install yt-dlp
+          yt-dlp --version
 
       - name: Get Playwright version
         id: playwright-version

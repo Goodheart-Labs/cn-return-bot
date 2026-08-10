@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { PostingLimitDrawer } from "./components/PostingLimitDrawer";
 import type {
   ReviewItem,
   DatasetOption,
@@ -9,15 +10,11 @@ import type {
 } from "./lib/types";
 import { defaultFilters } from "./lib/types";
 import { resolveRatingCounts } from "../../dashboard-shared/Ratings";
-import { FULLY_LOADED_FAILURE_TYPES } from "../../dashboard-shared/productionView";
 import {
-  fetchDashboardData,
-  fetchDefaultStatusData,
-  fetchDashboardDataByTags,
-  fetchDashboardDataHighValue,
-  buildDashboardItems,
+  compileFilters,
+  fetchDashboardPage,
+  fetchDashboardCounts,
   fetchLogsForRuns,
-  fetchProductionPillData,
   fetchDatasetRunItems,
   fetchDatasetRunCounts,
   fetchUploads,
@@ -27,13 +24,10 @@ import {
   setFailureModeFixed,
   deleteUpload,
   pruneUnusedFailureModes,
+  type PageCursor,
+  type DashboardCounts,
 } from "./lib/data";
 
-// The WINDOWED (non-default) types are bounded by a date window on
-// notes.submitted_at: the initial load covers the last WINDOW_DAYS_STEP days; the
-// "Load next N days" footer extends it by another step. The standard selection is
-// loaded in full (no window) — see fetchDefaultStatusData.
-const WINDOW_DAYS_STEP = 7;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 // Failure types whose pills show a seen-aware count (how many are left to review
@@ -42,10 +36,135 @@ const MS_PER_DAY = 24 * 60 * 60 * 1000;
 // the rest (needs-more-ratings, missed, low-eval) keep their all-time totals.
 const SEEN_AWARE_FAILURE_TYPES: FailureType[] = ["rated_helpful", "rated_unhelpful", "lost_to_competitor"];
 
-// The "standard selection" we load in full (no window); everything else is
-// windowed. Used to decide whether the "Load next N days" footer has anything
-// more to load. See productionView.FULLY_LOADED_FAILURE_TYPES.
-const FULLY_LOADED = new Set<FailureType>(FULLY_LOADED_FAILURE_TYPES);
+// Burn-down: the review backlog you're clearing to zero — unseen rated + underwater
+// notes (deliberately NOT the fresh NEEDS_MORE_RATINGS ones: "I couldn't do all").
+// Fixed target date so hitting the daily quota is a real "done for today". Edit the
+// date to re-aim.
+const BURNDOWN_TYPES = new Set<FailureType>(["rated_helpful", "rated_unhelpful", "underwater"]);
+const BURNDOWN_TARGET_ISO = "2026-10-18";
+// Nathan rates in bursts, not daily — quota assumes this many rating-days per
+// week (Nathan, 2026-08-06: "assume I rate 4 days a week, set the rate for that").
+const RATING_DAYS_PER_WEEK = 4;
+
+// Stale-while-revalidate cache for the tag catalog, so the tags drawer paints
+// instantly from the last session's snapshot.
+const CATALOG_CACHE_KEY = "reviewDashboard.catalogCache.v1";
+
+function daysUntil(iso: string): number {
+  const ms = new Date(iso + "T23:59:59").getTime() - Date.now();
+  return Math.max(1, Math.ceil(ms / MS_PER_DAY));
+}
+
+// Top-of-page pace bar: how many of the review backlog to clear today to stay on
+// track for BURNDOWN_TARGET_ISO, going green when you've done enough. The daily
+// quota is anchored to the day's STARTING unseen count (persisted per-day in
+// localStorage) so it doesn't shrink out from under you as you rate — that's what
+// makes "done today" a fixed, hittable bar.
+function BurndownBar({ unseen, reviewedToday, ready, inflowPerDay, pacePerDay }: { unseen: number; reviewedToday: number; ready: boolean; inflowPerDay: number; pacePerDay: number }) {
+  const todayKey = new Date().toLocaleDateString("en-CA"); // local YYYY-MM-DD
+  const [dayStart, setDayStart] = useState<number | null>(null);
+  // "at this rate" explainer, toggled by clicking the projection text.
+  const [explainOpen, setExplainOpen] = useState(false);
+  const [dismissed, setDismissed] = useState<boolean>(() => {
+    try { return localStorage.getItem(`reviewDashboard.burndown.dismissed.${new Date().toLocaleDateString("en-CA")}`) === "true"; }
+    catch { return false; }
+  });
+  useEffect(() => {
+    if (!ready) return;
+    const k = `reviewDashboard.burndown.dayStart.${todayKey}`;
+    try {
+      const saved = localStorage.getItem(k);
+      if (saved != null) { setDayStart(Number(saved)); return; }
+      localStorage.setItem(k, String(unseen));
+    } catch { /* ignore */ }
+    setDayStart(unseen);
+    // Capture the day's baseline once, when data is first ready — used only to set
+    // the day's quota. Progress is the reviewedToday COUNTER (below), not the drop
+    // in unseen — so notes the bot writes during the day can't mask your progress.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, todayKey]);
+
+  const dismiss = () => {
+    setDismissed(true);
+    try { localStorage.setItem(`reviewDashboard.burndown.dismissed.${todayKey}`, "true"); } catch { /* ignore */ }
+  };
+
+  if (!ready || dayStart == null || dismissed) return null;
+  const daysLeft = daysUntil(BURNDOWN_TARGET_ISO);
+  // Quota = what a RATING DAY must clear to hit the target, assuming
+  // RATING_DAYS_PER_WEEK rating-days a week: total remaining work (backlog +
+  // inflow over ALL remaining calendar days) spread over the remaining
+  // rating-days only. Recomputed daily from live state, so slipping raises it
+  // and getting ahead lowers it.
+  const ratingDaysLeft = Math.max(1, daysLeft * (RATING_DAYS_PER_WEEK / 7));
+  const quota = Math.max(1, Math.ceil((dayStart + inflowPerDay * daysLeft) / ratingDaysLeft));
+  const progress = reviewedToday; // notes YOU marked seen today — inflow-proof
+  const done = progress >= quota;
+  const remainingToday = Math.max(0, quota - progress);
+  // Full + green the moment the day's quota is met; the count keeps ticking up
+  // past it (progress rises) while the bar stays full.
+  const pct = done ? 100 : Math.min(100, Math.round((progress / quota) * 100));
+  const targetLabel = new Date(BURNDOWN_TARGET_ISO + "T00:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  // Reality check: at the observed 14-day pace, net of inflow, when does the
+  // pile actually hit zero? Diverges (or regresses) → "not at this pace".
+  const netPerDay = pacePerDay - inflowPerDay;
+  let projectedLabel: string;
+  if (netPerDay <= 0.05) {
+    projectedLabel = "not at this pace";
+  } else {
+    const projected = new Date(Date.now() + (unseen / netPerDay) * MS_PER_DAY);
+    projectedLabel = projected.toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+      ...(projected.getFullYear() !== new Date().getFullYear() ? { year: "2-digit" } : {}),
+    });
+  }
+  const onTrack = projectedLabel !== "not at this pace" && Date.now() + (unseen / Math.max(netPerDay, 0.05)) * MS_PER_DAY <= new Date(BURNDOWN_TARGET_ISO + "T23:59:59").getTime();
+
+  return (
+    <div className={`relative mb-4 rounded-lg border p-3 ${done ? "border-green-300 bg-green-50" : "border-gray-200 bg-gray-50"}`}>
+      <button
+        onClick={dismiss}
+        title="Dismiss for today"
+        aria-label="Dismiss for today"
+        className="absolute top-1 right-2 text-gray-400 hover:text-gray-600 text-base leading-none"
+      >
+        ×
+      </button>
+      <div className="flex items-center justify-between text-sm pr-5">
+        <span className={done ? "text-green-800 font-medium" : "text-gray-700 font-medium"}>
+          {done
+            ? `✓ Done for today — ${progress} reviewed`
+            : `Review ${remainingToday} more today (${progress}/${quota})`}
+        </span>
+        <span className="text-xs text-gray-500">
+          {unseen} unseen · target {targetLabel} ·{" "}
+          <button
+            onClick={() => setExplainOpen((o) => !o)}
+            className={`${onTrack ? "text-green-600" : "text-amber-600"} underline decoration-dotted cursor-help`}
+            title="What does this mean?"
+          >
+            at this rate: {projectedLabel}
+          </button>
+        </span>
+      </div>
+      <div className="mt-2 h-1.5 w-full rounded-full bg-gray-200 overflow-hidden">
+        <div className={`h-full transition-all duration-300 ${done ? "bg-green-500" : "bg-blue-500"}`} style={{ width: `${pct}%` }} />
+      </div>
+      {explainOpen && (
+        <div className="mt-2 text-xs text-gray-500 leading-relaxed">
+          <b>"At this rate"</b> = your average reviewing speed over the last 14 days ({pacePerDay.toFixed(1)}/day,
+          zero-days included) minus new notes joining the pile as they get rated (~{inflowPerDay.toFixed(1)}/day,
+          estimated from the matured 14–44-day cohort). Net ≈ {Math.max(0, pacePerDay - inflowPerDay).toFixed(1)}/day
+          of real shrinkage on {unseen} unseen → zero around <b>{projectedLabel}</b>. If the next months look like the
+          last two weeks, that's when you finish; review more days per week and this date marches toward the{" "}
+          {targetLabel} target (it turns green when it crosses). Today's quota ({quota}) assumes you rate {RATING_DAYS_PER_WEEK} days a
+          week: all remaining work (backlog + inflow to the target) ÷ remaining rating-days.
+        </div>
+      )}
+    </div>
+  );
+}
 
 import { NoteCard } from "./components/NoteCard";
 import { FilterBar } from "./components/FilterBar";
@@ -54,21 +173,11 @@ import { UploadDialog } from "./components/UploadDialog";
 import { AbFilterPanel } from "../../dashboard-shared/AbFilterPanel";
 import {
   buildAbTestSlots,
-  matchesAbFilters,
   type ABFilters,
 } from "../../dashboard-shared/abFilters";
+import { topicSetFor } from "../../dashboard-shared/topicSets";
 import { AB_TESTS } from "../../pipeline/ab-testing/abTestsData";
 
-
-// Union two production item lists by id. `winners` overwrite `base` on overlap:
-// the windowed fetch carries competing/missed/low-eval + in-window ab_test_picks,
-// so it wins over the full-default rows; out-of-window default notes exist only in
-// `base`, so they survive.
-function mergeItemsById(base: ReviewItem[], winners: ReviewItem[]): ReviewItem[] {
-  const byId = new Map(base.map((i) => [i.id, i]));
-  for (const w of winners) byId.set(w.id, w);
-  return [...byId.values()];
-}
 
 // Re-apply in-session annotation edits (you can only edit visible notes, all in
 // `prev`) onto a freshly-fetched list, so a load landing mid-edit can't revert it.
@@ -86,48 +195,18 @@ function byCreatedDesc(a: ReviewItem, b: ReviewItem): number {
   return db - da;
 }
 
-function matchesFilters(filters: FilterState, abFilters: ABFilters) {
+// Production filtering happens server-side (compileFilters → the page RPC).
+// Dataset-run items are fully loaded client-side, so they keep a local
+// predicate: the tag lens when tags are selected, else pills + seen.
+function matchesDatasetFilters(filters: FilterState) {
   return (item: ReviewItem) => {
-    // Topic-set LENS: when any set is selected it's the PRIMARY filter — show
-    // every note in that set regardless of status/failure-type (like the ★ lens),
-    // so picking a topic just lists all its notes to page through. The seen
-    // filter still narrows within it (default "unseen" = notes you've not reviewed).
-    if (filters.topicSets.size > 0) {
-      if (!item.topicSet || !filters.topicSets.has(item.topicSet)) return false;
-      if (filters.seen === "seen" && !(item.annotation?.seen)) return false;
-      if (filters.seen === "unseen" && item.annotation?.seen) return false;
-      return matchesAbFilters(item.abTestPicks ?? null, abFilters);
-    }
-    // High-value ★ lens: only starred items. The other filters still narrow
-    // within it — toggling ★ on resets them to non-restrictive (FilterBar), so
-    // any narrowing is one the user has visibly re-applied. An empty pill set
-    // means "all types" here (unlike the normal view, where the pills are the
-    // positive selection), so clearing the pills can't strand an empty list.
-    if (filters.highValueOnly) {
-      if (!item.annotation?.highValue) return false;
-      if (filters.failureModes.size > 0) {
-        const itemModes = item.annotation?.failureModes ?? [];
-        if (!itemModes.some((m) => filters.failureModes.has(m))) return false;
-      } else if (filters.failureTypes.size > 0 && !filters.failureTypes.has(item.failureType)) {
-        return false;
-      }
-      if (filters.seen === "seen" && !(item.annotation?.seen)) return false;
-      if (filters.seen === "unseen" && item.annotation?.seen) return false;
-      return matchesAbFilters(item.abTestPicks ?? null, abFilters);
-    }
-    // When tags are selected they're the primary lens: show every item carrying
-    // one, regardless of failure type or seen state. Tagged items are usually
-    // already marked seen, and many failure types are off by default, so
-    // applying those filters here would hide the very items you clicked to see.
     if (filters.failureModes.size > 0) {
       const itemModes = item.annotation?.failureModes ?? [];
-      if (!itemModes.some((m) => filters.failureModes.has(m))) return false;
-    } else {
-      if (!filters.failureTypes.has(item.failureType)) return false;
-      if (filters.seen === "seen" && !(item.annotation?.seen)) return false;
-      if (filters.seen === "unseen" && item.annotation?.seen) return false;
+      return itemModes.some((m) => filters.failureModes.has(m));
     }
-    if (!matchesAbFilters(item.abTestPicks ?? null, abFilters)) return false;
+    if (filters.failureTypes.size > 0 && !filters.failureTypes.has(item.failureType)) return false;
+    if (filters.seen === "seen" && !(item.annotation?.seen)) return false;
+    if (filters.seen === "unseen" && item.annotation?.seen) return false;
     return true;
   };
 }
@@ -203,34 +282,42 @@ export function App() {
   // Failure-mode tags drawer — collapsed by default so the big pill row doesn't
   // clutter the top (same collapsible style as the A/B test filters section).
   const [tagsOpen, setTagsOpen] = useState(false);
+  // Dataset-run pill counts (production counts come from the counts RPC below).
   const [counts, setCounts] = useState<Record<FailureType, number>>({} as any);
-  // All-time tag usage for production pills, fetched once per production
-  // session and adjusted optimistically on tag edits. Dataset runs derive
-  // counts from their (fully loaded) items instead.
-  const [productionTagCounts, setProductionTagCounts] = useState<Map<string, number>>(new Map());
-  // All-time {failureType, seen} per note and {failureModes, seen} per annotation,
-  // so the rated/tag pills can show counts under the current seen filter (how many
-  // are left to review) rather than the all-time total. Fetched with the counts.
-  const [notesSeen, setNotesSeen] = useState<{ noteId: string; failureType: FailureType; seen: boolean; abTestPicks: Record<string, string> | null }[]>([]);
-  const [annotationsSeen, setAnnotationsSeen] = useState<{ targetId: string; failureModes: string[]; seen: boolean; abTestPicks: Record<string, string> | null }[]>([]);
+  // Server-computed production aggregates: pill counts (all-time / unseen /
+  // seen+A/B-filtered), tag counts, burndown inputs, A/B slot variants, topic
+  // counts. Adjusted optimistically on annotation edits, reconciled by a
+  // debounced refetch.
+  const [countsData, setCountsData] = useState<DashboardCounts | null>(null);
   const [failureModeCatalog, setFailureModeCatalog] = useState<FailureModeInfo[]>([]);
   const [showFixedTags, setShowFixedTags] = useState(false);
   const [loading, setLoading] = useState(true);
-  // Gate the A/B filter panel on the full recent-notes fetch finishing, so its
-  // "recently varied" detection sees every pick from the window — not just the
-  // injected first-paint subset.
-  const [recentNotesLoaded, setRecentNotesLoaded] = useState(false);
+  // Seen-toggles made THIS page session — added to the DB-derived count below,
+  // then SUBTRACTED again once a fresh counts payload (which includes those
+  // toggles' annotations) lands, so a toggle is never counted twice. The ref
+  // mirrors the state so the async counts fetches can read the value at fetch
+  // start without re-running on every bump.
+  const [sessionSeenBumps, setSessionSeenBumps] = useState(0);
+  const sessionSeenBumpsRef = useRef(0);
+  const bumpReviewedToday = useCallback((delta: number) => {
+    sessionSeenBumpsRef.current += delta;
+    setSessionSeenBumps((n) => n + delta);
+  }, []);
+  const absorbSeenBumps = useCallback((bumpsAtFetchStart: number) => {
+    sessionSeenBumpsRef.current -= bumpsAtFetchStart;
+    setSessionSeenBumps((n) => n - bumpsAtFetchStart);
+  }, []);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Keyset cursor for the next production page (null = no more pages) and the
+  // server's total match count for the current filters.
+  const [nextCursor, setNextCursor] = useState<PageCursor | null>(null);
+  const [totalItems, setTotalItems] = useState<number | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
   // Production: all items in the current date window are loaded up-front
   // (metadata only, no TOAST). Logs are lazy-loaded per visible card and cached
   // here keyed by pipeline_run id.
   const [logsByRunId, setLogsByRunId] = useState<Map<string, Record<string, unknown>>>(new Map());
-  // Date-window size for the WINDOWED (non-default) types, in days. Extends in
-  // WINDOW_DAYS_STEP increments via the "Load next N days" footer. The standard
-  // selection ignores this (loaded in full). Dataset runs ignore it too.
-  const [windowDays, setWindowDays] = useState(WINDOW_DAYS_STEP);
-
   // Load uploads and failure mode catalog on mount
   useEffect(() => {
     fetchUploads().then((all) => {
@@ -242,84 +329,58 @@ export function App() {
         return match ? { type: "dataset_run", id: match.id, name: match.name } : d;
       });
     }).catch((e) => console.warn("Failed to fetch uploads (table may not exist yet):", e));
-    fetchFailureModes().then(setFailureModeCatalog).catch((e) => console.warn("Failed to fetch failure modes (table may not exist yet):", e));
+    try {
+      const raw = localStorage.getItem(CATALOG_CACHE_KEY);
+      if (raw) setFailureModeCatalog(JSON.parse(raw));
+    } catch { /* corrupt cache — fresh fetch below overwrites it */ }
+    fetchFailureModes()
+      .then((modes) => {
+        setFailureModeCatalog(modes);
+        try { localStorage.setItem(CATALOG_CACHE_KEY, JSON.stringify(modes)); } catch { /* ignore */ }
+      })
+      .catch((e) => console.warn("Failed to fetch failure modes (table may not exist yet):", e));
   }, []);
 
-  // Selecting failure-mode tags makes production loading fetch all-time tagged
-  // items instead of the date window, so the tag set is a fetch input. Serialize
-  // it for a stable loadData dep — the Set's identity churns on unrelated
-  // re-renders. Empty for dataset runs, whose tag filtering stays client-side.
-  const productionTagKey = useMemo(
-    () =>
-      dataset.type === "production"
-        ? JSON.stringify([...filters.failureModes].sort())
-        : "",
-    [dataset.type, filters.failureModes],
+  // The compiled server-side filters. Serialized so the fetch effect's dep is
+  // stable (the FilterState Sets' identities churn on unrelated re-renders).
+  const pageFilters = useMemo(
+    () => (dataset.type === "production" ? compileFilters(filters, abFilters) : null),
+    [dataset.type, filters, abFilters],
+  );
+  const filterKey = useMemo(() => JSON.stringify(pageFilters), [pageFilters]);
+  // The counts RPC only reads {seen, ab}; keying its effect on this narrower
+  // string means pill clicks don't refetch counts, only seen/A-B changes do.
+  const countsKey = useMemo(
+    () => JSON.stringify({ seen: pageFilters?.seen, ab: pageFilters?.ab }),
+    [pageFilters],
   );
 
-  // Monotonic id so a re-fire (dataset switch / window extend) that lands out of
-  // order can't clobber the newer view: each setState is gated on it.
+  // Monotonic id so a re-fire (dataset/filter switch) that lands out of order
+  // can't clobber the newer view: each setState is gated on it.
   const loadSeq = useRef(0);
 
-  // Load data when the dataset / window / tag filter changes. Production is a
-  // HYBRID: the standard selection (default-on types) is loaded in FULL — no
-  // window — so it's always complete; everything else is windowed. Tag filtering
-  // swaps both for an all-time fetch of everything tagged. Pill counts are all-time
-  // (a separate effect). Dataset runs keep their one-shot fetch (already include logs).
+  // Load page 1 whenever the dataset or any server-side filter changes.
+  // Production fetches one server-joined page; scrolling appends more via
+  // loadMore. Dataset runs keep their one-shot fetch (items include logs).
   const loadData = useCallback(async () => {
     const seq = ++loadSeq.current;
     setLoading(true);
-    setRecentNotesLoaded(false);
     setError(null);
     try {
       if (dataset.type === "production") {
-        // "Great notes" is a standalone all-time lens — fetch every starred note
-        // regardless of window/status, mirroring the tag path. Takes precedence.
-        if (filters.highValueOnly) {
-          const data = await fetchDashboardDataHighValue();
-          if (seq !== loadSeq.current) return;
-          setItems(buildDashboardItems(data));
-          setLogsByRunId(new Map());
-          return;
-        }
-        const tags = [...filters.failureModes];
-        if (tags.length > 0) {
-          const data = await fetchDashboardDataByTags(tags);
-          if (seq !== loadSeq.current) return;
-          setItems(buildDashboardItems(data));
-          setLogsByRunId(new Map());
-          setRecentNotesLoaded(true);
-          return;
-        }
-        // Instant first paint: the server injects the FULL default set as
-        // window.__DEFAULT_VIEW__. Paint it with zero round-trips, then reload.
-        // Consumed once, so window extends and later reloads fetch fresh.
-        const injected = (window as any).__DEFAULT_VIEW__;
-        (window as any).__DEFAULT_VIEW__ = null;
-        if (injected?.canonical?.length) {
-          setItems(buildDashboardItems(injected));
-          setLoading(false);
-        }
-        // The standard selection in full (no window, carries ab_test_picks via
-        // submitted runs) UNIONed with the windowed everything-else. Windowed rows
-        // win on id overlap (competing/missed/low-eval + in-window ab data);
-        // out-of-window default notes survive; in-session annotation edits preserved.
-        const windowSince = new Date(Date.now() - windowDays * MS_PER_DAY).toISOString();
-        const [defaultData, windowData] = await Promise.all([
-          fetchDefaultStatusData(),
-          fetchDashboardData(windowSince),
-        ]);
+        const page = await fetchDashboardPage(pageFilters!, null);
         if (seq !== loadSeq.current) return;
-        const merged = mergeItemsById(buildDashboardItems(defaultData), buildDashboardItems(windowData));
-        setItems((prev) => preserveAnnotations(prev, merged));
+        setItems((prev) => preserveAnnotations(prev, page.items));
+        setNextCursor(page.nextCursor);
+        setTotalItems(page.totalItems);
         setLogsByRunId(new Map());
-        setRecentNotesLoaded(true);
       } else {
         const loaded = await fetchDatasetRunItems(dataset.id!);
         if (seq !== loadSeq.current) return;
         setItems(loaded);
+        setNextCursor(null);
+        setTotalItems(null);
         setCounts(await fetchDatasetRunCounts(dataset.id!));
-        setRecentNotesLoaded(true);
       }
     } catch (err: any) {
       console.error("Failed to load data:", err);
@@ -327,8 +388,32 @@ export function App() {
     } finally {
       if (seq === loadSeq.current) setLoading(false);
     }
-    // productionTagKey is the stable proxy for filters.failureModes (read above).
-  }, [dataset, windowDays, productionTagKey, filters.highValueOnly]); // eslint-disable-line react-hooks/exhaustive-deps
+    // filterKey is the stable proxy for pageFilters (read above).
+  }, [dataset, filterKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Append the next page when the scroll sentinel comes into view.
+  const loadMore = useCallback(async () => {
+    // `loading` bail: while page 1 of a new filter set is in flight, the cursor
+    // still points into the OLD result set — following it would fetch a page of
+    // the wrong list.
+    if (dataset.type !== "production" || !nextCursor || loadingMore || loading) return;
+    const seq = loadSeq.current;
+    setLoadingMore(true);
+    try {
+      const page = await fetchDashboardPage(pageFilters!, nextCursor);
+      if (seq !== loadSeq.current) return;
+      setItems((prev) => {
+        const known = new Set(prev.map((i) => i.id));
+        return [...prev, ...page.items.filter((i) => !known.has(i.id))];
+      });
+      setNextCursor(page.nextCursor);
+    } catch (err: any) {
+      console.error("Failed to load next page:", err);
+      if (seq === loadSeq.current) setError(err?.message ?? "Failed to load next page");
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [dataset.type, nextCursor, loadingMore, loading, pageFilters]);
 
   // Reset filters when the dataset changes (but not when only the window
   // extends — extending should preserve the user's filters). windowDays
@@ -369,92 +454,157 @@ export function App() {
     loadData();
   }, [loadData]);
 
-  // Production pill data is all-time and independent of the date window, so fetch
-  // it once per production session rather than on every window extension. One
-  // pass returns the all-time counts plus the per-note / per-annotation seen
-  // flags the seen-aware pills derive from.
+  // Server-computed production aggregates (pill/tag/burndown/A-B counts).
+  // Refetched only when the seen or A/B filters change — pill clicks reuse the
+  // last payload. ~250ms server-side, so no client cache needed.
   useEffect(() => {
-    if (dataset.type !== "production") return;
-    fetchProductionPillData()
-      .then(({ counts, tagCounts, notesSeen, annotationsSeen }) => {
-        setCounts(counts);
-        setProductionTagCounts(tagCounts);
-        setNotesSeen(notesSeen);
-        setAnnotationsSeen(annotationsSeen);
+    if (dataset.type !== "production" || !pageFilters) return;
+    const seq = loadSeq.current;
+    const bumpsAtStart = sessionSeenBumpsRef.current;
+    fetchDashboardCounts(pageFilters)
+      .then((c) => {
+        if (seq !== loadSeq.current) return;
+        setCountsData(c);
+        absorbSeenBumps(bumpsAtStart);
       })
-      .catch((e) => console.warn("Failed to fetch production pill data:", e));
-  }, [dataset]);
+      .catch((e) => {
+        console.error("Failed to fetch counts:", e);
+        if (seq === loadSeq.current) setError(e?.message ?? "Failed to fetch counts");
+      });
+    // countsKey is the stable proxy for the {seen, ab} slice of pageFilters.
+  }, [dataset.type, countsKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Sort items by date (stable memo so renders don't re-sort unnecessarily).
-  const sortedItems = useMemo(() => [...items].sort(byCreatedDesc), [items]);
-  const filtered = sortedItems.filter(matchesFilters(filters, abFilters));
-  // How many loaded items sit in each topic set, for the topic-set filter chips.
+  // Annotation edits adjust countsData optimistically (below); this reconciles
+  // with the server after the burst of clicks settles.
+  const countsReconcileTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scheduleCountsReconcile = useCallback(() => {
+    if (countsReconcileTimer.current) clearTimeout(countsReconcileTimer.current);
+    const seq = loadSeq.current;
+    const f = pageFilters;
+    if (!f) return;
+    countsReconcileTimer.current = setTimeout(() => {
+      const bumpsAtStart = sessionSeenBumpsRef.current;
+      fetchDashboardCounts(f)
+        .then((c) => {
+          if (seq !== loadSeq.current) return;
+          setCountsData(c);
+          absorbSeenBumps(bumpsAtStart);
+        })
+        .catch((e) => console.error("Counts reconcile failed:", e));
+    }, 2000);
+  }, [pageFilters, absorbSeenBumps]);
+
+  // Production items arrive server-sorted and server-filtered; the only live
+  // client-side narrowing is the seen re-filter below (so marking a card seen in
+  // "unseen" mode hides it instantly, without a refetch). Dataset-run items are
+  // fully loaded and keep their client-side sort + filter.
+  const filtered = useMemo(() => {
+    if (dataset.type !== "production") {
+      return [...items].sort(byCreatedDesc).filter(matchesDatasetFilters(filters));
+    }
+    const wantSeen = pageFilters?.seen;
+    if (wantSeen === undefined) return items;
+    return items.filter((i) => !!i.annotation?.seen === wantSeen);
+  }, [dataset.type, items, filters, pageFilters]);
+
+  // How many items sit in each topic set, for the topic-set filter chips —
+  // folded from the server's per-topic counts (the topic → set grouping is TS).
   const topicSetCounts = useMemo(() => {
     const c: Record<string, number> = {};
-    for (const it of items) if (it.topicSet) c[it.topicSet] = (c[it.topicSet] ?? 0) + 1;
+    for (const t of countsData?.topicCounts ?? []) {
+      const set = topicSetFor(t.topic);
+      if (set) c[set] = (c[set] ?? 0) + t.count;
+    }
     return c;
-  }, [items]);
+  }, [countsData]);
 
-  // Loaded items keyed by id — their annotation state is the live truth and wins
-  // over the all-time pill data below. You can only edit a visible note, so every
-  // in-session seen/tag change is in here, which keeps the counts live without a
-  // refetch (mark a note seen and the "left to review" count drops immediately).
-  const itemById = useMemo(() => new Map(items.map((i) => [i.id, i])), [items]);
+  // Burn-down backlog: unseen rated + underwater notes, all-time, from the
+  // counts RPC — optimistically decremented as you mark notes seen.
+  const burndownUnseen = useMemo(() => {
+    let n = 0;
+    for (const row of countsData?.byFailureType ?? []) {
+      if (BURNDOWN_TYPES.has(row.failureType)) n += row.unseen;
+    }
+    return n;
+  }, [countsData]);
 
-  // True when any A/B slot is filtered. An empty A/B filter matches everything,
-  // so the seen-aware counts already double as A/B-aware ones — we only need the
-  // recompute when at least one of the seen / A/B filters is actually narrowing.
+  // Inflow into the burndown pile (notes/day newly becoming rated/underwater).
+  // Status-change dates aren't stored, so proxy with a matured cohort: burndown
+  // notes SUBMITTED 14-44 days ago (old enough that most of their ratings have
+  // arrived) over that 30-day span. Undercounts slightly while posting volume is
+  // ramping, but it's data-driven and self-corrects as cohorts mature.
+  const burndownInflowPerDay = useMemo(() => {
+    let n = 0;
+    for (const row of countsData?.byFailureType ?? []) {
+      if (BURNDOWN_TYPES.has(row.failureType)) n += row.matured30d;
+    }
+    return n / 30;
+  }, [countsData]);
+
+  // Nathan's actual recent review pace: seen-annotations toggled in the last 14
+  // days (updated_at moves on any edit, so this can over-count slightly if old
+  // reviews get re-touched — acceptable for a pace estimate).
+  const reviewPacePerDay = useMemo(() => {
+    const cutoff = Date.now() - 14 * 86400000;
+    return (countsData?.seenAnnotationTimes ?? []).filter((t) => Date.parse(t) >= cutoff).length / 14;
+  }, [countsData]);
+
+  // "Done today" from the DB: seen-annotations whose updated_at falls on today's
+  // LOCAL date, plus toggles made this session (which aren't in the fetched
+  // snapshot yet). Survives refreshes, other builds, other browsers.
+  const reviewedToday = useMemo(() => {
+    const today = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD, local tz
+    const n = (countsData?.seenAnnotationTimes ?? []).filter(
+      (t) => new Date(t).toLocaleDateString("en-CA") === today,
+    ).length;
+    return Math.max(0, n + sessionSeenBumps);
+  }, [countsData, sessionSeenBumps]);
+
+  // True when any A/B slot is filtered. The counts RPC's `current` column is
+  // seen+A/B-aware; we only swap it in when one of those is actually narrowing.
   const abActive = useMemo(() => Object.values(abFilters).some(Boolean), [abFilters]);
   const abActiveCount = useMemo(() => Object.values(abFilters).filter(Boolean).length, [abFilters]);
 
-  // Seen- and A/B-aware production pill counts: for the rated categories the pills
-  // report how many are left under the current seen + A/B filters, not the all-time
-  // total. Based on all-time notesSeen (so the window doesn't undercount), with
-  // loaded notes overridden by live state. No active filter → all-time counts.
+  // Production pill counts: all-time totals, except the rated categories which
+  // report how many are left under the current seen + A/B filters (`current`).
   const displayCounts = useMemo(() => {
-    if (dataset.type !== "production" || (filters.seen === "all" && !abActive)) return counts;
-    const wantSeen = filters.seen === "seen";
-    const derived = { ...counts };
-    for (const ft of SEEN_AWARE_FAILURE_TYPES) derived[ft] = 0;
-    for (const n of notesSeen) {
-      if (!SEEN_AWARE_FAILURE_TYPES.includes(n.failureType)) continue;
-      const live = itemById.get(n.noteId);
-      const seen = live ? !!live.annotation?.seen : n.seen;
-      const picks = live ? live.abTestPicks : n.abTestPicks;
-      if (filters.seen !== "all" && seen !== wantSeen) continue;
-      if (!matchesAbFilters(picks ?? null, abFilters)) continue;
-      derived[n.failureType]++;
+    if (dataset.type !== "production") return counts;
+    const narrowing = filters.seen !== "all" || abActive;
+    const derived = {} as Record<FailureType, number>;
+    for (const row of countsData?.byFailureType ?? []) {
+      derived[row.failureType] =
+        narrowing && SEEN_AWARE_FAILURE_TYPES.includes(row.failureType) ? row.current : row.total;
     }
     return derived;
-  }, [dataset.type, counts, notesSeen, itemById, filters.seen, abFilters, abActive]);
+  }, [dataset.type, counts, countsData, filters.seen, abActive]);
 
-  // Seen- and A/B-aware tag counts: same idea for the failure-mode pills. Merge by
-  // id so loaded notes use their live annotation (tags added/removed this session).
-  const displayTagCounts = useMemo(() => {
-    if (dataset.type !== "production" || (filters.seen === "all" && !abActive)) return productionTagCounts;
-    const wantSeen = filters.seen === "seen";
-    const byId = new Map<string, { failureModes: string[]; seen: boolean; abTestPicks: Record<string, string> | null }>();
-    for (const a of annotationsSeen) byId.set(a.targetId, { failureModes: a.failureModes, seen: a.seen, abTestPicks: a.abTestPicks });
-    for (const i of items) byId.set(i.id, { failureModes: i.annotation?.failureModes ?? [], seen: !!i.annotation?.seen, abTestPicks: i.abTestPicks ?? null });
-    const derived = new Map<string, number>();
-    for (const { failureModes, seen, abTestPicks } of byId.values()) {
-      if (filters.seen !== "all" && seen !== wantSeen) continue;
-      if (!matchesAbFilters(abTestPicks ?? null, abFilters)) continue;
-      for (const m of failureModes) derived.set(m, (derived.get(m) ?? 0) + 1);
-    }
-    return derived;
-  }, [dataset.type, productionTagCounts, annotationsSeen, items, filters.seen, abFilters, abActive]);
+  // Tag counts, same idea: all-time totals unless seen/A-B narrows.
+  const productionTagCounts = useMemo(() => {
+    const narrowing = filters.seen !== "all" || abActive;
+    return new Map(
+      (countsData?.tagCounts ?? []).map((t) => [t.tag, narrowing ? t.current : t.total]),
+    );
+  }, [countsData, filters.seen, abActive]);
+  const productionTagOrderCounts = useMemo(
+    () => new Map((countsData?.tagCounts ?? []).map((t) => [t.tag, t.total])),
+    [countsData],
+  );
+  const productionTagCounts30d = useMemo(
+    () => new Map((countsData?.tagCounts ?? []).map((t) => [t.tag, t.last30d])),
+    [countsData],
+  );
 
-  // Derive A/B slots from observed ab_test_picks; sort by AB_TESTS declaration
-  // order so dropdowns match the stats dashboard layout. createdAt drives the
-  // "recently varied" flag the panel uses to hide dormant tests by default.
+  // A/B slots from the server's per-(slot, variant) aggregates; sort by AB_TESTS
+  // declaration order so dropdowns match the stats dashboard layout. The latest
+  // pick date drives the "recently varied" flag the panel uses to hide dormant
+  // tests by default.
   const abSlots = useMemo(
     () =>
       buildAbTestSlots(
-        items.map((i) => ({ picks: i.abTestPicks, at: i.createdAt })),
+        (countsData?.abVariants ?? []).map((v) => ({ picks: { [v.slot]: v.variant }, at: v.lastPickedAt })),
         AB_TESTS,
       ),
-    [items],
+    [countsData],
   );
 
   // Tag usage counts derived from current items' annotations — correct for
@@ -470,19 +620,28 @@ export function App() {
   }, [items]);
 
   // Counts used to sort and label the pills (and order the card selector).
-  // Production items are only partially loaded (date window), so use the seen-aware
-  // all-time counts there; deriving from items would undercount.
-  const tagCounts = dataset.type === "production" ? displayTagCounts : itemTagCounts;
+  // Production items are only partially loaded (one page at a time), so use the
+  // server's all-time counts there; deriving from items would undercount.
+  const tagCounts = dataset.type === "production" ? productionTagCounts : itemTagCounts;
+  // Tag ORDER uses ALL-TIME usage, not the seen/filter-adjusted counts — so the
+  // tag list keeps a stable, meaningful order instead of reshuffling as you filter
+  // (Nathan, 2026-07-21). The little count shown on each chip still reflects the
+  // current view (tagCounts); only the sort key is all-time.
+  const tagOrderCounts = dataset.type === "production" ? productionTagOrderCounts : itemTagCounts;
+  // The per-card selector dropdown sorts by LAST-30-DAYS usage instead (Nathan,
+  // 2026-07-28: current-view counts made the order reshuffle with every filter;
+  // 30d tracks what's going wrong now, so retired failure modes sink).
+  const cardSelectorCounts = dataset.type === "production" ? productionTagCounts30d : itemTagCounts;
 
   const sortedFailureModes = useMemo(() => {
     const list = showFixedTags ? failureModeCatalog : failureModeCatalog.filter((m) => !m.fixed);
     return [...list].sort((a, b) => {
-      const ca = tagCounts.get(a.name) ?? 0;
-      const cb = tagCounts.get(b.name) ?? 0;
+      const ca = tagOrderCounts.get(a.name) ?? 0;
+      const cb = tagOrderCounts.get(b.name) ?? 0;
       if (cb !== ca) return cb - ca;
       return a.name.localeCompare(b.name);
     });
-  }, [failureModeCatalog, tagCounts, showFixedTags]);
+  }, [failureModeCatalog, tagOrderCounts, showFixedTags]);
 
   const activeFailureModes = useMemo(
     () => failureModeCatalog.filter((m) => !m.fixed),
@@ -490,9 +649,8 @@ export function App() {
   );
 
   // Fold lazy-loaded logs into the items the list is about to render. Without
-  // this, the first render sees logs=undefined; once the effect below fills
-  // logsByRunId we want the cards to pick them up. Every filtered item in the
-  // current window renders — to see more, extend the window (production only).
+  // this, the first render sees logs=undefined; once requestLogs fills
+  // logsByRunId we want the cards to pick them up.
   const visible = useMemo(
     () =>
       filtered.map((item) => {
@@ -502,48 +660,26 @@ export function App() {
     [filtered, logsByRunId],
   );
   const tagFilterActive = dataset.type === "production" && filters.failureModes.size > 0;
-  // The "Load next N days" footer is relevant only when a WINDOWED (non-default)
-  // type is selected — the standard selection is loaded in full, so there's nothing
-  // more to load for it. Hidden under a tag filter (all-time) and for dataset runs.
-  const windowedTypeSelected =
-    dataset.type === "production" &&
-    !tagFilterActive &&
-    !filters.highValueOnly &&
-    [...filters.failureTypes].some((ft) => !FULLY_LOADED.has(ft));
 
-  // The boundary: the OLDEST loaded windowed note. Below it (older) only the
-  // fully-loaded standard notes remain — that's where loading the next window
-  // helps. Newest-first order means windowed notes (recent) cluster near the top.
-  const lastWindowedId = useMemo(() => {
-    for (let i = visible.length - 1; i >= 0; i--) {
-      if (!FULLY_LOADED.has(visible[i].failureType)) return visible[i].id;
-    }
-    return null;
-  }, [visible]);
-
-  // Only surface the footer once you've scrolled PAST that boundary — the last
-  // windowed note has left the top of the viewport, so only the fully-loaded
-  // standard notes remain on screen (the user's "you're at week 2" case). Or
-  // immediately if no windowed notes are loaded at all. A scroll listener (rAF-
-  // throttled) rather than IntersectionObserver, which doesn't fire when you jump
-  // straight past the boundary.
-  const [scrolledPastWindow, setScrolledPastWindow] = useState(false);
+  // Infinite scroll: fetch the next server page when the user nears the bottom.
+  const loadMoreRef = useRef(loadMore);
+  loadMoreRef.current = loadMore;
+  const nearBottom = () =>
+    window.innerHeight + window.scrollY >= document.body.offsetHeight - 1200;
   useEffect(() => {
-    if (!windowedTypeSelected) { setScrolledPastWindow(false); return; }
-    if (!lastWindowedId) { setScrolledPastWindow(true); return; }
-    let raf = 0;
-    const check = () => {
-      raf = 0;
-      const el = document.getElementById(`note-${lastWindowedId}`);
-      setScrolledPastWindow(!!el && el.getBoundingClientRect().bottom < 0);
+    const onScroll = () => {
+      if (nearBottom()) loadMoreRef.current();
     };
-    const onScroll = () => { if (!raf) raf = requestAnimationFrame(check); };
-    check();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => { window.removeEventListener("scroll", onScroll); if (raf) cancelAnimationFrame(raf); };
-  }, [windowedTypeSelected, lastWindowedId]);
-
-  const showLoadMore = windowedTypeSelected && scrolledPastWindow;
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  // Scroll events only fire on movement — a user PARKED at the bottom (or a list
+  // too short to scroll at all) never emits one. Re-check the position after
+  // every append/filter/fetch-state change and keep chaining pages until the
+  // content outruns the threshold or the cursor runs out.
+  useEffect(() => {
+    if (nearBottom()) loadMoreRef.current();
+  }, [visible.length, nextCursor, loadingMore, loading]);
 
   // The list is newest-first, so the top is often freshly-submitted notes with
   // no ratings yet. Offer a jump to the first note that actually has ratings —
@@ -598,23 +734,54 @@ export function App() {
     }
   }, []);
 
-  const handleLoadMore = useCallback(() => {
-    setWindowDays((prev) => prev + WINDOW_DAYS_STEP);
-  }, []);
-
   // Annotation handlers
   const handleSeenToggle = async (id: string, seen: boolean) => {
     const source = dataset.type === "production" ? "production" : "dataset_run";
-    const targetId = dataset.type === "production" ? id : id;
+    const item = items.find((i) => i.id === id);
+    const wasSeen = item?.annotation?.seen ?? false;
     try {
-      await upsertAnnotation(source as "production" | "dataset_run", targetId, { seen });
+      await upsertAnnotation(source as "production" | "dataset_run", id, { seen });
       setItems((prev) =>
-        prev.map((item) =>
-          item.id === id
-            ? { ...item, annotation: { ...item.annotation, seen, failureModes: item.annotation?.failureModes ?? [] } }
-            : item,
+        prev.map((it) =>
+          it.id === id
+            ? { ...it, annotation: { ...it.annotation, seen, failureModes: it.annotation?.failureModes ?? [] } }
+            : it,
         ),
       );
+      // Burn-down progress = notes newly marked seen today (production only).
+      if (dataset.type === "production" && seen !== wasSeen) {
+        bumpReviewedToday(seen ? 1 : -1);
+        // The header total counts items matching the current seen filter; a
+        // toggle moves this item across that boundary, so track it live (the
+        // next page-1 fetch replaces it with the server's number).
+        const wantSeen = pageFilters?.seen;
+        if (wantSeen !== undefined) {
+          setTotalItems((t) => (t == null ? t : Math.max(0, t + (seen === wantSeen ? 1 : -1))));
+        }
+        // Keep the server-derived counts live without waiting for the
+        // reconcile: the item's unseen count (burndown, pills) moves now.
+        const ft = item?.failureType;
+        if (ft) {
+          setCountsData((prev) =>
+            prev && {
+              ...prev,
+              byFailureType: prev.byFailureType.map((row) =>
+                row.failureType === ft
+                  ? {
+                      ...row,
+                      unseen: Math.max(0, row.unseen + (seen ? -1 : 1)),
+                      current:
+                        wantSeen === undefined
+                          ? row.current
+                          : Math.max(0, row.current + (seen === wantSeen ? 1 : -1)),
+                    }
+                  : row,
+              ),
+            },
+          );
+        }
+        scheduleCountsReconcile();
+      }
     } catch (err: any) {
       console.error("Failed to update seen:", err);
     }
@@ -654,22 +821,30 @@ export function App() {
             : item,
         ),
       );
-      // Keep the all-time pill counts in step without refetching: apply the
-      // same add/remove diff we just persisted.
+      // Keep the tag pill counts in step without waiting for the reconcile:
+      // apply the same add/remove diff we just persisted to the server counts.
       if (dataset.type === "production") {
-        setProductionTagCounts((prev) => {
-          const next = new Map(prev);
-          for (const m of modes) {
-            if (!prevModes.includes(m)) next.set(m, (next.get(m) ?? 0) + 1);
+        setCountsData((prev) => {
+          if (!prev) return prev;
+          const added = modes.filter((m) => !prevModes.includes(m));
+          const removed = prevModes.filter((m) => !modes.includes(m));
+          if (!added.length && !removed.length) return prev;
+          const rows = new Map(prev.tagCounts.map((t) => [t.tag, { ...t }]));
+          for (const m of added) {
+            const row = rows.get(m) ?? { tag: m, total: 0, current: 0, last30d: 0 };
+            row.total++;
+            row.current++;
+            rows.set(m, row);
           }
-          for (const m of prevModes) {
-            if (modes.includes(m)) continue;
-            const remaining = (next.get(m) ?? 1) - 1;
-            if (remaining > 0) next.set(m, remaining);
-            else next.delete(m);
+          for (const m of removed) {
+            const row = rows.get(m);
+            if (!row) continue;
+            row.total = Math.max(0, row.total - 1);
+            row.current = Math.max(0, row.current - 1);
           }
-          return next;
+          return { ...prev, tagCounts: [...rows.values()] };
         });
+        scheduleCountsReconcile();
       }
       pruneUnusedFailureModes().then(setFailureModeCatalog).catch(() => {});
     } catch (err: any) {
@@ -766,6 +941,11 @@ export function App() {
         />
       </div>
 
+      {/* Burn-down pace bar — how much of the review backlog to clear today. */}
+      {dataset.type === "production" && (
+        <BurndownBar unseen={burndownUnseen} reviewedToday={reviewedToday} ready={countsData != null} inflowPerDay={burndownInflowPerDay} pacePerDay={reviewPacePerDay} />
+      )}
+
       {/* Filters */}
       <div className="mb-4">
         <FilterBar
@@ -777,13 +957,16 @@ export function App() {
         />
       </div>
 
+      {/* Collapsible drawers, grouped in one stack (Nathan 2026-07-28: "weird to
+          have them separated"): A/B test filters, failure-mode tags, posting limit. */}
+      <div className="mb-4 space-y-1">
       {/* A/B test filters. The toggle bar is ALWAYS shown in production (not gated on
           abSlots) so it doesn't pop in and shift the layout when the slots — derived
           from the progressively-loaded items — arrive a beat later. Collapsed by
           default; expanding before the data lands shows a "Loading…" placeholder.
           The bar is the section header; the panel's own header is hidden. */}
       {(dataset.type === "production" || abSlots.length > 0) && (
-        <div className="mb-4">
+        <div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setAbOpen((o) => !o)}
@@ -805,7 +988,7 @@ export function App() {
           </div>
           {abOpen && (
             <div className="mt-2">
-              {recentNotesLoaded && abSlots.length > 0 ? (
+              {countsData != null && abSlots.length > 0 ? (
                 <AbFilterPanel slots={abSlots} filters={abFilters} onChange={setAbFilters} hideHeader />
               ) : (
                 <div className="text-sm text-gray-400 px-3 py-2">Loading…</div>
@@ -817,7 +1000,7 @@ export function App() {
 
       {/* Failure-mode tags drawer — collapsible, same style as A/B test filters. */}
       {failureModeCatalog.length > 0 && (
-        <div className="mb-4">
+        <div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setTagsOpen((o) => !o)}
@@ -904,6 +1087,10 @@ export function App() {
         </div>
       )}
 
+      {/* Posting limit (writing cap) — collapsed by default, lazy-loads on open. */}
+      <PostingLimitDrawer />
+      </div>
+
       {/* Error */}
       {error && (
         <div className="bg-red-50 text-red-700 rounded-lg p-3 mb-4 text-sm">{error}</div>
@@ -916,10 +1103,10 @@ export function App() {
             ? "Loading..."
             : dataset.type === "production"
               ? filters.highValueOnly
-                ? `${visible.length} high-value notes · all time ★`
+                ? `${totalItems ?? visible.length} high-value notes · all time ★`
                 : tagFilterActive
-                  ? `${visible.length} notes · all time, tagged`
-                  : `${visible.length} notes`
+                  ? `${totalItems ?? visible.length} notes · all time, tagged`
+                  : `${totalItems ?? visible.length} notes`
               : `${filtered.length} items shown`}
         </div>
         {firstRatedIndex > 0 && (
@@ -939,7 +1126,7 @@ export function App() {
             <NoteCard
               item={item}
               failureModeCatalog={activeFailureModes}
-              failureModeUsage={tagCounts}
+              failureModeUsage={cardSelectorCounts}
               showFixed={showFixedTags}
               showTags={showTags}
               onSeenToggle={handleSeenToggle}
@@ -953,18 +1140,10 @@ export function App() {
         ))}
       </div>
 
-      {/* "Load next window" footer — pinned to the viewport bottom, shown once you
-          scroll past the windowed notes into the standard-only region (only the
-          fully-loaded default notes remain there). */}
-      {showLoadMore && (
-        <div className="fixed bottom-0 left-0 right-0 z-20 px-4 py-3 bg-white/95 backdrop-blur border-t border-gray-200 flex justify-center">
-          <button
-            onClick={handleLoadMore}
-            disabled={loading}
-            className="px-4 py-2 text-sm rounded-md border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50"
-          >
-            {loading ? "Loading…" : `Load next ${WINDOW_DAYS_STEP} days (currently last ${windowDays} days)`}
-          </button>
+      {/* Next-page indicator: the scroll listener fetches as you near the bottom. */}
+      {dataset.type === "production" && (loadingMore || nextCursor) && (
+        <div className="py-4 text-center text-sm text-gray-400">
+          {loadingMore ? "Loading more…" : ""}
         </div>
       )}
 

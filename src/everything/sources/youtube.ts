@@ -1,8 +1,8 @@
-import { execFileSync, execSync } from "child_process";
+import { execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import { tmpdir } from "os";
-import { fetchTimedTranscript, type SubtitleCue } from "../../pipeline/media/ytDlpDownload";
+import { execYtDlp, fetchTimedTranscript, type SubtitleCue } from "../../pipeline/media/ytDlpDownload";
 import type { FetchedContent } from "../types";
 
 export function ensureYtDlp(): void {
@@ -24,13 +24,50 @@ function parseUploadDate(raw: string): string | undefined {
 function fetchVideoMeta(url: string): { id: string; title: string; uploadDate?: string } {
   // upload_date first, title last: a multi-line title is absorbed by titleParts
   // without swallowing the other fields.
-  const out = execFileSync(
-    "yt-dlp",
-    ["--skip-download", "--no-warnings", "--print", "%(upload_date)s", "--print", "%(id)s", "--print", "%(title)s", url],
-    { encoding: "utf8", timeout: 120_000 },
-  );
+  const out = execYtDlp(url, ["--skip-download", "--no-warnings", "--print", "%(upload_date)s", "--print", "%(id)s", "--print", "%(title)s", url]);
   const [uploadDate = "", id = "", ...titleParts] = out.trim().split("\n");
   return { id, title: titleParts.join(" ").trim(), uploadDate: parseUploadDate(uploadDate) };
+}
+
+export interface ChannelVideo {
+  videoId: string;
+  url: string;
+  title: string;
+  durationSeconds: number | null;
+}
+
+/** Latest videos of a channel's /videos tab (newest first, Shorts excluded),
+ *  via one flat-playlist yt-dlp call. Duration is null for premieres/upcoming. */
+export function fetchChannelVideos(channelUrl: string, limit: number): ChannelVideo[] {
+  const out = execYtDlp(channelUrl, [
+    "--flat-playlist",
+    "--no-warnings",
+    "--playlist-items",
+    `1:${limit}`,
+    "--print",
+    "%(id)s\t%(duration)s\t%(title)s",
+    `${channelUrl.replace(/\/$/, "")}/videos`,
+  ]);
+  const videos = out
+    .trim()
+    .split("\n")
+    .filter(Boolean)
+    .map((line) => {
+      const [videoId = "", duration = "", ...titleParts] = line.split("\t");
+      return {
+        videoId,
+        url: `https://www.youtube.com/watch?v=${videoId}`,
+        title: titleParts.join(" "),
+        durationSeconds: /^\d/.test(duration) ? Number.parseFloat(duration) : null,
+      };
+    });
+  // A channel's videos tab is never empty, so an empty listing means yt-dlp
+  // failed silently. An outdated yt-dlp does exactly this: it exits with code
+  // zero and prints nothing. Fail loudly instead of treating it as "no videos".
+  if (videos.length === 0) {
+    throw new Error(`yt-dlp listed zero videos for ${channelUrl} — it is probably outdated or blocked`);
+  }
+  return videos;
 }
 
 const TRANSCRIPT_LANG = "en";

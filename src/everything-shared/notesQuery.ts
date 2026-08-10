@@ -81,7 +81,13 @@ export function normalizePageUrl(href: string, doc?: Document): string {
     if (canonicalUrl.pathname.replace(/\/$/, "") === url.pathname.replace(/\/$/, "")) url = canonicalUrl;
   }
   url.hash = "";
-  for (const key of [...url.searchParams.keys()]) {
+  // Collect via forEach, not the iterator: Firefox content scripts see DOM
+  // objects through Xray wrappers, which don't support the iterator protocol
+  // on URLSearchParams — `[...url.searchParams.keys()]` throws "not iterable"
+  // there (and killed the whole content script on startup).
+  const keys: string[] = [];
+  url.searchParams.forEach((_value, key) => keys.push(key));
+  for (const key of keys) {
     if (key.startsWith("utm_") || TRACKING_PARAMS.includes(key)) url.searchParams.delete(key);
   }
   return url.toString();
@@ -166,12 +172,42 @@ export async function fetchItemForUrl(pageUrl: string): Promise<PageItem | null>
     return hit ? toPageItem(hit) : null;
   }
   const trimmed = pageUrl.replace(/\/$/, "");
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("everything_items")
     .select(ITEM_SELECT)
     .in("url", [trimmed, `${trimmed}/`])
     .limit(1);
+  if (error) console.warn(`[common-notes] item lookup failed: ${error.message}`);
   return data?.[0] ? toPageItem(data[0]) : null;
+}
+
+/** URLs of every ingested page — the extension's coverage list, cached
+ *  locally so content scripts can decide "is this page ours?" on-device
+ *  (noteless browsing must never reach the backend). Null on failure —
+ *  callers must not mistake an outage for "no coverage". */
+export async function fetchCoveredPageUrls(): Promise<string[] | null> {
+  const { data, error } = await supabase.from("everything_items").select("url");
+  if (error) return null;
+  return (data ?? []).map((r: any) => r.url as string).filter((url) => !url.startsWith("local:"));
+}
+
+/** URLs of every ingested page with visible notes, or null when the query
+ *  failed. Synthetic local docs (`local:…`) excluded. */
+export async function fetchNotedPageUrls(): Promise<string[] | null> {
+  const { data, error } = await supabase
+    .from("everything_notes")
+    .select("claim:everything_claims!inner(item:everything_items!inner(url))")
+    .neq("status", "hidden");
+  if (error) return null;
+  return [...new Set((data ?? []).map((r: any) => r.claim.item.url as string))]
+    .filter((url) => !url.startsWith("local:"));
+}
+
+/** A random ingested page with visible notes — the popup's "Open random page"
+ *  target. */
+export async function fetchRandomNotedPageUrl(): Promise<string | null> {
+  const urls = (await fetchNotedPageUrls()) ?? [];
+  return urls[Math.floor(Math.random() * urls.length)] ?? null;
 }
 
 /** All visible notes on one item, joined + normalized. */

@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { Session } from "@supabase/supabase-js";
 import type { NnnApi } from "../../everything-web/src/components/NoteNotNeeded";
 import type { Vote } from "../../everything-shared/votes";
 import type { NnnRow, NoteRow } from "../../everything-shared/types";
 import type { PageItem } from "../../everything-shared/notesQuery";
+import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
 import { ABSORB_KEYS, ClaimNoteStack, GroupIcon, NOTE_POPOVER_WIDTH, SignInHint } from "./ClaimNoteStack";
 import { NoteWithActions } from "./NoteWithActions";
 import { useNoteVoting, replaceNoteInGroup } from "./useNoteVoting";
@@ -154,55 +155,71 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
     const resizeObserver = new ResizeObserver(relayout);
     resizeObserver.observe(document.body);
     resizeObserver.observe(container);
-    // A click on the host page (outside our shadow roots) closes the popover.
-    const onDown = () => setOpenClaim(null);
-    document.addEventListener("mousedown", onDown);
     return () => {
       window.removeEventListener("resize", relayout);
       document.removeEventListener("scroll", relayout, { capture: true } as EventListenerOptions);
       resizeObserver.disconnect();
-      document.removeEventListener("mousedown", onDown);
       cancelAnimationFrame(raf);
     };
   }, [container]);
 
   // The tint itself is a CSS highlight — not an element, so it can't receive
   // events. Hit-test host-page clicks against each claim's range instead, so
-  // clicking a tinted passage opens its note like clicking the badge does.
+  // clicking a tinted passage toggles its note like clicking the badge does.
+  // The close-on-outside-press listener lives here too and skips tinted
+  // passages: closing on mousedown and reopening on the click's hit-test
+  // made a highlight click flash the popover shut and instantly reopen it.
   useEffect(() => {
-    const onClick = (e: MouseEvent) => {
+    const claimAt = (x: number, y: number): string | null => {
+      for (const group of groups) {
+        for (const rect of group.range.getClientRects()) {
+          if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) return group.claimId;
+        }
+      }
+      return null;
+    };
+    const onDown = (e: MouseEvent) => {
       // Clicks inside our own overlay bubble out of the shadow root too — the
       // popover overlaps page text, so without this guard a vote click would
       // also hit-test the passage underneath and open ITS note.
-      if (e.composedPath().some((n) => {
-        const tag = (n as Element).tagName;
-        return tag === "COMMON-NOTES-UI" || tag === "COMMON-NOTES-INLINE";
-      })) return;
+      if (insideCommonNotesUi(e) || claimAt(e.clientX, e.clientY)) return;
+      // Only empty-surface presses close the note: a click that does
+      // something (a link, a like button) shouldn't also dismiss it.
+      if (!isInertClick(e)) return;
+      setOpenClaim(null);
+    };
+    const onClick = (e: MouseEvent) => {
+      if (insideCommonNotesUi(e)) return;
       // A drag-selection (e.g. selecting text to write a note on) ends in a
       // click too — don't hijack it.
       if (!window.getSelection()?.isCollapsed) return;
-      for (const group of groups) {
-        for (const rect of group.range.getClientRects()) {
-          if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
-            setOpenClaim(group.claimId);
-            return;
-          }
-        }
-      }
+      const claimId = claimAt(e.clientX, e.clientY);
+      if (claimId) setOpenClaim((previous) => (previous === claimId ? null : claimId));
     };
+    document.addEventListener("mousedown", onDown);
     document.addEventListener("click", onClick);
-    return () => document.removeEventListener("click", onClick);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("click", onClick);
+    };
   }, [groups]);
 
-  // Requests from the popup (scroll to the first note) and the background's
-  // context menu (write a note on the current selection).
+  // Requests from the popup (jump through the notes in document order,
+  // wrapping) and the background's context menu (write a note on the current
+  // selection). The cursor lives here so "next" survives popup reopenings;
+  // it resets with the page.
+  const jumpCursor = useRef(-1);
   useEffect(() => {
-    const first = groups[0];
-    const listener = (message: unknown) => {
+    const ordered = [...groups].sort((a, b) => a.range.compareBoundaryPoints(Range.START_TO_START, b.range));
+    const listener = (message: unknown, _sender: unknown, sendResponse: (response?: unknown) => void) => {
       const { type, selection } = (message as { type?: string; selection?: string }) ?? {};
-      if (type === "cn-scroll-to-notes" && first) {
-        first.range.startContainer.parentElement?.scrollIntoView({ behavior: "smooth", block: "center" });
-        setOpenClaim(first.claimId);
+      if (type === "cn-jump-state") sendResponse({ jumped: jumpCursor.current >= 0 });
+      if (type === "cn-jump-note" && ordered.length) {
+        jumpCursor.current = (jumpCursor.current + 1) % ordered.length;
+        const target = ordered[jumpCursor.current];
+        target.range.startContainer.parentElement?.scrollIntoView({ behavior: "smooth", block: "center" });
+        setOpenClaim(target.claimId);
+        sendResponse({ jumped: true });
       }
       if (type === "cn-write-note" && selection?.trim()) setWriteSelection(selection.trim());
     };

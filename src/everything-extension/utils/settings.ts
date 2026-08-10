@@ -1,18 +1,62 @@
 import { browser } from "#imports";
 
-// Origins the user has opted into beyond the static Substack/YouTube matches.
-const ENABLED_ORIGINS_KEY = "cn:enabledOrigins";
+// Hosts whose grant.html offer the user declined with "Not now" — never
+// redirect them there again (redirect mode only).
+const GRANT_DISMISSED_KEY = "cn:grantDismissed";
 
-export async function getEnabledOrigins(): Promise<string[]> {
-  return ((await browser.storage.sync.get(ENABLED_ORIGINS_KEY))[ENABLED_ORIGINS_KEY] as string[] | undefined) ?? [];
+export async function getDismissedGrantHosts(): Promise<string[]> {
+  return ((await browser.storage.sync.get(GRANT_DISMISSED_KEY))[GRANT_DISMISSED_KEY] as string[] | undefined) ?? [];
 }
 
-export async function updateEnabledOrigins(mutate: (origins: string[]) => string[]): Promise<void> {
-  await browser.storage.sync.set({ [ENABLED_ORIGINS_KEY]: mutate(await getEnabledOrigins()) });
+export async function addDismissedGrantHost(hostname: string): Promise<void> {
+  await browser.storage.sync.set({ [GRANT_DISMISSED_KEY]: [...new Set([...(await getDismissedGrantHosts()), hostname])] });
 }
 
-export function onEnabledOriginsChanged(callback: () => void): void {
-  browser.storage.onChanged.addListener((changes, area) => {
-    if (area === "sync" && changes[ENABLED_ORIGINS_KEY]) callback();
-  });
+/** The un-dismiss escape hatch: granting a site from the popup's "Show notes
+ *  on this site" button clears an earlier "Do not ask again". */
+export async function removeDismissedGrantHost(hostname: string): Promise<void> {
+  await browser.storage.sync.set({ [GRANT_DISMISSED_KEY]: (await getDismissedGrantHosts()).filter((h) => h !== hostname) });
+}
+
+// Pages the user already asked us to cover ("Request notes on this page") —
+// reopening the popup shows the done state instead of minting a duplicate
+// request. Rolling window: sync storage has an ~8KB per-key quota, so only
+// the most recent requests are remembered.
+const REQUESTED_PAGES_KEY = "cn:requestedPages";
+const REQUESTED_PAGES_MAX = 50;
+
+export async function getRequestedPages(): Promise<string[]> {
+  return ((await browser.storage.sync.get(REQUESTED_PAGES_KEY))[REQUESTED_PAGES_KEY] as string[] | undefined) ?? [];
+}
+
+export async function addRequestedPage(pageUrl: string): Promise<void> {
+  const pages = [...new Set([...(await getRequestedPages()), pageUrl])];
+  await browser.storage.sync.set({ [REQUESTED_PAGES_KEY]: pages.slice(-REQUESTED_PAGES_MAX) });
+}
+
+// Which note statuses render on pages: helpful notes always show, the other
+// two are the popup's tickboxes (synced across devices like the origin
+// opt-ins).
+const NOTE_FILTERS_KEY = "cn:noteFilters";
+
+export type NoteFilters = { showNeedsRatings: boolean; showUnhelpful: boolean };
+const DEFAULT_NOTE_FILTERS: NoteFilters = { showNeedsRatings: true, showUnhelpful: false };
+
+export async function getNoteFilters(): Promise<NoteFilters> {
+  const stored = (await browser.storage.sync.get(NOTE_FILTERS_KEY))[NOTE_FILTERS_KEY] as Partial<NoteFilters> | undefined;
+  return { ...DEFAULT_NOTE_FILTERS, ...stored };
+}
+
+export async function updateNoteFilters(patch: Partial<NoteFilters>): Promise<void> {
+  await browser.storage.sync.set({ [NOTE_FILTERS_KEY]: { ...(await getNoteFilters()), ...patch } });
+}
+
+/** Returns an unsubscribe — content-script mounts come and go with SPA
+ *  navigation and must not leak listeners. */
+export function onNoteFiltersChanged(callback: () => void): () => void {
+  const listener = (changes: Record<string, unknown>, area: string) => {
+    if (area === "sync" && changes[NOTE_FILTERS_KEY]) callback();
+  };
+  browser.storage.onChanged.addListener(listener);
+  return () => browser.storage.onChanged.removeListener(listener);
 }

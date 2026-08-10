@@ -1,22 +1,48 @@
 import { useRef, useState } from "react";
-import { signInWithEmail, signInWithTwitter } from "../../../everything-shared/auth";
+import { EMAIL_OTP_LENGTH, signInWithEmailCode, verifyEmailCode, signInWithTwitter } from "../../../everything-shared/auth";
+import { track } from "../../../everything-shared/analytics";
 
 const X_SIGNIN_ENABLED = true;
 
+/** Email sign-in is an 8-digit code typed here (same flow as the extension
+ *  popup) — the tab keeps its state while the user fetches the code, so no
+ *  persistence is needed. Verifying sets the session in this context, so the
+ *  modal closes itself. */
 export function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
+  const [code, setCode] = useState("");
+  const [stage, setStage] = useState<"email" | "code">("email");
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const backdropPress = useRef(false);
 
   if (!open) return null;
 
-  const sendLink = async (e: React.FormEvent) => {
+  const sendCode = async (e: React.FormEvent) => {
     e.preventDefault();
+    setBusy(true);
     setError(null);
-    const { error } = await signInWithEmail(email.trim());
-    if (error) setError(error.message);
-    else setSent(true);
+    track("sign_in_started", { method: "email" });
+    const { error } = await signInWithEmailCode(email.trim());
+    setBusy(false);
+    if (error) return setError(error.message);
+    setStage("code");
+  };
+
+  const verify = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    setError(null);
+    const { error } = await verifyEmailCode(email.trim(), code.trim());
+    setBusy(false);
+    if (error) return setError(error.message);
+    onClose();
+  };
+
+  const backToEmail = () => {
+    setStage("email");
+    setCode("");
+    setError(null);
   };
 
   return (
@@ -32,12 +58,8 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
         </div>
         <p className="text-sm text-gray-500">Voting and suggesting improvements need a quick sign-in. Reading notes doesn't.</p>
 
-        {sent ? (
-          <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg p-3">
-            Check your email for a magic link to <span className="font-medium">{email}</span>.
-          </p>
-        ) : (
-          <form onSubmit={sendLink} className="space-y-2">
+        {stage === "email" ? (
+          <form onSubmit={sendCode} className="space-y-2">
             <input
               type="email"
               required
@@ -46,8 +68,35 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
               placeholder="you@example.com"
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
             />
-            <button type="submit" className="w-full bg-blue-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-blue-700">
-              Send magic link
+            <button
+              type="submit"
+              disabled={busy}
+              className="w-full bg-blue-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-blue-700 disabled:opacity-40"
+            >
+              Send code
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={verify} className="space-y-2">
+            <p className="text-sm text-gray-500">Enter the code we sent to <span className="font-medium text-gray-700">{email.trim()}</span>.</p>
+            <input
+              inputMode="numeric"
+              autoFocus
+              required
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="12345678"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm tracking-widest"
+            />
+            <button
+              type="submit"
+              disabled={busy || code.trim().length < EMAIL_OTP_LENGTH}
+              className="w-full bg-blue-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-blue-700 disabled:opacity-40"
+            >
+              Verify
+            </button>
+            <button type="button" onClick={backToEmail} className="text-xs text-gray-500 hover:underline">
+              Use a different email
             </button>
           </form>
         )}
@@ -60,7 +109,7 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
               <span className="flex-1 border-t" /> or <span className="flex-1 border-t" />
             </div>
             <button
-              onClick={() => signInWithTwitter()}
+              onClick={() => { track("sign_in_started", { method: "twitter" }); signInWithTwitter(); }}
               className="w-full border border-gray-800 bg-black text-white rounded-lg py-2 text-sm font-medium hover:bg-gray-800"
             >
               Sign in with 𝕏

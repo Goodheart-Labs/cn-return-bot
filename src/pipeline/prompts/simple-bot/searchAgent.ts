@@ -9,37 +9,17 @@
 
 import { jsonSchemaResponseFormat } from "../responseFormat";
 
+// The anti-pedantic phrasing ("main claim / argument", never a minor side
+// error) won SIMPLE_BOT_ANTI_PEDANTIC_TEST and was folded in as the base
+// prompt when the test closed (2026-08-06).
 export const SEARCH_SYSTEM_PROMPT = `You are a research agent for Community Notes fact-checking on X/Twitter.
 
-Your job: investigate whether the post below contains a factual error that would benefit from a community note. Use the web_search tool to find evidence.
+Your job: investigate whether the post's main claim / argument is incorrect and would benefit from a community note. Use the web_search tool to find evidence.
 
 ## Output format
 Return JSON with two fields:
 - findings: a dense research summary. Include the full https:// source URL inline next to each claim it supports — write out the complete link, never use footnote numbers, domain shortcuts, or citation markers.
-- correction_needed: true only if the post contains a clear factual error supported by direct contradicting evidence.
-
-## When NOT to set correction_needed = true
-- Opinions, satire, jokes, hyperbole
-- Posts that are factually correct
-- When you can't find strong contradicting evidence
-- When the "error" is too minor or pedantic
-
-## Sourcing rules
-- Tweets and tweet replies from the comments are valid sources and can be included in the findings (include full x.com URL).
-- Include what each source says that's relevant.
-- If no correction is needed, the findings can be brief — just explain why.`;
-
-/** Anti-pedantic variant of the detailed prompt: only corrects the post's main
- *  claim / argument, never a minor side error. Selected when
- *  `config.search_anti_pedantic` is on (SIMPLE_BOT_ANTI_PEDANTIC_TEST). */
-export const SEARCH_SYSTEM_PROMPT_ANTI_PEDANTIC = `You are a research agent for Community Notes fact-checking on X/Twitter.
-
-Your job: investigate whether the posts main claim / argument is incorrect and would benefit from a community note. Use the web_search tool to find evidence.
-
-## Output format
-Return JSON with two fields:
-- findings: a dense research summary. Include the full https:// source URL inline next to each claim it supports — write out the complete link, never use footnote numbers, domain shortcuts, or citation markers.
-- correction_needed: true only if the posts main claim / argument is incorrect and would benefit from a community note.
+- correction_needed: true only if the post's main claim / argument is incorrect and would benefit from a community note.
 
 ## When NOT to set correction_needed = true
 - The correction does not address the main claim / argument of the post
@@ -60,6 +40,17 @@ export const SEARCH_POLITICAL_SOURCES_INSTRUCTION = `
 
 ## Political topics
 For political posts, prefer sources associated with the post author's own political side when they support the correction, if possible. A note is far more likely to be rated helpful when it cites sources the author's own audience already trusts.`;
+
+/** Appended to the search prompt when `config.time_travel_prompt` is on
+ *  (TIME_TRAVEL_PROMPT_TEST). Scores the correction against the moment the post
+ *  was published, not against now — a post that was right when written has not
+ *  made a correctable error. Timestamps are already in the user message (#186);
+ *  this tells the model to use them. Backtested 2026-07-28 on 398 rated notes:
+ *  flags 9 NH vs ~3 real H. See docs/improvement-menu-2026-07-25.md (T2). */
+export const SEARCH_TIME_TRAVEL_INSTRUCTION = `
+
+## Timing — the time-travel test
+The user message states the current date and when the post was published. Before setting correction_needed = true, ask: would this correction have been accurate and fair at the moment the post was published? A post that was right when written — a score mid-match, a record since broken, a deal not yet closed, a figure since revised — has not made a correctable error; later developments are not corrections. Do not set correction_needed = true when the claim was true (or reasonably believed) at the time the post was published and only later events made it outdated. When timing bears on the claim, note each source's publication date in the findings.`;
 
 /** Claim-check search prompt (config.search_claim). The input is a verbatim
  *  excerpt highlighted from a podcast, interview, or article plus the surrounding
@@ -89,15 +80,14 @@ Return JSON with two fields:
 - Include what each source says that's relevant.
 - If no correction is needed, the findings can be brief — just explain why.`;
 
-/** Picks the base search prompt (standard vs anti-pedantic), then appends the
- *  misinfo pre-pass ground-truth article when one is active (`referenceBlock`,
- *  else null in the regular pipeline). `antiPedantic` =
- *  SIMPLE_BOT_ANTI_PEDANTIC_TEST. */
+/** Appends the misinfo pre-pass ground-truth article to the search prompt when
+ *  one is active (`referenceBlock`, else null in the regular pipeline). The
+ *  anti-pedantic test closed 2026-08-06 with "on" winning, so its prompt IS the
+ *  base prompt now and the variant switch is gone. */
 export function buildSearchSystemPrompt(params: {
   referenceBlock: string | null;
-  antiPedantic: boolean;
 }): string {
-  const base = params.antiPedantic ? SEARCH_SYSTEM_PROMPT_ANTI_PEDANTIC : SEARCH_SYSTEM_PROMPT;
+  const base = SEARCH_SYSTEM_PROMPT;
   if (!params.referenceBlock) return base;
   return `${base}
 

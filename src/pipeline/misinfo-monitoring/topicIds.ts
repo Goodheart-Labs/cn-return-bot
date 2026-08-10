@@ -17,6 +17,7 @@ export const MISINFO_TOPIC_IDS = [
   "save_our_bacon",
   "ea_achievements",
   "trump_election_security",
+  "trump_election_fraud",
 ] as const;
 
 export type MisinfoTopicId = (typeof MISINFO_TOPIC_IDS)[number];

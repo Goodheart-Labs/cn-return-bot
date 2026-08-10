@@ -14,6 +14,7 @@ import { runJsonLlmCall, type ChatMessage } from "../utils/jsonLlmCall";
 import {
   WRITER_SYSTEM_PROMPT,
   WRITER_FEWSHOT_EXAMPLES,
+  WRITER_TIME_TRAVEL_RULE,
   WRITER_RESPONSE_FORMAT,
   MISINFO_SOURCING_RULE,
   MISINFO_NOTE_SHAPE_RULE,
@@ -33,11 +34,17 @@ export interface WriterResult {
 const MAX_WRITER_ATTEMPTS = 3;
 const MAX_NOTE_CHARS = 280;
 
-export async function runWriter(userMessage: string, findings: string): Promise<WriterResult> {
+export async function runWriter(
+  userMessage: string,
+  findings: string,
+  opts?: { timingContext?: string },
+): Promise<WriterResult> {
   const log = getTweetLog();
   const config = getBotConfig();
   const monitoring = getMonitoringContext();
   let systemPrompt = config.writer_examples ? WRITER_SYSTEM_PROMPT + WRITER_FEWSHOT_EXAMPLES : WRITER_SYSTEM_PROMPT;
+  if (config.time_travel_prompt) systemPrompt += WRITER_TIME_TRAVEL_RULE;
+  if (opts?.timingContext) log?.set("writer.timingContext", true);
 
   // Curated misinfo topic: prepend the topic's vetted in-group / primary sources
   // to the findings (so the writer can actually cite them), steer it to prefer
@@ -59,7 +66,7 @@ export async function runWriter(userMessage: string, findings: string): Promise<
 
   const messages: ChatMessage[] = [
     { role: "system", content: systemPrompt },
-    { role: "user", content: buildWriterUserMessage(userMessage, effectiveFindings) },
+    { role: "user", content: buildWriterUserMessage(userMessage, effectiveFindings) + (opts?.timingContext ?? "") },
   ];
 
   // The helper owns the JSON parse + re-ask loop; this loop layers the note's

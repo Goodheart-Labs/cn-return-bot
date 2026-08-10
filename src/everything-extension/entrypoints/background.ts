@@ -1,62 +1,174 @@
 import { defineBackground } from "#imports";
 import { browser } from "#imports";
-import { submitNoteRequest } from "../../everything-shared/noteRequests";
-import { fetchReaderCanonical } from "../../everything-shared/notesQuery";
+import { fetchCoveredPageUrls, fetchReaderCanonical } from "../../everything-shared/notesQuery";
+import { track } from "../../everything-shared/analytics";
+import { initBackgroundAnalytics } from "../utils/analytics";
 import { signInWithXViaWebAuthFlow } from "../utils/oauth";
-import { getEnabledOrigins, onEnabledOriginsChanged } from "../utils/settings";
+import { COVERED_PAGE_URLS_KEY } from "../utils/coveredPages";
+import { GENERIC_SCRIPT_PREFIX, hostnamePattern, registerGenericScripts, genericScriptId } from "../utils/genericScript";
+import { ASSUME_ALL_URLS } from "../utils/permissionsMode";
+import { getDismissedGrantHosts } from "../utils/settings";
+import { STATIC_SITE_HOSTNAME } from "../utils/staticSites";
 
 const WRITE_MENU_ID = "cn-write-note";
-const REQUEST_MENU_ID = "cn-request-note";
 const INJECT_RETRY_DELAY_MS = 150;
+const INJECT_RETRY_ATTEMPTS = 10;
+const SYNC_ALARM = "cn-sync-noted-sites";
+const SYNC_PERIOD_MINUTES = 5;
 
-// Sites whose content scripts the static manifest injects (keep in sync with
-// notes.content.ts matches + the popup's DEFAULT_SITE).
-const STATIC_TEXT_SITES = ["*://*.substack.com/*", "*://*.ai-2040.com/*"];
+/** Hostnames of covered pages outside the static sites — where the generic
+ *  content script belongs. */
+function genericHostnames(urls: string[]): string[] {
+  const hostnames = new Set<string>();
+  for (const url of urls) {
+    try {
+      const { protocol, hostname } = new URL(url);
+      if (!/^https?:$/.test(protocol) || STATIC_SITE_HOSTNAME.test(hostname)) continue;
+      hostnames.add(hostname);
+    } catch {
+      // synthetic local: keys
+    }
+  }
+  return [...hostnames];
+}
 
-/** Selection context menus. Write-note is scoped to the sites the extension
- *  runs on (static text sites plus the user's opted-in origins) — clicking
- *  hands the selection to that tab's content script, which opens the
- *  write-note overlay. Request-a-note appears on EVERY OTHER page: the click
- *  itself grants activeTab, so we can inject its content script on demand
- *  without any host permissions. */
-async function rebuildMenus() {
+async function registeredGenericHostnames(): Promise<string[]> {
+  const scripts = await browser.scripting.getRegisteredContentScripts();
+  return scripts
+    .map((s) => s.id)
+    .filter((id) => id.startsWith(GENERIC_SCRIPT_PREFIX))
+    .map((id) => id.slice(GENERIC_SCRIPT_PREFIX.length));
+}
+
+/** The hostnames we may register without asking: all of them when
+ *  <all_urls> is required at install, else only the origins the user granted
+ *  through grant.html (permission survives; registration is re-derived). */
+async function registrableHostnames(noted: string[]): Promise<string[]> {
+  if (ASSUME_ALL_URLS) return noted;
+  const granted = await Promise.all(noted.map((hostname) =>
+    browser.permissions.contains({ origins: [hostnamePattern(hostname)] }).catch(() => false)));
+  return noted.filter((_, i) => granted[i]);
+}
+
+/** Registration only affects FUTURE page loads — tabs already open on a
+ *  newly-covered host get the script injected directly (the script's own
+ *  window flag makes a double arrival a no-op), so a popup-triggered sync
+ *  shows notes in the current tab without a reload. Hosts here are freshly
+ *  REGISTERED, i.e. granted — consent-clean in both modes. */
+async function injectIntoOpenTabs(hostnames: string[]) {
+  for (const hostname of hostnames) {
+    const tabs = await browser.tabs.query({ url: hostnamePattern(hostname) }).catch(() => []);
+    await Promise.all(tabs.map((tab) => tab.id != null
+      ? browser.scripting.executeScript({ target: { tabId: tab.id }, files: ["/content-scripts/generic.js"] }).catch(() => {})
+      : undefined));
+  }
+}
+
+/** Keep the generic content-script registrations in step with the covered
+ *  sites — a new site goes live for existing installs straight from the DB
+ *  on the next sync, without a store update. The covered PAGE list is also
+ *  cached for the content scripts' on-device checks and the redirect-mode
+ *  navigation listener. */
+async function syncNotedSites() {
+  try {
+    const urls = await fetchCoveredPageUrls();
+    if (urls) {
+      await browser.storage.local.set({ [COVERED_PAGE_URLS_KEY]: urls });
+      const wanted = new Set(await registrableHostnames(genericHostnames(urls)));
+      const existing = new Set(await registeredGenericHostnames());
+      const toAdd = [...wanted].filter((hostname) => !existing.has(hostname));
+      const toRemove = [...existing].filter((hostname) => !wanted.has(hostname));
+      if (toAdd.length) {
+        await registerGenericScripts(toAdd);
+        await injectIntoOpenTabs(toAdd);
+      }
+      if (toRemove.length) {
+        await browser.scripting.unregisterContentScripts({ ids: toRemove.map(genericScriptId) });
+      }
+    }
+  } catch (err) {
+    console.warn("[common-notes] noted-sites sync failed:", err);
+  }
+}
+
+/** Redirect mode: a navigation to a noted site we can't inject into yet
+ *  detours through grant.html, whose Allow click is the user gesture a
+ *  permission request needs. Dismissals ("Not now") are remembered per host
+ *  so the detour never becomes a nag loop. */
+async function offerGrantOnNavigation(tabId: number, url: string) {
+  if (!/^https?:/.test(url)) return;
+  const hostname = new URL(url).hostname;
+  if (STATIC_SITE_HOSTNAME.test(hostname)) return;
+  const { [COVERED_PAGE_URLS_KEY]: covered = [] } = await browser.storage.local.get(COVERED_PAGE_URLS_KEY);
+  if (!genericHostnames(covered as string[]).includes(hostname)) return;
+  if (await browser.permissions.contains({ origins: [hostnamePattern(hostname)] }).catch(() => false)) return;
+  if ((await getDismissedGrantHosts()).includes(hostname)) return;
+  await browser.tabs.update(tabId, {
+    url: browser.runtime.getURL(`/grant.html?host=${encodeURIComponent(hostname)}&back=${encodeURIComponent(url)}`),
+  });
+}
+
+/** One selection menu, on EVERY page — writing works anywhere now. On a
+ *  covered page the mounted content script opens the overlay directly; on an
+ *  uncovered page the click's activeTab grant authorizes injecting the
+ *  script on demand, and posting lazily creates the page's item. */
+async function createMenus() {
   await browser.contextMenus.removeAll();
-  const origins = await getEnabledOrigins();
   browser.contextMenus.create({
     id: WRITE_MENU_ID,
     title: "Write a Common Note on this",
-    contexts: ["selection"],
-    documentUrlPatterns: [...STATIC_TEXT_SITES, ...origins.map((origin) => `${origin}/*`)],
-  });
-  browser.contextMenus.create({
-    id: REQUEST_MENU_ID,
-    title: "Request a Common Note",
     contexts: ["selection"],
   });
 }
 
 export default defineBackground(() => {
-  browser.runtime.onInstalled.addListener(() => void rebuildMenus());
-  onEnabledOriginsChanged(() => void rebuildMenus());
+  initBackgroundAnalytics();
+  // Sync on install/update and browser start; the 5-minute alarm keeps
+  // long-lived sessions current (the MV3 worker can't hold a timer), and
+  // the popup pings cn-sync-noted-sites on open.
+  const startSync = () => {
+    browser.alarms.create(SYNC_ALARM, { periodInMinutes: SYNC_PERIOD_MINUTES });
+    void syncNotedSites();
+  };
+  browser.runtime.onInstalled.addListener((details) => {
+    if (details.reason === "install") track("extension_installed");
+    void createMenus();
+    startSync();
+  });
+  browser.runtime.onStartup.addListener(startSync);
+  browser.alarms.onAlarm.addListener((alarm) => {
+    if (alarm.name === SYNC_ALARM) void syncNotedSites();
+  });
+
+  if (!ASSUME_ALL_URLS) {
+    browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
+      if (changeInfo.url) void offerGrantOnNavigation(tabId, changeInfo.url).catch(() => {});
+    });
+  }
 
   browser.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === WRITE_MENU_ID && tab?.id != null) {
-      browser.tabs.sendMessage(tab.id, { type: "cn-write-note", selection: info.selectionText ?? "" }).catch(() => {});
-    }
-    if (info.menuItemId === REQUEST_MENU_ID && tab?.id != null) {
       const tabId = tab.id;
+      const message = { type: "cn-write-note", selection: info.selectionText ?? "" };
       (async () => {
-        // Re-injection on repeat clicks is a no-op (the script guards with a
-        // window flag). executeScript fails only on restricted pages
-        // (chrome://, Web Store) — swallowed. The one retry covers WXT
-        // scheduling the script's listener registration a beat after the
-        // file's top level finishes evaluating.
-        await browser.scripting.executeScript({ target: { tabId }, files: ["/content-scripts/requestnote.js"] });
-        const message = { type: "cn-request-note", selection: info.selectionText ?? "" };
-        await browser.tabs.sendMessage(tabId, message).catch(async () => {
-          await new Promise((resolve) => setTimeout(resolve, INJECT_RETRY_DELAY_MS));
+        try {
           await browser.tabs.sendMessage(tabId, message);
-        });
+        } catch {
+          // Uncovered page — no script there yet. The menu click's activeTab
+          // grant authorizes injecting on demand (executeScript fails only on
+          // restricted pages: chrome://, the Web Store); the mount needs a
+          // beat before its listener answers, hence the retries.
+          await browser.scripting.executeScript({ target: { tabId }, files: ["/content-scripts/generic.js"] });
+          for (let attempt = 0; attempt < INJECT_RETRY_ATTEMPTS; attempt++) {
+            await new Promise((resolve) => setTimeout(resolve, INJECT_RETRY_DELAY_MS));
+            try {
+              await browser.tabs.sendMessage(tabId, message);
+              return;
+            } catch {
+              // listener not up yet — keep trying
+            }
+          }
+        }
       })().catch(() => {});
     }
   });
@@ -81,14 +193,10 @@ export default defineBackground(() => {
       fetchReaderCanonical((message as { href: string }).href).then(sendResponse);
       return true; // async response
     }
-    if ((message as { type?: string })?.type === "cn-request-note-run") {
-      // Runs here, not in the content script: request-note injects into
-      // ARBITRARY pages, where a strict page CSP could block a content-script
-      // fetch to Supabase. Background fetches are exempt from page CSP.
-      const { selection, pageTitle, pageUrl } = message as { selection: string; pageTitle: string; pageUrl: string };
-      submitNoteRequest({ pageUrl, pageTitle, selection })
-        .then(() => sendResponse({ ok: true }))
-        .catch((err: Error) => sendResponse({ ok: false, error: err.message }));
+    if ((message as { type?: string })?.type === "cn-sync-noted-sites") {
+      // The popup pings this on open so a fresh site reaches the current
+      // session immediately instead of on the next scheduled tick.
+      syncNotedSites().then(() => sendResponse({ ok: true }));
       return true; // async response
     }
     return undefined;

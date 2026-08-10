@@ -140,6 +140,8 @@ Indexes: `tweet_id`, `outcome`, `final_stage`, `(outcome, created_at DESC) WHERE
 
 | `outcome_reason` | `outcome` | Emitted by | Meaning |
 |---|---|---|---|
+| `blocked_topic` | `rejected` | [processTweet.ts](../src/pipeline/orchestration/processTweet.ts) (blocked-topic gate) | Post is on a topic we never note (`BLOCKED_TOPICS` in [blockedTopics.ts](../src/pipeline/prompts/prefilter/blockedTopics.ts)). Bot never ran. |
+| `prefilter_no_note` | `rejected` | [processTweet.ts](../src/pipeline/orchestration/processTweet.ts) (note-needed prefilter gate) | Cheap deepseek prefilter decided no note is needed. Bot never ran. |
 | `no_correction_needed` | `rejected` | [processTweet.ts](../src/pipeline/orchestration/processTweet.ts) (note status not `CORRECTION WITH TRUSTWORTHY CITATION`) | Bot decided the post needs no note. |
 | `low_evaluation_score` | `rejected` | [processTweet.ts](../src/pipeline/orchestration/processTweet.ts) (`evalShouldSubmit === false`) | Self-eval score below the submission threshold. |
 | `check_failed` | `rejected` | [processTweet.ts](../src/pipeline/orchestration/processTweet.ts) (`checkResult` is "NO: …") | Source verifier read the sources and decided they don't support the note. **Substantive rejection.** |
