@@ -81,6 +81,24 @@ export const MISINFO_NOTE_SHAPE_RULE = `
 Notes that reach Helpful on this topic correct exactly ONE claim — the claim the post's argument actually rests on, not the easiest-to-source side detail — in one or two blunt declarative sentences, then stop. Do not add a second correction, extra background, or an "also…" clause: every added assertion hands some group of raters a reason to reject the note. Cite one or two sources, never more.`;
 
 /**
+ * The concede-then-correct experiment from Rob, 2026-07-27, run as a 50/50 A/B
+ * test through MISINFO_CONCEDE_SHAPE_TEST. On the "on" arm this is appended
+ * after MISINFO_NOTE_SHAPE_RULE, for the topics enrolled in
+ * CONCEDE_SHAPE_TOPIC_IDS. On the "off" arm the document's shape section and
+ * its "True core" lines are also stripped, in buildReferenceBlock, so that arm
+ * matches the pre-experiment behaviour exactly. Rating analysis of this
+ * topic's notes found that the worst-rejected one sidestepped the true core
+ * of the post's claim, and 73% of its raters tagged it "missing key points" —
+ * they read the omission as evasive. The concession is framed as part of the
+ * ONE-claim shape rather than an exception to it, because the one-claim rule
+ * above would otherwise suppress it as extra background.
+ */
+export const MISINFO_CONCEDE_SHAPE_RULE = `
+
+## Opening shape for this topic (concede the true core, then correct)
+The reference document has a "Note shape — concede the true core first" section with a "True core:" line per claim. When the post's central claim contains a component a True core line affirms, OPEN the note with that concession in one short impersonal clause ("The raid did occur —", "The released files are real —"), then make your single correction of the false extension and stop. This concession is part of the one-claim shape, not extra background: concede only what a True core line affirms, never improvise balance, never address the poster ("you're right…"). If no True core line applies, or the concession would crowd out the correction, write the correction straight.`;
+
+/**
  * This block is appended to the writer system prompt when
  * `config.time_travel_prompt` is on. That is the TIME_TRAVEL_PROMPT_TEST arm.
  * It is the companion of SEARCH_TIME_TRAVEL_INSTRUCTION. The writer is the

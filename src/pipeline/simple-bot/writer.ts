@@ -18,6 +18,7 @@ import {
   WRITER_RESPONSE_FORMAT,
   MISINFO_SOURCING_RULE,
   MISINFO_NOTE_SHAPE_RULE,
+  MISINFO_CONCEDE_SHAPE_RULE,
   buildWriterUserMessage,
   buildWriterRetryMessage,
   buildWriterLintMessage,
@@ -52,6 +53,13 @@ export async function runWriter(
   let effectiveFindings = findings;
   if (monitoring) {
     systemPrompt += MISINFO_SOURCING_RULE + MISINFO_NOTE_SHAPE_RULE;
+    // Concede-then-correct experiment. The flag is only ever true on the "on"
+    // arm of the 50/50 MISINFO_CONCEDE_SHAPE_TEST, which fires only on topics
+    // enrolled in CONCEDE_SHAPE_TOPIC_IDS.
+    if (config.concede_shape) {
+      systemPrompt += MISINFO_CONCEDE_SHAPE_RULE;
+      log?.set("writer.concedeShape", true);
+    }
     effectiveFindings = `${buildReferenceBlock(monitoring)}\n\n${findings}`;
     log?.set("writer.misinfoSourcing", true);
   }

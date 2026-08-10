@@ -22,3 +22,13 @@ export const MISINFO_TOPIC_IDS = [
 ] as const;
 
 export type MisinfoTopicId = (typeof MISINFO_TOPIC_IDS)[number];
+
+/**
+ * The topics enrolled in the concede-then-correct experiment. The
+ * misinfo_concede_shape A/B test samples a pick only on these topics, through
+ * its prerequisite on the misinfo_topic config field. Enrolling a topic means
+ * adding its ID here and wrapping the experiment's additions in its document
+ * in concede-shape marker lines. topics.ts throws at load time when an
+ * enrolled topic's document carries no marked content.
+ */
+export const CONCEDE_SHAPE_TOPIC_IDS: MisinfoTopicId[] = ["trump_election_security"];
