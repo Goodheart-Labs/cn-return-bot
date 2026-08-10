@@ -47,7 +47,8 @@
   },
   "scripts": {
     "typecheck": "bunx --bun typescript@5.9.3 --noEmit 2>&1 | grep -v 'node_modules/' | grep -q 'error TS' && exit 1 || exit 0",
-    "check": "bun run typecheck && bunx knip",
+    "typecheck-review": "bunx --bun typescript@5.9.3 --noEmit -p src/review-dashboard 2>&1 | grep -v 'node_modules/' | grep -q 'error TS' && exit 1 || exit 0",
+    "check": "bun run typecheck && bun run typecheck-review && bunx knip",
     "prepare": "husky",
     "update-feedback": "bun run src/production/updateNoteFeedback.ts",
     "dev-review": "cd src/review-dashboard && bunx vite --port 8001",
