@@ -4,7 +4,14 @@ import { supabase } from "../../../everything-shared/supabase";
 // key cannot read everything_events or everything_votes directly, and the
 // RPCs return only aggregate counts.
 
-export type FunnelStage = "visitors" | "signed_in" | "voted_1" | "voted_5" | "voted_10";
+export type FunnelStage =
+  | "visitors"
+  | "installs"
+  | "shown_notes"
+  | "signed_in"
+  | "voted_1"
+  | "voted_5"
+  | "voted_10";
 
 export interface FunnelRow {
   platform: string;

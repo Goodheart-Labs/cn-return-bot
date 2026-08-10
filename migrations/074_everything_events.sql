@@ -45,22 +45,23 @@ create policy events_insert on everything_events
   with check (user_id is null or user_id = auth.uid());
 
 -- Funnel stage counts, split by platform, optionally restricted to the last
--- window_days days (null means all time). Every stage is counted
--- independently within the window — this is not a per-person conversion
--- funnel:
---   visitors  = distinct devices that saw content (web pageview, or notes
---               actually shown by the extension — the extension has no
---               pageview concept).
---   signed_in = distinct users who did anything while signed in. Users who
---               signed up before this table existed appear once they are
---               next active, consistent with the visitors stage.
---   voted_N   = voters whose vote count in the window reaches N. The primary
---               key of everything_votes is (note_id, voter_id), so count(*)
---               per voter is exactly "distinct notes voted". Votes from
---               before migration 069 have no platform and are reported under
---               'unknown' rather than guessed. A user who votes on both
---               platforms counts in each platform where they independently
---               reach the tier.
+-- window_days days (null means all time). Stages are counted within the
+-- window — this is not a per-person conversion funnel, with one exception
+-- (shown_notes below):
+--   visitors    = web only: distinct devices with a pageview.
+--   installs    = extension only: distinct devices that installed in-window.
+--   shown_notes = extension only: of the devices that installed in-window,
+--                 those that also had notes shown in-window.
+--   signed_in   = distinct users who did anything while signed in. Users who
+--                 signed up before this table existed appear once they are
+--                 next active.
+--   voted_N     = voters whose vote count in the window reaches N. The
+--                 primary key of everything_votes is (note_id, voter_id), so
+--                 count(*) per voter is exactly "distinct notes voted".
+--                 Votes from before migration 069 have no platform and are
+--                 counted as web (where nearly all early voting happened).
+--                 A user who votes on both platforms counts in each platform
+--                 where they independently reach the tier.
 create or replace function everything_funnel(window_days int default null)
 returns table (platform text, stage text, users bigint)
 language sql security definer set search_path = public as $$
@@ -68,16 +69,27 @@ language sql security definer set search_path = public as $$
     select case when window_days is null then '-infinity'::timestamptz
                 else now() - make_interval(days => window_days) end as t
   ),
+  installs as (
+    select distinct e.device_id
+    from everything_events e, cutoff
+    where e.event = 'extension_installed' and e.created_at >= cutoff.t
+  ),
   votes as (
-    select coalesce(v.platform, 'unknown') as platform, v.voter_id, count(*) as n
+    select coalesce(v.platform, 'web') as platform, v.voter_id, count(*) as n
     from everything_votes v, cutoff
     where v.created_at >= cutoff.t
     group by 1, 2
   )
-  select e.platform, 'visitors', count(distinct e.device_id)
+  select 'web', 'visitors', count(distinct e.device_id)
     from everything_events e, cutoff
-    where e.event in ('pageview', 'notes_shown') and e.created_at >= cutoff.t
-    group by e.platform
+    where e.event = 'pageview' and e.created_at >= cutoff.t
+  union all
+  select 'extension', 'installs', count(*) from installs
+  union all
+  select 'extension', 'shown_notes', count(distinct e.device_id)
+    from everything_events e, cutoff
+    where e.event = 'notes_shown' and e.created_at >= cutoff.t
+      and e.device_id in (select device_id from installs)
   union all
   select e.platform, 'signed_in', count(distinct e.user_id)
     from everything_events e, cutoff
