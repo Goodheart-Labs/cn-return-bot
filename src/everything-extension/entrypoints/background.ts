@@ -65,8 +65,8 @@ async function injectIntoOpenTabs(hostnames: string[]) {
 /** Keep the generic content-script registrations in step with the covered
  *  sites. A newly covered site goes live on existing installs on the next
  *  sync, straight from the database, without a store update. This also caches
- *  the list of covered pages. The content scripts use that list for their
- *  on-device checks, and so does the navigation listener in redirect mode. */
+ *  the list of covered pages and the note counts behind the listing badges.
+ *  The content scripts use both for their on-device checks. */
 async function syncNotedSites() {
   try {
     const [urls, counts] = await Promise.all([fetchCoveredPageUrls(), fetchNotedPageCounts()]);
