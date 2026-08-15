@@ -35,6 +35,21 @@ export async function addRequestedPage(pageUrl: string): Promise<void> {
   await browser.storage.sync.set({ [REQUESTED_PAGES_KEY]: pages.slice(-REQUESTED_PAGES_MAX) });
 }
 
+// The feeds the user has already asked us to follow. The status overlay and the
+// popup show "follow requested" instead of offering the button again. Same
+// rolling-window idea as the requested pages above.
+const REQUESTED_FOLLOWS_KEY = "cn:requestedFollows";
+const REQUESTED_FOLLOWS_MAX = 50;
+
+export async function getRequestedFollows(): Promise<string[]> {
+  return ((await browser.storage.sync.get(REQUESTED_FOLLOWS_KEY))[REQUESTED_FOLLOWS_KEY] as string[] | undefined) ?? [];
+}
+
+export async function addRequestedFollow(feedUrl: string): Promise<void> {
+  const feeds = [...new Set([...(await getRequestedFollows()), feedUrl])];
+  await browser.storage.sync.set({ [REQUESTED_FOLLOWS_KEY]: feeds.slice(-REQUESTED_FOLLOWS_MAX) });
+}
+
 // Which note statuses are rendered on a page. Notes rated helpful always show. The
 // other two statuses are controlled by tickboxes in the popup. The setting lives in
 // sync storage, so it follows the user across devices.

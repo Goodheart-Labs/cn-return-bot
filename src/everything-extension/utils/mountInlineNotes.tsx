@@ -7,6 +7,8 @@ import { resolveReaderCanonical } from "./readerCanonical";
 import { indexContainer, findQuoteRange } from "./anchor";
 import { fetchClaimGroups, type ClaimGroup } from "./claimGroups";
 import { getCoveredPageUrls, pageIsCovered } from "./coveredPages";
+import { authorHasCoveredPages, isSubstackPostPage, substackFollowTarget } from "./followTarget";
+import { mountStatusOverlay } from "./mountStatusOverlay";
 import { mountWriteAnywhere } from "./mountWriteAnywhere";
 import { onNoteFiltersChanged } from "./settings";
 import { isPageDark, observePageTheme } from "./pageTheme";
@@ -76,6 +78,31 @@ function applyHighlights(ranges: Range[]) {
   else highlights.set(HIGHLIGHT_NAME, new (globalThis as any).Highlight(...ranges));
 }
 
+/** The write-anywhere shell plus, on a post page, the transient "we haven't
+ *  checked this yet" card with its request and follow buttons. The card only
+ *  makes sense on a post: an unchecked homepage or archive is not news. */
+async function mountUncovered(
+  ctx: ContentScriptContext,
+  pageUrl: string,
+  covered: string[],
+  onCoverageChanged: () => void,
+): Promise<() => void> {
+  const teardownWrite = await mountWriteAnywhere(ctx, pageUrl, onCoverageChanged);
+  if (!isSubstackPostPage(pageUrl)) return teardownWrite;
+  const teardownStatus = await mountStatusOverlay(ctx, {
+    pageUrl,
+    noun: "post",
+    checked: null,
+    authorCovered: authorHasCoveredPages(pageUrl, covered),
+    followTarget: substackFollowTarget(pageUrl),
+    requestWithPageText: true,
+  });
+  return () => {
+    teardownStatus();
+    teardownWrite();
+  };
+}
+
 /** Resolves `href` to an ingested item, anchors that item's claims and mounts the
  *  overlay. When the page has no ingested item we mount the write-anywhere shell
  *  instead. Either way the returned function tears down whatever was mounted. */
@@ -90,11 +117,11 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   const covered = await getCoveredPageUrls();
   if (covered && !pageIsCovered(pageUrl, covered)) {
     console.info(`[common-notes] ${pageUrl} → not in the covered list (no backend lookup)`);
-    return mountWriteAnywhere(ctx, pageUrl, onCoverageChanged);
+    return mountUncovered(ctx, pageUrl, covered, onCoverageChanged);
   }
   const item = await fetchItemForUrl(pageUrl);
   console.info(`[common-notes] ${pageUrl} → ${item ? `item "${item.title ?? item.id}"` : "no ingested item"}`);
-  if (!item) return mountWriteAnywhere(ctx, pageUrl, onCoverageChanged);
+  if (!item) return mountUncovered(ctx, pageUrl, covered ?? [], onCoverageChanged);
   // We mount even when the item has no notes yet. Writing a note from a selection
   // works on any ingested page, and refresh() brings the new note in.
   let groups = await fetchClaimGroups(item.id);
@@ -108,6 +135,18 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
       note_count: groups.reduce((n, g) => n + g.notes.length, 0),
     });
   }
+
+  // The transient status card tells the reader this page has been checked,
+  // which matters most when the check produced zero notes and nothing else on
+  // the page shows we were here.
+  const statusTeardown = await mountStatusOverlay(ctx, {
+    pageUrl,
+    noun: isSubstackPostPage(pageUrl) ? "post" : "page",
+    checked: { noteCount: groups.reduce((n, g) => n + g.notes.length, 0) },
+    authorCovered: true,
+    followTarget: null,
+    requestWithPageText: false,
+  });
 
   let reactRoot: Root | null = null;
   let themeRoot: HTMLElement | null = null;
@@ -231,6 +270,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     stopTheme();
     observer.disconnect();
     clearTimeout(timer);
+    statusTeardown();
     ui.remove();
     inlineUi.remove();
   };

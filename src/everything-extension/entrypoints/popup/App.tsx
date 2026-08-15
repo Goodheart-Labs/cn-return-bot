@@ -8,6 +8,7 @@ import { submitNoteRequest } from "../../../everything-shared/noteRequests";
 import { noteVisible } from "../../utils/claimGroups";
 import { genericScriptId, hostnamePattern, registerGenericScripts } from "../../utils/genericScript";
 import { resolveReaderCanonical } from "../../utils/readerCanonical";
+import { capturePageFromTab } from "../../utils/pageCapture";
 import { addRequestedPage, getNoteFilters, getRequestedPages, removeDismissedGrantHost, updateNoteFilters, type NoteFilters } from "../../utils/settings";
 import { STATIC_SITE_HOSTNAME } from "../../utils/staticSites";
 import { LoginPanel } from "../../components/LoginPanel";
@@ -186,7 +187,12 @@ function RequestNoteButton() {
       const tab = await activeTab();
       if (!tab?.url) throw new Error("no page");
       const pageUrl = normalizePageUrl(tab.url);
-      await submitNoteRequest({ pageUrl, pageTitle: tab.title ?? "", selection: null });
+      // Opening the popup granted activeTab, so we can read the page's body
+      // text. The pipeline fact-checks the page from that text, because it
+      // cannot fetch arbitrary pages itself. A page we may not inject into
+      // still gets a text-less request.
+      const captured = tab.id != null ? await capturePageFromTab(tab.id) : null;
+      await submitNoteRequest({ pageUrl, pageTitle: tab.title ?? "", selection: null, pageText: captured?.text });
       // This is only a local reminder. The request itself is already saved.
       await addRequestedPage(pageUrl).catch(() => {});
       setPhase("done");
