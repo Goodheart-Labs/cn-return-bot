@@ -1,22 +1,34 @@
 import { browser } from "#imports";
 
-// The hosts where the user answered "Do not ask again" on the grant.html page. We
-// never send them to that page again. This only applies in the redirect permission
-// model.
-const GRANT_DISMISSED_KEY = "cn:grantDismissed";
+// The hostnames the user switched notes off for. The list began as the "Do not
+// ask again" answer on the old grant.html consent page, back when every site
+// needed its own permission. The extension now installs with access to all
+// sites, and this list is the per-site opt-out that replaced that flow. The
+// popup's "Hide notes on this site" button adds to it, and its "Show notes on
+// this site" button removes from it. The storage key keeps its old name so an
+// existing "Do not ask again" still counts as notes switched off.
+const DISABLED_SITES_KEY = "cn:grantDismissed";
 
-export async function getDismissedGrantHosts(): Promise<string[]> {
-  return ((await browser.storage.sync.get(GRANT_DISMISSED_KEY))[GRANT_DISMISSED_KEY] as string[] | undefined) ?? [];
+export async function getDisabledSites(): Promise<string[]> {
+  return ((await browser.storage.sync.get(DISABLED_SITES_KEY))[DISABLED_SITES_KEY] as string[] | undefined) ?? [];
 }
 
-export async function addDismissedGrantHost(hostname: string): Promise<void> {
-  await browser.storage.sync.set({ [GRANT_DISMISSED_KEY]: [...new Set([...(await getDismissedGrantHosts()), hostname])] });
+export async function addDisabledSite(hostname: string): Promise<void> {
+  await browser.storage.sync.set({ [DISABLED_SITES_KEY]: [...new Set([...(await getDisabledSites()), hostname])] });
 }
 
-/** The way back in for a user who changed their mind. Granting a site from the
- *  popup's "Show notes on this site" button clears an earlier "Do not ask again". */
-export async function removeDismissedGrantHost(hostname: string): Promise<void> {
-  await browser.storage.sync.set({ [GRANT_DISMISSED_KEY]: (await getDismissedGrantHosts()).filter((h) => h !== hostname) });
+export async function removeDisabledSite(hostname: string): Promise<void> {
+  await browser.storage.sync.set({ [DISABLED_SITES_KEY]: (await getDisabledSites()).filter((h) => h !== hostname) });
+}
+
+/** Returns a function that removes the listener again. The background watches
+ *  this so a toggled site is registered or unregistered right away. */
+export function onDisabledSitesChanged(callback: () => void): () => void {
+  const listener = (changes: Record<string, unknown>, area: string) => {
+    if (area === "sync" && changes[DISABLED_SITES_KEY]) callback();
+  };
+  browser.storage.onChanged.addListener(listener);
+  return () => browser.storage.onChanged.removeListener(listener);
 }
 
 // The pages the user has already asked us to cover with "Request notes on this

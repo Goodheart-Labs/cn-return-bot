@@ -7,6 +7,7 @@ import { fetchClaimGroups, type ClaimGroup } from "../utils/claimGroups";
 import { getCoveredPageUrls, pageIsCovered } from "../utils/coveredPages";
 import { YoutubeOverlayApp, DEFAULT_CLIP_SECONDS, type TimedGroup } from "../components/YoutubeOverlay";
 import { isPageDark, observePageTheme } from "../utils/pageTheme";
+import { getDisabledSites } from "../utils/settings";
 import { registerDevReloadHook } from "../utils/devReload";
 import { initUiAnalytics } from "../utils/analytics";
 import { track } from "../../everything-shared/analytics";
@@ -115,6 +116,8 @@ export default defineContentScript({
   matches: ["*://*.youtube.com/*"],
   cssInjectionMode: "ui",
   async main(ctx) {
+    // The user switched notes off for this site in the popup.
+    if ((await getDisabledSites()).includes(location.hostname)) return;
     initUiAnalytics();
     registerDevReloadHook(ctx);
     let cleanup: (() => void) | null = null;

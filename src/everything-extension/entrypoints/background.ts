@@ -6,8 +6,7 @@ import { initBackgroundAnalytics } from "../utils/analytics";
 import { signInWithXViaWebAuthFlow } from "../utils/oauth";
 import { COVERED_PAGE_URLS_KEY } from "../utils/coveredPages";
 import { GENERIC_SCRIPT_PREFIX, hostnamePattern, registerGenericScripts, genericScriptId } from "../utils/genericScript";
-import { ASSUME_ALL_URLS } from "../utils/permissionsMode";
-import { getDismissedGrantHosts } from "../utils/settings";
+import { getDisabledSites, onDisabledSitesChanged } from "../utils/settings";
 import { STATIC_SITE_HOSTNAME } from "../utils/staticSites";
 
 const WRITE_MENU_ID = "cn-write-note";
@@ -40,23 +39,20 @@ async function registeredGenericHostnames(): Promise<string[]> {
     .map((id) => id.slice(GENERIC_SCRIPT_PREFIX.length));
 }
 
-/** The hostnames we may register a script for without asking the user. When
- *  <all_urls> is required at install, that is all of them. Otherwise it is
- *  only the origins the user granted through grant.html. The permission itself
- *  survives, while the registration is worked out again on every sync. */
-async function registrableHostnames(noted: string[]): Promise<string[]> {
-  if (ASSUME_ALL_URLS) return noted;
-  const granted = await Promise.all(noted.map((hostname) =>
-    browser.permissions.contains({ origins: [hostnamePattern(hostname)] }).catch(() => false)));
-  return noted.filter((_, i) => granted[i]);
+/** The hostnames the sync should have a registration for. That is every noted
+ *  hostname except the sites the user switched notes off for. The list is
+ *  worked out again on every sync, so toggling a site in the popup takes
+ *  effect on the next sync it triggers. */
+async function enabledHostnames(noted: string[]): Promise<string[]> {
+  const disabled = new Set(await getDisabledSites());
+  return noted.filter((hostname) => !disabled.has(hostname));
 }
 
 /** Registering a script only affects future page loads. So tabs that are
  *  already open on a newly covered host get the script injected directly, and
  *  a sync triggered from the popup shows notes in the current tab without a
  *  reload. The script sets a flag on `window`, so a second copy arriving does
- *  nothing. Every hostname passed here has just been registered, which means
- *  the user has granted it in either permission mode. */
+ *  nothing. */
 async function injectIntoOpenTabs(hostnames: string[]) {
   for (const hostname of hostnames) {
     const tabs = await browser.tabs.query({ url: hostnamePattern(hostname) }).catch(() => []);
@@ -76,7 +72,7 @@ async function syncNotedSites() {
     const urls = await fetchCoveredPageUrls();
     if (urls) {
       await browser.storage.local.set({ [COVERED_PAGE_URLS_KEY]: urls });
-      const wanted = new Set(await registrableHostnames(genericHostnames(urls)));
+      const wanted = new Set(await enabledHostnames(genericHostnames(urls)));
       const existing = new Set(await registeredGenericHostnames());
       const toAdd = [...wanted].filter((hostname) => !existing.has(hostname));
       const toRemove = [...existing].filter((hostname) => !wanted.has(hostname));
@@ -91,24 +87,6 @@ async function syncNotedSites() {
   } catch (err) {
     console.warn("[common-notes] noted-sites sync failed:", err);
   }
-}
-
-/** In redirect mode, a navigation to a noted site we cannot inject into yet
- *  detours through grant.html. A permission request needs a user gesture, and
- *  the Allow click on that page is that gesture. If the user picks "Do not ask
- *  again" we remember it for that host, so the detour never becomes a nag
- *  loop. */
-async function offerGrantOnNavigation(tabId: number, url: string) {
-  if (!/^https?:/.test(url)) return;
-  const hostname = new URL(url).hostname;
-  if (STATIC_SITE_HOSTNAME.test(hostname)) return;
-  const { [COVERED_PAGE_URLS_KEY]: covered = [] } = await browser.storage.local.get(COVERED_PAGE_URLS_KEY);
-  if (!genericHostnames(covered as string[]).includes(hostname)) return;
-  if (await browser.permissions.contains({ origins: [hostnamePattern(hostname)] }).catch(() => false)) return;
-  if ((await getDismissedGrantHosts()).includes(hostname)) return;
-  await browser.tabs.update(tabId, {
-    url: browser.runtime.getURL(`/grant.html?host=${encodeURIComponent(hostname)}&back=${encodeURIComponent(url)}`),
-  });
 }
 
 /** There is one selection menu and it sits on every page, because writing a
@@ -144,12 +122,10 @@ export default defineBackground(() => {
   browser.alarms.onAlarm.addListener((alarm) => {
     if (alarm.name === SYNC_ALARM) void syncNotedSites();
   });
-
-  if (!ASSUME_ALL_URLS) {
-    browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
-      if (changeInfo.url) void offerGrantOnNavigation(tabId, changeInfo.url).catch(() => {});
-    });
-  }
+  // Toggling a site in the popup registers or unregisters its script right
+  // away, so the choice holds on the next page load and not only after the
+  // next scheduled sync.
+  onDisabledSitesChanged(() => void syncNotedSites());
 
   browser.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === WRITE_MENU_ID && tab?.id != null) {
