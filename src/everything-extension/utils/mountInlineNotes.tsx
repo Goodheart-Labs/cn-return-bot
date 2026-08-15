@@ -6,6 +6,7 @@ import { resolveReaderCanonical } from "./readerCanonical";
 import { indexContainer, findQuoteRange } from "./anchor";
 import { fetchClaimGroups, type ClaimGroup } from "./claimGroups";
 import { getCoveredPageUrls, pageIsCovered } from "./coveredPages";
+import { recordLinkVisit } from "./linkVisits";
 import { mountWriteAnywhere } from "./mountWriteAnywhere";
 import { getDisabledSites, onNoteFiltersChanged } from "./settings";
 import { isPageDark, observePageTheme } from "./pageTheme";
@@ -94,6 +95,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   const item = await fetchItemForUrl(pageUrl);
   console.info(`[common-notes] ${pageUrl} → ${item ? `item "${item.title ?? item.id}"` : "no ingested item"}`);
   if (!item) return mountWriteAnywhere(ctx, pageUrl, onCoverageChanged);
+  recordLinkVisit(item);
   // We mount even when the item has no notes yet. Writing a note from a selection
   // works on any ingested page, and refresh() brings the new note in.
   let groups = await fetchClaimGroups(item.id);

@@ -5,6 +5,7 @@ import type { ContentScriptContext } from "#imports";
 import { fetchItemForUrl, extractYoutubeVideoId } from "../../everything-shared/notesQuery";
 import { fetchClaimGroups, type ClaimGroup } from "../utils/claimGroups";
 import { getCoveredPageUrls, pageIsCovered } from "../utils/coveredPages";
+import { recordLinkVisit } from "../utils/linkVisits";
 import { YoutubeOverlayApp, DEFAULT_CLIP_SECONDS, type TimedGroup } from "../components/YoutubeOverlay";
 import { isPageDark, observePageTheme } from "../utils/pageTheme";
 import { getDisabledSites } from "../utils/settings";
@@ -20,6 +21,7 @@ const PLAYER_WAIT_MS = 15_000;
 const PLAYER_POLL_MS = 500;
 
 let lastShownUrl: string | null = null;
+let lastVisitUrl: string | null = null;
 
 function waitFor<T extends Element>(selector: string): Promise<T | null> {
   return new Promise((resolve) => {
@@ -60,6 +62,11 @@ async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | n
   if (covered && !pageIsCovered(location.href, covered)) return null;
   const item = await fetchItemForUrl(location.href);
   if (!item) return null;
+  // Once per video, because yt-navigate-finish re-fires on the same URL.
+  if (lastVisitUrl !== location.href) {
+    lastVisitUrl = location.href;
+    recordLinkVisit(item);
+  }
   const refetch = async () => timedGroups(await fetchClaimGroups(item.id));
   const groups = await refetch();
   console.info(`[common-notes] ${groups.length} timestamped claims on this video`);
