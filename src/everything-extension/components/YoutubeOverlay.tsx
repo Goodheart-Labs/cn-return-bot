@@ -165,7 +165,7 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
       if (type === "cn-jump-note" && groups.length) {
         jumpCursor.current = (jumpCursor.current + 1) % groups.length;
         video.scrollIntoView({ behavior: "smooth", block: "center" });
-        jumpToPin(groups[jumpCursor.current]);
+        jumpToPin(groups[jumpCursor.current]!);
         sendResponse({ jumped: true });
       }
     };

@@ -101,4 +101,7 @@ as $$
   select coalesce(sum(cost), 0) from everything_pipeline_runs where created_at >= since;
 $$;
 
+-- Revoking public also strips service_role's inherited execute, so grant it
+-- back explicitly. The pipeline is the only caller.
 revoke execute on function everything_cost_since(timestamptz) from public, anon, authenticated;
+grant execute on function everything_cost_since(timestamptz) to service_role;

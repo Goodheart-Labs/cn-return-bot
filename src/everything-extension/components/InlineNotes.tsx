@@ -231,7 +231,7 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
       if (type === "cn-jump-state") sendResponse({ jumped: jumpCursor.current >= 0 });
       if (type === "cn-jump-note" && ordered.length) {
         jumpCursor.current = (jumpCursor.current + 1) % ordered.length;
-        const target = ordered[jumpCursor.current];
+        const target = ordered[jumpCursor.current]!;
         target.range.startContainer.parentElement?.scrollIntoView({ behavior: "smooth", block: "center" });
         setOpenClaim(target.claimId);
         sendResponse({ jumped: true });
