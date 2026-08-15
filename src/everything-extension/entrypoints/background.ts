@@ -1,10 +1,10 @@
 import { defineBackground } from "#imports";
 import { browser } from "#imports";
-import { fetchCoveredPageUrls, fetchReaderCanonical } from "../../everything-shared/notesQuery";
+import { fetchCoveredPageUrls, fetchNotedPageCounts, fetchReaderCanonical } from "../../everything-shared/notesQuery";
 import { track } from "../../everything-shared/analytics";
 import { initBackgroundAnalytics } from "../utils/analytics";
 import { signInWithXViaWebAuthFlow } from "../utils/oauth";
-import { COVERED_PAGE_URLS_KEY } from "../utils/coveredPages";
+import { COVERED_PAGE_URLS_KEY, NOTED_PAGE_COUNTS_KEY } from "../utils/coveredPages";
 import { GENERIC_SCRIPT_PREFIX, hostnamePattern, registerGenericScripts, genericScriptId } from "../utils/genericScript";
 import { getDisabledSites, onDisabledSitesChanged } from "../utils/settings";
 import { STATIC_SITE_HOSTNAME } from "../utils/staticSites";
@@ -69,7 +69,9 @@ async function injectIntoOpenTabs(hostnames: string[]) {
  *  on-device checks, and so does the navigation listener in redirect mode. */
 async function syncNotedSites() {
   try {
-    const urls = await fetchCoveredPageUrls();
+    const [urls, counts] = await Promise.all([fetchCoveredPageUrls(), fetchNotedPageCounts()]);
+    // The listing badges draw their per-page note counts from this cache.
+    if (counts) await browser.storage.local.set({ [NOTED_PAGE_COUNTS_KEY]: counts });
     if (urls) {
       await browser.storage.local.set({ [COVERED_PAGE_URLS_KEY]: urls });
       const wanted = new Set(await enabledHostnames(genericHostnames(urls)));

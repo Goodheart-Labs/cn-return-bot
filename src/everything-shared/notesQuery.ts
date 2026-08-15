@@ -207,17 +207,31 @@ export async function fetchCoveredPageUrls(): Promise<string[] | null> {
   return (data ?? []).map((r: any) => r.url as string).filter((url) => !url.startsWith("local:"));
 }
 
-/** Returns the URL of every ingested page that has visible notes, or null when
- *  the query failed. Synthetic local documents, whose URL starts with `local:`,
- *  are left out. */
-export async function fetchNotedPageUrls(): Promise<string[] | null> {
+/** How many visible notes each ingested page has, keyed by the item's URL.
+ *  The extension caches this next to the coverage list and draws its listing
+ *  badges from it on-device. Synthetic local documents, whose URL starts with
+ *  `local:`, are left out. Returns null when the query failed, so a caller
+ *  does not mistake an outage for "nothing has notes". */
+export async function fetchNotedPageCounts(): Promise<Record<string, number> | null> {
   const { data, error } = await supabase
     .from("everything_notes")
     .select("claim:everything_claims!inner(item:everything_items!inner(url))")
     .neq("status", "hidden");
   if (error) return null;
-  return [...new Set((data ?? []).map((r: any) => r.claim.item.url as string))]
-    .filter((url) => !url.startsWith("local:"));
+  const counts: Record<string, number> = {};
+  for (const row of (data ?? []) as any[]) {
+    const url = row.claim.item.url as string;
+    if (url.startsWith("local:")) continue;
+    counts[url] = (counts[url] ?? 0) + 1;
+  }
+  return counts;
+}
+
+/** Returns the URL of every ingested page that has visible notes, or null when
+ *  the query failed. */
+export async function fetchNotedPageUrls(): Promise<string[] | null> {
+  const counts = await fetchNotedPageCounts();
+  return counts ? Object.keys(counts) : null;
 }
 
 /** Picks a random ingested page that has visible notes. The popup's "Open random

@@ -4,6 +4,7 @@ import { defineContentScript, createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
 import { fetchItemForUrl, extractYoutubeVideoId } from "../../everything-shared/notesQuery";
 import { fetchClaimGroups, type ClaimGroup } from "../utils/claimGroups";
+import { mountCoverageBadges } from "../utils/coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "../utils/coveredPages";
 import { recordLinkVisit } from "../utils/linkVisits";
 import { YoutubeOverlayApp, DEFAULT_CLIP_SECONDS, type TimedGroup } from "../components/YoutubeOverlay";
@@ -127,6 +128,10 @@ export default defineContentScript({
     if ((await getDisabledSites()).includes(location.hostname)) return;
     initUiAnalytics();
     registerDevReloadHook(ctx);
+    // Listing badges mark noted videos on channel pages and in other video
+    // lists. They live independently of the watch-page overlay below.
+    const stopBadges = await mountCoverageBadges(ctx);
+    ctx.onInvalidated(() => stopBadges?.());
     let cleanup: (() => void) | null = null;
     const init = async () => {
       cleanup?.();
