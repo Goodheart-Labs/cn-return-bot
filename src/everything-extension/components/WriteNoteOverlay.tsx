@@ -6,6 +6,7 @@ import { postClaimWithNote } from "../../everything-shared/postNote";
 import { track } from "../../everything-shared/analytics";
 import type { PageItem } from "../../everything-shared/notesQuery";
 import { RejectedNotice } from "../../everything-web/src/components/editorBits";
+import { LoginPanel } from "./LoginPanel";
 
 /** Write a note anchored to the reader's selection. This is the extension's
  *  version of the website's WriteNoteModal. On the website you search the
@@ -76,9 +77,10 @@ export function WriteNoteOverlay({ item, pageForItem, selection, session, onClos
         </div>
         <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 pl-3 text-gray-600 dark:text-gray-300 italic text-sm">“{selection}”</blockquote>
         {!session ? (
-          <p className="text-sm rounded-lg p-2 bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900">
-            Sign in from the Common Notes toolbar icon to write notes.
-          </p>
+          // Signing in happens right here in the overlay. Once the session
+          // lands, this branch flips to the composer and the selection is
+          // still in place.
+          <LoginPanel surface="overlay" />
         ) : (
           <>
             <textarea
