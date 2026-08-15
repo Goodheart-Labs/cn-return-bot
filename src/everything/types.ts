@@ -2,6 +2,12 @@ import type { SubtitleCue } from "../pipeline/media/ytDlpDownload";
 
 export type SourceKind = "youtube" | "substack";
 
+/** Everything an item row's source column can hold. `web` is an arbitrary page:
+ *  either one a reader wrote the first note on, or one a reader requested notes
+ *  on. Such an item is processed from the body text stored on it, because the
+ *  pipeline cannot fetch arbitrary pages from CI. */
+export type ItemSource = SourceKind | "web";
+
 /** Content fetched from a source, ready for claim extraction. */
 export type FetchedContent =
   | { kind: "youtube"; url: string; videoId: string; title: string; publishedAt?: string; cues: SubtitleCue[] }

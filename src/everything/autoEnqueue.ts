@@ -1,16 +1,19 @@
 /**
- * Auto-enqueue the next unprocessed content of the priority feeds listed in
- * priorityFeeds.ts. The everything-priority-feeds workflow runs this right
- * before the worker drains the queue.
+ * Auto-enqueue the next unprocessed content of the feeds we keep fact-checked.
+ * Those are the feeds readers asked us to follow, walked first, and then the
+ * curated priority feeds in priorityFeeds.ts. The everything-priority-feeds
+ * workflow runs this right before the worker drains the queue.
  *
  * For every feed we fetch its latest entries, newest first. A Substack feed
  * comes from its RSS feed, which goes through our Cloudflare Worker when we run
  * in CI. A YouTube feed comes from the channel's /videos tab. We then drop
  * every entry that already has an everything_items row. Any status counts as
  * processed, including an item that finished with zero notes and an item that
- * errored. The entries that are left are enqueued oldest first, so coverage
- * advances chronologically. A feed only lists its 15 to 20 latest entries, and
- * that bounds how far back this can ever reach.
+ * errored. The entries that are left are enqueued newest first. New posts must
+ * never wait behind an old backlog; a gap further back is acceptable and a
+ * later run fills it once the feed is otherwise caught up. A feed only lists
+ * its 15 to 20 latest entries, and that bounds how far back this can ever
+ * reach.
  *
  * A Substack post is enqueued with its RSS body already in full_text. That way
  * the worker never has to fetch Substack, which blocks our CI runners.
@@ -22,11 +25,13 @@
 import "dotenv/config";
 import {
   enqueueItems,
+  fetchFollowedFeeds,
   fetchItemClaims,
   fetchItemUrlsContaining,
   fetchItemUrlsIn,
   fetchOrphanedProcessingItems,
   markItemError,
+  QUEUE_PRIORITY,
   requeueItem,
   resolveProjectId,
   type EnqueueRow,
@@ -84,13 +89,13 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedEntry[]> {
     .map((v) => ({ source: "youtube" as const, url: v.url, matchKey: v.videoId, label: v.title }));
 }
 
-/** The feed's unprocessed entries, oldest first. */
+/** The feed's unprocessed entries, newest first. */
 async function unprocessedEntries(feed: PriorityFeed, entries: FeedEntry[]): Promise<FeedEntry[]> {
   const knownUrls =
     feed.type === "substack"
       ? await fetchItemUrlsIn(entries.map((e) => e.matchKey))
       : await fetchItemUrlsContaining(entries.map((e) => e.matchKey));
-  return entries.filter((e) => !knownUrls.some((url) => url.includes(e.matchKey))).reverse();
+  return entries.filter((e) => !knownUrls.some((url) => url.includes(e.matchKey)));
 }
 
 /** Decide what happens to items that a killed run left behind in "processing".
@@ -120,18 +125,32 @@ async function triageOrphanedItems(): Promise<void> {
   }
 }
 
+/** The feeds to walk, in walk order: reader-followed feeds first, because their
+ *  items also rank above the curated backlog in the queue, then the curated
+ *  priority feeds. */
+async function feedsToWalk(): Promise<{ feed: PriorityFeed; priority: number }[]> {
+  const followed = (await fetchFollowedFeeds()).map((f) => ({
+    feed:
+      f.feed_type === "substack"
+        ? { project: f.project_slug, type: "substack" as const, publicationUrl: f.feed_url }
+        : { project: f.project_slug, type: "youtube" as const, channelUrl: f.feed_url },
+    priority: QUEUE_PRIORITY.followed,
+  }));
+  return [...followed, ...PRIORITY_FEEDS.map((feed) => ({ feed, priority: QUEUE_PRIORITY.backlog }))];
+}
+
 /** Runs one pass of triage, selection, and enqueueing. Returns how many items
  *  were enqueued. */
 export async function runAutoEnqueue(dryRun = false): Promise<number> {
   if (!dryRun) await triageOrphanedItems();
 
-  const picks: { feed: PriorityFeed; entry: FeedEntry }[] = [];
-  for (const feed of PRIORITY_FEEDS) {
+  const picks: { feed: PriorityFeed; priority: number; entry: FeedEntry }[] = [];
+  for (const { feed, priority } of await feedsToWalk()) {
     if (picks.length >= BATCH_SIZE) break;
     const entries = await fetchFeedEntries(feed);
     const unprocessed = await unprocessedEntries(feed, entries);
     console.log(`[${feed.project}] ${entries.length} feed entries, ${unprocessed.length} unprocessed`);
-    for (const entry of unprocessed.slice(0, BATCH_SIZE - picks.length)) picks.push({ feed, entry });
+    for (const entry of unprocessed.slice(0, BATCH_SIZE - picks.length)) picks.push({ feed, priority, entry });
   }
 
   if (picks.length === 0) {
@@ -145,7 +164,7 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
   }
 
   const rows: EnqueueRow[] = [];
-  for (const { feed, entry } of picks) {
+  for (const { feed, priority, entry } of picks) {
     rows.push({
       project_id: await resolveProjectId(feed.project),
       source: entry.source,
@@ -153,6 +172,7 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
       title: entry.title,
       full_text: entry.fullText,
       published_at: entry.publishedAt,
+      priority,
     });
   }
   const inserted = await enqueueItems(rows);

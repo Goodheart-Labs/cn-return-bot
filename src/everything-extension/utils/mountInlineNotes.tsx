@@ -1,7 +1,8 @@
 import { createRoot, type Root } from "react-dom/client";
 import { createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
-import { fetchItemForUrl, normalizePageUrl } from "../../everything-shared/notesQuery";
+import { fetchItemForUrl } from "../../everything-shared/notesQuery";
+import { normalizePageUrl } from "../../everything-shared/pageUrls";
 import { resolveReaderCanonical } from "./readerCanonical";
 import { indexContainer, findQuoteRange } from "./anchor";
 import { fetchClaimGroups, type ClaimGroup } from "./claimGroups";

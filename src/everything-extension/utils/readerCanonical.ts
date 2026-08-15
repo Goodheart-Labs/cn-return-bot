@@ -1,5 +1,5 @@
 import { browser } from "#imports";
-import { isSubstackReaderUrl } from "../../everything-shared/notesQuery";
+import { isSubstackReaderUrl } from "../../everything-shared/pageUrls";
 
 /** Turns a Substack reader URL of the form substack.com/home/post/p-<id> into the
  *  publication's own post URL. Any other URL returns null. The fetch runs in the

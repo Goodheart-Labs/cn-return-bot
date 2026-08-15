@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { browser } from "#imports";
 import { useSession, signOut } from "../../../everything-shared/auth";
-import { fetchItemForUrl, fetchNotesForItem, fetchRandomNotedPageUrl, normalizePageUrl, type PageItem } from "../../../everything-shared/notesQuery";
+import { fetchItemForUrl, fetchNotesForItem, fetchRandomNotedPageUrl, type PageItem } from "../../../everything-shared/notesQuery";
+import { normalizePageUrl } from "../../../everything-shared/pageUrls";
 import type { NoteRow } from "../../../everything-shared/types";
 import { submitNoteRequest } from "../../../everything-shared/noteRequests";
 import { noteVisible } from "../../utils/claimGroups";
