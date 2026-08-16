@@ -109,26 +109,36 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
   }
   if (countByKey.size === 0) return null;
 
-  // The one badge each noted page currently has, so a page linked several
-  // times in one listing card is not badged on every link.
-  const badges = new Map<string, HTMLElement>();
+  // The one badge each noted page currently has, together with its card, so a
+  // page linked several times in one listing card is not badged on every link.
+  const badges = new Map<string, { badge: HTMLElement; card: HTMLElement }>();
+
+  /** Puts the badge on the best surface its card currently offers. Calling it
+   *  again is harmless, and that matters: cover images lazy-load, so the first
+   *  scan can run while the picture still has no size. The badge then starts
+   *  on the card's corner, and a later scan moves it onto the picture. */
+  const seat = ({ badge, card }: { badge: HTMLElement; card: HTMLElement }) => {
+    const surface = badgeSurface(card);
+    if (badge.parentElement === surface) return;
+    // The badge is positioned against the surface, so the surface must be a
+    // containing block. Almost every one already is; for the rare static one
+    // this is the only style we touch on the host page.
+    if (getComputedStyle(surface).position === "static") surface.style.position = "relative";
+    surface.appendChild(badge);
+  };
 
   const placeBadge = (anchor: HTMLAnchorElement, currentKeys: Set<string>) => {
     const key = pageKey(anchor.href);
     if (!key || currentKeys.has(key)) return;
     const count = countByKey.get(key);
     if (!count) return;
-    if (badges.get(key)?.isConnected) return;
+    const existing = badges.get(key);
+    if (existing?.badge.isConnected) return seat(existing);
     const card = cardFor(anchor);
     if (!card) return;
-    const surface = badgeSurface(card);
-    // The badge is positioned against the surface, so the surface must be a
-    // containing block. Almost every one already is; for the rare static one
-    // this is the only style we touch on the host page.
-    if (getComputedStyle(surface).position === "static") surface.style.position = "relative";
-    const badge = createBadge(count);
-    surface.appendChild(badge);
-    badges.set(key, badge);
+    const entry = { badge: createBadge(count), card };
+    seat(entry);
+    badges.set(key, entry);
   };
 
   const scan = () => {
@@ -156,10 +166,17 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
   const observer = new MutationObserver(scheduleScan);
   observer.observe(document.documentElement, { childList: true, subtree: true });
   ctx.addEventListener(window, "wxt:locationchange", scheduleScan);
+  // An image that finishes loading fires no DOM mutation, but it is exactly
+  // the moment a badge wants to move from the card's corner onto the picture.
+  // load events do not bubble; a capture listener on the document still sees
+  // every one of them.
+  const onLoad = () => scheduleScan();
+  document.addEventListener("load", onLoad, { capture: true, passive: true });
 
   return () => {
     observer.disconnect();
+    document.removeEventListener("load", onLoad, { capture: true } as EventListenerOptions);
     clearTimeout(timer);
-    for (const badge of badges.values()) badge.remove();
+    for (const { badge } of badges.values()) badge.remove();
   };
 }

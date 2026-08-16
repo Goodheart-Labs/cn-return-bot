@@ -9,12 +9,9 @@
 // keeps the background's synced coverage cache warm; on a cold profile the
 // script reloads the page until the sync has landed and badges can render.
 // On a machine without Chromium's system libraries, extract the needed .debs
-// into ~/.cache/cn-playwright-libs (no root needed) and this script puts them
-// on the library path by itself.
-import os from "node:os";
-import fs from "node:fs";
-import path from "node:path";
-import { chromium } from "playwright";
+// into ~/.cache/cn-playwright-libs (no root needed) and the launcher puts
+// them on the library path by itself.
+import { openPageWithExtension } from "./browser";
 
 const BADGE_WAIT_ROUNDS = 6;
 const BADGE_WAIT_PER_ROUND_MS = 4000;
@@ -25,43 +22,7 @@ if (!url || !out) {
   process.exit(1);
 }
 
-const extensionDir = path.resolve(import.meta.dir, "../.output/chrome-mv3-prod-backend");
-if (!fs.existsSync(path.join(extensionDir, "manifest.json"))) {
-  throw new Error(`no build at ${extensionDir} — run bun run build-ext-dev first`);
-}
-
-const localLibs = path.join(os.homedir(), ".cache/cn-playwright-libs/usr/lib/x86_64-linux-gnu");
-const env = {
-  ...process.env,
-  ...(fs.existsSync(localLibs)
-    ? { LD_LIBRARY_PATH: [localLibs, process.env.LD_LIBRARY_PATH].filter(Boolean).join(":") }
-    : {}),
-};
-
-const context = await chromium.launchPersistentContext(path.join(os.homedir(), ".cache/cn-preview-profile"), {
-  // Extensions need the real Chromium in its new headless mode. The default
-  // headless shell silently ignores --load-extension.
-  channel: "chromium",
-  headless: true,
-  env,
-  viewport: { width: 1440, height: 1000 },
-  args: [`--disable-extensions-except=${extensionDir}`, `--load-extension=${extensionDir}`],
-});
-
-const page = context.pages()[0] ?? (await context.newPage());
-page.on("console", (message) => {
-  const text = message.text();
-  if (text.includes("[common-notes]")) console.log(`console: ${text}`);
-});
-await page.goto(url, { waitUntil: "domcontentloaded" });
-
-// YouTube greets a fresh European profile with a consent page. Declining it
-// once is enough, because the choice sticks in the kept profile.
-const consent = page.getByRole("button", { name: /alle ablehnen|reject all/i }).first();
-if (await consent.isVisible({ timeout: 3000 }).catch(() => false)) {
-  await consent.click();
-  await page.waitForLoadState("domcontentloaded");
-}
+const { context, page } = await openPageWithExtension(url);
 
 // On a cold profile the badges cannot render before the background has synced
 // the note counts, so we give the page a few reload rounds to get there.
