@@ -5,21 +5,23 @@ import { getNotedPageCounts, trimSlash } from "./coveredPages";
 import { isPageDark } from "./pageTheme";
 
 // The badges that mark noted posts in a listing, for example on a Substack
-// publication's front page or a YouTube channel's videos tab. Every link that
-// leads to a page with notes gets a small pill with the community glyph and
-// the number of notes there. The counts come from the locally synced cache,
-// so drawing badges costs no backend request.
+// publication's front page or a YouTube channel's videos tab. Every listing
+// card that leads to a page with notes gets a small circle in its upper right
+// with the community glyph and the number of notes there. The counts come
+// from the locally synced cache, so drawing badges costs no backend request.
 
 const RESCAN_DEBOUNCE_MS = 600;
 const BADGE_CLASS = "cn-coverage-badge";
 
-// The title links of the two listing surfaces we care most about. They are
-// tried first, so the badge lands on the title. On any other site, or when
-// these selectors find nothing, any link with a bit of visible text is
-// eligible. The length floor keeps badges off icon links and bare comment
-// counts.
-const TITLE_LINK_SELECTOR = 'a[data-testid="post-preview-title"], a#video-title-link, a#video-title';
-const FALLBACK_MIN_TEXT_LENGTH = 8;
+// A badge is only placed on a link that sits inside a listing card, and it is
+// pinned to that card's corner. Substack wraps each feed entry in
+// role="article"; the ytd-* elements are YouTube's video tiles; article and
+// li catch listings on generic sites. The height cap tells a card apart from
+// a full article body that merely links to another noted post. Links outside
+// any card get no badge at all: appended inline they ended up dangling under
+// hero titles or stretched across cards, which is what this replaced.
+const CARD_SELECTOR = '[role="article"], ytd-rich-item-renderer, ytd-grid-video-renderer, ytd-video-renderer, ytd-compact-video-renderer, article, li';
+const CARD_MAX_HEIGHT_PX = 900;
 
 /** The lookup key of a page URL: the video ID on YouTube, the normalized URL
  *  everywhere else. Returns null for links that cannot lead to a noted page,
@@ -35,6 +37,10 @@ function pageKey(href: string): string | null {
   return extractYoutubeVideoId(url.toString()) ?? trimSlash(normalizePageUrl(url.toString()));
 }
 
+/** A small circle pinned to a card's upper right. It uses the same surface as
+ *  the in-article passage badge: a white circle with a border and the blue
+ *  community glyph, plus the note count. A double-digit count widens it into
+ *  a slight oval, which is fine. */
 function createBadge(count: number): HTMLElement {
   const dark = isPageDark();
   const badge = document.createElement("span");
@@ -42,13 +48,24 @@ function createBadge(count: number): HTMLElement {
   badge.title = `${count} Common ${count === 1 ? "Note" : "Notes"} on this page`;
   badge.setAttribute(
     "style",
-    "display:inline-flex;align-items:center;gap:3px;vertical-align:baseline;margin-left:6px;padding:1px 7px;" +
-      "border-radius:9999px;font-size:12px;line-height:16px;font-weight:600;white-space:nowrap;" +
-      `color:${dark ? "#60a5fa" : "#2563eb"};background:${dark ? "rgba(96,165,250,0.16)" : "rgba(37,99,235,0.10)"};`,
+    "position:absolute;top:6px;right:6px;z-index:10;display:inline-flex;align-items:center;justify-content:center;" +
+      "gap:2px;height:26px;min-width:26px;padding:0 6px;box-sizing:border-box;border-radius:9999px;" +
+      "font-size:11px;line-height:1;font-weight:600;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,0.25);" +
+      `color:${dark ? "#60a5fa" : "#2563eb"};background:${dark ? "#111827" : "#ffffff"};` +
+      `border:1px solid ${dark ? "#4b5563" : "#d1d5db"};`,
   );
-  const svg = `<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true" style="flex:none"><path d="${GROUP_GLYPH_PATH}"/></svg>`;
+  const svg = `<svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true" style="flex:none"><path d="${GROUP_GLYPH_PATH}"/></svg>`;
   badge.innerHTML = `${svg}${count}`;
   return badge;
+}
+
+/** The listing card a link belongs to, or null when the link is not part of a
+ *  card. The anchor itself may be the card, which happens when a whole tile
+ *  is one big link. */
+function cardFor(anchor: HTMLAnchorElement): HTMLElement | null {
+  const card = anchor.closest<HTMLElement>(CARD_SELECTOR);
+  if (!card || card.offsetHeight > CARD_MAX_HEIGHT_PX) return null;
+  return card;
 }
 
 /** Marks every listing link that leads to a noted page with a note-count
@@ -72,28 +89,34 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
   // times in one listing card is not badged on every link.
   const badges = new Map<string, HTMLElement>();
 
-  const placeBadge = (anchor: HTMLAnchorElement, currentPageKey: string | null) => {
+  const placeBadge = (anchor: HTMLAnchorElement, currentKeys: Set<string>) => {
     const key = pageKey(anchor.href);
-    if (!key || key === currentPageKey) return;
+    if (!key || currentKeys.has(key)) return;
     const count = countByKey.get(key);
     if (!count) return;
     if (badges.get(key)?.isConnected) return;
+    const card = cardFor(anchor);
+    if (!card) return;
+    // The badge is positioned against the card, so the card must be a
+    // containing block. Almost every card already is; for the rare static one
+    // this is the only style we touch on the host page.
+    if (getComputedStyle(card).position === "static") card.style.position = "relative";
     const badge = createBadge(count);
-    anchor.appendChild(badge);
+    card.appendChild(badge);
     badges.set(key, badge);
   };
 
   const scan = () => {
     // Links to the page we are already on carry no information, so they get
-    // no badge. On a watch page that also spares every "same video at a
-    // timestamp" link in the description.
-    const currentPageKey = pageKey(location.href);
-    for (const anchor of document.querySelectorAll<HTMLAnchorElement>(TITLE_LINK_SELECTOR)) {
-      placeBadge(anchor, currentPageKey);
+    // no badge. The canonical URL counts as the current page too: on a
+    // custom-domain newsletter the address bar and the stored item URL can
+    // name different hosts for the same post.
+    const currentKeys = new Set<string>();
+    for (const href of [location.href, document.querySelector('link[rel="canonical"]')?.getAttribute("href")]) {
+      const key = href ? pageKey(href) : null;
+      if (key) currentKeys.add(key);
     }
-    for (const anchor of document.querySelectorAll<HTMLAnchorElement>("a[href]")) {
-      if ((anchor.textContent ?? "").trim().length >= FALLBACK_MIN_TEXT_LENGTH) placeBadge(anchor, currentPageKey);
-    }
+    for (const anchor of document.querySelectorAll<HTMLAnchorElement>("a[href]")) placeBadge(anchor, currentKeys);
   };
 
   let timer: ReturnType<typeof setTimeout> | undefined;
