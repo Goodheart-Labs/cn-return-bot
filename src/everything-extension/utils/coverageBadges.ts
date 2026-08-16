@@ -68,6 +68,30 @@ function cardFor(anchor: HTMLAnchorElement): HTMLElement | null {
   return card;
 }
 
+// Avatars and icons are small, so anything under this area cannot be the
+// cover image.
+const MIN_COVER_IMAGE_AREA_PX = 120 * 68;
+
+/** The element the badge is pinned to. When the card shows a cover image or
+ *  video thumbnail, the badge belongs on that picture's corner, which reads
+ *  better than the card's own corner and stays clear of the card's controls,
+ *  such as Substack's dismiss button. The largest image wins; a text-only
+ *  card falls back to the card itself. The badge goes into the picture's
+ *  direct parent, which on both Substack and YouTube wraps the picture
+ *  tightly. */
+function badgeSurface(card: HTMLElement): HTMLElement {
+  let cover: HTMLElement | null = null;
+  let coverArea = MIN_COVER_IMAGE_AREA_PX;
+  for (const image of card.querySelectorAll<HTMLElement>("img")) {
+    const area = image.offsetWidth * image.offsetHeight;
+    if (area >= coverArea) {
+      cover = image;
+      coverArea = area;
+    }
+  }
+  return cover?.parentElement ?? card;
+}
+
 /** Marks every listing link that leads to a noted page with a note-count
  *  badge. Badges are appended inside the link itself, so they sit right after
  *  the title and navigate with it. The scan re-runs debounced on DOM changes,
@@ -97,12 +121,13 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
     if (badges.get(key)?.isConnected) return;
     const card = cardFor(anchor);
     if (!card) return;
-    // The badge is positioned against the card, so the card must be a
-    // containing block. Almost every card already is; for the rare static one
+    const surface = badgeSurface(card);
+    // The badge is positioned against the surface, so the surface must be a
+    // containing block. Almost every one already is; for the rare static one
     // this is the only style we touch on the host page.
-    if (getComputedStyle(card).position === "static") card.style.position = "relative";
+    if (getComputedStyle(surface).position === "static") surface.style.position = "relative";
     const badge = createBadge(count);
-    card.appendChild(badge);
+    surface.appendChild(badge);
     badges.set(key, badge);
   };
 
