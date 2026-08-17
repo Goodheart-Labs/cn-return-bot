@@ -218,9 +218,28 @@ function chunkCues(cues: SubtitleCue[]): SubtitleCue[][] {
   return chunks;
 }
 
+/** Splits a block that is larger than a whole chunk, preferring a newline and
+ *  then a space near the boundary so words stay intact. Such a block comes
+ *  from text with no blank lines at all, for example a web page whose fetch
+ *  fell back to plain tag-stripping. Without this a single block would become
+ *  one oversized extraction call. */
+function splitOversizedBlock(block: string): string[] {
+  const parts: string[] = [];
+  let rest = block;
+  while (rest.length > EXTRACTION_CHUNK_CHARS) {
+    const window = rest.slice(0, EXTRACTION_CHUNK_CHARS);
+    const cut = Math.max(window.lastIndexOf("\n"), window.lastIndexOf(" "));
+    const at = cut > EXTRACTION_CHUNK_CHARS / 2 ? cut : EXTRACTION_CHUNK_CHARS;
+    parts.push(rest.slice(0, at).trim());
+    rest = rest.slice(at).trim();
+  }
+  if (rest) parts.push(rest);
+  return parts;
+}
+
 // We split on blank lines so that paragraphs and speaker turns stay intact.
 function chunkText(text: string): string[] {
-  const blocks = text.split(/\n\s*\n/);
+  const blocks = text.split(/\n\s*\n/).flatMap((block) => splitOversizedBlock(block));
   const chunks: string[] = [];
   let cur = "";
   for (const block of blocks) {
