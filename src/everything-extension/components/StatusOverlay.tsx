@@ -58,7 +58,7 @@ export function ActionButton({ action, onDone, buttonClassName }: {
       >
         {action.label}
       </button>
-      {phase === "error" && <p className="mt-1 text-xs text-red-600 dark:text-red-400">Something went wrong — try again</p>}
+      {phase === "error" && <p className="mt-1 text-xs text-red-600 dark:text-red-400">Something went wrong. Try again</p>}
     </div>
   );
 }

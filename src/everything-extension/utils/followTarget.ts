@@ -12,7 +12,7 @@ export interface FollowTarget {
 }
 
 export const followButtonLabel = (target: FollowTarget) => `Request notes on all new posts from this ${target.kind}`;
-export const followDoneLabel = (target: FollowTarget) => `Requested — we'll check new posts from this ${target.kind}.`;
+export const followDoneLabel = (target: FollowTarget) => `Requested. We'll check new posts from this ${target.kind}.`;
 
 /** A Substack publication on its own subdomain. A publication on a custom
  *  domain gives null, because the pipeline can only follow the *.substack.com

@@ -310,7 +310,7 @@ function ImprovementLinks({ note, improvements }: { note: NoteRow; improvements:
         <JumpChip
           targetNoteId={note.improved_from_note_id}
           direction="up"
-          explain="This note is a suggested improvement of another note — jump to the original"
+          explain="This note is a suggested improvement of another note. Jump to the original"
         />
       )}
       {improvements.length > 0 && (
@@ -320,8 +320,8 @@ function ImprovementLinks({ note, improvements }: { note: NoteRow; improvements:
           count={improvements.length}
           explain={
             improvements.length === 1
-              ? "Someone suggested an improved version of this note — jump to it"
-              : `${improvements.length} suggested improvements of this note — jump to the first`
+              ? "Someone suggested an improved version of this note. Jump to it"
+              : `${improvements.length} suggested improvements of this note. Jump to the first`
           }
         />
       )}

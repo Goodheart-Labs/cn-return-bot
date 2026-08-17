@@ -50,7 +50,7 @@ async function buildActions(params: StatusOverlayParams): Promise<{ request: Sta
   if (params.checked) return { request: null, follow: null };
   const request: StatusAction = {
     label: "Request Common Notes",
-    doneLabel: "Requested — we'll check this page when it comes up in our queue.",
+    doneLabel: "Requested. We'll check this page when it comes up in our queue.",
     alreadyDone: (await getRequestedPages()).includes(params.pageUrl),
     run: async () => {
       await submitNoteRequest({
