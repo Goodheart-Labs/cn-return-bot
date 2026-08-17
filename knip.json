@@ -7,6 +7,8 @@
     "src/reports/*.ts",
     "src/stats-dashboard/src/main.tsx",
     "src/everything-web/src/main.tsx",
+    "src/analytics-dashboard/src/main.tsx",
+    "src/analytics-dashboard/vite.config.ts",
     "src/everything-extension/entrypoints/**/*.{ts,tsx}",
     "src/everything-extension/wxt.config.ts",
     "src/everything-extension/tailwind.config.ts",

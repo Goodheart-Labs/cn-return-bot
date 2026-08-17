@@ -1,56 +1,73 @@
-import posthog from "posthog-js";
+import { supabase } from "../../../everything-shared/supabase";
 import { setAnalyticsSink, track } from "../../../everything-shared/analytics";
 
-// This is the website's analytics transport. It registers posthog-js as the sink
-// behind everything-shared/analytics, which is the module components import
-// `track` and friends from.
-//
-// The key is a publishable PostHog project key, the kind that starts with phc_.
-// It is inlined at build time, the same way the Supabase anon key is. When it is
-// absent, which happens in local dev and before the repo secret is set, no sink
-// is registered. The app then runs untouched and no build breaks for want of it.
-const KEY = import.meta.env.VITE_PUBLIC_POSTHOG_KEY;
-const HOST = import.meta.env.VITE_PUBLIC_POSTHOG_HOST ?? "https://eu.i.posthog.com";
+// The website's analytics transport: rows in the everything_events table
+// (insert-only for clients, migration 077), registered as the sink behind
+// everything-shared/analytics. Events land in whatever backend
+// VITE_SUPABASE_URL points at, so local dev writes to the local stack and
+// only prod builds touch prod — there is no separate analytics key.
 
-export function initAnalytics() {
-  if (!KEY) return;
-  posthog.init(KEY, {
-    api_host: HOST,
-    // An anonymous reader does not mint a person profile. They still count in
-    // the "visited" step, as anonymous events. A profile is created the moment
-    // we identify them.
-    person_profiles: "identified_only",
-    // This covers the initial page load only. Navigation inside the app is a
-    // pushState that changes query parameters, and posthog's history detection
-    // watches the pathname, so it ignores those. App.tsx calls capturePageview
-    // on a route change instead. Posthog also holds this first capture back
-    // until the tab is actually visible, so a page opened in a background tab
-    // counts only once someone looks at it.
-    capture_pageview: true,
-    // We track only the events we chose deliberately. Auto-captured clicks would
-    // add volume without answering any question the database or our own events
-    // cannot already answer.
-    autocapture: false,
-  });
-  posthog.register({ platform: "web" });
-  setAnalyticsSink({
-    capture: (event, props) => posthog.capture(event, props),
-    identify: (userId, traits) => posthog.identify(userId, traits),
-    reset: () => posthog.reset(),
-  });
+const DEVICE_ID_KEY = "cn-device-id";
+
+// Set by identify while a session exists. Every event inserted while signed
+// in carries both device_id and user_id, which is what stores the
+// device-to-user link — there is no separate identify event.
+let userId: string | null = null;
+
+function deviceId(): string {
+  const existing = localStorage.getItem(DEVICE_ID_KEY);
+  if (existing) return existing;
+  const fresh = crypto.randomUUID();
+  localStorage.setItem(DEVICE_ID_KEY, fresh);
+  return fresh;
 }
 
-// The URL of the last pageview we counted. It starts at the landing URL, whose
-// pageview posthog captures on its own through the capture_pageview option set
-// above.
-let lastPageviewUrl = window.location.href;
+/** The page URL without its fragment. The auth return (magic link, X OAuth)
+ *  lands with access and refresh tokens in the fragment, so the fragment must
+ *  never be stored; dropping it also stops the app's post-auth hash cleanup
+ *  from counting as a second pageview. Routing is query-param based, so the
+ *  fragment carries no navigation information anyway. */
+function pageUrl(): string {
+  return window.location.origin + window.location.pathname + window.location.search;
+}
 
-/** Captures a $pageview for a navigation inside the app, but only when the URL
- *  actually changed. A route handler can therefore call this unconditionally
- *  after its pushState. Re-selecting the filter that is already showing does not
- *  inflate the count. */
+export function initAnalytics() {
+  setAnalyticsSink({
+    capture: (event, props) =>
+      void supabase
+        .from("everything_events")
+        .insert({ event, platform: "web", device_id: deviceId(), user_id: userId, props: props ?? {} })
+        .then(({ error }) => {
+          if (error) console.debug("analytics insert failed", error.message);
+        }),
+    identify: (id) => {
+      userId = id;
+    },
+    // Sign-out forgets the user and starts a fresh anonymous identity, so a
+    // later visitor on the same browser isn't linked to the previous account.
+    reset: () => {
+      userId = null;
+      localStorage.setItem(DEVICE_ID_KEY, crypto.randomUUID());
+    },
+  });
+  // The initial load fires immediately. PostHog used to defer this until the
+  // tab became visible; a background-tab load now counts as a pageview, which
+  // we accept for simplicity.
+  capturePageviewNow();
+}
+
+// The URL of the last counted pageview.
+let lastPageviewUrl: string | null = null;
+
+function capturePageviewNow() {
+  lastPageviewUrl = pageUrl();
+  track("pageview", { url: lastPageviewUrl });
+}
+
+/** Capture a pageview for an in-app navigation, but only if the URL actually
+ *  changed. Route handlers can then call this unconditionally after their
+ *  pushState — re-selecting the current filter doesn't inflate the count. */
 export function capturePageview() {
-  if (window.location.href === lastPageviewUrl) return;
-  lastPageviewUrl = window.location.href;
-  track("$pageview");
+  if (pageUrl() === lastPageviewUrl) return;
+  capturePageviewNow();
 }

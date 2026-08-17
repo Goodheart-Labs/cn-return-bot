@@ -147,20 +147,23 @@ async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: 
 
 export default defineBackground(() => {
   initBackgroundAnalytics();
-  // We sync on install, on update, and on browser start. The five-minute
-  // alarm keeps long-running sessions current, because an MV3 service worker
-  // cannot hold a timer of its own. The popup also asks for a sync when it
-  // opens.
-  const startSync = () => {
+  // The 5-minute alarm keeps long-lived sessions current (the MV3 worker
+  // can't hold a timer), and the popup pings cn-sync-noted-sites on open.
+  // The alarm is checked at every worker boot instead of on install/startup
+  // events: Chrome clears alarms exactly when the extension is installed,
+  // updated, or reloaded, and a reload via chrome.runtime.reload() (the
+  // dev-reload hook) fires neither lifecycle event — relying on them left
+  // the covered-pages cache frozen until a browser restart. On a normal
+  // worker wake the alarm still exists and this does nothing.
+  void browser.alarms.get(SYNC_ALARM).then((existing) => {
+    if (existing) return;
     browser.alarms.create(SYNC_ALARM, { periodInMinutes: SYNC_PERIOD_MINUTES });
     void syncNotedSites();
-  };
+  });
   browser.runtime.onInstalled.addListener((details) => {
     if (details.reason === "install") track("extension_installed");
     void createMenus();
-    startSync();
   });
-  browser.runtime.onStartup.addListener(startSync);
   browser.alarms.onAlarm.addListener((alarm) => {
     if (alarm.name === SYNC_ALARM) void syncNotedSites();
   });

@@ -175,10 +175,10 @@ export function App() {
   }, [projects, items, selectedId]);
 
   // Selecting a project updates the URL. Back and Forward then restore the
-  // selection. Each capture happens after the pushState so that the event carries
-  // the new URL. PostHog only detects a pageview of its own when the pathname
-  // changes, and our routing lives entirely in query parameters, so these manual
-  // captures are the only way navigation inside the app gets counted.
+  // selection. Each capture happens after the pushState so that the event
+  // carries the new URL. Routing lives entirely in query parameters and only
+  // the initial load is captured automatically, so these manual captures are
+  // the only way navigation inside the app gets counted.
   const selectProject = (id: string) => {
     setView("notes");
     setSelectedId(id);
@@ -255,17 +255,7 @@ export function App() {
     setMyVotes(next);
     const voteId = await castVote(note.id, session.user.id, vote, "web");
     if (!voteId) return null;
-    const ownNote = note.author_id === session.user.id;
-    // The vote funnel step. distinct_notes_voted is the count AFTER this cast,
-    // so the "voted on ≥ N notes" steps filter on distinct_notes_voted >= N.
-    track("note_voted", {
-      note_id: note.id,
-      vote, // 1 helpful · 0 somewhat · -1 not helpful
-      changed_vote: current != null,
-      own_note: ownNote,
-      distinct_notes_voted: next.size,
-    });
-    if (ownNote) return null;
+    if (note.author_id === session.user.id) return null;
     const pair = donationPair(priorTally(note, current), vote);
     // A backend without migration 061 rejects the pair of amount columns. We
     // keep the vote in that case. We just do not promise the user a donation the
