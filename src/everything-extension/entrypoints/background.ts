@@ -1,6 +1,6 @@
 import { defineBackground } from "#imports";
 import { browser } from "#imports";
-import { fetchCoveredPageUrls, fetchNotedPageCounts, fetchReaderCanonical, fetchReaderRedirectUrl } from "../../everything-shared/notesQuery";
+import { fetchCoveredPageUrls, fetchNotedPageCounts, fetchReaderCanonical } from "../../everything-shared/notesQuery";
 import { submitNoteRequest } from "../../everything-shared/noteRequests";
 import { canonicalizePageUrl, isSubstackReaderUrl } from "../../everything-shared/pageUrls";
 import { track } from "../../everything-shared/analytics";
@@ -213,18 +213,12 @@ export default defineBackground(() => {
       signInWithXViaWebAuthFlow().then(sendResponse);
       return true; // Keep the message channel open for the async reply.
     }
-    if ((message as { type?: string })?.type === "cn-reader-redirect") {
-      // The coverage badges resolve reader-style feed links to the publication
-      // URL our items are stored under. The redirect-following fetch has to
-      // run here, where host permissions apply.
-      fetchReaderRedirectUrl((message as { href: string }).href).then(sendResponse);
-      return true; // Keep the message channel open for the async reply.
-    }
     if ((message as { type?: string })?.type === "cn-reader-canonical") {
-      // A Substack reader URL redirects to the publication's own domain when
-      // it is fetched without cookies. A content script cannot follow that
-      // redirect, because CORS blocks it. So the fetch runs here in the
-      // background, where our *.substack.com host permission applies.
+      // Resolves a Substack reader URL to the publication's own post URL. The
+      // notes mount and the coverage badges both use this. The fetch has to run
+      // here in the background, where our *.substack.com host permission
+      // applies; a content script's fetch is bound by CORS and may neither
+      // follow the cross-origin redirect nor read the response.
       fetchReaderCanonical((message as { href: string }).href).then(sendResponse);
       return true; // Keep the message channel open for the async reply.
     }

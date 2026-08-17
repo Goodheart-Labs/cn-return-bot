@@ -67,34 +67,25 @@ export async function fetchNote(id: string): Promise<NoteRow | null> {
 // URL helpers they build on live in pageUrls.ts.
 // ---------------------------------------------------------------------------
 
-/** Resolves a reader URL to the publication's own post URL by fetching the page
- *  again. A fresh fetch is needed because the reader is a single-page app, so the
- *  embedded JSON already in the DOM goes stale after a navigation.
- *  Extension callers must run this in the background script, through the
- *  cn-reader-canonical message. Substack redirects the reader URL of a
- *  logged-out visitor to the publication's domain, and only a fetch that holds
- *  the host permission may follow that cross-origin redirect. A content script,
- *  or any other context bound by CORS, gets null instead. */
+/** Resolves a reader URL to the publication's own post URL by fetching it
+ *  logged out. A home-feed link (substack.com/home/post/p-<id>) answers with a
+ *  redirect to the publication's domain, so the redirect target is the answer
+ *  and the body is never downloaded. A profile link (substack.com/@author/p-<id>)
+ *  answers 200 on substack.com itself, so there the answer is the canonical_url
+ *  in the page's embedded JSON. A fresh fetch is needed even on the reader page
+ *  itself, because the reader is a single-page app and the JSON already in the
+ *  DOM goes stale after a navigation. Extension callers must run this in the
+ *  background script, through the cn-reader-canonical message. A content
+ *  script, or any other context bound by CORS, may neither follow the
+ *  cross-origin redirect nor read the response, and gets null instead. */
 export async function fetchReaderCanonical(href: string): Promise<string | null> {
   try {
-    const html = await (await fetch(href, { credentials: "omit" })).text();
-    return extractEmbeddedCanonical(html);
-  } catch {
-    return null;
-  }
-}
-
-/** Resolves a reader URL to the publication's own post URL by following the
- *  redirect a logged-out fetch gets, without downloading the page. This is the
- *  cheap variant of fetchReaderCanonical for bulk lookups: the coverage badges
- *  resolve every reader-style link in a Substack feed this way. Must run in
- *  the extension background for the same CORS reason. Null when no redirect
- *  happened or the fetch failed. */
-export async function fetchReaderRedirectUrl(href: string): Promise<string | null> {
-  try {
     const res = await fetch(href, { credentials: "omit" });
-    void res.body?.cancel();
-    return new URL(res.url).hostname === new URL(href).hostname ? null : res.url;
+    if (new URL(res.url).hostname !== new URL(href).hostname) {
+      void res.body?.cancel();
+      return res.url;
+    }
+    return extractEmbeddedCanonical(await res.text());
   } catch {
     return null;
   }

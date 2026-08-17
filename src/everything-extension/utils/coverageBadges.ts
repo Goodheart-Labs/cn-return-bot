@@ -43,9 +43,9 @@ function pageKey(href: string): string | null {
 // Substack's reader links a post as substack.com/home/post/p-<id> or
 // /@author/p-<id>. The database only knows the publication's own post URL, so
 // such a link cannot be matched directly. The background resolves each post id
-// to that URL once, by following the redirect a logged-out fetch gets, and the
-// mapping is kept in storage so a post the reader's feed showed once never
-// needs resolving again.
+// to that URL once, from the redirect a logged-out fetch gets or from the
+// canonical embedded in the fetched page, and the mapping is kept in storage
+// so a post the reader's feed showed once never needs resolving again.
 const READER_CANONICALS_KEY = "cn:readerPostCanonicals";
 const READER_CANONICALS_MAX = 2000;
 
@@ -158,7 +158,7 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
     if (readerResolving.has(postId)) return;
     readerResolving.add(postId);
     void browser.runtime
-      .sendMessage({ type: "cn-reader-redirect", href })
+      .sendMessage({ type: "cn-reader-canonical", href })
       .then((url) => {
         if (typeof url !== "string" || !url) return;
         readerCanonicals.set(postId, url);
