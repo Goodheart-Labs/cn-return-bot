@@ -24,6 +24,7 @@ import {
   type NewClaimRow,
 } from "../db";
 import { dropSpeculation, extractClaims, shouldFactCheck } from "./extractClaims";
+import { spendCapReached } from "../spendCap";
 import type { ExtractedClaim, FetchedContent } from "../types";
 
 const EXTRACTION_CONCURRENCY = 3;
@@ -37,6 +38,10 @@ export interface ItemTally {
   notes: number; // Claims we fact-checked and wrote a note on.
   no_note: number; // Claims we fact-checked and found no note was needed.
   errors: number; // Claims whose fact-check threw.
+  /** Claims left unchecked because the daily spend cap was reached mid-item.
+   *  They stay pending in the database, and the caller puts the item back in
+   *  the queue so the next day's run resumes exactly these claims. */
+  capped: number;
 }
 
 function buildClaimRow(itemId: string, claim: ExtractedClaim): NewClaimRow {
@@ -108,10 +113,17 @@ export async function processFetchedContent(item: EverythingItem, content: Fetch
   );
 
   const outcomes: Array<"note" | "no_note" | "error"> = [];
+  let capped = 0;
   const queue = new PQueue({ concurrency: CHECK_CONCURRENCY });
   claims.forEach((claim, i) => {
     if (!shouldFactCheck(claim.judgement)) return;
     queue.add(async () => {
+      // The cap is checked before every claim, so an item can stop partway.
+      // The unchecked claims stay pending and the resume path picks them up.
+      if (await spendCapReached()) {
+        capped++;
+        return;
+      }
       outcomes.push(await checkAndRecordClaim(claimIds[i]!, claim, item, i, content.publishedAt));
     });
   });
@@ -124,6 +136,7 @@ export async function processFetchedContent(item: EverythingItem, content: Fetch
     notes: outcomes.filter((o) => o === "note").length,
     no_note: outcomes.filter((o) => o === "no_note").length,
     errors: outcomes.filter((o) => o === "error").length,
+    capped,
   };
 }
 
@@ -158,12 +171,17 @@ export async function resumeItemClaims(item: EverythingItem): Promise<ItemTally>
   console.log(`  resuming "${item.title ?? item.url}" — redoing ${redo.length} of ${allClaims.length} claims`);
 
   const outcomes: Array<"note" | "no_note" | "error"> = [];
+  let capped = 0;
   const queue = new PQueue({ concurrency: CHECK_CONCURRENCY });
   redo.forEach((row, i) => {
     queue.add(async () => {
       if (alreadyNoted.has(row.id)) {
         await setClaimStatus(row.id, "note", null);
         outcomes.push("note");
+        return;
+      }
+      if (await spendCapReached()) {
+        capped++;
         return;
       }
       outcomes.push(await checkAndRecordClaim(row.id, toExtractedClaim(row), item, i, item.published_at ?? undefined));
@@ -178,5 +196,6 @@ export async function resumeItemClaims(item: EverythingItem): Promise<ItemTally>
     notes: outcomes.filter((o) => o === "note").length,
     no_note: outcomes.filter((o) => o === "no_note").length,
     errors: outcomes.filter((o) => o === "error").length,
+    capped,
   };
 }

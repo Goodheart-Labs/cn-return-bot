@@ -15,7 +15,7 @@ import { createTweetLog, getLoggedBotIdentity, nestDotKeys, withTweetLog, type T
 import type { TokenCost } from "../../pipeline/cost-tracking/pricing";
 import type { EvaluatedSource } from "../../pipeline/prompts/verify/citations";
 import { insertClaimPipelineRun } from "../db";
-import type { ClaimCheck, ExtractedClaim, NoteSourceCitation, SourceKind } from "../types";
+import type { ClaimCheck, ExtractedClaim, ItemSource, NoteSourceCitation } from "../types";
 
 // We run simple-bot with the note-needed prefilter turned off, so every checked
 // claim goes through the full search and write path. The prefilter was dropping
@@ -42,7 +42,7 @@ const FORCED_PICKS: Record<string, string> = {
 
 export interface ClaimPostParams {
   claim: ExtractedClaim;
-  source: SourceKind;
+  source: ItemSource;
   /** The everything_items.id. The synthetic post id built from it contains a
    *  hyphen, so it can never be mistaken for a real tweet id. */
   itemId: string;

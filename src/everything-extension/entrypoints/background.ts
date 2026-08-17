@@ -1,14 +1,20 @@
 import { defineBackground } from "#imports";
 import { browser } from "#imports";
-import { fetchCoveredPageUrls, fetchNotedPageCounts, fetchReaderCanonical } from "../../everything-shared/notesQuery";
+import { fetchCoveredPageUrls, fetchNotedPageCounts, fetchReaderCanonical, fetchReaderRedirectUrl } from "../../everything-shared/notesQuery";
+import { submitNoteRequest } from "../../everything-shared/noteRequests";
+import { canonicalizePageUrl, isSubstackReaderUrl } from "../../everything-shared/pageUrls";
 import { track } from "../../everything-shared/analytics";
 import { initBackgroundAnalytics } from "../utils/analytics";
 import { signInWithXViaWebAuthFlow } from "../utils/oauth";
 import { COVERED_PAGE_URLS_KEY, NOTED_PAGE_COUNTS_KEY } from "../utils/coveredPages";
 import { GENERIC_SCRIPT_PREFIX, hostnamePattern, registerGenericScripts, genericScriptId } from "../utils/genericScript";
+import { capturePageFromTab } from "../utils/pageCapture";
+import { addRequestedPage } from "../utils/settings";
 import { STATIC_SITE_HOSTNAME } from "../utils/staticSites";
 
 const WRITE_MENU_ID = "cn-write-note";
+const REQUEST_MENU_ID = "cn-request-note";
+const BADGE_FEEDBACK_MS = 3000;
 const INJECT_RETRY_DELAY_MS = 150;
 const INJECT_RETRY_ATTEMPTS = 10;
 const SYNC_ALARM = "cn-sync-noted-sites";
@@ -93,6 +99,50 @@ async function createMenus() {
     title: "Write a Common Note on this",
     contexts: ["selection"],
   });
+  browser.contextMenus.create({
+    id: REQUEST_MENU_ID,
+    title: "Request Common Notes on this",
+    contexts: ["selection"],
+  });
+}
+
+/** A context-menu click has no page of its own to answer on, so the action
+ *  badge is the feedback: a tick when the request was saved, an exclamation
+ *  mark when it failed. */
+function flashBadge(tabId: number | undefined, text: string) {
+  const action = browser.action ?? (browser as unknown as { browserAction?: typeof browser.action }).browserAction;
+  action?.setBadgeText({ text, tabId }).catch(() => {});
+  setTimeout(() => action?.setBadgeText({ text: "", tabId }).catch(() => {}), BADGE_FEEDBACK_MS);
+}
+
+/** Submits a note request for the selected paragraph. The menu click grants
+ *  activeTab, so the page's canonical link and body text can be read even on a
+ *  site the user never enabled; the pipeline fact-checks the page from that
+ *  text. A restricted page falls back to the tab's url and title alone. */
+async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: string }, selection: string) {
+  const captured = tab.id != null ? await capturePageFromTab(tab.id) : null;
+  const href = captured?.href ?? tab.url;
+  if (!href) return;
+  // A Substack reader page hides the publication's own post URL behind a
+  // fetch, the same way the notes flow resolves it.
+  const readerCanonical = isSubstackReaderUrl(href) ? await fetchReaderCanonical(href) : null;
+  const pageUrl = readerCanonical
+    ? canonicalizePageUrl(readerCanonical, null)
+    : canonicalizePageUrl(href, captured?.canonical ?? null);
+  try {
+    await submitNoteRequest({
+      pageUrl,
+      pageTitle: captured?.title ?? tab.title ?? "",
+      selection: selection.trim() || null,
+      pageText: captured?.text,
+    });
+    // This is only a local reminder. The request itself is already saved.
+    await addRequestedPage(pageUrl).catch(() => {});
+    flashBadge(tab.id, "✓");
+  } catch (err) {
+    console.warn("[common-notes] note request failed:", err);
+    flashBadge(tab.id, "!");
+  }
 }
 
 export default defineBackground(() => {
@@ -119,6 +169,10 @@ export default defineBackground(() => {
   });
 
   browser.contextMenus.onClicked.addListener((info, tab) => {
+    if (info.menuItemId === REQUEST_MENU_ID && tab != null) {
+      void requestNoteOnSelection(tab, info.selectionText ?? "");
+      return;
+    }
     if (info.menuItemId === WRITE_MENU_ID && tab?.id != null) {
       const tabId = tab.id;
       const message = { type: "cn-write-note", selection: info.selectionText ?? "" };
@@ -157,6 +211,13 @@ export default defineBackground(() => {
       // The OAuth window outlives the popup that asked for it, so the flow
       // runs here in the background.
       signInWithXViaWebAuthFlow().then(sendResponse);
+      return true; // Keep the message channel open for the async reply.
+    }
+    if ((message as { type?: string })?.type === "cn-reader-redirect") {
+      // The coverage badges resolve reader-style feed links to the publication
+      // URL our items are stored under. The redirect-following fetch has to
+      // run here, where host permissions apply.
+      fetchReaderRedirectUrl((message as { href: string }).href).then(sendResponse);
       return true; // Keep the message channel open for the async reply.
     }
     if ((message as { type?: string })?.type === "cn-reader-canonical") {

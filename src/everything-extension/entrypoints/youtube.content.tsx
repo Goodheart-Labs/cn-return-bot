@@ -2,12 +2,15 @@ import "../assets/tailwind.css";
 import { createRoot } from "react-dom/client";
 import { defineContentScript, createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
-import { fetchItemForUrl, extractYoutubeVideoId } from "../../everything-shared/notesQuery";
+import { fetchItemForUrl } from "../../everything-shared/notesQuery";
+import { extractYoutubeVideoId, normalizePageUrl } from "../../everything-shared/pageUrls";
 import { fetchClaimGroups, type ClaimGroup } from "../utils/claimGroups";
 import { mountCoverageBadges } from "../utils/coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "../utils/coveredPages";
 import { recordLinkVisit } from "../utils/linkVisits";
 import { YoutubeOverlayApp, DEFAULT_CLIP_SECONDS, type TimedGroup } from "../components/YoutubeOverlay";
+import { youtubeChannelTarget, type FollowTarget } from "../utils/followTarget";
+import { mountFollowOverlay, mountStatusOverlay } from "../utils/mountStatusOverlay";
 import { isPageDark, observePageTheme } from "../utils/pageTheme";
 import { registerDevReloadHook } from "../utils/devReload";
 import { initUiAnalytics } from "../utils/analytics";
@@ -16,6 +19,7 @@ import { track } from "../../everything-shared/analytics";
 // YouTube's DOM changes often. Every selector we depend on lives here.
 const PLAYER_SELECTOR = "#movie_player";
 const VIDEO_SELECTOR = "video.html5-main-video";
+const CHANNEL_LINK_SELECTOR = "ytd-video-owner-renderer ytd-channel-name a";
 
 const PLAYER_WAIT_MS = 15_000;
 const PLAYER_POLL_MS = 500;
@@ -54,14 +58,51 @@ function timedGroups(claimGroups: ClaimGroup[]): TimedGroup[] {
     .sort((a, b) => a.startSeconds - b.startSeconds);
 }
 
+/** The channel behind the current watch page, read from the owner box under
+ *  the video. Null when the box has not rendered yet or changed shape. */
+function channelFollowTarget(): FollowTarget | null {
+  const link = document.querySelector<HTMLAnchorElement>(CHANNEL_LINK_SELECTOR);
+  if (!link?.href) return null;
+  return youtubeChannelTarget(link.href, link.textContent?.trim() ?? "");
+}
+
+/** The transient "have we checked this video" card. On an unchecked video it
+ *  offers the request button and, once the owner box has rendered, the
+ *  channel-follow button. Whether we already follow the channel cannot be told
+ *  from the covered list, which only holds video URLs, so authorCovered stays
+ *  false here; the pipeline resolves a repeat follow as already followed. */
+async function mountStatus(ctx: ContentScriptContext, noteCount: number | null): Promise<() => void> {
+  let followTarget: FollowTarget | null = null;
+  if (noteCount === null) {
+    // The owner box renders late, so we wait for it before reading the channel.
+    await waitFor<HTMLAnchorElement>(CHANNEL_LINK_SELECTOR);
+    followTarget = channelFollowTarget();
+  }
+  return mountStatusOverlay(ctx, {
+    pageUrl: normalizePageUrl(location.href),
+    noun: "video",
+    checked: noteCount === null ? null : { noteCount },
+    authorCovered: false,
+    followTarget,
+    // The pipeline fetches the transcript itself, and this page's text is
+    // player chrome rather than the video's content.
+    requestWithPageText: false,
+  });
+}
+
 async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | null> {
+  // A channel page gets the follow-only card. Whether we already cover the
+  // channel cannot be told on-device, because the covered list only holds
+  // video URLs; the pipeline resolves a repeat follow as already followed.
+  const channelTarget = youtubeChannelTarget(location.href, document.title.replace(/ - YouTube$/, ""));
+  if (channelTarget) return mountFollowOverlay(ctx, channelTarget);
   if (!extractYoutubeVideoId(location.href)) return null;
   // We check coverage locally first. Most videos are not covered, and finding
   // that out must not cost a backend request on every watch page.
   const covered = await getCoveredPageUrls();
-  if (covered && !pageIsCovered(location.href, covered)) return null;
+  if (covered && !pageIsCovered(location.href, covered)) return mountStatus(ctx, null);
   const item = await fetchItemForUrl(location.href);
-  if (!item) return null;
+  if (!item) return mountStatus(ctx, null);
   // Once per video, because yt-navigate-finish re-fires on the same URL.
   if (lastVisitUrl !== location.href) {
     lastVisitUrl = location.href;
@@ -70,11 +111,12 @@ async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | n
   const refetch = async () => timedGroups(await fetchClaimGroups(item.id));
   const groups = await refetch();
   console.info(`[common-notes] ${groups.length} timestamped claims on this video`);
-  if (groups.length === 0) return null;
+  const statusTeardown = await mountStatus(ctx, groups.reduce((n, g) => n + 1 + g.alternatives.length, 0));
+  if (groups.length === 0) return statusTeardown;
 
   const player = await waitFor<HTMLElement>(PLAYER_SELECTOR);
   const video = document.querySelector<HTMLVideoElement>(VIDEO_SELECTOR);
-  if (!player || !video) return null;
+  if (!player || !video) return statusTeardown;
 
   let themeRoot: HTMLElement | null = null;
   const ui = await createShadowRootUi(ctx, {
@@ -115,6 +157,7 @@ async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | n
   const stopTheme = observePageTheme((dark) => themeRoot?.classList.toggle("dark", dark));
   return () => {
     stopTheme();
+    statusTeardown();
     ui.remove();
   };
 }
