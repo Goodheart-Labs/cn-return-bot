@@ -16,39 +16,52 @@
 <body>
 <main>
   <h1>Privacy Policy</h1>
-  <p class="muted">Common Notes (commonnotes.net and the Common Notes browser extension) · Last updated 3 August 2026</p>
+  <p class="muted">Common Notes (commonnotes.net and the Common Notes browser extension) · Last updated 17 August 2026</p>
 
   <h2>What we collect</h2>
   <ul>
-    <li><strong>Reading:</strong> nothing personal — no account needed, no tracking cookies.</li>
+    <li><strong>Reading:</strong> no account needed, no tracking cookies, no third-party trackers.
+    We count usage ourselves: the website records events such as page views in our own
+    database, under a random identifier stored in your browser. The identifier is not
+    derived from anything about you, and it is replaced with a fresh one when you sign out.</li>
     <li><strong>Signing in with email:</strong> your email address, used only to send an 8-digit login code.</li>
     <li><strong>Signing in with X:</strong> your X handle, display name, and the email X shares with us.</li>
-    <li><strong>Contributing:</strong> your votes, suggested improvements, and draft notes, linked to your account. Draft notes display your handle or display name publicly. When you rate a note, we record the charity you pick for the donation we pledge on that rating (the donation is our money, not yours).</li>
+    <li><strong>Contributing:</strong> your votes, suggested improvements, and draft notes, linked to your account. Draft notes display your handle or display name publicly. When you rate a note, we record the charity you pick for the donation we pledge on that rating (the donation is our money, not yours). While you are signed in, usage events also carry your account id.</li>
   </ul>
 
   <h2>The browser extension</h2>
   <p>The Common Notes browser extension shows notes directly on the pages they were
-  written about. It is built to know as little about your browsing as possible:</p>
+  written about. It asks for access to all websites at install, because notes can exist
+  anywhere — but it is built to know as little about your browsing as possible:</p>
   <ul>
     <li><strong>Matching happens on your device.</strong> The extension periodically
     downloads the list of pages that have notes and checks the pages you visit against
     that local list. Browsing pages without notes generates no request to our servers.</li>
     <li><strong>Pages with notes:</strong> to display notes, the page's address is sent
     to our server (together with your login token if you are signed in). The same
-    happens for the page you are on when you open the extension's toolbar popup.</li>
-    <li><strong>Contributing from the extension:</strong> "Request notes on this page"
-    stores that page's address and title; writing a note stores the text you selected,
-    your note, and the page's address and title.</li>
+    happens for the page you are on when you open the extension's toolbar popup.
+    On Substack, YouTube, and LessWrong pages that have notes, we additionally count
+    the visit: the page's address and the time, with no user or device identifier.</li>
+    <li><strong>Contributing from the extension:</strong> "Request Common Notes" stores
+    the page's address, title, and text (and the paragraph you selected, if any), so our
+    pipeline can fact-check pages it cannot download itself. Requesting notes on all new
+    posts from an author stores that author's feed address. Writing a note stores the
+    text you selected, your note, and the page's address and title.</li>
     <li><strong>Moderation:</strong> before a note or improvement is posted, its text and
     the selected passage are checked by an AI model via OpenRouter (Anthropic) to filter
     out non-earnest submissions. The check returns only accept or reject and stores
     nothing; no name, email, or page address is included.</li>
-    <li><strong>Settings:</strong> small preferences (which notes to display, sites where
-    you declined the permission prompt) live in your browser's built-in extension sync
-    storage — they travel with your browser account (e.g. Chrome sync), not through our
-    servers.</li>
-    <li><strong>No analytics:</strong> the extension contains no analytics, advertising,
-    or tracking code. Uninstalling it removes everything it stored in your browser.</li>
+    <li><strong>Settings:</strong> small preferences (which notes to display, which pages
+    and authors you already requested notes for) live in your browser's built-in
+    extension sync storage — they travel with your browser account (e.g. Chrome sync),
+    not through our servers.</li>
+    <li><strong>Usage analytics, self-hosted:</strong> the extension records a few usage
+    events in our own database — that it was installed, that notes were shown on a page,
+    that a sign-in was started, that a submission was rejected by moderation. Events
+    carry a random device identifier (replaced with a fresh one when you sign out) and,
+    while you are signed in, your account id. No third-party analytics, advertising, or
+    tracking code is involved. Uninstalling the extension removes everything it stored
+    in your browser.</li>
   </ul>
 
   <h2>Where it lives</h2>
