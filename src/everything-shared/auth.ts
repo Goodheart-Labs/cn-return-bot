@@ -60,9 +60,10 @@ export function useSession(): { session: Session | null; ready: boolean; event: 
   return { session, ready, event };
 }
 
-/** The length of the one-time code Supabase sends by email. Local development
- *  mirrors it in config.toml under auth.email.otp_length. */
-export const EMAIL_OTP_LENGTH = 8;
+/** The length of the one-time code Supabase sends by email. The prod value
+ *  lives in the dashboard (Authentication → Email → OTP Length); local
+ *  development mirrors it in config.toml under auth.email.otp_length. */
+export const EMAIL_OTP_LENGTH = 6;
 
 /** Step one of email sign-in, used by both the website and the extension. The email
  *  carries an 8-digit code, which the templates render as {{ .Token }}. There is no

@@ -120,7 +120,7 @@ export function LoginPanel({ surface = "popup", onDismiss }: { surface?: "popup"
               autoFocus
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder="12345678"
+              placeholder="123456"
               className={`${INPUT} tracking-widest`}
             />
             <button type="submit" disabled={busy || code.trim().length < EMAIL_OTP_LENGTH} className={PRIMARY}>

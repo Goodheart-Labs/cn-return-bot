@@ -86,7 +86,7 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
               required
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder="12345678"
+              placeholder="123456"
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm tracking-widest"
             />
             <button
