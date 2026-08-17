@@ -187,7 +187,10 @@ export function fetchAutoSubs(url: string, outputDir: string, lang: string = "en
 export function fetchTimedTranscript(url: string, outputDir: string, lang: string = "en"): SubtitleCue[] | null {
   const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
   try {
-    execYtDlp(url, ["--write-subs", "--write-auto-subs", "--sub-lang", lang, "--skip-download", "-o", outputTemplate, url]);
+    // Writing subtitles needs no video formats. Without the ignore flag a
+    // degraded player response from a flagged proxy IP, which lists no
+    // formats, aborts the call before the subtitles are fetched.
+    execYtDlp(url, ["--write-subs", "--write-auto-subs", "--sub-lang", lang, "--skip-download", "--ignore-no-formats-error", "-o", outputTemplate, url]);
   } catch {
     return null;
   }
