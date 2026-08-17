@@ -13,14 +13,16 @@ import { isPageDark } from "./pageTheme";
 const RESCAN_DEBOUNCE_MS = 600;
 const BADGE_CLASS = "cn-coverage-badge";
 
-// A badge is only placed on a link that sits inside a listing card, and it is
-// pinned to that card's corner. Substack wraps each feed entry in
-// role="article"; the ytd-* elements are YouTube's video tiles; article and
-// li catch listings on generic sites. The height cap tells a card apart from
-// a full article body that merely links to another noted post. Links outside
-// any card get no badge at all: appended inline they ended up dangling under
-// hero titles or stretched across cards, which is what this replaced.
-const CARD_SELECTOR = '[role="article"], ytd-rich-item-renderer, ytd-grid-video-renderer, ytd-video-renderer, ytd-compact-video-renderer, article, li';
+// The fallback for links that do not wrap a picture themselves: such a link
+// only gets a badge when it sits inside a listing card, and the badge goes on
+// that card's picture or corner. Substack wraps each feed entry in
+// role="article"; article and li catch listings on generic sites. YouTube
+// never needs this path, because its tiles always contain a thumbnail link.
+// The height cap tells a card apart from a full article body that merely
+// links to another noted post. Links outside any card get no badge at all:
+// appended inline they ended up dangling under hero titles or stretched
+// across cards, which is what this replaced.
+const CARD_SELECTOR = '[role="article"], article, li';
 const CARD_MAX_HEIGHT_PX = 900;
 
 /** The lookup key of a page URL: the video ID on YouTube, the normalized URL
@@ -59,37 +61,39 @@ function createBadge(count: number): HTMLElement {
   return badge;
 }
 
-/** The listing card a link belongs to, or null when the link is not part of a
- *  card. The anchor itself may be the card, which happens when a whole tile
- *  is one big link. */
-function cardFor(anchor: HTMLAnchorElement): HTMLElement | null {
-  const card = anchor.closest<HTMLElement>(CARD_SELECTOR);
-  if (!card || card.offsetHeight > CARD_MAX_HEIGHT_PX) return null;
-  return card;
-}
-
 // Avatars and icons are small, so anything under this area cannot be the
 // cover image.
 const MIN_COVER_IMAGE_AREA_PX = 120 * 68;
 
-/** The element the badge is pinned to. When the card shows a cover image or
- *  video thumbnail, the badge belongs on that picture's corner, which reads
- *  better than the card's own corner and stays clear of the card's controls,
- *  such as Substack's dismiss button. The largest image wins; a text-only
- *  card falls back to the card itself. The badge goes into the picture's
- *  direct parent, which on both Substack and YouTube wraps the picture
- *  tightly. */
-function badgeSurface(card: HTMLElement): HTMLElement {
+/** The largest image under `root` that is big enough to be a cover image or
+ *  thumbnail rather than an avatar or icon. */
+function coverImage(root: HTMLElement): HTMLElement | null {
   let cover: HTMLElement | null = null;
   let coverArea = MIN_COVER_IMAGE_AREA_PX;
-  for (const image of card.querySelectorAll<HTMLElement>("img")) {
+  for (const image of root.querySelectorAll<HTMLElement>("img")) {
     const area = image.offsetWidth * image.offsetHeight;
     if (area >= coverArea) {
       cover = image;
       coverArea = area;
     }
   }
-  return cover?.parentElement ?? card;
+  return cover;
+}
+
+/** The element the badge is pinned to, or null when this link should carry no
+ *  badge. A link that wraps the tile's picture is the preferred surface: every
+ *  video tile has one, whatever the host's current component names are, and it
+ *  pins the badge to the picture's corner, clear of the card's own controls.
+ *  Matching on structure rather than on component tag names is deliberate:
+ *  YouTube renders different tile components logged in than logged out, and a
+ *  tag-name list silently missed the logged-in ones. A text link falls back to
+ *  its listing card, where the badge sits on the card's picture if it has one
+ *  and on the card's corner otherwise. */
+function surfaceFor(anchor: HTMLAnchorElement): HTMLElement | null {
+  if (coverImage(anchor)) return anchor;
+  const card = anchor.closest<HTMLElement>(CARD_SELECTOR);
+  if (!card || card.offsetHeight > CARD_MAX_HEIGHT_PX) return null;
+  return coverImage(card)?.parentElement ?? card;
 }
 
 /** Marks every listing link that leads to a noted page with a note-count
@@ -109,16 +113,15 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
   }
   if (countByKey.size === 0) return null;
 
-  // The one badge each noted page currently has, together with its card, so a
-  // page linked several times in one listing card is not badged on every link.
-  const badges = new Map<string, { badge: HTMLElement; card: HTMLElement }>();
+  // The one badge each noted page currently has, together with the link that
+  // earned it, so a page linked several times in one listing is badged once.
+  const badges = new Map<string, { badge: HTMLElement; anchor: HTMLAnchorElement }>();
 
-  /** Puts the badge on the best surface its card currently offers. Calling it
+  /** Puts the badge on the best surface its link currently offers. Calling it
    *  again is harmless, and that matters: cover images lazy-load, so the first
    *  scan can run while the picture still has no size. The badge then starts
    *  on the card's corner, and a later scan moves it onto the picture. */
-  const seat = ({ badge, card }: { badge: HTMLElement; card: HTMLElement }) => {
-    const surface = badgeSurface(card);
+  const seat = (badge: HTMLElement, surface: HTMLElement) => {
     if (badge.parentElement === surface) return;
     // The badge is positioned against the surface, so the surface must be a
     // containing block. Almost every one already is; for the rare static one
@@ -127,21 +130,39 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
     surface.appendChild(badge);
   };
 
+  /** Drops every badge whose link no longer leads to its page. Hosts recycle
+   *  their tile nodes: YouTube keeps a card element connected while swapping
+   *  it to a different video during scrolling. Trusting isConnected alone left
+   *  a badge sitting on the wrong video and blocked the right tile from ever
+   *  getting one. A valid badge is re-seated, which moves it onto the picture
+   *  once a lazy-loaded image has arrived. */
+  const pruneAndReseat = () => {
+    for (const [key, { badge, anchor }] of badges) {
+      const valid = badge.isConnected && anchor.isConnected && pageKey(anchor.href) === key;
+      const surface = valid ? surfaceFor(anchor) : null;
+      if (surface) {
+        seat(badge, surface);
+      } else {
+        badge.remove();
+        badges.delete(key);
+      }
+    }
+  };
+
   const placeBadge = (anchor: HTMLAnchorElement, currentKeys: Set<string>) => {
     const key = pageKey(anchor.href);
-    if (!key || currentKeys.has(key)) return;
+    if (!key || currentKeys.has(key) || badges.has(key)) return;
     const count = countByKey.get(key);
     if (!count) return;
-    const existing = badges.get(key);
-    if (existing?.badge.isConnected) return seat(existing);
-    const card = cardFor(anchor);
-    if (!card) return;
-    const entry = { badge: createBadge(count), card };
-    seat(entry);
-    badges.set(key, entry);
+    const surface = surfaceFor(anchor);
+    if (!surface) return;
+    const badge = createBadge(count);
+    seat(badge, surface);
+    badges.set(key, { badge, anchor });
   };
 
   const scan = () => {
+    pruneAndReseat();
     // Links to the page we are already on carry no information, so they get
     // no badge. The canonical URL counts as the current page too: on a
     // custom-domain newsletter the address bar and the stored item URL can

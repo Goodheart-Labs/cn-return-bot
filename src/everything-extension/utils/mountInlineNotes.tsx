@@ -9,7 +9,7 @@ import { mountCoverageBadges } from "./coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "./coveredPages";
 import { recordLinkVisit } from "./linkVisits";
 import { mountWriteAnywhere } from "./mountWriteAnywhere";
-import { getDisabledSites, onNoteFiltersChanged } from "./settings";
+import { onNoteFiltersChanged } from "./settings";
 import { isPageDark, observePageTheme } from "./pageTheme";
 import { InlineNotesApp, type AnchoredGroup } from "../components/InlineNotes";
 import { track } from "../../everything-shared/analytics";
@@ -245,12 +245,6 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
  *  anchor its claims again on every URL change. That way notes also appear on posts
  *  the reader reached by clicking through, not only on a full page load. */
 export async function mountInlineNotes(ctx: ContentScriptContext): Promise<void> {
-  // The user switched notes off for this site in the popup. The hostname
-  // cannot change without a full page load, so checking once here is enough.
-  if ((await getDisabledSites()).includes(location.hostname)) {
-    console.info(`[common-notes] notes are switched off for ${location.hostname}`);
-    return;
-  }
   // Listing badges live independently of the per-URL note mounts below. They
   // mark noted posts in whatever listing this site shows, such as a Substack
   // front page, and their own observer follows navigations and lazy loading.

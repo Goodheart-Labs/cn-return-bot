@@ -7,7 +7,7 @@ import { submitNoteRequest } from "../../../everything-shared/noteRequests";
 import { noteVisible } from "../../utils/claimGroups";
 import { genericScriptId } from "../../utils/genericScript";
 import { resolveReaderCanonical } from "../../utils/readerCanonical";
-import { addDisabledSite, addRequestedPage, getDisabledSites, getNoteFilters, getRequestedPages, removeDisabledSite, updateNoteFilters, type NoteFilters } from "../../utils/settings";
+import { addRequestedPage, getNoteFilters, getRequestedPages, updateNoteFilters, type NoteFilters } from "../../utils/settings";
 import { STATIC_SITE_HOSTNAME } from "../../utils/staticSites";
 import { LoginPanel } from "../../components/LoginPanel";
 
@@ -108,21 +108,20 @@ function useJumped(state: PageState): boolean {
   return jumped;
 }
 
-/** How notes stand on this page's site. "off" means the user switched notes
- *  off for the site. "on" means the content script is guaranteed to be there,
- *  either through the static manifest or through a registration. "syncing"
- *  means the site is covered but the background's sync has not registered it
- *  yet, so the jump button injects into the tab directly. */
-type PageAccess = "on" | "syncing" | "off";
+/** How notes stand on this page's site. "on" means the content script is
+ *  guaranteed to be there, either through the static manifest or through a
+ *  registration. "syncing" means the site is covered but the background's
+ *  sync has not registered it yet, so the jump button injects into the tab
+ *  directly. */
+type PageAccess = "on" | "syncing";
 
 function usePageAccess(state: PageState): PageAccess | null {
   const [access, setAccess] = useState<PageAccess | null>(null);
   useEffect(() => {
     if (state.kind !== "item") return;
     const hostname = new URL(state.origin).hostname;
+    if (STATIC_SITE_HOSTNAME.test(hostname)) return setAccess("on");
     (async () => {
-      if ((await getDisabledSites()).includes(hostname)) return setAccess("off");
-      if (STATIC_SITE_HOSTNAME.test(hostname)) return setAccess("on");
       const scripts = await browser.scripting.getRegisteredContentScripts({ ids: [genericScriptId(hostname)] }).catch(() => []);
       setAccess(scripts.length > 0 ? "on" : "syncing");
     })();
@@ -220,23 +219,6 @@ function PrimaryAction({ state, visibleNoteCount, jumped, access }: {
   if (state.kind === "item" && visibleNoteCount > 0) {
     if (!access) return <p className="text-sm text-gray-500">Loading notes…</p>;
 
-    if (access === "off") {
-      const enable = async () => {
-        // The background watches the disabled-sites list and re-registers the
-        // site's script. The reload then mounts it, because a page that loaded
-        // while the site was off has no notes running.
-        await removeDisabledSite(new URL(state.origin).hostname);
-        const tab = await activeTab();
-        if (tab?.id != null) await browser.tabs.reload(tab.id);
-        window.close();
-      };
-      return (
-        <button onClick={enable} className={PRIMARY_BUTTON}>
-          Show notes on this site
-        </button>
-      );
-    }
-
     const jumpToNote = async () => {
       const tab = await activeTab();
       if (tab?.id != null) {
@@ -275,25 +257,6 @@ function PrimaryAction({ state, visibleNoteCount, jumped, access }: {
   );
 }
 
-/** The per-site opt-out that replaced the old per-site permission ask. It
- *  hides notes on this page's site until the user switches them back on with
- *  the popup's "Show notes on this site" button. The background unregisters
- *  the site's script when the list changes, and the reload takes the running
- *  overlay down. */
-function HideSiteButton({ origin }: { origin: string }) {
-  const hide = async () => {
-    await addDisabledSite(new URL(origin).hostname);
-    const tab = await activeTab();
-    if (tab?.id != null) await browser.tabs.reload(tab.id);
-    window.close();
-  };
-  return (
-    <button onClick={hide} className="text-xs text-gray-500 hover:underline">
-      Hide notes on this site
-    </button>
-  );
-}
-
 export function PopupApp() {
   const { session, ready } = useSession();
   const state = usePageState();
@@ -312,7 +275,6 @@ export function PopupApp() {
     <div className="p-4 space-y-4 bg-gray-50 min-h-[180px]">
       <PrimaryAction state={state} visibleNoteCount={visibleNoteCount} jumped={jumped} access={access} />
       {filters && <NoteFilterToggles filters={filters} onToggle={toggleFilters} />}
-      {state.kind === "item" && (access === "on" || access === "syncing") && <HideSiteButton origin={state.origin} />}
 
       <div className="border-t border-gray-200 pt-3">
         {!ready ? null : session ? (

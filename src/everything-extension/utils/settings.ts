@@ -1,36 +1,5 @@
 import { browser } from "#imports";
 
-// The hostnames the user switched notes off for. The list began as the "Do not
-// ask again" answer on the old grant.html consent page, back when every site
-// needed its own permission. The extension now installs with access to all
-// sites, and this list is the per-site opt-out that replaced that flow. The
-// popup's "Hide notes on this site" button adds to it, and its "Show notes on
-// this site" button removes from it. The storage key keeps its old name so an
-// existing "Do not ask again" still counts as notes switched off.
-const DISABLED_SITES_KEY = "cn:grantDismissed";
-
-export async function getDisabledSites(): Promise<string[]> {
-  return ((await browser.storage.sync.get(DISABLED_SITES_KEY))[DISABLED_SITES_KEY] as string[] | undefined) ?? [];
-}
-
-export async function addDisabledSite(hostname: string): Promise<void> {
-  await browser.storage.sync.set({ [DISABLED_SITES_KEY]: [...new Set([...(await getDisabledSites()), hostname])] });
-}
-
-export async function removeDisabledSite(hostname: string): Promise<void> {
-  await browser.storage.sync.set({ [DISABLED_SITES_KEY]: (await getDisabledSites()).filter((h) => h !== hostname) });
-}
-
-/** Returns a function that removes the listener again. The background watches
- *  this so a toggled site is registered or unregistered right away. */
-export function onDisabledSitesChanged(callback: () => void): () => void {
-  const listener = (changes: Record<string, unknown>, area: string) => {
-    if (area === "sync" && changes[DISABLED_SITES_KEY]) callback();
-  };
-  browser.storage.onChanged.addListener(listener);
-  return () => browser.storage.onChanged.removeListener(listener);
-}
-
 // The pages the user has already asked us to cover with "Request notes on this
 // page". Reopening the popup on such a page shows the done state instead of creating
 // a second request. The list is a rolling window. Sync storage allows about 8KB per

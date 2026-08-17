@@ -6,7 +6,6 @@ import { initBackgroundAnalytics } from "../utils/analytics";
 import { signInWithXViaWebAuthFlow } from "../utils/oauth";
 import { COVERED_PAGE_URLS_KEY, NOTED_PAGE_COUNTS_KEY } from "../utils/coveredPages";
 import { GENERIC_SCRIPT_PREFIX, hostnamePattern, registerGenericScripts, genericScriptId } from "../utils/genericScript";
-import { getDisabledSites, onDisabledSitesChanged } from "../utils/settings";
 import { STATIC_SITE_HOSTNAME } from "../utils/staticSites";
 
 const WRITE_MENU_ID = "cn-write-note";
@@ -39,15 +38,6 @@ async function registeredGenericHostnames(): Promise<string[]> {
     .map((id) => id.slice(GENERIC_SCRIPT_PREFIX.length));
 }
 
-/** The hostnames the sync should have a registration for. That is every noted
- *  hostname except the sites the user switched notes off for. The list is
- *  worked out again on every sync, so toggling a site in the popup takes
- *  effect on the next sync it triggers. */
-async function enabledHostnames(noted: string[]): Promise<string[]> {
-  const disabled = new Set(await getDisabledSites());
-  return noted.filter((hostname) => !disabled.has(hostname));
-}
-
 /** Registering a script only affects future page loads. So tabs that are
  *  already open on a newly covered host get the script injected directly, and
  *  a sync triggered from the popup shows notes in the current tab without a
@@ -74,7 +64,7 @@ async function syncNotedSites() {
     if (counts) await browser.storage.local.set({ [NOTED_PAGE_COUNTS_KEY]: counts });
     if (urls) {
       await browser.storage.local.set({ [COVERED_PAGE_URLS_KEY]: urls });
-      const wanted = new Set(await enabledHostnames(genericHostnames(urls)));
+      const wanted = new Set(genericHostnames(urls));
       const existing = new Set(await registeredGenericHostnames());
       const toAdd = [...wanted].filter((hostname) => !existing.has(hostname));
       const toRemove = [...existing].filter((hostname) => !wanted.has(hostname));
@@ -124,10 +114,6 @@ export default defineBackground(() => {
   browser.alarms.onAlarm.addListener((alarm) => {
     if (alarm.name === SYNC_ALARM) void syncNotedSites();
   });
-  // Toggling a site in the popup registers or unregisters its script right
-  // away, so the choice holds on the next page load and not only after the
-  // next scheduled sync.
-  onDisabledSitesChanged(() => void syncNotedSites());
 
   browser.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === WRITE_MENU_ID && tab?.id != null) {
