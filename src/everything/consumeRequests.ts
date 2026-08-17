@@ -1,8 +1,9 @@
 /**
  * Turns reader requests into pipeline work. The everything-priority-feeds
  * workflow runs this at the start of every cycle, before anything is enqueued
- * from the feeds. Both consumers are cheap: they only move rows around, no LLM
- * is called, so they run even on a day whose spend cap is already reached.
+ * from the feeds. Both consumers are cheap and run even on a day whose spend
+ * cap is already reached. The one exception to "no LLM here" is the small
+ * Flash call that trims a captured page text down to its article.
  *
  * Note requests ("check this page") become queue items at the requested
  * priority tier, so the worker takes them before any feed backlog. A request
@@ -25,6 +26,7 @@
 
 import "dotenv/config";
 import { extractYoutubeVideoId } from "../everything-shared/pageUrls";
+import { cleanCapturedPageText } from "./pipeline/cleanCapturedText";
 import {
   fetchPendingFollowRequests,
   fetchPendingNoteRequests,
@@ -74,10 +76,13 @@ async function consumeNoteRequest(request: NoteRequestRow): Promise<string> {
   const source = classifyRequestSource(request.page_url);
   // A request on a highlighted paragraph checks exactly that paragraph, never
   // the whole page: the selection becomes the item's text. A whole-page
-  // request uses the page text the extension captured. Without either, the
-  // worker fetches the page itself — through the web-fetch ladder for a text
-  // page, or as transcript and cues for a YouTube video.
-  const fullText = request.selection ?? (source === "youtube" ? undefined : request.page_text ?? undefined);
+  // request uses the page text the extension captured, run through the
+  // article-only cleanup, because the raw capture drags in comments and
+  // sidebars. Without either, the worker fetches the page itself — through
+  // the web-fetch ladder for a text page, or as transcript and cues for a
+  // YouTube video.
+  let fullText = request.selection ?? (source === "youtube" ? undefined : request.page_text ?? undefined);
+  if (fullText && fullText === request.page_text) fullText = await cleanCapturedPageText(fullText);
 
   const itemId = await insertQueuedItem({
     project_id: await resolveProjectId(REQUESTED_PROJECT_SLUG),
