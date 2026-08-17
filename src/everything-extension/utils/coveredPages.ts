@@ -1,5 +1,5 @@
 import { browser } from "#imports";
-import { extractYoutubeVideoId } from "../../everything-shared/notesQuery";
+import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
 
 // The covered-pages list holds the URL of every ingested item. The background's
 // sync writes it, and content scripts read it before they make any backend

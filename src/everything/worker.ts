@@ -14,16 +14,18 @@
 
 import "dotenv/config";
 import { closeBrowser } from "../pipeline/utils/browserManager";
-import { claimNextQueuedItem, fetchItemClaims, markItemDone, markItemError, type EverythingItem } from "./db";
+import { claimNextQueuedItem, fetchItemClaims, markItemDone, markItemError, requeueItem, type EverythingItem } from "./db";
 import { processFetchedContent, resumeItemClaims } from "./pipeline/processContent";
 import { fetchSubstackPost } from "./sources/substack";
 import { ensureYtDlp, fetchYoutubeContent, fetchYoutubeTranscriptContent } from "./sources/youtube";
+import { describeSpend, spendCapReached, todaySpendUsd } from "./spendCap";
 import type { FetchedContent } from "./types";
 
 async function fetchContent(item: EverythingItem): Promise<FetchedContent> {
   // An item enqueued with --doc already carries its body, which was read from a
-  // local file at enqueue time. A YouTube doc still needs the video's cues
-  // fetched, so that its claims get timestamps.
+  // local file at enqueue time, and so does a requested web page, whose body the
+  // extension captured. A YouTube doc still needs the video's cues fetched, so
+  // that its claims get timestamps.
   if (item.full_text !== null) {
     return item.source === "youtube"
       ? fetchYoutubeTranscriptContent(item.url, item.full_text)
@@ -40,13 +42,20 @@ async function fetchContent(item: EverythingItem): Promise<FetchedContent> {
       return fetchYoutubeContent(item.url);
     case "substack":
       return fetchSubstackPost(item.url);
+    default:
+      throw new Error(`Cannot fetch a '${item.source}' item without stored text: ${item.url}`);
   }
 }
 
-/** Processes queued items until the queue is empty. Returns how many it took. */
+/** Processes queued items until the queue is empty or the daily spend cap is
+ *  reached. Returns how many items it finished. */
 export async function drainQueue(): Promise<number> {
   let processed = 0;
   while (true) {
+    if (await spendCapReached()) {
+      console.log(`\nDaily spend cap reached (${describeSpend(await todaySpendUsd())}) — stopping for today`);
+      break;
+    }
     const item = await claimNextQueuedItem();
     if (!item) break;
     console.log(`\n=== [${item.source}] ${item.url}`);
@@ -54,8 +63,18 @@ export async function drainQueue(): Promise<number> {
       // If the item already has claims, an earlier run was killed after it had
       // extracted them. We resume its unfinished claims instead of fetching the
       // content and extracting all over again.
-      if ((await fetchItemClaims(item.id)).length > 0) await resumeItemClaims(item);
-      else await processFetchedContent(item, await fetchContent(item));
+      const tally =
+        (await fetchItemClaims(item.id)).length > 0
+          ? await resumeItemClaims(item)
+          : await processFetchedContent(item, await fetchContent(item));
+      // An item cut short by the spend cap goes back in the queue rather than
+      // being marked done. Its unchecked claims are still pending, so the next
+      // day's run resumes exactly those.
+      if (tally.capped > 0) {
+        await requeueItem(item.id);
+        console.log(`  Spend cap reached mid-item — requeued with ${tally.capped} claims left`);
+        break;
+      }
       await markItemDone(item.id);
     } catch (err: any) {
       console.error(`  Item failed: ${err?.message}`);

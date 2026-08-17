@@ -1,13 +1,28 @@
 import { useEffect, useState } from "react";
 import { browser } from "#imports";
 import { useSession, signOut } from "../../../everything-shared/auth";
-import { fetchItemForUrl, fetchNotesForItem, fetchRandomNotedPageUrl, normalizePageUrl, type PageItem } from "../../../everything-shared/notesQuery";
+import { fetchItemForUrl, fetchNotesForItem, fetchRandomNotedPageUrl, type PageItem } from "../../../everything-shared/notesQuery";
+import { normalizePageUrl } from "../../../everything-shared/pageUrls";
 import type { NoteRow } from "../../../everything-shared/types";
 import { submitNoteRequest } from "../../../everything-shared/noteRequests";
 import { noteVisible } from "../../utils/claimGroups";
 import { genericScriptId } from "../../utils/genericScript";
 import { resolveReaderCanonical } from "../../utils/readerCanonical";
+import { getCoveredPageUrls } from "../../utils/coveredPages";
+import {
+  authorHasCoveredPages,
+  hostnamesHaveCoveredPages,
+  resolveProfileFollowTarget,
+  substackFollowTarget,
+  substackProfileHandle,
+  youtubeChannelTarget,
+  type FollowTarget,
+} from "../../utils/followTarget";
+import { buildFollowAction } from "../../utils/mountStatusOverlay";
+import { capturePageFromTab } from "../../utils/pageCapture";
 import { addRequestedPage, getNoteFilters, getRequestedPages, updateNoteFilters, type NoteFilters } from "../../utils/settings";
+import { ActionButton, type StatusAction } from "../../components/StatusOverlay";
+import { extractYoutubeVideoId } from "../../../everything-shared/pageUrls";
 import { STATIC_SITE_HOSTNAME } from "../../utils/staticSites";
 import { LoginPanel } from "../../components/LoginPanel";
 
@@ -180,7 +195,12 @@ function RequestNoteButton() {
       const tab = await activeTab();
       if (!tab?.url) throw new Error("no page");
       const pageUrl = normalizePageUrl(tab.url);
-      await submitNoteRequest({ pageUrl, pageTitle: tab.title ?? "", selection: null });
+      // Opening the popup granted activeTab, so we can read the page's body
+      // text. The pipeline fact-checks the page from that text, because it
+      // cannot fetch arbitrary pages itself. A page we may not inject into
+      // still gets a text-less request.
+      const captured = tab.id != null ? await capturePageFromTab(tab.id) : null;
+      await submitNoteRequest({ pageUrl, pageTitle: tab.title ?? "", selection: null, pageText: captured?.text });
       // This is only a local reminder. The request itself is already saved.
       await addRequestedPage(pageUrl).catch(() => {});
       setPhase("done");
@@ -200,6 +220,58 @@ function RequestNoteButton() {
       {phase === "error" && <p className="text-sm text-red-600">Could not save the request (try again)</p>}
     </>
   );
+}
+
+/** Runs inside the watch page, so it must stay self-contained: executeScript
+ *  serializes the function and imports would not exist over there. */
+function readWatchPageChannel() {
+  const link = document.querySelector<HTMLAnchorElement>("ytd-video-owner-renderer ytd-channel-name a");
+  return link?.href ? { href: link.href, name: link.textContent ?? "" } : null;
+}
+
+/** The feed the current tab's author could be followed as: a Substack
+ *  publication (from its subdomain or a profile page) or a YouTube channel
+ *  (from a channel page, or read out of a watch page's owner box). Null when
+ *  the page has no author feed or we already cover the author. */
+async function followTargetForTab(tab: { id?: number; url?: string; title?: string }): Promise<FollowTarget | null> {
+  const url = tab.url;
+  if (!url) return null;
+  const covered = (await getCoveredPageUrls()) ?? [];
+  const subdomainTarget = substackFollowTarget(url);
+  if (subdomainTarget) return authorHasCoveredPages(url, covered) ? null : subdomainTarget;
+  const handle = substackProfileHandle(url);
+  if (handle) {
+    const resolved = await resolveProfileFollowTarget(handle);
+    return resolved && !hostnamesHaveCoveredPages(resolved.hostnames, covered) ? resolved.target : null;
+  }
+  const channelTarget = youtubeChannelTarget(url, (tab.title ?? "").replace(/ - YouTube$/, ""));
+  if (channelTarget) return channelTarget;
+  if (extractYoutubeVideoId(url) && tab.id != null) {
+    try {
+      const [result] = await browser.scripting.executeScript({ target: { tabId: tab.id }, func: readWatchPageChannel });
+      const channel = result?.result as { href: string; name: string } | null;
+      if (channel) return youtubeChannelTarget(channel.href, channel.name.trim());
+    } catch {
+      // A page we may not inject into offers no follow target.
+    }
+  }
+  return null;
+}
+
+/** The popup's version of the status card's follow button. It renders nothing
+ *  while the page has no followable author. */
+function FollowButton() {
+  const [action, setAction] = useState<StatusAction | null>(null);
+  useEffect(() => {
+    (async () => {
+      const tab = await activeTab();
+      if (!tab) return;
+      const target = await followTargetForTab(tab);
+      if (target) setAction(await buildFollowAction(target));
+    })();
+  }, []);
+  if (!action) return null;
+  return <ActionButton action={action} buttonClassName={PRIMARY_BUTTON} />;
 }
 
 /** The popup's single action button. On a page with visible notes it jumps to
@@ -241,7 +313,12 @@ function PrimaryAction({ state, visibleNoteCount, jumped, access }: {
   }
 
   if (state.kind === "no_item" && !NON_CONTENT_HOSTNAME.test(new URL(state.origin).hostname)) {
-    return <RequestNoteButton />;
+    return (
+      <div className="space-y-2">
+        <RequestNoteButton />
+        <FollowButton />
+      </div>
+    );
   }
 
   const openRandomPage = async () => {

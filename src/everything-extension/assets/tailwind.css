@@ -69,16 +69,11 @@
   z-index: 1000 !important;
 }
 
-/* The request-note popover. It is a fixed card in the bottom right corner of
- * whatever page the user asked for a Common Note on. */
-:host(common-notes-requestnote) {
+/* The transient status card. It is a fixed card in the bottom right corner
+ * saying whether we have checked the current page and its author yet. */
+:host(common-notes-status) {
   position: fixed !important;
   bottom: 16px !important;
   right: 16px !important;
   z-index: 2147483001 !important;
-}
-
-@keyframes cn-countdown {
-  from { stroke-dashoffset: 0; }
-  to { stroke-dashoffset: 44; }
 }

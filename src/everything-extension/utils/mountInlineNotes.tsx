@@ -1,13 +1,24 @@
 import { createRoot, type Root } from "react-dom/client";
 import { createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
-import { fetchItemForUrl, normalizePageUrl } from "../../everything-shared/notesQuery";
+import { fetchItemForUrl } from "../../everything-shared/notesQuery";
+import { normalizePageUrl } from "../../everything-shared/pageUrls";
 import { resolveReaderCanonical } from "./readerCanonical";
 import { indexContainer, findQuoteRange } from "./anchor";
 import { fetchClaimGroups, type ClaimGroup } from "./claimGroups";
 import { mountCoverageBadges } from "./coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "./coveredPages";
+import {
+  authorHasCoveredPages,
+  hostnamesHaveCoveredPages,
+  isSubstackPostPage,
+  resolveProfileFollowTarget,
+  substackFollowTarget,
+  substackProfileHandle,
+  type FollowTarget,
+} from "./followTarget";
 import { recordLinkVisit } from "./linkVisits";
+import { mountFollowOverlay, mountStatusOverlay } from "./mountStatusOverlay";
 import { mountWriteAnywhere } from "./mountWriteAnywhere";
 import { onNoteFiltersChanged } from "./settings";
 import { isPageDark, observePageTheme } from "./pageTheme";
@@ -77,6 +88,51 @@ function applyHighlights(ranges: Range[]) {
   else highlights.set(HIGHLIGHT_NAME, new (globalThis as any).Highlight(...ranges));
 }
 
+/** The follow target when this page is an author's own page rather than a
+ *  post: a publication homepage or archive on an uncovered *.substack.com
+ *  subdomain, or a Substack profile page whose publication we do not cover.
+ *  Null when the page is neither, or when we already cover the author. */
+async function authorPageFollowTarget(pageUrl: string, covered: string[]): Promise<FollowTarget | null> {
+  const subdomainTarget = substackFollowTarget(pageUrl);
+  if (subdomainTarget) return authorHasCoveredPages(pageUrl, covered) ? null : subdomainTarget;
+  const handle = substackProfileHandle(pageUrl);
+  if (!handle) return null;
+  const resolved = await resolveProfileFollowTarget(handle);
+  if (!resolved || hostnamesHaveCoveredPages(resolved.hostnames, covered)) return null;
+  return resolved.target;
+}
+
+/** The write-anywhere shell plus the transient status card. A post page gets
+ *  the full card with the request button. An author's own page — a publication
+ *  homepage or a profile — gets just the follow button when we do not cover
+ *  the author yet. */
+async function mountUncovered(
+  ctx: ContentScriptContext,
+  pageUrl: string,
+  covered: string[],
+  onCoverageChanged: () => void,
+): Promise<() => void> {
+  const teardownWrite = await mountWriteAnywhere(ctx, pageUrl, onCoverageChanged);
+  let teardownStatus: (() => void) | null = null;
+  if (isSubstackPostPage(pageUrl)) {
+    teardownStatus = await mountStatusOverlay(ctx, {
+      pageUrl,
+      noun: "post",
+      checked: null,
+      authorCovered: authorHasCoveredPages(pageUrl, covered),
+      followTarget: substackFollowTarget(pageUrl),
+      requestWithPageText: true,
+    });
+  } else {
+    const target = await authorPageFollowTarget(pageUrl, covered);
+    if (target) teardownStatus = await mountFollowOverlay(ctx, target);
+  }
+  return () => {
+    teardownStatus?.();
+    teardownWrite();
+  };
+}
+
 /** Resolves `href` to an ingested item, anchors that item's claims and mounts the
  *  overlay. When the page has no ingested item we mount the write-anywhere shell
  *  instead. Either way the returned function tears down whatever was mounted. */
@@ -91,11 +147,11 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   const covered = await getCoveredPageUrls();
   if (covered && !pageIsCovered(pageUrl, covered)) {
     console.info(`[common-notes] ${pageUrl} → not in the covered list (no backend lookup)`);
-    return mountWriteAnywhere(ctx, pageUrl, onCoverageChanged);
+    return mountUncovered(ctx, pageUrl, covered, onCoverageChanged);
   }
   const item = await fetchItemForUrl(pageUrl);
   console.info(`[common-notes] ${pageUrl} → ${item ? `item "${item.title ?? item.id}"` : "no ingested item"}`);
-  if (!item) return mountWriteAnywhere(ctx, pageUrl, onCoverageChanged);
+  if (!item) return mountUncovered(ctx, pageUrl, covered ?? [], onCoverageChanged);
   recordLinkVisit(item);
   // We mount even when the item has no notes yet. Writing a note from a selection
   // works on any ingested page, and refresh() brings the new note in.
@@ -110,6 +166,18 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
       note_count: groups.reduce((n, g) => n + g.notes.length, 0),
     });
   }
+
+  // The transient status card tells the reader this page has been checked,
+  // which matters most when the check produced zero notes and nothing else on
+  // the page shows we were here.
+  const statusTeardown = await mountStatusOverlay(ctx, {
+    pageUrl,
+    noun: isSubstackPostPage(pageUrl) ? "post" : "page",
+    checked: { noteCount: groups.reduce((n, g) => n + g.notes.length, 0) },
+    authorCovered: true,
+    followTarget: null,
+    requestWithPageText: false,
+  });
 
   let reactRoot: Root | null = null;
   let themeRoot: HTMLElement | null = null;
@@ -233,6 +301,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     stopTheme();
     observer.disconnect();
     clearTimeout(timer);
+    statusTeardown();
     ui.remove();
     inlineUi.remove();
   };
