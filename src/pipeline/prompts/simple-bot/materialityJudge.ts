@@ -1,13 +1,17 @@
 /**
- * Prompt — materiality / persuasion judge (SHADOW: logs scores, gates nothing).
+ * Prompt — materiality and persuasion judge. It is a shadow scorer, so it logs
+ * its scores and gates nothing.
  *
- * Targets the dominant not-helpful cluster in Nathan's review tags — "did not
- * engage with the argument" (0H/29NH lifetime), "minor/pedantic correction"
- * (1H/22NH), "didn't convince raters", "too confident", "sources unlikely to
- * convince" — ~75% of tagged failures since Jul 21. Every pipeline gate asks
- * "is the note true and cited?"; this judge asks the question raters actually
- * score: does it engage the post's real claim, and would it change a reader's
- * mind? See runMaterialityJudge in src/pipeline/orchestration/materialityJudge.ts.
+ * It targets the largest cluster of not-helpful notes in Nathan's review tags.
+ * The tag "did not engage with the argument" has 0 helpful and 29 not-helpful
+ * notes over its lifetime. The tag "minor or pedantic correction" has 1 helpful
+ * and 22 not-helpful. The cluster also holds the tags "didn't convince raters",
+ * "too confident" and "sources unlikely to convince". Together these are about
+ * 75% of the tagged failures since 21 July.
+ * Every other pipeline gate asks whether the note is true and cited. This judge
+ * asks the question raters actually score. Does the note engage the claim the
+ * post really makes, and would it change a reader's mind?
+ * See runMaterialityJudge in src/pipeline/orchestration/materialityJudge.ts.
  */
 
 import { jsonSchemaResponseFormat } from "../responseFormat";

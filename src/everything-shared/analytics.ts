@@ -27,7 +27,7 @@ export function identifyUser(userId: string, traits?: Record<string, unknown>) {
   sink?.identify(userId, traits);
 }
 
-/** Sign-out: stop attributing events to the person. */
+/** Stops attributing events to the signed-in person. This runs on sign-out. */
 export function resetAnalytics() {
   sink?.reset();
 }

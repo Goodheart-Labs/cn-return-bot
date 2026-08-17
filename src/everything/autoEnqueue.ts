@@ -1,16 +1,19 @@
 /**
- * Auto-enqueue the next unprocessed content of the priority feeds
- * (see priorityFeeds.ts) — run by the everything-priority-feeds workflow
- * right before the worker drains the queue.
+ * Auto-enqueue the next unprocessed content of the priority feeds listed in
+ * priorityFeeds.ts. The everything-priority-feeds workflow runs this right
+ * before the worker drains the queue.
  *
- * Selection per feed: fetch the latest entries (Substack RSS feed, proxied
- * through our Cloudflare Worker in CI / YouTube channel /videos tab — both
- * newest first), drop the ones that already have an everything_items row
- * (any status — done-with-zero-notes and errored count as processed), and
- * take the remaining entries oldest first, so coverage advances
- * chronologically. The feed window (~15-20 entries) bounds how far back
- * this can ever reach. Substack posts are enqueued with their RSS body as
- * full_text, so the worker never fetches Substack (blocked from CI).
+ * For every feed we fetch its latest entries, newest first. A Substack feed
+ * comes from its RSS feed, which goes through our Cloudflare Worker when we run
+ * in CI. A YouTube feed comes from the channel's /videos tab. We then drop
+ * every entry that already has an everything_items row. Any status counts as
+ * processed, including an item that finished with zero notes and an item that
+ * errored. The entries that are left are enqueued oldest first, so coverage
+ * advances chronologically. A feed only lists its 15 to 20 latest entries, and
+ * that bounds how far back this can ever reach.
+ *
+ * A Substack post is enqueued with its RSS body already in full_text. That way
+ * the worker never has to fetch Substack, which blocks our CI runners.
  *
  * Usage:
  *   bun run src/everything/autoEnqueue.ts [--dry-run]
@@ -38,12 +41,14 @@ const CHANNEL_FETCH_LIMIT = 15;
 interface FeedEntry {
   source: SourceKind;
   url: string;
-  /** What to match existing item urls against (YouTube video id — stored URL
-   *  forms vary; Substack the canonical url itself). */
+  /** What to match existing item urls against. For YouTube this is the video
+   *  id, because the stored URL forms vary. For Substack it is the canonical
+   *  url itself. */
   matchKey: string;
   label: string;
-  /** Substack only: the post body from the RSS feed, enqueued with the item so
-   *  the worker never fetches Substack (blocked from CI). */
+  /** Substack only. This is the post body taken from the RSS feed. We enqueue
+   *  it with the item so the worker never has to fetch Substack, which blocks
+   *  our CI runners. */
   fullText?: string;
   title?: string;
   publishedAt?: string;
@@ -53,11 +58,11 @@ interface FeedEntry {
 async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedEntry[]> {
   if (feed.type === "substack") {
     const posts = await fetchFeedPosts(feed.publicationUrl);
-    // A paid post's RSS body is only the free preview — fact-checking a
-    // fragment misfires, so the automated path leaves paid posts out. They are
-    // enqueued separately with the full text from a subscriber inbox
-    // (everything-enqueue --doc <canonical-url> <file>), whose item row then
-    // marks them processed here.
+    // A paid post's RSS body is only the free preview. Fact-checking a
+    // fragment gives bad results, so the automated path leaves paid posts out.
+    // Someone enqueues them by hand with the full text from a subscriber inbox,
+    // using `everything-enqueue --doc <canonical-url> <file>`. The item row
+    // that creates then marks the post processed here.
     for (const p of posts.filter((p) => p.paywalled)) {
       console.log(`[${feed.project}] paid post awaits the subscriber-inbox path: ${p.title}`);
     }
@@ -72,8 +77,9 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedEntry[]> {
     }));
   }
   return fetchChannelVideos(feed.channelUrl, CHANNEL_FETCH_LIMIT)
-    // A null duration is an upcoming premiere — not watchable yet, and enqueueing
-    // it would error the item permanently. It gets picked up once it's live.
+    // A video with no duration is an upcoming premiere. It cannot be watched
+    // yet, and enqueueing it would leave the item in a permanent error state.
+    // A later run picks it up once the video is live.
     .filter((v) => v.durationSeconds !== null)
     .map((v) => ({ source: "youtube" as const, url: v.url, matchKey: v.videoId, label: v.title }));
 }
@@ -96,8 +102,8 @@ async function unprocessedEntries(feed: PriorityFeed, entries: FeedEntry[]): Pro
  *
  *  If the item has no claims yet, the run died during extraction. Requeueing
  *  it would repeat the whole extraction, and if extraction is what killed the
- *  run, that could repeat forever. So we mark it as an error instead — a
- *  human sees it and can put it back in the queue by hand.
+ *  run, that could repeat forever. So we mark it as an error instead. A human
+ *  sees it and can put it back in the queue by hand.
  *
  *  This only runs while no worker is active. Inside the workflow that is
  *  guaranteed by its concurrency group; for local runs see the warning in
@@ -114,7 +120,8 @@ async function triageOrphanedItems(): Promise<void> {
   }
 }
 
-/** One triage + selection + enqueue pass; returns how many items were enqueued. */
+/** Runs one pass of triage, selection, and enqueueing. Returns how many items
+ *  were enqueued. */
 export async function runAutoEnqueue(dryRun = false): Promise<number> {
   if (!dryRun) await triageOrphanedItems();
 

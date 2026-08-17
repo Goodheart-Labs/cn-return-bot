@@ -5,29 +5,32 @@ import type { Vote } from "../../../everything-shared/votes";
 
 /** Outcome-contingent vote donations.
  *
- *  What a vote is worth rests on the latent-quality model in `noteBelief.ts`:
- *  because information genuinely runs out as θ is pinned down, a vote's donation
+ *  What a vote is worth rests on the latent-quality model in `noteBelief.ts`.
+ *  Information genuinely runs out as θ is pinned down, so a vote's donation
  *  decays on its own. There is no decay parameter anywhere.
  *
- *  Pricing — the Brier rule, which is proper (honesty maximises your expected
- *  donation) and, unlike the log rule, *bounded*: once the crowd converges and p
- *  stops moving, the payout goes to zero on BOTH sides, so a late vote is a
- *  low-stakes click rather than a big bet at long odds.
+ *  Amounts come from the Brier rule. That rule is proper, which means voting
+ *  honestly maximises your expected donation. Unlike the log rule it is also
+ *  bounded. Once the crowd has converged and p stops moving, the payout goes to
+ *  zero on both sides. A late vote is therefore a low-stakes click rather than a
+ *  big bet at long odds.
  *
- *  The base is the stake still on the table — exactly the worst score drop any
- *  vote could suffer from here — so the smallest number on the card is the tip
- *  and the whole card shrinks as the crowd converges. It stays incentive-neutral
- *  because it depends only on the tally you walked into, never on how you vote.
+ *  Every amount is lifted by a base, which is the stake still on the table. That
+ *  is the worst score drop any vote could suffer from the current position. So
+ *  the smallest number on the card is the tip, and the whole card shrinks as the
+ *  crowd converges. The base stays incentive-neutral because it depends only on
+ *  the tally you walked into, never on how you vote.
  *
  *  Derivation, tuning and the rejected alternatives:
  *  src/scripts_jim/2026_07_21_donation_decay/RESULTS.md
  */
 
-/** Raised 5 -> 6.25 (Jim, 2026-07-21): lifts every amount 25%. The tip is an
- *  additive term, so scaling this alone leaves the $0.25 floor where it is. */
+/** Jim raised this from 5 to 6.25 on 2026-07-21, which lifts every amount by
+ *  25%. The tip is added on top rather than scaled, so changing this alone
+ *  leaves the $0.25 floor where it is. */
 const DOLLARS_PER_SCORE_UNIT = 6.25;
-/** Floor on every displayed amount, so a fully converged note still pays for the
- *  click. Also what the whole card decays towards. */
+/** The floor under every displayed amount, so voting on a fully converged note
+ *  still pays for the click. The whole card decays towards this value. */
 const PARTICIPATION_TIP = 0.25;
 
 export interface DonationPair {
@@ -37,12 +40,15 @@ export interface DonationPair {
 
 const roundCents = (x: number) => Math.round(x * 100) / 100;
 
-/** Brier scores as [if the note settles Helpful, if it settles Not helpful].
- *  Proper, and bounded — which is what lets both sides decay to nothing. */
+/** The two Brier scores for a belief p. The first is the score if the note
+ *  settles helpful and the second is the score if it settles not helpful. The
+ *  rule is proper and bounded. Being bounded is what lets both sides decay to
+ *  nothing. */
 const brierScores = (p: number): [number, number] => [1 - (1 - p) ** 2, 1 - p ** 2];
 
-/** The tally a fresh vote is priced against: the note's, minus the voter's own
- *  standing vote (a re-vote replaces it rather than adding to it). */
+/** The tally a fresh vote is priced against. It is the note's tally with the
+ *  voter's own standing vote taken out, because voting again replaces that vote
+ *  rather than adding to it. */
 export function priorTally(note: NoteRow, myVote: Vote | undefined): VoteTally {
   const tally = noteTally(note);
   return {
@@ -52,10 +58,10 @@ export function priorTally(note: NoteRow, myVote: Vote | undefined): VoteTally {
   };
 }
 
-/** The stake still on the table: the largest score drop anyone could suffer
- *  voting from this position, and therefore the base every amount is lifted by.
- *  Depends only on the tally, never on how you vote — which is what keeps the
- *  base incentive-neutral. */
+/** The stake still on the table. This is the largest score drop anyone could
+ *  suffer by voting from this position, and it is the base that every amount is
+ *  lifted by. It depends only on the tally and never on how you vote, which is
+ *  what keeps the base incentive-neutral. */
 function stakeOnTheTable(tally: VoteTally): number {
   const before = brierScores(probabilityHelpful(tally));
   let worst = 0;
@@ -66,8 +72,9 @@ function stakeOnTheTable(tally: VoteTally): number {
   return PARTICIPATION_TIP + DOLLARS_PER_SCORE_UNIT * worst;
 }
 
-/** The frozen donation pair for `vote` cast against the given prior tally:
- *  (donated if the note settles rated helpful, donated if not helpful). */
+/** The frozen donation pair for `vote` cast against the given prior tally. The
+ *  first amount is donated if the note settles rated helpful. The second is
+ *  donated if it settles rated not helpful. */
 export function donationPair(tally: VoteTally, vote: Vote): DonationPair {
   const before = brierScores(probabilityHelpful(tally));
   const after = brierScores(probabilityHelpful(withVote(tally, vote)));

@@ -3,7 +3,7 @@ import { supabase } from "../../everything-shared/supabase";
 import { setAnalyticsSink } from "../../everything-shared/analytics";
 
 // The extension's analytics transport: rows in the everything_events table
-// (insert-only for clients, migration 074), registered as the sink behind
+// (insert-only for clients, migration 077), registered as the sink behind
 // everything-shared/analytics. No third-party analytics library enters these
 // bundles — the shared supabase client is already part of the extension, so
 // analytics adds no new dependency or remote code.
@@ -29,9 +29,10 @@ type AnalyticsMessage =
   | { type: typeof MESSAGE_TYPE; op: "identify"; userId: string; traits?: Record<string, unknown> }
   | { type: typeof MESSAGE_TYPE; op: "reset" };
 
-/** Sink for popup + content scripts: forward to the background. The .catch
- *  swallows "receiving end does not exist" — an orphaned content script after
- *  an extension reload must not throw on a stray capture. */
+/** Registers the sink the popup and the content scripts use. It forwards every
+ *  call to the background. The catch swallows the "receiving end does not exist"
+ *  error. A content script left behind by an extension reload has no background
+ *  to talk to any more, and a stray capture from it must not throw. */
 export function initUiAnalytics() {
   const send = (message: AnalyticsMessage) => void browser.runtime.sendMessage(message).catch(() => {});
   setAnalyticsSink({
@@ -41,9 +42,11 @@ export function initUiAnalytics() {
   });
 }
 
-/** Background: listen for UI events, watch auth, and register a direct sink
- *  for the background's own captures (a runtime.sendMessage from here would
- *  skip its own listener and reject with no receivers). */
+/** Sets analytics up in the background. It listens for the events the popup and
+ *  the content scripts send, and it watches the stored session for sign-ins and
+ *  sign-outs. It also registers a sink that fetches directly, because the
+ *  background captures events of its own. A runtime.sendMessage sent from here
+ *  would not reach the listener below and would reject for want of a receiver. */
 export function initBackgroundAnalytics() {
   setAnalyticsSink({
     capture: (event, props) => void capture(event, props),
@@ -56,7 +59,7 @@ export function initBackgroundAnalytics() {
     if (m.op === "capture") void capture(m.event, m.props);
     if (m.op === "identify") void identify(m.userId);
     if (m.op === "reset") void reset();
-    return undefined; // never an async response — captures are fire-and-forget
+    return undefined; // The listener never answers. Captures are fire and forget.
   });
   watchAuthChanges();
 }
@@ -138,7 +141,7 @@ async function handleAuthChange(newValue: unknown) {
     const session = typeof newValue === "string" ? JSON.parse(newValue) : newValue;
     user = session?.user ?? null;
   } catch {
-    // not a session payload — treat as signed out
+    // The value is not a session payload, so we treat the user as signed out.
   }
   const known = await knownUserId();
   if (user?.id && user.id !== known) {

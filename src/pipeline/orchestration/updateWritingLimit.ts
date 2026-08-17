@@ -1,8 +1,11 @@
 /**
  * Update Writing Limit
  *
- * Disabled — the computed writing limit doesn't work properly.
- * Writing limit is now only updated when the daily limit is hit during submission.
+ * This module is disabled. The writing limit it computed from our note history
+ * did not work properly. The writing limit now lives in writingLimit.ts and only
+ * moves in response to what X actually answers. It drops to the current
+ * submission count when X rejects a note with its daily limit, and it climbs
+ * again after a submission succeeds.
  */
 
 /*

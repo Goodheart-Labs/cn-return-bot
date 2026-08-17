@@ -15,16 +15,18 @@ interface NoteCardProps {
   failureModeCatalog: FailureModeInfo[];
   failureModeUsage: Map<string, number>;
   showFixed: boolean;
-  // When false, the per-note failure-mode tag chips are hidden (the editor
-  // dropdown still shows/edits them). Global toggle in the header.
+  // When this is false the failure-mode tag chips on the card are hidden. The
+  // dropdown on the card still shows and edits the tags. The toggle that controls
+  // this lives in the page header and applies to every card.
   showTags: boolean;
   onSeenToggle: (id: string, seen: boolean) => void;
   onHighValueToggle: (id: string, highValue: boolean) => void;
   onFailureModesChange: (id: string, modes: string[]) => void;
   onCreateFailureMode: (name: string) => void;
   onCommentChange: (id: string, comment: string | null) => void;
-  // Fetch this run's logs on demand (called when the log panel is first opened).
-  // Resolves once the fetch settles, so the card can stop showing "Loading…".
+  // Fetches this run's logs. The card calls it when the log panel is first opened.
+  // The promise resolves once the fetch has settled, which is how the card knows to
+  // stop showing "Loading…".
   onRequestLogs: (runId: string) => Promise<void>;
 }
 
@@ -42,9 +44,9 @@ function reviewItemToTweet(item: ReviewItem): Tweet {
 }
 
 function StatusBadge({ status, coreStatus }: { status?: string; coreStatus?: string }) {
-  // Prefer overall status; fall back to core only when overall is missing.
-  // Per CLAUDE.md: currentCoreStatus misses notes rated helpful by the
-  // expansion or group submodels.
+  // We show the overall status, and fall back to the core status only when the
+  // overall one is missing. The core status alone misses notes that were rated
+  // helpful by the expansion or group submodels.
   const display = status ?? coreStatus ?? "unknown";
   const colorMap: Record<string, string> = {
     CURRENTLY_RATED_HELPFUL: "bg-green-100 text-green-800",
@@ -80,7 +82,7 @@ function ComparisonNoteItem({ note }: { note: ComparisonNote }) {
   );
 }
 
-// Error boundary so one broken card doesn't blank the whole page
+// An error boundary, so that one broken card cannot blank the whole page.
 class CardErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
   state = { error: null as Error | null };
   static getDerivedStateFromError(error: Error) { return { error }; }
@@ -129,8 +131,9 @@ export function NoteCard({
 
   return (
     <CardErrorBoundary>
-    {/* Drafts (written, not posted) get a slate left-edge stripe on top of the
-        "Draft (not posted)" header chip, so they read as drafts at a glance. */}
+    {/* A draft is a note the bot wrote but never posted. It gets a grey stripe down
+        its left edge as well as the header chip, so it reads as a draft at a
+        glance. */}
     <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-4 ${seen ? "opacity-60" : ""} ${item.isDraft ? "border-l-4 border-l-slate-400" : ""}`}>
       {/* Header row */}
       <div className="flex items-start justify-between gap-3 mb-3">

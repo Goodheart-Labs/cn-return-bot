@@ -5,7 +5,9 @@ import { fetchItemForUrl, normalizePageUrl } from "../../everything-shared/notes
 import { resolveReaderCanonical } from "./readerCanonical";
 import { indexContainer, findQuoteRange } from "./anchor";
 import { fetchClaimGroups, type ClaimGroup } from "./claimGroups";
+import { mountCoverageBadges } from "./coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "./coveredPages";
+import { recordLinkVisit } from "./linkVisits";
 import { mountWriteAnywhere } from "./mountWriteAnywhere";
 import { onNoteFiltersChanged } from "./settings";
 import { isPageDark, observePageTheme } from "./pageTheme";
@@ -15,8 +17,9 @@ import { track } from "../../everything-shared/analytics";
 const HIGHLIGHT_NAME = "common-note";
 const REANCHOR_DEBOUNCE_MS = 600;
 
-/** The element holding the readable text: Substack's article body when
- *  present, else the page's main/article, else body. */
+/** Finds the element that holds the page's readable text. On Substack that is the
+ *  article body. On any other page we fall back to the article element, then to
+ *  main, then to the body. */
 function findContainer(): Element {
   return (
     document.querySelector("article .available-content") ??
@@ -26,8 +29,10 @@ function findContainer(): Element {
   );
 }
 
-/** Anchor every claim group to a Range. Candidates in reliability order:
- *  healed live wording, captured quote, wider paragraph. */
+/** Anchors every claim group to a range of text inside the container. Each claim
+ *  offers three quotes and we try them in order of reliability. First the updated
+ *  quote, which is how the passage reads on the page today. Then the quote that was
+ *  captured when the claim was extracted. Then the wider paragraph around it. */
 function anchorGroups(container: Element, groups: ClaimGroup[]): AnchoredGroup[] {
   const index = indexContainer(container);
   const anchored: AnchoredGroup[] = [];
@@ -46,11 +51,12 @@ function anchorGroups(container: Element, groups: ClaimGroup[]): AnchoredGroup[]
 }
 
 const HIGHLIGHT_TINT_LIGHT = "rgba(59, 130, 246, 0.16)";
-const HIGHLIGHT_TINT_DARK = "rgba(96, 165, 250, 0.25)"; // blue-400, stronger: reads on dark
+const HIGHLIGHT_TINT_DARK = "rgba(96, 165, 250, 0.25)"; // Tailwind's blue-400. It is stronger than the light tint so it reads on a dark page.
 
-/** The ::highlight rule must live in the DOCUMENT (the highlighted text is
- *  light DOM). Idempotent: one style element by id, tint updated in place on
- *  theme flips. */
+/** Makes sure the ::highlight rule exists in the host document. The rule cannot live
+ *  in our shadow root, because the text it highlights belongs to the page itself.
+ *  Calling this again is safe. It reuses the one style element carrying our id, and
+ *  it rewrites the tint in place when the page flips between light and dark. */
 function ensureHighlightStyle(dark: boolean) {
   let style = document.getElementById("common-notes-highlight-style") as HTMLStyleElement | null;
   if (!style) {
@@ -62,25 +68,26 @@ function ensureHighlightStyle(dark: boolean) {
   if (style.textContent !== text) style.textContent = text;
 }
 
-/** Tint the anchored passages via the CSS Custom Highlight API — no host-DOM
- *  mutation, so host-page frameworks never notice us. */
+/** Tints the anchored passages with the CSS Custom Highlight API. That API changes no
+ *  nodes in the host page, so the page's own framework never notices us. */
 function applyHighlights(ranges: Range[]) {
   const highlights = (CSS as any).highlights;
-  if (!highlights) return; // old Firefox ESR: badges only, no tint
+  if (!highlights) return; // Old Firefox ESR has no Highlight API. Badges still show, only the tint is missing.
   if (ranges.length === 0) highlights.delete(HIGHLIGHT_NAME);
   else highlights.set(HIGHLIGHT_NAME, new (globalThis as any).Highlight(...ranges));
 }
 
-/** Resolve `href` to an ingested item, anchor its claims, mount the overlay.
- *  Returns a teardown for the mounted overlay, or null when the page isn't
- *  ingested. */
+/** Resolves `href` to an ingested item, anchors that item's claims and mounts the
+ *  overlay. When the page has no ingested item we mount the write-anywhere shell
+ *  instead. Either way the returned function tears down whatever was mounted. */
 async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageChanged: () => void): Promise<(() => void) | null> {
   const readerCanonical = await resolveReaderCanonical(href);
   const pageUrl = readerCanonical ? normalizePageUrl(readerCanonical) : normalizePageUrl(href, document);
-  // Decide "is this page ours?" against the locally cached coverage list
-  // BEFORE any backend call — ordinary browsing on covered sites must never
-  // reach our server. A missing list (pre-first-sync) falls through to the
-  // live lookup rather than hiding notes.
+  // We decide whether this page is one of ours from the locally cached coverage
+  // list, and we do it before making any backend call. Ordinary browsing on a
+  // covered site must never reach our server. On a fresh install the list has not
+  // synced yet. In that case we fall through to the live lookup rather than hide
+  // notes.
   const covered = await getCoveredPageUrls();
   if (covered && !pageIsCovered(pageUrl, covered)) {
     console.info(`[common-notes] ${pageUrl} → not in the covered list (no backend lookup)`);
@@ -89,8 +96,9 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   const item = await fetchItemForUrl(pageUrl);
   console.info(`[common-notes] ${pageUrl} → ${item ? `item "${item.title ?? item.id}"` : "no ingested item"}`);
   if (!item) return mountWriteAnywhere(ctx, pageUrl, onCoverageChanged);
-  // Mount even with zero notes: the write-from-selection flow works on any
-  // ingested page, and its first note appears via refresh().
+  recordLinkVisit(item);
+  // We mount even when the item has no notes yet. Writing a note from a selection
+  // works on any ingested page, and refresh() brings the new note in.
   let groups = await fetchClaimGroups(item.id);
   // The extension's top of funnel: notes were actually displayed to a reader.
   // Once per page by construction — mountForUrl runs once per URL.
@@ -106,30 +114,33 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   let reactRoot: Root | null = null;
   let themeRoot: HTMLElement | null = null;
 
-  // Annotation layer: badges/popovers portal into this host, mounted INSIDE
-  // the article container so they move natively with the text under ANY
-  // scroll container (the reader scrolls an inner div, not the document — a
-  // body-anchored overlay there must chase the text with per-frame JS, always
-  // a frame behind the composited scroll). The host must be IN-FLOW
-  // (:host(common-notes-inline) is position:relative, 0×0): an absolute host
-  // only scrolls with its CONTAINING BLOCK's scrollers, which may sit outside
-  // the inner scroller. The function anchor is re-resolved on every mount(),
-  // so a re-append after an SPA article swap lands in the new article.
+  // This is the annotation layer. Badges and popovers are portalled into this host.
+  // We mount the host inside the article container so that it moves with the text
+  // whichever element does the scrolling. Substack's reader scrolls an inner div
+  // rather than the document. An overlay anchored to the body would have to chase
+  // the text with JavaScript on every frame, and it would always lag one frame
+  // behind the browser's own scrolling. The host also has to sit in the normal
+  // flow, which is why :host(common-notes-inline) is position:relative and has no
+  // size. An absolutely positioned host only scrolls with the scrollers of its
+  // containing block, and those can sit outside the inner scroller. The anchor is a
+  // function, so it is resolved again on every mount(). That way, if the page swaps
+  // the article element out, appending the host again lands it in the new article.
   const inlineUi = await createShadowRootUi(ctx, {
     name: "common-notes-inline",
     position: "inline",
     anchor: () => findContainer(),
     onMount(container) {
-      // Idempotent — mount() re-runs this on SPA re-append.
+      // Running this again is harmless. mount() re-runs it every time we append the
+      // host to a new container.
       container.style.position = "relative";
       container.classList.add("cn-theme-root");
     },
   });
   inlineUi.mount();
 
-  // One sync point for all theme surfaces: the .dark class in both shadow
-  // roots (activates every dark: variant) and the ::highlight tint in the
-  // host document.
+  // One place that updates every surface the theme touches. Those are the .dark
+  // class on both shadow roots, which switches on every Tailwind dark: variant, and
+  // the ::highlight tint in the host document.
   const syncTheme = () => {
     const dark = isPageDark(findContainer());
     themeRoot?.classList.toggle("dark", dark);
@@ -137,15 +148,17 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     if ((CSS as any).highlights) ensureHighlightStyle(dark);
   };
 
-  // Re-query the container every render: SPA navigations can replace the
-  // article element after we mount, and anchoring against a detached node
-  // finds nothing forever.
+  // We look the container up again on every render. A navigation inside a
+  // single-page app can replace the article element after we mounted. Anchoring
+  // against a node that is no longer in the document would then find nothing, and it
+  // would keep finding nothing.
   const render = () => {
-    syncTheme(); // piggybacks on the debounced re-anchor observer: catches
-    // theme repaints that arrive as DOM swaps rather than attribute flips
-    // The SPA swapped the article node out from under us (same URL): re-append
-    // the annotation host into the new container before anchoring against it.
-    // Can't loop — the append fires the debounced observer once, then settles.
+    syncTheme(); // Called here as well, so the debounced re-anchor observer catches
+    // theme repaints that arrive as DOM swaps rather than as attribute changes.
+    // If the page swapped the article node out from under us without changing the
+    // URL, our annotation host is no longer connected. We append it into the new
+    // container before anchoring against it. This cannot loop. The append triggers
+    // the debounced observer once, and then everything settles.
     if (!inlineUi.shadowHost.isConnected) inlineUi.mount();
     const container = findContainer();
     const anchored = anchorGroups(container, groups);
@@ -165,7 +178,8 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     groups = await fetchClaimGroups(item.id);
     render();
   };
-  // Popup tickbox flips re-fetch through the new filters, live.
+  // When the user flips a tickbox in the popup, we re-fetch the notes through the
+  // new filters right away.
   const stopFilters = onNoteFiltersChanged(() => void refresh());
 
   const ui = await createShadowRootUi(ctx, {
@@ -173,17 +187,19 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     position: "inline",
     anchor: "body",
     onMount(uiContainer, _shadow, _shadowHost) {
-      // Host geometry lives in assets/tailwind.css (`:host(common-notes-ui)`)
-      // — inline styles set here are dead on arrival, WXT's shadow reset
-      // (`:host{all:initial !important}`) overrides them.
+      // The shadow host's own geometry is set in assets/tailwind.css, under
+      // `:host(common-notes-ui)`. Do not try to set it inline on the shadow host
+      // here. WXT's shadow reset rule `:host{all:initial !important}` overrides
+      // anything we would set.
       uiContainer.style.position = "relative";
-      // Theme root: base font/color + the `.dark` toggle live on this class.
-      // Tailwind's class strategy compiles dark:x to `x:is(.dark *)`, which
-      // excludes the .dark element itself — never put dark: classes here.
+      // This class is the theme root. It carries the base font and colour, and it is
+      // the element the `.dark` class is toggled on. Tailwind's class strategy
+      // compiles `dark:x` into `x:is(.dark *)`, which matches descendants of the
+      // .dark element but not that element itself. So never put a dark: class here.
       uiContainer.classList.add("cn-theme-root");
       themeRoot = uiContainer;
       reactRoot = createRoot(uiContainer);
-      render(); // syncTheme runs synchronously inside — no light-flash
+      render(); // syncTheme runs synchronously inside render, so the UI never flashes in the wrong theme.
       return reactRoot;
     },
     onRemove(root) {
@@ -193,15 +209,18 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   });
   ui.mount();
 
-  // Theme flips arrive as attribute changes on html/body (YouTube's html[dark],
-  // class-based togglers like Substack's reader) — the subtree observer below
-  // watches childList/characterData only, so they need their own watcher.
+  // A theme flip usually arrives as an attribute change on html or body. YouTube
+  // sets a dark attribute on html, and Substack's reader toggles a class. The
+  // observer further down only watches child lists and character data, so attribute
+  // changes need a watcher of their own.
   const stopTheme = observePageTheme(syncTheme, findContainer);
 
-  // Host pages hydrate/lazy-load/swap the article; re-anchor after the dust
-  // settles. Observe documentElement, not body — SPAs can replace the body
-  // node, which would orphan the observer. Safe from self-triggering: our UI
-  // renders into a shadow root, which light-DOM observers don't see into.
+  // Host pages hydrate, lazy-load and swap out the article, so we re-anchor once the
+  // changes have settled. We observe documentElement rather than body, because a
+  // single-page app can replace the body node and that would leave the observer
+  // attached to a node nobody uses. Our own UI cannot trigger this observer. It
+  // renders inside a shadow root, and an observer on the light DOM does not see
+  // into shadow roots.
   let timer: ReturnType<typeof setTimeout> | undefined;
   const observer = new MutationObserver(() => {
     clearTimeout(timer);
@@ -219,30 +238,37 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   };
 }
 
-/** Entry for both the Substack/static and the opt-in generic content scripts.
- *  Substack and other Substack-like readers are SPAs: the content script is
- *  injected once, but in-app navigation swaps the article via pushState with no
- *  reload. Re-resolve the item + re-anchor on every URL change so notes appear
- *  on posts reached by clicking through, not just on hard loads. */
+/** The entry point for the static Substack content script and for the generic script
+ *  that is registered at runtime. Substack and readers like it are single-page apps.
+ *  The content script is injected once, but navigating inside the app swaps the
+ *  article through pushState without reloading the page. So we resolve the item and
+ *  anchor its claims again on every URL change. That way notes also appear on posts
+ *  the reader reached by clicking through, not only on a full page load. */
 export async function mountInlineNotes(ctx: ContentScriptContext): Promise<void> {
+  // Listing badges live independently of the per-URL note mounts below. They
+  // mark noted posts in whatever listing this site shows, such as a Substack
+  // front page, and their own observer follows navigations and lazy loading.
+  const stopBadges = await mountCoverageBadges(ctx);
+  ctx.onInvalidated(() => stopBadges?.());
   let cleanup: (() => void) | null = null;
   let seq = 0;
   const remount = async (href: string) => {
     const mine = ++seq;
     cleanup?.();
     cleanup = null;
-    // Writing the first note on an uncovered page makes it covered: the
-    // write-anywhere mount reports back and the full notes flow takes over
-    // in place — the fresh note shows without a reload.
+    // Writing the first note on an uncovered page makes that page covered. The
+    // write-anywhere mount calls back here, and the full notes flow takes over on
+    // the spot. The new note shows up without a reload.
     const teardown = await mountForUrl(ctx, href, () => void remount(location.href));
-    // A newer navigation superseded this one mid-resolve: drop the stale mount.
+    // A newer navigation started while this one was still resolving, so we throw the
+    // stale mount away.
     if (mine !== seq) return teardown?.();
     cleanup = teardown;
   };
   await remount(location.href);
-  // On Navigation-API browsers this event fires BEFORE the navigation commits
-  // — location.href may still be the PREVIOUS page — so resolve the item from
-  // the event's destination URL, never from location.
+  // In browsers with the Navigation API this event fires before the navigation
+  // commits. At that moment location.href can still point at the previous page. So
+  // we resolve the item from the event's destination URL and never from location.
   ctx.addEventListener(window, "wxt:locationchange", (event) => void remount(String(event.newUrl)));
   ctx.onInvalidated(() => cleanup?.());
 }

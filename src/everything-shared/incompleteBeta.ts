@@ -1,9 +1,11 @@
-/** Regularized incomplete beta I_x(a, b) — the Beta(a, b) CDF.
+/** The regularized incomplete beta function I_x(a, b). It is the cumulative
+ *  distribution function of Beta(a, b).
  *
- *  Lanczos log-gamma plus the standard continued-fraction expansion. Written out
- *  rather than pulled from a package because the donation model needs a Beta tail
- *  on every vote and the published page runs under a strict CSP with no external
- *  requests, so a dependency here is pure bundle weight.
+ *  It is built from a Lanczos approximation of the log-gamma function and the
+ *  standard continued-fraction expansion. We write it out here rather than pull in a
+ *  package. The donation model needs a Beta tail on every vote, and the published
+ *  page runs under a strict content security policy that allows no external
+ *  requests, so a dependency would only add bundle weight.
  */
 
 const LANCZOS_G = 7;
@@ -24,10 +26,12 @@ export function logGamma(x: number): number {
 
 const MAX_ITERATIONS = 300;
 const RELATIVE_TOLERANCE = 3e-14;
-/** Guards against division by zero in the recurrence, not a meaningful magnitude. */
+/** This value only guards against a division by zero in the recurrence. Its exact
+ *  magnitude carries no meaning. */
 const TINY = 1e-300;
 
-/** Continued fraction for I_x(a, b); converges quickly for x < (a+1)/(a+b+2). */
+/** The continued fraction for I_x(a, b). It converges quickly when x is below
+ *  (a+1)/(a+b+2). */
 function betaContinuedFraction(a: number, b: number, x: number): number {
   const qab = a + b;
   const qap = a + 1;
@@ -40,7 +44,7 @@ function betaContinuedFraction(a: number, b: number, x: number): number {
 
   for (let m = 1; m <= MAX_ITERATIONS; m++) {
     const m2 = 2 * m;
-    // Even step.
+    // This is the even step of the recurrence.
     let numerator = (m * (b - m) * x) / ((qam + m2) * (a + m2));
     d = 1 + numerator * d;
     if (Math.abs(d) < TINY) d = TINY;
@@ -48,7 +52,7 @@ function betaContinuedFraction(a: number, b: number, x: number): number {
     if (Math.abs(c) < TINY) c = TINY;
     d = 1 / d;
     result *= d * c;
-    // Odd step.
+    // This is the odd step of the recurrence.
     numerator = (-(a + m) * (qab + m) * x) / ((a + m2) * (qap + m2));
     d = 1 + numerator * d;
     if (Math.abs(d) < TINY) d = TINY;

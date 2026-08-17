@@ -1,8 +1,9 @@
 /**
- * Shared pipeline runner for tryoutNotes and runOnVideos.
+ * Shared pipeline runner for tryoutNotes, runOnVideos and runOnClaims.
  *
- * Each script provides a PostFetcher (how to get a Post from a URL) and
- * delegates the processing loop, output, AI judge, and summary to this module.
+ * Each of those scripts supplies a PostFetcher, which says how to turn one
+ * input row into a Post. This module then owns everything after that: the
+ * processing loop, the output files, the AI judge and the summary.
  */
 
 import { SupabaseLogger } from "../api/supabaseClient";
@@ -108,14 +109,16 @@ export function parseInputCsv(filePath: string): InputRow[] {
 
 export interface ParsedCliArgs {
   inputs: InputRow[];
-  /** Forced A/B test picks (e.g. `{ bot: "simple-bot", simple_bot_search: "grok43-native" }`). */
+  /** A/B test variants forced on the command line. For example
+   *  `{ bot: "simple-bot", simple_bot_search: "grok43-native" }`. */
   forcedPicks: Record<string, string>;
   datasetName: string;
   reversed: boolean;
   concurrency?: number;
   runName?: string;
-  /** Curated-topic id: run each post as a misinfo pre-pass post (document
-   *  injection + advisory eval gate), exactly as prod stage 3 does. */
+  /** The id of a curated misinformation topic. When it is set, every post runs
+   *  the way prod stage 3 runs it. The topic's grounding document is injected
+   *  into the input, and the evaluation gate becomes advisory. */
   topicId?: string;
 }
 
@@ -235,7 +238,8 @@ export function parseCliArgs(
     args.splice(reversedFlagIdx, 1);
   }
 
-  // Apply per-script arg transformation (e.g. bare tweet IDs → URLs)
+  // Let the calling script rewrite its own arguments first. tryoutNotes uses
+  // this to turn a bare tweet id into a full URL.
   const transformed = opts?.transformArg ? args.map(opts.transformArg) : args;
 
   const isUrls = transformed.every((a) => a.startsWith("http://") || a.startsWith("https://"));
@@ -330,8 +334,9 @@ function printSummary(counts: BucketCountsV2, totalProcessed: number, errors: nu
   const nnwTotal = nnwCorrect + nnwHarmless + nnwHardFP + nnwDisagrees;
 
   const scoredTotal = nwTotal + nnwTotal;
-  // Directional notes are net-helpful and count as wins; harmless extra notes are
-  // tolerated but NOT counted correct (we still published when none was needed).
+  // A directional note is helpful on balance, so it counts as a win. A harmless
+  // extra note is tolerated, but it does not count as correct. We still
+  // published a note on a post that needed none.
   const overallCorrect = nwSuccess + nwDirectional + nnwCorrect;
 
   console.log(`\n${"=".repeat(60)}`);
@@ -386,7 +391,7 @@ export interface RunPipelineOptions {
   concurrency?: number;
   reversed?: boolean;
   runName?: string;
-  /** Curated-topic id (see ParsedCliArgs.topicId). */
+  /** The id of a curated misinformation topic. See ParsedCliArgs.topicId. */
   topicId?: string;
   cleanup?: () => Promise<void>;
 }
@@ -406,8 +411,9 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
   } = options;
   const forcedBotId = forcedPicks.bot;
 
-  // Curated-topic mode: build the same MonitoringContext prod stage 3 runs
-  // under, so document injection and the advisory eval gate behave identically.
+  // In curated-topic mode we build the same MonitoringContext that prod stage 3
+  // runs under. Document injection and the advisory evaluation gate then behave
+  // exactly as they do in production.
   let monitoring: MonitoringContext | undefined;
   if (options.topicId) {
     const topic = MISINFO_TOPICS.find((t) => t.id === options.topicId);
@@ -439,11 +445,12 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
   let completedCount = 0;
   let errorCount = 0;
 
-  // All searches funnel through a single global 3s-gap queue, so with 5
-  // concurrent workers each making ~3 queries the queue wait alone can be
-  // 45s+. Factor in SearXNG cool-downs / retries and a single tweet can
-  // legitimately take 15+ min. 20 min catches real hangs without killing
-  // slow-but-progressing rows.
+  // Every search goes through one global queue that leaves a 3 second gap
+  // between queries. With 5 workers each making about 3 queries, the wait in
+  // that queue alone can be 45 seconds or more. Add SearXNG cool-downs and
+  // retries on top and a single tweet can legitimately take over 15 minutes. A
+  // 20 minute limit catches a real hang without killing a row that is slow but
+  // still making progress.
   const PER_TWEET_TIMEOUT_MS = 20 * 60 * 1000;
   const queue = new PQueue({ concurrency, timeout: PER_TWEET_TIMEOUT_MS, throwOnTimeout: true });
 
@@ -457,8 +464,9 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
     }
   };
 
-  // If the user kills the process (Ctrl-C / SIGTERM), still upload what's
-  // already in the CSV so the dashboard reflects partial progress.
+  // If the user kills the process with Ctrl-C, or something sends it a SIGTERM,
+  // we still upload whatever is already in the CSV. The dashboard then shows
+  // the partial progress rather than nothing at all.
   const onSignal = (sig: string) => {
     console.log(`\n[${scriptName}] received ${sig} — uploading partial results before exit...`);
     uploadResults().finally(() => process.exit(130));

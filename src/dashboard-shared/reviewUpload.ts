@@ -1,9 +1,9 @@
 /**
- * Single source of truth for mapping a results-CSV row → a review_dashboard_items
- * insert. Both upload paths (the dashboard's UploadDialog and the local-run
- * auto-open flow) use this so their column lists can't drift — a past drift
- * silently dropped judge_guidance/original_note_text/failure_reason from
- * auto-opened runs.
+ * The single place that maps a row of the results CSV onto a
+ * review_dashboard_items insert. Both upload paths use it: the dashboard's
+ * UploadDialog and the auto-open flow of a local run. That keeps their column
+ * lists from drifting apart. They did drift once, and auto-opened runs silently
+ * lost judge_guidance, original_note_text, and failure_reason.
  */
 
 import { stripNullChars } from "../utils/stripNullChars";
@@ -18,7 +18,7 @@ function parseLogs(logs: unknown): unknown {
   try {
     return JSON.parse(logs);
   } catch {
-    return logs; // keep raw string if it isn't valid JSON
+    return logs; // The text is not valid JSON, so we keep it as it is.
   }
 }
 
@@ -45,9 +45,10 @@ export function csvRowToReviewItemInsert(
   uploadId: string,
   r: Record<string, any>,
 ): ReviewItemInsert {
-  // Scrub NUL chars from every free-text / JSONB field before the insert —
-  // model output (e.g. Gemini media OCR) can emit U+0000, which Postgres rejects
-  // with 22P05 and would fail the whole upload batch.
+  // Remove NUL characters from every free-text and JSONB field before the
+  // insert. Model output can contain U+0000, for example from Gemini's media
+  // OCR. Postgres rejects such a value with error 22P05, and that would fail the
+  // whole upload batch.
   return stripNullChars({
     upload_id: uploadId,
     url: r.url ?? "",

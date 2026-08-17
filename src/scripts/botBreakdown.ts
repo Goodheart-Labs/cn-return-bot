@@ -1,10 +1,13 @@
 /**
- * Per-bot breakdown — "what is each bot actually doing?"
+ * Per-bot breakdown. It answers the question "what is each bot actually doing?".
  *
- * Prints a table of key metrics split by bot_name: how many notes each bot
- * has submitted, how they're rated by Community Notes, view reach, write/reject
- * rate, and cost. Bot identity lives on pipeline_runs (mapped to notes by
- * note_id, last-writer-wins), exactly as generateMainReport.ts does it.
+ * For every bot it prints how many notes the bot submitted, how Community Notes
+ * rated them, how many views they reached, how often the pipeline wrote a note
+ * instead of rejecting one, and what all of that cost.
+ *
+ * A note row does not say which bot wrote it. The bot name lives on
+ * pipeline_runs, so we map runs onto notes by note_id. This is the same mapping
+ * src/reports/generateMainReport.ts uses.
  *
  * Run from repo root:
  *   bun run src/scripts/botBreakdown.ts            # prod Supabase
@@ -31,7 +34,8 @@ import { fetchAllRows } from "../api/paging";
 
 const client = getSupabaseClient();
 
-// Keep in sync with generateMainReport.ts.
+// This list has to stay in sync with the activeBots array in
+// src/reports/generateMainReport.ts.
 const ACTIVE_BOTS = new Set(["multi-agent", "simple-bot", "agent", "cheap-bot"]);
 
 console.log(`[botBreakdown] Fetching from ${useLocal ? "LOCAL" : "PROD"} Supabase...`);
@@ -64,7 +68,8 @@ const runs = await fetchAllRows<{
   { label: "botBreakdown.runs" },
 );
 
-// note_id -> bot_name from submitted runs (last writer wins, as in the report).
+// Work out which bot owns each note. A note can have several submitted runs.
+// We keep the last one we come across, which is what the main report does too.
 const botByNoteId = new Map<string, string>();
 for (const r of runs) {
   if (r.outcome === "submitted" && r.note_id && r.bot_name) {
@@ -75,16 +80,16 @@ for (const r of runs) {
 interface BotStat {
   bot: string;
   notes: number;
-  helpful: number;      // CURRENTLY_RATED_HELPFUL
-  notHelpful: number;   // CURRENTLY_RATED_NOT_HELPFUL
-  needsMore: number;    // NEEDS_MORE_RATINGS
+  helpful: number;      // Notes whose current status is CURRENTLY_RATED_HELPFUL.
+  notHelpful: number;   // Notes whose current status is CURRENTLY_RATED_NOT_HELPFUL.
+  needsMore: number;    // Notes whose current status is NEEDS_MORE_RATINGS.
   otherStatus: number;
   views: number;
   helpfulVotes: number;
   notHelpfulVotes: number;
   firstAt: string | null;
   lastAt: string | null;
-  submitted: number;    // pipeline outcomes (all runs, not just note-bearing)
+  submitted: number;    // Counted over every run, not only runs that made a note.
   rejected: number;
   failed: number;
   cost: number;
@@ -124,7 +129,8 @@ for (const n of notes) {
   }
 }
 
-// Run-level metrics (outcomes + cost), keyed by the run's own bot_name.
+// Count the outcomes and the cost of each run against the bot named on the run
+// itself, which is not always the bot that owns the resulting note.
 for (const r of runs) {
   const bot = r.bot_name ?? "unknown";
   const s = stat(bot);
@@ -162,7 +168,8 @@ const legend = `● = active bot   ○ = legacy/other`;
 console.log(legend);
 console.log(`\nTotals: ${num(rows.reduce((a, s) => a + s.notes, 0))} notes across ${rows.length} bots · $${rows.reduce((a, s) => a + s.cost, 0).toFixed(2)} spend\n`);
 
-// --html: write a self-contained chart page (Chart.js from CDN) and open it.
+// The --html flag writes a chart page to a temporary file and opens it. The
+// page pulls Chart.js from a CDN, so it needs an internet connection to render.
 if (process.argv.includes("--html")) {
   const { writeFileSync } = await import("fs");
   const { execSync } = await import("child_process");
@@ -213,11 +220,13 @@ bar('c4',D.costPerNote,(v)=>'$'+v.toFixed(3));
   const out = join(tmpdir(), "bot-breakdown.html");
   writeFileSync(out, html);
   console.log(`[botBreakdown] Wrote chart page → ${out}`);
-  try { execSync(`open "${out}"`); } catch { /* non-mac: skip */ }
+  try { execSync(`open "${out}"`); } catch { /* The open command only exists on macOS. */ }
 }
 
-// --daily: diverging stacked bar by day — helpful notes up (greens), unhelpful
-// down (reds), each bot its own shade. Window = last N days (--days N, def 30).
+// The --daily flag writes a second chart with one stacked bar per day. Helpful
+// notes grow upwards in green and unhelpful notes grow downwards in red. Each
+// bot gets its own shade of both colours. The chart covers the last N days,
+// which --days sets and which defaults to 30.
 if (process.argv.includes("--daily")) {
   const { writeFileSync } = await import("fs");
   const { execSync } = await import("child_process");
@@ -227,7 +236,7 @@ if (process.argv.includes("--daily")) {
   const daysArgIdx = process.argv.indexOf("--days");
   const windowDays = daysArgIdx >= 0 ? Number(process.argv[daysArgIdx + 1]) || 30 : 30;
 
-  // Build the day axis (oldest → newest), inclusive of today.
+  // Build the day axis from oldest to newest. Today is part of it.
   const today = new Date();
   const dayKeys: string[] = [];
   for (let i = windowDays - 1; i >= 0; i--) {
@@ -237,7 +246,8 @@ if (process.argv.includes("--daily")) {
   }
   const earliest = dayKeys[0]!;
 
-  // Per (bot, day): helpful / unhelpful counts, from each note's current status.
+  // Count helpful and unhelpful notes for each bot on each day. The count uses
+  // the status a note carries right now, plotted on the day it was submitted.
   const perBot = new Map<string, { helpful: Map<string, number>; unhelpful: Map<string, number>; total: number }>();
   for (const n of notes) {
     if (!n.submitted_at) continue;
@@ -252,12 +262,14 @@ if (process.argv.includes("--daily")) {
     b.total++;
   }
 
-  // Biggest bots first so shade assignment is stable & meaningful.
+  // Sort the bots with the most notes first, so the darkest shade always goes
+  // to the bot with the highest volume.
   const bots = [...perBot.entries()].filter(([, b]) => b.total > 0).sort((a, b) => b[1].total - a[1].total).map(([name]) => name);
   if (bots.length === 0) {
     console.log(`[botBreakdown] No helpful/unhelpful notes in the last ${windowDays} days — nothing to chart.`);
   } else {
-    // One shade per bot: same lightness on green (up) and red (down).
+    // Give each bot one lightness value. It is used for the bot's green bar
+    // above the line and for its red bar below it.
     const shade = (i: number) => 32 + (bots.length === 1 ? 8 : (i / (bots.length - 1)) * 38); // 32%..70%
     const datasets: any[] = [];
     bots.forEach((bot, i) => {
@@ -310,6 +322,6 @@ new Chart(document.getElementById('c'),{
     const out = join(tmpdir(), "bot-daily.html");
     writeFileSync(out, html);
     console.log(`[botBreakdown] Wrote daily chart → ${out}  (${bots.length} bots: ${bots.join(", ")})`);
-    try { execSync(`open "${out}"`); } catch { /* non-mac: skip */ }
+    try { execSync(`open "${out}"`); } catch { /* The open command only exists on macOS. */ }
   }
 }

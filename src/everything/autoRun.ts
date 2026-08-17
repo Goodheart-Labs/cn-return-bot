@@ -1,14 +1,16 @@
 /**
- * Time-budgeted enqueue→process cycles — what the Everything Priority Feeds
- * workflow runs. Each cycle enqueues the next unprocessed priority-feed item
- * (BATCH_SIZE per cycle) and drains the queue; another cycle starts only while
- * total elapsed time is under the budget, so quick items (an ACX open thread
- * takes ~3 min) don't waste a whole 30-min dispatch slot, while a long item
- * still runs to completion past the budget.
+ * Runs enqueue-and-process cycles until a time budget runs out. This is what
+ * the Everything Priority Feeds workflow runs. Each cycle enqueues the next
+ * unprocessed priority-feed items, BATCH_SIZE of them, and then drains the
+ * queue. A new cycle only starts while the total elapsed time is still under
+ * the budget. A quick item such as an ACX open thread takes about 3 minutes,
+ * so several of them fit into one 30-minute dispatch slot instead of wasting
+ * it. A long item is never cut short. It runs to completion even past the
+ * budget.
  *
- * The stop signal is "the queue drained nothing" — not "nothing was enqueued" —
- * so a requeued orphan (see autoEnqueue's triage) is processed even when no new
- * item was picked.
+ * We stop when a cycle drained nothing from the queue. We deliberately do not
+ * stop when nothing new was enqueued. That way an item that autoEnqueue's
+ * triage put back in the queue is still processed.
  *
  * Usage:
  *   bun run src/everything/autoRun.ts

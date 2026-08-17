@@ -5,16 +5,19 @@ import {
   type RoleSelection,
 } from "../lib/flexoki";
 
-/** Experimental design menu, fixed bottom-left: color-scheme swatches and a
- *  font-size toggle. Each control sets a data attribute on <html> (styled by
- *  design.css) and persists the choice. Defaults are dark (blue accent) +
- *  large; "blue"/"normal" are the plain palette with no overrides. "large"
- *  bumps every text tier one tick (except the surrounding-context excerpt,
- *  pinned small). When the Flexoki ("beige") scheme is active, a ⚙ toggle opens
- *  a panel to remap any Flexoki accent onto any semantic role, live. */
-/** shape: "rect" marks the new (Flexoki / warm-neutral) schemes; "circle" is
- *  every other scheme. It's a persistent visual tag in the picker, independent
- *  of whichever theme is active (which may itself square all corners). */
+/** The experimental design menu, fixed to the bottom left corner. It offers
+ *  color-scheme swatches and a font-size toggle. Each control sets a data
+ *  attribute on the <html> element, which design.css styles, and saves the
+ *  choice. With nothing saved the scheme follows the operating system and the
+ *  font size is "large". The "blue" scheme and the "normal" font size are the
+ *  plain palette and the plain scale, with no overrides at all. The "large" size
+ *  bumps every text tier up one step, except the surrounding-context excerpt,
+ *  which stays small. While the Flexoki scheme ("beige") is active, a ⚙ button
+ *  opens a panel that remaps any Flexoki accent onto any semantic role, live. */
+/** A scheme's `shape` is "rect" on the newer schemes, which are Flexoki and
+ *  warm-neutral, and "circle" on every other scheme. It is a permanent visual
+ *  tag on the swatch in the picker. It does not follow the active theme, which
+ *  may itself square off every corner. */
 const SCHEMES = [
   { id: "blue", label: "Blue (default)", swatch: "#2563eb", shape: "circle" },
   { id: "brown", label: "Brown (classic)", swatch: "#8a6d3b", shape: "circle" },
@@ -35,13 +38,15 @@ type FontSizeId = (typeof FONT_SIZES)[number]["id"];
 const SCHEME_KEY = "cn-scheme";
 const FONTSIZE_KEY = "cn-fontsize";
 
-/** Kill switch for the experimental design menu. While false, the picker is
- *  hidden, saved experiments in localStorage are ignored, and the site follows
- *  the OS/browser theme live: blue for light systems, dark (blue accent) for
- *  dark ones, at the standard large font size. */
+/** Kill switch for the experimental design menu. While this is false the picker
+ *  is hidden and any experiment saved in localStorage is ignored. The site then
+ *  follows the operating system's theme as it changes. A light system gets the
+ *  blue scheme and a dark one gets the dark scheme with the blue accent, both at
+ *  the standard large font size. */
 const SHOW_DESIGN_MENU = false;
 
-/** Blue for light systems, dark (black · blue accent) for dark ones. */
+/** Returns the blue scheme on a light system. On a dark one it returns the dark
+ *  scheme, which is black with a blue accent. */
 function systemScheme(): SchemeId {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "blue";
 }
@@ -147,7 +152,7 @@ function DesignMenuPanel() {
       <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-full px-2.5 py-1.5 shadow-sm">
         {SCHEMES.map(({ id, label, swatch, shape }, i) => (
           <Fragment key={id}>
-            {/* divider between the round (classic) swatches and the square (new) ones */}
+            {/* The divider between the round classic swatches and the square new ones. */}
             {shape === "rect" && SCHEMES[i - 1]?.shape !== "rect" && (
               <span className="w-px h-4 bg-gray-200" aria-hidden />
             )}
@@ -160,8 +165,8 @@ function DesignMenuPanel() {
               className={`w-4 h-4 border border-gray-300 transition-transform ${
                 scheme === id ? "scale-125 ring-2 ring-offset-1 ring-gray-400" : "hover:scale-110"
               }`}
-              // inline radius keeps the swatch shape fixed even when the active
-              // theme squares every `rounded-*` class
+              // The radius is set inline so the swatch keeps its shape even when
+              // the active theme squares off every `rounded-*` class.
               style={{ background: swatch, borderRadius: shape === "rect" ? "2px" : "9999px" }}
             />
           </Fragment>

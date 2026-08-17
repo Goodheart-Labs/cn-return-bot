@@ -1,13 +1,16 @@
 /**
- * Detect X's UI-only "Made with AI" media-provenance label on a post.
+ * Detects X's "Made with AI" media-provenance label on a post. The label only
+ * exists in X's web interface.
  *
- * X's API does not expose this label, so we load the logged-out status page in a
- * fresh (incognito-equivalent) browser context and look for the label inside the
- * focused tweet's article. The label renders as a leaf <span> whose text is
- * exactly "Made with AI", sitting between the post body and the timestamp.
+ * X's API does not expose the label. So we load the post's status page logged
+ * out, in a fresh browser context that behaves like an incognito window, and look
+ * for the label inside the focused tweet's article. The label renders as a leaf
+ * span whose text is exactly "Made with AI". It sits between the post body and
+ * the timestamp.
  *
- * Fails open: any navigation/render error returns false so a flaky page load (or
- * a datacenter IP being served a login wall) never blocks note generation.
+ * The check fails open. Any navigation or render error returns false, so a flaky
+ * page load never blocks note generation. The same holds when X serves our
+ * datacenter IP a login wall instead of the post.
  */
 import { getBrowser } from "../utils/browserManager";
 
@@ -31,13 +34,13 @@ export async function detectMadeWithAiLabel(tweetId: string, logTag: string): Pr
     });
     await page.waitForSelector("article", { timeout: ARTICLE_TIMEOUT_MS });
 
-    // Scope to the focused (primary) tweet — the first rendered tweet article —
-    // and ignore the post's own body text, so a post that merely *says* "Made
-    // with AI" can't be mistaken for the media-provenance label.
+    // Search only the focused tweet, which is the first rendered article, and
+    // ignore that tweet's own body text. Otherwise a post that merely says the
+    // words "Made with AI" would be mistaken for the provenance label.
     //
-    // X's logged-out status page is a lightweight server-rendered view whose
-    // tweet is a bare <article> with no data-testid attributes, so we match on
-    // the element name (the focused tweet is always the first article).
+    // X's logged-out status page is a lightweight server-rendered view. Its tweet
+    // is a bare article element with no data-testid attributes, so matching on the
+    // element name is all we can do. The focused tweet is always the first article.
     const article = page.locator("article").first();
     return await article.evaluate((root, labelText) => {
       const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);

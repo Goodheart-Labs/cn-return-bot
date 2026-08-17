@@ -2,7 +2,9 @@
  * Pricing
  *
  * Model constants and cost-tracking helpers.
- * OpenRouter returns usage.cost directly; only Grok (xAI) needs manual calculation.
+ * OpenRouter reports what a call cost in usage.cost, so those calls need no
+ * calculation here. The xAI and native Gemini APIs report no cost at all, so we
+ * work theirs out from the published per-token rates below.
  */
 
 // --- Model constants ---
@@ -11,9 +13,9 @@ export const GROK_MODEL = "grok-4-fast";
 export const PERPLEXITY_MODEL = "perplexity/sonar";
 export const GEMINI_MODEL = "google/gemini-3-flash-preview";
 
-// --- Grok pricing (xAI doesn't return cost in response) ---
-// Per https://docs.x.ai/docs/models. Search call price applies regardless of
-// the model (xAI bills xSearch tool calls at a flat per-call rate).
+// --- Grok pricing ---
+// The rates come from https://docs.x.ai/docs/models. xAI bills every xSearch tool
+// call at the same flat rate, whichever model made the call.
 
 const GROK_PRICING: Record<string, { in: number; out: number }> = {
   "grok-4-fast": { in: 0.20,  out: 0.50 },
@@ -61,9 +63,10 @@ export function calculateGrokCost(
   };
 }
 
-// --- Gemini native API pricing (cloud.google.com/vertex-ai/pricing) ---
-// Used by src/pipeline/llm/gemini.ts since the native API does not return
-// usage.cost like OpenRouter does.
+// --- Gemini native API pricing ---
+// The rates come from cloud.google.com/vertex-ai/pricing. The native Gemini API
+// returns no usage.cost the way OpenRouter does, so src/pipeline/llm/gemini.ts
+// works the cost out from these numbers.
 const GEMINI_PRICING: Record<string, { in: number; out: number; searchPerCall: number }> = {
   "gemini-3-flash-preview": { in: 0.50, out: 3.00,  searchPerCall: 0.014 },
   "gemini-3.1-pro-preview": { in: 2.00, out: 12.00, searchPerCall: 0.014 },

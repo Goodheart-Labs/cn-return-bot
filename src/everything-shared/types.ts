@@ -18,25 +18,28 @@ export interface ItemRow {
   created_at: string;
 }
 
-/** The claim a note fact-checks, embedded on the note (PostgREST join). */
+/** The claim a note fact-checks. PostgREST embeds it on the note row. */
 export interface ClaimRef {
   id: string;
   item_id: string;
   claim: string;
   context_quote: string | null;
   context_paragraph: string | null;
-  /** Article images the claim is based on (Substack). Shown above the context. */
+  /** The article images the claim rests on. Only Substack items have them. They
+   *  are shown above the context. */
   image_urls: string[];
-  /** Current live-source wording when it has drifted from the captured quote
-   *  (sources heal — sometimes because of the note). Null = still matches. */
+  /** The wording the live source carries now, when it has drifted away from the
+   *  quote we captured. Sources do get corrected, sometimes because of the note
+   *  itself. Null means the source still matches the captured quote. */
   updated_quote: string | null;
   context_url: string | null;
   start_seconds: number | null;
   end_seconds: number | null;
 }
 
-/** One cited source of a note (everything_note_sources row, embedded via join).
- *  `quote` is the verbatim passage the verifier extracted; null = URL only. */
+/** One source a note cites. It is a row of everything_note_sources, embedded via
+ *  a join. `quote` is the passage the verifier copied out of that source word for
+ *  word. Null there means we have the URL and nothing else. */
 export interface NoteSourceRow {
   url: string;
   quote: string | null;
@@ -44,14 +47,14 @@ export interface NoteSourceRow {
   sort_order: number;
 }
 
-/** A "note not needed" argument — a flat, claim-level case that the claim
- *  needs no note at all. Keyed to the claim, so the same list renders under
- *  every note on that exact text. No nesting. */
+/** An argument that the claim needs no note at all. It is keyed to the claim
+ *  rather than to a note, so the same list renders under every note written on
+ *  that exact text. The entries form a flat list and never nest. */
 export interface NnnRow {
   id: string;
   claim_id: string;
   author_id: string | null;
-  author_name: string | null; // opt-in byline, captured at submit time
+  author_name: string | null; // The byline the author opted into, captured at submit time.
   body: string;
   helpful_count: number;
   somewhat_helpful_count: number;
@@ -64,14 +67,14 @@ export interface NoteRow {
   id: string;
   claim_id: string;
   note: string;
-  sources: NoteSourceRow[]; // citations, joined from everything_note_sources
+  sources: NoteSourceRow[]; // The note's citations, joined from everything_note_sources.
   helpful_count: number;
   somewhat_helpful_count: number;
   not_helpful_count: number;
-  author_id: string | null;   // null = the AI-written note
-  author_name: string | null; // display name captured at submit time
-  /** The note this one improves — set on notes posted via "Suggest an
-   *  improvement". Renders as a jump-link between the two cards. */
+  author_id: string | null;   // Null on the note the AI wrote.
+  author_name: string | null; // The display name captured at submit time.
+  /** The note this one improves. It is set on a note posted through "Suggest an
+   *  improvement". The UI renders it as a jump-link between the two cards. */
   improved_from_note_id: string | null;
   status: "published" | "draft" | "hidden";
   created_at: string;

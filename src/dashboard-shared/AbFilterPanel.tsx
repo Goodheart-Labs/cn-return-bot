@@ -10,11 +10,13 @@ export function AbFilterPanel({
   slots: ABTestSlotInfo[];
   filters: ABFilters;
   onChange: (filters: ABFilters) => void;
-  // Omit the title + "Clear all" row — for callers that supply their own header
-  // (e.g. a collapsible <summary>). Defaults to showing it.
+  // Hides the title row and its "Clear all" button. Set this when the caller
+  // draws its own header, for example a collapsible <summary> element. The
+  // header is shown by default.
   hideHeader?: boolean;
 }) {
-  // Older (not recently-varied) tests are hidden behind a toggle to cut clutter.
+  // Tests that have not been varied recently sit behind a toggle, so the panel
+  // stays short.
   const [showOlder, setShowOlder] = useState(false);
   if (!slots.length) return null;
 
@@ -26,8 +28,9 @@ export function AbFilterPanel({
   };
   const hasAny = Object.values(filters).some(Boolean);
 
-  // Show recently-varied tests by default; a test with an active filter always
-  // stays visible so it can be cleared even when it's no longer "recent".
+  // Only the recently varied tests are shown by default. A test that has an
+  // active filter stays visible as well. Without that the user could no longer
+  // clear the filter once the test stopped counting as recent.
   const olderCount = slots.filter((s) => !s.recentlyVaried).length;
   const visibleSlots = slots.filter(
     (s) => showOlder || s.recentlyVaried || filters[s.name],

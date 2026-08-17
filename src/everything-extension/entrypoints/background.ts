@@ -1,13 +1,11 @@
 import { defineBackground } from "#imports";
 import { browser } from "#imports";
-import { fetchCoveredPageUrls, fetchReaderCanonical } from "../../everything-shared/notesQuery";
+import { fetchCoveredPageUrls, fetchNotedPageCounts, fetchReaderCanonical } from "../../everything-shared/notesQuery";
 import { track } from "../../everything-shared/analytics";
 import { initBackgroundAnalytics } from "../utils/analytics";
 import { signInWithXViaWebAuthFlow } from "../utils/oauth";
-import { COVERED_PAGE_URLS_KEY } from "../utils/coveredPages";
+import { COVERED_PAGE_URLS_KEY, NOTED_PAGE_COUNTS_KEY } from "../utils/coveredPages";
 import { GENERIC_SCRIPT_PREFIX, hostnamePattern, registerGenericScripts, genericScriptId } from "../utils/genericScript";
-import { ASSUME_ALL_URLS } from "../utils/permissionsMode";
-import { getDismissedGrantHosts } from "../utils/settings";
 import { STATIC_SITE_HOSTNAME } from "../utils/staticSites";
 
 const WRITE_MENU_ID = "cn-write-note";
@@ -16,8 +14,8 @@ const INJECT_RETRY_ATTEMPTS = 10;
 const SYNC_ALARM = "cn-sync-noted-sites";
 const SYNC_PERIOD_MINUTES = 5;
 
-/** Hostnames of covered pages outside the static sites — where the generic
- *  content script belongs. */
+/** The hostnames of covered pages that are not static sites. These are the
+ *  hostnames the generic content script belongs on. */
 function genericHostnames(urls: string[]): string[] {
   const hostnames = new Set<string>();
   for (const url of urls) {
@@ -26,7 +24,7 @@ function genericHostnames(urls: string[]): string[] {
       if (!/^https?:$/.test(protocol) || STATIC_SITE_HOSTNAME.test(hostname)) continue;
       hostnames.add(hostname);
     } catch {
-      // synthetic local: keys
+      // The entry is not a parseable URL, so it covers no website.
     }
   }
   return [...hostnames];
@@ -40,21 +38,11 @@ async function registeredGenericHostnames(): Promise<string[]> {
     .map((id) => id.slice(GENERIC_SCRIPT_PREFIX.length));
 }
 
-/** The hostnames we may register without asking: all of them when
- *  <all_urls> is required at install, else only the origins the user granted
- *  through grant.html (permission survives; registration is re-derived). */
-async function registrableHostnames(noted: string[]): Promise<string[]> {
-  if (ASSUME_ALL_URLS) return noted;
-  const granted = await Promise.all(noted.map((hostname) =>
-    browser.permissions.contains({ origins: [hostnamePattern(hostname)] }).catch(() => false)));
-  return noted.filter((_, i) => granted[i]);
-}
-
-/** Registration only affects FUTURE page loads — tabs already open on a
- *  newly-covered host get the script injected directly (the script's own
- *  window flag makes a double arrival a no-op), so a popup-triggered sync
- *  shows notes in the current tab without a reload. Hosts here are freshly
- *  REGISTERED, i.e. granted — consent-clean in both modes. */
+/** Registering a script only affects future page loads. So tabs that are
+ *  already open on a newly covered host get the script injected directly, and
+ *  a sync triggered from the popup shows notes in the current tab without a
+ *  reload. The script sets a flag on `window`, so a second copy arriving does
+ *  nothing. */
 async function injectIntoOpenTabs(hostnames: string[]) {
   for (const hostname of hostnames) {
     const tabs = await browser.tabs.query({ url: hostnamePattern(hostname) }).catch(() => []);
@@ -65,16 +53,18 @@ async function injectIntoOpenTabs(hostnames: string[]) {
 }
 
 /** Keep the generic content-script registrations in step with the covered
- *  sites — a new site goes live for existing installs straight from the DB
- *  on the next sync, without a store update. The covered PAGE list is also
- *  cached for the content scripts' on-device checks and the redirect-mode
- *  navigation listener. */
+ *  sites. A newly covered site goes live on existing installs on the next
+ *  sync, straight from the database, without a store update. This also caches
+ *  the list of covered pages and the note counts behind the listing badges.
+ *  The content scripts use both for their on-device checks. */
 async function syncNotedSites() {
   try {
-    const urls = await fetchCoveredPageUrls();
+    const [urls, counts] = await Promise.all([fetchCoveredPageUrls(), fetchNotedPageCounts()]);
+    // The listing badges draw their per-page note counts from this cache.
+    if (counts) await browser.storage.local.set({ [NOTED_PAGE_COUNTS_KEY]: counts });
     if (urls) {
       await browser.storage.local.set({ [COVERED_PAGE_URLS_KEY]: urls });
-      const wanted = new Set(await registrableHostnames(genericHostnames(urls)));
+      const wanted = new Set(genericHostnames(urls));
       const existing = new Set(await registeredGenericHostnames());
       const toAdd = [...wanted].filter((hostname) => !existing.has(hostname));
       const toRemove = [...existing].filter((hostname) => !wanted.has(hostname));
@@ -91,27 +81,11 @@ async function syncNotedSites() {
   }
 }
 
-/** Redirect mode: a navigation to a noted site we can't inject into yet
- *  detours through grant.html, whose Allow click is the user gesture a
- *  permission request needs. Dismissals ("Not now") are remembered per host
- *  so the detour never becomes a nag loop. */
-async function offerGrantOnNavigation(tabId: number, url: string) {
-  if (!/^https?:/.test(url)) return;
-  const hostname = new URL(url).hostname;
-  if (STATIC_SITE_HOSTNAME.test(hostname)) return;
-  const { [COVERED_PAGE_URLS_KEY]: covered = [] } = await browser.storage.local.get(COVERED_PAGE_URLS_KEY);
-  if (!genericHostnames(covered as string[]).includes(hostname)) return;
-  if (await browser.permissions.contains({ origins: [hostnamePattern(hostname)] }).catch(() => false)) return;
-  if ((await getDismissedGrantHosts()).includes(hostname)) return;
-  await browser.tabs.update(tabId, {
-    url: browser.runtime.getURL(`/grant.html?host=${encodeURIComponent(hostname)}&back=${encodeURIComponent(url)}`),
-  });
-}
-
-/** One selection menu, on EVERY page — writing works anywhere now. On a
- *  covered page the mounted content script opens the overlay directly; on an
- *  uncovered page the click's activeTab grant authorizes injecting the
- *  script on demand, and posting lazily creates the page's item. */
+/** There is one selection menu and it sits on every page, because writing a
+ *  note works anywhere. On a covered page the content script is already
+ *  mounted and opens the overlay directly. On an uncovered page the menu click
+ *  grants activeTab, which lets us inject the script on demand, and posting
+ *  creates the page's item at that point. */
 async function createMenus() {
   await browser.contextMenus.removeAll();
   browser.contextMenus.create({
@@ -144,12 +118,6 @@ export default defineBackground(() => {
     if (alarm.name === SYNC_ALARM) void syncNotedSites();
   });
 
-  if (!ASSUME_ALL_URLS) {
-    browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
-      if (changeInfo.url) void offerGrantOnNavigation(tabId, changeInfo.url).catch(() => {});
-    });
-  }
-
   browser.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === WRITE_MENU_ID && tab?.id != null) {
       const tabId = tab.id;
@@ -158,10 +126,11 @@ export default defineBackground(() => {
         try {
           await browser.tabs.sendMessage(tabId, message);
         } catch {
-          // Uncovered page — no script there yet. The menu click's activeTab
-          // grant authorizes injecting on demand (executeScript fails only on
-          // restricted pages: chrome://, the Web Store); the mount needs a
-          // beat before its listener answers, hence the retries.
+          // The page is uncovered, so no script is running there yet. The menu
+          // click grants activeTab, which lets us inject one on demand. That
+          // only fails on restricted pages such as chrome:// and the Web
+          // Store. The script needs a moment to mount before its listener
+          // answers, which is why we retry.
           await browser.scripting.executeScript({ target: { tabId }, files: ["/content-scripts/generic.js"] });
           for (let attempt = 0; attempt < INJECT_RETRY_ATTEMPTS; attempt++) {
             await new Promise((resolve) => setTimeout(resolve, INJECT_RETRY_DELAY_MS));
@@ -169,7 +138,7 @@ export default defineBackground(() => {
               await browser.tabs.sendMessage(tabId, message);
               return;
             } catch {
-              // listener not up yet — keep trying
+              // The listener is not up yet, so we try again.
             }
           }
         }
@@ -178,8 +147,8 @@ export default defineBackground(() => {
   });
 
   browser.runtime.onMessage.addListener((message: unknown, _sender, sendResponse) => {
-    // Dev-only (compiled out of store builds): reload the unpacked extension
-    // from disk on request from a content script — see utils/devReload.ts.
+    // This reloads the unpacked extension from disk when a content script asks
+    // for it. See utils/devReload.ts. Store builds compile it out.
     if (import.meta.env.VITE_CN_DEV_RELOAD && (message as { type?: string })?.type === "cn-dev-reload") {
       browser.runtime.reload();
       return undefined;
@@ -188,20 +157,22 @@ export default defineBackground(() => {
       // The OAuth window outlives the popup that asked for it, so the flow
       // runs here in the background.
       signInWithXViaWebAuthFlow().then(sendResponse);
-      return true; // async response
+      return true; // Keep the message channel open for the async reply.
     }
     if ((message as { type?: string })?.type === "cn-reader-canonical") {
-      // Substack reader URLs 302 cross-origin to the publication domain when
-      // fetched without cookies; content scripts can't follow that (CORS), so
-      // the fetch runs here where the *.substack.com host permission applies.
+      // A Substack reader URL redirects to the publication's own domain when
+      // it is fetched without cookies. A content script cannot follow that
+      // redirect, because CORS blocks it. So the fetch runs here in the
+      // background, where our *.substack.com host permission applies.
       fetchReaderCanonical((message as { href: string }).href).then(sendResponse);
-      return true; // async response
+      return true; // Keep the message channel open for the async reply.
     }
     if ((message as { type?: string })?.type === "cn-sync-noted-sites") {
-      // The popup pings this on open so a fresh site reaches the current
-      // session immediately instead of on the next scheduled tick.
+      // The popup sends this when it opens, so that a newly covered site
+      // reaches the current session right away instead of on the next
+      // scheduled tick.
       syncNotedSites().then(() => sendResponse({ ok: true }));
-      return true; // async response
+      return true; // Keep the message channel open for the async reply.
     }
     return undefined;
   });

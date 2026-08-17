@@ -1,10 +1,12 @@
 /**
- * After a local pipeline run finishes, upload the results CSV to the prod
- * review-dashboard, make sure the dashboard server is up, and open the
- * freshly-uploaded run in a new browser tab.
+ * After a local pipeline run finishes, this uploads the results CSV to the
+ * production review dashboard, makes sure the dashboard server is up, and opens
+ * the freshly uploaded run in a new browser tab.
  *
- * Works for parallel runs: each finish uploads its own row and opens its own
- * tab; the dashboard server is started at most once (EADDRINUSE is ignored).
+ * Several runs can finish at the same time. Each one uploads its own row and
+ * opens its own tab. The dashboard server is only ever started once. A run that
+ * finds the port already open skips the start, and a server that loses the race
+ * simply fails to bind the port, which does no harm.
  */
 
 import { createClient } from "@supabase/supabase-js";
@@ -51,9 +53,10 @@ async function waitForPort(port: number, host: string): Promise<boolean> {
   return false;
 }
 
-// Atomic lockfile-based mutex: mkdirSync(lockDir) is atomic on POSIX, so the
-// first parallel finisher wins and runs `vite build`; the others wait for
-// dist/index.html to appear. Prevents concurrent builds from corrupting dist/.
+// Creating a directory is atomic on POSIX, so mkdirSync on the lock directory
+// works as a mutex. The first run to finish wins the lock and runs `vite
+// build`. The others wait for dist/index.html to appear. Without this, two
+// builds running at once would corrupt dist/.
 async function ensureDashboardBuilt(): Promise<void> {
   if (fs.existsSync(DIST_INDEX)) return;
 
@@ -94,8 +97,9 @@ async function ensureDashboardRunning(): Promise<void> {
   fs.mkdirSync(path.dirname(logPath), { recursive: true });
   const out = fs.openSync(logPath, "a");
 
-  // The pipeline process remapped SUPABASE_URL/KEY to local; the dashboard server
-  // must inject PROD creds into the page or the browser queries the wrong DB.
+  // The pipeline process pointed SUPABASE_URL and SUPABASE_SERVICE_KEY at the
+  // local instance. The dashboard server has to hand the production credentials
+  // to the page instead. Otherwise the browser would query the wrong database.
   const prod = getProdSupabaseCreds();
   const childEnv = { ...process.env };
   if (prod.url) childEnv.SUPABASE_URL = prod.url;
@@ -164,7 +168,8 @@ function openUrlInBrowser(url: string): void {
   }
 }
 
-/** Returns the created upload's id, or null if the upload/open failed. */
+/** Returns the id of the upload it created. It returns null when either the
+ *  upload or the browser open failed. */
 export async function autoOpenInDashboard(csvPath: string, runName: string): Promise<string | null> {
   try {
     const uploadId = await uploadCsvToProdDashboard(csvPath, runName);

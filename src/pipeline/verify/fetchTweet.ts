@@ -1,9 +1,10 @@
 /**
- * Fetch a tweet's text + author from X's public syndication endpoint
- * (cdn.syndication.twimg.com) — no auth required. Used by the source verifier
- * to actually read cited X posts instead of blind-accepting them. Works for
- * text-only and image tweets (where yt-dlp finds no video). Returns null when
- * the tweet is deleted, protected, or otherwise unavailable.
+ * Fetches a tweet's text and author from X's public syndication endpoint at
+ * cdn.syndication.twimg.com. That endpoint needs no authentication. The source
+ * verifier uses this so it can actually read a cited X post instead of
+ * accepting it unread. It works for text-only tweets and for image tweets,
+ * which are the ones where yt-dlp finds no video. It returns null when the
+ * tweet is deleted, protected, or otherwise unavailable.
  */
 
 const SYNDICATION_ENDPOINT = "https://cdn.syndication.twimg.com/tweet-result";
@@ -22,8 +23,8 @@ function tweetIdFromUrl(url: string): string | null {
 }
 
 // The endpoint requires a `token` derived from the id. This is the opaque
-// algorithm the official react-tweet library uses; the exact constant matters
-// only to X's server, so it's left inline rather than named.
+// algorithm the official react-tweet library uses. The constants in it mean
+// something only to X's server, so they are left inline rather than named.
 function syndicationToken(id: string): string {
   return ((Number(id) / 1e15) * Math.PI).toString(36).replace(/(0+|\.)/g, "");
 }

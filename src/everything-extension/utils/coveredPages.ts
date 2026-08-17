@@ -1,23 +1,35 @@
 import { browser } from "#imports";
 import { extractYoutubeVideoId } from "../../everything-shared/notesQuery";
 
-// The covered-pages list (every ingested item URL), written by the
-// background's sync and read by content scripts BEFORE any backend call —
-// the privacy point: whether a page has notes is decided on-device, so
-// ordinary browsing never reaches our server.
+// The covered-pages list holds the URL of every ingested item. The background's
+// sync writes it, and content scripts read it before they make any backend
+// call. This is the privacy point. Whether a page has notes is decided on the
+// user's own device, so ordinary browsing never reaches our server.
 export const COVERED_PAGE_URLS_KEY = "cn:coveredPageUrls";
 
-/** Null = never synced (fresh install): callers may fall back to a live
- *  lookup rather than hiding notes until the first sync lands. */
+/** Null means the list has never been synced, which is the case on a fresh
+ *  install. A caller may then fall back to a live lookup instead of hiding
+ *  notes until the first sync lands. */
 export async function getCoveredPageUrls(): Promise<string[] | null> {
   const stored = (await browser.storage.local.get(COVERED_PAGE_URLS_KEY))[COVERED_PAGE_URLS_KEY];
   return Array.isArray(stored) ? (stored as string[]) : null;
 }
 
-const trimSlash = (url: string) => url.replace(/\/$/, "");
+// The number of visible notes per covered page URL. The background's sync
+// writes it next to the coverage list, and the listing badges read it. Like
+// the coverage list, it makes the decision on the user's own device.
+export const NOTED_PAGE_COUNTS_KEY = "cn:notedPageCounts";
 
-/** Same matching semantics as fetchItemForUrl: exact URL up to a trailing
- *  slash, YouTube by video ID. */
+/** Null means the counts have never been synced. */
+export async function getNotedPageCounts(): Promise<Record<string, number> | null> {
+  const stored = (await browser.storage.local.get(NOTED_PAGE_COUNTS_KEY))[NOTED_PAGE_COUNTS_KEY];
+  return stored && typeof stored === "object" ? (stored as Record<string, number>) : null;
+}
+
+export const trimSlash = (url: string) => url.replace(/\/$/, "");
+
+/** This matches the same way fetchItemForUrl does. A URL must match exactly,
+ *  apart from a trailing slash. A YouTube page matches by video ID. */
 export function pageIsCovered(pageUrl: string, covered: string[]): boolean {
   const videoId = extractYoutubeVideoId(pageUrl);
   if (videoId) return covered.some((url) => extractYoutubeVideoId(url) === videoId);

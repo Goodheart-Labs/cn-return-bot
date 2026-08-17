@@ -1,9 +1,10 @@
 import { LinkifiedText } from "./LinkifiedText";
 import { communityNoteUrl } from "./communityNoteUrl";
 
-// A note rendered in a soft blue box — note text with clickable URLs, plus a
-// "View note" permalink when a noteId is given (the dashboards pass one; the
-// Common Notes site doesn't). Shared everywhere; renders nothing without text.
+// Renders a note in a soft blue box, with every URL in the note text made
+// clickable. A "View note" permalink is added when a noteId is given. The
+// dashboards pass one and the Common Notes site does not. Nothing is rendered
+// when there is no note text.
 export function OurNoteCard({
   noteId,
   noteText,

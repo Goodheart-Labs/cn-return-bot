@@ -17,7 +17,8 @@ function upsertHandler<T extends { id: string }>(setter: React.Dispatch<React.Se
   };
 }
 
-/** Live projects, items, notes (with their claim), and note-not-needed entries. */
+/** Loads the projects, items, notes with their claim, and note-not-needed
+ *  entries, then keeps them all up to date over a realtime channel. */
 export function useLiveData() {
   const [projects, setProjects] = useState<ProjectRow[]>([]);
   const [items, setItems] = useState<RowMap<ItemRow>>(new Map());
@@ -47,8 +48,9 @@ export function useLiveData() {
     }
     load();
 
-    // Realtime deltas don't carry the joined claim, so fetch a new note in full;
-    // for an UPDATE (vote counts) merge onto the existing row, keeping its claim.
+    /* A realtime change never carries the joined claim, so a note we have not
+     * seen before is fetched in full. An update only changes the vote counts,
+     * so it is merged onto the row we already have and keeps its claim. */
     async function fetchNote(id: string) {
       const schema = await detectSchema();
       const { data } = await supabase.from("everything_notes").select(noteSelect(schema)).eq("id", id).maybeSingle();
@@ -58,8 +60,8 @@ export function useLiveData() {
     const channel = supabase
       .channel(`common-notes-${crypto.randomUUID()}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "everything_items" }, upsertHandler(setItems))
-      // Note-not-needed entries have no joins, so the generic handler covers
-      // all events (vote-count UPDATEs arrive as full rows via the counter trigger).
+      // Note-not-needed entries have no joined data, so the generic handler
+      // covers every event. The counter trigger sends updates as full rows.
       .on("postgres_changes", { event: "*", schema: "public", table: "everything_note_not_needed" }, upsertHandler(setNnn))
       .on("postgres_changes", { event: "*", schema: "public", table: "everything_notes" }, (payload) => {
         if (payload.eventType === "DELETE") {
@@ -73,12 +75,13 @@ export function useLiveData() {
           setNotes((prev) => {
             const existing = prev.get(row.id);
             if (!existing) {
-              fetchNote(row.id); // don't have it yet — fetch fresh + normalized
+              fetchNote(row.id); // We do not have this note yet, so fetch it in full.
               return prev;
             }
-            // Vote-count update: take the scalar fields but keep the already
-            // normalized sources + claim (the raw row carries a raw jsonb
-            // `sources` on the old schema, and never the joined claim).
+            /* This is a vote-count update. Take the plain fields from it, but
+             * keep the sources and the claim we already normalized. On the old
+             * schema the raw row carries `sources` as raw jsonb, and it never
+             * carries the joined claim. */
             return new Map(prev).set(row.id, { ...existing, ...row, sources: existing.sources, claim: existing.claim ?? row.claim });
           });
         } else {

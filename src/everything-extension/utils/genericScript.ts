@@ -1,8 +1,9 @@
 import { browser } from "#imports";
 
-// The generic notes content script, registered per noted hostname — by the
-// background's sync (all-urls mode), the grant page (redirect mode), or the
-// popup's direct-inject fallback.
+// The generic notes content script is registered once per noted hostname. The
+// background's sync registers it when <all_urls> is required at install. The
+// grant page registers it in redirect mode. The popup registers it when the
+// user enables the site from there.
 export const GENERIC_SCRIPT_PREFIX = "cn-generic-";
 
 export const genericScriptId = (hostname: string) => `${GENERIC_SCRIPT_PREFIX}${hostname}`;

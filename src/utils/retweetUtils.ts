@@ -9,13 +9,10 @@ export function getOriginalTweetContent(post: Post): {
   isQuoteTweet: boolean;
   quotedPostContext?: string;
 } {
-  // Check if this post has a referenced tweet of type 'retweeted'
   const retweetRef = post.referenced_tweets?.find(rt => rt.type === 'retweeted');
-  // Check if this post has a referenced tweet of type 'quoted'  
   const quotedRef = post.referenced_tweets?.find(rt => rt.type === 'quoted');
   
   if (retweetRef && post.referenced_tweet_data) {
-    // This is a retweet, return the original tweet content
     const refMedia = post.referenced_tweet_data.media || [];
     return {
       text: post.referenced_tweet_data.text,
@@ -33,7 +30,6 @@ export function getOriginalTweetContent(post: Post): {
   }
 
   if (quotedRef && post.referenced_tweet_data) {
-    // This is a quoted tweet, combine both the quote and the original content
     const combinedText = `${post.text}\n\nQuoted tweet: "${post.referenced_tweet_data.text}"`;
     const allMedia = [
       ...(post.media || []),
@@ -54,13 +50,14 @@ export function getOriginalTweetContent(post: Post): {
     };
   }
   
-  // Check if this looks like a traditional retweet (RT @username: ...)
+  // An older retweet carries no referenced tweet. It simply repeats the original
+  // text in the form "RT @username: ...".
   if (post.text.startsWith('RT @')) {
     const rtMatch = post.text.match(/^RT @\w+: (.+)$/);
     if (rtMatch && rtMatch[1]) {
       const originalText = rtMatch[1];
       return {
-        text: originalText, // Extract the original tweet text after "RT @username: "
+        text: originalText,
         media: post.media?.map(m => m.url || m.preview_image_url).filter(Boolean) || [],
         mediaItems: post.media?.map(m => ({
           type: m.type,
@@ -75,7 +72,6 @@ export function getOriginalTweetContent(post: Post): {
     }
   }
   
-  // Not a retweet, return the original content
   return {
     text: post.text,
     media: post.media?.map(m => m.url || m.preview_image_url).filter(Boolean) || [],

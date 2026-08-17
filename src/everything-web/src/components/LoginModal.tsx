@@ -4,10 +4,11 @@ import { track } from "../../../everything-shared/analytics";
 
 const X_SIGNIN_ENABLED = true;
 
-/** Email sign-in is an 8-digit code typed here (same flow as the extension
- *  popup) — the tab keeps its state while the user fetches the code, so no
- *  persistence is needed. Verifying sets the session in this context, so the
- *  modal closes itself. */
+/** Email sign-in works by typing an 8-digit code into this modal. It is the same
+ *  flow the extension popup uses. The tab keeps its state while the user goes to
+ *  fetch the code from their inbox, so nothing has to be persisted. Verifying the
+ *  code sets the session in this same context, so the modal can simply close
+ *  itself. */
 export function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
@@ -85,7 +86,7 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
               required
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder="12345678"
+              placeholder="123456"
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm tracking-widest"
             />
             <button

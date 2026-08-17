@@ -1,13 +1,17 @@
 /**
  * Submit Candidates
  *
- * Submits candidates via the X API in the order they arrive. Non-misinfo
- * candidates below the velocity floor are cut first (recorded, not submitted) —
- * a backstop for candidates that skipped the floor the regular feed already
- * applies at selection. There is no re-sorting here: runPipeline decides the
- * order when it merges the passes (see misinfoReserveRemaining below) — so when
- * the daily cap is hit, the notes cut are the ones the pipeline already ranked
- * last. In dry-run mode, just logs what would be submitted.
+ * Submits candidates through the X API in the order they arrive. Candidates that
+ * are not misinfo and sit below the velocity floor are cut first. They are
+ * recorded as rejected instead of being submitted. That cut is only a backstop,
+ * because the regular feed already applies the same floor at selection.
+ *
+ * Nothing is re-sorted here. runPipeline fixes the order when it merges the
+ * passes, and misinfoReserveRemaining below is what shapes that order. So when
+ * the daily cap runs out, the notes that get dropped are the ones the pipeline
+ * had already ranked last.
+ *
+ * In dry-run mode nothing is submitted and we only log what would have been.
  */
 
 import { SupabaseLogger } from "../../api/supabaseClient";
@@ -16,36 +20,46 @@ import type { Post } from "../../api/fetchEligiblePosts";
 import type { ProcessTweetResult } from "./processTweet";
 import { velocityPerHour, formatVelocity, isAboveVelocityFloor, REGULAR_VELOCITY_FLOOR_PER_HOUR } from "../utils/velocity";
 
-// Prefer the velocity frozen when the post was fetched (regular feed); fall
-// back to deriving it for candidates that arrive without one (the pre-passes).
+// We prefer the velocity that was frozen when the post was fetched, which is
+// what the regular feed does. Candidates from the pre-passes arrive without one,
+// so for those we derive the velocity from the post instead.
 const velocityOf = (c: Candidate) => c.velocity ?? velocityPerHour(c.post);
 
 // ── Misinfo submit-priority reserve ─────────────────────────────────────────
-// Misinfo notes (curated topics like Trump election-security) are high-value
-// (~10x the views of a standard note) but high-variance: they may rate poorly,
-// which dilutes our hit rate and *lowers* the future cap (X's anti-spam lever).
-// So they get bounded priority rather than blanket priority — up to
-// MISINFO_RESERVE_24H of them per rolling 24h submit AHEAD of the regular notes;
-// beyond that they fall in BEHIND, so a heavy topic day cannot consume the whole
-// daily cap. Set to 0 to drop misinfo behind the regular notes entirely.
+// Misinfo notes are the ones on curated topics, for example Trump election
+// security. They are worth a lot, since they get roughly ten times the views of
+// a standard note. They are also risky. When they rate poorly they drag our hit
+// rate down, and X responds by lowering our future daily cap. That cap is X's
+// anti-spam lever.
+// So misinfo notes get bounded priority instead of blanket priority. Up to
+// MISINFO_RESERVE_24H of them per rolling 24 hours go out ahead of the regular
+// notes. Any beyond that go out behind the regular notes, so a day full of topic
+// hits cannot swallow the whole daily cap. Set this to 0 to keep misinfo behind
+// the regular notes at all times.
 export const MISINFO_RESERVE_24H = 5;
 const SUBMISSION_WINDOW_HOURS = 24;
 
 // ── Stale-tweet cutoff ──────────────────────────────────────────────────────
-// The velocity floor screens at FETCH time, but a note written on a fresh
-// tweet can wait in the candidate queue for cap slots and go out a day later —
-// 11.9% of post-floor submissions (Jul 21–Aug 3) were >24h after the tweet,
-// and they earn about half a fresh slot: 7.9% ever rated / +3.4% net vs 16.1%
-// / +7.3% fresh (historical Mar–Jul: 6.7% rated, +1.5% net, n=310). The knee
-// in the lag curve is at 24h — the 12–24h band still carries real helpful
-// supply (+5.2% net), so don't cut earlier. Curated-topic notes get 48h:
-// slower claim cycles, an 8×-lower velocity floor, and the submit reserve
-// exists to protect exactly those notes. Raise the constants to disable.
+// The velocity floor screens a post when we fetch it. A note written on a fresh
+// tweet can still sit in the candidate queue waiting for a cap slot and only go
+// out a day later. Between 21 July and 3 August, 11.9% of the submissions that
+// had passed the floor went out more than 24 hours after the tweet. A late
+// submission is worth about half a fresh one. 7.9% of them were ever rated and
+// their net helpful rate was +3.4%, against 16.1% and +7.3% for fresh ones. The
+// longer history from March to July agrees, with 6.7% rated and +1.5% net over
+// 310 notes.
+// The lag curve bends at 24 hours, which is why the cutoff sits there. The band
+// from 12 to 24 hours still supplies real helpful notes at +5.2% net, so we do
+// not cut earlier than that.
+// Curated-topic notes get 48 hours instead. Their claims move more slowly, their
+// velocity floor is far lower, and the submit reserve exists to protect exactly
+// those notes. Raise these constants to switch the cutoffs off.
 export const STALE_TWEET_CUTOFF_HOURS = 24;
 export const MISINFO_STALE_CUTOFF_HOURS = 48;
 
-/** Tweet age in hours at `nowMs`, from post.created_at, falling back to the
- *  timestamp encoded in the tweet id (snowflake). Null when neither parses. */
+/** The tweet's age in hours at `nowMs`. It reads post.created_at first. When that
+ *  is missing it falls back to the timestamp encoded in the tweet id, which X
+ *  calls a snowflake. It returns null when neither of the two parses. */
 export function tweetAgeHours(post: Post, nowMs: number): number | null {
   const fromCreatedAt = post.created_at ? Date.parse(post.created_at) : NaN;
   if (!Number.isNaN(fromCreatedAt)) return (nowMs - fromCreatedAt) / 3_600_000;
@@ -57,9 +71,11 @@ export function tweetAgeHours(post: Post, nowMs: number): number | null {
 }
 
 /**
- * Split candidates at the stale-tweet cutoff — the at-SUBMIT counterpart of the
- * at-fetch velocity floor, so queue-aged candidates get re-checked every time
- * they come up. Unknown age fails open. Pure — exported for tests.
+ * Splits the candidates at the stale-tweet cutoff. This is the submit-time
+ * counterpart of the velocity floor we apply at fetch time. It means a candidate
+ * that aged in the queue is checked again every time it comes up. A candidate
+ * whose age we cannot work out is kept. The function is pure and is exported for
+ * the tests.
  */
 export function partitionByStaleCutoff(
   candidates: Candidate[],
@@ -80,11 +96,14 @@ export function partitionByStaleCutoff(
 }
 
 /**
- * How many misinfo notes may still submit ahead of the regular ones in this 24h
- * window. The count covers every misinfo note we submitted, from either
- * discovery route (pre-pass and regular-feed curation). Fail-soft: on a count
- * error reserve nothing — misinfo still submits, just behind the regular notes,
- * which is the safe direction for the daily cap.
+ * Returns how many misinfo notes may still go out ahead of the regular ones in
+ * this 24 hour window. The count covers every misinfo note we submitted, no
+ * matter which route found it. The two routes are the pre-pass and the curation
+ * inside the regular feed.
+ *
+ * When the count itself fails we reserve nothing. Misinfo notes are still
+ * submitted, just behind the regular ones. That is the safe direction, because
+ * it cannot spend the daily cap on the riskier notes.
  */
 export async function misinfoReserveRemaining(logger: SupabaseLogger): Promise<number> {
   try {
@@ -105,30 +124,37 @@ export interface Candidate {
   post: Post;
   tweetResult: ProcessTweetResult;
   botId: string;
-  /** Note classification tags. Defaults to ["disputed_claim_as_fact"] (the
-   *  regular fact-check pipeline); the Pangram pre-pass sets
-   *  ["missing_important_context"] since X has no AI-generated tag. */
+  /** The note classification tags. The regular fact-check pipeline leaves this
+   *  unset and we then send ["disputed_claim_as_fact"]. The Pangram pre-pass sets
+   *  ["missing_important_context"], because X has no tag for AI-generated text. */
   misleadingTags?: string[];
-  /** notes.source_url when the candidate has no bot pipelineResult to read it
-   *  from (the Pangram pre-pass sets the report link here). */
+  /** The value to store in notes.source_url when the candidate has no bot
+   *  pipeline result to read it from. The Pangram pre-pass puts its report link
+   *  here. */
   sourceUrl?: string;
-  /** True for misinfo-monitoring (curated-topic) candidates. Exempts them from
-   *  the velocity-floor cut below — the topic has its own, lower floor, applied
-   *  at selection. Set in generateMisinfoCandidates. */
+  /** True for the misinfo-monitoring candidates, which are the curated-topic
+   *  ones. It exempts them from the velocity-floor cut below. The topic path has
+   *  its own lower floor and applies it at selection. It is set in
+   *  generateMisinfoCandidates. */
   isMisinfo?: boolean;
-  /** Velocity frozen when the post was fetched. Absent on candidates that never
-   *  went through feed selection — those derive it from the post instead. */
+  /** The velocity frozen when the post was fetched. Candidates that never went
+   *  through feed selection have none, and we derive their velocity from the
+   *  post instead. */
   velocity?: number | null;
 }
 
 /**
- * Split candidates at the regular velocity floor — a backstop, since the
- * regular feed now applies the same floor at selection (see collectFastPosts);
- * in practice this only bites candidates that skip selection, i.e. the Pangram
- * pre-pass. Misinfo candidates are never cut here (the topic has its own floor,
- * enforced at both topic selection points — the pre-pass work list and the
- * curation priority fill); unknown velocity fails open. Pure — exported for the
- * offline replay sim (scripts_rob/2026_07_20_velocity_floor_sim) and tests.
+ * Splits the candidates at the regular velocity floor. This is only a backstop,
+ * because the regular feed already applies the same floor at selection. See
+ * collectFastPosts for that. In practice this cut only bites candidates that
+ * skipped selection, which today means the Pangram pre-pass.
+ *
+ * Misinfo candidates are never cut here. The topic path has its own floor and
+ * enforces it at both of its selection points, the pre-pass work list and the
+ * curation priority fill. A candidate whose velocity we cannot work out is kept.
+ *
+ * The function is pure. It is exported for the tests and for the offline replay
+ * simulation in scripts_rob/2026_07_20_velocity_floor_sim.
  */
 export function partitionByVelocityFloor(candidates: Candidate[]): {
   kept: Candidate[];
@@ -180,8 +206,10 @@ export async function submitCandidates(
       );
     }
 
-    // No re-sort: `kept` is already in pipeline order (misinfo, then regular,
-    // then pangram — each internally ranked where it was selected).
+    // We do not re-sort. `kept` is already in the order runPipeline built: the
+    // reserved misinfo notes, then the regular ones, then any misinfo notes past
+    // the reserve, then the Pangram ones. Each group was ranked where it was
+    // selected.
     const ordered = kept;
 
     console.log(`[submit] ${ordered.length} candidates to submit (velocity floor applied, pipeline order)`);
@@ -199,10 +227,11 @@ export async function submitCandidates(
       return 0;
     }
 
-    // Record floor-cuts and stale-cuts before submitting: same
-    // rejected-with-reason pattern (and cooldown) as the daily-limit drops
-    // below. Fail-soft per candidate — a DB hiccup here must not block
-    // submitting the keepers.
+    // The floor cuts and the stale cuts are recorded before anything is
+    // submitted. They use the same rejected-with-reason pattern, and so the same
+    // cooldown, as the daily-limit drops further down. Each write is allowed to
+    // fail on its own, because a database hiccup here must not stop us
+    // submitting the candidates we kept.
     for (const f of floorCut) {
       if (f.candidate.tweetResult.pipelineRunId) {
         try {

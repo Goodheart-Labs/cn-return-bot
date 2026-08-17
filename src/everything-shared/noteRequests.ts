@@ -1,9 +1,10 @@
 import { supabase } from "./supabase";
 
-/** Log that a reader asked for a Common Note on a page we don't cover yet
- *  ("Request notes on this page" in the popup). Write-only inbox
- *  (everything_note_requests, migration 066; selection nullable since 067 —
- *  requests are page-level now). The team reads it in SQL. */
+/** Records that a reader asked for a Common Note on a page we do not cover yet. The
+ *  request comes from "Request notes on this page" in the popup. It is written to
+ *  everything_note_requests, which migration 066 added. Migration 067 made the
+ *  selection column nullable, because a request now applies to a whole page. Nothing
+ *  in the app reads this table. The team queries it in SQL. */
 export async function submitNoteRequest(params: { pageUrl: string; pageTitle: string; selection: string | null }) {
   const { data } = await supabase.auth.getSession();
   const { error } = await supabase.from("everything_note_requests").insert({

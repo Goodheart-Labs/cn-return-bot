@@ -1,44 +1,48 @@
 /**
  * Run On Claims
  *
- * Run the production note-writing pipeline on factual claims extracted from a
- * podcast (or any long-form) transcript, treating each claim as if it were a
- * standalone tweet. No X API needed: each claim becomes a synthetic Post whose
- * text is the (tweet-ified) claim and whose author is the speaker who said it.
- * The pipeline then searches, writes a note if one is warranted, verifies the
- * source, and scores it — exactly as it does for real tweets.
+ * Runs the production note-writing pipeline over factual claims taken from a
+ * podcast transcript, or from any other long-form transcript. Each claim is
+ * treated as if it were a standalone tweet. No X API access is needed. Each
+ * claim becomes a synthetic Post whose text is the claim rewritten as a tweet,
+ * and whose author is the speaker who said it. The pipeline then searches,
+ * writes a note when one is warranted, verifies the source and scores the
+ * result, exactly as it does for a real tweet.
  *
  * Input: a JSON file
  *   {
  *     "episode": "...", "date": "YYYY-MM-DD", "youtube_id": "...",
  *     "claims": [ { "id", "speaker", "section", "type", "text", "verbatim" }, ... ]
  *   }
- * `text` is the tweet-ified claim fed to the pipeline; `verbatim` is the ground
- * truth (what was actually said) and is carried through for the dossier only.
+ * The `text` field is the claim rewritten as a tweet, and that is what the
+ * pipeline sees. The `verbatim` field is what the speaker actually said. It is
+ * the ground truth and it is only carried through to the dossier.
  *
  * Usage:
  *   bun run src/local/runOnClaims.ts [flags] <claims.json>
  *
  * Flags:
- *   --bot <id>         force a bot (default: opus-direct-grok — search via
- *                      Perplexity+Grok, write/verify via Opus, all over
- *                      OPENROUTER_API_KEY + XAI_API_KEY)
- *   --pick test=var    force an A/B test variant, repeatable (e.g.
- *                      --pick note_prefilter=off to make every claim get the
- *                      full search+write treatment instead of being pre-killed)
- *   --ids C1,C5        only run these claim ids
- *   --exclude C1,C2    skip these claim ids (e.g. ones already run)
- *   --max <n>          limit number of claims
- *   --concurrency <n>  parallel workers (default 3)
- *   --name <label>     dashboard run name
+ *   --bot <id>         Force a bot. The default is opus-direct-grok, which
+ *                      searches with Perplexity and Grok and writes and
+ *                      verifies with Opus. It needs both OPENROUTER_API_KEY
+ *                      and XAI_API_KEY.
+ *   --pick test=var    Force an A/B test variant. Repeatable. For example
+ *                      --pick note_prefilter=off makes every claim get the full
+ *                      search and write treatment instead of being killed early.
+ *   --ids C1,C5        Only run these claim ids.
+ *   --exclude C1,C2    Skip these claim ids, for example ones already run.
+ *   --max <n>          Limit the number of claims.
+ *   --concurrency <n>  How many workers run in parallel. The default is 3.
+ *   --name <label>     The name the run gets in the dashboard.
  */
 
 import "dotenv/config";
 import { captureProdSupabaseCreds } from "./prodSupabaseCreds";
 captureProdSupabaseCreds();
 
-// Route Supabase to a local instance when configured (mirrors runOnVideos /
-// tryoutNotes). Must happen before any Supabase imports.
+// Route Supabase to a local instance when one is configured. runOnVideos and
+// tryoutNotes do the same thing. This has to happen before anything imports
+// Supabase.
 const localUrl = process.env.LOCAL_SUPABASE_URL;
 const localKey = process.env.LOCAL_SUPABASE_SERVICE_KEY;
 if (localUrl && localKey) {
@@ -157,12 +161,14 @@ async function main() {
     process.exit(1);
   }
 
-  // Episode date as the post's created_at; noon UTC to avoid TZ edge cases.
+  // The post's created_at is the episode's date. We pin it to noon UTC so that
+  // a timezone offset cannot push it onto the previous or the next day.
   const createdAt = data.date
     ? new Date(`${data.date}T12:00:00Z`).toISOString()
     : new Date().toISOString();
 
-  // Synthetic url == claim id; the fetcher looks the claim up to build the Post.
+  // There are no real URLs here, so each input's url is really a claim id. The
+  // fetcher looks the claim up by that id to build the Post.
   const byId = new Map<string, Claim>(claims.map((c) => [c.id, c]));
   const inputs: InputRow[] = claims.map((c) => ({ url: c.id }));
 

@@ -1,9 +1,9 @@
 /**
- * Prompt — source verifier (classic flow).
+ * Prompt for the classic flow of the source verifier.
  *
- * Verifies whether a note's cited sources support its claims and categorizes
- * each source good/bad. See runClassicVerification in
- * src/pipeline/verify/sourceVerifier.ts.
+ * It checks whether a note's cited sources support the note's claims. It also
+ * sorts each cited source into good or bad. The caller is
+ * runClassicVerification in src/pipeline/verify/sourceVerifier.ts.
  */
 
 import { jsonSchemaResponseFormat } from "../responseFormat";
@@ -74,8 +74,9 @@ export const VERIFY_RESPONSE_FORMAT = jsonSchemaResponseFormat("source_verificat
   additionalProperties: false,
 });
 
-/** Citations-mode classic schema: one evaluated source per cited URL (citations
- *  before verdict), then the overall reasoning + accepted. */
+/** The classic schema used in citations mode. It holds one evaluated source per
+ *  cited URL, and each of those states its citations before its verdict. The
+ *  overall reasoning and the accepted flag come after them. */
 export const VERIFY_CITATIONS_RESPONSE_FORMAT = jsonSchemaResponseFormat("source_verification_cited", {
   type: "object",
   properties: {

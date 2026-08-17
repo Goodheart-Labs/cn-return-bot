@@ -19,8 +19,9 @@ import { CiAxis, CiBar, computeDomain } from "./CiBar";
 import { MetricMenu } from "./MetricMenu";
 import { useResizeWidth } from "../lib/useResizeWidth";
 
-// Grid template shared by the axis row and every data row so the CI blocks line
-// up under the axis: [label gutter] [chart column] [hide button].
+// The axis row and every data row use this same grid, so the confidence interval
+// blocks line up under the axis. The three columns are the label gutter, the
+// chart, and the hide button.
 const GRID_COLUMNS = "minmax(11rem, 18rem) 1fr 1.25rem";
 
 const LEVEL_OPTIONS: ConfidenceLevel[] = [90, 95, 99];
@@ -73,7 +74,8 @@ export function AbComparisonPanel({
   const forceAll = forcesAllRuns(stat);
   const z = Z_BY_LEVEL[level];
 
-  // Map each combo to its interval; null when the chosen stat has no sample.
+  // Work out the interval for each combination. The result is null when the
+  // chosen metric has no data for that combination.
   const rows = combos.map((combo) => ({
     combo,
     result: statInterval(combo.counts, stat, forceAll ? true : includeNonCandidate, z),
@@ -81,8 +83,9 @@ export function AbComparisonPanel({
   const visible = rows.filter((r) => !hidden.has(r.combo.key));
   const hiddenRows = rows.filter((r) => hidden.has(r.combo.key));
 
-  // Shared x-axis domain across visible rows that have data; rows are sorted so
-  // the best is on top (highest %, or cheapest cost), no-data rows sink down.
+  // The x-axis spans every visible row that has data. The rows are sorted with
+  // the best one on top, which means the highest percentage or the lowest cost.
+  // Rows without data sink to the bottom.
   const domain = computeDomain(
     visible.flatMap((r) => (r.result ? [r.result.interval] : [])),
     kind,
@@ -167,7 +170,7 @@ export function AbComparisonPanel({
         <p className="text-sm text-gray-500">No records match the current filters.</p>
       ) : (
         <div className="space-y-1">
-          {/* shared x-axis (the metric) */}
+          {/* The metric's x-axis, shared by every row below it. */}
           <div className="grid items-center gap-x-3" style={{ gridTemplateColumns: GRID_COLUMNS }}>
             <div className="text-xs uppercase tracking-wide text-gray-500 truncate">{statLabel(stat)}</div>
             <div ref={chartRef}>
@@ -235,7 +238,8 @@ function DimensionPicker({
     const next = new Set(selected);
     if (next.has(name)) next.delete(name);
     else next.add(name);
-    // Re-derive in slot order so combo labels stay stable regardless of click order.
+    // Rebuild the list in slot order. The combination labels then read the same
+    // way no matter which order the user ticked the boxes in.
     onDimsChange(slots.filter((s) => next.has(s.name)).map((s) => s.name));
   };
 

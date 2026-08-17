@@ -1,11 +1,14 @@
 /**
- * Selection LLM for the misinfo pre-pass.
+ * Selection LLM for misinfo topic monitoring. Both the pre-pass and the
+ * curation of the regular feed pool call it.
  *
- * Given a topic's brief (a distilled debunk — or, for a time-boxed event like
- * trump_election_security, the source's transcript) and the keyword-matched
- * posts, the LLM returns the IDs of posts that contain a misleading claim the
- * reference can correct — filtering out posts that are merely on-topic,
- * accurate, opinion, or satire. One cheap call per topic, JSON output.
+ * The call gets a topic's brief and the posts the keyword filter matched. The
+ * brief is a distilled debunk. For a time-boxed news event such as
+ * trump_election_security it is the source's transcript instead. The model
+ * returns the IDs of the posts that carry a misleading claim the reference can
+ * correct. It filters out posts that are merely on the topic, and posts that are
+ * accurate, opinion, or satire. This is one cheap call per topic and the model
+ * answers in JSON.
  */
 
 import { llm } from "../llm/llm";
@@ -23,11 +26,13 @@ export interface SelectedPost {
 }
 
 /**
- * Throws ModelOutputInvalidError if the model can't produce valid JSON after
- * retries (e.g. a truncated response). Deliberately NOT swallowed into []: in
- * the pre-pass, sightings are recorded before evaluation, so a throw leaves
- * them needs_note=null → re-evaluated next run, whereas a silent [] would
- * record every post in the batch as needs_note=false — lost forever.
+ * Throws ModelOutputInvalidError when the model cannot produce valid JSON after
+ * the retries, for example because its response was truncated. The error is
+ * deliberately not swallowed into an empty list. Callers record their sightings
+ * before evaluating them, so a thrown error leaves those rows without a verdict
+ * and they are evaluated again next run. An empty list would instead record
+ * every post in the batch as not needing a note, and those posts would be lost
+ * for good.
  */
 export async function selectPostsNeedingNote(
   topic: MisinfoTopic,

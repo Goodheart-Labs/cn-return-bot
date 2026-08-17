@@ -1,11 +1,12 @@
 /**
  * Evaluate Results
  *
- * AI judge for community note evaluation. Can be used per-item (from runOnVideos)
- * or standalone on an existing CSV.
+ * An AI judge that rates the community notes a run produced. It can rate a
+ * single row as soon as that row completes, which is how the local pipeline
+ * runner uses it. It can also run on its own over an existing results CSV.
  *
  * Usage:
- *   bun run src/scripts/evaluateResults.ts <results.csv> [output-dir]
+ *   bun run src/local/evaluateResults.ts <results.csv> [output-dir] [--v2]
  */
 
 import "dotenv/config";
@@ -30,10 +31,12 @@ interface ParsedRow {
   [key: string]: unknown;
 }
 
-// 3-tier note quality. "good" = fully meets the bar; "directional" = accurate
-// and net-helpful but incomplete (misses some guidance specifics, or — on a post
-// that needs no note — is an accurate-but-unnecessary addition that does no harm);
-// "bad" = inaccurate, misleading, off-topic, or misses the central claim.
+// Note quality has three tiers. A "good" note fully meets the bar. A
+// "directional" note is accurate and helpful on balance but incomplete, because
+// it misses some of the specifics the judge guidance asked for. On a post that
+// needs no note at all, a "directional" note is an accurate but unnecessary
+// addition that does no harm. A "bad" note is inaccurate, misleading,
+// off-topic, or it misses the central claim.
 export type VerdictTier = "good" | "directional" | "bad";
 
 export interface JudgeVerdict {
@@ -41,8 +44,9 @@ export interface JudgeVerdict {
   reason?: string;
 }
 
-/** Back-compat boolean for callers that only care about pass/fail: a directional
- *  note still counts as net-helpful (not a hard failure). */
+/** A plain pass-or-fail answer, kept for callers that do not care about the
+ *  tier. A directional note is helpful on balance, so it does not count as a
+ *  failure. */
 export function verdictPassed(v: JudgeVerdict | undefined): boolean {
   return v !== undefined && v.tier !== "bad";
 }
@@ -73,10 +77,12 @@ export const CATEGORY_RESULT_LABEL: Record<Category, string> = {
 };
 
 // ─── V2 categorization ───────────────────────────────────────────────────────
-// 18-bucket scheme that crosses (pipeline stage that blocked the note) ×
-// (writer-stage note quality, judged independently) × (ground truth). Lets
-// us tell apart "judge killed a good note" from "judge correctly killed a
-// bad note" so we know whether to fix the writer or the judge.
+// The V2 scheme sorts every row into one of 18 buckets, plus an uncategorized
+// catch-all for rows with no ground truth. A bucket combines three things:
+// which pipeline stage blocked the note, how good the writer's own note was
+// when judged on its own, and what the ground truth said. That lets us tell
+// "the judge killed a good note" apart from "the judge correctly killed a bad
+// note", so we know whether the writer or the judge is the thing to fix.
 
 export type CategoryV2 =
   | "nw_success"
@@ -106,8 +112,8 @@ export interface CategorizedRowV2 {
   parsed: ParsedRow;
   stage_block: StageBlock;
   proposed_note_text: string | null;
-  proposed_note_verdict?: JudgeVerdict; // AI judge on the writer's pre-pipeline note
-  published_note_verdict?: JudgeVerdict; // AI judge on the published note (if any)
+  proposed_note_verdict?: JudgeVerdict; // The judge's verdict on the writer's own note, before any gate saw it.
+  published_note_verdict?: JudgeVerdict; // The judge's verdict on the published note, if a note was published.
 }
 
 export type BucketCountsV2 = Record<CategoryV2, number>;
@@ -173,9 +179,11 @@ function parseRowForJson(row: CsvRow): ParsedRow {
 // ---------------------------------------------------------------------------
 
 export async function judgeRow(row: CsvRow, sources?: string[]): Promise<JudgeVerdict> {
-  // big_eval datasets carry self-contained judge guidance so a context-free Opus
-  // can score strictly; for failure rows it must also check the note doesn't repeat
-  // the original note's specific failure. Plain datasets fall back to ground-truth.
+  // A big_eval dataset carries its own judge guidance, so the judge can score
+  // strictly without knowing anything else about the dataset. On a failure row
+  // the judge must also check that the note does not repeat the specific
+  // failure of the original note. A plain dataset carries no guidance, so the
+  // judge falls back to the ground-truth note.
   const guidance = (row.judge_guidance ?? "").trim();
   const originalNote = (row.original_note_text ?? "").trim();
   const failureReason = (row.failure_reason ?? "").trim();
@@ -199,9 +207,10 @@ export async function judgeRow(row: CsvRow, sources?: string[]): Promise<JudgeVe
   }
   if (guidance) parts.push(`What a correct note must do (judge guidance): ${guidance}`);
   parts.push(`Proposed note: ${row.note_text}`);
-  // The published note carries its sources separately (as a CN "sources" field),
-  // so the judge must see them too — otherwise a well-sourced note looks
-  // sourceless and fails any "must cite a loadable source" guidance.
+  // A published note keeps its sources in a separate Community Notes "sources"
+  // field rather than in the note text. The judge has to see them as well.
+  // Otherwise a well-sourced note looks sourceless, and it fails any guidance
+  // that asks it to cite a source that loads.
   if (sources && sources.length) parts.push(`Note's cited sources:\n${sources.join("\n")}`);
 
   try {
@@ -266,9 +275,10 @@ function getLogsObject(row: CsvRow): any {
   try { return typeof row.logs === "string" ? JSON.parse(row.logs) : row.logs; } catch { return null; }
 }
 
-/** Pull writer's PROPOSED note from logs (i.e. what the writer LLM returned,
- *  independent of whether the pipeline ultimately published it). Returns null
- *  when the writer was never invoked OR returned empty. */
+/** Reads the note the writer proposed out of the run's logs. This is whatever
+ *  the writer model returned, whether or not the pipeline went on to publish
+ *  it. It returns null when the writer never ran, and also when the writer ran
+ *  but returned nothing. */
 export function extractProposedNote(logsObj: any): { noteText: string; sources: string[] } | null {
   if (!logsObj) return null;
   const writer = logsObj?.note_writer_steps?.note_writer;
@@ -279,8 +289,9 @@ export function extractProposedNote(logsObj: any): { noteText: string; sources: 
   return { noteText, sources };
 }
 
-/** Determine which pipeline stage gated the row's outcome. Reads the
- *  orchestrator's recorded outcome + per-stage log presence. */
+/** Works out which pipeline stage blocked the note. It first reads the outcome
+ *  the orchestrator recorded. When that says nothing useful, it falls back to
+ *  looking at which per-stage logs are present. */
 export function inferStageBlock(row: CsvRow, logsObj: any): StageBlock {
   if (noteWasProposed(row)) return "published";
 
@@ -298,40 +309,45 @@ export function inferStageBlock(row: CsvRow, logsObj: any): StageBlock {
     if (typeof dec === "string") { try { dec = JSON.parse(dec); } catch {} }
     if (dec && typeof dec === "object" && "note_needed" in dec) {
       if (!dec.note_needed) return "judge_rejected";
-      // judge passed but note not proposed → verifier killed it
+      // The judge said a note was needed but none was proposed, so the
+      // verifier must have killed it.
       return "verifier_rejected";
     }
   }
-  // No judge log → likely search-stage block or writer abstained without
-  // logging the reason explicitly.
+  // There is no judge log at all. Either the search stage blocked the row, or
+  // the writer abstained without recording a reason.
   const proposed = extractProposedNote(logsObj);
   if (!proposed) {
-    // No writer output either — search must have failed.
+    // There is no writer output either, so the search must have failed.
     return "search_exhausted";
   }
-  // Writer produced a note but no judge ran and not published — weird, but
-  // most likely the orchestrator short-circuited after writer.
+  // The writer produced a note, but no judge ran and nothing was published.
+  // This should not happen. The most likely cause is the orchestrator stopping
+  // right after the writer.
   return "writer_abstained";
 }
 
-/** AI judge against ground truth, on an arbitrary proposed-note string
- *  (not row.note_text). Used by V2 to judge the writer's pre-pipeline output. */
+/** Runs the AI judge against the ground truth on any note text the caller
+ *  passes in, rather than on the row's own note_text. V2 uses this to judge the
+ *  note the writer produced before the rest of the pipeline ran. */
 export async function judgeProposedNote(row: CsvRow, proposedNoteText: string, sources?: string[]): Promise<JudgeVerdict> {
   return judgeRow({ ...row, note_text: proposedNoteText }, sources);
 }
 
-/** Ground truth = note needed, and we published. Map the judge's tier to a
- *  bucket: directional notes are net-helpful but imperfect, distinct from bad. */
+/** Picks the bucket for a post that needed a note and did get one published.
+ *  A directional note gets its own bucket, because it is helpful on balance
+ *  even though it is imperfect, and that is not the same as a bad note. */
 function tierToNwPublished(tier?: VerdictTier): CategoryV2 {
   if (tier === "good") return "nw_success";
   if (tier === "directional") return "nw_published_directional";
   return "nw_published_bad";
 }
 
-/** Ground truth = no note needed, and we published anyway. A "good" note means
- *  the judge thinks a note was actually warranted (eval disagrees with GT); a
- *  "directional" note is accurate but unnecessary — published when none was
- *  needed, yet harmless; a "bad" note is a genuinely harmful false positive. */
+/** Picks the bucket for a post that needed no note but got one published
+ *  anyway. A "good" note means the judge thinks a note was warranted after all,
+ *  so the judge disagrees with the ground truth. A "directional" note is
+ *  accurate but unnecessary. It was published when none was needed, yet it does
+ *  no harm. A "bad" note is a genuinely harmful false positive. */
 function tierToNnwPublished(tier?: VerdictTier): CategoryV2 {
   if (tier === "good") return "nnw_eval_disagrees";
   if (tier === "directional") return "nnw_fp_harmless";
@@ -349,20 +365,21 @@ export async function categorizeRowV2(row: CsvRow): Promise<CategorizedRowV2> {
     return { category: "uncategorized", parsed, stage_block, proposed_note_text: proposed?.noteText ?? null };
   }
 
-  // Judge the published note if there is one (when published).
   let publishedVerdict: JudgeVerdict | undefined;
   if (stage_block === "published") {
     publishedVerdict = await judgeRow(row, proposed?.sources);
   }
 
-  // Judge the writer's proposed note independently — but only when there IS one
-  // and it's NOT identical to the published note (avoid duplicate cost).
+  // Judge the writer's proposed note on its own. We only pay for a second judge
+  // call when there is a proposed note and it is not the same as the published
+  // note.
   let proposedVerdict: JudgeVerdict | undefined;
   if (proposed && stage_block !== "published") {
     proposedVerdict = await judgeProposedNote(row, proposed.noteText, proposed.sources);
   } else if (proposed && stage_block === "published") {
-    // proposed == published in this case (writer's first-attempt note IS the
-    // published note unless verifier rewrote it; we approximate as same).
+    // Here we treat the proposed note and the published note as the same
+    // thing. The writer's first attempt is the published note unless the
+    // verifier rewrote it, and we accept that approximation.
     proposedVerdict = publishedVerdict;
   }
 

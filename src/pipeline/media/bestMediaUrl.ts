@@ -5,10 +5,11 @@ export interface MediaVariant {
 }
 
 /**
- * Best downloadable/linkable URL for an X media item. Photos use the direct
- * url. Videos/gifs have no `url` in the API payload — only `preview_image_url`
- * (the thumbnail) and `variants` — so pick the highest-bitrate mp4 variant,
- * falling back to any variant, then the thumbnail.
+ * Picks the best URL to download or link for an X media item. A photo carries a
+ * direct url, so we use that. A video or a gif has no url in the API payload. It
+ * only has a preview_image_url, which is the thumbnail, and a list of variants.
+ * For those we take the mp4 variant with the highest bit rate. If there is no mp4
+ * we take any variant, and with no variants at all we fall back to the thumbnail.
  */
 export function getBestMediaUrl(item: {
   type: string;

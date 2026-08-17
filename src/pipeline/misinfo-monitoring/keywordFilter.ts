@@ -1,9 +1,11 @@
 /**
  * Keyword pre-filter for the misinfo pre-pass.
  *
- * Free (regex-only) first cut: reduce the ~thousands of crawled posts down to
- * the per-topic candidates the selection LLM then judges. Matches the
- * investigation's blob(): lowercased post text + the quoted/retweeted text.
+ * This is the first cut, and it costs nothing because it is only regular
+ * expressions. It narrows the thousands of crawled posts down to the per-topic
+ * candidates that the selection LLM then judges. A post is matched on the same text
+ * the investigation's blob() used. That text is the post's own text plus the text of
+ * any quoted or retweeted post, all lowercased.
  */
 
 import type { Post } from "../../api/fetchEligiblePosts";
@@ -14,7 +16,8 @@ export function blob(post: Post): string {
   return `${post.text ?? ""}\n${quoted}`.toLowerCase();
 }
 
-/** Map of topicId → posts whose blob matched that topic's keyword predicate. */
+/** Returns a map from topic id to the posts whose text matched that topic's keyword
+ *  test. */
 export function matchPostsByTopic(posts: Post[]): Map<string, Post[]> {
   const result = new Map<string, Post[]>(MISINFO_TOPICS.map((t) => [t.id, []]));
   for (const post of posts) {

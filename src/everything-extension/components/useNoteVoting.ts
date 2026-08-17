@@ -9,17 +9,19 @@ import type { NnnRow, NoteRow } from "../../everything-shared/types";
 import { donationPair, priorTally } from "../../everything-web/src/lib/donationScoring";
 import { saveDonation, usePreferredCharity, type MintedDonation } from "../../everything-web/src/lib/donations";
 
-/** Voting state shared by the inline popovers and the YouTube overlay:
- *  the caller's note + note-not-needed votes, optimistic cast/clear with the
- *  website's donation minting, a post-vote refetch (counts are
- *  trigger-computed server-side), and the signed-out hint. */
+/** The voting state shared by the inline popovers and the YouTube overlay. It
+ *  holds the caller's own votes, both on notes and on note-not-needed entries.
+ *  It casts and clears votes optimistically and mints donations the same way
+ *  the website does. It refetches after a vote, because the vote counts are
+ *  computed by database triggers. It also decides when the inline login form
+ *  is shown to a signed-out reader. */
 export function useNoteVoting(onNoteUpdated: (note: NoteRow) => void, onNnnUpdated?: (entry: NnnRow) => void) {
   const { session } = useSession();
   const [myVotes, setMyVotes] = useState<Map<string, Vote>>(new Map());
   const [myNnnVotes, setMyNnnVotes] = useState<Map<string, Vote>>(new Map());
-  const [signInHint, setSignInHint] = useState(false);
-  // A fresh vote's donation starts at the remembered charity; the donation
-  // box lets the voter redirect it afterwards.
+  const [loginOpen, setLoginOpen] = useState(false);
+  // A new vote's donation goes to the charity the voter picked last time. The
+  // donation box lets them redirect it afterwards.
   const [preferredCharity] = usePreferredCharity();
 
   useEffect(() => {
@@ -30,20 +32,24 @@ export function useNoteVoting(onNoteUpdated: (note: NoteRow) => void, onNnnUpdat
     }
     fetchMyVotes().then(setMyVotes);
     fetchMyNnnVotes().then(setMyNnnVotes);
+    // Signing in is what the form was open for, so it goes away on its own.
+    setLoginOpen(false);
   }, [session]);
 
-  const onNeedLogin = () => setSignInHint(true);
+  const onNeedLogin = () => setLoginOpen(true);
 
-  // React state can lag the shared chrome.storage session (login happened in
-  // the popup after this overlay mounted) — re-check at click time before
-  // bouncing the user to the sign-in hint.
+  // The React state can lag behind the shared session in chrome.storage. That
+  // happens when the user logs in from the popup after this overlay mounted.
+  // So we re-check at click time before showing the sign-in hint.
   const currentUser = async () =>
     session?.user ?? (await supabase.auth.getSession()).data.session?.user ?? null;
 
-  /** Cast/retract a note vote and mint its donation, same rules as the
-   *  website: the outcome-contingent pair is frozen at the pre-vote tally and
-   *  keyed to the vote row. Resolves to the minted donation, or null on
-   *  retract / own note / signed out. */
+  /** Cast or retract a vote on a note and mint its donation. The rules are the
+   *  same as on the website. The pair of contingent amounts is computed from
+   *  the tally as it stood before this vote, and it is stored against the vote
+   *  row. This resolves to the minted donation. It resolves to null when the
+   *  vote is retracted, when the note is the voter's own, or when nobody is
+   *  signed in. */
   const handleVote = async (note: NoteRow, vote: Vote): Promise<MintedDonation | null> => {
     const user = await currentUser();
     if (!user) {
@@ -58,15 +64,16 @@ export function useNoteVoting(onNoteUpdated: (note: NoteRow) => void, onNnnUpdat
     if (current === vote) {
       next.delete(note.id);
       setMyVotes(next);
-      await clearVote(note.id); // cascades the donation away
+      await clearVote(note.id); // The donation row is deleted along with it.
     } else {
       next.set(note.id, vote);
       setMyVotes(next);
       const voteId = await castVote(note.id, user.id, vote, "extension");
       if (voteId && note.author_id !== user.id) {
         const pair = donationPair(priorTally(note, current), vote);
-        // A backend without migration 061 rejects the pair columns — keep the
-        // vote, just don't promise a donation the ledger didn't record.
+        // A backend that has not run migration 061 rejects the pair columns.
+        // We keep the vote in that case. We just do not promise a donation
+        // that the ledger never recorded.
         const { error } = await saveDonation(voteId, preferredCharity, pair);
         if (!error) minted = { voteId, charity: preferredCharity, pair };
       }
@@ -76,7 +83,8 @@ export function useNoteVoting(onNoteUpdated: (note: NoteRow) => void, onNnnUpdat
     return minted;
   };
 
-  /** Entry votes never mint donations (same as the website). */
+  /** Votes on note-not-needed entries never mint a donation. The website
+   *  behaves the same way. */
   const handleNnnVote = async (entry: NnnRow, vote: Vote) => {
     const user = await currentUser();
     if (!user) return onNeedLogin();
@@ -95,9 +103,9 @@ export function useNoteVoting(onNoteUpdated: (note: NoteRow) => void, onNnnUpdat
     if (fresh) onNnnUpdated?.(fresh);
   };
 
-  // The DB self-vote triggers make a just-posted note/entry start with its
-  // author's helpful vote — mirror it locally so the pills light up without a
-  // refetch.
+  // A database trigger casts the author's own helpful vote on a note or entry
+  // as soon as it is posted. We mirror that vote locally so the pills light up
+  // without waiting for a refetch.
   const recordAuthored = (noteId: string) => setMyVotes((m) => new Map(m).set(noteId, 1));
   const recordNnnAuthored = (entryId: string) => setMyNnnVotes((m) => new Map(m).set(entryId, 1));
 
@@ -110,14 +118,15 @@ export function useNoteVoting(onNoteUpdated: (note: NoteRow) => void, onNnnUpdat
     recordAuthored,
     recordNnnAuthored,
     onNeedLogin,
-    signInHint,
-    dismissSignInHint: () => setSignInHint(false),
+    loginOpen,
+    closeLogin: () => setLoginOpen(false),
   };
 }
 
-/** Swap a refetched note into a claim group, keeping the joined claim the
- *  group already carries (the refetch result has it too, but identity-stable
- *  props avoid re-anchoring work). */
+/** Swap a refetched note into a claim group. The group keeps the claim object
+ *  it already carried. The refetched note carries an equal claim, but reusing
+ *  the same object keeps the prop identity stable, which saves the anchoring
+ *  work a new object would trigger. */
 export function replaceNoteInGroup<T extends { primary: NoteRow; alternatives: NoteRow[] }>(group: T, updated: NoteRow): T {
   return {
     ...group,

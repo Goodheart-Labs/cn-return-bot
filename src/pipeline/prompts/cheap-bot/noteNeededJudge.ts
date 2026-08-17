@@ -1,19 +1,21 @@
 /**
  * Prompt — cheap-bot note-needed judge.
  *
- * Decides whether a proposed note is warranted (post + proposed note + sources).
- * cheap-bot's primary false-positive guard. See runNoteNeededJudge in
+ * The judge receives the post, the proposed note and the note's cited sources,
+ * and decides whether the note is warranted. It is cheap-bot's main guard
+ * against false positives. See runNoteNeededJudge in
  * src/pipeline/cheap-bot/judge.ts.
  */
 
 import { jsonSchemaResponseFormat } from "../responseFormat";
 
 /**
- * When `satireFilteredUpstream` is true (cheap-bot's pre-search satire detector
- * is on), the heavy satire/comedy guidance is trimmed to a one-line backstop —
- * overt satire is already filtered before the writer runs, so the judge only
- * needs to catch the borderline cases the high-precision detector missed.
- * When false, the full satire guidance stays.
+ * `satireFilteredUpstream` says whether cheap-bot's pre-search satire detector
+ * is on. When it is on, the long guidance about satire and comedy shrinks to a
+ * one-line backstop. Overt satire has already been filtered out before the
+ * writer runs, so the judge only has to catch the borderline cases that the
+ * high-precision detector missed. When the detector is off, the judge keeps the
+ * full satire guidance.
  */
 export function buildJudgeSystemPrompt(satireFilteredUpstream: boolean): string {
   const precondition3 = satireFilteredUpstream

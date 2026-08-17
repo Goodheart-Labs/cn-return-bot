@@ -1,4 +1,5 @@
-/** Typed read/write helpers for the everything_* tables (service key). */
+/** Typed read and write helpers for the everything_* tables. They all run with
+ *  the service key. */
 
 import { getSupabaseClient } from "../api/supabaseClient";
 import { stripNullChars } from "../utils/stripNullChars";
@@ -11,8 +12,10 @@ export interface EverythingItem {
   title: string | null;
   published_at: string | null;
   status: "queued" | "processing" | "done" | "error";
-  /** Pre-supplied body for a local `--doc` item (read from a file at enqueue);
-   *  null for a live URL the worker fetches. Also the searchable text post-ingest. */
+  /** The body text supplied up front for a local `--doc` item, read from a file
+   *  at enqueue time. It is null for a live URL that the worker fetches. Once an
+   *  item has been ingested this column also holds the text that the public
+   *  write-note flow searches. */
   full_text: string | null;
 }
 
@@ -39,8 +42,9 @@ function throwOnError<T>({ data, error }: { data: T; error: { message: string } 
   return data;
 }
 
-/** Project id for a slug, creating a bare project (name = slug) if it's new.
- *  Never overwrites an existing project's name/description. */
+/** Returns the project id for a slug. A slug we have not seen before creates a
+ *  bare project whose name is the slug. An existing project's name and
+ *  description are never overwritten. */
 export async function resolveProjectId(slug: string): Promise<string> {
   const db = getSupabaseClient();
   const existing = throwOnError(
@@ -52,26 +56,29 @@ export async function resolveProjectId(slug: string): Promise<string> {
   }).id;
 }
 
-// A url-less local doc still needs a unique, non-null `url` (the column is NOT
-// NULL UNIQUE). We mint a synthetic key under this scheme; it is never shown as
-// a source link — buildClaimRow leaves such a claim's context_url null.
+// A local doc with no url still needs a unique, non-null `url`, because the
+// column is NOT NULL UNIQUE. We mint a synthetic key under this prefix. Such a
+// key is never shown as a source link. buildClaimRow recognizes one and leaves
+// the claim's context_url null.
 const LOCAL_DOC_URL_PREFIX = "local:";
 export const syntheticDocUrl = (slug: string, basename: string) => `${LOCAL_DOC_URL_PREFIX}${slug}/${basename}`;
 export const isSyntheticDocUrl = (url: string | null): boolean => !!url?.startsWith(LOCAL_DOC_URL_PREFIX);
 
-/** A queued item: a live URL (worker fetches) or one with its body supplied
- *  (local `--doc` files, RSS-fed priority-feed posts). */
+/** An item to put in the queue. It is either a live URL that the worker fetches,
+ *  or an item whose body we already have. Local `--doc` files and posts read
+ *  from a priority feed's RSS are the second kind. */
 export interface EnqueueRow {
   project_id: string;
   source: SourceKind;
   url: string;
-  title?: string; // known for supplied-body items; live URLs get their title from the worker fetch
-  full_text?: string; // pre-supplied body; absent for live URLs
-  published_at?: string; // known at enqueue for RSS-fed items; else set by the worker
+  title?: string; // We know this when the body is supplied. A live URL gets its title from the worker's fetch.
+  full_text?: string; // The body we already have. A live URL carries none here.
+  published_at?: string; // We know this at enqueue for an RSS-fed item. Otherwise the worker sets it.
 }
 
-/** Insert new items into the queue; already-known URLs are ignored. Returns the inserted count.
- *  Rows are padded to a uniform key set — PostgREST rejects bulk rows with differing keys. */
+/** Inserts new items into the queue and returns how many were inserted. A URL we
+ *  already have is ignored. Every row is padded to the same set of keys, because
+ *  PostgREST rejects a bulk insert whose rows have differing keys. */
 export async function enqueueItems(rows: EnqueueRow[]): Promise<number> {
   const padded = rows.map((r) => ({ title: null, full_text: null, published_at: null, ...r }));
   const inserted = throwOnError(
@@ -83,7 +90,7 @@ export async function enqueueItems(rows: EnqueueRow[]): Promise<number> {
   return inserted?.length ?? 0;
 }
 
-/** Urls among the given ones that already have an item row (any status). */
+/** Returns the given urls that already have an item row, whatever its status. */
 export async function fetchItemUrlsIn(urls: string[]): Promise<string[]> {
   if (urls.length === 0) return [];
   const rows = throwOnError(
@@ -92,8 +99,9 @@ export async function fetchItemUrlsIn(urls: string[]): Promise<string[]> {
   return rows.map((r) => r.url);
 }
 
-/** Item urls containing any of the given fragments (e.g. YouTube video ids —
- *  stored URL forms vary, so items are matched by id, not exact url). */
+/** Returns the item urls that contain any of the given fragments. We use this
+ *  for YouTube video ids. The stored URL forms vary, so an item is matched by
+ *  its video id rather than by an exact url. */
 export async function fetchItemUrlsContaining(fragments: string[]): Promise<string[]> {
   if (fragments.length === 0) return [];
   const rows = throwOnError(
@@ -105,16 +113,17 @@ export async function fetchItemUrlsContaining(fragments: string[]): Promise<stri
   return rows.map((r) => r.url);
 }
 
-/** Items stranded in `processing` by a killed run. Only meaningful when no
- *  worker is live (the workflow's concurrency group guarantees that). */
+/** Returns the items that a killed run left stranded in `processing`. This is
+ *  only meaningful while no worker is running. The workflow's concurrency group
+ *  guarantees that. */
 export async function fetchOrphanedProcessingItems(): Promise<{ id: string; url: string }[]> {
   return throwOnError(
     await getSupabaseClient().from("everything_items").select("id, url").eq("status", "processing"),
   ) as { id: string; url: string }[];
 }
 
-/** Put a stranded item back in the queue so the worker resumes it (its claims
- *  already exist; only the unfinished ones are redone). */
+/** Puts a stranded item back in the queue so the worker resumes it. Its claims
+ *  already exist, and the worker redoes only the unfinished ones. */
 export async function requeueItem(id: string): Promise<void> {
   throwOnError(await getSupabaseClient().from("everything_items").update({ status: "queued" }).eq("id", id));
 }
@@ -129,7 +138,8 @@ export interface ItemClaimRow {
   status: ClaimStatus;
 }
 
-/** All claims of an item, in insertion order (non-empty ⇒ extraction completed). */
+/** Returns all claims of an item, in insertion order. A non-empty result means
+ *  claim extraction for that item finished. */
 export async function fetchItemClaims(itemId: string): Promise<ItemClaimRow[]> {
   return throwOnError(
     await getSupabaseClient()
@@ -140,7 +150,8 @@ export async function fetchItemClaims(itemId: string): Promise<ItemClaimRow[]> {
   ) as ItemClaimRow[];
 }
 
-/** Oldest queued item → processing (single worker, so no locking needed). */
+/** Moves the oldest queued item to `processing` and returns it. Only one worker
+ *  ever runs, so no locking is needed. */
 export async function claimNextQueuedItem(): Promise<EverythingItem | null> {
   const db = getSupabaseClient();
   const item = throwOnError<EverythingItem | null>(
@@ -182,7 +193,7 @@ export async function markItemError(id: string, error: string): Promise<void> {
   );
 }
 
-/** Insert claim rows; returns their ids in input order. */
+/** Inserts the claim rows and returns their ids in input order. */
 export async function insertClaims(rows: NewClaimRow[]): Promise<string[]> {
   if (rows.length === 0) return [];
   const inserted = throwOnError(
@@ -197,7 +208,8 @@ export async function setClaimStatus(id: string, status: ClaimStatus, reason: st
   );
 }
 
-/** One fact-check run of a claim — the everything counterpart of pipeline_runs. */
+/** One fact-check run of a claim. This is the everything pipeline's counterpart
+ *  of a pipeline_runs row. */
 export interface ClaimPipelineRun {
   claim_id: string;
   bot_name: string;
@@ -210,16 +222,18 @@ export interface ClaimPipelineRun {
   cost: number | null;
 }
 
-/** NUL chars are scrubbed like pipeline_runs does — model output (e.g. media
- *  OCR) can emit U+0000, which Postgres rejects with 22P05. */
+/** We scrub NUL characters here, the same way pipeline_runs does. Model output
+ *  can contain U+0000, media OCR especially, and Postgres rejects such a value
+ *  with error 22P05. */
 export async function insertClaimPipelineRun(run: ClaimPipelineRun): Promise<void> {
   throwOnError(await getSupabaseClient().from("everything_pipeline_runs").insert(stripNullChars(run)));
 }
 
-/** Of the given claims, the ones that already have an AI note (author_id null —
- *  user drafts don't count). Used on resume to spot a kill that landed between
- *  insertNote and setClaimStatus, so the claim is finalized instead of
- *  rechecked (which would insert a duplicate note). */
+/** Returns the given claims that already have an AI note. An AI note is one with
+ *  a null author_id, so a user's draft does not count. A resume uses this to
+ *  spot a run that was killed between insertNote and setClaimStatus. Such a
+ *  claim is finalized rather than rechecked, because rechecking it would insert
+ *  a second note. */
 export async function fetchClaimIdsWithAiNotes(claimIds: string[]): Promise<Set<string>> {
   if (claimIds.length === 0) return new Set();
   const rows = throwOnError(
@@ -228,7 +242,7 @@ export async function fetchClaimIdsWithAiNotes(claimIds: string[]): Promise<Set<
   return new Set(rows.map((r) => r.claim_id));
 }
 
-/** Insert an AI note plus one everything_note_sources row per cited snippet. */
+/** Inserts an AI note and one everything_note_sources row per cited snippet. */
 export async function insertNote(claimId: string, note: string, sources: NoteSourceCitation[]): Promise<void> {
   const db = getSupabaseClient();
   const inserted = throwOnError(

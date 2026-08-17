@@ -1,16 +1,17 @@
 /**
  * Bot Registry
  *
- * Aggregates all bots and exposes lookup-by-id. Bot selection is driven by
- * `BOT_TEST` in src/pipeline/ab-testing/abTests.ts (no static weight table here).
+ * Collects every bot and lets a caller look one up by id. Which bot actually
+ * runs is decided by `BOT_TEST` in src/pipeline/ab-testing/abTestsData.ts.
+ * There is no static weight table in this file.
  */
 
 import { Bot } from "./types";
 import { simpleBot } from "./simple-bot";
 import { cheapBot } from "./cheap-bot";
 
-// =============================================================================
-// RETIRED BOTS — recoverable via `git show <commit>:src/bots/<file>.ts`.
+// Retired bots. Each file can be recovered with
+// `git show <commit>:src/bots/<file>.ts`.
 //
 //   bot-id         file                 last commit  notes
 //   opus-4.6       opus-4.6.ts          a698e34      Opus 4.6 baseline, superseded
@@ -24,14 +25,16 @@ import { cheapBot } from "./cheap-bot";
 //   gemini-3-flash gemini-3-flash.ts    80841a5      Gemini 2.0 Flash
 //   multi-search   multi-search.ts      80841a5      multi-source search variant
 //   deepseek       deepseek.ts          80841a5      DeepSeek model variant
-//   opus-main, opus-main-v2, opus-main-no-source-check, opus-direct,
-//   opus-direct-grok, opus-main-v2-grok, opus-multi-source, opus-bridging,
-//   opus-research, agent, multi-agent — all weight-0; retired when the prompts/
-//   folder landed. Took their note-writer / search / verify-single helpers with
-//   them (write/writeNote{Legacy,Direct,Bridging,MultiSource}, search/*,
-//   verify/sourceVerification, multi-agent/*, input/prompt, tool-calling tool
-//   schemas + buildToolList).
-// =============================================================================
+//
+// These bots were retired together when the prompts/ folder landed: opus-main,
+// opus-main-v2, opus-main-no-source-check, opus-direct, opus-direct-grok,
+// opus-main-v2-grok, opus-multi-source, opus-bridging, opus-research, agent
+// and multi-agent. All of them ran at weight 0 by then. Deleting them also
+// deleted the helpers that only they used. Those were the note writers
+// write/writeNoteLegacy, write/writeNoteDirect, write/writeNoteBridging and
+// write/writeNoteMultiSource, everything under search/,
+// verify/sourceVerification, everything under multi-agent/, input/prompt, and
+// the tool-calling tool schemas together with buildToolList.
 
 const ALL_BOTS: Bot[] = [simpleBot, cheapBot];
 
@@ -43,5 +46,4 @@ export function getBotById(id: string): Bot | undefined {
   return ALL_BOTS.find((bot) => bot.id === id);
 }
 
-// Re-export types
 export type { Bot, PipelineResult, PostContent } from "./types";

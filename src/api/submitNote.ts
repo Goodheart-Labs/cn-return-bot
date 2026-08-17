@@ -14,10 +14,9 @@ export type NoteInfo = {
 };
 
 /**
- * Submits a Community Note for a given Tweet using OAuth 1.0a authentication.
+ * Submit a Community Note on a tweet. The request is signed with OAuth 1.0a.
  * @param postId The ID of the tweet to annotate
  * @param info The info object for the note
- * @param testMode Whether to use test mode (default true)
  * @returns The API response
  */
 export async function submitNote(
@@ -28,7 +27,7 @@ export async function submitNote(
   const data = {
     info,
     post_id: postId,
-    test_mode: false, // Production mode - notes will be publicly visible
+    test_mode: false, // This is production mode, so the note is publicly visible.
   };
 
   const body = JSON.stringify(data);
@@ -39,7 +38,7 @@ export async function submitNote(
 
   const response = await axios.post(url, data, {
     headers,
-    timeout: 30000, // 30 second timeout to prevent hanging
+    timeout: 30000,
   });
   return response.data;
 }

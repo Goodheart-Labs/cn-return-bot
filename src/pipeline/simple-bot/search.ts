@@ -1,9 +1,10 @@
 /**
- * Simple Bot — Search
+ * The simple bot's search stage.
  *
- * Thin wrapper that dispatches to the right provider helper based on
- * config.web_search. The shared system prompt + JSON schema and the
- * per-provider implementations live in searchDispatch.ts.
+ * This is a thin wrapper. It hands the work to the provider helper that
+ * config.web_search selects, then records what the call cost. The helpers live
+ * in searchDispatch.ts, which also assembles the system prompt and the JSON
+ * schema they all share.
  */
 
 import { trackLlmCall } from "../cost-tracking/costTracker";

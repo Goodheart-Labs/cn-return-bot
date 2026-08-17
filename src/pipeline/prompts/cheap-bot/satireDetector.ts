@@ -1,8 +1,9 @@
 /**
  * Prompt — cheap-bot satire detector (Stage 0).
  *
- * High-precision pre-search gate: fire only when the audience is unmistakably
- * in on the joke. See runSatireDetector in src/pipeline/cheap-bot/satireDetector.ts.
+ * This gate runs before the search and is tuned for high precision. It fires
+ * only when the audience is unmistakably in on the joke. See runSatireDetector
+ * in src/pipeline/cheap-bot/satireDetector.ts.
  */
 
 import { jsonSchemaResponseFormat } from "../responseFormat";

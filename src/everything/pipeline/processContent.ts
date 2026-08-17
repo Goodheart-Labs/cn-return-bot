@@ -1,10 +1,12 @@
 /**
- * Turn fetched content into claims + notes in the everything_* tables.
+ * Turns fetched content into claims and notes in the everything_* tables. The
+ * queue worker calls this for every item it takes, whatever the item's source
+ * is.
  *
- * Shared by the queue worker (URL sources) and the local-file importer:
- * extract claims → drop speculation → insert → fact-check the non-confident
- * ones through the note pipeline → record every outcome. Returns the per-item
- * state tally (how many claims landed in each state) for progress reporting.
+ * We extract the claims, drop the speculative ones, insert the rest, then
+ * fact-check the ones Opus was not confident about through the note pipeline
+ * and record every outcome. The return value counts how many claims of this
+ * item ended in each state, which the caller prints as progress.
  */
 
 import PQueue from "p-queue";
@@ -30,11 +32,11 @@ const CHECK_CONCURRENCY = 4;
 /** Where every extracted claim ended up, for one item. */
 export interface ItemTally {
   extracted: number;
-  speculation: number; // future-scenario, dropped before insert
-  skipped: number; // confident-true, not fact-checked
-  notes: number; // fact-checked → note written
-  no_note: number; // fact-checked → no note needed
-  errors: number; // fact-check threw
+  speculation: number; // Claims about a future scenario. We drop them before inserting.
+  skipped: number; // Claims Opus was confident are true. We do not fact-check them.
+  notes: number; // Claims we fact-checked and wrote a note on.
+  no_note: number; // Claims we fact-checked and found no note was needed.
+  errors: number; // Claims whose fact-check threw.
 }
 
 function buildClaimRow(itemId: string, claim: ExtractedClaim): NewClaimRow {
@@ -56,7 +58,8 @@ function buildClaimRow(itemId: string, claim: ExtractedClaim): NewClaimRow {
   };
 }
 
-/** Fact-check one claim and record it; returns the terminal status for tallying. */
+/** Fact-checks one claim and records the result. Returns the claim's final
+ *  status so the caller can tally it. */
 async function checkAndRecordClaim(
   claimId: string,
   claim: ExtractedClaim,
@@ -82,7 +85,7 @@ async function checkAndRecordClaim(
   }
 }
 
-/** The item's searchable body text — what the public write-note flow searches. */
+/** The item's body text. This is what the public write-note flow searches. */
 function bodyText(content: FetchedContent): string {
   return content.kind === "youtube" ? content.cues.map((c) => c.text).join("\n") : content.text;
 }
@@ -124,8 +127,9 @@ export async function processFetchedContent(item: EverythingItem, content: Fetch
   };
 }
 
-/** The check path only reads the claim text and its context; anchor fields
- *  were already persisted by the original run and are never re-inserted. */
+/** Rebuilds an extracted claim from its stored row. The check path only reads
+ *  the claim text and its context. The anchor fields were already saved by the
+ *  original run and are never inserted again, so we leave them empty here. */
 function toExtractedClaim(row: ItemClaimRow): ExtractedClaim {
   return {
     claim: row.claim,
@@ -143,10 +147,10 @@ function toExtractedClaim(row: ItemClaimRow): ExtractedClaim {
  *  kept as they are. Claims still "pending" are checked now. Claims marked
  *  "error" are also rechecked, because on a killed run the error usually just
  *  means the check was cut off mid-flight, not that the claim is truly
- *  uncheckable. One special case: if a claim already has an AI note but was
- *  never marked "note", the kill happened between writing the note and
- *  updating the status — we then only fix the status, because rechecking
- *  would write a second note for the same claim. */
+ *  uncheckable. There is one special case. If a claim already has an AI note
+ *  but was never marked "note", the kill landed between writing the note and
+ *  updating the status. We then only fix the status, because rechecking would
+ *  write a second note for the same claim. */
 export async function resumeItemClaims(item: EverythingItem): Promise<ItemTally> {
   const allClaims = await fetchItemClaims(item.id);
   const redo = allClaims.filter((c) => c.status === "pending" || c.status === "error");

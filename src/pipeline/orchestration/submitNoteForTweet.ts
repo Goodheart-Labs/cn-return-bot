@@ -37,11 +37,12 @@ export async function submitNoteForTweet(
       return { status: "error", message: "No note ID in response" };
     }
 
-    // Order matters: insert into notes first, THEN set pipeline_runs.note_id.
-    // Migration 035 added an FK on pipeline_runs.note_id → notes.note_id, so
-    // the reverse order would fail referential integrity.
-    // Both writes are fail-soft — the X submission already succeeded above
-    // and we don't want a DB hiccup to mask that.
+    // The order of these two writes matters. The notes row has to exist before
+    // we set pipeline_runs.note_id. Migration 035 added a foreign key from
+    // pipeline_runs.note_id to notes.note_id, so the other order would be
+    // rejected by the database.
+    // Both writes are allowed to fail without failing the whole call. The note
+    // was already accepted by X above, and a database hiccup must not hide that.
     try {
       await logger.logNoteSubmission({
         note_id: noteId,
