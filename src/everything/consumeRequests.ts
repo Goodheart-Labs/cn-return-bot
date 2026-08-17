@@ -26,6 +26,7 @@
 
 import "dotenv/config";
 import { extractYoutubeVideoId } from "../everything-shared/pageUrls";
+import { WEB_PROJECT_SLUG } from "../everything-shared/projects";
 import { cleanCapturedPageText } from "./pipeline/cleanCapturedText";
 import {
   fetchPendingFollowRequests,
@@ -46,10 +47,6 @@ import {
 import { fetchFeedPosts } from "./sources/substack";
 import { fetchChannelVideos } from "./sources/youtube";
 import type { ItemSource } from "./types";
-
-/** The catch-all project every requested page lands under. Migration 077
- *  creates it. */
-const REQUESTED_PROJECT_SLUG = "requested";
 
 /** A requested YouTube video is its own source kind, because the worker
  *  fetches its transcript and cues for timestamped claims. Every other page is
@@ -85,7 +82,7 @@ async function consumeNoteRequest(request: NoteRequestRow): Promise<string> {
   if (fullText && fullText === request.page_text) fullText = await cleanCapturedPageText(fullText);
 
   const itemId = await insertQueuedItem({
-    project_id: await resolveProjectId(REQUESTED_PROJECT_SLUG),
+    project_id: await resolveProjectId(WEB_PROJECT_SLUG),
     source,
     url: request.page_url,
     title: request.page_title || undefined,
