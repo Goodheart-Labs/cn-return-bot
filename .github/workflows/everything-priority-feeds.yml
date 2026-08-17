@@ -53,6 +53,10 @@ jobs:
         run: bun install
 
       - name: Install FFmpeg and yt-dlp for YouTube ingestion
+        # A hung apt mirror once held this step for over an hour, which ate the
+        # dispatch slot while the pipeline never even started. Installs finish
+        # in about a minute normally, so this cap only ends runs that are stuck.
+        timeout-minutes: 10
         # Ubuntu's packaged yt-dlp is years old and silently returns an empty
         # channel listing on today's YouTube, so install the current release
         # from PyPI instead.
