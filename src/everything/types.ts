@@ -4,8 +4,8 @@ export type SourceKind = "youtube" | "substack";
 
 /** Everything an item row's source column can hold. `web` is an arbitrary page:
  *  either one a reader wrote the first note on, or one a reader requested notes
- *  on. Such an item is processed from the body text stored on it, because the
- *  pipeline cannot fetch arbitrary pages from CI. */
+ *  on. Such an item is processed from the body text stored on it when the
+ *  request captured one, and fetched through the web-fetch ladder otherwise. */
 export type ItemSource = SourceKind | "web";
 
 /** Content fetched from a source, ready for claim extraction. */
