@@ -61,18 +61,36 @@ create policy follow_requests_insert on everything_follow_requests
   for insert to anon, authenticated
   with check ((user_id is null or user_id = auth.uid()) and status = 'pending');
 
--- The feeds we actually follow. Service-key only: the consumer writes it, the
--- auto-enqueue reads it alongside the hardcoded priority feeds. A Substack feed
--- is stored in its *.substack.com form, the only shape the RSS relay accepts.
+-- Every feed the pipeline polls, curated and reader-requested alike. This
+-- table replaces the old hardcoded list in src/everything/priorityFeeds.ts;
+-- adding an author is now a row insert, not a deploy. Service-key only: the
+-- request consumer and the team write it, the auto-enqueue reads it. A
+-- Substack feed is stored in its *.substack.com form, the only shape the RSS
+-- relay accepts.
 create table everything_followed_feeds (
   id uuid primary key default gen_random_uuid(),
   project_slug text not null,
   feed_type text not null check (feed_type in ('substack', 'youtube')),
   feed_url text not null unique,
+  -- The queue tier this feed's items enqueue at: 1 for a reader-requested
+  -- follow, 0 for the curated backlog. Matches QUEUE_PRIORITY in db.ts.
+  priority smallint not null default 1,
+  -- Walk order among feeds of the same priority, lower first. The curated
+  -- feeds keep their old list order through this.
+  sort_order smallint not null default 0,
   created_at timestamptz not null default now()
 );
 
 alter table everything_followed_feeds enable row level security;
+
+-- The curated feeds, formerly hardcoded. Order is the old list order.
+insert into everything_followed_feeds (project_slug, feed_type, feed_url, priority, sort_order) values
+  ('zvi',        'substack', 'https://thezvi.substack.com',               0, 0),
+  ('dwarkesh',   'youtube',  'https://www.youtube.com/@DwarkeshPatel',    0, 1),
+  ('acx',        'substack', 'https://astralcodexten.substack.com',       0, 2),
+  ('natesilver', 'substack', 'https://natesilver.substack.com',           0, 3),
+  ('slowboring', 'substack', 'https://slowboring.substack.com',           0, 4)
+on conflict (feed_url) do nothing;
 
 -- ---------------------------------------------------------------------------
 -- 3. Queue priority. 2 = explicitly requested by a reader, 1 = post from a

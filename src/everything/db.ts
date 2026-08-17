@@ -375,21 +375,29 @@ export interface FollowedFeed {
   project_slug: string;
   feed_type: "substack" | "youtube";
   feed_url: string;
+  /** The QUEUE_PRIORITY tier this feed's items enqueue at: `followed` for a
+   *  reader-requested feed, `backlog` for the curated ones. */
+  priority: number;
 }
 
-/** The feeds readers asked us to follow, oldest follow first. The auto-enqueue
- *  walks these ahead of the curated priority feeds. */
+/** Every feed the pipeline polls, in walk order: highest priority tier first,
+ *  then the feed's own sort_order, then age. Migration 077 seeds the curated
+ *  feeds (Zvi, Dwarkesh, …); reader follows are added by the request
+ *  consumer. */
 export async function fetchFollowedFeeds(): Promise<FollowedFeed[]> {
   return throwOnError(
     await getSupabaseClient()
       .from("everything_followed_feeds")
-      .select("project_slug, feed_type, feed_url")
+      .select("project_slug, feed_type, feed_url, priority")
+      .order("priority", { ascending: false })
+      .order("sort_order")
       .order("created_at"),
   ) as FollowedFeed[];
 }
 
-/** Adds a feed to the followed list. A feed we already follow is left alone. */
-export async function insertFollowedFeed(feed: FollowedFeed): Promise<void> {
+/** Adds a reader-requested feed to the followed list, at the followed tier
+ *  (the column default). A feed we already follow is left alone. */
+export async function insertFollowedFeed(feed: Omit<FollowedFeed, "priority">): Promise<void> {
   throwOnError(
     await getSupabaseClient()
       .from("everything_followed_feeds")

@@ -1,8 +1,9 @@
 /**
  * Auto-enqueue the next unprocessed content of the feeds we keep fact-checked.
- * Those are the feeds readers asked us to follow, walked first, and then the
- * curated priority feeds in priorityFeeds.ts. The everything-priority-feeds
- * workflow runs this right before the worker drains the queue.
+ * The feeds live in everything_followed_feeds: reader-requested follows are
+ * walked first, then the curated ones migration 077 seeded, in their stored
+ * order. The everything-priority-feeds workflow runs this right before the
+ * worker drains the queue.
  *
  * For every feed we fetch its latest entries, newest first. A Substack feed
  * comes from its RSS feed, which goes through our Cloudflare Worker when we run
@@ -31,17 +32,22 @@ import {
   fetchItemUrlsIn,
   fetchOrphanedProcessingItems,
   markItemError,
-  QUEUE_PRIORITY,
   requeueItem,
   resolveProjectId,
   type EnqueueRow,
 } from "./db";
-import { BATCH_SIZE, PRIORITY_FEEDS, type PriorityFeed } from "./priorityFeeds";
 import { fetchFeedPosts, htmlToText } from "./sources/substack";
 import { ensureYtDlp, fetchChannelVideos } from "./sources/youtube";
 import type { SourceKind } from "./types";
 
+/** How many items one run enqueues, and therefore processes, across all feeds. */
+const BATCH_SIZE = 1;
 const CHANNEL_FETCH_LIMIT = 15;
+
+/** A followed feed in the shape the fetchers work with. */
+export type PriorityFeed =
+  | { project: string; type: "substack"; publicationUrl: string }
+  | { project: string; type: "youtube"; channelUrl: string };
 
 interface FeedEntry {
   source: SourceKind;
@@ -125,18 +131,18 @@ async function triageOrphanedItems(): Promise<void> {
   }
 }
 
-/** The feeds to walk, in walk order: reader-followed feeds first, because their
- *  items also rank above the curated backlog in the queue, then the curated
- *  priority feeds. */
+/** The feeds to walk. fetchFollowedFeeds already returns them in walk order:
+ *  reader-followed feeds first, because their items also rank above the
+ *  curated backlog in the queue, then the curated feeds in their stored
+ *  order. */
 async function feedsToWalk(): Promise<{ feed: PriorityFeed; priority: number }[]> {
-  const followed = (await fetchFollowedFeeds()).map((f) => ({
+  return (await fetchFollowedFeeds()).map((f) => ({
     feed:
       f.feed_type === "substack"
         ? { project: f.project_slug, type: "substack" as const, publicationUrl: f.feed_url }
         : { project: f.project_slug, type: "youtube" as const, channelUrl: f.feed_url },
-    priority: QUEUE_PRIORITY.followed,
+    priority: f.priority,
   }));
-  return [...followed, ...PRIORITY_FEEDS.map((feed) => ({ feed, priority: QUEUE_PRIORITY.backlog }))];
 }
 
 /** Runs one pass of triage, selection, and enqueueing. Returns how many items

@@ -40,7 +40,6 @@ import {
   type FollowRequestRow,
   type NoteRequestRow,
 } from "./db";
-import { PRIORITY_FEEDS } from "./priorityFeeds";
 import { fetchFeedPosts } from "./sources/substack";
 import { fetchChannelVideos } from "./sources/youtube";
 import type { ItemSource } from "./types";
@@ -135,9 +134,9 @@ export async function consumeFollowRequests(): Promise<void> {
   const requests = await fetchPendingFollowRequests();
   if (requests.length === 0) return;
 
-  const curatedUrls = PRIORITY_FEEDS.map((f) => (f.type === "substack" ? f.publicationUrl : f.channelUrl));
-  const followedUrls = (await fetchFollowedFeeds()).map((f) => f.feed_url);
-  const known = new Set([...curatedUrls, ...followedUrls].map((url) => url.replace(/\/$/, "").toLowerCase()));
+  // The followed list holds every feed we poll, the curated ones included, so
+  // this one lookup covers "already followed" completely.
+  const known = new Set((await fetchFollowedFeeds()).map((f) => f.feed_url.replace(/\/$/, "").toLowerCase()));
 
   for (const request of requests) {
     try {
