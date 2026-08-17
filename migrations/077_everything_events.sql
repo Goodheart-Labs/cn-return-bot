@@ -1,4 +1,4 @@
--- 074: Supabase-native analytics, replacing PostHog.
+-- 077: Supabase-native analytics, replacing PostHog.
 --
 -- everything_events holds only the events the database is otherwise blind to
 -- (anonymous visits, extension exposure, abandoned sign-in/vote intents,
