@@ -16,6 +16,9 @@ begin
   loop
     execute format('drop policy if exists posthog_reader_read on public.%I', t.tablename);
   end loop;
+  -- On Supabase the connecting postgres role is not a superuser, and dropping
+  -- what a role owns requires membership in that role.
+  execute format('grant posthog_reader to %I', current_user);
   drop owned by posthog_reader;
   drop role posthog_reader;
 end $$;
