@@ -73,10 +73,12 @@ async function consumeNoteRequest(request: NoteRequestRow): Promise<string> {
   }
 
   const { source, projectSlug } = classifyRequestSource(request.page_url);
-  // The worker can fetch YouTube and Substack itself. Any other page it cannot
-  // fetch, so the request must carry text the extension captured. A request on
-  // just a highlighted paragraph still works: the paragraph alone is checked.
-  const fullText = source === "youtube" ? undefined : (request.page_text ?? request.selection ?? undefined);
+  // A request on a highlighted paragraph checks exactly that paragraph, never
+  // the whole page: the selection becomes the item's text. A whole-page
+  // request uses the page text the extension captured. The worker only fetches
+  // content itself for a YouTube page, because it cannot fetch anything else
+  // from CI.
+  const fullText = request.selection ?? (source === "youtube" ? undefined : request.page_text ?? undefined);
   if (source === "web" && !fullText) {
     await resolveNoteRequest(request.id, "skipped", "page kind is not fetchable and the request carries no text", null);
     return `skipped (no text): ${request.page_url}`;
