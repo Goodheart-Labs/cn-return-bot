@@ -8,10 +8,8 @@ import { submitNoteRequest } from "../../../everything-shared/noteRequests";
 import { noteVisible } from "../../utils/claimGroups";
 import { genericScriptId } from "../../utils/genericScript";
 import { resolveReaderCanonical } from "../../utils/readerCanonical";
-import { getCoveredPageUrls } from "../../utils/coveredPages";
+import { unlessFollowed } from "../../utils/followedFeeds";
 import {
-  authorHasCoveredPages,
-  hostnamesHaveCoveredPages,
   resolveProfileFollowTarget,
   substackFollowTarget,
   substackProfileHandle,
@@ -232,18 +230,14 @@ function readWatchPageChannel() {
 /** The feed the current tab's author could be followed as: a Substack
  *  publication (from its subdomain or a profile page) or a YouTube channel
  *  (from a channel page, or read out of a watch page's owner box). Null when
- *  the page has no author feed or we already cover the author. */
-async function followTargetForTab(tab: { id?: number; url?: string; title?: string }): Promise<FollowTarget | null> {
+ *  the page has no author feed. */
+async function authorFeedForTab(tab: { id?: number; url?: string; title?: string }): Promise<FollowTarget | null> {
   const url = tab.url;
   if (!url) return null;
-  const covered = (await getCoveredPageUrls()) ?? [];
   const subdomainTarget = substackFollowTarget(url);
-  if (subdomainTarget) return authorHasCoveredPages(url, covered) ? null : subdomainTarget;
+  if (subdomainTarget) return subdomainTarget;
   const handle = substackProfileHandle(url);
-  if (handle) {
-    const resolved = await resolveProfileFollowTarget(handle);
-    return resolved && !hostnamesHaveCoveredPages(resolved.hostnames, covered) ? resolved.target : null;
-  }
+  if (handle) return resolveProfileFollowTarget(handle);
   const channelTarget = youtubeChannelTarget(url, (tab.title ?? "").replace(/ - YouTube$/, ""));
   if (channelTarget) return channelTarget;
   if (extractYoutubeVideoId(url) && tab.id != null) {
@@ -256,6 +250,11 @@ async function followTargetForTab(tab: { id?: number; url?: string; title?: stri
     }
   }
   return null;
+}
+
+/** The tab's author feed, when there is one we do not follow yet. */
+async function followTargetForTab(tab: { id?: number; url?: string; title?: string }): Promise<FollowTarget | null> {
+  return unlessFollowed(await authorFeedForTab(tab));
 }
 
 /** The popup's version of the status card's follow button. It renders nothing

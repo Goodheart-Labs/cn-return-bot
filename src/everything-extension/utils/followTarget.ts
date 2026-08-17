@@ -1,5 +1,6 @@
 /** Works out whether the current page belongs to a feed a reader could ask us
- *  to follow, and whether we already cover other pages by the same author. */
+ *  to follow. Whether that feed is already followed is a separate question,
+ *  answered by feedIsFollowed in followedFeeds.ts against the synced list. */
 
 export interface FollowTarget {
   feedType: "substack" | "youtube";
@@ -48,14 +49,11 @@ export function substackProfileHandle(pageUrl: string): string | null {
 }
 
 /** Resolves a profile handle to the author's publication through Substack's
- *  public profile API. Besides the follow target this returns the hostnames
- *  the publication lives on, which is what the coverage check needs: a
- *  custom-domain newsletter stores its items under that domain, not under its
- *  *.substack.com form. Null when the author has no publication or the API
- *  call failed. */
-export async function resolveProfileFollowTarget(
-  handle: string,
-): Promise<{ target: FollowTarget; hostnames: string[] } | null> {
+ *  public profile API. This works for custom-domain newsletters too, because
+ *  the API knows their *.substack.com form, which is not derivable from their
+ *  page URLs. Null when the author has no publication or the API call
+ *  failed. */
+export async function resolveProfileFollowTarget(handle: string): Promise<FollowTarget | null> {
   try {
     const res = await fetch(`https://substack.com/api/v1/user/${handle}/public_profile`, { credentials: "omit" });
     if (!res.ok) return null;
@@ -63,19 +61,11 @@ export async function resolveProfileFollowTarget(
     const publication = profile.primaryPublication ?? profile.publicationUsers?.[0]?.publication;
     const subdomain = publication?.subdomain;
     if (!subdomain) return null;
-    const hostnames = [`${subdomain}.substack.com`];
-    if (publication.custom_domain) {
-      const custom = String(publication.custom_domain).replace(/^www\./, "");
-      hostnames.push(custom, `www.${custom}`);
-    }
     return {
-      target: {
-        feedType: "substack",
-        feedUrl: `https://${subdomain}.substack.com`,
-        kind: "author",
-        title: publication.name ?? subdomain,
-      },
-      hostnames,
+      feedType: "substack",
+      feedUrl: `https://${subdomain}.substack.com`,
+      kind: "author",
+      title: publication.name ?? subdomain,
     };
   } catch {
     return null;
@@ -102,32 +92,4 @@ export function youtubeChannelTarget(href: string, title: string): FollowTarget 
   const path = youtubeChannelPath(href);
   if (!path) return null;
   return { feedType: "youtube", feedUrl: `https://www.youtube.com/${path}`, kind: "youtuber", title };
-}
-
-/** Whether the covered-pages list holds any page on one of these hostnames.
- *  That is our on-device proxy for "we have checked this author before". It
- *  says nothing on YouTube, where every video shares a hostname. */
-export function hostnamesHaveCoveredPages(hostnames: string[], covered: string[]): boolean {
-  const wanted = new Set(hostnames);
-  return covered.some((url) => {
-    try {
-      return wanted.has(new URL(url).hostname);
-    } catch {
-      return false;
-    }
-  });
-}
-
-/** Whether the covered-pages list holds any page on this URL's hostname
- *  besides the page itself. */
-export function authorHasCoveredPages(pageUrl: string, covered: string[]): boolean {
-  const { hostname } = new URL(pageUrl);
-  const trimmed = pageUrl.replace(/\/$/, "");
-  return covered.some((url) => {
-    try {
-      return new URL(url).hostname === hostname && url.replace(/\/$/, "") !== trimmed;
-    } catch {
-      return false;
-    }
-  });
 }

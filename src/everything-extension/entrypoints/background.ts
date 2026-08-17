@@ -1,12 +1,13 @@
 import { defineBackground } from "#imports";
 import { browser } from "#imports";
-import { fetchCoveredPageUrls, fetchNotedPageCounts, fetchReaderCanonical, fetchReaderRedirectUrl } from "../../everything-shared/notesQuery";
+import { fetchCoveredPageUrls, fetchFollowedFeedUrls, fetchNotedPageCounts, fetchReaderCanonical, fetchReaderRedirectUrl } from "../../everything-shared/notesQuery";
 import { submitNoteRequest } from "../../everything-shared/noteRequests";
 import { canonicalizePageUrl, isSubstackReaderUrl } from "../../everything-shared/pageUrls";
 import { track } from "../../everything-shared/analytics";
 import { initBackgroundAnalytics } from "../utils/analytics";
 import { signInWithXViaWebAuthFlow } from "../utils/oauth";
 import { COVERED_PAGE_URLS_KEY, NOTED_PAGE_COUNTS_KEY } from "../utils/coveredPages";
+import { FOLLOWED_FEED_URLS_KEY } from "../utils/followedFeeds";
 import { GENERIC_SCRIPT_PREFIX, hostnamePattern, registerGenericScripts, genericScriptId } from "../utils/genericScript";
 import { capturePageFromTab } from "../utils/pageCapture";
 import { addRequestedPage } from "../utils/settings";
@@ -65,9 +66,15 @@ async function injectIntoOpenTabs(hostnames: string[]) {
  *  The content scripts use both for their on-device checks. */
 async function syncNotedSites() {
   try {
-    const [urls, counts] = await Promise.all([fetchCoveredPageUrls(), fetchNotedPageCounts()]);
+    const [urls, counts, followedFeeds] = await Promise.all([
+      fetchCoveredPageUrls(),
+      fetchNotedPageCounts(),
+      fetchFollowedFeedUrls(),
+    ]);
     // The listing badges draw their per-page note counts from this cache.
     if (counts) await browser.storage.local.set({ [NOTED_PAGE_COUNTS_KEY]: counts });
+    // The follow-button surfaces hide the button for feeds on this list.
+    if (followedFeeds) await browser.storage.local.set({ [FOLLOWED_FEED_URLS_KEY]: followedFeeds });
     if (urls) {
       await browser.storage.local.set({ [COVERED_PAGE_URLS_KEY]: urls });
       const wanted = new Set(genericHostnames(urls));

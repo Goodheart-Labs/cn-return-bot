@@ -13,9 +13,8 @@ export interface StatusOverlayParams {
   noun: "post" | "video" | "page";
   /** Null while the page has not been checked, otherwise its note count. */
   checked: { noteCount: number } | null;
-  /** Whether we have checked other pages by this author. It gates the follow
-   *  button: an author we already cover needs no follow request. */
-  authorCovered: boolean;
+  /** The author's feed, when the page has one we could follow. Null also when
+   *  the feed is already on the synced followed list; the caller decides. */
   followTarget: FollowTarget | null;
   /** Whether a request should carry the page's body text. On it stays for text
    *  pages, off for YouTube, where the pipeline fetches the transcript itself
@@ -63,8 +62,7 @@ async function buildActions(params: StatusOverlayParams): Promise<{ request: Sta
       await addRequestedPage(params.pageUrl).catch(() => {});
     },
   };
-  const follow =
-    params.followTarget && !params.authorCovered ? await buildFollowAction(params.followTarget) : null;
+  const follow = params.followTarget ? await buildFollowAction(params.followTarget) : null;
   return { request, follow };
 }
 

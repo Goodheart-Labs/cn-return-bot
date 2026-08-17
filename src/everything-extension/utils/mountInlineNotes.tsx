@@ -8,9 +8,8 @@ import { indexContainer, findQuoteRange } from "./anchor";
 import { fetchClaimGroups, type ClaimGroup } from "./claimGroups";
 import { mountCoverageBadges } from "./coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "./coveredPages";
+import { unlessFollowed } from "./followedFeeds";
 import {
-  authorHasCoveredPages,
-  hostnamesHaveCoveredPages,
   isSubstackPostPage,
   resolveProfileFollowTarget,
   substackFollowTarget,
@@ -89,17 +88,13 @@ function applyHighlights(ranges: Range[]) {
 }
 
 /** The follow target when this page is an author's own page rather than a
- *  post: a publication homepage or archive on an uncovered *.substack.com
- *  subdomain, or a Substack profile page whose publication we do not cover.
- *  Null when the page is neither, or when we already cover the author. */
-async function authorPageFollowTarget(pageUrl: string, covered: string[]): Promise<FollowTarget | null> {
+ *  post: a publication homepage or archive on a *.substack.com subdomain, or a
+ *  Substack profile page. Null when the page is neither. */
+async function authorPageFollowTarget(pageUrl: string): Promise<FollowTarget | null> {
   const subdomainTarget = substackFollowTarget(pageUrl);
-  if (subdomainTarget) return authorHasCoveredPages(pageUrl, covered) ? null : subdomainTarget;
+  if (subdomainTarget) return subdomainTarget;
   const handle = substackProfileHandle(pageUrl);
-  if (!handle) return null;
-  const resolved = await resolveProfileFollowTarget(handle);
-  if (!resolved || hostnamesHaveCoveredPages(resolved.hostnames, covered)) return null;
-  return resolved.target;
+  return handle ? resolveProfileFollowTarget(handle) : null;
 }
 
 /** The write-anywhere shell plus the transient status card. A post page gets
@@ -109,7 +104,6 @@ async function authorPageFollowTarget(pageUrl: string, covered: string[]): Promi
 async function mountUncovered(
   ctx: ContentScriptContext,
   pageUrl: string,
-  covered: string[],
   onCoverageChanged: () => void,
 ): Promise<() => void> {
   const teardownWrite = await mountWriteAnywhere(ctx, pageUrl, onCoverageChanged);
@@ -119,12 +113,11 @@ async function mountUncovered(
       pageUrl,
       noun: "post",
       checked: null,
-      authorCovered: authorHasCoveredPages(pageUrl, covered),
-      followTarget: substackFollowTarget(pageUrl),
+      followTarget: await unlessFollowed(substackFollowTarget(pageUrl)),
       requestWithPageText: true,
     });
   } else {
-    const target = await authorPageFollowTarget(pageUrl, covered);
+    const target = await unlessFollowed(await authorPageFollowTarget(pageUrl));
     if (target) teardownStatus = await mountFollowOverlay(ctx, target);
   }
   return () => {
@@ -147,11 +140,11 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   const covered = await getCoveredPageUrls();
   if (covered && !pageIsCovered(pageUrl, covered)) {
     console.info(`[common-notes] ${pageUrl} → not in the covered list (no backend lookup)`);
-    return mountUncovered(ctx, pageUrl, covered, onCoverageChanged);
+    return mountUncovered(ctx, pageUrl, onCoverageChanged);
   }
   const item = await fetchItemForUrl(pageUrl);
   console.info(`[common-notes] ${pageUrl} → ${item ? `item "${item.title ?? item.id}"` : "no ingested item"}`);
-  if (!item) return mountUncovered(ctx, pageUrl, covered ?? [], onCoverageChanged);
+  if (!item) return mountUncovered(ctx, pageUrl, onCoverageChanged);
   recordLinkVisit(item);
   // We mount even when the item has no notes yet. Writing a note from a selection
   // works on any ingested page, and refresh() brings the new note in.
@@ -174,7 +167,6 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     pageUrl,
     noun: isSubstackPostPage(pageUrl) ? "post" : "page",
     checked: { noteCount: groups.reduce((n, g) => n + g.notes.length, 0) },
-    authorCovered: true,
     followTarget: null,
     requestWithPageText: false,
   });

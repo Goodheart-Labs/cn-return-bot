@@ -154,6 +154,16 @@ export async function fetchCoveredPageUrls(): Promise<string[] | null> {
   return (data ?? []).map((r: any) => r.url as string).filter((url) => !url.startsWith("local:"));
 }
 
+/** Returns the URL of every feed the pipeline actually follows. The extension
+ *  caches it next to the coverage list and hides the follow button only for
+ *  feeds on this list. Returns null when the query failed, so a caller does not
+ *  mistake an outage for "we follow nothing". */
+export async function fetchFollowedFeedUrls(): Promise<string[] | null> {
+  const { data, error } = await supabase.from("everything_followed_feeds").select("feed_url");
+  if (error) return null;
+  return (data ?? []).map((r: any) => r.feed_url as string);
+}
+
 /** How many visible notes each ingested page has, keyed by the item's URL.
  *  The extension caches this next to the coverage list and draws its listing
  *  badges from it on-device. Synthetic local documents, whose URL starts with
