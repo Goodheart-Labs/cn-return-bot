@@ -83,7 +83,7 @@ export function StatusOverlay({ headline, request, follow }: StatusOverlayProps)
   if (!visible) return null;
   return (
     <div
-      className="w-72 rounded-lg border border-gray-200 bg-white p-3 shadow-lg dark:border-gray-700 dark:bg-gray-800"
+      className="w-96 rounded-lg border border-gray-200 bg-white p-3 shadow-lg dark:border-gray-700 dark:bg-gray-800"
       onMouseEnter={() => clearTimeout(timer.current)}
       onMouseLeave={() => hideAfter(AUTO_HIDE_MS)}
     >
