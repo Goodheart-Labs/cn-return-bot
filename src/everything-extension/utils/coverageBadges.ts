@@ -84,8 +84,10 @@ function createBadge(count: number): HTMLElement {
 }
 
 // Avatars and icons are small, so anything under this area cannot be the
-// cover image.
-const MIN_COVER_IMAGE_AREA_PX = 120 * 68;
+// cover image. The bar is deliberately low: even a small thumbnail is a better
+// badge surface than the card's corner, where the badge lands on top of dates
+// and menus. A typical 40 to 48 pixel avatar stays under it.
+const MIN_COVER_IMAGE_AREA_PX = 60 * 60;
 
 /** The largest image under `root` that is big enough to be a cover image or
  *  thumbnail rather than an avatar or icon. */
