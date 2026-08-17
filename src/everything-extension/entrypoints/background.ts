@@ -1,6 +1,6 @@
 import { defineBackground } from "#imports";
 import { browser } from "#imports";
-import { fetchCoveredPageUrls, fetchNotedPageCounts, fetchReaderCanonical } from "../../everything-shared/notesQuery";
+import { fetchCoveredPageUrls, fetchNotedPageCounts, fetchReaderCanonical, fetchReaderRedirectUrl } from "../../everything-shared/notesQuery";
 import { submitNoteRequest } from "../../everything-shared/noteRequests";
 import { canonicalizePageUrl, isSubstackReaderUrl } from "../../everything-shared/pageUrls";
 import { track } from "../../everything-shared/analytics";
@@ -208,6 +208,13 @@ export default defineBackground(() => {
       // The OAuth window outlives the popup that asked for it, so the flow
       // runs here in the background.
       signInWithXViaWebAuthFlow().then(sendResponse);
+      return true; // Keep the message channel open for the async reply.
+    }
+    if ((message as { type?: string })?.type === "cn-reader-redirect") {
+      // The coverage badges resolve reader-style feed links to the publication
+      // URL our items are stored under. The redirect-following fetch has to
+      // run here, where host permissions apply.
+      fetchReaderRedirectUrl((message as { href: string }).href).then(sendResponse);
       return true; // Keep the message channel open for the async reply.
     }
     if ((message as { type?: string })?.type === "cn-reader-canonical") {

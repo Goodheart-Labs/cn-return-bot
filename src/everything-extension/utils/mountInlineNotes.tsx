@@ -8,9 +8,17 @@ import { indexContainer, findQuoteRange } from "./anchor";
 import { fetchClaimGroups, type ClaimGroup } from "./claimGroups";
 import { mountCoverageBadges } from "./coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "./coveredPages";
-import { authorHasCoveredPages, isSubstackPostPage, substackFollowTarget } from "./followTarget";
+import {
+  authorHasCoveredPages,
+  hostnamesHaveCoveredPages,
+  isSubstackPostPage,
+  resolveProfileFollowTarget,
+  substackFollowTarget,
+  substackProfileHandle,
+  type FollowTarget,
+} from "./followTarget";
 import { recordLinkVisit } from "./linkVisits";
-import { mountStatusOverlay } from "./mountStatusOverlay";
+import { mountFollowOverlay, mountStatusOverlay } from "./mountStatusOverlay";
 import { mountWriteAnywhere } from "./mountWriteAnywhere";
 import { onNoteFiltersChanged } from "./settings";
 import { isPageDark, observePageTheme } from "./pageTheme";
@@ -80,9 +88,24 @@ function applyHighlights(ranges: Range[]) {
   else highlights.set(HIGHLIGHT_NAME, new (globalThis as any).Highlight(...ranges));
 }
 
-/** The write-anywhere shell plus, on a post page, the transient "we haven't
- *  checked this yet" card with its request and follow buttons. The card only
- *  makes sense on a post: an unchecked homepage or archive is not news. */
+/** The follow target when this page is an author's own page rather than a
+ *  post: a publication homepage or archive on an uncovered *.substack.com
+ *  subdomain, or a Substack profile page whose publication we do not cover.
+ *  Null when the page is neither, or when we already cover the author. */
+async function authorPageFollowTarget(pageUrl: string, covered: string[]): Promise<FollowTarget | null> {
+  const subdomainTarget = substackFollowTarget(pageUrl);
+  if (subdomainTarget) return authorHasCoveredPages(pageUrl, covered) ? null : subdomainTarget;
+  const handle = substackProfileHandle(pageUrl);
+  if (!handle) return null;
+  const resolved = await resolveProfileFollowTarget(handle);
+  if (!resolved || hostnamesHaveCoveredPages(resolved.hostnames, covered)) return null;
+  return resolved.target;
+}
+
+/** The write-anywhere shell plus the transient status card. A post page gets
+ *  the full card with the request button. An author's own page — a publication
+ *  homepage or a profile — gets just the follow button when we do not cover
+ *  the author yet. */
 async function mountUncovered(
   ctx: ContentScriptContext,
   pageUrl: string,
@@ -90,17 +113,22 @@ async function mountUncovered(
   onCoverageChanged: () => void,
 ): Promise<() => void> {
   const teardownWrite = await mountWriteAnywhere(ctx, pageUrl, onCoverageChanged);
-  if (!isSubstackPostPage(pageUrl)) return teardownWrite;
-  const teardownStatus = await mountStatusOverlay(ctx, {
-    pageUrl,
-    noun: "post",
-    checked: null,
-    authorCovered: authorHasCoveredPages(pageUrl, covered),
-    followTarget: substackFollowTarget(pageUrl),
-    requestWithPageText: true,
-  });
+  let teardownStatus: (() => void) | null = null;
+  if (isSubstackPostPage(pageUrl)) {
+    teardownStatus = await mountStatusOverlay(ctx, {
+      pageUrl,
+      noun: "post",
+      checked: null,
+      authorCovered: authorHasCoveredPages(pageUrl, covered),
+      followTarget: substackFollowTarget(pageUrl),
+      requestWithPageText: true,
+    });
+  } else {
+    const target = await authorPageFollowTarget(pageUrl, covered);
+    if (target) teardownStatus = await mountFollowOverlay(ctx, target);
+  }
   return () => {
-    teardownStatus();
+    teardownStatus?.();
     teardownWrite();
   };
 }

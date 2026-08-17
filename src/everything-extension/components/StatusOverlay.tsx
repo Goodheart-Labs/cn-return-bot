@@ -10,8 +10,9 @@ const DONE_HIDE_MS = 4_000;
 type ActionPhase = "idle" | "busy" | "done" | "error";
 
 /** One overlay action: the button label, the confirmation text once it ran,
- *  and what it does. `done` starts true when the user already asked earlier,
- *  so reopening the page shows the confirmation instead of the button. */
+ *  and what it does. `alreadyDone` starts true when the user already asked
+ *  earlier, so reopening the page shows the confirmation instead of the
+ *  button. */
 export interface StatusAction {
   label: string;
   doneLabel: string;
@@ -20,24 +21,20 @@ export interface StatusAction {
 }
 
 export interface StatusOverlayProps {
-  /** What the card calls the current page: a Substack post, a YouTube video, or
-   *  a plain page. */
-  noun: "post" | "video" | "page";
-  /** Null while the page has not been checked, otherwise its note count. */
-  checked: { noteCount: number } | null;
-  /** Whether we have checked other pages by this author. Only shown while the
-   *  page itself is unchecked, where it tells the reader we know the author. */
-  authorCovered: boolean;
+  /** The card's first line. Null on an author surface, where the follow
+   *  button carries all the information by itself. */
+  headline: string | null;
   request: StatusAction | null;
   follow: StatusAction | null;
 }
 
-function checkedLine(noun: string, noteCount: number): string {
-  if (noteCount === 0) return `We checked this ${noun} and found nothing to note.`;
-  return noteCount === 1 ? `We checked this ${noun} — 1 Common Note.` : `We checked this ${noun} — ${noteCount} Common Notes.`;
-}
-
-function ActionButton({ action, onDone }: { action: StatusAction; onDone: () => void }) {
+export function ActionButton({ action, onDone, buttonClassName }: {
+  action: StatusAction;
+  onDone?: () => void;
+  /** Overrides the card-sized button look. The popup passes its own full-width
+   *  button style so the action matches the buttons around it. */
+  buttonClassName?: string;
+}) {
   const [phase, setPhase] = useState<ActionPhase>(action.alreadyDone ? "done" : "idle");
 
   const run = async () => {
@@ -45,7 +42,7 @@ function ActionButton({ action, onDone }: { action: StatusAction; onDone: () => 
     try {
       await action.run();
       setPhase("done");
-      onDone();
+      onDone?.();
     } catch {
       setPhase("error");
     }
@@ -57,7 +54,7 @@ function ActionButton({ action, onDone }: { action: StatusAction; onDone: () => 
       <button
         onClick={run}
         disabled={phase === "busy"}
-        className="bg-blue-600 text-white rounded-md px-2.5 py-1 text-xs font-medium hover:bg-blue-700 disabled:opacity-40"
+        className={buttonClassName ?? "bg-blue-600 text-white rounded-md px-2.5 py-1 text-xs font-medium hover:bg-blue-700 disabled:opacity-40 text-left"}
       >
         {action.label}
       </button>
@@ -67,9 +64,9 @@ function ActionButton({ action, onDone }: { action: StatusAction; onDone: () => 
 }
 
 /** The transient status card shown when a page opens. It says whether we have
- *  checked this post and this author yet, offers the request and follow
- *  buttons, and fades away after a few seconds so it never becomes furniture. */
-export function StatusOverlay({ noun, checked, authorCovered, request, follow }: StatusOverlayProps) {
+ *  checked the page, offers the request and follow buttons, and fades away
+ *  after a few seconds so it never becomes furniture. */
+export function StatusOverlay({ headline, request, follow }: StatusOverlayProps) {
   const [visible, setVisible] = useState(true);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -91,24 +88,16 @@ export function StatusOverlay({ noun, checked, authorCovered, request, follow }:
       onMouseLeave={() => hideAfter(AUTO_HIDE_MS)}
     >
       <div className="flex items-start justify-between gap-2">
-        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-          {checked ? checkedLine(noun, checked.noteCount) : `We haven't checked this ${noun} yet.`}
-        </p>
+        {headline && <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{headline}</p>}
         <button
           onClick={() => setVisible(false)}
           aria-label="Dismiss"
-          className="shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          className="ml-auto shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
         >
           ✕
         </button>
       </div>
-      {!checked && authorCovered && (
-        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">We have checked other posts by this author.</p>
-      )}
-      {!checked && !authorCovered && follow && (
-        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">We haven't checked this author yet.</p>
-      )}
-      <div className="mt-2 space-y-2">
+      <div className={`space-y-2 ${headline ? "mt-2" : ""}`}>
         {request && <ActionButton action={request} onDone={() => hideAfter(DONE_HIDE_MS)} />}
         {follow && <ActionButton action={follow} onDone={() => hideAfter(DONE_HIDE_MS)} />}
       </div>

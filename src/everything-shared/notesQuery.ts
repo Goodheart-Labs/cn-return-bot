@@ -84,6 +84,22 @@ export async function fetchReaderCanonical(href: string): Promise<string | null>
   }
 }
 
+/** Resolves a reader URL to the publication's own post URL by following the
+ *  redirect a logged-out fetch gets, without downloading the page. This is the
+ *  cheap variant of fetchReaderCanonical for bulk lookups: the coverage badges
+ *  resolve every reader-style link in a Substack feed this way. Must run in
+ *  the extension background for the same CORS reason. Null when no redirect
+ *  happened or the fetch failed. */
+export async function fetchReaderRedirectUrl(href: string): Promise<string | null> {
+  try {
+    const res = await fetch(href, { credentials: "omit" });
+    void res.body?.cancel();
+    return new URL(res.url).hostname === new URL(href).hostname ? null : res.url;
+  } catch {
+    return null;
+  }
+}
+
 /** An ItemRow plus the two extra fields the extension needs. `full_text` is the
  *  transcript or article body, which the write-note flow searches to check its
  *  anchor. `projectSlug` is what share links are built from. */

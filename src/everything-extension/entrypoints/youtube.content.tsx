@@ -9,8 +9,8 @@ import { mountCoverageBadges } from "../utils/coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "../utils/coveredPages";
 import { recordLinkVisit } from "../utils/linkVisits";
 import { YoutubeOverlayApp, DEFAULT_CLIP_SECONDS, type TimedGroup } from "../components/YoutubeOverlay";
-import type { FollowTarget } from "../utils/followTarget";
-import { mountStatusOverlay } from "../utils/mountStatusOverlay";
+import { youtubeChannelTarget, type FollowTarget } from "../utils/followTarget";
+import { mountFollowOverlay, mountStatusOverlay } from "../utils/mountStatusOverlay";
 import { isPageDark, observePageTheme } from "../utils/pageTheme";
 import { registerDevReloadHook } from "../utils/devReload";
 import { initUiAnalytics } from "../utils/analytics";
@@ -63,14 +63,7 @@ function timedGroups(claimGroups: ClaimGroup[]): TimedGroup[] {
 function channelFollowTarget(): FollowTarget | null {
   const link = document.querySelector<HTMLAnchorElement>(CHANNEL_LINK_SELECTOR);
   if (!link?.href) return null;
-  const path = new URL(link.href, location.origin).pathname.match(/^\/(@[\w.-]+|channel\/[\w-]+)/)?.[1];
-  if (!path) return null;
-  return {
-    feedType: "youtube",
-    feedUrl: `https://www.youtube.com/${path}`,
-    kind: "channel",
-    title: link.textContent?.trim() ?? "",
-  };
+  return youtubeChannelTarget(link.href, link.textContent?.trim() ?? "");
 }
 
 /** The transient "have we checked this video" card. On an unchecked video it
@@ -98,6 +91,11 @@ async function mountStatus(ctx: ContentScriptContext, noteCount: number | null):
 }
 
 async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | null> {
+  // A channel page gets the follow-only card. Whether we already cover the
+  // channel cannot be told on-device, because the covered list only holds
+  // video URLs; the pipeline resolves a repeat follow as already followed.
+  const channelTarget = youtubeChannelTarget(location.href, document.title.replace(/ - YouTube$/, ""));
+  if (channelTarget) return mountFollowOverlay(ctx, channelTarget);
   if (!extractYoutubeVideoId(location.href)) return null;
   // We check coverage locally first. Most videos are not covered, and finding
   // that out must not cost a backend request on every watch page.

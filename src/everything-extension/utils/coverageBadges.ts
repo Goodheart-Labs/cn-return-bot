@@ -1,3 +1,4 @@
+import { browser } from "#imports";
 import type { ContentScriptContext } from "#imports";
 import { extractYoutubeVideoId, normalizePageUrl } from "../../everything-shared/pageUrls";
 import { GROUP_GLYPH_PATH } from "../components/ClaimNoteStack";
@@ -37,6 +38,27 @@ function pageKey(href: string): string | null {
   }
   if (!/^https?:$/.test(url.protocol)) return null;
   return extractYoutubeVideoId(url.toString()) ?? trimSlash(normalizePageUrl(url.toString()));
+}
+
+// Substack's reader links a post as substack.com/home/post/p-<id> or
+// /@author/p-<id>. The database only knows the publication's own post URL, so
+// such a link cannot be matched directly. The background resolves each post id
+// to that URL once, by following the redirect a logged-out fetch gets, and the
+// mapping is kept in storage so a post the reader's feed showed once never
+// needs resolving again.
+const READER_CANONICALS_KEY = "cn:readerPostCanonicals";
+const READER_CANONICALS_MAX = 2000;
+
+/** The reader post id ("p-210916646") of a link, or null when the link is not
+ *  a reader-style post link. */
+function readerPostId(href: string): string | null {
+  try {
+    const url = new URL(href, location.href);
+    if (!/^(www\.)?substack\.com$/.test(url.hostname)) return null;
+    return url.pathname.match(/\/(p-\d+)(\/|$)/)?.[1] ?? null;
+  } catch {
+    return null;
+  }
 }
 
 /** A small circle pinned to a card's upper right. It uses the same surface as
@@ -113,6 +135,51 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
   }
   if (countByKey.size === 0) return null;
 
+  const readerCanonicals = new Map<string, string>(
+    Object.entries(
+      ((await browser.storage.local.get(READER_CANONICALS_KEY))[READER_CANONICALS_KEY] as Record<string, string> | undefined) ?? {},
+    ),
+  );
+  const readerResolving = new Set<string>();
+
+  const persistReaderCanonicals = () => {
+    // Insertion order is oldest first, so trimming from the front drops the
+    // posts the reader has not seen for the longest.
+    const entries = [...readerCanonicals.entries()].slice(-READER_CANONICALS_MAX);
+    void browser.storage.local.set({ [READER_CANONICALS_KEY]: Object.fromEntries(entries) }).catch(() => {});
+  };
+
+  /** Asks the background to resolve one reader post link. Each post id is
+   *  tried once per mount; a resolved id triggers a rescan so the link gets
+   *  its badge without any user action. */
+  const resolveReaderLink = (href: string, postId: string) => {
+    if (readerResolving.has(postId)) return;
+    readerResolving.add(postId);
+    void browser.runtime
+      .sendMessage({ type: "cn-reader-redirect", href })
+      .then((url) => {
+        if (typeof url !== "string" || !url) return;
+        readerCanonicals.set(postId, url);
+        persistReaderCanonicals();
+        scheduleScan();
+      })
+      .catch(() => {});
+  };
+
+  /** The lookup key of a link, with reader-style post links translated to the
+   *  publication URL they lead to. A reader link whose translation is not
+   *  known yet gets none, and its resolution is kicked off instead. */
+  const keyFor = (href: string): string | null => {
+    const postId = readerPostId(href);
+    if (!postId) return pageKey(href);
+    const canonical = readerCanonicals.get(postId);
+    if (!canonical) {
+      resolveReaderLink(new URL(href, location.href).toString(), postId);
+      return null;
+    }
+    return pageKey(canonical);
+  };
+
   // The one badge each noted page currently has, together with the link that
   // earned it, so a page linked several times in one listing is badged once.
   const badges = new Map<string, { badge: HTMLElement; anchor: HTMLAnchorElement }>();
@@ -138,7 +205,7 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
    *  once a lazy-loaded image has arrived. */
   const pruneAndReseat = () => {
     for (const [key, { badge, anchor }] of badges) {
-      const valid = badge.isConnected && anchor.isConnected && pageKey(anchor.href) === key;
+      const valid = badge.isConnected && anchor.isConnected && keyFor(anchor.href) === key;
       const surface = valid ? surfaceFor(anchor) : null;
       if (surface) {
         seat(badge, surface);
@@ -150,7 +217,7 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
   };
 
   const placeBadge = (anchor: HTMLAnchorElement, currentKeys: Set<string>) => {
-    const key = pageKey(anchor.href);
+    const key = keyFor(anchor.href);
     if (!key || currentKeys.has(key) || badges.has(key)) return;
     const count = countByKey.get(key);
     if (!count) return;
@@ -169,7 +236,7 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
     // name different hosts for the same post.
     const currentKeys = new Set<string>();
     for (const href of [location.href, document.querySelector('link[rel="canonical"]')?.getAttribute("href")]) {
-      const key = href ? pageKey(href) : null;
+      const key = href ? keyFor(href) : null;
       if (key) currentKeys.add(key);
     }
     for (const anchor of document.querySelectorAll<HTMLAnchorElement>("a[href]")) placeBadge(anchor, currentKeys);
