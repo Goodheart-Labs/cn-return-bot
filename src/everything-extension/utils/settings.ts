@@ -1,24 +1,5 @@
 import { browser } from "#imports";
 
-// The hosts where the user answered "Do not ask again" on the grant.html page. We
-// never send them to that page again. This only applies in the redirect permission
-// model.
-const GRANT_DISMISSED_KEY = "cn:grantDismissed";
-
-export async function getDismissedGrantHosts(): Promise<string[]> {
-  return ((await browser.storage.sync.get(GRANT_DISMISSED_KEY))[GRANT_DISMISSED_KEY] as string[] | undefined) ?? [];
-}
-
-export async function addDismissedGrantHost(hostname: string): Promise<void> {
-  await browser.storage.sync.set({ [GRANT_DISMISSED_KEY]: [...new Set([...(await getDismissedGrantHosts()), hostname])] });
-}
-
-/** The way back in for a user who changed their mind. Granting a site from the
- *  popup's "Show notes on this site" button clears an earlier "Do not ask again". */
-export async function removeDismissedGrantHost(hostname: string): Promise<void> {
-  await browser.storage.sync.set({ [GRANT_DISMISSED_KEY]: (await getDismissedGrantHosts()).filter((h) => h !== hostname) });
-}
-
 // The pages the user has already asked us to cover with "Request notes on this
 // page". Reopening the popup on such a page shows the done state instead of creating
 // a second request. The list is a rolling window. Sync storage allows about 8KB per

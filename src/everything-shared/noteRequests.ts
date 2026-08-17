@@ -1,7 +1,7 @@
 import { supabase } from "./supabase";
 
 /** The database caps everything_note_requests.page_text at this length
- *  (migration 076). Clients cut the captured text here so an oversized page
+ *  (migration 077). Clients cut the captured text here so an oversized page
  *  cannot make the insert fail. */
 export const MAX_PAGE_TEXT_LENGTH = 500_000;
 

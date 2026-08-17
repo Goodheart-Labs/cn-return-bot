@@ -6,7 +6,7 @@ import type { Vote } from "../../everything-shared/votes";
 import type { NnnRow, NoteRow } from "../../everything-shared/types";
 import type { PageItem } from "../../everything-shared/notesQuery";
 import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
-import { ABSORB_KEYS, ClaimNoteStack, GroupIcon, NOTE_POPOVER_WIDTH, SignInHint } from "./ClaimNoteStack";
+import { ABSORB_KEYS, ClaimNoteStack, GroupIcon, NOTE_POPOVER_WIDTH, OverlayLogin } from "./ClaimNoteStack";
 import { NoteWithActions } from "./NoteWithActions";
 import { useNoteVoting, replaceNoteInGroup } from "./useNoteVoting";
 import { WriteNoteOverlay } from "./WriteNoteOverlay";
@@ -59,7 +59,7 @@ function Badge({ open, onClick, style }: { open: boolean; onClick: () => void; s
   );
 }
 
-function NotePopover({ group, projectSlug, session, myVotes, onVote, onNeedLogin, onAuthored, onNnnAuthored, onDeleted, nnnApi, style }: {
+function NotePopover({ group, projectSlug, session, myVotes, onVote, onNeedLogin, onAuthored, onNnnAuthored, onDeleted, nnnApi, style, loginOpen, onCloseLogin }: {
   group: AnchoredGroup;
   projectSlug: string | null;
   session: Session | null;
@@ -71,6 +71,8 @@ function NotePopover({ group, projectSlug, session, myVotes, onVote, onNeedLogin
   onDeleted: () => void;
   nnnApi: NnnApi;
   style: React.CSSProperties;
+  loginOpen: boolean;
+  onCloseLogin: () => void;
 }) {
   return (
     // The popover has a maximum height and scrolls inside itself. One claim can
@@ -78,6 +80,7 @@ function NotePopover({ group, projectSlug, session, myVotes, onVote, onNeedLogin
     // viewport. The overscroll-contain class stops that inner scroll from
     // carrying on into the host page.
     <div style={style} className="absolute bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-xl p-3 text-left max-h-[70vh] overflow-y-auto overscroll-contain">
+      {loginOpen && !session && <OverlayLogin onDismiss={onCloseLogin} />}
       <ClaimNoteStack
         group={group}
         projectSlug={projectSlug}
@@ -117,7 +120,7 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
   const [groups, setGroups] = useState(initialGroups);
   const [openClaim, setOpenClaim] = useState<string | null>(null);
   const [writeSelection, setWriteSelection] = useState<string | null>(null);
-  const { session, myVotes, myNnnVotes, handleVote, handleNnnVote, recordAuthored, recordNnnAuthored, onNeedLogin, signInHint, dismissSignInHint } = useNoteVoting(
+  const { session, myVotes, myNnnVotes, handleVote, handleNnnVote, recordAuthored, recordNnnAuthored, onNeedLogin, loginOpen, closeLogin } = useNoteVoting(
     (updated) => setGroups((prev) => prev.map((g) => replaceNoteInGroup(g, updated))),
     (updatedEntry) => setGroups((prev) => prev.map((g) => ({
       ...g,
@@ -283,7 +286,6 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
     // to the host page and to our own passage hit test. Keys typed in a composer
     // would trigger the host page's own hotkeys. See ABSORB_KEYS.
     <div {...ABSORB_KEYS} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
-      {signInHint && <SignInHint onDismiss={dismissSignInHint} className="fixed top-4 right-4 z-50" />}
       {writeSelection && (
         <WriteNoteOverlay
           item={item}
@@ -320,6 +322,8 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
                   onDeleted={onPosted}
                   nnnApi={nnnApi}
                   style={popoverStyle}
+                  loginOpen={loginOpen}
+                  onCloseLogin={closeLogin}
                 />
               )}
             </div>

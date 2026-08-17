@@ -46,7 +46,7 @@ import { fetchChannelVideos } from "./sources/youtube";
 import type { ItemSource } from "./types";
 
 /** The catch-all project for requested pages that belong to no publication we
- *  can name. Migration 076 creates it. */
+ *  can name. Migration 077 creates it. */
 const REQUESTED_PROJECT_SLUG = "requested";
 
 const SUBSTACK_POST_URL = /^https:\/\/([\w-]+)\.substack\.com\/p\//;

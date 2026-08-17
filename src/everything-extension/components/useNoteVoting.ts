@@ -13,13 +13,13 @@ import { saveDonation, usePreferredCharity, type MintedDonation } from "../../ev
  *  holds the caller's own votes, both on notes and on note-not-needed entries.
  *  It casts and clears votes optimistically and mints donations the same way
  *  the website does. It refetches after a vote, because the vote counts are
- *  computed by database triggers. It also carries the hint shown to a
- *  signed-out reader. */
+ *  computed by database triggers. It also decides when the inline login form
+ *  is shown to a signed-out reader. */
 export function useNoteVoting(onNoteUpdated: (note: NoteRow) => void, onNnnUpdated?: (entry: NnnRow) => void) {
   const { session } = useSession();
   const [myVotes, setMyVotes] = useState<Map<string, Vote>>(new Map());
   const [myNnnVotes, setMyNnnVotes] = useState<Map<string, Vote>>(new Map());
-  const [signInHint, setSignInHint] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
   // A new vote's donation goes to the charity the voter picked last time. The
   // donation box lets them redirect it afterwards.
   const [preferredCharity] = usePreferredCharity();
@@ -32,9 +32,11 @@ export function useNoteVoting(onNoteUpdated: (note: NoteRow) => void, onNnnUpdat
     }
     fetchMyVotes().then(setMyVotes);
     fetchMyNnnVotes().then(setMyNnnVotes);
+    // Signing in is what the form was open for, so it goes away on its own.
+    setLoginOpen(false);
   }, [session]);
 
-  const onNeedLogin = () => setSignInHint(true);
+  const onNeedLogin = () => setLoginOpen(true);
 
   // The React state can lag behind the shared session in chrome.storage. That
   // happens when the user logs in from the popup after this overlay mounted.
@@ -128,8 +130,8 @@ export function useNoteVoting(onNoteUpdated: (note: NoteRow) => void, onNnnUpdat
     recordAuthored,
     recordNnnAuthored,
     onNeedLogin,
-    signInHint,
-    dismissSignInHint: () => setSignInHint(false),
+    loginOpen,
+    closeLogin: () => setLoginOpen(false),
   };
 }
 

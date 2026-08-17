@@ -15,7 +15,18 @@ export async function getCoveredPageUrls(): Promise<string[] | null> {
   return Array.isArray(stored) ? (stored as string[]) : null;
 }
 
-const trimSlash = (url: string) => url.replace(/\/$/, "");
+// The number of visible notes per covered page URL. The background's sync
+// writes it next to the coverage list, and the listing badges read it. Like
+// the coverage list, it makes the decision on the user's own device.
+export const NOTED_PAGE_COUNTS_KEY = "cn:notedPageCounts";
+
+/** Null means the counts have never been synced. */
+export async function getNotedPageCounts(): Promise<Record<string, number> | null> {
+  const stored = (await browser.storage.local.get(NOTED_PAGE_COUNTS_KEY))[NOTED_PAGE_COUNTS_KEY];
+  return stored && typeof stored === "object" ? (stored as Record<string, number>) : null;
+}
+
+export const trimSlash = (url: string) => url.replace(/\/$/, "");
 
 /** This matches the same way fetchItemForUrl does. A URL must match exactly,
  *  apart from a trailing slash. A YouTube page matches by video ID. */

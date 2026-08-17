@@ -216,11 +216,11 @@ enable_confirmations = false
 secure_password_change = false
 # Controls the minimum amount of time that must pass before sending another signup confirmation or password reset email.
 max_frequency = "1s"
-# Number of characters used in the email OTP. Matches prod's standard 8 —
+# Number of characters used in the email OTP. Matches the prod dashboard (6) —
 # the UI gates on EMAIL_OTP_LENGTH in everything-shared/auth.ts.
-otp_length = 8
+otp_length = 6
 # Number of seconds before the email OTP expires (defaults to 1 hour).
-otp_expiry = 3600
+otp_expiry = 300
 
 # Use a production-ready SMTP server
 # [auth.email.smtp]
