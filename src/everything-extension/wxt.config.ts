@@ -2,7 +2,6 @@ import path from "node:path";
 import { loadEnv } from "vite";
 import { defineConfig } from "wxt";
 import tailwindcss from "tailwindcss";
-import { ASSUME_ALL_URLS } from "./utils/permissionsMode";
 
 // The repo root's .env supplies the VITE_SUPABASE_* values to import.meta.env, just
 // as it does in the web app's vite config. The anon key is meant to be public.
@@ -40,28 +39,14 @@ export default defineConfig({
     icons: { 16: "icon/16.png", 32: "icon/32.png", 48: "icon/48.png", 128: "icon/128.png" },
     action: { default_icon: { 16: "icon/16.png", 32: "icon/32.png" } },
     permissions: ["storage", "identity", "contextMenus", "activeTab", "tabs", "scripting", "alarms"],
-    // Two permission models, switched by utils/permissionsMode.ts.
-    // With ASSUME_ALL_URLS the extension requires access to all sites at install
-    // time. The background then registers the generic script for every hostname
-    // that has notes, without asking. The user sees one broad install warning and
-    // no further prompts.
-    // The default is the redirect model. It asks for substack.com, which the
-    // background needs for its canonical-URL fetches, and for supabase.co, which
-    // Firefox content scripts need because Firefox blocks cross-origin fetches to
-    // hosts the extension has no permission for. Every other host is optional and
-    // is granted one site at a time through grant.html.
-    ...(ASSUME_ALL_URLS
-      ? { host_permissions: ["<all_urls>"] }
-      : {
-          host_permissions: ["*://*.substack.com/*", "https://*.supabase.co/*"],
-          // optional_host_permissions only exists in MV3. WXT drops it from the
-          // Firefox MV2 build without saying anything, which made
-          // permissions.request reject every grant. In MV2 the key is called
-          // optional_permissions.
-          ...(browser === "firefox"
-            ? { optional_permissions: ["<all_urls>"] }
-            : { optional_host_permissions: ["<all_urls>"] }),
-        }),
+    // Access to every site is required at install time. The background then
+    // registers the generic content script for every hostname that has notes,
+    // without asking. The user sees one broad install warning and no per-site
+    // prompts after that. The per-site consent flow this replaced lived in
+    // grant.html; the opt-out it left behind is now the per-site "hide notes"
+    // list in utils/settings.ts. Note for existing installs: Chrome disables an
+    // updated extension until the user approves the newly required permission.
+    host_permissions: ["<all_urls>"],
     ...(browser === "chrome" ? { key: CHROME_PUBLIC_KEY } : {}),
     browser_specific_settings: {
       // A fixed add-on ID keeps the OAuth redirect URL on extensions.allizom.org

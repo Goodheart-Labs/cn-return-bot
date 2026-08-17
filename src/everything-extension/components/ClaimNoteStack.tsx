@@ -3,6 +3,7 @@ import { NoteNotNeeded, type NnnApi } from "../../everything-web/src/components/
 import type { Vote } from "../../everything-shared/votes";
 import type { NnnRow, NoteRow } from "../../everything-shared/types";
 import { noteShareUrl } from "../utils/share";
+import { LoginPanel } from "./LoginPanel";
 import { NoteWithActions } from "./NoteWithActions";
 
 /** The width every overlay uses. The Substack popover and the YouTube card are
@@ -78,13 +79,14 @@ export function ClaimNoteStack({ group, projectSlug, session, myVotes, onVote, o
   );
 }
 
-/** The nudge shown to a signed-out user. Both overlays use it unchanged. The
- *  caller positions it with className. */
-export function SignInHint({ onDismiss, className }: { onDismiss: () => void; className?: string }) {
+/** The login form inside an overlay, shown above the note stack when a
+ *  signed-out reader tries to vote or write. It replaced a hint that sent
+ *  people off to the toolbar icon; now they sign in right here and their vote
+ *  is one more click away. Both overlays use it unchanged. */
+export function OverlayLogin({ onDismiss }: { onDismiss: () => void }) {
   return (
-    <div className={`bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-3 text-sm text-gray-700 dark:text-gray-300 flex items-center gap-3 ${className ?? ""}`}>
-      Sign in from the Common Notes toolbar icon to vote or write notes.
-      <button onClick={onDismiss} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">✕</button>
+    <div className="mb-3 pb-3 border-b border-gray-200 dark:border-gray-700">
+      <LoginPanel surface="overlay" onDismiss={onDismiss} />
     </div>
   );
 }

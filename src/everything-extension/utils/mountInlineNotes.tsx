@@ -5,7 +5,9 @@ import { fetchItemForUrl, normalizePageUrl } from "../../everything-shared/notes
 import { resolveReaderCanonical } from "./readerCanonical";
 import { indexContainer, findQuoteRange } from "./anchor";
 import { fetchClaimGroups, type ClaimGroup } from "./claimGroups";
+import { mountCoverageBadges } from "./coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "./coveredPages";
+import { recordLinkVisit } from "./linkVisits";
 import { mountWriteAnywhere } from "./mountWriteAnywhere";
 import { onNoteFiltersChanged } from "./settings";
 import { isPageDark, observePageTheme } from "./pageTheme";
@@ -94,6 +96,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   const item = await fetchItemForUrl(pageUrl);
   console.info(`[common-notes] ${pageUrl} → ${item ? `item "${item.title ?? item.id}"` : "no ingested item"}`);
   if (!item) return mountWriteAnywhere(ctx, pageUrl, onCoverageChanged);
+  recordLinkVisit(item);
   // We mount even when the item has no notes yet. Writing a note from a selection
   // works on any ingested page, and refresh() brings the new note in.
   let groups = await fetchClaimGroups(item.id);
@@ -242,6 +245,11 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
  *  anchor its claims again on every URL change. That way notes also appear on posts
  *  the reader reached by clicking through, not only on a full page load. */
 export async function mountInlineNotes(ctx: ContentScriptContext): Promise<void> {
+  // Listing badges live independently of the per-URL note mounts below. They
+  // mark noted posts in whatever listing this site shows, such as a Substack
+  // front page, and their own observer follows navigations and lazy loading.
+  const stopBadges = await mountCoverageBadges(ctx);
+  ctx.onInvalidated(() => stopBadges?.());
   let cleanup: (() => void) | null = null;
   let seq = 0;
   const remount = async (href: string) => {

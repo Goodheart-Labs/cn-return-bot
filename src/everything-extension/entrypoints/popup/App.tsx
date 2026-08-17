@@ -5,9 +5,9 @@ import { fetchItemForUrl, fetchNotesForItem, fetchRandomNotedPageUrl, normalizeP
 import type { NoteRow } from "../../../everything-shared/types";
 import { submitNoteRequest } from "../../../everything-shared/noteRequests";
 import { noteVisible } from "../../utils/claimGroups";
-import { genericScriptId, hostnamePattern, registerGenericScripts } from "../../utils/genericScript";
+import { genericScriptId } from "../../utils/genericScript";
 import { resolveReaderCanonical } from "../../utils/readerCanonical";
-import { addRequestedPage, getNoteFilters, getRequestedPages, removeDismissedGrantHost, updateNoteFilters, type NoteFilters } from "../../utils/settings";
+import { addRequestedPage, getNoteFilters, getRequestedPages, updateNoteFilters, type NoteFilters } from "../../utils/settings";
 import { STATIC_SITE_HOSTNAME } from "../../utils/staticSites";
 import { LoginPanel } from "../../components/LoginPanel";
 
@@ -108,27 +108,22 @@ function useJumped(state: PageState): boolean {
   return jumped;
 }
 
-/** How this page's origin stands with the extension. A "static" or
- *  "registered" origin is guaranteed to have the content script. A "granted"
- *  origin can be injected into without asking. An "ungranted" origin still
- *  needs the user's permission, which only happens in redirect mode, because
- *  an install that requires <all_urls> always reads as granted.
- *  This is worked out ahead of time so that the enable button can call
- *  permissions.request as the very first thing in its click handler. Any await
- *  before that call would void the user gesture the API requires. */
-type PageAccess = "static" | "registered" | "granted" | "ungranted";
+/** How notes stand on this page's site. "on" means the content script is
+ *  guaranteed to be there, either through the static manifest or through a
+ *  registration. "syncing" means the site is covered but the background's
+ *  sync has not registered it yet, so the jump button injects into the tab
+ *  directly. */
+type PageAccess = "on" | "syncing";
 
 function usePageAccess(state: PageState): PageAccess | null {
   const [access, setAccess] = useState<PageAccess | null>(null);
   useEffect(() => {
     if (state.kind !== "item") return;
     const hostname = new URL(state.origin).hostname;
-    if (STATIC_SITE_HOSTNAME.test(hostname)) return setAccess("static");
+    if (STATIC_SITE_HOSTNAME.test(hostname)) return setAccess("on");
     (async () => {
       const scripts = await browser.scripting.getRegisteredContentScripts({ ids: [genericScriptId(hostname)] }).catch(() => []);
-      if (scripts.length > 0) return setAccess("registered");
-      const granted = await browser.permissions.contains({ origins: [hostnamePattern(hostname)] }).catch(() => false);
-      setAccess(granted ? "granted" : "ungranted");
+      setAccess(scripts.length > 0 ? "on" : "syncing");
     })();
   }, [state]);
   return access;
@@ -218,56 +213,23 @@ function PrimaryAction({ state, visibleNoteCount, jumped, access }: {
   access: PageAccess | null;
 }) {
   const [busy, setBusy] = useState(false);
-  const [enableError, setEnableError] = useState<string | null>(null);
 
   if (state.kind === "loading") return <p className="text-sm text-gray-500">Loading notes…</p>;
 
   if (state.kind === "item" && visibleNoteCount > 0) {
     if (!access) return <p className="text-sm text-gray-500">Loading notes…</p>;
 
-    if (access === "ungranted") {
-      const enable = async () => {
-        setEnableError(null);
-        const hostname = new URL(state.origin).hostname;
-        try {
-          // permissions.request has to come first, because the click is the
-          // user gesture it needs. A thrown error is a real bug, such as
-          // optional permissions missing from the manifest. It is not the user
-          // declining, so we show it instead of swallowing it.
-          const granted = await browser.permissions.request({ origins: [hostnamePattern(hostname)] });
-          if (!granted) return;
-        } catch (err) {
-          return setEnableError((err as Error).message);
-        }
-        await registerGenericScripts([hostname]);
-        await removeDismissedGrantHost(hostname);
-        const tab = await activeTab();
-        if (tab?.id != null) {
-          await browser.scripting.executeScript({ target: { tabId: tab.id }, files: ["/content-scripts/generic.js"] }).catch(() => {});
-        }
-        window.close();
-      };
-      return (
-        <>
-          <button onClick={enable} className={PRIMARY_BUTTON}>
-            Show notes on this site
-          </button>
-          {enableError && <p className="text-sm text-red-600">{enableError}</p>}
-        </>
-      );
-    }
-
     const jumpToNote = async () => {
       const tab = await activeTab();
       if (tab?.id != null) {
-        if (access === "granted") {
-          // The user has granted this origin but the sync has not registered
-          // it yet, so we inject into this tab directly. Healing can only
-          // retry here. A reload would land on a page with no script, because
-          // nothing is registered that would re-inject it.
+        if (access === "syncing") {
+          // The site is covered but the sync has not registered it yet, so we
+          // inject into this tab directly. Healing can only retry here. A
+          // reload would land on a page with no script, because nothing is
+          // registered that would re-inject it.
           await browser.scripting.executeScript({ target: { tabId: tab.id }, files: ["/content-scripts/generic.js"] }).catch(() => {});
         }
-        await sendJumpToNote(tab.id, access !== "granted");
+        await sendJumpToNote(tab.id, access === "on");
       }
       window.close();
     };

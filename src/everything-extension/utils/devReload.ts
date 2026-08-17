@@ -13,6 +13,12 @@ export function registerDevReloadHook(ctx: ContentScriptContext) {
   // running, which you cannot otherwise see from the page. A runtime.reload()
   // leaves the old content scripts running until the tab itself reloads.
   console.debug(`[common-notes] dev build ${import.meta.env.VITE_CN_BUILD ?? "?"}`);
+  // The same stamp goes onto the DOM, because that is the only place a
+  // scripted check can read it from. AppleScript's "execute javascript" runs
+  // in the page's own world and cannot see into the content script. The
+  // Mac's reload script compares this against the build on disk to know
+  // whether a reload is needed and whether it worked.
+  document.documentElement.dataset.cnDevBuild = import.meta.env.VITE_CN_BUILD ?? "?";
   ctx.addEventListener(window, "cn-dev-reload" as keyof WindowEventMap, () => {
     // We report the failure. A sendMessage that fails silently, because the
     // service worker died or the context was invalidated, would leave an

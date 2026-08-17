@@ -3,7 +3,7 @@ import type { NnnApi } from "../../everything-web/src/components/NoteNotNeeded";
 import type { NnnRow, NoteRow } from "../../everything-shared/types";
 import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
 import { onNoteFiltersChanged } from "../utils/settings";
-import { ABSORB_KEYS, ClaimNoteStack, NOTE_POPOVER_WIDTH, SignInHint } from "./ClaimNoteStack";
+import { ABSORB_KEYS, ClaimNoteStack, NOTE_POPOVER_WIDTH, OverlayLogin } from "./ClaimNoteStack";
 import { ScrubberPins } from "./ScrubberPins";
 import { useNoteVoting, replaceNoteInGroup } from "./useNoteVoting";
 
@@ -67,7 +67,7 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
   const inWindow = useRef(false);
   const lastInteraction = useRef(0);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const { session, myVotes, myNnnVotes, handleVote, handleNnnVote, recordAuthored, recordNnnAuthored, onNeedLogin, signInHint, dismissSignInHint } = useNoteVoting(
+  const { session, myVotes, myNnnVotes, handleVote, handleNnnVote, recordAuthored, recordNnnAuthored, onNeedLogin, loginOpen, closeLogin } = useNoteVoting(
     (updated) => setGroups((prev) => prev.map((g) => replaceNoteInGroup(g, updated))),
     (updatedEntry) => setGroups((prev) => prev.map((g) => ({
       ...g,
@@ -99,12 +99,16 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
   };
 
   // The card outlives its window only while the reader is engaged with it.
-  // That means the pointer is on the card, or there was a click or keystroke
-  // more recently than the hold allows. A playing video re-evaluates this on
-  // every timeupdate, so the card goes once the hold expires. On a paused
-  // video the card simply stays, because a paused video means someone is
-  // reading.
-  const engaged = () => hovered.current || Date.now() - lastInteraction.current < HOLD_AFTER_INTERACTION_MS;
+  // That means the pointer is on the card, there was a click or keystroke more
+  // recently than the hold allows, or the login form is open. The login hold
+  // matters because fetching the emailed code means leaving this tab while the
+  // video plays on; the card must still be there on return. A playing video
+  // re-evaluates this on every timeupdate, so the card goes once the hold
+  // expires. On a paused video the card simply stays, because a paused video
+  // means someone is reading.
+  const loginOpenRef = useRef(false);
+  loginOpenRef.current = loginOpen && !session;
+  const engaged = () => hovered.current || loginOpenRef.current || Date.now() - lastInteraction.current < HOLD_AFTER_INTERACTION_MS;
 
   useEffect(() => {
     const onTime = () => {
@@ -165,7 +169,7 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
       if (type === "cn-jump-note" && groups.length) {
         jumpCursor.current = (jumpCursor.current + 1) % groups.length;
         video.scrollIntoView({ behavior: "smooth", block: "center" });
-        jumpToPin(groups[jumpCursor.current]);
+        jumpToPin(groups[jumpCursor.current]!);
         sendResponse({ jumped: true });
       }
     };
@@ -215,7 +219,7 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
           // the note text could not be copied.
           className={`select-text max-w-[85vw] max-h-[70vh] overflow-y-auto overscroll-contain bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-2xl p-3 transition-opacity duration-[400ms] ease-out ${visible ? "opacity-100" : "opacity-0"}`}
         >
-          {signInHint && <SignInHint onDismiss={dismissSignInHint} className="mb-2" />}
+          {loginOpen && !session && <OverlayLogin onDismiss={closeLogin} />}
           <div className="flex items-start justify-between gap-2 mb-2">
             <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Community note on this part of the video</span>
             <button onClick={dismiss} title="Dismiss for this video" className="px-1.5 shrink-0 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">✕</button>
