@@ -4,6 +4,7 @@ import { LoginPanel } from "../../components/LoginPanel";
 import { NoteFilterToggles, useNoteFilters } from "../../components/NoteFilterToggles";
 import {
   getSettings,
+  markSettingsOnboardingDone,
   updateSettings,
   type ExtensionSettings,
   type SettingsPatch,
@@ -56,6 +57,12 @@ export function SettingsApp() {
   const [settings, toggleSettings] = useExtensionSettings();
   const [filters, toggleFilters] = useNoteFilters();
   const { session, ready } = useSession();
+  // Seeing this page is what the onboarding flag means, however the user got
+  // here. The background sets it too, but a dev reload never fires
+  // onInstalled, and a user can find the settings on their own.
+  useEffect(() => {
+    void markSettingsOnboardingDone();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4">
