@@ -31,13 +31,18 @@ export interface StatusOverlayParams {
 
 function headline(params: StatusOverlayParams): string {
   if (!params.checked) return `We haven't checked this ${params.noun} yet.`;
-  const { total, needsRatings } = params.checked;
-  if (total === 0) return `We checked this ${params.noun} and found nothing to note.`;
+  // The two numbers are disjoint: the first is the helpful notes, the second
+  // the notes still waiting for ratings.
+  const { helpful, needsRatings } = params.checked;
+  if (helpful === 0 && needsRatings === 0) return `We checked this ${params.noun} and found nothing to note.`;
   const surface = params.noun === "video" ? "video" : "page";
-  const count = total === 1 ? "1 Common Note" : `${total} Common Notes`;
+  const notes = (n: number) => (n === 1 ? "1 Common Note" : `${n} Common Notes`);
+  if (helpful === 0) {
+    return `${notes(needsRatings)} on this ${surface} ${needsRatings === 1 ? "needs" : "need"} more ratings.`;
+  }
   const ratings =
     needsRatings === 0 ? "" : needsRatings === 1 ? ", 1 needs more ratings" : `, ${needsRatings} need more ratings`;
-  return `${count} on this ${surface}${ratings}.`;
+  return `${notes(helpful)} on this ${surface}${ratings}.`;
 }
 
 /** The follow action for a target, or null when the user already asked. The
@@ -125,7 +130,8 @@ export async function mountStatusOverlay(ctx: ContentScriptContext, params: Stat
   }
   return mountCard(ctx, {
     headline: headline(params),
-    onHeadlineClick: params.checked && params.checked.total > 0 ? params.onOpenNotes : undefined,
+    onHeadlineClick:
+      params.checked && params.checked.helpful + params.checked.needsRatings > 0 ? params.onOpenNotes : undefined,
     request,
     follow,
   });

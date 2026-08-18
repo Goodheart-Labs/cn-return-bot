@@ -33,10 +33,12 @@ export function noteVisible(note: NoteRow, filters: NoteFilters): boolean {
   return true;
 }
 
-/** How many notes the filters let the reader see, and how many of those still
- *  need ratings. The count card renders these, so they must match what opening
- *  the notes would actually show. */
-export type NoteCounts = { total: number; needsRatings: number };
+/** The visible notes broken down for the count card: `helpful` and
+ *  `needsRatings` are disjoint, so "1 Common Note, 1 needs more ratings"
+ *  means one helpful note plus one unrated one. `total` is every note the
+ *  filters let the reader see, unhelpful ones included. All three count only
+ *  filter-visible notes, so they match what opening the notes would show. */
+export type NoteCounts = { total: number; helpful: number; needsRatings: number };
 
 /** An item's notes and its claims' note-not-needed entries, grouped by claim,
  *  with the status filters applied, plus the visible-note counts. Both the
@@ -45,10 +47,12 @@ export type NoteCounts = { total: number; needsRatings: number };
 export async function fetchClaimGroups(itemId: string): Promise<{ groups: ClaimGroup[]; counts: NoteCounts }> {
   const [notes, filters] = await Promise.all([fetchNotesForItem(itemId), getNoteFilters()]);
   const visible = notes.filter((note) => noteVisible(note, filters));
-  const counts = {
-    total: visible.length,
-    needsRatings: visible.filter((note) => noteStatus(note) === "needs_ratings").length,
-  };
+  const counts = { total: visible.length, helpful: 0, needsRatings: 0 };
+  for (const note of visible) {
+    const status = noteStatus(note);
+    if (status === "helpful") counts.helpful += 1;
+    else if (status === "needs_ratings") counts.needsRatings += 1;
+  }
   const nnn = await fetchNnnForClaims([...new Set(visible.map((n) => n.claim_id))]);
   return { groups: groupByClaim(visible, nnn), counts };
 }
