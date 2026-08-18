@@ -134,10 +134,16 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
 const SIMPLE_BOT_WRITER_TEST: ABTest = {
   name: "simple_bot_writer",
   prerequisites: { botId: "simple-bot" },
+  // Refreshed 2026-08-18: Sonnet 5 promoted to co-baseline, Sonnet 4.6 wound
+  // down to a small continuity arm, and two current-generation Anthropic arms
+  // added (Fable 5 at $10/$50, Opus 5 at $5/$25 per MTok — low weights keep
+  // the cost a few notes/day each).
   variants: [
-    { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 40 },
-    { variant: { name: "gemini-flash",     overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 40 },
-    { variant: { name: "sonnet5",          overrides: { writer_model: "anthropic/claude-sonnet-5"      }}, weight: 20 },
+    { variant: { name: "sonnet5",          overrides: { writer_model: "anthropic/claude-sonnet-5"      }}, weight: 40 },
+    { variant: { name: "gemini-flash",     overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 30 },
+    { variant: { name: "fable5",           overrides: { writer_model: "anthropic/claude-fable-5"      }}, weight: 10 },
+    { variant: { name: "opus5",            overrides: { writer_model: "anthropic/claude-opus-5"       }}, weight: 10 },
+    { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 10 },
     { variant: { name: "deepseek-v4flash", overrides: { writer_model: "deepseek/deepseek-v4-flash"    }}, weight: 0 },
   ],
 };
