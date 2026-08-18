@@ -5,7 +5,8 @@ import { LinkifiedText } from "../../../dashboard-shared/LinkifiedText";
 import { VoteRatings } from "../../../dashboard-shared/Ratings";
 import { quoteFragmentUrl } from "../../../dashboard-shared/textFragment";
 import type { NotedContent } from "../../../dashboard-shared/types";
-import type { ClaimRef, NnnRow, NoteRow, NoteSourceRow } from "../../../everything-shared/types";
+import type { ClaimRef, NnnRow, NoteRow, NoteSourceDetail } from "../../../everything-shared/types";
+import { fetchNoteSourceDetails } from "../../../everything-shared/notesQuery";
 import type { MintedDonation } from "../lib/donations";
 import type { Vote } from "../../../everything-shared/votes";
 import { noteStatus, noteTallyVisible, type NoteStatus } from "../../../everything-shared/noteScore";
@@ -57,18 +58,23 @@ function noteText(note: NoteRow): string {
   return urls.length > 0 ? `${note.note} ${urls.join(" ")}` : note.note;
 }
 
-/** Tells whether any source carries a supporting quote. That is the only content
- *  the source-details reveal has to show. */
-function hasSourceDetails(sources: NoteSourceRow[]): boolean {
-  return sources.some((s) => s.quote);
-}
-
 /** The supporting quote and the explanation for each source, revealed by the
  *  "Show source details" button. The source URLs already sit inline in the note
  *  text, so this shows only the body of each citation. Each quote links out to
- *  that passage in the source. */
-function SourceDetails({ open, sources }: { open: boolean; sources: NoteSourceRow[] }) {
-  const detailed = [...sources].sort((a, b) => a.sort_order - b.sort_order).filter((s) => s.quote);
+ *  that passage in the source.
+ *
+ *  The quotes are the largest thing a note carries and most readers never open
+ *  this, so the feed loads without them and this fetches them the first time it
+ *  is opened. It keeps them afterwards, so opening and closing costs one
+ *  request. */
+function SourceDetails({ open, noteId }: { open: boolean; noteId: string }) {
+  const [detailed, setDetailed] = useState<NoteSourceDetail[]>([]);
+  const requested = useRef(false);
+  useEffect(() => {
+    if (!open || requested.current) return;
+    requested.current = true;
+    fetchNoteSourceDetails(noteId).then(setDetailed);
+  }, [open, noteId]);
   return (
     <div
       style={{ display: "grid", gridTemplateRows: open ? "1fr" : "0fr", transition: "grid-template-rows 300ms ease" }}
@@ -78,7 +84,7 @@ function SourceDetails({ open, sources }: { open: boolean; sources: NoteSourceRo
         <div className="mt-3 space-y-3">
           {detailed.map((s, i) => (
             <div key={i}>
-              <a href={quoteFragmentUrl(s.url, s.quote!)} target="_blank" rel="noopener noreferrer" className="block group">
+              <a href={quoteFragmentUrl(s.url, s.quote)} target="_blank" rel="noopener noreferrer" className="block group">
                 <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 group-hover:border-blue-400 pl-3 text-gray-600 dark:text-gray-300 italic text-sm">“{s.quote}”</blockquote>
               </a>
               {s.explanation && <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{s.explanation}</p>}
@@ -242,7 +248,7 @@ export function NoteBox({ note, status, sourcesOpen, children }: {
         {by && <span className="text-xs text-gray-500 dark:text-gray-400 shrink-0">by {by}</span>}
       </div>
       <LinkifiedText className="text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap" text={noteText(note)} />
-      {hasSourceDetails(note.sources) && <SourceDetails open={!!sourcesOpen} sources={note.sources} />}
+      {note.has_source_details && <SourceDetails open={!!sourcesOpen} noteId={note.id} />}
       {children && (
         <div className="-mx-3 mt-3 px-3 pt-2.5 border-t border-gray-200/70 dark:border-gray-700/70 flex items-center justify-between flex-wrap gap-x-4 gap-y-1">
           <span className="text-sm text-gray-700 dark:text-gray-300">{STATUS[status].ask}</span>

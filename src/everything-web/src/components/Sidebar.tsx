@@ -1,11 +1,11 @@
-import type { ProjectRow } from "../../../everything-shared/types";
+import type { FeedProjectRow } from "../../../everything-shared/types";
 import type { View } from "../lib/routing";
 
 const DESCRIPTION =
   "Common Notes is an attempt to bring Community Notes everywhere: podcasts, newsletters, and beyond. This is in alpha, but voting works.";
 
 export function Sidebar({ projects, selectedId, view, onSelect, onSelectLeaderboard }: {
-  projects: ProjectRow[];
+  projects: FeedProjectRow[];
   selectedId: string | null;
   view: View;
   onSelect: (id: string) => void;
