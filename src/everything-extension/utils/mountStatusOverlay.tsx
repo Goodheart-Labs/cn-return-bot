@@ -16,6 +16,10 @@ export interface StatusOverlayParams {
   /** Null while the page has not been checked, otherwise the counts of the
    *  notes the reader's filters let them see (utils/claimGroups.ts). */
   checked: NoteCounts | null;
+  /** Jumps to the next note when the reader clicks the count headline. Shares
+   *  the popup jump button's cursor (utils/jumpBus.ts). Only used when the
+   *  card actually has notes to jump to. */
+  onOpenNotes?: () => void;
   /** The author's feed, when the page has one we could follow. Null also when
    *  the feed is already on the synced followed list; the caller decides. */
   followTarget: FollowTarget | null;
@@ -75,7 +79,7 @@ async function buildActions(params: StatusOverlayParams): Promise<{ request: Sta
 
 async function mountCard(
   ctx: ContentScriptContext,
-  props: { headline: string | null; request: StatusAction | null; follow: StatusAction | null },
+  props: { headline: string | null; onHeadlineClick?: () => void; request: StatusAction | null; follow: StatusAction | null },
 ): Promise<() => void> {
   let root: Root | null = null;
   const ui = await createShadowRootUi(ctx, {
@@ -86,7 +90,14 @@ async function mountCard(
       container.classList.add("cn-theme-root");
       container.classList.toggle("dark", isPageDark());
       root = createRoot(container);
-      root.render(<StatusOverlay headline={props.headline} request={props.request} follow={props.follow} />);
+      root.render(
+        <StatusOverlay
+          headline={props.headline}
+          onHeadlineClick={props.onHeadlineClick}
+          request={props.request}
+          follow={props.follow}
+        />,
+      );
       return root;
     },
     onRemove(mounted) {
@@ -112,7 +123,12 @@ export async function mountStatusOverlay(ctx: ContentScriptContext, params: Stat
     // follow overlays on later still gets its one showing.
     if (follow && params.followTarget) await markFollowOverlaySeen(params.followTarget.feedUrl);
   }
-  return mountCard(ctx, { headline: headline(params), request, follow });
+  return mountCard(ctx, {
+    headline: headline(params),
+    onHeadlineClick: params.checked && params.checked.total > 0 ? params.onOpenNotes : undefined,
+    request,
+    follow,
+  });
 }
 
 /** Mounts the follow-only card shown on an author's own pages: a publication

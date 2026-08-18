@@ -10,6 +10,7 @@ import { getCoveredPageUrls, pageIsCovered } from "../utils/coveredPages";
 import { recordPageVisit } from "../utils/linkVisits";
 import { YoutubeOverlayApp, DEFAULT_CLIP_SECONDS, type TimedGroup } from "../components/YoutubeOverlay";
 import { unlessFollowed } from "../utils/followedFeeds";
+import { jumpToNextNote } from "../utils/jumpBus";
 import { youtubeChannelTarget, type FollowTarget } from "../utils/followTarget";
 import { mountFollowOverlay, mountStatusOverlay } from "../utils/mountStatusOverlay";
 import { isPageDark, observePageTheme } from "../utils/pageTheme";
@@ -82,6 +83,7 @@ async function mountStatus(ctx: ContentScriptContext, counts: NoteCounts | null)
       pageUrl: normalizePageUrl(location.href),
       noun: "video",
       checked: counts,
+      onOpenNotes: jumpToNextNote,
       followTarget: null,
       requestWithPageText: false,
     });

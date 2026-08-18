@@ -16,6 +16,7 @@ import {
   substackProfileHandle,
   type FollowTarget,
 } from "./followTarget";
+import { jumpToNextNote } from "./jumpBus";
 import { recordPageVisit } from "./linkVisits";
 import { mountFollowOverlay, mountStatusOverlay } from "./mountStatusOverlay";
 import { mountWriteAnywhere } from "./mountWriteAnywhere";
@@ -185,6 +186,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
         pageUrl,
         noun: isSubstackPostPage(pageUrl) ? "post" : "page",
         checked: counts,
+        onOpenNotes: jumpToNextNote,
         followTarget: null,
         requestWithPageText: false,
       })

@@ -27,6 +27,9 @@ export interface StatusOverlayProps {
   /** The card's first line. Null on an author surface, where the follow
    *  button carries all the information by itself. */
   headline: string | null;
+  /** Makes the headline clickable. The note-count card passes the jump here,
+   *  so clicking the card walks the notes like the popup's jump button. */
+  onHeadlineClick?: () => void;
   request: StatusAction | null;
   follow: StatusAction | null;
 }
@@ -69,7 +72,7 @@ export function ActionButton({ action, onDone, buttonClassName }: {
 /** The transient status card shown when a page opens. It says whether we have
  *  checked the page, offers the request and follow buttons, and fades away
  *  after a few seconds so it never becomes furniture. */
-export function StatusOverlay({ headline, request, follow }: StatusOverlayProps) {
+export function StatusOverlay({ headline, onHeadlineClick, request, follow }: StatusOverlayProps) {
   const [phase, setPhase] = useState<"shown" | "fading" | "hidden">("shown");
   const hideTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const fadeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -106,7 +109,17 @@ export function StatusOverlay({ headline, request, follow }: StatusOverlayProps)
       onMouseLeave={() => hideAfter(AUTO_HIDE_MS)}
     >
       <div className="flex items-start justify-between gap-2">
-        {headline && <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{headline}</p>}
+        {headline &&
+          (onHeadlineClick ? (
+            <button
+              onClick={onHeadlineClick}
+              className="text-left text-sm font-medium text-gray-900 underline-offset-2 hover:underline dark:text-gray-100"
+            >
+              {headline}
+            </button>
+          ) : (
+            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{headline}</p>
+          ))}
         <button
           onClick={() => setPhase("hidden")}
           aria-label="Dismiss"
