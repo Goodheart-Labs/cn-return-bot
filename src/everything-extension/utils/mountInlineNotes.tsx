@@ -174,7 +174,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
       surface: "inline",
       item_id: item.id,
       claim_count: groups.length,
-      note_count: counts.total,
+      note_count: counts.visible,
     });
   }
 

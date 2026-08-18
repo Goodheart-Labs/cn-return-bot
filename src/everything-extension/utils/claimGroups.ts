@@ -33,12 +33,13 @@ export function noteVisible(note: NoteRow, filters: NoteFilters): boolean {
   return true;
 }
 
-/** The visible notes broken down for the count card: `helpful` and
- *  `needsRatings` are disjoint, so "1 Common Note, 1 needs more ratings"
- *  means one helpful note plus one unrated one. `total` is every note the
- *  filters let the reader see, unhelpful ones included. All three count only
- *  filter-visible notes, so they match what opening the notes would show. */
-export type NoteCounts = { total: number; helpful: number; needsRatings: number };
+/** The note tallies for the count card. `helpful` and `needsRatings` are
+ *  disjoint, so "1 Common Note, 1 needs more ratings" means one helpful note
+ *  plus one unrated one. Both are counted over ALL of the item's notes,
+ *  deliberately ignoring the reader's display filters: counts report what
+ *  exists, filters only decide what renders. `visible` is the filtered count,
+ *  the notes a jump can actually reach. */
+export type NoteCounts = { helpful: number; needsRatings: number; visible: number };
 
 /** An item's notes and its claims' note-not-needed entries, grouped by claim,
  *  with the status filters applied, plus the visible-note counts. Both the
@@ -47,8 +48,8 @@ export type NoteCounts = { total: number; helpful: number; needsRatings: number 
 export async function fetchClaimGroups(itemId: string): Promise<{ groups: ClaimGroup[]; counts: NoteCounts }> {
   const [notes, filters] = await Promise.all([fetchNotesForItem(itemId), getNoteFilters()]);
   const visible = notes.filter((note) => noteVisible(note, filters));
-  const counts = { total: visible.length, helpful: 0, needsRatings: 0 };
-  for (const note of visible) {
+  const counts = { helpful: 0, needsRatings: 0, visible: visible.length };
+  for (const note of notes) {
     const status = noteStatus(note);
     if (status === "helpful") counts.helpful += 1;
     else if (status === "needs_ratings") counts.needsRatings += 1;

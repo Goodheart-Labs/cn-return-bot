@@ -4,7 +4,7 @@ import { extractYoutubeVideoId, normalizePageUrl } from "../../everything-shared
 import { GROUP_GLYPH_PATH } from "../components/ClaimNoteStack";
 import { getNotedPageStatusCounts, trimSlash } from "./coveredPages";
 import { isPageDark } from "./pageTheme";
-import { getNoteFilters, getSettings, onNoteFiltersChanged } from "./settings";
+import { getSettings } from "./settings";
 
 // The badges that mark noted posts in a listing, for example on a Substack
 // publication's front page or a YouTube channel's videos tab. Every listing
@@ -131,26 +131,19 @@ function surfaceFor(anchor: HTMLAnchorElement): HTMLElement | null {
 export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<(() => void) | null> {
   if (!(await getSettings()).showThumbnailBadges) return null;
   const statusCounts = await getNotedPageStatusCounts();
-  if (!statusCounts || Object.keys(statusCounts).length === 0) return null;
+  if (!statusCounts) return null;
 
-  // A badge counts only the notes the user's filters let them see, so the
-  // number on a thumbnail always matches what opening the page would show.
-  // The map is rebuilt when the filters change.
+  // A badge counts the page's helpful and needs-ratings notes, deliberately
+  // ignoring the reader's display filters: like the count card, it reports
+  // what exists. Notes rated unhelpful are not advertised.
   const countByKey = new Map<string, number>();
-  const rebuildCounts = async () => {
-    const filters = await getNoteFilters();
-    countByKey.clear();
-    for (const [url, page] of Object.entries(statusCounts)) {
-      const count =
-        page.helpful +
-        (filters.showNeedsRatings ? page.needsRatings : 0) +
-        (filters.showUnhelpful ? page.notHelpful : 0);
-      if (count === 0) continue;
-      const key = pageKey(url);
-      if (key) countByKey.set(key, (countByKey.get(key) ?? 0) + count);
-    }
-  };
-  await rebuildCounts();
+  for (const [url, page] of Object.entries(statusCounts)) {
+    const count = page.helpful + page.needsRatings;
+    if (count === 0) continue;
+    const key = pageKey(url);
+    if (key) countByKey.set(key, (countByKey.get(key) ?? 0) + count);
+  }
+  if (countByKey.size === 0) return null;
 
   const readerCanonicals = new Map<string, string>(
     Object.entries(
@@ -266,15 +259,6 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
   };
 
   scan();
-  // A filter change alters the numbers, so every badge is rebuilt: the count
-  // is baked into the badge element when it is created.
-  const stopFilters = onNoteFiltersChanged(() => {
-    void rebuildCounts().then(() => {
-      for (const { badge } of badges.values()) badge.remove();
-      badges.clear();
-      scan();
-    });
-  });
   // Our own appends wake this observer once more; that pass finds everything
   // badged and settles.
   const observer = new MutationObserver(scheduleScan);
@@ -288,7 +272,6 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
   document.addEventListener("load", onLoad, { capture: true, passive: true });
 
   return () => {
-    stopFilters();
     observer.disconnect();
     document.removeEventListener("load", onLoad, { capture: true } as EventListenerOptions);
     clearTimeout(timer);

@@ -130,8 +130,9 @@ export async function mountStatusOverlay(ctx: ContentScriptContext, params: Stat
   }
   return mountCard(ctx, {
     headline: headline(params),
-    onHeadlineClick:
-      params.checked && params.checked.helpful + params.checked.needsRatings > 0 ? params.onOpenNotes : undefined,
+    // The numbers ignore the filters, but a jump can only reach rendered
+    // notes, so the headline is a button only while something renders.
+    onHeadlineClick: params.checked && params.checked.visible > 0 ? params.onOpenNotes : undefined,
     request,
     follow,
   });
