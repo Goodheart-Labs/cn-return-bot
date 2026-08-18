@@ -4,15 +4,17 @@ import type { ContentScriptContext } from "#imports";
 import { submitFollowRequest, submitNoteRequest } from "../../everything-shared/noteRequests";
 import { StatusOverlay, type StatusAction } from "../components/StatusOverlay";
 import { readPageForRequest } from "./pageCapture";
+import type { NoteCounts } from "./claimGroups";
 import { followButtonLabel, followDoneLabel, type FollowTarget } from "./followTarget";
 import { isPageDark } from "./pageTheme";
-import { addRequestedFollow, addRequestedPage, getRequestedFollows, getRequestedPages } from "./settings";
+import { addRequestedFollow, addRequestedPage, getRequestedFollows, getRequestedPages, getSettings } from "./settings";
 
 export interface StatusOverlayParams {
   pageUrl: string;
   noun: "post" | "video" | "page";
-  /** Null while the page has not been checked, otherwise its note count. */
-  checked: { noteCount: number } | null;
+  /** Null while the page has not been checked, otherwise the counts of the
+   *  notes the reader's filters let them see (utils/claimGroups.ts). */
+  checked: NoteCounts | null;
   /** The author's feed, when the page has one we could follow. Null also when
    *  the feed is already on the synced followed list; the caller decides. */
   followTarget: FollowTarget | null;
@@ -24,10 +26,13 @@ export interface StatusOverlayParams {
 
 function headline(params: StatusOverlayParams): string {
   if (!params.checked) return `We haven't checked this ${params.noun} yet.`;
-  const { noteCount } = params.checked;
-  if (noteCount === 0) return `We checked this ${params.noun} and found nothing to note.`;
+  const { total, needsRatings } = params.checked;
+  if (total === 0) return `We checked this ${params.noun} and found nothing to note.`;
   const surface = params.noun === "video" ? "video" : "page";
-  return noteCount === 1 ? `1 Common Note on this ${surface}.` : `${noteCount} Common Notes on this ${surface}.`;
+  const count = total === 1 ? "1 Common Note" : `${total} Common Notes`;
+  const ratings =
+    needsRatings === 0 ? "" : needsRatings === 1 ? ", 1 needs more ratings" : `, ${needsRatings} need more ratings`;
+  return `${count} on this ${surface}${ratings}.`;
 }
 
 /** The follow action for a target, or null when the user already asked. The
@@ -62,7 +67,8 @@ async function buildActions(params: StatusOverlayParams): Promise<{ request: Sta
       await addRequestedPage(params.pageUrl).catch(() => {});
     },
   };
-  const follow = params.followTarget ? await buildFollowAction(params.followTarget) : null;
+  const follow =
+    params.followTarget && (await getSettings()).showFollowOverlay ? await buildFollowAction(params.followTarget) : null;
   return { request, follow };
 }
 
@@ -99,10 +105,17 @@ export async function mountStatusOverlay(ctx: ContentScriptContext, params: Stat
 
 /** Mounts the follow-only card shown on an author's own pages: a publication
  *  homepage, a Substack profile, or a YouTube channel. The card is only the
- *  button, and it is not mounted at all when the user already asked. Returns a
- *  teardown function either way. */
+ *  button, and it is not mounted at all when the user already asked or turned
+ *  follow overlays off. Returns a teardown function either way. */
 export async function mountFollowOverlay(ctx: ContentScriptContext, target: FollowTarget): Promise<() => void> {
+  if (!(await getSettings()).showFollowOverlay) return () => {};
   const follow = await buildFollowAction(target);
   if (follow.alreadyDone) return () => {};
   return mountCard(ctx, { headline: null, request: null, follow });
+}
+
+/** Mounts a headline-only card, used to explain why a request was not needed.
+ *  The card hides itself like every status card; the teardown removes it. */
+export async function mountInfoOverlay(ctx: ContentScriptContext, headline: string): Promise<() => void> {
+  return mountCard(ctx, { headline, request: null, follow: null });
 }

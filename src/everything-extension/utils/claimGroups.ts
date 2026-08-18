@@ -33,13 +33,22 @@ export function noteVisible(note: NoteRow, filters: NoteFilters): boolean {
   return true;
 }
 
+/** How many notes the filters let the reader see, and how many of those still
+ *  need ratings. The count card renders these, so they must match what opening
+ *  the notes would actually show. */
+export type NoteCounts = { total: number; needsRatings: number };
+
 /** An item's notes and its claims' note-not-needed entries, grouped by claim,
- *  with the popup's status filters applied. Both the inline mount, used on
- *  Substack and on the generic text sites, and the YouTube overlay call
- *  this. */
-export async function fetchClaimGroups(itemId: string): Promise<ClaimGroup[]> {
+ *  with the status filters applied, plus the visible-note counts. Both the
+ *  inline mount, used on Substack and on the generic text sites, and the
+ *  YouTube overlay call this. */
+export async function fetchClaimGroups(itemId: string): Promise<{ groups: ClaimGroup[]; counts: NoteCounts }> {
   const [notes, filters] = await Promise.all([fetchNotesForItem(itemId), getNoteFilters()]);
   const visible = notes.filter((note) => noteVisible(note, filters));
+  const counts = {
+    total: visible.length,
+    needsRatings: visible.filter((note) => noteStatus(note) === "needs_ratings").length,
+  };
   const nnn = await fetchNnnForClaims([...new Set(visible.map((n) => n.claim_id))]);
-  return groupByClaim(visible, nnn);
+  return { groups: groupByClaim(visible, nnn), counts };
 }

@@ -43,9 +43,10 @@ export default defineConfig({
     // registers the generic content script for every hostname that has notes,
     // without asking. The user sees one broad install warning and no per-site
     // prompts after that. The per-site consent flow this replaced lived in
-    // grant.html; the opt-out it left behind is now the per-site "hide notes"
-    // list in utils/settings.ts. Note for existing installs: Chrome disables an
-    // updated extension until the user approves the newly required permission.
+    // grant.html; what the user can switch off now lives on the settings page
+    // (overlays, thumbnail badges, visit recording). Note for existing
+    // installs: Chrome disables an updated extension until the user approves
+    // the newly required permission.
     host_permissions: ["<all_urls>"],
     ...(browser === "chrome" ? { key: CHROME_PUBLIC_KEY } : {}),
     browser_specific_settings: {

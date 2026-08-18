@@ -1,3 +1,4 @@
+import { noteStatus } from "./noteScore";
 import { extractEmbeddedCanonical, extractYoutubeVideoId } from "./pageUrls";
 import { supabase } from "./supabase";
 import type { ItemRow, NoteRow, NoteSourceRow } from "./types";
@@ -164,22 +165,29 @@ export async function fetchFollowedFeedUrls(): Promise<string[] | null> {
   return (data ?? []).map((r: any) => r.feed_url as string);
 }
 
-/** How many visible notes each ingested page has, keyed by the item's URL.
- *  The extension caches this next to the coverage list and draws its listing
- *  badges from it on-device. Synthetic local documents, whose URL starts with
- *  `local:`, are left out. Returns null when the query failed, so a caller
- *  does not mistake an outage for "nothing has notes". */
-export async function fetchNotedPageCounts(): Promise<Record<string, number> | null> {
+/** How many notes of each rating status each ingested page has, keyed by the
+ *  item's URL. The extension caches this next to the coverage list; its listing
+ *  badges and count cards sum whichever statuses the user's note filters show.
+ *  Synthetic local documents, whose URL starts with `local:`, are left out.
+ *  Returns null when the query failed, so a caller does not mistake an outage
+ *  for "nothing has notes". */
+export type PageNoteStatusCounts = { helpful: number; needsRatings: number; notHelpful: number };
+
+export async function fetchNotedPageCounts(): Promise<Record<string, PageNoteStatusCounts> | null> {
   const { data, error } = await supabase
     .from("everything_notes")
-    .select("claim:everything_claims!inner(item:everything_items!inner(url))")
+    .select("helpful_count, somewhat_helpful_count, not_helpful_count, author_id, claim:everything_claims!inner(item:everything_items!inner(url))")
     .neq("status", "hidden");
   if (error) return null;
-  const counts: Record<string, number> = {};
+  const counts: Record<string, PageNoteStatusCounts> = {};
   for (const row of (data ?? []) as any[]) {
     const url = row.claim.item.url as string;
     if (url.startsWith("local:")) continue;
-    counts[url] = (counts[url] ?? 0) + 1;
+    const page = (counts[url] ??= { helpful: 0, needsRatings: 0, notHelpful: 0 });
+    const status = noteStatus(row);
+    if (status === "helpful") page.helpful += 1;
+    else if (status === "needs_ratings") page.needsRatings += 1;
+    else page.notHelpful += 1;
   }
   return counts;
 }
