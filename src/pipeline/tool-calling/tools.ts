@@ -429,7 +429,11 @@ export interface WebFetchResult {
   ok: boolean;
 }
 
-export async function fetchWebPage(url: string): Promise<WebFetchResult> {
+/** `maxChars` overrides the default return cap. The default is sized for a
+ *  verifier's context window; the everything pipeline passes a much larger cap
+ *  because it ingests the whole article. */
+export async function fetchWebPage(url: string, opts?: { maxChars?: number }): Promise<WebFetchResult> {
+  const maxChars = opts?.maxChars ?? MAX_RETURN_CHARS;
   const attempts: Array<{ label: string; cls: ContentClass | "fail"; status?: number; chars: number; markdown: string; sourceLabel?: string }> = [];
 
   // Steps 1 to 3 are the HTTP ladder with three user agents. We stop as soon as
@@ -444,7 +448,7 @@ export async function fetchWebPage(url: string): Promise<WebFetchResult> {
     if (r.ok && r.body) {
       const { cls, markdown } = classifyContent(r.body);
       attempts.push({ label, cls, status: r.status, chars: markdown.length, markdown });
-      if (cls === "good") return { content: markdown.slice(0, MAX_RETURN_CHARS), fetchedUrl: url, ok: true };
+      if (cls === "good") return { content: markdown.slice(0, maxChars), fetchedUrl: url, ok: true };
     } else {
       attempts.push({ label, cls: "fail", status: r.status, chars: 0, markdown: "" });
     }
@@ -463,7 +467,7 @@ export async function fetchWebPage(url: string): Promise<WebFetchResult> {
         // The requested URL is dead or blocked. We read the snapshot instead, so
         // the snapshot is the URL a note may cite, not the original.
         return {
-          content: `[fetched via ${archiveLabel} snapshot]\n\n${markdown.slice(0, MAX_RETURN_CHARS)}`,
+          content: `[fetched via ${archiveLabel} snapshot]\n\n${markdown.slice(0, maxChars)}`,
           fetchedUrl: r.finalUrl ?? url,
           ok: true,
         };
@@ -482,7 +486,7 @@ export async function fetchWebPage(url: string): Promise<WebFetchResult> {
     attempts.push({ label: "browser", cls, status: browser.status, chars: markdown.length, markdown });
     if (cls === "good") {
       return {
-        content: `[fetched via headless browser]\n\n${markdown.slice(0, MAX_RETURN_CHARS)}`,
+        content: `[fetched via headless browser]\n\n${markdown.slice(0, maxChars)}`,
         fetchedUrl: url,
         ok: true,
       };

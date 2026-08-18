@@ -2,10 +2,13 @@ import { useEffect, useRef, useState } from "react";
 
 /** How long the overlay stays before it fades out on its own. Hovering pauses
  *  the clock, so a reader who is about to click never loses the card. */
-const AUTO_HIDE_MS = 10_000;
+const AUTO_HIDE_MS = 5_000;
 /** After a request or follow succeeded the card lingers briefly to show the
  *  confirmation, then leaves. */
 const DONE_HIDE_MS = 4_000;
+/** How long the fade-out takes once the clock has run out. Hovering during the
+ *  fade brings the card back. */
+const FADE_MS = 700;
 
 type ActionPhase = "idle" | "busy" | "done" | "error";
 
@@ -24,6 +27,9 @@ export interface StatusOverlayProps {
   /** The card's first line. Null on an author surface, where the follow
    *  button carries all the information by itself. */
   headline: string | null;
+  /** Makes the headline clickable. The note-count card passes the jump here,
+   *  so clicking the card walks the notes like the popup's jump button. */
+  onHeadlineClick?: () => void;
   request: StatusAction | null;
   follow: StatusAction | null;
 }
@@ -58,7 +64,7 @@ export function ActionButton({ action, onDone, buttonClassName }: {
       >
         {action.label}
       </button>
-      {phase === "error" && <p className="mt-1 text-xs text-red-600 dark:text-red-400">Something went wrong — try again</p>}
+      {phase === "error" && <p className="mt-1 text-xs text-red-600 dark:text-red-400">Something went wrong. Try again</p>}
     </div>
   );
 }
@@ -66,31 +72,56 @@ export function ActionButton({ action, onDone, buttonClassName }: {
 /** The transient status card shown when a page opens. It says whether we have
  *  checked the page, offers the request and follow buttons, and fades away
  *  after a few seconds so it never becomes furniture. */
-export function StatusOverlay({ headline, request, follow }: StatusOverlayProps) {
-  const [visible, setVisible] = useState(true);
-  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+export function StatusOverlay({ headline, onHeadlineClick, request, follow }: StatusOverlayProps) {
+  const [phase, setPhase] = useState<"shown" | "fading" | "hidden">("shown");
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const fadeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  const clearTimers = () => {
+    clearTimeout(hideTimer.current);
+    clearTimeout(fadeTimer.current);
+  };
 
   const hideAfter = (ms: number) => {
-    clearTimeout(timer.current);
-    timer.current = setTimeout(() => setVisible(false), ms);
+    clearTimers();
+    hideTimer.current = setTimeout(() => {
+      setPhase("fading");
+      fadeTimer.current = setTimeout(() => setPhase("hidden"), FADE_MS);
+    }, ms);
+  };
+
+  const keep = () => {
+    clearTimers();
+    setPhase("shown");
   };
 
   useEffect(() => {
     hideAfter(AUTO_HIDE_MS);
-    return () => clearTimeout(timer.current);
+    return clearTimers;
   }, []);
 
-  if (!visible) return null;
+  if (phase === "hidden") return null;
   return (
     <div
-      className="w-96 rounded-lg border border-gray-200 bg-white p-3 shadow-lg dark:border-gray-700 dark:bg-gray-800"
-      onMouseEnter={() => clearTimeout(timer.current)}
+      className={`w-96 rounded-lg border border-gray-200 bg-white p-3 shadow-lg transition-opacity ease-out dark:border-gray-700 dark:bg-gray-800 ${phase === "fading" ? "opacity-0" : "opacity-100"}`}
+      style={{ transitionDuration: `${FADE_MS}ms` }}
+      onMouseEnter={keep}
       onMouseLeave={() => hideAfter(AUTO_HIDE_MS)}
     >
       <div className="flex items-start justify-between gap-2">
-        {headline && <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{headline}</p>}
+        {headline &&
+          (onHeadlineClick ? (
+            <button
+              onClick={onHeadlineClick}
+              className="text-left text-sm font-medium text-gray-900 underline-offset-2 hover:underline dark:text-gray-100"
+            >
+              {headline}
+            </button>
+          ) : (
+            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{headline}</p>
+          ))}
         <button
-          onClick={() => setVisible(false)}
+          onClick={() => setPhase("hidden")}
           aria-label="Dismiss"
           className="ml-auto shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
         >

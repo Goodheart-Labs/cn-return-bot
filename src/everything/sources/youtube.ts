@@ -28,7 +28,11 @@ function fetchVideoMeta(url: string): { id: string; title: string; uploadDate?: 
   // We print the title last because a title can span several lines. Everything
   // after the id therefore belongs to the title, and the earlier fields stay
   // readable.
-  const out = execYtDlp(url, ["--skip-download", "--no-warnings", "--print", "%(upload_date)s", "--print", "%(id)s", "--print", "%(title)s", url]);
+  // A flagged proxy IP gets a degraded player response whose format list is
+  // empty, and format selection then aborts the whole call with "Requested
+  // format is not available" even though the metadata fields were served.
+  // Printing metadata needs no formats, so we tell yt-dlp to ignore that.
+  const out = execYtDlp(url, ["--skip-download", "--ignore-no-formats-error", "--no-warnings", "--print", "%(upload_date)s", "--print", "%(id)s", "--print", "%(title)s", url]);
   const [uploadDate = "", id = "", ...titleParts] = out.trim().split("\n");
   return { id, title: titleParts.join(" ").trim(), uploadDate: parseUploadDate(uploadDate) };
 }

@@ -1,8 +1,9 @@
 /**
  * Turns reader requests into pipeline work. The everything-priority-feeds
  * workflow runs this at the start of every cycle, before anything is enqueued
- * from the feeds. Both consumers are cheap: they only move rows around, no LLM
- * is called, so they run even on a day whose spend cap is already reached.
+ * from the feeds. Both consumers are cheap and run even on a day whose spend
+ * cap is already reached. The one exception to "no LLM here" is the small
+ * Flash call that trims a captured page text down to its article.
  *
  * Note requests ("check this page") become queue items at the requested
  * priority tier, so the worker takes them before any feed backlog. A request
@@ -14,9 +15,10 @@
  * listing the feed once, and then promoted into everything_followed_feeds. The
  * auto-enqueue walks that table ahead of the curated priority feeds.
  *
- * A request that cannot be consumed is marked on its own row, either "skipped"
- * with the reason, or "error" with the message. It is never retried silently; a
- * human can set it back to "pending" after fixing the cause.
+ * A request that cannot be consumed is marked on its own row: a follow request
+ * for something that is not a followable feed is "skipped" with the reason,
+ * and anything that throws is "error" with the message. Nothing is retried
+ * silently; a human can set a row back to "pending" after fixing the cause.
  *
  * Usage:
  *   bun run src/everything/consumeRequests.ts
@@ -24,6 +26,8 @@
 
 import "dotenv/config";
 import { extractYoutubeVideoId } from "../everything-shared/pageUrls";
+import { WEB_PROJECT_SLUG } from "../everything-shared/projects";
+import { cleanCapturedPageText } from "./pipeline/cleanCapturedText";
 import {
   fetchPendingFollowRequests,
   fetchPendingNoteRequests,
@@ -44,17 +48,12 @@ import { fetchFeedPosts } from "./sources/substack";
 import { fetchChannelVideos } from "./sources/youtube";
 import type { ItemSource } from "./types";
 
-/** The catch-all project for requested pages that belong to no publication we
- *  can name. Migration 077 creates it. */
-const REQUESTED_PROJECT_SLUG = "requested";
-
-const SUBSTACK_POST_URL = /^https:\/\/([\w-]+)\.substack\.com\/p\//;
-
-function classifyRequestSource(pageUrl: string): { source: ItemSource; projectSlug: string } {
-  if (extractYoutubeVideoId(pageUrl)) return { source: "youtube", projectSlug: REQUESTED_PROJECT_SLUG };
-  const substack = pageUrl.match(SUBSTACK_POST_URL);
-  if (substack) return { source: "substack", projectSlug: substack[1]! };
-  return { source: "web", projectSlug: REQUESTED_PROJECT_SLUG };
+/** A requested YouTube video is its own source kind, because the worker
+ *  fetches its transcript and cues for timestamped claims. Every other page is
+ *  a plain `web` item that the worker fetches through the X pipeline's
+ *  web-fetch ladder, Substack posts included — no special-casing. */
+function classifyRequestSource(pageUrl: string): ItemSource {
+  return extractYoutubeVideoId(pageUrl) ? "youtube" : "web";
 }
 
 /** Consumes one note request. Returns a log line describing what happened. */
@@ -71,20 +70,19 @@ async function consumeNoteRequest(request: NoteRequestRow): Promise<string> {
     return `bumped existing item to requested priority: ${request.page_url}`;
   }
 
-  const { source, projectSlug } = classifyRequestSource(request.page_url);
+  const source = classifyRequestSource(request.page_url);
   // A request on a highlighted paragraph checks exactly that paragraph, never
   // the whole page: the selection becomes the item's text. A whole-page
-  // request uses the page text the extension captured. The worker only fetches
-  // content itself for a YouTube page, because it cannot fetch anything else
-  // from CI.
-  const fullText = request.selection ?? (source === "youtube" ? undefined : request.page_text ?? undefined);
-  if (source === "web" && !fullText) {
-    await resolveNoteRequest(request.id, "skipped", "page kind is not fetchable and the request carries no text", null);
-    return `skipped (no text): ${request.page_url}`;
-  }
+  // request uses the page text the extension captured, run through the
+  // article-only cleanup, because the raw capture drags in comments and
+  // sidebars. Without either, the worker fetches the page itself — through
+  // the web-fetch ladder for a text page, or as transcript and cues for a
+  // YouTube video.
+  let fullText = request.selection ?? (source === "youtube" ? undefined : request.page_text ?? undefined);
+  if (fullText && fullText === request.page_text) fullText = await cleanCapturedPageText(fullText);
 
   const itemId = await insertQueuedItem({
-    project_id: await resolveProjectId(projectSlug),
+    project_id: await resolveProjectId(WEB_PROJECT_SLUG),
     source,
     url: request.page_url,
     title: request.page_title || undefined,

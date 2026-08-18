@@ -33,7 +33,7 @@ export default defineConfig({
   // defence.
   zip: { excludeSources: ["chrome-signing-key.pem", "store-assets/**"] },
   manifest: ({ browser }) => ({
-    version: "0.1.1",
+    version: "0.2.0",
     name: "Common Notes",
     description: "Community Notes Everywhere",
     icons: { 16: "icon/16.png", 32: "icon/32.png", 48: "icon/48.png", 128: "icon/128.png" },
@@ -43,8 +43,10 @@ export default defineConfig({
     // registers the generic content script for every hostname that has notes,
     // without asking. The user sees one broad install warning and no per-site
     // prompts after that. The per-site consent flow this replaced lived in
-    // grant.html. Note for existing installs: Chrome disables an
-    // updated extension until the user approves the newly required permission.
+    // grant.html; what the user can switch off now lives on the settings page
+    // (overlays, thumbnail badges, visit recording). Note for existing
+    // installs: Chrome disables an updated extension until the user approves
+    // the newly required permission.
     host_permissions: ["<all_urls>"],
     ...(browser === "chrome" ? { key: CHROME_PUBLIC_KEY } : {}),
     browser_specific_settings: {

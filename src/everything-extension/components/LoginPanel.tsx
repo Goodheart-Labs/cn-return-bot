@@ -30,16 +30,16 @@ const clearPendingEmail = () => browser.storage.local.remove(PENDING_EMAIL_KEY);
 const INPUT = "flex-1 min-w-0 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-2.5 py-1.5 text-sm";
 const PRIMARY = "bg-blue-600 text-white rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-blue-700 disabled:opacity-40";
 
-/** The sign-in form. The user either types their email and then the 8-digit
+/** The sign-in form. The user either types their email and then the 6-digit
  *  code we send them, which needs no redirect, or signs in with X. The X flow
  *  runs launchWebAuthFlow in the background. Either way the session ends up in
  *  chrome.storage.local, and it reaches every other context through
- *  useSession's storage listener. The popup renders this form, and so do the
- *  note overlays when a signed-out reader tries to vote or write, so nobody is
- *  sent off to the toolbar icon. `surface` says which of the two hosted the
- *  sign-in, for the funnel. `onDismiss` adds a close button; the popup leaves
- *  it out because its form has nowhere to go. */
-export function LoginPanel({ surface = "popup", onDismiss }: { surface?: "popup" | "overlay"; onDismiss?: () => void }) {
+ *  useSession's storage listener. The settings page renders this form, and so
+ *  do the note overlays when a signed-out reader tries to vote or write, so
+ *  nobody is sent off to the toolbar icon. `surface` says which of them hosted
+ *  the sign-in, for the funnel. `onDismiss` adds a close button; the settings
+ *  page leaves it out because its form has nowhere to go. */
+export function LoginPanel({ surface = "settings", onDismiss }: { surface?: "settings" | "overlay"; onDismiss?: () => void }) {
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [stage, setStage] = useState<"email" | "code">("email");

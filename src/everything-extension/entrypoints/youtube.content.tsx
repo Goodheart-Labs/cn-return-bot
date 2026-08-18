@@ -2,16 +2,20 @@ import "../assets/tailwind.css";
 import { createRoot } from "react-dom/client";
 import { defineContentScript, createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
-import { fetchItemForUrl } from "../../everything-shared/notesQuery";
+import { fetchItemForUrl, type PageItem } from "../../everything-shared/notesQuery";
 import { extractYoutubeVideoId, normalizePageUrl } from "../../everything-shared/pageUrls";
-import { fetchClaimGroups, type ClaimGroup } from "../utils/claimGroups";
+import { fetchClaimGroups, type ClaimGroup, type NoteCounts } from "../utils/claimGroups";
 import { mountCoverageBadges } from "../utils/coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "../utils/coveredPages";
-import { recordLinkVisit } from "../utils/linkVisits";
+import { recordPageVisit } from "../utils/linkVisits";
 import { YoutubeOverlayApp, DEFAULT_CLIP_SECONDS, type TimedGroup } from "../components/YoutubeOverlay";
+import { unlessFollowed } from "../utils/followedFeeds";
+import { jumpToNextNote } from "../utils/jumpBus";
 import { youtubeChannelTarget, type FollowTarget } from "../utils/followTarget";
 import { mountFollowOverlay, mountStatusOverlay } from "../utils/mountStatusOverlay";
 import { isPageDark, observePageTheme } from "../utils/pageTheme";
+import { listenForRequestInfo } from "../utils/requestInfo";
+import { getSettings } from "../utils/settings";
 import { registerDevReloadHook } from "../utils/devReload";
 import { initUiAnalytics } from "../utils/analytics";
 import { track } from "../../everything-shared/analytics";
@@ -66,52 +70,82 @@ function channelFollowTarget(): FollowTarget | null {
   return youtubeChannelTarget(link.href, link.textContent?.trim() ?? "");
 }
 
-/** The transient "have we checked this video" card. On an unchecked video it
- *  offers the request button and, once the owner box has rendered, the
- *  channel-follow button. Whether we already follow the channel cannot be told
- *  from the covered list, which only holds video URLs, so authorCovered stays
- *  false here; the pipeline resolves a repeat follow as already followed. */
-async function mountStatus(ctx: ContentScriptContext, noteCount: number | null): Promise<() => void> {
-  let followTarget: FollowTarget | null = null;
-  if (noteCount === null) {
-    // The owner box renders late, so we wait for it before reading the channel.
-    await waitFor<HTMLAnchorElement>(CHANNEL_LINK_SELECTOR);
-    followTarget = channelFollowTarget();
+/** The transient "have we checked this video" card. On a checked video it is
+ *  the note-count card, gated by its setting. On an unchecked video it offers
+ *  the request button, but only when request overlays are turned on and the
+ *  channel is not already followed; with the request card suppressed an
+ *  unfollowed channel still gets the follow-only card. */
+async function mountStatus(ctx: ContentScriptContext, counts: NoteCounts | null): Promise<() => void> {
+  const settings = await getSettings();
+  if (counts !== null) {
+    if (!settings.showNoteCountOverlay) return () => {};
+    return mountStatusOverlay(ctx, {
+      pageUrl: normalizePageUrl(location.href),
+      noun: "video",
+      checked: counts,
+      onOpenNotes: jumpToNextNote,
+      followTarget: null,
+      requestWithPageText: false,
+    });
   }
-  return mountStatusOverlay(ctx, {
-    pageUrl: normalizePageUrl(location.href),
-    noun: "video",
-    checked: noteCount === null ? null : { noteCount },
-    authorCovered: false,
-    followTarget,
-    // The pipeline fetches the transcript itself, and this page's text is
-    // player chrome rather than the video's content.
-    requestWithPageText: false,
-  });
+  // With both cards turned off there is nothing to mount, and we skip the wait
+  // for the owner box entirely.
+  if (!settings.showRequestOverlay && !settings.showFollowOverlay) return () => {};
+  // The owner box renders late, so we wait for it before reading the channel.
+  await waitFor<HTMLAnchorElement>(CHANNEL_LINK_SELECTOR);
+  const channel = channelFollowTarget();
+  const unfollowedChannel = await unlessFollowed(channel);
+  const channelFollowed = channel !== null && unfollowedChannel === null;
+  if (settings.showRequestOverlay && !channelFollowed) {
+    return mountStatusOverlay(ctx, {
+      pageUrl: normalizePageUrl(location.href),
+      noun: "video",
+      checked: null,
+      followTarget: unfollowedChannel,
+      // The pipeline fetches the transcript itself, and this page's text is
+      // player chrome rather than the video's content.
+      requestWithPageText: false,
+    });
+  }
+  if (unfollowedChannel) return mountFollowOverlay(ctx, unfollowedChannel);
+  return () => {};
 }
 
 async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | null> {
-  // A channel page gets the follow-only card. Whether we already cover the
-  // channel cannot be told on-device, because the covered list only holds
-  // video URLs; the pipeline resolves a repeat follow as already followed.
+  // A channel page gets the follow-only card, unless we already follow the
+  // channel.
   const channelTarget = youtubeChannelTarget(location.href, document.title.replace(/ - YouTube$/, ""));
-  if (channelTarget) return mountFollowOverlay(ctx, channelTarget);
-  if (!extractYoutubeVideoId(location.href)) return null;
-  // We check coverage locally first. Most videos are not covered, and finding
-  // that out must not cost a backend request on every watch page.
-  const covered = await getCoveredPageUrls();
-  if (covered && !pageIsCovered(location.href, covered)) return mountStatus(ctx, null);
-  const item = await fetchItemForUrl(location.href);
-  if (!item) return mountStatus(ctx, null);
-  // Once per video, because yt-navigate-finish re-fires on the same URL.
-  if (lastVisitUrl !== location.href) {
-    lastVisitUrl = location.href;
-    recordLinkVisit(item);
+  if (channelTarget) {
+    const target = await unlessFollowed(channelTarget);
+    return target ? mountFollowOverlay(ctx, target) : null;
   }
-  const refetch = async () => timedGroups(await fetchClaimGroups(item.id));
-  const groups = await refetch();
+  if (!extractYoutubeVideoId(location.href)) return null;
+  // Every watch-page visit counts, checked video or not; the counts tell the
+  // team which videos are worth checking. Once per video, because
+  // yt-navigate-finish re-fires on the same URL.
+  const recordWatchVisit = (item: PageItem | null) => {
+    if (lastVisitUrl === location.href) return;
+    lastVisitUrl = location.href;
+    recordPageVisit(location.href, item);
+  };
+  // We check coverage locally first. Most videos are not covered, and finding
+  // that out must not cost a backend lookup on every watch page.
+  const covered = await getCoveredPageUrls();
+  if (covered && !pageIsCovered(location.href, covered)) {
+    recordWatchVisit(null);
+    return mountStatus(ctx, null);
+  }
+  const item = await fetchItemForUrl(location.href);
+  if (!item) {
+    recordWatchVisit(null);
+    return mountStatus(ctx, null);
+  }
+  recordWatchVisit(item);
+  const refetch = async () => timedGroups((await fetchClaimGroups(item.id)).groups);
+  const first = await fetchClaimGroups(item.id);
+  const groups = timedGroups(first.groups);
   console.info(`[common-notes] ${groups.length} timestamped claims on this video`);
-  const statusTeardown = await mountStatus(ctx, groups.reduce((n, g) => n + 1 + g.alternatives.length, 0));
+  const statusTeardown = await mountStatus(ctx, first.counts);
   if (groups.length === 0) return statusTeardown;
 
   const player = await waitFor<HTMLElement>(PLAYER_SELECTOR);
@@ -168,6 +202,9 @@ export default defineContentScript({
   async main(ctx) {
     initUiAnalytics();
     registerDevReloadHook(ctx);
+    // The background answers a needless request, for example on an already
+    // checked video, with an explanation card through this listener.
+    listenForRequestInfo(ctx);
     // Listing badges mark noted videos on channel pages and in other video
     // lists. They live independently of the watch-page overlay below.
     const stopBadges = await mountCoverageBadges(ctx);

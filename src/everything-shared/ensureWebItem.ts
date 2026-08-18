@@ -1,6 +1,5 @@
 import { supabase } from "./supabase";
-
-const WEB_PROJECT_SLUG = "web";
+import { WEB_PROJECT_SLUG } from "./projects";
 const POSTGRES_UNIQUE_VIOLATION = "23505";
 
 /** Finds or creates the everything_items row for any web page, and returns its id.

@@ -140,7 +140,7 @@ function BurndownBar({ unseen, reviewedToday, ready, inflowPerDay, pacePerDay }:
       <div className="flex items-center justify-between text-sm pr-5">
         <span className={done ? "text-green-800 font-medium" : "text-gray-700 font-medium"}>
           {done
-            ? `✓ Done for today — ${progress} reviewed`
+            ? `✓ Done for today. ${progress} reviewed`
             : `Review ${remainingToday} more today (${progress}/${quota})`}
         </span>
         <span className="text-xs text-gray-500">

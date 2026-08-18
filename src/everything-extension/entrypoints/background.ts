@@ -1,19 +1,22 @@
 import { defineBackground } from "#imports";
 import { browser } from "#imports";
-import { fetchCoveredPageUrls, fetchNotedPageCounts, fetchReaderCanonical, fetchReaderRedirectUrl } from "../../everything-shared/notesQuery";
+import { fetchCoveredPageUrls, fetchFollowedFeedUrls, fetchNotedPageCounts, fetchReaderCanonical, fetchReaderRedirectUrl } from "../../everything-shared/notesQuery";
 import { submitNoteRequest } from "../../everything-shared/noteRequests";
 import { canonicalizePageUrl, isSubstackReaderUrl } from "../../everything-shared/pageUrls";
 import { track } from "../../everything-shared/analytics";
 import { initBackgroundAnalytics } from "../utils/analytics";
 import { signInWithXViaWebAuthFlow } from "../utils/oauth";
-import { COVERED_PAGE_URLS_KEY, NOTED_PAGE_COUNTS_KEY } from "../utils/coveredPages";
+import { authorFeedStatusForTab } from "../utils/authorFeed";
+import { COVERED_PAGE_URLS_KEY, NOTED_PAGE_STATUS_COUNTS_KEY, getCoveredPageUrls, pageIsCovered } from "../utils/coveredPages";
+import { FOLLOWED_FEED_URLS_KEY } from "../utils/followedFeeds";
 import { GENERIC_SCRIPT_PREFIX, hostnamePattern, registerGenericScripts, genericScriptId } from "../utils/genericScript";
 import { capturePageFromTab } from "../utils/pageCapture";
-import { addRequestedPage } from "../utils/settings";
+import { addRequestedPage, getSettingsOnboardingDone, markSettingsOnboardingDone } from "../utils/settings";
 import { STATIC_SITE_HOSTNAME } from "../utils/staticSites";
 
 const WRITE_MENU_ID = "cn-write-note";
 const REQUEST_MENU_ID = "cn-request-note";
+const REQUEST_PAGE_MENU_ID = "cn-request-page";
 const BADGE_FEEDBACK_MS = 3000;
 const INJECT_RETRY_DELAY_MS = 150;
 const INJECT_RETRY_ATTEMPTS = 10;
@@ -65,9 +68,16 @@ async function injectIntoOpenTabs(hostnames: string[]) {
  *  The content scripts use both for their on-device checks. */
 async function syncNotedSites() {
   try {
-    const [urls, counts] = await Promise.all([fetchCoveredPageUrls(), fetchNotedPageCounts()]);
-    // The listing badges draw their per-page note counts from this cache.
-    if (counts) await browser.storage.local.set({ [NOTED_PAGE_COUNTS_KEY]: counts });
+    const [urls, counts, followedFeeds] = await Promise.all([
+      fetchCoveredPageUrls(),
+      fetchNotedPageCounts(),
+      fetchFollowedFeedUrls(),
+    ]);
+    // The listing badges and count cards draw their per-page note counts from
+    // this cache.
+    if (counts) await browser.storage.local.set({ [NOTED_PAGE_STATUS_COUNTS_KEY]: counts });
+    // The follow-button surfaces hide the button for feeds on this list.
+    if (followedFeeds) await browser.storage.local.set({ [FOLLOWED_FEED_URLS_KEY]: followedFeeds });
     if (urls) {
       await browser.storage.local.set({ [COVERED_PAGE_URLS_KEY]: urls });
       const wanted = new Set(genericHostnames(urls));
@@ -104,6 +114,15 @@ async function createMenus() {
     title: "Request Common Notes on this",
     contexts: ["selection"],
   });
+  // The page-context item is the always-available request path, now that the
+  // in-page request overlay is off by default. Browsers show page items on a
+  // plain right-click and selection items only over a selection, so the two
+  // request entries never appear together.
+  browser.contextMenus.create({
+    id: REQUEST_PAGE_MENU_ID,
+    title: "Request Common Notes on this page",
+    contexts: ["page"],
+  });
 }
 
 /** A context-menu click has no page of its own to answer on, so the action
@@ -115,10 +134,48 @@ function flashBadge(tabId: number | undefined, text: string) {
   setTimeout(() => action?.setBadgeText({ text: "", tabId }).catch(() => {}), BADGE_FEEDBACK_MS);
 }
 
+/** Delivers a message to the tab's content script. On a page where no script
+ *  runs yet, the click's activeTab grant lets us inject the generic one on
+ *  demand; the script needs a moment to mount before its listener answers,
+ *  which is why we retry. Returns false when nothing could be reached, which
+ *  only happens on restricted pages such as chrome:// and the Web Store. */
+async function sendToTabWithInjection(tabId: number, message: unknown): Promise<boolean> {
+  try {
+    await browser.tabs.sendMessage(tabId, message);
+    return true;
+  } catch {
+    try {
+      await browser.scripting.executeScript({ target: { tabId }, files: ["/content-scripts/generic.js"] });
+    } catch {
+      return false;
+    }
+    for (let attempt = 0; attempt < INJECT_RETRY_ATTEMPTS; attempt++) {
+      await new Promise((resolve) => setTimeout(resolve, INJECT_RETRY_DELAY_MS));
+      try {
+        await browser.tabs.sendMessage(tabId, message);
+        return true;
+      } catch {
+        // The listener is not up yet, so we try again.
+      }
+    }
+    return false;
+  }
+}
+
+/** Tells the user in the page why their request was not needed. Falls back to
+ *  the toolbar tick when the page cannot host the card: the request's goal is
+ *  met either way. */
+async function showRequestNotNeeded(tab: { id?: number }, headline: string) {
+  const delivered = tab.id != null && (await sendToTabWithInjection(tab.id, { type: "cn-request-info", headline }));
+  if (!delivered) flashBadge(tab.id, "✓");
+}
+
 /** Submits a note request for the selected paragraph. The menu click grants
  *  activeTab, so the page's canonical link and body text can be read even on a
  *  site the user never enabled; the pipeline fact-checks the page from that
- *  text. A restricted page falls back to the tab's url and title alone. */
+ *  text. A restricted page falls back to the tab's url and title alone. A page
+ *  that is already checked, or whose author we already follow, submits nothing
+ *  and gets an explanatory card instead. */
 async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: string }, selection: string) {
   const captured = tab.id != null ? await capturePageFromTab(tab.id) : null;
   const href = captured?.href ?? tab.url;
@@ -129,6 +186,17 @@ async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: 
   const pageUrl = readerCanonical
     ? canonicalizePageUrl(readerCanonical, null)
     : canonicalizePageUrl(href, captured?.canonical ?? null);
+  const covered = await getCoveredPageUrls();
+  if (covered && pageIsCovered(pageUrl, covered)) {
+    await showRequestNotNeeded(tab, "This page has already been checked.");
+    return;
+  }
+  const authorFeed = await authorFeedStatusForTab(tab);
+  if (authorFeed.kind === "followed") {
+    const what = authorFeed.feed.kind === "youtuber" ? "video from this youtuber" : "post from this author";
+    await showRequestNotNeeded(tab, `We already check every new ${what}.`);
+    return;
+  }
   try {
     await submitNoteRequest({
       pageUrl,
@@ -163,40 +231,29 @@ export default defineBackground(() => {
   browser.runtime.onInstalled.addListener((details) => {
     if (details.reason === "install") track("extension_installed");
     void createMenus();
+    // The settings onboarding: open the settings page once, so the user has
+    // seen the visit-recording checkboxes before anything is recorded (the
+    // recording code is inert until this flag is set). The flag is set before
+    // the tab opens, so a failed open cannot re-open the page on every update.
+    if (details.reason === "install" || details.reason === "update") {
+      void (async () => {
+        if (await getSettingsOnboardingDone()) return;
+        await markSettingsOnboardingDone();
+        await browser.runtime.openOptionsPage();
+      })();
+    }
   });
   browser.alarms.onAlarm.addListener((alarm) => {
     if (alarm.name === SYNC_ALARM) void syncNotedSites();
   });
 
   browser.contextMenus.onClicked.addListener((info, tab) => {
-    if (info.menuItemId === REQUEST_MENU_ID && tab != null) {
+    if ((info.menuItemId === REQUEST_MENU_ID || info.menuItemId === REQUEST_PAGE_MENU_ID) && tab != null) {
       void requestNoteOnSelection(tab, info.selectionText ?? "");
       return;
     }
     if (info.menuItemId === WRITE_MENU_ID && tab?.id != null) {
-      const tabId = tab.id;
-      const message = { type: "cn-write-note", selection: info.selectionText ?? "" };
-      (async () => {
-        try {
-          await browser.tabs.sendMessage(tabId, message);
-        } catch {
-          // The page is uncovered, so no script is running there yet. The menu
-          // click grants activeTab, which lets us inject one on demand. That
-          // only fails on restricted pages such as chrome:// and the Web
-          // Store. The script needs a moment to mount before its listener
-          // answers, which is why we retry.
-          await browser.scripting.executeScript({ target: { tabId }, files: ["/content-scripts/generic.js"] });
-          for (let attempt = 0; attempt < INJECT_RETRY_ATTEMPTS; attempt++) {
-            await new Promise((resolve) => setTimeout(resolve, INJECT_RETRY_DELAY_MS));
-            try {
-              await browser.tabs.sendMessage(tabId, message);
-              return;
-            } catch {
-              // The listener is not up yet, so we try again.
-            }
-          }
-        }
-      })().catch(() => {});
+      void sendToTabWithInjection(tab.id, { type: "cn-write-note", selection: info.selectionText ?? "" });
     }
   });
 
