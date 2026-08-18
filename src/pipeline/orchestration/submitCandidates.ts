@@ -36,7 +36,11 @@ const velocityOf = (c: Candidate) => c.velocity ?? velocityPerHour(c.post);
 // notes. Any beyond that go out behind the regular notes, so a day full of topic
 // hits cannot swallow the whole daily cap. Set this to 0 to keep misinfo behind
 // the regular notes at all times.
-export const MISINFO_RESERVE_24H = 5;
+//
+// Set to 0 on 2026-08-18. Topic notes had a 0/126 helpful record while holding
+// priority, so they now queue behind the regular notes. The pre-pass still
+// crawls the XXL feed and its candidates still submit, last.
+export const MISINFO_RESERVE_24H = 0;
 const SUBMISSION_WINDOW_HOURS = 24;
 
 // ── Stale-tweet cutoff ──────────────────────────────────────────────────────
