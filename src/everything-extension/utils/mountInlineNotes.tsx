@@ -16,7 +16,7 @@ import {
   substackProfileHandle,
   type FollowTarget,
 } from "./followTarget";
-import { recordLinkVisit } from "./linkVisits";
+import { recordPageVisit } from "./linkVisits";
 import { mountFollowOverlay, mountStatusOverlay } from "./mountStatusOverlay";
 import { mountWriteAnywhere } from "./mountWriteAnywhere";
 import { listenForRequestInfo } from "./requestInfo";
@@ -153,12 +153,16 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   const covered = await getCoveredPageUrls();
   if (covered && !pageIsCovered(pageUrl, covered)) {
     console.info(`[common-notes] ${pageUrl} → not in the covered list (no backend lookup)`);
+    recordPageVisit(pageUrl, null);
     return mountUncovered(ctx, pageUrl, onCoverageChanged);
   }
   const item = await fetchItemForUrl(pageUrl);
   console.info(`[common-notes] ${pageUrl} → ${item ? `item "${item.title ?? item.id}"` : "no ingested item"}`);
-  if (!item) return mountUncovered(ctx, pageUrl, onCoverageChanged);
-  recordLinkVisit(item);
+  if (!item) {
+    recordPageVisit(pageUrl, null);
+    return mountUncovered(ctx, pageUrl, onCoverageChanged);
+  }
+  recordPageVisit(pageUrl, item);
   // We mount even when the item has no notes yet. Writing a note from a selection
   // works on any ingested page, and refresh() brings the new note in.
   let { groups, counts } = await fetchClaimGroups(item.id);

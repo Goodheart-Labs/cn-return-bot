@@ -67,16 +67,14 @@ export function SettingsApp() {
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4">
       <div className="mx-auto max-w-xl space-y-5 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-        <div>
-          <h1 className="text-xl font-semibold text-gray-900">Common Notes settings</h1>
-          <p className="mt-1 text-sm text-gray-600">Changes take effect immediately.</p>
-        </div>
+        <h1 className="text-xl font-semibold text-gray-900">Settings</h1>
 
         <Section title="Visit recording">
           <p className="text-sm text-gray-600">
-            When you open a page that has Common Notes on one of these sites, the extension records an
-            anonymous visit: just the link and the time, never your account or your other browsing. This
-            shows us how many readers the notes reach. Untick a site to keep visits there unrecorded.
+            On these sites, the extension counts a visit whenever you open a post or a video, so we can
+            see which pages are read most and check those first. A visit is anonymous: just the link and
+            the time, never your account or the rest of your browsing. Untick a site to record nothing
+            there.
           </p>
           {settings &&
             VISIT_SITES.map(({ kind, label }) => (

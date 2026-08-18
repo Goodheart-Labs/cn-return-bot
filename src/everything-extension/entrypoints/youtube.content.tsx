@@ -2,12 +2,12 @@ import "../assets/tailwind.css";
 import { createRoot } from "react-dom/client";
 import { defineContentScript, createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
-import { fetchItemForUrl } from "../../everything-shared/notesQuery";
+import { fetchItemForUrl, type PageItem } from "../../everything-shared/notesQuery";
 import { extractYoutubeVideoId, normalizePageUrl } from "../../everything-shared/pageUrls";
 import { fetchClaimGroups, type ClaimGroup, type NoteCounts } from "../utils/claimGroups";
 import { mountCoverageBadges } from "../utils/coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "../utils/coveredPages";
-import { recordLinkVisit } from "../utils/linkVisits";
+import { recordPageVisit } from "../utils/linkVisits";
 import { YoutubeOverlayApp, DEFAULT_CLIP_SECONDS, type TimedGroup } from "../components/YoutubeOverlay";
 import { unlessFollowed } from "../utils/followedFeeds";
 import { youtubeChannelTarget, type FollowTarget } from "../utils/followTarget";
@@ -118,17 +118,27 @@ async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | n
     return target ? mountFollowOverlay(ctx, target) : null;
   }
   if (!extractYoutubeVideoId(location.href)) return null;
-  // We check coverage locally first. Most videos are not covered, and finding
-  // that out must not cost a backend request on every watch page.
-  const covered = await getCoveredPageUrls();
-  if (covered && !pageIsCovered(location.href, covered)) return mountStatus(ctx, null);
-  const item = await fetchItemForUrl(location.href);
-  if (!item) return mountStatus(ctx, null);
-  // Once per video, because yt-navigate-finish re-fires on the same URL.
-  if (lastVisitUrl !== location.href) {
+  // Every watch-page visit counts, checked video or not; the counts tell the
+  // team which videos are worth checking. Once per video, because
+  // yt-navigate-finish re-fires on the same URL.
+  const recordWatchVisit = (item: PageItem | null) => {
+    if (lastVisitUrl === location.href) return;
     lastVisitUrl = location.href;
-    recordLinkVisit(item);
+    recordPageVisit(location.href, item);
+  };
+  // We check coverage locally first. Most videos are not covered, and finding
+  // that out must not cost a backend lookup on every watch page.
+  const covered = await getCoveredPageUrls();
+  if (covered && !pageIsCovered(location.href, covered)) {
+    recordWatchVisit(null);
+    return mountStatus(ctx, null);
   }
+  const item = await fetchItemForUrl(location.href);
+  if (!item) {
+    recordWatchVisit(null);
+    return mountStatus(ctx, null);
+  }
+  recordWatchVisit(item);
   const refetch = async () => timedGroups((await fetchClaimGroups(item.id)).groups);
   const first = await fetchClaimGroups(item.id);
   const groups = timedGroups(first.groups);
