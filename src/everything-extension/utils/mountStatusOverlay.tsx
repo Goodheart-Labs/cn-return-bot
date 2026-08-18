@@ -6,6 +6,7 @@ import { StatusOverlay, type StatusAction } from "../components/StatusOverlay";
 import { readPageForRequest } from "./pageCapture";
 import type { NoteCounts } from "./claimGroups";
 import { followButtonLabel, followDoneLabel, type FollowTarget } from "./followTarget";
+import { followOverlaySeen, markFollowOverlaySeen, markRequestOverlaySeen, requestOverlaySeen } from "./overlayMemory";
 import { isPageDark } from "./pageTheme";
 import { addRequestedFollow, addRequestedPage, getRequestedFollows, getRequestedPages, getSettings } from "./settings";
 
@@ -97,20 +98,34 @@ async function mountCard(
 }
 
 /** Mounts the transient "have we checked this yet" card in its own shadow root
- *  and returns a teardown function. */
+ *  and returns a teardown function. The unchecked variant appears once per
+ *  page; a later visit falls back to the follow-only card, which keeps its own
+ *  once-per-feed memory. The checked note-count card is not rationed. */
 export async function mountStatusOverlay(ctx: ContentScriptContext, params: StatusOverlayParams): Promise<() => void> {
+  if (!params.checked && (await requestOverlaySeen(params.pageUrl))) {
+    return params.followTarget ? mountFollowOverlay(ctx, params.followTarget) : () => {};
+  }
   const { request, follow } = await buildActions(params);
+  if (!params.checked) {
+    await markRequestOverlaySeen(params.pageUrl);
+    // Only a follow button that actually renders counts as seen, so turning
+    // follow overlays on later still gets its one showing.
+    if (follow && params.followTarget) await markFollowOverlaySeen(params.followTarget.feedUrl);
+  }
   return mountCard(ctx, { headline: headline(params), request, follow });
 }
 
 /** Mounts the follow-only card shown on an author's own pages: a publication
  *  homepage, a Substack profile, or a YouTube channel. The card is only the
- *  button, and it is not mounted at all when the user already asked or turned
- *  follow overlays off. Returns a teardown function either way. */
+ *  button, and it is not mounted at all when the user already asked, turned
+ *  follow overlays off, or was already offered this feed once. Returns a
+ *  teardown function either way. */
 export async function mountFollowOverlay(ctx: ContentScriptContext, target: FollowTarget): Promise<() => void> {
   if (!(await getSettings()).showFollowOverlay) return () => {};
+  if (await followOverlaySeen(target.feedUrl)) return () => {};
   const follow = await buildFollowAction(target);
   if (follow.alreadyDone) return () => {};
+  await markFollowOverlaySeen(target.feedUrl);
   return mountCard(ctx, { headline: null, request: null, follow });
 }
 
