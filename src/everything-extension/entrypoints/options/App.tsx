@@ -71,10 +71,9 @@ export function SettingsApp() {
 
         <Section title="Visit recording">
           <p className="text-sm text-gray-600">
-            On these sites, the extension counts a visit whenever you open a post or a video, so we can
-            see which pages are read most and check those first. A visit is anonymous: just the link and
-            the time, never your account or the rest of your browsing. Untick a site to record nothing
-            there.
+            On these sites, the extension saves visits whenever you open a post, so that we know which
+            posts we should run our pipeline on. A visit is anonymous: just the link and the time, never
+            your account or the rest of your browsing. Untick a site to record nothing there.
           </p>
           {settings &&
             VISIT_SITES.map(({ kind, label }) => (
