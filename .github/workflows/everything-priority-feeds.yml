@@ -63,9 +63,14 @@ jobs:
         run: |
           # The runners' default mirror, azure.archive.ubuntu.com, degrades to
           # KB/s every few weeks and stalled this step repeatedly on 2026-08-18.
+          # The runner image picks its mirror through the mirror+file scheme, so
+          # the mirror list file is what has to change — editing ubuntu.sources
+          # does nothing, which an earlier attempt found out the hard way.
           # Ubuntu's own archive is a touch slower on good days but does not
           # have those outages, and the retries cover brief hiccups.
-          sudo sed -i 's|azure.archive.ubuntu.com|archive.ubuntu.com|g' /etc/apt/sources.list.d/ubuntu.sources
+          if [ -f /etc/apt/apt-mirrors.txt ]; then
+            echo "http://archive.ubuntu.com/ubuntu/	priority:1" | sudo tee /etc/apt/apt-mirrors.txt
+          fi
           sudo apt-get update -o Acquire::Retries=3
           sudo apt-get install -y --no-install-recommends -o Acquire::Retries=3 ffmpeg
           pipx install yt-dlp
