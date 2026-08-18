@@ -74,7 +74,7 @@ const PIN_TOOLTIP_CHARS = 120;
 function pinTitle(group: TimedGroup): string {
   const quote = group.primary.claim?.context_quote ?? group.primary.claim?.claim ?? "";
   const preview = quote.length > PIN_TOOLTIP_CHARS ? `${quote.slice(0, PIN_TOOLTIP_CHARS)}…` : quote;
-  return preview ? `Community note: “${preview}”` : "Community note — click to jump there";
+  return preview ? `Community note: “${preview}”` : "Click to jump to this community note";
 }
 
 /** The pins are portalled into a strip of zero height that we append inside
@@ -141,7 +141,7 @@ export function ScrubberPins({ groups, video, player, onPinClick }: {
         className="cn-scrub-pin"
         style={{ left: `${(group.startSeconds / duration) * 100}%`, background: "none", border: "none", padding: 0 }}
         title={pinTitle(group)}
-        aria-label="Community note — jump to this moment"
+        aria-label="Jump to this community note"
         onClick={(e) => {
           // Keep the click off the bar underneath. A mousedown that leaked
           // through would start a scrub-drag to wherever the pointer sits.

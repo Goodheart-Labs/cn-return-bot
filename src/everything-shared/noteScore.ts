@@ -1,4 +1,4 @@
-import { noteTally, probabilityHelpful } from "./noteBelief";
+import { noteTally, probabilityHelpful, type NoteTallyFields } from "./noteBelief";
 import type { NoteRow } from "./types";
 import type { Vote } from "./votes";
 
@@ -50,7 +50,7 @@ export const originalsFirst = (a: NoteRow, b: NoteRow) =>
   Number(!!a.improved_from_note_id) - Number(!!b.improved_from_note_id) ||
   a.created_at.localeCompare(b.created_at);
 
-export function noteStatus(note: NoteRow): NoteStatus {
+export function noteStatus(note: NoteTallyFields): NoteStatus {
   // There is no explicit quorum. A single vote cannot reach either threshold on
   // its own: one Helpful vote gives p = 0.577, one Somewhat gives 0.469 and one
   // Not-helpful gives 0.235. So one voter can never rate a note alone.

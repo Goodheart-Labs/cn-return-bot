@@ -8,19 +8,20 @@ import { indexContainer, findQuoteRange } from "./anchor";
 import { fetchClaimGroups, type ClaimGroup } from "./claimGroups";
 import { mountCoverageBadges } from "./coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "./coveredPages";
+import { unlessFollowed } from "./followedFeeds";
 import {
-  authorHasCoveredPages,
-  hostnamesHaveCoveredPages,
   isSubstackPostPage,
   resolveProfileFollowTarget,
   substackFollowTarget,
   substackProfileHandle,
   type FollowTarget,
 } from "./followTarget";
-import { recordLinkVisit } from "./linkVisits";
+import { jumpToNextNote } from "./jumpBus";
+import { recordPageVisit } from "./linkVisits";
 import { mountFollowOverlay, mountStatusOverlay } from "./mountStatusOverlay";
 import { mountWriteAnywhere } from "./mountWriteAnywhere";
-import { onNoteFiltersChanged } from "./settings";
+import { listenForRequestInfo } from "./requestInfo";
+import { getSettings, onNoteFiltersChanged } from "./settings";
 import { isPageDark, observePageTheme } from "./pageTheme";
 import { InlineNotesApp, type AnchoredGroup } from "../components/InlineNotes";
 import { track } from "../../everything-shared/analytics";
@@ -89,42 +90,48 @@ function applyHighlights(ranges: Range[]) {
 }
 
 /** The follow target when this page is an author's own page rather than a
- *  post: a publication homepage or archive on an uncovered *.substack.com
- *  subdomain, or a Substack profile page whose publication we do not cover.
- *  Null when the page is neither, or when we already cover the author. */
-async function authorPageFollowTarget(pageUrl: string, covered: string[]): Promise<FollowTarget | null> {
+ *  post: a publication homepage or archive on a *.substack.com subdomain, or a
+ *  Substack profile page. Null when the page is neither. */
+async function authorPageFollowTarget(pageUrl: string): Promise<FollowTarget | null> {
   const subdomainTarget = substackFollowTarget(pageUrl);
-  if (subdomainTarget) return authorHasCoveredPages(pageUrl, covered) ? null : subdomainTarget;
+  if (subdomainTarget) return subdomainTarget;
   const handle = substackProfileHandle(pageUrl);
-  if (!handle) return null;
-  const resolved = await resolveProfileFollowTarget(handle);
-  if (!resolved || hostnamesHaveCoveredPages(resolved.hostnames, covered)) return null;
-  return resolved.target;
+  return handle ? resolveProfileFollowTarget(handle) : null;
 }
 
 /** The write-anywhere shell plus the transient status card. A post page gets
- *  the full card with the request button. An author's own page — a publication
- *  homepage or a profile — gets just the follow button when we do not cover
- *  the author yet. */
+ *  the full card with the request button, but only when request overlays are
+ *  turned on and the author is not already followed; with the request card
+ *  suppressed an unfollowed author still gets the follow-only card. An
+ *  author's own page — a publication homepage or a profile — gets just the
+ *  follow button when we do not follow the author yet. */
 async function mountUncovered(
   ctx: ContentScriptContext,
   pageUrl: string,
-  covered: string[],
   onCoverageChanged: () => void,
 ): Promise<() => void> {
   const teardownWrite = await mountWriteAnywhere(ctx, pageUrl, onCoverageChanged);
   let teardownStatus: (() => void) | null = null;
   if (isSubstackPostPage(pageUrl)) {
-    teardownStatus = await mountStatusOverlay(ctx, {
-      pageUrl,
-      noun: "post",
-      checked: null,
-      authorCovered: authorHasCoveredPages(pageUrl, covered),
-      followTarget: substackFollowTarget(pageUrl),
-      requestWithPageText: true,
-    });
+    // unlessFollowed collapses "no feed" and "followed feed" both to null, so
+    // the author's feed is resolved once to tell the two apart. A post on a
+    // custom domain has no derivable feed and counts as not followed.
+    const authorFeed = substackFollowTarget(pageUrl);
+    const unfollowedAuthor = await unlessFollowed(authorFeed);
+    const authorFollowed = authorFeed !== null && unfollowedAuthor === null;
+    if ((await getSettings()).showRequestOverlay && !authorFollowed) {
+      teardownStatus = await mountStatusOverlay(ctx, {
+        pageUrl,
+        noun: "post",
+        checked: null,
+        followTarget: unfollowedAuthor,
+        requestWithPageText: true,
+      });
+    } else if (unfollowedAuthor) {
+      teardownStatus = await mountFollowOverlay(ctx, unfollowedAuthor);
+    }
   } else {
-    const target = await authorPageFollowTarget(pageUrl, covered);
+    const target = await unlessFollowed(await authorPageFollowTarget(pageUrl));
     if (target) teardownStatus = await mountFollowOverlay(ctx, target);
   }
   return () => {
@@ -147,15 +154,19 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   const covered = await getCoveredPageUrls();
   if (covered && !pageIsCovered(pageUrl, covered)) {
     console.info(`[common-notes] ${pageUrl} → not in the covered list (no backend lookup)`);
-    return mountUncovered(ctx, pageUrl, covered, onCoverageChanged);
+    recordPageVisit(pageUrl, null);
+    return mountUncovered(ctx, pageUrl, onCoverageChanged);
   }
   const item = await fetchItemForUrl(pageUrl);
   console.info(`[common-notes] ${pageUrl} → ${item ? `item "${item.title ?? item.id}"` : "no ingested item"}`);
-  if (!item) return mountUncovered(ctx, pageUrl, covered ?? [], onCoverageChanged);
-  recordLinkVisit(item);
+  if (!item) {
+    recordPageVisit(pageUrl, null);
+    return mountUncovered(ctx, pageUrl, onCoverageChanged);
+  }
+  recordPageVisit(pageUrl, item);
   // We mount even when the item has no notes yet. Writing a note from a selection
   // works on any ingested page, and refresh() brings the new note in.
-  let groups = await fetchClaimGroups(item.id);
+  let { groups, counts } = await fetchClaimGroups(item.id);
   // The extension's top of funnel: notes were actually displayed to a reader.
   // Once per page by construction — mountForUrl runs once per URL.
   if (groups.length > 0) {
@@ -163,21 +174,23 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
       surface: "inline",
       item_id: item.id,
       claim_count: groups.length,
-      note_count: groups.reduce((n, g) => n + g.notes.length, 0),
+      note_count: counts.visible,
     });
   }
 
   // The transient status card tells the reader this page has been checked,
   // which matters most when the check produced zero notes and nothing else on
   // the page shows we were here.
-  const statusTeardown = await mountStatusOverlay(ctx, {
-    pageUrl,
-    noun: isSubstackPostPage(pageUrl) ? "post" : "page",
-    checked: { noteCount: groups.reduce((n, g) => n + g.notes.length, 0) },
-    authorCovered: true,
-    followTarget: null,
-    requestWithPageText: false,
-  });
+  const statusTeardown = (await getSettings()).showNoteCountOverlay
+    ? await mountStatusOverlay(ctx, {
+        pageUrl,
+        noun: isSubstackPostPage(pageUrl) ? "post" : "page",
+        checked: counts,
+        onOpenNotes: jumpToNextNote,
+        followTarget: null,
+        requestWithPageText: false,
+      })
+    : () => {};
 
   let reactRoot: Root | null = null;
   let themeRoot: HTMLElement | null = null;
@@ -243,7 +256,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   };
 
   const refresh = async () => {
-    groups = await fetchClaimGroups(item.id);
+    groups = (await fetchClaimGroups(item.id)).groups;
     render();
   };
   // When the user flips a tickbox in the popup, we re-fetch the notes through the
@@ -314,6 +327,9 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
  *  anchor its claims again on every URL change. That way notes also appear on posts
  *  the reader reached by clicking through, not only on a full page load. */
 export async function mountInlineNotes(ctx: ContentScriptContext): Promise<void> {
+  // The background answers a needless request, for example on an already
+  // checked page, with an explanation card through this listener.
+  listenForRequestInfo(ctx);
   // Listing badges live independently of the per-URL note mounts below. They
   // mark noted posts in whatever listing this site shows, such as a Substack
   // front page, and their own observer follows navigations and lazy loading.

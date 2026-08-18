@@ -1,30 +1,20 @@
 import { useEffect, useState } from "react";
 import { browser } from "#imports";
-import { useSession, signOut } from "../../../everything-shared/auth";
 import { fetchItemForUrl, fetchNotesForItem, fetchRandomNotedPageUrl, type PageItem } from "../../../everything-shared/notesQuery";
 import { normalizePageUrl } from "../../../everything-shared/pageUrls";
 import type { NoteRow } from "../../../everything-shared/types";
 import { submitNoteRequest } from "../../../everything-shared/noteRequests";
+import { authorFeedStatusForTab, type AuthorFeedStatus } from "../../utils/authorFeed";
 import { noteVisible } from "../../utils/claimGroups";
 import { genericScriptId } from "../../utils/genericScript";
 import { resolveReaderCanonical } from "../../utils/readerCanonical";
-import { getCoveredPageUrls } from "../../utils/coveredPages";
-import {
-  authorHasCoveredPages,
-  hostnamesHaveCoveredPages,
-  resolveProfileFollowTarget,
-  substackFollowTarget,
-  substackProfileHandle,
-  youtubeChannelTarget,
-  type FollowTarget,
-} from "../../utils/followTarget";
+import type { FollowTarget } from "../../utils/followTarget";
 import { buildFollowAction } from "../../utils/mountStatusOverlay";
 import { capturePageFromTab } from "../../utils/pageCapture";
-import { addRequestedPage, getNoteFilters, getRequestedPages, updateNoteFilters, type NoteFilters } from "../../utils/settings";
+import { addRequestedPage, getRequestedPages } from "../../utils/settings";
 import { ActionButton, type StatusAction } from "../../components/StatusOverlay";
-import { extractYoutubeVideoId } from "../../../everything-shared/pageUrls";
 import { STATIC_SITE_HOSTNAME } from "../../utils/staticSites";
-import { LoginPanel } from "../../components/LoginPanel";
+import { useNoteFilters } from "../../components/NoteFilterToggles";
 
 // Requesting notes makes no sense on these pages. They are searches and
 // portals rather than content. Pages that are not http or https are already
@@ -32,7 +22,6 @@ import { LoginPanel } from "../../components/LoginPanel";
 const NON_CONTENT_HOSTNAME = /(^|\.)google\.[a-z.]+$|(^|\.)bing\.com$|(^|\.)duckduckgo\.com$|(^|\.)ecosia\.org$|(^|\.)startpage\.com$|(^|\.)search\.brave\.com$/;
 
 const PRIMARY_BUTTON = "w-full bg-blue-600 text-white rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-blue-700 disabled:opacity-40";
-const SECONDARY_BUTTON = "w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-800 hover:bg-gray-100";
 
 type PageState =
   | { kind: "loading" }
@@ -61,44 +50,6 @@ function usePageState(): PageState {
     })();
   }, []);
   return state;
-}
-
-/** The popup's two tickboxes. A change is written to synced storage, and the
- *  content scripts watch that storage so open pages re-render straight
- *  away. */
-function useNoteFilters(): [NoteFilters | null, (patch: Partial<NoteFilters>) => void] {
-  const [filters, setFilters] = useState<NoteFilters | null>(null);
-  useEffect(() => {
-    getNoteFilters().then(setFilters);
-  }, []);
-  const toggle = (patch: Partial<NoteFilters>) => {
-    setFilters((prev) => (prev ? { ...prev, ...patch } : prev));
-    void updateNoteFilters(patch);
-  };
-  return [filters, toggle];
-}
-
-function NoteFilterToggles({ filters, onToggle }: { filters: NoteFilters; onToggle: (patch: Partial<NoteFilters>) => void }) {
-  return (
-    <div className="space-y-1.5">
-      <label className="flex items-center gap-2 text-sm text-gray-700">
-        <input
-          type="checkbox"
-          checked={filters.showNeedsRatings}
-          onChange={(e) => onToggle({ showNeedsRatings: e.target.checked })}
-        />
-        Show notes that need more ratings
-      </label>
-      <label className="flex items-center gap-2 text-sm text-gray-700">
-        <input
-          type="checkbox"
-          checked={filters.showUnhelpful}
-          onChange={(e) => onToggle({ showUnhelpful: e.target.checked })}
-        />
-        Show unhelpful notes
-      </label>
-    </div>
-  );
 }
 
 /** Whether this page's content script has already jumped to a note once. This
@@ -222,54 +173,27 @@ function RequestNoteButton() {
   );
 }
 
-/** Runs inside the watch page, so it must stay self-contained: executeScript
- *  serializes the function and imports would not exist over there. */
-function readWatchPageChannel() {
-  const link = document.querySelector<HTMLAnchorElement>("ytd-video-owner-renderer ytd-channel-name a");
-  return link?.href ? { href: link.href, name: link.textContent ?? "" } : null;
-}
-
-/** The feed the current tab's author could be followed as: a Substack
- *  publication (from its subdomain or a profile page) or a YouTube channel
- *  (from a channel page, or read out of a watch page's owner box). Null when
- *  the page has no author feed or we already cover the author. */
-async function followTargetForTab(tab: { id?: number; url?: string; title?: string }): Promise<FollowTarget | null> {
-  const url = tab.url;
-  if (!url) return null;
-  const covered = (await getCoveredPageUrls()) ?? [];
-  const subdomainTarget = substackFollowTarget(url);
-  if (subdomainTarget) return authorHasCoveredPages(url, covered) ? null : subdomainTarget;
-  const handle = substackProfileHandle(url);
-  if (handle) {
-    const resolved = await resolveProfileFollowTarget(handle);
-    return resolved && !hostnamesHaveCoveredPages(resolved.hostnames, covered) ? resolved.target : null;
-  }
-  const channelTarget = youtubeChannelTarget(url, (tab.title ?? "").replace(/ - YouTube$/, ""));
-  if (channelTarget) return channelTarget;
-  if (extractYoutubeVideoId(url) && tab.id != null) {
-    try {
-      const [result] = await browser.scripting.executeScript({ target: { tabId: tab.id }, func: readWatchPageChannel });
-      const channel = result?.result as { href: string; name: string } | null;
-      if (channel) return youtubeChannelTarget(channel.href, channel.name.trim());
-    } catch {
-      // A page we may not inject into offers no follow target.
-    }
-  }
-  return null;
-}
-
-/** The popup's version of the status card's follow button. It renders nothing
- *  while the page has no followable author. */
-function FollowButton() {
-  const [action, setAction] = useState<StatusAction | null>(null);
+/** How the current tab's page relates to author feeds, resolved once so the
+ *  request and follow buttons can be decided together. Null while resolving;
+ *  the caller keeps its loading text up rather than flashing buttons in. */
+function useAuthorFeed(state: PageState): AuthorFeedStatus | null {
+  const [status, setStatus] = useState<AuthorFeedStatus | null>(null);
   useEffect(() => {
+    if (state.kind !== "no_item") return;
     (async () => {
       const tab = await activeTab();
-      if (!tab) return;
-      const target = await followTargetForTab(tab);
-      if (target) setAction(await buildFollowAction(target));
+      setStatus(tab ? await authorFeedStatusForTab(tab) : { kind: "none" });
     })();
-  }, []);
+  }, [state]);
+  return status;
+}
+
+/** The popup's version of the status card's follow button. */
+function FollowButton({ target }: { target: FollowTarget }) {
+  const [action, setAction] = useState<StatusAction | null>(null);
+  useEffect(() => {
+    void buildFollowAction(target).then(setAction);
+  }, [target]);
   if (!action) return null;
   return <ActionButton action={action} buttonClassName={PRIMARY_BUTTON} />;
 }
@@ -285,6 +209,7 @@ function PrimaryAction({ state, visibleNoteCount, jumped, access }: {
   access: PageAccess | null;
 }) {
   const [busy, setBusy] = useState(false);
+  const authorFeed = useAuthorFeed(state);
 
   if (state.kind === "loading") return <p className="text-sm text-gray-500">Loading notes…</p>;
 
@@ -313,10 +238,22 @@ function PrimaryAction({ state, visibleNoteCount, jumped, access }: {
   }
 
   if (state.kind === "no_item" && !NON_CONTENT_HOSTNAME.test(new URL(state.origin).hostname)) {
+    if (!authorFeed) return <p className="text-sm text-gray-500">Loading notes…</p>;
+    // A page by an author we already follow needs no request. Every new post
+    // gets checked on its own, so the button would only submit noise.
+    if (authorFeed.kind === "followed") {
+      return (
+        <p className="text-sm text-gray-600">
+          {authorFeed.feed.kind === "youtuber"
+            ? "We check every new video from this youtuber."
+            : "We check every new post from this author."}
+        </p>
+      );
+    }
     return (
       <div className="space-y-2">
         <RequestNoteButton />
-        <FollowButton />
+        {authorFeed.kind === "followable" && <FollowButton target={authorFeed.target} />}
       </div>
     );
   }
@@ -335,11 +272,12 @@ function PrimaryAction({ state, visibleNoteCount, jumped, access }: {
 }
 
 export function PopupApp() {
-  const { session, ready } = useSession();
   const state = usePageState();
   const jumped = useJumped(state);
   const access = usePageAccess(state);
-  const [filters, toggleFilters] = useNoteFilters();
+  // The filters are edited on the settings page; the popup only reads them to
+  // count the notes the reader would actually see.
+  const [filters] = useNoteFilters();
   // A fresh site should reach this session now, not on the next scheduled tick.
   useEffect(() => {
     void browser.runtime.sendMessage({ type: "cn-sync-noted-sites" }).catch(() => {});
@@ -349,16 +287,19 @@ export function PopupApp() {
     : 0;
 
   return (
-    <div className="p-4 space-y-4 bg-gray-50 min-h-[180px]">
+    <div className="p-4 space-y-4 bg-gray-50 min-h-[120px]">
       <PrimaryAction state={state} visibleNoteCount={visibleNoteCount} jumped={jumped} access={access} />
-      {filters && <NoteFilterToggles filters={filters} onToggle={toggleFilters} />}
 
       <div className="border-t border-gray-200 pt-3">
-        {!ready ? null : session ? (
-          <button onClick={() => signOut()} className={SECONDARY_BUTTON}>Sign out</button>
-        ) : (
-          <LoginPanel />
-        )}
+        <button
+          onClick={() => {
+            void browser.runtime.openOptionsPage();
+            window.close();
+          }}
+          className="text-sm text-gray-500 hover:text-gray-700 underline"
+        >
+          Settings
+        </button>
       </div>
     </div>
   );
