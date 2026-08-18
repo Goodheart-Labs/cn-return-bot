@@ -61,7 +61,13 @@ jobs:
         # channel listing on today's YouTube, so install the current release
         # from PyPI instead.
         run: |
-          sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
+          # The runners' default mirror, azure.archive.ubuntu.com, degrades to
+          # KB/s every few weeks and stalled this step repeatedly on 2026-08-18.
+          # Ubuntu's own archive is a touch slower on good days but does not
+          # have those outages, and the retries cover brief hiccups.
+          sudo sed -i 's|azure.archive.ubuntu.com|archive.ubuntu.com|g' /etc/apt/sources.list.d/ubuntu.sources
+          sudo apt-get update -o Acquire::Retries=3
+          sudo apt-get install -y --no-install-recommends -o Acquire::Retries=3 ffmpeg
           pipx install yt-dlp
           yt-dlp --version
 
