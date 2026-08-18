@@ -77,7 +77,7 @@ Changed because: the tabs.onUpdated consent-page flow it described is gone
 (the per-site grant page was removed together with the optional host
 permission), and the "URLs seen by this listener are never transmitted" claim
 no longer holds as stated — covered pages ARE looked up on the server, and
-visits to covered Substack/YouTube/LessWrong pages are counted anonymously.
+visits to Substack/YouTube/LessWrong posts are counted anonymously (opt-out).
 The replacement text states the on-device check accurately without
 overclaiming.
 
