@@ -53,11 +53,26 @@ jobs:
         run: bun install
 
       - name: Install FFmpeg and yt-dlp for YouTube ingestion
+        # A hung apt mirror once held this step for over an hour, which ate the
+        # dispatch slot while the pipeline never even started. Installs finish
+        # in about a minute normally, so this cap only ends runs that are stuck.
+        timeout-minutes: 10
         # Ubuntu's packaged yt-dlp is years old and silently returns an empty
         # channel listing on today's YouTube, so install the current release
         # from PyPI instead.
         run: |
-          sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
+          # The runners' default mirror, azure.archive.ubuntu.com, degrades to
+          # KB/s every few weeks and stalled this step repeatedly on 2026-08-18.
+          # The runner image picks its mirror through the mirror+file scheme, so
+          # the mirror list file is what has to change — editing ubuntu.sources
+          # does nothing, which an earlier attempt found out the hard way.
+          # Ubuntu's own archive is a touch slower on good days but does not
+          # have those outages, and the retries cover brief hiccups.
+          if [ -f /etc/apt/apt-mirrors.txt ]; then
+            echo "http://archive.ubuntu.com/ubuntu/	priority:1" | sudo tee /etc/apt/apt-mirrors.txt
+          fi
+          sudo apt-get update -o Acquire::Retries=3
+          sudo apt-get install -y --no-install-recommends -o Acquire::Retries=3 ffmpeg
           pipx install yt-dlp
           yt-dlp --version
 
