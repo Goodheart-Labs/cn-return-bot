@@ -1,7 +1,7 @@
 # Chrome Web Store privacy disclosures — Common Notes
 
 This file mirrors the "Privacy" tab of the Chrome Web Store listing for the
-Common Notes extension, updated to match the code as of 17 August 2026. Each
+Common Notes extension, updated to match the code as of 18 August 2026. Each
 section below is one form field. The text in the code block is the proposed
 answer, ready to paste (every field is under the store's 1000-character limit).
 Fields that differ from what is currently live in the store carry a
@@ -24,15 +24,18 @@ Unchanged.
 ## storage justification
 
 ```
-Used for: (1) The user's sign-in session (auth token of our backend, Supabase) in chrome.storage.local, because content scripts cannot share the host page's localStorage. (2) Privacy by design: every 5 minutes the background downloads the list of pages that currently have notes, plus per-page note counts, and caches them in chrome.storage.local; content scripts consult this local list first, so pages without notes never trigger any network request. A small cache of resolved Substack reader URLs serves the same purpose. (3) chrome.storage.local also holds a randomly generated device id for our self-hosted usage analytics (regenerated on sign-out) and, during the two-step email sign-in, the typed email address for up to 1 hour so the login code can be entered later (content scripts cannot read storage.session). (4) chrome.storage.sync holds small preferences: which note types to display, and which pages and authors the user already requested notes for. No browsing history is stored.
+Used for: (1) The user's sign-in session (Supabase auth token) in chrome.storage.local, because content scripts cannot share the host page's localStorage. (2) Every 5 minutes the background downloads the list of pages that currently have notes, per-page note counts, and the list of author feeds we already check, and caches them in chrome.storage.local; content scripts consult these local lists first, so browsing a page without notes triggers no note lookup. A cache of resolved Substack reader URLs and a memory of already-shown offer cards serve the same purpose. (3) chrome.storage.local also holds a random device id for our self-hosted usage analytics (regenerated on sign-out) and, during email sign-in, the typed email address for up to 1 hour (content scripts cannot read storage.session). (4) chrome.storage.sync holds small settings: per-site visit-recording consent, overlay toggles, note-type filters, requested pages/authors, and a flag that the settings page was shown once.
 ```
 
 Changed because: the analytics device id and the reader-URL cache are new
 uses; the pending sign-in email moved from `storage.session` to
-`chrome.storage.local` (content scripts cannot read session storage); and the
-"Do not ask again" host list no longer exists — the per-site permission prompt
-was removed, and sync storage now remembers requested pages and follows
-instead.
+`chrome.storage.local`; the "Do not ask again" host list no longer exists;
+and August 2026 added the settings object (visit-recording consent, overlay
+toggles), the settings-onboarding flag, the followed-feeds cache, and the
+local shown-once memory for offer cards. The "pages without notes never
+trigger any network request" claim was narrowed to note lookups, because
+consented visit counting can now fire on unchecked posts too (see host
+permission).
 
 ## identity justification
 
@@ -45,22 +48,24 @@ Unchanged (verified against `utils/oauth.ts` — still accurate).
 ## contextMenus justification
 
 ```
-Used for two context-menu items, both shown only on text selections: "Write a Common Note on this" lets the user write a note on the selected passage, and "Request Common Notes on this" asks our fact-checking pipeline to check the selected paragraph.
+Used for three context-menu items: on a text selection, "Write a Common Note on this" lets the user write a note on the selected passage and "Request Common Notes on this" asks our fact-checking pipeline to check the selected paragraph; on a plain right-click, "Request Common Notes on this page" asks the pipeline to check the whole page. When the page is already checked, or we already follow its author, a click submits nothing and a small in-page card says so.
 ```
 
-Changed because: a second selection-only item, "Request Common Notes on this",
-was added with the note-requests feature.
+Changed because: a page-context item was added (18 August 2026), so the
+"both shown only on text selections" wording is no longer true, and clicks on
+already-handled pages now explain themselves instead of submitting.
 
 ## activeTab justification
 
 ```
-Two uses, both after an explicit user action on that one tab: (1) When "Write a Common Note on this" is clicked on a page where no content script is running, the packaged note-composer script is injected once, so users can write a note on any page they act on. (2) "Request Common Notes" (the context-menu item, or the popup's request button) reads the page's title, canonical link, and main body text via scripting.executeScript and attaches them to the request — our pipeline fact-checks the page from that captured text, because it cannot download arbitrary pages itself. The activeTab grant also keeps both features working for users who have limited the extension's site access in the browser's settings.
+Two uses, both after an explicit user action on that one tab: (1) When "Write a Common Note on this" is clicked on a page where no content script is running, the packaged note-composer script is injected once, so users can write a note on any page they act on. (2) "Request Common Notes" (the context-menu items, or the popup's request button) reads the page's title, canonical link, and main body text via scripting.executeScript and attaches them to the request — our pipeline fact-checks the page from that captured text, because it cannot download arbitrary pages itself. On a YouTube watch page it also reads the channel name from the page, so no request is offered for channels we already check. The activeTab grant also keeps these features working for users who have limited the extension's site access in the browser's settings.
 ```
 
-Changed because: requesting notes now captures the page's title, canonical
-link, and body text under the activeTab grant, and the framing shifted — host
-access is no longer "per-site opt-in", so activeTab's role is the two
-click-driven features plus users who restrict site access.
+Changed because: requesting notes captures the page's title, canonical link,
+and body text under the activeTab grant; reading the watch page's channel name
+(to suppress redundant requests for followed channels) is new; and host access
+is no longer "per-site opt-in", so activeTab's role is the click-driven
+features plus users who restrict site access.
 
 ## tabs justification
 
@@ -88,24 +93,29 @@ executeScript gained the page-capture use for note requests.
 ## alarms justification
 
 ```
-A single alarm ("cn-sync-noted-sites", every 5 minutes) re-downloads the list of pages and sites that currently have notes, plus per-page note counts. The list powers the on-device page check that prevents any network request for pages without notes, and determines which sites get the notes script registered.
+A single alarm ("cn-sync-noted-sites", every 5 minutes) re-downloads the list of pages that currently have notes, per-page note counts, and the list of author feeds we already check. These local lists power the on-device page checks (whether a page gets a note lookup, whether an offer card is shown) and determine which sites get the notes script registered.
 ```
 
 Changed because: the sync now also caches per-page note counts (for the
-listing badges), and the "granted sites" wording was dropped.
+listing badges) and the followed-feeds list (to suppress redundant follow
+offers), the "granted sites" wording was dropped, and the "prevents any
+network request" claim was narrowed to note lookups.
 
 ## Host permission justification
 
 ```
-1) *://*.substack.com/* and *://*.youtube.com/* (static content scripts): the platforms most notes are written about, so the notes script always runs there to highlight noted passages and show the YouTube timestamp overlay. 2) https://*.supabase.co/*: our own backend (database and auth); content scripts must fetch notes and submit votes and notes from inside third-party pages. 3) <all_urls> (required at install): notes can exist on any website, and which sites have them changes daily on the server. The background keeps a synced list of noted hostnames and registers the notes script for exactly those hosts, so a newly noted site reaches users without a store update or per-site permission prompts. Privacy safeguard: content scripts check every page on-device against the locally cached noted-pages list BEFORE any network request, so pages without notes never contact our server. The permission also lets the background resolve Substack reader links via a cookie-less fetch.
+1) *://*.substack.com/* and *://*.youtube.com/* (static content scripts): the platforms most notes are written about, so the notes script always runs there. 2) https://*.supabase.co/*: our own backend (database and auth); content scripts must fetch notes and submit votes and notes from inside third-party pages. 3) <all_urls> (required at install): notes can exist on any website, and which sites have them changes daily. The background syncs the list of noted hostnames and registers the notes script for exactly those hosts, so a newly noted site reaches users without a store update. Privacy safeguards: pages are checked on-device against the cached noted-pages list before any note lookup. The only other request browsing can cause is the anonymous visit count on Substack, YouTube, and LessWrong posts (address and time, no user id), governed by per-site checkboxes on the settings page shown once after install; off sends nothing. The permission also lets the background resolve Substack reader links via a cookie-less fetch.
 ```
 
 Changed because: this is the biggest change. `<all_urls>` is now a REQUIRED
 install-time permission (manifest `host_permissions`), not an optional one
 requested per site — the "Show notes on this site" consent flow and the
 per-site decline memory were removed in August 2026. The justification must
-say that plainly, and the on-device check is the privacy story that makes it
-defensible. (Note: existing installs are disabled by Chrome until the user
+say that plainly, and the on-device check plus the consent-gated visit
+counting are the privacy story that makes it defensible: since 18 August 2026
+visits are counted for every opened post on the three sites, checked or not,
+so the old "pages without notes never contact our server" absolute would be
+false. (Note: existing installs are disabled by Chrome until the user
 approves the broadened permission.)
 
 ## Remote code
@@ -127,7 +137,7 @@ Proposed selections, with what changed:
 | --- | --- | --- | --- |
 | Personenidentifizierbare Informationen (PII) | ✔ | ✔ keep | Email address on email sign-in; X handle, display name, and email on X sign-in. |
 | Authentifizierungsdaten | ✔ | ✔ keep | Supabase session tokens stored in extension storage. |
-| Webprotokoll (web history) | ✔ | ✔ keep | Covered pages are looked up on our server, and visits to covered Substack/YouTube/LessWrong pages are now counted (anonymously — page address and time, no user or device id). This is a subset of browsing history, so the box stays checked. |
+| Webprotokoll (web history) | ✔ | ✔ keep | Covered pages are looked up on our server, and on Substack/YouTube/LessWrong every opened post or video is counted (anonymously — page address and time, no user or device id; per-site opt-out checkboxes on the settings page, and nothing is recorded before that page was shown once after install). This is a subset of browsing history, so the box stays checked. |
 | Websitecontent | ✔ | ✔ keep | Note requests capture the page's title, canonical link, and body text; writing a note captures the selected passage. |
 | Nutzeraktivität (user activity) | ✘ | ✔ **add** | New since the Supabase analytics work: the extension records interaction events in our own database — install, notes shown on a page, sign-in started, a vote blocked pending login, a submission rejected by moderation — under a random device id (plus the account id while signed in). Chrome's definition of user activity includes clicks and interaction monitoring, so declaring it is the safe, honest reading even though the events are first-party and coarse. |
 | Gesundheitsdaten / Finanz- und Zahlungsinformationen / Private Mitteilungen / Standort | ✘ | ✘ keep | Not collected. |
@@ -158,3 +168,10 @@ The manifest's `data_collection_permissions` for AMO declare
 - The settings bullet no longer mentions the removed per-site permission
   prompt; it lists the note-type filters and the requested pages/authors
   memory instead.
+- 18 August 2026: visit counting is now its own policy bullet and covers every
+  opened post or video on the three sites, checked or not, consent-gated: the
+  per-site checkboxes live on a settings page that opens once after install,
+  recording is inert until that page has been shown, and unticking a site
+  stops it immediately. The settings bullet gained the new checkboxes and the
+  local shown-once memory for offer cards, and the email login-code length was
+  corrected from 8 to 6 digits.
