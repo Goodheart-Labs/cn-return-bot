@@ -1,0 +1,27 @@
+# Temporary diagnostic for GOO-25. Curls the Substack proxy from CI to see the
+# real error response. Deleted once the feed errors are diagnosed.
+name: Debug Substack Proxy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Probe proxy for andymasley feed
+        env:
+          SUBSTACK_PROXY_URL: ${{ secrets.SUBSTACK_PROXY_URL }}
+          SUBSTACK_PROXY_KEY: ${{ secrets.SUBSTACK_PROXY_KEY }}
+        run: |
+          for feed in andymasley thezvi astralcodexten; do
+            echo "=== $feed ==="
+            curl -sS -o body.txt -D headers.txt -w "HTTP %{http_code}\n" \
+              -H "X-Proxy-Key: $SUBSTACK_PROXY_KEY" \
+              "$SUBSTACK_PROXY_URL?url=https%3A%2F%2F$feed.substack.com%2Ffeed" || true
+            echo "--- response headers ---"
+            cat headers.txt
+            echo "--- first 800 bytes of body ---"
+            head -c 800 body.txt; echo
+          done
