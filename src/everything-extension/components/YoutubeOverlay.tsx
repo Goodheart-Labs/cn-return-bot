@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { NnnApi } from "../../everything-web/src/components/NoteNotNeeded";
 import type { NnnRow, NoteRow } from "../../everything-shared/types";
 import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
+import { setJumpHandler } from "../utils/jumpBus";
 import { onNoteFiltersChanged } from "../utils/settings";
 import { ABSORB_KEYS, ClaimNoteStack, NOTE_POPOVER_WIDTH, OverlayLogin } from "./ClaimNoteStack";
 import { ScrubberPins } from "./ScrubberPins";
@@ -163,19 +164,28 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
   // when the popup is closed and reopened. It resets when the page reloads.
   const jumpCursor = useRef(-1);
   useEffect(() => {
+    const jumpNext = () => {
+      if (!groups.length) return;
+      jumpCursor.current = (jumpCursor.current + 1) % groups.length;
+      video.scrollIntoView({ behavior: "smooth", block: "center" });
+      jumpToPin(groups[jumpCursor.current]!);
+    };
     const listener = (message: unknown, _sender: unknown, sendResponse: (response?: unknown) => void) => {
       const type = (message as { type?: string })?.type;
       if (type === "cn-jump-state") sendResponse({ jumped: jumpCursor.current >= 0 });
       if (type === "cn-jump-note" && groups.length) {
-        jumpCursor.current = (jumpCursor.current + 1) % groups.length;
-        video.scrollIntoView({ behavior: "smooth", block: "center" });
-        jumpToPin(groups[jumpCursor.current]!);
+        jumpNext();
         sendResponse({ jumped: true });
       }
     };
     const runtime = (globalThis as any).browser?.runtime ?? (globalThis as any).chrome?.runtime;
     runtime?.onMessage.addListener(listener);
-    return () => runtime?.onMessage.removeListener(listener);
+    // The note-count card jumps through the same cursor, see utils/jumpBus.ts.
+    setJumpHandler(jumpNext);
+    return () => {
+      runtime?.onMessage.removeListener(listener);
+      setJumpHandler(null);
+    };
   }, [groups, video]);
   const refresh = async () => setGroups(await refetch());
   // Flipping a tickbox in the popup re-fetches the notes through the new

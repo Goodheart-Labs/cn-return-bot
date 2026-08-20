@@ -37,8 +37,13 @@ import { isAboveFloor, MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR } from "../utils/ve
 /** Confirmed topic matches are guaranteed up to this many of the run's maxPosts
  *  slots, fastest first. They displace the lowest-ranked regular picks, so the
  *  total number of posts processed does not change. Set this to 0 to keep the
- *  matching and the topic tagging but stop giving topic posts priority. */
-export const TOPIC_PRIORITY_SLOTS = 3;
+ *  matching and the topic tagging but stop giving topic posts priority.
+ *
+ *  Set to 0 on 2026-08-18: topic posts now compete on velocity like everything
+ *  else. The tagging and reference-document injection still run for any topic
+ *  post that earns a slot on its own, so the concede-shape test keeps
+ *  sampling. */
+export const TOPIC_PRIORITY_SLOTS = 0;
 
 /** The same shape as SourcedPost in generateCandidates. It is declared again
  *  here instead of imported, because generateCandidates imports this module.

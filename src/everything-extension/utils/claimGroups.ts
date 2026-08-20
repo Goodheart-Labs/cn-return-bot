@@ -33,13 +33,27 @@ export function noteVisible(note: NoteRow, filters: NoteFilters): boolean {
   return true;
 }
 
+/** The note tallies for the count card. `helpful` and `needsRatings` are
+ *  disjoint, so "1 Common Note, 1 needs more ratings" means one helpful note
+ *  plus one unrated one. Both are counted over ALL of the item's notes,
+ *  deliberately ignoring the reader's display filters: counts report what
+ *  exists, filters only decide what renders. `visible` is the filtered count,
+ *  the notes a jump can actually reach. */
+export type NoteCounts = { helpful: number; needsRatings: number; visible: number };
+
 /** An item's notes and its claims' note-not-needed entries, grouped by claim,
- *  with the popup's status filters applied. Both the inline mount, used on
- *  Substack and on the generic text sites, and the YouTube overlay call
- *  this. */
-export async function fetchClaimGroups(itemId: string): Promise<ClaimGroup[]> {
+ *  with the status filters applied, plus the visible-note counts. Both the
+ *  inline mount, used on Substack and on the generic text sites, and the
+ *  YouTube overlay call this. */
+export async function fetchClaimGroups(itemId: string): Promise<{ groups: ClaimGroup[]; counts: NoteCounts }> {
   const [notes, filters] = await Promise.all([fetchNotesForItem(itemId), getNoteFilters()]);
   const visible = notes.filter((note) => noteVisible(note, filters));
+  const counts = { helpful: 0, needsRatings: 0, visible: visible.length };
+  for (const note of notes) {
+    const status = noteStatus(note);
+    if (status === "helpful") counts.helpful += 1;
+    else if (status === "needs_ratings") counts.needsRatings += 1;
+  }
   const nnn = await fetchNnnForClaims([...new Set(visible.map((n) => n.claim_id))]);
-  return groupByClaim(visible, nnn);
+  return { groups: groupByClaim(visible, nnn), counts };
 }

@@ -57,11 +57,15 @@ export const withVote = (tally: VoteTally, vote: Vote): VoteTally => ({
   notHelpful: tally.notHelpful + (vote === -1 ? 1 : 0),
 });
 
+/** The columns the tally is computed from. Callers that never hold a full
+ *  NoteRow, such as the noted-page counts sync, can select just these. */
+export type NoteTallyFields = Pick<NoteRow, "helpful_count" | "somewhat_helpful_count" | "not_helpful_count" | "author_id">;
+
 /** The note's public tally with the author's own vote taken out. A database trigger
  *  casts that vote automatically, so it is entirely predictable and carries no
  *  information. This is an approximation, because it assumes the author has not
  *  since changed that vote away from helpful. */
-export function noteTally(note: NoteRow): VoteTally {
+export function noteTally(note: NoteTallyFields): VoteTally {
   return {
     helpful: Math.max(0, note.helpful_count - (note.author_id ? 1 : 0)),
     somewhatHelpful: note.somewhat_helpful_count,

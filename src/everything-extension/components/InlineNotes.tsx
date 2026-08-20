@@ -6,6 +6,7 @@ import type { Vote } from "../../everything-shared/votes";
 import type { NnnRow, NoteRow } from "../../everything-shared/types";
 import type { PageItem } from "../../everything-shared/notesQuery";
 import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
+import { setJumpHandler } from "../utils/jumpBus";
 import { ABSORB_KEYS, ClaimNoteStack, GroupIcon, NOTE_POPOVER_WIDTH, OverlayLogin } from "./ClaimNoteStack";
 import { NoteWithActions } from "./NoteWithActions";
 import { useNoteVoting, replaceNoteInGroup } from "./useNoteVoting";
@@ -229,21 +230,30 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
   const jumpCursor = useRef(-1);
   useEffect(() => {
     const ordered = [...groups].sort((a, b) => a.range.compareBoundaryPoints(Range.START_TO_START, b.range));
+    const jumpNext = () => {
+      if (!ordered.length) return;
+      jumpCursor.current = (jumpCursor.current + 1) % ordered.length;
+      const target = ordered[jumpCursor.current]!;
+      target.range.startContainer.parentElement?.scrollIntoView({ behavior: "smooth", block: "center" });
+      setOpenClaim(target.claimId);
+    };
     const listener = (message: unknown, _sender: unknown, sendResponse: (response?: unknown) => void) => {
       const { type, selection } = (message as { type?: string; selection?: string }) ?? {};
       if (type === "cn-jump-state") sendResponse({ jumped: jumpCursor.current >= 0 });
       if (type === "cn-jump-note" && ordered.length) {
-        jumpCursor.current = (jumpCursor.current + 1) % ordered.length;
-        const target = ordered[jumpCursor.current]!;
-        target.range.startContainer.parentElement?.scrollIntoView({ behavior: "smooth", block: "center" });
-        setOpenClaim(target.claimId);
+        jumpNext();
         sendResponse({ jumped: true });
       }
       if (type === "cn-write-note" && selection?.trim()) setWriteSelection(selection.trim());
     };
     const runtime = (globalThis as any).browser?.runtime ?? (globalThis as any).chrome?.runtime;
     runtime?.onMessage.addListener(listener);
-    return () => runtime?.onMessage.removeListener(listener);
+    // The note-count card jumps through the same cursor, see utils/jumpBus.ts.
+    setJumpHandler(jumpNext);
+    return () => {
+      runtime?.onMessage.removeListener(listener);
+      setJumpHandler(null);
+    };
   }, [groups]);
 
   const positioned = useMemo(() => {

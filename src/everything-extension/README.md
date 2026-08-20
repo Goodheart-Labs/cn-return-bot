@@ -1,6 +1,6 @@
 # Common Notes browser extension
 
-Community notes inline on the pages you read — Substack, YouTube, and any other site with notes (the extension installs with access to all sites, and the popup's "Hide notes on this site" switches any site off), backed by the same Supabase database as [commonnotes.net](https://commonnotes.net).
+Community notes inline on the pages you read — Substack, YouTube, and any other site with notes (the extension installs with access to all sites), backed by the same Supabase database as [commonnotes.net](https://commonnotes.net). The settings page, opened once after install and reachable from the popup, holds the visit-recording checkboxes, the overlay toggles, the note filters, and sign-in.
 
 Also: **write a note on any page** — right-click selected text → "Write a Common Note on this" (the click authorizes a one-off injection; posting creates the page's entry). On uncovered pages the popup offers **"Request notes on this page"** instead, telling us where to expand coverage.
 

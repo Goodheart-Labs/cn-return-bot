@@ -92,7 +92,7 @@ cliffs:  NH_5 ≥ 3 → 5    NH_10 ≥ 8 → 2`}</pre>
       <div>
         <Label>The inputs (live)</Label>
         <div className="text-[11px] text-gray-500 mb-1.5 px-2">
-          % is <b>net</b> = (helpful − not-helpful) ÷ window — so it goes negative when a window has more
+          % is <b>net</b> = (helpful − not-helpful) ÷ window, so it goes negative when a window has more
           not-helpful than helpful.
         </div>
         <div className="space-y-0.5">
@@ -142,7 +142,7 @@ cliffs:  NH_5 ≥ 3 → 5    NH_10 ≥ 8 → 2`}</pre>
         <div className="font-semibold text-gray-900 mb-0.5">What's bottlenecking us</div>
         {d.bindingTerm === "quality" && d.bindingWindow ? (
           <>
-            Resting on <b>{d.bindingWindow.label}</b> ({d.bindingWindow.key}) at <b>{pct(d.bindingWindow.rate)}</b> — the
+            Resting on <b>{d.bindingWindow.label}</b> ({d.bindingWindow.key}) at <b>{pct(d.bindingWindow.rate)}</b>. That is the
             best of the recent windows, so it's the one carrying us. Raise it ~1pp → cap{" "}
             <b>
               {d.slopePerPoint >= 0 ? "+" : ""}
@@ -157,7 +157,7 @@ cliffs:  NH_5 ≥ 3 → 5    NH_10 ≥ 8 → 2`}</pre>
           </>
         ) : (
           <>
-            On a collapse cliff (NH_5 {d.nh5}/5, NH_10 {d.nh10}/10) — cap forced to <b>{d.modeledCap}</b>. Stop feeding
+            On a collapse cliff (NH_5 {d.nh5}/5, NH_10 {d.nh10}/10), so the cap is forced to <b>{d.modeledCap}</b>. Stop feeding
             fresh not-helpful notes.
           </>
         )}
