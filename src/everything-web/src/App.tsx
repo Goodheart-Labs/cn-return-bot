@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { Session } from "@supabase/supabase-js";
-import { useLiveData } from "./lib/useLiveData";
+import { useProjectFeed, useProjects } from "./lib/useFeedData";
+import { fetchProjectIdsWithItems } from "./lib/feedData";
 import { useSession, signOut } from "../../everything-shared/auth";
 import { castVote, clearVote, fetchMyVotes, type Vote } from "../../everything-shared/votes";
 import { castNnnVote, clearNnnVote, fetchMyNnnVotes } from "../../everything-shared/noteNotNeeded";
@@ -67,9 +68,12 @@ function NoteSection({ label, notes, render }: {
 }
 
 export function App() {
-  const { projects, items, notes, nnn, loaded } = useLiveData();
+  const projects = useProjects();
   const { session, event: authEvent } = useSession();
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  // The feed holds one project at a time. Selecting another project loads that
+  // project's items, notes and entries and drops the previous project's.
+  const { items, notes, nnn, loaded } = useProjectFeed(selectedId);
   // Which top-level view is showing: the note feed or the rating leaderboard.
   const [view, setView] = useState<View>(() => readRoute().view);
   // Which item inside the project the feed is narrowed to. An item is one
@@ -165,14 +169,22 @@ export function App() {
 
   // The project we open on is the one named by the ?project= slug in the URL. If
   // there is no such slug, we take the first project in sort order that actually
-  // has content.
+  // has content, and asking which projects have content is the only reason the
+  // page ever looks past the project it is showing.
   useEffect(() => {
     if (selectedId || projects.length === 0) return;
     const fromUrl = projects.find((p) => p.slug === readRoute().project);
-    if (fromUrl) return setSelectedId(fromUrl.id);
-    const withItems = new Set([...items.values()].map((i) => i.project_id));
-    setSelectedId(projects.find((p) => withItems.has(p.id))?.id ?? projects[0]!.id);
-  }, [projects, items, selectedId]);
+    if (fromUrl) {
+      setSelectedId(fromUrl.id);
+      return;
+    }
+    let cancelled = false;
+    fetchProjectIdsWithItems().then((withItems) => {
+      if (cancelled) return;
+      setSelectedId(projects.find((p) => withItems.has(p.id))?.id ?? projects[0]!.id);
+    });
+    return () => { cancelled = true; };
+  }, [projects, selectedId]);
 
   // Selecting a project updates the URL. Back and Forward then restore the
   // selection. Each capture happens after the pushState so that the event
@@ -297,7 +309,7 @@ export function App() {
   // The project's items that actually have notes, newest first. This list feeds
   // both the chip row and the note feed.
   const projectItems = [...items.values()]
-    .filter((i) => i.project_id === selectedId && (notesByItem.get(i.id)?.length ?? 0) > 0)
+    .filter((i) => (notesByItem.get(i.id)?.length ?? 0) > 0)
     .sort((a, b) => (b.published_at ?? b.created_at).localeCompare(a.published_at ?? a.created_at));
   const itemNoteCounts = new Map(projectItems.map((i) => [i.id, notesByItem.get(i.id)!.length]));
   // Ignore an ?item= parameter that is stale or belongs to another project.
