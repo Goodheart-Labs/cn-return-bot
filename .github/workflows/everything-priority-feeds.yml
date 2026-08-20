@@ -91,25 +91,5 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
-      # BRANCH-ONLY DIAGNOSTIC (GOO-25): probe the Substack proxy to see the
-      # real error response behind the 500s. The pipeline step below is
-      # temporarily disabled on this branch. Never merge this to main.
-      - name: Probe Substack proxy
-        env:
-          SUBSTACK_PROXY_URL: ${{ secrets.SUBSTACK_PROXY_URL }}
-          SUBSTACK_PROXY_KEY: ${{ secrets.SUBSTACK_PROXY_KEY }}
-        run: |
-          for feed in andymasley thezvi astralcodexten; do
-            echo "=== $feed ==="
-            curl -sS -o body.txt -D headers.txt -w "HTTP %{http_code}\n" \
-              -H "X-Proxy-Key: $SUBSTACK_PROXY_KEY" \
-              "$SUBSTACK_PROXY_URL?url=https%3A%2F%2F$feed.substack.com%2Ffeed" || true
-            echo "--- response headers ---"
-            cat headers.txt
-            echo "--- first 1200 bytes of body ---"
-            head -c 1200 body.txt; echo; echo
-          done
-
       - name: Enqueue and process in time-budgeted cycles
-        if: false
         run: bun run everything-auto-run
