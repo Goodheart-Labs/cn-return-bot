@@ -27,3 +27,12 @@ The pipeline uses the proxy only when those env vars are set (CI); local runs
 fetch Substack directly. A feed's first-ever request registers it for
 background refresh; feeds nobody requests for a week are dropped from the
 refresh loop.
+
+The free tier allows only 1000 KV writes per day, and the budget resets at
+midnight UTC. The cron writes each feed at most every 20 minutes, so one feed
+costs about 72 writes per day and the current budget fits roughly 13 feeds. If
+the followed-feed list grows toward that, raise `REFRESH_AGE_MS` in `index.ts`
+or move the account to the paid Workers plan. Running over the cap is no longer
+fatal (writes are best-effort and requests are still served from cache), but
+the cache then goes stale and the client fails loudly once it is older than a
+day.
