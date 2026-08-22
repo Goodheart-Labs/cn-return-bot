@@ -1,14 +1,15 @@
 name: Everything Priority Feeds
 
-# BRANCH-ONLY DIAGNOSTIC (GOO-21): does a failing video really have no English
-# captions, or does the proxy IP get a degraded player response that omits
-# them? This replaces the pipeline with a yt-dlp caption probe on this branch.
+# BRANCH-ONLY DIAGNOSTIC (GOO-21): the first probe said the parked videos report
+# no captions at all. That alone does not settle it, because a flagged proxy IP
+# is served a stripped player response that also reports no captions. So this
+# run tests known-good controls in the same session: videos whose captions the
+# pipeline successfully read a few days ago. If the controls still show captions
+# and the parked ones do not, the parked videos genuinely have none.
 # Never merge this to main.
 on:
   workflow_dispatch:
 
-# A different group from production, because this probe runs no worker and must
-# not queue behind or delay the real dispatch ticks.
 concurrency:
   group: everything-priority-feeds-caption-probe
   cancel-in-progress: false
@@ -24,20 +25,22 @@ jobs:
         run: pipx install yt-dlp && yt-dlp --version
 
       - name: Probe caption availability through the proxy
+        # A single timeout must not abort the whole probe, which is what cut the
+        # previous run short.
+        continue-on-error: true
         run: |
-          # DgeRVUSuGvQ / EdhbPHjzdU8 / pXVmkurTOgM: Hank Green videos parked as
-          # "No en transcript available". IabDOXf7Acs: same for MoneyMacro.
-          # DoXvZtfrLns: a MoneyMacro video that processed fine, as a control.
-          for id in DgeRVUSuGvQ EdhbPHjzdU8 pXVmkurTOgM IabDOXf7Acs DoXvZtfrLns; do
-            for attempt in 1 2; do
-              echo "=== $id attempt $attempt ==="
-              timeout 150 yt-dlp --proxy "$YTDLP_PROXY_URL" --list-subs --skip-download \
-                --ignore-no-formats-error --no-warnings --socket-timeout 20 \
-                "https://www.youtube.com/watch?v=$id" > subs.txt 2> err.txt
-              echo "exit=$?"
-              echo "--- available subtitle languages (grep en) ---"
-              grep -E "^en|Available (automatic captions|subtitles)|has no " subs.txt | head -8 || echo "(no caption lines)"
-              echo "--- stderr ---"
-              head -c 500 err.txt; echo
-            done
+          set +e
+          # Controls first: DoXvZtfrLns (MoneyMacro) and 47IWmZUDxqc (Hank Green)
+          # both had their captions read successfully by the pipeline on Aug 17-20.
+          # Then the parked ones: IabDOXf7Acs (MoneyMacro), DgeRVUSuGvQ (Hank).
+          for id in DoXvZtfrLns 47IWmZUDxqc IabDOXf7Acs DgeRVUSuGvQ; do
+            echo "=== $id ==="
+            timeout 120 yt-dlp --proxy "$YTDLP_PROXY_URL" --list-subs --skip-download \
+              --ignore-no-formats-error --socket-timeout 20 \
+              "https://www.youtube.com/watch?v=$id" > subs.txt 2> err.txt
+            echo "exit=$?"
+            grep -cE "^en" subs.txt | sed 's/^/english caption tracks: /'
+            grep -E "has no (automatic captions|subtitles)|Available (automatic captions|subtitles)" subs.txt | head -4
+            echo "--- stderr (first 300 bytes) ---"
+            head -c 300 err.txt; echo
           done
