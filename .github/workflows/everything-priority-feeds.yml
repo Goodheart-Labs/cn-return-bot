@@ -1,95 +1,43 @@
 name: Everything Priority Feeds
 
+# BRANCH-ONLY DIAGNOSTIC (GOO-21): does a failing video really have no English
+# captions, or does the proxy IP get a degraded player response that omits
+# them? This replaces the pipeline with a yt-dlp caption probe on this branch.
+# Never merge this to main.
 on:
   workflow_dispatch:
 
-# Triggered by Supabase pg_cron via workflow_dispatch (GitHub's own scheduler
-# delays/drops runs) — see migrations/071_reschedule_everything_dispatch.sql.
-# Fires at :03/:33, offset from the create-notes routine's :18/:48.
-#
-# Never run two workers at once: the queue claim has no locking, and the
-# auto-enqueue's orphan cleanup assumes no worker is live. Queue (don't cancel)
-# so a run is never killed mid-item.
+# A different group from production, because this probe runs no worker and must
+# not queue behind or delay the real dispatch ticks.
 concurrency:
-  group: everything-priority-feeds
+  group: everything-priority-feeds-caption-probe
   cancel-in-progress: false
 
 jobs:
   enqueue-and-process:
     runs-on: ubuntu-latest
-    # A large item (a Zvi post / a podcast episode) can take well over an
-    # hour of claim checks; queued dispatch ticks cover the cadence meanwhile.
-    timeout-minutes: 120
+    timeout-minutes: 25
     env:
-      # OpenRouter API key for AI models (claim extraction, search, writer)
-      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-      # Supabase credentials for the everything_* tables
-      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-      # Gemini API key for the source verifier and media analysis
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      # Groq API key for Whisper audio transcription (media analysis)
-      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-      # xAI API key for Grok X search
-      XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
-      # Brave Search API key — fallback search provider
-      BRAVE_API_KEY: ${{ secrets.BRAVE_API_KEY }}
-      # Cloudflare Worker relaying Substack RSS fetches (Substack 403s runner IPs)
-      SUBSTACK_PROXY_URL: ${{ secrets.SUBSTACK_PROXY_URL }}
-      SUBSTACK_PROXY_KEY: ${{ secrets.SUBSTACK_PROXY_KEY }}
-      # Residential proxy for yt-dlp YouTube fetches (YouTube bot-checks runner IPs)
       YTDLP_PROXY_URL: ${{ secrets.YTDLP_PROXY_URL }}
-      # Daily spend cap in USD (repo variable; empty falls back to the code default of about 50 EUR)
-      EVERYTHING_DAILY_SPEND_CAP_USD: ${{ vars.EVERYTHING_DAILY_SPEND_CAP_USD }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Install yt-dlp
+        run: pipx install yt-dlp && yt-dlp --version
 
-      - uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: latest
-
-      - name: Install dependencies
-        run: bun install
-
-      - name: Install FFmpeg and yt-dlp for YouTube ingestion
-        # A hung apt mirror once held this step for over an hour, which ate the
-        # dispatch slot while the pipeline never even started. Installs finish
-        # in about a minute normally, so this cap only ends runs that are stuck.
-        timeout-minutes: 10
-        # Ubuntu's packaged yt-dlp is years old and silently returns an empty
-        # channel listing on today's YouTube, so install the current release
-        # from PyPI instead.
+      - name: Probe caption availability through the proxy
         run: |
-          # The runners' default mirror, azure.archive.ubuntu.com, degrades to
-          # KB/s every few weeks and stalled this step repeatedly on 2026-08-18.
-          # The runner image picks its mirror through the mirror+file scheme, so
-          # the mirror list file is what has to change — editing ubuntu.sources
-          # does nothing, which an earlier attempt found out the hard way.
-          # Ubuntu's own archive is a touch slower on good days but does not
-          # have those outages, and the retries cover brief hiccups.
-          if [ -f /etc/apt/apt-mirrors.txt ]; then
-            echo "http://archive.ubuntu.com/ubuntu/	priority:1" | sudo tee /etc/apt/apt-mirrors.txt
-          fi
-          sudo apt-get update -o Acquire::Retries=3
-          sudo apt-get install -y --no-install-recommends -o Acquire::Retries=3 ffmpeg
-          pipx install yt-dlp
-          yt-dlp --version
-
-      - name: Get Playwright version
-        id: playwright-version
-        run: echo "version=$(npx playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')" >> $GITHUB_OUTPUT
-
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        id: playwright-cache
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
-
-      - name: Install Playwright Browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps
-
-      - name: Enqueue and process in time-budgeted cycles
-        run: bun run everything-auto-run
+          # DgeRVUSuGvQ / EdhbPHjzdU8 / pXVmkurTOgM: Hank Green videos parked as
+          # "No en transcript available". IabDOXf7Acs: same for MoneyMacro.
+          # DoXvZtfrLns: a MoneyMacro video that processed fine, as a control.
+          for id in DgeRVUSuGvQ EdhbPHjzdU8 pXVmkurTOgM IabDOXf7Acs DoXvZtfrLns; do
+            for attempt in 1 2; do
+              echo "=== $id attempt $attempt ==="
+              timeout 150 yt-dlp --proxy "$YTDLP_PROXY_URL" --list-subs --skip-download \
+                --ignore-no-formats-error --no-warnings --socket-timeout 20 \
+                "https://www.youtube.com/watch?v=$id" > subs.txt 2> err.txt
+              echo "exit=$?"
+              echo "--- available subtitle languages (grep en) ---"
+              grep -E "^en|Available (automatic captions|subtitles)|has no " subs.txt | head -8 || echo "(no caption lines)"
+              echo "--- stderr ---"
+              head -c 500 err.txt; echo
+            done
+          done
