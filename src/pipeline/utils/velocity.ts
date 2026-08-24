@@ -56,9 +56,34 @@ export function formatVelocity(v: number | null): string {
 // predicts whether the post's note is ever rated. 56% of recent submissions
 // were below the historical median velocity, and notes on those posts mostly
 // sit unread. The analysis is in src/scripts_rob/2026_07_20_rating_velocity.
-// The daily cap on submissions is binding, so the goal is not to keep every
-// possible winner. The goal is to maximize the hit rate of the few submissions
-// the cap allows.
+// Its premise was that the daily cap on submissions is binding, so the goal was
+// not to keep every possible winner but to maximize the hit rate of the few
+// submissions the cap allows.
+//
+// That premise expired. As of 2026-08-24 the cap is not binding: X has not
+// refused a submission since 2026-08-14, and we post ~90/day against a real
+// ceiling near 115-120. Meanwhile the floor is what starves the pool. We
+// surface ~3,285 posts/day and only ~841 clear 15k/h, which is essentially
+// exactly what we process — the 20-per-run cap is not binding either, the
+// median run does 11. So the floor is no longer trading breadth for hit rate.
+// It is holding output below a ceiling nothing else is reaching.
+//
+// Lowered 30k -> 15k on 2026-07-28, and 15k -> 5k on 2026-08-24. At 5k the pool
+// is ~1,392 posts/day, enough to fill the ceiling with about 20% headroom.
+// Dropping further (2k -> 1,870/day, 0 -> 3,285/day) buys more candidates than
+// there are slots, which only pays once submission selects on quality. It does
+// not today: see submitCandidates, "Nothing is re-sorted here."
+//
+// Two independent readings say the posts this admits are not worse. Jim's
+// ladder replay over the feed_tweets archive (PR #371) has no-floor at H/day
+// +8% and U/day -32%. A note-level check on 706 notes with 7-day labels found
+// net helpful rate running BACKWARDS against velocity: <5k +15.0%, 5-15k
+// +12.4%, 15-30k +9.5%, 30-100k +10.8%, 100k+ +4.2%; the non-topic subset is
+// the same shape, and topic share is flat across bands so curation is not
+// driving it. Both supersede the earlier reading that helpful rate rises with
+// velocity. Caveat on the second: sub-floor notes are not a random sample of
+// sub-floor posts, since something had to bypass the floor for them to exist.
+// Suggestive, not decisive — which is why this step is 5k and not 0.
 //
 // The floor is enforced when the feed is selected, in generateCandidates. Each
 // tier is filtered down to above-floor posts, and the ladder broadens until
@@ -67,7 +92,7 @@ export function formatVelocity(v: number | null): string {
 // candidates that never went through selection, such as those from the Pangram
 // pre-pass. Topic posts answer to MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR below
 // instead. Set this to 0 to disable the floor.
-export const REGULAR_VELOCITY_FLOOR_PER_HOUR = 15_000;
+export const REGULAR_VELOCITY_FLOOR_PER_HOUR = 5_000;
 
 // ── Topic velocity floor ────────────────────────────────────────────────────
 // This floor comes from the same experiment in the week of 2026-07-20. The
