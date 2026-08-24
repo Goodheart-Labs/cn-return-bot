@@ -56,31 +56,17 @@ export function formatVelocity(v: number | null): string {
 // predicts whether the post's note is ever rated. 56% of recent submissions
 // were below the historical median velocity, and notes on those posts mostly
 // sit unread. The analysis is in src/scripts_rob/2026_07_20_rating_velocity.
-// Its premise was that the daily cap on submissions is binding, so the goal was
-// not to keep every possible winner but to maximize the hit rate of the few
-// submissions the cap allows.
 //
-// That premise expired. As of 2026-08-24 the cap is not binding: X has not
-// refused a submission since 2026-08-14, and we post ~90/day against a real
-// ceiling near 115-120. Meanwhile the floor is what starves the pool. We
-// surface ~3,285 posts/day and only ~841 clear 15k/h, which is essentially
-// exactly what we process — the 20-per-run cap is not binding either, the
-// median run does 11. So the floor is no longer trading breadth for hit rate.
-// It is holding output below a ceiling nothing else is reaching.
+// As of 2026-08-24 we were undershooting the daily cap: X had not refused a
+// submission since 2026-08-14, and we were posting ~90/day against a real
+// ceiling near 115-120. We surface ~3,285 posts/day and only ~841 clear 15k/h,
+// which is essentially exactly what we process — the 20-per-run cap is not
+// binding either, the median run does 11. So the floor had stopped trading
+// breadth for hit rate; it was holding output below a ceiling nothing else was
+// reaching.
 //
 // Lowered 30k -> 15k on 2026-07-28, and 15k -> 5k on 2026-08-24. At 5k the pool
 // is ~1,392 posts/day, enough to fill the ceiling with about 20% headroom.
-//
-// Why 5k and not 0. Every admitted post costs a full pipeline run whether or
-// not its note is ever submitted, and the ceiling on submissions is ~115-120.
-// So going to 0 would triple spend to choose the same ~115 notes, and that only
-// pays if the choosing is good. It cannot be done at submission — the eval
-// score arrives after the search, the writer and the verifier have all been
-// paid for, and today there is nothing for it to reorder anyway (we submit
-// essentially everything that survives the funnel; limit-skipped has been 0
-// since 2026-08-15). Choosing well has to happen HERE, at admission, on
-// features known at fetch time. Until there is such a score, each step down
-// buys volume at proportional cost, so take the steps one at a time.
 //
 // Evidence the posts this admits are not worse, with its own limits stated.
 // Jim's ladder replay over the feed_tweets archive (PR #371) puts no-floor at
