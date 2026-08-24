@@ -70,20 +70,38 @@ export function formatVelocity(v: number | null): string {
 //
 // Lowered 30k -> 15k on 2026-07-28, and 15k -> 5k on 2026-08-24. At 5k the pool
 // is ~1,392 posts/day, enough to fill the ceiling with about 20% headroom.
-// Dropping further (2k -> 1,870/day, 0 -> 3,285/day) buys more candidates than
-// there are slots, which only pays once submission selects on quality. It does
-// not today: see submitCandidates, "Nothing is re-sorted here."
 //
-// Two independent readings say the posts this admits are not worse. Jim's
-// ladder replay over the feed_tweets archive (PR #371) has no-floor at H/day
-// +8% and U/day -32%. A note-level check on 706 notes with 7-day labels found
-// net helpful rate running BACKWARDS against velocity: <5k +15.0%, 5-15k
-// +12.4%, 15-30k +9.5%, 30-100k +10.8%, 100k+ +4.2%; the non-topic subset is
-// the same shape, and topic share is flat across bands so curation is not
-// driving it. Both supersede the earlier reading that helpful rate rises with
-// velocity. Caveat on the second: sub-floor notes are not a random sample of
-// sub-floor posts, since something had to bypass the floor for them to exist.
-// Suggestive, not decisive — which is why this step is 5k and not 0.
+// Why 5k and not 0. Every admitted post costs a full pipeline run whether or
+// not its note is ever submitted, and the ceiling on submissions is ~115-120.
+// So going to 0 would triple spend to choose the same ~115 notes, and that only
+// pays if the choosing is good. It cannot be done at submission — the eval
+// score arrives after the search, the writer and the verifier have all been
+// paid for, and today there is nothing for it to reorder anyway (we submit
+// essentially everything that survives the funnel; limit-skipped has been 0
+// since 2026-08-15). Choosing well has to happen HERE, at admission, on
+// features known at fetch time. Until there is such a score, each step down
+// buys volume at proportional cost, so take the steps one at a time.
+//
+// Evidence the posts this admits are not worse, with its own limits stated.
+// Jim's ladder replay over the feed_tweets archive (PR #371) puts no-floor at
+// H/day +8% and U/day -32%. A note-level check on 706 notes with 7-day labels
+// found net helpful running BACKWARDS against velocity: <5k +15.0%, 5-15k
+// +12.4%, 15-30k +9.5%, 30-100k +10.8%, 100k+ +4.2%. Topic-curated share is
+// flat across those bands, so curation is not driving it. But velocity and feed
+// tier ARE correlated, and controlling for tier shrinks the effect a lot: the
+// slower half beats the faster half by +5.8pp within large (n=77 vs 200) and by
+// only +0.7pp within xl (n=74 vs 298); small shows +15.8pp on ten notes, which
+// is noise. So the raw gradient overstates it. What survives is the weaker
+// claim, and it is still the one that matters here: slower posts are not worse,
+// which is all the floor's existence ever rested on.
+//
+// Two further caveats worth carrying. Sub-floor notes are not a random sample
+// of sub-floor posts — something had to bypass the floor for them to exist — so
+// this is not the counterfactual population a lower floor admits. And the tier
+// gradient in things-we-know item 3 (small +9.0% > large +6.7% > xl +4.0%) does
+// NOT reproduce in this window: at matched velocity (>=15k) it reads xl +10.1%
+// (n=298) > large +8.5% (n=200) > small +4.2% (n=48). Do not lean on item 3
+// when reasoning about widening until someone re-measures it properly.
 //
 // The floor is enforced when the feed is selected, in generateCandidates. Each
 // tier is filtered down to above-floor posts, and the ladder broadens until
