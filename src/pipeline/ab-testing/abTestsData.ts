@@ -236,13 +236,22 @@ const SIMPLE_BOT_ANTI_PEDANTIC_TEST: ABTest = {
 // logs.timing.*. The background is in docs/improvement-menu-2026-07-25.md, item
 // T2. This test supersedes TIME_TRAVEL_PROMPT_TEST below. It has prerequisites,
 // so it declares no defaultVariant.
+//
+// The off arm was retired on 2026-08-23 (Nathan's call, on the first 7-day-
+// labeled readout): off +6.0% net of labeled (26H/11NH, n=248), context +10.0%
+// (31H/8NH, n=229), instruction +12.2% (33H/6NH, n=222) — both treatments also
+// lifted rated-at-all (~15% -> ~17.5%). Treatments-vs-off was z≈1.7, suggestive
+// rather than decisive, but it points the same way as the 2026-07-28 backtest,
+// and the control was plausibly costing ~5pp net on a third of traffic. The
+// off arm stays declared at weight 0 so picks from old runs still resolve;
+// context vs instruction keeps running 50/50 to decide which treatment wins.
 const TIMING_TREATMENT_TEST: ABTest = {
   name: "timing_treatment",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "off",         overrides: { time_travel_prompt: false, timing_context: false } }, weight: 34 },
-    { variant: { name: "instruction", overrides: { time_travel_prompt: true,  timing_context: false } }, weight: 33 },
-    { variant: { name: "context",     overrides: { time_travel_prompt: false, timing_context: true  } }, weight: 33 },
+    { variant: { name: "off",         overrides: { time_travel_prompt: false, timing_context: false } }, weight: 0 },
+    { variant: { name: "instruction", overrides: { time_travel_prompt: true,  timing_context: false } }, weight: 50 },
+    { variant: { name: "context",     overrides: { time_travel_prompt: false, timing_context: true  } }, weight: 50 },
   ],
 };
 
