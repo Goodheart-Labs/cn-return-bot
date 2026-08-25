@@ -32,9 +32,11 @@ import {
   fetchItemUrlsIn,
   fetchOrphanedProcessingItems,
   markItemError,
+  promoteItemToWholePage,
   requeueItem,
   resolveProjectId,
   type EnqueueRow,
+  type KnownItemUrl,
 } from "./db";
 import { fetchFeedPosts, htmlToText } from "./sources/substack";
 import { ensureYtDlp, fetchChannelVideos } from "./sources/youtube";
@@ -95,13 +97,24 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedEntry[]> {
     .map((v) => ({ source: "youtube" as const, url: v.url, matchKey: v.videoId, label: v.title }));
 }
 
-/** The feed's unprocessed entries, newest first. */
-async function unprocessedEntries(feed: PriorityFeed, entries: FeedEntry[]): Promise<FeedEntry[]> {
-  const knownUrls =
+/** A feed entry that still needs a whole-page check. Most carry no item row
+ *  at all and are enqueued fresh. An entry whose item exists but was never a
+ *  whole-page check, because a reader wrote a note on the page or one
+ *  paragraph was checked, carries that item so the walker can promote it
+ *  instead of skipping it forever. */
+type UnprocessedEntry = FeedEntry & { existingItem: KnownItemUrl | null };
+
+/** The feed's unprocessed entries, newest first. An entry whose item is a
+ *  whole-page check, in whatever status, is genuinely handled and dropped.
+ *  Exported for the tests, which mock the db module underneath it. */
+export async function unprocessedEntries(feed: PriorityFeed, entries: FeedEntry[]): Promise<UnprocessedEntry[]> {
+  const known =
     feed.type === "substack"
       ? await fetchItemUrlsIn(entries.map((e) => e.matchKey))
       : await fetchItemUrlsContaining(entries.map((e) => e.matchKey));
-  return entries.filter((e) => !knownUrls.some((url) => url.includes(e.matchKey)));
+  return entries
+    .map((e) => ({ ...e, existingItem: known.find((k) => k.url.includes(e.matchKey)) ?? null }))
+    .filter((e) => e.existingItem === null || e.existingItem.checked_scope !== "page");
 }
 
 /** Decide what happens to items that a killed run left behind in "processing".
@@ -150,7 +163,7 @@ async function feedsToWalk(): Promise<{ feed: PriorityFeed; priority: number }[]
 export async function runAutoEnqueue(dryRun = false): Promise<number> {
   if (!dryRun) await triageOrphanedItems();
 
-  const picks: { feed: PriorityFeed; priority: number; entry: FeedEntry }[] = [];
+  const picks: { feed: PriorityFeed; priority: number; entry: UnprocessedEntry }[] = [];
   for (const { feed, priority } of await feedsToWalk()) {
     if (picks.length >= BATCH_SIZE) break;
     const entries = await fetchFeedEntries(feed);
@@ -169,8 +182,21 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
     return 0;
   }
 
+  // An entry whose item row already exists is promoted to a whole-page check
+  // in place, keeping its claims and notes. A Substack promotion carries the
+  // RSS body, the same text a fresh enqueue would have carried; a YouTube one
+  // carries none and the worker fetches the transcript. Promotions count
+  // toward the batch exactly like fresh enqueues, because picks was capped
+  // above.
   const rows: EnqueueRow[] = [];
+  let promoted = 0;
   for (const { feed, priority, entry } of picks) {
+    if (entry.existingItem) {
+      await promoteItemToWholePage(entry.existingItem.id, entry.fullText ?? null, priority);
+      console.log(`  promoted to a whole-page check: ${entry.url}`);
+      promoted++;
+      continue;
+    }
     rows.push({
       project_id: await resolveProjectId(feed.project),
       source: entry.source,
@@ -181,9 +207,9 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
       priority,
     });
   }
-  const inserted = await enqueueItems(rows);
-  console.log(`Enqueued ${inserted} item(s)`);
-  return inserted;
+  const inserted = rows.length > 0 ? await enqueueItems(rows) : 0;
+  console.log(`Enqueued ${inserted} item(s), promoted ${promoted}`);
+  return inserted + promoted;
 }
 
 if (import.meta.main) {

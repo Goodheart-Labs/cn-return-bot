@@ -1,5 +1,6 @@
 {
   "entry": [
+    "src/**/*.test.ts",
     "src/production/*.ts",
     "src/local/*.ts",
     "src/scraper/*.ts",

@@ -76,6 +76,13 @@ const LOCAL_DOC_URL_PREFIX = "local:";
 export const syntheticDocUrl = (slug: string, basename: string) => `${LOCAL_DOC_URL_PREFIX}${slug}/${basename}`;
 export const isSyntheticDocUrl = (url: string | null): boolean => !!url?.startsWith(LOCAL_DOC_URL_PREFIX);
 
+/** What the pipeline was asked to read for an item. `page` is the whole
+ *  article or transcript. `paragraph` is only the passage a reader
+ *  highlighted, which is then the item's entire text. Null means no pipeline
+ *  run was ever intended: a reader-written note created the row. A page
+ *  counts as checked only when the item is done AND the scope is `page`. */
+export type CheckedScope = "page" | "paragraph" | null;
+
 /** An item to put in the queue. It is either a live URL that the worker fetches,
  *  or an item whose body we already have. Local `--doc` files and posts read
  *  from a priority feed's RSS are the second kind. */
@@ -87,13 +94,14 @@ export interface EnqueueRow {
   full_text?: string; // The body we already have. A live URL carries none here.
   published_at?: string; // We know this at enqueue for an RSS-fed item. Otherwise the worker sets it.
   priority?: number; // A QUEUE_PRIORITY tier. Left out it defaults to the backlog tier.
+  checked_scope?: "page" | "paragraph"; // Left out it defaults to a whole-page check.
 }
 
 /** Inserts new items into the queue and returns how many were inserted. A URL we
  *  already have is ignored. Every row is padded to the same set of keys, because
  *  PostgREST rejects a bulk insert whose rows have differing keys. */
 export async function enqueueItems(rows: EnqueueRow[]): Promise<number> {
-  const padded = rows.map((r) => ({ title: null, full_text: null, published_at: null, priority: QUEUE_PRIORITY.backlog, ...r }));
+  const padded = rows.map((r) => ({ title: null, full_text: null, published_at: null, priority: QUEUE_PRIORITY.backlog, checked_scope: "page", ...r }));
   const inserted = throwOnError(
     await getSupabaseClient()
       .from("everything_items")
@@ -124,46 +132,70 @@ export async function raiseItemPriority(id: string, priority: number): Promise<v
  *  matched by its video id, because the stored URL forms vary. Any other URL is
  *  matched exactly, apart from a trailing slash. This mirrors the extension's
  *  fetchItemForUrl. */
-export async function findItemForPageUrl(pageUrl: string): Promise<{ id: string; status: string } | null> {
+export async function findItemForPageUrl(
+  pageUrl: string,
+): Promise<{ id: string; status: string; checked_scope: CheckedScope } | null> {
   const db = getSupabaseClient();
   const videoId = extractYoutubeVideoId(pageUrl);
   if (videoId) {
     // ilike reads an underscore in the video id as a wildcard, so this is only a
     // prefilter. Every row it returns is verified by comparing the id exactly.
     const rows = throwOnError(
-      await db.from("everything_items").select("id, status, url").ilike("url", `%${videoId}%`),
-    ) as { id: string; status: string; url: string }[];
+      await db.from("everything_items").select("id, status, checked_scope, url").ilike("url", `%${videoId}%`),
+    ) as { id: string; status: string; checked_scope: CheckedScope; url: string }[];
     const hit = rows.find((r) => extractYoutubeVideoId(r.url) === videoId);
-    return hit ? { id: hit.id, status: hit.status } : null;
+    return hit ? { id: hit.id, status: hit.status, checked_scope: hit.checked_scope } : null;
   }
   const trimmed = pageUrl.replace(/\/$/, "");
   const rows = throwOnError(
-    await db.from("everything_items").select("id, status").in("url", [trimmed, `${trimmed}/`]).limit(1),
-  ) as { id: string; status: string }[];
+    await db.from("everything_items").select("id, status, checked_scope").in("url", [trimmed, `${trimmed}/`]).limit(1),
+  ) as { id: string; status: string; checked_scope: CheckedScope }[];
   return rows[0] ?? null;
 }
 
+/** Turns an existing item into a whole-page check and puts it back in the
+ *  queue at the given priority tier. The item's claims and notes are kept, and
+ *  the worker redoes only the unfinished ones. full_text is always
+ *  overwritten. Keeping a paragraph item's old text would make the worker
+ *  re-check the same paragraph and then record it as a whole-page check. Null
+ *  makes the worker fetch the page itself. */
+export async function promoteItemToWholePage(id: string, fullText: string | null, priority: number): Promise<void> {
+  throwOnError(
+    await getSupabaseClient()
+      .from("everything_items")
+      .update({ checked_scope: "page", full_text: fullText, status: "queued", error: null })
+      .eq("id", id),
+  );
+  await raiseItemPriority(id, priority);
+}
+
+/** An existing item row seen from the feed walker: where it lives and what
+ *  kind of check it stands for. */
+export interface KnownItemUrl {
+  id: string;
+  url: string;
+  checked_scope: CheckedScope;
+}
+
 /** Returns the given urls that already have an item row, whatever its status. */
-export async function fetchItemUrlsIn(urls: string[]): Promise<string[]> {
+export async function fetchItemUrlsIn(urls: string[]): Promise<KnownItemUrl[]> {
   if (urls.length === 0) return [];
-  const rows = throwOnError(
-    await getSupabaseClient().from("everything_items").select("url").in("url", urls),
-  ) as { url: string }[];
-  return rows.map((r) => r.url);
+  return throwOnError(
+    await getSupabaseClient().from("everything_items").select("id, url, checked_scope").in("url", urls),
+  ) as KnownItemUrl[];
 }
 
 /** Returns the item urls that contain any of the given fragments. We use this
  *  for YouTube video ids. The stored URL forms vary, so an item is matched by
  *  its video id rather than by an exact url. */
-export async function fetchItemUrlsContaining(fragments: string[]): Promise<string[]> {
+export async function fetchItemUrlsContaining(fragments: string[]): Promise<KnownItemUrl[]> {
   if (fragments.length === 0) return [];
-  const rows = throwOnError(
+  return throwOnError(
     await getSupabaseClient()
       .from("everything_items")
-      .select("url")
+      .select("id, url, checked_scope")
       .or(fragments.map((f) => `url.like.*${f}*`).join(",")),
-  ) as { url: string }[];
-  return rows.map((r) => r.url);
+  ) as KnownItemUrl[];
 }
 
 /** Returns the items that a killed run left stranded in `processing`. This is

@@ -35,6 +35,7 @@ import {
   findItemForPageUrl,
   insertFollowedFeed,
   insertQueuedItem,
+  promoteItemToWholePage,
   QUEUE_PRIORITY,
   raiseItemPriority,
   requeueItem,
@@ -56,14 +57,43 @@ function classifyRequestSource(pageUrl: string): ItemSource {
   return extractYoutubeVideoId(pageUrl) ? "youtube" : "web";
 }
 
-/** Consumes one note request. Returns a log line describing what happened. */
-async function consumeNoteRequest(request: NoteRequestRow): Promise<string> {
+/** Consumes one note request. Returns a log line describing what happened.
+ *  Exported for the tests, which mock the db module underneath it. */
+export async function consumeNoteRequest(request: NoteRequestRow): Promise<string> {
   const existing = await findItemForPageUrl(request.page_url);
   if (existing) {
-    if (existing.status === "done") {
+    // Only a finished whole-page check refuses the request. An item that
+    // exists because a reader wrote a note on the page, or because one
+    // paragraph was checked, is promoted to a whole-page check instead.
+    if (existing.status === "done" && existing.checked_scope === "page") {
       await resolveNoteRequest(request.id, "done", "page was already checked", existing.id);
       return `already checked: ${request.page_url}`;
     }
+    // A worker is holding this item right now. Taking the row away mid-run
+    // would race it, so the request stays pending and the next cycle retries.
+    if (existing.status === "processing") {
+      return `item is being processed, request stays pending: ${request.page_url}`;
+    }
+    if (existing.checked_scope !== "page") {
+      // The promotion overwrites full_text. A paragraph item's old text would
+      // make the worker re-check the same paragraph and then record it as a
+      // whole-page check. The fresh capture is used when the request carries
+      // one; without it the worker fetches the page itself.
+      const source = classifyRequestSource(request.page_url);
+      let fullText = source === "youtube" ? null : (request.page_text ?? null);
+      if (fullText) fullText = await cleanCapturedPageText(fullText);
+      await promoteItemToWholePage(existing.id, fullText, QUEUE_PRIORITY.requested);
+      // A paragraph request on an existing item cannot be honoured as a
+      // paragraph check, because one item holds one body text. The whole page
+      // contains the paragraph, so it is checked instead, and the request row
+      // says so.
+      const reason = request.selection ? "checked the whole page instead" : null;
+      await resolveNoteRequest(request.id, "enqueued", reason, existing.id);
+      return `promoted existing item to a whole-page check: ${request.page_url}`;
+    }
+    // A whole-page item that is queued or errored goes back in the queue at
+    // the requested tier. Its full_text stays as it is. A Substack item's RSS
+    // body must survive, because CI cannot fetch Substack pages itself.
     if (existing.status === "error") await requeueItem(existing.id);
     await raiseItemPriority(existing.id, QUEUE_PRIORITY.requested);
     await resolveNoteRequest(request.id, "enqueued", null, existing.id);
@@ -88,6 +118,7 @@ async function consumeNoteRequest(request: NoteRequestRow): Promise<string> {
     title: request.page_title || undefined,
     full_text: fullText,
     priority: QUEUE_PRIORITY.requested,
+    checked_scope: request.selection ? "paragraph" : "page",
   });
   await resolveNoteRequest(request.id, "enqueued", null, itemId);
   return `enqueued [${source}]: ${request.page_url}`;

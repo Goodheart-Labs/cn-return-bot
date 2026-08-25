@@ -95,7 +95,24 @@ function bodyText(content: FetchedContent): string {
   return content.kind === "youtube" ? content.cues.map((c) => c.text).join("\n") : content.text;
 }
 
-export async function processFetchedContent(item: EverythingItem, content: FetchedContent): Promise<ItemTally> {
+/** Whether a freshly extracted claim repeats one the item already has. An
+ *  item can carry claims before extraction runs: a reader wrote a note on the
+ *  page, or an earlier paragraph check finished. Their claims must not be
+ *  extracted again, or the same passage would end up with two notes. */
+function repeatsExistingClaim(claim: ExtractedClaim, existing: ItemClaimRow[]): boolean {
+  const norm = (text: string | null | undefined) => (text ?? "").trim().toLowerCase();
+  return existing.some(
+    (row) =>
+      norm(row.claim) === norm(claim.claim) ||
+      (!!row.context_quote && norm(row.context_quote) === norm(claim.context)),
+  );
+}
+
+export async function processFetchedContent(
+  item: EverythingItem,
+  content: FetchedContent,
+  existingClaims: ItemClaimRow[] = [],
+): Promise<ItemTally> {
   await updateItemMeta(item.id, {
     title: content.title,
     published_at: content.publishedAt?.slice(0, 10) ?? null,
@@ -104,8 +121,11 @@ export async function processFetchedContent(item: EverythingItem, content: Fetch
   console.log(`  "${content.title}" (${content.publishedAt?.slice(0, 10) ?? "no date"})`);
 
   const extracted = await extractClaims(content, EXTRACTION_CONCURRENCY);
-  const claims = dropSpeculation(extracted);
-  const speculation = extracted.length - claims.length;
+  const fresh = dropSpeculation(extracted);
+  const duplicates = fresh.filter((c) => repeatsExistingClaim(c, existingClaims)).length;
+  if (duplicates > 0) console.log(`  dropped ${duplicates} claims the item already carries`);
+  const claims = fresh.filter((c) => !repeatsExistingClaim(c, existingClaims));
+  const speculation = extracted.length - fresh.length;
   const claimIds = await insertClaims(claims.map((c) => buildClaimRow(item.id, c)));
   const toCheck = claims.filter((c) => shouldFactCheck(c.judgement)).length;
   console.log(
