@@ -18,6 +18,19 @@ export interface ItemRow {
   created_at: string;
 }
 
+/** A project as the website's sidebar loads it. The sidebar shows the name and
+ *  the URL carries the slug, so the description is left in the database. */
+export type FeedProjectRow = Pick<ProjectRow, "id" | "slug" | "name" | "sort_order">;
+
+/** An item as the website's feed loads it. The feed only names an item on a
+ *  filter chip and orders the chips by date, so it reads these columns and
+ *  leaves the rest of the row in the database. The body text in particular is
+ *  the largest column we have and nothing on the website renders it. */
+export type FeedItemRow = Pick<
+  ItemRow,
+  "id" | "project_id" | "url" | "title" | "published_at" | "created_at"
+>;
+
 /** The claim a note fact-checks. PostgREST embeds it on the note row. */
 export interface ClaimRef {
   id: string;
@@ -37,12 +50,22 @@ export interface ClaimRef {
   end_seconds: number | null;
 }
 
-/** One source a note cites. It is a row of everything_note_sources, embedded via
- *  a join. `quote` is the passage the verifier copied out of that source word for
- *  word. Null there means we have the URL and nothing else. */
+/** One source a note cites, as a note is loaded. It is a row of
+ *  everything_note_sources, embedded via a join. Only the link is read here,
+ *  because the link is all the note text itself shows. */
 export interface NoteSourceRow {
   url: string;
-  quote: string | null;
+  sort_order: number;
+}
+
+/** The body of one citation. `quote` is the passage the verifier copied out of
+ *  that source word for word, and it is the only thing the source-details
+ *  reveal shows. Sources without a quote have no body to show, so they never
+ *  appear here. These rows are fetched when a reader opens the reveal, because
+ *  they are large and most readers never open it. */
+export interface NoteSourceDetail {
+  url: string;
+  quote: string;
   explanation: string | null;
   sort_order: number;
 }
@@ -67,7 +90,11 @@ export interface NoteRow {
   id: string;
   claim_id: string;
   note: string;
-  sources: NoteSourceRow[]; // The note's citations, joined from everything_note_sources.
+  sources: NoteSourceRow[]; // The note's citation links, joined from everything_note_sources.
+  /** Whether any of this note's sources carries a supporting quote. It decides
+   *  whether the "Show source details" button appears. The quotes themselves are
+   *  fetched only when the reader presses that button. */
+  has_source_details: boolean;
   helpful_count: number;
   somewhat_helpful_count: number;
   not_helpful_count: number;

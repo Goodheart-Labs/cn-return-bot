@@ -115,7 +115,7 @@ function WlLBlock({ m }: { m: WritingLimitMetrics }) {
         <span className="text-gray-900 font-semibold">{m.WL_L.toFixed(2)}</span>
         <span className="text-gray-500">
           {" "}
-          (Internal writing limit — the writing limit before accounting for the delta in writing
+          (Internal writing limit. The writing limit before accounting for the delta in writing
           volume vs. DN_30)
         </span>
       </div>

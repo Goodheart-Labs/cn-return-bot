@@ -1,4 +1,5 @@
 import { browser } from "#imports";
+import type { PageNoteStatusCounts } from "../../everything-shared/notesQuery";
 import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
 
 // The covered-pages list holds the URL of every ingested item. The background's
@@ -15,15 +16,18 @@ export async function getCoveredPageUrls(): Promise<string[] | null> {
   return Array.isArray(stored) ? (stored as string[]) : null;
 }
 
-// The number of visible notes per covered page URL. The background's sync
-// writes it next to the coverage list, and the listing badges read it. Like
-// the coverage list, it makes the decision on the user's own device.
-export const NOTED_PAGE_COUNTS_KEY = "cn:notedPageCounts";
+// The per-status note counts per covered page URL. The background's sync
+// writes it next to the coverage list; the listing badges and count cards sum
+// whichever statuses the user's note filters show. Like the coverage list, it
+// makes the decision on the user's own device. The key replaced the older
+// cn:notedPageCounts, whose values were plain numbers; the new name means a
+// build never misreads the other build's shape.
+export const NOTED_PAGE_STATUS_COUNTS_KEY = "cn:notedPageStatusCounts";
 
 /** Null means the counts have never been synced. */
-export async function getNotedPageCounts(): Promise<Record<string, number> | null> {
-  const stored = (await browser.storage.local.get(NOTED_PAGE_COUNTS_KEY))[NOTED_PAGE_COUNTS_KEY];
-  return stored && typeof stored === "object" ? (stored as Record<string, number>) : null;
+export async function getNotedPageStatusCounts(): Promise<Record<string, PageNoteStatusCounts> | null> {
+  const stored = (await browser.storage.local.get(NOTED_PAGE_STATUS_COUNTS_KEY))[NOTED_PAGE_STATUS_COUNTS_KEY];
+  return stored && typeof stored === "object" ? (stored as Record<string, PageNoteStatusCounts>) : null;
 }
 
 export const trimSlash = (url: string) => url.replace(/\/$/, "");

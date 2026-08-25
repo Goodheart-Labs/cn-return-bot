@@ -170,7 +170,7 @@ export function NoteCard({
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => onHighValueToggle(item.id, !highValue)}
-            title={highValue ? "High-value note — click to unmark" : "Mark as high-value"}
+            title={highValue ? "High-value note. Click to unmark" : "Mark as high-value"}
             className={`text-sm px-2 py-1 rounded border flex items-center gap-1 ${
               highValue
                 ? "border-amber-300 bg-amber-50 text-amber-700"

@@ -169,7 +169,7 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
   };
   // Every card already shows its source links. This toggle only reveals the
   // quote and explanation for each source, so it appears only if a quote exists.
-  const showSourcesButton = !!onToggleSources && note.sources.some((s) => s.quote);
+  const showSourcesButton = !!onToggleSources && note.has_source_details;
 
   return (
     <div className="mt-1">

@@ -1,6 +1,7 @@
+import { noteStatus } from "./noteScore";
 import { extractEmbeddedCanonical, extractYoutubeVideoId } from "./pageUrls";
 import { supabase } from "./supabase";
-import type { ItemRow, NoteRow, NoteSourceRow } from "./types";
+import type { ItemRow, NoteRow, NoteSourceDetail, NoteSourceRow } from "./types";
 
 // A client reads whichever backend happens to be deployed, and that backend can
 // be older than the migrations this build assumes. These are the pieces that may
@@ -31,34 +32,70 @@ export function detectSchema(): Promise<Schema> {
 
 /** Builds the PostgREST select string for a note with its claim and its sources
  *  embedded. Setting `innerClaim` makes the claim join an inner join, which is
- *  what lets the query filter on a claim column such as `claim.item_id`. */
-export function noteSelect(s: Schema, opts?: { innerClaim?: boolean }): string {
+ *  what lets the query filter on a claim column such as `claim.item_id`.
+ *
+ *  Only the source URLs are read, because the URLs are what the note text
+ *  renders. The quote and the explanation of each source are much larger and
+ *  they sit behind the "Show source details" button, so they are fetched by
+ *  fetchNoteSourceDetails when a reader opens that. The button still has to know
+ *  whether there is anything to show, and that is what the second, aliased embed
+ *  of the same table is for: noteQuery filters it down to the sources that carry
+ *  a quote, so its length answers the question without reading a single quote. */
+function noteSelect(s: Schema, opts?: { innerClaim?: boolean; projectScoped?: boolean }): string {
   const join = opts?.innerClaim ? "everything_claims!inner" : "everything_claims";
-  const claim = `claim:${join}(${CLAIM_COLS}${s.hasImageUrls ? ", image_urls" : ""})`;
-  const sources = s.hasNoteSources ? ", sources:everything_note_sources(url, quote, explanation, sort_order)" : "";
+  // Filtering on the project means reaching through the claim to its item, so
+  // that item has to be embedded for PostgREST to accept `claim.item.project_id`
+  // as a filter. Only the join column is read.
+  const item = opts?.projectScoped ? ", item:everything_items!inner(project_id)" : "";
+  const claim = `claim:${join}(${CLAIM_COLS}${s.hasImageUrls ? ", image_urls" : ""}${item})`;
+  const sources = s.hasNoteSources
+    ? ", sources:everything_note_sources(url, sort_order), detailed:everything_note_sources(sort_order)"
+    : "";
   return `*, ${claim}${sources}`;
 }
 
+/** The query every note fetch starts from. It applies the select above and the
+ *  one filter that select depends on, so no caller has to know how the
+ *  source-details flag is built. Callers add their own filters and await it. */
+export function noteQuery(s: Schema, opts?: { innerClaim?: boolean; projectScoped?: boolean }) {
+  const q = supabase.from("everything_notes").select(noteSelect(s, opts));
+  return s.hasNoteSources ? q.not("detailed.quote", "is", null) : q;
+}
+
 /** Turns a raw note row from either schema into a NoteRow. `sources` always ends
- *  up as an array of NoteSourceRow. On the old schema each URL in the jsonb array
- *  becomes a row that carries no quote. `claim.image_urls` always ends up as an
- *  array too. */
+ *  up as an array of NoteSourceRow, and `has_source_details` says whether the
+ *  reveal has anything in it. On the old schema the note's own jsonb column
+ *  holds bare URLs, which carry no quotes, so the reveal is always empty there.
+ *  `claim.image_urls` always ends up as an array too. */
 export function normalizeNote(row: any, s: Schema): NoteRow {
+  const { detailed, ...note } = row;
   const sources: NoteSourceRow[] = s.hasNoteSources
     ? (row.sources ?? [])
-    : (Array.isArray(row.sources) ? row.sources : []).map((url: string, i: number) => ({
-        url, quote: null, explanation: null, sort_order: i,
-      }));
+    : (Array.isArray(row.sources) ? row.sources : []).map((url: string, i: number) => ({ url, sort_order: i }));
   const claim = row.claim ? { ...row.claim, image_urls: row.claim.image_urls ?? [] } : row.claim;
-  return { ...row, sources, claim };
+  return { ...note, sources, claim, has_source_details: (detailed ?? []).length > 0 };
 }
 
 /** Fetches one note by id, fully joined and normalized. Callers use it to refetch
  *  a note after a vote, so they pick up the counts the database trigger wrote. */
 export async function fetchNote(id: string): Promise<NoteRow | null> {
   const schema = await detectSchema();
-  const { data } = await supabase.from("everything_notes").select(noteSelect(schema)).eq("id", id).maybeSingle();
+  const { data } = await noteQuery(schema).eq("id", id).maybeSingle();
   return data ? normalizeNote(data, schema) : null;
+}
+
+/** The quote and the explanation behind one note's "Show source details"
+ *  reveal. A source with no quote has no body to show, so it is left out here
+ *  the same way the reveal leaves it out. This runs when a reader opens the
+ *  reveal, which is why the feed can load without any of this text. */
+export async function fetchNoteSourceDetails(noteId: string): Promise<NoteSourceDetail[]> {
+  const { data } = await supabase
+    .from("everything_note_sources")
+    .select("url, quote, explanation, sort_order")
+    .eq("note_id", noteId)
+    .not("quote", "is", null)
+    .order("sort_order");
+  return (data ?? []) as NoteSourceDetail[];
 }
 
 // ---------------------------------------------------------------------------
@@ -145,22 +182,39 @@ export async function fetchCoveredPageUrls(): Promise<string[] | null> {
   return (data ?? []).map((r: any) => r.url as string).filter((url) => !url.startsWith("local:"));
 }
 
-/** How many visible notes each ingested page has, keyed by the item's URL.
- *  The extension caches this next to the coverage list and draws its listing
- *  badges from it on-device. Synthetic local documents, whose URL starts with
- *  `local:`, are left out. Returns null when the query failed, so a caller
- *  does not mistake an outage for "nothing has notes". */
-export async function fetchNotedPageCounts(): Promise<Record<string, number> | null> {
+/** Returns the URL of every feed the pipeline actually follows. The extension
+ *  caches it next to the coverage list and hides the follow button only for
+ *  feeds on this list. Returns null when the query failed, so a caller does not
+ *  mistake an outage for "we follow nothing". */
+export async function fetchFollowedFeedUrls(): Promise<string[] | null> {
+  const { data, error } = await supabase.from("everything_followed_feeds").select("feed_url");
+  if (error) return null;
+  return (data ?? []).map((r: any) => r.feed_url as string);
+}
+
+/** How many notes of each rating status each ingested page has, keyed by the
+ *  item's URL. The extension caches this next to the coverage list; its listing
+ *  badges and count cards sum whichever statuses the user's note filters show.
+ *  Synthetic local documents, whose URL starts with `local:`, are left out.
+ *  Returns null when the query failed, so a caller does not mistake an outage
+ *  for "nothing has notes". */
+export type PageNoteStatusCounts = { helpful: number; needsRatings: number; notHelpful: number };
+
+export async function fetchNotedPageCounts(): Promise<Record<string, PageNoteStatusCounts> | null> {
   const { data, error } = await supabase
     .from("everything_notes")
-    .select("claim:everything_claims!inner(item:everything_items!inner(url))")
+    .select("helpful_count, somewhat_helpful_count, not_helpful_count, author_id, claim:everything_claims!inner(item:everything_items!inner(url))")
     .neq("status", "hidden");
   if (error) return null;
-  const counts: Record<string, number> = {};
+  const counts: Record<string, PageNoteStatusCounts> = {};
   for (const row of (data ?? []) as any[]) {
     const url = row.claim.item.url as string;
     if (url.startsWith("local:")) continue;
-    counts[url] = (counts[url] ?? 0) + 1;
+    const page = (counts[url] ??= { helpful: 0, needsRatings: 0, notHelpful: 0 });
+    const status = noteStatus(row);
+    if (status === "helpful") page.helpful += 1;
+    else if (status === "needs_ratings") page.needsRatings += 1;
+    else page.notHelpful += 1;
   }
   return counts;
 }
@@ -182,9 +236,7 @@ export async function fetchRandomNotedPageUrl(): Promise<string | null> {
 /** Fetches every visible note on one item, joined and normalized. */
 export async function fetchNotesForItem(itemId: string): Promise<NoteRow[]> {
   const schema = await detectSchema();
-  const { data } = await supabase
-    .from("everything_notes")
-    .select(noteSelect(schema, { innerClaim: true }))
+  const { data } = await noteQuery(schema, { innerClaim: true })
     .eq("claim.item_id", itemId)
     .neq("status", "hidden");
   return ((data ?? []) as any[]).map((r) => normalizeNote(r, schema));

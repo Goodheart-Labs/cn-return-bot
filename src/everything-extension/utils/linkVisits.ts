@@ -1,36 +1,54 @@
 import { supabase } from "../../everything-shared/supabase";
 import type { PageItem } from "../../everything-shared/notesQuery";
+import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
+import { isSubstackPostPage } from "./followTarget";
+import { getSettings, getSettingsOnboardingDone, type VisitSiteKind } from "./settings";
 
-// Visits are recorded on Substack, YouTube, and LessWrong only. Substack and
-// YouTube are recognized by the item's source, which also catches newsletters
-// on custom domains and videos ingested through the old podcast pipeline.
-// LessWrong items carry the catch-all "web" source, so they are recognized by
-// their hostname instead.
-const YOUTUBE_AND_SUBSTACK_SOURCES = ["substack", "youtube", "podcast"];
+// Visits are recorded on Substack, YouTube, and LessWrong, and only for
+// content pages: a post or a video, never a homepage or a feed. Visit counts
+// per link are what tells the team where notes are needed, so the page does
+// NOT have to be covered already. An ingested page is recognized by its item's
+// source, which also catches newsletters on custom domains and videos from the
+// old podcast pipeline. A page we have not ingested is recognized by its URL:
+// a watch URL on YouTube, a /p/ post path on Substack (content scripts only
+// run on hosts we know, so a /p/ path there is a Substack post), a /posts/
+// path on LessWrong.
 const LESSWRONG_HOSTNAME = /(^|\.)lesswrong\.com$/;
 
-function isTrackedSite(item: PageItem): boolean {
-  if (YOUTUBE_AND_SUBSTACK_SOURCES.includes(item.source)) return true;
+function visitSiteKind(pageUrl: string, item: PageItem | null): VisitSiteKind | null {
+  if (item?.source === "substack") return "substack";
+  if (item?.source === "youtube" || item?.source === "podcast") return "youtube";
   try {
-    return LESSWRONG_HOSTNAME.test(new URL(item.url).hostname);
+    const url = new URL(pageUrl);
+    if (LESSWRONG_HOSTNAME.test(url.hostname)) return url.pathname.startsWith("/posts/") ? "lesswrong" : null;
   } catch {
-    return false;
+    return null;
   }
+  if (extractYoutubeVideoId(pageUrl)) return "youtube";
+  if (isSubstackPostPage(pageUrl)) return "substack";
+  return null;
 }
 
-/** Records that a covered page was opened, so the team can see how often each
- *  link is visited. This runs only after the on-device coverage check has
- *  already said the page is one of ours; a page we do not cover never causes
- *  any request. The row stores the item's own URL rather than the address
- *  bar's, so every variant of the same page counts under one link. It is
- *  anonymous: no user id, just the URL, the item and the time. A failed
- *  insert is dropped, because a visit count is not worth an error surface. */
-export function recordLinkVisit(item: PageItem): void {
-  if (!isTrackedSite(item)) return;
-  void supabase
-    .from("everything_link_visits")
-    .insert({ url: item.url, item_id: item.id })
-    .then(({ error }) => {
-      if (error) console.debug(`[common-notes] visit not recorded: ${error.message}`);
-    });
+/** Records that a post or video on one of the tracked sites was opened, so the
+ *  team can see which links are read and where notes are needed most. `item`
+ *  is the page's ingested row when it has one, and null for a page we have not
+ *  checked; both count. The row stores the item's own URL when there is one,
+ *  so every variant of the same page counts under one link. It is anonymous:
+ *  no user id, just the URL, the item if any, and the time. A failed insert is
+ *  dropped, because a visit count is not worth an error surface.
+ *
+ *  Recording is consentful twice over. Nothing is recorded until the settings
+ *  onboarding has shown the user the checkboxes, and nothing is recorded for a
+ *  site kind whose checkbox the user unticked. */
+export function recordPageVisit(pageUrl: string, item: PageItem | null): void {
+  const kind = visitSiteKind(pageUrl, item);
+  if (!kind) return;
+  void (async () => {
+    const [onboarded, settings] = await Promise.all([getSettingsOnboardingDone(), getSettings()]);
+    if (!onboarded || !settings.saveVisits[kind]) return;
+    const { error } = await supabase
+      .from("everything_link_visits")
+      .insert({ url: item?.url ?? pageUrl, item_id: item?.id ?? null });
+    if (error) console.debug(`[common-notes] visit not recorded: ${error.message}`);
+  })();
 }
