@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { browser } from "#imports";
-import { fetchItemForUrl, fetchNotesForItem, fetchRandomNotedPageUrl, type PageItem } from "../../../everything-shared/notesQuery";
+import { fetchItemForUrl, fetchNotesForItem, fetchRandomNotedPageUrl, isWholePageChecked, type PageItem } from "../../../everything-shared/notesQuery";
 import { normalizePageUrl } from "../../../everything-shared/pageUrls";
 import type { NoteRow } from "../../../everything-shared/types";
 import { submitNoteRequest } from "../../../everything-shared/noteRequests";
@@ -26,6 +26,7 @@ const PRIMARY_BUTTON = "w-full bg-blue-600 text-white rounded-lg px-3 py-1.5 tex
 type PageState =
   | { kind: "loading" }
   | { kind: "unsupported" } // The page is not http or https.
+  | { kind: "load_failed" } // The backend could not be reached.
   | { kind: "no_item"; origin: string }
   | { kind: "item"; origin: string; item: PageItem; notes: NoteRow[] };
 
@@ -43,9 +44,17 @@ function usePageState(): PageState {
       if (!url || !/^https?:/.test(url)) return setState({ kind: "unsupported" });
       const origin = new URL(url).origin;
       const readerCanonical = await resolveReaderCanonical(url);
-      const item = await fetchItemForUrl(normalizePageUrl(readerCanonical ?? url));
+      // An outage is its own state. Falling through to "no item" would offer
+      // to check a page we may well have checked already.
+      let item;
+      try {
+        item = await fetchItemForUrl(normalizePageUrl(readerCanonical ?? url));
+      } catch {
+        return setState({ kind: "load_failed" });
+      }
       if (!item) return setState({ kind: "no_item", origin });
       const notes = await fetchNotesForItem(item.id);
+      if (notes === null) return setState({ kind: "load_failed" });
       setState({ kind: "item", origin, item, notes });
     })();
   }, []);
@@ -124,12 +133,13 @@ async function sendJumpToNote(tabId: number, scriptWasRegistered: boolean) {
   }
 }
 
-/** The "Request notes on this page" button, shown on uncovered content pages.
- *  It works on the whole page and replaced an older flow that requested notes
- *  on a text selection. Requested pages are remembered in storage rather than
- *  in component state, so closing and reopening the popup cannot submit the
- *  same page twice. */
-function RequestNoteButton() {
+/** The request button, shown on content pages we have not read in full. On a
+ *  page with no item it reads "Request notes on this page"; on a page that
+ *  already has an item, because a reader wrote a note or one paragraph was
+ *  checked, it reads "Check this whole page" so the two meanings stay apart.
+ *  Requested pages are remembered in storage rather than in component state,
+ *  so closing and reopening the popup cannot submit the same page twice. */
+function RequestNoteButton({ label, doneLabel }: { label: string; doneLabel: string }) {
   const [phase, setPhase] = useState<"loading" | "idle" | "busy" | "done" | "error">("loading");
 
   useEffect(() => {
@@ -161,12 +171,12 @@ function RequestNoteButton() {
   };
 
   if (phase === "done") {
-    return <button disabled className={PRIMARY_BUTTON}>You requested notes on this page</button>;
+    return <button disabled className={PRIMARY_BUTTON}>{doneLabel}</button>;
   }
   return (
     <>
       <button onClick={request} disabled={phase !== "idle"} className={PRIMARY_BUTTON}>
-        Request notes on this page
+        {label}
       </button>
       {phase === "error" && <p className="text-sm text-red-600">Could not save the request (try again)</p>}
     </>
@@ -179,7 +189,10 @@ function RequestNoteButton() {
 function useAuthorFeed(state: PageState): AuthorFeedStatus | null {
   const [status, setStatus] = useState<AuthorFeedStatus | null>(null);
   useEffect(() => {
-    if (state.kind !== "no_item") return;
+    // The feed is resolved on covered pages too. Following an author must not
+    // depend on catching the transient in-page card, so the popup offers it
+    // wherever the page has an author, notes or not.
+    if (state.kind !== "no_item" && state.kind !== "item") return;
     (async () => {
       const tab = await activeTab();
       setStatus(tab ? await authorFeedStatusForTab(tab) : { kind: "none" });
@@ -198,10 +211,11 @@ function FollowButton({ target }: { target: FollowTarget }) {
   return <ActionButton action={action} buttonClassName={PRIMARY_BUTTON} />;
 }
 
-/** The popup's single action button. On a page with visible notes it jumps to
- *  them, first enabling the site if the user never granted it. On an uncovered
- *  content page it requests notes. Anywhere else it opens a random page that
- *  has notes. */
+/** The popup's actions for the current page. On a page with visible notes the
+ *  first button jumps to them, first enabling the site if the sync has not
+ *  registered it yet. A content page we have not read in full offers the
+ *  request under it, and a page whose author we could follow offers the
+ *  follow. Anywhere else the popup opens a random page that has notes. */
 function PrimaryAction({ state, visibleNoteCount, jumped, access }: {
   state: PageState;
   visibleNoteCount: number;
@@ -212,54 +226,13 @@ function PrimaryAction({ state, visibleNoteCount, jumped, access }: {
   const authorFeed = useAuthorFeed(state);
 
   if (state.kind === "loading") return <p className="text-sm text-gray-500">Loading notes…</p>;
-
-  if (state.kind === "item" && visibleNoteCount > 0) {
-    if (!access) return <p className="text-sm text-gray-500">Loading notes…</p>;
-
-    const jumpToNote = async () => {
-      const tab = await activeTab();
-      if (tab?.id != null) {
-        if (access === "syncing") {
-          // The site is covered but the sync has not registered it yet, so we
-          // inject into this tab directly. Healing can only retry here. A
-          // reload would land on a page with no script, because nothing is
-          // registered that would re-inject it.
-          await browser.scripting.executeScript({ target: { tabId: tab.id }, files: ["/content-scripts/generic.js"] }).catch(() => {});
-        }
-        await sendJumpToNote(tab.id, access === "on");
-      }
-      window.close();
-    };
-    // A page with a single note never says "next". Jumping again just
-    // re-centers the one note, so both states share one honest label.
-    const label = visibleNoteCount === 1 ? "Jump to the note" : jumped ? "Jump to next note" : "Jump to first note";
-    return (
-      <button onClick={jumpToNote} className={PRIMARY_BUTTON}>
-        {label}
-      </button>
-    );
+  if (state.kind === "load_failed") {
+    return <p className="text-sm text-gray-600">Couldn't load notes. Check your connection and try again.</p>;
   }
 
-  if (state.kind === "no_item" && !NON_CONTENT_HOSTNAME.test(new URL(state.origin).hostname)) {
-    if (!authorFeed) return <p className="text-sm text-gray-500">Loading notes…</p>;
-    // A page by an author we already follow needs no request. Every new post
-    // gets checked on its own, so the button would only submit noise.
-    if (authorFeed.kind === "followed") {
-      return (
-        <p className="text-sm text-gray-600">
-          {authorFeed.feed.kind === "youtuber"
-            ? "We check every new video from this youtuber."
-            : "We check every new post from this author."}
-        </p>
-      );
-    }
-    return (
-      <div className="space-y-2">
-        <RequestNoteButton />
-        {authorFeed.kind === "followable" && <FollowButton target={authorFeed.target} />}
-      </div>
-    );
-  }
+  const isContentPage =
+    (state.kind === "no_item" || state.kind === "item") &&
+    !NON_CONTENT_HOSTNAME.test(new URL(state.origin).hostname);
 
   const openRandomPage = async () => {
     setBusy(true);
@@ -267,10 +240,75 @@ function PrimaryAction({ state, visibleNoteCount, jumped, access }: {
     if (url) await browser.tabs.create({ url });
     window.close();
   };
+
+  if (!isContentPage) {
+    return (
+      <button onClick={openRandomPage} disabled={busy} className={PRIMARY_BUTTON}>
+        Open random page
+      </button>
+    );
+  }
+  if (!authorFeed || (state.kind === "item" && visibleNoteCount > 0 && !access)) {
+    return <p className="text-sm text-gray-500">Loading notes…</p>;
+  }
+
+  const jumpToNote = async () => {
+    const tab = await activeTab();
+    if (tab?.id != null) {
+      if (access === "syncing") {
+        // The site is covered but the sync has not registered it yet, so we
+        // inject into this tab directly. Healing can only retry here. A
+        // reload would land on a page with no script, because nothing is
+        // registered that would re-inject it.
+        await browser.scripting.executeScript({ target: { tabId: tab.id }, files: ["/content-scripts/generic.js"] }).catch(() => {});
+      }
+      await sendJumpToNote(tab.id, access === "on");
+    }
+    window.close();
+  };
+
+  // Only a page the pipeline has read in full stops offering the request. An
+  // item that exists because a reader wrote a note, or because one paragraph
+  // was checked, still gets the offer, under its own wording.
+  const requestable = state.kind === "no_item" || !isWholePageChecked(state.item);
+  const fullyCheckedNoNotes = state.kind === "item" && !requestable && visibleNoteCount === 0;
+
   return (
-    <button onClick={openRandomPage} disabled={busy} className={PRIMARY_BUTTON}>
-      Open random page
-    </button>
+    <div className="space-y-2">
+      {state.kind === "item" && visibleNoteCount > 0 && (
+        <button onClick={jumpToNote} className={PRIMARY_BUTTON}>
+          {/* A page with a single note never says "next". Jumping again just
+              re-centers the one note, so both states share one honest label. */}
+          {visibleNoteCount === 1 ? "Jump to the note" : jumped ? "Jump to next note" : "Jump to first note"}
+        </button>
+      )}
+      {fullyCheckedNoNotes && (
+        <p className="text-sm text-gray-600">We checked this page and found nothing to note.</p>
+      )}
+      {requestable &&
+        (authorFeed.kind === "followed" ? (
+          // A page by an author we already follow needs no request. Every new
+          // post gets checked on its own, so the button would only submit
+          // noise.
+          <p className="text-sm text-gray-600">
+            {authorFeed.feed.kind === "youtuber"
+              ? "We check every new video from this youtuber."
+              : "We check every new post from this author."}
+          </p>
+        ) : state.kind === "item" ? (
+          <RequestNoteButton label="Check this whole page" doneLabel="You asked us to check this whole page" />
+        ) : (
+          <RequestNoteButton label="Request notes on this page" doneLabel="You requested notes on this page" />
+        ))}
+      {/* Following an author must not depend on catching the transient in-page
+          card, so the popup offers it on covered pages too. */}
+      {authorFeed.kind === "followable" && <FollowButton target={authorFeed.target} />}
+      {fullyCheckedNoNotes && (
+        <button onClick={openRandomPage} disabled={busy} className={PRIMARY_BUTTON}>
+          Open random page
+        </button>
+      )}
+    </div>
   );
 }
 

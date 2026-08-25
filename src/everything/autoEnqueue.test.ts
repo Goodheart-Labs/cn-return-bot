@@ -6,6 +6,9 @@ import { describe, expect, mock, test } from "bun:test";
 
 let knownItems: { id: string; url: string; checked_scope: "page" | "paragraph" | null }[] = [];
 
+/* Both test files in this folder mock ./db, and bun's mock.module is global,
+ * so the last mock loaded serves every importer. Each file therefore mocks
+ * the union of what either needs. */
 mock.module("./db", () => ({
   QUEUE_PRIORITY: { requested: 2, followed: 1, backlog: 0 },
   fetchItemUrlsIn: () => Promise.resolve(knownItems),
@@ -18,6 +21,14 @@ mock.module("./db", () => ({
   promoteItemToWholePage: () => Promise.resolve(),
   requeueItem: () => Promise.resolve(),
   resolveProjectId: () => Promise.resolve("project-id"),
+  findItemForPageUrl: () => Promise.resolve(null),
+  raiseItemPriority: () => Promise.resolve(),
+  resolveNoteRequest: () => Promise.resolve(),
+  insertQueuedItem: () => Promise.resolve("new-item-id"),
+  fetchPendingNoteRequests: () => Promise.resolve([]),
+  fetchPendingFollowRequests: () => Promise.resolve([]),
+  insertFollowedFeed: () => Promise.resolve(),
+  resolveFollowRequest: () => Promise.resolve(),
 }));
 
 const { unprocessedEntries } = await import("./autoEnqueue");

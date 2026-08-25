@@ -55,8 +55,9 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
   video: HTMLVideoElement;
   player: HTMLElement;
   /** Re-fetch the item's groups after a note is posted or deleted. There is no
-   *  realtime subscription here. */
-  refetch: () => Promise<TimedGroup[]>;
+   *  realtime subscription here. Null means the fetch failed and the overlay
+   *  keeps what it has. */
+  refetch: () => Promise<TimedGroup[] | null>;
 }) {
   const [groups, setGroups] = useState(initialGroups);
   // `displayed` is the claim whose card is mounted. `visible` drives the
@@ -203,7 +204,10 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
       setJumpHandler(null);
     };
   }, [groups, video]);
-  const refresh = async () => setGroups(await refetch());
+  const refresh = async () => {
+    const next = await refetch();
+    if (next !== null) setGroups(next);
+  };
   // Flipping a tickbox in the popup re-fetches the notes through the new
   // filters straight away.
   useEffect(() => onNoteFiltersChanged(() => void refresh()), []);

@@ -32,6 +32,11 @@ export interface StatusOverlayProps {
   onHeadlineClick?: () => void;
   request: StatusAction | null;
   follow: StatusAction | null;
+  /** Called once the card has actually been shown: it finished its fade-out,
+   *  or the reader dismissed it. The one-shot cards spend their single
+   *  showing here rather than at mount, so a card in a background tab does
+   *  not burn it unseen. */
+  onDisplayed?: () => void;
 }
 
 export function ActionButton({ action, onDone, buttonClassName }: {
@@ -72,10 +77,20 @@ export function ActionButton({ action, onDone, buttonClassName }: {
 /** The transient status card shown when a page opens. It says whether we have
  *  checked the page, offers the request and follow buttons, and fades away
  *  after a few seconds so it never becomes furniture. */
-export function StatusOverlay({ headline, onHeadlineClick, request, follow }: StatusOverlayProps) {
+export function StatusOverlay({ headline, onHeadlineClick, request, follow, onDisplayed }: StatusOverlayProps) {
   const [phase, setPhase] = useState<"shown" | "fading" | "hidden">("shown");
   const hideTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const fadeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const displayed = useRef(false);
+
+  const recordDisplayed = () => {
+    if (displayed.current) return;
+    // A card in a tab nobody is looking at was never shown, so its showing is
+    // not spent. The tab that opened in the background keeps its offer.
+    if (document.visibilityState !== "visible") return;
+    displayed.current = true;
+    onDisplayed?.();
+  };
 
   const clearTimers = () => {
     clearTimeout(hideTimer.current);
@@ -85,6 +100,8 @@ export function StatusOverlay({ headline, onHeadlineClick, request, follow }: St
   const hideAfter = (ms: number) => {
     clearTimers();
     hideTimer.current = setTimeout(() => {
+      // The card stood on screen for its full time, so its showing counts.
+      recordDisplayed();
       setPhase("fading");
       fadeTimer.current = setTimeout(() => setPhase("hidden"), FADE_MS);
     }, ms);
@@ -121,7 +138,10 @@ export function StatusOverlay({ headline, onHeadlineClick, request, follow }: St
             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{headline}</p>
           ))}
         <button
-          onClick={() => setPhase("hidden")}
+          onClick={() => {
+            recordDisplayed();
+            setPhase("hidden");
+          }}
           aria-label="Dismiss"
           className="ml-auto shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
         >

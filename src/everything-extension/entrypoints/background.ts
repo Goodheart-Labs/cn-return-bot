@@ -1,13 +1,13 @@
 import { defineBackground } from "#imports";
 import { browser } from "#imports";
-import { fetchCoveredPageUrls, fetchFollowedFeedUrls, fetchNotedPageCounts, fetchReaderCanonical } from "../../everything-shared/notesQuery";
+import { fetchCoveredPageUrls, fetchFollowedFeedUrls, fetchItemForUrl, fetchNotedPageCounts, fetchReaderCanonical, isWholePageChecked } from "../../everything-shared/notesQuery";
 import { submitNoteRequest } from "../../everything-shared/noteRequests";
 import { canonicalizePageUrl, isSubstackReaderUrl } from "../../everything-shared/pageUrls";
 import { track } from "../../everything-shared/analytics";
 import { initBackgroundAnalytics } from "../utils/analytics";
 import { signInWithXViaWebAuthFlow } from "../utils/oauth";
 import { authorFeedStatusForTab } from "../utils/authorFeed";
-import { COVERED_PAGE_URLS_KEY, NOTED_PAGE_STATUS_COUNTS_KEY, getCoveredPageUrls, pageIsCovered } from "../utils/coveredPages";
+import { COVERED_PAGE_URLS_KEY, NOTED_PAGE_STATUS_COUNTS_KEY } from "../utils/coveredPages";
 import { FOLLOWED_FEED_URLS_KEY } from "../utils/followedFeeds";
 import { GENERIC_SCRIPT_PREFIX, hostnamePattern, registerGenericScripts, genericScriptId } from "../utils/genericScript";
 import { capturePageFromTab } from "../utils/pageCapture";
@@ -186,10 +186,20 @@ async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: 
   const pageUrl = readerCanonical
     ? canonicalizePageUrl(readerCanonical, null)
     : canonicalizePageUrl(href, captured?.canonical ?? null);
-  const covered = await getCoveredPageUrls();
-  if (covered && pageIsCovered(pageUrl, covered)) {
-    await showRequestInfo(tab, "This page has already been checked.");
-    return;
+  // Only a page the pipeline has read in full refuses the request. The cached
+  // coverage list cannot tell a fully checked page from one that merely has an
+  // item row, so this is a live lookup. The click is about to send the page's
+  // address and text anyway, so the lookup costs nothing privacy-wise. A
+  // failed lookup submits regardless, because the consumer de-duplicates
+  // server-side.
+  try {
+    const item = await fetchItemForUrl(pageUrl);
+    if (isWholePageChecked(item)) {
+      await showRequestInfo(tab, "This page has already been checked.");
+      return;
+    }
+  } catch (err) {
+    console.warn("[common-notes] item lookup failed, submitting the request anyway:", err);
   }
   const authorFeed = await authorFeedStatusForTab(tab);
   if (authorFeed.kind === "followed") {

@@ -1,7 +1,7 @@
 import { createRoot, type Root } from "react-dom/client";
 import { createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
-import { fetchItemForUrl } from "../../everything-shared/notesQuery";
+import { fetchItemForUrl, isWholePageChecked } from "../../everything-shared/notesQuery";
 import { normalizePageUrl } from "../../everything-shared/pageUrls";
 import { resolveReaderCanonical } from "./readerCanonical";
 import { indexContainer, findQuoteRange } from "./anchor";
@@ -120,13 +120,16 @@ async function mountUncovered(
     const unfollowedAuthor = await unlessFollowed(authorFeed);
     const authorFollowed = authorFeed !== null && unfollowedAuthor === null;
     if ((await getSettings()).showRequestOverlay && !authorFollowed) {
-      teardownStatus = await mountStatusOverlay(ctx, {
-        pageUrl,
-        noun: "post",
-        checked: null,
-        followTarget: unfollowedAuthor,
-        requestWithPageText: true,
-      });
+      teardownStatus = (
+        await mountStatusOverlay(ctx, {
+          pageUrl,
+          noun: "post",
+          counts: null,
+          wholePageChecked: false,
+          followTarget: unfollowedAuthor,
+          requestWithPageText: true,
+        })
+      ).teardown;
     } else if (unfollowedAuthor) {
       teardownStatus = await mountFollowOverlay(ctx, unfollowedAuthor);
     }
@@ -157,7 +160,16 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     recordPageVisit(pageUrl, null);
     return mountUncovered(ctx, pageUrl, onCoverageChanged);
   }
-  const item = await fetchItemForUrl(pageUrl);
+  // A failed lookup mounts nothing. Treating an outage as an unchecked page
+  // would tell the reader we never checked a page we did, and offer to check
+  // it again.
+  let item;
+  try {
+    item = await fetchItemForUrl(pageUrl);
+  } catch (err) {
+    console.warn(`[common-notes] ${pageUrl} → item lookup failed, mounting nothing:`, err);
+    return null;
+  }
   console.info(`[common-notes] ${pageUrl} → ${item ? `item "${item.title ?? item.id}"` : "no ingested item"}`);
   if (!item) {
     recordPageVisit(pageUrl, null);
@@ -166,7 +178,14 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   recordPageVisit(pageUrl, item);
   // We mount even when the item has no notes yet. Writing a note from a selection
   // works on any ingested page, and refresh() brings the new note in.
-  let { groups, counts } = await fetchClaimGroups(item.id);
+  const fetched = await fetchClaimGroups(item.id);
+  // The same rule as the lookup: a failed notes fetch mounts no status card,
+  // because "found nothing to note" must never be an outage in disguise.
+  if (fetched === null) {
+    console.warn(`[common-notes] ${pageUrl} → notes fetch failed, mounting nothing`);
+    return null;
+  }
+  let { groups, counts } = fetched;
   // The extension's top of funnel: notes were actually displayed to a reader.
   // Once per page by construction — mountForUrl runs once per URL.
   if (groups.length > 0) {
@@ -178,19 +197,21 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     });
   }
 
-  // The transient status card tells the reader this page has been checked,
-  // which matters most when the check produced zero notes and nothing else on
-  // the page shows we were here.
-  const statusTeardown = (await getSettings()).showNoteCountOverlay
+  // The transient status card tells the reader how this page stands: checked
+  // in full, carrying notes, or holding only a reader's note with the whole
+  // page still uncheckable. That last state matters most, because nothing
+  // else on the page says the check is still worth asking for.
+  const statusCard = (await getSettings()).showNoteCountOverlay
     ? await mountStatusOverlay(ctx, {
         pageUrl,
         noun: isSubstackPostPage(pageUrl) ? "post" : "page",
-        checked: counts,
+        counts,
+        wholePageChecked: isWholePageChecked(item),
         onOpenNotes: jumpToNextNote,
         followTarget: null,
-        requestWithPageText: false,
+        requestWithPageText: true,
       })
-    : () => {};
+    : null;
 
   let reactRoot: Root | null = null;
   let themeRoot: HTMLElement | null = null;
@@ -256,7 +277,13 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   };
 
   const refresh = async () => {
-    groups = (await fetchClaimGroups(item.id)).groups;
+    // A failed refresh keeps what is on screen rather than blanking it.
+    const next = await fetchClaimGroups(item.id);
+    if (next === null) return;
+    groups = next.groups;
+    // The status card's sentence follows along. Without this, posting a note
+    // while the card still stands would leave "found nothing to note" up.
+    statusCard?.updateCounts(next.counts);
     render();
   };
   // When the user flips a tickbox in the popup, we re-fetch the notes through the
@@ -314,7 +341,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     stopTheme();
     observer.disconnect();
     clearTimeout(timer);
-    statusTeardown();
+    statusCard?.teardown();
     ui.remove();
     inlineUi.remove();
   };
