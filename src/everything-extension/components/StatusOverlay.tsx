@@ -12,6 +12,10 @@ const FADE_MS = 700;
 
 type ActionPhase = "idle" | "busy" | "done" | "error";
 
+/** The one action-button style, shared by the in-page cards and the popup so
+ *  the two surfaces always match in height and font. */
+export const PRIMARY_BUTTON = "w-full bg-blue-600 text-white rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-blue-700 disabled:opacity-40";
+
 /** One overlay action: the button label, the confirmation text once it ran,
  *  and what it does. `alreadyDone` starts true when the user already asked
  *  earlier, so reopening the page shows the confirmation instead of the
@@ -39,12 +43,9 @@ export interface StatusOverlayProps {
   onDisplayed?: () => void;
 }
 
-export function ActionButton({ action, onDone, buttonClassName }: {
+export function ActionButton({ action, onDone }: {
   action: StatusAction;
   onDone?: () => void;
-  /** Overrides the card-sized button look. The popup passes its own full-width
-   *  button style so the action matches the buttons around it. */
-  buttonClassName?: string;
 }) {
   const [phase, setPhase] = useState<ActionPhase>(action.alreadyDone ? "done" : "idle");
 
@@ -59,17 +60,13 @@ export function ActionButton({ action, onDone, buttonClassName }: {
     }
   };
 
-  if (phase === "done") return <p className="text-xs text-green-700 dark:text-green-400">{action.doneLabel}</p>;
+  if (phase === "done") return <p className="text-sm text-green-700 dark:text-green-400">{action.doneLabel}</p>;
   return (
     <div>
-      <button
-        onClick={run}
-        disabled={phase === "busy"}
-        className={buttonClassName ?? "bg-blue-600 text-white rounded-md px-2.5 py-1 text-xs font-medium hover:bg-blue-700 disabled:opacity-40 text-left"}
-      >
+      <button onClick={run} disabled={phase === "busy"} className={PRIMARY_BUTTON}>
         {action.label}
       </button>
-      {phase === "error" && <p className="mt-1 text-xs text-red-600 dark:text-red-400">Something went wrong. Try again</p>}
+      {phase === "error" && <p className="mt-1 text-sm text-red-600 dark:text-red-400">Something went wrong. Try again</p>}
     </div>
   );
 }

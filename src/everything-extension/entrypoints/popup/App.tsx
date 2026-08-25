@@ -14,7 +14,7 @@ import { buildFollowAction, headline } from "../../utils/mountStatusOverlay";
 import { isSubstackPostPage, requestMakesSenseForUrl } from "../../utils/followTarget";
 import { capturePageFromTab } from "../../utils/pageCapture";
 import { addRequestedPage, getRequestedPages } from "../../utils/settings";
-import { ActionButton, type StatusAction } from "../../components/StatusOverlay";
+import { ActionButton, PRIMARY_BUTTON, type StatusAction } from "../../components/StatusOverlay";
 import { STATIC_SITE_HOSTNAME } from "../../utils/staticSites";
 import { useNoteFilters } from "../../components/NoteFilterToggles";
 
@@ -22,8 +22,6 @@ import { useNoteFilters } from "../../components/NoteFilterToggles";
 // portals rather than content. Pages that are not http or https are already
 // excluded as the "unsupported" kind.
 const NON_CONTENT_HOSTNAME = /(^|\.)google\.[a-z.]+$|(^|\.)bing\.com$|(^|\.)duckduckgo\.com$|(^|\.)ecosia\.org$|(^|\.)startpage\.com$|(^|\.)search\.brave\.com$/;
-
-const PRIMARY_BUTTON = "w-full bg-blue-600 text-white rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-blue-700 disabled:opacity-40";
 
 type PageState =
   | { kind: "loading" }
@@ -210,7 +208,7 @@ function FollowButton({ target }: { target: FollowTarget }) {
     void buildFollowAction(target).then(setAction);
   }, [target]);
   if (!action) return null;
-  return <ActionButton action={action} buttonClassName={PRIMARY_BUTTON} />;
+  return <ActionButton action={action} />;
 }
 
 /** The popup for the current page leads with the same status sentence the
