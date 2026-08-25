@@ -230,9 +230,12 @@ function PrimaryAction({ state, visibleNoteCount, jumped, access }: {
       }
       window.close();
     };
+    // A page with a single note never says "next". Jumping again just
+    // re-centers the one note, so both states share one honest label.
+    const label = visibleNoteCount === 1 ? "Jump to the note" : jumped ? "Jump to next note" : "Jump to first note";
     return (
       <button onClick={jumpToNote} className={PRIMARY_BUTTON}>
-        {jumped ? "Jump to next note" : "Jump to first note"}
+        {label}
       </button>
     );
   }

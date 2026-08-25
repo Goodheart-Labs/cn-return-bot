@@ -69,11 +69,13 @@
   z-index: 1000 !important;
 }
 
-/* The transient status card. It is a fixed card in the bottom right corner
- * saying whether we have checked the current page and its author yet. */
+/* The transient status card. It is a fixed card in the top right corner
+ * saying whether we have checked the current page and its author yet. The top
+ * is where a reader already looks when a page opens. The offset clears the
+ * controls Substack and YouTube keep in that corner. */
 :host(common-notes-status) {
   position: fixed !important;
-  bottom: 16px !important;
+  top: 72px !important;
   right: 16px !important;
   z-index: 2147483001 !important;
 }

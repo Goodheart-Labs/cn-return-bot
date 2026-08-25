@@ -162,10 +162,10 @@ async function sendToTabWithInjection(tabId: number, message: unknown): Promise<
   }
 }
 
-/** Tells the user in the page why their request was not needed. Falls back to
- *  the toolbar tick when the page cannot host the card: the request's goal is
- *  met either way. */
-async function showRequestNotNeeded(tab: { id?: number }, headline: string) {
+/** Tells the user in the page how their request went: the confirmation that
+ *  it was saved, or why it was not needed. Falls back to the toolbar tick when
+ *  the page cannot host the card, for example on a browser-internal page. */
+async function showRequestInfo(tab: { id?: number }, headline: string) {
   const delivered = tab.id != null && (await sendToTabWithInjection(tab.id, { type: "cn-request-info", headline }));
   if (!delivered) flashBadge(tab.id, "✓");
 }
@@ -188,13 +188,13 @@ async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: 
     : canonicalizePageUrl(href, captured?.canonical ?? null);
   const covered = await getCoveredPageUrls();
   if (covered && pageIsCovered(pageUrl, covered)) {
-    await showRequestNotNeeded(tab, "This page has already been checked.");
+    await showRequestInfo(tab, "This page has already been checked.");
     return;
   }
   const authorFeed = await authorFeedStatusForTab(tab);
   if (authorFeed.kind === "followed") {
     const what = authorFeed.feed.kind === "youtuber" ? "video from this youtuber" : "post from this author";
-    await showRequestNotNeeded(tab, `We already check every new ${what}.`);
+    await showRequestInfo(tab, `We already check every new ${what}.`);
     return;
   }
   try {
@@ -206,7 +206,10 @@ async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: 
     });
     // This is only a local reminder. The request itself is already saved.
     await addRequestedPage(pageUrl).catch(() => {});
-    flashBadge(tab.id, "✓");
+    // The confirmation is a card in the page. The toolbar tick alone is
+    // invisible to anyone whose toolbar keeps the extension in the overflow
+    // menu, so the click looked like it did nothing.
+    await showRequestInfo(tab, "Requested. We'll check this page when it comes up in our queue.");
   } catch (err) {
     console.warn("[common-notes] note request failed:", err);
     flashBadge(tab.id, "!");

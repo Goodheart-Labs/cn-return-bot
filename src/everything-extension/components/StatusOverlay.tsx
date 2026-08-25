@@ -2,10 +2,10 @@ import { useEffect, useRef, useState } from "react";
 
 /** How long the overlay stays before it fades out on its own. Hovering pauses
  *  the clock, so a reader who is about to click never loses the card. */
-const AUTO_HIDE_MS = 5_000;
-/** After a request or follow succeeded the card lingers briefly to show the
+const AUTO_HIDE_MS = 7_000;
+/** After a request or follow succeeded the card lingers to show the
  *  confirmation, then leaves. */
-const DONE_HIDE_MS = 4_000;
+const DONE_HIDE_MS = 6_000;
 /** How long the fade-out takes once the clock has run out. Hovering during the
  *  fade brings the card back. */
 const FADE_MS = 700;
@@ -103,7 +103,7 @@ export function StatusOverlay({ headline, onHeadlineClick, request, follow }: St
   if (phase === "hidden") return null;
   return (
     <div
-      className={`w-96 rounded-lg border border-gray-200 bg-white p-3 shadow-lg transition-opacity ease-out dark:border-gray-700 dark:bg-gray-800 ${phase === "fading" ? "opacity-0" : "opacity-100"}`}
+      className={`max-w-[24rem] rounded-lg border border-gray-200 bg-white p-3 shadow-lg transition-opacity ease-out dark:border-gray-700 dark:bg-gray-800 ${phase === "fading" ? "opacity-0" : "opacity-100"}`}
       style={{ transitionDuration: `${FADE_MS}ms` }}
       onMouseEnter={keep}
       onMouseLeave={() => hideAfter(AUTO_HIDE_MS)}

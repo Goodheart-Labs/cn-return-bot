@@ -22,6 +22,9 @@ export interface TimedGroup {
 
 // A claim without end_seconds stays up this long past its start.
 export const DEFAULT_CLIP_SECONDS = 30;
+// The card outlives its span by this much, so a note about a sentence someone
+// just said is still there when the reader looks up.
+const TRAILING_GRACE_SECONDS = 1;
 // How long the opacity transition runs. The card unmounts once the fade
 // completes.
 const FADE_MS = 400;
@@ -61,9 +64,13 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
   // false starts the fade, and a timer unmounts the card after FADE_MS.
   const [displayed, setDisplayed] = useState<string | null>(null);
   const [visible, setVisible] = useState(false);
-  // The claims the reader dismissed. This set is dropped when the page moves
-  // on to another video.
+  // The claims the reader dismissed with the card's own dismiss button. This
+  // set is dropped when the page moves on to another video.
   const dismissed = useRef(new Set<string>());
+  // A claim hidden by a click on empty page surface. Unlike a dismissal it
+  // only lasts while playback stays inside the claim's window, so a stray
+  // click cannot remove a note for the rest of the video.
+  const hushed = useRef<string | null>(null);
   const hovered = useRef(false);
   const inWindow = useRef(false);
   const lastInteraction = useRef(0);
@@ -114,13 +121,19 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
   useEffect(() => {
     const onTime = () => {
       const t = video.currentTime;
-      const hit = groups.find((g) => !dismissed.current.has(g.claimId) && t >= g.startSeconds && t <= g.endSeconds);
+      const hit = groups.find(
+        (g) => !dismissed.current.has(g.claimId) && t >= g.startSeconds && t <= g.endSeconds + TRAILING_GRACE_SECONDS,
+      );
       inWindow.current = !!hit;
-      if (hit) show(hit.claimId);
-      // The card fades the moment playback leaves the window. It stays if the
-      // reader is engaged, for example mid-vote, picking a charity, or typing
-      // a note.
-      else if (!engaged()) beginHide();
+      // A claim hushed by an outside click stays hidden while playback is
+      // still inside its window. Once the window is left, the hush ends, so
+      // seeking back into the claim shows its card again.
+      if (hushed.current && hushed.current !== hit?.claimId) hushed.current = null;
+      if (hit && hit.claimId !== hushed.current) show(hit.claimId);
+      // The card fades once playback leaves the window and its grace. It stays
+      // if the reader is engaged, for example mid-vote, picking a charity, or
+      // typing a note.
+      else if (!hit && !engaged()) beginHide();
     };
     video.addEventListener("timeupdate", onTime);
     return () => {
@@ -135,18 +148,20 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
     if (group) dismissed.current.add(group.claimId);
     beginHide();
   };
-  // A click on empty surface outside the card dismisses it, just as the ✕
-  // does. A plain beginHide would not be enough, because the next timeupdate
-  // inside the window would show the card again. Clicks that actually do
-  // something keep the card up, such as clicking the video to play or pause
-  // it, or the like button, or the comments. isInertClick tells the two apart
-  // by looking for the signs that an element is interactive.
+  // A click on empty surface outside the card hushes it. A plain beginHide
+  // would not be enough, because the next timeupdate inside the window would
+  // show the card again; the hush holds it down until playback leaves the
+  // window. Only the ✕ dismisses a claim for the whole video. Clicks that
+  // actually do something keep the card up, such as clicking the video to
+  // play or pause it, or the like button, or the comments. isInertClick tells
+  // the two apart by looking for the signs that an element is interactive.
   useEffect(() => {
     if (!group) return;
     const onClick = (e: MouseEvent) => {
       if (insideCommonNotesUi(e) || !isInertClick(e)) return;
       if (!window.getSelection()?.isCollapsed) return;
-      dismiss();
+      hushed.current = group.claimId;
+      beginHide();
     };
     document.addEventListener("click", onClick);
     return () => document.removeEventListener("click", onClick);
@@ -155,6 +170,7 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
   // the claim's window. The resulting timeupdate shows the card.
   const jumpToPin = (target: TimedGroup) => {
     dismissed.current.delete(target.claimId);
+    if (hushed.current === target.claimId) hushed.current = null;
     video.currentTime = target.startSeconds + 0.01;
   };
 
