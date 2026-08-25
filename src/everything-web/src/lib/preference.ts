@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { readStored, writeStored } from "./safeStorage";
 
 /** Creates a hook for one preference stored in localStorage. Every instance of
  *  the hook on the page shares it, so setting it anywhere updates all mounted
@@ -9,7 +10,7 @@ export function createLocalPreference<T extends string | boolean>(
   { parse, serialize }: { parse: (raw: string | null) => T; serialize: (value: T) => string },
 ) {
   const listeners = new Set<() => void>();
-  const read = () => parse(localStorage.getItem(key));
+  const read = () => parse(readStored(key));
   const fallback = parse(null);
   return function usePreference(): [T, (value: T) => void] {
     const value = useSyncExternalStore(
@@ -21,7 +22,7 @@ export function createLocalPreference<T extends string | boolean>(
       () => fallback, // The server snapshot. There is no localStorage during a build.
     );
     const set = (next: T) => {
-      localStorage.setItem(key, serialize(next));
+      writeStored(key, serialize(next));
       listeners.forEach((fn) => fn());
     };
     return [value, set];

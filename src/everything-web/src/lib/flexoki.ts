@@ -13,6 +13,8 @@
  *  Body text is not set here and stays fixed in the CSS, which keeps the theme
  *  legible across the whole range. */
 
+import { readStored } from "./safeStorage";
+
 export type AccentId =
   | "red" | "orange" | "yellow" | "green" | "cyan" | "blue" | "purple" | "magenta";
 /** The note surface may also be "bg", which blends it into the page background
@@ -171,7 +173,7 @@ export const TONE_KEY = "cn-flexoki-tone";
 
 export function loadRoles(): RoleSelection {
   try {
-    const raw = localStorage.getItem(ROLE_KEY);
+    const raw = readStored(ROLE_KEY);
     if (raw) return { ...DEFAULT_ROLES, ...JSON.parse(raw) };
   } catch {
     /* Fall through to the defaults. */
@@ -180,7 +182,7 @@ export function loadRoles(): RoleSelection {
 }
 
 export function loadTone(): number {
-  const raw = Number(localStorage.getItem(TONE_KEY));
+  const raw = Number(readStored(TONE_KEY));
   if (Number.isFinite(raw)) return Math.max(MIN_TONE, Math.min(MAX_TONE, raw));
   return 0;
 }

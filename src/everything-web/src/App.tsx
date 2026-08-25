@@ -68,12 +68,12 @@ function NoteSection({ label, notes, render }: {
 }
 
 export function App() {
-  const projects = useProjects();
+  const { projects, failed: projectsFailed } = useProjects();
   const { session, event: authEvent } = useSession();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   // The feed holds one project at a time. Selecting another project loads that
   // project's items, notes and entries and drops the previous project's.
-  const { items, notes, nnn, loaded } = useProjectFeed(selectedId);
+  const { items, notes, nnn, loaded, failed: feedFailed, retry: retryFeed } = useProjectFeed(selectedId);
   // Which top-level view is showing: the note feed or the rating leaderboard.
   const [view, setView] = useState<View>(() => readRoute().view);
   // Which item inside the project the feed is narrowed to. An item is one
@@ -452,9 +452,19 @@ export function App() {
         onSelectLeaderboard={selectLeaderboard}
       />
 
-      <main className="flex-1 max-w-3xl md:max-w-[96rem] mx-auto px-4 md:px-8 py-8 w-full">
-        <div className="flex items-center justify-between gap-4 mb-6">
-          <h2 className="text-2xl font-extrabold">
+      {/* min-w-0 is what keeps the feed inside the window. A flex item starts with
+        * min-width auto, which means it refuses to shrink below its own content.
+        * This main element also sets w-full, so that floor is the full width of
+        * the window, and the sidebar's 256px then push the feed off the right
+        * edge. Setting the floor to zero lets the feed take the space that is
+        * actually left beside the sidebar. */}
+      <main className="flex-1 min-w-0 max-w-3xl md:max-w-[96rem] mx-auto px-4 md:px-8 py-8 w-full">
+        {/* The title and the two actions share one row on a wide window. On a
+          * phone they do not fit next to each other, so the row is allowed to
+          * wrap and the title is allowed to break rather than push the actions
+          * off screen. */}
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 mb-6">
+          <h2 className="text-2xl font-extrabold min-w-0 break-words">
             {view === "leaderboard" ? "Rating leaderboard" : selected?.name ?? ""}
           </h2>
           <div className="flex items-center gap-4">
@@ -481,8 +491,23 @@ export function App() {
             onSelect={selectItem}
           />
         )}
-        {view === "notes" && !loaded && <p className="text-gray-400">Loading…</p>}
-        {view === "notes" && loaded && orderedNotes.length === 0 && (
+        {view === "notes" && !loaded && !feedFailed && !projectsFailed && (
+          <p className="text-gray-400">Loading…</p>
+        )}
+        {view === "notes" && (feedFailed || projectsFailed) && (
+          <div className="space-y-3">
+            <p className="text-gray-600">
+              These notes could not be loaded. The connection to our server failed.
+            </p>
+            <button
+              onClick={() => (projectsFailed ? window.location.reload() : retryFeed())}
+              className="bg-blue-600 text-white rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-blue-700"
+            >
+              Try again
+            </button>
+          </div>
+        )}
+        {view === "notes" && loaded && !feedFailed && orderedNotes.length === 0 && (
           <p className="text-gray-400">No notes yet for this project.</p>
         )}
         {view === "notes" && (

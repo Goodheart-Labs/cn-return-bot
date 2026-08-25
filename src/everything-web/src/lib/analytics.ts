@@ -1,5 +1,7 @@
 import { supabase } from "../../../everything-shared/supabase";
 import { setAnalyticsSink, track } from "../../../everything-shared/analytics";
+import { randomUuid } from "./randomUuid";
+import { readStored, writeStored } from "./safeStorage";
 
 // The website's analytics transport: rows in the everything_events table
 // (insert-only for clients, migration 077), registered as the sink behind
@@ -14,11 +16,17 @@ const DEVICE_ID_KEY = "cn-device-id";
 // device-to-user link — there is no separate identify event.
 let userId: string | null = null;
 
+/* The id for a browser that cannot store one. It lasts as long as the page is
+ * open, so such a visitor counts as a new device on every load. */
+let inMemoryDeviceId: string | null = null;
+
 function deviceId(): string {
-  const existing = localStorage.getItem(DEVICE_ID_KEY);
+  const existing = readStored(DEVICE_ID_KEY);
   if (existing) return existing;
-  const fresh = crypto.randomUUID();
-  localStorage.setItem(DEVICE_ID_KEY, fresh);
+  if (inMemoryDeviceId) return inMemoryDeviceId;
+  const fresh = randomUuid();
+  writeStored(DEVICE_ID_KEY, fresh);
+  inMemoryDeviceId = fresh;
   return fresh;
 }
 
@@ -47,7 +55,9 @@ export function initAnalytics() {
     // later visitor on the same browser isn't linked to the previous account.
     reset: () => {
       userId = null;
-      localStorage.setItem(DEVICE_ID_KEY, crypto.randomUUID());
+      const fresh = randomUuid();
+      writeStored(DEVICE_ID_KEY, fresh);
+      inMemoryDeviceId = fresh;
     },
   });
   // The initial load fires immediately. PostHog used to defer this until the
