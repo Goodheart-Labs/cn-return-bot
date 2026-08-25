@@ -44,6 +44,12 @@ jobs:
       PANGRAM_API_KEY: ${{ secrets.PANGRAM_API_KEY }}
       # SearXNG instance running as a Docker container (see "Start SearXNG" step)
       SEARXNG_URL: http://localhost:8080
+      # Brave's paid API is the primary search provider. The scraped Google and
+      # Brave engines are the fallback, not the front line: scraping is an
+      # arms race with the engines' bot detection, and losing a round silently
+      # zeroed our submissions for days in Aug 2026. If the key is over quota,
+      # brave-api suspends itself and the scraped engines take over.
+      SEARXNG_PROVIDERS: brave-api,google,brave
       # Residential proxy for yt-dlp YouTube fetches (YouTube bot-checks runner IPs)
       YTDLP_PROXY_URL: ${{ secrets.YTDLP_PROXY_URL }}
     steps:
