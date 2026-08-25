@@ -130,7 +130,7 @@ export async function fetchFeedPosts(publicationUrl: string): Promise<SubstackFe
   // The channel's own title is the first <title> before any <item>. The items
   // carry <title> tags too, so the channel block is cut out first.
   const channelXml = xml.split("<item>")[0]!;
-  const title = decodeHtmlEntities(cdataUnwrap(tagContent(channelXml, "title"))) || undefined;
+  const title = decodeHtmlEntities(cdataUnwrap(tagContent(channelXml, "title"))).trim() || undefined;
   const posts = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)]
     .map(([, item]) => {
       const bodyHtml = cdataUnwrap(tagContent(item!, "content:encoded"));
