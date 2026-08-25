@@ -226,8 +226,62 @@ async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: 
   }
 }
 
+/** Dev builds reload themselves when a fresh build lands on disk, so
+ *  delivering a build to another machine is nothing but a file sync. An
+ *  unpacked extension's fetch of its own packaged file reads the CURRENT file
+ *  on disk, while import.meta.env.VITE_CN_BUILD is frozen at build time, so
+ *  the two disagreeing means a newer build is sitting under the extension
+ *  directory. An alarm drives the check because a service worker holds no
+ *  timers. Store builds compile this away. */
+function registerDevSelfReload() {
+  if (!import.meta.env.VITE_CN_DEV_RELOAD) return;
+  const DEV_RELOAD_ALARM = "cn-dev-reload-poll";
+  const PERIOD_MINUTES = 0.5;
+  void browser.alarms.get(DEV_RELOAD_ALARM).then((existing) => {
+    if (!existing) browser.alarms.create(DEV_RELOAD_ALARM, { periodInMinutes: PERIOD_MINUTES });
+  });
+  // The background stamps its own build id into every open tab, so a script
+  // on another machine can read which build is RUNNING from any existing tab,
+  // without opening or navigating one. The content-script stamp cannot answer
+  // that: it freezes at page load and goes stale the moment the extension
+  // reloads underneath it.
+  const build = import.meta.env.VITE_CN_BUILD ?? "?";
+  void browser.tabs.query({ url: ["http://*/*", "https://*/*"] }).then((tabs) => {
+    for (const tab of tabs) {
+      if (tab.id == null) continue;
+      browser.scripting
+        .executeScript({
+          target: { tabId: tab.id },
+          func: (id: string) => {
+            document.documentElement.dataset.cnDevBuildBg = id;
+          },
+          args: [build],
+        })
+        .catch(() => {}); // A tab we may not inject into simply keeps no stamp.
+    }
+  });
+  browser.alarms.onAlarm.addListener(async (alarm) => {
+    if (alarm.name !== DEV_RELOAD_ALARM) return;
+    try {
+      // build-ext-dev writes build-id.txt after the build, so WXT's generated
+      // path union does not know it and the cast is needed.
+      const buildIdUrl = (browser.runtime.getURL as (path: string) => string)("/build-id.txt");
+      const onDisk = (await (await fetch(buildIdUrl)).text()).trim();
+      const running = import.meta.env.VITE_CN_BUILD ?? "";
+      if (onDisk && running && onDisk !== running) {
+        console.info(`[common-notes] new build on disk (${running} -> ${onDisk}), reloading`);
+        browser.runtime.reload();
+      }
+    } catch {
+      // A build without the stamp file, or a transient read error. The next
+      // tick tries again.
+    }
+  });
+}
+
 export default defineBackground(() => {
   initBackgroundAnalytics();
+  registerDevSelfReload();
   // The 5-minute alarm keeps long-lived sessions current (the MV3 worker
   // can't hold a timer), and the popup pings cn-sync-noted-sites on open.
   // The alarm is checked at every worker boot instead of on install/startup
