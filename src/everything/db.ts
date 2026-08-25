@@ -19,6 +19,7 @@ export const QUEUE_PRIORITY = {
 
 export interface EverythingItem {
   id: string;
+  project_id: string | null;
   source: ItemSource;
   url: string;
   title: string | null;
@@ -31,7 +32,7 @@ export interface EverythingItem {
   full_text: string | null;
 }
 
-const ITEM_COLUMNS = "id, source, url, title, published_at, status, full_text";
+const ITEM_COLUMNS = "id, project_id, source, url, title, published_at, status, full_text";
 
 export type ClaimStatus = "pending" | "skipped" | "no_note" | "note" | "error";
 
@@ -54,18 +55,61 @@ function throwOnError<T>({ data, error }: { data: T; error: { message: string } 
   return data;
 }
 
-/** Returns the project id for a slug. A slug we have not seen before creates a
- *  bare project whose name is the slug. An existing project's name and
- *  description are never overwritten. */
-export async function resolveProjectId(slug: string): Promise<string> {
+interface ProjectRow {
+  id: string;
+  slug: string;
+  name: string;
+}
+
+/** Writes a project's real display name once a fetch has learned it. A project
+ *  created before its name was known carries its slug as the name, and only
+ *  such a placeholder is ever replaced. A name that differs from the slug was
+ *  set deliberately, by a seed migration or by hand, and is left alone. */
+async function fillDisplayName(project: ProjectRow, displayName: string | undefined): Promise<void> {
+  if (!displayName || displayName === project.slug || project.name !== project.slug) return;
+  throwOnError(await getSupabaseClient().from("everything_projects").update({ name: displayName }).eq("id", project.id));
+  console.log(`Project "${project.slug}" display name set to "${displayName}"`);
+}
+
+/** Returns the project id for a slug. A slug we have not seen before creates
+ *  the project, named by `displayName` when the caller knows it and by the
+ *  slug otherwise. On an existing project the display name only fills in a
+ *  slug placeholder; see fillDisplayName. */
+export async function resolveProjectId(slug: string, displayName?: string): Promise<string> {
   const db = getSupabaseClient();
   const existing = throwOnError(
-    await db.from("everything_projects").select("id").eq("slug", slug).maybeSingle(),
-  ) as { id: string } | null;
-  if (existing) return existing.id;
-  return (throwOnError(await db.from("everything_projects").insert({ slug, name: slug }).select("id").single()) as {
-    id: string;
-  }).id;
+    await db.from("everything_projects").select("id, slug, name").eq("slug", slug).maybeSingle(),
+  ) as ProjectRow | null;
+  if (existing) {
+    await fillDisplayName(existing, displayName);
+    return existing.id;
+  }
+  return (
+    throwOnError(
+      await db.from("everything_projects").insert({ slug, name: displayName ?? slug }).select("id").single(),
+    ) as { id: string }
+  ).id;
+}
+
+/** Fills a project's display name by project id; see fillDisplayName. The
+ *  worker calls this with the author name of the content it just fetched. */
+export async function fillProjectDisplayName(projectId: string | null, displayName: string | undefined): Promise<void> {
+  if (!projectId || !displayName) return;
+  const project = throwOnError(
+    await getSupabaseClient().from("everything_projects").select("id, slug, name").eq("id", projectId).maybeSingle(),
+  ) as ProjectRow | null;
+  if (project) await fillDisplayName(project, displayName);
+}
+
+/** Fills a project's display name by slug, without creating the project; see
+ *  fillDisplayName. The follow-request consumer calls this, because a followed
+ *  feed's project may or may not exist yet. */
+export async function fillProjectDisplayNameBySlug(slug: string, displayName: string | undefined): Promise<void> {
+  if (!displayName) return;
+  const project = throwOnError(
+    await getSupabaseClient().from("everything_projects").select("id, slug, name").eq("slug", slug).maybeSingle(),
+  ) as ProjectRow | null;
+  if (project) await fillDisplayName(project, displayName);
 }
 
 // A local doc with no url still needs a unique, non-null `url`, because the

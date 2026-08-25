@@ -45,14 +45,17 @@ function classifyUrl(url: string): SourceKind {
 
 /** Expands a live URL into the items it stands for. A YouTube video and a
  *  Substack post are one item each. A Substack profile expands to its latest
- *  posts. */
-async function expandLiveUrl(url: string, latest: number): Promise<{ source: SourceKind; url: string }[]> {
-  if (/youtube\.com|youtu\.be/.test(url)) return [{ source: "youtube", url }];
-  if (/\.substack\.com\/p\//.test(url)) return [{ source: "substack", url }];
+ *  posts, and its lookup also learns the publication's display name. */
+async function expandLiveUrl(
+  url: string,
+  latest: number,
+): Promise<{ items: { source: SourceKind; url: string }[]; projectName?: string }> {
+  if (/youtube\.com|youtu\.be/.test(url)) return { items: [{ source: "youtube", url }] };
+  if (/\.substack\.com\/p\//.test(url)) return { items: [{ source: "substack", url }] };
   if (parseProfileHandle(url)) {
-    const posts = await fetchLatestFreePosts(url, latest);
+    const { publicationName, posts } = await fetchLatestFreePosts(url, latest);
     console.log(`Profile ${url} → ${posts.length} latest free posts`);
-    return posts.map((post) => ({ source: "substack" as const, url: post.url }));
+    return { items: posts.map((post) => ({ source: "substack" as const, url: post.url })), projectName: publicationName };
   }
   throw new Error(`Unsupported URL (need a YouTube video, Substack post, or Substack profile): ${url}`);
 }
@@ -139,12 +142,18 @@ async function main() {
     process.exit(1);
   }
 
-  const projectId = await resolveProjectId(projectSlug);
-  const rows: EnqueueRow[] = [];
+  // The live URLs are expanded before the project is resolved, because a
+  // profile expansion is where the publication's display name comes from.
+  const liveItems: { source: SourceKind; url: string }[] = [];
+  let projectName: string | undefined;
   for (const url of liveUrls) {
     const expanded = await expandLiveUrl(url, latest);
-    rows.push(...expanded.map((r) => ({ ...r, project_id: projectId })));
+    liveItems.push(...expanded.items);
+    projectName ??= expanded.projectName;
   }
+
+  const projectId = await resolveProjectId(projectSlug, projectName);
+  const rows: EnqueueRow[] = liveItems.map((r) => ({ ...r, project_id: projectId }));
   for (const d of docs) {
     const text = fs.readFileSync(d.file, "utf8");
     const url = d.url ?? syntheticDocUrl(projectSlug, path.basename(d.file));
