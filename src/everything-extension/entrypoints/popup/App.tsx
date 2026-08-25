@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { browser } from "#imports";
 import { fetchItemForUrl, fetchNotesForItem, fetchRandomNotedPageUrl, isWholePageChecked, type PageItem } from "../../../everything-shared/notesQuery";
-import { normalizePageUrl } from "../../../everything-shared/pageUrls";
+import { extractYoutubeVideoId, normalizePageUrl } from "../../../everything-shared/pageUrls";
+import { noteStatus } from "../../../everything-shared/noteScore";
 import type { NoteRow } from "../../../everything-shared/types";
 import { submitNoteRequest } from "../../../everything-shared/noteRequests";
 import { authorFeedStatusForTab, type AuthorFeedStatus } from "../../utils/authorFeed";
-import { noteVisible } from "../../utils/claimGroups";
+import { noteVisible, type NoteCounts } from "../../utils/claimGroups";
 import { genericScriptId } from "../../utils/genericScript";
 import { resolveReaderCanonical } from "../../utils/readerCanonical";
 import type { FollowTarget } from "../../utils/followTarget";
-import { buildFollowAction } from "../../utils/mountStatusOverlay";
+import { buildFollowAction, headline } from "../../utils/mountStatusOverlay";
 import { capturePageFromTab } from "../../utils/pageCapture";
 import { addRequestedPage, getRequestedPages } from "../../utils/settings";
 import { ActionButton, type StatusAction } from "../../components/StatusOverlay";
@@ -211,14 +212,16 @@ function FollowButton({ target }: { target: FollowTarget }) {
   return <ActionButton action={action} buttonClassName={PRIMARY_BUTTON} />;
 }
 
-/** The popup's actions for the current page. On a page with visible notes the
- *  first button jumps to them, first enabling the site if the sync has not
- *  registered it yet. A content page we have not read in full offers the
- *  request under it, and a page whose author we could follow offers the
- *  follow. Anywhere else the popup opens a random page that has notes. */
-function PrimaryAction({ state, visibleNoteCount, jumped, access }: {
+/** The popup for the current page leads with the same status sentence the
+ *  in-page card shows: how many notes there are, that we found nothing, or
+ *  that the page is unchecked. On a page with notes the sentence itself is
+ *  the link that jumps to them, first enabling the site if the sync has not
+ *  registered it yet. Blue buttons are kept for actions only: requesting a
+ *  check and following an author. Anywhere else the popup opens a random page
+ *  that has notes. */
+function PrimaryAction({ state, counts, jumped, access }: {
   state: PageState;
-  visibleNoteCount: number;
+  counts: NoteCounts | null;
   jumped: boolean;
   access: PageAccess | null;
 }) {
@@ -248,6 +251,7 @@ function PrimaryAction({ state, visibleNoteCount, jumped, access }: {
       </button>
     );
   }
+  const visibleNoteCount = counts?.visible ?? 0;
   if (!authorFeed || (state.kind === "item" && visibleNoteCount > 0 && !access)) {
     return <p className="text-sm text-gray-500">Loading notes…</p>;
   }
@@ -273,17 +277,22 @@ function PrimaryAction({ state, visibleNoteCount, jumped, access }: {
   const requestable = state.kind === "no_item" || !isWholePageChecked(state.item);
   const fullyCheckedNoNotes = state.kind === "item" && !requestable && visibleNoteCount === 0;
 
+  // The same sentence the in-page card shows, from the same function.
+  const noun = state.kind === "item" && extractYoutubeVideoId(state.item.url) ? "video" : "page";
+  const statusLine = headline({
+    noun,
+    counts: state.kind === "item" ? counts : null,
+    wholePageChecked: state.kind === "item" && isWholePageChecked(state.item),
+  });
+
   return (
     <div className="space-y-2">
-      {state.kind === "item" && visibleNoteCount > 0 && (
-        <button onClick={jumpToNote} className={PRIMARY_BUTTON}>
-          {/* A page with a single note never says "next". Jumping again just
-              re-centers the one note, so both states share one honest label. */}
-          {visibleNoteCount === 1 ? "Jump to the note" : jumped ? "Jump to next note" : "Jump to first note"}
+      {visibleNoteCount > 0 ? (
+        <button onClick={jumpToNote} className="text-left text-sm text-blue-600 hover:underline" title={jumped ? "Jump to the next note" : "Jump to the first note"}>
+          {statusLine}
         </button>
-      )}
-      {fullyCheckedNoNotes && (
-        <p className="text-sm text-gray-600">We checked this page and found nothing to note.</p>
+      ) : (
+        <p className="text-sm text-gray-600">{statusLine}</p>
       )}
       {requestable &&
         (authorFeed.kind === "followed" ? (
@@ -323,13 +332,23 @@ export function PopupApp() {
   useEffect(() => {
     void browser.runtime.sendMessage({ type: "cn-sync-noted-sites" }).catch(() => {});
   }, []);
-  const visibleNoteCount = state.kind === "item" && filters
-    ? state.notes.filter((note) => noteVisible(note, filters)).length
-    : 0;
+  // The same tallies the in-page card shows: the status counts report what
+  // exists and ignore the filters, while `visible` is what a jump can reach.
+  let counts: NoteCounts | null = null;
+  if (state.kind === "item" && filters) {
+    counts = { helpful: 0, needsRatings: 0, notHelpful: 0, visible: 0 };
+    for (const note of state.notes) {
+      const status = noteStatus(note);
+      if (status === "helpful") counts.helpful += 1;
+      else if (status === "needs_ratings") counts.needsRatings += 1;
+      else counts.notHelpful += 1;
+      if (noteVisible(note, filters)) counts.visible += 1;
+    }
+  }
 
   return (
     <div className="p-4 space-y-4 bg-gray-50 min-h-[120px]">
-      <PrimaryAction state={state} visibleNoteCount={visibleNoteCount} jumped={jumped} access={access} />
+      <PrimaryAction state={state} counts={counts} jumped={jumped} access={access} />
 
       <div className="border-t border-gray-200 pt-3">
         <button
