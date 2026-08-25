@@ -34,27 +34,29 @@ export interface StatusOverlayParams {
   requestWithPageText: boolean;
 }
 
+/* The status sentences carry no trailing dot. They stand alone on a card or
+ * as the popup's link, where a period reads as clutter. */
 export function headline(params: Pick<StatusOverlayParams, "noun" | "counts" | "wholePageChecked">): string {
   const { counts, noun, wholePageChecked } = params;
-  if (!counts) return `We haven't checked this ${noun} yet.`;
+  if (!counts) return `We haven't checked this ${noun} yet`;
   const { helpful, needsRatings, notHelpful } = counts;
   if (helpful === 0 && needsRatings === 0) {
     // The sentence "found nothing to note" is only true for a page that was
     // read in full and genuinely produced nothing. A page that only carries a
     // reader's note, or a checked paragraph, has not been read whole; a page
     // whose notes were all rated not helpful found plenty.
-    if (notHelpful > 0) return `No note on this ${noun} is currently rated helpful.`;
-    if (wholePageChecked) return `We checked this ${noun} and found nothing to note.`;
-    return `We haven't checked this whole ${noun} yet.`;
+    if (notHelpful > 0) return `No note on this ${noun} is currently rated helpful`;
+    if (wholePageChecked) return `We checked this ${noun} and found nothing to note`;
+    return `We haven't checked this whole ${noun} yet`;
   }
   const surface = noun === "video" ? "video" : "page";
   const notes = (n: number) => (n === 1 ? "1 Common Note" : `${n} Common Notes`);
   if (helpful === 0) {
-    return `${notes(needsRatings)} on this ${surface} ${needsRatings === 1 ? "needs" : "need"} more ratings.`;
+    return `${notes(needsRatings)} on this ${surface} ${needsRatings === 1 ? "needs" : "need"} more ratings`;
   }
   const ratings =
     needsRatings === 0 ? "" : needsRatings === 1 ? ", 1 needs more ratings" : `, ${needsRatings} need more ratings`;
-  return `${notes(helpful)} on this ${surface}${ratings}.`;
+  return `${notes(helpful)} on this ${surface}${ratings}`;
 }
 
 /** The follow action for a target, or null when the user already asked. The
