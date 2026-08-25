@@ -45,11 +45,11 @@ export function useNoteVoting(onNoteUpdated: (note: NoteRow) => void, onNnnUpdat
     session?.user ?? (await supabase.auth.getSession()).data.session?.user ?? null;
 
   /** Cast or retract a vote on a note and mint its donation. The rules are the
-   *  same as on the website. The pair of contingent amounts is computed from
-   *  the tally as it stood before this vote, and it is stored against the vote
-   *  row. This resolves to the minted donation. It resolves to null when the
-   *  vote is retracted, when the note is the voter's own, or when nobody is
-   *  signed in. */
+   *  same as on the website, and a vote on your own note mints like any other.
+   *  The pair of contingent amounts is computed from the tally as it stood
+   *  before this vote, and it is stored against the vote row. This resolves to
+   *  the minted donation. It resolves to null when the vote is retracted or
+   *  when nobody is signed in. */
   const handleVote = async (note: NoteRow, vote: Vote): Promise<MintedDonation | null> => {
     const user = await currentUser();
     if (!user) {
@@ -69,7 +69,7 @@ export function useNoteVoting(onNoteUpdated: (note: NoteRow) => void, onNnnUpdat
       next.set(note.id, vote);
       setMyVotes(next);
       const voteId = await castVote(note.id, user.id, vote, "extension");
-      if (voteId && note.author_id !== user.id) {
+      if (voteId) {
         const pair = donationPair(priorTally(note, current), vote);
         // A backend that has not run migration 061 rejects the pair columns.
         // We keep the vote in that case. We just do not promise a donation

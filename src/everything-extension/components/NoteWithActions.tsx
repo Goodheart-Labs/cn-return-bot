@@ -4,7 +4,7 @@ import { VoteRatings } from "../../dashboard-shared/Ratings";
 import { NoteBox } from "../../everything-web/src/components/NoteCard";
 import { NoteMenu } from "../../everything-web/src/components/NoteMenu";
 import { VoteDonation } from "../../everything-web/src/components/VoteDonation";
-import type { MintedDonation } from "../../everything-web/src/lib/donations";
+import { takeMintedDonation, type MintedDonation } from "../../everything-web/src/lib/donations";
 import { noteStatus, noteTallyVisible } from "../../everything-shared/noteScore";
 import type { NoteRow } from "../../everything-shared/types";
 import type { Vote } from "../../everything-shared/votes";
@@ -37,9 +37,11 @@ export function NoteWithActions({ note, myVote, onVote, session, shareUrl, onNee
 }) {
   const [sourcesOpen, setSourcesOpen] = useState(false);
   // The donation that was just minted. It makes the notice appear beneath the
-  // pills. It is cleared when the vote is retracted, which leaves myVote
-  // undefined, and when the notice closes itself.
-  const [cast, setCast] = useState<MintedDonation | null>(null);
+  // pills. A note the viewer just posted starts with the parked donation its
+  // automatic Helpful vote minted, so the notice explains the pill that is
+  // already lit. It is cleared when the vote is retracted, which leaves
+  // myVote undefined, and when the notice closes itself.
+  const [cast, setCast] = useState<MintedDonation | null>(() => takeMintedDonation(note.id));
   const status = noteStatus(note);
   return (
     <div>

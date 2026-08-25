@@ -3,6 +3,34 @@ import { supabase } from "./supabase";
 import { displayName } from "./session";
 import { isEarnestNote } from "./judgeNote";
 import type { NoteRow } from "./types";
+import { donationPair } from "../everything-web/src/lib/donationScoring";
+import { parkMintedDonation, preferredCharity, saveDonation } from "../everything-web/src/lib/donations";
+
+/** Mints the donation for the author's automatic Helpful vote, which a
+ *  database trigger casts the moment a note is inserted. The trigger writes
+ *  the vote row directly, so the client mints its donation here, from the
+ *  same formula every clicked vote uses. The self-vote is always the note's
+ *  first vote, so the prior tally is empty. The minted donation is parked for
+ *  the note's card, which shows the notice when it first renders. A failure
+ *  here never fails the posting: the note is already saved, and against a
+ *  backend without the trigger or the ledger there is nothing to mint. */
+async function mintAuthorSelfVoteDonation(noteId: string, authorId: string): Promise<void> {
+  try {
+    const { data: vote } = await supabase
+      .from("everything_votes")
+      .select("id")
+      .eq("note_id", noteId)
+      .eq("voter_id", authorId)
+      .maybeSingle();
+    if (!vote) return;
+    const pair = donationPair({ helpful: 0, somewhatHelpful: 0, notHelpful: 0 }, 1);
+    const charity = preferredCharity();
+    const { error } = await saveDonation(vote.id, charity, pair);
+    if (!error) parkMintedDonation(noteId, { voteId: vote.id, charity, pair });
+  } catch (err) {
+    console.warn("[common-notes] could not mint the self-vote donation:", err);
+  }
+}
 
 export type PostOutcome =
   | { type: "posted"; claimId: string; noteId: string }
@@ -57,6 +85,7 @@ export async function postClaimWithNote(params: {
       .select("id")
       .single();
     if (noteError || !noteRow) return { type: "error", message: noteError?.message ?? "could not create the note" };
+    await mintAuthorSelfVoteDonation(noteRow.id, session.user.id);
     return { type: "posted", claimId: claim.id, noteId: noteRow.id };
   } catch (err) {
     return { type: "error", message: (err as Error).message };
@@ -91,6 +120,7 @@ export async function postImprovement(params: {
       .select("id")
       .single();
     if (error || !noteRow) return { type: "error", message: error?.message ?? "could not create the note" };
+    await mintAuthorSelfVoteDonation(noteRow.id, session.user.id);
     return { type: "posted", claimId: note.claim_id, noteId: noteRow.id };
   } catch (err) {
     return { type: "error", message: (err as Error).message };

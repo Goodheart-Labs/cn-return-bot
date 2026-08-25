@@ -19,19 +19,46 @@ const isCharityId = (v: unknown): v is CharityId => CHARITIES.some((c) => c.id =
  *  donation box never displays this value. It displays the charity on its own
  *  ledger row, because the box must never show a charity the ledger does not
  *  hold. */
-export const usePreferredCharity = createLocalPreference<CharityId>("cn-preferred-charity", {
+const PREFERRED_CHARITY_KEY = "cn-preferred-charity";
+
+export const usePreferredCharity = createLocalPreference<CharityId>(PREFERRED_CHARITY_KEY, {
   parse: (raw) => (isCharityId(raw) ? raw : CHARITIES[0].id),
   serialize: (charity) => charity,
 });
 
+/** The stored charity preference read outside React. Posting a note mints the
+ *  author's automatic self-vote donation from plain code, where the hook above
+ *  cannot run. */
+export function preferredCharity(): CharityId {
+  try {
+    const raw = localStorage.getItem(PREFERRED_CHARITY_KEY);
+    return isCharityId(raw) ? raw : CHARITIES[0].id;
+  } catch {
+    return CHARITIES[0].id;
+  }
+}
+
 /** The donation a cast vote minted. It carries the vote id, the charity the
  *  ledger row was written with, and the frozen pair of amounts. Callers hold
- *  null instead when the vote was retracted, or when the vote mints no donation
- *  at all, which is what happens on your own note. */
+ *  null instead when the vote was retracted. */
 export interface MintedDonation {
   voteId: string;
   charity: CharityId;
   pair: DonationPair;
+}
+
+/* Posting a note mints a donation for the author's automatic Helpful vote,
+ * but the note's card does not exist yet at that moment. The mint is parked
+ * here under the note id, and the card claims it when it first renders, so
+ * the donation notice appears under the fresh note the same way it would
+ * after a click. The map never grows past a handful of entries, because every
+ * render of a note card takes its entry out. */
+const mintedByNote = new Map<string, MintedDonation>();
+export const parkMintedDonation = (noteId: string, donation: MintedDonation) => mintedByNote.set(noteId, donation);
+export function takeMintedDonation(noteId: string): MintedDonation | null {
+  const donation = mintedByNote.get(noteId) ?? null;
+  mintedByNote.delete(noteId);
+  return donation;
 }
 
 /** Mint the donation a vote earns, which is the pair of amounts frozen at vote

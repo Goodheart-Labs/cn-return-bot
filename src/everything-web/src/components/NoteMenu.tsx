@@ -186,9 +186,13 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
         <button onClick={toggleNnn} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
           <SpeechBubbleIcon /> Note not needed
         </button>
-        <button onClick={toggleImprove} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
-          <PencilIcon /> Suggest an improvement
-        </button>
+        {/* Improving your own note makes no sense as a second card beside it.
+            An author who wants different wording deletes and rewrites. */}
+        {!mine && (
+          <button onClick={toggleImprove} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
+            <PencilIcon /> Suggest an improvement
+          </button>
+        )}
         <button
           onClick={share}
           className={`inline-flex items-center gap-1 hover:underline ${copied ? "text-green-700 dark:text-green-400" : "text-blue-600 dark:text-blue-400"}`}

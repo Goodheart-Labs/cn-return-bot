@@ -244,10 +244,10 @@ export function App() {
   // Casts the vote and mints its donation. The outcome-contingent pair is
   // computed from the tally as it stood before this vote. It is frozen at that
   // moment and stored against the vote row. The function returns the minted
-  // donation, and returns null in three cases. Retracting a vote returns null,
+  // donation, and returns null in two cases. Retracting a vote returns null,
   // and the database cascade removes the donation with it. A signed-out visitor
-  // returns null, since no vote is cast at all. A vote on your own note returns
-  // null, because it mints no donation.
+  // returns null, since no vote is cast at all. A vote on your own note mints
+  // like any other vote.
   const handleVote = async (note: NoteRow, vote: Vote): Promise<MintedDonation | null> => {
     if (!session) {
       // An anonymous reader hit the vote wall — the funnel's sign-in prompt.
@@ -267,7 +267,6 @@ export function App() {
     setMyVotes(next);
     const voteId = await castVote(note.id, session.user.id, vote, "web");
     if (!voteId) return null;
-    if (note.author_id === session.user.id) return null;
     const pair = donationPair(priorTally(note, current), vote);
     // A backend without migration 061 rejects the pair of amount columns. We
     // keep the vote in that case. We just do not promise the user a donation the

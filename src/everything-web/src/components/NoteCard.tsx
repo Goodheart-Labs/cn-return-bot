@@ -7,7 +7,7 @@ import { quoteFragmentUrl } from "../../../dashboard-shared/textFragment";
 import type { NotedContent } from "../../../dashboard-shared/types";
 import type { ClaimRef, NnnRow, NoteRow, NoteSourceDetail } from "../../../everything-shared/types";
 import { fetchNoteSourceDetails } from "../../../everything-shared/notesQuery";
-import type { MintedDonation } from "../lib/donations";
+import { takeMintedDonation, type MintedDonation } from "../lib/donations";
 import type { Vote } from "../../../everything-shared/votes";
 import { noteStatus, noteTallyVisible, type NoteStatus } from "../../../everything-shared/noteScore";
 import { noteUrl } from "../lib/routing";
@@ -365,7 +365,10 @@ export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug, 
   // presence is what shows the donation notice beneath the rating pills. The
   // charity on it is the value in the ledger, and a successful redirect updates
   // it here too. Retracting the vote clears it.
-  const [cast, setCast] = useState<MintedDonation | null>(null);
+  // A note the viewer just posted starts with the parked donation its
+  // automatic Helpful vote minted, so the notice explains the pill that is
+  // already lit.
+  const [cast, setCast] = useState<MintedDonation | null>(() => takeMintedDonation(note.id));
   const cardColRef = useRef<HTMLDivElement>(null);
   const [sourcesOpen, setSourcesOpen] = useState(false);
   // The status is computed once per card. The badge, the box tint, the reveal of
