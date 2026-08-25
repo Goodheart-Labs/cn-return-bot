@@ -2,9 +2,11 @@ import { browser } from "#imports";
 import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
 import { unlessFollowed } from "./followedFeeds";
 import {
+  readSubstackPublicationFromPage,
   resolveProfileFollowTarget,
   substackFollowTarget,
   substackProfileHandle,
+  substackTargetFromPublication,
   youtubeChannelTarget,
   type FollowTarget,
 } from "./followTarget";
@@ -35,6 +37,21 @@ export async function authorFeedForTab(tab: { id?: number; url?: string; title?:
       const [result] = await browser.scripting.executeScript({ target: { tabId: tab.id }, func: readWatchPageChannel });
       const channel = result?.result as { href: string; name: string } | null;
       if (channel) return youtubeChannelTarget(channel.href, channel.name.trim());
+    } catch {
+      // A page we may not inject into offers no follow target.
+    }
+  }
+  // A Substack newsletter on a custom domain names its *.substack.com form
+  // inside the page, so the page itself is asked last. On any page that is
+  // not Substack this reads nothing and stays a follow-less answer.
+  if (tab.id != null) {
+    try {
+      const [result] = await browser.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: readSubstackPublicationFromPage,
+      });
+      const target = substackTargetFromPublication(result?.result ?? null);
+      if (target) return target;
     } catch {
       // A page we may not inject into offers no follow target.
     }

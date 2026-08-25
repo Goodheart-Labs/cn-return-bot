@@ -11,9 +11,11 @@ import { getCoveredPageUrls, pageIsCovered } from "./coveredPages";
 import { unlessFollowed } from "./followedFeeds";
 import {
   isSubstackPostPage,
+  readSubstackPublicationFromPage,
   resolveProfileFollowTarget,
   substackFollowTarget,
   substackProfileHandle,
+  substackTargetFromPublication,
   type FollowTarget,
 } from "./followTarget";
 import { jumpToNextNote } from "./jumpBus";
@@ -90,13 +92,17 @@ function applyHighlights(ranges: Range[]) {
 }
 
 /** The follow target when this page is an author's own page rather than a
- *  post: a publication homepage or archive on a *.substack.com subdomain, or a
- *  Substack profile page. Null when the page is neither. */
+ *  post: a publication homepage or archive on a *.substack.com subdomain or a
+ *  custom domain, or a Substack profile page. Null when the page is none of
+ *  those. */
 async function authorPageFollowTarget(pageUrl: string): Promise<FollowTarget | null> {
   const subdomainTarget = substackFollowTarget(pageUrl);
   if (subdomainTarget) return subdomainTarget;
   const handle = substackProfileHandle(pageUrl);
-  return handle ? resolveProfileFollowTarget(handle) : null;
+  if (handle) return resolveProfileFollowTarget(handle);
+  // A custom-domain publication names its *.substack.com form inside the
+  // page. Any page that is not Substack reads as nothing here.
+  return substackTargetFromPublication(readSubstackPublicationFromPage());
 }
 
 /** The write-anywhere shell plus the transient status card. A post page gets
@@ -115,8 +121,8 @@ async function mountUncovered(
   if (isSubstackPostPage(pageUrl)) {
     // unlessFollowed collapses "no feed" and "followed feed" both to null, so
     // the author's feed is resolved once to tell the two apart. A post on a
-    // custom domain has no derivable feed and counts as not followed.
-    const authorFeed = substackFollowTarget(pageUrl);
+    // custom domain derives its feed from the page itself.
+    const authorFeed = substackFollowTarget(pageUrl) ?? substackTargetFromPublication(readSubstackPublicationFromPage());
     const unfollowedAuthor = await unlessFollowed(authorFeed);
     const authorFollowed = authorFeed !== null && unfollowedAuthor === null;
     if ((await getSettings()).showRequestOverlay && !authorFollowed) {

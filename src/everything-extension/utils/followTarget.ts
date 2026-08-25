@@ -16,13 +16,43 @@ export const followButtonLabel = (target: FollowTarget) => `Request notes on all
 export const followDoneLabel = (target: FollowTarget) => `Requested. We'll check new posts from this ${target.kind}.`;
 
 /** A Substack publication on its own subdomain. A publication on a custom
- *  domain gives null, because the pipeline can only follow the *.substack.com
- *  form (the RSS relay accepts nothing else) and that form is not derivable
- *  from the page URL. */
+ *  domain gives null here, because the *.substack.com form the pipeline needs
+ *  (the RSS relay accepts nothing else) is not derivable from the page URL.
+ *  For those, readSubstackPublicationFromPage reads it out of the page. */
 export function substackFollowTarget(pageUrl: string): FollowTarget | null {
   const m = new URL(pageUrl).hostname.match(/^([\w-]+)\.substack\.com$/);
   if (!m || m[1] === "www") return null;
   return { feedType: "substack", feedUrl: `https://${m[1]}.substack.com`, kind: "author", title: m[1]! };
+}
+
+/** Reads the publication's identity out of a Substack page itself, which is
+ *  how a newsletter on a custom domain becomes followable. Every Substack
+ *  page embeds its publication data as an escaped JSON blob inside a script
+ *  tag, and that raw text is visible to a content script even though the
+ *  page's own JavaScript variables are not. The subdomain in that blob is the
+ *  *.substack.com form the follow pipeline needs. Null on any page that is
+ *  not Substack.
+ *
+ *  This also runs inside the page via executeScript for the popup, so it must
+ *  stay self-contained: the serialized function has no imports over there. */
+export function readSubstackPublicationFromPage(): { subdomain: string; name: string } | null {
+  for (const script of Array.from(document.querySelectorAll("script"))) {
+    const text = script.textContent ?? "";
+    if (!text.includes("_preloads")) continue;
+    // The blob is JSON inside a JSON string, so the quotes around the value
+    // usually arrive escaped. The pattern tolerates both forms.
+    const m = text.match(/subdomain\\?":\\?"([\w-]+)\\?"/);
+    if (!m) continue;
+    const name = document.querySelector<HTMLMetaElement>('meta[property="og:site_name"]')?.content;
+    return { subdomain: m[1]!, name: name || m[1]! };
+  }
+  return null;
+}
+
+/** The follow target for a publication read out of a page. */
+export function substackTargetFromPublication(pub: { subdomain: string; name: string } | null): FollowTarget | null {
+  if (!pub) return null;
+  return { feedType: "substack", feedUrl: `https://${pub.subdomain}.substack.com`, kind: "author", title: pub.name };
 }
 
 /** Substack post pages live under /p/, on subdomains and custom domains alike.
