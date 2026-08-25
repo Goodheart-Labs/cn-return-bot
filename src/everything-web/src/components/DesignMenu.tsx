@@ -4,6 +4,7 @@ import {
   optionHex, optionsForRole, applyFlexokiRoles, loadRoles, loadTone,
   type RoleSelection,
 } from "../lib/flexoki";
+import { readStored, writeStored } from "../lib/safeStorage";
 
 /** The experimental design menu, fixed to the bottom left corner. It offers
  *  color-scheme swatches and a font-size toggle. Each control sets a data
@@ -70,10 +71,10 @@ function SystemThemeSync() {
 
 function DesignMenuPanel() {
   const [scheme, setScheme] = useState<SchemeId>(
-    () => (localStorage.getItem(SCHEME_KEY) as SchemeId) ?? systemScheme(),
+    () => (readStored(SCHEME_KEY) as SchemeId) ?? systemScheme(),
   );
   const [fontSize, setFontSize] = useState<FontSizeId>(
-    () => (localStorage.getItem(FONTSIZE_KEY) as FontSizeId) ?? "large",
+    () => (readStored(FONTSIZE_KEY) as FontSizeId) ?? "large",
   );
   const [roles, setRoles] = useState<RoleSelection>(loadRoles);
   const [tone, setTone] = useState<number>(loadTone);
@@ -81,18 +82,18 @@ function DesignMenuPanel() {
 
   useEffect(() => {
     document.documentElement.setAttribute("data-scheme", scheme);
-    localStorage.setItem(SCHEME_KEY, scheme);
+    writeStored(SCHEME_KEY, scheme);
   }, [scheme]);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-fontsize", fontSize);
-    localStorage.setItem(FONTSIZE_KEY, fontSize);
+    writeStored(FONTSIZE_KEY, fontSize);
   }, [fontSize]);
 
   useEffect(() => {
     applyFlexokiRoles(roles, tone);
-    localStorage.setItem(ROLE_KEY, JSON.stringify(roles));
-    localStorage.setItem(TONE_KEY, String(tone));
+    writeStored(ROLE_KEY, JSON.stringify(roles));
+    writeStored(TONE_KEY, String(tone));
   }, [roles, tone]);
 
   const isFlexoki = scheme === "beige";

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import { supabase } from "../../../everything-shared/supabase";
+import { randomUuid } from "./randomUuid";
 import {
   fetchProjectItems,
   fetchProjectNnn,
@@ -14,16 +15,25 @@ type RowMap<T> = Map<string, T>;
 
 /** The projects in the sidebar. They are loaded once and they never change while
  *  the page is open. */
-export function useProjects(): FeedProjectRow[] {
+export function useProjects(): { projects: FeedProjectRow[]; failed: boolean } {
   const [projects, setProjects] = useState<FeedProjectRow[]>([]);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    fetchProjects().then((rows) => { if (!cancelled) setProjects(rows); });
+    fetchProjects()
+      .then((rows) => { if (!cancelled) setProjects(rows); })
+      /* Without this the sidebar stayed empty for ever and no project was ever
+       * opened, so a reader whose first request failed sat in front of a page
+       * that never finished loading and never said why. */
+      .catch((err) => {
+        console.error("Could not load the projects", err);
+        if (!cancelled) setFailed(true);
+      });
     return () => { cancelled = true; };
   }, []);
 
-  return projects;
+  return { projects, failed };
 }
 
 /** Keeps only the columns the feed renders. A realtime message always carries
@@ -47,6 +57,9 @@ export function useProjectFeed(projectId: string | null) {
   const [notes, setNotes] = useState<RowMap<NoteRow>>(new Map());
   const [nnn, setNnn] = useState<RowMap<NnnRow>>(new Map());
   const [loaded, setLoaded] = useState(false);
+  const [failed, setFailed] = useState(false);
+  // Bumped by retry() to run the load effect again.
+  const [attempt, setAttempt] = useState(0);
 
   // The note-not-needed handler has to know which claims are on screen, and the
   // subscription is set up once per project, so it reads them through a ref
@@ -60,18 +73,29 @@ export function useProjectFeed(projectId: string | null) {
     if (!projectId) return;
     let cancelled = false;
     setLoaded(false);
+    setFailed(false);
 
+    /* Any one of these three can fail: the backend has brief outages, and a
+     * reader's network or browser extension can block the request outright.
+     * Before this was caught, the rejection went nowhere and `loaded` stayed
+     * false, which left the reader looking at "Loading..." for ever. Now the
+     * feed says what happened and offers to try again. */
     (async () => {
-      const [i, n, e] = await Promise.all([
-        fetchProjectItems(projectId),
-        fetchProjectNotes(projectId),
-        fetchProjectNnn(projectId),
-      ]);
-      if (cancelled) return;
-      setItems(new Map(i.map((r) => [r.id, r])));
-      setNotes(new Map(n.map((r) => [r.id, r])));
-      setNnn(new Map(e.map((r) => [r.id, r])));
-      setLoaded(true);
+      try {
+        const [i, n, e] = await Promise.all([
+          fetchProjectItems(projectId),
+          fetchProjectNotes(projectId),
+          fetchProjectNnn(projectId),
+        ]);
+        if (cancelled) return;
+        setItems(new Map(i.map((r) => [r.id, r])));
+        setNotes(new Map(n.map((r) => [r.id, r])));
+        setNnn(new Map(e.map((r) => [r.id, r])));
+        setLoaded(true);
+      } catch (err) {
+        console.error("Could not load this project", err);
+        if (!cancelled) setFailed(true);
+      }
     })();
 
     /* A realtime change never carries the joined claim, so a note we have not
@@ -92,7 +116,7 @@ export function useProjectFeed(projectId: string | null) {
       };
 
     const channel = supabase
-      .channel(`common-notes-${projectId}-${crypto.randomUUID()}`)
+      .channel(`common-notes-${projectId}-${randomUuid()}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "everything_items", filter: `project_id=eq.${projectId}` },
@@ -140,7 +164,7 @@ export function useProjectFeed(projectId: string | null) {
       cancelled = true;
       supabase.removeChannel(channel);
     };
-  }, [projectId]);
+  }, [projectId, attempt]);
 
-  return { items, notes, nnn, loaded };
+  return { items, notes, nnn, loaded, failed, retry: () => setAttempt((n) => n + 1) };
 }
