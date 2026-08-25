@@ -11,6 +11,7 @@ import { genericScriptId } from "../../utils/genericScript";
 import { resolveReaderCanonical } from "../../utils/readerCanonical";
 import type { FollowTarget } from "../../utils/followTarget";
 import { buildFollowAction, headline } from "../../utils/mountStatusOverlay";
+import { isSubstackPostPage, requestMakesSenseForUrl } from "../../utils/followTarget";
 import { capturePageFromTab } from "../../utils/pageCapture";
 import { addRequestedPage, getRequestedPages } from "../../utils/settings";
 import { ActionButton, type StatusAction } from "../../components/StatusOverlay";
@@ -28,7 +29,7 @@ type PageState =
   | { kind: "loading" }
   | { kind: "unsupported" } // The page is not http or https.
   | { kind: "load_failed" } // The backend could not be reached.
-  | { kind: "no_item"; origin: string }
+  | { kind: "no_item"; origin: string; pageUrl: string }
   | { kind: "item"; origin: string; item: PageItem; notes: NoteRow[] };
 
 async function activeTab() {
@@ -53,7 +54,7 @@ function usePageState(): PageState {
       } catch {
         return setState({ kind: "load_failed" });
       }
-      if (!item) return setState({ kind: "no_item", origin });
+      if (!item) return setState({ kind: "no_item", origin, pageUrl: normalizePageUrl(readerCanonical ?? url) });
       const notes = await fetchNotesForItem(item.id);
       if (notes === null) return setState({ kind: "load_failed" });
       setState({ kind: "item", origin, item, notes });
@@ -273,8 +274,17 @@ function PrimaryAction({ state, counts, jumped, access }: {
 
   // Only a page the pipeline has read in full stops offering the request. An
   // item that exists because a reader wrote a note, or because one paragraph
-  // was checked, still gets the offer, under its own wording.
-  const requestable = state.kind === "no_item" || !isWholePageChecked(state.item);
+  // was checked, still gets the offer, under its own wording. On the
+  // platforms whose URL shapes we know, only an actual post or video gets
+  // it: a Substack inbox or a YouTube channel page is not checkable. A
+  // custom-domain Substack is recognized through its author feed, so its
+  // homepage and archive pages are held to the same post rule.
+  const pageUrl = state.kind === "item" ? state.item.url : state.pageUrl;
+  const substackFeed =
+    (authorFeed.kind === "followable" && authorFeed.target.feedType === "substack") ||
+    (authorFeed.kind === "followed" && authorFeed.feed.feedType === "substack");
+  const postShaped = requestMakesSenseForUrl(pageUrl) && (!substackFeed || isSubstackPostPage(pageUrl));
+  const requestable = postShaped && (state.kind === "no_item" || !isWholePageChecked(state.item));
   const fullyCheckedNoNotes = state.kind === "item" && !requestable && visibleNoteCount === 0;
 
   // The same sentence the in-page card shows, from the same function.
