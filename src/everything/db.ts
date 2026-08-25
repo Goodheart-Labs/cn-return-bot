@@ -91,26 +91,24 @@ export async function resolveProjectId(slug: string, displayName?: string): Prom
   ).id;
 }
 
-/** Fills a project's display name by project id; see fillDisplayName. The
- *  worker calls this with the author name of the content it just fetched. */
-export async function fillProjectDisplayName(projectId: string | null, displayName: string | undefined): Promise<void> {
-  if (!projectId || !displayName) return;
+async function fillDisplayNameWhere(column: "id" | "slug", value: string, displayName: string | undefined): Promise<void> {
+  if (!displayName) return;
   const project = throwOnError(
-    await getSupabaseClient().from("everything_projects").select("id, slug, name").eq("id", projectId).maybeSingle(),
+    await getSupabaseClient().from("everything_projects").select("id, slug, name").eq(column, value).maybeSingle(),
   ) as ProjectRow | null;
   if (project) await fillDisplayName(project, displayName);
 }
 
+/** Fills a project's display name by project id; see fillDisplayName. The
+ *  worker calls this with the author name of the content it just fetched. */
+export const fillProjectDisplayName = (projectId: string | null, displayName?: string): Promise<void> =>
+  projectId ? fillDisplayNameWhere("id", projectId, displayName) : Promise.resolve();
+
 /** Fills a project's display name by slug, without creating the project; see
  *  fillDisplayName. The follow-request consumer calls this, because a followed
  *  feed's project may or may not exist yet. */
-export async function fillProjectDisplayNameBySlug(slug: string, displayName: string | undefined): Promise<void> {
-  if (!displayName) return;
-  const project = throwOnError(
-    await getSupabaseClient().from("everything_projects").select("id, slug, name").eq("slug", slug).maybeSingle(),
-  ) as ProjectRow | null;
-  if (project) await fillDisplayName(project, displayName);
-}
+export const fillProjectDisplayNameBySlug = (slug: string, displayName?: string): Promise<void> =>
+  fillDisplayNameWhere("slug", slug, displayName);
 
 // A local doc with no url still needs a unique, non-null `url`, because the
 // column is NOT NULL UNIQUE. We mint a synthetic key under this prefix. Such a
