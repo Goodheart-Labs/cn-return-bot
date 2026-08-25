@@ -1,4 +1,4 @@
--- Slow the review-dashboard matview refresh from every 5 minutes to every 30.
+-- Slow the review-dashboard matview refresh from every 5 minutes to hourly.
 --
 -- Context (incident 2026-08-25, GOO-49): the prod instance (Micro compute,
 -- 1 GB RAM) went into disk-IO starvation in the evening. Auth took a minute,
@@ -11,7 +11,7 @@
 -- diagnosis comment in migration 075).
 --
 -- Trade-off: a new item or a status flip on the review dashboard can now lag
--- up to 30 minutes instead of 5. Annotations (seen / tags / stars) are joined
+-- up to an hour instead of 5 minutes. Annotations (seen / tags / stars) are joined
 -- live and never lag. Migration 075's cache-warming side effect is weakened;
 -- if cold visits get noticeably slower, tune the schedule back down once the
 -- instance has headroom (this migration is a one-line reschedule either way).
@@ -21,7 +21,7 @@ do $$ begin
   if exists (select 1 from pg_extension where extname = 'pg_cron') then
     perform cron.schedule(
       'refresh-review-dashboard-base',
-      '*/30 * * * *',
+      '0 * * * *',
       $sql$ refresh materialized view concurrently review_dashboard_base_m $sql$
     );
   else
