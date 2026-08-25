@@ -9,7 +9,11 @@ import { hitWritingLimitRecently, readWritingLimit } from "./writingLimit";
 
 const WRITING_LIMIT_WINDOW_HOURS = 24;
 const RATE_SAMPLE_WINDOW_HOURS = 32;
-export const MAX_POSTS_CAP = 20;
+// TEMPORARY (2026-08-25): lowered from 20 to 10 while the note prefilter is
+// off. Without the prefilter every processed post runs the full bot, so the
+// cap is what bounds LLM spend per run. Restore 20 together with the
+// prefilter once the Brave quota is back. See GOO-51.
+export const MAX_POSTS_CAP = 10;
 const SAFETY_MULTIPLIER = 1.25;
 const FALLBACK_MAX_POSTS = 5;
 const MIN_RUNS_FOR_RATE = 20;
