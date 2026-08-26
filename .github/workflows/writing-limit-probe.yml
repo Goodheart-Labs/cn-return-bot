@@ -16,7 +16,11 @@ jobs:
       X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
       X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
       # For writing each reading down so it can be checked later.
+      # SUPABASE_PROBE_KEY is scoped to the probe_writer role (migration 082):
+      # it can read notes.submitted_at, read pipeline_state, and append its own
+      # readings. Nothing else. The service key is the fallback until it is set.
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_PROBE_KEY: ${{ secrets.SUPABASE_PROBE_KEY }}
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
     steps:
       - uses: actions/checkout@v4
