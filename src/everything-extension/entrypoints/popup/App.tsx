@@ -14,7 +14,8 @@ import { buildFollowAction, headline } from "../../utils/mountStatusOverlay";
 import { isSubstackPostPage, requestMakesSenseForUrl } from "../../utils/followTarget";
 import { capturePageFromTab } from "../../utils/pageCapture";
 import { addRequestedPage, getRequestedPages } from "../../utils/settings";
-import { ActionButton, PRIMARY_BUTTON, type StatusAction } from "../../components/StatusOverlay";
+import { ActionButton, type StatusAction } from "../../components/StatusOverlay";
+import { BUTTON } from "../../../everything-shared/ui";
 import { STATIC_SITE_HOSTNAME } from "../../utils/staticSites";
 import { useNoteFilters } from "../../components/NoteFilterToggles";
 
@@ -171,11 +172,11 @@ function RequestNoteButton({ label, doneLabel }: { label: string; doneLabel: str
   };
 
   if (phase === "done") {
-    return <button disabled className={PRIMARY_BUTTON}>{doneLabel}</button>;
+    return <button disabled className={`${BUTTON} w-full`}>{doneLabel}</button>;
   }
   return (
     <>
-      <button onClick={request} disabled={phase !== "idle"} className={PRIMARY_BUTTON}>
+      <button onClick={request} disabled={phase !== "idle"} className={`${BUTTON} w-full`}>
         {label}
       </button>
       {phase === "error" && <p className="text-sm text-red-600">Could not save the request (try again)</p>}
@@ -245,7 +246,7 @@ function PrimaryAction({ state, counts, jumped, access }: {
 
   if (!isContentPage) {
     return (
-      <button onClick={openRandomPage} disabled={busy} className={PRIMARY_BUTTON}>
+      <button onClick={openRandomPage} disabled={busy} className={`${BUTTON} w-full`}>
         Open random page
       </button>
     );
@@ -321,7 +322,7 @@ function PrimaryAction({ state, counts, jumped, access }: {
           card, so the popup offers it on covered pages too. */}
       {authorFeed.kind === "followable" && <FollowButton target={authorFeed.target} />}
       {fullyCheckedNoNotes && (
-        <button onClick={openRandomPage} disabled={busy} className={PRIMARY_BUTTON}>
+        <button onClick={openRandomPage} disabled={busy} className={`${BUTTON} w-full`}>
           Open random page
         </button>
       )}

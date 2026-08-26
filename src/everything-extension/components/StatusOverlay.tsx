@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { BUTTON } from "../../everything-shared/ui";
 
 /** How long the overlay stays before it fades out on its own. Hovering pauses
  *  the clock, so a reader who is about to click never loses the card. */
@@ -11,10 +12,6 @@ const DONE_HIDE_MS = 6_000;
 const FADE_MS = 700;
 
 type ActionPhase = "idle" | "busy" | "done" | "error";
-
-/** The one action-button style, shared by the in-page cards and the popup so
- *  the two surfaces always match in height and font. */
-export const PRIMARY_BUTTON = "w-full bg-blue-600 text-white rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-blue-700 disabled:opacity-40";
 
 /** One overlay action: the button label, the confirmation text once it ran,
  *  and what it does. `alreadyDone` starts true when the user already asked
@@ -63,7 +60,7 @@ export function ActionButton({ action, onDone }: {
   if (phase === "done") return <p className="text-sm text-green-700 dark:text-green-400">{action.doneLabel}</p>;
   return (
     <div>
-      <button onClick={run} disabled={phase === "busy"} className={PRIMARY_BUTTON}>
+      <button onClick={run} disabled={phase === "busy"} className={`${BUTTON} w-full`}>
         {action.label}
       </button>
       {phase === "error" && <p className="mt-1 text-sm text-red-600 dark:text-red-400">Something went wrong. Try again</p>}
