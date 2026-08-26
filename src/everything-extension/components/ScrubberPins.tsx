@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { isPageDark, observePageTheme } from "../utils/pageTheme";
 import { GROUP_GLYPH_PATH } from "./ClaimNoteStack";
+import { MARKER_DARK, MARKER_HOVER_SCALE, MARKER_LIGHT } from "../utils/markerPalette";
 import type { TimedGroup } from "./YoutubeOverlay";
 
 // Map-pin markers on YouTube's scrub bar, one for each timestamped claim. They
@@ -26,7 +27,7 @@ const PIN_CSS = `
      it was clickable. */
   z-index: 60;
 }
-.cn-scrub-pin:hover { transform: translateX(-50%) scale(1.2); }
+.cn-scrub-pin:hover { transform: translateX(-50%) scale(${MARKER_HOVER_SCALE}); }
 .cn-scrub-pin svg { display: block; width: 18px; height: 24px; filter: drop-shadow(0 1px 1px rgba(0,0,0,.5)); }
 .ytp-big-mode .cn-scrub-pin svg { width: 22px; height: 29px; }
 `;
@@ -40,20 +41,18 @@ function ensurePinStyle() {
 }
 
 // The Substack passage badge drawn as a pin. The head of the pin is the badge
-// and the tip of its tail points at the timestamp. Both palettes copy the
-// badge's colors. They are written out here because Tailwind cannot reach the
-// host page's DOM. The pin reads the theme through the same isPageDark and
-// observePageTheme pair that drives the note card's `.dark` class, so every
-// YouTube surface follows one theme source.
-const PIN_LIGHT = { body: "#ffffff", border: "#d1d5db", glyph: "#2563eb" }; // Tailwind white, gray-300, blue-600.
-const PIN_DARK = { body: "#111827", border: "#4b5563", glyph: "#3b82f6" }; // Tailwind gray-900, gray-600, blue-500.
+// and the tip of its tail points at the timestamp. The colors come from the
+// shared marker palette, because Tailwind cannot reach the host page's DOM.
+// The pin reads the theme through the same isPageDark and observePageTheme
+// pair that drives the note card's `.dark` class, so every YouTube surface
+// follows one theme source.
 
 /** Draws the marker as a round head that tapers into a tail. The tip of the tail
  *  sits at the bottom centre of the viewBox, and that tip is what points at the
  *  timestamp. The head is centred at (12, 10.8) and the group glyph is scaled to
  *  fit inside it. */
 function PinGlyph({ dark }: { dark: boolean }) {
-  const palette = dark ? PIN_DARK : PIN_LIGHT;
+  const palette = dark ? MARKER_DARK : MARKER_LIGHT;
   return (
     <svg viewBox="0 0 24 32" aria-hidden>
       <path

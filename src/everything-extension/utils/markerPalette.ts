@@ -15,3 +15,9 @@ export const MARKER_DARK: MarkerColors = { body: "#111827", border: "#4b5563", g
 export const MARKER_HOVER_SCALE = 1.1;
 export const MARKER_GLYPH_SIZE = 14;
 export const MARKER_SHADOW = "0 1px 3px rgba(0,0,0,0.25)";
+
+/** The passage tint drawn behind noted text via the CSS Custom Highlight API.
+ *  Light is blue-500 at low opacity; dark is blue-400 and stronger, so it
+ *  still reads on a dark page. */
+export const PASSAGE_TINT_LIGHT = "rgba(59, 130, 246, 0.16)";
+export const PASSAGE_TINT_DARK = "rgba(96, 165, 250, 0.25)";
