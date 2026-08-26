@@ -2,15 +2,12 @@
 --
 -- The probe (src/scripts/writingLimitProbe.ts) has printed the formula's
 -- inputs and its predicted cap into GitHub Action logs since 2026-08-12.
--- Those logs expire after ~90 days, so the series it was built to produce
--- has been evaporating behind it.
+-- Those logs expire after ~90 days.
 --
--- The point of keeping it is the PAIR, not the prediction. X's real cap has
+-- The point of keeping it is the PAIR. X's real cap has
 -- run about 2.4x the formula's arithmetic -- on 2026-08-17..20 we posted
 -- 87/110/80/91 against predicted caps of 37/38/41/42 with no refusal, and the
--- last actual 403 was 2026-08-14 at 90. Until predicted and observed sit in
--- the same row on the same day, that ratio stays a guess we re-derive by hand
--- (badly) every time it matters. One row per probe run makes it fittable.
+-- last actual 403 was 2026-08-14 at 90.
 --
 -- Service-key only. Nothing reads this in the pipeline; it is an analysis
 -- series, and the probe must never be able to affect posting behaviour.
