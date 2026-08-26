@@ -375,18 +375,12 @@ const TOPIC_FILTER_TEST: ABTest = {
 // audit finds that we are losing real notes. The defaultVariant is "off", so a
 // row with no pick resolves through resolvePicks to running without the
 // prefilter.
-// TEMPORARY (2026-08-25): the prefilter is switched off because the Brave
-// Search API hit its monthly cap and SearXNG returns zero results from CI.
-// With no results the prefilter fails closed and rejects almost every post.
-// Once the Brave quota is restored, move the 100 back to the deepseek arm.
-// See GOO-51 and the investigation in
-// src/scripts_jim/2026_08_25_pipeline_note_yield/RESULTS.md.
 const NOTE_PREFILTER_TEST: ABTest = {
   name: "note_prefilter",
   defaultVariant: "off",
   variants: [
-    { variant: { name: "off",      overrides: { note_prefilter: false } }, weight: 100 },
-    { variant: { name: "deepseek", overrides: { note_prefilter: true  } }, weight: 0 },
+    { variant: { name: "off",      overrides: { note_prefilter: false } }, weight: 0 },
+    { variant: { name: "deepseek", overrides: { note_prefilter: true  } }, weight: 100 },
   ],
 };
 
