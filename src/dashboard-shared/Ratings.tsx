@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { PublicDumpRatings } from "./types";
 import { humanizeTagName } from "./ratingReasons";
+import { CHIP } from "../everything-shared/ui";
 
 type TagBucket = "helpful" | "not_helpful";
 
@@ -140,11 +141,9 @@ export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVo
   compact?: boolean;
 }) {
   const counts: Record<VoteValue, number> = { 1: helpful, 0: somewhatHelpful, [-1]: notHelpful };
-  const shape = compact
-    ? "inline-flex items-center gap-1 h-6 px-1.5 rounded-full border text-[11px] font-semibold transition-colors"
-    : "inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full border cursor-pointer transition-colors";
+  const shape = `${CHIP} transition-colors`;
   return (
-    <span className={compact ? "inline-flex items-center gap-0.5" : "inline-flex items-center gap-1.5 flex-wrap"}>
+    <span className="inline-flex items-center gap-1 flex-wrap">
       {VOTE_OPTIONS.map(({ value, label, active, hover, icon }) => (
         <button
           key={value}
@@ -157,7 +156,7 @@ export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVo
         >
           {icon}
           {!compact && label}
-          {showCounts && counts[value] > 0 && <span className={compact ? "" : "ml-0.5 font-semibold"}>{counts[value].toLocaleString("en-US")}</span>}
+          {showCounts && counts[value] > 0 && <span>{counts[value].toLocaleString("en-US")}</span>}
         </button>
       ))}
     </span>
