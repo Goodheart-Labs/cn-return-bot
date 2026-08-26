@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* The surrounding-context excerpt stays small even though the site's type
+ * scale bumps text-xs up one step. Declared after utilities so it wins on
+ * source order. The extension does not load this file, so there the excerpt
+ * renders at the default text-xs, same as before. */
+.cn-context {
+  font-size: 0.75rem;
+  line-height: 1.625;
+}

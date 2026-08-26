@@ -38,7 +38,7 @@ import { WriteNoteModal } from "./components/WriteNoteModal";
 import { NoteCard } from "./components/NoteCard";
 import { ItemChips } from "./components/ItemChips";
 import { Leaderboard } from "./components/Leaderboard";
-import { DesignMenu } from "./components/DesignMenu";
+import { SystemTheme } from "./components/SystemTheme";
 import type { NnnRow, NoteRow } from "../../everything-shared/types";
 import { noteStatus, totalVotes } from "../../everything-shared/noteScore";
 
@@ -519,7 +519,7 @@ export function App() {
         )}
       </main>
 
-      <DesignMenu />
+      <SystemTheme />
       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
       <WriteNoteModal open={writeOpen} onClose={() => setWriteOpen(false)} />
     </div>

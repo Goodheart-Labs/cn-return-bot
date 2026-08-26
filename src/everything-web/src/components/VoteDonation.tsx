@@ -128,8 +128,6 @@ export function VoteDonation({ voteId, pair, charity, status, onCharityChange, o
   };
 
   return (
-    // Use plain utility classes here, so bg-blue-50 and never bg-blue-50/50.
-    // design.css remaps these exact class names for each color scheme.
     <div
       ref={boxRef}
       className="mt-2 rounded-lg border border-blue-100 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/50 p-3 flex items-start justify-between gap-3"
