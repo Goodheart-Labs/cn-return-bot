@@ -66,7 +66,7 @@ export function ClaimNoteStack({ group, projectSlug, session, myVotes, onVote, o
     <>
       <NoteWithActions {...noteProps(group.primary)} />
       {group.alternatives.length > 0 && (
-        <div className="mt-3 pl-3 border-l-[3px] border-gray-300 dark:border-gray-600 space-y-3">
+        <div className="mt-3 pl-3 border-l-4 border-gray-200 dark:border-gray-700 space-y-3">
           {group.alternatives.map((d) => (
             <NoteWithActions key={d.id} {...noteProps(d)} />
           ))}

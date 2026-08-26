@@ -15,7 +15,7 @@ import { isSubstackPostPage, requestMakesSenseForUrl } from "../../utils/followT
 import { capturePageFromTab } from "../../utils/pageCapture";
 import { addRequestedPage, getRequestedPages } from "../../utils/settings";
 import { ActionButton, type StatusAction } from "../../components/StatusOverlay";
-import { BUTTON } from "../../../everything-shared/ui";
+import { BUTTON, LINK, QUIET_LINK } from "../../../everything-shared/ui";
 import { STATIC_SITE_HOSTNAME } from "../../utils/staticSites";
 import { useNoteFilters } from "../../components/NoteFilterToggles";
 
@@ -179,7 +179,7 @@ function RequestNoteButton({ label, doneLabel }: { label: string; doneLabel: str
       <button onClick={request} disabled={phase !== "idle"} className={`${BUTTON} w-full`}>
         {label}
       </button>
-      {phase === "error" && <p className="text-sm text-red-600">Could not save the request (try again)</p>}
+      {phase === "error" && <p className="text-sm text-red-600 dark:text-red-400">Could not save the request (try again)</p>}
     </>
   );
 }
@@ -297,11 +297,11 @@ function PrimaryAction({ state, counts, jumped, access }: {
   return (
     <div className="space-y-2">
       {visibleNoteCount > 0 ? (
-        <button onClick={jumpToNote} className="text-left text-sm text-blue-600 hover:underline" title={jumped ? "Jump to the next note" : "Jump to the first note"}>
+        <button onClick={jumpToNote} className={`text-left text-sm font-medium ${LINK}`} title={jumped ? "Jump to the next note" : "Jump to the first note"}>
           {statusLine}
         </button>
       ) : (
-        <p className="text-sm text-gray-600">{statusLine}</p>
+        <p className="text-sm font-medium text-gray-900">{statusLine}</p>
       )}
       {requestable &&
         (authorFeed.kind === "followed" ? (
@@ -359,13 +359,13 @@ export function PopupApp() {
     <div className="p-4 space-y-4 bg-gray-50 min-h-[120px]">
       <PrimaryAction state={state} counts={counts} jumped={jumped} access={access} />
 
-      <div className="border-t border-gray-200 pt-3">
+      <div className="border-t border-gray-200 pt-4">
         <button
           onClick={() => {
             void browser.runtime.openOptionsPage();
             window.close();
           }}
-          className="text-sm text-gray-500 hover:text-gray-700 underline"
+          className={`text-sm ${QUIET_LINK}`}
         >
           Settings
         </button>

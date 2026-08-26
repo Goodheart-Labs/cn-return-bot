@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { FLOATING_CARD } from "../../everything-shared/ui";
 import { createPortal } from "react-dom";
 import type { Session } from "@supabase/supabase-js";
 import type { NnnApi } from "../../everything-web/src/components/NoteNotNeeded";
@@ -53,7 +54,7 @@ function Badge({ open, onClick, style }: { open: boolean; onClick: () => void; s
       title="Community note on this passage"
       aria-expanded={open}
       style={style}
-      className={`absolute flex items-center justify-center rounded-full border shadow transition-transform hover:scale-110 bg-white border-gray-300 text-blue-600 dark:bg-gray-900 dark:border-gray-600 dark:text-blue-500 ${open ? "ring-2 ring-blue-500" : ""}`}
+      className={`absolute flex items-center justify-center rounded-full border shadow transition-transform hover:scale-110 bg-white border-gray-300 text-blue-600 dark:bg-gray-900 dark:border-gray-600 dark:text-blue-400 ${open ? "ring-2 ring-blue-500" : ""}`}
     >
       <GroupIcon />
     </button>
@@ -80,7 +81,7 @@ function NotePopover({ group, projectSlug, session, myVotes, onVote, onNeedLogin
     // stack several notes and an open composer, which gets taller than the
     // viewport. The overscroll-contain class stops that inner scroll from
     // carrying on into the host page.
-    <div style={style} className="absolute bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-xl p-3 text-left max-h-[70vh] overflow-y-auto overscroll-contain">
+    <div style={style} className={`absolute ${FLOATING_CARD} p-4 text-left max-h-[70vh] overflow-y-auto overscroll-contain`}>
       {loginOpen && !session && <OverlayLogin onDismiss={onCloseLogin} />}
       <ClaimNoteStack
         group={group}

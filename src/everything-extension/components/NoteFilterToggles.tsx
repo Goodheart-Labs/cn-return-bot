@@ -18,8 +18,8 @@ export function useNoteFilters(): [NoteFilters | null, (patch: Partial<NoteFilte
 
 export function NoteFilterToggles({ filters, onToggle }: { filters: NoteFilters; onToggle: (patch: Partial<NoteFilters>) => void }) {
   return (
-    <div className="space-y-1.5">
-      <label className="flex items-center gap-2 text-sm text-gray-700">
+    <div className="space-y-2">
+      <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
         <input
           type="checkbox"
           checked={filters.showNeedsRatings}
@@ -27,7 +27,7 @@ export function NoteFilterToggles({ filters, onToggle }: { filters: NoteFilters;
         />
         Show notes that need more ratings
       </label>
-      <label className="flex items-center gap-2 text-sm text-gray-700">
+      <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
         <input
           type="checkbox"
           checked={filters.showUnhelpful}

@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { browser } from "#imports";
+import { BUTTON, INPUT, QUIET_LINK, SECONDARY_BUTTON } from "../../everything-shared/ui";
+import { IconButton } from "../../everything-web/src/components/IconButton";
 import { EMAIL_OTP_LENGTH, signInWithEmailCode, verifyEmailCode } from "../../everything-shared/auth";
 import { track } from "../../everything-shared/analytics";
 
@@ -27,8 +29,7 @@ const setPendingEmail = (email: string) =>
 
 const clearPendingEmail = () => browser.storage.local.remove(PENDING_EMAIL_KEY);
 
-const INPUT = "flex-1 min-w-0 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-2.5 py-1.5 text-sm";
-const PRIMARY = "bg-blue-600 text-white rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-blue-700 disabled:opacity-40";
+const FIELD = `flex-1 min-w-0 ${INPUT}`;
 
 /** The sign-in form. The user either types their email and then the 6-digit
  *  code we send them, which needs no redirect, or signs in with X. The X flow
@@ -94,9 +95,7 @@ export function LoginPanel({ surface = "settings", onDismiss }: { surface?: "set
     <div className="space-y-2">
       <div className="flex items-center justify-between gap-2">
         <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Sign in to vote or write notes</p>
-        {onDismiss && (
-          <button onClick={onDismiss} title="Not now" className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">✕</button>
-        )}
+        {onDismiss && <IconButton label="Not now" onClick={onDismiss}>✕</IconButton>}
       </div>
       {stage === "email" ? (
         <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); sendCode(); }}>
@@ -105,9 +104,9 @@ export function LoginPanel({ surface = "settings", onDismiss }: { surface?: "set
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className={INPUT}
+            className={FIELD}
           />
-          <button type="submit" disabled={busy || !email.includes("@")} className={PRIMARY}>
+          <button type="submit" disabled={busy || !email.includes("@")} className={BUTTON}>
             Send code
           </button>
         </form>
@@ -121,13 +120,13 @@ export function LoginPanel({ surface = "settings", onDismiss }: { surface?: "set
               value={code}
               onChange={(e) => setCode(e.target.value)}
               placeholder="123456"
-              className={`${INPUT} tracking-widest`}
+              className={`${FIELD} tracking-widest`}
             />
-            <button type="submit" disabled={busy || code.trim().length < EMAIL_OTP_LENGTH} className={PRIMARY}>
+            <button type="submit" disabled={busy || code.trim().length < EMAIL_OTP_LENGTH} className={BUTTON}>
               Verify
             </button>
           </div>
-          <button type="button" onClick={backToEmail} className="text-xs text-gray-500 dark:text-gray-400 hover:underline">
+          <button type="button" onClick={backToEmail} className={`text-xs ${QUIET_LINK}`}>
             Different email
           </button>
         </form>
@@ -135,7 +134,7 @@ export function LoginPanel({ surface = "settings", onDismiss }: { surface?: "set
       <button
         onClick={signInWithX}
         disabled={busy}
-        className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-40"
+        className={`w-full ${SECONDARY_BUTTON}`}
       >
         Sign in with 𝕏
       </button>

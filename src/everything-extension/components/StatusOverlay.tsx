@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { BUTTON } from "../../everything-shared/ui";
+import { BUTTON, FLOATING_CARD } from "../../everything-shared/ui";
+import { IconButton } from "../../everything-web/src/components/IconButton";
 
 /** How long the overlay stays before it fades out on its own. Hovering pauses
  *  the clock, so a reader who is about to click never loses the card. */
@@ -114,7 +115,7 @@ export function StatusOverlay({ headline, onHeadlineClick, request, follow, onDi
   if (phase === "hidden") return null;
   return (
     <div
-      className={`max-w-[24rem] rounded-lg border border-gray-200 bg-white p-3 shadow-lg transition-opacity ease-out dark:border-gray-700 dark:bg-gray-800 ${phase === "fading" ? "opacity-0" : "opacity-100"}`}
+      className={`max-w-[24rem] ${FLOATING_CARD} p-4 transition-opacity ease-out ${phase === "fading" ? "opacity-0" : "opacity-100"}`}
       style={{ transitionDuration: `${FADE_MS}ms` }}
       onMouseEnter={keep}
       onMouseLeave={() => hideAfter(AUTO_HIDE_MS)}
@@ -131,18 +132,18 @@ export function StatusOverlay({ headline, onHeadlineClick, request, follow, onDi
           ) : (
             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{headline}</p>
           ))}
-        <button
+        <IconButton
+          label="Dismiss"
+          className="ml-auto"
           onClick={() => {
             recordDisplayed();
             setPhase("hidden");
           }}
-          aria-label="Dismiss"
-          className="ml-auto shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
         >
           ✕
-        </button>
+        </IconButton>
       </div>
-      <div className={`space-y-2 ${headline ? "mt-2" : ""}`}>
+      <div className="mt-2 space-y-2">
         {request && <ActionButton action={request} onDone={() => hideAfter(DONE_HIDE_MS)} />}
         {follow && <ActionButton action={follow} onDone={() => hideAfter(DONE_HIDE_MS)} />}
       </div>
