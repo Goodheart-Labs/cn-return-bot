@@ -26,8 +26,8 @@
  */
 
 import axios from "axios";
+import { createClient } from "@supabase/supabase-js";
 import { getOAuth1Headers } from "../api/getOAuthToken";
-import { getSupabaseClient } from "../api/supabaseClient";
 
 type WrittenNote = { id: string; status: string | undefined };
 
@@ -146,7 +146,18 @@ console.log(
 //   last_403_value — the trailing-24h count at the moment X refused. The only
 //                    hard observation of the real cap we ever get.
 async function persist(): Promise<void> {
-  const client = getSupabaseClient();
+  // Deliberately NOT getSupabaseClient(): that returns the service-role client,
+  // which bypasses RLS and can read every table in the database. This job needs
+  // three things, so it runs on a key scoped to the probe_writer role
+  // (migration 082, minted by scripts/mintProbeKey.ts). Falls back to the
+  // service key only so the probe keeps working before the scoped key is set.
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_PROBE_KEY ?? process.env.SUPABASE_SERVICE_KEY;
+  if (!url || !key) throw new Error("SUPABASE_URL and a Supabase key are required");
+  if (!process.env.SUPABASE_PROBE_KEY) {
+    console.warn("[probe] SUPABASE_PROBE_KEY unset — falling back to the service key (over-privileged)");
+  }
+  const client = createClient(url, key, { auth: { persistSession: false } });
 
   const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
   const { count: submitted24h, error: countErr } = await client
