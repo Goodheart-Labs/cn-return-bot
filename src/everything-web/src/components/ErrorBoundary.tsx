@@ -23,7 +23,7 @@ export class ErrorBoundary extends React.Component<
   render() {
     if (!this.state.failed) return this.props.children;
     return (
-      <div className="max-w-lg mx-auto px-4 py-16 space-y-3">
+      <div className="max-w-lg mx-auto px-4 py-8 space-y-3">
         <h1 className="text-xl font-extrabold">Common Notes could not load</h1>
         <p className="text-sm text-gray-600 dark:text-gray-300">
           Something went wrong while showing this page. Reloading usually fixes it.

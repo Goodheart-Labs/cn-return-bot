@@ -64,7 +64,7 @@ export function ActionButton({ action, onDone }: {
       <button onClick={run} disabled={phase === "busy"} className={`${BUTTON} w-full`}>
         {action.label}
       </button>
-      {phase === "error" && <p className="mt-1 text-sm text-red-600 dark:text-red-400">Something went wrong. Try again</p>}
+      {phase === "error" && <p className="mt-2 text-sm text-red-600 dark:text-red-400">Something went wrong. Try again</p>}
     </div>
   );
 }
