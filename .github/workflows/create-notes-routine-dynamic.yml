@@ -44,6 +44,12 @@ jobs:
       PANGRAM_API_KEY: ${{ secrets.PANGRAM_API_KEY }}
       # SearXNG instance running as a Docker container (see "Start SearXNG" step)
       SEARXNG_URL: http://localhost:8080
+      # Brave's paid API is the primary search provider. The scraped Google and
+      # Brave engines are the fallback, not the front line: scraping is an
+      # arms race with the engines' bot detection, and losing a round silently
+      # zeroed our submissions for days in Aug 2026. If the key is over quota,
+      # brave-api suspends itself and the scraped engines take over.
+      SEARXNG_PROVIDERS: brave-api,google,brave
       # Residential proxy for yt-dlp YouTube fetches (YouTube bot-checks runner IPs)
       YTDLP_PROXY_URL: ${{ secrets.YTDLP_PROXY_URL }}
     steps:
@@ -51,11 +57,16 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Start SearXNG
+        # The image is pinned because :latest (2026.8.22) gets an instant Google
+        # CAPTCHA — every query returns zero results, which the note-needed
+        # prefilter reads as "no note needed" and posting silently collapses
+        # (Aug 23-25 2026). Verify a candidate image serves Google results
+        # before moving this pin.
         run: |
           docker run -d --name searxng \
             -p 8080:8080 \
             -v "${{ github.workspace }}/.github/searxng:/etc/searxng:ro" \
-            searxng/searxng:latest
+            searxng/searxng:2026.8.17-374939b88
           for i in {1..30}; do
             if curl -sf "http://localhost:8080/search?q=test&format=json" > /dev/null; then
               echo "SearXNG is ready"

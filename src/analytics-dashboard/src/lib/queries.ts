@@ -1,12 +1,12 @@
 import { supabase } from "../../../everything-shared/supabase";
 
-// Both queries run through security-definer RPCs (migration 077) — the anon
+// Both queries run through security-definer RPCs (migrations 077 and 080) — the anon
 // key cannot read everything_events or everything_votes directly, and the
 // RPCs return only aggregate counts.
 
 export type FunnelStage =
   | "visitors"
-  | "installs"
+  | "devices"
   | "shown_notes"
   | "signed_in"
   | "voted_1"

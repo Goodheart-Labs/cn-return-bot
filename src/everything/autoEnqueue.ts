@@ -67,10 +67,10 @@ interface FeedEntry {
   publishedAt?: string;
 }
 
-/** A feed's latest entries, newest first. */
-async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedEntry[]> {
+/** A feed's latest entries, newest first, and the source's display name. */
+async function fetchFeedEntries(feed: PriorityFeed): Promise<{ sourceName?: string; entries: FeedEntry[] }> {
   if (feed.type === "substack") {
-    const posts = await fetchFeedPosts(feed.publicationUrl);
+    const { title: sourceName, posts } = await fetchFeedPosts(feed.publicationUrl);
     // A paid post's RSS body is only the free preview. Fact-checking a
     // fragment gives bad results, so the automated path leaves paid posts out.
     // Someone enqueues them by hand with the full text from a subscriber inbox,
@@ -79,7 +79,7 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedEntry[]> {
     for (const p of posts.filter((p) => p.paywalled)) {
       console.log(`[${feed.project}] paid post awaits the subscriber-inbox path: ${p.title}`);
     }
-    return posts.filter((p) => !p.paywalled).map((p) => ({
+    const entries = posts.filter((p) => !p.paywalled).map((p) => ({
       source: "substack" as const,
       url: p.url,
       matchKey: p.url,
@@ -88,13 +88,16 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedEntry[]> {
       title: p.title,
       publishedAt: p.publishedAt.slice(0, 10),
     }));
+    return { sourceName, entries };
   }
-  return fetchChannelVideos(feed.channelUrl, CHANNEL_FETCH_LIMIT)
+  const { channelName, videos } = fetchChannelVideos(feed.channelUrl, CHANNEL_FETCH_LIMIT);
+  const entries = videos
     // A video with no duration is an upcoming premiere. It cannot be watched
     // yet, and enqueueing it would leave the item in a permanent error state.
     // A later run picks it up once the video is live.
     .filter((v) => v.durationSeconds !== null)
     .map((v) => ({ source: "youtube" as const, url: v.url, matchKey: v.videoId, label: v.title }));
+  return { sourceName: channelName, entries };
 }
 
 /** A feed entry that still needs a whole-page check. Most carry no item row
@@ -163,13 +166,13 @@ async function feedsToWalk(): Promise<{ feed: PriorityFeed; priority: number }[]
 export async function runAutoEnqueue(dryRun = false): Promise<number> {
   if (!dryRun) await triageOrphanedItems();
 
-  const picks: { feed: PriorityFeed; priority: number; entry: UnprocessedEntry }[] = [];
+  const picks: { feed: PriorityFeed; priority: number; entry: UnprocessedEntry; sourceName?: string }[] = [];
   for (const { feed, priority } of await feedsToWalk()) {
     if (picks.length >= BATCH_SIZE) break;
-    const entries = await fetchFeedEntries(feed);
+    const { sourceName, entries } = await fetchFeedEntries(feed);
     const unprocessed = await unprocessedEntries(feed, entries);
     console.log(`[${feed.project}] ${entries.length} feed entries, ${unprocessed.length} unprocessed`);
-    for (const entry of unprocessed.slice(0, BATCH_SIZE - picks.length)) picks.push({ feed, priority, entry });
+    for (const entry of unprocessed.slice(0, BATCH_SIZE - picks.length)) picks.push({ feed, priority, entry, sourceName });
   }
 
   if (picks.length === 0) {
@@ -190,7 +193,7 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
   // above.
   const rows: EnqueueRow[] = [];
   let promoted = 0;
-  for (const { feed, priority, entry } of picks) {
+  for (const { feed, priority, entry, sourceName } of picks) {
     if (entry.existingItem) {
       await promoteItemToWholePage(entry.existingItem.id, entry.fullText ?? null, priority);
       console.log(`  promoted to a whole-page check: ${entry.url}`);
@@ -198,7 +201,7 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
       continue;
     }
     rows.push({
-      project_id: await resolveProjectId(feed.project),
+      project_id: await resolveProjectId(feed.project, sourceName),
       source: entry.source,
       url: entry.url,
       title: entry.title,
