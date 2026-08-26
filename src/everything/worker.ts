@@ -15,7 +15,7 @@
 import "dotenv/config";
 import { fetchWebPage } from "../pipeline/tool-calling/tools";
 import { closeBrowser } from "../pipeline/utils/browserManager";
-import { claimNextQueuedItem, fetchItemClaims, markItemDone, markItemError, requeueItem, type EverythingItem } from "./db";
+import { claimNextQueuedItem, fetchItemClaims, fillProjectDisplayName, markItemDone, markItemError, requeueItem, type EverythingItem } from "./db";
 import { processFetchedContent, resumeItemClaims } from "./pipeline/processContent";
 import { fetchSubstackPost, imageMarker } from "./sources/substack";
 import { ensureYtDlp, fetchYoutubeContent, fetchYoutubeTranscriptContent } from "./sources/youtube";
@@ -125,10 +125,16 @@ export async function drainQueue(): Promise<number> {
       // If the item already has claims, an earlier run was killed after it had
       // extracted them. We resume its unfinished claims instead of fetching the
       // content and extracting all over again.
-      const tally =
-        (await fetchItemClaims(item.id)).length > 0
-          ? await resumeItemClaims(item)
-          : await processFetchedContent(item, await fetchContent(item));
+      let tally;
+      if ((await fetchItemClaims(item.id)).length > 0) {
+        tally = await resumeItemClaims(item);
+      } else {
+        const content = await fetchContent(item);
+        // The fetch is also where the source's display name comes from, so a
+        // project created knowing only its slug gets its real name here.
+        await fillProjectDisplayName(item.project_id, content.authorName);
+        tally = await processFetchedContent(item, content);
+      }
       // An item cut short by the spend cap goes back in the queue rather than
       // being marked done. Its unchecked claims are still pending, so the next
       // day's run resumes exactly those.

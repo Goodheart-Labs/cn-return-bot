@@ -32,6 +32,7 @@ import {
   fetchPendingFollowRequests,
   fetchPendingNoteRequests,
   fetchFollowedFeeds,
+  fillProjectDisplayNameBySlug,
   findItemForPageUrl,
   insertFollowedFeed,
   insertQueuedItem,
@@ -150,9 +151,16 @@ export async function consumeFollowRequests(): Promise<void> {
         continue;
       }
       // Listing the feed once proves it exists and is reachable from where the
-      // pipeline runs, before we commit to polling it forever.
-      if (feed.feed_type === "substack") await fetchFeedPosts(feed.feed_url);
-      else fetchChannelVideos(feed.feed_url, 1);
+      // pipeline runs, before we commit to polling it forever. The listing also
+      // carries the source's display name, which fills in the project's name
+      // when that project already exists under a placeholder. A project that
+      // does not exist yet is created by the auto-enqueue with the name it
+      // reads from the same feed.
+      const sourceName =
+        feed.feed_type === "substack"
+          ? (await fetchFeedPosts(feed.feed_url)).title
+          : fetchChannelVideos(feed.feed_url, 1).channelName;
+      await fillProjectDisplayNameBySlug(feed.project_slug, sourceName);
       await insertFollowedFeed(feed);
       known.add(feed.feed_url.toLowerCase());
       await resolveFollowRequest(request.id, "accepted", null);

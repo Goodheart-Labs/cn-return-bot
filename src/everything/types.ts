@@ -8,10 +8,13 @@ export type SourceKind = "youtube" | "substack";
  *  request captured one, and fetched through the web-fetch ladder otherwise. */
 export type ItemSource = SourceKind | "web";
 
-/** Content fetched from a source, ready for claim extraction. */
+/** Content fetched from a source, ready for claim extraction. `authorName` is
+ *  the source's human-readable name, so the YouTube channel name or the
+ *  Substack publication name. The worker uses it to fill in the display name
+ *  of a project that was created knowing only its slug. */
 export type FetchedContent =
-  | { kind: "youtube"; url: string; videoId: string; title: string; publishedAt?: string; cues: SubtitleCue[] }
-  | { kind: "substack"; url: string; title: string; publishedAt?: string; text: string }
+  | { kind: "youtube"; url: string; videoId: string; title: string; publishedAt?: string; cues: SubtitleCue[]; authorName?: string }
+  | { kind: "substack"; url: string; title: string; publishedAt?: string; text: string; authorName?: string }
   // A YouTube video whose claims come from a transcript the caller supplied.
   // That is usually the author's own clean published transcript. Timestamps are
   // still snapped against the video's own cues, so anchoring works exactly as
@@ -24,6 +27,7 @@ export type FetchedContent =
       publishedAt?: string;
       text: string;
       cues: SubtitleCue[];
+      authorName?: string;
     };
 
 /** Where a claim's context lives in the original content. */

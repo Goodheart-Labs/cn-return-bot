@@ -22,11 +22,11 @@ export function parseProfileHandle(url: string): string | null {
   return url.match(/substack\.com\/@([\w.-]+)/)?.[1] ?? null;
 }
 
-async function fetchPublicationSubdomain(handle: string): Promise<string> {
+async function fetchPublication(handle: string): Promise<{ subdomain: string; name?: string }> {
   const profile = await fetchJson(`https://substack.com/api/v1/user/${handle}/public_profile`);
-  const subdomain = profile.primaryPublication?.subdomain ?? profile.publicationUsers?.[0]?.publication?.subdomain;
-  if (!subdomain) throw new Error(`No publication found for substack handle @${handle}`);
-  return subdomain;
+  const publication = profile.primaryPublication ?? profile.publicationUsers?.[0]?.publication;
+  if (!publication?.subdomain) throw new Error(`No publication found for substack handle @${handle}`);
+  return { subdomain: publication.subdomain, name: publication.name ?? undefined };
 }
 
 // We fetch more posts than we need, because paywalled posts and podcast posts
@@ -49,12 +49,16 @@ export async function fetchArchivePosts(publicationUrl: string, n: number): Prom
     .map((p) => ({ url: p.canonical_url as string, title: p.title as string, postDate: p.post_date as string }));
 }
 
-/** Latest N free text posts of a profile ("https://substack.com/@handle/posts"), newest first. */
-export async function fetchLatestFreePosts(profileUrl: string, n: number): Promise<ArchivePost[]> {
+/** Latest N free text posts of a profile ("https://substack.com/@handle/posts"),
+ *  newest first, together with the publication's display name. */
+export async function fetchLatestFreePosts(
+  profileUrl: string,
+  n: number,
+): Promise<{ publicationName?: string; posts: ArchivePost[] }> {
   const handle = parseProfileHandle(profileUrl);
   if (!handle) throw new Error(`Not a substack profile URL: ${profileUrl}`);
-  const subdomain = await fetchPublicationSubdomain(handle);
-  return fetchArchivePosts(`https://${subdomain}.substack.com`, n);
+  const publication = await fetchPublication(handle);
+  return { publicationName: publication.name, posts: await fetchArchivePosts(`https://${publication.subdomain}.substack.com`, n) };
 }
 
 export interface FeedPost {
@@ -103,12 +107,18 @@ function tagContent(item: string, tag: string): string {
  *  forever. */
 const MAX_PROXY_CACHE_AGE_SECONDS = 24 * 3600;
 
+export interface SubstackFeed {
+  /** The publication's display name, from the feed's channel title. */
+  title?: string;
+  posts: FeedPost[];
+}
+
 /** Reads a publication's RSS feed, so "https://thezvi.substack.com" becomes its
- *  /feed. It returns the roughly 20 latest posts, newest first, each with the
- *  full post HTML. This is the only Substack endpoint the automated pipeline
- *  uses. Feed-reader traffic is the one kind Substack serves to a
- *  non-residential IP. */
-export async function fetchFeedPosts(publicationUrl: string): Promise<FeedPost[]> {
+ *  /feed. It returns the publication's name and the roughly 20 latest posts,
+ *  newest first, each with the full post HTML. This is the only Substack
+ *  endpoint the automated pipeline uses. Feed-reader traffic is the one kind
+ *  Substack serves to a non-residential IP. */
+export async function fetchFeedPosts(publicationUrl: string): Promise<SubstackFeed> {
   const { url, headers } = feedRequest(`${publicationUrl.replace(/\/$/, "")}/feed`);
   const res = await fetch(url, { headers });
   if (!res.ok) throw new Error(`${res.status} ${res.statusText} for ${url}`);
@@ -117,7 +127,11 @@ export async function fetchFeedPosts(publicationUrl: string): Promise<FeedPost[]
     throw new Error(`Proxy cache for ${url} is ${Math.round(cacheAgeSeconds / 3600)}h old — its Substack fetches must be failing`);
   }
   const xml = await res.text();
-  return [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)]
+  // The channel's own title is the first <title> before any <item>. The items
+  // carry <title> tags too, so the channel block is cut out first.
+  const channelXml = xml.split("<item>")[0]!;
+  const title = decodeHtmlEntities(cdataUnwrap(tagContent(channelXml, "title"))).trim() || undefined;
+  const posts = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)]
     .map(([, item]) => {
       const bodyHtml = cdataUnwrap(tagContent(item!, "content:encoded"));
       return {
@@ -129,6 +143,7 @@ export async function fetchFeedPosts(publicationUrl: string): Promise<FeedPost[]
       };
     })
     .filter((p) => p.url && p.bodyHtml);
+  return { title, posts };
 }
 
 /** The placeholder we leave in the plain text where an image stood. The
@@ -167,6 +182,17 @@ export function htmlToText(html: string, keepImages = false): string {
     .trim();
 }
 
+/** The publication's display name, read out of a post's bylines. The byline
+ *  lists every publication its author writes for, so the one whose subdomain
+ *  matches the post's own is the one the post belongs to. */
+function publicationNameFromPost(post: any, subdomain: string): string | undefined {
+  const publications = (post.publishedBylines ?? [])
+    .flatMap((byline: any) => byline.publicationUsers ?? [])
+    .map((pu: any) => pu.publication)
+    .filter(Boolean);
+  return publications.find((p: any) => p.subdomain === subdomain)?.name ?? undefined;
+}
+
 export async function fetchSubstackPost(url: string): Promise<FetchedContent> {
   const m = url.match(/^https?:\/\/([\w-]+)\.substack\.com\/p\/([\w-]+)/);
   if (!m) throw new Error(`Not a substack post URL: ${url}`);
@@ -181,5 +207,6 @@ export async function fetchSubstackPost(url: string): Promise<FetchedContent> {
     title: post.title ?? slug,
     publishedAt: post.post_date,
     text,
+    authorName: publicationNameFromPost(post, subdomain!),
   };
 }
