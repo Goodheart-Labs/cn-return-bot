@@ -10,6 +10,8 @@ let knownItems: { id: string; url: string; checked_scope: "page" | "paragraph" |
  * so the last mock loaded serves every importer. Each file therefore mocks
  * the union of what either needs. */
 mock.module("./db", () => ({
+  fillProjectDisplayName: () => Promise.resolve(),
+  fillProjectDisplayNameBySlug: () => Promise.resolve(),
   QUEUE_PRIORITY: { requested: 2, followed: 1, backlog: 0 },
   fetchItemUrlsIn: () => Promise.resolve(knownItems),
   fetchItemUrlsContaining: () => Promise.resolve(knownItems),
