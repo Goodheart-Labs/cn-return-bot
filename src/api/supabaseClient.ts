@@ -1437,6 +1437,50 @@ export class SupabaseLogger {
     return total;
   }
 
+  /**
+   * The pipeline_runs rows stranded with outcome 'candidate' by an earlier run
+   * that died before its submit phase, each joined to its tweets row when one
+   * exists. rescueStrandedCandidates rebuilds submittable candidates from them
+   * and explains the age window. Tweets that already carry one of our notes are
+   * excluded here, so a rescue can never put a second note on the same tweet.
+   *
+   * A query error is thrown rather than swallowed. The caller treats the rescue
+   * as best-effort and continues the run without it.
+   */
+  async fetchStrandedCandidateRows(minAgeMinutes: number, maxAgeHours: number): Promise<StrandedCandidateRow[]> {
+    const youngest = new Date(Date.now() - minAgeMinutes * 60 * 1000).toISOString();
+    const oldest = new Date(Date.now() - maxAgeHours * 60 * 60 * 1000).toISOString();
+    const { data: runs, error } = await this.client
+      .from("pipeline_runs")
+      .select("id, tweet_id, note_text, bot_name, evaluation_score, created_at")
+      .eq("outcome", "candidate")
+      .gte("created_at", oldest)
+      .lte("created_at", youngest)
+      .order("created_at", { ascending: true });
+    if (error) throw error;
+    const rows = (runs ?? []).filter((r) => r.note_text && r.tweet_id) as Omit<StrandedCandidateRow, "tweet">[];
+    if (rows.length === 0) return [];
+
+    const tweetIds = [...new Set(rows.map((r) => String(r.tweet_id)))];
+    const tweetById = new Map<string, StrandedCandidateTweet>();
+    const alreadyNoted = new Set<string>();
+    for (let i = 0; i < tweetIds.length; i += 200) {
+      const batch = tweetIds.slice(i, i + 200);
+      const [{ data: tweets, error: tErr }, { data: noted, error: nErr }] = await Promise.all([
+        this.client.from("tweets").select("tweet_id, author_id, posted_at, text, impressions").in("tweet_id", batch),
+        this.client.from("notes").select("tweet_id").in("tweet_id", batch),
+      ]);
+      if (tErr) throw tErr;
+      if (nErr) throw nErr;
+      for (const t of tweets ?? []) tweetById.set(String(t.tweet_id), t as StrandedCandidateTweet);
+      for (const n of noted ?? []) alreadyNoted.add(String((n as { tweet_id: string }).tweet_id));
+    }
+
+    return rows
+      .filter((r) => !alreadyNoted.has(String(r.tweet_id)))
+      .map((r) => ({ ...r, tweet: tweetById.get(String(r.tweet_id)) ?? null }));
+  }
+
   async countRecentPipelineRuns(hours: number): Promise<number> {
     const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
     return this.runExactCount(
@@ -1459,4 +1503,28 @@ export class SupabaseLogger {
       "recent pipeline runs by outcome",
     );
   }
+}
+
+/** The tweets-table fields a rescued candidate needs for its submit-time
+ *  checks: the stale cutoff reads posted_at, the velocity floor reads
+ *  impressions, and the note metadata reads the rest. */
+export interface StrandedCandidateTweet {
+  tweet_id: string;
+  author_id: string | null;
+  posted_at: string | null;
+  text: string | null;
+  impressions: number | null;
+}
+
+/** A stranded pipeline_runs candidate row joined to its tweet. `tweet` is null
+ *  when the tweets row is missing; the snowflake in the tweet id still lets the
+ *  stale cutoff work in that case. */
+export interface StrandedCandidateRow {
+  id: string;
+  tweet_id: string;
+  note_text: string;
+  bot_name: string | null;
+  evaluation_score: number | null;
+  created_at: string;
+  tweet: StrandedCandidateTweet | null;
 }

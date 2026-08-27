@@ -71,6 +71,7 @@ import { generatePangramCandidates } from "../pipeline/pangram-monitoring/genera
 import { generateMisinfoCandidates } from "../pipeline/misinfo-monitoring/generateMisinfoCandidates";
 import type { MisinfoTopicId } from "../pipeline/misinfo-monitoring/topicIds";
 import { submitCandidates, misinfoReserveRemaining, type Candidate } from "../pipeline/orchestration/submitCandidates";
+import { rescueStrandedCandidates } from "../pipeline/orchestration/rescueStrandedCandidates";
 import { computeMaxPosts } from "../pipeline/orchestration/computeMaxPosts";
 import { probeWritingLimitAfterCooldown } from "../pipeline/orchestration/writingLimit";
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
@@ -163,6 +164,24 @@ async function main() {
       clearTimeout(globalTimeout);
       await closeBrowser();
       process.exit(0);
+    }
+
+    // The rescue pass runs before anything is generated. An earlier run that
+    // hit the 27-minute guard died before its submit phase, leaving finished
+    // notes behind as candidate rows. Submitting them first means this run's
+    // own death can only cost unwritten work, never finished notes. Failing
+    // soft here matters for the same reason it does on the pre-passes below.
+    if (supabaseLogger) {
+      try {
+        const rescued = await rescueStrandedCandidates(supabaseLogger);
+        if (rescued.length > 0) {
+          console.log(`[rescue] ${rescued.length} stranded candidate(s) from earlier runs — submitting before generation`);
+          const rescueSubmitted = await submitCandidates(rescued, supabaseLogger, isLocal);
+          console.log(`[rescue] submitted ${rescueSubmitted} rescued candidate(s)`);
+        }
+      } catch (err) {
+        console.warn("[pipeline] Rescue pass failed (continuing with the normal run):", err);
+      }
     }
 
     // With --local we collect the per-tweet results into a CSV and open the
