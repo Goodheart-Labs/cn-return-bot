@@ -61,6 +61,9 @@ export interface MisinfoCandidatesOptions {
    *  twice. */
   skipPostIds: Set<string>;
   onTweetProcessed?: (event: TweetProcessedEvent) => void | Promise<void>;
+  /** The soft deadline for starting new posts, passed through to processPosts.
+   *  See ProcessPostsOptions.deadlineMs. */
+  deadlineMs?: number;
   /** For local testing only. When this is set we read posts from the given JSONL dump
    *  instead of crawling the live XXL feed, which is only reachable from GitHub
    *  Actions. See loadDumpFeed. */
@@ -205,7 +208,7 @@ function buildWorkList(
 
 export async function generateMisinfoCandidates(
   supabaseLogger: SupabaseLogger | null,
-  { skipPostIds, onTweetProcessed, dumpPath, topicIds }: MisinfoCandidatesOptions,
+  { skipPostIds, onTweetProcessed, deadlineMs, dumpPath, topicIds }: MisinfoCandidatesOptions,
 ): Promise<Candidate[]> {
   // The sightings table is the ledger that stops us judging the same post twice.
   // Without it every run would re-evaluate the whole crawl.
@@ -270,6 +273,14 @@ export async function generateMisinfoCandidates(
   const candidates = await processPosts(work.map((w) => w.item), supabaseLogger, {
     onTweetProcessed: onProcessed,
     label: "misinfo",
+    deadlineMs,
+    // A skipped post's tweets row is released so the ledger does not burn it,
+    // same as the regular pass. Its sighting was never stamped processed, so
+    // the pre-pass finds it again on a later crawl for free.
+    onDeadlineSkip: async (skippedPosts) => {
+      const released = await supabaseLogger.deleteFreshUnprocessedTweets(skippedPosts.map((p) => p.id));
+      console.log(`[misinfo] released ${released} deadline-skipped post(s) back to the crawl`);
+    },
   });
   // Tag these as misinfo so submitCandidates exempts them from its own velocity-floor
   // backstop. This pre-pass has already applied the lower topic floor to them. They

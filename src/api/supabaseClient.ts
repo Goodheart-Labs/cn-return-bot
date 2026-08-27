@@ -1438,6 +1438,33 @@ export class SupabaseLogger {
   }
 
   /**
+   * Deletes the tweets rows of posts a soft deadline skipped before anyone
+   * looked at them. The tweets table is the ledger of posts we must not fetch
+   * again, and these rows were inserted minutes ago by this very run for posts
+   * it then never started — leaving them would burn each post forever. Two
+   * guards keep this from touching anything else: only the given ids, and only
+   * rows first seen inside the current run's lifetime. A post that existed
+   * before this run cannot match, because the feed passes only ever insert and
+   * process posts that were not in the ledger. Returns how many rows went.
+   */
+  async deleteFreshUnprocessedTweets(tweetIds: string[]): Promise<number> {
+    if (tweetIds.length === 0) return 0;
+    const runLifetimeAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+    let released = 0;
+    for (let i = 0; i < tweetIds.length; i += 200) {
+      const { data, error } = await this.client
+        .from("tweets")
+        .delete()
+        .in("tweet_id", tweetIds.slice(i, i + 200))
+        .gte("first_seen_at", runLifetimeAgo)
+        .select("tweet_id");
+      if (error) throw error;
+      released += (data ?? []).length;
+    }
+    return released;
+  }
+
+  /**
    * The pipeline_runs rows stranded with outcome 'candidate' by an earlier run
    * that died before its submit phase, each joined to its tweets row when one
    * exists. rescueStrandedCandidates rebuilds submittable candidates from them

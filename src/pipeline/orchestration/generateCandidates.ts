@@ -238,6 +238,17 @@ export interface ProcessPostsOptions {
   /** A prefix for the log lines, so that the misinfo pre-pass and the regular
    *  pass can be told apart in the output. */
   label?: string;
+  /** The soft deadline as an epoch timestamp. A post whose processing has not
+   *  started by this moment is skipped instead of started, so the run always
+   *  has time left to submit the notes it finished. The posts are processed in
+   *  selection order, which is value order, so what the deadline cuts is the
+   *  least valuable tail of the batch. Unset means no deadline. */
+  deadlineMs?: number;
+  /** Called once with the posts the deadline skipped, after the batch settles.
+   *  The caller knows what bookkeeping the skip has to undo — the feed passes
+   *  use it to release the posts' just-inserted tweets rows so the ledger does
+   *  not burn a post nobody looked at. Errors are logged and swallowed. */
+  onDeadlineSkip?: (skipped: Post[]) => void | Promise<void>;
 }
 
 /**
@@ -251,7 +262,7 @@ export interface ProcessPostsOptions {
 export async function processPosts(
   items: ProcessPostItem[],
   supabaseLogger: SupabaseLogger | null,
-  { onTweetProcessed, label = "generate" }: ProcessPostsOptions,
+  { onTweetProcessed, label = "generate", deadlineMs, onDeadlineSkip }: ProcessPostsOptions,
 ): Promise<Candidate[]> {
   if (!items.length) return [];
 
@@ -266,6 +277,7 @@ export async function processPosts(
   // the order `items` came in. That order is the selection ranking: curated
   // topic posts first, then by feed tier, then by velocity.
   const candidateByIndex: (Candidate | undefined)[] = new Array(items.length);
+  const skippedByIndex: (Post | undefined)[] = new Array(items.length);
 
   for (const [idx, item] of items.entries()) {
     // A post from the misinfo pre-pass carries a MonitoringContext. For those we
@@ -280,6 +292,13 @@ export async function processPosts(
     const feedSizePick: Record<string, string> = item.feedSize ? { feed_size: item.feedSize } : {};
     const perPostPicks = { ...outerForcedPicks, ...feedSizePick, ...monitoringPicks };
     queue.add(() => withForcedPicks(perPostPicks, () => withMonitoringContext(item.monitoring, async () => {
+      // The deadline is checked the moment the post would start, not when it
+      // was enqueued. Work already in flight is left to finish; what the
+      // deadline cuts is only the posts nobody has touched yet.
+      if (deadlineMs && Date.now() >= deadlineMs) {
+        skippedByIndex[idx] = item.post;
+        return;
+      }
       // Any forced picks are already in the async-local store, put there by
       // runPipeline.ts through withForcedPicks. runABTests honours them for
       // whichever tests fire.
@@ -328,6 +347,23 @@ export async function processPosts(
 
   await queue.onIdle();
 
+  const skipped = skippedByIndex.filter((p): p is Post => p !== undefined);
+  if (skipped.length > 0) {
+    // Say exactly what the clock cut, so a thin batch reads as a deadline
+    // decision in the logs and never as coverage.
+    console.log(
+      `[${label}] soft deadline: ${skipped.length} of ${items.length} post(s) never started — ` +
+        skipped.map((p) => p.id).join(", "),
+    );
+    if (onDeadlineSkip) {
+      try {
+        await onDeadlineSkip(skipped);
+      } catch (err) {
+        console.warn(`[${label}] onDeadlineSkip failed:`, err);
+      }
+    }
+  }
+
   const candidates = candidateByIndex.filter((c): c is Candidate => c !== undefined);
 
   if (process.env.CI) {
@@ -343,6 +379,9 @@ export async function processPosts(
 
 export interface GenerateCandidatesOptions {
   maxPosts: number;
+  /** The soft deadline for starting new posts, passed through to processPosts.
+   *  See ProcessPostsOptions.deadlineMs. */
+  deadlineMs?: number;
   /** These are pre-fetched by runPipeline and shared with the misinfo pre-pass,
    *  so the notes, pipeline_runs and tweets tables are not scanned twice in one
    *  run. A caller that leaves them out makes fetchPosts fetch them instead. */
@@ -359,7 +398,7 @@ export interface GenerateCandidatesOptions {
 
 export async function generateCandidates(
   supabaseLogger: SupabaseLogger | null,
-  { maxPosts, skipPostIds, knownTweetIds, onTweetProcessed, topicIds }: GenerateCandidatesOptions,
+  { maxPosts, deadlineMs, skipPostIds, knownTweetIds, onTweetProcessed, topicIds }: GenerateCandidatesOptions,
 ): Promise<Candidate[]> {
   const outerForcedPicks = getForcedPicks();
   if (Object.keys(outerForcedPicks).length > 0) {
@@ -485,6 +524,15 @@ export async function generateCandidates(
   const candidates = await processPosts(items, supabaseLogger, {
     onTweetProcessed: onProcessed,
     label: "generate",
+    deadlineMs,
+    // A skipped post was inserted into the tweets ledger above but never
+    // looked at. Releasing its row is what lets the next run pick it up
+    // again; without this the skip would burn the post forever.
+    onDeadlineSkip: async (skippedPosts) => {
+      if (!supabaseLogger) return;
+      const released = await supabaseLogger.deleteFreshUnprocessedTweets(skippedPosts.map((p) => p.id));
+      console.log(`[generate] released ${released} deadline-skipped post(s) back to the feed`);
+    },
   });
   // Tag curated candidates the way pre-pass ones are tagged, so that
   // submitCandidates leaves them out of its velocity-floor backstop. They answer
