@@ -246,16 +246,10 @@ export async function generateMisinfoCandidates(
   }
   console.log(`[misinfo] Processing ${work.length} selected post(s)`);
 
-  // Store the tweets we are about to note, so the review dashboard and any other
-  // view that joins on tweets has their content. generateCandidates and the pangram
-  // pre-pass both do this. The misinfo pre-pass used to skip it, which made misinfo
-  // notes show blank tweet cards. A failure here is only logged, because it must not
-  // stop us writing notes.
-  try {
-    await supabaseLogger.bulkInsertNewTweets(work.map((w) => w.item.post));
-  } catch (err) {
-    console.warn("[misinfo] bulkInsertNewTweets failed:", err);
-  }
+  // The tweets rows the review dashboard joins on are written by processPosts,
+  // which stamps each post into the ledger the moment its processing starts. A
+  // post the soft deadline skips is never stamped, so it stays fetchable and a
+  // later crawl finds it again for free.
 
   const topicByTweetId = new Map(work.map((w) => [w.item.post.id, w.topicId]));
   const onProcessed = async (event: TweetProcessedEvent) => {
@@ -274,13 +268,6 @@ export async function generateMisinfoCandidates(
     onTweetProcessed: onProcessed,
     label: "misinfo",
     deadlineMs,
-    // A skipped post's tweets row is released so the ledger does not burn it,
-    // same as the regular pass. Its sighting was never stamped processed, so
-    // the pre-pass finds it again on a later crawl for free.
-    onDeadlineSkip: async (skippedPosts) => {
-      const released = await supabaseLogger.deleteFreshUnprocessedTweets(skippedPosts.map((p) => p.id));
-      console.log(`[misinfo] released ${released} deadline-skipped post(s) back to the crawl`);
-    },
   });
   // Tag these as misinfo so submitCandidates exempts them from its own velocity-floor
   // backstop. This pre-pass has already applied the lower topic floor to them. They

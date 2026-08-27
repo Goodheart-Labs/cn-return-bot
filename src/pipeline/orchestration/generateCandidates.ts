@@ -244,11 +244,6 @@ export interface ProcessPostsOptions {
    *  selection order, which is value order, so what the deadline cuts is the
    *  least valuable tail of the batch. Unset means no deadline. */
   deadlineMs?: number;
-  /** Called once with the posts the deadline skipped, after the batch settles.
-   *  The caller knows what bookkeeping the skip has to undo — the feed passes
-   *  use it to release the posts' just-inserted tweets rows so the ledger does
-   *  not burn a post nobody looked at. Errors are logged and swallowed. */
-  onDeadlineSkip?: (skipped: Post[]) => void | Promise<void>;
 }
 
 /**
@@ -262,7 +257,7 @@ export interface ProcessPostsOptions {
 export async function processPosts(
   items: ProcessPostItem[],
   supabaseLogger: SupabaseLogger | null,
-  { onTweetProcessed, label = "generate", deadlineMs, onDeadlineSkip }: ProcessPostsOptions,
+  { onTweetProcessed, label = "generate", deadlineMs }: ProcessPostsOptions,
 ): Promise<Candidate[]> {
   if (!items.length) return [];
 
@@ -298,6 +293,19 @@ export async function processPosts(
       if (deadlineMs && Date.now() >= deadlineMs) {
         skippedByIndex[idx] = item.post;
         return;
+      }
+
+      // The tweets ledger records a post when its processing STARTS, not when
+      // it was selected. A post the deadline skips therefore never enters the
+      // ledger and needs no undoing — it simply comes back on a later run
+      // while it is still fast. An insert failure is logged and the post still
+      // runs; the ledger existing is worth less than the note.
+      if (supabaseLogger) {
+        try {
+          await supabaseLogger.bulkInsertNewTweets([item.post]);
+        } catch (err) {
+          console.warn(`[${label}] tweets-ledger insert failed for ${item.post.id} (continuing):`, err);
+        }
       }
       // Any forced picks are already in the async-local store, put there by
       // runPipeline.ts through withForcedPicks. runABTests honours them for
@@ -353,15 +361,9 @@ export async function processPosts(
     // decision in the logs and never as coverage.
     console.log(
       `[${label}] soft deadline: ${skipped.length} of ${items.length} post(s) never started — ` +
+        `they were never entered into the tweets ledger and stay fetchable — ` +
         skipped.map((p) => p.id).join(", "),
     );
-    if (onDeadlineSkip) {
-      try {
-        await onDeadlineSkip(skipped);
-      } catch (err) {
-        console.warn(`[${label}] onDeadlineSkip failed:`, err);
-      }
-    }
   }
 
   const candidates = candidateByIndex.filter((c): c is Candidate => c !== undefined);
@@ -466,21 +468,14 @@ export async function generateCandidates(
     return [];
   }
 
-  // Record only the posts we are about to process. The tweets table is the
-  // ledger of posts we have already handled and must not fetch again. Recording
-  // everything the ladder walked past would therefore burn every below-floor
-  // post on first sight, and a post that is slow now may be worth a note once it
-  // takes off. The full feed pull is archived separately, in feed_tweets. This
-  // runs after curation, so a regular post that curation displaced is not burned
-  // and a prioritized topic post is.
-  if (supabaseLogger && final.length) {
-    try {
-      await supabaseLogger.bulkInsertNewTweets(final.map((s) => s.post));
-      console.log(`[generate] Inserted ${final.length} new tweets`);
-    } catch (err) {
-      console.warn("[generate] Failed to bulk-insert tweets:", err);
-    }
-  }
+  // The tweets table is the ledger of posts we have already handled and must
+  // not fetch again. Nothing is recorded here at selection time: processPosts
+  // stamps each post into the ledger the moment its processing starts, so a
+  // post that is selected but never started — the soft deadline, a crash —
+  // stays fetchable and simply comes back on a later run. Recording everything
+  // the ladder walked past would burn every below-floor post on first sight,
+  // and a post that is slow now may be worth a note once it takes off. The
+  // full feed pull is archived separately, in feed_tweets.
 
   const topicIdByTweet = new Map(
     [...confirmedTopics].map(([tweetId, topic]) => [tweetId, topic.id]),
@@ -525,14 +520,6 @@ export async function generateCandidates(
     onTweetProcessed: onProcessed,
     label: "generate",
     deadlineMs,
-    // A skipped post was inserted into the tweets ledger above but never
-    // looked at. Releasing its row is what lets the next run pick it up
-    // again; without this the skip would burn the post forever.
-    onDeadlineSkip: async (skippedPosts) => {
-      if (!supabaseLogger) return;
-      const released = await supabaseLogger.deleteFreshUnprocessedTweets(skippedPosts.map((p) => p.id));
-      console.log(`[generate] released ${released} deadline-skipped post(s) back to the feed`);
-    },
   });
   // Tag curated candidates the way pre-pass ones are tagged, so that
   // submitCandidates leaves them out of its velocity-floor backstop. They answer
