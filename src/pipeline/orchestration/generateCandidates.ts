@@ -342,7 +342,31 @@ export async function processPosts(
     })));
   }
 
-  await queue.onIdle();
+  // Waiting for stragglers past the deadline is how the hard kill used to land
+  // before the submit phase: once every post has started, the start-gate above
+  // has nothing left to cut, and one slow post holds the whole run hostage
+  // until the 27-minute kill (observed 2026-08-27: a 9-post batch sat on its
+  // tail with two finished notes and lost both). So at the deadline we stop
+  // waiting, drop whatever has not started, and hand back the candidates that
+  // are finished, in selection order — the submit phase gets its five minutes.
+  // Posts still in flight keep running to no useful end; their rows are swept
+  // as not_completed by the next run, exactly as under the hard kill.
+  if (deadlineMs) {
+    const msLeft = deadlineMs - Date.now();
+    if (msLeft > 0) {
+      await Promise.race([queue.onIdle(), new Promise<void>((r) => setTimeout(r, msLeft))]);
+    }
+    if (queue.size > 0 || queue.pending > 0) {
+      const notStarted = queue.size;
+      queue.clear();
+      console.log(
+        `[${label}] soft deadline: stopped waiting — ${queue.pending} post(s) abandoned in flight, ` +
+          `${notStarted} never started; submitting what is finished`,
+      );
+    }
+  } else {
+    await queue.onIdle();
+  }
 
   const skipped = skippedByIndex.filter((p): p is Post => p !== undefined);
   if (skipped.length > 0) {

@@ -127,9 +127,11 @@ const SOFT_DEADLINE_AT_MS = RUN_STARTED_AT_MS + 22 * 60 * 1000;
 
 // How much wall clock one post costs to process, for sizing a batch to the
 // clock. Healthy runs at concurrency 5 do a post roughly every two minutes of
-// wall time; overrunning runs did 14 posts in 27 minutes, which is the same
-// figure. Erring high just trims a batch the deadline would have cut anyway.
-const EST_WALL_MS_PER_POST = 2 * 60 * 1000;
+// wall time. The estimate carries margin on top of that: sizing at the bare
+// two minutes budgeted a batch to land exactly on the deadline, and the first
+// slow batch overran it (2026-08-27, 1:48pm run). Erring high just trims a
+// batch the deadline would have cut anyway.
+const EST_WALL_MS_PER_POST = 2.5 * 60 * 1000;
 
 async function main() {
   try {
