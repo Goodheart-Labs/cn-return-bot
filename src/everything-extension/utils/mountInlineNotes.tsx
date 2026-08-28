@@ -50,7 +50,7 @@ function findContainer(): Element {
  *  offers three quotes and we try them in order of reliability. First the updated
  *  quote, which is how the passage reads on the page today. Then the quote that was
  *  captured when the claim was extracted. Then the wider paragraph around it. */
-function anchorGroups(container: Element, groups: ClaimGroup[], lastRanges: Map<string, Range>): AnchoredGroup[] {
+function anchorGroups(container: Element, groups: ClaimGroup[]): AnchoredGroup[] {
   const index = indexContainer(container);
   const anchored: AnchoredGroup[] = [];
   for (const { claimId, notes, nnn } of groups) {
@@ -61,18 +61,7 @@ function anchorGroups(container: Element, groups: ClaimGroup[], lastRanges: Map<
       if (candidate) range = findQuoteRange(index, candidate);
       if (range) break;
     }
-    // When a re-anchor finds nothing, the last known range is kept as long as
-    // its text is still in the document. Another extension wrapping the
-    // passage in its own elements is exactly the kind of change that breaks
-    // the match, and dropping the claim would take its open note with it.
-    if (!range) {
-      const last = lastRanges.get(claimId);
-      if (last?.startContainer.isConnected && last.endContainer.isConnected) range = last;
-    }
-    if (range) {
-      lastRanges.set(claimId, range);
-      anchored.push({ claimId, primary: notes[0]!, alternatives: notes.slice(1), nnn, range });
-    }
+    if (range) anchored.push({ claimId, primary: notes[0]!, alternatives: notes.slice(1), nnn, range });
   }
   console.info(`[common-notes] anchored ${anchored.length}/${groups.length} claims on this page`);
   return anchored;
@@ -274,9 +263,6 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   // single-page app can replace the article element after we mounted. Anchoring
   // against a node that is no longer in the document would then find nothing, and it
   // would keep finding nothing.
-  // The last range each claim anchored to, so a re-anchor that finds nothing
-  // can keep the claim where it was instead of dropping it.
-  const lastRanges = new Map<string, Range>();
   const render = () => {
     syncTheme(); // Called here as well, so the debounced re-anchor observer catches
     // theme repaints that arrive as DOM swaps rather than as attribute changes.
@@ -286,7 +272,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     // the debounced observer once, and then everything settles.
     if (!inlineUi.shadowHost.isConnected) inlineUi.mount();
     const container = findContainer();
-    const anchored = anchorGroups(container, groups, lastRanges);
+    const anchored = anchorGroups(container, groups);
     applyHighlights(anchored.map((g) => g.range));
     reactRoot?.render(
       <InlineNotesApp

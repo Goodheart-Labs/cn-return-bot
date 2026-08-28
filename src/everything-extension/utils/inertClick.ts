@@ -26,11 +26,6 @@ const ELEMENT_NODE = 1;
 export function isInertClick(e: MouseEvent): boolean {
   let deepest: HTMLElement | null = null;
   for (const node of e.composedPath()) {
-    // A press that went through any shadow root is a press on somebody's
-    // interface, never on empty page surface. Another extension's toolbar
-    // lives in its own shadow root, and without this rule a click in it read
-    // as blank page and closed our note.
-    if (node instanceof ShadowRoot) return false;
     const el = node as HTMLElement;
     if (el.nodeType !== ELEMENT_NODE) continue;
     deepest ??= el;
