@@ -297,7 +297,7 @@ function PrimaryAction({ state, counts, jumped, access }: {
   return (
     <div className="space-y-2">
       {visibleNoteCount > 0 ? (
-        <button onClick={jumpToNote} className={`text-left text-sm font-medium ${LINK}`} title={jumped ? "Jump to the next note" : "Jump to the first note"}>
+        <button onClick={jumpToNote} className={`text-left text-sm font-medium ${LINK}`} title={visibleNoteCount === 1 ? "Jump to the note" : jumped ? "Jump to the next note" : "Jump to the first note"}>
           {statusLine}
         </button>
       ) : (
