@@ -24,7 +24,12 @@ export function useNoteVoting(onNoteUpdated: (note: NoteRow) => void, onNnnUpdat
   // donation box lets them redirect it afterwards.
   const [preferredCharity] = usePreferredCharity();
 
-  useEffect(() => {
+  /** Refetches which notes and entries the user has voted on. The overlays
+   *  call it whenever their note data refreshes, because a vote can appear
+   *  without this hook seeing it cast: writing a note makes a database
+   *  trigger cast the author's own helpful vote. Without the refetch that
+   *  pill stayed unlit and the donation notice never showed. */
+  const refreshVotes = () => {
     if (!session) {
       setMyVotes(new Map());
       setMyNnnVotes(new Map());
@@ -32,8 +37,13 @@ export function useNoteVoting(onNoteUpdated: (note: NoteRow) => void, onNnnUpdat
     }
     fetchMyVotes().then(setMyVotes);
     fetchMyNnnVotes().then(setMyNnnVotes);
+  };
+
+  useEffect(() => {
+    refreshVotes();
     // Signing in is what the form was open for, so it goes away on its own.
-    setLoginOpen(false);
+    if (session) setLoginOpen(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
 
   const onNeedLogin = () => setLoginOpen(true);
@@ -113,6 +123,7 @@ export function useNoteVoting(onNoteUpdated: (note: NoteRow) => void, onNnnUpdat
     session,
     myVotes,
     myNnnVotes,
+    refreshVotes,
     handleVote,
     handleNnnVote,
     recordAuthored,

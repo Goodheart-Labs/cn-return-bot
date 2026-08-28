@@ -121,7 +121,7 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
   const [groups, setGroups] = useState(initialGroups);
   const [openClaim, setOpenClaim] = useState<string | null>(null);
   const [writeSelection, setWriteSelection] = useState<string | null>(null);
-  const { session, myVotes, myNnnVotes, handleVote, handleNnnVote, recordAuthored, recordNnnAuthored, onNeedLogin, loginOpen, closeLogin } = useNoteVoting(
+  const { session, myVotes, myNnnVotes, refreshVotes, handleVote, handleNnnVote, recordAuthored, recordNnnAuthored, onNeedLogin, loginOpen, closeLogin } = useNoteVoting(
     (updated) => setGroups((prev) => prev.map((g) => replaceNoteInGroup(g, updated))),
     (updatedEntry) => setGroups((prev) => prev.map((g) => ({
       ...g,
@@ -146,7 +146,13 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
   // are computed again.
   const [layoutTick, setLayoutTick] = useState(0);
 
-  useEffect(() => setGroups(initialGroups), [initialGroups]);
+  useEffect(() => {
+    setGroups(initialGroups);
+    // A refresh can carry votes this hook never saw cast, such as the
+    // automatic helpful vote on a note the reader just wrote.
+    refreshVotes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialGroups]);
 
   useEffect(() => {
     let raf = 0;
