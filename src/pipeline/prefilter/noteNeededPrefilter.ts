@@ -134,7 +134,15 @@ async function runPrefilterSteps(userMessage: string): Promise<PrefilterVerdict>
 
   const findings = await gatherFindings(userMessage, queries);
   if (!findings) {
-    return { needsNote: false, reasoning: "no evidence found — every query returned zero results" };
+    // Fail OPEN. Zero results across every query almost never means the claim
+    // is unsearchable — on a healthy day it happens ~2 times. It means the
+    // search layer is broken, and treating blindness as absence is how a
+    // broken search layer silently rejected the entire feed for days in Aug
+    // 2026 (submissions ~90/day -> 6/day, every CI run green). Passing the
+    // post through costs one full-bot run, and the bot still has its own
+    // native search plus the note-needed judge, the eval gate, and the source
+    // verifier between here and a submission.
+    return { needsNote: true, reasoning: "search returned zero results for every query — failing open, the bot's own search and gates decide" };
   }
 
   const judge = await runPrefilterJudge(userMessage, findings);

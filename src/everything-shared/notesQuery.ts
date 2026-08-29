@@ -11,7 +11,7 @@ import type { ItemRow, NoteRow, NoteSourceDetail, NoteSourceRow } from "./types"
 //   - migration 057 added `everything_claims.image_urls`.
 //   - migration 063 added `everything_note_not_needed`. Without it the list of
 //     entries simply stays empty.
-//   - migration 080 added `everything_items.checked_scope`. Without it, "is
+//   - migration 081 added `everything_items.checked_scope`. Without it, "is
 //     this page fully checked" falls back to the item being done at all.
 // We probe the schema once, then shape the query and normalize the rows it
 // returns. Callers render the same way against the old schema and the new one.
@@ -145,7 +145,7 @@ const itemSelect = (s: Schema) =>
 /** Whether this page has been read in full by the pipeline. Only such a page
  *  refuses a new "check this page" request. An item that exists because a
  *  reader wrote a note, or because one paragraph was checked, is not a checked
- *  page. Against a backend that predates migration 080 the scope is undefined,
+ *  page. Against a backend that predates migration 081 the scope is undefined,
  *  and the rule falls back to what it used to be: done means checked. */
 export function isWholePageChecked(item: Pick<ItemRow, "status" | "checked_scope"> | null): boolean {
   if (!item) return false;

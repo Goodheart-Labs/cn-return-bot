@@ -21,20 +21,24 @@ function parseUploadDate(raw: string): string | undefined {
   return m ? `${m[1]}-${m[2]}-${m[3]}` : undefined;
 }
 
-/** Fetch the id, the title and the upload date by printing just those fields.
- *  We do not ask for the full -J metadata here. For a YouTube video that JSON
- *  is large enough to overflow the output buffer of the yt-dlp child process. */
-function fetchVideoMeta(url: string): { id: string; title: string; uploadDate?: string } {
+/** yt-dlp prints "NA" for a field it has no value for. */
+const ytDlpField = (raw: string): string | undefined => (raw && raw !== "NA" ? raw : undefined);
+
+/** Fetch the id, the title, the channel name and the upload date by printing
+ *  just those fields. We do not ask for the full -J metadata here. For a
+ *  YouTube video that JSON is large enough to overflow the output buffer of
+ *  the yt-dlp child process. */
+function fetchVideoMeta(url: string): { id: string; title: string; channel?: string; uploadDate?: string } {
   // We print the title last because a title can span several lines. Everything
-  // after the id therefore belongs to the title, and the earlier fields stay
-  // readable.
+  // after the channel therefore belongs to the title, and the earlier fields
+  // stay readable.
   // A flagged proxy IP gets a degraded player response whose format list is
   // empty, and format selection then aborts the whole call with "Requested
   // format is not available" even though the metadata fields were served.
   // Printing metadata needs no formats, so we tell yt-dlp to ignore that.
-  const out = execYtDlp(url, ["--skip-download", "--ignore-no-formats-error", "--no-warnings", "--print", "%(upload_date)s", "--print", "%(id)s", "--print", "%(title)s", url]);
-  const [uploadDate = "", id = "", ...titleParts] = out.trim().split("\n");
-  return { id, title: titleParts.join(" ").trim(), uploadDate: parseUploadDate(uploadDate) };
+  const out = execYtDlp(url, ["--skip-download", "--ignore-no-formats-error", "--no-warnings", "--print", "%(upload_date)s", "--print", "%(id)s", "--print", "%(channel)s", "--print", "%(title)s", url]);
+  const [uploadDate = "", id = "", channel = "", ...titleParts] = out.trim().split("\n");
+  return { id, title: titleParts.join(" ").trim(), channel: ytDlpField(channel), uploadDate: parseUploadDate(uploadDate) };
 }
 
 export interface ChannelVideo {
@@ -44,11 +48,19 @@ export interface ChannelVideo {
   durationSeconds: number | null;
 }
 
-/** List the latest videos on a channel's /videos tab with a single
- *  flat-playlist yt-dlp call. The newest video comes first and Shorts are left
- *  out, because that tab does not list them. The duration is null for a
- *  premiere and for a video that has not aired yet. */
-export function fetchChannelVideos(channelUrl: string, limit: number): ChannelVideo[] {
+export interface ChannelListing {
+  /** The channel's display name. */
+  channelName?: string;
+  videos: ChannelVideo[];
+}
+
+/** List the channel's name and the latest videos on its /videos tab with a
+ *  single flat-playlist yt-dlp call. The newest video comes first and Shorts
+ *  are left out, because that tab does not list them. The duration is null for
+ *  a premiere and for a video that has not aired yet. */
+export function fetchChannelVideos(channelUrl: string, limit: number): ChannelListing {
+  // The per-video lines print first, one per video. The playlist-level print
+  // runs once after them, so the channel name is always the last line.
   const out = execYtDlp(channelUrl, [
     "--flat-playlist",
     "--no-warnings",
@@ -56,28 +68,30 @@ export function fetchChannelVideos(channelUrl: string, limit: number): ChannelVi
     `1:${limit}`,
     "--print",
     "%(id)s\t%(duration)s\t%(title)s",
+    "--print",
+    "playlist:%(channel)s",
     `${channelUrl.replace(/\/$/, "")}/videos`,
   ]);
-  const videos = out
-    .trim()
-    .split("\n")
-    .filter(Boolean)
-    .map((line) => {
-      const [videoId = "", duration = "", ...titleParts] = line.split("\t");
-      return {
-        videoId,
-        url: `https://www.youtube.com/watch?v=${videoId}`,
-        title: titleParts.join(" "),
-        durationSeconds: /^\d/.test(duration) ? Number.parseFloat(duration) : null,
-      };
-    });
+  const lines = out.trim().split("\n").filter(Boolean);
+  // A video line always contains tabs and a channel name never does, so a
+  // tabbed last line means the playlist print did not run.
+  const channelName = lines.at(-1)?.includes("\t") ? undefined : ytDlpField(lines.pop() ?? "");
+  const videos = lines.map((line) => {
+    const [videoId = "", duration = "", ...titleParts] = line.split("\t");
+    return {
+      videoId,
+      url: `https://www.youtube.com/watch?v=${videoId}`,
+      title: titleParts.join(" "),
+      durationSeconds: /^\d/.test(duration) ? Number.parseFloat(duration) : null,
+    };
+  });
   // A channel's videos tab is never empty, so an empty listing means yt-dlp
   // failed silently. An outdated yt-dlp does exactly this: it exits with code
   // zero and prints nothing. Fail loudly instead of treating it as "no videos".
   if (videos.length === 0) {
     throw new Error(`yt-dlp listed zero videos for ${channelUrl} — it is probably outdated or blocked`);
   }
-  return videos;
+  return { channelName, videos };
 }
 
 const TRANSCRIPT_LANG = "en";
@@ -97,7 +111,7 @@ function fetchCues(url: string): SubtitleCue[] {
 
 export function fetchYoutubeContent(url: string): FetchedContent {
   const meta = fetchVideoMeta(url);
-  return { kind: "youtube", url, videoId: meta.id, title: meta.title, publishedAt: meta.uploadDate, cues: fetchCues(url) };
+  return { kind: "youtube", url, videoId: meta.id, title: meta.title, publishedAt: meta.uploadDate, cues: fetchCues(url), authorName: meta.channel };
 }
 
 /** The claims are extracted from a transcript the caller supplies. We still
@@ -112,5 +126,6 @@ export function fetchYoutubeTranscriptContent(url: string, transcriptText: strin
     publishedAt: meta.uploadDate,
     text: transcriptText,
     cues: fetchCues(url),
+    authorName: meta.channel,
   };
 }

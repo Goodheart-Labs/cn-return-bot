@@ -13,6 +13,8 @@ const record = (name: string) => (...args: unknown[]) => {
 let existingItem: { id: string; status: string; checked_scope: "page" | "paragraph" | null } | null = null;
 
 mock.module("./db", () => ({
+  fillProjectDisplayName: () => Promise.resolve(),
+  fillProjectDisplayNameBySlug: () => Promise.resolve(),
   QUEUE_PRIORITY: { requested: 2, followed: 1, backlog: 0 },
   findItemForPageUrl: () => Promise.resolve(existingItem),
   promoteItemToWholePage: record("promoteItemToWholePage"),

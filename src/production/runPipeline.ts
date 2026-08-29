@@ -117,6 +117,22 @@ const globalTimeout = setTimeout(async () => {
   process.exit(0);
 }, MAX_RUNTIME_MS);
 
+// The soft deadline is when the run stops STARTING work so it can finish and
+// submit what it has. The five minutes between it and the hard kill above are
+// the submit phase's guaranteed budget plus room for the posts still in
+// flight. Before this existed, a run that outran the hard kill stranded every
+// note it had finished — 37 stranded against 46 submitted on 2026-08-26.
+const RUN_STARTED_AT_MS = Date.now();
+const SOFT_DEADLINE_AT_MS = RUN_STARTED_AT_MS + 22 * 60 * 1000;
+
+// How much wall clock one post costs to process, for sizing a batch to the
+// clock. Healthy runs at concurrency 5 do a post roughly every two minutes of
+// wall time. The estimate carries margin on top of that: sizing at the bare
+// two minutes budgeted a batch to land exactly on the deadline, and the first
+// slow batch overran it (2026-08-27, 1:48pm run). Erring high just trims a
+// batch the deadline would have cut anyway.
+const EST_WALL_MS_PER_POST = 2.5 * 60 * 1000;
+
 async function main() {
   try {
     let supabaseLogger: SupabaseLogger | null = null;
@@ -227,6 +243,7 @@ async function main() {
     if (MISINFO_PIPELINE_ENABLED) {
       try {
         misinfoCandidates = await generateMisinfoCandidates(supabaseLogger, {
+          deadlineMs: SOFT_DEADLINE_AT_MS,
           skipPostIds: skipPostIds ?? new Set<string>(),
           onTweetProcessed: trackPrePassProcessed,
           topicIds: MISINFO_ACTIVE_TOPIC_IDS,
@@ -238,8 +255,23 @@ async function main() {
       console.log("[pipeline] Misinfo pre-pass disabled (MISINFO_PIPELINE_ENABLED=false)");
     }
 
+    // Size the regular batch to the clock that is actually left. The misinfo
+    // pre-pass above eats a variable slice of the run, and selecting more
+    // posts than the remaining minutes can process only queues work for the
+    // deadline to cut.
+    const remainingMs = SOFT_DEADLINE_AT_MS - Date.now();
+    const clockBudgetPosts = Math.max(1, Math.floor(remainingMs / EST_WALL_MS_PER_POST));
+    if (clockBudgetPosts < maxPosts) {
+      console.log(
+        `[max-posts] clock: ${(remainingMs / 60_000).toFixed(1)} min to the soft deadline — ` +
+          `capping maxPosts ${maxPosts} -> ${clockBudgetPosts}`,
+      );
+      maxPosts = clockBudgetPosts;
+    }
+
     const regularCandidates = await generateCandidates(supabaseLogger, {
       maxPosts,
+      deadlineMs: SOFT_DEADLINE_AT_MS,
       skipPostIds,
       knownTweetIds,
       onTweetProcessed,
