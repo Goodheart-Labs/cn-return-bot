@@ -16,7 +16,7 @@ export interface ItemRow {
   status: "queued" | "processing" | "done" | "error";
   error: string | null;
   created_at: string;
-  /** What the pipeline was asked to read (migration 080). `page` is the whole
+  /** What the pipeline was asked to read (migration 081). `page` is the whole
    *  article or transcript, `paragraph` only a highlighted passage. Null means
    *  no run was ever intended: a reader's note created the row. Undefined
    *  means the backend predates the column, and callers fall back to reading
