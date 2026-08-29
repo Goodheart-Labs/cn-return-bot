@@ -14,17 +14,17 @@ import { parkMintedDonation, preferredCharity, saveDonation } from "../everythin
  *  the note's card, which shows the notice when it first renders. A failure
  *  here never fails the posting: the note is already saved, and against a
  *  backend without the trigger or the ledger there is nothing to mint. */
-async function mintAuthorSelfVoteDonation(noteId: string, authorId: string): Promise<void> {
+async function mintAuthorSelfVoteDonation(noteId: string, author: Session["user"]): Promise<void> {
   try {
     const { data: vote } = await supabase
       .from("everything_votes")
       .select("id")
       .eq("note_id", noteId)
-      .eq("voter_id", authorId)
+      .eq("voter_id", author.id)
       .maybeSingle();
     if (!vote) return;
     const pair = donationPair({ helpful: 0, somewhatHelpful: 0, notHelpful: 0 }, 1);
-    const charity = preferredCharity();
+    const charity = preferredCharity(author);
     const { error } = await saveDonation(vote.id, charity, pair);
     if (!error) parkMintedDonation(noteId, { voteId: vote.id, charity, pair });
   } catch (err) {
@@ -85,7 +85,7 @@ export async function postClaimWithNote(params: {
       .select("id")
       .single();
     if (noteError || !noteRow) return { type: "error", message: noteError?.message ?? "could not create the note" };
-    await mintAuthorSelfVoteDonation(noteRow.id, session.user.id);
+    await mintAuthorSelfVoteDonation(noteRow.id, session.user);
     return { type: "posted", claimId: claim.id, noteId: noteRow.id };
   } catch (err) {
     return { type: "error", message: (err as Error).message };
@@ -120,7 +120,7 @@ export async function postImprovement(params: {
       .select("id")
       .single();
     if (error || !noteRow) return { type: "error", message: error?.message ?? "could not create the note" };
-    await mintAuthorSelfVoteDonation(noteRow.id, session.user.id);
+    await mintAuthorSelfVoteDonation(noteRow.id, session.user);
     return { type: "posted", claimId: note.claim_id, noteId: noteRow.id };
   } catch (err) {
     return { type: "error", message: (err as Error).message };

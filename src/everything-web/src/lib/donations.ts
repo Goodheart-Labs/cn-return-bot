@@ -1,5 +1,5 @@
+import type { User } from "@supabase/supabase-js";
 import type { DonationPair } from "./donationScoring";
-import { createLocalPreference } from "./preference";
 import { supabase } from "../../../everything-shared/supabase";
 
 /** The charities a voter can direct their donation to. The first entry is the
@@ -15,27 +15,42 @@ export type CharityId = (typeof CHARITIES)[number]["id"];
 
 const isCharityId = (v: unknown): v is CharityId => CHARITIES.some((c) => c.id === v);
 
-/** The stored charity preference. Future donations are minted with it. A
- *  donation box never displays this value. It displays the charity on its own
- *  ledger row, because the box must never show a charity the ledger does not
- *  hold. */
+/** The charity preference. The account is the source of truth: the choice is
+ *  stored in the auth user's metadata, so it follows the user across devices,
+ *  browsers, and both apps. localStorage is only a cache and a fallback for
+ *  choices made before this existed. It cannot be the store itself, because a
+ *  content script's localStorage belongs to the host page, which made the
+ *  extension remember the choice per website. Future donations are minted
+ *  with this value. A donation box never displays it. It displays the charity
+ *  on its own ledger row, because the box must never show a charity the
+ *  ledger does not hold. */
 const PREFERRED_CHARITY_KEY = "cn-preferred-charity";
 
-export const usePreferredCharity = createLocalPreference<CharityId>(PREFERRED_CHARITY_KEY, {
-  parse: (raw) => (isCharityId(raw) ? raw : CHARITIES[0].id),
-  serialize: (charity) => charity,
-});
-
-/** The stored charity preference read outside React. Posting a note mints the
- *  author's automatic self-vote donation from plain code, where the hook above
- *  cannot run. */
-export function preferredCharity(): CharityId {
+export function preferredCharity(user?: User | null): CharityId {
+  const fromAccount = user?.user_metadata?.charity;
+  if (isCharityId(fromAccount)) return fromAccount;
   try {
     const raw = localStorage.getItem(PREFERRED_CHARITY_KEY);
     return isCharityId(raw) ? raw : CHARITIES[0].id;
   } catch {
     return CHARITIES[0].id;
   }
+}
+
+/** Remembers a picked charity on the account and in the local cache. The
+ *  metadata write is fire-and-forget: if it fails, only the cross-device
+ *  memory is lost, never the pick that was already applied to its ledger
+ *  row. */
+export function rememberCharity(charity: CharityId): void {
+  try {
+    localStorage.setItem(PREFERRED_CHARITY_KEY, charity);
+  } catch {
+    // A browser that refuses storage still gets the account write below.
+  }
+  void supabase.auth.updateUser({ data: { charity } }).then(
+    () => {},
+    () => {},
+  );
 }
 
 /** The donation a cast vote minted. It carries the vote id, the charity the

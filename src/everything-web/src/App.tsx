@@ -8,7 +8,7 @@ import { castVote, clearVote, fetchMyVotes, type Vote } from "../../everything-s
 import { castNnnVote, clearNnnVote, fetchMyNnnVotes } from "../../everything-shared/noteNotNeeded";
 import { donationPair, priorTally } from "./lib/donationScoring";
 import { noteTally, probabilityHelpful, probabilityHelpfulAfter } from "../../everything-shared/noteBelief";
-import { saveDonation, usePreferredCharity, type MintedDonation } from "./lib/donations";
+import { saveDonation, preferredCharity, type MintedDonation } from "./lib/donations";
 import { readRoute, pushProject, pushItem, pushLeaderboard, type View } from "./lib/routing";
 import { identifyUser, resetAnalytics, track } from "../../everything-shared/analytics";
 import { capturePageview } from "./lib/analytics";
@@ -82,9 +82,6 @@ export function App() {
   const [itemFilter, setItemFilter] = useState<string | null>(() => readRoute().item);
   const [myVotes, setMyVotes] = useState<Map<string, Vote>>(new Map());
   const [myNnnVotes, setMyNnnVotes] = useState<Map<string, Vote>>(new Map());
-  // A new vote's donation goes to the charity we remembered for this user. The
-  // donation box lets them redirect it afterwards.
-  const [preferredCharity] = usePreferredCharity();
   const [loginOpen, setLoginOpen] = useState(false);
   const [writeOpen, setWriteOpen] = useState(false);
 
@@ -269,11 +266,14 @@ export function App() {
     const voteId = await castVote(note.id, session.user.id, vote, "web");
     if (!voteId) return null;
     const pair = donationPair(priorTally(note, current), vote);
+    // The donation goes to the charity remembered on the account. The donation
+    // box lets the voter redirect it afterwards.
+    const charity = preferredCharity(session.user);
     // A backend without migration 061 rejects the pair of amount columns. We
     // keep the vote in that case. We just do not promise the user a donation the
     // ledger never recorded.
-    const { error } = await saveDonation(voteId, preferredCharity, pair);
-    return error ? null : { voteId, charity: preferredCharity, pair };
+    const { error } = await saveDonation(voteId, charity, pair);
+    return error ? null : { voteId, charity, pair };
   };
 
   const handleNnnVote = async (entry: NnnRow, vote: Vote) => {
