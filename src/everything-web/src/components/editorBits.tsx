@@ -4,9 +4,8 @@ import { INPUT } from "../../../everything-shared/ui";
 import { displayName } from "../../../everything-shared/session";
 
 /** The pieces shared by the two small inline editors, which are suggesting an
- *  improvement and arguing that a claim needs no note. There is an auto-growing
- *  textarea, the opt-in byline checkbox, and the notice shown when the judge
- *  rejects the text. */
+ *  improvement and arguing that a claim needs no note: an auto-growing
+ *  textarea and the opt-in byline checkbox. */
 
 export function AutoGrowTextarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   const { className, ...rest } = props;
@@ -49,10 +48,3 @@ export function PostAsCheckbox({ signed, onChange, session, className }: {
   );
 }
 
-export function RejectedNotice({ children }: { children?: React.ReactNode }) {
-  return (
-    <p className="text-sm rounded-lg p-3 bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900">
-      {children ?? "That didn't look like a genuine note (try again)"}
-    </p>
-  );
-}

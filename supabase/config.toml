@@ -374,15 +374,6 @@ authorization_url_path = "/oauth/consent"
 # Allow dynamic client registration
 allow_dynamic_registration = false
 
-[functions.judge-note]
-# Gates both note flows (write-a-note + suggest-an-improvement): an LLM decides
-# earnest vs trolling; the client posts the note only on an "accepted" verdict.
-# Needs OPENROUTER_API_KEY. verify_jwt is off because the function does its own
-# auth via getUser() (validates against the auth server, so it works with the
-# local ES256 signing keys that the gateway's verify_jwt can't handle); an
-# unauthenticated call is rejected before any LLM cost is incurred.
-enabled = true
-verify_jwt = false
 
 [edge_runtime]
 enabled = true

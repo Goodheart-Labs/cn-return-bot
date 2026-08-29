@@ -2,9 +2,8 @@ import { useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { ensureWebItem } from "../../everything-shared/ensureWebItem";
 import { postClaimWithNote } from "../../everything-shared/postNote";
-import { track } from "../../everything-shared/analytics";
 import type { PageItem } from "../../everything-shared/notesQuery";
-import { PostAsCheckbox, RejectedNotice } from "../../everything-web/src/components/editorBits";
+import { PostAsCheckbox } from "../../everything-web/src/components/editorBits";
 import { Modal } from "../../everything-web/src/components/Modal";
 import { BUTTON, INPUT, QUOTE_RAIL } from "../../everything-shared/ui";
 import { LoginPanel } from "./LoginPanel";
@@ -27,7 +26,6 @@ export function WriteNoteOverlay({ item, pageForItem, selection, session, onClos
 }) {
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
-  const [rejected, setRejected] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Bylines are opt-in, so a note is anonymous by default. That is how
   // Community Notes works on X. Nathan asked for this on 2026-07-14.
@@ -37,7 +35,6 @@ export function WriteNoteOverlay({ item, pageForItem, selection, session, onClos
     if (!session) return;
     setBusy(true);
     setError(null);
-    setRejected(false);
     let itemId = item?.id;
     let itemUrl = item?.url;
     if (!itemId) {
@@ -59,11 +56,6 @@ export function WriteNoteOverlay({ item, pageForItem, selection, session, onClos
       signed,
     });
     setBusy(false);
-    if (outcome.type === "rejected") {
-      // The earnest-gate judge stores nothing, so rejections exist only as events.
-      track("note_write_rejected", { item_id: itemId });
-      return setRejected(true);
-    }
     if (outcome.type === "error") return setError(outcome.message);
     onPosted();
     onClose();
@@ -81,17 +73,16 @@ export function WriteNoteOverlay({ item, pageForItem, selection, session, onClos
           <>
             <textarea
               value={note}
-              onChange={(e) => { setNote(e.target.value); setRejected(false); }}
+              onChange={(e) => setNote(e.target.value)}
               rows={4}
               autoFocus
               placeholder="Write your correction"
               className={`w-full ${INPUT}`}
             />
-            {rejected && <RejectedNotice />}
             <div className="flex gap-2 items-center justify-end">
               <PostAsCheckbox signed={signed} onChange={setSigned} session={session} className="mr-auto" />
               <button onClick={submit} disabled={busy || note.trim().length < 10} className={BUTTON}>
-                {busy ? "Checking…" : "Post draft note"}
+                {busy ? "Posting…" : "Post draft note"}
               </button>
             </div>
           </>
