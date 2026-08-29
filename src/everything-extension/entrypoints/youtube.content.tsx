@@ -2,7 +2,7 @@ import "../assets/tailwind.css";
 import { createRoot } from "react-dom/client";
 import { defineContentScript, createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
-import { fetchItemForUrl, type PageItem } from "../../everything-shared/notesQuery";
+import { fetchItemForUrl, isWholePageChecked, type PageItem } from "../../everything-shared/notesQuery";
 import { extractYoutubeVideoId, normalizePageUrl } from "../../everything-shared/pageUrls";
 import { fetchClaimGroups, type ClaimGroup, type NoteCounts } from "../utils/claimGroups";
 import { mountCoverageBadges } from "../utils/coverageBadges";
@@ -75,18 +75,21 @@ function channelFollowTarget(): FollowTarget | null {
  *  the request button, but only when request overlays are turned on and the
  *  channel is not already followed; with the request card suppressed an
  *  unfollowed channel still gets the follow-only card. */
-async function mountStatus(ctx: ContentScriptContext, counts: NoteCounts | null): Promise<() => void> {
+async function mountStatus(ctx: ContentScriptContext, counts: NoteCounts | null, wholePageChecked: boolean): Promise<() => void> {
   const settings = await getSettings();
   if (counts !== null) {
     if (!settings.showNoteCountOverlay) return () => {};
-    return mountStatusOverlay(ctx, {
-      pageUrl: normalizePageUrl(location.href),
-      noun: "video",
-      checked: counts,
-      onOpenNotes: jumpToNextNote,
-      followTarget: null,
-      requestWithPageText: false,
-    });
+    return (
+      await mountStatusOverlay(ctx, {
+        pageUrl: normalizePageUrl(location.href),
+        noun: "video",
+        counts,
+        wholePageChecked,
+        onOpenNotes: jumpToNextNote,
+        followTarget: null,
+        requestWithPageText: false,
+      })
+    ).teardown;
   }
   // With both cards turned off there is nothing to mount, and we skip the wait
   // for the owner box entirely.
@@ -97,15 +100,18 @@ async function mountStatus(ctx: ContentScriptContext, counts: NoteCounts | null)
   const unfollowedChannel = await unlessFollowed(channel);
   const channelFollowed = channel !== null && unfollowedChannel === null;
   if (settings.showRequestOverlay && !channelFollowed) {
-    return mountStatusOverlay(ctx, {
-      pageUrl: normalizePageUrl(location.href),
-      noun: "video",
-      checked: null,
-      followTarget: unfollowedChannel,
-      // The pipeline fetches the transcript itself, and this page's text is
-      // player chrome rather than the video's content.
-      requestWithPageText: false,
-    });
+    return (
+      await mountStatusOverlay(ctx, {
+        pageUrl: normalizePageUrl(location.href),
+        noun: "video",
+        counts: null,
+        wholePageChecked: false,
+        followTarget: unfollowedChannel,
+        // The pipeline fetches the transcript itself, and this page's text is
+        // player chrome rather than the video's content.
+        requestWithPageText: false,
+      })
+    ).teardown;
   }
   if (unfollowedChannel) return mountFollowOverlay(ctx, unfollowedChannel);
   return () => {};
@@ -133,19 +139,35 @@ async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | n
   const covered = await getCoveredPageUrls();
   if (covered && !pageIsCovered(location.href, covered)) {
     recordWatchVisit(null);
-    return mountStatus(ctx, null);
+    return mountStatus(ctx, null, false);
   }
-  const item = await fetchItemForUrl(location.href);
+  // A failed lookup or notes fetch mounts nothing. An outage must not read as
+  // "we haven't checked this video yet" with a request button under it.
+  let item;
+  try {
+    item = await fetchItemForUrl(location.href);
+  } catch (err) {
+    console.warn("[common-notes] item lookup failed, mounting nothing:", err);
+    return null;
+  }
   if (!item) {
     recordWatchVisit(null);
-    return mountStatus(ctx, null);
+    return mountStatus(ctx, null, false);
   }
   recordWatchVisit(item);
-  const refetch = async () => timedGroups((await fetchClaimGroups(item.id)).groups);
+  // Null on a failed fetch, so the overlay keeps what is on screen.
+  const refetch = async () => {
+    const next = await fetchClaimGroups(item.id);
+    return next === null ? null : timedGroups(next.groups);
+  };
   const first = await fetchClaimGroups(item.id);
+  if (first === null) {
+    console.warn("[common-notes] notes fetch failed, mounting nothing");
+    return null;
+  }
   const groups = timedGroups(first.groups);
   console.info(`[common-notes] ${groups.length} timestamped claims on this video`);
-  const statusTeardown = await mountStatus(ctx, first.counts);
+  const statusTeardown = await mountStatus(ctx, first.counts, isWholePageChecked(item));
   if (groups.length === 0) return statusTeardown;
 
   const player = await waitFor<HTMLElement>(PLAYER_SELECTOR);

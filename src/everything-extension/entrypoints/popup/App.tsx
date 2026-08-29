@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
 import { browser } from "#imports";
-import { fetchItemForUrl, fetchNotesForItem, fetchRandomNotedPageUrl, type PageItem } from "../../../everything-shared/notesQuery";
-import { normalizePageUrl } from "../../../everything-shared/pageUrls";
+import { fetchItemForUrl, fetchNotesForItem, fetchRandomNotedPageUrl, isWholePageChecked, type PageItem } from "../../../everything-shared/notesQuery";
+import { extractYoutubeVideoId, normalizePageUrl } from "../../../everything-shared/pageUrls";
+import { noteStatus } from "../../../everything-shared/noteScore";
 import type { NoteRow } from "../../../everything-shared/types";
 import { submitNoteRequest } from "../../../everything-shared/noteRequests";
 import { authorFeedStatusForTab, type AuthorFeedStatus } from "../../utils/authorFeed";
-import { noteVisible } from "../../utils/claimGroups";
+import { noteVisible, type NoteCounts } from "../../utils/claimGroups";
 import { genericScriptId } from "../../utils/genericScript";
 import { resolveReaderCanonical } from "../../utils/readerCanonical";
 import type { FollowTarget } from "../../utils/followTarget";
-import { buildFollowAction } from "../../utils/mountStatusOverlay";
+import { buildFollowAction, headline } from "../../utils/mountStatusOverlay";
+import { isSubstackPostPage, requestMakesSenseForUrl } from "../../utils/followTarget";
 import { capturePageFromTab } from "../../utils/pageCapture";
 import { addRequestedPage, getRequestedPages } from "../../utils/settings";
-import { ActionButton, type StatusAction } from "../../components/StatusOverlay";
+import { ActionButton, PRIMARY_BUTTON, type StatusAction } from "../../components/StatusOverlay";
 import { STATIC_SITE_HOSTNAME } from "../../utils/staticSites";
 import { useNoteFilters } from "../../components/NoteFilterToggles";
 
@@ -21,12 +23,11 @@ import { useNoteFilters } from "../../components/NoteFilterToggles";
 // excluded as the "unsupported" kind.
 const NON_CONTENT_HOSTNAME = /(^|\.)google\.[a-z.]+$|(^|\.)bing\.com$|(^|\.)duckduckgo\.com$|(^|\.)ecosia\.org$|(^|\.)startpage\.com$|(^|\.)search\.brave\.com$/;
 
-const PRIMARY_BUTTON = "w-full bg-blue-600 text-white rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-blue-700 disabled:opacity-40";
-
 type PageState =
   | { kind: "loading" }
   | { kind: "unsupported" } // The page is not http or https.
-  | { kind: "no_item"; origin: string }
+  | { kind: "load_failed" } // The backend could not be reached.
+  | { kind: "no_item"; origin: string; pageUrl: string }
   | { kind: "item"; origin: string; item: PageItem; notes: NoteRow[] };
 
 async function activeTab() {
@@ -43,9 +44,17 @@ function usePageState(): PageState {
       if (!url || !/^https?:/.test(url)) return setState({ kind: "unsupported" });
       const origin = new URL(url).origin;
       const readerCanonical = await resolveReaderCanonical(url);
-      const item = await fetchItemForUrl(normalizePageUrl(readerCanonical ?? url));
-      if (!item) return setState({ kind: "no_item", origin });
+      // An outage is its own state. Falling through to "no item" would offer
+      // to check a page we may well have checked already.
+      let item;
+      try {
+        item = await fetchItemForUrl(normalizePageUrl(readerCanonical ?? url));
+      } catch {
+        return setState({ kind: "load_failed" });
+      }
+      if (!item) return setState({ kind: "no_item", origin, pageUrl: normalizePageUrl(readerCanonical ?? url) });
       const notes = await fetchNotesForItem(item.id);
+      if (notes === null) return setState({ kind: "load_failed" });
       setState({ kind: "item", origin, item, notes });
     })();
   }, []);
@@ -124,12 +133,13 @@ async function sendJumpToNote(tabId: number, scriptWasRegistered: boolean) {
   }
 }
 
-/** The "Request notes on this page" button, shown on uncovered content pages.
- *  It works on the whole page and replaced an older flow that requested notes
- *  on a text selection. Requested pages are remembered in storage rather than
- *  in component state, so closing and reopening the popup cannot submit the
- *  same page twice. */
-function RequestNoteButton() {
+/** The request button, shown on content pages we have not read in full. On a
+ *  page with no item it reads "Request notes on this page"; on a page that
+ *  already has an item, because a reader wrote a note or one paragraph was
+ *  checked, it reads "Check this whole page" so the two meanings stay apart.
+ *  Requested pages are remembered in storage rather than in component state,
+ *  so closing and reopening the popup cannot submit the same page twice. */
+function RequestNoteButton({ label, doneLabel }: { label: string; doneLabel: string }) {
   const [phase, setPhase] = useState<"loading" | "idle" | "busy" | "done" | "error">("loading");
 
   useEffect(() => {
@@ -161,12 +171,12 @@ function RequestNoteButton() {
   };
 
   if (phase === "done") {
-    return <button disabled className={PRIMARY_BUTTON}>You requested notes on this page</button>;
+    return <button disabled className={PRIMARY_BUTTON}>{doneLabel}</button>;
   }
   return (
     <>
       <button onClick={request} disabled={phase !== "idle"} className={PRIMARY_BUTTON}>
-        Request notes on this page
+        {label}
       </button>
       {phase === "error" && <p className="text-sm text-red-600">Could not save the request (try again)</p>}
     </>
@@ -179,7 +189,10 @@ function RequestNoteButton() {
 function useAuthorFeed(state: PageState): AuthorFeedStatus | null {
   const [status, setStatus] = useState<AuthorFeedStatus | null>(null);
   useEffect(() => {
-    if (state.kind !== "no_item") return;
+    // The feed is resolved on covered pages too. Following an author must not
+    // depend on catching the transient in-page card, so the popup offers it
+    // wherever the page has an author, notes or not.
+    if (state.kind !== "no_item" && state.kind !== "item") return;
     (async () => {
       const tab = await activeTab();
       setStatus(tab ? await authorFeedStatusForTab(tab) : { kind: "none" });
@@ -195,16 +208,19 @@ function FollowButton({ target }: { target: FollowTarget }) {
     void buildFollowAction(target).then(setAction);
   }, [target]);
   if (!action) return null;
-  return <ActionButton action={action} buttonClassName={PRIMARY_BUTTON} />;
+  return <ActionButton action={action} />;
 }
 
-/** The popup's single action button. On a page with visible notes it jumps to
- *  them, first enabling the site if the user never granted it. On an uncovered
- *  content page it requests notes. Anywhere else it opens a random page that
- *  has notes. */
-function PrimaryAction({ state, visibleNoteCount, jumped, access }: {
+/** The popup for the current page leads with the same status sentence the
+ *  in-page card shows: how many notes there are, that we found nothing, or
+ *  that the page is unchecked. On a page with notes the sentence itself is
+ *  the link that jumps to them, first enabling the site if the sync has not
+ *  registered it yet. Blue buttons are kept for actions only: requesting a
+ *  check and following an author. Anywhere else the popup opens a random page
+ *  that has notes. */
+function PrimaryAction({ state, counts, jumped, access }: {
   state: PageState;
-  visibleNoteCount: number;
+  counts: NoteCounts | null;
   jumped: boolean;
   access: PageAccess | null;
 }) {
@@ -212,51 +228,13 @@ function PrimaryAction({ state, visibleNoteCount, jumped, access }: {
   const authorFeed = useAuthorFeed(state);
 
   if (state.kind === "loading") return <p className="text-sm text-gray-500">Loading notes…</p>;
-
-  if (state.kind === "item" && visibleNoteCount > 0) {
-    if (!access) return <p className="text-sm text-gray-500">Loading notes…</p>;
-
-    const jumpToNote = async () => {
-      const tab = await activeTab();
-      if (tab?.id != null) {
-        if (access === "syncing") {
-          // The site is covered but the sync has not registered it yet, so we
-          // inject into this tab directly. Healing can only retry here. A
-          // reload would land on a page with no script, because nothing is
-          // registered that would re-inject it.
-          await browser.scripting.executeScript({ target: { tabId: tab.id }, files: ["/content-scripts/generic.js"] }).catch(() => {});
-        }
-        await sendJumpToNote(tab.id, access === "on");
-      }
-      window.close();
-    };
-    return (
-      <button onClick={jumpToNote} className={PRIMARY_BUTTON}>
-        {jumped ? "Jump to next note" : "Jump to first note"}
-      </button>
-    );
+  if (state.kind === "load_failed") {
+    return <p className="text-sm text-gray-600">Couldn't load notes. Check your connection and try again.</p>;
   }
 
-  if (state.kind === "no_item" && !NON_CONTENT_HOSTNAME.test(new URL(state.origin).hostname)) {
-    if (!authorFeed) return <p className="text-sm text-gray-500">Loading notes…</p>;
-    // A page by an author we already follow needs no request. Every new post
-    // gets checked on its own, so the button would only submit noise.
-    if (authorFeed.kind === "followed") {
-      return (
-        <p className="text-sm text-gray-600">
-          {authorFeed.feed.kind === "youtuber"
-            ? "We check every new video from this youtuber."
-            : "We check every new post from this author."}
-        </p>
-      );
-    }
-    return (
-      <div className="space-y-2">
-        <RequestNoteButton />
-        {authorFeed.kind === "followable" && <FollowButton target={authorFeed.target} />}
-      </div>
-    );
-  }
+  const isContentPage =
+    (state.kind === "no_item" || state.kind === "item") &&
+    !NON_CONTENT_HOSTNAME.test(new URL(state.origin).hostname);
 
   const openRandomPage = async () => {
     setBusy(true);
@@ -264,10 +242,90 @@ function PrimaryAction({ state, visibleNoteCount, jumped, access }: {
     if (url) await browser.tabs.create({ url });
     window.close();
   };
+
+  if (!isContentPage) {
+    return (
+      <button onClick={openRandomPage} disabled={busy} className={PRIMARY_BUTTON}>
+        Open random page
+      </button>
+    );
+  }
+  const visibleNoteCount = counts?.visible ?? 0;
+  if (!authorFeed || (state.kind === "item" && visibleNoteCount > 0 && !access)) {
+    return <p className="text-sm text-gray-500">Loading notes…</p>;
+  }
+
+  const jumpToNote = async () => {
+    const tab = await activeTab();
+    if (tab?.id != null) {
+      if (access === "syncing") {
+        // The site is covered but the sync has not registered it yet, so we
+        // inject into this tab directly. Healing can only retry here. A
+        // reload would land on a page with no script, because nothing is
+        // registered that would re-inject it.
+        await browser.scripting.executeScript({ target: { tabId: tab.id }, files: ["/content-scripts/generic.js"] }).catch(() => {});
+      }
+      await sendJumpToNote(tab.id, access === "on");
+    }
+    window.close();
+  };
+
+  // Only a page the pipeline has read in full stops offering the request. An
+  // item that exists because a reader wrote a note, or because one paragraph
+  // was checked, still gets the offer, under its own wording. On the
+  // platforms whose URL shapes we know, only an actual post or video gets
+  // it: a Substack inbox or a YouTube channel page is not checkable. A
+  // custom-domain Substack is recognized through its author feed, so its
+  // homepage and archive pages are held to the same post rule.
+  const pageUrl = state.kind === "item" ? state.item.url : state.pageUrl;
+  const substackFeed =
+    (authorFeed.kind === "followable" && authorFeed.target.feedType === "substack") ||
+    (authorFeed.kind === "followed" && authorFeed.feed.feedType === "substack");
+  const postShaped = requestMakesSenseForUrl(pageUrl) && (!substackFeed || isSubstackPostPage(pageUrl));
+  const requestable = postShaped && (state.kind === "no_item" || !isWholePageChecked(state.item));
+  const fullyCheckedNoNotes = state.kind === "item" && !requestable && visibleNoteCount === 0;
+
+  // The same sentence the in-page card shows, from the same function.
+  const noun = state.kind === "item" && extractYoutubeVideoId(state.item.url) ? "video" : "page";
+  const statusLine = headline({
+    noun,
+    counts: state.kind === "item" ? counts : null,
+    wholePageChecked: state.kind === "item" && isWholePageChecked(state.item),
+  });
+
   return (
-    <button onClick={openRandomPage} disabled={busy} className={PRIMARY_BUTTON}>
-      Open random page
-    </button>
+    <div className="space-y-2">
+      {visibleNoteCount > 0 ? (
+        <button onClick={jumpToNote} className="text-left text-sm text-blue-600 hover:underline" title={visibleNoteCount === 1 ? "Jump to the note" : jumped ? "Jump to the next note" : "Jump to the first note"}>
+          {statusLine}
+        </button>
+      ) : (
+        <p className="text-sm text-gray-600">{statusLine}</p>
+      )}
+      {requestable &&
+        (authorFeed.kind === "followed" ? (
+          // A page by an author we already follow needs no request. Every new
+          // post gets checked on its own, so the button would only submit
+          // noise.
+          <p className="text-sm text-gray-600">
+            {authorFeed.feed.kind === "youtuber"
+              ? "We check every new video from this youtuber."
+              : "We check every new post from this author."}
+          </p>
+        ) : state.kind === "item" ? (
+          <RequestNoteButton label="Check this whole page" doneLabel="You asked us to check this whole page" />
+        ) : (
+          <RequestNoteButton label="Request notes on this page" doneLabel="You requested notes on this page" />
+        ))}
+      {/* Following an author must not depend on catching the transient in-page
+          card, so the popup offers it on covered pages too. */}
+      {authorFeed.kind === "followable" && <FollowButton target={authorFeed.target} />}
+      {fullyCheckedNoNotes && (
+        <button onClick={openRandomPage} disabled={busy} className={PRIMARY_BUTTON}>
+          Open random page
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -282,13 +340,23 @@ export function PopupApp() {
   useEffect(() => {
     void browser.runtime.sendMessage({ type: "cn-sync-noted-sites" }).catch(() => {});
   }, []);
-  const visibleNoteCount = state.kind === "item" && filters
-    ? state.notes.filter((note) => noteVisible(note, filters)).length
-    : 0;
+  // The same tallies the in-page card shows: the status counts report what
+  // exists and ignore the filters, while `visible` is what a jump can reach.
+  let counts: NoteCounts | null = null;
+  if (state.kind === "item" && filters) {
+    counts = { helpful: 0, needsRatings: 0, notHelpful: 0, visible: 0 };
+    for (const note of state.notes) {
+      const status = noteStatus(note);
+      if (status === "helpful") counts.helpful += 1;
+      else if (status === "needs_ratings") counts.needsRatings += 1;
+      else counts.notHelpful += 1;
+      if (noteVisible(note, filters)) counts.visible += 1;
+    }
+  }
 
   return (
     <div className="p-4 space-y-4 bg-gray-50 min-h-[120px]">
-      <PrimaryAction state={state} visibleNoteCount={visibleNoteCount} jumped={jumped} access={access} />
+      <PrimaryAction state={state} counts={counts} jumped={jumped} access={access} />
 
       <div className="border-t border-gray-200 pt-3">
         <button

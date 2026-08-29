@@ -1,13 +1,13 @@
 import { defineBackground } from "#imports";
 import { browser } from "#imports";
-import { fetchCoveredPageUrls, fetchFollowedFeedUrls, fetchNotedPageCounts, fetchReaderCanonical } from "../../everything-shared/notesQuery";
+import { fetchCoveredPageUrls, fetchFollowedFeedUrls, fetchItemForUrl, fetchNotedPageCounts, fetchReaderCanonical, isWholePageChecked } from "../../everything-shared/notesQuery";
 import { submitNoteRequest } from "../../everything-shared/noteRequests";
 import { canonicalizePageUrl, isSubstackReaderUrl } from "../../everything-shared/pageUrls";
 import { track } from "../../everything-shared/analytics";
 import { initBackgroundAnalytics } from "../utils/analytics";
 import { signInWithXViaWebAuthFlow } from "../utils/oauth";
 import { authorFeedStatusForTab } from "../utils/authorFeed";
-import { COVERED_PAGE_URLS_KEY, NOTED_PAGE_STATUS_COUNTS_KEY, getCoveredPageUrls, pageIsCovered } from "../utils/coveredPages";
+import { COVERED_PAGE_URLS_KEY, NOTED_PAGE_STATUS_COUNTS_KEY } from "../utils/coveredPages";
 import { FOLLOWED_FEED_URLS_KEY } from "../utils/followedFeeds";
 import { GENERIC_SCRIPT_PREFIX, hostnamePattern, registerGenericScripts, genericScriptId } from "../utils/genericScript";
 import { capturePageFromTab } from "../utils/pageCapture";
@@ -162,10 +162,10 @@ async function sendToTabWithInjection(tabId: number, message: unknown): Promise<
   }
 }
 
-/** Tells the user in the page why their request was not needed. Falls back to
- *  the toolbar tick when the page cannot host the card: the request's goal is
- *  met either way. */
-async function showRequestNotNeeded(tab: { id?: number }, headline: string) {
+/** Tells the user in the page how their request went: the confirmation that
+ *  it was saved, or why it was not needed. Falls back to the toolbar tick when
+ *  the page cannot host the card, for example on a browser-internal page. */
+async function showRequestInfo(tab: { id?: number }, headline: string) {
   const delivered = tab.id != null && (await sendToTabWithInjection(tab.id, { type: "cn-request-info", headline }));
   if (!delivered) flashBadge(tab.id, "✓");
 }
@@ -186,15 +186,25 @@ async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: 
   const pageUrl = readerCanonical
     ? canonicalizePageUrl(readerCanonical, null)
     : canonicalizePageUrl(href, captured?.canonical ?? null);
-  const covered = await getCoveredPageUrls();
-  if (covered && pageIsCovered(pageUrl, covered)) {
-    await showRequestNotNeeded(tab, "This page has already been checked.");
-    return;
+  // Only a page the pipeline has read in full refuses the request. The cached
+  // coverage list cannot tell a fully checked page from one that merely has an
+  // item row, so this is a live lookup. The click is about to send the page's
+  // address and text anyway, so the lookup costs nothing privacy-wise. A
+  // failed lookup submits regardless, because the consumer de-duplicates
+  // server-side.
+  try {
+    const item = await fetchItemForUrl(pageUrl);
+    if (isWholePageChecked(item)) {
+      await showRequestInfo(tab, "This page has already been checked.");
+      return;
+    }
+  } catch (err) {
+    console.warn("[common-notes] item lookup failed, submitting the request anyway:", err);
   }
   const authorFeed = await authorFeedStatusForTab(tab);
   if (authorFeed.kind === "followed") {
     const what = authorFeed.feed.kind === "youtuber" ? "video from this youtuber" : "post from this author";
-    await showRequestNotNeeded(tab, `We already check every new ${what}.`);
+    await showRequestInfo(tab, `We already check every new ${what}.`);
     return;
   }
   try {
@@ -206,15 +216,72 @@ async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: 
     });
     // This is only a local reminder. The request itself is already saved.
     await addRequestedPage(pageUrl).catch(() => {});
-    flashBadge(tab.id, "✓");
+    // The confirmation is a card in the page. The toolbar tick alone is
+    // invisible to anyone whose toolbar keeps the extension in the overflow
+    // menu, so the click looked like it did nothing.
+    await showRequestInfo(tab, "Requested. We'll check this page when it comes up in our queue.");
   } catch (err) {
     console.warn("[common-notes] note request failed:", err);
     flashBadge(tab.id, "!");
   }
 }
 
+/** Dev builds reload themselves when a fresh build lands on disk, so
+ *  delivering a build to another machine is nothing but a file sync. An
+ *  unpacked extension's fetch of its own packaged file reads the CURRENT file
+ *  on disk, while import.meta.env.VITE_CN_BUILD is frozen at build time, so
+ *  the two disagreeing means a newer build is sitting under the extension
+ *  directory. An alarm drives the check because a service worker holds no
+ *  timers. Store builds compile this away. */
+function registerDevSelfReload() {
+  if (!import.meta.env.VITE_CN_DEV_RELOAD) return;
+  const DEV_RELOAD_ALARM = "cn-dev-reload-poll";
+  const PERIOD_MINUTES = 0.5;
+  void browser.alarms.get(DEV_RELOAD_ALARM).then((existing) => {
+    if (!existing) browser.alarms.create(DEV_RELOAD_ALARM, { periodInMinutes: PERIOD_MINUTES });
+  });
+  // The background stamps its own build id into every open tab, so a script
+  // on another machine can read which build is RUNNING from any existing tab,
+  // without opening or navigating one. The content-script stamp cannot answer
+  // that: it freezes at page load and goes stale the moment the extension
+  // reloads underneath it.
+  const build = import.meta.env.VITE_CN_BUILD ?? "?";
+  void browser.tabs.query({ url: ["http://*/*", "https://*/*"] }).then((tabs) => {
+    for (const tab of tabs) {
+      if (tab.id == null) continue;
+      browser.scripting
+        .executeScript({
+          target: { tabId: tab.id },
+          func: (id: string) => {
+            document.documentElement.dataset.cnDevBuildBg = id;
+          },
+          args: [build],
+        })
+        .catch(() => {}); // A tab we may not inject into simply keeps no stamp.
+    }
+  });
+  browser.alarms.onAlarm.addListener(async (alarm) => {
+    if (alarm.name !== DEV_RELOAD_ALARM) return;
+    try {
+      // build-ext-dev writes build-id.txt after the build, so WXT's generated
+      // path union does not know it and the cast is needed.
+      const buildIdUrl = (browser.runtime.getURL as (path: string) => string)("/build-id.txt");
+      const onDisk = (await (await fetch(buildIdUrl)).text()).trim();
+      const running = import.meta.env.VITE_CN_BUILD ?? "";
+      if (onDisk && running && onDisk !== running) {
+        console.info(`[common-notes] new build on disk (${running} -> ${onDisk}), reloading`);
+        browser.runtime.reload();
+      }
+    } catch {
+      // A build without the stamp file, or a transient read error. The next
+      // tick tries again.
+    }
+  });
+}
+
 export default defineBackground(() => {
   initBackgroundAnalytics();
+  registerDevSelfReload();
   // The 5-minute alarm keeps long-lived sessions current (the MV3 worker
   // can't hold a timer), and the popup pings cn-sync-noted-sites on open.
   // The alarm is checked at every worker boot instead of on install/startup

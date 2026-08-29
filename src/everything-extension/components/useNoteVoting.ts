@@ -7,7 +7,7 @@ import { castNnnVote, clearNnnVote, fetchMyNnnVotes, fetchNnnEntry } from "../..
 import { fetchNote } from "../../everything-shared/notesQuery";
 import type { NnnRow, NoteRow } from "../../everything-shared/types";
 import { donationPair, priorTally } from "../../everything-web/src/lib/donationScoring";
-import { saveDonation, usePreferredCharity, type MintedDonation } from "../../everything-web/src/lib/donations";
+import { preferredCharity, saveDonation, type MintedDonation } from "../../everything-web/src/lib/donations";
 
 /** The voting state shared by the inline popovers and the YouTube overlay. It
  *  holds the caller's own votes, both on notes and on note-not-needed entries.
@@ -20,11 +20,13 @@ export function useNoteVoting(onNoteUpdated: (note: NoteRow) => void, onNnnUpdat
   const [myVotes, setMyVotes] = useState<Map<string, Vote>>(new Map());
   const [myNnnVotes, setMyNnnVotes] = useState<Map<string, Vote>>(new Map());
   const [loginOpen, setLoginOpen] = useState(false);
-  // A new vote's donation goes to the charity the voter picked last time. The
-  // donation box lets them redirect it afterwards.
-  const [preferredCharity] = usePreferredCharity();
 
-  useEffect(() => {
+  /** Refetches which notes and entries the user has voted on. The overlays
+   *  call it whenever their note data refreshes, because a vote can appear
+   *  without this hook seeing it cast: writing a note makes a database
+   *  trigger cast the author's own helpful vote. Without the refetch that
+   *  pill stayed unlit and the donation notice never showed. */
+  const refreshVotes = () => {
     if (!session) {
       setMyVotes(new Map());
       setMyNnnVotes(new Map());
@@ -32,8 +34,13 @@ export function useNoteVoting(onNoteUpdated: (note: NoteRow) => void, onNnnUpdat
     }
     fetchMyVotes().then(setMyVotes);
     fetchMyNnnVotes().then(setMyNnnVotes);
+  };
+
+  useEffect(() => {
+    refreshVotes();
     // Signing in is what the form was open for, so it goes away on its own.
-    setLoginOpen(false);
+    if (session) setLoginOpen(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
 
   const onNeedLogin = () => setLoginOpen(true);
@@ -45,11 +52,11 @@ export function useNoteVoting(onNoteUpdated: (note: NoteRow) => void, onNnnUpdat
     session?.user ?? (await supabase.auth.getSession()).data.session?.user ?? null;
 
   /** Cast or retract a vote on a note and mint its donation. The rules are the
-   *  same as on the website. The pair of contingent amounts is computed from
-   *  the tally as it stood before this vote, and it is stored against the vote
-   *  row. This resolves to the minted donation. It resolves to null when the
-   *  vote is retracted, when the note is the voter's own, or when nobody is
-   *  signed in. */
+   *  same as on the website, and a vote on your own note mints like any other.
+   *  The pair of contingent amounts is computed from the tally as it stood
+   *  before this vote, and it is stored against the vote row. This resolves to
+   *  the minted donation. It resolves to null when the vote is retracted or
+   *  when nobody is signed in. */
   const handleVote = async (note: NoteRow, vote: Vote): Promise<MintedDonation | null> => {
     const user = await currentUser();
     if (!user) {
@@ -69,13 +76,16 @@ export function useNoteVoting(onNoteUpdated: (note: NoteRow) => void, onNnnUpdat
       next.set(note.id, vote);
       setMyVotes(next);
       const voteId = await castVote(note.id, user.id, vote, "extension");
-      if (voteId && note.author_id !== user.id) {
+      if (voteId) {
         const pair = donationPair(priorTally(note, current), vote);
+        // The donation goes to the charity remembered on the account. The
+        // donation box lets the voter redirect it afterwards.
+        const charity = preferredCharity(user);
         // A backend that has not run migration 061 rejects the pair columns.
         // We keep the vote in that case. We just do not promise a donation
         // that the ledger never recorded.
-        const { error } = await saveDonation(voteId, preferredCharity, pair);
-        if (!error) minted = { voteId, charity: preferredCharity, pair };
+        const { error } = await saveDonation(voteId, charity, pair);
+        if (!error) minted = { voteId, charity, pair };
       }
     }
     const fresh = await fetchNote(note.id);
@@ -113,6 +123,7 @@ export function useNoteVoting(onNoteUpdated: (note: NoteRow) => void, onNnnUpdat
     session,
     myVotes,
     myNnnVotes,
+    refreshVotes,
     handleVote,
     handleNnnVote,
     recordAuthored,

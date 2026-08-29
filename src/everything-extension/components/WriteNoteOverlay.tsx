@@ -3,9 +3,7 @@ import type { Session } from "@supabase/supabase-js";
 import { displayName } from "../../everything-shared/session";
 import { ensureWebItem } from "../../everything-shared/ensureWebItem";
 import { postClaimWithNote } from "../../everything-shared/postNote";
-import { track } from "../../everything-shared/analytics";
 import type { PageItem } from "../../everything-shared/notesQuery";
-import { RejectedNotice } from "../../everything-web/src/components/editorBits";
 import { LoginPanel } from "./LoginPanel";
 
 /** Write a note anchored to the reader's selection. This is the extension's
@@ -26,7 +24,6 @@ export function WriteNoteOverlay({ item, pageForItem, selection, session, onClos
 }) {
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
-  const [rejected, setRejected] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Bylines are opt-in, so a note is anonymous by default. That is how
   // Community Notes works on X. Nathan asked for this on 2026-07-14.
@@ -36,7 +33,6 @@ export function WriteNoteOverlay({ item, pageForItem, selection, session, onClos
     if (!session) return;
     setBusy(true);
     setError(null);
-    setRejected(false);
     let itemId = item?.id;
     let itemUrl = item?.url;
     if (!itemId) {
@@ -58,11 +54,6 @@ export function WriteNoteOverlay({ item, pageForItem, selection, session, onClos
       signed,
     });
     setBusy(false);
-    if (outcome.type === "rejected") {
-      // The earnest-gate judge stores nothing, so rejections exist only as events.
-      track("note_write_rejected", { item_id: itemId });
-      return setRejected(true);
-    }
     if (outcome.type === "error") return setError(outcome.message);
     onPosted();
     onClose();
@@ -85,13 +76,12 @@ export function WriteNoteOverlay({ item, pageForItem, selection, session, onClos
           <>
             <textarea
               value={note}
-              onChange={(e) => { setNote(e.target.value); setRejected(false); }}
+              onChange={(e) => setNote(e.target.value)}
               rows={4}
               autoFocus
               placeholder="Write your correction"
               className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-3 py-2 text-sm"
             />
-            {rejected && <RejectedNotice />}
             <div className="flex gap-2 items-center justify-end">
               <label className="mr-auto flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 cursor-pointer">
                 <input type="checkbox" checked={signed} onChange={(e) => setSigned(e.target.checked)} />
@@ -102,7 +92,7 @@ export function WriteNoteOverlay({ item, pageForItem, selection, session, onClos
                 disabled={busy || note.trim().length < 10}
                 className="bg-blue-600 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-blue-700 disabled:opacity-40"
               >
-                {busy ? "Checking…" : "Post draft note"}
+                {busy ? "Posting…" : "Post draft note"}
               </button>
             </div>
           </>

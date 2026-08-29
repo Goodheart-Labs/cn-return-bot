@@ -13,9 +13,14 @@ import { addRequestedFollow, addRequestedPage, getRequestedFollows, getRequested
 export interface StatusOverlayParams {
   pageUrl: string;
   noun: "post" | "video" | "page";
-  /** Null while the page has not been checked, otherwise the counts of the
-   *  notes the reader's filters let them see (utils/claimGroups.ts). */
-  checked: NoteCounts | null;
+  /** Null while the page has no item at all, otherwise the note counts
+   *  (utils/claimGroups.ts). */
+  counts: NoteCounts | null;
+  /** Whether the pipeline has read this page in full
+   *  (everything-shared/notesQuery.ts isWholePageChecked). A page with an
+   *  item that is not fully checked, because a reader wrote a note on it or
+   *  one paragraph was checked, still offers the request. */
+  wholePageChecked: boolean;
   /** Jumps to the next note when the reader clicks the count headline. Shares
    *  the popup jump button's cursor (utils/jumpBus.ts). Only used when the
    *  card actually has notes to jump to. */
@@ -29,20 +34,29 @@ export interface StatusOverlayParams {
   requestWithPageText: boolean;
 }
 
-function headline(params: StatusOverlayParams): string {
-  if (!params.checked) return `We haven't checked this ${params.noun} yet.`;
-  // The two numbers are disjoint: the first is the helpful notes, the second
-  // the notes still waiting for ratings.
-  const { helpful, needsRatings } = params.checked;
-  if (helpful === 0 && needsRatings === 0) return `We checked this ${params.noun} and found nothing to note.`;
-  const surface = params.noun === "video" ? "video" : "page";
+/* The status sentences carry no trailing dot. They stand alone on a card or
+ * as the popup's link, where a period reads as clutter. */
+export function headline(params: Pick<StatusOverlayParams, "noun" | "counts" | "wholePageChecked">): string {
+  const { counts, noun, wholePageChecked } = params;
+  if (!counts) return `We haven't checked this ${noun} yet`;
+  const { helpful, needsRatings, notHelpful } = counts;
+  if (helpful === 0 && needsRatings === 0) {
+    // The sentence "found nothing to note" is only true for a page that was
+    // read in full and genuinely produced nothing. A page that only carries a
+    // reader's note, or a checked paragraph, has not been read whole; a page
+    // whose notes were all rated not helpful found plenty.
+    if (notHelpful > 0) return `No note on this ${noun} is currently rated helpful`;
+    if (wholePageChecked) return `We checked this ${noun} and found nothing to note`;
+    return `We haven't checked this whole ${noun} yet`;
+  }
+  const surface = noun === "video" ? "video" : "page";
   const notes = (n: number) => (n === 1 ? "1 Common Note" : `${n} Common Notes`);
   if (helpful === 0) {
-    return `${notes(needsRatings)} on this ${surface} ${needsRatings === 1 ? "needs" : "need"} more ratings.`;
+    return `${notes(needsRatings)} on this ${surface} ${needsRatings === 1 ? "needs" : "need"} more ratings`;
   }
   const ratings =
     needsRatings === 0 ? "" : needsRatings === 1 ? ", 1 needs more ratings" : `, ${needsRatings} need more ratings`;
-  return `${notes(helpful)} on this ${surface}${ratings}.`;
+  return `${notes(helpful)} on this ${surface}${ratings}`;
 }
 
 /** The follow action for a target, or null when the user already asked. The
@@ -61,10 +75,20 @@ export async function buildFollowAction(target: FollowTarget): Promise<StatusAct
 }
 
 async function buildActions(params: StatusOverlayParams): Promise<{ request: StatusAction | null; follow: StatusAction | null }> {
-  if (params.checked) return { request: null, follow: null };
+  // Only a page the pipeline has read in full stops offering the request. A
+  // page whose item exists for another reason still offers it, with wording
+  // that says what the click will do.
+  if (params.wholePageChecked) return { request: null, follow: null };
+  // On the note-count card the request button obeys the same setting as the
+  // request card, which is off by default. The popup and the context menus
+  // stay the always-available route. The no-item card is gated at its call
+  // site, so this only concerns a page that already has an item.
+  if (params.counts && !(await getSettings()).showRequestOverlay) return { request: null, follow: null };
   const request: StatusAction = {
-    label: "Request Common Notes",
-    doneLabel: "Requested. We'll check this page when it comes up in our queue.",
+    label: params.counts ? "Check this whole page" : "Request Common Notes",
+    doneLabel: params.counts
+      ? "Requested. We'll check the whole page when it comes up in our queue."
+      : "Requested. We'll check this page when it comes up in our queue.",
     alreadyDone: (await getRequestedPages()).includes(params.pageUrl),
     run: async () => {
       await submitNoteRequest({
@@ -82,11 +106,35 @@ async function buildActions(params: StatusOverlayParams): Promise<{ request: Sta
   return { request, follow };
 }
 
-async function mountCard(
-  ctx: ContentScriptContext,
-  props: { headline: string | null; onHeadlineClick?: () => void; request: StatusAction | null; follow: StatusAction | null },
-): Promise<() => void> {
+interface CardProps {
+  headline: string | null;
+  onHeadlineClick?: () => void;
+  request: StatusAction | null;
+  follow: StatusAction | null;
+  onDisplayed?: () => void;
+}
+
+/** The mounted card's handle: tear it down, or re-render it with fresh props.
+ *  Re-rendering keeps the component's own state, so the hide timers and a
+ *  running request are not reset by an update. */
+interface MountedCard {
+  teardown: () => void;
+  update: (next: Partial<CardProps>) => void;
+}
+
+async function mountCard(ctx: ContentScriptContext, props: CardProps): Promise<MountedCard> {
   let root: Root | null = null;
+  let current = props;
+  const render = () =>
+    root?.render(
+      <StatusOverlay
+        headline={current.headline}
+        onHeadlineClick={current.onHeadlineClick}
+        request={current.request}
+        follow={current.follow}
+        onDisplayed={current.onDisplayed}
+      />,
+    );
   const ui = await createShadowRootUi(ctx, {
     name: "common-notes-status",
     position: "inline",
@@ -95,14 +143,7 @@ async function mountCard(
       container.classList.add("cn-theme-root");
       container.classList.toggle("dark", isPageDark());
       root = createRoot(container);
-      root.render(
-        <StatusOverlay
-          headline={props.headline}
-          onHeadlineClick={props.onHeadlineClick}
-          request={props.request}
-          follow={props.follow}
-        />,
-      );
+      render();
       return root;
     },
     onRemove(mounted) {
@@ -110,32 +151,62 @@ async function mountCard(
     },
   });
   ui.mount();
-  return () => ui.remove();
+  return {
+    teardown: () => ui.remove(),
+    update: (next) => {
+      current = { ...current, ...next };
+      render();
+    },
+  };
 }
 
 /** Mounts the transient "have we checked this yet" card in its own shadow root
- *  and returns a teardown function. The unchecked variant appears once per
+ *  and returns a teardown function. The request-offer variant appears once per
  *  page; a later visit falls back to the follow-only card, which keeps its own
- *  once-per-feed memory. The checked note-count card is not rationed. */
-export async function mountStatusOverlay(ctx: ContentScriptContext, params: StatusOverlayParams): Promise<() => void> {
-  if (!params.checked && (await requestOverlaySeen(params.pageUrl))) {
-    return params.followTarget ? mountFollowOverlay(ctx, params.followTarget) : () => {};
+ *  once-per-feed memory. The note-count card is not rationed. */
+export interface StatusOverlayHandle {
+  teardown: () => void;
+  /** Re-renders the card's headline from fresh counts, so a note posted while
+   *  the card still stands does not leave a stale sentence on screen. */
+  updateCounts: (counts: NoteCounts) => void;
+}
+
+export async function mountStatusOverlay(ctx: ContentScriptContext, params: StatusOverlayParams): Promise<StatusOverlayHandle> {
+  const offersRequest = !params.wholePageChecked;
+  if (offersRequest && !params.counts && (await requestOverlaySeen(params.pageUrl))) {
+    const teardown = params.followTarget ? await mountFollowOverlay(ctx, params.followTarget) : () => {};
+    return { teardown, updateCounts: () => {} };
   }
   const { request, follow } = await buildActions(params);
-  if (!params.checked) {
-    await markRequestOverlaySeen(params.pageUrl);
-    // Only a follow button that actually renders counts as seen, so turning
-    // follow overlays on later still gets its one showing.
-    if (follow && params.followTarget) await markFollowOverlaySeen(params.followTarget.feedUrl);
-  }
-  return mountCard(ctx, {
+  // The showing is spent only once the card actually stood on screen. Marking
+  // at mount burned the one showing in a background tab, or while the reader
+  // was still reading the article, and the offer never came back.
+  const onDisplayed =
+    offersRequest && !params.counts
+      ? async () => {
+          await markRequestOverlaySeen(params.pageUrl);
+          // Only a follow button that actually rendered counts as seen, so
+          // turning follow overlays on later still gets its one showing.
+          if (follow && params.followTarget) await markFollowOverlaySeen(params.followTarget.feedUrl);
+        }
+      : undefined;
+  const card = await mountCard(ctx, {
     headline: headline(params),
     // The numbers ignore the filters, but a jump can only reach rendered
     // notes, so the headline is a button only while something renders.
-    onHeadlineClick: params.checked && params.checked.visible > 0 ? params.onOpenNotes : undefined,
+    onHeadlineClick: params.counts && params.counts.visible > 0 ? params.onOpenNotes : undefined,
     request,
     follow,
+    onDisplayed,
   });
+  return {
+    teardown: card.teardown,
+    updateCounts: (counts) =>
+      card.update({
+        headline: headline({ ...params, counts }),
+        onHeadlineClick: counts.visible > 0 ? params.onOpenNotes : undefined,
+      }),
+  };
 }
 
 /** Mounts the follow-only card shown on an author's own pages: a publication
@@ -148,12 +219,17 @@ export async function mountFollowOverlay(ctx: ContentScriptContext, target: Foll
   if (await followOverlaySeen(target.feedUrl)) return () => {};
   const follow = await buildFollowAction(target);
   if (follow.alreadyDone) return () => {};
-  await markFollowOverlaySeen(target.feedUrl);
-  return mountCard(ctx, { headline: null, request: null, follow });
+  const card = await mountCard(ctx, {
+    headline: null,
+    request: null,
+    follow,
+    onDisplayed: () => void markFollowOverlaySeen(target.feedUrl),
+  });
+  return card.teardown;
 }
 
 /** Mounts a headline-only card, used to explain why a request was not needed.
  *  The card hides itself like every status card; the teardown removes it. */
 export async function mountInfoOverlay(ctx: ContentScriptContext, headline: string): Promise<() => void> {
-  return mountCard(ctx, { headline, request: null, follow: null });
+  return (await mountCard(ctx, { headline, request: null, follow: null })).teardown;
 }

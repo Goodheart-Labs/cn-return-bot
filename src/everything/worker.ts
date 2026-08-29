@@ -122,18 +122,24 @@ export async function drainQueue(): Promise<number> {
     if (!item) break;
     console.log(`\n=== [${item.source}] ${item.url}`);
     try {
-      // If the item already has claims, an earlier run was killed after it had
-      // extracted them. We resume its unfinished claims instead of fetching the
-      // content and extracting all over again.
+      // Claims left pending or in error mean an earlier run was killed while
+      // checking them. We resume exactly those instead of fetching the content
+      // and extracting all over again. An item whose claims are all finished
+      // still goes through extraction. That is what makes a promoted item
+      // work: a page that only carried a reader's note, or a checked
+      // paragraph, is read in full now, and the duplicate guard inside
+      // processFetchedContent keeps the finished claims from being extracted
+      // a second time.
+      const claims = await fetchItemClaims(item.id);
       let tally;
-      if ((await fetchItemClaims(item.id)).length > 0) {
+      if (claims.some((c) => c.status === "pending" || c.status === "error")) {
         tally = await resumeItemClaims(item);
       } else {
         const content = await fetchContent(item);
         // The fetch is also where the source's display name comes from, so a
         // project created knowing only its slug gets its real name here.
         await fillProjectDisplayName(item.project_id, content.authorName);
-        tally = await processFetchedContent(item, content);
+        tally = await processFetchedContent(item, content, claims);
       }
       // An item cut short by the spend cap goes back in the queue rather than
       // being marked done. Its unchecked claims are still pending, so the next

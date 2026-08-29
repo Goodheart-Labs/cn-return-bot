@@ -70,7 +70,10 @@
 }
 
 /* The transient status card. It is a fixed card in the bottom right corner
- * saying whether we have checked the current page and its author yet. */
+ * saying whether we have checked the current page and its author yet. It
+ * briefly moved to the top right after the user test, and Jim moved it back
+ * on 2026-08-25 after seeing both: the bottom corner reads as a notification
+ * and stays out of the way of the sites' own header controls. */
 :host(common-notes-status) {
   position: fixed !important;
   bottom: 16px !important;
