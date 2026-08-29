@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { CHARITIES, setDonationCharity, usePreferredCharity, type CharityId } from "../lib/donations";
+import { CHARITIES, rememberCharity, setDonationCharity, type CharityId } from "../lib/donations";
 import type { DonationPair } from "../lib/donationScoring";
 import type { NoteStatus } from "../../../everything-shared/noteScore";
 
@@ -83,7 +83,6 @@ export function VoteDonation({ voteId, pair, charity, status, onCharityChange, o
   onCharityChange: (charity: CharityId) => void;
   onClose: () => void;
 }) {
-  const [, setCharityPref] = usePreferredCharity();
   const [failed, setFailed] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -118,7 +117,7 @@ export function VoteDonation({ voteId, pair, charity, status, onCharityChange, o
    * the row does not hold. */
   const pickCharity = async (picked: CharityId) => {
     const previous = charity;
-    setCharityPref(picked);
+    rememberCharity(picked);
     onCharityChange(picked);
     setFailed(false);
     if (!(await setDonationCharity(voteId, picked))) {
