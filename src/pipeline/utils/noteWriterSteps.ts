@@ -1,7 +1,7 @@
 /**
  * Note-writer step log keys.
  *
- * Both note-writing pipelines, simple-bot and cheap-bot, record their per-step
+ * The note-writing pipeline and the note-needed prefilter record their per-step
  * logs under a single `note_writer_steps` namespace. That way the review
  * dashboard renders one foldable tree with the same step names no matter which
  * bot ran. The steps both bots share are note_writer, note_needed_judge and

@@ -1,5 +1,5 @@
 /**
- * The shared JSON LLM call for the cheap-bot pipeline and for the simple-bot
+ * The shared JSON LLM call for the prefilter steps and for the simple-bot
  * stages that reuse it. It wraps `trackedLlmCreate` and adds the tolerance for
  * provider quirks that every JSON stage needs. It strips ```json fences and then
  * parses the output. Some providers enforce the schema loosely and answer in

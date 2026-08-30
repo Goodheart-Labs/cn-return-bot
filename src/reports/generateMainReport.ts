@@ -184,14 +184,14 @@ const notes = scrapedNotes.map((n) => {
   };
 });
 
-const activeBots = ["multi-agent", "simple-bot", "agent", "cheap-bot"];
+const activeBots = ["multi-agent", "simple-bot", "agent"];
 const legacyBots = [
   "claude-simple",  // Renamed to "simple-bot" by migration 039, which also renamed every existing row.
   "opus-main", "opus-main-v2", "opus-direct", "opus-direct-grok",
   "opus-main-v2-grok", "opus-main-no-source-check", "opus-multi-source",
   "opus-bridging", "opus-4.6", "sonar-pro", "kimi-k2", "opus-research",
   "opus-verified", "opus-concise", "opus-scored", "opus-strict",
-  "gemini-flash", "multi-search", "gemini-3-flash", "deepseek", "pre-tracking",
+  "gemini-flash", "multi-search", "gemini-3-flash", "deepseek", "cheap-bot", "pre-tracking",
 ];
 
 const knownBots = new Set([...activeBots, ...legacyBots]);

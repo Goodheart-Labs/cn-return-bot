@@ -54,7 +54,7 @@ function resolveConcedeBlocks(document: string, concedeArmOn: boolean): string {
 /** Builds the reference-document block that is injected into the research step. It
  *  leads with the source URL when the document has one canonical source, so the bot
  *  can cite the article directly. A document that carries its own sources for each
- *  claim renders without that line. Both simple-bot's search prompt and cheap-bot's
+ *  claim renders without that line. Both simple-bot's search prompt and the prefilter's
  *  search analyzer call this, so the format stays identical in both. Every consumer
  *  goes through here, and that is what keeps the concede A/B arms clean: the "off"
  *  arm never sees the experiment's document additions in any step. */

@@ -12,15 +12,14 @@ export interface BotConfig {
   model: string;
   /** Step-specific model overrides. Each defaults to `model` when unset. */
   search_model?: string;
-  /** Model for the cheap-bot search analyzer. When it is unset the analyzer uses
-   *  `search_model`, and when that is unset too it uses `model`. The query writer
-   *  also reads `search_model`. This field exists so the analyzer and the query
-   *  writer can run on different models. */
+  /** Model for the prefilter's search analyzer. When it is unset the analyzer
+   *  uses `search_model`, and when that is unset too it uses `model`. The query
+   *  writer also reads `search_model`. This field exists so the analyzer and the
+   *  query writer can run on different models. */
   search_analyzer_model?: string;
   writer_model?: string;
   /** Model for the source verifier. DEFAULT_CONFIG sets it to
-   *  gemini-3-flash-preview. No dedicated A/B test varies it, but the cheap-bot
-   *  variant of BOT_TEST overrides it. */
+   *  gemini-3-flash-preview. No dedicated A/B test varies it. */
   verifier_model?: string;
   /**
    * When this is true, the source verifier can judge a cited media URL. It runs
@@ -48,14 +47,6 @@ export interface BotConfig {
    * carries. VERIFIER_CITATIONS_TEST sets this and it defaults to false.
    */
   verifier_citations?: boolean;
-  /**
-   * When this is true, the pipeline runs an extra LLM step between the writer and
-   * the source verifier. That step judges whether a note is actually warranted
-   * for the post. It is cheap-bot's main guard against false positives, and
-   * BOT_TEST always turns it on there. Defaults to false, which means no judge
-   * step runs.
-   */
-  note_needed_judge?: boolean;
   /** Model for the note-needed-judge step. Defaults to `model` when unset. */
   note_judge_model?: string;
   /**
@@ -88,11 +79,6 @@ export interface BotConfig {
    * defaults to false.
    */
   topic_filter?: boolean;
-  /** Model for the cheap-bot satire detector. When it is unset the detector uses
-   *  `note_judge_model`, and when that is unset too it uses `model`. The
-   *  note-needed judge also reads `note_judge_model`. This field exists so the
-   *  satire detector and the judge can run on different models. */
-  satire_model?: string;
   /**
    * When this is set, it is passed through to OpenRouter as `reasoning_effort`
    * for every LLM call this bot makes. It is useful when the configured model
@@ -111,11 +97,11 @@ export interface BotConfig {
   search_reasoning_effort?: "low" | "medium" | "high";
   /**
    * When this is set, it is passed through to OpenRouter as `temperature` for
-   * every LLM call this bot makes. cheap-bot pins it to 0 through the
-   * `cheap_bot_temperature` A/B test, so its judge, verifier, and writer
-   * decisions are deterministic enough to hill-climb. At the model's default
-   * temperature about 58% of eval rows flipped from one run to the next. When
-   * this is unset the model's own default applies.
+   * every LLM call this bot makes. The note-needed prefilter pins it to 0, so
+   * its decisions are deterministic enough to hill-climb. On the retired
+   * cheap-bot, the model's default temperature flipped about 58% of eval rows
+   * from one run to the next. When this is unset the model's own default
+   * applies.
    */
   temperature?: number;
   web_search:
@@ -129,21 +115,6 @@ export interface BotConfig {
     | "searxng_summarized";// A tool-calling loop calls google_search, and Gemini summarizes the SearXNG results.
   video_description_strategy: VideoDescriptionStrategy;
   parallel_research: boolean;
-  /** When true, an LLM step between search and writer distills the raw search
-   *  snippets into a research brief written as free text. Defaults to false. */
-  search_analyzer?: boolean;
-  /**
-   * When this is true, cheap-bot runs an LLM gate before search. The gate reads
-   * the post, the comments, and the author profile without the proposed note, and
-   * decides whether the post is overt satire that the audience is in on. A
-   * positive verdict exits the pipeline early with no_correction and skips
-   * search, writer, and judge. The detector is high-precision by design. It fires
-   * only when the room is in on the joke, and not on fabricated content that
-   * imitates real media. Because it misses some cases, the note-needed judge
-   * keeps a lighter satire backstop. This applies to cheap-bot only and defaults
-   * to false.
-   */
-  satire_detector?: boolean;
   /**
    * When this is true, simple-bot's search agent gets an extra instruction in its
    * system prompt. On a political post it should prefer sources associated with

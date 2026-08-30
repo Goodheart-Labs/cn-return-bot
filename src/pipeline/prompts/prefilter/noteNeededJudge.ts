@@ -1,7 +1,8 @@
 /**
  * Prompt — note-needed prefilter judge.
  *
- * This is the cheap-bot judge, reframed. It receives the post and the research
+ * This judge began as the retired cheap-bot's note-needed judge, reframed. It
+ * receives the post and the research
  * findings but no proposed note, and it decides whether the post needs a note at
  * all. See runNoteNeededPrefilter in
  * src/pipeline/prefilter/noteNeededPrefilter.ts.
