@@ -1,6 +1,6 @@
 import axios from "axios";
 import { getOAuth1Headers } from "./getOAuthToken";
-import { parsePostsResponse, POST_API_FIELD_PARAMS, type Post } from "./fetchEligiblePosts";
+import { parsePostsResponse, singleTweetFieldParams, type Post } from "./fetchEligiblePosts";
 
 /**
  * Fetch a single tweet by its ID from the X API v2.
@@ -8,19 +8,32 @@ import { parsePostsResponse, POST_API_FIELD_PARAMS, type Post } from "./fetchEli
  * it returns has an identical shape. That includes the full raw tweet capture.
  */
 export async function fetchTweetById(tweetId: string): Promise<Post> {
-  const params = new URLSearchParams(POST_API_FIELD_PARAMS);
+  const params = new URLSearchParams(singleTweetFieldParams());
 
   // OAuth1 requires spaces to be encoded as %20, but URLSearchParams encodes
   // them as +, so we swap them back.
   const fullUrl = `https://api.x.com/2/tweets/${tweetId}?${params.toString().replace(/\+/g, "%20")}`;
 
-  const response = await axios.get(fullUrl, {
-    headers: {
-      ...getOAuth1Headers(fullUrl, "GET"),
-      "Content-Type": "application/json",
-    },
-    timeout: 30000,
-  });
+  let response;
+  try {
+    response = await axios.get(fullUrl, {
+      headers: {
+        ...getOAuth1Headers(fullUrl, "GET"),
+        "Content-Type": "application/json",
+      },
+      timeout: 30000,
+    });
+  } catch (err) {
+    // Axios reports a failed request as an opaque "Request failed with status
+    // code 400". X puts the actual reason in the response body, so we surface
+    // that body in the error message.
+    if (axios.isAxiosError(err) && err.response) {
+      throw new Error(
+        `X API ${err.response.status} fetching tweet ${tweetId}: ${JSON.stringify(err.response.data)}`
+      );
+    }
+    throw err;
+  }
 
   // The /2/tweets/{id} endpoint puts a single object in data.data.
   // parsePostsResponse expects the array that the multi-tweet endpoint returns,
