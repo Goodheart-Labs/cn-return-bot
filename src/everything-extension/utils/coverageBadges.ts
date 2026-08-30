@@ -1,4 +1,5 @@
 import { browser } from "#imports";
+import { MARKER_DARK, MARKER_GLYPH_SIZE, MARKER_LIGHT, MARKER_SHADOW } from "./markerPalette";
 import type { ContentScriptContext } from "#imports";
 import { extractYoutubeVideoId, normalizePageUrl } from "../../everything-shared/pageUrls";
 import { GROUP_GLYPH_PATH } from "../components/ClaimNoteStack";
@@ -67,7 +68,7 @@ function readerPostId(href: string): string | null {
  *  community glyph, plus the note count. A double-digit count widens it into
  *  a slight oval, which is fine. */
 function createBadge(count: number): HTMLElement {
-  const dark = isPageDark();
+  const palette = isPageDark() ? MARKER_DARK : MARKER_LIGHT;
   const badge = document.createElement("span");
   badge.className = BADGE_CLASS;
   badge.title = `${count} Common ${count === 1 ? "Note" : "Notes"} on this page`;
@@ -75,11 +76,11 @@ function createBadge(count: number): HTMLElement {
     "style",
     "position:absolute;top:6px;right:6px;z-index:10;display:inline-flex;align-items:center;justify-content:center;" +
       "gap:2px;height:26px;min-width:26px;padding:0 6px;box-sizing:border-box;border-radius:9999px;" +
-      "font-size:11px;line-height:1;font-weight:600;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,0.25);" +
-      `color:${dark ? "#60a5fa" : "#2563eb"};background:${dark ? "#111827" : "#ffffff"};` +
-      `border:1px solid ${dark ? "#4b5563" : "#d1d5db"};`,
+      `font-size:12px;line-height:1;font-weight:600;white-space:nowrap;box-shadow:${MARKER_SHADOW};` +
+      `color:${palette.glyph};background:${palette.body};` +
+      `border:1px solid ${palette.border};`,
   );
-  const svg = `<svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true" style="flex:none"><path d="${GROUP_GLYPH_PATH}"/></svg>`;
+  const svg = `<svg viewBox="0 0 24 24" width="${MARKER_GLYPH_SIZE}" height="${MARKER_GLYPH_SIZE}" fill="currentColor" aria-hidden="true" style="flex:none"><path d="${GROUP_GLYPH_PATH}"/></svg>`;
   badge.innerHTML = `${svg}${count}`;
   return badge;
 }

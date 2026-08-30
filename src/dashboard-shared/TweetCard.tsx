@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import type { NotedContent, Tweet } from "./types";
 import { extractMedia, type MediaImage, type MediaVideo } from "./media";
 import { quoteFragmentUrl } from "./textFragment";
+import { LINK, QUOTE_RAIL } from "../everything-shared/ui";
 
 function MediaBlock({ images, videos }: { images: MediaImage[]; videos: MediaVideo[] }) {
   if (images.length === 0 && videos.length === 0) return null;
@@ -14,7 +15,7 @@ function MediaBlock({ images, videos }: { images: MediaImage[]; videos: MediaVid
               <img
                 src={img.url}
                 alt={`Image ${i + 1}`}
-                className="max-w-[300px] max-h-[250px] rounded border border-gray-200 object-contain cursor-pointer hover:opacity-90"
+                className="max-w-[300px] max-h-[250px] rounded-lg border border-gray-200 dark:border-gray-700 object-contain cursor-pointer hover:opacity-90"
                 loading="lazy"
                 onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
               />
@@ -25,7 +26,7 @@ function MediaBlock({ images, videos }: { images: MediaImage[]; videos: MediaVid
       {videos.length > 0 && (
         <div className="flex flex-col gap-1 mb-2">
           {videos.map((vid, i) => vid.url && (
-            <a key={i} href={vid.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline">
+            <a key={i} href={vid.url} target="_blank" rel="noopener noreferrer" className={`text-xs ${LINK}`}>
               {vid.url}
             </a>
           ))}
@@ -62,11 +63,11 @@ export function TweetCard({ tweet }: { tweet: Tweet }) {
       : null;
 
   return (
-    <div className="bg-gray-50 rounded-lg border border-gray-200 p-3">
+    <div className="bg-gray-50 dark:bg-gray-800/40 rounded-lg border border-gray-200 dark:border-gray-700 p-3">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           {tweet.handle && (
-            <span className="text-sm font-medium text-gray-800">@{tweet.handle}</span>
+            <span className="text-sm font-medium text-gray-800 dark:text-gray-200">@{tweet.handle}</span>
           )}
         </div>
         {sourceUrl && (
@@ -74,7 +75,7 @@ export function TweetCard({ tweet }: { tweet: Tweet }) {
             href={sourceUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs text-blue-500 hover:underline"
+            className={`text-xs ${LINK}`}
           >
             View on {sourceLinkLabel(sourceUrl)} ↗
           </a>
@@ -82,14 +83,14 @@ export function TweetCard({ tweet }: { tweet: Tweet }) {
       </div>
 
       {tweet.text && (
-        <p className="text-sm text-gray-700 whitespace-pre-wrap mb-2">{tweet.text}</p>
+        <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap mb-2">{tweet.text}</p>
       )}
 
       <MediaBlock images={media.images} videos={media.videos} />
 
       {(media.quotedPostContext || media.quotedImages.length > 0 || media.quotedVideos.length > 0) && (
-        <div className="bg-white border border-gray-200 rounded p-2 mb-2 text-sm text-gray-600">
-          <div className="text-xs text-gray-400 mb-1">Quoted post</div>
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-3 mb-2 text-sm text-gray-600 dark:text-gray-300">
+          <div className="text-xs text-gray-400 dark:text-gray-500 mb-1">Quoted post</div>
           {media.quotedPostContext && (
             <p className="whitespace-pre-wrap mb-2">{media.quotedPostContext}</p>
           )}
@@ -133,30 +134,30 @@ function CitationBlock({ quote, url, linkText, fragmentText, updatedQuote, image
 }) {
   const verbatim = !fragmentText;
   return (
-    <div>
+    <div className="bg-gray-50 dark:bg-gray-800/40 rounded-lg border border-gray-200 dark:border-gray-700 p-3">
       {url && (
         <div className="flex justify-end mb-1">
-          <a href={imageGrounded ? url : quoteFragmentUrl(url, updatedQuote ?? fragmentText ?? quote)} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline">
+          <a href={imageGrounded ? url : quoteFragmentUrl(url, updatedQuote ?? fragmentText ?? quote)} target="_blank" rel="noopener noreferrer" className={`text-xs ${LINK}`}>
             {linkText} ↗
           </a>
         </div>
       )}
       {verbatim ? (
-        <blockquote className="border-l-4 border-gray-300 pl-3 text-gray-600 italic text-sm">
+        <blockquote className={`${QUOTE_RAIL} text-gray-600 dark:text-gray-300 italic text-sm`}>
           “{quote}”
         </blockquote>
       ) : (
         <div>
-          <p className="text-sm text-gray-800 whitespace-pre-wrap">{quote}</p>
+          <p className="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap">{quote}</p>
           {imageGrounded ? (
-            <p className="text-xs text-gray-500 mt-1">Summarized from the image above, not a text quote</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Summarized from the image above, not a text quote</p>
           ) : (
-            <p className="text-xs text-amber-600 mt-1">⚠ Not an exact quote. This wording isn’t found in the source</p>
+            <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">⚠ Not an exact quote. This wording isn’t found in the source</p>
           )}
         </div>
       )}
       {updatedQuote && (
-        <p className="mt-1.5 pl-3 text-xs text-emerald-700">
+        <p className="mt-2 pl-3 text-xs text-green-700 dark:text-green-400">
           ✎ The source has since been updated and now reads: <em>“{updatedQuote}”</em>
         </p>
       )}
@@ -268,7 +269,7 @@ function YouTubeClip({ url, quote, fragmentText, updatedQuote, imageGrounded, st
       {videoId && <div ref={hostRef} className="w-full aspect-video rounded-lg overflow-hidden" />}
       {quote && <CitationBlock quote={quote} url={url} linkText="watch" fragmentText={fragmentText} updatedQuote={updatedQuote} imageGrounded={imageGrounded} />}
       {!videoId && !quote && (
-        <a href={url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline">
+        <a href={url} target="_blank" rel="noopener noreferrer" className={`text-xs ${LINK}`}>
           View on {sourceLinkLabel(url)} ↗
         </a>
       )}

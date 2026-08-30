@@ -1,9 +1,11 @@
 import { useState } from "react";
 import type { Session } from "@supabase/supabase-js";
-import { displayName } from "../../everything-shared/session";
 import { ensureWebItem } from "../../everything-shared/ensureWebItem";
 import { postClaimWithNote } from "../../everything-shared/postNote";
 import type { PageItem } from "../../everything-shared/notesQuery";
+import { PostAsCheckbox } from "../../everything-web/src/components/editorBits";
+import { Modal } from "../../everything-web/src/components/Modal";
+import { BUTTON, INPUT, QUOTE_RAIL } from "../../everything-shared/ui";
 import { LoginPanel } from "./LoginPanel";
 
 /** Write a note anchored to the reader's selection. This is the extension's
@@ -60,13 +62,8 @@ export function WriteNoteOverlay({ item, pageForItem, selection, session, onClos
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-xl p-5 w-full max-w-xl space-y-3 max-h-[90vh] overflow-y-auto shadow-2xl">
-        <div className="flex justify-between items-center">
-          <h2 className="text-lg font-extrabold text-gray-900 dark:text-gray-100">Write a note</h2>
-          <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">✕</button>
-        </div>
-        <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 pl-3 text-gray-600 dark:text-gray-300 italic text-sm">“{selection}”</blockquote>
+    <Modal title="Write a note" onClose={onClose} widthClassName="max-w-[35rem]">
+        <blockquote className={`${QUOTE_RAIL} text-gray-600 dark:text-gray-300 italic text-sm`}>“{selection}”</blockquote>
         {!session ? (
           // Signing in happens right here in the overlay. Once the session
           // lands, this branch flips to the composer and the selection is
@@ -80,25 +77,17 @@ export function WriteNoteOverlay({ item, pageForItem, selection, session, onClos
               rows={4}
               autoFocus
               placeholder="Write your correction"
-              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-3 py-2 text-sm"
+              className={`w-full ${INPUT}`}
             />
             <div className="flex gap-2 items-center justify-end">
-              <label className="mr-auto flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 cursor-pointer">
-                <input type="checkbox" checked={signed} onChange={(e) => setSigned(e.target.checked)} />
-                Post as {displayName(session)}
-              </label>
-              <button
-                onClick={submit}
-                disabled={busy || note.trim().length < 10}
-                className="bg-blue-600 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-blue-700 disabled:opacity-40"
-              >
+              <PostAsCheckbox signed={signed} onChange={setSigned} session={session} className="mr-auto" />
+              <button onClick={submit} disabled={busy || note.trim().length < 10} className={BUTTON}>
                 {busy ? "Posting…" : "Post draft note"}
               </button>
             </div>
           </>
         )}
         {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
-      </div>
-    </div>
+    </Modal>
   );
 }

@@ -5,6 +5,8 @@ import { displayName } from "../../../everything-shared/session";
 import { postImprovement } from "../../../everything-shared/postNote";
 import { postNnn } from "../../../everything-shared/noteNotNeeded";
 import type { NoteRow } from "../../../everything-shared/types";
+import { BUTTON, MENU } from "../../../everything-shared/ui";
+import { IconButton } from "./IconButton";
 import { AutoGrowTextarea, PostAsCheckbox, useSignedByline } from "./editorBits";
 
 /** One row of the ⋯ dropdown menu. A row marked as danger turns red, which is
@@ -27,7 +29,7 @@ export function MenuItem({ onClick, icon, label, danger, autoFocus }: {
     <button
       onClick={onClick}
       autoFocus={autoFocus}
-      className={`flex w-full items-center gap-2.5 text-left px-2.5 py-2 rounded-lg font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${tone}`}
+      className={`flex w-full items-center gap-2 text-left px-2 py-2 rounded-lg font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${tone}`}
     >
       <span className={`shrink-0 ${danger ? "text-red-500" : "text-gray-400 dark:text-gray-500"}`} aria-hidden>{icon}</span>
       {label}
@@ -171,7 +173,7 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
   const showSourcesButton = !!onToggleSources && note.has_source_details;
 
   return (
-    <div className="mt-1">
+    <div className="mt-2">
       <div ref={ref} className="relative flex flex-wrap justify-end items-center gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
         {/* The sources, improve and share actions are visible on every card.
             The ⋯ menu only holds Delete, and only on your own notes. Nathan
@@ -200,13 +202,9 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
         </button>
         {children}
         {mine && (
-          <button
-            aria-label="Note actions"
-            onClick={() => setExpanded((prev) => (prev === "menu" ? null : "menu"))}
-            className="px-1.5 py-0.5 rounded text-base leading-none text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800"
-          >
-            ⋯
-          </button>
+          <IconButton label="Note actions" onClick={() => setExpanded((prev) => (prev === "menu" ? null : "menu"))}>
+            <span className="text-base leading-none">⋯</span>
+          </IconButton>
         )}
         {expanded === "menu" && mine && (
           /* The menu sits in the normal flow and wraps onto its own line. It is
@@ -216,7 +214,7 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
            * reader then saw a scrollbar instead of the menu. Sitting in the
            * flow grows the card instead, the same way the two composers do. */
           <div className="w-full flex justify-end mt-1">
-            <div className="cn-menu w-56 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-1.5 text-sm">
+            <div className={MENU}>
               <MenuItem onClick={del} icon={<TrashIcon />} label="Delete" danger autoFocus />
             </div>
           </div>
@@ -282,14 +280,14 @@ function NnnComposer({ note, session, text, onTextChange, onAuthored, onClose }:
         <button
           onClick={submit}
           disabled={busy || text.trim().length < 10}
-          className="bg-blue-600 text-white rounded-lg px-3 py-1 text-sm font-medium hover:bg-blue-700 disabled:opacity-40"
+          className={BUTTON}
         >
           {busy ? "Posting…" : "Post"}
         </button>
         <button onClick={onClose} className="text-sm text-gray-500 dark:text-gray-400 hover:underline">Cancel</button>
         <PostAsCheckbox signed={signed} onChange={setSigned} session={session} className="ml-auto" />
       </div>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
     </div>
   );
 }
@@ -333,14 +331,14 @@ function ImproveEditor({ note, session, text, onTextChange, onAuthored, onClose 
         <button
           onClick={submit}
           disabled={busy || text.trim().length < 10}
-          className="bg-blue-600 text-white rounded-lg px-3 py-1 text-sm font-medium hover:bg-blue-700 disabled:opacity-40"
+          className={BUTTON}
         >
           {busy ? "Posting…" : "Post note"}
         </button>
         <button onClick={onClose} className="text-sm text-gray-500 dark:text-gray-400 hover:underline">Cancel</button>
         <PostAsCheckbox signed={signed} onChange={setSigned} session={session} className="ml-auto" />
       </div>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
     </div>
   );
 }

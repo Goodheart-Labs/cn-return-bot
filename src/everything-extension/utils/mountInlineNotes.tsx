@@ -1,4 +1,5 @@
 import { createRoot, type Root } from "react-dom/client";
+import { PASSAGE_TINT_DARK, PASSAGE_TINT_LIGHT } from "./markerPalette";
 import { createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
 import { fetchItemForUrl, isWholePageChecked } from "../../everything-shared/notesQuery";
@@ -67,8 +68,6 @@ function anchorGroups(container: Element, groups: ClaimGroup[]): AnchoredGroup[]
   return anchored;
 }
 
-const HIGHLIGHT_TINT_LIGHT = "rgba(59, 130, 246, 0.16)";
-const HIGHLIGHT_TINT_DARK = "rgba(96, 165, 250, 0.25)"; // Tailwind's blue-400. It is stronger than the light tint so it reads on a dark page.
 
 /** Makes sure the ::highlight rule exists in the host document. The rule cannot live
  *  in our shadow root, because the text it highlights belongs to the page itself.
@@ -81,7 +80,7 @@ function ensureHighlightStyle(dark: boolean) {
     style.id = "common-notes-highlight-style";
     document.head.appendChild(style);
   }
-  const text = `::highlight(${HIGHLIGHT_NAME}) { background-color: ${dark ? HIGHLIGHT_TINT_DARK : HIGHLIGHT_TINT_LIGHT}; }`;
+  const text = `::highlight(${HIGHLIGHT_NAME}) { background-color: ${dark ? PASSAGE_TINT_DARK : PASSAGE_TINT_LIGHT}; }`;
   if (style.textContent !== text) style.textContent = text;
 }
 

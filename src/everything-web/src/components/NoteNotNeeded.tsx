@@ -5,6 +5,8 @@ import type { Vote } from "../../../everything-shared/votes";
 import { deleteNnn } from "../../../everything-shared/noteNotNeeded";
 import { tallyVisible } from "../../../everything-shared/noteScore";
 import { MenuItem, TrashIcon } from "./NoteMenu";
+import { EYEBROW, MENU } from "../../../everything-shared/ui";
+import { IconButton } from "./IconButton";
 import { VoteRatings } from "../../../dashboard-shared/Ratings";
 
 /** Voting on entries, and keeping track of the entries you wrote. App owns this
@@ -54,15 +56,11 @@ function OwnEntryMenu({ onDelete }: { onDelete: () => void }) {
   }, [open]);
   return (
     <span ref={ref} className="relative">
-      <button
-        aria-label="Entry actions"
-        onClick={() => setOpen((o) => !o)}
-        className="inline-flex items-center justify-center h-6 w-6 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 leading-none"
-      >
-        ⋯
-      </button>
+      <IconButton label="Entry actions" onClick={() => setOpen((o) => !o)}>
+        <span className="text-base leading-none">⋯</span>
+      </IconButton>
       {open && (
-        <div className="cn-menu absolute left-0 top-7 z-20 w-44 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-1.5 text-sm">
+        <div className={`absolute left-0 top-7 z-20 ${MENU}`}>
           <MenuItem onClick={() => { setOpen(false); onDelete(); }} icon={<TrashIcon />} label="Delete" danger autoFocus />
         </div>
       )}
@@ -85,7 +83,7 @@ export function NoteNotNeeded({ entries, api, session }: {
       <button
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
-        className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 py-1"
+        className={`flex items-center gap-1.5 py-1 ${EYEBROW} hover:text-gray-700 dark:hover:text-gray-300`}
       >
         <svg
           {...CHEVRON_ICON_PROPS}
@@ -102,8 +100,8 @@ export function NoteNotNeeded({ entries, api, session }: {
             <span className="font-semibold text-gray-600 dark:text-gray-300">{entry.author_name ?? "anonymous"}</span>
             <span className="text-gray-400"> · {timeAgo(entry.created_at)}</span>
           </p>
-          <p className="mt-0.5 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap">{entry.body}</p>
-          <div className="mt-1 -ml-1.5 flex items-center gap-1">
+          <p className="mt-1 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap">{entry.body}</p>
+          <div className="mt-1 -ml-2 flex items-center gap-1">
             <VoteRatings
               compact
               helpful={entry.helpful_count}

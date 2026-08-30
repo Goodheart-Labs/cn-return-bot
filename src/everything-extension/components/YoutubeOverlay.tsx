@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { EYEBROW, FLOATING_CARD, QUOTE_RAIL } from "../../everything-shared/ui";
+import { IconButton } from "../../everything-web/src/components/IconButton";
 import type { NnnApi } from "../../everything-web/src/components/NoteNotNeeded";
 import type { NnnRow, NoteRow } from "../../everything-shared/types";
 import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
@@ -247,15 +249,15 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
           // used value. The parent here is #movie_player, where YouTube sets
           // `none` across the whole player. Without opting back in explicitly
           // the note text could not be copied.
-          className={`select-text max-w-[85vw] max-h-[70vh] overflow-y-auto overscroll-contain bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-2xl p-3 transition-opacity duration-[400ms] ease-out ${visible ? "opacity-100" : "opacity-0"}`}
+          className={`select-text max-w-[85vw] max-h-[70vh] overflow-y-auto overscroll-contain ${FLOATING_CARD} p-4 transition-opacity duration-[400ms] ease-out ${visible ? "opacity-100" : "opacity-0"}`}
         >
           {loginOpen && !session && <OverlayLogin onDismiss={closeLogin} />}
           <div className="flex items-start justify-between gap-2 mb-2">
-            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Community note on this part of the video</span>
-            <button onClick={dismiss} title="Dismiss for this video" className="px-1.5 shrink-0 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">✕</button>
+            <span className={EYEBROW}>Community note on this part of the video</span>
+            <IconButton label="Dismiss for this video" onClick={dismiss}>✕</IconButton>
           </div>
           {quotePreview(group) && (
-            <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 pl-2 mb-2 text-xs text-gray-500 dark:text-gray-400 italic">“{quotePreview(group)}”</blockquote>
+            <blockquote className={`${QUOTE_RAIL} mb-2 text-sm text-gray-600 dark:text-gray-300 italic`}>“{quotePreview(group)}”</blockquote>
           )}
           <ClaimNoteStack
             group={group}

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { BUTTON, LINK } from "../../everything-shared/ui";
 import type { Session } from "@supabase/supabase-js";
 import { useProjectFeed, useProjects } from "./lib/useFeedData";
 import { fetchProjectIdsWithItems } from "./lib/feedData";
@@ -20,16 +21,16 @@ function AuthCorner({ session, onSignIn, onSignOut }: {
 }) {
   if (!session) {
     return (
-      <button onClick={onSignIn} className="bg-blue-600 text-white rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-blue-700 shrink-0">
+      <button onClick={onSignIn} className={`${BUTTON} shrink-0`}>
         Sign in to vote
       </button>
     );
   }
   const who = session.user.email ?? session.user.user_metadata?.user_name ?? "signed in";
   return (
-    <div className="text-sm text-gray-500 flex items-center gap-3 shrink-0 min-w-0">
+    <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-3 shrink-0 min-w-0">
       <span className="truncate max-w-[16rem]" title={who}>{who}</span>
-      <button onClick={onSignOut} className="text-blue-600 hover:underline">Sign out</button>
+      <button onClick={onSignOut} className={LINK}>Sign out</button>
     </div>
   );
 }
@@ -38,7 +39,7 @@ import { WriteNoteModal } from "./components/WriteNoteModal";
 import { NoteCard } from "./components/NoteCard";
 import { ItemChips } from "./components/ItemChips";
 import { Leaderboard } from "./components/Leaderboard";
-import { DesignMenu } from "./components/DesignMenu";
+import { SystemTheme } from "./components/SystemTheme";
 import type { NnnRow, NoteRow } from "../../everything-shared/types";
 import { noteStatus, totalVotes } from "../../everything-shared/noteScore";
 
@@ -57,10 +58,10 @@ function NoteSection({ label, notes, render }: {
   if (notes.length === 0) return null;
   return (
     <>
-      <div className="flex items-center gap-3 pt-4 max-w-[40rem] mx-auto w-full xl:max-w-none" role="separator">
-        <span className="flex-1 border-t-2 border-dotted border-gray-300" />
-        <span className="text-xs text-gray-400">{label}</span>
-        <span className="flex-1 border-t-2 border-dotted border-gray-300" />
+      <div className="flex items-center gap-3 py-2 max-w-[40rem] mx-auto w-full" role="separator">
+        <span className="flex-1 border-t-2 border-dotted border-gray-300 dark:border-gray-700" />
+        <span className="text-xs text-gray-400 dark:text-gray-500">{label}</span>
+        <span className="flex-1 border-t-2 border-dotted border-gray-300 dark:border-gray-700" />
       </div>
       {notes.map(render)}
     </>
@@ -474,7 +475,7 @@ export function App() {
                 // web user asking for a write flow, i.e. extension demand.
                 track("write_note_teaser_shown");
               }}
-              className="text-sm font-medium text-blue-600 hover:underline shrink-0"
+              className={`text-sm font-medium shrink-0 ${LINK}`}
             >
               Write a note
             </button>
@@ -491,23 +492,23 @@ export function App() {
           />
         )}
         {view === "notes" && !loaded && !feedFailed && !projectsFailed && (
-          <p className="text-gray-400">Loading…</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Loading…</p>
         )}
         {view === "notes" && (feedFailed || projectsFailed) && (
           <div className="space-y-3">
-            <p className="text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-300">
               These notes could not be loaded. The connection to our server failed.
             </p>
             <button
               onClick={() => (projectsFailed ? window.location.reload() : retryFeed())}
-              className="bg-blue-600 text-white rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-blue-700"
+              className={BUTTON}
             >
               Try again
             </button>
           </div>
         )}
         {view === "notes" && loaded && !feedFailed && orderedNotes.length === 0 && (
-          <p className="text-gray-400">No notes yet for this project.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">No notes yet for this project.</p>
         )}
         {view === "notes" && (
         <div className="space-y-4">
@@ -519,7 +520,7 @@ export function App() {
         )}
       </main>
 
-      <DesignMenu />
+      <SystemTheme />
       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
       <WriteNoteModal open={writeOpen} onClose={() => setWriteOpen(false)} />
     </div>

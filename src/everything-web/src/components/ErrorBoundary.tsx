@@ -1,4 +1,5 @@
 import React from "react";
+import { BUTTON } from "../../../everything-shared/ui";
 
 /* The last line of defence against a blank page. React unmounts the whole tree
  * when a render throws, and with nothing in its place the reader is left
@@ -22,14 +23,14 @@ export class ErrorBoundary extends React.Component<
   render() {
     if (!this.state.failed) return this.props.children;
     return (
-      <div className="max-w-lg mx-auto px-4 py-16 space-y-3">
+      <div className="max-w-lg mx-auto px-4 py-8 space-y-3">
         <h1 className="text-xl font-extrabold">Common Notes could not load</h1>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-gray-600 dark:text-gray-300">
           Something went wrong while showing this page. Reloading usually fixes it.
         </p>
         <button
           onClick={() => window.location.reload()}
-          className="bg-blue-600 text-white rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-blue-700"
+          className={BUTTON}
         >
           Reload
         </button>

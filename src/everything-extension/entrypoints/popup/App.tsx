@@ -14,7 +14,8 @@ import { buildFollowAction, headline } from "../../utils/mountStatusOverlay";
 import { isSubstackPostPage, requestMakesSenseForUrl } from "../../utils/followTarget";
 import { capturePageFromTab } from "../../utils/pageCapture";
 import { addRequestedPage, getRequestedPages } from "../../utils/settings";
-import { ActionButton, PRIMARY_BUTTON, type StatusAction } from "../../components/StatusOverlay";
+import { ActionButton, type StatusAction } from "../../components/StatusOverlay";
+import { BUTTON, LINK, QUIET_LINK } from "../../../everything-shared/ui";
 import { STATIC_SITE_HOSTNAME } from "../../utils/staticSites";
 import { useNoteFilters } from "../../components/NoteFilterToggles";
 
@@ -171,14 +172,14 @@ function RequestNoteButton({ label, doneLabel }: { label: string; doneLabel: str
   };
 
   if (phase === "done") {
-    return <button disabled className={PRIMARY_BUTTON}>{doneLabel}</button>;
+    return <button disabled className={`${BUTTON} w-full`}>{doneLabel}</button>;
   }
   return (
     <>
-      <button onClick={request} disabled={phase !== "idle"} className={PRIMARY_BUTTON}>
+      <button onClick={request} disabled={phase !== "idle"} className={`${BUTTON} w-full`}>
         {label}
       </button>
-      {phase === "error" && <p className="text-sm text-red-600">Could not save the request (try again)</p>}
+      {phase === "error" && <p className="text-sm text-red-600 dark:text-red-400">Could not save the request (try again)</p>}
     </>
   );
 }
@@ -245,7 +246,7 @@ function PrimaryAction({ state, counts, jumped, access }: {
 
   if (!isContentPage) {
     return (
-      <button onClick={openRandomPage} disabled={busy} className={PRIMARY_BUTTON}>
+      <button onClick={openRandomPage} disabled={busy} className={`${BUTTON} w-full`}>
         Open random page
       </button>
     );
@@ -296,11 +297,11 @@ function PrimaryAction({ state, counts, jumped, access }: {
   return (
     <div className="space-y-2">
       {visibleNoteCount > 0 ? (
-        <button onClick={jumpToNote} className="text-left text-sm text-blue-600 hover:underline" title={visibleNoteCount === 1 ? "Jump to the note" : jumped ? "Jump to the next note" : "Jump to the first note"}>
+        <button onClick={jumpToNote} className={`text-left text-sm font-medium ${LINK}`} title={visibleNoteCount === 1 ? "Jump to the note" : jumped ? "Jump to the next note" : "Jump to the first note"}>
           {statusLine}
         </button>
       ) : (
-        <p className="text-sm text-gray-600">{statusLine}</p>
+        <p className="text-sm font-medium text-gray-900">{statusLine}</p>
       )}
       {requestable &&
         (authorFeed.kind === "followed" ? (
@@ -321,7 +322,7 @@ function PrimaryAction({ state, counts, jumped, access }: {
           card, so the popup offers it on covered pages too. */}
       {authorFeed.kind === "followable" && <FollowButton target={authorFeed.target} />}
       {fullyCheckedNoNotes && (
-        <button onClick={openRandomPage} disabled={busy} className={PRIMARY_BUTTON}>
+        <button onClick={openRandomPage} disabled={busy} className={`${BUTTON} w-full`}>
           Open random page
         </button>
       )}
@@ -358,13 +359,13 @@ export function PopupApp() {
     <div className="p-4 space-y-4 bg-gray-50 min-h-[120px]">
       <PrimaryAction state={state} counts={counts} jumped={jumped} access={access} />
 
-      <div className="border-t border-gray-200 pt-3">
+      <div className="border-t border-gray-200 pt-4">
         <button
           onClick={() => {
             void browser.runtime.openOptionsPage();
             window.close();
           }}
-          className="text-sm text-gray-500 hover:text-gray-700 underline"
+          className={`text-sm ${QUIET_LINK}`}
         >
           Settings
         </button>

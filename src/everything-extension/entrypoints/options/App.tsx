@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
+import { CARD, SECONDARY_BUTTON } from "../../../everything-shared/ui";
 import { signOut, useSession } from "../../../everything-shared/auth";
 import { LoginPanel } from "../../components/LoginPanel";
 import { NoteFilterToggles, useNoteFilters } from "../../components/NoteFilterToggles";
@@ -44,14 +45,12 @@ function Checkbox({ checked, onChange, children }: { checked: boolean; onChange:
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="space-y-2 border-t border-gray-200 pt-5">
+    <section className="space-y-2 border-t border-gray-200 pt-4 first:border-t-0 first:pt-0">
       <h2 className="text-sm font-semibold text-gray-900">{title}</h2>
       {children}
     </section>
   );
 }
-
-const SIGN_OUT_BUTTON = "w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-800 hover:bg-gray-100";
 
 export function SettingsApp() {
   const [settings, toggleSettings] = useExtensionSettings();
@@ -65,9 +64,10 @@ export function SettingsApp() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
-      <div className="mx-auto max-w-xl space-y-5 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h1 className="text-xl font-semibold text-gray-900">Settings</h1>
+    <div className="min-h-screen bg-gray-50 px-4 py-8">
+      <div className={`${CARD} mx-auto max-w-xl p-6`}>
+        <h1 className="mb-4 text-xl font-extrabold text-gray-900">Settings</h1>
+        <div className="space-y-4">
 
         <Section title="Visit recording">
           <p className="text-sm text-gray-600">
@@ -126,7 +126,7 @@ export function SettingsApp() {
           {!ready ? null : session ? (
             <div className="space-y-2">
               {session.user.email && <p className="text-sm text-gray-600">Signed in as {session.user.email}</p>}
-              <button onClick={() => signOut()} className={SIGN_OUT_BUTTON}>
+              <button onClick={() => signOut()} className={`w-full ${SECONDARY_BUTTON}`}>
                 Sign out
               </button>
             </div>
@@ -134,6 +134,7 @@ export function SettingsApp() {
             <LoginPanel surface="settings" />
           )}
         </Section>
+        </div>
       </div>
     </div>
   );

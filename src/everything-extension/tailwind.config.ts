@@ -15,6 +15,8 @@ export default {
   content: [
     path.resolve(__dirname, "entrypoints/**/*.{ts,tsx}"),
     path.resolve(__dirname, "components/**/*.{ts,tsx}"),
+    path.resolve(__dirname, "utils/**/*.{ts,tsx}"),
+    path.resolve(__dirname, "../everything-shared/**/*.ts"),
     path.resolve(__dirname, "../everything-web/src/components/**/*.tsx"),
     path.resolve(__dirname, "../dashboard-shared/**/*.tsx"),
   ],

@@ -1,5 +1,6 @@
 import type { Session } from "@supabase/supabase-js";
 import { createLocalPreference } from "../lib/preference";
+import { INPUT } from "../../../everything-shared/ui";
 import { displayName } from "../../../everything-shared/session";
 
 /** The pieces shared by the two small inline editors, which are suggesting an
@@ -17,7 +18,7 @@ export function AutoGrowTextarea(props: React.TextareaHTMLAttributes<HTMLTextAre
           el.style.height = `${el.scrollHeight}px`;
         }
       }}
-      className={`w-full resize-none overflow-hidden border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-3 py-2 text-sm ${className ?? ""}`}
+      className={`w-full resize-none overflow-hidden ${INPUT} ${className ?? ""}`}
     />
   );
 }
@@ -40,7 +41,7 @@ export function PostAsCheckbox({ signed, onChange, session, className }: {
   className?: string;
 }) {
   return (
-    <label className={`flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 cursor-pointer ${className ?? ""}`}>
+    <label className={`flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 cursor-pointer ${className ?? ""}`}>
       <input type="checkbox" checked={signed} onChange={(e) => onChange(e.target.checked)} />
       Post as {displayName(session)}
     </label>

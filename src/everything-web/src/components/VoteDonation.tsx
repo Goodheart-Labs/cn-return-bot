@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { MENU } from "../../../everything-shared/ui";
 import { CHARITIES, rememberCharity, setDonationCharity, type CharityId } from "../lib/donations";
 import type { DonationPair } from "../lib/donationScoring";
 import type { NoteStatus } from "../../../everything-shared/noteScore";
@@ -44,7 +45,7 @@ function CharityPicker({ charity, onPick, open, setOpen }: {
         {charityLabel(charity)}
       </button>
       {open && (
-        <div className="cn-menu absolute left-0 top-6 z-20 w-72 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-1.5 text-sm">
+        <div className={`absolute left-0 top-6 z-20 ${MENU} w-72`}>
           {CHARITIES.map((c) => (
             <button
               key={c.id}
@@ -56,7 +57,7 @@ function CharityPicker({ charity, onPick, open, setOpen }: {
                 setOpen(false);
               }}
               aria-pressed={c.id === charity}
-              className={`flex w-full items-center text-left px-2.5 py-2 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-gray-800 ${
+              className={`flex w-full items-center text-left px-2 py-2 rounded-lg font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 hover:bg-gray-100 dark:hover:bg-gray-800 ${
                 c.id === charity ? "text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-300"
               }`}
             >
@@ -127,11 +128,9 @@ export function VoteDonation({ voteId, pair, charity, status, onCharityChange, o
   };
 
   return (
-    // Use plain utility classes here, so bg-blue-50 and never bg-blue-50/50.
-    // design.css remaps these exact class names for each color scheme.
     <div
       ref={boxRef}
-      className="mt-2 rounded-lg border border-blue-100 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/50 p-3 flex items-start justify-between gap-3"
+      className="mt-2 rounded-lg border border-blue-200 bg-blue-100 dark:border-blue-800 dark:bg-blue-900/40 p-3 flex items-start justify-between gap-3"
       style={{ opacity: fading ? 0 : 1, transition: `opacity ${FADE_MS}ms ease` }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}

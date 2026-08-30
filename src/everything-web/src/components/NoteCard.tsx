@@ -11,6 +11,7 @@ import { takeMintedDonation, type MintedDonation } from "../lib/donations";
 import type { Vote } from "../../../everything-shared/votes";
 import { noteStatus, noteTallyVisible, type NoteStatus } from "../../../everything-shared/noteScore";
 import { noteUrl } from "../lib/routing";
+import { CARD, CHIP, LINK, QUOTE_RAIL } from "../../../everything-shared/ui";
 import { NoteMenu } from "./NoteMenu";
 import { NoteNotNeeded, type NnnApi } from "./NoteNotNeeded";
 import { VoteDonation } from "./VoteDonation";
@@ -22,7 +23,7 @@ import { VoteDonation } from "./VoteDonation";
  *  the vote row asks one plain question. */
 const STATUS: Record<NoteStatus, { label: string; color: string; box: string; ask: string }> = {
   helpful: { label: "Currently rated helpful", color: "#22c55e", box: "bg-blue-50 border-blue-100 dark:bg-blue-950/50 dark:border-blue-900", ask: "Do you find this helpful?" },
-  not_helpful: { label: "Currently rated not helpful", color: "#ef4444", box: "bg-gray-50 border-gray-200 dark:bg-gray-800/60 dark:border-gray-700", ask: "Do you find this helpful?" },
+  not_helpful: { label: "Currently rated not helpful", color: "#ef4444", box: "bg-gray-100 border-gray-200 dark:bg-gray-800/60 dark:border-gray-700", ask: "Do you find this helpful?" },
   needs_ratings: { label: "Needs more ratings", color: "#9ca3af", box: "bg-blue-50 border-blue-100 dark:bg-blue-950/50 dark:border-blue-900", ask: "Is this note helpful?" },
 };
 
@@ -33,10 +34,9 @@ export function StatusBadge({ status }: { status: NoteStatus }) {
   const { label, color } = STATUS[status];
   return (
     <div className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 dark:text-gray-200">
-      {/* The size is given in em so the icon scales with the font-size
-          experiment. The cn-badge-* class lets a color scheme restyle the fills
-          that are set inline here. */}
-      <svg viewBox="0 0 20 20" width="1.05em" height="1.05em" aria-hidden className={`shrink-0 cn-badge-${status}`}>
+      {/* The size is given in em so the icon scales with the site's larger
+          type scale. */}
+      <svg viewBox="0 0 20 20" width="1.05em" height="1.05em" aria-hidden className="shrink-0">
         <circle cx="10" cy="10" r="10" fill={color} />
         {status === "helpful" && (
           <path d="M5.5 10.5l3 3 6-6.5" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -88,7 +88,7 @@ function SourceDetails({ open, noteId }: { open: boolean; noteId: string }) {
           {detailed.map((s, i) => (
             <div key={i}>
               <a href={quoteFragmentUrl(s.url, s.quote)} target="_blank" rel="noopener noreferrer" className="block group">
-                <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 group-hover:border-blue-400 pl-3 text-gray-600 dark:text-gray-300 italic text-sm">“{s.quote}”</blockquote>
+                <blockquote className={`${QUOTE_RAIL} group-hover:border-blue-400 text-sm italic text-gray-600 dark:text-gray-300`}>“{s.quote}”</blockquote>
               </a>
               {s.explanation && <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{s.explanation}</p>}
             </div>
@@ -143,7 +143,7 @@ function ClaimImages({ urls }: { urls: string[] }) {
             src={url}
             alt="Claim source"
             loading="lazy"
-            className="max-h-48 w-auto rounded-md border border-gray-200 object-contain"
+            className="max-h-48 w-auto rounded-lg border border-gray-200 dark:border-gray-700 object-contain"
           />
         </a>
       ))}
@@ -205,7 +205,7 @@ function ContextParagraph({ paragraph, quote, bare, fitTo }: {
     ellipsis = true;
   }
   return (
-    <div className={`cn-context text-xs text-gray-400 leading-relaxed ${bare ? "" : "border-l-4 border-gray-200 pl-3"}`}>
+    <div className={`cn-context text-xs text-gray-400 dark:text-gray-500 leading-relaxed ${bare ? "" : QUOTE_RAIL}`}>
       <div
         ref={bodyRef}
         style={clampable && !expanded
@@ -220,13 +220,13 @@ function ContextParagraph({ paragraph, quote, bare, fitTo }: {
         ) : (
           <>
             {text.slice(0, idx)}
-            <strong className="font-semibold text-gray-800">{text.slice(idx, idx + quote.length)}</strong>
+            <strong className="font-semibold text-gray-800 dark:text-gray-200">{text.slice(idx, idx + quote.length)}</strong>
             {text.slice(idx + quote.length)}
           </>
         )}
       </div>
       {clampable && (
-        <button onClick={() => setExpanded((e) => !e)} className="mt-1 text-xs text-blue-600 hover:underline">
+        <button onClick={() => setExpanded((e) => !e)} className={`mt-1 text-xs ${LINK}`}>
           {expanded ? "Show less" : "Show more"}
         </button>
       )}
@@ -246,15 +246,15 @@ export function NoteBox({ note, status, sourcesOpen, children }: {
   const by = note.author_id ? note.author_name ?? "anonymous" : null;
   return (
     <div className={`cn-notebox rounded-lg p-3 border ${STATUS[status].box}`}>
-      <div className="-mx-3 px-3 pb-2 mb-3 border-b border-gray-200/70 dark:border-gray-700/70 flex items-center justify-between gap-2">
+      <div className="-mx-3 px-3 pb-2 mb-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between gap-2">
         <StatusBadge status={status} />
         {by && <span className="text-xs text-gray-500 dark:text-gray-400 shrink-0">by {by}</span>}
       </div>
       <LinkifiedText className="text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap" text={noteText(note)} />
       {note.has_source_details && <SourceDetails open={!!sourcesOpen} noteId={note.id} />}
       {children && (
-        <div className="-mx-3 mt-3 px-3 pt-2.5 border-t border-gray-200/70 dark:border-gray-700/70 flex items-center justify-between flex-wrap gap-x-4 gap-y-1">
-          <span className="text-sm text-gray-700 dark:text-gray-300">{STATUS[status].ask}</span>
+        <div className="-mx-3 mt-3 px-3 pt-2 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between flex-wrap gap-x-4 gap-y-1">
+          <span className="text-sm text-gray-600 dark:text-gray-300">{STATUS[status].ask}</span>
           <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500 dark:text-gray-400">{children}</div>
         </div>
       )}
@@ -291,7 +291,7 @@ function JumpChip({ targetNoteId, explain, direction, count }: {
       onClick={() => jumpToNote(targetNoteId)}
       title={explain}
       aria-label={explain}
-      className="inline-flex items-center gap-1 h-6 px-1.5 rounded-full border border-gray-200 text-[11px] font-semibold text-blue-600 hover:bg-gray-100"
+      className={`${CHIP} border-gray-200 dark:border-gray-700 text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800`}
     >
       <svg {...JUMP_ARROW_PROPS} aria-hidden>
         {direction === "up"
@@ -314,7 +314,7 @@ function JumpChip({ targetNoteId, explain, direction, count }: {
 function ImprovementLinks({ note, improvements }: { note: NoteRow; improvements: NoteRow[] }) {
   if (!note.improved_from_note_id && improvements.length === 0) return null;
   return (
-    <span className="inline-flex gap-1.5">
+    <span className="inline-flex gap-1">
       {note.improved_from_note_id && (
         <JumpChip
           targetNoteId={note.improved_from_note_id}
@@ -384,7 +384,7 @@ export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug, 
   const paragraph = claim?.context_paragraph;
   const quoteInParagraph = claim?.context_quote ?? claim?.claim ?? "";
   return (
-    <div id={`note-${note.id}`} className="scroll-mt-4 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,40rem)_minmax(0,1fr)] xl:gap-5 items-start">
+    <div id={`note-${note.id}`} className="scroll-mt-4 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,40rem)_minmax(0,1fr)] xl:gap-4 items-start">
       {paragraph && claim && (
         <div className="hidden xl:block xl:col-start-1 xl:row-start-1">
           <ContextParagraph paragraph={paragraph} quote={quoteInParagraph} fitTo={cardColRef} />
@@ -403,14 +403,14 @@ export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug, 
           </div>
         </div>
       )}
-      <div ref={cardColRef} className="bg-white rounded-lg border border-gray-200 p-4 w-full max-w-[40rem] mx-auto xl:max-w-none xl:mx-0 xl:col-start-2 xl:row-start-1">
+      <div ref={cardColRef} className={`${CARD} p-4 w-full max-w-[40rem] mx-auto xl:max-w-none xl:mx-0 xl:col-start-2 xl:row-start-1`}>
       {claim && (
         <div className="mb-3">
           {claim.image_urls?.length > 0 && <ClaimImages urls={claim.image_urls} />}
           {paragraph && (
             <button
               onClick={() => setCtxOpen((o) => !o)}
-              className="xl:hidden text-xs text-blue-600 hover:underline mb-2"
+              className={`xl:hidden text-xs mb-2 ${LINK}`}
             >
               {ctxOpen ? "Hide surrounding context" : "Show surrounding context"}
             </button>
