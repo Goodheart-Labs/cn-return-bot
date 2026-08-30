@@ -1,0 +1,53 @@
+/** The one stand-in for ./db that every test file in this folder installs.
+ *  bun's mock.module is global to the test process, and module evaluation can
+ *  interleave across test files, so whichever registration is active when a
+ *  module first loads serves that module for good. Two files installing
+ *  different partial mocks therefore break each other depending on load
+ *  order, which is exactly what happened in CI. Every file installs this same
+ *  complete mock and steers its behaviour through `dbState`. */
+
+export const dbState = {
+  /** What fetchItemUrlsIn / fetchItemUrlsContaining answer. */
+  knownItems: [] as { id: string; url: string; checked_scope: "page" | "paragraph" | null }[],
+  /** What findItemForPageUrl answers. */
+  existingItem: null as { id: string; status: string; checked_scope: "page" | "paragraph" | null } | null,
+  /** Every recorded call, keyed by function name. */
+  calls: {} as Record<string, unknown[][]>,
+};
+
+export const resetDbState = () => {
+  dbState.knownItems = [];
+  dbState.existingItem = null;
+  dbState.calls = {};
+};
+
+const record = (name: string) => (...args: unknown[]) => {
+  (dbState.calls[name] ??= []).push(args);
+  return Promise.resolve(
+    name === "insertQueuedItem" ? "new-item-id" : name === "resolveProjectId" ? "project-id" : undefined,
+  );
+};
+
+export const dbMock = () => ({
+  QUEUE_PRIORITY: { requested: 2, followed: 1, backlog: 0 },
+  fillProjectDisplayName: () => Promise.resolve(),
+  fillProjectDisplayNameBySlug: () => Promise.resolve(),
+  fetchItemUrlsIn: () => Promise.resolve(dbState.knownItems),
+  fetchItemUrlsContaining: () => Promise.resolve(dbState.knownItems),
+  fetchFollowedFeeds: () => Promise.resolve([]),
+  fetchItemClaims: () => Promise.resolve([]),
+  fetchOrphanedProcessingItems: () => Promise.resolve([]),
+  fetchPendingNoteRequests: () => Promise.resolve([]),
+  fetchPendingFollowRequests: () => Promise.resolve([]),
+  enqueueItems: () => Promise.resolve(0),
+  markItemError: () => Promise.resolve(),
+  findItemForPageUrl: () => Promise.resolve(dbState.existingItem),
+  promoteItemToWholePage: record("promoteItemToWholePage"),
+  raiseItemPriority: record("raiseItemPriority"),
+  requeueItem: record("requeueItem"),
+  resolveNoteRequest: record("resolveNoteRequest"),
+  insertQueuedItem: record("insertQueuedItem"),
+  resolveProjectId: record("resolveProjectId"),
+  insertFollowedFeed: record("insertFollowedFeed"),
+  resolveFollowRequest: record("resolveFollowRequest"),
+});
