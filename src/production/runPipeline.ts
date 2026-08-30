@@ -126,12 +126,22 @@ const RUN_STARTED_AT_MS = Date.now();
 const SOFT_DEADLINE_AT_MS = RUN_STARTED_AT_MS + 22 * 60 * 1000;
 
 // How much wall clock one post costs to process, for sizing a batch to the
-// clock. Healthy runs at concurrency 5 do a post roughly every two minutes of
-// wall time. The estimate carries margin on top of that: sizing at the bare
-// two minutes budgeted a batch to land exactly on the deadline, and the first
-// slow batch overran it (2026-08-27, 1:48pm run). Erring high just trims a
-// batch the deadline would have cut anyway.
-const EST_WALL_MS_PER_POST = 2.5 * 60 * 1000;
+// clock. This number is tied to CONCURRENCY_LIMIT in generateCandidates: at
+// concurrency 5 a healthy run did a post roughly every two minutes of wall
+// time, so at concurrency 10 the figure halves. The estimate also sizes
+// OPTIMISTICALLY, slightly under that, and this is safe on purpose: since the
+// deadline stopped waiting for stragglers, an oversized batch costs only its
+// unfinished tail — every finished note still submits — while an undersized
+// batch costs real notes against a cap we are not filling. When over- and
+// under-shooting have asymmetric prices, size toward the cheap mistake.
+const EST_WALL_MS_PER_POST = 1 * 60 * 1000;
+
+// The misinfo pre-pass processes its finds through the full pipeline before
+// the regular pass gets the clock, so a heavy misinfo run used to starve the
+// regular batch. Its processing now stops at this sub-deadline; the crawl and
+// the selection judge run before it and are quick. Regular posts get whatever
+// the pre-pass leaves, which this floor keeps at ~15 of the 22 minutes.
+const MISINFO_PROCESSING_BUDGET_MS = 7 * 60 * 1000;
 
 async function main() {
   try {
@@ -243,7 +253,7 @@ async function main() {
     if (MISINFO_PIPELINE_ENABLED) {
       try {
         misinfoCandidates = await generateMisinfoCandidates(supabaseLogger, {
-          deadlineMs: SOFT_DEADLINE_AT_MS,
+          deadlineMs: Math.min(SOFT_DEADLINE_AT_MS, RUN_STARTED_AT_MS + MISINFO_PROCESSING_BUDGET_MS),
           skipPostIds: skipPostIds ?? new Set<string>(),
           onTweetProcessed: trackPrePassProcessed,
           topicIds: MISINFO_ACTIVE_TOPIC_IDS,
