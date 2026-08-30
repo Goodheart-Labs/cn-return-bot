@@ -33,7 +33,17 @@ import {
 import type { Post } from "../../api/fetchEligiblePosts";
 import PQueue from "p-queue";
 
-const CONCURRENCY_LIMIT = 5;
+// Ten posts process at once. Five was the long-standing setting, and it left
+// the engine's daily output (~50 notes) below the cap X grants us (~65 and
+// rising as ratings recover) — the batch was clock-limited, not work-limited.
+// Doubling the overlap fits a full batch back inside the soft deadline. The
+// shared search queue still paces every search 4 seconds apart across ALL
+// posts, so search-heavy stages serialize regardless; what parallelizes is
+// the LLM-latency waiting, which dominates. Going higher than this buys
+// little more (the batch is at most 20 and the runner has 2 cores for the
+// media steps) and risks rate-limit bursts — step, measure a day of logs,
+// then step again if clean.
+const CONCURRENCY_LIMIT = 10;
 // These two are ceilings, not targets. Each feed tier is walked as deep as X
 // will paginate. What actually stops a walk is next_token running out, or a rate
 // limit part-way through, in which case fetchEligiblePosts keeps whatever it
