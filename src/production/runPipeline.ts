@@ -126,15 +126,15 @@ const RUN_STARTED_AT_MS = Date.now();
 const SOFT_DEADLINE_AT_MS = RUN_STARTED_AT_MS + 22 * 60 * 1000;
 
 // How much wall clock one post costs to process, for sizing a batch to the
-// clock. Healthy runs at concurrency 5 do a post roughly every two minutes of
-// wall time. The estimate sizes OPTIMISTICALLY, slightly under the observed
-// average, and that is safe on purpose: since the deadline stopped waiting
-// for stragglers, an oversized batch costs only its unfinished tail — every
-// finished note still submits. An undersized batch costs real notes, because
-// capacity (~50/day at the 2.5-minute sizing) sits below the ~65/day cap X
-// currently grants us. When over- and under-shooting have asymmetric prices,
-// size toward the cheap mistake.
-const EST_WALL_MS_PER_POST = 1.75 * 60 * 1000;
+// clock. This number is tied to CONCURRENCY_LIMIT in generateCandidates: at
+// concurrency 5 a healthy run did a post roughly every two minutes of wall
+// time, so at concurrency 10 the figure halves. The estimate also sizes
+// OPTIMISTICALLY, slightly under that, and this is safe on purpose: since the
+// deadline stopped waiting for stragglers, an oversized batch costs only its
+// unfinished tail — every finished note still submits — while an undersized
+// batch costs real notes against a cap we are not filling. When over- and
+// under-shooting have asymmetric prices, size toward the cheap mistake.
+const EST_WALL_MS_PER_POST = 1 * 60 * 1000;
 
 // The misinfo pre-pass processes its finds through the full pipeline before
 // the regular pass gets the clock, so a heavy misinfo run used to starve the
