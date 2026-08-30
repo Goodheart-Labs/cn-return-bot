@@ -8,7 +8,6 @@
 
 import { Bot } from "./types";
 import { simpleBot } from "./simple-bot";
-import { cheapBot } from "./cheap-bot";
 
 // Retired bots. Each file can be recovered with
 // `git show <commit>:src/bots/<file>.ts`.
@@ -25,6 +24,12 @@ import { cheapBot } from "./cheap-bot";
 //   gemini-3-flash gemini-3-flash.ts    80841a5      Gemini 2.0 Flash
 //   multi-search   multi-search.ts      80841a5      multi-source search variant
 //   deepseek       deepseek.ts          80841a5      DeepSeek model variant
+//   cheap-bot      cheap-bot.ts         see below    DeepSeek 5-stage eval bot, retired at weight 0
+//
+// cheap-bot was removed together with its orchestrator, judge and search cache
+// under src/pipeline/cheap-bot/. Its query writer, search analyzer and satire
+// detector live on under src/pipeline/prefilter/, because the note-needed
+// prefilter runs them.
 //
 // These bots were retired together when the prompts/ folder landed: opus-main,
 // opus-main-v2, opus-main-no-source-check, opus-direct, opus-direct-grok,
@@ -36,7 +41,7 @@ import { cheapBot } from "./cheap-bot";
 // verify/sourceVerification, everything under multi-agent/, input/prompt, and
 // the tool-calling tool schemas together with buildToolList.
 
-const ALL_BOTS: Bot[] = [simpleBot, cheapBot];
+const ALL_BOTS: Bot[] = [simpleBot];
 
 export function getEnabledBots(): Bot[] {
   return ALL_BOTS;

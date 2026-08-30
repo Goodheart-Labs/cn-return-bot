@@ -57,30 +57,6 @@ export const BOT_TEST: ABTest = {
   name: "bot",
   variants: [
     { variant: { name: "simple-bot",  overrides: { botId: "simple-bot" }}, weight: 100 },
-    { variant: { name: "cheap-bot", overrides: {
-      botId: "cheap-bot",
-      model: "deepseek/deepseek-v4-flash",
-      search_model: "deepseek/deepseek-v4-flash",
-      writer_model: "deepseek/deepseek-v4-flash",
-      note_needed_judge: true,
-      // On the big_eval validation set, moving the judge from deepseek-v4-flash
-      // to gemini-3-flash roughly halved the rate of hard false positives, from
-      // 35% to 14%. Coverage rose at the same time, from 57% to 68% of notes
-      // passing.
-      note_judge_model: "google/gemini-3-flash-preview",
-      verifier_model: "deepseek/deepseek-v4-flash",
-      // The source verifier runs Gemini media analysis on links to TikTok,
-      // Instagram, YouTube and images, then treats that analysis as the content
-      // of the source. The text side of the verifier stays on DeepSeek. Only the
-      // media description step uses Gemini, because DeepSeek cannot see images.
-      verifier_accepts_media_sources: true,
-      web_search: "searxng",
-      // Turn on reasoning for deepseek-v4-flash. It is cheap. It also makes the
-      // judge better at deciding whether a dispute is substantive, and the
-      // writer better at deciding between reporting a dispute and returning
-      // nothing.
-      reasoning_effort: "high",
-    }}, weight: 0 },
   ],
 };
 
@@ -383,75 +359,6 @@ const NOTE_PREFILTER_TEST: ABTest = {
     { variant: { name: "deepseek", overrides: { note_prefilter: true  } }, weight: 100 },
   ],
 };
-
-// Chooses the model for cheap-bot's note-needed judge, which is our main guard
-// against false positives. The cheap-bot variant of BOT_TEST sets the baseline
-// of gemini-3-flash. This test swaps only the judge model and holds the writer,
-// the verifier and the search constant. That way a replay from cached writer
-// output leaves the judge model as the only thing that changed.
-//
-// gemini3flash won the comparison on the big_eval validation set. It had the
-// lowest rate of hard false positives at 14%, and 68% of notes passed.
-// deepseek-v4flash came in at 35% false positives, deepseek-v4pro at 16% but
-// rejecting too many good notes, and sonnet46 at 18%.
-//
-// This test has prerequisites, so it declares no defaultVariant. resolvePicks
-// cannot evaluate prerequisites, and a missing pick already falls back to the
-// note_judge_model that BOT_TEST set.
-const CHEAP_BOT_JUDGE_MODEL_TEST: ABTest = {
-  name: "cheap_bot_judge_model",
-  prerequisites: { botId: "cheap-bot" },
-  variants: [
-    { variant: { name: "gemini3flash",     overrides: { note_judge_model: "google/gemini-3-flash-preview" } }, weight: 100 },
-    { variant: { name: "deepseek-v4flash", overrides: { note_judge_model: "deepseek/deepseek-v4-flash"   } }, weight: 0 },
-    { variant: { name: "deepseek-v4pro",   overrides: { note_judge_model: "deepseek/deepseek-v4-pro"     } }, weight: 0 },
-    { variant: { name: "sonnet46",         overrides: { note_judge_model: "anthropic/claude-sonnet-4.6"  } }, weight: 0 },
-  ],
-};
-
-// Runs gemini-3-flash for exactly the two steps where it helped the big_eval
-// validation set most. Those are the search analyzer, which synthesises the
-// evidence, and the note-needed judge, which guards against false positives.
-// Every other step stays on deepseek-v4-flash: the query writer, the satire
-// detector, the writer and the verifier.
-//
-// CHEAP_BOT_JUDGE_MODEL_TEST has already put the judge on gemini, so this test
-// only has to route the analyzer to gemini through search_analyzer_model, and
-// pin the satire detector back to deepseek through satire_model. Without that
-// pin the satire detector would follow note_judge_model. This test is declared
-// after CHEAP_BOT_JUDGE_MODEL_TEST so that its overrides win. It has
-// prerequisites, so it declares no defaultVariant.
-const CHEAP_BOT_GEMINI_STEPS_TEST: ABTest = {
-  name: "cheap_bot_gemini_steps",
-  prerequisites: { botId: "cheap-bot" },
-  variants: [
-    { variant: { name: "deepseek-baseline", overrides: {} }, weight: 0 },
-    { variant: { name: "gemini-analyzer-judge", overrides: {
-      search_analyzer_model: "google/gemini-3-flash-preview",
-      satire_model: "deepseek/deepseek-v4-flash",
-    } }, weight: 100 },
-  ],
-};
-
-// Replaces the chain of query writer, SearXNG and analyzer with a single Gemini
-// call that uses Gemini's own googleSearch tool. Gemini issues its own queries
-// and returns a findings brief directly. The writer, judge and verifier gates
-// are unchanged. The cheap-bot orchestrator branches on web_search being
-// "native_gemini". The native variant also sets search_model, because its search
-// call has to go to Gemini. This test has prerequisites, so it declares no
-// defaultVariant.
-const CHEAP_BOT_NATIVE_SEARCH_TEST: ABTest = {
-  name: "cheap_bot_native_search",
-  prerequisites: { botId: "cheap-bot" },
-  variants: [
-    { variant: { name: "searxng", overrides: {} }, weight: 50 },
-    { variant: { name: "native-gemini", overrides: {
-      web_search: "native_gemini",
-      search_model: "google/gemini-3-flash-preview",
-    } }, weight: 50 },
-  ],
-};
-
 const VERIFIER_MEDIA_SOURCES_TEST: ABTest = {
   name: "verifier_media_sources",
   variants: [
@@ -464,7 +371,7 @@ const VERIFIER_MEDIA_SOURCES_TEST: ABTest = {
 // that only accepts or rejects each source. The claim-based flow first extracts
 // the note's distinct claims. It then maps each claim to the cited sources that
 // support it. It submits the good sources only when every claim has one.
-// verifySources runs in both simple-bot and cheap-bot, so this test has no
+// verifySources runs for every bot, so this test has no
 // prerequisites. Its defaultVariant is "classic", which resolves rows written
 // before the test to the older flow.
 const VERIFIER_CLAIM_BASED_TEST: ABTest = {
@@ -576,44 +483,6 @@ export const PANGRAM_NOTE_TEST: ABTest = {
     { variant: { name: "fp_context", overrides: {} }, weight: 50 },
   ],
 };
-
-const SEARCH_ANALYZER_TEST: ABTest = {
-  name: "search_analyzer",
-  prerequisites: { botId: "cheap-bot" },
-  variants: [
-    { variant: { name: "off", overrides: { search_analyzer: false } }, weight: 0 },
-    { variant: { name: "on",  overrides: { search_analyzer: true  } }, weight: 100 },
-  ],
-};
-
-// A satire gate that runs before the search. It reads the post, its comments and
-// the author's profile, but no note. When the post is obvious satire that its
-// audience is in on, the run exits before the query writer. The gate is tuned
-// for precision. The note-needed judge still keeps a lighter satire check behind
-// it.
-const SATIRE_DETECTOR_TEST: ABTest = {
-  name: "satire_detector",
-  prerequisites: { botId: "cheap-bot" },
-  variants: [
-    { variant: { name: "off", overrides: { satire_detector: false } }, weight: 0 },
-    { variant: { name: "on",  overrides: { satire_detector: true  } }, weight: 100 },
-  ],
-};
-
-// Pins every cheap-bot LLM call to temperature 0. At the model's default
-// temperature the judge and the verifier were so unpredictable that about 58% of
-// eval rows changed their answer from one run to the next. That noise swamped
-// the signal from any prompt change. This test is gated to cheap-bot, so the
-// other bots keep their default sampling.
-const CHEAP_BOT_TEMPERATURE_TEST: ABTest = {
-  name: "cheap_bot_temperature",
-  prerequisites: { botId: "cheap-bot" },
-  variants: [
-    { variant: { name: "default", overrides: {} },               weight: 0 },
-    { variant: { name: "zero",    overrides: { temperature: 0 } }, weight: 100 },
-  ],
-};
-
 // The eval score cutoff for submitting a note. The X eval gate keeps a note only
 // when its `claim_opinion_score` is at least `eval_submit_threshold`. The cutoff
 // is fixed at -3, so every note scoring below -3 is filtered out. The older arms
@@ -677,15 +546,9 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_CORRECTION_EXTRACTION_TEST,
   TOPIC_FILTER_TEST,
   NOTE_PREFILTER_TEST,
-  CHEAP_BOT_JUDGE_MODEL_TEST,
-  CHEAP_BOT_GEMINI_STEPS_TEST,
-  CHEAP_BOT_NATIVE_SEARCH_TEST,
   VERIFIER_MEDIA_SOURCES_TEST,
   VERIFIER_CLAIM_BASED_TEST,
   VERIFIER_CITATIONS_TEST,
-  SEARCH_ANALYZER_TEST,
-  SATIRE_DETECTOR_TEST,
-  CHEAP_BOT_TEMPERATURE_TEST,
   EVAL_SUBMIT_THRESHOLD_TEST,
   FEED_SIZE_TEST,
   MISINFO_MONITORING_TEST,

@@ -36,7 +36,7 @@ const client = getSupabaseClient();
 
 // This list has to stay in sync with the activeBots array in
 // src/reports/generateMainReport.ts.
-const ACTIVE_BOTS = new Set(["multi-agent", "simple-bot", "agent", "cheap-bot"]);
+const ACTIVE_BOTS = new Set(["multi-agent", "simple-bot", "agent"]);
 
 console.log(`[botBreakdown] Fetching from ${useLocal ? "LOCAL" : "PROD"} Supabase...`);
 

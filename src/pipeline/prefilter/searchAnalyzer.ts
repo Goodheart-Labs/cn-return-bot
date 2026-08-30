@@ -1,5 +1,5 @@
 /**
- * cheap-bot stage 2b: search analyzer
+ * Prefilter step: search analyzer
  *
  * This step sits between the raw SearXNG fetch and the writer. The model reads
  * the post context and the messy search results, thinks about what is going on,
@@ -15,7 +15,7 @@ import { trackedLlmCreate, trackLlmCall } from "../cost-tracking/costTracker";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP, COST, ANALYSIS_LOG_MAX_CHARS } from "../utils/noteWriterSteps";
 import { getMonitoringContext, buildReferenceBlock } from "../misinfo-monitoring/monitoringContext";
-import { SEARCH_ANALYZER_SYSTEM_PROMPT, buildSearchAnalyzerUserMessage } from "../prompts/cheap-bot/searchAnalyzer";
+import { SEARCH_ANALYZER_SYSTEM_PROMPT, buildSearchAnalyzerUserMessage } from "../prompts/prefilter/searchAnalyzer";
 
 export async function runSearchAnalyzer(
   postContext: string,

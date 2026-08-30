@@ -49,7 +49,7 @@ There are some ranked strategic cruxes (Mar 2026) in Claude's auto-memory coveri
   - `media/` - Media analysis
   - `orchestration/` - processTweet, generateCandidates, submitCandidates
   - `utils/` - tweetLog, browserManager, parseStatusNoteUrl
-- `src/bots/` - Bot configurations (opus-main, multi-search)
+- `src/bots/` - Bot configurations (simple-bot is the only active bot)
 - `src/production/` - GitHub Actions entry points (runPipeline, updateNoteFeedback)
 - `src/local/` - Local testing tools (tryoutNotes, runOnVideos, evaluateResults)
 - `src/scraper/` - Notewriter page scraper
@@ -227,9 +227,9 @@ bun run src/production/runPipeline.ts --local   # local mode
 
 When running locally, the prod X API keys must only be used for reading (fetching tweets, fetching note feedback). Never submit notes or perform any account-modifying action with the prod key without explicit approval — use `LOCAL_X_*` for that.
 
-### Replay a cheap-bot run from prod logs (`tryoutNotes --from-db [level]`)
+### Replay a bot run from prod logs (`tryoutNotes --from-db [level]`)
 
-Re-run a tweet's most recent cheap-bot run locally, reusing data from its prod
+Re-run a tweet's most recent run locally, reusing data from its prod
 logs. Pick how deep to reuse (each level includes the previous; default `tweet`):
 
 ```bash
@@ -246,5 +246,5 @@ bun run src/local/tryoutNotes.ts <tweet-id> --from-db note
 It looks up the latest `pipeline_runs` row in prod and **seeds the existing
 caches** from its logs — no pipeline code changes: the input cache makes
 `createBotInput` short-circuit, the writer cache makes the orchestrator replay
-from the gates. Forces `--bot cheap-bot`. See `src/local/seedReplayFromDb.ts`,
-`src/pipeline/input/inputCache.ts`, `src/pipeline/cheap-bot/writerCache.ts`.
+from the gates. Defaults to `--bot simple-bot`. See `src/local/seedReplayFromDb.ts`,
+`src/pipeline/input/inputCache.ts`, `src/pipeline/replay/writerCache.ts`.

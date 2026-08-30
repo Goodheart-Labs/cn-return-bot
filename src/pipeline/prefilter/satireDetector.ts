@@ -1,11 +1,11 @@
 /**
- * cheap-bot stage 0: satire detector
+ * Prefilter step: satire detector
  *
  * A gate that runs before search. It reads the post, the comments, and the
  * author profile without the proposed note, and decides whether the post is
- * overt satire the audience is in on. A positive verdict exits the pipeline
- * early with no_correction, before the query writer runs. That way we never
- * spend search, writer, or judge calls fact-checking a joke.
+ * overt satire the audience is in on. A positive verdict makes the prefilter
+ * answer "no note needed" before the query writer runs. That way we never
+ * spend search, analyzer, or judge calls fact-checking a joke.
  *
  * The detector is high-precision by design. It must fire only when the room is
  * clearly in on the joke. Examples are a comedian or parody account, audience
@@ -22,7 +22,7 @@ import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP, COST } from "../utils/noteWriterSteps";
 import { runJsonLlmCall } from "../utils/jsonLlmCall";
-import { SATIRE_SYSTEM_PROMPT, SATIRE_RESPONSE_FORMAT } from "../prompts/cheap-bot/satireDetector";
+import { SATIRE_SYSTEM_PROMPT, SATIRE_RESPONSE_FORMAT } from "../prompts/prefilter/satireDetector";
 
 export interface SatireResult {
   isSatire: boolean;
@@ -32,7 +32,7 @@ export interface SatireResult {
 export async function runSatireDetector(postContext: string): Promise<SatireResult> {
   const log = getTweetLog();
   const config = getBotConfig();
-  const model = config.satire_model ?? config.note_judge_model ?? config.model;
+  const model = config.note_judge_model ?? config.model;
 
   const messages = [
     { role: "system" as const, content: SATIRE_SYSTEM_PROMPT },

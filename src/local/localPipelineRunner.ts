@@ -162,9 +162,8 @@ export function parseCliArgs(
     console.error("  --concurrency <n>       parallel workers (default 5)");
     console.error("  --name <label>          name for dashboard upload (default: derived)");
     console.error("  --topic <id>            run as a curated-topic post: inject the topic's grounding document and make the eval gate advisory, as prod does");
-    console.error("  --search-cache <dir>    cache/replay SearXNG results to/from this directory");
     console.error("  --input-cache <dir>     cache/replay bot inputs (media, comments, author history)");
-    console.error("  --writer-cache <dir>    cache/replay cheap-bot writer output (replay starts from the two judges)");
+    console.error("  --writer-cache <dir>    cache/replay writer output (replay starts from the gates)");
     console.error("\nAvailable bots:", getEnabledBots().map((b) => b.id).join(", "));
     process.exit(1);
   }
@@ -211,12 +210,6 @@ export function parseCliArgs(
     console.error(`Unknown topic: ${topicId}`);
     console.error("Available topics:", MISINFO_TOPICS.map((t) => t.id).join(", "));
     process.exit(1);
-  }
-
-  const searchCache = takeFlagValue(args, "--search-cache");
-  if (searchCache) {
-    process.env.SEARCH_CACHE = searchCache;
-    console.log(`[${scriptName}] Search cache: ${searchCache}`);
   }
 
   const inputCache = takeFlagValue(args, "--input-cache");

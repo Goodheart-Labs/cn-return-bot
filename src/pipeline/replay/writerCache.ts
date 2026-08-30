@@ -3,7 +3,7 @@
  * saves everything the gates need, keyed by tweet id. The gates are the
  * note-needed judge and the source verifier. With the cache in place a run can
  * replay just the gates and skip the search and the note writer. The simple
- * bot, the cheap bot, and the seedReplayFromDb tooling all use it.
+ * bot and the seedReplayFromDb tooling both use it.
  *
  * The WRITER_CACHE environment variable turns the cache on, and its value is
  * the path to the cache directory. When the variable is unset nothing is read

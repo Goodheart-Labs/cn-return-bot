@@ -22,7 +22,7 @@ import {
   buildMaterialityJudgeUserMessage,
 } from "../prompts/simple-bot/materialityJudge";
 
-// This is a cheap judge model. The cheap-bot note judge uses the same one. In
+// This is a cheap judge model. In
 // the big_eval run it halved the rate of hard false positives compared with
 // deepseek, and it still covered more cases.
 const MATERIALITY_JUDGE_MODEL = "google/gemini-3-flash-preview";
