@@ -52,9 +52,12 @@ export function StatusBadge({ status }: { status: NoteStatus }) {
 
 /** Common Notes keeps a note's citations in a separate column. We append their
  *  URLs to the note text so they render as links inside it, the way the review
- *  dashboard and the stats dashboard render a note. */
+ *  dashboard and the stats dashboard render a note. A note stores one source
+ *  row per supporting quote, so the same URL can appear on several rows when
+ *  several passages of one document back the note. The link is shown once;
+ *  the individual quotes live behind "Show source details". */
 function noteText(note: NoteRow): string {
-  const urls = note.sources.map((s) => s.url);
+  const urls = [...new Set(note.sources.map((s) => s.url))];
   return urls.length > 0 ? `${note.note} ${urls.join(" ")}` : note.note;
 }
 
