@@ -1,8 +1,12 @@
 /**
  * The note-needed prefilter is a cheap deepseek-v4-flash gate. It decides
  * whether a post is worth running the full and expensive bot on. Its steps run
- * in order: the query writer, then SearXNG, then the search analyzer. Last
- * comes a reframed note-needed judge. That judge sees the post
+ * in order: the satire gate, then the query writer, then SearXNG, then the
+ * search analyzer. Last comes a reframed note-needed judge. The satire gate
+ * answers "no note needed" right away when the post is overt satire that its
+ * audience is in on, so we never search, analyze, or judge a joke. It is tuned
+ * for precision: it must not fire on fabricated content that imitates real
+ * media, because that deceives people and still needs a note. That judge sees the post
  * and the research brief but no proposed note, and answers whether the post
  * needs a note at all. The prefilter never writes a note and never verifies
  * sources.
@@ -25,6 +29,7 @@ import {
   buildPrefilterJudgeUserMessage,
 } from "../prompts/prefilter/noteNeededJudge";
 import { runQueryWriter } from "./queryWriter";
+import { runSatireDetector } from "./satireDetector";
 import { runSearchAnalyzer } from "./searchAnalyzer";
 import { fetchSearxngResults, formatSearxngResults, type SearxngResult } from "../tool-calling/tools";
 import { runJsonLlmCall } from "../utils/jsonLlmCall";
@@ -126,6 +131,13 @@ async function runPrefilterJudge(postContext: string, findings: string): Promise
  *  cost tracker. The caller isolates that log and that tracker, so the entries
  *  land in the prefilter's own namespace instead of the bot's. */
 async function runPrefilterSteps(userMessage: string): Promise<PrefilterVerdict> {
+  // The satire gate runs first. runSatireDetector logs its own messages.0 and
+  // messages.1 and its cost under the satire_detector step.
+  const satire = await runSatireDetector(userMessage);
+  if (satire.isSatire) {
+    return { needsNote: false, reasoning: `overt satire — ${satire.reasoning}` };
+  }
+
   const { queries } = await runQueryWriterRetryOnEmpty(userMessage);
   if (queries.length === 0) {
     return { needsNote: false, reasoning: "query writer returned no queries — opinion/joke/non-checkable" };
