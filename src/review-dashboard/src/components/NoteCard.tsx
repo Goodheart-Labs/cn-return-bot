@@ -1,12 +1,11 @@
 import { Component, useState, type ReactNode } from "react";
-import type { ReviewItem, ComparisonNote, FailureModeInfo } from "../lib/types";
+import type { ReviewItem, FailureModeInfo } from "../lib/types";
 import { FAILURE_TYPE_CONFIG } from "../lib/types";
 import { JsonViewer } from "./JsonViewer";
 import { FailureModeSelector } from "./FailureModeSelector";
 import { TweetCard } from "../../../dashboard-shared/TweetCard";
-import { LinkifiedText } from "../../../dashboard-shared/LinkifiedText";
 import { OurNoteCard } from "../../../dashboard-shared/OurNoteCard";
-import { communityNoteUrl } from "../../../dashboard-shared/communityNoteUrl";
+import { CompetingNoteCard } from "../../../dashboard-shared/CompetingNoteCard";
 import { Ratings } from "../../../dashboard-shared/Ratings";
 import type { Tweet } from "../../../dashboard-shared/types";
 
@@ -41,45 +40,6 @@ function reviewItemToTweet(item: ReviewItem): Tweet {
     media: item.tweetMedia,
     referencedTweetData: item.referencedTweetData,
   };
-}
-
-function StatusBadge({ status, coreStatus }: { status?: string; coreStatus?: string }) {
-  // We show the overall status, and fall back to the core status only when the
-  // overall one is missing. The core status alone misses notes that were rated
-  // helpful by the expansion or group submodels.
-  const display = status ?? coreStatus ?? "unknown";
-  const colorMap: Record<string, string> = {
-    CURRENTLY_RATED_HELPFUL: "bg-green-100 text-green-800",
-    CURRENTLY_RATED_NOT_HELPFUL: "bg-red-100 text-red-800",
-    NEEDS_MORE_RATINGS: "bg-blue-100 text-blue-800",
-  };
-  const color = colorMap[display] ?? "bg-gray-100 text-gray-600";
-  const label = display.replace(/CURRENTLY_RATED_/g, "").replace(/_/g, " ");
-
-  return (
-    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${color}`}>
-      {label}
-    </span>
-  );
-}
-
-function ComparisonNoteItem({ note }: { note: ComparisonNote }) {
-  return (
-    <div className="bg-gray-50 rounded p-3 text-sm border border-gray-100">
-      <div className="flex items-center gap-2 mb-1">
-        <StatusBadge status={note.status} />
-        <a
-          href={communityNoteUrl(note.noteId)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs text-blue-500 hover:underline ml-auto"
-        >
-          View note ↗
-        </a>
-      </div>
-      <LinkifiedText className="text-gray-700 whitespace-pre-wrap" text={note.noteText ?? "No text"} />
-    </div>
-  );
 }
 
 // An error boundary, so that one broken card cannot blank the whole page.
@@ -268,7 +228,7 @@ export function NoteCard({
           {comparisonOpen && (
             <div className="mt-2 space-y-2">
               {item.comparisonNotes.map((cn) => (
-                <ComparisonNoteItem key={cn.noteId} note={cn} />
+                <CompetingNoteCard key={cn.noteId} noteId={cn.noteId} noteText={cn.noteText} status={cn.status} />
               ))}
             </div>
           )}

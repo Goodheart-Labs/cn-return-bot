@@ -1,0 +1,2079 @@
+{
+  "generatedAt": "2026-07-01T23:00:21.385Z",
+  "model": "gemini-embedding-2",
+  "dims": 1536,
+  "corpusSize": 100,
+  "corpusWithNotes": 47,
+  "sources": [
+    {
+      "tweetId": "2072380636816363745",
+      "text": "Breaking:\n\nNative British Man Harry Kane saves team of immigrants in World Cup Match! 😂😂 https://t.co/n7ihsMtt4N",
+      "postedAt": "2026-07-01T18:03:41+00:00",
+      "neighbors": [
+        {
+          "tweetId": "2072077785254785334",
+          "similarity": 0.6541
+        },
+        {
+          "tweetId": "2071189695485108558",
+          "similarity": 0.6433
+        },
+        {
+          "tweetId": "2071259098444873784",
+          "similarity": 0.6337
+        },
+        {
+          "tweetId": "2072056908018803034",
+          "similarity": 0.6187
+        },
+        {
+          "tweetId": "2072059308712357959",
+          "similarity": 0.6177
+        },
+        {
+          "tweetId": "2071972013137175015",
+          "similarity": 0.6144
+        },
+        {
+          "tweetId": "2071988764541432053",
+          "similarity": 0.6121
+        },
+        {
+          "tweetId": "2072030849759957324",
+          "similarity": 0.6075
+        },
+        {
+          "tweetId": "2072063017810800759",
+          "similarity": 0.6067
+        },
+        {
+          "tweetId": "2071963354906628219",
+          "similarity": 0.605
+        },
+        {
+          "tweetId": "2072019723227635842",
+          "similarity": 0.6039
+        },
+        {
+          "tweetId": "2072034329111204056",
+          "similarity": 0.602
+        },
+        {
+          "tweetId": "2072031262928179469",
+          "similarity": 0.602
+        },
+        {
+          "tweetId": "2072068951601807709",
+          "similarity": 0.6003
+        },
+        {
+          "tweetId": "2072015469112951008",
+          "similarity": 0.5998
+        },
+        {
+          "tweetId": "2071053106914132060",
+          "similarity": 0.5981
+        },
+        {
+          "tweetId": "2072008441401339958",
+          "similarity": 0.5981
+        },
+        {
+          "tweetId": "2071045090932601153",
+          "similarity": 0.5945
+        },
+        {
+          "tweetId": "2072067709354057819",
+          "similarity": 0.5926
+        },
+        {
+          "tweetId": "2071466134260629990",
+          "similarity": 0.5909
+        },
+        {
+          "tweetId": "2072029125930274895",
+          "similarity": 0.5906
+        },
+        {
+          "tweetId": "2071526146903020032",
+          "similarity": 0.5903
+        },
+        {
+          "tweetId": "2072040766038528278",
+          "similarity": 0.5887
+        },
+        {
+          "tweetId": "2071297224437576117",
+          "similarity": 0.5864
+        },
+        {
+          "tweetId": "2072045003271225503",
+          "similarity": 0.5862
+        },
+        {
+          "tweetId": "2071262307842216136",
+          "similarity": 0.5853
+        },
+        {
+          "tweetId": "2071235837820575899",
+          "similarity": 0.5845
+        },
+        {
+          "tweetId": "2072006484695670937",
+          "similarity": 0.5798
+        },
+        {
+          "tweetId": "2071318871940952266",
+          "similarity": 0.5794
+        },
+        {
+          "tweetId": "2072028916227752434",
+          "similarity": 0.5777
+        },
+        {
+          "tweetId": "2072054221789446644",
+          "similarity": 0.5753
+        },
+        {
+          "tweetId": "2072087591256494141",
+          "similarity": 0.5736
+        },
+        {
+          "tweetId": "2072008973985685860",
+          "similarity": 0.5735
+        },
+        {
+          "tweetId": "2071982201936150956",
+          "similarity": 0.5711
+        },
+        {
+          "tweetId": "2071962722913091637",
+          "similarity": 0.5696
+        },
+        {
+          "tweetId": "2071945686355169310",
+          "similarity": 0.5691
+        },
+        {
+          "tweetId": "2070876701945647608",
+          "similarity": 0.5677
+        },
+        {
+          "tweetId": "2071335450808144177",
+          "similarity": 0.5631
+        },
+        {
+          "tweetId": "2071196250956059103",
+          "similarity": 0.5628
+        },
+        {
+          "tweetId": "2071971271244456238",
+          "similarity": 0.5582
+        },
+        {
+          "tweetId": "2071931442263728450",
+          "similarity": 0.5577
+        },
+        {
+          "tweetId": "2071445352289358128",
+          "similarity": 0.5566
+        },
+        {
+          "tweetId": "2067034547347202532",
+          "similarity": 0.5528
+        },
+        {
+          "tweetId": "2071991375730729419",
+          "similarity": 0.5514
+        },
+        {
+          "tweetId": "2071468054320410774",
+          "similarity": 0.5493
+        },
+        {
+          "tweetId": "2071266121634689505",
+          "similarity": 0.5484
+        },
+        {
+          "tweetId": "2072056986737188903",
+          "similarity": 0.5472
+        },
+        {
+          "tweetId": "2071993583054602561",
+          "similarity": 0.5452
+        },
+        {
+          "tweetId": "2072001546049749232",
+          "similarity": 0.5432
+        },
+        {
+          "tweetId": "2071998487021973689",
+          "similarity": 0.5426
+        }
+      ]
+    },
+    {
+      "tweetId": "2072201368786333738",
+      "text": "Jessica Alba somehow gets more gorgeous every year. 💚 https://t.co/MWDdP0VRbi",
+      "postedAt": "2026-07-01T06:11:20+00:00",
+      "neighbors": [
+        {
+          "tweetId": "2071945686355169310",
+          "similarity": 0.4757
+        },
+        {
+          "tweetId": "2070886185937891693",
+          "similarity": 0.4749
+        },
+        {
+          "tweetId": "2071942024765337763",
+          "similarity": 0.4525
+        },
+        {
+          "tweetId": "2071189695485108558",
+          "similarity": 0.4483
+        },
+        {
+          "tweetId": "2071259098444873784",
+          "similarity": 0.4456
+        },
+        {
+          "tweetId": "2071931442263728450",
+          "similarity": 0.4391
+        },
+        {
+          "tweetId": "2071945134602604684",
+          "similarity": 0.4378
+        },
+        {
+          "tweetId": "2071445352289358128",
+          "similarity": 0.4366
+        },
+        {
+          "tweetId": "2071297224437576117",
+          "similarity": 0.4337
+        },
+        {
+          "tweetId": "2072067709354057819",
+          "similarity": 0.4333
+        },
+        {
+          "tweetId": "2071196250956059103",
+          "similarity": 0.4321
+        },
+        {
+          "tweetId": "2071991375730729419",
+          "similarity": 0.4306
+        },
+        {
+          "tweetId": "2070876701945647608",
+          "similarity": 0.4302
+        },
+        {
+          "tweetId": "2072008441401339958",
+          "similarity": 0.4292
+        },
+        {
+          "tweetId": "2072042043497398440",
+          "similarity": 0.4267
+        },
+        {
+          "tweetId": "2072031262928179469",
+          "similarity": 0.4264
+        },
+        {
+          "tweetId": "2071972013137175015",
+          "similarity": 0.426
+        },
+        {
+          "tweetId": "2071448460838994156",
+          "similarity": 0.4249
+        },
+        {
+          "tweetId": "2072068951601807709",
+          "similarity": 0.4246
+        },
+        {
+          "tweetId": "2071169179705626774",
+          "similarity": 0.4238
+        },
+        {
+          "tweetId": "2071335450808144177",
+          "similarity": 0.4237
+        },
+        {
+          "tweetId": "2072051570510872712",
+          "similarity": 0.4229
+        },
+        {
+          "tweetId": "2072011300125778387",
+          "similarity": 0.4223
+        },
+        {
+          "tweetId": "2071262307842216136",
+          "similarity": 0.4214
+        },
+        {
+          "tweetId": "2071255392974475593",
+          "similarity": 0.4211
+        },
+        {
+          "tweetId": "2072034329111204056",
+          "similarity": 0.42
+        },
+        {
+          "tweetId": "2071468054320410774",
+          "similarity": 0.419
+        },
+        {
+          "tweetId": "2072059308712357959",
+          "similarity": 0.4189
+        },
+        {
+          "tweetId": "2072033273908515200",
+          "similarity": 0.4188
+        },
+        {
+          "tweetId": "2071235837820575899",
+          "similarity": 0.4183
+        },
+        {
+          "tweetId": "2071246784723386596",
+          "similarity": 0.4179
+        },
+        {
+          "tweetId": "2071357876208324778",
+          "similarity": 0.4174
+        },
+        {
+          "tweetId": "2071991611249090636",
+          "similarity": 0.4174
+        },
+        {
+          "tweetId": "2071982201936150956",
+          "similarity": 0.4172
+        },
+        {
+          "tweetId": "2071383873444061230",
+          "similarity": 0.4161
+        },
+        {
+          "tweetId": "2072040766038528278",
+          "similarity": 0.4155
+        },
+        {
+          "tweetId": "2071292692441518096",
+          "similarity": 0.4153
+        },
+        {
+          "tweetId": "2071202306687721648",
+          "similarity": 0.4138
+        },
+        {
+          "tweetId": "2071466134260629990",
+          "similarity": 0.413
+        },
+        {
+          "tweetId": "2071971271244456238",
+          "similarity": 0.4127
+        },
+        {
+          "tweetId": "2072010971967820248",
+          "similarity": 0.4123
+        },
+        {
+          "tweetId": "2071993583054602561",
+          "similarity": 0.4116
+        },
+        {
+          "tweetId": "2072077785254785334",
+          "similarity": 0.4113
+        },
+        {
+          "tweetId": "2072030849759957324",
+          "similarity": 0.4102
+        },
+        {
+          "tweetId": "2072001546049749232",
+          "similarity": 0.4101
+        },
+        {
+          "tweetId": "2072063017810800759",
+          "similarity": 0.4098
+        },
+        {
+          "tweetId": "2072028916227752434",
+          "similarity": 0.4088
+        },
+        {
+          "tweetId": "2067034547347202532",
+          "similarity": 0.4087
+        },
+        {
+          "tweetId": "2072050547822141658",
+          "similarity": 0.4083
+        },
+        {
+          "tweetId": "2071284682852061481",
+          "similarity": 0.4052
+        }
+      ]
+    },
+    {
+      "tweetId": "2072449853142040722",
+      "text": "#BREAKING: LeBron James will sign with the Celtics, per sources.\n\nI’m told the Celtics aren’t even remotely  close to being done. A massive get for Brad Stevens. https://t.co/BhXo3Iv69r",
+      "postedAt": "2026-07-01T22:38:43+00:00",
+      "neighbors": [
+        {
+          "tweetId": "2072001546049749232",
+          "similarity": 0.7267
+        },
+        {
+          "tweetId": "2071989838522257920",
+          "similarity": 0.6756
+        },
+        {
+          "tweetId": "2071985306958774339",
+          "similarity": 0.6276
+        },
+        {
+          "tweetId": "2072019723227635842",
+          "similarity": 0.601
+        },
+        {
+          "tweetId": "2072063017810800759",
+          "similarity": 0.5966
+        },
+        {
+          "tweetId": "2071259098444873784",
+          "similarity": 0.5924
+        },
+        {
+          "tweetId": "2071246784723386596",
+          "similarity": 0.5908
+        },
+        {
+          "tweetId": "2071972013137175015",
+          "similarity": 0.5848
+        },
+        {
+          "tweetId": "2072029125930274895",
+          "similarity": 0.5638
+        },
+        {
+          "tweetId": "2072077785254785334",
+          "similarity": 0.5602
+        },
+        {
+          "tweetId": "2071229668817314285",
+          "similarity": 0.5602
+        },
+        {
+          "tweetId": "2071962722913091637",
+          "similarity": 0.5561
+        },
+        {
+          "tweetId": "2071297224437576117",
+          "similarity": 0.5553
+        },
+        {
+          "tweetId": "2071189695485108558",
+          "similarity": 0.5553
+        },
+        {
+          "tweetId": "2072008441401339958",
+          "similarity": 0.5537
+        },
+        {
+          "tweetId": "2071988764541432053",
+          "similarity": 0.551
+        },
+        {
+          "tweetId": "2072011867934117991",
+          "similarity": 0.5478
+        },
+        {
+          "tweetId": "2071262307842216136",
+          "similarity": 0.5475
+        },
+        {
+          "tweetId": "2072028916227752434",
+          "similarity": 0.5473
+        },
+        {
+          "tweetId": "2071963354906628219",
+          "similarity": 0.5473
+        },
+        {
+          "tweetId": "2071445352289358128",
+          "similarity": 0.5457
+        },
+        {
+          "tweetId": "2071982201936150956",
+          "similarity": 0.545
+        },
+        {
+          "tweetId": "2072087591256494141",
+          "similarity": 0.5439
+        },
+        {
+          "tweetId": "2071053106914132060",
+          "similarity": 0.5401
+        },
+        {
+          "tweetId": "2072043241755840690",
+          "similarity": 0.5398
+        },
+        {
+          "tweetId": "2071318871940952266",
+          "similarity": 0.5387
+        },
+        {
+          "tweetId": "2071448460838994156",
+          "similarity": 0.5377
+        },
+        {
+          "tweetId": "2071235837820575899",
+          "similarity": 0.5371
+        },
+        {
+          "tweetId": "2071998487021973689",
+          "similarity": 0.5325
+        },
+        {
+          "tweetId": "2071224701678915735",
+          "similarity": 0.5306
+        },
+        {
+          "tweetId": "2071255392974475593",
+          "similarity": 0.5294
+        },
+        {
+          "tweetId": "2071335450808144177",
+          "similarity": 0.5278
+        },
+        {
+          "tweetId": "2067034547347202532",
+          "similarity": 0.5271
+        },
+        {
+          "tweetId": "2072059308712357959",
+          "similarity": 0.5257
+        },
+        {
+          "tweetId": "2071993583054602561",
+          "similarity": 0.525
+        },
+        {
+          "tweetId": "2072008973985685860",
+          "similarity": 0.5243
+        },
+        {
+          "tweetId": "2072015469112951008",
+          "similarity": 0.5238
+        },
+        {
+          "tweetId": "2071931442263728450",
+          "similarity": 0.5238
+        },
+        {
+          "tweetId": "2072051570510872712",
+          "similarity": 0.5186
+        },
+        {
+          "tweetId": "2072056908018803034",
+          "similarity": 0.5179
+        },
+        {
+          "tweetId": "2072031262928179469",
+          "similarity": 0.5171
+        },
+        {
+          "tweetId": "2071945686355169310",
+          "similarity": 0.5149
+        },
+        {
+          "tweetId": "2071357876208324778",
+          "similarity": 0.5133
+        },
+        {
+          "tweetId": "2072054221789446644",
+          "similarity": 0.5127
+        },
+        {
+          "tweetId": "2072034329111204056",
+          "similarity": 0.5124
+        },
+        {
+          "tweetId": "2072033273908515200",
+          "similarity": 0.5119
+        },
+        {
+          "tweetId": "2072011300125778387",
+          "similarity": 0.5112
+        },
+        {
+          "tweetId": "2070912866153304396",
+          "similarity": 0.5108
+        },
+        {
+          "tweetId": "2071959868953518216",
+          "similarity": 0.5108
+        },
+        {
+          "tweetId": "2071284682852061481",
+          "similarity": 0.5092
+        }
+      ]
+    },
+    {
+      "tweetId": "2072381464893677977",
+      "text": "Holy shit @YouTubeCreators this guy is threatening people lives and he’s on your platform https://t.co/CmtIeI5cMv",
+      "postedAt": "2026-07-01T18:06:58+00:00",
+      "neighbors": [
+        {
+          "tweetId": "2072040766038528278",
+          "similarity": 0.6305
+        },
+        {
+          "tweetId": "2071972013137175015",
+          "similarity": 0.613
+        },
+        {
+          "tweetId": "2072031262928179469",
+          "similarity": 0.594
+        },
+        {
+          "tweetId": "2071053106914132060",
+          "similarity": 0.5914
+        },
+        {
+          "tweetId": "2071383873444061230",
+          "similarity": 0.5818
+        },
+        {
+          "tweetId": "2071162901910433984",
+          "similarity": 0.5816
+        },
+        {
+          "tweetId": "2072051570510872712",
+          "similarity": 0.5769
+        },
+        {
+          "tweetId": "2072063017810800759",
+          "similarity": 0.5769
+        },
+        {
+          "tweetId": "2072087591256494141",
+          "similarity": 0.5734
+        },
+        {
+          "tweetId": "2071399901091795405",
+          "similarity": 0.5731
+        },
+        {
+          "tweetId": "2071297224437576117",
+          "similarity": 0.5719
+        },
+        {
+          "tweetId": "2072059308712357959",
+          "similarity": 0.5699
+        },
+        {
+          "tweetId": "2071262307842216136",
+          "similarity": 0.5697
+        },
+        {
+          "tweetId": "2071189695485108558",
+          "similarity": 0.5694
+        },
+        {
+          "tweetId": "2072054221789446644",
+          "similarity": 0.5669
+        },
+        {
+          "tweetId": "2071945686355169310",
+          "similarity": 0.5649
+        },
+        {
+          "tweetId": "2071318871940952266",
+          "similarity": 0.5647
+        },
+        {
+          "tweetId": "2071988764541432053",
+          "similarity": 0.5638
+        },
+        {
+          "tweetId": "2072019723227635842",
+          "similarity": 0.5625
+        },
+        {
+          "tweetId": "2070774708467851522",
+          "similarity": 0.5616
+        },
+        {
+          "tweetId": "2071235837820575899",
+          "similarity": 0.5608
+        },
+        {
+          "tweetId": "2071445352289358128",
+          "similarity": 0.5607
+        },
+        {
+          "tweetId": "2071931442263728450",
+          "similarity": 0.5602
+        },
+        {
+          "tweetId": "2072077785254785334",
+          "similarity": 0.5601
+        },
+        {
+          "tweetId": "2071292692441518096",
+          "similarity": 0.5601
+        },
+        {
+          "tweetId": "2072008441401339958",
+          "similarity": 0.5584
+        },
+        {
+          "tweetId": "2072030849759957324",
+          "similarity": 0.5568
+        },
+        {
+          "tweetId": "2072006484695670937",
+          "similarity": 0.5537
+        },
+        {
+          "tweetId": "2067034547347202532",
+          "similarity": 0.5529
+        },
+        {
+          "tweetId": "2071523057475436985",
+          "similarity": 0.5518
+        },
+        {
+          "tweetId": "2071259098444873784",
+          "similarity": 0.5511
+        },
+        {
+          "tweetId": "2072029125930274895",
+          "similarity": 0.5489
+        },
+        {
+          "tweetId": "2072028916227752434",
+          "similarity": 0.5489
+        },
+        {
+          "tweetId": "2071278152916062216",
+          "similarity": 0.5479
+        },
+        {
+          "tweetId": "2071971271244456238",
+          "similarity": 0.5476
+        },
+        {
+          "tweetId": "2072011867934117991",
+          "similarity": 0.5424
+        },
+        {
+          "tweetId": "2072045003271225503",
+          "similarity": 0.5422
+        },
+        {
+          "tweetId": "2072056908018803034",
+          "similarity": 0.5421
+        },
+        {
+          "tweetId": "2071982201936150956",
+          "similarity": 0.5417
+        },
+        {
+          "tweetId": "2071229668817314285",
+          "similarity": 0.5413
+        },
+        {
+          "tweetId": "2071466134260629990",
+          "similarity": 0.5408
+        },
+        {
+          "tweetId": "2072068951601807709",
+          "similarity": 0.5407
+        },
+        {
+          "tweetId": "2072017752500420705",
+          "similarity": 0.5388
+        },
+        {
+          "tweetId": "2071468054320410774",
+          "similarity": 0.5369
+        },
+        {
+          "tweetId": "2070876701945647608",
+          "similarity": 0.5361
+        },
+        {
+          "tweetId": "2072037422310015059",
+          "similarity": 0.5348
+        },
+        {
+          "tweetId": "2071284682852061481",
+          "similarity": 0.5328
+        },
+        {
+          "tweetId": "2071357876208324778",
+          "similarity": 0.5323
+        },
+        {
+          "tweetId": "2071526146903020032",
+          "similarity": 0.5318
+        },
+        {
+          "tweetId": "2072056986737188903",
+          "similarity": 0.53
+        }
+      ]
+    },
+    {
+      "tweetId": "2072390782779084802",
+      "text": "‘We kneel for nobody’: Culture minister speaks at Canada Day ceremony – CP24 https://t.co/1e1T2oIyMX",
+      "postedAt": "2026-07-01T18:44:00+00:00",
+      "neighbors": [
+        {
+          "tweetId": "2072030849759957324",
+          "similarity": 0.6499
+        },
+        {
+          "tweetId": "2072008441401339958",
+          "similarity": 0.6424
+        },
+        {
+          "tweetId": "2067034547347202532",
+          "similarity": 0.6378
+        },
+        {
+          "tweetId": "2072031262928179469",
+          "similarity": 0.637
+        },
+        {
+          "tweetId": "2072059308712357959",
+          "similarity": 0.6368
+        },
+        {
+          "tweetId": "2072068951601807709",
+          "similarity": 0.6359
+        },
+        {
+          "tweetId": "2072077785254785334",
+          "similarity": 0.6342
+        },
+        {
+          "tweetId": "2071982201936150956",
+          "similarity": 0.6319
+        },
+        {
+          "tweetId": "2071972013137175015",
+          "similarity": 0.624
+        },
+        {
+          "tweetId": "2071945686355169310",
+          "similarity": 0.6195
+        },
+        {
+          "tweetId": "2072063017810800759",
+          "similarity": 0.6176
+        },
+        {
+          "tweetId": "2071466134260629990",
+          "similarity": 0.6172
+        },
+        {
+          "tweetId": "2071988764541432053",
+          "similarity": 0.6166
+        },
+        {
+          "tweetId": "2071259098444873784",
+          "similarity": 0.6162
+        },
+        {
+          "tweetId": "2071297224437576117",
+          "similarity": 0.6114
+        },
+        {
+          "tweetId": "2071445352289358128",
+          "similarity": 0.6071
+        },
+        {
+          "tweetId": "2072019723227635842",
+          "similarity": 0.6055
+        },
+        {
+          "tweetId": "2072006484695670937",
+          "similarity": 0.6054
+        },
+        {
+          "tweetId": "2071526146903020032",
+          "similarity": 0.6044
+        },
+        {
+          "tweetId": "2072028916227752434",
+          "similarity": 0.6037
+        },
+        {
+          "tweetId": "2071189695485108558",
+          "similarity": 0.6014
+        },
+        {
+          "tweetId": "2072045003271225503",
+          "similarity": 0.6012
+        },
+        {
+          "tweetId": "2071262307842216136",
+          "similarity": 0.5998
+        },
+        {
+          "tweetId": "2072029125930274895",
+          "similarity": 0.5993
+        },
+        {
+          "tweetId": "2071335450808144177",
+          "similarity": 0.5991
+        },
+        {
+          "tweetId": "2072040766038528278",
+          "similarity": 0.5989
+        },
+        {
+          "tweetId": "2071318871940952266",
+          "similarity": 0.5942
+        },
+        {
+          "tweetId": "2071963354906628219",
+          "similarity": 0.5938
+        },
+        {
+          "tweetId": "2072056908018803034",
+          "similarity": 0.5931
+        },
+        {
+          "tweetId": "2071931442263728450",
+          "similarity": 0.5903
+        },
+        {
+          "tweetId": "2072087591256494141",
+          "similarity": 0.5897
+        },
+        {
+          "tweetId": "2072056986737188903",
+          "similarity": 0.5893
+        },
+        {
+          "tweetId": "2071053106914132060",
+          "similarity": 0.5888
+        },
+        {
+          "tweetId": "2072033273908515200",
+          "similarity": 0.5867
+        },
+        {
+          "tweetId": "2071162901910433984",
+          "similarity": 0.5854
+        },
+        {
+          "tweetId": "2071993583054602561",
+          "similarity": 0.5795
+        },
+        {
+          "tweetId": "2071998487021973689",
+          "similarity": 0.5791
+        },
+        {
+          "tweetId": "2071202306687721648",
+          "similarity": 0.5778
+        },
+        {
+          "tweetId": "2071169179705626774",
+          "similarity": 0.5757
+        },
+        {
+          "tweetId": "2071235837820575899",
+          "similarity": 0.574
+        },
+        {
+          "tweetId": "2071962722913091637",
+          "similarity": 0.5722
+        },
+        {
+          "tweetId": "2070876701945647608",
+          "similarity": 0.5678
+        },
+        {
+          "tweetId": "2072053775536181400",
+          "similarity": 0.5673
+        },
+        {
+          "tweetId": "2071255392974475593",
+          "similarity": 0.5667
+        },
+        {
+          "tweetId": "2071292692441518096",
+          "similarity": 0.5666
+        },
+        {
+          "tweetId": "2072054221789446644",
+          "similarity": 0.566
+        },
+        {
+          "tweetId": "2071971271244456238",
+          "similarity": 0.5659
+        },
+        {
+          "tweetId": "2071399901091795405",
+          "similarity": 0.5654
+        },
+        {
+          "tweetId": "2072037422310015059",
+          "similarity": 0.5619
+        },
+        {
+          "tweetId": "2071240390670463256",
+          "similarity": 0.5614
+        }
+      ]
+    },
+    {
+      "tweetId": "2072411032094744938",
+      "text": "BREAKING: After two unknown people climbed to the top of the Empire State Building and unfurled a banner on top of its spire Wednesday afternoon reading “ONLY TRAITORS HELP INVADERS”. \n\nReports say that shirts with the same slogan are being sold here: https://t.co/XH3oZ2ql6v https://t.co/j6VWoaPtxx",
+      "postedAt": "2026-07-01T20:04:28+00:00",
+      "neighbors": [
+        {
+          "tweetId": "2071962722913091637",
+          "similarity": 0.6324
+        },
+        {
+          "tweetId": "2071988764541432053",
+          "similarity": 0.6071
+        },
+        {
+          "tweetId": "2071982201936150956",
+          "similarity": 0.6044
+        },
+        {
+          "tweetId": "2072068951601807709",
+          "similarity": 0.6019
+        },
+        {
+          "tweetId": "2072063017810800759",
+          "similarity": 0.5982
+        },
+        {
+          "tweetId": "2072008441401339958",
+          "similarity": 0.5966
+        },
+        {
+          "tweetId": "2071998487021973689",
+          "similarity": 0.5956
+        },
+        {
+          "tweetId": "2071972013137175015",
+          "similarity": 0.5936
+        },
+        {
+          "tweetId": "2071971271244456238",
+          "similarity": 0.5933
+        },
+        {
+          "tweetId": "2072030849759957324",
+          "similarity": 0.5824
+        },
+        {
+          "tweetId": "2072059308712357959",
+          "similarity": 0.5821
+        },
+        {
+          "tweetId": "2071297224437576117",
+          "similarity": 0.5817
+        },
+        {
+          "tweetId": "2072029125930274895",
+          "similarity": 0.5811
+        },
+        {
+          "tweetId": "2072019723227635842",
+          "similarity": 0.5807
+        },
+        {
+          "tweetId": "2072077785254785334",
+          "similarity": 0.5803
+        },
+        {
+          "tweetId": "2071963354906628219",
+          "similarity": 0.5799
+        },
+        {
+          "tweetId": "2072011867934117991",
+          "similarity": 0.575
+        },
+        {
+          "tweetId": "2072011300125778387",
+          "similarity": 0.5745
+        },
+        {
+          "tweetId": "2071466134260629990",
+          "similarity": 0.5741
+        },
+        {
+          "tweetId": "2071259098444873784",
+          "similarity": 0.5729
+        },
+        {
+          "tweetId": "2072031262928179469",
+          "similarity": 0.5714
+        },
+        {
+          "tweetId": "2071959868953518216",
+          "similarity": 0.5702
+        },
+        {
+          "tweetId": "2072028916227752434",
+          "similarity": 0.5696
+        },
+        {
+          "tweetId": "2072045003271225503",
+          "similarity": 0.5693
+        },
+        {
+          "tweetId": "2072087591256494141",
+          "similarity": 0.569
+        },
+        {
+          "tweetId": "2071262307842216136",
+          "similarity": 0.5688
+        },
+        {
+          "tweetId": "2071468054320410774",
+          "similarity": 0.5678
+        },
+        {
+          "tweetId": "2071445352289358128",
+          "similarity": 0.5637
+        },
+        {
+          "tweetId": "2071985306958774339",
+          "similarity": 0.5579
+        },
+        {
+          "tweetId": "2072006484695670937",
+          "similarity": 0.5578
+        },
+        {
+          "tweetId": "2071526146903020032",
+          "similarity": 0.5575
+        },
+        {
+          "tweetId": "2067034547347202532",
+          "similarity": 0.5566
+        },
+        {
+          "tweetId": "2071224701678915735",
+          "similarity": 0.5545
+        },
+        {
+          "tweetId": "2071235837820575899",
+          "similarity": 0.5541
+        },
+        {
+          "tweetId": "2071931442263728450",
+          "similarity": 0.5537
+        },
+        {
+          "tweetId": "2071991375730729419",
+          "similarity": 0.5513
+        },
+        {
+          "tweetId": "2072040766038528278",
+          "similarity": 0.5508
+        },
+        {
+          "tweetId": "2070876701945647608",
+          "similarity": 0.5473
+        },
+        {
+          "tweetId": "2071255392974475593",
+          "similarity": 0.5473
+        },
+        {
+          "tweetId": "2071202306687721648",
+          "similarity": 0.5466
+        },
+        {
+          "tweetId": "2071945686355169310",
+          "similarity": 0.5456
+        },
+        {
+          "tweetId": "2071284682852061481",
+          "similarity": 0.5455
+        },
+        {
+          "tweetId": "2071448460838994156",
+          "similarity": 0.5453
+        },
+        {
+          "tweetId": "2072056908018803034",
+          "similarity": 0.5448
+        },
+        {
+          "tweetId": "2071335450808144177",
+          "similarity": 0.5438
+        },
+        {
+          "tweetId": "2072033273908515200",
+          "similarity": 0.5425
+        },
+        {
+          "tweetId": "2071318871940952266",
+          "similarity": 0.5414
+        },
+        {
+          "tweetId": "2071162901910433984",
+          "similarity": 0.5409
+        },
+        {
+          "tweetId": "2071229668817314285",
+          "similarity": 0.5399
+        },
+        {
+          "tweetId": "2070912866153304396",
+          "similarity": 0.5392
+        }
+      ]
+    },
+    {
+      "tweetId": "2072386948568904022",
+      "text": "Uhmm guys I think i just saw smth #BringValkoback https://t.co/64MDB0Ta0i",
+      "postedAt": "2026-07-01T18:28:46+00:00",
+      "neighbors": [
+        {
+          "tweetId": "2071399901091795405",
+          "similarity": 0.6279
+        },
+        {
+          "tweetId": "2072077785254785334",
+          "similarity": 0.6006
+        },
+        {
+          "tweetId": "2072068951601807709",
+          "similarity": 0.572
+        },
+        {
+          "tweetId": "2071972013137175015",
+          "similarity": 0.572
+        },
+        {
+          "tweetId": "2071931442263728450",
+          "similarity": 0.5718
+        },
+        {
+          "tweetId": "2072019723227635842",
+          "similarity": 0.5693
+        },
+        {
+          "tweetId": "2067034547347202532",
+          "similarity": 0.5673
+        },
+        {
+          "tweetId": "2072063017810800759",
+          "similarity": 0.5654
+        },
+        {
+          "tweetId": "2072067709354057819",
+          "similarity": 0.5653
+        },
+        {
+          "tweetId": "2071189695485108558",
+          "similarity": 0.5646
+        },
+        {
+          "tweetId": "2071297224437576117",
+          "similarity": 0.558
+        },
+        {
+          "tweetId": "2071945686355169310",
+          "similarity": 0.5541
+        },
+        {
+          "tweetId": "2071466134260629990",
+          "similarity": 0.5535
+        },
+        {
+          "tweetId": "2072045003271225503",
+          "similarity": 0.5534
+        },
+        {
+          "tweetId": "2071318871940952266",
+          "similarity": 0.5531
+        },
+        {
+          "tweetId": "2072031262928179469",
+          "similarity": 0.553
+        },
+        {
+          "tweetId": "2072015469112951008",
+          "similarity": 0.553
+        },
+        {
+          "tweetId": "2071053106914132060",
+          "similarity": 0.5528
+        },
+        {
+          "tweetId": "2072006484695670937",
+          "similarity": 0.5505
+        },
+        {
+          "tweetId": "2071971271244456238",
+          "similarity": 0.5503
+        },
+        {
+          "tweetId": "2072008441401339958",
+          "similarity": 0.5498
+        },
+        {
+          "tweetId": "2071292692441518096",
+          "similarity": 0.5488
+        },
+        {
+          "tweetId": "2071445352289358128",
+          "similarity": 0.5485
+        },
+        {
+          "tweetId": "2070886185937891693",
+          "similarity": 0.5454
+        },
+        {
+          "tweetId": "2071259098444873784",
+          "similarity": 0.5448
+        },
+        {
+          "tweetId": "2071262307842216136",
+          "similarity": 0.5435
+        },
+        {
+          "tweetId": "2072029125930274895",
+          "similarity": 0.5423
+        },
+        {
+          "tweetId": "2072037422310015059",
+          "similarity": 0.5397
+        },
+        {
+          "tweetId": "2072051570510872712",
+          "similarity": 0.537
+        },
+        {
+          "tweetId": "2071998487021973689",
+          "similarity": 0.5357
+        },
+        {
+          "tweetId": "2072056908018803034",
+          "similarity": 0.5335
+        },
+        {
+          "tweetId": "2072028916227752434",
+          "similarity": 0.5319
+        },
+        {
+          "tweetId": "2072040766038528278",
+          "similarity": 0.531
+        },
+        {
+          "tweetId": "2071988764541432053",
+          "similarity": 0.5307
+        },
+        {
+          "tweetId": "2071991375730729419",
+          "similarity": 0.5294
+        },
+        {
+          "tweetId": "2072033273908515200",
+          "similarity": 0.5292
+        },
+        {
+          "tweetId": "2071235837820575899",
+          "similarity": 0.5282
+        },
+        {
+          "tweetId": "2071526146903020032",
+          "similarity": 0.5273
+        },
+        {
+          "tweetId": "2071278152916062216",
+          "similarity": 0.527
+        },
+        {
+          "tweetId": "2070876701945647608",
+          "similarity": 0.5254
+        },
+        {
+          "tweetId": "2071284682852061481",
+          "similarity": 0.5229
+        },
+        {
+          "tweetId": "2072054221789446644",
+          "similarity": 0.521
+        },
+        {
+          "tweetId": "2072017752500420705",
+          "similarity": 0.5194
+        },
+        {
+          "tweetId": "2071963354906628219",
+          "similarity": 0.519
+        },
+        {
+          "tweetId": "2071993583054602561",
+          "similarity": 0.5188
+        },
+        {
+          "tweetId": "2072059308712357959",
+          "similarity": 0.5178
+        },
+        {
+          "tweetId": "2071946284378792248",
+          "similarity": 0.5168
+        },
+        {
+          "tweetId": "2071162901910433984",
+          "similarity": 0.5163
+        },
+        {
+          "tweetId": "2071982201936150956",
+          "similarity": 0.5159
+        },
+        {
+          "tweetId": "2072030849759957324",
+          "similarity": 0.5152
+        }
+      ]
+    },
+    {
+      "tweetId": "2072397300165378476",
+      "text": "Dominos is ending production of physical pizzas starting January 2028. \n\nFrom that date, pizzas will be available in digital formats only. https://t.co/nNKbc5KVrM",
+      "postedAt": "2026-07-01T19:09:54+00:00",
+      "neighbors": [
+        {
+          "tweetId": "2071445352289358128",
+          "similarity": 0.5821
+        },
+        {
+          "tweetId": "2071972013137175015",
+          "similarity": 0.5754
+        },
+        {
+          "tweetId": "2072077785254785334",
+          "similarity": 0.5705
+        },
+        {
+          "tweetId": "2072059308712357959",
+          "similarity": 0.5648
+        },
+        {
+          "tweetId": "2072019723227635842",
+          "similarity": 0.5573
+        },
+        {
+          "tweetId": "2072054221789446644",
+          "similarity": 0.5559
+        },
+        {
+          "tweetId": "2072063017810800759",
+          "similarity": 0.5556
+        },
+        {
+          "tweetId": "2072028916227752434",
+          "similarity": 0.5542
+        },
+        {
+          "tweetId": "2071189695485108558",
+          "similarity": 0.5519
+        },
+        {
+          "tweetId": "2072068951601807709",
+          "similarity": 0.5517
+        },
+        {
+          "tweetId": "2071297224437576117",
+          "similarity": 0.5505
+        },
+        {
+          "tweetId": "2072011867934117991",
+          "similarity": 0.55
+        },
+        {
+          "tweetId": "2067034547347202532",
+          "similarity": 0.5482
+        },
+        {
+          "tweetId": "2072087591256494141",
+          "similarity": 0.5475
+        },
+        {
+          "tweetId": "2071262307842216136",
+          "similarity": 0.545
+        },
+        {
+          "tweetId": "2072051570510872712",
+          "similarity": 0.5449
+        },
+        {
+          "tweetId": "2072029125930274895",
+          "similarity": 0.5414
+        },
+        {
+          "tweetId": "2071399901091795405",
+          "similarity": 0.5413
+        },
+        {
+          "tweetId": "2071335450808144177",
+          "similarity": 0.5364
+        },
+        {
+          "tweetId": "2071963354906628219",
+          "similarity": 0.5351
+        },
+        {
+          "tweetId": "2071235837820575899",
+          "similarity": 0.5349
+        },
+        {
+          "tweetId": "2071383873444061230",
+          "similarity": 0.5345
+        },
+        {
+          "tweetId": "2071468054320410774",
+          "similarity": 0.5339
+        },
+        {
+          "tweetId": "2072050547822141658",
+          "similarity": 0.5337
+        },
+        {
+          "tweetId": "2071982201936150956",
+          "similarity": 0.5321
+        },
+        {
+          "tweetId": "2072015469112951008",
+          "similarity": 0.5315
+        },
+        {
+          "tweetId": "2071255392974475593",
+          "similarity": 0.5303
+        },
+        {
+          "tweetId": "2071229668817314285",
+          "similarity": 0.5298
+        },
+        {
+          "tweetId": "2072031262928179469",
+          "similarity": 0.5296
+        },
+        {
+          "tweetId": "2072033273908515200",
+          "similarity": 0.528
+        },
+        {
+          "tweetId": "2071318871940952266",
+          "similarity": 0.5279
+        },
+        {
+          "tweetId": "2071202306687721648",
+          "similarity": 0.5269
+        },
+        {
+          "tweetId": "2072045003271225503",
+          "similarity": 0.5262
+        },
+        {
+          "tweetId": "2071053106914132060",
+          "similarity": 0.526
+        },
+        {
+          "tweetId": "2071988764541432053",
+          "similarity": 0.5259
+        },
+        {
+          "tweetId": "2070774708467851522",
+          "similarity": 0.5256
+        },
+        {
+          "tweetId": "2072036930640888214",
+          "similarity": 0.5247
+        },
+        {
+          "tweetId": "2072034329111204056",
+          "similarity": 0.5241
+        },
+        {
+          "tweetId": "2071985306958774339",
+          "similarity": 0.524
+        },
+        {
+          "tweetId": "2072008441401339958",
+          "similarity": 0.5239
+        },
+        {
+          "tweetId": "2071162901910433984",
+          "similarity": 0.5233
+        },
+        {
+          "tweetId": "2072030849759957324",
+          "similarity": 0.522
+        },
+        {
+          "tweetId": "2071945686355169310",
+          "similarity": 0.5208
+        },
+        {
+          "tweetId": "2070876701945647608",
+          "similarity": 0.5197
+        },
+        {
+          "tweetId": "2071466134260629990",
+          "similarity": 0.5187
+        },
+        {
+          "tweetId": "2071971271244456238",
+          "similarity": 0.5163
+        },
+        {
+          "tweetId": "2070912866153304396",
+          "similarity": 0.5148
+        },
+        {
+          "tweetId": "2072037422310015059",
+          "similarity": 0.5133
+        },
+        {
+          "tweetId": "2072053775536181400",
+          "similarity": 0.5121
+        },
+        {
+          "tweetId": "2071989838522257920",
+          "similarity": 0.5118
+        }
+      ]
+    },
+    {
+      "tweetId": "2072365372741767495",
+      "text": "Can you believe the GOP was once capable of nominating men like this?\n\nA better party, a better country... https://t.co/dV8BIckHh9",
+      "postedAt": "2026-07-01T17:03:02+00:00",
+      "neighbors": [
+        {
+          "tweetId": "2071982201936150956",
+          "similarity": 0.5451
+        },
+        {
+          "tweetId": "2072031262928179469",
+          "similarity": 0.5238
+        },
+        {
+          "tweetId": "2072030849759957324",
+          "similarity": 0.5235
+        },
+        {
+          "tweetId": "2071240390670463256",
+          "similarity": 0.506
+        },
+        {
+          "tweetId": "2071318871940952266",
+          "similarity": 0.5003
+        },
+        {
+          "tweetId": "2071262307842216136",
+          "similarity": 0.5003
+        },
+        {
+          "tweetId": "2072028916227752434",
+          "similarity": 0.4915
+        },
+        {
+          "tweetId": "2071972013137175015",
+          "similarity": 0.4913
+        },
+        {
+          "tweetId": "2072068951601807709",
+          "similarity": 0.4892
+        },
+        {
+          "tweetId": "2072011867934117991",
+          "similarity": 0.4865
+        },
+        {
+          "tweetId": "2071235837820575899",
+          "similarity": 0.4858
+        },
+        {
+          "tweetId": "2071357876208324778",
+          "similarity": 0.4817
+        },
+        {
+          "tweetId": "2072036930640888214",
+          "similarity": 0.4808
+        },
+        {
+          "tweetId": "2072087591256494141",
+          "similarity": 0.4807
+        },
+        {
+          "tweetId": "2071297224437576117",
+          "similarity": 0.4798
+        },
+        {
+          "tweetId": "2071053106914132060",
+          "similarity": 0.4786
+        },
+        {
+          "tweetId": "2071162901910433984",
+          "similarity": 0.4765
+        },
+        {
+          "tweetId": "2072008441401339958",
+          "similarity": 0.4748
+        },
+        {
+          "tweetId": "2072040766038528278",
+          "similarity": 0.4716
+        },
+        {
+          "tweetId": "2071189695485108558",
+          "similarity": 0.4702
+        },
+        {
+          "tweetId": "2071202306687721648",
+          "similarity": 0.4701
+        },
+        {
+          "tweetId": "2071468054320410774",
+          "similarity": 0.4679
+        },
+        {
+          "tweetId": "2072053775536181400",
+          "similarity": 0.4661
+        },
+        {
+          "tweetId": "2071959868953518216",
+          "similarity": 0.466
+        },
+        {
+          "tweetId": "2071931442263728450",
+          "similarity": 0.466
+        },
+        {
+          "tweetId": "2072033273908515200",
+          "similarity": 0.4632
+        },
+        {
+          "tweetId": "2067034547347202532",
+          "similarity": 0.463
+        },
+        {
+          "tweetId": "2071945686355169310",
+          "similarity": 0.4614
+        },
+        {
+          "tweetId": "2071335450808144177",
+          "similarity": 0.4598
+        },
+        {
+          "tweetId": "2071962722913091637",
+          "similarity": 0.4592
+        },
+        {
+          "tweetId": "2070912866153304396",
+          "similarity": 0.4585
+        },
+        {
+          "tweetId": "2071988764541432053",
+          "similarity": 0.4561
+        },
+        {
+          "tweetId": "2072029125930274895",
+          "similarity": 0.4553
+        },
+        {
+          "tweetId": "2072054221789446644",
+          "similarity": 0.4551
+        },
+        {
+          "tweetId": "2070876701945647608",
+          "similarity": 0.4549
+        },
+        {
+          "tweetId": "2072019723227635842",
+          "similarity": 0.4541
+        },
+        {
+          "tweetId": "2071526146903020032",
+          "similarity": 0.4537
+        },
+        {
+          "tweetId": "2071971271244456238",
+          "similarity": 0.4514
+        },
+        {
+          "tweetId": "2071963354906628219",
+          "similarity": 0.4509
+        },
+        {
+          "tweetId": "2072017752500420705",
+          "similarity": 0.4487
+        },
+        {
+          "tweetId": "2071993583054602561",
+          "similarity": 0.4477
+        },
+        {
+          "tweetId": "2071448460838994156",
+          "similarity": 0.4477
+        },
+        {
+          "tweetId": "2071445352289358128",
+          "similarity": 0.4464
+        },
+        {
+          "tweetId": "2071224701678915735",
+          "similarity": 0.4454
+        },
+        {
+          "tweetId": "2071292692441518096",
+          "similarity": 0.4453
+        },
+        {
+          "tweetId": "2071259098444873784",
+          "similarity": 0.4443
+        },
+        {
+          "tweetId": "2071196250956059103",
+          "similarity": 0.4443
+        },
+        {
+          "tweetId": "2072063017810800759",
+          "similarity": 0.4425
+        },
+        {
+          "tweetId": "2071399901091795405",
+          "similarity": 0.4419
+        },
+        {
+          "tweetId": "2071991375730729419",
+          "similarity": 0.4408
+        }
+      ]
+    },
+    {
+      "tweetId": "2072405940800725254",
+      "text": "Trump: \"I even had a conversation with Theodore Roosevelt. I said, 'What do you think about the Panama Canal? Do you consider that your greatest achievement and how do you feel about the fact that the Democrats gave the Panama Canal away to Panama for $1?'\" https://t.co/nP0ox7ensO",
+      "postedAt": "2026-07-01T19:44:14+00:00",
+      "neighbors": [
+        {
+          "tweetId": "2072031262928179469",
+          "similarity": 0.7266
+        },
+        {
+          "tweetId": "2071335450808144177",
+          "similarity": 0.6635
+        },
+        {
+          "tweetId": "2071240390670463256",
+          "similarity": 0.6536
+        },
+        {
+          "tweetId": "2071972013137175015",
+          "similarity": 0.6495
+        },
+        {
+          "tweetId": "2072011867934117991",
+          "similarity": 0.6474
+        },
+        {
+          "tweetId": "2072008441401339958",
+          "similarity": 0.6453
+        },
+        {
+          "tweetId": "2071988764541432053",
+          "similarity": 0.6449
+        },
+        {
+          "tweetId": "2072068951601807709",
+          "similarity": 0.641
+        },
+        {
+          "tweetId": "2071945686355169310",
+          "similarity": 0.6396
+        },
+        {
+          "tweetId": "2071297224437576117",
+          "similarity": 0.636
+        },
+        {
+          "tweetId": "2072030849759957324",
+          "similarity": 0.6341
+        },
+        {
+          "tweetId": "2071259098444873784",
+          "similarity": 0.6335
+        },
+        {
+          "tweetId": "2072028916227752434",
+          "similarity": 0.6303
+        },
+        {
+          "tweetId": "2071189695485108558",
+          "similarity": 0.6279
+        },
+        {
+          "tweetId": "2072040766038528278",
+          "similarity": 0.6265
+        },
+        {
+          "tweetId": "2071357876208324778",
+          "similarity": 0.6263
+        },
+        {
+          "tweetId": "2071931442263728450",
+          "similarity": 0.6228
+        },
+        {
+          "tweetId": "2071982201936150956",
+          "similarity": 0.6202
+        },
+        {
+          "tweetId": "2072087591256494141",
+          "similarity": 0.6201
+        },
+        {
+          "tweetId": "2072006484695670937",
+          "similarity": 0.6176
+        },
+        {
+          "tweetId": "2071235837820575899",
+          "similarity": 0.6155
+        },
+        {
+          "tweetId": "2072017752500420705",
+          "similarity": 0.613
+        },
+        {
+          "tweetId": "2071262307842216136",
+          "similarity": 0.6125
+        },
+        {
+          "tweetId": "2071971271244456238",
+          "similarity": 0.6108
+        },
+        {
+          "tweetId": "2071963354906628219",
+          "similarity": 0.6095
+        },
+        {
+          "tweetId": "2072077785254785334",
+          "similarity": 0.6089
+        },
+        {
+          "tweetId": "2071318871940952266",
+          "similarity": 0.6081
+        },
+        {
+          "tweetId": "2071162901910433984",
+          "similarity": 0.6068
+        },
+        {
+          "tweetId": "2071466134260629990",
+          "similarity": 0.6054
+        },
+        {
+          "tweetId": "2072063017810800759",
+          "similarity": 0.604
+        },
+        {
+          "tweetId": "2067034547347202532",
+          "similarity": 0.5993
+        },
+        {
+          "tweetId": "2072056908018803034",
+          "similarity": 0.5988
+        },
+        {
+          "tweetId": "2072053775536181400",
+          "similarity": 0.5976
+        },
+        {
+          "tweetId": "2072045003271225503",
+          "similarity": 0.5958
+        },
+        {
+          "tweetId": "2070774708467851522",
+          "similarity": 0.5942
+        },
+        {
+          "tweetId": "2072029125930274895",
+          "similarity": 0.5926
+        },
+        {
+          "tweetId": "2071468054320410774",
+          "similarity": 0.5918
+        },
+        {
+          "tweetId": "2071053106914132060",
+          "similarity": 0.5908
+        },
+        {
+          "tweetId": "2070912866153304396",
+          "similarity": 0.5901
+        },
+        {
+          "tweetId": "2071993583054602561",
+          "similarity": 0.5885
+        },
+        {
+          "tweetId": "2072059308712357959",
+          "similarity": 0.5884
+        },
+        {
+          "tweetId": "2072036930640888214",
+          "similarity": 0.5882
+        },
+        {
+          "tweetId": "2071962722913091637",
+          "similarity": 0.5847
+        },
+        {
+          "tweetId": "2072019723227635842",
+          "similarity": 0.5832
+        },
+        {
+          "tweetId": "2072033273908515200",
+          "similarity": 0.5826
+        },
+        {
+          "tweetId": "2070876701945647608",
+          "similarity": 0.5813
+        },
+        {
+          "tweetId": "2072054221789446644",
+          "similarity": 0.5739
+        },
+        {
+          "tweetId": "2072056986737188903",
+          "similarity": 0.5728
+        },
+        {
+          "tweetId": "2071448460838994156",
+          "similarity": 0.5714
+        },
+        {
+          "tweetId": "2071383873444061230",
+          "similarity": 0.57
+        }
+      ]
+    }
+  ]
+}

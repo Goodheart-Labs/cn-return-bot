@@ -173,6 +173,7 @@ function BurndownBar({ unseen, reviewedToday, ready, inflowPerDay, pacePerDay }:
 }
 
 import { NoteCard } from "./components/NoteCard";
+import { SimilarityPanel } from "./components/SimilarityPanel";
 import { FilterBar } from "./components/FilterBar";
 import { DatasetSelector } from "./components/DatasetSelector";
 import { UploadDialog } from "./components/UploadDialog";
@@ -291,6 +292,10 @@ export function App() {
   const [abFilters, setAbFilters] = useState<ABFilters>({});
   // The A/B filter section starts collapsed.
   const [abOpen, setAbOpen] = useState(false);
+  // Top-level panel, deep-linkable via ?view=similarity.
+  const [view, setView] = useState<View>(() =>
+    new URLSearchParams(window.location.search).get("view") === "similarity" ? "similarity" : "review",
+  );
   // The failure-mode tags drawer starts collapsed, so the large row of tag pills
   // does not clutter the top of the page. It uses the same collapsible style as
   // the A/B test filters section.
@@ -964,7 +969,18 @@ export function App() {
     setDataset({ type: "dataset_run", id, name });
   };
 
+  if (view === "similarity") {
+    return (
+      <>
+        <ViewTabs view={view} onSelect={setView} />
+        <SimilarityPanel />
+      </>
+    );
+  }
+
   return (
+    <>
+    <ViewTabs view={view} onSelect={setView} />
     <div className="max-w-4xl mx-auto px-4 py-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
@@ -1194,6 +1210,26 @@ export function App() {
         onClose={() => setUploadOpen(false)}
         onUploaded={handleUploaded}
       />
+    </div>
+    </>
+  );
+}
+
+type View = "review" | "similarity";
+
+function ViewTabs({ view, onSelect }: { view: View; onSelect: (v: View) => void }) {
+  const tabClass = (active: boolean) =>
+    `text-sm px-3 py-1 rounded-md border ${
+      active ? "bg-indigo-600 text-white border-indigo-600" : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+    }`;
+  return (
+    <div className="max-w-6xl mx-auto px-4 pt-4 flex items-center gap-2">
+      <button onClick={() => onSelect("review")} className={tabClass(view === "review")}>
+        Note Review
+      </button>
+      <button onClick={() => onSelect("similarity")} className={tabClass(view === "similarity")}>
+        Similarity (derisk)
+      </button>
     </div>
   );
 }
