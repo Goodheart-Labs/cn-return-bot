@@ -24,18 +24,22 @@ const ELEMENT_NODE = 1;
  *  pausing the video, pressing like, or following a link, keeps the note
  *  open. */
 export function isInertClick(e: MouseEvent): boolean {
+  let deepest: HTMLElement | null = null;
   for (const node of e.composedPath()) {
     const el = node as HTMLElement;
     if (el.nodeType !== ELEMENT_NODE) continue;
+    deepest ??= el;
     if (INTERACTIVE_TAGS.has(el.tagName)) return false;
     const role = el.getAttribute("role");
     if (role && INTERACTIVE_ROLES.has(role.trim().toLowerCase())) return false;
     const tabindex = el.getAttribute("tabindex");
     if (tabindex !== null && Number(tabindex) >= 0) return false;
     if (el.isContentEditable) return false;
-    if (getComputedStyle(el).cursor === "pointer") return false;
   }
-  return true;
+  // The cursor inherits, so the deepest element's computed cursor answers for
+  // the whole path. Reading it once keeps this handler cheap; the old
+  // per-ancestor read ran style resolution on every click on the page.
+  return !deepest || getComputedStyle(deepest).cursor !== "pointer";
 }
 
 /** Whether the event passed through one of our own shadow hosts. Those are

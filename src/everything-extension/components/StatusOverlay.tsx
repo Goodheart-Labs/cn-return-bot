@@ -2,15 +2,19 @@ import { useEffect, useRef, useState } from "react";
 
 /** How long the overlay stays before it fades out on its own. Hovering pauses
  *  the clock, so a reader who is about to click never loses the card. */
-const AUTO_HIDE_MS = 5_000;
-/** After a request or follow succeeded the card lingers briefly to show the
+const AUTO_HIDE_MS = 7_000;
+/** After a request or follow succeeded the card lingers to show the
  *  confirmation, then leaves. */
-const DONE_HIDE_MS = 4_000;
+const DONE_HIDE_MS = 6_000;
 /** How long the fade-out takes once the clock has run out. Hovering during the
  *  fade brings the card back. */
 const FADE_MS = 700;
 
 type ActionPhase = "idle" | "busy" | "done" | "error";
+
+/** The one action-button style, shared by the in-page cards and the popup so
+ *  the two surfaces always match in height and font. */
+export const PRIMARY_BUTTON = "w-full bg-blue-600 text-white rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-blue-700 disabled:opacity-40";
 
 /** One overlay action: the button label, the confirmation text once it ran,
  *  and what it does. `alreadyDone` starts true when the user already asked
@@ -32,14 +36,16 @@ export interface StatusOverlayProps {
   onHeadlineClick?: () => void;
   request: StatusAction | null;
   follow: StatusAction | null;
+  /** Called once the card has actually been shown: it finished its fade-out,
+   *  or the reader dismissed it. The one-shot cards spend their single
+   *  showing here rather than at mount, so a card in a background tab does
+   *  not burn it unseen. */
+  onDisplayed?: () => void;
 }
 
-export function ActionButton({ action, onDone, buttonClassName }: {
+export function ActionButton({ action, onDone }: {
   action: StatusAction;
   onDone?: () => void;
-  /** Overrides the card-sized button look. The popup passes its own full-width
-   *  button style so the action matches the buttons around it. */
-  buttonClassName?: string;
 }) {
   const [phase, setPhase] = useState<ActionPhase>(action.alreadyDone ? "done" : "idle");
 
@@ -54,17 +60,13 @@ export function ActionButton({ action, onDone, buttonClassName }: {
     }
   };
 
-  if (phase === "done") return <p className="text-xs text-green-700 dark:text-green-400">{action.doneLabel}</p>;
+  if (phase === "done") return <p className="text-sm text-green-700 dark:text-green-400">{action.doneLabel}</p>;
   return (
     <div>
-      <button
-        onClick={run}
-        disabled={phase === "busy"}
-        className={buttonClassName ?? "bg-blue-600 text-white rounded-md px-2.5 py-1 text-xs font-medium hover:bg-blue-700 disabled:opacity-40 text-left"}
-      >
+      <button onClick={run} disabled={phase === "busy"} className={PRIMARY_BUTTON}>
         {action.label}
       </button>
-      {phase === "error" && <p className="mt-1 text-xs text-red-600 dark:text-red-400">Something went wrong. Try again</p>}
+      {phase === "error" && <p className="mt-1 text-sm text-red-600 dark:text-red-400">Something went wrong. Try again</p>}
     </div>
   );
 }
@@ -72,10 +74,20 @@ export function ActionButton({ action, onDone, buttonClassName }: {
 /** The transient status card shown when a page opens. It says whether we have
  *  checked the page, offers the request and follow buttons, and fades away
  *  after a few seconds so it never becomes furniture. */
-export function StatusOverlay({ headline, onHeadlineClick, request, follow }: StatusOverlayProps) {
+export function StatusOverlay({ headline, onHeadlineClick, request, follow, onDisplayed }: StatusOverlayProps) {
   const [phase, setPhase] = useState<"shown" | "fading" | "hidden">("shown");
   const hideTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const fadeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const displayed = useRef(false);
+
+  const recordDisplayed = () => {
+    if (displayed.current) return;
+    // A card in a tab nobody is looking at was never shown, so its showing is
+    // not spent. The tab that opened in the background keeps its offer.
+    if (document.visibilityState !== "visible") return;
+    displayed.current = true;
+    onDisplayed?.();
+  };
 
   const clearTimers = () => {
     clearTimeout(hideTimer.current);
@@ -85,6 +97,8 @@ export function StatusOverlay({ headline, onHeadlineClick, request, follow }: St
   const hideAfter = (ms: number) => {
     clearTimers();
     hideTimer.current = setTimeout(() => {
+      // The card stood on screen for its full time, so its showing counts.
+      recordDisplayed();
       setPhase("fading");
       fadeTimer.current = setTimeout(() => setPhase("hidden"), FADE_MS);
     }, ms);
@@ -103,7 +117,7 @@ export function StatusOverlay({ headline, onHeadlineClick, request, follow }: St
   if (phase === "hidden") return null;
   return (
     <div
-      className={`w-96 rounded-lg border border-gray-200 bg-white p-3 shadow-lg transition-opacity ease-out dark:border-gray-700 dark:bg-gray-800 ${phase === "fading" ? "opacity-0" : "opacity-100"}`}
+      className={`max-w-[24rem] rounded-lg border border-gray-200 bg-white p-3 shadow-lg transition-opacity ease-out dark:border-gray-700 dark:bg-gray-800 ${phase === "fading" ? "opacity-0" : "opacity-100"}`}
       style={{ transitionDuration: `${FADE_MS}ms` }}
       onMouseEnter={keep}
       onMouseLeave={() => hideAfter(AUTO_HIDE_MS)}
@@ -121,7 +135,10 @@ export function StatusOverlay({ headline, onHeadlineClick, request, follow }: St
             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{headline}</p>
           ))}
         <button
-          onClick={() => setPhase("hidden")}
+          onClick={() => {
+            recordDisplayed();
+            setPhase("hidden");
+          }}
           aria-label="Dismiss"
           className="ml-auto shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
         >

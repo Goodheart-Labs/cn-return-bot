@@ -1,8 +1,9 @@
 import type { ContentScriptContext } from "#imports";
 import { mountInfoOverlay } from "./mountStatusOverlay";
 
-// The card hides itself after 10 seconds; tearing the mount down a little
-// later removes its shadow root too, so repeated clicks cannot pile up roots.
+// The card hides itself after the StatusOverlay auto-hide. Tearing the mount
+// down a little later removes its shadow root too, so repeated clicks cannot
+// pile up roots.
 const INFO_CARD_LIFETIME_MS = 15_000;
 
 /** Shows the background's explanation card when a note request was not needed,

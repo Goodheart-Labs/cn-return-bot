@@ -7,7 +7,7 @@ import { castVote, clearVote, fetchMyVotes, type Vote } from "../../everything-s
 import { castNnnVote, clearNnnVote, fetchMyNnnVotes } from "../../everything-shared/noteNotNeeded";
 import { donationPair, priorTally } from "./lib/donationScoring";
 import { noteTally, probabilityHelpful, probabilityHelpfulAfter } from "../../everything-shared/noteBelief";
-import { saveDonation, usePreferredCharity, type MintedDonation } from "./lib/donations";
+import { saveDonation, preferredCharity, type MintedDonation } from "./lib/donations";
 import { readRoute, pushProject, pushItem, pushLeaderboard, type View } from "./lib/routing";
 import { identifyUser, resetAnalytics, track } from "../../everything-shared/analytics";
 import { capturePageview } from "./lib/analytics";
@@ -81,9 +81,6 @@ export function App() {
   const [itemFilter, setItemFilter] = useState<string | null>(() => readRoute().item);
   const [myVotes, setMyVotes] = useState<Map<string, Vote>>(new Map());
   const [myNnnVotes, setMyNnnVotes] = useState<Map<string, Vote>>(new Map());
-  // A new vote's donation goes to the charity we remembered for this user. The
-  // donation box lets them redirect it afterwards.
-  const [preferredCharity] = usePreferredCharity();
   const [loginOpen, setLoginOpen] = useState(false);
   const [writeOpen, setWriteOpen] = useState(false);
 
@@ -244,10 +241,10 @@ export function App() {
   // Casts the vote and mints its donation. The outcome-contingent pair is
   // computed from the tally as it stood before this vote. It is frozen at that
   // moment and stored against the vote row. The function returns the minted
-  // donation, and returns null in three cases. Retracting a vote returns null,
+  // donation, and returns null in two cases. Retracting a vote returns null,
   // and the database cascade removes the donation with it. A signed-out visitor
-  // returns null, since no vote is cast at all. A vote on your own note returns
-  // null, because it mints no donation.
+  // returns null, since no vote is cast at all. A vote on your own note mints
+  // like any other vote.
   const handleVote = async (note: NoteRow, vote: Vote): Promise<MintedDonation | null> => {
     if (!session) {
       // An anonymous reader hit the vote wall — the funnel's sign-in prompt.
@@ -267,13 +264,15 @@ export function App() {
     setMyVotes(next);
     const voteId = await castVote(note.id, session.user.id, vote, "web");
     if (!voteId) return null;
-    if (note.author_id === session.user.id) return null;
     const pair = donationPair(priorTally(note, current), vote);
+    // The donation goes to the charity remembered on the account. The donation
+    // box lets the voter redirect it afterwards.
+    const charity = preferredCharity(session.user);
     // A backend without migration 061 rejects the pair of amount columns. We
     // keep the vote in that case. We just do not promise the user a donation the
     // ledger never recorded.
-    const { error } = await saveDonation(voteId, preferredCharity, pair);
-    return error ? null : { voteId, charity: preferredCharity, pair };
+    const { error } = await saveDonation(voteId, charity, pair);
+    return error ? null : { voteId, charity, pair };
   };
 
   const handleNnnVote = async (entry: NnnRow, vote: Vote) => {

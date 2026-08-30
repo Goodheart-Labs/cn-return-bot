@@ -1,3 +1,5 @@
+import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
+
 /** Works out whether the current page belongs to a feed a reader could ask us
  *  to follow. Whether that feed is already followed is a separate question,
  *  answered by feedIsFollowed in followedFeeds.ts against the synced list. */
@@ -16,13 +18,43 @@ export const followButtonLabel = (target: FollowTarget) => `Request notes on all
 export const followDoneLabel = (target: FollowTarget) => `Requested. We'll check new posts from this ${target.kind}.`;
 
 /** A Substack publication on its own subdomain. A publication on a custom
- *  domain gives null, because the pipeline can only follow the *.substack.com
- *  form (the RSS relay accepts nothing else) and that form is not derivable
- *  from the page URL. */
+ *  domain gives null here, because the *.substack.com form the pipeline needs
+ *  (the RSS relay accepts nothing else) is not derivable from the page URL.
+ *  For those, readSubstackPublicationFromPage reads it out of the page. */
 export function substackFollowTarget(pageUrl: string): FollowTarget | null {
   const m = new URL(pageUrl).hostname.match(/^([\w-]+)\.substack\.com$/);
   if (!m || m[1] === "www") return null;
   return { feedType: "substack", feedUrl: `https://${m[1]}.substack.com`, kind: "author", title: m[1]! };
+}
+
+/** Reads the publication's identity out of a Substack page itself, which is
+ *  how a newsletter on a custom domain becomes followable. Every Substack
+ *  page embeds its publication data as an escaped JSON blob inside a script
+ *  tag, and that raw text is visible to a content script even though the
+ *  page's own JavaScript variables are not. The subdomain in that blob is the
+ *  *.substack.com form the follow pipeline needs. Null on any page that is
+ *  not Substack.
+ *
+ *  This also runs inside the page via executeScript for the popup, so it must
+ *  stay self-contained: the serialized function has no imports over there. */
+export function readSubstackPublicationFromPage(): { subdomain: string; name: string } | null {
+  for (const script of Array.from(document.querySelectorAll("script"))) {
+    const text = script.textContent ?? "";
+    if (!text.includes("_preloads")) continue;
+    // The blob is JSON inside a JSON string, so the quotes around the value
+    // usually arrive escaped. The pattern tolerates both forms.
+    const m = text.match(/subdomain\\?":\\?"([\w-]+)\\?"/);
+    if (!m) continue;
+    const name = document.querySelector<HTMLMetaElement>('meta[property="og:site_name"]')?.content;
+    return { subdomain: m[1]!, name: name || m[1]! };
+  }
+  return null;
+}
+
+/** The follow target for a publication read out of a page. */
+export function substackTargetFromPublication(pub: { subdomain: string; name: string } | null): FollowTarget | null {
+  if (!pub) return null;
+  return { feedType: "substack", feedUrl: `https://${pub.subdomain}.substack.com`, kind: "author", title: pub.name };
 }
 
 /** Substack post pages live under /p/, on subdomains and custom domains alike.
@@ -31,6 +63,25 @@ export function substackFollowTarget(pageUrl: string): FollowTarget | null {
 export function isSubstackPostPage(pageUrl: string): boolean {
   try {
     return new URL(pageUrl).pathname.startsWith("/p/");
+  } catch {
+    return false;
+  }
+}
+
+/** Whether requesting a check makes sense for this URL. On the platforms
+ *  whose URL shapes we know, only an actual post or video is checkable:
+ *  youtube.com must be a watch page, a substack.com host must be a /p/ post
+ *  (so messages, inboxes and profiles offer nothing), lesswrong.com must be a
+ *  /posts/ page. Any other site keeps the offer, because we cannot know its
+ *  URL shapes and a wrong guess would hide the feature. The search-engine
+ *  exclusion lives separately in the popup. */
+export function requestMakesSenseForUrl(pageUrl: string): boolean {
+  try {
+    const url = new URL(pageUrl);
+    if (/(^|\.)youtube\.com$/.test(url.hostname)) return !!extractYoutubeVideoId(pageUrl);
+    if (/(^|\.)substack\.com$/.test(url.hostname)) return isSubstackPostPage(pageUrl);
+    if (/(^|\.)lesswrong\.com$/.test(url.hostname)) return url.pathname.startsWith("/posts/");
+    return true;
   } catch {
     return false;
   }

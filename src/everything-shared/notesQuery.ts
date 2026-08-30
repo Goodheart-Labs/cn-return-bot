@@ -11,21 +11,24 @@ import type { ItemRow, NoteRow, NoteSourceDetail, NoteSourceRow } from "./types"
 //   - migration 057 added `everything_claims.image_urls`.
 //   - migration 063 added `everything_note_not_needed`. Without it the list of
 //     entries simply stays empty.
+//   - migration 081 added `everything_items.checked_scope`. Without it, "is
+//     this page fully checked" falls back to the item being done at all.
 // We probe the schema once, then shape the query and normalize the rows it
 // returns. Callers render the same way against the old schema and the new one.
 const CLAIM_COLS = "id, item_id, claim, context_quote, context_paragraph, updated_quote, context_url, start_seconds, end_seconds";
 
-export type Schema = { hasImageUrls: boolean; hasNoteSources: boolean; hasNnn: boolean };
+export type Schema = { hasImageUrls: boolean; hasNoteSources: boolean; hasNnn: boolean; hasCheckedScope: boolean };
 let schemaProbe: Promise<Schema> | null = null;
 
 export function detectSchema(): Promise<Schema> {
   schemaProbe ??= (async () => {
-    const [img, ns, nnn] = await Promise.all([
+    const [img, ns, nnn, scope] = await Promise.all([
       supabase.from("everything_claims").select("image_urls").limit(1),
       supabase.from("everything_note_sources").select("url").limit(1),
       supabase.from("everything_note_not_needed").select("id").limit(1),
+      supabase.from("everything_items").select("checked_scope").limit(1),
     ]);
-    return { hasImageUrls: !img.error, hasNoteSources: !ns.error, hasNnn: !nnn.error };
+    return { hasImageUrls: !img.error, hasNoteSources: !ns.error, hasNnn: !nnn.error, hasCheckedScope: !scope.error };
   })();
   return schemaProbe;
 }
@@ -134,7 +137,21 @@ export async function fetchReaderCanonical(href: string): Promise<string | null>
 export type PageItem = ItemRow & { full_text: string | null; projectSlug: string | null };
 
 const ITEM_COLS = "id, project_id, source, url, title, published_at, status, error, created_at, full_text";
-const ITEM_SELECT = `${ITEM_COLS}, project:everything_projects(slug)`;
+// Selecting a column an old backend does not have fails the whole query, so
+// checked_scope only joins the select once the probe confirmed it exists.
+const itemSelect = (s: Schema) =>
+  `${ITEM_COLS}${s.hasCheckedScope ? ", checked_scope" : ""}, project:everything_projects(slug)`;
+
+/** Whether this page has been read in full by the pipeline. Only such a page
+ *  refuses a new "check this page" request. An item that exists because a
+ *  reader wrote a note, or because one paragraph was checked, is not a checked
+ *  page. Against a backend that predates migration 081 the scope is undefined,
+ *  and the rule falls back to what it used to be: done means checked. */
+export function isWholePageChecked(item: Pick<ItemRow, "status" | "checked_scope"> | null): boolean {
+  if (!item) return false;
+  if (item.status !== "done") return false;
+  return item.checked_scope === undefined || item.checked_scope === "page";
+}
 
 function toPageItem(row: any): PageItem {
   const { project, ...item } = row;
@@ -148,26 +165,31 @@ function toPageItem(row: any): PageItem {
  *  videos ingested through the old podcast pipeline carry the source "podcast",
  *  and the video ID check below is the real matcher anyway. */
 export async function fetchItemForUrl(pageUrl: string): Promise<PageItem | null> {
+  const select = itemSelect(await detectSchema());
   const videoId = extractYoutubeVideoId(pageUrl);
   if (videoId) {
     // A video ID may contain an underscore, and ilike reads an underscore as a
     // wildcard, so this pattern matches more rows than it should. It is only a
     // prefilter. Every row it returns is verified below by parsing that row's
     // URL and comparing the video ID exactly.
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("everything_items")
-      .select(ITEM_SELECT)
+      .select(select)
       .ilike("url", `%${videoId}%`);
+    if (error) throw new Error(`item lookup failed: ${error.message}`);
     const hit = (data ?? []).find((r: any) => extractYoutubeVideoId(r.url) === videoId);
     return hit ? toPageItem(hit) : null;
   }
   const trimmed = pageUrl.replace(/\/$/, "");
   const { data, error } = await supabase
     .from("everything_items")
-    .select(ITEM_SELECT)
+    .select(select)
     .in("url", [trimmed, `${trimmed}/`])
     .limit(1);
-  if (error) console.warn(`[common-notes] item lookup failed: ${error.message}`);
+  // A failed lookup must throw rather than pass as "no item". Treating an
+  // outage as an unchecked page would tell the reader we never checked a page
+  // we did, and offer to check it again.
+  if (error) throw new Error(`item lookup failed: ${error.message}`);
   return data?.[0] ? toPageItem(data[0]) : null;
 }
 
@@ -233,11 +255,17 @@ export async function fetchRandomNotedPageUrl(): Promise<string | null> {
   return urls[Math.floor(Math.random() * urls.length)] ?? null;
 }
 
-/** Fetches every visible note on one item, joined and normalized. */
-export async function fetchNotesForItem(itemId: string): Promise<NoteRow[]> {
+/** Fetches every visible note on one item, joined and normalized. Returns
+ *  null when the query failed, so a caller does not mistake an outage for a
+ *  page without notes and announce "found nothing to note". */
+export async function fetchNotesForItem(itemId: string): Promise<NoteRow[] | null> {
   const schema = await detectSchema();
-  const { data } = await noteQuery(schema, { innerClaim: true })
+  const { data, error } = await noteQuery(schema, { innerClaim: true })
     .eq("claim.item_id", itemId)
     .neq("status", "hidden");
+  if (error) {
+    console.warn(`[common-notes] notes fetch failed: ${error.message}`);
+    return null;
+  }
   return ((data ?? []) as any[]).map((r) => normalizeNote(r, schema));
 }

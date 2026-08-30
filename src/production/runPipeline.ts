@@ -117,6 +117,32 @@ const globalTimeout = setTimeout(async () => {
   process.exit(0);
 }, MAX_RUNTIME_MS);
 
+// The soft deadline is when the run stops STARTING work so it can finish and
+// submit what it has. The five minutes between it and the hard kill above are
+// the submit phase's guaranteed budget plus room for the posts still in
+// flight. Before this existed, a run that outran the hard kill stranded every
+// note it had finished — 37 stranded against 46 submitted on 2026-08-26.
+const RUN_STARTED_AT_MS = Date.now();
+const SOFT_DEADLINE_AT_MS = RUN_STARTED_AT_MS + 22 * 60 * 1000;
+
+// How much wall clock one post costs to process, for sizing a batch to the
+// clock. This number is tied to CONCURRENCY_LIMIT in generateCandidates: at
+// concurrency 5 a healthy run did a post roughly every two minutes of wall
+// time, so at concurrency 10 the figure halves. The estimate also sizes
+// OPTIMISTICALLY, slightly under that, and this is safe on purpose: since the
+// deadline stopped waiting for stragglers, an oversized batch costs only its
+// unfinished tail — every finished note still submits — while an undersized
+// batch costs real notes against a cap we are not filling. When over- and
+// under-shooting have asymmetric prices, size toward the cheap mistake.
+const EST_WALL_MS_PER_POST = 1 * 60 * 1000;
+
+// The misinfo pre-pass processes its finds through the full pipeline before
+// the regular pass gets the clock, so a heavy misinfo run used to starve the
+// regular batch. Its processing now stops at this sub-deadline; the crawl and
+// the selection judge run before it and are quick. Regular posts get whatever
+// the pre-pass leaves, which this floor keeps at ~15 of the 22 minutes.
+const MISINFO_PROCESSING_BUDGET_MS = 7 * 60 * 1000;
+
 async function main() {
   try {
     let supabaseLogger: SupabaseLogger | null = null;
@@ -227,6 +253,7 @@ async function main() {
     if (MISINFO_PIPELINE_ENABLED) {
       try {
         misinfoCandidates = await generateMisinfoCandidates(supabaseLogger, {
+          deadlineMs: Math.min(SOFT_DEADLINE_AT_MS, RUN_STARTED_AT_MS + MISINFO_PROCESSING_BUDGET_MS),
           skipPostIds: skipPostIds ?? new Set<string>(),
           onTweetProcessed: trackPrePassProcessed,
           topicIds: MISINFO_ACTIVE_TOPIC_IDS,
@@ -238,8 +265,23 @@ async function main() {
       console.log("[pipeline] Misinfo pre-pass disabled (MISINFO_PIPELINE_ENABLED=false)");
     }
 
+    // Size the regular batch to the clock that is actually left. The misinfo
+    // pre-pass above eats a variable slice of the run, and selecting more
+    // posts than the remaining minutes can process only queues work for the
+    // deadline to cut.
+    const remainingMs = SOFT_DEADLINE_AT_MS - Date.now();
+    const clockBudgetPosts = Math.max(1, Math.floor(remainingMs / EST_WALL_MS_PER_POST));
+    if (clockBudgetPosts < maxPosts) {
+      console.log(
+        `[max-posts] clock: ${(remainingMs / 60_000).toFixed(1)} min to the soft deadline — ` +
+          `capping maxPosts ${maxPosts} -> ${clockBudgetPosts}`,
+      );
+      maxPosts = clockBudgetPosts;
+    }
+
     const regularCandidates = await generateCandidates(supabaseLogger, {
       maxPosts,
+      deadlineMs: SOFT_DEADLINE_AT_MS,
       skipPostIds,
       knownTweetIds,
       onTweetProcessed,

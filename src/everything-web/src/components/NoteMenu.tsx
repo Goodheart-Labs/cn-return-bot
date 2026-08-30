@@ -3,10 +3,9 @@ import type { Session } from "@supabase/supabase-js";
 import { supabase } from "../../../everything-shared/supabase";
 import { displayName } from "../../../everything-shared/session";
 import { postImprovement } from "../../../everything-shared/postNote";
-import { track } from "../../../everything-shared/analytics";
 import { postNnn } from "../../../everything-shared/noteNotNeeded";
 import type { NoteRow } from "../../../everything-shared/types";
-import { AutoGrowTextarea, PostAsCheckbox, RejectedNotice, useSignedByline } from "./editorBits";
+import { AutoGrowTextarea, PostAsCheckbox, useSignedByline } from "./editorBits";
 
 /** One row of the ⋯ dropdown menu. A row marked as danger turns red, which is
  *  how a destructive action such as Delete is set apart from the rest. */
@@ -186,9 +185,13 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
         <button onClick={toggleNnn} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
           <SpeechBubbleIcon /> Note not needed
         </button>
-        <button onClick={toggleImprove} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
-          <PencilIcon /> Suggest an improvement
-        </button>
+        {/* Improving your own note makes no sense as a second card beside it.
+            An author who wants different wording deletes and rewrites. */}
+        {!mine && (
+          <button onClick={toggleImprove} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
+            <PencilIcon /> Suggest an improvement
+          </button>
+        )}
         <button
           onClick={share}
           className={`inline-flex items-center gap-1 hover:underline ${copied ? "text-green-700 dark:text-green-400" : "text-blue-600 dark:text-blue-400"}`}
@@ -293,8 +296,7 @@ function NnnComposer({ note, session, text, onTextChange, onAuthored, onClose }:
 
 /** Post an improved version as your own draft note on the same claim. It does
  *  not replace the original. It appears as its own card with jump links to and
- *  from the original, and both notes are rated separately. The judge-note edge
- *  function checks that the text is a genuine attempt before it is posted. */
+ *  from the original, and both notes are rated separately. */
 function ImproveEditor({ note, session, text, onTextChange, onAuthored, onClose }: {
   note: NoteRow;
   session: Session;
@@ -304,21 +306,14 @@ function ImproveEditor({ note, session, text, onTextChange, onAuthored, onClose 
   onClose: () => void;
 }) {
   const [busy, setBusy] = useState(false);
-  const [rejected, setRejected] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [signed, setSigned] = useSignedByline();
 
   const submit = async () => {
     setBusy(true);
     setError(null);
-    setRejected(false);
     const outcome = await postImprovement({ note, text, session, signed });
     setBusy(false);
-    if (outcome.type === "rejected") {
-      // The earnest-gate judge stores nothing, so rejections exist only as events.
-      track("improvement_write_rejected", { note_id: note.id });
-      return setRejected(true);
-    }
     if (outcome.type === "error") return setError(outcome.message);
     onTextChange("");
     onAuthored(outcome.noteId);
@@ -329,7 +324,7 @@ function ImproveEditor({ note, session, text, onTextChange, onAuthored, onClose 
     <div className="mt-2 space-y-2">
       <AutoGrowTextarea
         value={text}
-        onChange={(e) => { onTextChange(e.target.value); setRejected(false); }}
+        onChange={(e) => onTextChange(e.target.value)}
         rows={3}
         autoFocus
         placeholder="Write a clearer or better-sourced version"
@@ -340,12 +335,11 @@ function ImproveEditor({ note, session, text, onTextChange, onAuthored, onClose 
           disabled={busy || text.trim().length < 10}
           className="bg-blue-600 text-white rounded-lg px-3 py-1 text-sm font-medium hover:bg-blue-700 disabled:opacity-40"
         >
-          {busy ? "Checking…" : "Post note"}
+          {busy ? "Posting…" : "Post note"}
         </button>
         <button onClick={onClose} className="text-sm text-gray-500 dark:text-gray-400 hover:underline">Cancel</button>
         <PostAsCheckbox signed={signed} onChange={setSigned} session={session} className="ml-auto" />
       </div>
-      {rejected && <RejectedNotice />}
       {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
   );
