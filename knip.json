@@ -27,7 +27,8 @@
     "src/pipeline/misinfo-monitoring/**",
     "src/pipeline/prompts/misinfo-monitoring/**",
     "src/dashboard-shared/topicSets.ts",
-    "src/dashboard-shared/supabasePaging.ts"
+    "src/dashboard-shared/supabasePaging.ts",
+    "src/dashboard-shared/CompetingNoteCard.tsx"
   ],
   "ignoreDependencies": [
     "@types/p-queue",
