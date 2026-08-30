@@ -1,10 +1,10 @@
 /**
- * Prompt — SearXNG result summarizer.
+ * Prompt for the SearXNG result summarizer.
  *
- * Summarizes raw SearXNG results into a URL-rich brief for the google_search
- * tool's summarized variant. See handleGoogleSearchSummarized in
- * src/pipeline/tool-calling/tools.ts. `formattedResults` is the output of
- * formatSearxngResults.
+ * It turns raw SearXNG results into a brief that keeps as many URLs as it can.
+ * The summarized variant of the google_search tool uses it. The caller is
+ * handleGoogleSearchSummarized in src/pipeline/tool-calling/tools.ts.
+ * `formattedResults` is whatever formatSearxngResults returned.
  */
 
 export function buildSearxngSummarizePrompt(query: string, formattedResults: string): string {

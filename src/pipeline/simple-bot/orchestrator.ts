@@ -1,11 +1,14 @@
 /**
- * Simple Bot Orchestrator
+ * The simple bot's orchestrator.
  *
- * Linear three-stage pipeline: search → write → verify.
+ * The pipeline is linear. It searches, then writes a note, then verifies the
+ * note's sources.
  *
- * The writer stage is wrapped in withWriterCache: when WRITER_CACHE is
- * populated (replay), search + write are skipped and the run starts from the
- * gates (judge + verifier). Unset env = full pipeline, no caching.
+ * The search and write stages are wrapped in withWriterCache. When the
+ * WRITER_CACHE directory already holds an entry for this tweet, the run is a
+ * replay. It skips searching and writing and starts at the source verifier.
+ * When the environment variable is unset nothing is cached and the full
+ * pipeline runs.
  */
 
 import type { Post } from "../../api/fetchEligiblePosts";
@@ -23,6 +26,7 @@ import {
 } from "../prompts/simple-bot/correctionExtractor";
 import { runSearch } from "./search";
 import { runCorrectionExtractor } from "./correctionExtractor";
+import { runTimingStage } from "./timingStage";
 import { runWriter } from "./writer";
 import { topicSourcelessRejection } from "../utils/noteLint";
 
@@ -39,14 +43,27 @@ export async function runSimpleBotPipeline(
   return outcome;
 }
 
-/** Search → write. Returns a terminal early-exit when search finds no dispute,
- *  or the written note (writer_done) for the gates to run on. */
+/** Runs the search stage and then the writer. It returns an early exit when the
+ *  search finds nothing to dispute. Otherwise it returns the written note for
+ *  the verifier to run on. */
 async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterStageResult> {
   const userMessage = buildUserMessageFromInput(post, input);
 
   const search = await runSearch(userMessage);
   if (!search.correctionNeeded) {
     return { kind: "early_exit", outcome: { type: "no_correction", reason: search.findings } };
+  }
+
+  // The timing stage runs only on the timing_context ON arm. That arm is
+  // independent of the time_travel_prompt instruction test, so the two form a
+  // 2x2. A post about an event that has already settled passes through
+  // untouched. A post published within six hours of its event, or in the middle
+  // of the event, gets a block of timing context added to the writer's user
+  // message. The block is information and not a gate. The writer still decides.
+  let timingContext: string | undefined;
+  if (getBotConfig().timing_context) {
+    const timing = await runTimingStage({ userMessage, findings: search.findings, postCreatedAt: post.created_at });
+    if (timing.action === "inform") timingContext = timing.contextBlock;
   }
 
   let writerFindings = search.findings;
@@ -65,12 +82,13 @@ async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterS
     writerFindings = formatCorrectionsForWriter(highValue);
   }
 
-  const note = await runWriter(userMessage, writerFindings);
+  const note = await runWriter(userMessage, writerFindings, { timingContext });
   return {
     kind: "writer_done",
     userMessage,
-    // Filtered corrections (or raw findings when extraction is off) — the writer AND
-    // the source verifier both read this via stage.findings; also what's logged.
+    // This holds the filtered corrections, or the raw findings when correction
+    // extraction is off. The writer and the source verifier both read it as
+    // stage.findings, and it is also what gets logged.
     findings: writerFindings,
     queries: [],
     noteText: note.noteText,
@@ -79,7 +97,8 @@ async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterS
   };
 }
 
-/** Source verifier. Runs on every full pipeline and on every cache replay. */
+/** Runs the source verifier. It runs on every full pipeline run and on every
+ *  cache replay. */
 async function runGates(stage: Extract<WriterStageResult, { kind: "writer_done" }>): Promise<PipelineOutcome> {
   const { userMessage, findings, noteText, sources } = stage;
 
@@ -92,14 +111,15 @@ async function runGates(stage: Extract<WriterStageResult, { kind: "writer_done" 
   });
 
   if (verification.accepted) {
-    // Curated-topic notes must keep ≥1 verified source (the classic verifier
-    // can accept while classifying every URL bad — see topicSourcelessRejection).
+    // A curated-topic note must keep at least one verified source. The classic
+    // verifier can accept a note while marking every one of its URLs bad. See
+    // topicSourcelessRejection.
     const sourceless = topicSourcelessRejection(verification.good_sources);
     if (sourceless) {
       return { type: "verification_failed", noteText, sources, reason: sourceless, searchResults: findings };
     }
-    // Drop URLs the verifier classified as bad — they don't support any claim
-    // (or failed to fetch), so we don't want them in the published note.
+    // Drop the URLs the verifier marked bad. Such a URL either supports no claim
+    // in the note or failed to fetch, so the published note should not carry it.
     const goodSet = new Set(verification.good_sources);
     return {
       type: "note",

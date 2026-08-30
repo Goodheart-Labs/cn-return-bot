@@ -2,13 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Mirrors everything-web/index.html: system font stack (deliberately no
- * TwitterChirp). Lives on the React root container (the shadow tree's inner
- * <body>), NOT on :host: WXT's prepended `:host{all:initial !important}`
- * outranks non-important :host declarations, and :host can't react to the
- * `.dark` class the mount code toggles on the container to follow the HOST
- * PAGE's theme. (Never write a literal `:root` in this file — WXT rewrites
- * it to `:host`.) */
+/* The same system font stack that everything-web/index.html uses. TwitterChirp
+ * is left out on purpose. These rules sit on the React root container, which
+ * acts as the shadow tree's inner <body>, and not on :host. There are two
+ * reasons for that. WXT prepends `:host{all:initial !important}` to this sheet,
+ * and that beats any :host declaration of ours that is not important itself.
+ * And :host cannot react to the `.dark` class, which the mount code toggles on
+ * the container so the UI follows the host page's theme. Never write a literal
+ * `:root` in this file, because WXT rewrites it to `:host`. */
 .cn-theme-root {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   font-size: 16px;
@@ -20,15 +21,17 @@
   color: #f3f4f6;
 }
 
-/* Host geometry MUST live here, not in JS. WXT prepends
- * `:host{all:initial !important}` to this sheet, and an important rule inside
- * the shadow tree outranks even the page-side inline `!important` styles the
- * mount code could set (CSS scoping inverts proximity for !important). These
- * rules come later with higher specificity, so they win over the reset — and
- * over any host-page global reset like Substack's. */
+/* The geometry of each shadow host must be set here in CSS, not from
+ * JavaScript. WXT prepends `:host{all:initial !important}` to this sheet. An
+ * important rule inside the shadow tree beats even an inline `!important` style
+ * that the mount code could set from the page side, because CSS scoping
+ * reverses the usual order for important rules. The rules below come later and
+ * are more specific, so they win over that reset. They also win over a global
+ * reset on the host page, such as Substack's. */
 
-/* Inline-notes overlay: zero-footprint anchor at the document origin; badges
- * and popovers inside are positioned in page coordinates relative to it. */
+/* The inline-notes overlay. It takes up no space and sits at the top left corner
+ * of the document. The badges and popovers inside it are placed in page
+ * coordinates relative to that corner. */
 :host(common-notes-ui) {
   position: absolute !important;
   top: 0 !important;
@@ -38,11 +41,13 @@
   z-index: 2147483000 !important;
 }
 
-/* In-content annotation layer: in-flow zero-size last child of the article
- * container, so badges/popovers scroll natively with the text in EVERY scroll
- * mode (document scroll AND inner-container scroll, e.g. Substack's reader).
- * Must be IN-FLOW, not absolute: an absolute host only scrolls with its
- * containing block's scrollers, which may sit outside an inner scroller. */
+/* The annotation layer that lives inside the content. It is the last child of
+ * the article container, takes up no space, and stays in the normal flow. That
+ * way the badges and popovers scroll with the text under every scroll mode. Both
+ * the document scrolling and an inner container scrolling work, and the latter
+ * is what Substack's reader does. The layer must stay in flow. An absolutely
+ * positioned host only scrolls with the scrollers of its containing block, and
+ * those can sit outside an inner scroller. */
 :host(common-notes-inline) {
   position: relative !important;
   display: block !important;
@@ -52,10 +57,10 @@
   z-index: 2147483000 !important;
 }
 
-/* YouTube overlay: right edge of #movie_player (the anchor element),
- * vertically centered — the host box is content-sized, so translateY(-50%)
- * centers the card. Fullscreen/theater keep working since it lives inside
- * the player. */
+/* The YouTube overlay. It sits at the right edge of #movie_player, the element
+ * it is anchored to, and is centred vertically. The host box is sized by its
+ * content, so translateY(-50%) is what centres the card. Fullscreen and theater
+ * mode keep working because the overlay lives inside the player. */
 :host(common-notes-yt) {
   position: absolute !important;
   top: 50% !important;
@@ -64,16 +69,14 @@
   z-index: 1000 !important;
 }
 
-/* Request-note popover: fixed bottom-right card on whatever page the user
- * invoked "Request a Common Note" on. */
-:host(common-notes-requestnote) {
+/* The transient status card. It is a fixed card in the bottom right corner
+ * saying whether we have checked the current page and its author yet. It
+ * briefly moved to the top right after the user test, and Jim moved it back
+ * on 2026-08-25 after seeing both: the bottom corner reads as a notification
+ * and stays out of the way of the sites' own header controls. */
+:host(common-notes-status) {
   position: fixed !important;
   bottom: 16px !important;
   right: 16px !important;
   z-index: 2147483001 !important;
-}
-
-@keyframes cn-countdown {
-  from { stroke-dashoffset: 0; }
-  to { stroke-dashoffset: 44; }
 }

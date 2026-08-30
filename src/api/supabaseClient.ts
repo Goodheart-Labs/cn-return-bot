@@ -1,11 +1,14 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { fetchAllRows as fetchAllRowsShared } from "./paging";
 import type { Post } from "./fetchEligiblePosts";
+import type { FeedSize } from "../pipeline/orchestration/utils/feedSizeStrategy";
 import { stripNullChars } from "../utils/stripNullChars";
 
-// A note that an --incremental scrape scrolled past without capturing this many
-// times is "given up": excluded from the anchor so a permanently-deleted note
-// can't pin the daily window. The staged updates in markIncrementalMisses assume 2.
+// How often an --incremental scrape may scroll past a note without capturing it
+// before we give up on that note. A note we have given up on no longer anchors
+// the scrape window, so a permanently deleted note cannot pin the daily scrape
+// to its date. The staged updates in markIncrementalMisses only work for the
+// value 2.
 const MISS_LIMIT = 2;
 
 // Database types
@@ -18,10 +21,11 @@ export interface Notewriter {
   created_at: string;
 }
 
-// Merged shape after migration 034: notes is the master record per note,
-// with submission metadata (notewriter_id / submitted_at) nullable for
-// pre-tracking rows and rating/status fields populated from public data.
-// For run/bot/score data, join notes.note_id → pipeline_runs.note_id.
+// Migration 034 merged the old tables into `notes`, so one row is now the
+// master record for one note. The submission metadata notewriter_id and
+// submitted_at are null on rows that predate submission tracking. The rating
+// and status fields are filled in from X's public data. Run, bot and score data
+// live elsewhere. Join notes.note_id to pipeline_runs.note_id to reach it.
 export interface Note {
   id: string;
   note_id: string;
@@ -55,9 +59,10 @@ export interface PublicDataSnapshot {
   core_note_factor1?: number;
 }
 
-// Insert payload for logNoteSubmission: only the columns the submission
-// pipeline actually knows. Status/ratings/views get filled in later by the
-// updateNoteFeedback cron and the scraper.
+// The insert payload for logNoteSubmission. It carries only the columns the
+// submission pipeline knows at submit time. The status, the rating counts and
+// the view count are filled in later by the updateNoteFeedback cron job and by
+// the scraper.
 export type NoteInsert = {
   note_id: string;
   tweet_id: string;
@@ -82,13 +87,16 @@ type ExactCountResponse = {
   status: number;
 };
 
-// Builds the count query. head:true is the normal body-less request; head:false
-// is the diagnostic GET fallback (error bodies only survive on GET). Builders
-// should append .limit(1) — a no-op on HEAD — so the fallback fetches one row.
+// Builds the count query. Passing head:true sends the normal request, which
+// comes back without a body. Passing head:false sends a GET instead, which is
+// the diagnostic fallback, because only a GET carries the error body. A builder
+// should end with .limit(1). That does nothing on a HEAD request and keeps the
+// GET fallback down to a single row.
 type ExactCountQuery = (head: boolean) => PromiseLike<ExactCountResponse>;
 
 const COUNT_RETRY_DELAYS_MS = [250, 1000] as const;
-// status 0 = network-level failure (supabase-js resolves with no HTTP status)
+// Status 0 means the request failed at the network level. supabase-js resolves
+// with no HTTP status in that case.
 const RETRYABLE_COUNT_STATUSES = new Set([0, 408, 425, 429]);
 
 function sleep(ms: number): Promise<void> {
@@ -98,12 +106,12 @@ function sleep(ms: number): Promise<void> {
 /**
  * Returns the singleton supabase-js client.
  *
- * Heads-up for callers writing new queries: PostgREST silently caps any
- * single `.select()` response at 1000 rows. There's no error if your
- * result is larger — it just gets truncated. To fetch everything matching
- * a query, use `fetchAllRows` from ./paging (keyset-paginated, handles
- * arbitrarily large result sets). Bounded queries with `.limit(N)` or
- * `.single()` are fine to call directly on this client.
+ * Heads-up for callers writing new queries. PostgREST silently caps the
+ * response of a single `.select()` at 1000 rows. You get no error when your
+ * result is larger. It is simply truncated. To fetch everything that matches a
+ * query, use `fetchAllRows` from ./paging. That helper walks the result with a
+ * keyset, so it handles any size. A bounded query with `.limit(N)` or
+ * `.single()` is fine to call directly on this client.
  */
 export function getSupabaseClient(): SupabaseClient {
   if (supabaseInstance) {
@@ -123,9 +131,14 @@ export function getSupabaseClient(): SupabaseClient {
   return supabaseInstance;
 }
 
-// Rows with raw_tweet blobs are large — keep write batches small enough that a
-// single PostgREST request stays well under body-size/time limits.
+// Rows that carry a raw_tweet blob are large. Keep write batches small enough
+// that a single PostgREST request stays well under the body size limit and the
+// time limit.
 const FEED_TWEETS_WRITE_CHUNK = 500;
+// An existence check sends only ids, and they travel in the URL as
+// `tweet_id=in.(...)`. So this chunk size is bounded by the length of the URL
+// rather than by the size of a payload.
+const FEED_TWEETS_ID_CHUNK = 200;
 
 function chunked<T>(items: T[], size: number): T[][] {
   const chunks: T[][] = [];
@@ -134,10 +147,11 @@ function chunked<T>(items: T[], size: number): T[][] {
 }
 
 /**
- * Map an eligibility-endpoint Post to the shared column shape of the `tweets`
- * and `feed_tweets` tables. Derives has_video / has_photo / media_count /
- * video_duration_ms from post.media and carries the complete raw X-API object
- * in raw_tweet. Table-specific timestamps are added by the callers.
+ * Maps a Post from the eligibility endpoint onto the columns that the `tweets`
+ * and `feed_tweets` tables have in common. It derives has_video, has_photo,
+ * media_count and video_duration_ms from post.media. It stores the complete raw
+ * X API object in raw_tweet. Each caller adds the timestamps that only its own
+ * table has.
  */
 function postToTweetRow(post: Post) {
   const videoMedia = post.media?.find((m) => m.type === "video");
@@ -175,9 +189,10 @@ export class SupabaseLogger {
   }
 
   /**
-   * Fetch every row matching `buildQuery()`. Delegates to the shared keyset
-   * paginator in src/api/paging.ts. Caller must supply a unique, indexed
-   * `keyCol` (typically the table's primary key).
+   * Fetches every row that matches `buildQuery()`. The paging itself is done by
+   * the shared keyset paginator in src/api/paging.ts. The caller must supply a
+   * `keyCol` that is unique and indexed. That is usually the table's primary
+   * key.
    */
   async fetchAllRows<T extends Record<string, any>>(
     buildQuery: (from: SupabaseClient) => any,
@@ -188,10 +203,11 @@ export class SupabaseLogger {
   }
 
   /**
-   * Upsert the notes row after a successful submission. Upsert (not insert)
-   * because the scraper may have already created a row with cn_status / view_count
-   * before we landed the API response — we want to enrich that row with the
-   * submission metadata, not crash on the unique-constraint violation.
+   * Writes the notes row after a successful submission. This is an upsert
+   * rather than an insert because the scraper may have created the row already,
+   * with a cn_status and a view_count, before our API response landed. In that
+   * case we want to add the submission metadata to the existing row instead of
+   * failing on the unique constraint.
    */
   async logNoteSubmission(note: NoteInsert): Promise<Note | null> {
     const { data, error } = await this.client
@@ -209,11 +225,7 @@ export class SupabaseLogger {
     return data;
   }
 
-  /**
-   * Get or create a notewriter by handle
-   */
   async getOrCreateNotewriter(handle: string, displayName?: string): Promise<Notewriter> {
-    // Try to find existing
     const { data: existing } = await this.client
       .from("notewriters")
       .select()
@@ -224,7 +236,6 @@ export class SupabaseLogger {
       return existing;
     }
 
-    // Create new
     const { data, error } = await this.client
       .from("notewriters")
       .insert({ handle, display_name: displayName })
@@ -318,9 +329,6 @@ export class SupabaseLogger {
     return !!data;
   }
 
-  /**
-   * Find a scraped note by tweet_id and return its current note_id
-   */
   async findScrapedNoteByTweetId(tweetId: string): Promise<string | null> {
     const { data, error } = await this.client
       .from("notes")
@@ -337,13 +345,14 @@ export class SupabaseLogger {
   }
 
   /**
-   * Update a scraped note's note_id (e.g., from tweet_XXXX placeholder to real ID)
-   * Also updates any snapshots that reference the old note_id
+   * Changes a scraped note's note_id. The scraper stores a placeholder id of
+   * the form tweet_XXXX until it can read the real id out of the note's modal.
    */
   async updateScrapedNoteId(oldNoteId: string, newNoteId: string): Promise<void> {
-    // Single UPDATE on notes; the FK on scraped_notewriter_snapshots.note_id
-    // is ON UPDATE CASCADE (migration 036), so dependent snapshot rows are
-    // renamed in the same transaction.
+    // This is a single update on notes. The foreign key on
+    // scraped_notewriter_snapshots.note_id is ON UPDATE CASCADE since migration
+    // 036, so the snapshot rows that point at the old id are renamed in the
+    // same transaction.
     const { error } = await this.client
       .from("notes")
       .update({ note_id: newNoteId })
@@ -356,7 +365,8 @@ export class SupabaseLogger {
   }
 
   /**
-   * Get scraped note IDs in a given range (for coverage checks)
+   * Returns the ids of the scraped notes that fall in the given id range.
+   * Placeholder ids are left out. The scraper uses this to check its coverage.
    */
   async getScrapedNoteIdsInRange(minId: string, maxId: string): Promise<string[]> {
     const { data, error } = await this.client
@@ -375,9 +385,10 @@ export class SupabaseLogger {
   }
 
   /**
-   * Existence + first-snapshot state for a note in a single read. Lets the
-   * scraper decide whether to create the note row and whether it still needs its
-   * `first_snapshot_at` stamped, without an extra round-trip.
+   * Reads in one query whether a note row exists and whether it already has a
+   * first snapshot. The scraper needs both facts to decide whether to create the
+   * row and whether to stamp `first_snapshot_at`, and this saves it a second
+   * round trip.
    */
   async getNoteSnapshotState(noteId: string): Promise<{ exists: boolean; hasFirstSnapshot: boolean }> {
     const { data, error } = await this.client
@@ -395,9 +406,10 @@ export class SupabaseLogger {
   }
 
   /**
-   * Stamp when a note first received a scraper snapshot. Idempotent — only sets
-   * the value while it is still null. This is what makes getOldestUnscrapedNoteId
-   * a cheap indexed lookup instead of a scan of the whole snapshots time-series.
+   * Records when a note first received a scraper snapshot. The update only
+   * touches rows where the value is still null, so calling it again changes
+   * nothing. This column is what makes getOldestUnscrapedNoteId a cheap indexed
+   * lookup instead of a scan over the whole snapshots time series.
    */
   async markFirstSnapshot(noteId: string): Promise<void> {
     const { error } = await this.client
@@ -413,17 +425,19 @@ export class SupabaseLogger {
   }
 
   /**
-   * Oldest known note that is still eligible to anchor the --incremental scrape:
-   * no snapshot yet (`first_snapshot_at IS NULL`) and not given up after repeated
-   * misses (`scrape_misses < MISS_LIMIT`). `first_snapshot_at` is stamped on a
-   * note's first snapshot (see markFirstSnapshot + migration 048) and this exact
-   * predicate is backed by the partial index `idx_notes_incremental_anchor`, so
-   * it's a cheap indexed read rather than a scan of the snapshots time-series.
-   * Returns null when every known note has a snapshot or has been given up.
+   * Returns the oldest note that may still anchor an --incremental scrape. A
+   * note qualifies when it has no snapshot yet, so `first_snapshot_at` is null,
+   * and when it has not been given up after repeated misses, so `scrape_misses`
+   * is still below MISS_LIMIT. markFirstSnapshot stamps `first_snapshot_at` on a
+   * note's first snapshot, see migration 048. The partial index
+   * `idx_notes_incremental_anchor` covers exactly this predicate, so the read is
+   * cheap and never scans the snapshots time series. Returns null when every
+   * known note either has a snapshot or has been given up.
    */
   async getOldestUnscrapedNoteId(): Promise<string | null> {
-    // note_id is text so .order() is lexicographic; take the smallest window and
-    // pick the true min as a BigInt to guard against any mixed-length ids.
+    // note_id is a text column, so .order() sorts it as text. We take a small
+    // window of the smallest ids in that order and then pick the true minimum by
+    // comparing them as BigInts. That guards against ids of different lengths.
     const TOP_CANDIDATES = 50;
     const { data, error } = await this.client
       .from("notes")
@@ -449,14 +463,20 @@ export class SupabaseLogger {
   }
 
   /**
-   * After an --incremental run, account for notes the scrape scrolled past but
-   * failed to capture — still no snapshot and note_id >= the lowest captured id.
-   * Implements a MISS_LIMIT-miss give-up with two ordered literal-set updates (no
-   * column arithmetic, so no RPC needed): first promote already-missed notes to
-   * MISS_LIMIT (given up), then record a first miss for the rest. The order avoids
-   * giving up on a note in the same run it was first missed. A captured note has
-   * first_snapshot_at set and so drops out of this set, making misses effectively
-   * consecutive. Returns counts for logging.
+   * Accounts for the notes an --incremental run scrolled past but failed to
+   * capture. Those are the notes that still have no snapshot and whose note_id
+   * is at or above the lowest id the run did capture. A note is given up once it
+   * has been missed MISS_LIMIT times.
+   *
+   * The counting uses two updates that each write a literal value. That way it
+   * needs no arithmetic on a column and therefore no RPC. The first update
+   * promotes the already-missed notes to MISS_LIMIT, which gives up on them. The
+   * second records a first miss for the rest. The order matters. It stops a note
+   * from being given up in the same run in which it was first missed.
+   *
+   * A captured note gets first_snapshot_at set and therefore leaves this set, so
+   * the misses it counts are effectively consecutive. Returns both counts for
+   * logging.
    */
   async markIncrementalMisses(minCoveredNoteId: string): Promise<{ givenUp: number; firstMisses: number }> {
     const coveredUnscraped = (q: any) =>
@@ -465,7 +485,7 @@ export class SupabaseLogger {
         .not("note_id", "like", "tweet_%")
         .not("note_id", "like", "unavailable_%");
 
-    // 1. Missed before and missed again → give up.
+    // Step 1. A note that was missed before and is missed again is given up.
     const { data: givenUp, error: giveUpErr } = await coveredUnscraped(
       this.client.from("notes").update({ scrape_misses: MISS_LIMIT }),
     )
@@ -476,7 +496,7 @@ export class SupabaseLogger {
       throw giveUpErr;
     }
 
-    // 2. First miss for notes never missed before.
+    // Step 2. Record a first miss for the notes that were never missed before.
     const { data: firstMissed, error: firstMissErr } = await coveredUnscraped(
       this.client.from("notes").update({ scrape_misses: 1 }),
     )
@@ -495,9 +515,9 @@ export class SupabaseLogger {
   // ============================================
 
   /**
-   * Bulk insert tweets from fetched eligibility-endpoint posts.
-   * Insert-only: rows whose tweet_id already exists are skipped, so engagement
-   * metrics remain frozen at first sight.
+   * Inserts the tweets we fetched from the eligibility endpoint. It only ever
+   * inserts. A row whose tweet_id already exists is skipped, so its engagement
+   * metrics stay frozen at the values we saw the first time.
    */
   async bulkInsertNewTweets(posts: Post[]): Promise<void> {
     if (!posts.length) return;
@@ -511,20 +531,46 @@ export class SupabaseLogger {
   }
 
   /**
-   * Save every post from a full eligible-feed pull into feed_tweets.
-   * First-seen tweets get a full row (incl. the large raw_tweet blob);
-   * already-known tweets get only their engagement metrics, author counts and
-   * last_seen_at refreshed — the big JSONB/text columns are never rewritten.
-   * Returns { inserted, updated } for run logging.
+   * Inserts a feed_tweets row for every post we are seeing for the first time.
+   * Such a row freezes first_seen_impressions and first_seen_feed_size. Floor
+   * analyses need both values to reconstruct how fast a post was growing when
+   * the feed first surfaced it. The plain `impressions` column cannot serve that
+   * purpose, because it is refreshed every time we see the post again.
+   *
+   * Tweet ids we already know are filtered out with cheap id-only reads before
+   * anything is sent. The feed ladder re-surfaces the same below-floor posts on
+   * every 15-minute run. Re-sending their raw_tweet blobs only for the server to
+   * skip them would dwarf the payload of the genuinely new posts.
+   *
+   * Returns the ids that were actually inserted.
    */
-  async bulkSaveFeedTweets(posts: Post[]): Promise<{ inserted: number; updated: number }> {
-    if (!posts.length) return { inserted: 0, updated: 0 };
-    const now = new Date().toISOString();
+  async insertNewFeedTweets(sightings: { post: Post; feedSize: FeedSize }[]): Promise<Set<string>> {
+    if (!sightings.length) return new Set();
 
-    // Pass 1: insert full rows for tweets not seen before (DO NOTHING on
-    // conflict); .select() returns only the actually-inserted rows.
+    const known = new Set<string>();
+    for (const chunk of chunked(sightings.map((s) => s.post.id), FEED_TWEETS_ID_CHUNK)) {
+      const { data, error } = await this.client.from("feed_tweets").select("tweet_id").in("tweet_id", chunk);
+      if (error) {
+        console.error(`[SupabaseLogger] Error checking ${chunk.length} feed tweet ids:`, error);
+        throw error;
+      }
+      for (const row of data ?? []) known.add(row.tweet_id);
+    }
+
+    const now = new Date().toISOString();
+    const fullRows = sightings
+      .filter((s) => !known.has(s.post.id))
+      .map(({ post, feedSize }) => ({
+        ...postToTweetRow(post),
+        first_seen_at: now,
+        last_seen_at: now,
+        first_seen_impressions: post.public_metrics?.impression_count,
+        first_seen_feed_size: feedSize,
+      }));
+
+    // Do nothing on conflict, because a concurrent writer may have won the race.
+    // The .select() then returns only the rows this call actually inserted.
     const insertedIds = new Set<string>();
-    const fullRows = posts.map((post) => ({ ...postToTweetRow(post), first_seen_at: now, last_seen_at: now }));
     for (const chunk of chunked(fullRows, FEED_TWEETS_WRITE_CHUNK)) {
       const { data, error } = await this.client
         .from("feed_tweets")
@@ -536,8 +582,25 @@ export class SupabaseLogger {
       }
       for (const row of data ?? []) insertedIds.add(row.tweet_id);
     }
+    return insertedIds;
+  }
 
-    // Pass 2: for the pre-existing rest, refresh only the volatile columns.
+  /**
+   * Saves every post from a full pull of the eligible feed into feed_tweets. A
+   * tweet we see for the first time gets a full row through insertNewFeedTweets,
+   * including the large raw_tweet blob. For a tweet we already know we refresh
+   * only its engagement metrics, its author counts and last_seen_at. The large
+   * JSONB and text columns are never rewritten. Returns how many rows were
+   * inserted and how many were updated, for the run log.
+   */
+  async bulkSaveFeedTweets(posts: Post[], feedSize: FeedSize): Promise<{ inserted: number; updated: number }> {
+    if (!posts.length) return { inserted: 0, updated: 0 };
+    const now = new Date().toISOString();
+
+    const insertedIds = await this.insertNewFeedTweets(posts.map((post) => ({ post, feedSize })));
+
+    // Second pass. For the tweets we already knew, refresh only the columns
+    // whose values change over time.
     const metricRows = posts
       .filter((post) => !insertedIds.has(post.id))
       .map((post) => ({
@@ -568,8 +631,8 @@ export class SupabaseLogger {
   // ============================================
 
   /**
-   * Create a new pipeline run record when a tweet starts processing
-   * Returns the run ID to attach scores to later
+   * Creates the pipeline run row for a tweet that is starting to process.
+   * Returns the run id, which the caller uses later to attach scores to the run.
    */
   async createPipelineRun(data: {
     tweet_id: string;
@@ -586,7 +649,7 @@ export class SupabaseLogger {
         ab_test_picks: data.ab_test_picks,
         bot_config: data.bot_config,
         commit_sha: data.commit_sha,
-        outcome: "in_progress", // Will be updated when pipeline completes
+        outcome: "in_progress", // The pipeline overwrites this when it finishes.
         final_stage: "started",
       })
       .select("id")
@@ -600,9 +663,6 @@ export class SupabaseLogger {
     return result.id;
   }
 
-  /**
-   * Update pipeline run with final outcome
-   */
   async completePipelineRun(
     runId: string,
     data: {
@@ -626,9 +686,10 @@ export class SupabaseLogger {
   ): Promise<void> {
     const { error } = await this.client
       .from("pipeline_runs")
-      // Scrub NUL chars from every free-text / JSONB field — model output (e.g.
-      // Gemini media OCR) can emit U+0000, which Postgres rejects with 22P05 and
-      // would otherwise drop the whole run's row (logs + outcome).
+      // Strip NUL characters from every free-text and JSONB field. Model output
+      // can contain U+0000, for example when Gemini reads text out of an image.
+      // Postgres rejects such a string with error 22P05, and that would lose the
+      // whole run's row, including its logs and its outcome.
       .update(stripNullChars({
         outcome: data.outcome,
         outcome_reason: data.outcome_reason,
@@ -655,9 +716,6 @@ export class SupabaseLogger {
     }
   }
 
-  /**
-   * Add a score to a pipeline run
-   */
   async addPipelineScore(
     runId: string,
     data: {
@@ -682,10 +740,11 @@ export class SupabaseLogger {
   }
 
   /**
-   * Mark any `in_progress` runs older than `olderThanMinutes` as failed.
-   * Catches rows where processTweet's terminal `completePipelineRun` call
-   * itself threw — without this, those rows stay `in_progress` forever
-   * and pollute outcome-rate calculations.
+   * Marks every run that is still `in_progress` and older than
+   * `olderThanMinutes` as failed. A row like that is left behind when
+   * processTweet's final `completePipelineRun` call threw. Without this sweep
+   * those rows would stay `in_progress` forever and would distort every
+   * outcome-rate calculation.
    */
   async sweepStuckRuns(opts: { olderThanMinutes: number }): Promise<number> {
     const cutoff = new Date(Date.now() - opts.olderThanMinutes * 60_000).toISOString();
@@ -708,9 +767,6 @@ export class SupabaseLogger {
     return data?.length ?? 0;
   }
 
-  /**
-   * Mark a candidate as submitted after successful note submission.
-   */
   async markCandidateSubmitted(runId: string, noteId: string): Promise<void> {
     const { error } = await this.client
       .from("pipeline_runs")
@@ -728,7 +784,8 @@ export class SupabaseLogger {
   }
 
   /**
-   * Mark a pipeline run as expired (tweet deleted or ineligible during submission).
+   * Marks a pipeline run as expired. That happens when the tweet was deleted or
+   * became ineligible while we were submitting the note.
    */
   async markCandidateExpired(runId: string, reason: string): Promise<void> {
     const { error } = await this.client
@@ -747,9 +804,11 @@ export class SupabaseLogger {
   }
 
   /**
-   * Get tweet IDs to skip, with cooldown logic for retries.
-   * - Submitted notes: always skip
-   * - All rejections: 1h after 1st, 24h after 2nd, permanent after 3+
+   * Returns the tweet ids the pipeline should skip. A tweet we already wrote a
+   * note for is always skipped. A tweet that was rejected before is skipped for
+   * a cooldown period that grows with the number of rejections. One rejection
+   * means one hour. Two rejections mean 24 hours. Three or more rejections mean
+   * the tweet is skipped for good.
    */
   async getSkipTweetIds(): Promise<Set<string>> {
     const tweetIds = new Set<string>();
@@ -808,15 +867,16 @@ export class SupabaseLogger {
   }
 
   /**
-   * Get all tweet IDs already in the tweets table — i.e. tweets we have
-   * previously seen from the eligibility endpoint. Used to skip already-seen
-   * tweets so each fetched tweet is processed at most once.
+   * Returns every tweet id that is already in the tweets table. Those are the
+   * tweets we have seen before from the eligibility endpoint. The caller uses
+   * the set to skip them, so each fetched tweet is processed at most once.
    */
   async getKnownTweetIds(): Promise<Set<string>> {
     try {
-      // Keyset by tweet_id: the tweets table has 40k+ rows and grows roughly
-      // linearly with pipeline runs. tweet_id is the primary key so it's
-      // unique, indexed, and a natural pagination key.
+      // We page by tweet_id. The tweets table holds more than 40,000 rows and
+      // keeps growing roughly in step with the number of pipeline runs. tweet_id
+      // is the primary key, so it is unique and indexed and makes a natural
+      // paging key.
       const rows = await this.fetchAllRows<{ tweet_id: string }>(
         (client) => client.from("tweets").select("tweet_id"),
         "tweet_id",
@@ -834,10 +894,12 @@ export class SupabaseLogger {
   // ============================================
 
   /**
-   * Tweet IDs already run through Pangram (any verdict). One read per run so the
-   * Pangram pre-pass checks each long-form post exactly once instead of
-   * re-classifying the same viral post every run. Fail-soft to an empty set so
-   * the pre-pass still runs before migration 049 is applied (it just re-checks).
+   * Returns the tweet ids that have already been run through Pangram, whatever
+   * the verdict was. It costs one read per run, and it lets the Pangram pre-pass
+   * check each long-form post exactly once instead of classifying the same viral
+   * post again on every run. On any error it returns an empty set instead of
+   * throwing. That way the pre-pass still works before migration 049 has been
+   * applied. It simply checks the posts again.
    */
   async getPangramCheckedTweetIds(): Promise<Set<string>> {
     try {
@@ -853,7 +915,8 @@ export class SupabaseLogger {
     }
   }
 
-  /** Record Pangram verdicts (insert-only; the first verdict per tweet wins). */
+  /** Records Pangram verdicts. The write only inserts, so the first verdict we
+   *  store for a tweet is the one that is kept. */
   async recordPangramChecks(rows: Array<{
     tweet_id: string;
     feed_size?: string;
@@ -875,16 +938,20 @@ export class SupabaseLogger {
   }
 
   /**
-   * All JUDGED sightings, keyed "<tweetId>:<topicId>". One read per pass so
-   * callers can tell which keyword-matched posts are *new* (worth upserting +
-   * evaluating with the selection LLM) versus already-judged. Rows with a null
-   * needs_note are deliberately EXCLUDED: they were upserted but the selection
-   * LLM never returned a verdict (e.g. it crashed after the upsert), and
-   * treating them as "seen" would silently drop them forever — excluding them
-   * lets the next run re-evaluate, which is what the sightings-first ordering
-   * was designed for (and what migration 043's needs_note-IS-NULL partial
-   * index anticipated). The table grows unboundedly and this paginates the
-   * whole thing; fine at current scale, revisit if reads get slow.
+   * Returns every sighting that already has a verdict, keyed as
+   * "<tweetId>:<topicId>". It costs one read per pass. With that set a caller
+   * can tell which keyword-matched posts are new, and only those are worth
+   * upserting and sending to the selection LLM.
+   *
+   * Rows whose needs_note is null are left out on purpose. Such a row was
+   * upserted, but the selection LLM never returned a verdict for it, for example
+   * because it crashed after the upsert. Treating those rows as seen would drop
+   * them forever. Leaving them out lets the next run judge them again. That is
+   * what the sightings-first ordering is for, and it is what the partial index
+   * on needs_note IS NULL in migration 043 anticipated.
+   *
+   * The table grows without bound and this call pages through all of it. That is
+   * fine at the current size. Revisit it if the reads get slow.
    */
   async getMisinfoSightingKeys(): Promise<Set<string>> {
     const rows = await this.fetchAllRows<{ tweet_id: string; topic_id: string }>(
@@ -899,10 +966,12 @@ export class SupabaseLogger {
   }
 
   /**
-   * Sightings judged note-worthy but never processed (needs_note = true,
-   * processed_run_id IS NULL — served by migration 043's partial index), keyed
-   * "<tweetId>:<topicId>". When such a post re-surfaces in a later fetch, the
-   * stored verdict is reused instead of re-spending a selection-LLM call.
+   * Returns the sightings that the selection LLM judged note-worthy but that
+   * were never processed, keyed as "<tweetId>:<topicId>". Those are the rows
+   * where needs_note is true and processed_run_id is null, which is the
+   * predicate the partial index from migration 043 serves. When such a post
+   * shows up again in a later fetch, the stored verdict is reused instead of
+   * paying for another selection-LLM call.
    */
   async getPendingMisinfoSightings(topicIds: string[]): Promise<Set<string>> {
     if (!topicIds.length) return new Set();
@@ -919,7 +988,8 @@ export class SupabaseLogger {
     return new Set(rows.map((r) => `${r.tweet_id}:${r.topic_id}`));
   }
 
-  /** Insert newly-matched sightings; existing (tweet, topic) pairs are ignored. */
+  /** Inserts newly matched sightings. A tweet and topic pair that already has a
+   *  row is ignored. */
   async upsertMisinfoSightings(rows: Array<{
     tweet_id: string;
     topic_id: string;
@@ -972,8 +1042,9 @@ export class SupabaseLogger {
   }
 
   /**
-   * Get summary stats across ALL scraped notewriter notes using reconciled data.
-   * Excludes junk-tier notes. Includes notes that predate bot tracking.
+   * Returns summary statistics over all scraped notewriter notes, taken from the
+   * reconciled rows in `notes`. Notes in the junk data tier are left out. Notes
+   * that predate bot tracking are included.
    */
   async getScrapedNoteSummary(): Promise<{ totalNotes: number; totalViews: number; totalHelpful: number; totalNotHelpful: number; totalNeedsMore: number }> {
     const notes = await this.fetchAllRows<{
@@ -1002,18 +1073,21 @@ export class SupabaseLogger {
   }
 
   /**
-   * Derive canonical tweet_ids for scraped notes using snapshot majority vote.
+   * Derives the canonical tweet_id of each scraped note by letting its snapshots
+   * vote.
    *
-   * For each note_id in notes:
-   * - Collect all non-null tweet_ids from its snapshots
-   * - If the top tweet_id has >= 2/3 of votes AND matches the `notes` table (if entry exists), clear the flag
-   * - Otherwise, set tweet_id_flag with the reason
-   * - Update notes.tweet_id to the majority winner (if there is one)
+   * Every note goes through the same steps. We collect the non-null tweet_ids
+   * from all of its snapshots. The id with the most votes wins. If that winner
+   * holds at least two thirds of the votes and does not contradict the tweet_id
+   * the `notes` row already carries, we clear tweet_id_flag. Otherwise we set
+   * tweet_id_flag to the reason. We write the winner into notes.tweet_id only
+   * when it holds at least two thirds of the votes.
    *
-   * Returns summary stats.
+   * Returns summary statistics.
    */
   async deriveTweetIds(): Promise<{ total: number; updated: number; flagged: number; noVotes: number }> {
-    // 1. Get all snapshots with tweet_id (paginate by snapshot id PK).
+    // Step 1. Read every snapshot together with its tweet_id. The paging key is
+    // the snapshot id primary key.
     const snapshots = await this.fetchAllRows<{ id: string; note_id: string; tweet_id: string | null }>(
       (client) => client.from("scraped_notewriter_snapshots")
         .select("id, note_id, tweet_id"),
@@ -1021,7 +1095,7 @@ export class SupabaseLogger {
       "deriveTweetIds.snapshots",
     );
 
-    // 2. Get all scraped notes
+    // Step 2. Read the notes the vote is computed for.
     const scrapedNotes = await this.fetchAllRows<{ note_id: string; tweet_id: string }>(
       (client) => client.from("notes")
         .select("note_id, tweet_id"),
@@ -1029,7 +1103,10 @@ export class SupabaseLogger {
       "deriveTweetIds.scrapedNotes",
     );
 
-    // 3. Get bot-submitted notes (source of truth for tweet_id)
+    // Step 3. Read the tweet_id that the notes table already holds. Migration
+    // 034 merged the bot's submission rows into this same table, so these are
+    // the same rows as in step 2. The values serve as the reference the snapshot
+    // vote has to agree with.
     const botNotes = await this.fetchAllRows<{ note_id: string; tweet_id: string }>(
       (client) => client.from("notes")
         .select("note_id, tweet_id"),
@@ -1041,7 +1118,7 @@ export class SupabaseLogger {
       if (n.note_id && n.tweet_id) botTweetIds.set(n.note_id, n.tweet_id);
     }
 
-    // 4. Build vote tallies per note_id
+    // Step 4. Tally the votes for each note.
     const votesPerNote = new Map<string, Map<string, number>>();
     for (const snap of snapshots) {
       if (!snap.tweet_id) continue;
@@ -1050,7 +1127,7 @@ export class SupabaseLogger {
       tally.set(snap.tweet_id, (tally.get(snap.tweet_id) || 0) + 1);
     }
 
-    // 5. For each scraped note, compute majority and flag
+    // Step 5. Work out the winner for each note and flag the doubtful cases.
     let updated = 0, flagged = 0, noVotes = 0;
 
     for (const note of scrapedNotes) {
@@ -1061,13 +1138,11 @@ export class SupabaseLogger {
         continue;
       }
 
-      // Find the winner
       const sorted = [...tally.entries()].sort((a, b) => b[1] - a[1]);
       const [winnerTweetId, winnerCount] = sorted[0]!;
       const totalVotes = [...tally.values()].reduce((a, b) => a + b, 0);
       const winnerShare = winnerCount / totalVotes;
 
-      // Check conditions
       const botTweetId = botTweetIds.get(note.note_id);
       const hasSuperMajority = winnerShare >= 2 / 3;
       const matchesBot = !botTweetId || botTweetId === winnerTweetId;
@@ -1079,7 +1154,10 @@ export class SupabaseLogger {
         flag = `disagrees_with_notes_table:snapshots=${winnerTweetId},notes=${botTweetId}`;
       }
 
-      // Update if tweet_id changed or flag changed
+      // We only write when the winner differs from the stored tweet_id, or when
+      // there is a flag to record. A row that already holds the winning id and
+      // gets no flag is left untouched, so a flag set by an earlier run is never
+      // cleared on such a row.
       const needsUpdate = winnerTweetId !== note.tweet_id || flag !== null;
       if (needsUpdate) {
         const updateData: Record<string, any> = { tweet_id_flag: flag };
@@ -1104,20 +1182,24 @@ export class SupabaseLogger {
   }
 
   /**
-   * Detect anomalies in snapshot data across scrapes.
+   * Looks for signs that a scrape recorded the wrong data for a note. Both
+   * checks catch the same underlying problem. X's virtualized list can hand the
+   * scraper the contents of another note's cell.
    *
-   * Checks for:
-   * 1. View count decreasing between consecutive snapshots (virtualizer corruption)
-   * 2. Note text changing between snapshots (virtualizer corruption — note text is immutable on X)
+   * The first check reports a view count that fell below the highest count we
+   * have seen for that note. A view count only ever goes up.
    *
-   * Returns list of anomalies found.
+   * The second check reports a note whose text changed between two snapshots.
+   * Note text cannot be edited on X.
+   *
+   * Returns every anomaly it found.
    */
   async detectSnapshotAnomalies(): Promise<{
     viewCountDecreases: Array<{ note_id: string; from: number; to: number; fromDate: string; toDate: string }>;
     noteTextChanges: Array<{ note_id: string; texts: string[]; dates: string[] }>;
   }> {
-    // Keyset pagination paginates by id so the underlying scraped_at order
-    // is lost; we re-sort each per-note group below.
+    // Keyset pagination returns the rows ordered by id, so the scraped_at order
+    // is lost here. Each note's group is sorted by scraped_at again below.
     const snapshots = await this.fetchAllRows<{
       id: string;
       note_id: string;
@@ -1132,7 +1214,6 @@ export class SupabaseLogger {
       "detectSnapshotAnomalies",
     );
 
-    // Group by note_id and sort each group by scraped_at ascending.
     const byNote = new Map<string, typeof snapshots>();
     for (const snap of snapshots) {
       if (!byNote.has(snap.note_id)) byNote.set(snap.note_id, []);
@@ -1146,7 +1227,7 @@ export class SupabaseLogger {
     const noteTextChanges: Array<{ note_id: string; texts: string[]; dates: string[] }> = [];
 
     for (const [noteId, noteSnaps] of byNote) {
-      // 1. Check for view count decreases
+      // First check. A view count that fell below the highest one seen so far.
       let maxViewsSeen = 0;
       for (const snap of noteSnaps) {
         const views = snap.view_count || 0;
@@ -1162,7 +1243,9 @@ export class SupabaseLogger {
         if (views > maxViewsSeen) maxViewsSeen = views;
       }
 
-      // 2. Check for note text changes (only among snapshots that have note_text)
+      // Second check. Note text that changed. Only snapshots that carry more
+      // than ten characters of text take part, so an empty or truncated cell
+      // does not count as a change.
       const withText = noteSnaps.filter(s => s.note_text && s.note_text.length > 10);
       if (withText.length >= 2) {
         const uniqueTexts = new Set(withText.map(s => s.note_text!));
@@ -1179,11 +1262,10 @@ export class SupabaseLogger {
     return { viewCountDecreases, noteTextChanges };
   }
 
-  /**
-   * Insert a snapshot from the public CN data dump
-   */
+  /** Inserts a snapshot taken from X's public Community Notes data dump. */
   async insertPublicDataSnapshot(snapshot: Omit<PublicDataSnapshot, "id" | "created_at">): Promise<void> {
-    // Use upsert to update note_text if it was previously null
+    // This is an upsert so that a later dump can fill in note_text on a row that
+    // was stored without it.
     const { error } = await this.client
       .from("public_data_snapshots")
       .upsert(snapshot, {
@@ -1192,7 +1274,6 @@ export class SupabaseLogger {
       });
 
     if (error) {
-      // Re-throw to let caller handle
       throw error;
     }
   }
@@ -1261,12 +1342,14 @@ export class SupabaseLogger {
   }
 
   /**
-   * Run a head-only exact count with retries, returning 0 (and logging) on error.
+   * Runs an exact count as a HEAD request, with retries. When it still fails it
+   * logs the error and returns 0.
    *
-   * HEAD responses have no body, so on failure the HTTP status is the only
-   * diagnostic. Transient failures (network, 5xx, timeouts) are retried; once
-   * retries are exhausted a one-row GET runs the same count, which either
-   * recovers it or surfaces the real PostgREST error body.
+   * A HEAD response has no body, so the HTTP status is the only thing we learn
+   * when the request fails. Failures that look transient are retried. Those are
+   * network errors, 5xx statuses and timeouts. Once the retries are used up, the
+   * same count runs once more as a GET that fetches a single row. That either
+   * succeeds or gives us the real PostgREST error body.
    */
   private async runExactCount(makeQuery: ExactCountQuery, label: string): Promise<number> {
     const maxAttempts = COUNT_RETRY_DELAYS_MS.length + 1;
@@ -1306,7 +1389,6 @@ export class SupabaseLogger {
     return 0;
   }
 
-  /** Count notes submitted in the last N hours (rolling window) */
   async countRecentSubmissions(hours: number): Promise<number> {
     const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
     return this.runExactCount(
@@ -1316,16 +1398,23 @@ export class SupabaseLogger {
   }
 
   /**
-   * Count misinfo-monitoring notes we've SUBMITTED in the last `hours`. Bounds
-   * the misinfo submit-priority reserve to ~10% of the daily cap. Misinfo notes
-   * are identified via their processed sightings (processed_at within a slightly
-   * wider window) joined to notes we actually submitted. Throws on a query error
-   * so the caller falls back to no-boost (the safe direction).
+   * Counts the misinfo-monitoring notes we submitted in the last `hours`. The
+   * number bounds the reserve that gives misinfo notes priority at submit time,
+   * see submitCandidates.
+   *
+   * A misinfo note is found by taking the sightings that were processed in a
+   * slightly wider window and keeping those whose tweet we actually submitted a
+   * note for. Going through the sightings means that a curated-topic post the
+   * regular pass found counts too, not only the ones the pre-pass found.
+   *
+   * A query error is thrown rather than swallowed. The caller then falls back to
+   * giving no priority at all, which is the safe direction.
    */
   async countRecentMisinfoSubmissions(hours: number): Promise<number> {
     const submitSince = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
-    // A note submitted in the window was processed at ~the same time; widen the
-    // processed-at window a little so a just-submitted note is never missed.
+    // A note submitted inside the window was processed at roughly the same time.
+    // The processed-at window is a little wider so that a note submitted moments
+    // ago is never missed.
     const processedSince = new Date(Date.now() - (hours + 2) * 60 * 60 * 1000).toISOString();
     const { data: sightings, error: sErr } = await this.client
       .from("misinfo_monitoring_sightings")
@@ -1348,7 +1437,6 @@ export class SupabaseLogger {
     return total;
   }
 
-  /** Count pipeline_runs created in the last N hours */
   async countRecentPipelineRuns(hours: number): Promise<number> {
     const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
     return this.runExactCount(
@@ -1358,7 +1446,6 @@ export class SupabaseLogger {
     );
   }
 
-  /** Count pipeline_runs created in the last N hours whose outcome is in `outcomes` */
   async countRecentPipelineRunsByOutcomes(hours: number, outcomes: string[]): Promise<number> {
     const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
     return this.runExactCount(

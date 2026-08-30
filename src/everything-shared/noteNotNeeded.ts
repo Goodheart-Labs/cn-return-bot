@@ -2,8 +2,8 @@ import { supabase } from "./supabase";
 import type { NnnRow } from "./types";
 import type { Vote } from "./votes";
 
-/** Insert a "note not needed" entry on a claim and return its id. The DB
- *  trigger auto-casts the author's helpful vote. */
+/** Inserts a "note not needed" entry on a claim and returns its id. A database
+ *  trigger casts the author's own helpful vote on it. */
 export async function postNnn(params: {
   claimId: string;
   body: string;
@@ -23,9 +23,9 @@ export async function postNnn(params: {
   return error ? null : (data as { id: string }).id;
 }
 
-/** All entries on a set of claims, oldest first (page-scoped: the browser
- *  extension fetches one item's claims at a time). Tolerates a backend
- *  without migration 063 — the list just stays empty. */
+/** All entries on a set of claims, oldest first. The set stays small because the
+ *  browser extension asks for the claims of one item at a time. A backend that has
+ *  not run migration 063 yet is tolerated. The list simply comes back empty. */
 export async function fetchNnnForClaims(claimIds: string[]): Promise<NnnRow[]> {
   if (claimIds.length === 0) return [];
   const { data } = await supabase
@@ -36,28 +36,31 @@ export async function fetchNnnForClaims(claimIds: string[]): Promise<NnnRow[]> {
   return (data as NnnRow[]) ?? [];
 }
 
-/** One entry by id — refetch after a vote to pick up the trigger-computed
- *  counts (the extension has no realtime channel). */
+/** Fetches a single entry by id. Callers refetch after a vote to pick up the counts
+ *  the database trigger recomputed, because the extension has no realtime channel. */
 export async function fetchNnnEntry(entryId: string): Promise<NnnRow | null> {
   const { data } = await supabase.from("everything_note_not_needed").select("*").eq("id", entryId).maybeSingle();
   return (data as NnnRow) ?? null;
 }
 
-/** Delete own entry (RLS-scoped). Awaits internally — a supabase-js query
- *  builder only executes when awaited, so a fire-and-forget caller would
- *  silently never send the request. */
+/** Deletes the caller's own entry. Row level security limits it to their own rows.
+ *  This function awaits the query itself. A supabase-js query builder only runs when
+ *  it is awaited, so a caller that fired and forgot would silently send no
+ *  request. */
 export async function deleteNnn(entryId: string) {
   const { error } = await supabase.from("everything_note_not_needed").delete().eq("id", entryId);
   if (error) console.error("Note-not-needed delete failed:", error.message);
 }
 
-/** The signed-in user's own entry votes (RLS returns only their rows). */
+/** The signed-in user's own votes on entries. Row level security returns only their
+ *  rows. */
 export async function fetchMyNnnVotes(): Promise<Map<string, Vote>> {
   const { data } = await supabase.from("everything_note_not_needed_votes").select("entry_id, vote");
   return new Map((data ?? []).map((v) => [v.entry_id as string, v.vote as Vote]));
 }
 
-/** Cast or change an entry vote; the counter trigger updates the entry live. */
+/** Casts a vote on an entry, or changes an existing one. A database trigger keeps the
+ *  entry's counts up to date. */
 export async function castNnnVote(entryId: string, voterId: string, vote: Vote) {
   const { error } = await supabase
     .from("everything_note_not_needed_votes")
@@ -65,7 +68,7 @@ export async function castNnnVote(entryId: string, voterId: string, vote: Vote) 
   if (error) console.error("[common-notes] entry vote failed:", error.message);
 }
 
-/** Un-vote (RLS restricts deletion to the caller's own row). */
+/** Retracts a vote. Row level security lets the caller delete only their own row. */
 export async function clearNnnVote(entryId: string) {
   const { error } = await supabase.from("everything_note_not_needed_votes").delete().eq("entry_id", entryId);
   if (error) console.error("[common-notes] entry vote retract failed:", error.message);

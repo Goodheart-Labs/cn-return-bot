@@ -42,6 +42,36 @@ Two triggers:
 or state the claims accurately with context. Correct the misleading factual claim or the unsupported
 leap — never the opinion.
 
+<!-- concede-shape -->
+## Note shape — concede the true core first
+
+Many posts on this topic contain a **true core with a false extension** (a real document, raid, or
+data-collection event, plus a claim about what it proves). When part of the post's claim is verified
+by this document, open the note by stating that true part plainly — one clause — then correct the
+specific false extension. Rating data on our submitted notes shows why: our most-rejected note
+sidestepped a post's true core (the released files really do contain the quoted admission) to argue
+an adjacent point, and raters tagged it "missing key points" — they read the omission as evasive.
+The correction lands better after the note has engaged what the post got right.
+
+Rules, in order of importance:
+
+1. **Only concede what this document affirms.** Each claim section below has a "True core" line;
+   that line (or the released documents themselves, cited directly) is the entire license. Never
+   improvise a concession to seem balanced, and never manufacture one when nothing in the post is
+   true — in that case write the correction straight.
+2. **Impersonal and factual.** The note addresses readers, not the poster: "The raid did occur…",
+   "The released files do include…" — never "You're right that…" or any address to the author.
+3. **One clause, then the correction.** The concession is an opener, not the note. The correction
+   must remain the bulk of the ~280-character budget.
+4. **The concession never weakens the correction.** If concede-then-correct won't fit or reads as
+   agreement with the post's thesis, drop the concession, not the correction.
+
+Shape example (Claim 1 material, concede-then-correct form):
+> Noncitizens do turn up on voter rolls — Iowa's GOP audit confirmed 277, of whom 35 voted. But bulk
+> database matches collapse on audit: Texas's 2019 claim of ~95,000 was mostly naturalized citizens,
+> and its Republican author resigned. Registered ≠ voted. https://sos.iowa.gov/news-resources/iowa-secretary-states-audit-voter-registration-lists-finds-277-confirmed-noncitizens
+<!-- /concede-shape -->
+
 **Coverup-lore families with no vetted debunk section yet** — the "shadow government" FBI email,
 Obama "burn bags," the "massaged" presidential daily briefings, China's 2018–19 influence ops
 (paying journalists, pressuring business leaders), and the Michigan/Muskegon registration case.
@@ -51,9 +81,21 @@ documents say — and only if that gap can be cited to a source that meets the s
 If it can't, skip. Never write a note on these families that argues the underlying story is false;
 we have not vetted that ground.
 
+<!-- concede-shape -->
+The concede-then-correct shape fits these coverup-lore posts naturally: concede what the released
+files actually contain (citable to the release itself), then correct what the post claims beyond
+them.
+<!-- /concede-shape -->
+
 ---
 
 ## Claim 1 — "Hundreds of thousands of noncitizens" / DHS "250,000 in four states" on the rolls
+
+<!-- concede-shape -->
+**True core:** some noncitizens really are on voter rolls — Iowa's GOP audit confirmed 277 (35 of
+whom voted); Louisiana found 390 registered, 79 of whom had voted since the 1980s. The false
+extension is the bulk figure ("278,000") and the fraud it's said to imply.
+<!-- /concede-shape -->
 
 Estimates of noncitizens on voter rolls come from database/commercial-data matching and routinely
 collapse once naturalized citizens are removed — and the officials who have proven this are
@@ -80,6 +122,12 @@ Gold-standard note (257 chars, source counts as 1):
 
 ## Claim 2 — China "acquired 220 million voter files" / "largest compromise of election data in history"
 
+<!-- concede-shape -->
+**True core:** the collection happened — the declassified files describe a ~204.8M-record voter file
+and state voter databases acquired by China. The false extension is "compromise of election data":
+data held by China, not any vote, machine, or registration touched.
+<!-- /concede-shape -->
+
 The collection is real — the declassified files describe a 2016 file of ~204.8 million voter records
 plus state voter databases — but the files' own stated purpose is "mining PII," "identity matching,"
 and "public opinion analysis on the U.S. General Election": espionage and influence targeting, **not**
@@ -102,6 +150,13 @@ Gold-standard note (259 chars):
 
 ## Claim 3 — Voting machines "vulnerable and they're easily compromised"
 
+<!-- concede-shape -->
+**True core:** the declassified assessment does say adversaries "have the capability to compromise
+US election infrastructure," with registration databases and election websites the most exposed —
+long-known, real vulnerabilities. The false extension is "easily": the same report says vote
+tabulation is hard to alter at scale and audits would very likely catch it.
+<!-- /concede-shape -->
+
 The claim rests on documents Trump himself declassified — and they say the opposite. The report he
 quoted (NICM 2020-003, "Vulnerabilities in US 2020 Election Infrastructure," declassified by DNI
 Gabbard) states that vote-tabulation systems "would be difficult to manipulate on a wide enough
@@ -123,6 +178,12 @@ Gold-standard note (264 chars):
 
 ## Claim 4 — "Mail-in ballots are inherently corrupt"
 
+<!-- concede-shape -->
+**True core:** mail-ballot fraud has genuinely occurred — the conservative Heritage Foundation's own
+database lists ~1,500 proven cases across all U.S. elections over decades. The false extension is
+"inherently corrupt": proven cases are rare and prosecuted, not systemic.
+<!-- /concede-shape -->
+
 Trump's own party spent 2024 urging Republicans to vote by mail — the RNC's "Swamp the Vote"
 program, with Trump saying "if we swamp them with votes they can't cheat" — and Trump votes by mail
 himself (Florida, 2020 and 2026). The conservative Heritage Foundation's own election-fraud database
@@ -142,6 +203,12 @@ Gold-standard note (258 chars):
 ---
 
 ## Claim 5 — "The system falls catastrophically short" (the 2020-was-stolen premise)
+
+<!-- concede-shape -->
+**True core:** thin — isolated, prosecuted fraud cases exist in every cycle (see Heritage's database
+under Claim 4), and that is all this document affirms. If a post's only claim is the systemic one,
+there is no true core to concede; write the correction straight (rule 1 above).
+<!-- /concede-shape -->
 
 The people best positioned to prove 2020 fraud were Trump's own appointees and Republican officials,
 and they didn't. Trump's own Attorney General, Bill Barr, said in December 2020 the DOJ had "not seen
@@ -163,6 +230,11 @@ Gold-standard note (219 chars):
 ---
 
 ## Unsubstantiated leaps (trigger 2) — the election was "stolen"/"manipulated" via China
+
+<!-- concede-shape -->
+**True core:** the documents themselves are real, were really declassified, and really describe the
+data collection — concede that plainly; the leap from there to a rigged election is the false part.
+<!-- /concede-shape -->
 
 This is the most common misreading of the speech: that the declassified documents prove China (or
 anyone) rigged, stole, or could easily flip a U.S. election. They do not. The China documents

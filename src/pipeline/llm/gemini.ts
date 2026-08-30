@@ -1,19 +1,21 @@
 /**
  * Native Google Gen AI client.
  *
- * OpenRouter does not expose Gemini's googleSearch tool, so simple-bot
- * search variants targeting Gemini call this directly. Media analysis also
- * goes through here so it shares the free→paid key routing below.
+ * OpenRouter does not expose Gemini's googleSearch tool. The simple-bot search
+ * variants that target Gemini therefore call this client directly. Media analysis
+ * also goes through here so that it shares the key routing described below.
  *
- * Key routing: `geminiNativeGenerate` tries GEMINI_API_KEY_FREE first (the AI
- * Studio free tier) and only falls back to the paid GEMINI_API_KEY when the free
- * key is out of quota (429 / RESOURCE_EXHAUSTED). Transient 5xx/network errors
- * retry on the same key with backoff; they don't burn the fallback. Free-tier
- * calls report cost as $0 (the tier is not billed) while keeping token counts.
+ * `geminiNativeGenerate` tries GEMINI_API_KEY_FREE first. That key is the AI
+ * Studio free tier. It only falls back to the paid GEMINI_API_KEY when the free
+ * key is out of quota, which arrives as a 429 or a RESOURCE_EXHAUSTED message.
+ * A transient server or network error is retried on the same key with backoff, so
+ * it never uses up the fallback. The free tier is not billed, so free-tier calls
+ * report a cost of zero while still keeping their token counts.
  *
- * `geminiNativeGenerateFree` tries the free key only and fails fast on quota —
- * used by the trackedLlmCreate adapter, which routes any non-tooling gemini call
- * through the free key and falls back to OpenRouter (not the paid native key).
+ * `geminiNativeGenerateFree` tries the free key only and fails immediately when
+ * the quota is gone. The trackedLlmCreate adapter uses it. That adapter sends
+ * every Gemini call that needs no tools through the free key, and on failure falls
+ * back to OpenRouter rather than to the paid native key.
  */
 
 import { GoogleGenAI } from "@google/genai";
@@ -38,7 +40,8 @@ function getClient(apiKey: string): GoogleGenAI {
   return client;
 }
 
-/** Keys to try in order: free tier first, paid as fallback. */
+/** The keys to try, in order. The free tier comes first and the paid key is the
+ *  fallback. */
 function geminiKeys(): GeminiKey[] {
   const keys: GeminiKey[] = [];
   if (process.env.GEMINI_API_KEY_FREE) keys.push({ apiKey: process.env.GEMINI_API_KEY_FREE, tier: "free" });
@@ -49,16 +52,18 @@ function geminiKeys(): GeminiKey[] {
   return keys;
 }
 
-/** Free key only, or null when GEMINI_API_KEY_FREE is unset. Used by the
- *  trackedLlmCreate adapter, which tries free-native then falls back to
- *  OpenRouter (not the paid native key) since those calls need no native tooling. */
+/** Returns the free key, or null when GEMINI_API_KEY_FREE is unset. The
+ *  trackedLlmCreate adapter uses this. It tries the free native key and then falls
+ *  back to OpenRouter rather than to the paid native key, because the calls it
+ *  routes need no native tooling. */
 export function geminiFreeKey(): GeminiKey | null {
   return process.env.GEMINI_API_KEY_FREE
     ? { apiKey: process.env.GEMINI_API_KEY_FREE, tier: "free" }
     : null;
 }
 
-/** Free-tier quota exhaustion — the signal to fall back to the paid key. */
+/** True when the error means the free tier is out of quota. That is the signal to
+ *  fall back to the paid key. */
 export function isQuotaError(err: any): boolean {
   const status = err?.status ?? err?.response?.status;
   if (status === 429) return true;
@@ -68,13 +73,13 @@ export function isQuotaError(err: any): boolean {
   return false;
 }
 
-/** Transient errors worth retrying on the same key. */
+/** True when the error is transient and worth retrying on the same key. */
 function isTransientError(err: any): boolean {
   const status = err?.status ?? err?.response?.status;
   if (status === 500 || status === 502 || status === 503 || status === 504) return true;
   if (err?.code === "ECONNRESET" || err?.code === "ETIMEDOUT" || err?.code === "ENETUNREACH") return true;
-  // @google/genai's ApiError stuffs the HTTP status into the JSON message body
-  // rather than exposing it as a field, so fall back to inspecting the text.
+  // The ApiError from @google/genai puts the HTTP status inside the JSON message
+  // body instead of exposing it as a field. So we fall back to reading the text.
   const msg: string = err?.message ?? "";
   if (/"code"\s*:\s*(500|502|503|504)/.test(msg)) return true;
   if (/UNAVAILABLE|DEADLINE_EXCEEDED/.test(msg)) return true;
@@ -86,13 +91,14 @@ async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-/** Part of a multimodal user turn: plain text or inline media bytes. */
+/** One part of a multimodal user turn. It is either plain text or inline media
+ *  bytes. */
 export type GeminiContentPart =
   | { text: string }
   | { inlineData: { mimeType: string; data: string } };
 
-/** One conversation turn (system messages are passed separately as
- *  systemInstruction). "model" is Gemini's name for the assistant role. */
+/** One conversation turn. A system message is not a turn. It is passed separately
+ *  as systemInstruction. "model" is Gemini's name for the assistant role. */
 export interface GeminiTurn {
   role: "user" | "model";
   text: string;
@@ -106,35 +112,40 @@ export interface GeminiNativeParams {
   systemInstruction?: string;
   /** Text-only user turn. Ignored when `userParts` or `userTurns` is set. */
   userMessage?: string;
-  /** Multimodal user turn (text + inline image/video bytes). Takes precedence over `userMessage`. */
+  /** A multimodal user turn holding text plus inline image or video bytes. It takes
+   *  precedence over `userMessage`. */
   userParts?: GeminiContentPart[];
-  /** Multi-turn text history (user/model). Takes precedence over userParts/userMessage. */
+  /** The text history as user and model turns. It takes precedence over both
+   *  `userParts` and `userMessage`. */
   userTurns?: GeminiTurn[];
   enableGoogleSearch?: boolean;
-  /** Gemini-flavoured JSON schema (uses uppercase types like "OBJECT", "STRING"). */
+  /** A JSON schema in Gemini's flavour. Its type names are uppercase, such as
+   *  "OBJECT" and "STRING". */
   responseSchema?: object;
-  /** When set, forces JSON output even without a schema (responseMimeType). */
+  /** When set, the request asks for JSON output through responseMimeType even
+   *  though no schema is given. */
   jsonOutput?: boolean;
   temperature?: number;
   thinkingLevel?: GeminiThinkingLevel;
 }
 
 export interface GeminiNativeResult {
-  /** Raw text body (already JSON-formatted when responseSchema is set). */
+  /** The raw text body. It is already JSON when responseSchema is set. */
   text: string;
   parsed?: any;
-  /** Web grounding citations from googleSearch, when enabled. */
+  /** The web grounding citations googleSearch returned, when it was enabled. */
   groundingChunks: { uri?: string; title?: string }[];
-  /** Number of webSearchQueries Gemini issued during the call. */
+  /** How many web search queries Gemini issued during the call. */
   searchCalls: number;
   cost: TokenCost;
   /** Which key tier served the request. Free-tier cost is reported as $0. */
   keyTier: "free" | "paid";
 }
 
-/** Run generateContent on one key, retrying transient errors (and, on the last
- *  key, quota errors too) with backoff. Quota errors on a non-final key throw
- *  immediately so the caller can switch keys instead of waiting out the limit. */
+/** Runs generateContent on one key. A transient error is retried with backoff.
+ *  On the last key a quota error is retried too. On any earlier key a quota error
+ *  is thrown at once, so the caller can switch keys instead of waiting the limit
+ *  out. */
 async function generateOnce(
   key: GeminiKey,
   request: { model: string; contents: unknown; config: unknown },
@@ -181,10 +192,11 @@ function buildRequest(p: GeminiNativeParams): { model: string; contents: unknown
   return { model: p.model, contents, config };
 }
 
-/** Run the request against keys in order, falling back to the next key on quota
- *  exhaustion. `retryQuotaOnLastKey` controls whether the final key waits out a
- *  quota error with backoff (true for the paid fallback in geminiNativeGenerate)
- *  or fails fast (false for the free-only adapter path, which falls to OpenRouter). */
+/** Runs the request against the keys in order and moves on to the next key when
+ *  one is out of quota. `retryQuotaOnLastKey` decides what the final key does with
+ *  a quota error. geminiNativeGenerate passes true, so the paid key waits the
+ *  limit out with backoff. The free-only adapter path passes false, so it fails
+ *  fast and its caller falls back to OpenRouter. */
 async function runKeys(
   request: { model: string; contents: unknown; config: unknown },
   keys: GeminiKey[],
@@ -216,7 +228,8 @@ function buildResult(p: GeminiNativeParams, response: any, keyTier: "free" | "pa
     try {
       parsed = JSON.parse(text);
     } catch {
-      // Caller can still inspect text; no throw here so cost tracking still records.
+      // We do not throw on unparseable JSON. The caller can still read the raw
+      // text, and the cost of the call is still recorded.
     }
   }
 
@@ -231,20 +244,23 @@ function buildResult(p: GeminiNativeParams, response: any, keyTier: "free" | "pa
   const inputTokens = usage?.promptTokenCount ?? 0;
   const outputTokens = (usage?.candidatesTokenCount ?? 0) + (usage?.thoughtsTokenCount ?? 0);
   const cost = calculateGeminiCost(p.model, inputTokens, outputTokens, searchCalls);
-  // AI Studio free tier is not billed; keep token counts for visibility but zero the charge.
+  // The AI Studio free tier is not billed. We keep the token counts so the call is
+  // still visible, and set the charge to zero.
   if (keyTier === "free") cost.cost = 0;
 
   return { text, parsed, groundingChunks, searchCalls, cost, keyTier };
 }
 
-/** Free key first, paid key as quota fallback. */
+/** Tries the free key first and falls back to the paid key when the free quota is
+ *  gone. */
 export async function geminiNativeGenerate(p: GeminiNativeParams): Promise<GeminiNativeResult> {
   const { response, keyTier } = await runKeys(buildRequest(p), geminiKeys(), true);
   return buildResult(p, response, keyTier);
 }
 
-/** Free key ONLY. Throws on quota (no backoff) so the caller can fall back to
- *  OpenRouter immediately. Throws if GEMINI_API_KEY_FREE is unset. */
+/** Uses the free key only. It throws on a quota error without any backoff, so the
+ *  caller can fall back to OpenRouter immediately. It also throws when
+ *  GEMINI_API_KEY_FREE is unset. */
 export async function geminiNativeGenerateFree(p: GeminiNativeParams): Promise<GeminiNativeResult> {
   const free = geminiFreeKey();
   if (!free) throw new Error("GEMINI_API_KEY_FREE is required but not set");

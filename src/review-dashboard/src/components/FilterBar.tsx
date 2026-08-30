@@ -55,12 +55,13 @@ export function FilterBar({ source, filters, counts, topicSetCounts, onFiltersCh
 
   const toggleHighValue = () => {
     if (!filters.highValueOnly) {
-      // Entering the ★ lens: reset the other filters to non-restrictive so the
-      // list starts as ALL starred notes; narrowing back is opt-in and visible.
+      // We are turning the star filter on. The other filters are reset to their
+      // widest setting, so the list starts as every starred note. Narrowing it
+      // again is then something the user chooses and can see in the filter bar.
       onFiltersChange({ seen: "all", failureTypes: new Set(), failureModes: new Set(), topicSets: new Set(), highValueOnly: true });
     } else {
-      // Leaving: back to the standard default view rather than whatever
-      // narrowing was applied inside the lens.
+      // We are turning the star filter off. The view goes back to the standard
+      // defaults rather than whatever narrowing was applied while it was on.
       onFiltersChange(defaultFilters(source));
     }
   };

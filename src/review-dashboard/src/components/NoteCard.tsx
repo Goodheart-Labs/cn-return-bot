@@ -14,13 +14,18 @@ interface NoteCardProps {
   failureModeCatalog: FailureModeInfo[];
   failureModeUsage: Map<string, number>;
   showFixed: boolean;
+  // When this is false the failure-mode tag chips on the card are hidden. The
+  // dropdown on the card still shows and edits the tags. The toggle that controls
+  // this lives in the page header and applies to every card.
+  showTags: boolean;
   onSeenToggle: (id: string, seen: boolean) => void;
   onHighValueToggle: (id: string, highValue: boolean) => void;
   onFailureModesChange: (id: string, modes: string[]) => void;
   onCreateFailureMode: (name: string) => void;
   onCommentChange: (id: string, comment: string | null) => void;
-  // Fetch this run's logs on demand (called when the log panel is first opened).
-  // Resolves once the fetch settles, so the card can stop showing "Loading…".
+  // Fetches this run's logs. The card calls it when the log panel is first opened.
+  // The promise resolves once the fetch has settled, which is how the card knows to
+  // stop showing "Loading…".
   onRequestLogs: (runId: string) => Promise<void>;
 }
 
@@ -37,7 +42,7 @@ function reviewItemToTweet(item: ReviewItem): Tweet {
   };
 }
 
-// Error boundary so one broken card doesn't blank the whole page
+// An error boundary, so that one broken card cannot blank the whole page.
 class CardErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
   state = { error: null as Error | null };
   static getDerivedStateFromError(error: Error) { return { error }; }
@@ -64,6 +69,7 @@ export function NoteCard({
   failureModeCatalog,
   failureModeUsage,
   showFixed,
+  showTags,
   onSeenToggle,
   onHighValueToggle,
   onFailureModesChange,
@@ -85,7 +91,10 @@ export function NoteCard({
 
   return (
     <CardErrorBoundary>
-    <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-4 ${seen ? "opacity-60" : ""}`}>
+    {/* A draft is a note the bot wrote but never posted. It gets a grey stripe down
+        its left edge as well as the header chip, so it reads as a draft at a
+        glance. */}
+    <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-4 ${seen ? "opacity-60" : ""} ${item.isDraft ? "border-l-4 border-l-slate-400" : ""}`}>
       {/* Header row */}
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex items-center gap-2 flex-wrap">
@@ -121,7 +130,7 @@ export function NoteCard({
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => onHighValueToggle(item.id, !highValue)}
-            title={highValue ? "High-value note — click to unmark" : "Mark as high-value"}
+            title={highValue ? "High-value note. Click to unmark" : "Mark as high-value"}
             className={`text-sm px-2 py-1 rounded border flex items-center gap-1 ${
               highValue
                 ? "border-amber-300 bg-amber-50 text-amber-700"
@@ -171,7 +180,7 @@ export function NoteCard({
       </div>
 
       {/* Failure mode tags */}
-      {failureModes.length > 0 && (
+      {showTags && failureModes.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-3">
           {failureModes.map((m) => (
             <span key={m} className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">

@@ -153,7 +153,8 @@ enabled = true
 # in emails.
 site_url = "http://localhost:8003"
 # A list of URLs (globs allowed) auth providers may redirect to post authentication.
-# Add the deployed GitHub Pages notes URL here for prod magic-link / X sign-in.
+# Add the deployed GitHub Pages notes URL here for prod X sign-in. (Email
+# sign-in is a typed 8-digit code on both surfaces — no redirects involved.)
 # The chromiumapp.org / allizom.org wildcards are the browser-extension OAuth
 # redirect URLs (launchWebAuthFlow); mirror them in the prod dashboard's
 # allow-list, with the real extension IDs, for X sign-in from the extension.
@@ -215,10 +216,11 @@ enable_confirmations = false
 secure_password_change = false
 # Controls the minimum amount of time that must pass before sending another signup confirmation or password reset email.
 max_frequency = "1s"
-# Number of characters used in the email OTP.
+# Number of characters used in the email OTP. Matches the prod dashboard (6) —
+# the UI gates on EMAIL_OTP_LENGTH in everything-shared/auth.ts.
 otp_length = 6
 # Number of seconds before the email OTP expires (defaults to 1 hour).
-otp_expiry = 3600
+otp_expiry = 300
 
 # Use a production-ready SMTP server
 # [auth.email.smtp]
@@ -230,8 +232,10 @@ otp_expiry = 3600
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
 
-# Branded Common Notes auth emails. Mirror these in the prod project's
-# dashboard (Auth → Email Templates) — config.toml only applies to local dev.
+# Branded Common Notes auth emails — code-only ({{ .Token }}, no
+# {{ .ConfirmationURL }}): website and extension both take the typed code.
+# Mirror these in the prod project's dashboard (Auth → Email Templates) —
+# config.toml only applies to local dev.
 [auth.email.template.confirmation]
 subject = "Confirm your email for Common Notes"
 content_path = "./supabase/templates/confirmation.html"
@@ -370,15 +374,6 @@ authorization_url_path = "/oauth/consent"
 # Allow dynamic client registration
 allow_dynamic_registration = false
 
-[functions.judge-note]
-# Gates both note flows (write-a-note + suggest-an-improvement): an LLM decides
-# earnest vs trolling; the client posts the note only on an "accepted" verdict.
-# Needs OPENROUTER_API_KEY. verify_jwt is off because the function does its own
-# auth via getUser() (validates against the auth server, so it works with the
-# local ES256 signing keys that the gateway's verify_jwt can't handle); an
-# unauthenticated call is rejected before any LLM cost is incurred.
-enabled = true
-verify_jwt = false
 
 [edge_runtime]
 enabled = true

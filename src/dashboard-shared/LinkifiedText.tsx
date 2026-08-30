@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 
 const URL_PATTERN = /https?:\/\/[^\s]+/g;
-// Trailing characters that read as sentence punctuation, not part of the URL.
+// These trailing characters read as sentence punctuation rather than as part of
+// the URL.
 const TRAILING_PUNCTUATION = /[.,;:!?'")\]}]+$/;
 
 function countChar(text: string, char: string) {
@@ -10,8 +11,9 @@ function countChar(text: string, char: string) {
   return count;
 }
 
-// Strip sentence punctuation from the end of a matched URL, but keep a trailing
-// ")" that closes a paren inside the URL (e.g. wikipedia.org/wiki/Foo_(bar)).
+// Removes sentence punctuation from the end of a matched URL. A trailing ")" is
+// kept when it closes a bracket that belongs to the URL itself, as in
+// wikipedia.org/wiki/Foo_(bar).
 function splitTrailingPunctuation(matched: string): { url: string; trailing: string } {
   let trailing = matched.match(TRAILING_PUNCTUATION)?.[0] ?? "";
   let url = trailing ? matched.slice(0, -trailing.length) : matched;
@@ -22,8 +24,9 @@ function splitTrailingPunctuation(matched: string): { url: string; trailing: str
   return { url, trailing };
 }
 
-// Render text with every http(s) URL turned into its own clickable link.
-// Each URL becomes a separate anchor (no greedy merging of adjacent links).
+// Renders text with every http and https URL turned into a clickable link. Each
+// URL becomes its own anchor. Two links that sit next to each other are never
+// merged into one.
 export function LinkifiedText({ text, className }: { text: string; className?: string }) {
   const nodes: ReactNode[] = [];
   let lastIndex = 0;

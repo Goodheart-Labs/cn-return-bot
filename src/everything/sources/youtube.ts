@@ -1,8 +1,8 @@
-import { execFileSync, execSync } from "child_process";
+import { execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import { tmpdir } from "os";
-import { fetchTimedTranscript, type SubtitleCue } from "../../pipeline/media/ytDlpDownload";
+import { execYtDlp, fetchTimedTranscript, type SubtitleCue } from "../../pipeline/media/ytDlpDownload";
 import type { FetchedContent } from "../types";
 
 export function ensureYtDlp(): void {
@@ -14,28 +14,90 @@ export function ensureYtDlp(): void {
   }
 }
 
-/** yt-dlp's upload_date is YYYYMMDD; convert to ISO YYYY-MM-DD (undefined if absent). */
+/** yt-dlp reports upload_date as YYYYMMDD. This turns it into the ISO form
+ *  YYYY-MM-DD. It returns undefined when the value is missing or malformed. */
 function parseUploadDate(raw: string): string | undefined {
   const m = raw.trim().match(/^(\d{4})(\d{2})(\d{2})$/);
   return m ? `${m[1]}-${m[2]}-${m[3]}` : undefined;
 }
 
-/** Fetch id + title + upload date via --print (full -J metadata busts execSync's buffer on YouTube). */
-function fetchVideoMeta(url: string): { id: string; title: string; uploadDate?: string } {
-  // upload_date first, title last: a multi-line title is absorbed by titleParts
-  // without swallowing the other fields.
-  const out = execFileSync(
-    "yt-dlp",
-    ["--skip-download", "--no-warnings", "--print", "%(upload_date)s", "--print", "%(id)s", "--print", "%(title)s", url],
-    { encoding: "utf8", timeout: 120_000 },
-  );
-  const [uploadDate = "", id = "", ...titleParts] = out.trim().split("\n");
-  return { id, title: titleParts.join(" ").trim(), uploadDate: parseUploadDate(uploadDate) };
+/** yt-dlp prints "NA" for a field it has no value for. */
+const ytDlpField = (raw: string): string | undefined => (raw && raw !== "NA" ? raw : undefined);
+
+/** Fetch the id, the title, the channel name and the upload date by printing
+ *  just those fields. We do not ask for the full -J metadata here. For a
+ *  YouTube video that JSON is large enough to overflow the output buffer of
+ *  the yt-dlp child process. */
+function fetchVideoMeta(url: string): { id: string; title: string; channel?: string; uploadDate?: string } {
+  // We print the title last because a title can span several lines. Everything
+  // after the channel therefore belongs to the title, and the earlier fields
+  // stay readable.
+  // A flagged proxy IP gets a degraded player response whose format list is
+  // empty, and format selection then aborts the whole call with "Requested
+  // format is not available" even though the metadata fields were served.
+  // Printing metadata needs no formats, so we tell yt-dlp to ignore that.
+  const out = execYtDlp(url, ["--skip-download", "--ignore-no-formats-error", "--no-warnings", "--print", "%(upload_date)s", "--print", "%(id)s", "--print", "%(channel)s", "--print", "%(title)s", url]);
+  const [uploadDate = "", id = "", channel = "", ...titleParts] = out.trim().split("\n");
+  return { id, title: titleParts.join(" ").trim(), channel: ytDlpField(channel), uploadDate: parseUploadDate(uploadDate) };
+}
+
+export interface ChannelVideo {
+  videoId: string;
+  url: string;
+  title: string;
+  durationSeconds: number | null;
+}
+
+export interface ChannelListing {
+  /** The channel's display name. */
+  channelName?: string;
+  videos: ChannelVideo[];
+}
+
+/** List the channel's name and the latest videos on its /videos tab with a
+ *  single flat-playlist yt-dlp call. The newest video comes first and Shorts
+ *  are left out, because that tab does not list them. The duration is null for
+ *  a premiere and for a video that has not aired yet. */
+export function fetchChannelVideos(channelUrl: string, limit: number): ChannelListing {
+  // The per-video lines print first, one per video. The playlist-level print
+  // runs once after them, so the channel name is always the last line.
+  const out = execYtDlp(channelUrl, [
+    "--flat-playlist",
+    "--no-warnings",
+    "--playlist-items",
+    `1:${limit}`,
+    "--print",
+    "%(id)s\t%(duration)s\t%(title)s",
+    "--print",
+    "playlist:%(channel)s",
+    `${channelUrl.replace(/\/$/, "")}/videos`,
+  ]);
+  const lines = out.trim().split("\n").filter(Boolean);
+  // A video line always contains tabs and a channel name never does, so a
+  // tabbed last line means the playlist print did not run.
+  const channelName = lines.at(-1)?.includes("\t") ? undefined : ytDlpField(lines.pop() ?? "");
+  const videos = lines.map((line) => {
+    const [videoId = "", duration = "", ...titleParts] = line.split("\t");
+    return {
+      videoId,
+      url: `https://www.youtube.com/watch?v=${videoId}`,
+      title: titleParts.join(" "),
+      durationSeconds: /^\d/.test(duration) ? Number.parseFloat(duration) : null,
+    };
+  });
+  // A channel's videos tab is never empty, so an empty listing means yt-dlp
+  // failed silently. An outdated yt-dlp does exactly this: it exits with code
+  // zero and prints nothing. Fail loudly instead of treating it as "no videos".
+  if (videos.length === 0) {
+    throw new Error(`yt-dlp listed zero videos for ${channelUrl} — it is probably outdated or blocked`);
+  }
+  return { channelName, videos };
 }
 
 const TRANSCRIPT_LANG = "en";
 
-/** Fetch the video's timestamped cues (temp dir cleaned up); throws if none. */
+/** Fetch the video's timestamped cues. The temporary directory is always
+ *  removed afterwards. This throws when the video has no transcript. */
 function fetchCues(url: string): SubtitleCue[] {
   const dir = fs.mkdtempSync(path.join(tmpdir(), "cn-yt-subs-"));
   try {
@@ -49,10 +111,11 @@ function fetchCues(url: string): SubtitleCue[] {
 
 export function fetchYoutubeContent(url: string): FetchedContent {
   const meta = fetchVideoMeta(url);
-  return { kind: "youtube", url, videoId: meta.id, title: meta.title, publishedAt: meta.uploadDate, cues: fetchCues(url) };
+  return { kind: "youtube", url, videoId: meta.id, title: meta.title, publishedAt: meta.uploadDate, cues: fetchCues(url), authorName: meta.channel };
 }
 
-/** Claims come from a caller-supplied transcript; timestamps snap to the video's own cues. */
+/** The claims are extracted from a transcript the caller supplies. We still
+ *  fetch the video's own cues, so that each claim's timestamp snaps onto them. */
 export function fetchYoutubeTranscriptContent(url: string, transcriptText: string): FetchedContent {
   const meta = fetchVideoMeta(url);
   return {
@@ -63,5 +126,6 @@ export function fetchYoutubeTranscriptContent(url: string, transcriptText: strin
     publishedAt: meta.uploadDate,
     text: transcriptText,
     cues: fetchCues(url),
+    authorName: meta.channel,
   };
 }

@@ -1,13 +1,18 @@
 /**
  * Claim extraction for the everything pipeline.
  *
- * Ask Opus (high thinking) to extract every checkable claim from a text —
- * a timestamped YouTube transcript or a plain article — in neutral,
- * self-contained language, each with a verbatim context excerpt and a 7-point
- * truth judgement from its own knowledge. YouTube claims get their context
- * snapped back to subtitle cues for a deep link into the video. Article images
- * are pre-described by Gemini (description + OCR) and spliced inline as
- * bracketed text blocks, so extraction runs on plain text.
+ * We ask Opus, with high thinking effort, to extract every checkable claim from
+ * a text. The text is either a timestamped YouTube transcript or a plain
+ * article. Each claim comes back in neutral, self-contained language, with a
+ * verbatim excerpt of the context around it and a truth judgement on a
+ * seven-point scale that Opus makes from its own knowledge.
+ *
+ * A claim from a YouTube video has its context snapped back onto the subtitle
+ * cues, which gives us a deep link into the video.
+ *
+ * An article's images are described by Gemini beforehand, both a description of
+ * the image and the text read off it. Those descriptions are spliced into the
+ * article as bracketed blocks, so extraction always runs on plain text.
  */
 
 import PQueue from "p-queue";
@@ -22,7 +27,8 @@ import { normalizeText } from "../../everything-shared/normalizeText";
 
 const CLAIM_EXTRACTION_MODEL = "anthropic/claude-opus-4.6";
 
-// Ordered most-true → most-false; the index drives which claims get fact-checked.
+// The list runs from most true to most false. A judgement's index in it decides
+// whether the claim gets fact-checked.
 export const JUDGEMENTS = [
   "certainly true",
   "likely true",
@@ -33,11 +39,12 @@ export const JUDGEMENTS = [
   "certainly false",
 ] as const;
 
-// Only fact-check claims Opus isn't confident are true: "uncertain" and below.
+// We only fact-check a claim Opus is not confident about, so "uncertain" and
+// everything below it.
 const FACT_CHECK_FROM = JUDGEMENTS.indexOf("uncertain");
 export function shouldFactCheck(judgement: string): boolean {
   const idx = (JUDGEMENTS as readonly string[]).indexOf(judgement);
-  return idx === -1 || idx >= FACT_CHECK_FROM; // unknown / error judgement → check to be safe
+  return idx === -1 || idx >= FACT_CHECK_FROM; // A judgement we do not recognize is checked to be safe.
 }
 
 function extractionSystemPrompt(): string {
@@ -92,7 +99,8 @@ interface RawClaim {
   speculation: boolean;
 }
 
-/** Carry the LLM's claim fields onto an ExtractedClaim, attaching its resolved anchor. */
+/** Copies the LLM's claim fields onto an ExtractedClaim and attaches the anchor
+ *  we resolved for it. */
 function toExtractedClaim(raw: RawClaim, anchor: ClaimAnchor): ExtractedClaim {
   return {
     claim: raw.claim,
@@ -105,11 +113,13 @@ function toExtractedClaim(raw: RawClaim, anchor: ClaimAnchor): ExtractedClaim {
   };
 }
 
-// IMAGE_MARKER_RE is a shared stateful global regex — always scan with a fresh clone.
+// IMAGE_MARKER_RE is a shared global regex and keeps state between scans. So we
+// always scan with a fresh clone of it.
 const freshImageMarkerRe = () => new RegExp(IMAGE_MARKER_RE.source, "g");
 
-/** Gemini-describe every `[[IMAGE:url]]` in the article once (deduped, in
- *  parallel), keyed by URL. A failed describe maps to empty fields — the
+/** Asks Gemini to describe every `[[IMAGE:url]]` in the article and returns the
+ *  descriptions keyed by URL. Each distinct URL is described once, and the calls
+ *  run in parallel. A description that fails becomes empty fields, and the
  *  renderer still keeps the URL in the text. */
 async function describeArticleImages(text: string): Promise<Map<string, GeminiMediaDescription>> {
   const urls = [...new Set([...text.matchAll(freshImageMarkerRe())].map((m) => m[1]!))];
@@ -126,9 +136,10 @@ async function describeArticleImages(text: string): Promise<Map<string, GeminiMe
   return new Map(entries);
 }
 
-/** Replace each `[[IMAGE:url]]` marker with a bracketed text block: the URL (so
- *  the model can cite it into image_urls) plus the Gemini description and OCR.
- *  Bracketed so it reads as an aside, never as quotable article prose. */
+/** Replaces each `[[IMAGE:url]]` marker with a bracketed block of text. The
+ *  block holds the URL, so the model can cite it back in image_urls, plus
+ *  Gemini's description and the text it read off the image. The brackets make
+ *  the block read as an aside, so the model never quotes it as article prose. */
 function renderImageDescriptions(text: string, descriptions: Map<string, GeminiMediaDescription>): string {
   return text.replace(freshImageMarkerRe(), (_m, url) => {
     const { description, ocrText } = descriptions.get(url) ?? { description: "", ocrText: "" };
@@ -160,14 +171,55 @@ function buildVideoLink(videoId: string, seconds: number): string {
 }
 
 /**
- * Time span of a context excerpt: the earliest start and latest end among the
- * cues whose text falls inside the (verbatim) context. start → deep-link,
- * [start, end] → clip bounds. Returns {} when nothing lines up.
+ * Returns the time span of a context excerpt: the earliest start and the latest
+ * end among the cues the excerpt overlaps. The start on its own gives us the
+ * deep link into the video. The start and end together give the bounds of the
+ * clip. If the excerpt cannot be located in the cues, the returned object is
+ * empty.
+ *
+ * We locate the excerpt in two ways. First we search for it as a substring of
+ * the full transcript, built by joining all normalized cue texts. That finds
+ * any verbatim excerpt, however short, even one that straddles a cue boundary.
+ * If that fails, for example because the excerpt came from an author's own
+ * transcript whose wording differs slightly from the cues, we fall back to
+ * scanning for whole cues that appear inside the excerpt.
  */
 const MIN_SNAP_MATCH_CHARS = 12;
-function contextTimeSpan(context: string, cues: SubtitleCue[]): { start?: number; end?: number } {
+export function contextTimeSpan(context: string, cues: SubtitleCue[]): { start?: number; end?: number } {
   const ctx = normalizeText(context);
   if (!ctx) return {};
+  return joinedCueSpan(ctx, cues) ?? containedCueSpan(ctx, cues);
+}
+
+/** Finds the excerpt as a substring of the joined normalized cue texts and
+ *  returns the span of the cues the match overlaps. Null when the excerpt does
+ *  not appear verbatim. */
+function joinedCueSpan(ctx: string, cues: SubtitleCue[]): { start: number; end: number } | null {
+  const ranges: { from: number; to: number; cue: SubtitleCue }[] = [];
+  let joined = "";
+  for (const cue of cues) {
+    const t = normalizeText(cue.text);
+    if (!t) continue;
+    if (joined) joined += " ";
+    ranges.push({ from: joined.length, to: joined.length + t.length, cue });
+    joined += t;
+  }
+  const at = joined.indexOf(ctx);
+  if (at === -1) return null;
+  const matchEnd = at + ctx.length;
+  let start: number | undefined;
+  let end: number | undefined;
+  for (const r of ranges) {
+    if (r.to <= at || r.from >= matchEnd) continue;
+    if (start === undefined || r.cue.start < start) start = r.cue.start;
+    if (end === undefined || r.cue.end > end) end = r.cue.end;
+  }
+  return start === undefined || end === undefined ? null : { start, end };
+}
+
+/** The original snapping: the span of the whole cues whose text appears inside
+ *  the excerpt. Only an excerpt longer than a cue can match this way. */
+function containedCueSpan(ctx: string, cues: SubtitleCue[]): { start?: number; end?: number } {
   let start: number | undefined;
   let end: number | undefined;
   for (const cue of cues) {
@@ -180,12 +232,13 @@ function contextTimeSpan(context: string, cues: SubtitleCue[]): { start?: number
   return { start, end };
 }
 
-// Long texts are chunked so each Opus call stays exhaustive (one giant call
-// tends to summarize/sample rather than extract every claim) and to dodge
-// output-token limits.
+// We split a long text into chunks for two reasons. One giant call tends to
+// summarize or sample the text instead of extracting every claim, so a smaller
+// chunk keeps each call exhaustive. Smaller calls also stay under the model's
+// output token limit.
 const EXTRACTION_CHUNK_CHARS = 12_000;
 
-// Cue version of chunkText: preserves timestamps per cue.
+// This is the cue version of chunkText. It keeps every cue's timestamp.
 function chunkCues(cues: SubtitleCue[]): SubtitleCue[][] {
   const chunks: SubtitleCue[][] = [];
   let cur: SubtitleCue[] = [];
@@ -204,9 +257,28 @@ function chunkCues(cues: SubtitleCue[]): SubtitleCue[][] {
   return chunks;
 }
 
-// Split on blank lines so paragraphs / speaker turns stay intact.
+/** Splits a block that is larger than a whole chunk, preferring a newline and
+ *  then a space near the boundary so words stay intact. Such a block comes
+ *  from text with no blank lines at all, for example a web page whose fetch
+ *  fell back to plain tag-stripping. Without this a single block would become
+ *  one oversized extraction call. */
+function splitOversizedBlock(block: string): string[] {
+  const parts: string[] = [];
+  let rest = block;
+  while (rest.length > EXTRACTION_CHUNK_CHARS) {
+    const window = rest.slice(0, EXTRACTION_CHUNK_CHARS);
+    const cut = Math.max(window.lastIndexOf("\n"), window.lastIndexOf(" "));
+    const at = cut > EXTRACTION_CHUNK_CHARS / 2 ? cut : EXTRACTION_CHUNK_CHARS;
+    parts.push(rest.slice(0, at).trim());
+    rest = rest.slice(at).trim();
+  }
+  if (rest) parts.push(rest);
+  return parts;
+}
+
+// We split on blank lines so that paragraphs and speaker turns stay intact.
 function chunkText(text: string): string[] {
-  const blocks = text.split(/\n\s*\n/);
+  const blocks = text.split(/\n\s*\n/).flatMap((block) => splitOversizedBlock(block));
   const chunks: string[] = [];
   let cur = "";
   for (const block of blocks) {
@@ -220,15 +292,21 @@ function chunkText(text: string): string[] {
   return chunks;
 }
 
-/** Resolves each claim's context excerpt to where it lives in the source. */
-type AnchorResolver = (context: string) => ClaimAnchor;
+/** Resolves each claim's context excerpts to where they live in the source. */
+type AnchorResolver = (context: string, contextParagraph: string) => ClaimAnchor;
 
-/** Snap the context against the video's cues → deep-linkable YouTube anchor.
- *  Shared by live YouTube (extract from cues) and transcript imports (extract
- *  from a supplied transcript, timestamps still from the video's own cues). */
+/** Snaps a claim's context onto the video's cues and returns a YouTube anchor we
+ *  can deep-link to. Two paths share this. A live YouTube video extracts its
+ *  claims from the cues themselves. A transcript import extracts them from a
+ *  supplied transcript, but the timestamps still come from the video's own
+ *  cues. When the tight context excerpt cannot be located in the cues, we snap
+ *  the wider paragraph instead — a looser clip, but the claim keeps its
+ *  timestamp and the extension can still pin it on the player. */
 function youtubeAnchor(videoId: string, cues: SubtitleCue[]): AnchorResolver {
-  return (context) => {
-    const { start, end } = contextTimeSpan(context, cues);
+  return (context, contextParagraph) => {
+    let span = contextTimeSpan(context, cues);
+    if (span.start === undefined) span = contextTimeSpan(contextParagraph, cues);
+    const { start, end } = span;
     return {
       kind: "youtube",
       startSeconds: start,
@@ -249,11 +327,12 @@ async function extractChunks(
   return perChunk
     .flat()
     .filter((c): c is RawClaim => !!c)
-    .map((c) => toExtractedClaim(c, anchorFor(c.context)));
+    .map((c) => toExtractedClaim(c, anchorFor(c.context ?? "", c.context_paragraph ?? "")));
 }
 
-// Plain transcript text for the LLM — timestamps are snapped from cues
-// afterwards, so no [seconds] markers leak into the verbatim context.
+// The LLM sees plain transcript text with no timestamps in it. We snap the
+// timestamps from the cues afterwards, so no [seconds] marker can leak into a
+// claim's verbatim context.
 const transcriptChunk = (text: string) => `Transcript segment:\n\n${text}`;
 
 export async function extractClaims(content: FetchedContent, concurrency: number): Promise<ExtractedClaim[]> {
@@ -271,8 +350,9 @@ export async function extractClaims(content: FetchedContent, concurrency: number
         concurrency,
       );
     case "substack": {
-      // Describe images up front, then chunk the rendered text — so the chunk
-      // budget counts the actual description text, not the short markers.
+      // We describe the images first and only then chunk the rendered text.
+      // That way the chunk budget counts the real description text rather than
+      // the short markers.
       const descriptions = await describeArticleImages(content.text);
       return extractChunks(
         chunkText(renderImageDescriptions(content.text, descriptions)).map((chunk) => `Article excerpt:\n\n${chunk}`),
@@ -284,9 +364,9 @@ export async function extractClaims(content: FetchedContent, concurrency: number
 }
 
 /**
- * Drop hypothetical/future-scenario claims: only real-world (present/past)
- * claims are fact-checkable, so speculation never reaches the rest of the
- * pipeline. Downstream works with the returned subset.
+ * Drops every claim about a hypothetical or future scenario. Only a claim about
+ * the present or the past can be fact-checked, so speculation never reaches the
+ * rest of the pipeline. Everything downstream works on the returned subset.
  */
 export function dropSpeculation(claims: ExtractedClaim[]): ExtractedClaim[] {
   return claims.filter((c) => !c.speculation);

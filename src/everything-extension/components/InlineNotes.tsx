@@ -1,17 +1,20 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { Session } from "@supabase/supabase-js";
 import type { NnnApi } from "../../everything-web/src/components/NoteNotNeeded";
 import type { Vote } from "../../everything-shared/votes";
 import type { NnnRow, NoteRow } from "../../everything-shared/types";
 import type { PageItem } from "../../everything-shared/notesQuery";
-import { ABSORB_KEYS, ClaimNoteStack, GroupIcon, NOTE_POPOVER_WIDTH, SignInHint } from "./ClaimNoteStack";
+import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
+import { setJumpHandler } from "../utils/jumpBus";
+import { ABSORB_KEYS, ClaimNoteStack, GroupIcon, NOTE_POPOVER_WIDTH, OverlayLogin } from "./ClaimNoteStack";
 import { NoteWithActions } from "./NoteWithActions";
 import { useNoteVoting, replaceNoteInGroup } from "./useNoteVoting";
 import { WriteNoteOverlay } from "./WriteNoteOverlay";
 
-/** One anchored claim: its notes (originals first), its note-not-needed
- *  entries, and where it sits on the page. */
+/** One claim anchored to the page. It carries the claim's notes with the
+ *  original first, its note-not-needed entries, and the stretch of page text it
+ *  sits on. */
 export interface AnchoredGroup {
   claimId: string;
   primary: NoteRow;
@@ -21,13 +24,14 @@ export interface AnchoredGroup {
 }
 
 const BADGE_SIZE = 20;
-const BADGE_GAP = 4; // px between the passage's end and the badge
-const POPOVER_GAP = 8; // px between the passage and the opened popover
-const VIEWPORT_MARGIN = 8; // keep the popover this far from the viewport edges
+const BADGE_GAP = 4; // Pixels between the end of the passage and the badge.
+const POPOVER_GAP = 8; // Pixels between the passage and the opened popover.
+const VIEWPORT_MARGIN = 8; // The popover stays this many pixels from the edges.
 
-/** Range rect relative to the in-content annotation layer — both rects read
- *  in the same layout pass, so the pair is scroll-invariant: the layer sits
- *  inside the article and moves with the text under any scroll container. */
+/** Gives the range's rectangle relative to the in-content annotation layer. Both
+ *  rectangles are read in the same layout pass, so the pair does not change when
+ *  the page scrolls. The layer sits inside the article and moves with the text
+ *  under any scroll container. */
 function relRect(range: Range, origin: DOMRect) {
   const rect = range.getBoundingClientRect();
   return {
@@ -39,8 +43,9 @@ function relRect(range: Range, origin: DOMRect) {
 }
 
 
-/** Small badge at the end of the anchored passage: blue community glyph on a
- *  light/dark surface following the host page's theme. */
+/** The small badge at the end of an anchored passage. It draws the blue
+ *  community glyph on a surface that follows the host page's light or dark
+ *  theme. */
 function Badge({ open, onClick, style }: { open: boolean; onClick: () => void; style: React.CSSProperties }) {
   return (
     <button
@@ -55,7 +60,7 @@ function Badge({ open, onClick, style }: { open: boolean; onClick: () => void; s
   );
 }
 
-function NotePopover({ group, projectSlug, session, myVotes, onVote, onNeedLogin, onAuthored, onNnnAuthored, onDeleted, nnnApi, style }: {
+function NotePopover({ group, projectSlug, session, myVotes, onVote, onNeedLogin, onAuthored, onNnnAuthored, onDeleted, nnnApi, style, loginOpen, onCloseLogin }: {
   group: AnchoredGroup;
   projectSlug: string | null;
   session: Session | null;
@@ -67,12 +72,16 @@ function NotePopover({ group, projectSlug, session, myVotes, onVote, onNeedLogin
   onDeleted: () => void;
   nnnApi: NnnApi;
   style: React.CSSProperties;
+  loginOpen: boolean;
+  onCloseLogin: () => void;
 }) {
   return (
-    // max-h + inner scroll: a claim can stack several notes plus an open
-    // composer — taller than the viewport. overscroll-contain keeps the inner
-    // scroll from chaining into the host page.
+    // The popover has a maximum height and scrolls inside itself. One claim can
+    // stack several notes and an open composer, which gets taller than the
+    // viewport. The overscroll-contain class stops that inner scroll from
+    // carrying on into the host page.
     <div style={style} className="absolute bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-xl p-3 text-left max-h-[70vh] overflow-y-auto overscroll-contain">
+      {loginOpen && !session && <OverlayLogin onDismiss={onCloseLogin} />}
       <ClaimNoteStack
         group={group}
         projectSlug={projectSlug}
@@ -91,33 +100,37 @@ function NotePopover({ group, projectSlug, session, myVotes, onVote, onNeedLogin
 
 type NoteWithActionsVote = React.ComponentProps<typeof NoteWithActions>["onVote"];
 
-/** All badges + popovers for one page. They render (via portal) into the
- *  in-content annotation layer and are absolutely positioned relative to it,
- *  so scrolling moves them natively with the text — no per-frame JS. The
- *  viewport-fixed pieces (sign-in hint, write modal) stay in the body-level
- *  host, where position:fixed is safe from article-ancestor transforms. */
+/** Every badge and popover for one page. They are rendered through a portal into
+ *  the in-content annotation layer and positioned absolutely inside it, so
+ *  scrolling moves them along with the text and no JavaScript runs per frame.
+ *  The two pieces that are fixed to the viewport, the sign-in hint and the write
+ *  modal, stay in the host element at body level. There a transform on an
+ *  ancestor of the article cannot break position:fixed. */
 export function InlineNotesApp({ groups: initialGroups, item, onPosted, container, inlineContainer }: {
   groups: AnchoredGroup[];
   item: PageItem;
   onPosted: () => void;
-  /** The article container the ranges live in (re-queried per render). */
+  /** The article container the ranges live in. It is looked up again on every
+   *  render. */
   container: Element;
-  /** The annotation layer's React-root element inside `container`. */
+  /** The React root element of the annotation layer, which sits inside
+   *  `container`. */
   inlineContainer: HTMLElement;
 }) {
   const projectSlug = item.projectSlug;
   const [groups, setGroups] = useState(initialGroups);
   const [openClaim, setOpenClaim] = useState<string | null>(null);
   const [writeSelection, setWriteSelection] = useState<string | null>(null);
-  const { session, myVotes, myNnnVotes, handleVote, handleNnnVote, recordAuthored, recordNnnAuthored, onNeedLogin, signInHint, dismissSignInHint } = useNoteVoting(
+  const { session, myVotes, myNnnVotes, refreshVotes, handleVote, handleNnnVote, recordAuthored, recordNnnAuthored, onNeedLogin, loginOpen, closeLogin } = useNoteVoting(
     (updated) => setGroups((prev) => prev.map((g) => replaceNoteInGroup(g, updated))),
     (updatedEntry) => setGroups((prev) => prev.map((g) => ({
       ...g,
       nnn: g.nnn.map((e) => (e.id === updatedEntry.id ? updatedEntry : e)),
     }))),
   );
-  // A just-posted improvement / entry: light up its self-vote and refetch the
-  // item's notes so it appears in its claim group.
+  // An improvement or a note-not-needed entry has just been posted. We light up
+  // the author's own vote on it and refetch the item's notes, so the new one
+  // shows up in its claim group.
   const handleAuthored = (noteId: string) => {
     recordAuthored(noteId);
     onPosted();
@@ -126,12 +139,20 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
     recordNnnAuthored(entryId);
     onPosted();
   };
-  // No realtime in the extension: deletes refresh the item's groups explicitly.
+  // The extension gets no realtime updates, so a delete refreshes the item's
+  // groups by hand.
   const nnnApi: NnnApi = { myVotes: myNnnVotes, onVote: handleNnnVote, onAuthored: recordNnnAuthored, onDeleted: () => onPosted() };
-  // Bumped on resize so positions derived from ranges recompute.
+  // This counter is bumped on a resize, so the positions derived from the ranges
+  // are computed again.
   const [layoutTick, setLayoutTick] = useState(0);
 
-  useEffect(() => setGroups(initialGroups), [initialGroups]);
+  useEffect(() => {
+    setGroups(initialGroups);
+    // A refresh can carry votes this hook never saw cast, such as the
+    // automatic helpful vote on a note the reader just wrote.
+    refreshVotes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialGroups]);
 
   useEffect(() => {
     let raf = 0;
@@ -140,87 +161,118 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
       raf = requestAnimationFrame(() => setLayoutTick((t) => t + 1));
     };
     window.addEventListener("resize", relayout);
-    // Fallback only: the annotation layer lives inside the article, so
-    // shared-scroller scrolls recompute to identical values (React diffs to
-    // zero DOM writes — no visible movement). This catches the rare range
-    // inside a NESTED scroller (scrollable code block / table) the layer
-    // doesn't share.
+    // This scroll listener is only a fallback. The annotation layer lives inside
+    // the article, so a scroll of a shared scroller recomputes to exactly the
+    // same positions and React writes nothing to the DOM. The listener exists
+    // for the rare range that sits in a nested scroller the layer does not
+    // share, such as a scrollable code block or table.
     document.addEventListener("scroll", relayout, { capture: true, passive: true });
-    // Passages reflow as the host page's images/embeds finish loading — an
-    // <img> gaining height fires no DOM mutation, so cached positions would
-    // drift from their passage. body catches document-height changes; the
-    // article container must be observed too, because in inner-scroll layouts
-    // (the reader) body stays viewport-locked while the article grows.
+    // Passages move as the host page's images and embeds finish loading. An
+    // <img> that gains height fires no DOM mutation, so the cached positions
+    // would drift away from their passage. Observing the body catches changes in
+    // the document's height. The article container has to be observed as well.
+    // In an inner-scroll layout such as Substack's reader, the body stays locked
+    // to the viewport while the article itself grows.
     const resizeObserver = new ResizeObserver(relayout);
     resizeObserver.observe(document.body);
     resizeObserver.observe(container);
-    // A click on the host page (outside our shadow roots) closes the popover.
-    const onDown = () => setOpenClaim(null);
-    document.addEventListener("mousedown", onDown);
     return () => {
       window.removeEventListener("resize", relayout);
       document.removeEventListener("scroll", relayout, { capture: true } as EventListenerOptions);
       resizeObserver.disconnect();
-      document.removeEventListener("mousedown", onDown);
       cancelAnimationFrame(raf);
     };
   }, [container]);
 
-  // The tint itself is a CSS highlight — not an element, so it can't receive
-  // events. Hit-test host-page clicks against each claim's range instead, so
-  // clicking a tinted passage opens its note like clicking the badge does.
+  // The passage tint is a CSS highlight rather than an element, so it cannot
+  // receive events. We test every host-page click against each claim's range
+  // instead. Clicking a tinted passage then toggles its note, just as clicking
+  // the badge does. The listener that closes the popover on an outside press
+  // lives here too, and it skips tinted passages. Closing on mousedown and
+  // reopening from the click's hit test made a click on a highlight flash the
+  // popover shut and open it again straight away.
   useEffect(() => {
-    const onClick = (e: MouseEvent) => {
-      // Clicks inside our own overlay bubble out of the shadow root too — the
-      // popover overlaps page text, so without this guard a vote click would
-      // also hit-test the passage underneath and open ITS note.
-      if (e.composedPath().some((n) => {
-        const tag = (n as Element).tagName;
-        return tag === "COMMON-NOTES-UI" || tag === "COMMON-NOTES-INLINE";
-      })) return;
-      // A drag-selection (e.g. selecting text to write a note on) ends in a
-      // click too — don't hijack it.
-      if (!window.getSelection()?.isCollapsed) return;
+    const claimAt = (x: number, y: number): string | null => {
       for (const group of groups) {
         for (const rect of group.range.getClientRects()) {
-          if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
-            setOpenClaim(group.claimId);
-            return;
-          }
+          if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) return group.claimId;
         }
       }
+      return null;
     };
+    const onDown = (e: MouseEvent) => {
+      // Clicks inside our own overlay bubble out of the shadow root as well. The
+      // popover overlaps the page text, so without this guard a click on a vote
+      // pill would also hit-test the passage underneath and open that passage's
+      // note.
+      if (insideCommonNotesUi(e) || claimAt(e.clientX, e.clientY)) return;
+      // Only a press on empty surface closes the note. A click that does
+      // something, such as one on a link or a like button, should not dismiss
+      // the note as well.
+      if (!isInertClick(e)) return;
+      setOpenClaim(null);
+    };
+    const onClick = (e: MouseEvent) => {
+      if (insideCommonNotesUi(e)) return;
+      // Dragging out a selection, for example to write a note on some text, ends
+      // in a click as well. We leave that click alone.
+      if (!window.getSelection()?.isCollapsed) return;
+      const claimId = claimAt(e.clientX, e.clientY);
+      if (claimId) setOpenClaim((previous) => (previous === claimId ? null : claimId));
+    };
+    document.addEventListener("mousedown", onDown);
     document.addEventListener("click", onClick);
-    return () => document.removeEventListener("click", onClick);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("click", onClick);
+    };
   }, [groups]);
 
-  // Requests from the popup (scroll to the first note) and the background's
-  // context menu (write a note on the current selection).
+  // Handles the two requests that arrive from elsewhere in the extension. The
+  // popup asks to jump through the notes in document order, wrapping around at
+  // the end. The background's context menu asks to write a note on the current
+  // selection. The jump cursor lives here so that "next" keeps its place when
+  // the popup is closed and opened again. It resets when the page does.
+  const jumpCursor = useRef(-1);
   useEffect(() => {
-    const first = groups[0];
-    const listener = (message: unknown) => {
+    const ordered = [...groups].sort((a, b) => a.range.compareBoundaryPoints(Range.START_TO_START, b.range));
+    const jumpNext = () => {
+      if (!ordered.length) return;
+      jumpCursor.current = (jumpCursor.current + 1) % ordered.length;
+      const target = ordered[jumpCursor.current]!;
+      target.range.startContainer.parentElement?.scrollIntoView({ behavior: "smooth", block: "center" });
+      setOpenClaim(target.claimId);
+    };
+    const listener = (message: unknown, _sender: unknown, sendResponse: (response?: unknown) => void) => {
       const { type, selection } = (message as { type?: string; selection?: string }) ?? {};
-      if (type === "cn-scroll-to-notes" && first) {
-        first.range.startContainer.parentElement?.scrollIntoView({ behavior: "smooth", block: "center" });
-        setOpenClaim(first.claimId);
+      if (type === "cn-jump-state") sendResponse({ jumped: jumpCursor.current >= 0 });
+      if (type === "cn-jump-note" && ordered.length) {
+        jumpNext();
+        sendResponse({ jumped: true });
       }
       if (type === "cn-write-note" && selection?.trim()) setWriteSelection(selection.trim());
     };
     const runtime = (globalThis as any).browser?.runtime ?? (globalThis as any).chrome?.runtime;
     runtime?.onMessage.addListener(listener);
-    return () => runtime?.onMessage.removeListener(listener);
+    // The note-count card jumps through the same cursor, see utils/jumpBus.ts.
+    setJumpHandler(jumpNext);
+    return () => {
+      runtime?.onMessage.removeListener(listener);
+      setJumpHandler(null);
+    };
   }, [groups]);
 
   const positioned = useMemo(() => {
-    // Read the layer origin and every range rect in the same layout pass —
-    // never cache the origin across renders, or the pair loses its
-    // scroll-invariance.
+    // Read the layer's origin and every range rectangle in the same layout pass.
+    // Never cache the origin across renders. The two would then come from
+    // different scroll positions, and the result would no longer hold as the
+    // page scrolls.
     const origin = inlineContainer.getBoundingClientRect();
     return groups.map((group) => {
       const rect = relRect(group.range, origin);
-      // Clamp the popover into the VIEWPORT, expressed in layer space:
-      // client x = layer x + origin.left, so viewport edge M maps to
-      // M - origin.left (same clamp as before, minus the scroll offsets).
+      // Keep the popover inside the viewport, with the numbers expressed in the
+      // layer's own coordinates. A client x equals the layer x plus origin.left,
+      // so a viewport edge at M becomes M - origin.left here.
       const popLeft = Math.max(
         VIEWPORT_MARGIN - origin.left,
         Math.min(rect.left, window.innerWidth - NOTE_POPOVER_WIDTH - VIEWPORT_MARGIN - origin.left),
@@ -245,12 +297,11 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
   }, [groups, layoutTick, inlineContainer]);
 
   return (
-    // Absorb mouse AND keyboard: mousedown would close the popover via the
-    // document listener above; click would leak to the host page and to our
-    // own passage hit-test; keys typed in a composer would trigger host-page
-    // hotkeys (see ABSORB_KEYS).
+    // Absorb both mouse and keyboard events here. A mousedown would otherwise
+    // close the popover through the document listener above. A click would leak
+    // to the host page and to our own passage hit test. Keys typed in a composer
+    // would trigger the host page's own hotkeys. See ABSORB_KEYS.
     <div {...ABSORB_KEYS} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
-      {signInHint && <SignInHint onDismiss={dismissSignInHint} className="fixed top-4 right-4 z-50" />}
       {writeSelection && (
         <WriteNoteOverlay
           item={item}
@@ -260,10 +311,11 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
           onPosted={onPosted}
         />
       )}
-      {/* Badges/popovers portal into the in-content annotation layer so they
-          scroll natively with the text; the wrapper re-absorbs events there
-          (React attaches listeners to portal containers, so stopPropagation
-          halts the native event before the document-level listeners). */}
+      {/* The badges and popovers are portalled into the in-content annotation
+          layer, so they scroll with the text. The wrapper absorbs events again
+          on that side. React attaches its listeners to the portal container, so
+          stopPropagation halts the native event before it reaches the
+          document-level listeners. */}
       {createPortal(
         <div {...ABSORB_KEYS} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
           {positioned.map(({ group, badgeStyle, popoverStyle }) => (
@@ -286,6 +338,8 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
                   onDeleted={onPosted}
                   nnnApi={nnnApi}
                   style={popoverStyle}
+                  loginOpen={loginOpen}
+                  onCloseLogin={closeLogin}
                 />
               )}
             </div>

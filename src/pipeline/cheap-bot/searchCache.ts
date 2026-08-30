@@ -1,8 +1,10 @@
 /**
- * Disk-backed search cache for cheap-bot. Saves raw SearXNG results per query
- * so hill-climbing iterations can replay search without hitting Brave/SearXNG.
+ * A disk-backed search cache for cheap-bot. It saves the raw SearXNG results for
+ * each query, so hill-climbing iterations can replay a search without hitting
+ * Brave or SearXNG again.
  *
- * Gated by the SEARCH_CACHE env var (path to a directory). Unset = no caching.
+ * The SEARCH_CACHE env var turns the cache on. Its value is a path to a
+ * directory. When the variable is unset nothing is cached.
  */
 import * as fs from "fs";
 import * as path from "path";

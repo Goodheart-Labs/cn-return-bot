@@ -1,17 +1,24 @@
 /**
- * Source Verifier
+ * Source verifier.
  *
- * Checks whether cited sources actually support a community note. Two flows,
- * picked by config.verifier_claim_based:
- *   - classic (default): one LLM call categorizes each cited source good/bad and
- *     accepts iff the good ones cover every claim.
- *   - claim-based: one call extracts the note's distinct claims, a second maps
- *     each claim to its supporting cited sources. A source is good iff it
- *     supports ≥1 claim; the note is accepted iff every claim has ≥1 supporter.
- * Both share the same source-fetching cascade and return a SourceVerification.
+ * This module checks whether the sources a community note cites actually
+ * support it. There are two flows and config.verifier_claim_based picks between
+ * them.
+ *
+ * The classic flow is the default. One LLM call sorts each cited source into
+ * good or bad. It accepts the note only when the good sources cover every
+ * claim.
+ *
+ * The claim-based flow uses two calls. The first extracts the distinct claims
+ * the note makes. The second maps each claim to the cited sources that support
+ * it. A source is good when it supports at least one claim. The note is
+ * accepted only when every claim has at least one supporting source.
+ *
+ * Both flows use the same cascade for fetching sources, and both return a
+ * SourceVerification.
  */
 
-import { handleWebFetch } from "../tool-calling/tools";
+import { fetchWebPage } from "../tool-calling/tools";
 import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP, COST } from "../utils/noteWriterSteps";
@@ -30,26 +37,33 @@ import type { EvaluatedSource, SourceCitation } from "../prompts/verify/citation
 export interface SourceVerification {
   /** Reasoning for the verification decision. */
   reasoning: string;
-  /** Cited URLs that support at least one factual claim in the note. Subset of the input sources. */
+  /** Cited URLs that support at least one factual claim in the note. This is
+   *  always a subset of the input sources. */
   good_sources: string[];
-  /** Cited URLs that failed to fetch or don't support any factual claim. Subset of the input sources. */
+  /** Cited URLs that failed to fetch, or that support no factual claim. This is
+   *  always a subset of the input sources. */
   bad_sources: string[];
-  /** True iff good_sources together cover every factual claim. */
+  /** True when good_sources together cover every factual claim, and false
+   *  otherwise. */
   accepted: boolean;
-  /** Per-source detail (snippets + explanation + verdict). Set only when the
-   *  verifier_citations flag is on; undefined otherwise. */
+  /** Per-source detail, holding the snippets, the explanation and the verdict.
+   *  This is set only when the verifier_citations flag is on. Otherwise it is
+   *  undefined. */
   source_evaluations?: EvaluatedSource[];
 }
 
-/** Raw evaluated source as returned by the model in citations mode (both flows).
- *  Normalized into an EvaluatedSource by normalizeEvaluatedSource. */
+/** An evaluated source exactly as the model returns it in citations mode. Both
+ *  flows use this shape. normalizeEvaluatedSource turns it into an
+ *  EvaluatedSource. */
 interface RawEvaluatedSource {
   url: string;
   citations?: { quote: string; explanation?: string }[];
   verdict?: string;
 }
 
-/** Clamp citations + apply the "good needs ≥1 snippet of evidence" demotion. */
+/** Normalizes the citations the model returned for one source. A source is only
+ *  allowed to stay good if it comes with at least one snippet of evidence.
+ *  Otherwise it is demoted to bad. */
 function normalizeEvaluatedSource(raw: RawEvaluatedSource): EvaluatedSource {
   const citations: SourceCitation[] = (raw.citations ?? []).map((c) => ({ quote: c.quote, explanation: c.explanation ?? "" }));
   const verdict = raw.verdict === "good" && citations.length > 0 ? "good" : "bad";
@@ -66,10 +80,11 @@ function isTwitterUrl(url: string): boolean {
   }
 }
 
-// Hosts where we attempt the media-download cascade (yt-dlp → gallery-dl)
-// before falling back to handleWebFetch. yt-dlp covers video-leaning hosts;
-// gallery-dl covers image-leaning hosts (Reddit/Tumblr/Imgur) and rescues
-// Facebook/Instagram image posts that yt-dlp can't extract.
+// On these hosts we try the media-download cascade before falling back to
+// fetchWebPage. The cascade runs yt-dlp first and gallery-dl second. yt-dlp
+// covers the hosts that mostly carry video. gallery-dl covers the hosts that
+// mostly carry images, such as Reddit, Tumblr and Imgur. It also rescues the
+// Facebook and Instagram image posts that yt-dlp cannot extract.
 const MEDIA_HOSTS = [
   "youtube.com", "youtu.be",
   "vimeo.com",
@@ -118,7 +133,11 @@ function formatCascadeMediaSection(url: string, media: MediaSourceDescription): 
 }
 
 interface FetchedSource {
+  /** The URL the writer cited. */
   url: string;
+  /** Where the content was actually read from. This differs from `url` only
+   *  when the fetch ladder fell back to an archive snapshot. */
+  fetchedUrl: string;
   content: string;
   fetched: boolean;
 }
@@ -129,12 +148,13 @@ async function fetchSourceContent(
   logPrefix: string,
   acceptMediaSources: boolean,
   snippetsByUrl?: Map<string, { title: string; snippet: string }>,
-): Promise<{ sections: string; fetchedCount: number; totalNonTwitter: number }> {
+): Promise<{ sections: string; fetchedCount: number; totalNonTwitter: number; snapshotUrls: Map<string, string> }> {
   const results: FetchedSource[] = [];
   for (let i = 0; i < sources.length; i++) {
     const fetched = await fetchOneSource(sources[i]!, `${costPrefix}.source.${i}`, `${logPrefix}.source.${i}`, acceptMediaSources);
-    // Fallback: if the full fetch failed but we have a search snippet for this
-    // URL, use it so the verifier has something to evaluate rather than nothing.
+    // If the full fetch failed but we have a search snippet for this URL, fall
+    // back to the snippet. That gives the verifier something to evaluate
+    // instead of nothing.
     if (!fetched.fetched && snippetsByUrl?.has(fetched.url)) {
       const { title, snippet } = snippetsByUrl.get(fetched.url)!;
       fetched.content = `### ${fetched.url}\n[from search snippet — full page could not be fetched]\n**${title}**\n${snippet}`;
@@ -148,6 +168,7 @@ async function fetchSourceContent(
     sections,
     fetchedCount: nonTwitter.filter((r) => r.fetched).length,
     totalNonTwitter: nonTwitter.length,
+    snapshotUrls: new Map(results.filter((r) => r.fetchedUrl !== r.url).map((r) => [r.url, r.fetchedUrl])),
   };
 }
 
@@ -167,10 +188,12 @@ async function fetchOneSource(
   return fetchAsWebPage(url);
 }
 
-/** Fetch a cited X post so the verifier can read it, rather than blind-accepting.
- *  Video tweets go through the yt-dlp cascade (when media is accepted); the rest
- *  fall back to the syndication endpoint for text + author. Only when both fail
- *  (deleted/protected/unavailable) do we accept it unread. */
+/** Fetches a cited X post so the verifier can read it instead of accepting it
+ *  unread. When media sources are accepted, video tweets go through the yt-dlp
+ *  cascade. Every other tweet falls back to the syndication endpoint, which
+ *  gives us the text and the author. Only when both of those fail do we accept
+ *  the post unread. That happens when the post is deleted, protected, or
+ *  otherwise unavailable. */
 async function fetchTwitterSource(
   url: string,
   costName: string,
@@ -182,8 +205,8 @@ async function fetchTwitterSource(
     if (media) return media;
   }
   const tweet = await fetchTweetViaSyndication(url);
-  if (tweet) return { url, content: formatTweetSection(url, tweet), fetched: true };
-  return { url, content: `### ${url}\nTwitter/X link — tweet could not be fetched (deleted, protected, or unavailable); accepted without content.`, fetched: true };
+  if (tweet) return { url, fetchedUrl: url, content: formatTweetSection(url, tweet), fetched: true };
+  return { url, fetchedUrl: url, content: `### ${url}\nTwitter/X link — tweet could not be fetched (deleted, protected, or unavailable); accepted without content.`, fetched: true };
 }
 
 function formatTweetSection(url: string, tweet: SyndicationTweet): string {
@@ -196,18 +219,21 @@ function formatTweetSection(url: string, tweet: SyndicationTweet): string {
   return lines.join("\n");
 }
 
-/** Returns null when the URL isn't a media host or the cascade failed (caller falls through to handleWebFetch). */
+/** Runs the media cascade when the URL is on a media host. Returns null when
+ *  the URL is not on one, or when the cascade failed. The caller then falls
+ *  through to fetchWebPage. */
 async function tryMediaDescription(url: string, costName: string, logKey: string): Promise<FetchedSource | null> {
   if (!isMediaHost(url)) return null;
   return tryDescribeMedia(url, costName, logKey);
 }
 
-/** Run the yt-dlp/gallery-dl cascade + Gemini analysis, or null if it can't
- *  extract media (text-only post, removed content, unsupported host). */
+/** Runs the yt-dlp and gallery-dl cascade followed by the Gemini analysis.
+ *  Returns null when no media can be extracted. That happens for a text-only
+ *  post, for removed content, and for an unsupported host. */
 async function tryDescribeMedia(url: string, costName: string, logKey: string): Promise<FetchedSource | null> {
   try {
     const media = await describeMediaFromUrl(url, costName);
-    return { url, content: formatCascadeMediaSection(url, media), fetched: true };
+    return { url, fetchedUrl: url, content: formatCascadeMediaSection(url, media), fetched: true };
   } catch (err: any) {
     getTweetLog()?.set(`${logKey}.media_error`, err?.message ?? "unknown error");
     return null;
@@ -215,13 +241,8 @@ async function tryDescribeMedia(url: string, costName: string, logKey: string): 
 }
 
 async function fetchAsWebPage(url: string): Promise<FetchedSource> {
-  const result = await handleWebFetch(url);
-  const content = typeof result.output === "string" ? result.output : JSON.stringify(result.output);
-  const isFetchError =
-    content.startsWith("Fetch failed:") ||
-    content.startsWith("Fetch error:") ||
-    content.startsWith("Non-text content:");
-  return { url, content: `### ${url}\n${content}`, fetched: !isFetchError };
+  const { content, fetchedUrl, ok } = await fetchWebPage(url);
+  return { url, fetchedUrl, content: `### ${url}\n${content}`, fetched: ok };
 }
 
 export interface VerifySourcesParams {
@@ -239,7 +260,7 @@ export async function verifySources(params: VerifySourcesParams): Promise<Source
   const logPrefix = `${STEP.sourceVerifier}.turn.${params.turnNumber}`;
 
   const acceptMediaSources = config.verifier_accepts_media_sources ?? false;
-  const { sections, fetchedCount, totalNonTwitter } = await fetchSourceContent(
+  const { sections, fetchedCount, totalNonTwitter, snapshotUrls } = await fetchSourceContent(
     params.sources,
     costPrefix,
     logPrefix,
@@ -253,14 +274,38 @@ export async function verifySources(params: VerifySourcesParams): Promise<Source
     );
   }
 
-  return config.verifier_claim_based
-    ? runClaimBasedVerification(params, sections, costPrefix, logPrefix)
-    : runClassicVerification(params, sections, acceptMediaSources, costPrefix, logPrefix);
+  const verification = config.verifier_claim_based
+    ? await runClaimBasedVerification(params, sections, costPrefix, logPrefix)
+    : await runClassicVerification(params, sections, acceptMediaSources, costPrefix, logPrefix);
+
+  return applySnapshotUrls(verification, snapshotUrls, logPrefix);
 }
 
-/** Shared tail of the verifier user message: the fetched cited sources plus the
- *  post and research findings as background. The head (the note, or the
- *  extracted claims) is prepended by each flow. */
+/** The model sees and returns the cited URL. When the fetch ladder fell back to
+ *  an archive snapshot, that original URL is dead or blocked, and only the
+ *  snapshot serves the content we just verified. So we publish the snapshot
+ *  instead. A note then never cites a URL its readers cannot open. Rejected
+ *  sources keep their original URL, because that is the URL the writer chose and
+ *  must stop reusing. */
+function applySnapshotUrls(
+  verification: SourceVerification,
+  snapshotUrls: Map<string, string>,
+  logPrefix: string,
+): SourceVerification {
+  if (snapshotUrls.size === 0) return verification;
+  const toSnapshot = (url: string) => snapshotUrls.get(url) ?? url;
+  getTweetLog()?.set(`${logPrefix}.snapshot_urls`, Object.fromEntries(snapshotUrls));
+  return {
+    ...verification,
+    good_sources: verification.good_sources.map(toSnapshot),
+    source_evaluations: verification.source_evaluations?.map((e) => ({ ...e, url: toSnapshot(e.url) })),
+  };
+}
+
+/** Builds the shared tail of the verifier's user message. It holds the fetched
+ *  cited sources, plus the post and the research findings as background. Each
+ *  flow prepends its own head, which is either the note or the extracted
+ *  claims. */
 function buildSourcesContext(sections: string, params: VerifySourcesParams): string {
   const parts = [
     `## Note's cited sources (verify these)`,
@@ -275,18 +320,20 @@ function buildSourcesContext(sections: string, params: VerifySourcesParams): str
   return parts.join("\n");
 }
 
-/** Restrict a model-returned URL list to URLs the writer actually cited. A
- *  misbehaving model could echo URLs from the research findings or hallucinate;
- *  the submitted note must never carry a URL the writer didn't choose. */
+/** Restricts a URL list the model returned to the URLs the writer actually
+ *  cited. A misbehaving model could echo URLs from the research findings, or
+ *  invent them outright. The submitted note must never carry a URL the writer
+ *  did not choose. */
 function clampToCited(urls: string[] | undefined, citedSet: Set<string>): string[] {
   return (urls ?? []).filter((u) => citedSet.has(u));
 }
 
-// --- Classic flow: single accept/reject call ---
+// --- Classic flow: a single accept or reject call ---
 
-/** Citations-mode classic derive: clamp the model's evaluated sources to the
- *  cited set, apply the good-needs-evidence demotion, and split into good/bad
- *  URL lists. A cited URL the model didn't return is treated as bad. */
+/** Derives the classic flow's result from the model's evaluated sources in
+ *  citations mode. It clamps those sources to the cited set, demotes any source
+ *  that came without evidence, and splits the rest into a good list and a bad
+ *  list. A cited URL the model did not return at all counts as bad. */
 function deriveClassicFromEvaluations(
   rawSources: RawEvaluatedSource[],
   cited: string[],
@@ -370,13 +417,14 @@ async function runClassicVerification(
   return result;
 }
 
-// --- Claim-based flow: extract claims, then map each to supporting sources ---
+// --- Claim-based flow: extract the claims, then map each one to its supporting sources ---
 
 export interface ClaimExtraction {
   claims: string[];
 }
 
-/** First claim-based call: break the note into its distinct factual claims. */
+/** The first call of the claim-based flow. It breaks the note into its distinct
+ *  factual claims. */
 export async function extractClaims(noteText: string, costPrefix: string): Promise<string[]> {
   const config = getBotConfig();
   const parsed = await runJsonLlmCall<ClaimExtraction>({
@@ -402,10 +450,11 @@ interface CitedClaimSupport {
   claim_support?: { claim: string; sources?: RawEvaluatedSource[] }[];
 }
 
-/** A claim plus the cited sources the model weighed against it. Off flow: every
- *  listed URL is a supporter (verdict "good", no citations). Citations flow: the
- *  verdict + snippets come from the model (a non-listed source = not supporting,
- *  so it never appears here). */
+/** A claim plus the cited sources the model weighed against it. When citations
+ *  are off, every listed URL is a supporter, so it gets the verdict "good" and
+ *  no citations. When citations are on, the verdict and the snippets come from
+ *  the model. A source the model does not list does not support the claim, so it
+ *  never appears here at all. */
 interface ClaimSourceMapping {
   claim: string;
   sources: EvaluatedSource[];
@@ -480,9 +529,9 @@ async function runClaimBasedVerification(
   return result;
 }
 
-/** A source is good iff it supports at least one claim (after clamping to cited
- *  URLs). The note is accepted iff there is at least one claim and every claim
- *  has at least one cited supporting source. */
+/** A source is good when it supports at least one claim, after the sources have
+ *  been clamped to the cited URLs. The note is accepted when there is at least
+ *  one claim and every claim has at least one cited supporting source. */
 function deriveVerificationFromClaims(
   claims: string[],
   reasoning: string,
@@ -501,8 +550,8 @@ function deriveVerificationFromClaims(
   }
 
   // The model must return a support entry for every extracted claim. If it
-  // dropped some, those claims went unevaluated — treat that as not-accepted
-  // rather than silently submitting a note with an unverified claim.
+  // dropped some, those claims were never evaluated. We treat that as not
+  // accepted, rather than silently submitting a note with an unverified claim.
   const allClaimsCovered = mappings.length >= claims.length;
   const accepted = claims.length > 0 && allClaimsCovered && unsupportedClaims.length === 0;
   const reasonParts = [reasoning.trim()].filter(Boolean) as string[];
@@ -521,9 +570,10 @@ function deriveVerificationFromClaims(
   };
 }
 
-/** Collapse the per-claim source lists into one EvaluatedSource per cited URL:
- *  verdict good iff it supports ≥1 claim, citations deduped (by quote) across
- *  the claims that listed it. */
+/** Collapses the per-claim source lists into one EvaluatedSource per cited URL.
+ *  A URL gets the verdict good when it supports at least one claim. Its
+ *  citations are gathered from every claim that listed it, with duplicate quotes
+ *  removed. */
 function aggregateClaimEvaluations(
   mappings: ClaimSourceMapping[],
   cited: string[],

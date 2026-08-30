@@ -1,8 +1,8 @@
 import crypto from "crypto";
 import OAuth from "oauth-1.0a";
 
-// === CONFIGURATION ===
-// Set these from your Twitter/X Developer Portal app settings:
+// The four X credentials read below come from the app's settings in the
+// Twitter/X Developer Portal.
 function getRequiredEnv(name: string): string {
   const value = process.env[name];
   if (!value) {
@@ -14,7 +14,6 @@ function getRequiredEnv(name: string): string {
   return value;
 }
 
-// === OAuth1 Helper Function ===
 export function getOAuth1Headers(
   url: string,
   method: string = "GET",
@@ -39,12 +38,11 @@ export function getOAuth1Headers(
     },
   });
 
-  // Don't include body in OAuth1 signature calculation
-  // This matches xurl's behavior
+  // The request body is deliberately left out of the OAuth1 signature. This is
+  // what the xurl tool does, and X accepts our requests on that basis.
   const request_data = {
     url: url,
     method: method,
-    // Remove body from signature calculation
   };
 
   const token = {
@@ -55,8 +53,8 @@ export function getOAuth1Headers(
   return oauth.toHeader(oauth.authorize(request_data, token));
 }
 
-// === OAuth1 Token Validation ===
-// Run directly: bun run src/api/getOAuthToken.ts
+// Check that the configured tokens still work. Run this file directly to use it:
+// bun run src/api/getOAuthToken.ts
 async function validateOAuth1Tokens() {
   try {
     const headers = getOAuth1Headers("https://api.twitter.com/2/users/me");

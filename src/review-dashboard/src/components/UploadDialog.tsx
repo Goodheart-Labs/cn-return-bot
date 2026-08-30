@@ -44,13 +44,13 @@ export function UploadDialog({ open, onClose, onUploaded }: UploadDialogProps) {
         return;
       }
 
-      // Parse logs column from JSON string
+      // The logs column arrives as a JSON string, so turn it back into an object.
       for (const row of rows) {
         if (row.logs && typeof row.logs === "string") {
           try {
             row.logs = JSON.parse(row.logs);
           } catch {
-            // Keep as string if not valid JSON
+            // Some rows hold something that is not JSON. We leave those as text.
           }
         }
       }

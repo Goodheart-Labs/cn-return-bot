@@ -1,6 +1,7 @@
 export const COMMONNOTES_ORIGIN = "https://commonnotes.net";
 
-/** Deep link to a note on the public site (the extension's share target). */
+/** Builds a deep link to a single note on the public site. This is the URL the
+ *  extension's Share action copies. */
 export function noteShareUrl(projectSlug: string | null, noteId: string): string {
   const params = new URLSearchParams();
   if (projectSlug) params.set("project", projectSlug);

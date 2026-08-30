@@ -184,6 +184,7 @@ async function main() {
         claim: toExtractedClaim(claim),
         source: item.source,
         itemId: item.id,
+        claimId: null,
         index,
         publishedAt: item.published_at ?? undefined,
       });

@@ -1,36 +1,46 @@
 /**
  * Tryout Notes
  *
- * Run the production pipeline on X/Twitter tweets without submitting.
- * Uses Nathan's X API credentials to fetch tweets identically to production.
+ * Run the production pipeline on X/Twitter tweets without submitting anything.
+ * Tweets are fetched exactly as production fetches them, using one person's X
+ * API credentials from the environment.
  *
  * Usage:
  *   bun run src/local/tryoutNotes.ts [flags] <input.csv | tweet-url-or-id...>
  *
  * Flags:
  *   --bot <id>              force a specific bot (shorthand for --pick bot=<id>)
+ *   --topic <id>            run as a curated-topic post. This injects the
+ *                           topic's grounding document and its advisory eval
+ *                           gate, exactly as stage 3 of the production misinfo
+ *                           pre-pass does.
  *   --pick test=variant     force an A/B test variant (repeatable)
  *   --max <n>               limit number of inputs
  *   --reversed              process newest-last
  *   --concurrency <n>       parallel workers (default 5)
  *   --name <label>          name for dashboard upload (default: derived)
- *   --from-db [level]       replay each tweet's most recent prod run, reusing
- *                           data from its prod logs. Levels (each includes the
- *                           previous), default `tweet`:
- *                             tweet  reuse the post (no X fetch); rebuild everything else
- *                             input  also reuse the full input (comments, media, author)
- *                             note   also reuse the written note → only the gates re-run
- *                           Defaults to --bot simple-bot (override with --bot).
+ *   --from-db [level]       replay each tweet's most recent production run,
+ *                           reusing data from that run's logs. Each level also
+ *                           reuses what the previous one reuses. The default
+ *                           level is `tweet`.
+ *                             tweet  reuse the post, so there is no X fetch.
+ *                                    Everything else is rebuilt.
+ *                             input  also reuse the full input, which covers
+ *                                    the comments, the media and the author.
+ *                             note   also reuse the written note, so only the
+ *                                    gates run again.
+ *                           This defaults to --bot simple-bot. Override it with
+ *                           --bot.
  */
 
 import "dotenv/config";
 import { captureProdSupabaseCreds } from "./prodSupabaseCreds";
 captureProdSupabaseCreds();
 
-// Remap a per-user X API credential set → standard X API env vars
-// (must happen before any X API imports read them). First prefix that's fully
-// populated wins; Jim's keys take priority so a fresh-account user doesn't
-// silently fall back to Nathan's quota.
+// Copy one person's X API credentials onto the standard X API environment
+// variables. This has to happen before anything that reads those variables is
+// imported. The first prefix that has all four values set wins. Jim's keys come
+// first, so a user with a fresh account does not quietly spend Nathan's quota.
 const X_KEY_PREFIXES = ["X_JIMMAAR1", "X_NATHANPMYOUNG"];
 const X_KEY_SUFFIXES = ["API_KEY", "API_KEY_SECRET", "ACCESS_TOKEN", "ACCESS_TOKEN_SECRET"];
 for (const prefix of X_KEY_PREFIXES) {
@@ -43,7 +53,7 @@ for (const prefix of X_KEY_PREFIXES) {
   break;
 }
 
-// Route Supabase to local instance
+// Send every Supabase write from this run to the local instance.
 const localUrl = process.env.LOCAL_SUPABASE_URL;
 const localKey = process.env.LOCAL_SUPABASE_SERVICE_KEY;
 if (localUrl && localKey) {
@@ -69,8 +79,8 @@ function extractTweetId(url: string): string {
   throw new Error(`Cannot extract tweet ID from: ${url}`);
 }
 
-// --from-db seeds these from prod logs so the replay reuses the exact post the
-// original run saw — no X API round-trip.
+// --from-db fills this map from the production logs. The replay then reuses the
+// exact post the original run saw and never calls the X API.
 const seededPosts = new Map<string, Post>();
 
 const fetchPost: PostFetcher = async (input) => {
@@ -87,11 +97,12 @@ function rankLevel(level: ReplayLevel): number {
   return REPLAY_LEVELS.indexOf(level);
 }
 
-/** Seed the replay caches from prod logs up to `level`, defaulting to simple-bot.
- *  Each level reuses more from the logged run (post → input → note); the
- *  existing cache-read paths short-circuit the corresponding pipeline stages.
- *  Both simple-bot and cheap-bot support the writer cache, so either may be
- *  forced via --bot; with none given we default to simple-bot (production). */
+/** Seed the replay caches from the production logs, up to the given level. Each
+ *  level reuses more of the logged run. First the post, then the input, then the
+ *  note. The cache reads that already exist in the pipeline skip the matching
+ *  stages. Both simple-bot and cheap-bot can read the writer cache, so either of
+ *  them may be forced with --bot. When no bot is forced we use simple-bot,
+ *  because that is the bot production runs. */
 async function seedFromDb(
   inputs: InputRow[],
   forcedPicks: Record<string, string>,
@@ -126,7 +137,8 @@ async function main() {
   const finalFlag = args.includes("--final");
   if (finalFlag) args.splice(args.indexOf("--final"), 1);
 
-  // --from-db [tweet|input|note]; the level word is optional (default `tweet`).
+  // The level word after --from-db is optional. Without one we replay at the
+  // `tweet` level.
   let fromDbLevel: ReplayLevel | null = null;
   const fromDbIdx = args.indexOf("--from-db");
   if (fromDbIdx !== -1) {
@@ -166,6 +178,7 @@ async function main() {
     reversed: parsed.reversed,
     concurrency: parsed.concurrency,
     runName: parsed.runName,
+    topicId: parsed.topicId,
   });
 }
 

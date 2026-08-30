@@ -1,24 +1,28 @@
 /**
- * Curated-topic matching on the REGULAR feed pool.
+ * Curated topic matching on the regular feed pool.
  *
- * The XXL pre-pass (generateMisinfoCandidates) discovers topic posts by
- * crawling the big feeds, but topic posts also arrive through the regular
- * pass's own pool — where, until now, they were processed as generic posts:
- * no reference document, no topic tagging, no sightings attribution. This
- * module gives the regular pass the same stage-1 keyword match and stage-2
- * selection-LLM judgment, so confirmed topic posts get the full monitoring
- * treatment (document injection, advisory eval gate, topic picks) without
- * adding any processing volume: confirmed posts are guaranteed a bounded
- * number of slots WITHIN the run's existing maxPosts budget.
+ * The XXL pre-pass in generateMisinfoCandidates finds topic posts by crawling
+ * the big feeds. Topic posts also arrive through the regular pass's own pool.
+ * Without this module the regular pass treats them as generic posts, with no
+ * reference document, no topic tag, and no sighting attributed to the topic.
+ * This module runs the same two stages the pre-pass runs. Stage one is the
+ * keyword match and stage two is the judgment of the selection LLM. A post the
+ * LLM confirms then gets the full monitoring treatment: the topic's reference
+ * document is injected, the eval gate becomes advisory, and the run records the
+ * topic picks. Processing volume does not grow, because confirmed posts are
+ * guaranteed a bounded number of slots inside the run's existing maxPosts
+ * budget.
  *
- * Sightings semantics are shared with the pre-pass (one ledger, one
- * judged-once rule): a pair already judged needs_note=false or already
- * processed is left alone; a pair judged needs_note=true but never processed
- * (e.g. the pre-pass selected it, then dropped it at its cap or floor) reuses
- * the stored verdict here without a second LLM call. The rescue is
- * floor-gated: fillWithTopicPriority applies the same topic velocity floor as
- * the pre-pass work list, so a floor-dropped post cannot re-enter through
- * this route until a later fetch shows it accelerating past the floor.
+ * This module and the pre-pass share one sightings ledger and one rule: a tweet
+ * and topic pair is judged only once. A pair already judged as not needing a
+ * note, or already processed, is left alone. A pair judged as needing a note but
+ * never processed reuses the stored verdict here, so there is no second LLM
+ * call. That case arises when the pre-pass selected the post and then dropped it
+ * at its cap or at its velocity floor. Such a rescue still has to clear the
+ * floor. fillWithTopicPriority applies the same topic velocity floor the
+ * pre-pass work list applies, so a post dropped for being too slow cannot come
+ * back through this route until a later fetch shows it moving faster than the
+ * floor.
  */
 
 import type { Post } from "../../api/fetchEligiblePosts";
@@ -30,14 +34,20 @@ import { MISINFO_TOPICS, type MisinfoTopic } from "./topics";
 import type { MisinfoTopicId } from "./topicIds";
 import { isAboveFloor, MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR } from "../utils/velocity";
 
-/** Confirmed topic matches are guaranteed up to this many of the run's
- *  maxPosts slots (fastest first). They displace the slowest regular picks —
- *  total processing volume is unchanged. Set 0 to keep the matching/tagging
- *  but stop prioritizing. */
-export const TOPIC_PRIORITY_SLOTS = 3;
+/** Confirmed topic matches are guaranteed up to this many of the run's maxPosts
+ *  slots, fastest first. They displace the lowest-ranked regular picks, so the
+ *  total number of posts processed does not change. Set this to 0 to keep the
+ *  matching and the topic tagging but stop giving topic posts priority.
+ *
+ *  Set to 0 on 2026-08-18: topic posts now compete on velocity like everything
+ *  else. The tagging and reference-document injection still run for any topic
+ *  post that earns a slot on its own, so the concede-shape test keeps
+ *  sampling. */
+export const TOPIC_PRIORITY_SLOTS = 0;
 
-/** Matches generateCandidates' SourcedPost without importing it (that module
- *  imports this one). `velocity` is the value frozen at fetch time. */
+/** The same shape as SourcedPost in generateCandidates. It is declared again
+ *  here instead of imported, because generateCandidates imports this module.
+ *  The velocity is the value frozen when the post was fetched. */
 export interface PooledPost {
   post: Post;
   feedSize: FeedSize;
@@ -45,21 +55,23 @@ export interface PooledPost {
 }
 
 /**
- * Match the regular pool against the active topics and return the posts a
- * selection verdict confirms as note-worthy, keyed by tweet id (a post
- * matching several topics is confirmed under the first in MISINFO_TOPICS
- * order — same rule as the pre-pass work list).
+ * Match the regular pool against the active topics. Returns the posts that a
+ * selection verdict confirms as needing a note, keyed by tweet id. A post that
+ * matches several topics is confirmed under the first one in MISINFO_TOPICS
+ * order. The pre-pass work list uses that same rule.
  *
- * Callers MUST wrap this fail-soft: selectPostsNeedingNote throws on
- * unrecoverable model output (by design, so unjudged sightings are retried
- * next run), and a curation failure must never take down the regular pass.
+ * Callers must catch whatever this throws. selectPostsNeedingNote throws when
+ * the model output cannot be recovered, which is deliberate, because it leaves
+ * the sightings unjudged and they are retried next run. A failure in curation
+ * must never take down the regular pass.
  *
- * Note: this adds a second full-ledger getMisinfoSightingKeys read per run
- * (the pre-pass does its own). Fine at current table size; passing the set
- * through from runPipeline is the future optimization.
+ * This costs one extra read of the whole sightings ledger per run, because the
+ * pre-pass reads it too. That is fine at the current table size. Passing the set
+ * down from runPipeline is the optimization to make when it stops being fine.
  */
 export async function curateRegularFeedPosts(opts: {
-  /** Every new post the ladder surfaced this run, below-floor included. */
+  /** This is every new post the ladder surfaced this run, including the posts
+   *  below the floor. */
   fresh: PooledPost[];
   supabaseLogger: SupabaseLogger;
   topicIds: readonly MisinfoTopicId[];
@@ -78,19 +90,21 @@ export async function curateRegularFeedPosts(opts: {
     supabaseLogger.getPendingMisinfoSightings(topics.map((t) => t.id)),
   ]);
 
-  // Multi-topic note: unlike the pre-pass (which dedupes its work list so a
-  // multi-topic post is judged once, under its first matching topic), curation
-  // judges such a post under EVERY matching topic; the confirmed map still
-  // dedupes first-topic-wins, so a secondary pair can sit needs_note=true/
-  // unprocessed indefinitely (returned by getPendingMisinfoSightings, inert).
-  // Moot with one active topic — align with the pre-pass's dedupe if a second
-  // topic ever activates.
+  // The pre-pass dedupes its work list, so a post matching several topics is
+  // judged once, under its first matching topic. Curation does not dedupe. It
+  // judges such a post under every topic it matches. The confirmed map below
+  // still keeps only the first topic. So the sighting for a second topic can
+  // stay marked as needing a note and never be processed. Such a row is
+  // returned by getPendingMisinfoSightings and does nothing. Only one topic is
+  // active, so this cannot happen today. Copy the pre-pass dedupe here if a
+  // second topic is ever turned on.
   for (const topic of topics) {
     const topicPosts = matched.get(topic.id) ?? [];
     if (!topicPosts.length) continue;
 
-    // Reuse stored verdicts; judge only genuinely new pairs. Pairs judged
-    // needs_note=false or already processed are excluded entirely.
+    // Reuse the stored verdicts and pay for a judgment only on genuinely new
+    // pairs. A pair already judged as not needing a note, or already processed,
+    // is left out of both lists.
     const pending = topicPosts.filter((p) => pendingKeys.has(`${p.id}:${topic.id}`));
     const fresh = topicPosts.filter(
       (p) => !pendingKeys.has(`${p.id}:${topic.id}`) && !judgedKeys.has(`${p.id}:${topic.id}`),
@@ -104,9 +118,10 @@ export async function curateRegularFeedPosts(opts: {
     }
     if (!fresh.length) continue;
 
-    // Sightings first (needs_note=null): a crash mid-evaluation leaves them
-    // to be re-evaluated next run rather than lost (getMisinfoSightingKeys
-    // excludes null verdicts).
+    // Record the sightings before judging them, so they start with no verdict.
+    // If the run crashes during evaluation they are evaluated again next run
+    // instead of being lost, because getMisinfoSightingKeys ignores rows that
+    // carry no verdict.
     await supabaseLogger.upsertMisinfoSightings(
       fresh.map((p) => ({
         tweet_id: p.id,
@@ -121,12 +136,13 @@ export async function curateRegularFeedPosts(opts: {
     const reasonById = new Map(selected.map((s) => [s.postId, s.reason]));
     console.log(`[generate] topic curation: ${topic.id}: ${fresh.length} new match(es), ${selected.length} need a note`);
 
-    // Confirm BEFORE writing verdicts, and keep the verdict write fail-soft:
-    // once the judge has spoken, a bookkeeping failure must not cost the post
-    // its topic treatment this run (it would be processed generically, then
-    // burned in the tweets ledger where the pending rescue can't reach it).
-    // On write failure the sightings stay needs_note=null and are re-judged
-    // next run — worst case a duplicate judge call, never a lost treatment.
+    // Confirm the posts before writing the verdicts, and let the write fail
+    // without stopping the run. Once the judge has spoken, a bookkeeping failure
+    // must not cost the post its topic treatment in this run. The post would
+    // then be processed as a generic post and recorded in the tweets ledger,
+    // which the rescue of pending sightings cannot reach. If the write fails the
+    // sightings keep no verdict and are judged again next run. The worst case is
+    // one duplicate judge call. The treatment is never lost.
     for (const p of fresh) {
       if (reasonById.has(p.id) && !confirmed.has(p.id)) confirmed.set(p.id, topic);
     }
@@ -147,18 +163,20 @@ export async function curateRegularFeedPosts(opts: {
 }
 
 /**
- * Guarantee confirmed topic posts a bounded share of the run's processing
- * budget. Pure. Up to `slots` confirmed posts (fastest first, from the whole
- * new-post pool) are included; the rest of the budget keeps the regular
- * velocity-ranked selection, displacing its slowest picks when full. The
- * returned list is velocity-sorted descending (unknown last), matching the
- * regular selection's ordering.
+ * Give confirmed topic posts a bounded share of the run's processing budget.
+ * This function has no side effects. It takes up to `slots` confirmed posts,
+ * fastest first, out of the whole pool of new posts. The rest of the budget goes
+ * to the regular selection, and when the budget is full the regular picks that
+ * rank lowest are dropped. The returned list puts the prioritized topic posts
+ * first and then the kept regular posts in the order they came in, which is the
+ * selection ranking. That list is the processing and submission order, so it is
+ * never sorted again.
  *
- * Confirmed posts below the topic velocity floor are returned in
- * `floorDropped` (for the caller's log) and never prioritized — the same
- * policy the pre-pass work list applies, so the two discovery routes cannot
- * disagree about the same tweet. Their sightings stay pending and are
- * re-offered when a later fetch shows the post above the floor.
+ * Confirmed posts below the topic velocity floor are never prioritized. They are
+ * returned in `floorDropped` so the caller can log them. The pre-pass work list
+ * applies the same floor, so the two discovery routes can never disagree about
+ * the same tweet. Their sightings stay pending, and such a post is offered again
+ * once a later fetch shows it above the floor.
  */
 export function fillWithTopicPriority<T extends { post: Post; velocity: number | null }>(
   selected: T[],
@@ -167,23 +185,26 @@ export function fillWithTopicPriority<T extends { post: Post; velocity: number |
   maxPosts: number,
   slots: number = TOPIC_PRIORITY_SLOTS,
 ): { final: T[]; prioritized: T[]; displacedCount: number; floorDropped: T[] } {
-  // Rank by the velocity frozen at fetch time (same value selection used).
+  // Rank by the velocity frozen at fetch time. Selection ranked on that same
+  // value.
   const byVelocityDesc = (a: T, b: T) => (b.velocity ?? -Infinity) - (a.velocity ?? -Infinity);
 
   if (slots <= 0 || !confirmedIds.size) {
     return { final: selected, prioritized: [], displacedCount: 0, floorDropped: [] };
   }
 
-  // Topic floor over the velocity frozen at fetch time (NOT re-derived — see
-  // SourcedPost in generateCandidates: recomputing mid-run shrinks velocity).
+  // Apply the topic floor to the velocity frozen at fetch time. Do not derive it
+  // again here. SourcedPost in generateCandidates explains why: recomputing a
+  // velocity part-way through a run makes it shrink.
   const confirmedPool = pool.filter((s) => confirmedIds.has(s.post.id));
   const aboveFloor = confirmedPool.filter((s) =>
     isAboveFloor(s.velocity, MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR),
   );
   const floorDropped = confirmedPool.filter((s) => !aboveFloor.includes(s));
 
-  // Never exceed the run budget: near writing-limit exhaustion computeMaxPosts
-  // genuinely produces maxPosts of 1–2, below the slot count.
+  // Never take more slots than the run budget allows. When the writing limit is
+  // nearly used up, computeMaxPosts really does return a maxPosts of 1 or 2,
+  // which is below the slot count.
   const prioritized = aboveFloor.sort(byVelocityDesc).slice(0, Math.min(slots, maxPosts));
   if (!prioritized.length) return { final: selected, prioritized: [], displacedCount: 0, floorDropped };
 
@@ -191,7 +212,7 @@ export function fillWithTopicPriority<T extends { post: Post; velocity: number |
   const regulars = selected.filter((s) => !prioritizedIds.has(s.post.id));
   const keepRegulars = regulars.slice(0, Math.max(0, maxPosts - prioritized.length));
 
-  const final = [...prioritized, ...keepRegulars].sort(byVelocityDesc);
+  const final = [...prioritized, ...keepRegulars];
   return {
     final,
     prioritized,

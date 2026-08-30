@@ -1,186 +1,271 @@
+import { noteStatus } from "./noteScore";
+import { extractEmbeddedCanonical, extractYoutubeVideoId } from "./pageUrls";
 import { supabase } from "./supabase";
-import type { ItemRow, NoteRow, NoteSourceRow } from "./types";
+import type { ItemRow, NoteRow, NoteSourceDetail, NoteSourceRow } from "./types";
 
-// Clients read whichever backend is deployed, which may be BEHIND the
-// migrations this build assumes. Columns/tables that can be missing:
-//   - migration 056: `everything_note_sources` table (old notes keep a `sources`
-//     jsonb array of URLs on the note row instead)
-//   - migration 057: `everything_claims.image_urls`
-//   - migration 063: `everything_note_not_needed` (the list simply stays empty)
-// Probe once and shape the query + normalize rows so callers render
-// identically against the old or the new schema.
+// A client reads whichever backend happens to be deployed, and that backend can
+// be older than the migrations this build assumes. These are the pieces that may
+// be missing:
+//   - migration 056 added the `everything_note_sources` table. Without it, a note
+//     keeps a `sources` jsonb array of URLs on its own row instead.
+//   - migration 057 added `everything_claims.image_urls`.
+//   - migration 063 added `everything_note_not_needed`. Without it the list of
+//     entries simply stays empty.
+//   - migration 081 added `everything_items.checked_scope`. Without it, "is
+//     this page fully checked" falls back to the item being done at all.
+// We probe the schema once, then shape the query and normalize the rows it
+// returns. Callers render the same way against the old schema and the new one.
 const CLAIM_COLS = "id, item_id, claim, context_quote, context_paragraph, updated_quote, context_url, start_seconds, end_seconds";
 
-export type Schema = { hasImageUrls: boolean; hasNoteSources: boolean; hasNnn: boolean };
+export type Schema = { hasImageUrls: boolean; hasNoteSources: boolean; hasNnn: boolean; hasCheckedScope: boolean };
 let schemaProbe: Promise<Schema> | null = null;
 
 export function detectSchema(): Promise<Schema> {
   schemaProbe ??= (async () => {
-    const [img, ns, nnn] = await Promise.all([
+    const [img, ns, nnn, scope] = await Promise.all([
       supabase.from("everything_claims").select("image_urls").limit(1),
       supabase.from("everything_note_sources").select("url").limit(1),
       supabase.from("everything_note_not_needed").select("id").limit(1),
+      supabase.from("everything_items").select("checked_scope").limit(1),
     ]);
-    return { hasImageUrls: !img.error, hasNoteSources: !ns.error, hasNnn: !nnn.error };
+    return { hasImageUrls: !img.error, hasNoteSources: !ns.error, hasNnn: !nnn.error, hasCheckedScope: !scope.error };
   })();
   return schemaProbe;
 }
 
-/** PostgREST select string for a note with its embedded claim + sources.
- *  `innerClaim` makes the claim join inner so the query can filter on
- *  claim columns (e.g. `.eq("claim.item_id", …)`). */
-export function noteSelect(s: Schema, opts?: { innerClaim?: boolean }): string {
+/** Builds the PostgREST select string for a note with its claim and its sources
+ *  embedded. Setting `innerClaim` makes the claim join an inner join, which is
+ *  what lets the query filter on a claim column such as `claim.item_id`.
+ *
+ *  Only the source URLs are read, because the URLs are what the note text
+ *  renders. The quote and the explanation of each source are much larger and
+ *  they sit behind the "Show source details" button, so they are fetched by
+ *  fetchNoteSourceDetails when a reader opens that. The button still has to know
+ *  whether there is anything to show, and that is what the second, aliased embed
+ *  of the same table is for: noteQuery filters it down to the sources that carry
+ *  a quote, so its length answers the question without reading a single quote. */
+function noteSelect(s: Schema, opts?: { innerClaim?: boolean; projectScoped?: boolean }): string {
   const join = opts?.innerClaim ? "everything_claims!inner" : "everything_claims";
-  const claim = `claim:${join}(${CLAIM_COLS}${s.hasImageUrls ? ", image_urls" : ""})`;
-  const sources = s.hasNoteSources ? ", sources:everything_note_sources(url, quote, explanation, sort_order)" : "";
+  // Filtering on the project means reaching through the claim to its item, so
+  // that item has to be embedded for PostgREST to accept `claim.item.project_id`
+  // as a filter. Only the join column is read.
+  const item = opts?.projectScoped ? ", item:everything_items!inner(project_id)" : "";
+  const claim = `claim:${join}(${CLAIM_COLS}${s.hasImageUrls ? ", image_urls" : ""}${item})`;
+  const sources = s.hasNoteSources
+    ? ", sources:everything_note_sources(url, sort_order), detailed:everything_note_sources(sort_order)"
+    : "";
   return `*, ${claim}${sources}`;
 }
 
-/** Coerce a raw note row from either schema into NoteRow: sources always a
- *  NoteSourceRow[] (old jsonb URL array → quote-less rows), claim.image_urls
- *  always an array. */
-export function normalizeNote(row: any, s: Schema): NoteRow {
-  const sources: NoteSourceRow[] = s.hasNoteSources
-    ? (row.sources ?? [])
-    : (Array.isArray(row.sources) ? row.sources : []).map((url: string, i: number) => ({
-        url, quote: null, explanation: null, sort_order: i,
-      }));
-  const claim = row.claim ? { ...row.claim, image_urls: row.claim.image_urls ?? [] } : row.claim;
-  return { ...row, sources, claim };
+/** The query every note fetch starts from. It applies the select above and the
+ *  one filter that select depends on, so no caller has to know how the
+ *  source-details flag is built. Callers add their own filters and await it. */
+export function noteQuery(s: Schema, opts?: { innerClaim?: boolean; projectScoped?: boolean }) {
+  const q = supabase.from("everything_notes").select(noteSelect(s, opts));
+  return s.hasNoteSources ? q.not("detailed.quote", "is", null) : q;
 }
 
-/** One note by id, fully joined + normalized (e.g. refetch after a vote to
- *  pick up the trigger-computed counts). */
+/** Turns a raw note row from either schema into a NoteRow. `sources` always ends
+ *  up as an array of NoteSourceRow, and `has_source_details` says whether the
+ *  reveal has anything in it. On the old schema the note's own jsonb column
+ *  holds bare URLs, which carry no quotes, so the reveal is always empty there.
+ *  `claim.image_urls` always ends up as an array too. */
+export function normalizeNote(row: any, s: Schema): NoteRow {
+  const { detailed, ...note } = row;
+  const sources: NoteSourceRow[] = s.hasNoteSources
+    ? (row.sources ?? [])
+    : (Array.isArray(row.sources) ? row.sources : []).map((url: string, i: number) => ({ url, sort_order: i }));
+  const claim = row.claim ? { ...row.claim, image_urls: row.claim.image_urls ?? [] } : row.claim;
+  return { ...note, sources, claim, has_source_details: (detailed ?? []).length > 0 };
+}
+
+/** Fetches one note by id, fully joined and normalized. Callers use it to refetch
+ *  a note after a vote, so they pick up the counts the database trigger wrote. */
 export async function fetchNote(id: string): Promise<NoteRow | null> {
   const schema = await detectSchema();
-  const { data } = await supabase.from("everything_notes").select(noteSelect(schema)).eq("id", id).maybeSingle();
+  const { data } = await noteQuery(schema).eq("id", id).maybeSingle();
   return data ? normalizeNote(data, schema) : null;
 }
 
+/** The quote and the explanation behind one note's "Show source details"
+ *  reveal. A source with no quote has no body to show, so it is left out here
+ *  the same way the reveal leaves it out. This runs when a reader opens the
+ *  reveal, which is why the feed can load without any of this text. */
+export async function fetchNoteSourceDetails(noteId: string): Promise<NoteSourceDetail[]> {
+  const { data } = await supabase
+    .from("everything_note_sources")
+    .select("url, quote, explanation, sort_order")
+    .eq("note_id", noteId)
+    .not("quote", "is", null)
+    .order("sort_order");
+  return (data ?? []) as NoteSourceDetail[];
+}
+
 // ---------------------------------------------------------------------------
-// Page-scoped lookups (browser extension): resolve the current page to an
-// everything_items row, then fetch just that item's notes.
+// Page-scoped lookups, used by the browser extension. They resolve the current
+// page to an everything_items row, then fetch just that item's notes. The pure
+// URL helpers they build on live in pageUrls.ts.
 // ---------------------------------------------------------------------------
 
-const TRACKING_PARAMS = ["fbclid", "gclid", "igshid", "si"];
-
-/** Canonicalize a page URL for the `everything_items.url` lookup: prefer the
- *  page's <link rel="canonical"> (Substack items store Substack's canonical_url,
- *  which custom-domain newsletters only expose via that tag), drop the hash and
- *  tracking params. */
-export function normalizePageUrl(href: string, doc?: Document): string {
-  const canonical = doc?.querySelector('link[rel="canonical"]')?.getAttribute("href");
-  let url = new URL(href);
-  if (canonical) {
-    // SPAs (Substack) can leave the previous page's canonical tag in place
-    // after a client-side navigation — trusting it then resolves the wrong
-    // item (e.g. the homepage matching the last-read post). Only follow the
-    // canonical while it still points at the current path; custom-domain
-    // canonicals differ in host, not path, so they stay covered.
-    const canonicalUrl = new URL(canonical, url);
-    if (canonicalUrl.pathname.replace(/\/$/, "") === url.pathname.replace(/\/$/, "")) url = canonicalUrl;
-  }
-  url.hash = "";
-  for (const key of [...url.searchParams.keys()]) {
-    if (key.startsWith("utm_") || TRACKING_PARAMS.includes(key)) url.searchParams.delete(key);
-  }
-  return url.toString();
-}
-
-/** Substack's reader app shows posts under several apex-domain URL shapes
- *  (`/@author/p-<postid>`, `/home/post/p-<postid>`, inbox variants…) the DB
- *  has never seen; its <link rel=canonical> is self-referential, so the only
- *  mapping to the publication URL we store is the `canonical_url` field in
- *  the page's embedded JSON. Match any `/p-<id>` path segment — a false
- *  positive just fetches a page with no embedded canonical and falls back. */
-export function isSubstackReaderUrl(href: string): boolean {
-  try {
-    const url = new URL(href);
-    return /^(www\.)?substack\.com$/.test(url.hostname) && /\/p-\d+(\/|$)/.test(url.pathname);
-  } catch {
-    return false;
-  }
-}
-
-/** The embedded `canonical_url` appears raw or JSON-escaped depending on
- *  where Substack serialized it; a URL contains neither `"` nor `\`. */
-export function extractEmbeddedCanonical(html: string): string | null {
-  return html.match(/canonical_url\\?"\s*:\s*\\?"(https?:[^"\\]+)/)?.[1] ?? null;
-}
-
-/** Resolve a reader URL to the publication post URL by fetching the page
- *  fresh (the DOM's embedded JSON goes stale on reader SPA navigation).
- *  Extension callers must run this in the BACKGROUND (via the
- *  cn-reader-canonical message): logged-out Substack 302s the reader URL
- *  cross-origin to the publication domain, which only a host-permission
- *  fetch can follow — content scripts and CORS-bound contexts get null. */
+/** Resolves a reader URL to the publication's own post URL by fetching it
+ *  logged out. A home-feed link (substack.com/home/post/p-<id>) answers with a
+ *  redirect to the publication's domain, so the redirect target is the answer
+ *  and the body is never downloaded. A profile link (substack.com/@author/p-<id>)
+ *  answers 200 on substack.com itself, so there the answer is the canonical_url
+ *  in the page's embedded JSON. A fresh fetch is needed even on the reader page
+ *  itself, because the reader is a single-page app and the JSON already in the
+ *  DOM goes stale after a navigation. Extension callers must run this in the
+ *  background script, through the cn-reader-canonical message. A content
+ *  script, or any other context bound by CORS, may neither follow the
+ *  cross-origin redirect nor read the response, and gets null instead. */
 export async function fetchReaderCanonical(href: string): Promise<string | null> {
   try {
-    const html = await (await fetch(href, { credentials: "omit" })).text();
-    return extractEmbeddedCanonical(html);
+    const res = await fetch(href, { credentials: "omit" });
+    if (new URL(res.url).hostname !== new URL(href).hostname) {
+      void res.body?.cancel();
+      return res.url;
+    }
+    return extractEmbeddedCanonical(await res.text());
   } catch {
     return null;
   }
 }
 
-export function extractYoutubeVideoId(url: string): string | null {
-  try {
-    const u = new URL(url);
-    if (/(^|\.)youtu\.be$/.test(u.hostname)) return u.pathname.split("/")[1] || null;
-    if (!/(^|\.)youtube\.com$/.test(u.hostname)) return null;
-    const v = u.searchParams.get("v");
-    if (v) return v;
-    return u.pathname.match(/^\/(?:shorts|live|embed)\/([^/?]+)/)?.[1] ?? null;
-  } catch {
-    return null;
-  }
-}
-
-/** ItemRow plus what the extension needs alongside it: the transcript/article
- *  body (write-note anchor check) and the project slug (share links). */
+/** An ItemRow plus the two extra fields the extension needs. `full_text` is the
+ *  transcript or article body, which the write-note flow searches to check its
+ *  anchor. `projectSlug` is what share links are built from. */
 export type PageItem = ItemRow & { full_text: string | null; projectSlug: string | null };
 
 const ITEM_COLS = "id, project_id, source, url, title, published_at, status, error, created_at, full_text";
-const ITEM_SELECT = `${ITEM_COLS}, project:everything_projects(slug)`;
+// Selecting a column an old backend does not have fails the whole query, so
+// checked_scope only joins the select once the probe confirmed it exists.
+const itemSelect = (s: Schema) =>
+  `${ITEM_COLS}${s.hasCheckedScope ? ", checked_scope" : ""}, project:everything_projects(slug)`;
+
+/** Whether this page has been read in full by the pipeline. Only such a page
+ *  refuses a new "check this page" request. An item that exists because a
+ *  reader wrote a note, or because one paragraph was checked, is not a checked
+ *  page. Against a backend that predates migration 081 the scope is undefined,
+ *  and the rule falls back to what it used to be: done means checked. */
+export function isWholePageChecked(item: Pick<ItemRow, "status" | "checked_scope"> | null): boolean {
+  if (!item) return false;
+  if (item.status !== "done") return false;
+  return item.checked_scope === undefined || item.checked_scope === "page";
+}
 
 function toPageItem(row: any): PageItem {
   const { project, ...item } = row;
   return { ...item, projectSlug: project?.slug ?? null };
 }
 
-/** Resolve a page URL to its everything_items row, or null when the page
- *  isn't ingested. YouTube items store the URL as-enqueued (watch?v= or
- *  youtu.be), so match by video ID instead of exact URL — with no `source`
- *  filter: video items ingested through the old podcast pipeline carry
- *  source "podcast", and the ID re-verify below is the real matcher anyway. */
+/** Resolves a page URL to its everything_items row. Returns null when the page
+ *  has never been ingested. A YouTube item stores the URL exactly as it was
+ *  enqueued, which may be a watch?v= link or a youtu.be link, so we match on the
+ *  video ID rather than on the whole URL. There is no filter on `source`, because
+ *  videos ingested through the old podcast pipeline carry the source "podcast",
+ *  and the video ID check below is the real matcher anyway. */
 export async function fetchItemForUrl(pageUrl: string): Promise<PageItem | null> {
+  const select = itemSelect(await detectSchema());
   const videoId = extractYoutubeVideoId(pageUrl);
   if (videoId) {
-    // Video IDs are [A-Za-z0-9_-]; `_`/`-` make ilike over-match, so the
-    // pattern only prefilters and each hit is re-verified by parsing its URL.
-    const { data } = await supabase
+    // A video ID may contain an underscore, and ilike reads an underscore as a
+    // wildcard, so this pattern matches more rows than it should. It is only a
+    // prefilter. Every row it returns is verified below by parsing that row's
+    // URL and comparing the video ID exactly.
+    const { data, error } = await supabase
       .from("everything_items")
-      .select(ITEM_SELECT)
+      .select(select)
       .ilike("url", `%${videoId}%`);
+    if (error) throw new Error(`item lookup failed: ${error.message}`);
     const hit = (data ?? []).find((r: any) => extractYoutubeVideoId(r.url) === videoId);
     return hit ? toPageItem(hit) : null;
   }
   const trimmed = pageUrl.replace(/\/$/, "");
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("everything_items")
-    .select(ITEM_SELECT)
+    .select(select)
     .in("url", [trimmed, `${trimmed}/`])
     .limit(1);
+  // A failed lookup must throw rather than pass as "no item". Treating an
+  // outage as an unchecked page would tell the reader we never checked a page
+  // we did, and offer to check it again.
+  if (error) throw new Error(`item lookup failed: ${error.message}`);
   return data?.[0] ? toPageItem(data[0]) : null;
 }
 
-/** All visible notes on one item, joined + normalized. */
-export async function fetchNotesForItem(itemId: string): Promise<NoteRow[]> {
-  const schema = await detectSchema();
-  const { data } = await supabase
+/** Returns the URL of every ingested page. This is the extension's coverage
+ *  list. The extension caches it locally so a content script can decide on the
+ *  user's own device whether the current page is one of ours. Browsing a page
+ *  that has no notes must never reach our backend. Returns null when the query
+ *  failed, so a caller does not mistake an outage for "we cover nothing". */
+export async function fetchCoveredPageUrls(): Promise<string[] | null> {
+  const { data, error } = await supabase.from("everything_items").select("url");
+  if (error) return null;
+  return (data ?? []).map((r: any) => r.url as string).filter((url) => !url.startsWith("local:"));
+}
+
+/** Returns the URL of every feed the pipeline actually follows. The extension
+ *  caches it next to the coverage list and hides the follow button only for
+ *  feeds on this list. Returns null when the query failed, so a caller does not
+ *  mistake an outage for "we follow nothing". */
+export async function fetchFollowedFeedUrls(): Promise<string[] | null> {
+  const { data, error } = await supabase.from("everything_followed_feeds").select("feed_url");
+  if (error) return null;
+  return (data ?? []).map((r: any) => r.feed_url as string);
+}
+
+/** How many notes of each rating status each ingested page has, keyed by the
+ *  item's URL. The extension caches this next to the coverage list; its listing
+ *  badges and count cards sum whichever statuses the user's note filters show.
+ *  Synthetic local documents, whose URL starts with `local:`, are left out.
+ *  Returns null when the query failed, so a caller does not mistake an outage
+ *  for "nothing has notes". */
+export type PageNoteStatusCounts = { helpful: number; needsRatings: number; notHelpful: number };
+
+export async function fetchNotedPageCounts(): Promise<Record<string, PageNoteStatusCounts> | null> {
+  const { data, error } = await supabase
     .from("everything_notes")
-    .select(noteSelect(schema, { innerClaim: true }))
+    .select("helpful_count, somewhat_helpful_count, not_helpful_count, author_id, claim:everything_claims!inner(item:everything_items!inner(url))")
+    .neq("status", "hidden");
+  if (error) return null;
+  const counts: Record<string, PageNoteStatusCounts> = {};
+  for (const row of (data ?? []) as any[]) {
+    const url = row.claim.item.url as string;
+    if (url.startsWith("local:")) continue;
+    const page = (counts[url] ??= { helpful: 0, needsRatings: 0, notHelpful: 0 });
+    const status = noteStatus(row);
+    if (status === "helpful") page.helpful += 1;
+    else if (status === "needs_ratings") page.needsRatings += 1;
+    else page.notHelpful += 1;
+  }
+  return counts;
+}
+
+/** Returns the URL of every ingested page that has visible notes, or null when
+ *  the query failed. */
+export async function fetchNotedPageUrls(): Promise<string[] | null> {
+  const counts = await fetchNotedPageCounts();
+  return counts ? Object.keys(counts) : null;
+}
+
+/** Picks a random ingested page that has visible notes. The popup's "Open random
+ *  page" button goes there. */
+export async function fetchRandomNotedPageUrl(): Promise<string | null> {
+  const urls = (await fetchNotedPageUrls()) ?? [];
+  return urls[Math.floor(Math.random() * urls.length)] ?? null;
+}
+
+/** Fetches every visible note on one item, joined and normalized. Returns
+ *  null when the query failed, so a caller does not mistake an outage for a
+ *  page without notes and announce "found nothing to note". */
+export async function fetchNotesForItem(itemId: string): Promise<NoteRow[] | null> {
+  const schema = await detectSchema();
+  const { data, error } = await noteQuery(schema, { innerClaim: true })
     .eq("claim.item_id", itemId)
     .neq("status", "hidden");
+  if (error) {
+    console.warn(`[common-notes] notes fetch failed: ${error.message}`);
+    return null;
+  }
   return ((data ?? []) as any[]).map((r) => normalizeNote(r, schema));
 }

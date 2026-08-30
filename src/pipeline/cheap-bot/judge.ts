@@ -1,9 +1,10 @@
 /**
  * Note-Needed Judge
  *
- * Extra LLM step between writer and source verifier. Decides whether the
- * proposed note is actually warranted given the post and the proposed note.
- * cheap-bot's primary false-positive guard (always on there via BOT_TEST).
+ * An extra LLM step between the writer and the source verifier. It decides
+ * whether the proposed note is actually warranted, given the post and the note
+ * itself. It is cheap-bot's main guard against false positives, and BOT_TEST
+ * keeps it always on there.
  */
 
 import { getBotConfig } from "../ab-testing/botConfig";

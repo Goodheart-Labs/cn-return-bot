@@ -1,19 +1,55 @@
-/** Detect and track the HOST PAGE's effective theme so the shadow-root
- *  overlays match the page they sit on, not the OS setting: Substack's reader
- *  renders dark under a light OS theme (and vice versa). Same approach as
- *  Dark Reader's built-in-dark-theme detection: prefer the standards-based
- *  `color-scheme` signal, else judge the rendered background's luminance. */
+/** Works out which theme the host page is actually painting, and watches for changes
+ *  to it. Our shadow-root overlays follow the page they sit on rather than the
+ *  operating system's setting. Substack's reader can render dark under a light OS
+ *  theme, and the other way round. The approach is the one Dark Reader uses to spot
+ *  a built-in dark theme. We prefer the page's own `color-scheme` declaration. When
+ *  that says nothing, we judge the luminance of the background it renders. */
 
-function parseColor(value: string): { r: number; g: number; b: number; a: number } | null {
-  // Computed colors serialize as rgb()/rgba() in practice; anything exotic
-  // (oklch(), color()) returns null and the caller keeps walking.
-  const m = value.match(/^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+)\s*)?\)$/);
-  if (!m) return null;
-  return { r: +m[1]!, g: +m[2]!, b: +m[3]!, a: m[4] === undefined ? 1 : +m[4]! };
+/** Turns one colour component into a number between 0 and 1. The component can be
+ *  written as a decimal such as "0.5", as a percentage such as "50%", or as the
+ *  keyword "none". */
+function channel(v: string): number {
+  if (v === "none") return 0;
+  return v.endsWith("%") ? parseFloat(v) / 100 : parseFloat(v);
 }
 
-/** Perceived lightness 0..1 (Rec. 709 weights on raw sRGB — the same formula
- *  Dark Reader uses; plenty of precision for a light/dark call). */
+function parseColor(value: string): { r: number; g: number; b: number; a: number } | null {
+  // This branch matches the legacy rgb() and rgba() serialization.
+  let m = value.match(/^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+)\s*)?\)$/);
+  if (m) return { r: +m[1]!, g: +m[2]!, b: +m[3]!, a: m[4] === undefined ? 1 : +m[4]! };
+  // Wide-gamut colours keep their color() function form in getComputedStyle, and
+  // Substack paints in display-p3. Their components run from 0 to 1. We treat all of
+  // these colour spaces alike. The small differences between their channels do not
+  // matter when the only decision is light or dark.
+  m = value.match(
+    /^color\((?:srgb|srgb-linear|display-p3|rec2020|a98-rgb|prophoto-rgb)\s+([\d.]+%?|none)\s+([\d.]+%?|none)\s+([\d.]+%?|none)(?:\s*\/\s*([\d.]+%?|none))?\)$/,
+  );
+  if (m) {
+    return {
+      r: channel(m[1]!) * 255,
+      g: channel(m[2]!) * 255,
+      b: channel(m[3]!) * 255,
+      a: m[4] === undefined ? 1 : channel(m[4]!),
+    };
+  }
+  // These colour spaces start with a lightness component. That component on its own
+  // is a good enough signal for light or dark. We return it as a shade of grey, so
+  // that luminance() gives the same number back.
+  m = value.match(/^(oklab|oklch|lab|lch)\(\s*([\d.]+%?|none)\s+[^/)]+(?:\/\s*([\d.]+%?|none)\s*)?\)$/);
+  if (m) {
+    const raw = m[2]!;
+    let lightness = channel(raw);
+    // In lab() and lch() a bare lightness number runs from 0 to 100.
+    if (!raw.endsWith("%") && (m[1] === "lab" || m[1] === "lch")) lightness /= 100;
+    const v = lightness * 255;
+    return { r: v, g: v, b: v, a: m[3] === undefined ? 1 : channel(m[3]!) };
+  }
+  return null;
+}
+
+/** Returns how light a colour looks, on a scale from 0 to 1. It applies the Rec. 709
+ *  weights to the raw sRGB values. This is the same formula Dark Reader uses. It is
+ *  accurate enough for deciding between light and dark. */
 function luminance(c: { r: number; g: number; b: number }): number {
   return (0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b) / 255;
 }
@@ -21,8 +57,10 @@ function luminance(c: { r: number; g: number; b: number }): number {
 const DARK_BELOW = 0.45;
 const OPAQUE_ENOUGH = 0.05;
 
-/** An explicit single-scheme declaration decides outright; "normal" and
- *  "light dark" say nothing about what the page currently paints. */
+/** Reads the page's `color-scheme` declaration. A declaration that names a single
+ *  scheme settles the question on its own. The values "normal" and "light dark" say
+ *  nothing about which of the two the page is painting right now, so they return
+ *  null. */
 function declaredScheme(): boolean | null {
   const declared =
     getComputedStyle(document.documentElement).colorScheme ||
@@ -34,9 +72,9 @@ function declaredScheme(): boolean | null {
   return null;
 }
 
-/** Whether the page paints a dark backdrop where our UI sits. `from` is the
- *  element the overlay anchors to (e.g. the article container) — a dark
- *  backdrop painted on an inner wrapper still wins over a white body. */
+/** Tells you whether the page paints a dark backdrop where our UI sits. `from` is the
+ *  element the overlay is anchored to, such as the article container. We walk up from
+ *  there, so a dark backdrop painted on an inner wrapper wins over a white body. */
 export function isPageDark(from?: Element | null): boolean {
   const declared = declaredScheme();
   if (declared !== null) return declared;
@@ -44,16 +82,18 @@ export function isPageDark(from?: Element | null): boolean {
     const bg = parseColor(getComputedStyle(el).backgroundColor);
     if (bg && bg.a > OPAQUE_ENOUGH) return luminance(bg) < DARK_BELOW;
   }
-  // Everything transparent: a page set in light TEXT is a dark page.
+  // Every element up the chain was transparent. A page whose text is light must be a
+  // dark page.
   const text = parseColor(getComputedStyle(document.body ?? document.documentElement).color);
   return text ? luminance(text) > 1 - DARK_BELOW : false;
 }
 
 const RECHECK_DEBOUNCE_MS = 100;
 
-/** Watch for theme flips (Substack's reader and YouTube toggle themes by
- *  swapping classes/attributes on html or body, no reload). Calls `onChange`
- *  only when the detected theme actually changes. Returns a cleanup. */
+/** Watches for theme flips. Substack's reader and YouTube switch theme by swapping a
+ *  class or an attribute on html or body, without reloading the page. `onChange` is
+ *  called only when the detected theme really changed. The returned function stops
+ *  the watching. */
 export function observePageTheme(
   onChange: (dark: boolean) => void,
   sampleFrom?: () => Element | null,
@@ -67,7 +107,8 @@ export function observePageTheme(
     onChange(dark);
   };
   const observer = new MutationObserver((mutations) => {
-    // SPAs can replace <body>; re-attach so its attribute flips stay covered.
+    // A single-page app can replace the whole body element. We attach the observer to
+    // the new one, so that its attribute changes stay covered.
     if (mutations.some((m) => m.type === "childList") && document.body) {
       observer.observe(document.body, { attributes: true });
     }

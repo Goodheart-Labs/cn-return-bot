@@ -8,7 +8,9 @@
  * columns that don't exist locally (e.g. dropped current_*_status), and columns
  * too large to fetch in bulk (see SKIP_COLUMNS — pipeline_runs.logs).
  *
- * Usage: bun run src/scripts_jim/2026_04_06_sync_prod_to_local/syncAll.ts
+ * Usage: bun run src/scripts_jim/2026_04_06_sync_prod_to_local/syncAll.ts [--only t1,t2]
+ * --only limits the sync to the named local tables (e.g. resuming after a
+ * mid-run failure without refetching everything).
  */
 
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
@@ -17,12 +19,21 @@ import "dotenv/config";
 
 const BATCH = 1000;
 
+// Per-table batch override (both fetch AND insert) for tables whose rows carry
+// fat jsonb: a 1000-row page of review_dashboard_items detoasts every dataset
+// item's inline logs at once and reliably times out — on prod's read AND on the
+// local REST insert. The table is tiny (~hundreds of rows), so small pages
+// cost nothing.
+const TABLE_BATCH_OVERRIDE: Record<string, number> = {
+  review_dashboard_items: 25,
+};
+
 // (localTable, prodTable) pairs. Local-table-name first; prodTable defaults
 // to localTable when omitted. Listed in dependency order — parents first.
 type SyncSpec = { local: string; prod?: string };
 const SYNC_SPECS: SyncSpec[] = [
   { local: "notewriters" },
-  { local: "tweets", prod: "__skip__" },          // tweets is local-only (no prod equivalent)
+  { local: "tweets" }, // prod's tweets table is the author-history source (author_id since migration 033); ~171k rows
   { local: "notes" }, // prod merged canonical_note_information into notes (May 2026)
   { local: "pipeline_runs" },
   { local: "misinfo_monitoring_sightings" }, // after pipeline_runs: processed_run_id FKs to it
@@ -31,11 +42,18 @@ const SYNC_SPECS: SyncSpec[] = [
   { local: "competing_notes" },
   { local: "public_data_snapshots" },
   { local: "pipeline_state" },
+  { local: "note_ratings_from_public_dump" }, // after notes: FK note_id → notes(note_id)
+  { local: "review_dashboard_failure_modes" },
+  { local: "review_dashboard_uploads" },
+  { local: "review_dashboard_items" }, // after uploads: FK upload_id
+  { local: "review_dashboard_annotations" },
 ];
 
 const PK: Record<string, string> = {
   pipeline_state: "key",
   tweets: "tweet_id",
+  note_ratings_from_public_dump: "note_id",
+  review_dashboard_failure_modes: "name",
   // `id` is GENERATED ALWAYS identity (can't be inserted), so dedupe on the
   // natural key and let local regenerate ids (see DROP_BEFORE_INSERT).
   misinfo_monitoring_sightings: "tweet_id,topic_id",
@@ -100,20 +118,30 @@ async function fetchAll(
   // a `> cursor` lookup uses the index and stays flat. orderCol must be in the
   // selection to read the cursor — add it if the caller didn't.
   const cols = columns.includes(orderCol) ? columns : [...columns, orderCol];
+  const batchSize = TABLE_BATCH_OVERRIDE[table] ?? BATCH;
   const rows: any[] = [];
   let cursor: unknown = null;
   while (true) {
-    let query = client
-      .from(table)
-      .select(cols.join(","))
-      .order(orderCol, { ascending: true })
-      .limit(BATCH);
-    if (cursor !== null) query = query.gt(orderCol, cursor as never);
-    const { data, error } = await query;
-    if (error) throw new Error(`Fetch ${table}: ${error.message}`);
+    // A 400-batch table (pipeline_scores) will occasionally hit a transient
+    // network timeout — retry the batch a few times before giving up, so one
+    // hiccup doesn't abort the whole (fetch-everything-first) sync.
+    let data: any[] | null = null;
+    for (let attempt = 1; ; attempt++) {
+      let query = client
+        .from(table)
+        .select(cols.join(","))
+        .order(orderCol, { ascending: true })
+        .limit(batchSize);
+      if (cursor !== null) query = query.gt(orderCol, cursor as never);
+      const res = await query;
+      if (!res.error) { data = res.data; break; }
+      if (attempt >= 3) throw new Error(`Fetch ${table}: ${res.error.message}`);
+      console.log(`  ${table}: batch failed (${res.error.message}), retry ${attempt}/2…`);
+      await new Promise((r) => setTimeout(r, 2000 * attempt));
+    }
     if (!data?.length) break;
     rows.push(...data);
-    if (data.length < BATCH) break;
+    if (data.length < batchSize) break;
     cursor = (data[data.length - 1] as Record<string, unknown>)[orderCol];
   }
   return rows;
@@ -136,8 +164,9 @@ async function insertAll(
   rows: any[],
   pk: string,
 ) {
-  for (let i = 0; i < rows.length; i += BATCH) {
-    const slice = rows.slice(i, i + BATCH);
+  const batchSize = TABLE_BATCH_OVERRIDE[table] ?? BATCH;
+  for (let i = 0; i < rows.length; i += batchSize) {
+    const slice = rows.slice(i, i + batchSize);
     const { error } = await client
       .from(table)
       .upsert(slice, { onConflict: pk, ignoreDuplicates: true });
@@ -159,7 +188,10 @@ async function probeProdColumns(t: string): Promise<Set<string> | null> {
 }
 
 async function main() {
-  const liveSpecs = SYNC_SPECS.filter((s) => s.prod !== "__skip__");
+  const onlyIdx = process.argv.indexOf("--only");
+  const only = onlyIdx >= 0 ? new Set(process.argv[onlyIdx + 1]!.split(",")) : null;
+  const specs = only ? SYNC_SPECS.filter((s) => only.has(s.local)) : SYNC_SPECS;
+  const liveSpecs = specs.filter((s) => s.prod !== "__skip__");
   const localCols = await getColumnsForTables(
     "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
     liveSpecs.map((s) => s.local),
@@ -179,7 +211,7 @@ async function main() {
   type Plan = { lt: string; pt: string; pk: string; rows: any[] };
   const plan: Plan[] = [];
 
-  for (const spec of SYNC_SPECS) {
+  for (const spec of specs) {
     const lt = spec.local;
     const pt = spec.prod ?? spec.local;
     const pk = PK[lt] ?? "id";

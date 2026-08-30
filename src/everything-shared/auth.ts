@@ -1,20 +1,24 @@
 import { useEffect, useState } from "react";
-import type { Session } from "@supabase/supabase-js";
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
 
-export function useSession(): { session: Session | null; ready: boolean } {
+export function useSession(): { session: Session | null; ready: boolean; event: AuthChangeEvent | null } {
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
+  // The last auth transition. Lets a consumer tell an actual SIGNED_IN apart
+  // from INITIAL_SESSION (a returning user's persisted session on page load).
+  const [event, setEvent] = useState<AuthChangeEvent | null>(null);
 
   useEffect(() => {
-    // Extension contexts (popup, content scripts, background) each run their
-    // own supabase-js instance over one chrome.storage.local session, and
-    // onAuthStateChange only fires in the context that changed it — watch the
-    // shared storage so a login in the popup reaches every open page.
+    // The popup, the content scripts and the background each run their own
+    // supabase-js instance, and all of them share one session in
+    // chrome.storage.local. onAuthStateChange only fires in the context that made
+    // the change. So we also watch the shared storage, and a login in the popup then
+    // reaches every open page.
     const ext = (globalThis as unknown as { browser?: any; chrome?: any }).browser?.storage
       ?? (globalThis as unknown as { chrome?: any }).chrome?.storage;
     const logSession = (label: string, s: Session | null) => {
-      if (!ext) return; // extension-only diagnostics; keep the website console clean
+      if (!ext) return; // These diagnostics are for the extension only. The website's console stays clean.
       console.debug(`[common-notes] session (${label}): ${s ? s.user.email ?? s.user.id : "none"}`);
     };
 
@@ -24,13 +28,15 @@ export function useSession(): { session: Session | null; ready: boolean } {
       logSession("mount", data.session);
       if (error) console.debug(`[common-notes] getSession error: ${error.message}`);
     });
-    // What the shared storage itself holds, independent of supabase-js's view.
+    // This logs what the shared storage itself holds. It can differ from what
+    // supabase-js believes the session to be.
     ext?.local?.get?.(null)?.then((all: Record<string, unknown>) => {
       const key = Object.keys(all).find((k) => k.startsWith("sb-") && k.endsWith("-auth-token"));
       console.debug(`[common-notes] auth storage: ${key ? "present" : "absent"}`);
     });
     const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
       setSession(s);
+      setEvent(event);
       logSession(`event ${event}`, s);
     });
 
@@ -51,21 +57,23 @@ export function useSession(): { session: Session | null; ready: boolean } {
     };
   }, []);
 
-  return { session, ready };
+  return { session, ready, event };
 }
 
-/** Send a magic link; the user returns to this same page signed in. */
-export function signInWithEmail(email: string) {
-  return supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.href } });
-}
+/** The length of the one-time code Supabase sends by email. The prod value
+ *  lives in the dashboard (Authentication → Email → OTP Length); local
+ *  development mirrors it in config.toml under auth.email.otp_length. */
+export const EMAIL_OTP_LENGTH = 6;
 
-/** Extension email sign-in, step 1: the same email as the magic link also
- *  carries a 6-digit code ({{ .Token }} in the template) — no redirect needed. */
+/** Step one of email sign-in, used by both the website and the extension. The email
+ *  carries an 8-digit code, which the templates render as {{ .Token }}. There is no
+ *  magic link. That means email sign-in never touches the redirect allow-list, and
+ *  the code can be typed on a different device. */
 export function signInWithEmailCode(email: string) {
   return supabase.auth.signInWithOtp({ email });
 }
 
-/** Extension email sign-in, step 2: verify the typed code. */
+/** Step two of email sign-in. It verifies the code the user typed. */
 export function verifyEmailCode(email: string, code: string) {
   return supabase.auth.verifyOtp({ email, token: code, type: "email" });
 }

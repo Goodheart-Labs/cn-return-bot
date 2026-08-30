@@ -1,14 +1,16 @@
 /**
  * Step-through debug harness for the everything pipeline on a SINGLE input.
  *
- * Runs the real pipeline functions in the same order the queue worker does
- * (fetch → extract claims → drop speculation → fact-check), but WITHOUT the
- * DB-queue and DB-write plumbing (insertClaims / insertNote / item status).
- * So it's safe to F5 against the prod backend: it reads nothing from and
- * writes nothing to the everything_* tables — it only exercises the fetch +
- * LLM code paths so you can set breakpoints anywhere and inspect the data.
+ * It runs the real pipeline functions in the order the queue worker uses. It
+ * fetches the content, extracts the claims, drops the speculative ones, and
+ * fact-checks the rest. It leaves out everything that touches the queue and the
+ * database, so it never calls insertClaims or insertNote and never changes an
+ * item's status. That makes it safe to run against the prod backend. It reads
+ * nothing from the everything_* tables and writes nothing to them. It only
+ * exercises the fetching and the LLM code paths, so you can set a breakpoint
+ * anywhere and inspect the data.
  *
- * Concurrency is pinned to 1 everywhere so stepping is linear.
+ * Concurrency is pinned to 1 everywhere so that stepping stays linear.
  *
  * Usage:
  *   bun run src/everything/debug/debugItem.ts [<url>] [--claim N] [--all]
@@ -96,7 +98,7 @@ async function main() {
   for (let i = 0; i < targets.length; i++) {
     const claim = targets[i]!;
     console.log(`\n--- checking claim: ${claim.claim}`);
-    const check = await checkClaim({ claim, source, itemId: `debugitm-${i}`, index: i, publishedAt: content.publishedAt });
+    const check = await checkClaim({ claim, source, itemId: `debugitm-${i}`, claimId: null, index: i, publishedAt: content.publishedAt });
     if (check.kind === "note") {
       console.log(`  ⚠️  NOTE: ${check.note}`);
       check.sources.forEach((s) => console.log(`      source: ${s.url}${s.quote ? `\n        “${s.quote}”` : ""}`));

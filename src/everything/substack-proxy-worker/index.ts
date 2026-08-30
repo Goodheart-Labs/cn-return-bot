@@ -1,0 +1,163 @@
+/**
+ * Substack feed proxy. This is a Cloudflare Worker that relays RSS fetches for
+ * the everything pipeline.
+ *
+ * Substack refuses GitHub Actions' datacenter IPs outright with a 403. It also
+ * rate-limits the shared egress IPs that Cloudflare Workers go out through. The
+ * success rate of a live fetch swings between roughly 100% and roughly 10%
+ * depending on how congested those shared IPs are. So this worker does more
+ * than relay. A cron trigger keeps a copy of every requested feed fresh in KV
+ * storage in the background, and a request is answered from that copy straight
+ * away. A feed that is a few minutes out of date does not matter at our
+ * cadence. Authors post about once a day and the pipeline polls every 30
+ * minutes. The client throws when the cached copy is more than a day old, so a
+ * worker that is blocked completely fails loudly instead of quietly serving
+ * frozen data.
+ *
+ * GET <worker-url>?url=https://<pub>.substack.com/feed
+ * with header X-Proxy-Key: <PROXY_KEY secret>
+ *
+ * Only exact /feed URLs are relayed, and only when the request carries the
+ * shared key. That stops this from being usable as an open proxy. Once a feed
+ * has been requested it is refreshed automatically, until nobody has asked for
+ * it for a week. See README.md for how to deploy it.
+ *
+ * KV writes are rationed and best-effort. The account is on the Workers free
+ * tier, which allows only 1000 KV writes per day, and a KV write that runs
+ * into that cap throws. On 2026-08-20 that took the whole pipeline down for an
+ * evening: the handler wrote a bookkeeping key on every request, the cron
+ * rewrote every feed every 5 minutes, the budget ran out around 18:00 UTC, and
+ * every request died as a 500 before it could read the perfectly good cache.
+ * So now every KV write is wrapped: a failed write is logged and the request
+ * is still served from cache. The cron refreshes a feed at most every 20
+ * minutes and the bookkeeping key is rewritten at most once a day, which keeps
+ * the budget at roughly 72 writes per feed per day.
+ */
+
+interface KVNamespace {
+  get(key: string): Promise<string | null>;
+  put(key: string, value: string): Promise<void>;
+  list(options?: { prefix?: string }): Promise<{ keys: { name: string }[] }>;
+}
+
+interface Env {
+  PROXY_KEY: string;
+  FEEDS: KVNamespace;
+}
+
+const ALLOWED_TARGET = /^https:\/\/[\w-]+\.substack\.com\/feed$/;
+const LIVE_RETRIES = 3;
+const RETRY_GAP_MS = 2000;
+/** The cron refreshes a cached feed once it is older than this. The cron itself
+ *  runs every 5 minutes, but refreshing on every cron run would blow the KV
+ *  free tier's budget of 1000 writes per day. The pipeline only polls every 30
+ *  minutes, so a feed refreshed every 20 minutes is always fresh enough. */
+const REFRESH_AGE_MS = 20 * 60_000;
+/** Stop refreshing a feed nobody has requested for this long. */
+const WANTED_TTL_MS = 7 * 24 * 3600_000;
+/** How often a request renews its feed's "wanted" timestamp. Renewing on every
+ *  request would cost one KV write per request; once a day is enough, because
+ *  a feed is only dropped after a whole week without requests. */
+const WANTED_RENEW_MS = 24 * 3600_000;
+
+interface CachedFeed {
+  fetchedAt: number;
+  xml: string;
+}
+
+async function fetchFeedLive(url: string, retries: number): Promise<string | null> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const res = await fetch(url);
+      if (res.ok) return res.text();
+    } catch (err) {
+      console.error(`live fetch of ${url} threw:`, err);
+    }
+    await new Promise((r) => setTimeout(r, RETRY_GAP_MS));
+  }
+  return null;
+}
+
+/** Stores the feed in KV. A failed write is logged and swallowed: the caller
+ *  still has the live body to serve, and the cron retries the write soon. */
+async function cacheFeed(env: Env, url: string, xml: string): Promise<void> {
+  try {
+    await env.FEEDS.put(`feed:${url}`, JSON.stringify({ fetchedAt: Date.now(), xml } satisfies CachedFeed));
+  } catch (err) {
+    console.error(`KV write of feed:${url} failed:`, err);
+  }
+}
+
+/** Marks the feed as requested so the cron keeps it fresh. The mark only needs
+ *  to be newer than a week (WANTED_TTL_MS), so we skip the KV write when the
+ *  existing mark is younger than a day. A KV failure is logged and swallowed:
+ *  serving the reader matters more than the bookkeeping, and this is what
+ *  turned the KV free tier's daily write cap into a hard outage before. */
+async function renewWanted(env: Env, url: string): Promise<void> {
+  try {
+    const markedAt = Number(await env.FEEDS.get(`wanted:${url}`));
+    if (Date.now() - markedAt < WANTED_RENEW_MS) return;
+    await env.FEEDS.put(`wanted:${url}`, String(Date.now()));
+  } catch (err) {
+    console.error(`renewing wanted:${url} failed:`, err);
+  }
+}
+
+function feedResponse(xml: string, ageMs: number): Response {
+  return new Response(xml, {
+    headers: { "Content-Type": "text/xml", "X-Cache-Age-Seconds": String(Math.round(ageMs / 1000)) },
+  });
+}
+
+export default {
+  async fetch(request: Request, env: Env): Promise<Response> {
+    if (request.headers.get("X-Proxy-Key") !== env.PROXY_KEY) {
+      return new Response("forbidden", { status: 403 });
+    }
+    const target = new URL(request.url).searchParams.get("url") ?? "";
+    if (!ALLOWED_TARGET.test(target)) {
+      return new Response("url not allowed", { status: 400 });
+    }
+
+    // Register interest so the cron keeps this feed fresh from now on.
+    await renewWanted(env, target);
+
+    let cached: string | null = null;
+    try {
+      cached = await env.FEEDS.get(`feed:${target}`);
+    } catch (err) {
+      console.error(`KV read of feed:${target} failed:`, err);
+    }
+    if (cached) {
+      const { fetchedAt, xml } = JSON.parse(cached) as CachedFeed;
+      return feedResponse(xml, Date.now() - fetchedAt);
+    }
+    // This is the first request we have ever seen for this feed, so nothing is
+    // cached yet. We try a live fetch. Either way the cron warms the cache
+    // within minutes.
+    const live = await fetchFeedLive(target, LIVE_RETRIES);
+    if (live) {
+      await cacheFeed(env, target, live);
+      return feedResponse(live, 0);
+    }
+    return new Response("feed not cached yet and live fetch rate-limited — retry in a few minutes", { status: 503 });
+  },
+
+  async scheduled(_event: unknown, env: Env): Promise<void> {
+    const { keys } = await env.FEEDS.list({ prefix: "wanted:" });
+    for (const key of keys) {
+      // One feed's KV failure must not stop the other feeds from refreshing.
+      try {
+        const url = key.name.slice("wanted:".length);
+        const wantedAt = Number(await env.FEEDS.get(key.name));
+        if (Date.now() - wantedAt > WANTED_TTL_MS) continue;
+        const cached = await env.FEEDS.get(`feed:${url}`);
+        if (cached && Date.now() - (JSON.parse(cached) as CachedFeed).fetchedAt < REFRESH_AGE_MS) continue;
+        const live = await fetchFeedLive(url, LIVE_RETRIES);
+        if (live) await cacheFeed(env, url, live);
+      } catch (err) {
+        console.error(`cron refresh for ${key.name} failed:`, err);
+      }
+    }
+  },
+};

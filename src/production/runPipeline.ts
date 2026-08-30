@@ -1,14 +1,18 @@
 /**
- * Run Pipeline
+ * Run pipeline.
  *
- * Single-pass pipeline: fetch tweets, generate notes, submit immediately.
+ * This is the single-pass pipeline. It fetches tweets, generates notes and
+ * submits them straight away.
  *
- * Runs on GitHub Actions every 30 minutes.
+ * It runs on GitHub Actions every 30 minutes.
  *
  * Flags:
- *   --local              route Supabase to LOCAL_SUPABASE_URL/KEY; write CSV + auto-open dashboard
- *   --pick test=variant  force a specific A/B test variant (repeatable). The bot itself
- *                        is picked by the "bot" test, so use --pick bot=<id> to force it.
+ *   --local              Routes Supabase to LOCAL_SUPABASE_URL and
+ *                        LOCAL_SUPABASE_SERVICE_KEY. It also writes a CSV and
+ *                        opens the dashboard automatically.
+ *   --pick test=variant  Forces a specific A/B test variant. You can pass it
+ *                        more than once. The bot itself is chosen by the "bot"
+ *                        test, so pass --pick bot=<id> to force a bot.
  */
 
 import { captureProdSupabaseCreds } from "../local/prodSupabaseCreds";
@@ -47,8 +51,9 @@ if (isLocal) {
     process.exit(1);
   }
 
-  // Route X API calls to the local test account (must happen before any X API
-  // imports read these).
+  // Route X API calls to the local test account. This must happen before any X
+  // API module is imported, because those modules read the variables as they
+  // load.
   for (const [src, dest] of Object.entries({
     LOCAL_X_API_KEY: "X_API_KEY",
     LOCAL_X_API_KEY_SECRET: "X_API_KEY_SECRET",
@@ -65,7 +70,7 @@ import { generateCandidates, type TweetProcessedEvent } from "../pipeline/orches
 import { generatePangramCandidates } from "../pipeline/pangram-monitoring/generatePangramCandidates";
 import { generateMisinfoCandidates } from "../pipeline/misinfo-monitoring/generateMisinfoCandidates";
 import type { MisinfoTopicId } from "../pipeline/misinfo-monitoring/topicIds";
-import { submitCandidates, type Candidate } from "../pipeline/orchestration/submitCandidates";
+import { submitCandidates, misinfoReserveRemaining, type Candidate } from "../pipeline/orchestration/submitCandidates";
 import { computeMaxPosts } from "../pipeline/orchestration/computeMaxPosts";
 import { probeWritingLimitAfterCooldown } from "../pipeline/orchestration/writingLimit";
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
@@ -88,10 +93,11 @@ function writePipelineRowToCsv(output: OutputFolder, event: TweetProcessedEvent)
   output.appendRow(row);
 }
 
-// 27 min: the 30-min cron gives each run this much wall clock without overlapping
-// the next tick. The GH Actions job timeout (35 min) sits above this — plus
-// multi-minute setup — so the watchdog (clean exit), not the runner kill, is the
-// normal stop.
+// The cron fires every 30 minutes, so 27 minutes is how much wall clock a run
+// gets without overlapping the next tick. The GitHub Actions job timeout of 35
+// minutes sits above this, and setup takes several minutes on top of it. So the
+// normal way a long run stops is our own watchdog exiting cleanly, not the
+// runner killing the job.
 const MAX_RUNTIME_MS = 27 * 60 * 1000;
 const MAX_POSTS_LOCAL = 5;
 const MAX_POSTS_FALLBACK = 5;
@@ -99,9 +105,9 @@ const MAX_POSTS_FALLBACK = 5;
 // Flip to true to re-enable the XXL-feed Pangram AI-detection pre-pass.
 const PANGRAM_PIPELINE_ENABLED = false;
 
-// Activates the misinfo-monitoring pre-pass for the topics below ONLY (not the
-// evergreen topics). A live run writes AND submits real notes to X; flip to
-// false to kill-switch it.
+// Activates the misinfo-monitoring pre-pass, and only for the topics listed
+// below. The evergreen topics are not included. A live run writes real notes and
+// submits them to X. Set this to false to switch the pre-pass off.
 const MISINFO_PIPELINE_ENABLED = true;
 const MISINFO_ACTIVE_TOPIC_IDS: MisinfoTopicId[] = ["trump_election_security"];
 
@@ -111,9 +117,34 @@ const globalTimeout = setTimeout(async () => {
   process.exit(0);
 }, MAX_RUNTIME_MS);
 
+// The soft deadline is when the run stops STARTING work so it can finish and
+// submit what it has. The five minutes between it and the hard kill above are
+// the submit phase's guaranteed budget plus room for the posts still in
+// flight. Before this existed, a run that outran the hard kill stranded every
+// note it had finished — 37 stranded against 46 submitted on 2026-08-26.
+const RUN_STARTED_AT_MS = Date.now();
+const SOFT_DEADLINE_AT_MS = RUN_STARTED_AT_MS + 22 * 60 * 1000;
+
+// How much wall clock one post costs to process, for sizing a batch to the
+// clock. This number is tied to CONCURRENCY_LIMIT in generateCandidates: at
+// concurrency 5 a healthy run did a post roughly every two minutes of wall
+// time, so at concurrency 10 the figure halves. The estimate also sizes
+// OPTIMISTICALLY, slightly under that, and this is safe on purpose: since the
+// deadline stopped waiting for stragglers, an oversized batch costs only its
+// unfinished tail — every finished note still submits — while an undersized
+// batch costs real notes against a cap we are not filling. When over- and
+// under-shooting have asymmetric prices, size toward the cheap mistake.
+const EST_WALL_MS_PER_POST = 1 * 60 * 1000;
+
+// The misinfo pre-pass processes its finds through the full pipeline before
+// the regular pass gets the clock, so a heavy misinfo run used to starve the
+// regular batch. Its processing now stops at this sub-deadline; the crawl and
+// the selection judge run before it and are quick. Regular posts get whatever
+// the pre-pass leaves, which this floor keeps at ~15 of the 22 minutes.
+const MISINFO_PROCESSING_BUDGET_MS = 7 * 60 * 1000;
+
 async function main() {
   try {
-    // Initialize Supabase logger
     let supabaseLogger: SupabaseLogger | null = null;
     if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY) {
       try {
@@ -126,9 +157,9 @@ async function main() {
       console.log("[pipeline] Supabase logging disabled (env vars not set)");
     }
 
-    // Clear in_progress rows abandoned by a prior run that was killed before
-    // finalizing them. Concurrency prevents overlapping runs, so this never
-    // sweeps a live run's rows.
+    // Clear the in_progress rows left behind by an earlier run that was killed
+    // before it could finalize them. The workflow's concurrency group stops two
+    // runs from overlapping, so this can never sweep a live run's rows.
     if (supabaseLogger) {
       try {
         const swept = await supabaseLogger.sweepStuckRuns({ olderThanMinutes: 30 });
@@ -144,9 +175,10 @@ async function main() {
         ? await computeMaxPosts(supabaseLogger)
         : { maxPosts: MAX_POSTS_FALLBACK };
 
-    // We'd skip (writing limit reached), but X's cap may have risen since it last
-    // rejected us. If the cooldown has elapsed, probe by nudging the limit up 1
-    // and re-budgeting, so we attempt a note instead of skipping outright.
+    // At this point we would skip the run because the writing limit is reached.
+    // X's cap may have risen since it last rejected us. So once the cooldown has
+    // elapsed we probe it. We nudge the limit up by one and work out the budget
+    // again, so that we attempt a note instead of skipping outright.
     if (maxPosts === 0 && supabaseLogger) {
       const probed = await probeWritingLimitAfterCooldown(supabaseLogger);
       if (probed) ({ maxPosts } = await computeMaxPosts(supabaseLogger));
@@ -159,7 +191,8 @@ async function main() {
       process.exit(0);
     }
 
-    // --local: collect per-tweet results into a CSV and auto-open the dashboard
+    // With --local we collect the per-tweet results into a CSV and open the
+    // dashboard on them afterwards.
     const localOutput: OutputFolder | null = isLocal
       ? initOutputFolder("pipeline", "run", undefined)
       : null;
@@ -167,8 +200,8 @@ async function main() {
       ? (event: TweetProcessedEvent) => writePipelineRowToCsv(localOutput, event)
       : undefined;
 
-    // Pre-fetch the skip/known sets ONCE so notes/pipeline_runs/tweets aren't
-    // scanned twice per run.
+    // Fetch the skip set and the known-tweet set once here. Otherwise the notes,
+    // pipeline_runs and tweets tables get scanned twice in a single run.
     let skipPostIds: Set<string> | undefined;
     let knownTweetIds: Set<string> | undefined;
     if (supabaseLogger) {
@@ -182,20 +215,22 @@ async function main() {
       }
     }
 
-    // Track every tweet a pre-pass processes so the regular pass (whose
-    // known-set was snapshotted above, BEFORE the pre-passes ran) can never
-    // re-process the same tweet within this run. knownTweetIds can be
-    // undefined if the pre-fetch failed — that path self-heals (fetchPosts
-    // re-queries the DB after the pre-passes' bulkInsertNewTweets).
+    // Track every tweet a pre-pass processes. The known-tweet set above was
+    // snapshotted before the pre-passes ran, so without this the regular pass
+    // could process the same tweet a second time within one run. knownTweetIds
+    // is undefined when the pre-fetch failed. That case heals itself, because
+    // fetchPosts then queries the database again after the pre-passes have
+    // written their new tweets with bulkInsertNewTweets.
     const trackPrePassProcessed = (event: TweetProcessedEvent) => {
       knownTweetIds?.add(event.post.id);
       return onTweetProcessed?.(event);
     };
 
-    // XXL-feed Pangram AI-detection pre-pass runs first. Fail-soft to []: a
-    // pre-pass failure (crawl error, missing Pangram key, etc.) must never take
-    // down regular note-writing. Its candidates and the regular pipeline's share
-    // one submit call under the daily cap.
+    // The Pangram AI-detection pre-pass over the XXL feed runs first. If it
+    // fails we keep an empty candidate list and carry on. A crawl error or a
+    // missing Pangram key must never take down regular note-writing. Its
+    // candidates and the regular pipeline's candidates share one submit call
+    // under the daily cap.
     let pangramCandidates: Candidate[] = [];
     if (PANGRAM_PIPELINE_ENABLED) {
       try {
@@ -210,13 +245,15 @@ async function main() {
       console.log("[pipeline] Pangram pre-pass disabled (PANGRAM_PIPELINE_ENABLED=false)");
     }
 
-    // Misinfo-monitoring pre-pass, scoped to MISINFO_ACTIVE_TOPIC_IDS. Same
-    // fail-soft contract as Pangram: a pre-pass failure must never take down
-    // regular note-writing; its candidates share the one submit call / daily cap.
+    // The misinfo-monitoring pre-pass runs next, scoped to
+    // MISINFO_ACTIVE_TOPIC_IDS. It fails soft exactly like the Pangram pre-pass.
+    // A failure here must never take down regular note-writing. Its candidates
+    // also share the single submit call and the daily cap.
     let misinfoCandidates: Candidate[] = [];
     if (MISINFO_PIPELINE_ENABLED) {
       try {
         misinfoCandidates = await generateMisinfoCandidates(supabaseLogger, {
+          deadlineMs: Math.min(SOFT_DEADLINE_AT_MS, RUN_STARTED_AT_MS + MISINFO_PROCESSING_BUDGET_MS),
           skipPostIds: skipPostIds ?? new Set<string>(),
           onTweetProcessed: trackPrePassProcessed,
           topicIds: MISINFO_ACTIVE_TOPIC_IDS,
@@ -228,18 +265,46 @@ async function main() {
       console.log("[pipeline] Misinfo pre-pass disabled (MISINFO_PIPELINE_ENABLED=false)");
     }
 
+    // Size the regular batch to the clock that is actually left. The misinfo
+    // pre-pass above eats a variable slice of the run, and selecting more
+    // posts than the remaining minutes can process only queues work for the
+    // deadline to cut.
+    const remainingMs = SOFT_DEADLINE_AT_MS - Date.now();
+    const clockBudgetPosts = Math.max(1, Math.floor(remainingMs / EST_WALL_MS_PER_POST));
+    if (clockBudgetPosts < maxPosts) {
+      console.log(
+        `[max-posts] clock: ${(remainingMs / 60_000).toFixed(1)} min to the soft deadline — ` +
+          `capping maxPosts ${maxPosts} -> ${clockBudgetPosts}`,
+      );
+      maxPosts = clockBudgetPosts;
+    }
+
     const regularCandidates = await generateCandidates(supabaseLogger, {
       maxPosts,
+      deadlineMs: SOFT_DEADLINE_AT_MS,
       skipPostIds,
       knownTweetIds,
       onTweetProcessed,
-      // Curated-topic matching also runs on the regular pool: confirmed topic
-      // posts get the monitoring treatment + a bounded share of maxPosts
-      // (regularFeedTopicCuration.ts). Pass [] to disable.
+      // Curated-topic matching also runs on the regular pool. A post confirmed
+      // to be on topic gets the monitoring treatment and a bounded share of
+      // maxPosts. The code for that lives in regularFeedTopicCuration.ts. Pass
+      // an empty array to disable it.
       topicIds: MISINFO_ACTIVE_TOPIC_IDS,
     });
 
-    const candidates = [...pangramCandidates, ...misinfoCandidates, ...regularCandidates];
+    // This array fixes the submission order, because submitCandidates does not
+    // re-sort it. Misinfo notes get priority, but only up to a bound. The first
+    // few are however many the 24-hour reserve has left, and they arrive already
+    // ranked by velocity. Those go ahead of the regular notes. The rest fall in
+    // behind them, so a day heavy with topic posts cannot eat the whole daily
+    // cap.
+    const misinfoReserve = supabaseLogger ? await misinfoReserveRemaining(supabaseLogger) : 0;
+    const candidates = [
+      ...misinfoCandidates.slice(0, misinfoReserve),
+      ...regularCandidates,
+      ...misinfoCandidates.slice(misinfoReserve),
+      ...pangramCandidates,
+    ];
     if (candidates.length > 0 && supabaseLogger) {
       const submitted = await submitCandidates(candidates, supabaseLogger, isLocal);
       console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates (${pangramCandidates.length} pangram, ${misinfoCandidates.length} misinfo, ${regularCandidates.length} regular)`);

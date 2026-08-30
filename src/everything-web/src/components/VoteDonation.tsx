@@ -1,20 +1,22 @@
 import { useEffect, useRef, useState } from "react";
-import { CHARITIES, setDonationCharity, usePreferredCharity, type CharityId } from "../lib/donations";
+import { CHARITIES, rememberCharity, setDonationCharity, type CharityId } from "../lib/donations";
 import type { DonationPair } from "../lib/donationScoring";
 import type { NoteStatus } from "../../../everything-shared/noteScore";
 
 const charityLabel = (id: CharityId) => CHARITIES.find((c) => c.id === id)!.label;
 
-/** How long the notice sits fully visible before fading itself out, and how
- *  long the fade takes. Anything that shows the reader is still using the box —
- *  hovering it, or having the charity popover open — restarts the dwell, so the
- *  donation can always be redirected without racing the fade. */
+/** How long the notice stays fully visible before it starts to fade, and how
+ *  long the fade itself takes (both in milliseconds). Any sign that the reader
+ *  is still using the box restarts the wait. Hovering it counts, and so does
+ *  having the charity popover open. That way the donation can always be
+ *  redirected without racing the fade. */
 const DWELL_MS = 5000;
 const FADE_MS = 1500;
 
-/** The charity name inline in the donation copy — clickable, opening a small
- *  popover to redirect the donation to one of the other charities. Open state
- *  lives in the parent, which holds the notice open while the popover is. */
+/** The charity name shown inline in the donation text. Clicking it opens a
+ *  small popover for redirecting the donation to one of the other charities.
+ *  The open state lives in the parent, because the parent keeps the notice on
+ *  screen for as long as the popover is open. */
 function CharityPicker({ charity, onPick, open, setOpen }: {
   charity: CharityId;
   onPick: (c: CharityId) => void;
@@ -46,6 +48,9 @@ function CharityPicker({ charity, onPick, open, setOpen }: {
           {CHARITIES.map((c) => (
             <button
               key={c.id}
+              // The browser scrolls a newly focused element into view, and that
+              // is what reveals a menu opening below the fold of the popover.
+              autoFocus={c.id === charity}
               onClick={() => {
                 onPick(c.id);
                 setOpen(false);
@@ -64,21 +69,20 @@ function CharityPicker({ charity, onPick, open, setOpen }: {
   );
 }
 
-/** The donation notice shown right after casting a note vote: the
- *  outcome-contingent pair frozen at vote time, with the charity switchable
- *  inline. Dismisses itself once the reader is done with it. Donation only —
- *  discussion lives in the note's action row (Jim, 2026-07-17: separate
- *  widgets). */
+/** The donation notice shown right after you vote on a note. It states the two
+ *  amounts frozen at vote time, one for each way the note can settle, and it
+ *  lets you switch the charity inline. It dismisses itself once you are done
+ *  with it. It covers the donation and nothing else. Jim split the two apart on
+ *  2026-07-17, so discussion is its own action in the note's action row. */
 export function VoteDonation({ voteId, pair, charity, status, onCharityChange, onClose }: {
   voteId: string;
   pair: DonationPair;
-  /** The charity the ledger row currently holds — the display never guesses. */
+  /** The charity the ledger row currently holds. The box never guesses it. */
   charity: CharityId;
   status: NoteStatus;
   onCharityChange: (charity: CharityId) => void;
   onClose: () => void;
 }) {
-  const [, setCharityPref] = usePreferredCharity();
   const [failed, setFailed] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -86,16 +90,16 @@ export function VoteDonation({ voteId, pair, charity, status, onCharityChange, o
   const boxRef = useRef<HTMLDivElement>(null);
   const inUse = pickerOpen || hovered || failed;
 
-  // The notice mounts at the bottom of whatever holds the note — inside the
-  // extension's scroll-constrained popovers that can be below the fold, and a
-  // notice nobody sees defeats its purpose. "nearest" makes it a no-op when
-  // already visible.
+  /* The notice mounts at the bottom of whatever holds the note. Inside the
+   * extension's scrolling popovers that spot can be below the fold, and a
+   * notice nobody sees defeats its purpose. Scrolling to "nearest" does nothing
+   * when the box is already visible. */
   useEffect(() => {
     boxRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }, []);
 
-  // Fade out and unmount once the reader is no longer using the box; any use
-  // cancels a fade in progress and restarts the dwell from scratch.
+  // Fade the box out and unmount it once the reader stops using it. Any use
+  // cancels a fade already running and starts the wait again from zero.
   useEffect(() => {
     if (inUse) return setFading(false);
     const fade = setTimeout(() => setFading(true), DWELL_MS);
@@ -106,13 +110,14 @@ export function VoteDonation({ voteId, pair, charity, status, onCharityChange, o
     };
   }, [inUse]);
 
-  // The donation row already exists (minted with the vote); a pick redirects it
-  // and becomes the remembered default for future donations. Optimistic, but
-  // rolled back unless the ledger verifiably changed — the box must never show
-  // a charity the row doesn't hold.
+  /* The donation row was already written when the vote was cast. Picking a
+   * charity redirects that row, and the pick also becomes the remembered
+   * default for future donations. The display updates first, and it is rolled
+   * back unless the ledger really changed. The box must never show a charity
+   * the row does not hold. */
   const pickCharity = async (picked: CharityId) => {
     const previous = charity;
-    setCharityPref(picked);
+    rememberCharity(picked);
     onCharityChange(picked);
     setFailed(false);
     if (!(await setDonationCharity(voteId, picked))) {
@@ -122,8 +127,8 @@ export function VoteDonation({ voteId, pair, charity, status, onCharityChange, o
   };
 
   return (
-    // Theme note: only unmodified utility classes (bg-blue-50, not bg-blue-50/50)
-    // — design.css remaps the exact class names per color scheme.
+    // Use plain utility classes here, so bg-blue-50 and never bg-blue-50/50.
+    // design.css remaps these exact class names for each color scheme.
     <div
       ref={boxRef}
       className="mt-2 rounded-lg border border-blue-100 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/50 p-3 flex items-start justify-between gap-3"
@@ -153,7 +158,7 @@ export function VoteDonation({ voteId, pair, charity, status, onCharityChange, o
             <CharityPicker charity={charity} onPick={pickCharity} open={pickerOpen} setOpen={setPickerOpen} />.
           </p>
         )}
-        {failed && <p className="text-sm text-red-600 dark:text-red-400 mt-1">Could not switch the charity — try again.</p>}
+        {failed && <p className="text-sm text-red-600 dark:text-red-400 mt-1">Could not switch the charity (try again)</p>}
       </div>
       <button onClick={onClose} className="text-sm text-gray-500 dark:text-gray-400 hover:underline shrink-0">Close</button>
     </div>

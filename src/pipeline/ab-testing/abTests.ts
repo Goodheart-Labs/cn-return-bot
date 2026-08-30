@@ -1,17 +1,19 @@
 /**
- * A/B Test Framework — runtime half.
+ * The runtime half of the A/B test framework.
  *
- * A pipeline run is the result of running N A/B tests in declaration order.
- * Each test defines variants and a weight per variant. The first test picks
- * the bot; subsequent tests overlay BotConfig fields conditional on
- * `prerequisites` matching the current partial config.
+ * A pipeline run is configured by running every A/B test in the order the tests
+ * are declared. Each test lists its variants together with a sampling weight.
+ * The first test picks the bot. Every later test overlays more BotConfig fields
+ * on top, and it only runs when its `prerequisites` match the config built so
+ * far.
  *
- * The chosen variant for each test is recorded in a `picks` dictionary that
- * gets persisted to `pipeline_runs.ab_test_picks` (added in migration 038).
+ * The variant chosen for each test is recorded in a `picks` dictionary. That
+ * dictionary is stored in `pipeline_runs.ab_test_picks`, a column migration 038
+ * added.
  *
- * The AB_TESTS data lives in `abTestsData.ts` (browser-safe). This file holds
- * the sampling / forcing / resolving helpers that depend on
- * `node:async_hooks` and DEFAULT_CONFIG.
+ * The tests themselves live in `abTestsData.ts`, which is safe to import in a
+ * browser. This file holds the helpers that sample, force and resolve picks.
+ * They live apart because they need `node:async_hooks` and DEFAULT_CONFIG.
  */
 
 import { AsyncLocalStorage } from "node:async_hooks";
@@ -59,9 +61,10 @@ function findVariantByName(test: ABTest, name: string): ABVariant {
 }
 
 /**
- * Pick one test's variant name in isolation (honouring a forced pick), for
- * callers outside the bot pipeline that need a single A/B decision — e.g. the
- * Pangram pre-pass choosing its note wording per candidate.
+ * Pick the variant name for a single test on its own, honouring a forced pick.
+ * This is for callers outside the bot pipeline that need one A/B decision and
+ * no bot config at all. The Pangram pre-pass uses it to choose the note wording
+ * for each candidate.
  */
 export function pickVariantName(test: ABTest): string {
   const forced = getForcedPicks()[test.name];
@@ -69,9 +72,9 @@ export function pickVariantName(test: ABTest): string {
 }
 
 /**
- * Run all A/B tests in order against a fresh DEFAULT_CONFIG. Returns the
- * resolved config plus a picks dictionary mapping testName → variantName for
- * every test that fired.
+ * Run all A/B tests in order, starting from a fresh DEFAULT_CONFIG. Returns the
+ * resolved config. Also returns a picks dictionary that maps each test name to
+ * the variant name that test chose, for every test that fired.
  */
 export function runABTests(tests: ABTest[]): {
   config: BotConfig;
@@ -85,6 +88,10 @@ export function runABTests(tests: ABTest[]): {
     if (test.prerequisites && !matchesPrerequisites(config, test.prerequisites)) continue;
 
     const forcedName = forced[test.name];
+    // A retired test keeps its declaration with every weight set to zero. That
+    // way a forced pick from a historical run still resolves to a real variant.
+    // Live sampling skips the test.
+    if (!forcedName && test.variants.every((v) => v.weight <= 0)) continue;
     const variant = forcedName
       ? findVariantByName(test, forcedName)
       : sampleVariantByWeight(test.variants);
@@ -99,7 +106,7 @@ export function runABTests(tests: ABTest[]): {
   return { config: config as BotConfig, picks };
 }
 
-// --- Forced picks (replay / debugging) ---
+// --- Forced picks, used for replay and debugging ---
 
 const forcedPicksStorage = new AsyncLocalStorage<Record<string, string>>();
 
@@ -111,18 +118,18 @@ export function getForcedPicks(): Record<string, string> {
   return forcedPicksStorage.getStore() ?? {};
 }
 
-// --- Reading picks (consumers) ---
+// --- Reading picks in consumers ---
 
 /**
- * Return a new picks dict with every test's `defaultVariant` filled in for
- * missing keys. Use this at the boundary where raw rows enter a consumer so
- * everything downstream sees a uniform shape regardless of when the row was
- * written.
+ * Return a new picks dictionary with every test's `defaultVariant` filled in
+ * wherever a key is missing. Call this at the boundary where raw rows enter a
+ * consumer. Everything downstream then sees the same shape no matter when the
+ * row was written.
  *
- * Deliberately does NOT evaluate prerequisites — callers are expected to
- * filter to the relevant population first (e.g. `bot === "simple-bot"`)
- * before reading prereq-gated picks like `simple_bot_search`. Which is why
- * prereq-gated tests should leave `defaultVariant` unset.
+ * This function does not evaluate prerequisites. A caller is expected to narrow
+ * the rows to the relevant population first, for example to rows whose bot is
+ * `simple-bot`, before it reads a prereq-gated pick such as `simple_bot_search`.
+ * That is why a prereq-gated test should leave `defaultVariant` unset.
  */
 export function resolvePicks(
   picks: Record<string, string> | null | undefined,
@@ -136,12 +143,11 @@ export function resolvePicks(
   return out;
 }
 
-// --- Helpers exposed for telemetry / tooling ---
+// --- Helpers exposed for telemetry and tooling ---
 
 /**
- * Probability-weighted distribution for the bot test, expressed as percent.
- * Used by reports and dashboards (replaces the old getBotProbabilities()
- * derived from BOT_WEIGHTS).
+ * Return how likely the bot test is to pick each bot, as a percentage. Reports
+ * and dashboards use this to show the live split between the bots.
  */
 export function getBotProbabilities(): { id: string; probability: number }[] {
   const total = BOT_TEST.variants.reduce((s, v) => s + v.weight, 0);

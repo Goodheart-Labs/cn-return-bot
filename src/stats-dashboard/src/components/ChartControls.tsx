@@ -85,7 +85,7 @@ export function ChartLegend({ mode, showNonCandidate }: { mode: ChartMode; showN
         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-blue-600" /> Our notes</span>
         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-blue-400" /> Top other AI notewriters</span>
         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-blue-200" /> Human-written</span>
-        <span className="text-gray-400">— share of rated-helpful Community Notes</span>
+        <span className="text-gray-400">share of rated-helpful Community Notes</span>
       </div>
     );
   }

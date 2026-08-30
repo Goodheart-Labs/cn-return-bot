@@ -1,8 +1,9 @@
 /**
- * Shared pipeline runner for tryoutNotes and runOnVideos.
+ * Shared pipeline runner for tryoutNotes, runOnVideos and runOnClaims.
  *
- * Each script provides a PostFetcher (how to get a Post from a URL) and
- * delegates the processing loop, output, AI judge, and summary to this module.
+ * Each of those scripts supplies a PostFetcher, which says how to turn one
+ * input row into a Post. This module then owns everything after that: the
+ * processing loop, the output files, the AI judge and the summary.
  */
 
 import { SupabaseLogger } from "../api/supabaseClient";
@@ -14,6 +15,8 @@ import { withCostTracker } from "../pipeline/cost-tracking/costTracker";
 import { runABTests, withForcedPicks } from "../pipeline/ab-testing/abTests";
 import { AB_TESTS } from "../pipeline/ab-testing/abTestsData";
 import { createTweetLog, getLoggedBotId, nestDotKeys, withTweetLog } from "../pipeline/utils/tweetLog";
+import { withMonitoringContext, type MonitoringContext } from "../pipeline/misinfo-monitoring/monitoringContext";
+import { MISINFO_TOPICS } from "../pipeline/misinfo-monitoring/topics";
 import type { Post } from "../api/fetchEligiblePosts";
 import * as fs from "fs";
 import * as path from "path";
@@ -106,12 +109,17 @@ export function parseInputCsv(filePath: string): InputRow[] {
 
 export interface ParsedCliArgs {
   inputs: InputRow[];
-  /** Forced A/B test picks (e.g. `{ bot: "simple-bot", simple_bot_search: "grok43-native" }`). */
+  /** A/B test variants forced on the command line. For example
+   *  `{ bot: "simple-bot", simple_bot_search: "grok43-native" }`. */
   forcedPicks: Record<string, string>;
   datasetName: string;
   reversed: boolean;
   concurrency?: number;
   runName?: string;
+  /** The id of a curated misinformation topic. When it is set, every post runs
+   *  the way prod stage 3 runs it. The topic's grounding document is injected
+   *  into the input, and the evaluation gate becomes advisory. */
+  topicId?: string;
 }
 
 function takeFlagValue(args: string[], flag: string): string | undefined {
@@ -153,6 +161,7 @@ export function parseCliArgs(
     console.error("  --reversed              process newest-last");
     console.error("  --concurrency <n>       parallel workers (default 5)");
     console.error("  --name <label>          name for dashboard upload (default: derived)");
+    console.error("  --topic <id>            run as a curated-topic post: inject the topic's grounding document and make the eval gate advisory, as prod does");
     console.error("  --search-cache <dir>    cache/replay SearXNG results to/from this directory");
     console.error("  --input-cache <dir>     cache/replay bot inputs (media, comments, author history)");
     console.error("  --writer-cache <dir>    cache/replay cheap-bot writer output (replay starts from the two judges)");
@@ -197,6 +206,13 @@ export function parseCliArgs(
 
   const runName = takeFlagValue(args, "--name");
 
+  const topicId = takeFlagValue(args, "--topic");
+  if (topicId && !MISINFO_TOPICS.some((t) => t.id === topicId)) {
+    console.error(`Unknown topic: ${topicId}`);
+    console.error("Available topics:", MISINFO_TOPICS.map((t) => t.id).join(", "));
+    process.exit(1);
+  }
+
   const searchCache = takeFlagValue(args, "--search-cache");
   if (searchCache) {
     process.env.SEARCH_CACHE = searchCache;
@@ -222,7 +238,8 @@ export function parseCliArgs(
     args.splice(reversedFlagIdx, 1);
   }
 
-  // Apply per-script arg transformation (e.g. bare tweet IDs → URLs)
+  // Let the calling script rewrite its own arguments first. tryoutNotes uses
+  // this to turn a bare tweet id into a full URL.
   const transformed = opts?.transformArg ? args.map(opts.transformArg) : args;
 
   const isUrls = transformed.every((a) => a.startsWith("http://") || a.startsWith("https://"));
@@ -242,7 +259,7 @@ export function parseCliArgs(
 
   if (maxInputs) inputs = inputs.slice(0, maxInputs);
 
-  return { inputs, forcedPicks, datasetName, reversed, concurrency, runName };
+  return { inputs, forcedPicks, datasetName, reversed, concurrency, runName, topicId };
 }
 
 
@@ -317,8 +334,9 @@ function printSummary(counts: BucketCountsV2, totalProcessed: number, errors: nu
   const nnwTotal = nnwCorrect + nnwHarmless + nnwHardFP + nnwDisagrees;
 
   const scoredTotal = nwTotal + nnwTotal;
-  // Directional notes are net-helpful and count as wins; harmless extra notes are
-  // tolerated but NOT counted correct (we still published when none was needed).
+  // A directional note is helpful on balance, so it counts as a win. A harmless
+  // extra note is tolerated, but it does not count as correct. We still
+  // published a note on a post that needed none.
   const overallCorrect = nwSuccess + nwDirectional + nnwCorrect;
 
   console.log(`\n${"=".repeat(60)}`);
@@ -373,6 +391,8 @@ export interface RunPipelineOptions {
   concurrency?: number;
   reversed?: boolean;
   runName?: string;
+  /** The id of a curated misinformation topic. See ParsedCliArgs.topicId. */
+  topicId?: string;
   cleanup?: () => Promise<void>;
 }
 
@@ -390,6 +410,22 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
     cleanup,
   } = options;
   const forcedBotId = forcedPicks.bot;
+
+  // In curated-topic mode we build the same MonitoringContext that prod stage 3
+  // runs under. Document injection and the advisory evaluation gate then behave
+  // exactly as they do in production.
+  let monitoring: MonitoringContext | undefined;
+  if (options.topicId) {
+    const topic = MISINFO_TOPICS.find((t) => t.id === options.topicId);
+    if (!topic) throw new Error(`Unknown topic id: ${options.topicId}`);
+    monitoring = {
+      topicId: topic.id,
+      topicTitle: topic.title,
+      documentUrl: topic.documentUrl,
+      document: topic.document,
+    };
+    console.log(`[${scriptName}] Curated-topic mode: "${topic.title}" (${topic.id}) — grounding document injected, eval gate advisory`);
+  }
 
   let logger: SupabaseLogger | null = null;
   try {
@@ -409,11 +445,12 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
   let completedCount = 0;
   let errorCount = 0;
 
-  // All searches funnel through a single global 3s-gap queue, so with 5
-  // concurrent workers each making ~3 queries the queue wait alone can be
-  // 45s+. Factor in SearXNG cool-downs / retries and a single tweet can
-  // legitimately take 15+ min. 20 min catches real hangs without killing
-  // slow-but-progressing rows.
+  // Every search goes through one global queue that leaves a 3 second gap
+  // between queries. With 5 workers each making about 3 queries, the wait in
+  // that queue alone can be 45 seconds or more. Add SearXNG cool-downs and
+  // retries on top and a single tweet can legitimately take over 15 minutes. A
+  // 20 minute limit catches a real hang without killing a row that is slow but
+  // still making progress.
   const PER_TWEET_TIMEOUT_MS = 20 * 60 * 1000;
   const queue = new PQueue({ concurrency, timeout: PER_TWEET_TIMEOUT_MS, throwOnTimeout: true });
 
@@ -427,8 +464,9 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
     }
   };
 
-  // If the user kills the process (Ctrl-C / SIGTERM), still upload what's
-  // already in the CSV so the dashboard reflects partial progress.
+  // If the user kills the process with Ctrl-C, or something sends it a SIGTERM,
+  // we still upload whatever is already in the CSV. The dashboard then shows
+  // the partial progress rather than nothing at all.
   const onSignal = (sig: string) => {
     console.log(`\n[${scriptName}] received ${sig} — uploading partial results before exit...`);
     uploadResults().finally(() => process.exit(130));
@@ -462,12 +500,14 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
         log.set("tweet.total", inputs.length);
         const result = await withTweetLog(log, () =>
           withBotConfig(config, () =>
-            withCostTracker(() => {
-              log.set("bot.id", config.botId);
-              log.set("bot.picks", picks);
-              log.set("bot.config", config);
-              return processSingleTweet({ post, bot, logger });
-            }),
+            withMonitoringContext(monitoring, () =>
+              withCostTracker(() => {
+                log.set("bot.id", config.botId);
+                log.set("bot.picks", picks);
+                log.set("bot.config", config);
+                return processSingleTweet({ post, bot, logger });
+              }),
+            ),
           ),
         );
 

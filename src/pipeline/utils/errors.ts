@@ -1,7 +1,8 @@
 /**
- * Errors thrown from the bot pipeline. The orchestrator's catch reads
- * `err.outcomeReason` to populate `pipeline_runs.outcome_reason`. Plain
- * `Error`s land in `bot_error`; subclass to introduce a new reason.
+ * Errors thrown from the bot pipeline. The orchestrator catches them and reads
+ * `err.outcomeReason` to fill in `pipeline_runs.outcome_reason`. A plain `Error`
+ * carries no such field, so it is recorded as `bot_error`. Add a subclass here
+ * when you need a new reason.
  */
 
 export class PipelineError extends Error {
@@ -13,8 +14,8 @@ export class PipelineError extends Error {
   }
 }
 
-/** Source verifier couldn't fetch any of the cited URLs — tooling failure,
- * not a substantive verifier rejection. */
+/** The source verifier could not fetch any of the cited URLs. This is a failure
+ * of our fetching tools. It does not mean the verifier judged the sources bad. */
 export class UnfetchableSourcesError extends PipelineError {
   readonly outcomeReason = "unfetchable_sources";
 }

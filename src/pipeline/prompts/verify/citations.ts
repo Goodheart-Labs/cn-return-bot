@@ -1,24 +1,31 @@
 /**
- * Shared citation unit for the source verifier's "citations" mode
- * (verifier_citations A/B test). In both the classic and claim-based flows the
- * model evaluates a source by first gathering verbatim snippets + a
- * plain-language explanation of how each does/doesn't support the note, THEN
- * judging good/bad — reason-then-judge, which exploits autoregressive decoding.
+ * The shared citation unit for the source verifier's "citations" mode, which is
+ * the verifier_citations A/B test.
  *
- * This module holds the one place that shape is defined: the TS types
- * (SourceCitation, EvaluatedSource), the strict-schema fragment both flows embed
- * (EVALUATED_SOURCE_SCHEMA), and the prompt fragment both prompts append.
+ * The classic flow and the claim-based flow evaluate a source the same way. The
+ * model first gathers verbatim snippets from the source. For each snippet it
+ * writes a plain-language explanation of how that snippet supports the note, or
+ * fails to support it. Only then does it judge the source good or bad. Making
+ * the model reason before it judges helps because it writes its answer one
+ * token at a time, so the verdict can lean on the text it has already written.
+ *
+ * This module is the single place that shape is defined. It holds the
+ * TypeScript types SourceCitation and EvaluatedSource, the strict schema
+ * fragment EVALUATED_SOURCE_SCHEMA that both flows embed, and the prompt
+ * fragment that both prompts append.
  */
 
 export interface SourceCitation {
   /** Verbatim snippet copied from the source's fetched content. */
   quote: string;
-  /** Concise, plain-language note (for non-experts) on how this snippet supports
-   *  or fails to support the note. "" when self-evident. */
+  /** A short note in plain language, aimed at a reader who is not an expert, on
+   *  how this snippet supports the note or fails to support it. It is the empty
+   *  string when the connection is self-evident. */
   explanation: string;
 }
 
-/** A source's evidence gathered BEFORE its verdict. Same unit in both flows. */
+/** The evidence gathered for one source before its verdict is decided. Both
+ *  flows use this same unit. */
 export interface EvaluatedSource {
   url: string;
   citations: SourceCitation[];
@@ -44,9 +51,10 @@ const CITATIONS_SCHEMA = {
   },
 };
 
-/** Per-source schema fragment: url → citations → verdict. Insertion order is the
- *  generation order, so the model produces its evidence before the verdict.
- *  Embedded as the `items` of the `sources` array in both verifier flows. */
+/** The schema fragment for one source. Its properties are listed as url, then
+ *  citations, then verdict. The model generates them in that order, so it
+ *  produces its evidence before its verdict. Both verifier flows embed this
+ *  fragment as the `items` of their `sources` array. */
 export const EVALUATED_SOURCE_SCHEMA = {
   type: "object",
   properties: {
@@ -58,7 +66,8 @@ export const EVALUATED_SOURCE_SCHEMA = {
   additionalProperties: false,
 };
 
-/** Appended to both verifier prompts when citations is on. */
+/** This fragment is appended to both verifier prompts when the citations mode is
+ *  on. */
 export const CITATIONS_PROMPT_FRAGMENT = `For each source list its "citations" FIRST, each a { quote, explanation }:
 - quote: text copied verbatim from that source's shown content (never invented or paraphrased).
 - explanation: a concise, plain-language note (for readers not deep in the topic) on how the snippet supports — or fails to support — a factual claim in the note. Use "" when self-evident.

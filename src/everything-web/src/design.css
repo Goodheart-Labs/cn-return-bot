@@ -1,52 +1,58 @@
-/* Experimental design settings (DesignMenu, bottom-left), applied as data
- * attributes on <html>. Both dimensions are experimentation-grade: the winning
- * combination should be promoted to a real Tailwind theme, not live here.
+/* Experimental design settings. The DesignMenu in the bottom left corner sets
+ * them as data attributes on <html>. Both settings are experiments. Once one
+ * combination wins it should become a real Tailwind theme instead of living
+ * here.
  *
- *   data-scheme:   blue (default, no rules) | beige | taupe | dark | dark-orange
- *   data-fontsize: normal (default, no rules) | large
+ *   data-scheme:   blue is the default and needs no rules. The others are
+ *                  beige, taupe, brown, taupe-classic, dark and dark-orange.
+ *   data-fontsize: normal is the default and needs no rules. The other is large.
  *
- * Scheme rules remap the utility classes the app actually uses; the
- * attribute+class selector outscores the bare utility without !important. */
+ * A scheme's rules remap the utility classes the app actually uses. A selector
+ * that combines the attribute with the class beats the bare utility class, so
+ * none of this needs !important. */
 
 /* ---------- beige = Flexoki (warm paper, LessWrong type, squared corners) ----
- * Flexoki (stephango.com/flexoki), light theme. Base ramp is the warm mono
- * paper/black blend; accents are the light-theme 600 values, mapped by
- * Flexoki's own semantics (cy = links/active, gr = success, or = warning,
- * re = error). Corners squared; type switches to LessWrong's stacks (see the
- * shared LessWrong type block below; font *sizes* left to the shared scale).
- * The note surface is one warm yellow wash regardless of status — status reads
- * from the badge + pills. */
+ * This is the light theme of Flexoki, from stephango.com/flexoki. The neutral
+ * ramp is Flexoki's warm blend between paper and black. The accents are the
+ * light theme's 600 values, each given the role Flexoki itself gives it. Cyan
+ * is links and active states, green is success, orange is warning and red is
+ * error. Corners are squared. Type switches to LessWrong's font stacks, which
+ * the shared block further down defines. Font sizes stay on the shared scale.
+ * The note surface is one warm yellow wash whatever the note's status is,
+ * because the status already reads from the badge and the vote pills. */
 [data-scheme="beige"] body {
-  background: var(--cn-bg); /* base-50 by default; cards sit a shade brighter on paper */
+  background: var(--cn-bg); /* base-50 by default. Cards sit a shade brighter. */
   color: #100F0F;           /* black (tx) */
   font-family: GreekFallback, Calibri, gill-sans-nova, "Gill Sans", "Gill Sans MT",
     "Myriad Pro", Myriad, "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva,
     "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 [data-scheme="beige"] .bg-white { background: var(--cn-card); } /* paper by default */
-[data-scheme="beige"] .bg-gray-50 { background: var(--cn-bg); }/* tracks the page wash */
+[data-scheme="beige"] .bg-gray-50 { background: var(--cn-bg); }/* Tracks the page wash. */
 [data-scheme="beige"] .hover\:bg-gray-50:hover { background: #E6E4D9; }   /* base-100 (ui) */
 [data-scheme="beige"] .hover\:bg-gray-100:hover { background: #DAD8CE; }  /* base-150 (ui-2) */
-[data-scheme="beige"] .bg-gray-100 { background: #E6E4D9; }  /* ui — subtle fills */
-[data-scheme="beige"] .bg-gray-200 { background: #DAD8CE; }  /* ui-2 — dividers/active */
+[data-scheme="beige"] .bg-gray-100 { background: #E6E4D9; }  /* ui, for subtle fills */
+[data-scheme="beige"] .bg-gray-200 { background: #DAD8CE; }  /* ui-2, for dividers and active states */
 [data-scheme="beige"] .border-gray-100 { border-color: #E6E4D9; }
 [data-scheme="beige"] .border-gray-200 { border-color: #E6E4D9; }  /* ui */
 [data-scheme="beige"] .border-gray-300 { border-color: #DAD8CE; }  /* ui-2 */
 [data-scheme="beige"] .text-gray-500 { color: #6F6E69; }  /* base-600 (tx-2) */
 [data-scheme="beige"] .text-gray-400 { color: #B7B5AC; }  /* base-300 (tx-3) */
 
-/* elevated surfaces (the ⋯ dropdown) float above the page: a derived surface
- * distinct from --cn-bg, not the flat card. Placed after .bg-white so it wins. */
+/* Elevated surfaces such as the ⋯ dropdown float above the page. They use their
+ * own color, derived from --cn-bg rather than reusing the flat card color. This
+ * rule sits after .bg-white so that it wins. */
 [data-scheme="beige"] .cn-menu { background: var(--cn-elevated); border-color: var(--cn-elevated-border); }
 
-/* role → accent variables. Defaults are Flexoki's own semantic mapping
- * (link=cyan, helpful=green, somewhat=orange, not-helpful=red, note=yellow);
- * the DesignMenu (Flexoki panel) overrides these live via inline styles on
- * <html>, letting any accent (re/or/ye/gr/cy/bl/pu/ma) map to any role. */
+/* The variables that map each role to an accent color. The defaults below are
+ * Flexoki's own mapping: links are cyan, helpful is green, somewhat helpful is
+ * orange, not helpful is red, and the note surface is yellow. The Flexoki panel
+ * in the DesignMenu overrides them live with inline styles on <html>, so any of
+ * the eight accents can be given to any role. */
 [data-scheme="beige"] {
-  --cn-bg: #F2F0E5;   /* base-50; Background control sets this */
-  --cn-card: #FFFCF0; /* paper; Card control sets this */
-  --cn-elevated: #FFFFFF;        /* dropdowns/popovers; derived from --cn-bg */
+  --cn-bg: #F2F0E5;   /* base-50. The Background control sets this. */
+  --cn-card: #FFFCF0; /* paper. The Card control sets this. */
+  --cn-elevated: #FFFFFF;        /* dropdowns and popovers, derived from --cn-bg */
   --cn-elevated-border: #E6E4D9;
   --cn-link-50: #DDF1E4; --cn-link-100: #BFE8D9; --cn-link-500: #2F968D; --cn-link-600: #24837B; --cn-link-700: #1C6C66;
   --cn-helpful-50: #EDEECF; --cn-helpful-100: #DDE2B2; --cn-helpful-150: #CDD597; --cn-helpful-200: #BEC97E; --cn-helpful-600: #66800B; --cn-helpful-700: #536907;
@@ -55,7 +61,7 @@
   --cn-note-bg: #FAEEC6; --cn-note-border: #F1D67E;
 }
 
-/* accent = links / active states */
+/* accent = links and active states */
 [data-scheme="beige"] .bg-blue-600 { background: var(--cn-link-600); }
 [data-scheme="beige"] .hover\:bg-blue-700:hover { background: var(--cn-link-700); }
 [data-scheme="beige"] .text-blue-600 { color: var(--cn-link-600); }
@@ -64,7 +70,8 @@
 [data-scheme="beige"] .bg-blue-50 { background: var(--cn-link-50); }
 [data-scheme="beige"] .border-blue-100 { border-color: var(--cn-link-100); }
 
-/* semantics: helpful / somewhat / not-helpful (needs-ratings stays neutral tx-2) */
+/* Vote semantics: helpful, somewhat helpful and not helpful. A note that still
+ * needs ratings stays the neutral tx-2 color. */
 [data-scheme="beige"] .cn-badge-helpful circle { fill: var(--cn-helpful-600); }
 [data-scheme="beige"] .cn-badge-not_helpful circle { fill: var(--cn-nothelpful-600); }
 [data-scheme="beige"] .cn-badge-needs_ratings circle { fill: #6F6E69; }
@@ -91,9 +98,9 @@
 [data-scheme="beige"] .hover\:bg-red-50:hover { background: var(--cn-nothelpful-50); }
 [data-scheme="beige"] .bg-yellow-100 { background: #F6E2A0; }  /* text highlight, fixed yellow */
 
-/* the note surface: one warm wash (note-role accent), defined after the utility
- * remaps so it wins the status box tint (bg-blue-50 / bg-gray-50 + their borders)
- * on source order */
+/* The note surface is one warm wash taken from the note role's accent. It is
+ * defined after the utility remaps so that it wins the status box tint on
+ * source order. That tint comes from bg-blue-50, bg-gray-50 and their borders. */
 [data-scheme="beige"] .cn-notebox { background: var(--cn-note-bg); border-color: var(--cn-note-border); }
 
 /* squared corners: strip all rounding in this theme */
@@ -103,10 +110,11 @@
 [data-scheme="beige"] input, [data-scheme="beige"] textarea { background: #FFFCF0; }
 
 /* ---------- taupe = Warm-Neutral palette (squared corners, LessWrong type) ----
- * From the "Warm-Neutral Color Palette" reference: page = beige, cards = cream,
- * note surface = camel, votes = olive (helpful) / burnt-orange (somewhat) / rust
- * (not-helpful), accent/links = denim. Corners squared; LessWrong type (shared
- * block below; font sizes left to the shared scale). */
+ * Taken from the "Warm-Neutral Color Palette" reference. The page is beige and
+ * the cards are cream. The note surface is denim, and links use a warm rose so
+ * that they stay distinct from it. Helpful is olive, somewhat helpful is burnt
+ * orange, and not helpful is rust. Corners are squared. Type is the LessWrong
+ * stack from the shared block below, and font sizes stay on the shared scale. */
 [data-scheme="taupe"] body {
   background: #E6D3A9; /* beige */
   color: #3D3020;      /* chocolate brown */
@@ -128,8 +136,9 @@
 [data-scheme="taupe"] .text-gray-500 { color: #6D5C45; } /* taupe */
 [data-scheme="taupe"] .text-gray-400 { color: #8A7A5F; }
 
-/* accent = links / active states = warm rose (denim is taken by the note, so the
- * highlight moves to a warm, distinct hue that reads on the cream cards) */
+/* The accent for links and active states is a warm rose. The note surface
+ * already takes denim, so the highlight moves to a warm hue that stays distinct
+ * from it and still reads on the cream cards. */
 [data-scheme="taupe"] .bg-blue-600 { background: #BA6C63; }
 [data-scheme="taupe"] .hover\:bg-blue-700:hover { background: #A6584F; }
 [data-scheme="taupe"] .text-blue-600 { color: #9E5049; } /* darkened for legibility on cream */
@@ -138,8 +147,8 @@
 [data-scheme="taupe"] .bg-blue-50 { background: #F3E1DC; }
 [data-scheme="taupe"] .border-blue-100 { border-color: #E7C7C0; }
 
-/* votes: helpful = olive, somewhat = burnt orange, not-helpful = rust
- * (needs-ratings stays neutral taupe) */
+/* Votes: helpful is olive, somewhat helpful is burnt orange and not helpful is
+ * rust. A note that still needs ratings stays the neutral taupe. */
 [data-scheme="taupe"] .cn-badge-helpful circle { fill: #606C3A; }
 [data-scheme="taupe"] .cn-badge-not_helpful circle { fill: #B36330; }
 [data-scheme="taupe"] .cn-badge-needs_ratings circle { fill: #6D5C45; }
@@ -166,13 +175,14 @@
 [data-scheme="taupe"] .hover\:bg-red-50:hover { background: #F6E6D6; }
 [data-scheme="taupe"] .bg-yellow-100 { background: #EFD79A; }
 
-/* the note surface: denim (defined after the utility remaps so it wins the
- * status box tint on source order). Denim is dark, so the note reads as a cool
- * callout — its interior text/links/idle-pill labels go light for contrast. */
+/* The note surface is denim. It is defined after the utility remaps so that it
+ * wins the status box tint on source order. Denim is dark, so the note reads as
+ * a cool callout. The text, the links and the idle vote labels inside it go
+ * light for contrast. */
 [data-scheme="taupe"] .cn-notebox { background: #4F7197; border-color: #3A5675; }
 [data-scheme="taupe"] .cn-notebox .text-gray-800 { color: #F7F0E2; } /* note body */
 [data-scheme="taupe"] .cn-notebox .text-gray-700 { color: #ECE3D2; } /* status label */
-[data-scheme="taupe"] .cn-notebox .text-gray-500 { color: #CAD6E1; } /* by / meta */
+[data-scheme="taupe"] .cn-notebox .text-gray-500 { color: #CAD6E1; } /* byline and meta */
 [data-scheme="taupe"] .cn-notebox .text-blue-500 { color: #CFE1F2; } /* note source links */
 [data-scheme="taupe"] .cn-notebox .text-green-700 { color: #CDD597; } /* idle vote labels, lightened */
 [data-scheme="taupe"] .cn-notebox .text-amber-700 { color: #F1D67E; }
@@ -182,14 +192,16 @@
 [data-scheme="taupe"] [class*="rounded"] { border-radius: 0 !important; }
 
 /* ---------- shared LessWrong type (beige + taupe) ----------
- * lesswrong.com splits type by role: reading content — post title and headings —
- * is serif Warnock Pro at weight 600, while UI chrome (nav, author names,
- * metadata) is the Gill Sans stack the body rules above already use. Warnock Pro
- * (and gill-sans-nova) are Adobe Typekit webfonts LessWrong loads and we don't,
- * so we run the same stack from its fallbacks: Palatino (macOS) / Palatino
- * Linotype (Windows) / Georgia. The attribute+element selector outscores the
- * font-weight utilities headings carry in markup (the Twitter-style 800 of the
- * default theme), pulling them back to LessWrong's 600. */
+ * lesswrong.com splits its type by role. Reading content, meaning post titles
+ * and headings, is the serif Warnock Pro at weight 600. The interface around
+ * it, such as navigation, author names and metadata, uses the Gill Sans stack
+ * that the body rules above already apply. Warnock Pro and gill-sans-nova are
+ * Adobe Typekit webfonts that LessWrong loads and we do not, so we run the same
+ * stack from its fallbacks. Those are Palatino on macOS, Palatino Linotype on
+ * Windows and Georgia elsewhere. A selector that combines the attribute with
+ * the element beats the font-weight utility classes the headings carry in the
+ * markup. Those classes are the default theme's Twitter-style 800, and this
+ * pulls the headings back to LessWrong's 600. */
 [data-scheme="beige"] h1, [data-scheme="beige"] h2, [data-scheme="beige"] h3,
 [data-scheme="taupe"] h1, [data-scheme="taupe"] h2, [data-scheme="taupe"] h3 {
   font-family: warnock-pro, Palatino, "Palatino Linotype", "Palatino LT STD",
@@ -233,8 +245,8 @@
 [data-scheme="taupe-classic"] .bg-blue-50 { background: #efe4d0; }
 [data-scheme="taupe-classic"] .border-blue-100 { border-color: #ddc9a8; }
 
-/* shared classic warm semantics (brown + taupe-classic): teal = positive,
- * rust = negative, saffron = warning, warm stone = neutral. */
+/* The shared warm semantics for brown and taupe-classic. Positive is teal,
+ * negative is rust, warning is saffron and neutral is a warm stone. */
 [data-scheme="brown"] .cn-badge-helpful circle, [data-scheme="taupe-classic"] .cn-badge-helpful circle { fill: #0f766e; }
 [data-scheme="brown"] .cn-badge-not_helpful circle, [data-scheme="taupe-classic"] .cn-badge-not_helpful circle { fill: #b7410e; }
 [data-scheme="brown"] .cn-badge-needs_ratings circle, [data-scheme="taupe-classic"] .cn-badge-needs_ratings circle { fill: #8a7358; }
@@ -304,8 +316,9 @@
 [data-scheme="dark"] .hover\:bg-red-50:hover, [data-scheme="dark-orange"] .hover\:bg-red-50:hover { background: #331413; }
 [data-scheme="dark"] .border-red-300, [data-scheme="dark-orange"] .border-red-300 { border-color: #6b2b26; }
 
-/* dark: the ⋯ dropdown needs real contrast — an elevated surface, white text,
- * a clearly visible border, and legible icons/divider (not the remapped grays). */
+/* In the dark schemes the ⋯ dropdown needs real contrast. It gets a raised
+ * surface, white text, a clearly visible border, and icons and dividers that
+ * stay legible. The remapped grays are too dim for it. */
 [data-scheme="dark"] .cn-menu, [data-scheme="dark-orange"] .cn-menu {
   background: #1f242c;
   border-color: rgba(255, 255, 255, 0.4);
@@ -332,9 +345,9 @@
 [data-scheme="dark-orange"] .border-blue-100 { border-color: #4a2f18; }
 
 /* ---------- form controls ----------
- * Inputs/textareas carry no bg/text utility classes, so they'd stay UA-white
- * with inherited (light) text on dark schemes — invisible typing. Theme them
- * per scheme here. */
+ * Inputs and textareas carry no background or text utility classes. On a dark
+ * scheme they would stay the browser's white with light inherited text, which
+ * makes what you type invisible. So each scheme themes them here. */
 [data-scheme="dark"] input, [data-scheme="dark"] textarea,
 [data-scheme="dark-orange"] input, [data-scheme="dark-orange"] textarea {
   background: #12151a;
@@ -346,16 +359,16 @@
 [data-scheme="taupe"] input, [data-scheme="taupe"] textarea { background: #fffdf6; color: #362a1e; }
 [data-scheme="taupe"] input::placeholder, [data-scheme="taupe"] textarea::placeholder { color: #8a7358; }
 
-/* dark: <mark> (transcript search highlight) UA-defaults to black text —
- * unreadable on the dark highlight background. */
+/* The browser gives <mark> black text by default, which is unreadable on the
+ * dark highlight background. <mark> is the transcript search highlight. */
 [data-scheme="dark"] mark, [data-scheme="dark-orange"] mark { color: #e7e9ee; }
 
-/* dark: the DesignMenu's selected-swatch ring offset must match its panel,
- * not default to white. */
+/* In the dark schemes the ring around the DesignMenu's selected swatch must be
+ * offset with the panel's own color. It would otherwise default to white. */
 [data-scheme="dark"] .ring-offset-1, [data-scheme="dark-orange"] .ring-offset-1 { --tw-ring-offset-color: #171b21; }
 
 /* ---------- font size: large (one tick up per text tier) ----------
- * The surrounding-context excerpt (.cn-context) is pinned small in both modes. */
+ * The surrounding-context excerpt, .cn-context, stays small in both sizes. */
 [data-fontsize="large"] .text-xs { font-size: 0.875rem; line-height: 1.25rem; }
 [data-fontsize="large"] .text-sm { font-size: 1rem; line-height: 1.5rem; }
 [data-fontsize="large"] .text-base { font-size: 1.125rem; line-height: 1.75rem; }

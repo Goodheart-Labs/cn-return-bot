@@ -5,21 +5,25 @@ import type { Vote } from "../../../everything-shared/votes";
 import { deleteNnn } from "../../../everything-shared/noteNotNeeded";
 import { tallyVisible } from "../../../everything-shared/noteScore";
 import { MenuItem, TrashIcon } from "./NoteMenu";
+import { VoteRatings } from "../../../dashboard-shared/Ratings";
 
-/** Entry voting + authored-entry bookkeeping, owned by App and shared by
- *  every list on the page. */
+/** Voting on entries, and keeping track of the entries you wrote. App owns this
+ *  state and hands the same object to every list on the page. */
 export interface NnnApi {
   myVotes: Map<string, Vote>;
   onVote: (entry: NnnRow, vote: Vote) => void;
-  /** Mirror the DB self-upvote of a just-posted entry into local state. */
+  /** Mirror the helpful vote the database casts on your own new entry into
+   *  local state. */
   onAuthored: (entryId: string) => void;
-  /** An entry was deleted. The website's realtime channel already removes it;
-   *  the extension (no realtime) refreshes on this. */
+  /** Called after an entry was deleted. The website's realtime channel already
+   *  drops it, so only the extension needs this. The extension has no realtime
+   *  connection and refreshes when this fires. */
   onDeleted?: (entryId: string) => void;
 }
 
-/** Compact relative timestamp for entry meta ("now", "5m", "3h", "2d", then
- *  a short date). Entries are conversation — age matters, precision doesn't. */
+/** A short relative timestamp for an entry, such as "now", "5m", "3h" or "2d".
+ *  Anything older than a month shows a short date instead. Entries read as
+ *  conversation, so a rough age is enough and an exact time would be noise. */
 function timeAgo(iso: string): string {
   const seconds = (Date.now() - new Date(iso).getTime()) / 1000;
   if (seconds < 60) return "now";
@@ -29,73 +33,14 @@ function timeAgo(iso: string): string {
   return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-const VOTE_ICON_PROPS = {
-  width: 12, height: 12, viewBox: "0 0 16 16",
-  fill: "none", stroke: "currentColor", strokeWidth: 2,
+/* The header row's little chevron. The vote chips draw their own icons inside
+ * the shared VoteRatings component. */
+const CHEVRON_ICON_PROPS = {
+  width: 12, height: 12, viewBox: "0 0 14 14",
+  fill: "none", stroke: "currentColor", strokeWidth: 1.8,
   strokeLinecap: "round", strokeLinejoin: "round",
 } as const;
 
-/** Entries are secondary surface — votes shrink to icon chips (✓ ~ ✕) so the
- *  text stays the loudest thing in the list. Same three-way scale and
- *  toggle/switch semantics as the note pills; labels live in tooltips/aria. */
-const COMPACT_VOTES: { value: Vote; label: string; active: string; hover: string; icon: React.ReactNode }[] = [
-  {
-    value: 1, label: "Helpful",
-    active: "bg-green-100 text-green-700 border-green-300 dark:bg-green-900/50 dark:text-green-300 dark:border-green-700",
-    hover: "hover:bg-green-50 hover:text-green-700 dark:hover:bg-green-950/40 dark:hover:text-green-400",
-    icon: <svg {...VOTE_ICON_PROPS} aria-hidden><path d="M3.5 8.5l3 3 6-7" /></svg>,
-  },
-  {
-    value: 0, label: "Somewhat helpful",
-    active: "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-900/50 dark:text-amber-300 dark:border-amber-700",
-    hover: "hover:bg-amber-50 hover:text-amber-700 dark:hover:bg-amber-950/40 dark:hover:text-amber-400",
-    icon: <svg {...VOTE_ICON_PROPS} aria-hidden><path d="M2.5 9c1.8-2.6 3.7-2.6 5.5 0s3.7 2.6 5.5 0" /></svg>,
-  },
-  {
-    value: -1, label: "Not helpful",
-    active: "bg-red-100 text-red-700 border-red-300 dark:bg-red-900/50 dark:text-red-300 dark:border-red-700",
-    hover: "hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950/40 dark:hover:text-red-400",
-    icon: <svg {...VOTE_ICON_PROPS} aria-hidden><path d="M4.5 4.5l7 7M11.5 4.5l-7 7" /></svg>,
-  },
-];
-
-function CompactVoteRatings({ entry, myVote, onVote }: {
-  entry: NnnRow;
-  myVote: Vote | undefined;
-  onVote: (vote: Vote) => void;
-}) {
-  const counts: Record<Vote, number> = {
-    1: entry.helpful_count,
-    0: entry.somewhat_helpful_count,
-    [-1]: entry.not_helpful_count,
-  };
-  // Same rule as the note pills: tallies show once you've voted or the
-  // entry has aged past the reveal window.
-  const showCounts = tallyVisible(myVote, entry.created_at);
-  return (
-    <span className="inline-flex items-center gap-0.5">
-      {COMPACT_VOTES.map(({ value, label, active, hover, icon }) => (
-        <button
-          key={value}
-          type="button"
-          title={label}
-          aria-pressed={myVote === value}
-          aria-label={showCounts ? `${label}: ${counts[value]} ratings` : label}
-          onClick={() => onVote(value)}
-          className={`inline-flex items-center gap-1 h-6 px-1.5 rounded-full border text-[11px] font-semibold transition-colors ${
-            myVote === value ? active : `border-transparent text-gray-400 ${hover}`
-          }`}
-        >
-          {icon}
-          {showCounts && counts[value] > 0 && counts[value].toLocaleString("en-US")}
-        </button>
-      ))}
-    </span>
-  );
-}
-
-/** ⋯ overflow on your own entries — destructive Delete lives here, one step
- *  removed from a stray tap (mirrors the note card's own-menu pattern). */
 function OwnEntryMenu({ onDelete }: { onDelete: () => void }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLSpanElement>(null);
@@ -118,18 +63,18 @@ function OwnEntryMenu({ onDelete }: { onDelete: () => void }) {
       </button>
       {open && (
         <div className="cn-menu absolute left-0 top-7 z-20 w-44 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-1.5 text-sm">
-          <MenuItem onClick={() => { setOpen(false); onDelete(); }} icon={<TrashIcon />} label="Delete" danger />
+          <MenuItem onClick={() => { setOpen(false); onDelete(); }} icon={<TrashIcon />} label="Delete" danger autoFocus />
         </div>
       )}
     </span>
   );
 }
 
-/** The claim's "note not needed" arguments — the same flat list renders under
- *  every note card on that claim. Collapsed by default; the header row is the
- *  toggle. */
+/** The arguments that a claim needs no note. The list is flat, and the same
+ *  list renders under every note card on that claim. It starts collapsed, and
+ *  the header row is the toggle. */
 export function NoteNotNeeded({ entries, api, session }: {
-  entries: NnnRow[]; // this claim's entries, oldest first (App pre-sorts)
+  entries: NnnRow[]; // This claim's entries. App sorts them oldest first.
   api: NnnApi;
   session: Session | null;
 }) {
@@ -143,7 +88,7 @@ export function NoteNotNeeded({ entries, api, session }: {
         className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 py-1"
       >
         <svg
-          {...VOTE_ICON_PROPS}
+          {...CHEVRON_ICON_PROPS}
           aria-hidden
           className={`transition-transform ${open ? "rotate-90" : ""}`}
         >
@@ -159,9 +104,13 @@ export function NoteNotNeeded({ entries, api, session }: {
           </p>
           <p className="mt-0.5 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap">{entry.body}</p>
           <div className="mt-1 -ml-1.5 flex items-center gap-1">
-            <CompactVoteRatings
-              entry={entry}
+            <VoteRatings
+              compact
+              helpful={entry.helpful_count}
+              somewhatHelpful={entry.somewhat_helpful_count}
+              notHelpful={entry.not_helpful_count}
               myVote={api.myVotes.get(entry.id)}
+              showCounts={tallyVisible(api.myVotes.get(entry.id), entry.created_at)}
               onVote={(vote) => api.onVote(entry, vote)}
             />
             {!!session && session.user.id === entry.author_id && (

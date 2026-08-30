@@ -1,12 +1,14 @@
-import { originalsFirst } from "../../everything-shared/noteScore";
+import { noteStatus, originalsFirst } from "../../everything-shared/noteScore";
 import { fetchNnnForClaims } from "../../everything-shared/noteNotNeeded";
 import { fetchNotesForItem } from "../../everything-shared/notesQuery";
 import type { NnnRow, NoteRow } from "../../everything-shared/types";
+import { getNoteFilters, type NoteFilters } from "./settings";
 
 export type ClaimGroup = { claimId: string; notes: NoteRow[]; nnn: NnnRow[] };
 
-/** Group an item's notes per claim (originals before improvements), each with
- *  the claim's note-not-needed entries. */
+/** Group an item's notes by claim, with an original note before any
+ *  improvements to it. Each group also carries that claim's note-not-needed
+ *  entries. */
 function groupByClaim(notes: NoteRow[], nnn: NnnRow[]): ClaimGroup[] {
   const byId = new Map<string, NoteRow[]>();
   for (const note of notes) {
@@ -22,10 +24,39 @@ function groupByClaim(notes: NoteRow[], nnn: NnnRow[]): ClaimGroup[] {
   }));
 }
 
-/** An item's notes + its claims' note-not-needed entries, grouped per claim.
- *  Shared by the Substack/generic inline mount and the YouTube overlay. */
-export async function fetchClaimGroups(itemId: string): Promise<ClaimGroup[]> {
-  const notes = await fetchNotesForItem(itemId);
-  const nnn = await fetchNnnForClaims([...new Set(notes.map((n) => n.claim_id))]);
-  return groupByClaim(notes, nnn);
+/** Whether the popup's filter tickboxes let this note render. A note rated
+ *  helpful always shows. */
+export function noteVisible(note: NoteRow, filters: NoteFilters): boolean {
+  const status = noteStatus(note);
+  if (status === "needs_ratings") return filters.showNeedsRatings;
+  if (status === "not_helpful") return filters.showUnhelpful;
+  return true;
+}
+
+/** The note tallies for the count card. `helpful`, `needsRatings` and
+ *  `notHelpful` are disjoint, so "1 Common Note, 1 needs more ratings" means
+ *  one helpful note plus one unrated one. All three are counted over ALL of
+ *  the item's notes, deliberately ignoring the reader's display filters:
+ *  counts report what exists, filters only decide what renders. `visible` is
+ *  the filtered count, the notes a jump can actually reach. */
+export type NoteCounts = { helpful: number; needsRatings: number; notHelpful: number; visible: number };
+
+/** An item's notes and its claims' note-not-needed entries, grouped by claim,
+ *  with the status filters applied, plus the visible-note counts. Both the
+ *  inline mount, used on Substack and on the generic text sites, and the
+ *  YouTube overlay call this. Returns null when the notes could not be
+ *  fetched, so a caller does not mistake an outage for a page without notes. */
+export async function fetchClaimGroups(itemId: string): Promise<{ groups: ClaimGroup[]; counts: NoteCounts } | null> {
+  const [notes, filters] = await Promise.all([fetchNotesForItem(itemId), getNoteFilters()]);
+  if (notes === null) return null;
+  const visible = notes.filter((note) => noteVisible(note, filters));
+  const counts = { helpful: 0, needsRatings: 0, notHelpful: 0, visible: visible.length };
+  for (const note of notes) {
+    const status = noteStatus(note);
+    if (status === "helpful") counts.helpful += 1;
+    else if (status === "needs_ratings") counts.needsRatings += 1;
+    else counts.notHelpful += 1;
+  }
+  const nnn = await fetchNnnForClaims([...new Set(visible.map((n) => n.claim_id))]);
+  return { groups: groupByClaim(visible, nnn), counts };
 }

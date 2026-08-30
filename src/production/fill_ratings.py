@@ -8,9 +8,9 @@ Run from repo root:
   uv run src/production/fill_ratings.py --local
   uv run src/production/fill_ratings.py             # prod
 
-In CI (--stream) the script downloads each ratings shard on demand and deletes
-it after scanning — the 8 partitions sum to ~40 GB so we can't hold them all
-on a GitHub-hosted runner's disk at once.
+In CI the script runs with --stream. It then downloads each ratings shard on
+demand and deletes it again after scanning. The 8 partitions add up to about
+40 GB, so a GitHub-hosted runner's disk cannot hold them all at once.
 """
 
 import argparse
@@ -33,10 +33,11 @@ CN_DATA_DIR = Path(__file__).resolve().parent / "cn_data"
 CACHE_PATH = Path(__file__).resolve().parent / "_aggregates_cache.json"
 DOWNLOAD_LOOKBACK_DAYS = 7
 
-# The dump grows a partition every few months (notes went 2→3 in Jul 2026).
-# We discover the count by probing rather than hardcoding, so a new partition
-# doesn't silently drop notes/ratings. (file_type is the URL path segment,
-# prefix is the on-disk filename stem — they differ only for ratings.)
+# The dump grows a partition every few months. Notes went from 2 to 3 in July
+# 2026. We discover the count by probing rather than hardcoding it, so a new
+# partition never silently drops notes or ratings. In the constants below,
+# file_type is the segment in the URL path and prefix is the stem of the
+# filename on disk. They differ only for ratings.
 NOTE_FILE_TYPE, NOTE_PREFIX = "notes", "notes"
 RATING_FILE_TYPE, RATING_PREFIX = "noteRatings", "ratings"
 AUTHOR_ID = "813EB394B10809EBA8D09BCFA8E2E1C25A2DA0085186867F9E9C00696951C447"
@@ -51,9 +52,11 @@ HELPFULNESS_BUCKETS = {
     "NOT_HELPFUL": "not_helpful_count",
 }
 
-# Supabase REST has a request size ceiling; 500 rows per upsert keeps us safe.
+# Supabase REST has a ceiling on request size. 500 rows per upsert keeps us
+# safely under it.
 UPSERT_BATCH = 500
-# csv module's default field-size limit is too low for occasional long rows.
+# The csv module's default field-size limit is too low for the occasional long
+# row.
 csv.field_size_limit(sys.maxsize)
 
 
@@ -82,7 +85,8 @@ def download_and_extract(file_type: str, partition: str, date_str: str) -> bool:
 
 
 def try_download_partition(file_type: str, partition: str) -> bool:
-    """Try the daily snapshot date, walking back up to DOWNLOAD_LOOKBACK_DAYS."""
+    """Try today's daily snapshot date first, then walk back one day at a time
+    for up to DOWNLOAD_LOOKBACK_DAYS days."""
     for days_back in range(DOWNLOAD_LOOKBACK_DAYS):
         date = datetime.now(timezone.utc) - timedelta(days=days_back)
         date_str = date.strftime("%Y/%m/%d")
@@ -92,7 +96,8 @@ def try_download_partition(file_type: str, partition: str) -> bool:
 
 
 def resolve_dump_date(file_type: str, prefix: str) -> str | None:
-    """Most recent snapshot date (within lookback) whose partition 0 exists."""
+    """Return the most recent snapshot date within the lookback window whose
+    partition 0 exists."""
     for days_back in range(DOWNLOAD_LOOKBACK_DAYS):
         date_str = (datetime.now(timezone.utc) - timedelta(days=days_back)).strftime("%Y/%m/%d")
         url = f"{CN_DATA_BASE_URL}/{date_str}/{file_type}/{prefix}-00000.zip"
@@ -102,8 +107,9 @@ def resolve_dump_date(file_type: str, prefix: str) -> str | None:
 
 
 def discover_partition_files(file_type: str, prefix: str) -> list[str]:
-    """Enumerate every partition in the latest dump by walking the index up
-    from 0 until the CDN 404s — so a newly added partition is picked up."""
+    """Enumerate every partition in the latest dump. This walks the index up
+    from 0 until the CDN returns a 404, so a newly added partition is picked up
+    on its own."""
     date_str = resolve_dump_date(file_type, prefix)
     if date_str is None:
         return []
@@ -170,8 +176,9 @@ def empty_agg() -> dict:
 
 
 def aggregate_ratings(our_note_ids: set[str], stream: bool) -> dict[str, dict]:
-    """Walk every ratings partition; in `stream` mode, download each shard on
-    demand and delete it after scanning so we stay under runner disk limits."""
+    """Walk every ratings partition. In stream mode each shard is downloaded on
+    demand and deleted again after scanning, so we stay under the runner's disk
+    limit."""
     aggregates: dict[str, dict] = defaultdict(empty_agg)
     helpful_tags: list[str] = []
     not_helpful_tags: list[str] = []
@@ -255,8 +262,9 @@ def build_upsert_rows(aggregates: dict[str, dict], dump_date: str) -> list[dict]
 
 
 def latest_dump_date_from_disk() -> str:
-    # Use the noteStatusHistory mtime as the dump date — it's always downloaded
-    # together with notes/ratings by the data fetcher.
+    # Take the dump date from the modification time of the first of these files
+    # that exists on disk. noteStatusHistory comes first because the data
+    # fetcher always downloads it together with the notes and ratings files.
     candidates = ["noteStatusHistory-00000.tsv", "notes-00000.tsv", "ratings-00000.tsv"]
     for fname in candidates:
         path = CN_DATA_DIR / fname
@@ -311,9 +319,10 @@ def main():
         rows = rows[: args.limit]
         print(f"[limit] truncated to {len(rows)} rows for smoke test")
 
-    # Filter to note_ids that exist in `notes` to avoid FK failures. PostgREST
-    # caps responses at 1000 rows per request, so we have to paginate — a plain
-    # `.execute()` silently truncates and drops every row past the first 1000.
+    # Keep only the note_ids that already exist in `notes`, so the upsert cannot
+    # fail on a foreign key. PostgREST caps a response at 1000 rows per request,
+    # so we have to paginate. A plain `.execute()` would silently truncate and
+    # drop every row past the first 1000.
     existing_ids: set[str] = set()
     page = 1000
     offset = 0

@@ -10,7 +10,7 @@ export type NoteEvaluationResponse = {
 };
 
 /**
- * Evaluates a Community Note using X's evaluation endpoint to predict helpfulness
+ * Calls X's evaluation endpoint to predict how helpful a Community Note is.
  * @param postId The ID of the tweet the note is for
  * @param noteText The text content of the note
  * @returns The evaluation response containing the claim_opinion_score

@@ -2,20 +2,22 @@
  * Tweet Sorting
  *
  * Ranks tweets by a weighted blend of recency, text length, and impressions.
- * Each component is normalized to [0, 1] before weighting: length and impressions
- * against the batch's 95th percentile (clamped, so one viral / huge-article
- * outlier can't flatten everyone else), recency against a fixed 48h horizon.
- * Callers just pick the weights that fit their goal.
+ * Every part is normalized to a value between 0 and 1 before it is weighted.
+ * Length and impressions are measured against the batch's 95th percentile and
+ * clamped there, so one viral post or one very long article cannot flatten
+ * everyone else. Recency is measured against a fixed horizon of 48 hours.
+ * Callers only have to pick the weights that fit their goal.
  */
 
 import type { Post } from "../../../api/fetchEligiblePosts";
 
 const MAX_AGE_HOURS = 48;
-// Normalize length/impressions against the batch's p95, not its max, so a single
-// outlier doesn't compress the rest of the field into a narrow low-score band.
+// Length and impressions are normalized against the batch's 95th percentile
+// rather than its maximum. Using the maximum would let a single outlier squeeze
+// every other post into a narrow band of low scores.
 const NORMALIZATION_PERCENTILE = 95;
 
-/** Relative importance of each ranking signal; the weights need not sum to 1. */
+/** How much each ranking signal counts. The weights do not have to add up to 1. */
 export type SortWeights = { recency: number; length: number; impressions: number };
 
 export function ageInHours(post: Post): number {
@@ -25,7 +27,7 @@ export function ageInHours(post: Post): number {
   return Math.max(0, (nowMs - createdMs) / (1000 * 60 * 60));
 }
 
-/** Format a large number compactly: 1234567 → "1.2M" */
+/** Formats a large number compactly. For example 1234567 becomes "1.2M". */
 export function formatCount(n: number): string {
   if (n >= 1_000_000_000) return `${(n / 1_000_000_000).toFixed(1)}B`;
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
@@ -33,7 +35,8 @@ export function formatCount(n: number): string {
   return String(n);
 }
 
-/** p-th percentile of `values` (linear interpolation between ranks). */
+/** Returns the p-th percentile of `values`. Values between two ranks are
+ *  interpolated linearly. */
 function percentile(values: number[], p: number): number {
   if (values.length === 0) return 0;
   const sorted = [...values].sort((a, b) => a - b);

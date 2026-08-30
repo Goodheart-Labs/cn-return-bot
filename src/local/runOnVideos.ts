@@ -1,31 +1,33 @@
 /**
  * Run On Videos
  *
- * Run the pipeline on videos from any platform (X, YouTube, TikTok, etc.)
- * using yt-dlp for metadata extraction. No X API credentials needed.
+ * Runs the pipeline on videos from any platform, such as X, YouTube or TikTok.
+ * yt-dlp extracts the metadata, so no X API credentials are needed.
  *
- * Input: CSV file with columns:
- *   - url (required): link to the video/post
- *   - needs_note (optional): ground truth label ("yes" or "no")
+ * Input: a CSV file with these columns:
+ *   - url (required): a link to the video or the post
+ *   - needs_note (optional): the ground truth label, either "yes" or "no"
  *   - ground_truth_note (optional): what the note should say
  *
  * Usage:
  *   bun run src/local/runOnVideos.ts [flags] <input.csv | url...>
  *
  * Flags:
- *   --bot <id>              force a specific bot
- *   --max <n>               limit number of inputs
- *   --reversed              process newest-last
- *   --concurrency <n>       parallel workers (default 5)
- *   --config-name <name>    force a BotConfig variant
- *   --name <label>          name for dashboard upload (default: derived)
+ *   --pick test=variant     Force an A/B test variant. Repeatable. Use
+ *                           --pick bot=<id> to force a specific bot.
+ *   --max <n>               Limit the number of inputs.
+ *   --reversed              Process the inputs in reverse order, newest last.
+ *   --concurrency <n>       How many workers run in parallel. The default is 5.
+ *   --name <label>          The name the run gets in the dashboard. It is
+ *                           derived from the input if you do not pass one.
  */
 
 import "dotenv/config";
 import { captureProdSupabaseCreds } from "./prodSupabaseCreds";
 captureProdSupabaseCreds();
 
-// Route Supabase to local instance (must happen before any Supabase imports)
+// Route Supabase to a local instance when one is configured. This has to happen
+// before anything imports Supabase.
 const localUrl = process.env.LOCAL_SUPABASE_URL;
 const localKey = process.env.LOCAL_SUPABASE_SERVICE_KEY;
 if (localUrl && localKey) {
