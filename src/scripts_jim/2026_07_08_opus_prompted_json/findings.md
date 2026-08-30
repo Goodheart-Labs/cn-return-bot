@@ -27,11 +27,11 @@ reliably narrates a reasoning preamble before the JSON — e.g.
 preamble remains, take the first `{` … last `}` slice — not just fence-stripped.
 (The OpenAI / Sonar paths don't need this: those models emit bare JSON.)
 
-## End-to-end (`live_test.ts`, real dispatchSearch, Opus 4.8)
+## End-to-end (`live_check.ts`, real dispatchSearch, Opus 4.8)
 Runs the actual production `dispatchSearch` path (not a replica) over 4 posts and
 asserts each returns a valid parsed result — non-empty `findings` string + boolean
 `correctionNeeded`. **4/4 pass**, exits non-zero on any throw/malformed result.
 
 Scripts:
 - `smoke.ts` — diagnostic: raw output, salad + naive-vs-extract parse comparison.
-- `live_test.ts` — assertive integration test through the real dispatchSearch path.
+- `live_check.ts` — assertive integration test through the real dispatchSearch path.

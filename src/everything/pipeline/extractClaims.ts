@@ -171,16 +171,55 @@ function buildVideoLink(videoId: string, seconds: number): string {
 }
 
 /**
- * Returns the time span of a context excerpt. It is the earliest start and the
- * latest end among the cues whose text appears inside the verbatim context. The
- * start on its own gives us the deep link into the video. The start and end
- * together give the bounds of the clip. If no cue lines up, the returned object
- * is empty.
+ * Returns the time span of a context excerpt: the earliest start and the latest
+ * end among the cues the excerpt overlaps. The start on its own gives us the
+ * deep link into the video. The start and end together give the bounds of the
+ * clip. If the excerpt cannot be located in the cues, the returned object is
+ * empty.
+ *
+ * We locate the excerpt in two ways. First we search for it as a substring of
+ * the full transcript, built by joining all normalized cue texts. That finds
+ * any verbatim excerpt, however short, even one that straddles a cue boundary.
+ * If that fails, for example because the excerpt came from an author's own
+ * transcript whose wording differs slightly from the cues, we fall back to
+ * scanning for whole cues that appear inside the excerpt.
  */
 const MIN_SNAP_MATCH_CHARS = 12;
-function contextTimeSpan(context: string, cues: SubtitleCue[]): { start?: number; end?: number } {
+export function contextTimeSpan(context: string, cues: SubtitleCue[]): { start?: number; end?: number } {
   const ctx = normalizeText(context);
   if (!ctx) return {};
+  return joinedCueSpan(ctx, cues) ?? containedCueSpan(ctx, cues);
+}
+
+/** Finds the excerpt as a substring of the joined normalized cue texts and
+ *  returns the span of the cues the match overlaps. Null when the excerpt does
+ *  not appear verbatim. */
+function joinedCueSpan(ctx: string, cues: SubtitleCue[]): { start: number; end: number } | null {
+  const ranges: { from: number; to: number; cue: SubtitleCue }[] = [];
+  let joined = "";
+  for (const cue of cues) {
+    const t = normalizeText(cue.text);
+    if (!t) continue;
+    if (joined) joined += " ";
+    ranges.push({ from: joined.length, to: joined.length + t.length, cue });
+    joined += t;
+  }
+  const at = joined.indexOf(ctx);
+  if (at === -1) return null;
+  const matchEnd = at + ctx.length;
+  let start: number | undefined;
+  let end: number | undefined;
+  for (const r of ranges) {
+    if (r.to <= at || r.from >= matchEnd) continue;
+    if (start === undefined || r.cue.start < start) start = r.cue.start;
+    if (end === undefined || r.cue.end > end) end = r.cue.end;
+  }
+  return start === undefined || end === undefined ? null : { start, end };
+}
+
+/** The original snapping: the span of the whole cues whose text appears inside
+ *  the excerpt. Only an excerpt longer than a cue can match this way. */
+function containedCueSpan(ctx: string, cues: SubtitleCue[]): { start?: number; end?: number } {
   let start: number | undefined;
   let end: number | undefined;
   for (const cue of cues) {
@@ -253,17 +292,21 @@ function chunkText(text: string): string[] {
   return chunks;
 }
 
-/** Resolves each claim's context excerpt to where it lives in the source. */
-type AnchorResolver = (context: string) => ClaimAnchor;
+/** Resolves each claim's context excerpts to where they live in the source. */
+type AnchorResolver = (context: string, contextParagraph: string) => ClaimAnchor;
 
 /** Snaps a claim's context onto the video's cues and returns a YouTube anchor we
  *  can deep-link to. Two paths share this. A live YouTube video extracts its
  *  claims from the cues themselves. A transcript import extracts them from a
  *  supplied transcript, but the timestamps still come from the video's own
- *  cues. */
+ *  cues. When the tight context excerpt cannot be located in the cues, we snap
+ *  the wider paragraph instead — a looser clip, but the claim keeps its
+ *  timestamp and the extension can still pin it on the player. */
 function youtubeAnchor(videoId: string, cues: SubtitleCue[]): AnchorResolver {
-  return (context) => {
-    const { start, end } = contextTimeSpan(context, cues);
+  return (context, contextParagraph) => {
+    let span = contextTimeSpan(context, cues);
+    if (span.start === undefined) span = contextTimeSpan(contextParagraph, cues);
+    const { start, end } = span;
     return {
       kind: "youtube",
       startSeconds: start,
@@ -284,7 +327,7 @@ async function extractChunks(
   return perChunk
     .flat()
     .filter((c): c is RawClaim => !!c)
-    .map((c) => toExtractedClaim(c, anchorFor(c.context)));
+    .map((c) => toExtractedClaim(c, anchorFor(c.context ?? "", c.context_paragraph ?? "")));
 }
 
 // The LLM sees plain transcript text with no timestamps in it. We snap the

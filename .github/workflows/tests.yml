@@ -1,0 +1,27 @@
+name: Tests
+
+# Runs the repo's unit tests (bun test discovers every *.test.ts) on each PR
+# and on main, so a regression in tested logic goes red before it merges.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run unit tests
+        run: bun test
