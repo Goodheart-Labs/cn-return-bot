@@ -20,6 +20,12 @@ import { canonicalFeed } from "./feedUrls";
 
 export const VISIT_RANKING_WINDOW_DAYS = 14;
 
+/** A creator nobody follows needs this many visits inside the window before
+ *  their new posts are walked, so one stray click does not buy a check.
+ *  Followed and curated feeds are walked regardless, because following them
+ *  was a deliberate act. */
+export const MIN_VISITS_FOR_UNFOLLOWED_CREATOR = 2;
+
 export interface RankedCreator {
   project_slug: string;
   feed_type: "substack" | "youtube";
@@ -74,6 +80,7 @@ export async function rankCreators(): Promise<RankedCreator[]> {
   if (visitedCreatorsEnabled()) {
     for (const [key, { feed_url, visits }] of visitsByUrl) {
       if (followedUrls.has(key)) continue;
+      if (visits < MIN_VISITS_FOR_UNFOLLOWED_CREATOR) continue;
       // A captured feed URL of an unknown shape (or a corrupted old row) is
       // skipped rather than walked blindly.
       const feed = canonicalFeed(feed_url);
