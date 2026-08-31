@@ -41,17 +41,27 @@ const MARGIN_CARD_MIN_WIDTH = 300;
 // are nudged down by one marker height plus breathing room.
 const MARGIN_MARKER_STEP = BADGE_SIZE + 6;
 
-/** Whether an ancestor of the article container would clip content drawn this
- *  far right of the viewport's left edge. Reader shells sometimes wrap the
- *  article in an overflow-hidden column; a marker drawn into that margin would
- *  silently vanish, so such pages fall back to the classic style. */
-function marginClipped(container: Element, rightEdge: number): boolean {
+/** The ancestor of the article container that would clip content drawn this
+ *  far right of the viewport's left edge, or null when nothing clips. Reader
+ *  shells sometimes wrap the article in an overflow-hidden or scrollable
+ *  column; a marker drawn into that margin would silently vanish or add a
+ *  horizontal scrollbar, so such pages fall back to the classic style. */
+function marginClipper(container: Element, rightEdge: number): Element | null {
   for (let el = container.parentElement; el && el !== document.body; el = el.parentElement) {
     const { overflowX, overflow } = getComputedStyle(el);
     const clips = (v: string) => v === "hidden" || v === "clip" || v === "auto" || v === "scroll";
-    if ((clips(overflowX) || clips(overflow)) && el.getBoundingClientRect().right < rightEdge) return true;
+    if ((clips(overflowX) || clips(overflow)) && el.getBoundingClientRect().right < rightEdge) return el;
   }
-  return false;
+  return null;
+}
+
+/* Says once per page why the margin style is not being drawn, so a "why is
+ * this the old look" report can be answered from the console. */
+let lastFallbackReason: string | null = null;
+function logMarginFallback(reason: string | null) {
+  if (reason === lastFallbackReason) return;
+  lastFallbackReason = reason;
+  if (reason) console.info(`[common-notes] margin style fell back to classic: ${reason}`);
 }
 
 /** Gives the range's rectangle relative to the in-content annotation layer. Both
@@ -332,11 +342,19 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
     const containerRect = container.getBoundingClientRect();
     const marginLeft = containerRect.right + MARGIN_MARKER_GAP;
     const availableMargin = window.innerWidth - marginLeft - VIEWPORT_MARGIN;
-    const useMargin =
-      noteStyle === "margin" &&
-      container !== document.body &&
-      availableMargin >= MARGIN_CARD_MIN_WIDTH &&
-      !marginClipped(container, marginLeft + BADGE_SIZE);
+    const clipper = marginClipper(container, marginLeft + BADGE_SIZE);
+    const fallbackReason =
+      noteStyle !== "margin"
+        ? null // Classic was chosen in the settings; nothing to explain.
+        : container === document.body
+          ? "the article container is the page body, which has no margin"
+          : availableMargin < MARGIN_CARD_MIN_WIDTH
+            ? `only ${Math.round(availableMargin)}px of margin, the card needs ${MARGIN_CARD_MIN_WIDTH}px`
+            : clipper
+              ? `an ancestor would clip the margin (<${clipper.tagName.toLowerCase()} class="${clipper.className}">)`
+              : null;
+    logMarginFallback(fallbackReason);
+    const useMargin = noteStyle === "margin" && fallbackReason === null;
 
     // Markers of passages that start on the same lines would land on top of
     // each other; walking them from top to bottom and pushing each below the
