@@ -41,18 +41,36 @@ const MARGIN_CARD_MIN_WIDTH = 300;
 // are nudged down by one marker height plus breathing room.
 const MARGIN_MARKER_STEP = BADGE_SIZE + 6;
 
-/** The ancestor of the article container that would clip content drawn this
- *  far right of the viewport's left edge, or null when nothing clips. Reader
- *  shells sometimes wrap the article in an overflow-hidden or scrollable
- *  column; a marker drawn into that margin would silently vanish or add a
- *  horizontal scrollbar, so such pages fall back to the classic style. */
+/** The element (the container itself or an ancestor) that would clip content
+ *  drawn this far right of the viewport's left edge, or null when nothing
+ *  clips. Reader shells sometimes wrap the article in an overflow-hidden or
+ *  scrollable column; a marker drawn into that margin would silently vanish
+ *  or add a horizontal scrollbar, so such pages fall back to the classic
+ *  style. */
 function marginClipper(container: Element, rightEdge: number): Element | null {
-  for (let el = container.parentElement; el && el !== document.body; el = el.parentElement) {
+  for (let el: Element | null = container; el && el !== document.body; el = el.parentElement) {
     const { overflowX, overflow } = getComputedStyle(el);
     const clips = (v: string) => v === "hidden" || v === "clip" || v === "auto" || v === "scroll";
     if ((clips(overflowX) || clips(overflow)) && el.getBoundingClientRect().right < rightEdge) return el;
   }
   return null;
+}
+
+/** The right edge, in viewport coordinates, of the text block a passage sits
+ *  in. This is the honest edge of the text column: the container found by
+ *  findContainer can be a full-width wrapper (Substack's logged-in renderer
+ *  centers a narrow column inside a page-wide article element), so measuring
+ *  the margin from the container box would see no margin where the eye sees
+ *  plenty. */
+function passageBlockRight(range: Range, container: Element): number {
+  let el: Element | null =
+    range.startContainer instanceof Element ? range.startContainer : range.startContainer.parentElement;
+  while (el && el !== container) {
+    const display = getComputedStyle(el).display;
+    if (display !== "inline" && display !== "contents") return el.getBoundingClientRect().right;
+    el = el.parentElement;
+  }
+  return container.getBoundingClientRect().right;
 }
 
 /* Says once per page why the margin style is not being drawn, so a "why is
@@ -339,20 +357,24 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
     // container has no margin by construction; a too-narrow window has no room
     // for the card; a clipping ancestor would swallow the marker. Every
     // failure falls back to the classic style rather than to nothing.
+    // The markers all sit on one vertical rail just right of the text column.
+    // The column's edge is the widest passage block, capped at the container
+    // box (a block cannot honestly be wider than the article).
     const containerRect = container.getBoundingClientRect();
-    const marginLeft = containerRect.right + MARGIN_MARKER_GAP;
+    const columnRight = groups.length
+      ? Math.min(containerRect.right, Math.max(...groups.map((g) => passageBlockRight(g.range, container))))
+      : containerRect.right;
+    const marginLeft = columnRight + MARGIN_MARKER_GAP;
     const availableMargin = window.innerWidth - marginLeft - VIEWPORT_MARGIN;
     const clipper = marginClipper(container, marginLeft + BADGE_SIZE);
     const fallbackReason =
       noteStyle !== "margin"
         ? null // Classic was chosen in the settings; nothing to explain.
-        : container === document.body
-          ? "the article container is the page body, which has no margin"
-          : availableMargin < MARGIN_CARD_MIN_WIDTH
-            ? `only ${Math.round(availableMargin)}px of margin, the card needs ${MARGIN_CARD_MIN_WIDTH}px`
-            : clipper
-              ? `an ancestor would clip the margin (<${clipper.tagName.toLowerCase()} class="${clipper.className}">)`
-              : null;
+        : availableMargin < MARGIN_CARD_MIN_WIDTH
+          ? `only ${Math.round(availableMargin)}px of margin right of the text column, the card needs ${MARGIN_CARD_MIN_WIDTH}px`
+          : clipper
+            ? `an element would clip the margin (<${clipper.tagName.toLowerCase()} class="${clipper.className}">)`
+            : null;
     logMarginFallback(fallbackReason);
     const useMargin = noteStyle === "margin" && fallbackReason === null;
 
