@@ -236,7 +236,15 @@ function PrimaryAction({ state, counts, jumped, access }: {
     !NON_CONTENT_HOSTNAME.test(new URL(state.origin).hostname);
 
   if (!isContentPage) {
-    return <p className="text-sm text-gray-600">Open a post or video on a covered site to see Common Notes.</p>;
+    return (
+      <p className="text-sm text-gray-600">
+        Open a post or video on a covered site to see Common Notes. You can also see notes on{" "}
+        <a href="https://commonnotes.net" target="_blank" rel="noreferrer" className={LINK}>
+          commonnotes.net
+        </a>
+        .
+      </p>
+    );
   }
   const visibleNoteCount = counts?.visible ?? 0;
   if (!authorFeed || (state.kind === "item" && visibleNoteCount > 0 && !access)) {
