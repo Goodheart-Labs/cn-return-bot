@@ -33,7 +33,7 @@ export default defineConfig({
   // defence.
   zip: { excludeSources: ["chrome-signing-key.pem", "store-assets/**"] },
   manifest: ({ browser }) => ({
-    version: "0.2.0",
+    version: "0.3.0",
     name: "Common Notes",
     description: "Community Notes Everywhere",
     icons: { 16: "icon/16.png", 32: "icon/32.png", 48: "icon/48.png", 128: "icon/128.png" },
