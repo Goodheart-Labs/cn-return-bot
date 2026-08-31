@@ -21,8 +21,10 @@
  * (2026-08-17..20: posted 87/110/80/91 against predicted 37/38/41/42, no
  * refusal; last 403 was 2026-08-14 at 90), and until both halves live in one
  * row on one day that ratio stays a guess re-derived by hand each time it
- * matters. Persisting is best-effort: a DB failure logs and exits 0, because
- * losing a reading must never turn into a red workflow that gets muted.
+ * matters. If saving the reading fails, the whole run fails with it. A green
+ * run has to mean a reading was stored, otherwise the workflow reports success
+ * on the exact days it recorded nothing, which is the failure this file was
+ * written to end.
  */
 
 import axios from "axios";
@@ -218,10 +220,10 @@ async function persist(): Promise<void> {
   console.log("Reading saved to writing_limit_probe_readings.");
 }
 
-// Best-effort. A probe that fails loudly on a DB hiccup becomes a red workflow
-// people mute, and a muted probe records nothing at all.
-try {
-  await persist();
-} catch (err) {
-  console.warn(`[probe] could not save reading; the printout above still stands: ${(err as Error)?.message}`);
-}
+// Deliberately not wrapped in a try/catch. Most of the ways this can fail are
+// permanent: the key expires, its role loses a permission, a column is renamed.
+// Every one of those fails again tomorrow and every day after, so a run that
+// swallowed them would report success forever while the table stayed empty.
+// A transient database problem will turn one run red, and the next run fixes
+// it by succeeding.
+await persist();
