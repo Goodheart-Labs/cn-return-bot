@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BUTTON, INPUT, QUIET_LINK } from "../../../everything-shared/ui";
 import { Modal } from "./Modal";
-import { EMAIL_OTP_LENGTH, signInWithEmailCode, verifyEmailCode, signInWithTwitter, type EmailFlow } from "../../../everything-shared/auth";
+import { EMAIL_OTP_LENGTH, getSignedInBefore, signInWithEmailCode, verifyEmailCode, signInWithTwitter, type EmailFlow } from "../../../everything-shared/auth";
 import { track } from "../../../everything-shared/analytics";
 
 const X_SIGNIN_ENABLED = true;
@@ -20,6 +20,12 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
   const [flow, setFlow] = useState<EmailFlow>("signin");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Explains why the form is here at all when anonymous participation was
+  // refused because this browser has held a real account before.
+  const [signedInBefore, setSignedInBefore] = useState(false);
+  useEffect(() => {
+    if (open) void getSignedInBefore().then(setSignedInBefore);
+  }, [open]);
 
   if (!open) return null;
 
@@ -56,7 +62,11 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
 
   return (
     <Modal title="Sign in" onClose={onClose}>
-        <p className="text-sm text-gray-500 dark:text-gray-400">Signing in keeps your votes and notes together across devices. Reading and voting work without it.</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          {signedInBefore
+            ? "You have signed in on this browser before, so voting and writing need a sign-in. Reading works without it."
+            : "Signing in keeps your votes and notes together across devices. Reading and voting work without it."}
+        </p>
 
         {stage === "email" ? (
           <form onSubmit={sendCode} className="space-y-2">

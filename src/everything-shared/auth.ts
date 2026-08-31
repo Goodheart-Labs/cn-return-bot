@@ -25,6 +25,7 @@ export function useSession(): { session: Session | null; ready: boolean; event: 
     supabase.auth.getSession().then(({ data, error }) => {
       setSession(data.session);
       setReady(true);
+      noteRealSession(data.session);
       logSession("mount", data.session);
       if (error) console.debug(`[common-notes] getSession error: ${error.message}`);
     });
@@ -37,6 +38,7 @@ export function useSession(): { session: Session | null; ready: boolean; event: 
     const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
       setSession(s);
       setEvent(event);
+      noteRealSession(s);
       logSession(`event ${event}`, s);
     });
 
@@ -60,16 +62,67 @@ export function useSession(): { session: Session | null; ready: boolean; event: 
   return { session, ready, event };
 }
 
+/* Whether a real account has ever signed in on this browser. Once it has,
+ * signing out and voting again must not mint a fresh anonymous account: that
+ * loop would let one person vote on the same note as often as they can click
+ * sign-out. A browser that has signed in before therefore has to sign in to
+ * act. Clearing site data resets the flag, which we accept: that same wipe
+ * defeats every client-side identity anyway. The extension keeps the flag in
+ * extension storage (shared by its popup, overlays, and background); the
+ * website keeps it in localStorage. */
+const SIGNED_IN_BEFORE_KEY = "cn:signedInBefore";
+
+function extensionLocalStorage(): { get: (key: string) => Promise<Record<string, unknown>>; set: (items: Record<string, unknown>) => Promise<void> } | null {
+  const g = globalThis as { browser?: any; chrome?: any };
+  return g.browser?.storage?.local ?? g.chrome?.storage?.local ?? null;
+}
+
+export async function getSignedInBefore(): Promise<boolean> {
+  const ext = extensionLocalStorage();
+  if (ext) return !!(await ext.get(SIGNED_IN_BEFORE_KEY))[SIGNED_IN_BEFORE_KEY];
+  try {
+    return localStorage.getItem(SIGNED_IN_BEFORE_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
+
+function rememberSignedInBefore(): void {
+  const ext = extensionLocalStorage();
+  if (ext) {
+    void ext.set({ [SIGNED_IN_BEFORE_KEY]: true });
+    return;
+  }
+  try {
+    localStorage.setItem(SIGNED_IN_BEFORE_KEY, "true");
+  } catch {
+    // A browser that blocks storage cannot remember; the loop stays possible
+    // there, which is no worse than clearing site data.
+  }
+}
+
+/** Stamps the browser as having held a real account whenever one is seen.
+ *  useSession calls this on every session it observes, which covers code
+ *  verifies, OAuth returns, and restored sessions on later visits. */
+function noteRealSession(session: Session | null): void {
+  if (session && !session.user.is_anonymous) rememberSignedInBefore();
+}
+
 /** Returns the signed-in user, creating an invisible anonymous account when
  *  there is none. Voting and writing notes call this instead of demanding a
  *  sign-in, so a reader can act right away. The anonymous account lives in
  *  this browser's stored session like any other, and a later email or X
  *  sign-in upgrades it in place, keeping the votes and notes. Returns null
- *  when the backend refuses (anonymous sign-ins disabled, rate limit); the
- *  caller then falls back to the sign-in form. */
+ *  when no account may be minted: the browser has signed in before (see
+ *  SIGNED_IN_BEFORE_KEY) or the backend refuses; the caller then falls back
+ *  to the sign-in form. */
 export async function ensureUser(): Promise<User | null> {
   const { data } = await supabase.auth.getSession();
   if (data.session) return data.session.user;
+  if (await getSignedInBefore()) {
+    console.info("[common-notes] not minting an anonymous account: this browser has signed in before");
+    return null;
+  }
   const { data: anon, error } = await supabase.auth.signInAnonymously();
   if (error) {
     console.warn(`[common-notes] anonymous sign-in failed: ${error.message}`);

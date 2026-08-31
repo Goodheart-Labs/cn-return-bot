@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { browser } from "#imports";
 import { BUTTON, INPUT, QUIET_LINK, SECONDARY_BUTTON } from "../../everything-shared/ui";
 import { IconButton } from "../../everything-web/src/components/IconButton";
-import { EMAIL_OTP_LENGTH, signInWithEmailCode, verifyEmailCode, type EmailFlow } from "../../everything-shared/auth";
+import { EMAIL_OTP_LENGTH, getSignedInBefore, signInWithEmailCode, verifyEmailCode, type EmailFlow } from "../../everything-shared/auth";
 import { track } from "../../everything-shared/analytics";
 
 // The login form closes when the user switches away to their mail client to
@@ -49,8 +49,12 @@ export function LoginPanel({ surface = "settings", onDismiss }: { surface?: "set
   const [flow, setFlow] = useState<EmailFlow>("signin");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Explains why the form is here at all when anonymous participation was
+  // refused because this browser has held a real account before.
+  const [signedInBefore, setSignedInBefore] = useState(false);
 
   useEffect(() => {
+    void getSignedInBefore().then(setSignedInBefore);
     getPendingEmail().then((pending) => {
       if (pending) {
         setEmail(pending.email);
@@ -106,6 +110,11 @@ export function LoginPanel({ surface = "settings", onDismiss }: { surface?: "set
         <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Sign in to keep your votes and notes across devices</p>
         {onDismiss && <IconButton label="Not now" onClick={onDismiss}>✕</IconButton>}
       </div>
+      {signedInBefore && (
+        <p className="text-xs text-gray-500 dark:text-gray-400">
+          You have signed in on this browser before, so voting and writing need a sign-in.
+        </p>
+      )}
       {stage === "email" ? (
         <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); sendCode(); }}>
           <input
