@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { browser } from "#imports";
 import { BUTTON, INPUT, QUIET_LINK, SECONDARY_BUTTON } from "../../everything-shared/ui";
 import { IconButton } from "../../everything-web/src/components/IconButton";
-import { EMAIL_OTP_LENGTH, signInWithEmailCode, verifyEmailCode } from "../../everything-shared/auth";
+import { EMAIL_OTP_LENGTH, getSignedInBefore, signInWithEmailCode, verifyEmailCode, type EmailFlow } from "../../everything-shared/auth";
 import { track } from "../../everything-shared/analytics";
 
 // The login form closes when the user switches away to their mail client to
@@ -16,16 +16,16 @@ import { track } from "../../everything-shared/analytics";
 const PENDING_EMAIL_KEY = "cn-login-pending-email";
 const PENDING_EMAIL_MAX_AGE_MS = 60 * 60 * 1000;
 
-type PendingEmail = { email: string; at: number };
+type PendingEmail = { email: string; at: number; flow?: EmailFlow };
 
-async function getPendingEmail(): Promise<string | null> {
+async function getPendingEmail(): Promise<{ email: string; flow: EmailFlow } | null> {
   const stored = (await browser.storage.local.get(PENDING_EMAIL_KEY))[PENDING_EMAIL_KEY] as PendingEmail | undefined;
   if (!stored?.email || Date.now() - stored.at > PENDING_EMAIL_MAX_AGE_MS) return null;
-  return stored.email;
+  return { email: stored.email, flow: stored.flow ?? "signin" };
 }
 
-const setPendingEmail = (email: string) =>
-  browser.storage.local.set({ [PENDING_EMAIL_KEY]: { email, at: Date.now() } satisfies PendingEmail });
+const setPendingEmail = (email: string, flow: EmailFlow) =>
+  browser.storage.local.set({ [PENDING_EMAIL_KEY]: { email, at: Date.now(), flow } satisfies PendingEmail });
 
 const clearPendingEmail = () => browser.storage.local.remove(PENDING_EMAIL_KEY);
 
@@ -44,13 +44,21 @@ export function LoginPanel({ surface = "settings", onDismiss }: { surface?: "set
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [stage, setStage] = useState<"email" | "code">("email");
+  // Whether the code signs into an account or attaches the email to the
+  // current anonymous one. Decided when the code is sent, needed to verify it.
+  const [flow, setFlow] = useState<EmailFlow>("signin");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Explains why the form is here at all when anonymous participation was
+  // refused because this browser has held a real account before.
+  const [signedInBefore, setSignedInBefore] = useState(false);
 
   useEffect(() => {
+    void getSignedInBefore().then(setSignedInBefore);
     getPendingEmail().then((pending) => {
       if (pending) {
-        setEmail(pending);
+        setEmail(pending.email);
+        setFlow(pending.flow);
         setStage("code");
       }
     });
@@ -66,17 +74,22 @@ export function LoginPanel({ surface = "settings", onDismiss }: { surface?: "set
     setBusy(true);
     setError(null);
     track("sign_in_started", { method: "email", surface });
-    const { error } = await signInWithEmailCode(email.trim());
+    const { error, flow: sentFlow } = await signInWithEmailCode(email.trim());
     setBusy(false);
     if (error) return setError(error.message);
-    await setPendingEmail(email.trim());
+    // "done" means the email attached without a code (confirmations off on
+    // this backend). The session already updated, so there is nothing left
+    // for this form to do.
+    if (sentFlow === "done") return;
+    setFlow(sentFlow);
+    await setPendingEmail(email.trim(), sentFlow);
     setStage("code");
   };
 
   const verify = async () => {
     setBusy(true);
     setError(null);
-    const { error } = await verifyEmailCode(email.trim(), code.trim());
+    const { error } = await verifyEmailCode(email.trim(), code.trim(), flow);
     setBusy(false);
     if (error) return setError(error.message);
     await clearPendingEmail();
@@ -94,13 +107,20 @@ export function LoginPanel({ surface = "settings", onDismiss }: { surface?: "set
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between gap-2">
-        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Sign in to vote or write notes</p>
+        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Sign in to keep your votes and notes across devices</p>
         {onDismiss && <IconButton label="Not now" onClick={onDismiss}>✕</IconButton>}
       </div>
+      {signedInBefore && (
+        <p className="text-xs text-gray-500 dark:text-gray-400">
+          You have signed in on this browser before, so voting and writing need a sign-in.
+        </p>
+      )}
       {stage === "email" ? (
         <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); sendCode(); }}>
           <input
             type="email"
+            name="email"
+            autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
@@ -116,6 +136,8 @@ export function LoginPanel({ surface = "settings", onDismiss }: { surface?: "set
           <div className="flex gap-2">
             <input
               inputMode="numeric"
+              name="one-time-code"
+              autoComplete="one-time-code"
               autoFocus
               value={code}
               onChange={(e) => setCode(e.target.value)}

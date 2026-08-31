@@ -4,6 +4,7 @@ import { VoteRatings } from "../../dashboard-shared/Ratings";
 import { NoteBox } from "../../everything-web/src/components/NoteCard";
 import { NoteMenu } from "../../everything-web/src/components/NoteMenu";
 import { VoteDonation } from "../../everything-web/src/components/VoteDonation";
+import { useVotingNudge, VotingNudge } from "../../everything-web/src/components/VotingNudge";
 import { takeMintedDonation, type MintedDonation } from "../../everything-web/src/lib/donations";
 import { noteStatus, noteTallyVisible } from "../../everything-shared/noteScore";
 import type { NoteRow } from "../../everything-shared/types";
@@ -43,17 +44,24 @@ export function NoteWithActions({ note, myVote, onVote, session, shareUrl, onNee
   // myVote undefined, and when the notice closes itself.
   const [cast, setCast] = useState<MintedDonation | null>(() => takeMintedDonation(note.id));
   const status = noteStatus(note);
+  const nudge = useVotingNudge();
   return (
     <div>
       <NoteBox note={note} status={status} sourcesOpen={sourcesOpen}>
-        <VoteRatings
-          helpful={note.helpful_count}
-          somewhatHelpful={note.somewhat_helpful_count}
-          notHelpful={note.not_helpful_count}
-          myVote={myVote}
-          showCounts={noteTallyVisible(status, myVote, note.created_at)}
-          onVote={(vote) => void onVote(note, vote).then(setCast)}
-        />
+        <span className="relative inline-flex">
+          {nudge.show && <VotingNudge onDismiss={nudge.dismiss} />}
+          <VoteRatings
+            helpful={note.helpful_count}
+            somewhatHelpful={note.somewhat_helpful_count}
+            notHelpful={note.not_helpful_count}
+            myVote={myVote}
+            showCounts={noteTallyVisible(status, myVote, note.created_at)}
+            onVote={(vote) => {
+              if (nudge.show) nudge.dismiss();
+              void onVote(note, vote).then(setCast);
+            }}
+          />
+        </span>
       </NoteBox>
       {cast && myVote !== undefined && session && (
         <VoteDonation

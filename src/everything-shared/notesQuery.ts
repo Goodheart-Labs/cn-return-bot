@@ -193,15 +193,30 @@ export async function fetchItemForUrl(pageUrl: string): Promise<PageItem | null>
   return data?.[0] ? toPageItem(data[0]) : null;
 }
 
+/** The extension's coverage lists: every ingested page, and the subset the
+ *  pipeline has read in full. The second list is what lets a listing badge say
+ *  "we checked this and found nothing" for a page that has no notes. */
+export interface CoveredPages {
+  all: string[];
+  wholePageChecked: string[];
+}
+
 /** Returns the URL of every ingested page. This is the extension's coverage
  *  list. The extension caches it locally so a content script can decide on the
  *  user's own device whether the current page is one of ours. Browsing a page
  *  that has no notes must never reach our backend. Returns null when the query
  *  failed, so a caller does not mistake an outage for "we cover nothing". */
-export async function fetchCoveredPageUrls(): Promise<string[] | null> {
-  const { data, error } = await supabase.from("everything_items").select("url");
+export async function fetchCoveredPageUrls(): Promise<CoveredPages | null> {
+  const s = await detectSchema();
+  const { data, error } = await supabase
+    .from("everything_items")
+    .select(`url, status${s.hasCheckedScope ? ", checked_scope" : ""}`);
   if (error) return null;
-  return (data ?? []).map((r: any) => r.url as string).filter((url) => !url.startsWith("local:"));
+  const rows = (data ?? []).filter((r: any) => !(r.url as string).startsWith("local:"));
+  return {
+    all: rows.map((r: any) => r.url as string),
+    wholePageChecked: rows.filter((r: any) => isWholePageChecked(r)).map((r: any) => r.url as string),
+  };
 }
 
 /** Returns the URL of every feed the pipeline actually follows. The extension
@@ -239,20 +254,6 @@ export async function fetchNotedPageCounts(): Promise<Record<string, PageNoteSta
     else page.notHelpful += 1;
   }
   return counts;
-}
-
-/** Returns the URL of every ingested page that has visible notes, or null when
- *  the query failed. */
-export async function fetchNotedPageUrls(): Promise<string[] | null> {
-  const counts = await fetchNotedPageCounts();
-  return counts ? Object.keys(counts) : null;
-}
-
-/** Picks a random ingested page that has visible notes. The popup's "Open random
- *  page" button goes there. */
-export async function fetchRandomNotedPageUrl(): Promise<string | null> {
-  const urls = (await fetchNotedPageUrls()) ?? [];
-  return urls[Math.floor(Math.random() * urls.length)] ?? null;
 }
 
 /** Fetches every visible note on one item, joined and normalized. Returns

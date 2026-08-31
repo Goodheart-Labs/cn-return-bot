@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { browser } from "#imports";
-import { fetchItemForUrl, fetchNotesForItem, fetchRandomNotedPageUrl, isWholePageChecked, type PageItem } from "../../../everything-shared/notesQuery";
+import { fetchItemForUrl, fetchNotesForItem, isWholePageChecked, type PageItem } from "../../../everything-shared/notesQuery";
 import { extractYoutubeVideoId, normalizePageUrl } from "../../../everything-shared/pageUrls";
 import { noteStatus } from "../../../everything-shared/noteScore";
 import type { NoteRow } from "../../../everything-shared/types";
@@ -217,15 +217,13 @@ function FollowButton({ target }: { target: FollowTarget }) {
  *  that the page is unchecked. On a page with notes the sentence itself is
  *  the link that jumps to them, first enabling the site if the sync has not
  *  registered it yet. Blue buttons are kept for actions only: requesting a
- *  check and following an author. Anywhere else the popup opens a random page
- *  that has notes. */
+ *  check and following an author. */
 function PrimaryAction({ state, counts, jumped, access }: {
   state: PageState;
   counts: NoteCounts | null;
   jumped: boolean;
   access: PageAccess | null;
 }) {
-  const [busy, setBusy] = useState(false);
   const authorFeed = useAuthorFeed(state);
 
   if (state.kind === "loading") return <p className="text-sm text-gray-500">Loading notes…</p>;
@@ -237,18 +235,15 @@ function PrimaryAction({ state, counts, jumped, access }: {
     (state.kind === "no_item" || state.kind === "item") &&
     !NON_CONTENT_HOSTNAME.test(new URL(state.origin).hostname);
 
-  const openRandomPage = async () => {
-    setBusy(true);
-    const url = await fetchRandomNotedPageUrl();
-    if (url) await browser.tabs.create({ url });
-    window.close();
-  };
-
   if (!isContentPage) {
     return (
-      <button onClick={openRandomPage} disabled={busy} className={`${BUTTON} w-full`}>
-        Open random page
-      </button>
+      <p className="text-sm text-gray-600">
+        Open a post or video on a covered site to see Common Notes. You can also see notes on{" "}
+        <a href="https://commonnotes.net" target="_blank" rel="noreferrer" className={LINK}>
+          commonnotes.net
+        </a>
+        .
+      </p>
     );
   }
   const visibleNoteCount = counts?.visible ?? 0;
@@ -284,7 +279,6 @@ function PrimaryAction({ state, counts, jumped, access }: {
     (authorFeed.kind === "followed" && authorFeed.feed.feedType === "substack");
   const postShaped = requestMakesSenseForUrl(pageUrl) && (!substackFeed || isSubstackPostPage(pageUrl));
   const requestable = postShaped && (state.kind === "no_item" || !isWholePageChecked(state.item));
-  const fullyCheckedNoNotes = state.kind === "item" && !requestable && visibleNoteCount === 0;
 
   // The same sentence the in-page card shows, from the same function.
   const noun = state.kind === "item" && extractYoutubeVideoId(state.item.url) ? "video" : "page";
@@ -321,11 +315,6 @@ function PrimaryAction({ state, counts, jumped, access }: {
       {/* Following an author must not depend on catching the transient in-page
           card, so the popup offers it on covered pages too. */}
       {authorFeed.kind === "followable" && <FollowButton target={authorFeed.target} />}
-      {fullyCheckedNoNotes && (
-        <button onClick={openRandomPage} disabled={busy} className={`${BUTTON} w-full`}>
-          Open random page
-        </button>
-      )}
     </div>
   );
 }

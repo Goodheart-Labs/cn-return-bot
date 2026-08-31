@@ -9,22 +9,13 @@ import { indexContainer, findQuoteRange } from "./anchor";
 import { fetchClaimGroups, type ClaimGroup } from "./claimGroups";
 import { mountCoverageBadges } from "./coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "./coveredPages";
-import { unlessFollowed } from "./followedFeeds";
-import {
-  isSubstackPostPage,
-  readSubstackPublicationFromPage,
-  resolveProfileFollowTarget,
-  substackFollowTarget,
-  substackProfileHandle,
-  substackTargetFromPublication,
-  type FollowTarget,
-} from "./followTarget";
+import { isSubstackPostPage } from "./followTarget";
 import { jumpToNextNote } from "./jumpBus";
 import { recordPageVisit } from "./linkVisits";
-import { mountFollowOverlay, mountStatusOverlay } from "./mountStatusOverlay";
+import { mountStatusOverlay } from "./mountStatusOverlay";
 import { mountWriteAnywhere } from "./mountWriteAnywhere";
 import { listenForRequestInfo } from "./requestInfo";
-import { getSettings, onNoteFiltersChanged } from "./settings";
+import { getSettings, onNoteFiltersChanged, onSettingsChanged, type NoteStyle } from "./settings";
 import { isPageDark, observePageTheme } from "./pageTheme";
 import { InlineNotesApp, type AnchoredGroup } from "../components/InlineNotes";
 import { track } from "../../everything-shared/analytics";
@@ -47,10 +38,51 @@ function findContainer(): Element {
   );
 }
 
-/** Anchors every claim group to a range of text inside the container. Each claim
+/** The stable part of a claim image URL: the original file name. The pipeline
+ *  stores Substack CDN fetch URLs, which wrap the original image URL with size
+ *  and quality parameters that differ between page renderings; the uploaded
+ *  file's name is the piece both sides share. */
+function claimImageFilename(cdnUrl: string): string | null {
+  let decoded = cdnUrl;
+  try {
+    decoded = decodeURIComponent(cdnUrl);
+  } catch {
+    // A malformed escape leaves the raw URL, which still ends in the name.
+  }
+  return decoded.split("/").pop()?.split("?")[0] || null;
+}
+
+/** A range around the image a claim is grounded in, or null when the page does
+ *  not show that image. This is how an image-only claim, whose quote columns
+ *  are all null, still gets a marker: it hangs off the picture instead of a
+ *  passage. */
+function findClaimImageRange(container: Element, imageUrls: string[]): Range | null {
+  for (const url of imageUrls) {
+    const name = claimImageFilename(url);
+    if (!name) continue;
+    for (const img of container.querySelectorAll("img")) {
+      let src = img.currentSrc || img.src || "";
+      try {
+        src = decodeURIComponent(src);
+      } catch {
+        // Compared raw instead.
+      }
+      if (src.includes(name)) {
+        const range = document.createRange();
+        range.selectNode(img);
+        return range;
+      }
+    }
+  }
+  return null;
+}
+
+/** Anchors every claim group to a range inside the container. Each claim
  *  offers three quotes and we try them in order of reliability. First the updated
  *  quote, which is how the passage reads on the page today. Then the quote that was
- *  captured when the claim was extracted. Then the wider paragraph around it. */
+ *  captured when the claim was extracted. Then the wider paragraph around it.
+ *  A claim that has no anchorable text but carries images, such as a note on a
+ *  chart, anchors to its image. */
 function anchorGroups(container: Element, groups: ClaimGroup[]): AnchoredGroup[] {
   const index = indexContainer(container);
   const anchored: AnchoredGroup[] = [];
@@ -62,6 +94,7 @@ function anchorGroups(container: Element, groups: ClaimGroup[]): AnchoredGroup[]
       if (candidate) range = findQuoteRange(index, candidate);
       if (range) break;
     }
+    if (!range && claim.image_urls.length > 0) range = findClaimImageRange(container, claim.image_urls);
     if (range) anchored.push({ claimId, primary: notes[0]!, alternatives: notes.slice(1), nnn, range });
   }
   console.info(`[common-notes] anchored ${anchored.length}/${groups.length} claims on this page`);
@@ -93,64 +126,6 @@ function applyHighlights(ranges: Range[]) {
   else highlights.set(HIGHLIGHT_NAME, new (globalThis as any).Highlight(...ranges));
 }
 
-/** The follow target when this page is an author's own page rather than a
- *  post: a publication homepage or archive on a *.substack.com subdomain or a
- *  custom domain, or a Substack profile page. Null when the page is none of
- *  those. */
-async function authorPageFollowTarget(pageUrl: string): Promise<FollowTarget | null> {
-  const subdomainTarget = substackFollowTarget(pageUrl);
-  if (subdomainTarget) return subdomainTarget;
-  const handle = substackProfileHandle(pageUrl);
-  if (handle) return resolveProfileFollowTarget(handle);
-  // A custom-domain publication names its *.substack.com form inside the
-  // page. Any page that is not Substack reads as nothing here.
-  return substackTargetFromPublication(readSubstackPublicationFromPage());
-}
-
-/** The write-anywhere shell plus the transient status card. A post page gets
- *  the full card with the request button, but only when request overlays are
- *  turned on and the author is not already followed; with the request card
- *  suppressed an unfollowed author still gets the follow-only card. An
- *  author's own page — a publication homepage or a profile — gets just the
- *  follow button when we do not follow the author yet. */
-async function mountUncovered(
-  ctx: ContentScriptContext,
-  pageUrl: string,
-  onCoverageChanged: () => void,
-): Promise<() => void> {
-  const teardownWrite = await mountWriteAnywhere(ctx, pageUrl, onCoverageChanged);
-  let teardownStatus: (() => void) | null = null;
-  if (isSubstackPostPage(pageUrl)) {
-    // unlessFollowed collapses "no feed" and "followed feed" both to null, so
-    // the author's feed is resolved once to tell the two apart. A post on a
-    // custom domain derives its feed from the page itself.
-    const authorFeed = substackFollowTarget(pageUrl) ?? substackTargetFromPublication(readSubstackPublicationFromPage());
-    const unfollowedAuthor = await unlessFollowed(authorFeed);
-    const authorFollowed = authorFeed !== null && unfollowedAuthor === null;
-    if ((await getSettings()).showRequestOverlay && !authorFollowed) {
-      teardownStatus = (
-        await mountStatusOverlay(ctx, {
-          pageUrl,
-          noun: "post",
-          counts: null,
-          wholePageChecked: false,
-          followTarget: unfollowedAuthor,
-          requestWithPageText: true,
-        })
-      ).teardown;
-    } else if (unfollowedAuthor) {
-      teardownStatus = await mountFollowOverlay(ctx, unfollowedAuthor);
-    }
-  } else {
-    const target = await unlessFollowed(await authorPageFollowTarget(pageUrl));
-    if (target) teardownStatus = await mountFollowOverlay(ctx, target);
-  }
-  return () => {
-    teardownStatus?.();
-    teardownWrite();
-  };
-}
-
 /** Resolves `href` to an ingested item, anchors that item's claims and mounts the
  *  overlay. When the page has no ingested item we mount the write-anywhere shell
  *  instead. Either way the returned function tears down whatever was mounted. */
@@ -166,7 +141,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   if (covered && !pageIsCovered(pageUrl, covered)) {
     console.info(`[common-notes] ${pageUrl} → not in the covered list (no backend lookup)`);
     recordPageVisit(pageUrl, null);
-    return mountUncovered(ctx, pageUrl, onCoverageChanged);
+    return mountWriteAnywhere(ctx, pageUrl, onCoverageChanged);
   }
   // A failed lookup mounts nothing. Treating an outage as an unchecked page
   // would tell the reader we never checked a page we did, and offer to check
@@ -181,7 +156,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   console.info(`[common-notes] ${pageUrl} → ${item ? `item "${item.title ?? item.id}"` : "no ingested item"}`);
   if (!item) {
     recordPageVisit(pageUrl, null);
-    return mountUncovered(ctx, pageUrl, onCoverageChanged);
+    return mountWriteAnywhere(ctx, pageUrl, onCoverageChanged);
   }
   recordPageVisit(pageUrl, item);
   // We mount even when the item has no notes yet. Writing a note from a selection
@@ -205,19 +180,20 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     });
   }
 
+  // The note style is read once here and kept fresh by the settings listener
+  // below, so flipping it in the settings applies without a reload.
+  let noteStyle: NoteStyle = (await getSettings()).noteStyle;
+
   // The transient status card tells the reader how this page stands: checked
   // in full, carrying notes, or holding only a reader's note with the whole
   // page still uncheckable. That last state matters most, because nothing
   // else on the page says the check is still worth asking for.
   const statusCard = (await getSettings()).showNoteCountOverlay
     ? await mountStatusOverlay(ctx, {
-        pageUrl,
         noun: isSubstackPostPage(pageUrl) ? "post" : "page",
         counts,
         wholePageChecked: isWholePageChecked(item),
         onOpenNotes: jumpToNextNote,
-        followTarget: null,
-        requestWithPageText: true,
       })
     : null;
 
@@ -280,6 +256,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
         onPosted={refresh}
         container={container}
         inlineContainer={inlineUi.uiContainer}
+        noteStyle={noteStyle}
       />,
     );
   };
@@ -297,6 +274,14 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   // When the user flips a tickbox in the popup, we re-fetch the notes through the
   // new filters right away.
   const stopFilters = onNoteFiltersChanged(() => void refresh());
+  // A note-style flip in the settings re-renders the markers in place.
+  const stopSettings = onSettingsChanged(() => {
+    void getSettings().then((settings) => {
+      if (settings.noteStyle === noteStyle) return;
+      noteStyle = settings.noteStyle;
+      render();
+    });
+  });
 
   const ui = await createShadowRootUi(ctx, {
     name: "common-notes-ui",
@@ -346,6 +331,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
 
   return () => {
     stopFilters();
+    stopSettings();
     stopTheme();
     observer.disconnect();
     clearTimeout(timer);

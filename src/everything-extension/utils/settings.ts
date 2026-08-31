@@ -37,7 +37,9 @@ export async function addRequestedFollow(feedUrl: string): Promise<void> {
 const NOTE_FILTERS_KEY = "cn:noteFilters";
 
 export type NoteFilters = { showNeedsRatings: boolean; showUnhelpful: boolean };
-const DEFAULT_NOTE_FILTERS: NoteFilters = { showNeedsRatings: true, showUnhelpful: false };
+// Both filters default on since 2026-08-31 (Jim's call): a fresh install shows
+// unhelpful notes too, and hiding them is the opt-in.
+const DEFAULT_NOTE_FILTERS: NoteFilters = { showNeedsRatings: true, showUnhelpful: true };
 
 export async function getNoteFilters(): Promise<NoteFilters> {
   const stored = (await browser.storage.sync.get(NOTE_FILTERS_KEY))[NOTE_FILTERS_KEY] as Partial<NoteFilters> | undefined;
@@ -60,6 +62,11 @@ function onSyncKeyChanged(key: string, callback: () => void): () => void {
 
 export const onNoteFiltersChanged = (callback: () => void) => onSyncKeyChanged(NOTE_FILTERS_KEY, callback);
 
+/** Fires when the general settings object changes, on every context. The note
+ *  mounts use it to flip between the margin and classic note styles without a
+ *  reload. */
+export const onSettingsChanged = (callback: () => void) => onSyncKeyChanged(SETTINGS_KEY, callback);
+
 // The general extension settings, edited on the settings page. One sync-storage
 // object; reads merge over the defaults, so a key added in a later version
 // gets its default for existing users without a migration.
@@ -68,26 +75,30 @@ const SETTINGS_KEY = "cn:settings";
 /** The site kinds whose page visits can be recorded (see utils/linkVisits.ts). */
 export type VisitSiteKind = "substack" | "youtube" | "lesswrong";
 
+/** How notes render on article pages. "margin" is the default: a small marker
+ *  in the right margin, and the note card opens beside the text. "classic" is
+ *  the old style: a badge at the end of the passage, and the card opens as a
+ *  popover over the text. Narrow windows fall back to classic on their own. */
+export type NoteStyle = "margin" | "classic";
+
 export type ExtensionSettings = {
   /** Whether opening a covered page on this kind of site writes an anonymous
-   *  visit row. The settings onboarding asks about exactly these. */
+   *  visit row. The welcome page asks about exactly these. */
   saveVisits: Record<VisitSiteKind, boolean>;
-  /** The "we haven't checked this yet" card with its request button. */
-  showRequestOverlay: boolean;
   /** The "N Common Notes on this page" card on checked pages. */
   showNoteCountOverlay: boolean;
   /** The note-count badges on listing thumbnails. */
   showThumbnailBadges: boolean;
-  /** The follow-an-author cards and the follow button on unchecked pages. */
-  showFollowOverlay: boolean;
+  noteStyle: NoteStyle;
 };
 
 const DEFAULT_SETTINGS: ExtensionSettings = {
   saveVisits: { substack: true, youtube: true, lesswrong: true },
-  showRequestOverlay: false,
-  showNoteCountOverlay: true,
+  // Off by default since 2026-08-31 (Jim's call): the margin markers already
+  // say there are notes, so the card is opt-in.
+  showNoteCountOverlay: false,
   showThumbnailBadges: true,
-  showFollowOverlay: true,
+  noteStyle: "margin",
 };
 
 export type SettingsPatch = Partial<Omit<ExtensionSettings, "saveVisits">> & {
@@ -114,17 +125,28 @@ export async function updateSettings(patch: SettingsPatch): Promise<void> {
   });
 }
 
-// Whether the settings onboarding has run: the tab the background opens once,
-// on install or update, so the user has seen the settings (the visit-recording
-// checkboxes above all else) before any of them takes effect. Deliberately its
-// own key: changing a setting must never look like finishing the onboarding,
-// and vice versa.
+// Whether the settings onboarding has run. Before the welcome page existed
+// this was the consent gate: the background opened the settings page once so
+// the user had seen the visit-recording checkboxes. It still marks "this
+// install saw the tracking choice under the old flow", which is what lets the
+// welcome backfill below skip existing users.
 const SETTINGS_ONBOARDING_KEY = "cn:settingsOnboardingDone";
 
 export async function getSettingsOnboardingDone(): Promise<boolean> {
   return ((await browser.storage.sync.get(SETTINGS_ONBOARDING_KEY))[SETTINGS_ONBOARDING_KEY] as boolean | undefined) ?? false;
 }
 
-export async function markSettingsOnboardingDone(): Promise<void> {
-  await browser.storage.sync.set({ [SETTINGS_ONBOARDING_KEY]: true });
+// Whether the user has been through the welcome page, which is where the
+// visit-recording question is asked. Visit recording stays inert until this
+// is set (utils/linkVisits.ts), so nothing is recorded before the user made
+// the choice. Seeing the settings page counts too, because the per-site
+// checkboxes are the same choice in more detail.
+const WELCOME_SEEN_KEY = "cn:welcomeSeen";
+
+export async function getWelcomeSeen(): Promise<boolean> {
+  return ((await browser.storage.sync.get(WELCOME_SEEN_KEY))[WELCOME_SEEN_KEY] as boolean | undefined) ?? false;
+}
+
+export async function markWelcomeSeen(): Promise<void> {
+  await browser.storage.sync.set({ [WELCOME_SEEN_KEY]: true });
 }

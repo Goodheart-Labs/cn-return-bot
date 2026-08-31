@@ -3,16 +3,14 @@ import { createRoot } from "react-dom/client";
 import { defineContentScript, createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
 import { fetchItemForUrl, isWholePageChecked, type PageItem } from "../../everything-shared/notesQuery";
-import { extractYoutubeVideoId, normalizePageUrl } from "../../everything-shared/pageUrls";
+import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
 import { fetchClaimGroups, type ClaimGroup, type NoteCounts } from "../utils/claimGroups";
 import { mountCoverageBadges } from "../utils/coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "../utils/coveredPages";
 import { recordPageVisit } from "../utils/linkVisits";
 import { YoutubeOverlayApp, DEFAULT_CLIP_SECONDS, type TimedGroup } from "../components/YoutubeOverlay";
-import { unlessFollowed } from "../utils/followedFeeds";
 import { jumpToNextNote } from "../utils/jumpBus";
-import { youtubeChannelTarget, type FollowTarget } from "../utils/followTarget";
-import { mountFollowOverlay, mountStatusOverlay } from "../utils/mountStatusOverlay";
+import { mountStatusOverlay } from "../utils/mountStatusOverlay";
 import { isPageDark, observePageTheme } from "../utils/pageTheme";
 import { listenForRequestInfo } from "../utils/requestInfo";
 import { getSettings } from "../utils/settings";
@@ -23,7 +21,6 @@ import { track } from "../../everything-shared/analytics";
 // YouTube's DOM changes often. Every selector we depend on lives here.
 const PLAYER_SELECTOR = "#movie_player";
 const VIDEO_SELECTOR = "video.html5-main-video";
-const CHANNEL_LINK_SELECTOR = "ytd-video-owner-renderer ytd-channel-name a";
 
 const PLAYER_WAIT_MS = 15_000;
 const PLAYER_POLL_MS = 500;
@@ -62,69 +59,20 @@ function timedGroups(claimGroups: ClaimGroup[]): TimedGroup[] {
     .sort((a, b) => a.startSeconds - b.startSeconds);
 }
 
-/** The channel behind the current watch page, read from the owner box under
- *  the video. Null when the box has not rendered yet or changed shape. */
-function channelFollowTarget(): FollowTarget | null {
-  const link = document.querySelector<HTMLAnchorElement>(CHANNEL_LINK_SELECTOR);
-  if (!link?.href) return null;
-  return youtubeChannelTarget(link.href, link.textContent?.trim() ?? "");
-}
-
-/** The transient "have we checked this video" card. On a checked video it is
- *  the note-count card, gated by its setting. On an unchecked video it offers
- *  the request button, but only when request overlays are turned on and the
- *  channel is not already followed; with the request card suppressed an
- *  unfollowed channel still gets the follow-only card. */
-async function mountStatus(ctx: ContentScriptContext, counts: NoteCounts | null, wholePageChecked: boolean): Promise<() => void> {
-  const settings = await getSettings();
-  if (counts !== null) {
-    if (!settings.showNoteCountOverlay) return () => {};
-    return (
-      await mountStatusOverlay(ctx, {
-        pageUrl: normalizePageUrl(location.href),
-        noun: "video",
-        counts,
-        wholePageChecked,
-        onOpenNotes: jumpToNextNote,
-        followTarget: null,
-        requestWithPageText: false,
-      })
-    ).teardown;
-  }
-  // With both cards turned off there is nothing to mount, and we skip the wait
-  // for the owner box entirely.
-  if (!settings.showRequestOverlay && !settings.showFollowOverlay) return () => {};
-  // The owner box renders late, so we wait for it before reading the channel.
-  await waitFor<HTMLAnchorElement>(CHANNEL_LINK_SELECTOR);
-  const channel = channelFollowTarget();
-  const unfollowedChannel = await unlessFollowed(channel);
-  const channelFollowed = channel !== null && unfollowedChannel === null;
-  if (settings.showRequestOverlay && !channelFollowed) {
-    return (
-      await mountStatusOverlay(ctx, {
-        pageUrl: normalizePageUrl(location.href),
-        noun: "video",
-        counts: null,
-        wholePageChecked: false,
-        followTarget: unfollowedChannel,
-        // The pipeline fetches the transcript itself, and this page's text is
-        // player chrome rather than the video's content.
-        requestWithPageText: false,
-      })
-    ).teardown;
-  }
-  if (unfollowedChannel) return mountFollowOverlay(ctx, unfollowedChannel);
-  return () => {};
+/** The transient note-count card on a checked video, gated by its setting. */
+async function mountStatus(ctx: ContentScriptContext, counts: NoteCounts, wholePageChecked: boolean): Promise<() => void> {
+  if (!(await getSettings()).showNoteCountOverlay) return () => {};
+  return (
+    await mountStatusOverlay(ctx, {
+      noun: "video",
+      counts,
+      wholePageChecked,
+      onOpenNotes: jumpToNextNote,
+    })
+  ).teardown;
 }
 
 async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | null> {
-  // A channel page gets the follow-only card, unless we already follow the
-  // channel.
-  const channelTarget = youtubeChannelTarget(location.href, document.title.replace(/ - YouTube$/, ""));
-  if (channelTarget) {
-    const target = await unlessFollowed(channelTarget);
-    return target ? mountFollowOverlay(ctx, target) : null;
-  }
   if (!extractYoutubeVideoId(location.href)) return null;
   // Every watch-page visit counts, checked video or not; the counts tell the
   // team which videos are worth checking. Once per video, because
@@ -139,7 +87,7 @@ async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | n
   const covered = await getCoveredPageUrls();
   if (covered && !pageIsCovered(location.href, covered)) {
     recordWatchVisit(null);
-    return mountStatus(ctx, null, false);
+    return null;
   }
   // A failed lookup or notes fetch mounts nothing. An outage must not read as
   // "we haven't checked this video yet" with a request button under it.
@@ -152,7 +100,7 @@ async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | n
   }
   if (!item) {
     recordWatchVisit(null);
-    return mountStatus(ctx, null, false);
+    return null;
   }
   recordWatchVisit(item);
   // Null on a failed fetch, so the overlay keeps what is on screen.

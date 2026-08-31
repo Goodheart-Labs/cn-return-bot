@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "../../../everything-shared/supabase";
+import { ensureUser } from "../../../everything-shared/auth";
 import { displayName } from "../../../everything-shared/session";
 import { postImprovement } from "../../../everything-shared/postNote";
 import { postNnn } from "../../../everything-shared/noteNotNeeded";
@@ -160,12 +161,15 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
     }
     onDeleted?.();
   };
-  const toggleImprove = () => {
-    if (!session) return onNeedLogin();
+  // A reader with no session gets an invisible anonymous account on the spot;
+  // the composer then renders as soon as the new session reaches this
+  // component. Only when even that fails does the sign-in form appear.
+  const toggleImprove = async () => {
+    if (!session && !(await ensureUser())) return onNeedLogin();
     setExpanded((prev) => (prev === "improve" ? null : "improve"));
   };
-  const toggleNnn = () => {
-    if (!session) return onNeedLogin();
+  const toggleNnn = async () => {
+    if (!session && !(await ensureUser())) return onNeedLogin();
     setExpanded((prev) => (prev === "nnn" ? null : "nnn"));
   };
   // Every card already shows its source links. This toggle only reveals the
