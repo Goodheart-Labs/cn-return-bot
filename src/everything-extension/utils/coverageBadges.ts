@@ -273,10 +273,14 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
     // Links to the page we are already on carry no information, so they get
     // no badge. The canonical URL counts as the current page too: on a
     // custom-domain newsletter the address bar and the stored item URL can
-    // name different hosts for the same post.
+    // name different hosts for the same post. The canonical goes through
+    // normalizePageUrl rather than being read raw, because that applies the
+    // only-while-the-path-matches guard: after a client-side navigation back
+    // to the front page, Substack leaves the previous post's canonical tag in
+    // the head, and trusting it raw suppressed exactly that post's badge.
     const currentKeys = new Set<string>();
-    for (const href of [location.href, document.querySelector('link[rel="canonical"]')?.getAttribute("href")]) {
-      const key = href ? keyFor(href) : null;
+    for (const href of [location.href, normalizePageUrl(location.href, document)]) {
+      const key = keyFor(href);
       if (key) currentKeys.add(key);
     }
     for (const anchor of document.querySelectorAll<HTMLAnchorElement>("a[href]")) placeBadge(anchor, currentKeys);
