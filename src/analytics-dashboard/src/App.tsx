@@ -1,29 +1,35 @@
 import { useEffect, useState } from "react";
 import {
+  fetchCreators,
   fetchDaily,
   fetchFunnel,
   WINDOWS,
+  type CreatorRow,
   type DailyRow,
   type FunnelRow,
   type TimeWindow,
 } from "./lib/queries";
 import { FunnelTable } from "./components/FunnelTable";
 import { DailyChart } from "./components/DailyChart";
+import { CreatorLeaderboard } from "./components/CreatorLeaderboard";
 
 export function App() {
   const [timeWindow, setWindow] = useState<TimeWindow>(WINDOWS[1]!);
   const [funnel, setFunnel] = useState<FunnelRow[] | null>(null);
   const [daily, setDaily] = useState<DailyRow[] | null>(null);
+  const [creators, setCreators] = useState<CreatorRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setFunnel(null);
     setDaily(null);
+    setCreators(null);
     setError(null);
-    Promise.all([fetchFunnel(timeWindow.days), fetchDaily(timeWindow.days)])
-      .then(([f, d]) => {
+    Promise.all([fetchFunnel(timeWindow.days), fetchDaily(timeWindow.days), fetchCreators(timeWindow.days)])
+      .then(([f, d, c]) => {
         setFunnel(f);
         setDaily(d);
+        setCreators(c);
       })
       .catch((e: Error) => setError(e.message));
   }, [timeWindow]);
@@ -64,9 +70,16 @@ export function App() {
       )}
 
       {daily && (
-        <section>
+        <section style={{ marginBottom: 40 }}>
           <h2 style={{ fontSize: 17, marginBottom: 16 }}>Daily activity</h2>
           <DailyChart rows={daily} days={timeWindow.days} />
+        </section>
+      )}
+
+      {creators && (
+        <section>
+          <h2 style={{ fontSize: 17, marginBottom: 16 }}>Creators by visits</h2>
+          <CreatorLeaderboard rows={creators} />
         </section>
       )}
     </div>
