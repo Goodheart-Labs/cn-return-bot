@@ -29,7 +29,7 @@ const record = (name: string) => (...args: unknown[]) => {
 };
 
 export const dbMock = () => ({
-  QUEUE_PRIORITY: { requested: 2, followed: 1, backlog: 0 },
+  QUEUE_PRIORITY: { requested: 2, followed: 1, backlog: 0, retry: -1 },
   fillProjectDisplayName: () => Promise.resolve(),
   fillProjectDisplayNameBySlug: () => Promise.resolve(),
   fetchItemUrlsIn: () => Promise.resolve(dbState.knownItems),
@@ -37,6 +37,8 @@ export const dbMock = () => ({
   fetchFollowedFeeds: () => Promise.resolve([]),
   fetchItemClaims: () => Promise.resolve([]),
   fetchOrphanedProcessingItems: () => Promise.resolve([]),
+  fetchRetryableErrorItems: () => Promise.resolve([]),
+  requeueErroredItem: record("requeueErroredItem"),
   fetchPendingNoteRequests: () => Promise.resolve([]),
   fetchPendingFollowRequests: () => Promise.resolve([]),
   enqueueItems: () => Promise.resolve(0),

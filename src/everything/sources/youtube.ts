@@ -28,7 +28,7 @@ const ytDlpField = (raw: string): string | undefined => (raw && raw !== "NA" ? r
  *  just those fields. We do not ask for the full -J metadata here. For a
  *  YouTube video that JSON is large enough to overflow the output buffer of
  *  the yt-dlp child process. */
-function fetchVideoMeta(url: string): { id: string; title: string; channel?: string; uploadDate?: string } {
+export function fetchVideoMeta(url: string): { id: string; title: string; channel?: string; uploadDate?: string } {
   // We print the title last because a title can span several lines. Everything
   // after the channel therefore belongs to the title, and the earlier fields
   // stay readable.
