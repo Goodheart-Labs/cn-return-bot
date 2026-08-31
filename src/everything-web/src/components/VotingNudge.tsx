@@ -68,7 +68,7 @@ export function VotingNudge({ onDismiss }: { onDismiss: () => void }) {
     <span className="absolute bottom-full right-0 mb-2.5 z-10 block w-72 max-w-[80vw] rounded-xl bg-gray-900 text-gray-50 shadow-xl dark:bg-gray-800 dark:border dark:border-gray-600 p-3 text-left">
       <span className="block text-[13px] font-bold">You don't need to be an expert</span>
       <span className="mt-1 block text-[13px] leading-snug text-gray-300">
-        Rate whether this note is helpful to you. Ratings are what decide if a note shows.
+        Rate whether this note is helpful to you
       </span>
       <button onClick={onDismiss} className="mt-1.5 block ml-auto text-xs font-semibold text-blue-300 hover:underline">
         Got it
