@@ -3,7 +3,7 @@ import { MARKER_DARK, MARKER_GLYPH_SIZE, MARKER_LIGHT, MARKER_SHADOW } from "./m
 import type { ContentScriptContext } from "#imports";
 import { extractYoutubeVideoId, normalizePageUrl } from "../../everything-shared/pageUrls";
 import { GROUP_GLYPH_PATH } from "../components/ClaimNoteStack";
-import { getNotedPageStatusCounts, trimSlash } from "./coveredPages";
+import { getNotedPageStatusCounts, getWholePageCheckedUrls, trimSlash } from "./coveredPages";
 import { isPageDark } from "./pageTheme";
 import { getNoteFilters, getSettings, onNoteFiltersChanged } from "./settings";
 
@@ -66,12 +66,14 @@ function readerPostId(href: string): string | null {
 /** A small circle pinned to a card's upper right. It uses the same surface as
  *  the in-article passage badge: a white circle with a border and the blue
  *  community glyph, plus the note count. A double-digit count widens it into
- *  a slight oval, which is fine. */
-function createBadge(count: number): HTMLElement {
+ *  a slight oval, which is fine.
+ *  A checked page that produced no notes gets the same circle with a check
+ *  mark instead of the count, so "we looked and found nothing" is visible in
+ *  listings too. */
+function createBadge(mark: { count: number } | { checked: true }): HTMLElement {
   const palette = isPageDark() ? MARKER_DARK : MARKER_LIGHT;
   const badge = document.createElement("span");
   badge.className = BADGE_CLASS;
-  badge.title = `${count} Common ${count === 1 ? "Note" : "Notes"} on this page`;
   badge.setAttribute(
     "style",
     "position:absolute;top:6px;right:6px;z-index:10;display:inline-flex;align-items:center;justify-content:center;" +
@@ -81,7 +83,14 @@ function createBadge(count: number): HTMLElement {
       `border:1px solid ${palette.border};`,
   );
   const svg = `<svg viewBox="0 0 24 24" width="${MARKER_GLYPH_SIZE}" height="${MARKER_GLYPH_SIZE}" fill="currentColor" aria-hidden="true" style="flex:none"><path d="${GROUP_GLYPH_PATH}"/></svg>`;
-  badge.innerHTML = `${svg}${count}`;
+  if ("count" in mark) {
+    badge.title = `${mark.count} Common ${mark.count === 1 ? "Note" : "Notes"} on this page`;
+    badge.innerHTML = `${svg}${mark.count}`;
+  } else {
+    badge.title = "We checked this page and found nothing to note";
+    const check = `<svg viewBox="0 0 14 14" width="${MARKER_GLYPH_SIZE}" height="${MARKER_GLYPH_SIZE}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M3 7.5l2.5 2.5 5.5-6"/></svg>`;
+    badge.innerHTML = `${svg}${check}`;
+  }
   return badge;
 }
 
@@ -131,8 +140,21 @@ function surfaceFor(anchor: HTMLAnchorElement): HTMLElement | null {
  *  function, or null when the counts have never been synced. */
 export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<(() => void) | null> {
   if (!(await getSettings()).showThumbnailBadges) return null;
-  const statusCounts = await getNotedPageStatusCounts();
-  if (!statusCounts || Object.keys(statusCounts).length === 0) return null;
+  const statusCounts = (await getNotedPageStatusCounts()) ?? {};
+  // A checked page with no notes at all gets its own badge saying we looked
+  // and found nothing. Pages whose notes exist but are all hidden by the
+  // reader's filters are not in that set: for them silence stays honest.
+  const notedKeys = new Set<string>();
+  for (const url of Object.keys(statusCounts)) {
+    const key = pageKey(url);
+    if (key) notedKeys.add(key);
+  }
+  const checkedNoNotesKeys = new Set<string>();
+  for (const url of (await getWholePageCheckedUrls()) ?? []) {
+    const key = pageKey(url);
+    if (key && !notedKeys.has(key)) checkedNoNotesKeys.add(key);
+  }
+  if (notedKeys.size === 0 && checkedNoNotesKeys.size === 0) return null;
 
   // Unlike the count card, whose numbers report what exists, a badge promises
   // what opening the page will actually show, so it counts only the notes the
@@ -238,10 +260,10 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
     const key = keyFor(anchor.href);
     if (!key || currentKeys.has(key) || badges.has(key)) return;
     const count = countByKey.get(key);
-    if (!count) return;
+    if (!count && !checkedNoNotesKeys.has(key)) return;
     const surface = surfaceFor(anchor);
     if (!surface) return;
-    const badge = createBadge(count);
+    const badge = createBadge(count ? { count } : { checked: true });
     seat(badge, surface);
     badges.set(key, { badge, anchor });
   };

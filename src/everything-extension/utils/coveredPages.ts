@@ -16,6 +16,17 @@ export async function getCoveredPageUrls(): Promise<string[] | null> {
   return Array.isArray(stored) ? (stored as string[]) : null;
 }
 
+// The subset of covered pages the pipeline has read in full. The listing
+// badges use it to mark a checked page that produced no notes, which is
+// information in its own right: the reader knows we looked and found nothing.
+export const CHECKED_PAGE_URLS_KEY = "cn:checkedPageUrls";
+
+/** Null means the list has never been synced. */
+export async function getWholePageCheckedUrls(): Promise<string[] | null> {
+  const stored = (await browser.storage.local.get(CHECKED_PAGE_URLS_KEY))[CHECKED_PAGE_URLS_KEY];
+  return Array.isArray(stored) ? (stored as string[]) : null;
+}
+
 // The per-status note counts per covered page URL. The background's sync
 // writes it next to the coverage list; the listing badges and count cards sum
 // whichever statuses the user's note filters show. Like the coverage list, it

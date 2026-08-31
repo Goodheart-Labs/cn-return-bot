@@ -7,7 +7,7 @@ import { track } from "../../everything-shared/analytics";
 import { initBackgroundAnalytics } from "../utils/analytics";
 import { signInWithXViaWebAuthFlow } from "../utils/oauth";
 import { authorFeedStatusForTab } from "../utils/authorFeed";
-import { COVERED_PAGE_URLS_KEY, NOTED_PAGE_STATUS_COUNTS_KEY } from "../utils/coveredPages";
+import { CHECKED_PAGE_URLS_KEY, COVERED_PAGE_URLS_KEY, NOTED_PAGE_STATUS_COUNTS_KEY } from "../utils/coveredPages";
 import { FOLLOWED_FEED_URLS_KEY } from "../utils/followedFeeds";
 import { GENERIC_SCRIPT_PREFIX, hostnamePattern, registerGenericScripts, genericScriptId } from "../utils/genericScript";
 import { capturePageFromTab } from "../utils/pageCapture";
@@ -68,7 +68,7 @@ async function injectIntoOpenTabs(hostnames: string[]) {
  *  The content scripts use both for their on-device checks. */
 async function syncNotedSites() {
   try {
-    const [urls, counts, followedFeeds] = await Promise.all([
+    const [covered, counts, followedFeeds] = await Promise.all([
       fetchCoveredPageUrls(),
       fetchNotedPageCounts(),
       fetchFollowedFeedUrls(),
@@ -78,8 +78,14 @@ async function syncNotedSites() {
     if (counts) await browser.storage.local.set({ [NOTED_PAGE_STATUS_COUNTS_KEY]: counts });
     // The follow-button surfaces hide the button for feeds on this list.
     if (followedFeeds) await browser.storage.local.set({ [FOLLOWED_FEED_URLS_KEY]: followedFeeds });
-    if (urls) {
-      await browser.storage.local.set({ [COVERED_PAGE_URLS_KEY]: urls });
+    if (covered) {
+      const urls = covered.all;
+      await browser.storage.local.set({
+        [COVERED_PAGE_URLS_KEY]: urls,
+        // The listing badges mark these as "checked, nothing to note" when
+        // the page has no notes.
+        [CHECKED_PAGE_URLS_KEY]: covered.wholePageChecked,
+      });
       const wanted = new Set(genericHostnames(urls));
       const existing = new Set(await registeredGenericHostnames());
       const toAdd = [...wanted].filter((hostname) => !existing.has(hostname));

@@ -193,15 +193,30 @@ export async function fetchItemForUrl(pageUrl: string): Promise<PageItem | null>
   return data?.[0] ? toPageItem(data[0]) : null;
 }
 
+/** The extension's coverage lists: every ingested page, and the subset the
+ *  pipeline has read in full. The second list is what lets a listing badge say
+ *  "we checked this and found nothing" for a page that has no notes. */
+export interface CoveredPages {
+  all: string[];
+  wholePageChecked: string[];
+}
+
 /** Returns the URL of every ingested page. This is the extension's coverage
  *  list. The extension caches it locally so a content script can decide on the
  *  user's own device whether the current page is one of ours. Browsing a page
  *  that has no notes must never reach our backend. Returns null when the query
  *  failed, so a caller does not mistake an outage for "we cover nothing". */
-export async function fetchCoveredPageUrls(): Promise<string[] | null> {
-  const { data, error } = await supabase.from("everything_items").select("url");
+export async function fetchCoveredPageUrls(): Promise<CoveredPages | null> {
+  const s = await detectSchema();
+  const { data, error } = await supabase
+    .from("everything_items")
+    .select(`url, status${s.hasCheckedScope ? ", checked_scope" : ""}`);
   if (error) return null;
-  return (data ?? []).map((r: any) => r.url as string).filter((url) => !url.startsWith("local:"));
+  const rows = (data ?? []).filter((r: any) => !(r.url as string).startsWith("local:"));
+  return {
+    all: rows.map((r: any) => r.url as string),
+    wholePageChecked: rows.filter((r: any) => isWholePageChecked(r)).map((r: any) => r.url as string),
+  };
 }
 
 /** Returns the URL of every feed the pipeline actually follows. The extension
