@@ -11,6 +11,16 @@ export const dbState = {
   knownItems: [] as { id: string; url: string; checked_scope: "page" | "paragraph" | null }[],
   /** What findItemForPageUrl answers. */
   existingItem: null as { id: string; status: string; checked_scope: "page" | "paragraph" | null } | null,
+  /** What fetchFollowedFeeds answers. */
+  followedFeeds: [] as {
+    project_slug: string;
+    feed_type: "substack" | "youtube";
+    feed_url: string;
+    priority: number;
+    priority_until: string | null;
+  }[],
+  /** What fetchVisitCounts answers. */
+  visitCounts: [] as { feed_url: string; visits: number }[],
   /** Every recorded call, keyed by function name. */
   calls: {} as Record<string, unknown[][]>,
 };
@@ -18,6 +28,8 @@ export const dbState = {
 export const resetDbState = () => {
   dbState.knownItems = [];
   dbState.existingItem = null;
+  dbState.followedFeeds = [];
+  dbState.visitCounts = [];
   dbState.calls = {};
 };
 
@@ -34,7 +46,9 @@ export const dbMock = () => ({
   fillProjectDisplayNameBySlug: () => Promise.resolve(),
   fetchItemUrlsIn: () => Promise.resolve(dbState.knownItems),
   fetchItemUrlsContaining: () => Promise.resolve(dbState.knownItems),
-  fetchFollowedFeeds: () => Promise.resolve([]),
+  fetchFollowedFeeds: () => Promise.resolve(dbState.followedFeeds),
+  fetchVisitCounts: () => Promise.resolve(dbState.visitCounts),
+  upsertFeedPriority: record("upsertFeedPriority"),
   fetchItemClaims: () => Promise.resolve([]),
   fetchOrphanedProcessingItems: () => Promise.resolve([]),
   fetchRetryableErrorItems: () => Promise.resolve([]),

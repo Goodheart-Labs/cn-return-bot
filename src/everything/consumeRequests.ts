@@ -28,6 +28,7 @@ import "dotenv/config";
 import { extractYoutubeVideoId } from "../everything-shared/pageUrls";
 import { WEB_PROJECT_SLUG } from "../everything-shared/projects";
 import { cleanCapturedPageText } from "./pipeline/cleanCapturedText";
+import { canonicalSubstackFeed, canonicalYoutubeFeed, type CanonicalFeed } from "./feedUrls";
 import {
   fetchPendingFollowRequests,
   fetchPendingNoteRequests,
@@ -140,24 +141,12 @@ export async function consumeNoteRequests(): Promise<void> {
 }
 
 /** Normalizes a follow request into the feed we would store, or explains why it
- *  cannot be followed. A Substack feed must be in its *.substack.com form,
- *  because that is the only shape the RSS relay accepts in CI. */
-function normalizeFollowFeed(
-  request: FollowRequestRow,
-): { project_slug: string; feed_type: "substack" | "youtube"; feed_url: string } | { invalid: string } {
+ *  cannot be followed. */
+function normalizeFollowFeed(request: FollowRequestRow): CanonicalFeed | { invalid: string } {
   if (request.feed_type === "substack") {
-    const m = request.feed_url.match(/^https:\/\/([\w-]+)\.substack\.com\/?$/);
-    if (!m) return { invalid: "not a *.substack.com publication URL" };
-    return { project_slug: m[1]!.toLowerCase(), feed_type: "substack", feed_url: `https://${m[1]!.toLowerCase()}.substack.com` };
+    return canonicalSubstackFeed(request.feed_url) ?? { invalid: "not a *.substack.com publication URL" };
   }
-  const m = request.feed_url.match(/^https:\/\/(?:www\.)?youtube\.com\/(@[\w.-]+|channel\/[\w-]+)\/?$/);
-  if (!m) return { invalid: "not a YouTube channel URL" };
-  const path = m[1]!;
-  return {
-    project_slug: path.replace(/^@|^channel\//, "").toLowerCase(),
-    feed_type: "youtube",
-    feed_url: `https://www.youtube.com/${path}`,
-  };
+  return canonicalYoutubeFeed(request.feed_url) ?? { invalid: "not a YouTube channel URL" };
 }
 
 export async function consumeFollowRequests(): Promise<void> {

@@ -48,3 +48,19 @@ export async function fetchDaily(days: number | null): Promise<DailyRow[]> {
   if (error) throw new Error(`everything_daily_activity failed: ${error.message}`);
   return data as DailyRow[];
 }
+
+export interface CreatorRow {
+  creator: string;
+  visits: number;
+  /** Pipeline totals for the creator's project, unwindowed. All zero when the
+   *  visits could not be attributed to a project. */
+  processed: number;
+  notes: number;
+  errored: number;
+}
+
+export async function fetchCreators(days: number | null): Promise<CreatorRow[]> {
+  const { data, error } = await supabase.rpc("everything_creator_visits", { window_days: days });
+  if (error) throw new Error(`everything_creator_visits failed: ${error.message}`);
+  return data as CreatorRow[];
+}

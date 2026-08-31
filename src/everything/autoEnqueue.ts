@@ -1,9 +1,9 @@
 /**
  * Auto-enqueue the next unprocessed content of the feeds we keep fact-checked.
- * The feeds live in everything_followed_feeds: reader-requested follows are
- * walked first, then the curated ones migration 077 seeded, in their stored
- * order. The everything-priority-feeds workflow runs this right before the
- * worker drains the queue.
+ * The feeds live in everything_followed_feeds, and the walk order comes from
+ * the creator ranking: manually flagged creators first, then everyone by
+ * reader attention (see creatorRanking.ts). The everything-priority-feeds
+ * workflow runs this right before the worker drains the queue.
  *
  * For every feed we fetch its latest entries, newest first. A Substack feed
  * comes from its RSS feed, which goes through our Cloudflare Worker when we run
@@ -25,9 +25,9 @@
  */
 
 import "dotenv/config";
+import { rankCreators } from "./creatorRanking";
 import {
   enqueueItems,
-  fetchFollowedFeeds,
   fetchItemClaims,
   fetchItemUrlsContaining,
   fetchItemUrlsIn,
@@ -198,17 +198,18 @@ async function retryErroredItems(): Promise<void> {
   }
 }
 
-/** The feeds to walk. fetchFollowedFeeds already returns them in walk order:
- *  reader-followed feeds first, because their items also rank above the
- *  curated backlog in the queue, then the curated feeds in their stored
- *  order. */
-async function feedsToWalk(): Promise<{ feed: PriorityFeed; priority: number }[]> {
-  return (await fetchFollowedFeeds()).map((f) => ({
+/** The feeds to walk, most important creator first. rankCreators orders them
+ *  by reader attention: manually flagged creators, then visit counts inside
+ *  the ranking window, then the stored feed order. With the visited-creators
+ *  switch on it also adds creators readers visit without following. */
+async function feedsToWalk(): Promise<{ feed: PriorityFeed; priority: number; flagged: boolean }[]> {
+  return (await rankCreators()).map((c) => ({
     feed:
-      f.feed_type === "substack"
-        ? { project: f.project_slug, type: "substack" as const, publicationUrl: f.feed_url }
-        : { project: f.project_slug, type: "youtube" as const, channelUrl: f.feed_url },
-    priority: f.priority,
+      c.feed_type === "substack"
+        ? { project: c.project_slug, type: "substack" as const, publicationUrl: c.feed_url }
+        : { project: c.project_slug, type: "youtube" as const, channelUrl: c.feed_url },
+    priority: c.priority,
+    flagged: c.flagged,
   }));
 }
 
@@ -219,8 +220,11 @@ interface Candidate {
   feed: PriorityFeed;
   priority: number;
   /** The feed's position in the walk order. This is the author-priority rank
-   *  input: reader-followed feeds come first, then the curated ones. */
+   *  input: the creator ranking puts the most-visited creators first. */
   feedIndex: number;
+  /** A manually flagged creator's posts rank strictly above the blended
+   *  ranking, right below individually requested pages. */
+  flagged: boolean;
   entry: UnprocessedEntry;
   sourceName?: string;
   publishedAt?: string;
@@ -279,7 +283,7 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
   }
 
   const candidates: Candidate[] = [];
-  for (const [feedIndex, { feed, priority }] of (await feedsToWalk()).entries()) {
+  for (const [feedIndex, { feed, priority, flagged }] of (await feedsToWalk()).entries()) {
     const { sourceName, entries } = await cachedFeedEntries(feed);
     const latest = entries.slice(0, FEED_CANDIDATE_LIMIT);
     const unprocessed = await unprocessedEntries(feed, latest);
@@ -289,13 +293,19 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
         feed,
         priority,
         feedIndex,
+        flagged,
         entry,
         sourceName,
         publishedAt: entry.source === "youtube" ? videoUploadDate(entry) : entry.publishedAt,
       });
     }
   }
-  const picks = rankCandidates(candidates).slice(0, BATCH_SIZE);
+  // A flagged creator's posts come strictly before the blended ranking, so a
+  // flag means "next", not "sooner". Within each partition the blend applies.
+  const picks = [
+    ...rankCandidates(candidates.filter((c) => c.flagged)),
+    ...rankCandidates(candidates.filter((c) => !c.flagged)),
+  ].slice(0, BATCH_SIZE);
 
   if (picks.length === 0) {
     console.log("All priority feeds are caught up — nothing to enqueue");
