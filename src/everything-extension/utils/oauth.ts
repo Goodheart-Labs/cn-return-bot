@@ -13,10 +13,23 @@ import { supabase } from "../../everything-shared/supabase";
 export async function signInWithXViaWebAuthFlow(): Promise<{ ok: boolean; error?: string }> {
   try {
     const redirectTo = browser.identity.getRedirectURL();
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: "twitter",
-      options: { redirectTo, skipBrowserRedirect: true },
-    });
+    const options = { redirectTo, skipBrowserRedirect: true };
+    // With an anonymous session held, the X identity is linked onto that
+    // account, which keeps its votes and notes. When linking cannot start,
+    // for example because manual linking is disabled on the backend, we fall
+    // back to the ordinary sign-in.
+    const { data: current } = await supabase.auth.getSession();
+    let start;
+    if (current.session?.user.is_anonymous) {
+      start = await supabase.auth.linkIdentity({ provider: "twitter", options });
+      if (start.error) {
+        console.warn(`[common-notes] X identity link failed, falling back to sign-in: ${start.error.message}`);
+        start = await supabase.auth.signInWithOAuth({ provider: "twitter", options });
+      }
+    } else {
+      start = await supabase.auth.signInWithOAuth({ provider: "twitter", options });
+    }
+    const { data, error } = start;
     if (error || !data?.url) return { ok: false, error: error?.message ?? "could not start OAuth" };
 
     const resultUrl = await browser.identity.launchWebAuthFlow({ url: data.url, interactive: true });

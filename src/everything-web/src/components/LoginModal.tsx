@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { BUTTON, INPUT, QUIET_LINK } from "../../../everything-shared/ui";
 import { Modal } from "./Modal";
-import { EMAIL_OTP_LENGTH, signInWithEmailCode, verifyEmailCode, signInWithTwitter } from "../../../everything-shared/auth";
+import { EMAIL_OTP_LENGTH, signInWithEmailCode, verifyEmailCode, signInWithTwitter, type EmailFlow } from "../../../everything-shared/auth";
 import { track } from "../../../everything-shared/analytics";
 
 const X_SIGNIN_ENABLED = true;
@@ -15,6 +15,9 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [stage, setStage] = useState<"email" | "code">("email");
+  // Whether the code signs into an account or attaches the email to the
+  // current anonymous one. Decided when the code is sent, needed to verify it.
+  const [flow, setFlow] = useState<EmailFlow>("signin");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,9 +28,13 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
     setBusy(true);
     setError(null);
     track("sign_in_started", { method: "email" });
-    const { error } = await signInWithEmailCode(email.trim());
+    const { error, flow: sentFlow } = await signInWithEmailCode(email.trim());
     setBusy(false);
     if (error) return setError(error.message);
+    // "done" means the email attached without a code (confirmations off on
+    // this backend). The session already updated, so the modal can close.
+    if (sentFlow === "done") return onClose();
+    setFlow(sentFlow);
     setStage("code");
   };
 
@@ -35,7 +42,7 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
     e.preventDefault();
     setBusy(true);
     setError(null);
-    const { error } = await verifyEmailCode(email.trim(), code.trim());
+    const { error } = await verifyEmailCode(email.trim(), code.trim(), flow);
     setBusy(false);
     if (error) return setError(error.message);
     onClose();
@@ -48,8 +55,8 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
   };
 
   return (
-    <Modal title="Sign in to vote" onClose={onClose}>
-        <p className="text-sm text-gray-500 dark:text-gray-400">Voting and suggesting improvements need a quick sign-in. Reading notes doesn't.</p>
+    <Modal title="Sign in" onClose={onClose}>
+        <p className="text-sm text-gray-500 dark:text-gray-400">Signing in keeps your votes and notes together across devices. Reading and voting work without it.</p>
 
         {stage === "email" ? (
           <form onSubmit={sendCode} className="space-y-2">

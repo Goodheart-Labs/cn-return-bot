@@ -148,7 +148,10 @@ export function SettingsApp() {
         </Section>
 
         <Section title="Account">
-          {!ready ? null : session ? (
+          {/* An anonymous session is invisible to the reader: it exists only so
+              their votes have an account to live on. This section keeps
+              offering the real sign-in, which upgrades that account in place. */}
+          {!ready ? null : session && !session.user.is_anonymous ? (
             <div className="space-y-2">
               {session.user.email && <p className="text-sm text-gray-600">Signed in as {session.user.email}</p>}
               <button onClick={() => signOut()} className={`w-full ${SECONDARY_BUTTON}`}>

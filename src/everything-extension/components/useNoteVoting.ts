@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSession } from "../../everything-shared/auth";
+import { ensureUser, useSession } from "../../everything-shared/auth";
 import { supabase } from "../../everything-shared/supabase";
 import { castVote, clearVote, fetchMyVotes, type Vote } from "../../everything-shared/votes";
 import { track } from "../../everything-shared/analytics";
@@ -47,9 +47,12 @@ export function useNoteVoting(onNoteUpdated: (note: NoteRow) => void, onNnnUpdat
 
   // The React state can lag behind the shared session in chrome.storage. That
   // happens when the user logs in from the popup after this overlay mounted.
-  // So we re-check at click time before showing the sign-in hint.
+  // So we re-check at click time, and a reader with no session at all gets an
+  // invisible anonymous account instead of a sign-in form. Only when even
+  // that fails, for example because the backend has anonymous sign-ins
+  // disabled, do we fall back to the form.
   const currentUser = async () =>
-    session?.user ?? (await supabase.auth.getSession()).data.session?.user ?? null;
+    session?.user ?? (await supabase.auth.getSession()).data.session?.user ?? (await ensureUser());
 
   /** Cast or retract a vote on a note and mint its donation. The rules are the
    *  same as on the website, and a vote on your own note mints like any other.
@@ -60,7 +63,8 @@ export function useNoteVoting(onNoteUpdated: (note: NoteRow) => void, onNnnUpdat
   const handleVote = async (note: NoteRow, vote: Vote): Promise<MintedDonation | null> => {
     const user = await currentUser();
     if (!user) {
-      // An anonymous reader hit the vote wall — the funnel's sign-in prompt.
+      // Even the silent anonymous sign-in failed, so the form is the only
+      // way left to vote.
       track("vote_gated_login", { note_id: note.id });
       onNeedLogin();
       return null;
