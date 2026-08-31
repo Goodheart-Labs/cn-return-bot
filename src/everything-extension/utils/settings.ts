@@ -108,17 +108,28 @@ export async function updateSettings(patch: SettingsPatch): Promise<void> {
   });
 }
 
-// Whether the settings onboarding has run: the tab the background opens once,
-// on install or update, so the user has seen the settings (the visit-recording
-// checkboxes above all else) before any of them takes effect. Deliberately its
-// own key: changing a setting must never look like finishing the onboarding,
-// and vice versa.
+// Whether the settings onboarding has run. Before the welcome page existed
+// this was the consent gate: the background opened the settings page once so
+// the user had seen the visit-recording checkboxes. It still marks "this
+// install saw the tracking choice under the old flow", which is what lets the
+// welcome backfill below skip existing users.
 const SETTINGS_ONBOARDING_KEY = "cn:settingsOnboardingDone";
 
 export async function getSettingsOnboardingDone(): Promise<boolean> {
   return ((await browser.storage.sync.get(SETTINGS_ONBOARDING_KEY))[SETTINGS_ONBOARDING_KEY] as boolean | undefined) ?? false;
 }
 
-export async function markSettingsOnboardingDone(): Promise<void> {
-  await browser.storage.sync.set({ [SETTINGS_ONBOARDING_KEY]: true });
+// Whether the user has been through the welcome page, which is where the
+// visit-recording question is asked. Visit recording stays inert until this
+// is set (utils/linkVisits.ts), so nothing is recorded before the user made
+// the choice. Seeing the settings page counts too, because the per-site
+// checkboxes are the same choice in more detail.
+const WELCOME_SEEN_KEY = "cn:welcomeSeen";
+
+export async function getWelcomeSeen(): Promise<boolean> {
+  return ((await browser.storage.sync.get(WELCOME_SEEN_KEY))[WELCOME_SEEN_KEY] as boolean | undefined) ?? false;
+}
+
+export async function markWelcomeSeen(): Promise<void> {
+  await browser.storage.sync.set({ [WELCOME_SEEN_KEY]: true });
 }

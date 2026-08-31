@@ -11,7 +11,7 @@ import { CHECKED_PAGE_URLS_KEY, COVERED_PAGE_URLS_KEY, NOTED_PAGE_STATUS_COUNTS_
 import { FOLLOWED_FEED_URLS_KEY } from "../utils/followedFeeds";
 import { GENERIC_SCRIPT_PREFIX, hostnamePattern, registerGenericScripts, genericScriptId } from "../utils/genericScript";
 import { capturePageFromTab } from "../utils/pageCapture";
-import { addRequestedPage, getSettingsOnboardingDone, markSettingsOnboardingDone } from "../utils/settings";
+import { addRequestedPage, getSettingsOnboardingDone, getWelcomeSeen, markWelcomeSeen } from "../utils/settings";
 import { STATIC_SITE_HOSTNAME } from "../utils/staticSites";
 
 const WRITE_MENU_ID = "cn-write-note";
@@ -304,15 +304,16 @@ export default defineBackground(() => {
   browser.runtime.onInstalled.addListener((details) => {
     if (details.reason === "install") track("extension_installed");
     void createMenus();
-    // The settings onboarding: open the settings page once, so the user has
-    // seen the visit-recording checkboxes before anything is recorded (the
-    // recording code is inert until this flag is set). The flag is set before
-    // the tab opens, so a failed open cannot re-open the page on every update.
+    // The welcome: open the welcome tab once after a fresh install, so the
+    // user has been asked the visit-recording question before anything is
+    // recorded (the recording code is inert until the question was answered).
+    // An install that already went through the old settings onboarding made
+    // that choice there, so it is marked welcomed without a tab.
     if (details.reason === "install" || details.reason === "update") {
       void (async () => {
-        if (await getSettingsOnboardingDone()) return;
-        await markSettingsOnboardingDone();
-        await browser.runtime.openOptionsPage();
+        if (await getWelcomeSeen()) return;
+        if (await getSettingsOnboardingDone()) return markWelcomeSeen();
+        await browser.tabs.create({ url: browser.runtime.getURL("/welcome.html") });
       })();
     }
   });

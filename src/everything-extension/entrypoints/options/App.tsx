@@ -1,11 +1,12 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { CARD, SECONDARY_BUTTON } from "../../../everything-shared/ui";
+import { browser } from "#imports";
+import { CARD, QUIET_LINK, SECONDARY_BUTTON } from "../../../everything-shared/ui";
 import { signOut, useSession } from "../../../everything-shared/auth";
 import { LoginPanel } from "../../components/LoginPanel";
 import { NoteFilterToggles, useNoteFilters } from "../../components/NoteFilterToggles";
 import {
   getSettings,
-  markSettingsOnboardingDone,
+  markWelcomeSeen,
   updateSettings,
   type ExtensionSettings,
   type SettingsPatch,
@@ -130,11 +131,12 @@ export function SettingsApp() {
   const [settings, toggleSettings] = useExtensionSettings();
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const { session, ready } = useSession();
-  // Seeing this page is what the onboarding flag means, however the user got
-  // here. The background sets it too, but a dev reload never fires
-  // onInstalled, and a user can find the settings on their own.
+  // Seeing this page counts as having been welcomed: the sharing choice above
+  // is the welcome page's question in more detail. A user who found the
+  // settings on their own therefore stops being greeted, and recording obeys
+  // their checkboxes from here on.
   useEffect(() => {
-    void markSettingsOnboardingDone();
+    void markWelcomeSeen();
   }, []);
 
   return (
@@ -176,6 +178,15 @@ export function SettingsApp() {
               <AdvancedSettings settings={settings} onToggle={toggleSettings} />
             </div>
           )}
+        </section>
+
+        <section className="border-t border-gray-200 pt-4">
+          <button
+            onClick={() => void browser.tabs.create({ url: browser.runtime.getURL("/welcome.html") })}
+            className={`text-sm ${QUIET_LINK}`}
+          >
+            Show the welcome again
+          </button>
         </section>
         </div>
       </div>
