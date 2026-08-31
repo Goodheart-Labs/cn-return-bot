@@ -71,7 +71,7 @@ function relRect(range: Range, origin: DOMRect) {
 
 /** The small badge at the end of an anchored passage. It draws the blue
  *  community glyph on a surface that follows the host page's light or dark
- *  theme. */
+ *  theme. This is the classic style's marker. */
 function Badge({ open, onClick, style }: { open: boolean; onClick: () => void; style: React.CSSProperties }) {
   return (
     <button
@@ -82,6 +82,31 @@ function Badge({ open, onClick, style }: { open: boolean; onClick: () => void; s
       className={`absolute flex items-center justify-center rounded-full border shadow transition-transform hover:scale-110 bg-white border-gray-300 text-blue-600 dark:bg-gray-900 dark:border-gray-600 dark:text-blue-400 ${open ? "ring-2 ring-blue-500" : ""}`}
     >
       <GroupIcon />
+    </button>
+  );
+}
+
+/** The margin style's marker: a quiet gray dot that turns blue with a soft
+ *  halo when the pointer is near, and stays that way while its note is open
+ *  (Jim picked this over the circled glyph, 2026-08-31). The button box stays
+ *  badge-sized so the positioning and collision math is shared; the dot is
+ *  drawn smaller inside it. */
+function MarginDot({ open, onClick, style }: { open: boolean; onClick: () => void; style: React.CSSProperties }) {
+  return (
+    <button
+      onClick={onClick}
+      title="Community note on this passage"
+      aria-expanded={open}
+      style={style}
+      className="absolute flex items-center justify-center group"
+    >
+      <span
+        className={`h-2.5 w-2.5 rounded-full transition-colors ${
+          open
+            ? "bg-blue-600 ring-4 ring-blue-500/20 dark:bg-blue-400 dark:ring-blue-400/25"
+            : "bg-gray-400 group-hover:bg-blue-600 group-hover:ring-4 group-hover:ring-blue-500/20 dark:bg-gray-500 dark:group-hover:bg-blue-400 dark:group-hover:ring-blue-400/25"
+        }`}
+      />
     </button>
   );
 }
@@ -333,6 +358,7 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
         const left = marginLeft - origin.left;
         return {
           group,
+          margin: true,
           badgeStyle: { top: marginTops.get(group)!, left, width: BADGE_SIZE, height: BADGE_SIZE } satisfies React.CSSProperties,
           popoverStyle: {
             top: rect.top,
@@ -351,6 +377,7 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
       );
       return {
         group,
+        margin: false,
         badgeStyle: {
           top: rect.top - BADGE_SIZE / 2,
           left: rect.right + BADGE_GAP,
@@ -390,13 +417,21 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
           document-level listeners. */}
       {createPortal(
         <div {...ABSORB_KEYS} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
-          {positioned.map(({ group, badgeStyle, popoverStyle }) => (
+          {positioned.map(({ group, badgeStyle, popoverStyle, margin }) => (
             <div key={group.claimId}>
-              <Badge
-                open={openClaim === group.claimId}
-                onClick={() => setOpenClaim((cur) => (cur === group.claimId ? null : group.claimId))}
-                style={badgeStyle}
-              />
+              {margin ? (
+                <MarginDot
+                  open={openClaim === group.claimId}
+                  onClick={() => setOpenClaim((cur) => (cur === group.claimId ? null : group.claimId))}
+                  style={badgeStyle}
+                />
+              ) : (
+                <Badge
+                  open={openClaim === group.claimId}
+                  onClick={() => setOpenClaim((cur) => (cur === group.claimId ? null : group.claimId))}
+                  style={badgeStyle}
+                />
+              )}
               {openClaim === group.claimId && (
                 <NotePopover
                   group={group}
