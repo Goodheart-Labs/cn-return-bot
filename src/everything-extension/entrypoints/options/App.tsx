@@ -1,6 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { browser } from "#imports";
-import { CARD, QUIET_LINK, SECONDARY_BUTTON } from "../../../everything-shared/ui";
+import { CARD, SECONDARY_BUTTON } from "../../../everything-shared/ui";
 import { signOut, useSession } from "../../../everything-shared/auth";
 import { LoginPanel } from "../../components/LoginPanel";
 import { NoteFilterToggles, useNoteFilters } from "../../components/NoteFilterToggles";
@@ -197,15 +196,6 @@ export function SettingsApp() {
               <AdvancedSettings settings={settings} onToggle={toggleSettings} />
             </div>
           )}
-        </section>
-
-        <section className="border-t border-gray-200 pt-4">
-          <button
-            onClick={() => void browser.tabs.create({ url: browser.runtime.getURL("/welcome.html") })}
-            className={`text-sm ${QUIET_LINK}`}
-          >
-            Show the welcome again
-          </button>
         </section>
         </div>
       </div>

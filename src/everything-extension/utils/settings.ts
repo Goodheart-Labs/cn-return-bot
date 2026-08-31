@@ -94,7 +94,9 @@ export type ExtensionSettings = {
 
 const DEFAULT_SETTINGS: ExtensionSettings = {
   saveVisits: { substack: true, youtube: true, lesswrong: true },
-  showNoteCountOverlay: true,
+  // Off by default since 2026-08-31 (Jim's call): the margin markers already
+  // say there are notes, so the card is opt-in.
+  showNoteCountOverlay: false,
   showThumbnailBadges: true,
   noteStyle: "margin",
 };

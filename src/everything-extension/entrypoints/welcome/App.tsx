@@ -4,6 +4,10 @@ import { BUTTON, CARD, QUIET_LINK, SECONDARY_BUTTON } from "../../../everything-
 import { GroupIcon } from "../../components/ClaimNoteStack";
 import { markWelcomeSeen, updateSettings } from "../../utils/settings";
 
+/** How long the confirmation stays on screen before the welcome tab closes
+ *  itself. The tab has done its job once the question is answered. */
+const CLOSE_AFTER_ANSWER_MS = 1_000;
+
 /** The welcome tab the background opens once after a fresh install. It says
  *  what Common Notes is and asks the one question that has to be answered
  *  before anything else happens: whether we may count which posts the reader
@@ -16,6 +20,9 @@ export function WelcomeApp() {
     setAnswered(shareVisits);
     await updateSettings({ saveVisits: { substack: shareVisits, youtube: shareVisits, lesswrong: shareVisits } });
     await markWelcomeSeen();
+    // The tab closes itself once the answer is saved. window.close works here
+    // because the background opened this tab.
+    setTimeout(() => window.close(), CLOSE_AFTER_ANSWER_MS);
   };
 
   return (
