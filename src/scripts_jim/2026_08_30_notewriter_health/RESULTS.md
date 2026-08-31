@@ -81,5 +81,7 @@ at the wrong one.
 ## Notes on the other half of GOO-72 (PR cleanup)
 
 Done under GOO-75 before this check started: all 13 open PRs dispositioned
-(9 merged/closed, 4 left as active work, since merged). The only open PRs are
-#418/#419, which wait for Jim's review and were deliberately not touched.
+(9 merged/closed, 4 left as active work, since merged). The last two open
+PRs, #418/#419, were deliberately not touched here; Jim merged them himself
+on Aug 31, which makes the probe follow-ups (migrations 081 + 082, minting
+the probe key) live manual items.
