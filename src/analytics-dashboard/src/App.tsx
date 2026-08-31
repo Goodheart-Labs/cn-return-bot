@@ -18,20 +18,26 @@ export function App() {
   const [funnel, setFunnel] = useState<FunnelRow[] | null>(null);
   const [daily, setDaily] = useState<DailyRow[] | null>(null);
   const [creators, setCreators] = useState<CreatorRow[] | null>(null);
+  const [creatorsError, setCreatorsError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setFunnel(null);
     setDaily(null);
     setCreators(null);
+    setCreatorsError(null);
     setError(null);
-    Promise.all([fetchFunnel(timeWindow.days), fetchDaily(timeWindow.days), fetchCreators(timeWindow.days)])
-      .then(([f, d, c]) => {
+    Promise.all([fetchFunnel(timeWindow.days), fetchDaily(timeWindow.days)])
+      .then(([f, d]) => {
         setFunnel(f);
         setDaily(d);
-        setCreators(c);
       })
       .catch((e: Error) => setError(e.message));
+    // The leaderboard loads on its own, so a backend missing its function
+    // (migration 084 not applied yet) blanks only this section, not the page.
+    fetchCreators(timeWindow.days)
+      .then(setCreators)
+      .catch((e: Error) => setCreatorsError(e.message));
   }, [timeWindow]);
 
   return (
@@ -76,10 +82,11 @@ export function App() {
         </section>
       )}
 
-      {creators && (
+      {(creators || creatorsError) && (
         <section>
           <h2 style={{ fontSize: 17, marginBottom: 16 }}>Creators by visits</h2>
-          <CreatorLeaderboard rows={creators} />
+          {creatorsError && <p style={{ color: "#b91c1c" }}>Failed to load: {creatorsError}</p>}
+          {creators && <CreatorLeaderboard rows={creators} />}
         </section>
       )}
     </div>
