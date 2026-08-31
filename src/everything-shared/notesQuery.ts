@@ -241,20 +241,6 @@ export async function fetchNotedPageCounts(): Promise<Record<string, PageNoteSta
   return counts;
 }
 
-/** Returns the URL of every ingested page that has visible notes, or null when
- *  the query failed. */
-export async function fetchNotedPageUrls(): Promise<string[] | null> {
-  const counts = await fetchNotedPageCounts();
-  return counts ? Object.keys(counts) : null;
-}
-
-/** Picks a random ingested page that has visible notes. The popup's "Open random
- *  page" button goes there. */
-export async function fetchRandomNotedPageUrl(): Promise<string | null> {
-  const urls = (await fetchNotedPageUrls()) ?? [];
-  return urls[Math.floor(Math.random() * urls.length)] ?? null;
-}
-
 /** Fetches every visible note on one item, joined and normalized. Returns
  *  null when the query failed, so a caller does not mistake an outage for a
  *  page without notes and announce "found nothing to note". */
