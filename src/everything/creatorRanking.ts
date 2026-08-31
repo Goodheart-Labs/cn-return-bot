@@ -37,7 +37,7 @@ export function visitedCreatorsEnabled(): boolean {
 }
 
 function isFlagged(priorityUntil: string | null): boolean {
-  return priorityUntil !== null && Date.parse(priorityUntil) > Date.now();
+  return priorityUntil != null && Date.parse(priorityUntil) > Date.now();
 }
 
 /** Every creator the auto-enqueue should walk, most important first. */

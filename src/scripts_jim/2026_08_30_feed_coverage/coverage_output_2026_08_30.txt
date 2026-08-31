@@ -1,0 +1,297 @@
+15 followed feeds, 346 everything_items rows total
+
+## plannedobs (substack, priority 1) — https://plannedobs.substack.com
+  [Fri, 28 Aug 2026]            item: done/page (enqueued 2026-08-30, processed 2026-08-30)            | The Hugging Face attack surprised me
+  [Fri, 14 Aug 2026]            item: done/page (enqueued 2026-08-30, processed 2026-08-30)            | Hurtling through 2026
+  [Fri, 10 Jul 2026]            item: done/page (enqueued 2026-08-30, processed 2026-08-30)            | Total research transparency would be nice
+  [Fri, 05 Jun 2026]            item: done/page (enqueued 2026-08-30, processed 2026-08-30)            | Could a company overpower nations?
+  [Fri, 01 May 2026]            item: done/page (enqueued 2026-08-30, processed 2026-08-30)            | Science and speculation
+  [Fri, 03 Apr 2026]            item: done/page (enqueued 2026-08-30, processed 2026-08-30)            | Six milestones for AI automation
+  [Thu, 05 Mar 2026]            item: done/page (enqueued 2026-08-30, processed 2026-08-30)            | I underestimated AI capabilities (again)
+  [Thu, 12 Feb 2026]            item: done/page (enqueued 2026-08-30, processed 2026-08-30)            | Takeoff speeds rule everything around me
+  [Wed, 14 Jan 2026]            item: done/page (enqueued 2026-08-30, processed 2026-08-30)            | AI predictions for 2026
+  [Tue, 06 Jan 2026]            item: done/page (enqueued 2026-08-30, processed 2026-08-30)            | Self-sufficient AI
+  [Thu, 21 Nov 2024]            item: done/page (enqueued 2026-08-30, processed 2026-08-30)            | OpenAI's CBRN tests seem unclear
+  [Tue, 20 Aug 2024]            item: done/page (enqueued 2026-08-30, processed 2026-08-30)            | Dangerous capability tests should be harder
+  [Tue, 10 Oct 2023]            item: done/page (enqueued 2026-08-30, processed 2026-08-30)            | Scale, schlep, and systems
+  [Tue, 29 Aug 2023]            item: done/page (enqueued 2026-08-30, processed 2026-08-30)            | Language models surprised us
+  [Tue, 06 Jun 2023]            item: done/page (enqueued 2026-08-30, processed 2026-08-30)            | Could AI accelerate economic growth?
+  [Mon, 01 May 2023]            item: done/page (enqueued 2026-08-30, processed 2026-08-30)            | The costs of caution
+  [Wed, 12 Apr 2023]            item: done/page (enqueued 2026-08-30, processed 2026-08-30)            | Continuous doesn’t mean slow
+  [Tue, 04 Apr 2023]            item: done/page (enqueued 2026-08-30, processed 2026-08-30)            | AIs accelerating AI research
+  [Thu, 30 Mar 2023]            item: done/page (enqueued 2026-08-30, processed 2026-08-30)            | Is it time for a pause?
+  [Sun, 26 Mar 2023]            item: done/page (enqueued 2026-08-30, processed 2026-08-30)            | The ethics of AI red-teaming
+
+## sabinehossenfelder (youtube, priority 1) — https://www.youtube.com/@SabineHossenfelder
+  [                ]            item: done/page (enqueued 2026-08-30, processed 2026-08-30)            | Some UAPs Might Be Warp Drives, Physicists Say
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=DX_oIQ-tA6M (enqueued 2026-08-25, processed 2026-08-25) | Quantum Computing Failure Now Obvious
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=yE8OkdpCWhw (enqueued 2026-08-24, processed 2026-08-24) | Weekly Digest: Astronomers Claim To Have Seen Alien Spacecra
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=PzDe6AP_JfE (enqueued 2026-08-23, processed 2026-08-23) | The First New Nuclear Fusion Idea for Decades
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=NzQQXQK_Ngk (enqueued 2026-08-23, processed 2026-08-23) | Breakthrough: New Type of Matter Discovered
+  [                ]            item: done/page (enqueued 2026-08-23, processed 2026-08-23)            | Collapsing Stars Can Create New Universes, Physicists Say
+  [                ]            item: done/page (enqueued 2026-08-23, processed 2026-08-23)            | Astronomers Claim To Have Seen Alien Spacecraft On the Moon
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=Z_AudXqm240 (enqueued 2026-08-23, processed 2026-08-23) | Weekly Digest: The War on AI Has Begun and more!
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=8e_JSOxaEVQ (enqueued 2026-08-23, processed 2026-08-23) | Two Dimensions of Time Explain Quantum Physics, Physicist Ar
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=6edAuSPGao8 (enqueued 2026-08-23, processed 2026-08-23) | Plot Twist: Life on Earth had TWO Origins!
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=4k7njY7F1-8 (enqueued 2026-08-23, processed 2026-08-23) | Scientists Solve Mystery of Earth’s Continents
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=BvlGs25tCxI (enqueued 2026-08-23, processed 2026-08-23) | The War on AI Has Begun
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=jHGx7HBB-J4 (enqueued 2026-08-23, processed 2026-08-23) | Neuroscience is in big trouble
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=0XcEsuFs5Y8 (enqueued 2026-08-23, processed 2026-08-23) | Dunning Kruger Effect Wrong, Scientists Claim
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=03VL5O3OO8U (enqueued 2026-08-23, processed 2026-08-23) | Weekly Digest: Physicists Say They’ve Found The Origin Of Ca
+
+## nicholasdecker (substack, priority 1) — https://nicholasdecker.substack.com
+  [Wed, 26 Aug 2026]            item: done/page (enqueued 2026-08-27, processed 2026-08-27)            | Kevin Warsh Does Not Understand the Federal Reserve
+  [Mon, 24 Aug 2026]            item: done/page (enqueued 2026-08-27, processed 2026-08-27)            | Academia is Doing Fine, Actually
+  [Tue, 18 Aug 2026]            item: done/page (enqueued 2026-08-27, processed 2026-08-27)            | No, We Should Not Develop Telepathy
+  [Mon, 17 Aug 2026]            item: done/page (enqueued 2026-08-27, processed 2026-08-27)            | What Can We Know About Discrimination in America?
+  [Thu, 13 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | Why I No Longer Believe Macroeconomic Models of Climate Chan
+  [Mon, 10 Aug 2026]            item: done/page (enqueued 2026-08-27, processed 2026-08-27)            | The Great Recession
+  [Mon, 03 Aug 2026]            item: done/page (enqueued 2026-08-27, processed 2026-08-27)            | The Median Voter is a Maoist
+  [Thu, 30 Jul 2026]            item: done/page (enqueued 2026-08-27, processed 2026-08-27)            | Some Folk Fallacies of Housing
+  [Mon, 27 Jul 2026]            item: done/page (enqueued 2026-08-27, processed 2026-08-27)            | Health Insurance is a Big Union
+  [Mon, 20 Jul 2026]            item: done/page (enqueued 2026-08-27, processed 2026-08-27)            | AI Alignment is the Default
+  [Sun, 12 Jul 2026]            item: done/page (enqueued 2026-08-27, processed 2026-08-27)            | Why Can I Still Buy Health Insurance?
+  [Thu, 09 Jul 2026]            item: done/page (enqueued 2026-08-27, processed 2026-08-27)            | I Was Wrong About Fertilizer in Africa
+  [Wed, 08 Jul 2026] PAYWALLED  NO ITEM ROW                                                            | Answering YOUR Questions
+  [Fri, 03 Jul 2026]            item: done/page (enqueued 2026-08-27, processed 2026-08-27)            | Ask Me Anything
+  [Thu, 02 Jul 2026]            item: done/page (enqueued 2026-08-27, processed 2026-08-27)            | The Consequences of Caste in Village India
+  [Mon, 29 Jun 2026]            item: done/page (enqueued 2026-08-27, processed 2026-08-27)            | If No One Builds It, Everyone Dies
+  [Tue, 23 Jun 2026] PAYWALLED  NO ITEM ROW                                                            | Risk vs Credit Constraints
+  [Mon, 22 Jun 2026]            item: done/page (enqueued 2026-08-27, processed 2026-08-27)            | Daron Acemoglu is a Crypto-Marxist
+  [Wed, 17 Jun 2026] PAYWALLED  NO ITEM ROW                                                            | So You Want to Reduce Poverty in the Developing World
+  [Sun, 14 Jun 2026]            item: done/page (enqueued 2026-08-27, processed 2026-08-27)            | What Do Airlines Do?
+
+## stuffmadehere (youtube, priority 1) — https://www.youtube.com/@StuffMadeHere
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=RpslsMqPFWA (enqueued 2026-08-27, processed 2026-08-27) | I made an apple peel itself
+  [                ]            item: done/page (enqueued 2026-08-27, processed 2026-08-27)            | Robot golf vs holes that keep getting harder
+  [                ]            item: done/page (enqueued 2026-08-27, processed 2026-08-27)            | Making an autocorrect mini golf club (part 1)
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=vJ43DjwLPGA (enqueued 2026-08-28, processed 2026-08-28) | Why is this task so difficult for machines?
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | Baking brownies from the inside out
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | I really thought this would fly well
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | What if we made a camera that sees in reverse?
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=YqywL9PkM2s (enqueued 2026-08-28, processed 2026-08-28) | After 100+ parts and 45 hours of practice, I did it
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | Precision guided launcher turns noobs into pros
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | I made these to do a ridiculously high dunk
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | Six questionably legal pencil sharpeners
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | I sent robot forgeries to a handwriting expert
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | Worlds hardest jigsaw vs. puzzle machine (all white)
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=Gu_1S77XkiM (enqueued 2026-08-28, processed 2026-08-28) | A simple human task that's insanely hard for a robot
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=xHWXZyfhQas (enqueued 2026-08-28, processed 2026-08-28) | I made a ball seeking hoop
+
+## jeffnippard (youtube, priority 1) — https://www.youtube.com/@JeffNippard
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | How Ripped Can I Get My Brother In 100 Days?
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | The Only 25 Exercises You Ever Need
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | 7 Things That Helped My Shoulders Grow
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=5K9QhkPww44 (enqueued 2026-08-28, processed 2026-08-28) | What Every Body Fat % Actually Looks Like (50% to 5%)
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | I Cut The Number Of Sets I Do In Half
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | 7 Amazing Exercises No One Does (ALL S TIER)
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | I Built The World's Most Scientific Gym
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | How To Tell If Someone Is On Steroids (Using Science)
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | How To Look Enhanced Without Steroids
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | The Leg Workout I Followed For My 1 Year Transformation
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | The Upper Body Workout I Followed For My 1 Year Transformati
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | How Much Muscle Did I Gain In 365 Days? (Scientific Experime
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | The Best & Worst Glute Exercises (According To Science)
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | Exercise Scientists Critique Fitness Influencer Workouts
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | How To Get Jacked For $10/Day (Healthy Meals On A Budget)
+
+## aiexplained-official (youtube, priority 1) — https://www.youtube.com/@aiexplained-official
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | OpenAI Trained AI Agents, but Did Not Expect the Swarm
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | AI is getting a little out of control
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | GPT-6 Goes Rogue? The HuggingFace Incident, Sans Hype
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-28)            | A Model Explosion: GPT 5.6 Sol, Grok 4.5 and Meta Muse Rewri
+  [                ]            item: done/page (enqueued 2026-08-28, processed 2026-08-29)            | Fable 5 vs GPT 5.6 Sol: The Early Results
+  [                ]            item: done/page (enqueued 2026-08-29, processed 2026-08-29)            | Claude Fable Blocked - 11 Quiet Details on What’s Next
+  [                ]            item: done/page (enqueued 2026-08-29, processed 2026-08-29)            | Claude Fable 5 - Full 319 page Breakdown
+  [                ]            item: done/page (enqueued 2026-08-29, processed 2026-08-29)            | New Claude Opus 4.8: 15 Things You May’ve Missed
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=o_av1b9rs2g (enqueued 2026-08-29, processed 2026-08-29) | Two Rival Bets on AGI: Google I/O Highlights
+  [                ]            item: done/page (enqueued 2026-08-29, processed 2026-08-29)            | GPT 5.5 Arrives, DeepSeek V4 Drops, and the Compute War Inte
+  [                ]            item: done/page (enqueued 2026-08-29, processed 2026-08-30)            | Claude Opus 4.7 - A New Frontier, in Performance … and Drama
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=txx6ec6MLNY (enqueued 2026-08-30, processed 2026-08-30) | Claude Mythos: Highlights from 244-page Release
+  [                ]            item: done/page (enqueued 2026-08-30, processed 2026-08-30)            | Two AI Models Set to “stir government urgency”, But Will Thi
+  [                ]            item: done/page (enqueued 2026-08-30, processed 2026-08-30)            | What the New ChatGPT 5.4 Means for the World
+  [                ]            item: done/page (enqueued 2026-08-30, processed 2026-08-30)            | Deadline Day for Autonomous AI Weapons & Mass Surveillance
+
+## hankschannel (youtube, priority 1) — https://www.youtube.com/@hankschannel
+  [                ]            item: done/page (enqueued 2026-08-27, processed 2026-08-27)            | Saturn is Much More than a Planet
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=DgeRVUSuGvQ (enqueued 2026-08-22, processed 2026-08-22) | How Big of a Deal is this Cancer Vaccine?
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=EdhbPHjzdU8 (enqueued 2026-08-19, processed 2026-08-19) | If I could Put a Plaque Anywhere in London...
+  [                ]            item: done/page (enqueued 2026-08-17, processed 2026-08-17)            | Let's Catch Up on Connections
+  [                ]            item: done/page (enqueued 2026-08-17, processed 2026-08-17)            | This Planet is...Up to Something
+  [                ]            item: done/page (enqueued 2026-08-17, processed 2026-08-17)            | You Have Never Seen a Normal Star
+  [                ]            item: done/page (enqueued 2026-08-17, processed 2026-08-17)            | Let's Play SMUSH (and also look at how bad people are at spe
+  [                ]            item: done/page (enqueued 2026-08-17, processed 2026-08-17)            | Unfortunately, You Need to Know What the Jevons Paradox is
+  [                ]            item: done/page (enqueued 2026-08-17, processed 2026-08-17)            | Why is Everything Boring Now
+  [                ]            item: done/page (enqueued 2026-08-17, processed 2026-08-17)            | People are Wrong about my Game
+  [                ]            item: done/page (enqueued 2026-08-17, processed 2026-08-17)            | Why Aren't Salt-Water Fish Salty?
+  [                ]            item: done/page (enqueued 2026-08-17, processed 2026-08-17)            | There's a Border Closing Over Our Heads
+  [                ]            item: done/page (enqueued 2026-08-17, processed 2026-08-17)            | Are Scientific Papers Bad?
+  [                ]            item: done/page (enqueued 2026-08-17, processed 2026-08-17)            | No Effort is Wasted
+  [                ]            item: done/page (enqueued 2026-08-17, processed 2026-08-17)            | The Riskiest Moment of the AI Bubble
+
+## andymasley (substack, priority 1) — https://andymasley.substack.com
+  [Tue, 25 Aug 2026]            item: done/page (enqueued 2026-08-25, processed 2026-08-25)            | I think the data center backlash is mostly about data center
+  [Tue, 18 Aug 2026]            item: done/page (enqueued 2026-08-19, processed 2026-08-19)            | Thinking about other industries like we think about data cen
+  [Sat, 08 Aug 2026]            item: done/page (enqueued 2026-08-17, processed 2026-08-17)            | I'm very skeptical that China has played a meaningful role i
+  [Fri, 10 Jul 2026]            item: done/page (enqueued 2026-08-17, processed 2026-08-17)            | Toward liberal environmentalism
+  [Tue, 07 Jul 2026]            item: done/page (enqueued 2026-08-18, processed 2026-08-18)            | A conversation with my city planner friend Curtis on a recen
+  [Fri, 03 Jul 2026]            item: done/page (enqueued 2026-08-18, processed 2026-08-18)            | AI art as curation
+  [Sun, 21 Jun 2026]            item: done/page (enqueued 2026-08-18, processed 2026-08-18)            | What does it mean for AI to be democratic?
+  [Thu, 11 Jun 2026]            item: done/page (enqueued 2026-08-18, processed 2026-08-18)            | A plug for a tool I made to show how little most current AI 
+  [Sat, 06 Jun 2026]            item: done/page (enqueued 2026-08-18, processed 2026-08-18)            | A simple trick to fix the data center debate
+  [Thu, 04 Jun 2026]            item: done/page (enqueued 2026-08-18, processed 2026-08-18)            | Why I think panic about local impacts of data centers is jus
+  [Wed, 20 May 2026]            item: done/page (enqueued 2026-08-17, processed 2026-08-17)            | A history of the data center panic - part 1
+  [Tue, 19 May 2026]            item: done/page (enqueued 2026-08-18, processed 2026-08-18)            | A crash course on US air pollution
+  [Mon, 11 May 2026]            item: done/page (enqueued 2026-08-18, processed 2026-08-18)            | Let's not compare data center heat exhaust to nuclear bombs
+  [Sat, 02 May 2026]            item: done/page (enqueued 2026-08-18, processed 2026-08-18)            | Data center land use issues are fake
+  [Fri, 24 Apr 2026]            item: done/page (enqueued 2026-08-18, processed 2026-08-18)            | To be clear, I do understand how sound works
+  [Sun, 19 Apr 2026]            item: done/page (enqueued 2026-08-18, processed 2026-08-19)            | Contra Benn Jordan, data center (and all) sub-audible infras
+  [Sun, 12 Apr 2026]            item: done/page (enqueued 2026-08-19, processed 2026-08-19)            | Training AI models doesn't emit that much
+  [Fri, 03 Apr 2026]            item: done/page (enqueued 2026-08-19, processed 2026-08-19)            | What's blocking Waymo in DC and how can we fix it?
+  [Tue, 31 Mar 2026]            item: done/page (enqueued 2026-08-19, processed 2026-08-19)            | Data centers' heat exhaust is not raising the land temperatu
+  [Wed, 11 Mar 2026]            item: done/page (enqueued 2026-08-19, processed 2026-08-19)            | A call for more specific and numerate climate communication
+
+## moneymacro (youtube, priority 1) — https://www.youtube.com/@MoneyMacro
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=IabDOXf7Acs (enqueued 2026-08-20, processed 2026-08-20) | Why you should stop worrying about the birth rate collapse
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=ZbZfmNVFeE0 (enqueued 2026-08-20, processed 2026-08-20) | How long can the US keep borrowing so much?
+  [                ]            item: done/page (enqueued 2026-08-20, processed 2026-08-20)            | Why do 90% of economists oppose rent control?
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=PZd5tcGdQqc (enqueued 2026-08-20, processed 2026-08-20) | Why Japan industrialized before China
+  [                ]            item: done/page (enqueued 2026-08-20, processed 2026-08-20)            | How is Spain’s mass migration experiment going?
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=Y9LOOvJ7hKw (enqueued 2026-08-20, processed 2026-08-20) | What happens when you stop taxing billionaires?
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=1N2C72OdOxo (enqueued 2026-08-20, processed 2026-08-20) | What happened to China's property collapse?
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=kJttqFCWtQM (enqueued 2026-08-20, processed 2026-08-20) | What happened when Norway raised taxes on the wealthy?
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=hLwSSGM6tzc (enqueued 2026-08-20, processed 2026-08-20) | Why Japan isn’t broke yet
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=fWF0ZwzGoho (enqueued 2026-08-20, processed 2026-08-20) | Iran's crumbling economy
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=Yx-s-yY5AnI (enqueued 2026-08-20, processed 2026-08-20) | Why do right-wing populists keep coming back?
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=wXbuiTrnqXY (enqueued 2026-08-20, processed 2026-08-20) | The PetroDollar is a myth. The Iran war confirmed it.
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=uqSwRHc-1MQ (enqueued 2026-08-20, processed 2026-08-20) | Who will pay for 100 million boomer pensions?
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=_RKESHFcm54 (enqueued 2026-08-20, processed 2026-08-20) | Why Hungary's election may soon disappoint
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=an9cWefN8q8 (enqueued 2026-08-20, processed 2026-08-20) | If the strait opens, what happens to the economy?
+
+## lironshapira (substack, priority 1) — https://lironshapira.substack.com
+  [Fri, 28 Aug 2026]            item: done/page (enqueued 2026-08-29, processed 2026-08-29)            | Sam Altman Is Gaslighting About AI Risk After His Own AI Jus
+  [Wed, 26 Aug 2026]            item: done/page (enqueued 2026-08-26, processed 2026-08-26)            | They’re Making AI Doom Cool! Ft. AELLA, Brangus, Avalon Warr
+  [Thu, 20 Aug 2026]            item: error/page ERROR=[model: anthropic/claude-opus-4.6] 403 403 Key limit exceeded (monthly limit). M (enqueued 2026-08-22, processed 2026-08-22) | I Warned You AI Would Hack Us — My 2023 Interview Aged Terri
+  [Tue, 18 Aug 2026]            item: error/page ERROR=[model: anthropic/claude-opus-4.6] 403 403 Key limit exceeded (monthly limit). M (enqueued 2026-08-22, processed 2026-08-22) | Former Singularity Institute President: PauseAI Is Making AI
+  [Tue, 11 Aug 2026]            item: error/page ERROR=[model: anthropic/claude-opus-4.6] 403 403 Key limit exceeded (monthly limit). M (enqueued 2026-08-22, processed 2026-08-22) | 14-Year-Old Forecaster Challenges My P(Doom) — Eli Goldfine
+  [Sat, 08 Aug 2026]            item: error/page ERROR=[model: anthropic/claude-opus-4.6] 403 403 Key limit exceeded (monthly limit). M (enqueued 2026-08-22, processed 2026-08-22) | OpenAI's Bombshell Hack Explained: Swarms of Agents, Zero-Da
+  [Thu, 06 Aug 2026]            item: error/page ERROR=[model: anthropic/claude-opus-4.6] 403 403 Key limit exceeded (monthly limit). M (enqueued 2026-08-22, processed 2026-08-22) | I Raised His P(Doom) Live On Air — Liron on Milk Road AI
+  [Wed, 05 Aug 2026]            item: error/page ERROR=[model: anthropic/claude-opus-4.6] 403 403 Key limit exceeded (monthly limit). M (enqueued 2026-08-22, processed 2026-08-22) | Would You Consider Supporting Doom Debates?
+  [Tue, 04 Aug 2026]            item: error/page ERROR=[model: anthropic/claude-opus-4.6] 403 403 Key limit exceeded (monthly limit). M (enqueued 2026-08-22, processed 2026-08-22) | Google DeepMind AI Safety Researcher Who Just RESIGNED Says 
+  [Sat, 01 Aug 2026]            item: error/page ERROR=[model: anthropic/claude-opus-4.6] 403 403 Key limit exceeded (monthly limit). M (enqueued 2026-08-22, processed 2026-08-22) | NEWS: Anthropic's AI Went on a Hacking Rampage, Leopold's Fu
+  [Wed, 29 Jul 2026]            item: error/page ERROR=[model: anthropic/claude-opus-4.6] 403 403 Key limit exceeded (monthly limit). M (enqueued 2026-08-22, processed 2026-08-22) | Doom Debates State of the Show 2026
+  [Tue, 28 Jul 2026]            item: error/page ERROR=[model: anthropic/claude-opus-4.6] 403 403 Key limit exceeded (monthly limit). M (enqueued 2026-08-22, processed 2026-08-22) | Special Report: Google DeepMind's Frontier AI Policy Lead Ma
+  [Sat, 25 Jul 2026]            item: error/page ERROR=[model: anthropic/claude-opus-4.6] 403 403 Key limit exceeded (monthly limit). M (enqueued 2026-08-22, processed 2026-08-22) | Where Do YOU Get Off the Doom Train? Live Debate at Manifest
+  [Tue, 21 Jul 2026]            item: error/page ERROR=[model: anthropic/claude-opus-4.6] 403 403 Key limit exceeded (monthly limit). M (enqueued 2026-08-22, processed 2026-08-22) | Debating College Students About AI Extinction
+  [Tue, 07 Jul 2026]            item: error/page ERROR=[model: anthropic/claude-opus-4.6] 403 403 Key limit exceeded (monthly limit). M (enqueued 2026-08-22, processed 2026-08-22) | AI Took His Job, But He's Trying to Stay Optimistic — Debate
+  [Fri, 03 Jul 2026]            item: error/page ERROR=[model: anthropic/claude-opus-4.6] 403 403 Key limit exceeded (monthly limit). M (enqueued 2026-08-22, processed 2026-08-22) | Live Q&A: Dr. Mike Israetel Takes Your Questions on AI & the
+  [Thu, 02 Jul 2026]            item: error/page ERROR=[model: anthropic/claude-opus-4.6] 403 403 Key limit exceeded (monthly limit). M (enqueued 2026-08-22, processed 2026-08-22) | Living with a 50% P(AI Doom) — Liron Shapira and Peter Clark
+  [Tue, 30 Jun 2026]            item: error/page ERROR=[model: anthropic/claude-opus-4.6] 403 403 Key limit exceeded (monthly limit). M (enqueued 2026-08-22, processed 2026-08-22) | Let's CALL OUT the AI Doom “Enablers” Joining OpenAI & Anthr
+  [Thu, 25 Jun 2026]            item: error/page ERROR=[model: anthropic/claude-opus-4.6] 403 403 Key limit exceeded (monthly limit). M (enqueued 2026-08-22, processed 2026-08-22) | Even 0.1% P(Doom) Is Unacceptable — World-Class Coder Casey 
+  [Tue, 23 Jun 2026]            item: error/page ERROR=[model: anthropic/claude-opus-4.6] 403 403 Key limit exceeded (monthly limit). M (enqueued 2026-08-22, processed 2026-08-22) | Robert Wright's New Book, The God Test, Launches Today. What
+
+## zvi (substack, priority 0) — https://thezvi.substack.com
+  [Sat, 29 Aug 2026]            item: queued/page (enqueued 2026-08-29, processed None)                | METR and Redwood Offer Holy #%^@ Postmortem Of The HuggingFa
+  [Fri, 28 Aug 2026]            item: done/None (enqueued 2026-08-28, processed None)                  | OpenAI Offers Straight-Laced Postmortem Of The HuggingFace H
+  [Thu, 27 Aug 2026]            item: done/page (enqueued 2026-08-27, processed 2026-08-27)            | AI #183: Pre Post Mortem
+  [Wed, 26 Aug 2026]            item: done/page (enqueued 2026-08-26, processed 2026-08-26)            | Against Modesty’s Bailey
+  [Tue, 25 Aug 2026]            item: done/page (enqueued 2026-08-25, processed 2026-08-25)            | On Writing #3
+  [Mon, 24 Aug 2026]            item: done/page (enqueued 2026-08-24, processed 2026-08-24)            | The American People Really Hate Data Centers
+  [Fri, 21 Aug 2026]            item: error/page ERROR=[model: anthropic/claude-opus-4.6] 403 403 Key limit exceeded (monthly limit). M (enqueued 2026-08-21, processed 2026-08-21) | AI Text Watermarking Is Free And Good
+  [Thu, 20 Aug 2026]            item: done/page (enqueued 2026-08-20, processed 2026-08-20)            | AI #182: Pause For Reflection
+  [Wed, 19 Aug 2026]            item: done/page (enqueued 2026-08-19, processed 2026-08-19)            | OpenAI Takes Initial Steps To Address Its Alignment Problems
+  [Tue, 18 Aug 2026]            item: done/page (enqueued 2026-08-19, processed 2026-08-19)            | Anthropic Risk Report: August 2026
+  [Sat, 15 Aug 2026]            item: done/page (enqueued 2026-08-15, processed 2026-08-15)            | On Dwarkesh Patel's Podcast With Ryan Greenblatt
+  [Thu, 13 Aug 2026]            item: done/page (enqueued 2026-08-13, processed 2026-08-13)            | AI #181: Astra Goes Cyber Critical
+  [Wed, 12 Aug 2026]            item: done/page (enqueued 2026-08-12, processed 2026-08-12)            | Monthly Roundup #45: August 2026
+  [Tue, 11 Aug 2026]            item: done/page (enqueued 2026-08-11, processed 2026-08-11)            | Various Reflections About What Happened With OpenAI's Intern
+  [Mon, 10 Aug 2026]            item: done/page (enqueued 2026-08-10, processed 2026-08-10)            | The Pacing of the Frontier
+  [Sat, 08 Aug 2026]            item: done/page (enqueued 2026-08-08, processed 2026-08-08)            | What Happened: OpenAI and HuggingFace
+  [Fri, 07 Aug 2026]            item: done/page (enqueued 2026-08-07, processed 2026-08-07)            | OpenAI Trained Its Models For Months While Those Models Were
+  [Thu, 06 Aug 2026]            item: done/page (enqueued 2026-08-07, processed 2026-08-07)            | AI #180: No Longer In Charge
+  [Wed, 05 Aug 2026]            item: done/page (enqueued 2026-08-07, processed 2026-08-07)            | The Three AI Pills
+  [Mon, 03 Aug 2026]            item: done/page (enqueued 2026-08-07, processed 2026-08-07)            | OpenAI's Unreleased Model Astra Solves Ten Major Open Mathem
+
+## dwarkesh (youtube, priority 0) — https://www.youtube.com/@DwarkeshPatel
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=aV26V1UvkJw (enqueued 2026-08-25, processed 2026-08-25) | Dylan Patel – Anthropic & OpenAI will have most of the world
+  [                ]            item: done/page (enqueued 2026-08-11, processed 2026-08-11)            | Ryan Greenblatt – What happens once AI can automate AI resea
+  [                ]            item: done/page (enqueued 2026-08-07, processed 2026-08-10)            | 8 Predictions for the Era of Continual Learning
+  [                ]            item: done/page (enqueued 2026-08-07, processed 2026-08-10)            | Why smarter AI models could drive up compute prices 10x
+  [                ]            item: done/page (enqueued 2026-07-14, processed None)                  | General relativity from first principles – Adam Brown
+  [                ]            item: done/page (enqueued 2026-08-07, processed 2026-08-10)            | Grant Sanderson (@3Blue1Brown) – AI disproved a famous math 
+  [                ]            item: done/page (enqueued 2026-08-07, processed 2026-08-10)            | What does the next training paradigm look like?
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=4pG3SJQPAwk (enqueued 2026-08-07, processed 2026-08-10) | The data black hole at the center of AI
+  [                ]            item: done/page (enqueued 2026-08-07, processed 2026-08-10)            | Machiavelli is the most misunderstood thinker of all time – 
+  [                ]            item: done/page (enqueued 2026-08-07, processed 2026-08-10)            | Sarah Paine - Why Putin and Xi can't escape geography
+  [                ]            item: done/page (enqueued 2026-07-10, processed None)                  | The better AI gets, the smaller its share of the economy mig
+  [                ]            item: done/page (enqueued 2026-08-07, processed 2026-08-10)            | Chip design from the bottom up – Reiner Pope
+  [                ]            item: done/page (enqueued 2026-08-07, processed 2026-08-10)            | What rebuilding AlphaGo teaches us about self-play, RL, and 
+  [                ]            item: error/page ERROR=No en transcript available for https://www.youtube.com/watch?v=sRKBGVFVYAw (enqueued 2026-08-07, processed 2026-08-10) | David Reich – Bronze Age shock, the Neanderthal puzzle, & th
+  [                ]            item: done/page (enqueued 2026-08-07, processed 2026-08-10)            | How GPT, Claude, and Gemini are actually trained and served 
+
+## acx (substack, priority 0) — https://astralcodexten.substack.com
+  [Fri, 28 Aug 2026]            NO ITEM ROW                                                            | Your Book Review: Thomas Urquhart’s Translation Of Rabelais
+  [Thu, 27 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | Hidden Open Thread 448.5
+  [Thu, 27 Aug 2026]            item: done/page (enqueued 2026-08-27, processed 2026-08-27)            | Take The 2026 ACX Survey
+  [Tue, 25 Aug 2026]            item: done/page (enqueued 2026-08-25, processed 2026-08-25)            | Highlights From The Comments On The Substack Religion Debate
+  [Mon, 24 Aug 2026]            item: done/page (enqueued 2026-08-25, processed 2026-08-25)            | Re: Re: Re: Pritchard On Liberal Happiness
+  [Mon, 24 Aug 2026]            item: done/page (enqueued 2026-08-24, processed 2026-08-24)            | Open Thread 448
+  [Fri, 21 Aug 2026]            item: error/page ERROR=[model: anthropic/claude-opus-4.6] 403 403 Key limit exceeded (monthly limit). M (enqueued 2026-08-21, processed 2026-08-21) | Your Book Review: A Residence Of 21 Years In The Sandwich Is
+  [Thu, 20 Aug 2026]            item: error/page ERROR=[model: anthropic/claude-opus-4.6] 402 402 This request requires more credits, o (enqueued 2026-08-21, processed 2026-08-21) | College EA Meetups Everywhere: Call For Organizers
+  [Wed, 19 Aug 2026]            item: done/page (enqueued 2026-08-19, processed 2026-08-19)            | Why I'm Staying Out Of The Substack Religion Debate
+  [Mon, 17 Aug 2026]            item: done/page (enqueued 2026-08-19, processed 2026-08-19)            | Open Thread 447
+  [Fri, 14 Aug 2026]            item: done/page (enqueued 2026-08-14, processed 2026-08-14)            | Your Book Review: The Escape Artist
+  [Thu, 13 Aug 2026]            item: done/page (enqueued 2026-08-14, processed 2026-08-14)            | The Foothills Of Bay Area House Party
+  [Thu, 13 Aug 2026]            item: done/page (enqueued 2026-08-13, processed 2026-08-13)            | The Quest For Caffeine You Can Have At Night
+  [Mon, 10 Aug 2026]            item: done/page (enqueued 2026-08-10, processed 2026-08-10)            | Open Thread 446
+  [Fri, 07 Aug 2026]            item: done/page (enqueued 2026-08-07, processed 2026-08-07)            | MacGregor The Bridge Builder
+  [Thu, 06 Aug 2026]            item: done/page (enqueued 2026-08-07, processed 2026-08-07)            | Open Questions On Open Weights
+  [Thu, 06 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | Hidden Open Thread 445.5
+  [Tue, 04 Aug 2026]            item: done/page (enqueued 2026-08-07, processed 2026-08-07)            | The Beauty Of Settled Science
+  [Mon, 03 Aug 2026]            item: done/page (enqueued 2026-08-07, processed 2026-08-07)            | Does Forecasting Have Room At The Top?
+  [Mon, 03 Aug 2026]            item: done/page (enqueued 2026-08-07, processed 2026-08-07)            | Open Thread 445
+
+## natesilver (substack, priority 0) — https://natesilver.substack.com
+  [Sat, 29 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | FLIPR 2026 midterm election forecast
+  [Fri, 28 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | A tour of the 9 key governor races
+  [Fri, 28 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | How popular is Donald Trump?
+  [Fri, 28 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | Who’s ahead on the generic congressional ballot?
+  [Fri, 28 Aug 2026]            item: done/page (enqueued 2026-08-07, processed 2026-08-07)            | How popular is the Iran War?
+  [Tue, 25 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | Do I really buy that Texas could turn blue?
+  [Sat, 22 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | A tour of the 48 key House races
+  [Thu, 20 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | Are Democrats on a summer sugar high?
+  [Mon, 17 Aug 2026]            item: done/page (enqueued 2026-08-19, processed 2026-08-19)            | Why does everyone hate data centers?
+  [Sat, 15 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | A tour of the 7 key Senate races
+  [Thu, 13 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | Prediction markets aren't magic
+  [Wed, 12 Aug 2026]            item: done/page (enqueued 2026-08-07, processed 2026-08-07)            | How popular is Elon Musk?
+  [Tue, 11 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | Everything is breaking Democrats’ way. Is it enough to win t
+  [Tue, 11 Aug 2026]            item: done/page (enqueued 2026-08-11, processed 2026-08-11)            | How FLIPR forecasts the midterm elections
+  [Wed, 05 Aug 2026]            item: done/page (enqueued 2026-08-07, processed 2026-08-07)            | What to make of Michigan
+  [Mon, 03 Aug 2026]            item: done/page (enqueued 2026-08-07, processed 2026-08-07)            | What Trump's latest slump means for the midterms
+  [Wed, 29 Jul 2026] PAYWALLED  NO ITEM ROW                                                            | Goodbye, Iowa. Hello, Michigan. Which Democratic primaries w
+  [Sat, 25 Jul 2026]            item: done/page (enqueued 2026-08-07, processed 2026-08-07)            | What is agency — and how can you get more of it?
+  [Tue, 21 Jul 2026]            item: done/page (enqueued 2026-08-07, processed 2026-08-07)            | The DSA sweet spot: highly educated, downwardly mobile
+  [Sun, 19 Jul 2026] PAYWALLED  NO ITEM ROW                                                            | PELE International Football Rankings ⚽
+
+## slowboring (substack, priority 0) — https://slowboring.substack.com
+  [Sat, 29 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | Everything is country
+  [Fri, 28 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | Friday discussion post
+  [Fri, 28 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | The Great Awokening started in 2014, not 2020
+  [Thu, 27 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | Thursday discussion post
+  [Thu, 27 Aug 2026]            item: done/page (enqueued 2026-08-27, processed 2026-08-27)            | Politics should be more boring
+  [Thu, 27 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | The “anti-social century” with Derek Thompson
+  [Wed, 26 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | As one housing reform works in Texas, another in Colorado hi
+  [Wed, 26 Aug 2026]            item: done/page (enqueued 2026-08-26, processed 2026-08-26)            | YIMBYs already have a bold vision for solving the housing cr
+  [Tue, 25 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | Tuesday discussion post
+  [Tue, 25 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | The Western water crisis has a simple solution
+  [Mon, 24 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | Three Dan Sullivans walk into a race for Senate
+  [Mon, 24 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | The real reason nobody feels good about technological progre
+  [Sun, 23 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | Sunday Thread + Mailbag
+  [Sat, 22 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | Saturday discussion post
+  [Fri, 21 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | What kind of Democrat can win?
+  [Fri, 21 Aug 2026]            item: error/page ERROR=[model: anthropic/claude-opus-4.6] 403 403 Key limit exceeded (monthly limit). M (enqueued 2026-08-21, processed 2026-08-21) | Giving the people what they want (not data centers)
+  [Thu, 20 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | Thursday discussion post
+  [Thu, 20 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | Thousands of years of indoor air pollution
+  [Thu, 20 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | Everyone hates the “elites,” but who are they?
+  [Wed, 19 Aug 2026] PAYWALLED  NO ITEM ROW                                                            | The have-and-have-not housing market
+
