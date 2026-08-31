@@ -87,10 +87,11 @@ function Badge({ open, onClick, style }: { open: boolean; onClick: () => void; s
 }
 
 /** The margin style's marker: a quiet gray dot that turns blue with a soft
- *  halo when the pointer is near, and stays that way while its note is open
- *  (Jim picked this over the circled glyph, 2026-08-31). The button box stays
- *  badge-sized so the positioning and collision math is shared; the dot is
- *  drawn smaller inside it. */
+ *  halo when the pointer is near (Jim picked this over the circled glyph,
+ *  2026-08-31). While the note is open the dot sits under the card and stays
+ *  plain gray: an open-state blue faded back to gray on close and read as a
+ *  flicker. The button box stays badge-sized so the positioning and collision
+ *  math is shared; the dot is drawn smaller inside it. */
 function MarginDot({ open, onClick, style }: { open: boolean; onClick: () => void; style: React.CSSProperties }) {
   return (
     <button
@@ -101,10 +102,10 @@ function MarginDot({ open, onClick, style }: { open: boolean; onClick: () => voi
       className="absolute flex items-center justify-center group"
     >
       <span
-        className={`h-2.5 w-2.5 rounded-full transition-colors ${
+        className={`h-2.5 w-2.5 rounded-full bg-gray-400 dark:bg-gray-500 ${
           open
-            ? "bg-blue-600 ring-4 ring-blue-500/20 dark:bg-blue-400 dark:ring-blue-400/25"
-            : "bg-gray-400 group-hover:bg-blue-600 group-hover:ring-4 group-hover:ring-blue-500/20 dark:bg-gray-500 dark:group-hover:bg-blue-400 dark:group-hover:ring-blue-400/25"
+            ? ""
+            : "transition-colors group-hover:bg-blue-600 group-hover:ring-4 group-hover:ring-blue-500/20 dark:group-hover:bg-blue-400 dark:group-hover:ring-blue-400/25"
         }`}
       />
     </button>
