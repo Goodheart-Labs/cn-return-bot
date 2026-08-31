@@ -1,0 +1,43 @@
+Installed 2 packages in 2ms
+=== error items by class ===
+    43  no english transcript                               2026-08-10 → 2026-08-30
+    26  openrouter monthly key limit (403)                  2026-08-21 → 2026-08-22
+     1  openrouter out of credits (402)                     2026-08-21 → 2026-08-21
+     1  [model: anthropic/claude-opus-4.6] ? Failed to parse JSON  2026-08-07 → 2026-08-07
+
+=== items by status ===
+   274  done
+    71  error
+     1  queued
+
+=== queued right now (priority, created) ===
+  prio 0  [web] 2026-08-29  https://thezvi.substack.com/p/metr-and-redwood-offer-holy-postmortem
+
+=== daily spend, last 14 days (UTC) ===
+  2026-08-17  $  35.66   331 claim-runs  last run 23:39:16.073348
+  2026-08-18  $  56.64   366 claim-runs  last run 05:07:49.468992
+  2026-08-19  $  43.02   349 claim-runs  last run 20:07:05.310022
+  2026-08-20  $  17.30   143 claim-runs  last run 17:03:31.450302
+  2026-08-23  $   0.64     5 claim-runs  last run 21:09:38.350024
+  2026-08-24  $   1.00     7 claim-runs  last run 18:36:28.047801
+  2026-08-25  $  16.35   114 claim-runs  last run 21:18:11.494943
+  2026-08-26  $  10.89   121 claim-runs  last run 18:36:29.105081
+  2026-08-27  $  20.86   200 claim-runs  last run 23:39:10.938025
+  2026-08-28  $  55.79   601 claim-runs  last run 13:43:02.796436
+  2026-08-29  $  55.50   374 claim-runs  last run 02:38:24.525169
+  2026-08-30  $  55.51   464 claim-runs  last run 06:22:38.323263
+
+=== spend by project, last 7 days ===
+  $ 104.21   749 claim-runs  aiexplained-official
+  $  21.92   219 claim-runs  web
+  $  18.35   288 claim-runs  jeffnippard
+  $  16.49   112 claim-runs  plannedobs
+  $  13.57   142 claim-runs  lironshapira
+  $  11.85   112 claim-runs  zvi
+  $  10.50    91 claim-runs  nicholasdecker
+  $   7.05    42 claim-runs  acx
+  $   6.52    46 claim-runs  andymasley
+  $   3.91    63 claim-runs  stuffmadehere
+  $   0.84     6 claim-runs  sabinehossenfelder
+  $   0.74    11 claim-runs  hankschannel
+  $   0.57     5 claim-runs  slowboring
