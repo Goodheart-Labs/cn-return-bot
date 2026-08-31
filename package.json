@@ -66,6 +66,7 @@
     "everything-enqueue": "bun run src/everything/enqueue.ts",
     "everything-auto-enqueue": "bun run src/everything/autoEnqueue.ts",
     "everything-consume-requests": "bun run src/everything/consumeRequests.ts",
+    "everything-prioritize": "bun run src/everything/prioritize.ts",
     "everything-auto-run": "bun run src/everything/autoRun.ts",
     "everything-worker": "bun run src/everything/worker.ts",
     "commonnotes": "cd src/everything-web && bunx vite --port 8003 --mode prod-backend",
