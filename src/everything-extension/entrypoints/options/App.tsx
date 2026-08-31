@@ -102,18 +102,6 @@ export function SettingsApp() {
               >
                 Show note counts on thumbnails and listings
               </Checkbox>
-              <Checkbox
-                checked={settings.showFollowOverlay}
-                onChange={(checked) => toggleSettings({ showFollowOverlay: checked })}
-              >
-                Offer to follow authors and channels we don't check yet
-              </Checkbox>
-              <Checkbox
-                checked={settings.showRequestOverlay}
-                onChange={(checked) => toggleSettings({ showRequestOverlay: checked })}
-              >
-                Offer to request notes on unchecked Substack posts and YouTube videos
-              </Checkbox>
             </>
           )}
         </Section>

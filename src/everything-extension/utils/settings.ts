@@ -72,22 +72,16 @@ export type ExtensionSettings = {
   /** Whether opening a covered page on this kind of site writes an anonymous
    *  visit row. The settings onboarding asks about exactly these. */
   saveVisits: Record<VisitSiteKind, boolean>;
-  /** The "we haven't checked this yet" card with its request button. */
-  showRequestOverlay: boolean;
   /** The "N Common Notes on this page" card on checked pages. */
   showNoteCountOverlay: boolean;
   /** The note-count badges on listing thumbnails. */
   showThumbnailBadges: boolean;
-  /** The follow-an-author cards and the follow button on unchecked pages. */
-  showFollowOverlay: boolean;
 };
 
 const DEFAULT_SETTINGS: ExtensionSettings = {
   saveVisits: { substack: true, youtube: true, lesswrong: true },
-  showRequestOverlay: false,
   showNoteCountOverlay: true,
   showThumbnailBadges: true,
-  showFollowOverlay: true,
 };
 
 export type SettingsPatch = Partial<Omit<ExtensionSettings, "saveVisits">> & {

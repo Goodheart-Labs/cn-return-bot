@@ -9,19 +9,10 @@ import { indexContainer, findQuoteRange } from "./anchor";
 import { fetchClaimGroups, type ClaimGroup } from "./claimGroups";
 import { mountCoverageBadges } from "./coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "./coveredPages";
-import { unlessFollowed } from "./followedFeeds";
-import {
-  isSubstackPostPage,
-  readSubstackPublicationFromPage,
-  resolveProfileFollowTarget,
-  substackFollowTarget,
-  substackProfileHandle,
-  substackTargetFromPublication,
-  type FollowTarget,
-} from "./followTarget";
+import { isSubstackPostPage } from "./followTarget";
 import { jumpToNextNote } from "./jumpBus";
 import { recordPageVisit } from "./linkVisits";
-import { mountFollowOverlay, mountStatusOverlay } from "./mountStatusOverlay";
+import { mountStatusOverlay } from "./mountStatusOverlay";
 import { mountWriteAnywhere } from "./mountWriteAnywhere";
 import { listenForRequestInfo } from "./requestInfo";
 import { getSettings, onNoteFiltersChanged } from "./settings";
@@ -93,64 +84,6 @@ function applyHighlights(ranges: Range[]) {
   else highlights.set(HIGHLIGHT_NAME, new (globalThis as any).Highlight(...ranges));
 }
 
-/** The follow target when this page is an author's own page rather than a
- *  post: a publication homepage or archive on a *.substack.com subdomain or a
- *  custom domain, or a Substack profile page. Null when the page is none of
- *  those. */
-async function authorPageFollowTarget(pageUrl: string): Promise<FollowTarget | null> {
-  const subdomainTarget = substackFollowTarget(pageUrl);
-  if (subdomainTarget) return subdomainTarget;
-  const handle = substackProfileHandle(pageUrl);
-  if (handle) return resolveProfileFollowTarget(handle);
-  // A custom-domain publication names its *.substack.com form inside the
-  // page. Any page that is not Substack reads as nothing here.
-  return substackTargetFromPublication(readSubstackPublicationFromPage());
-}
-
-/** The write-anywhere shell plus the transient status card. A post page gets
- *  the full card with the request button, but only when request overlays are
- *  turned on and the author is not already followed; with the request card
- *  suppressed an unfollowed author still gets the follow-only card. An
- *  author's own page — a publication homepage or a profile — gets just the
- *  follow button when we do not follow the author yet. */
-async function mountUncovered(
-  ctx: ContentScriptContext,
-  pageUrl: string,
-  onCoverageChanged: () => void,
-): Promise<() => void> {
-  const teardownWrite = await mountWriteAnywhere(ctx, pageUrl, onCoverageChanged);
-  let teardownStatus: (() => void) | null = null;
-  if (isSubstackPostPage(pageUrl)) {
-    // unlessFollowed collapses "no feed" and "followed feed" both to null, so
-    // the author's feed is resolved once to tell the two apart. A post on a
-    // custom domain derives its feed from the page itself.
-    const authorFeed = substackFollowTarget(pageUrl) ?? substackTargetFromPublication(readSubstackPublicationFromPage());
-    const unfollowedAuthor = await unlessFollowed(authorFeed);
-    const authorFollowed = authorFeed !== null && unfollowedAuthor === null;
-    if ((await getSettings()).showRequestOverlay && !authorFollowed) {
-      teardownStatus = (
-        await mountStatusOverlay(ctx, {
-          pageUrl,
-          noun: "post",
-          counts: null,
-          wholePageChecked: false,
-          followTarget: unfollowedAuthor,
-          requestWithPageText: true,
-        })
-      ).teardown;
-    } else if (unfollowedAuthor) {
-      teardownStatus = await mountFollowOverlay(ctx, unfollowedAuthor);
-    }
-  } else {
-    const target = await unlessFollowed(await authorPageFollowTarget(pageUrl));
-    if (target) teardownStatus = await mountFollowOverlay(ctx, target);
-  }
-  return () => {
-    teardownStatus?.();
-    teardownWrite();
-  };
-}
-
 /** Resolves `href` to an ingested item, anchors that item's claims and mounts the
  *  overlay. When the page has no ingested item we mount the write-anywhere shell
  *  instead. Either way the returned function tears down whatever was mounted. */
@@ -166,7 +99,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   if (covered && !pageIsCovered(pageUrl, covered)) {
     console.info(`[common-notes] ${pageUrl} → not in the covered list (no backend lookup)`);
     recordPageVisit(pageUrl, null);
-    return mountUncovered(ctx, pageUrl, onCoverageChanged);
+    return mountWriteAnywhere(ctx, pageUrl, onCoverageChanged);
   }
   // A failed lookup mounts nothing. Treating an outage as an unchecked page
   // would tell the reader we never checked a page we did, and offer to check
@@ -181,7 +114,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   console.info(`[common-notes] ${pageUrl} → ${item ? `item "${item.title ?? item.id}"` : "no ingested item"}`);
   if (!item) {
     recordPageVisit(pageUrl, null);
-    return mountUncovered(ctx, pageUrl, onCoverageChanged);
+    return mountWriteAnywhere(ctx, pageUrl, onCoverageChanged);
   }
   recordPageVisit(pageUrl, item);
   // We mount even when the item has no notes yet. Writing a note from a selection
@@ -211,13 +144,10 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   // else on the page says the check is still worth asking for.
   const statusCard = (await getSettings()).showNoteCountOverlay
     ? await mountStatusOverlay(ctx, {
-        pageUrl,
         noun: isSubstackPostPage(pageUrl) ? "post" : "page",
         counts,
         wholePageChecked: isWholePageChecked(item),
         onOpenNotes: jumpToNextNote,
-        followTarget: null,
-        requestWithPageText: true,
       })
     : null;
 
