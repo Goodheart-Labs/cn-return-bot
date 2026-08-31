@@ -110,6 +110,23 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<{ sourceName?: stri
   return { sourceName: channelName, entries };
 }
 
+/** Feed listings fetched this process, keyed by feed URL. The cycles of one
+ *  dispatch reuse them, so a growing feed set does not multiply listing
+ *  fetches by the cycle count; a post published mid-dispatch simply waits for
+ *  the next dispatch. The unprocessed check against the database still runs
+ *  every cycle, so an entry enqueued in an earlier cycle is not picked again. */
+const feedListingCache = new Map<string, { sourceName?: string; entries: FeedEntry[] }>();
+
+async function cachedFeedEntries(feed: PriorityFeed): Promise<{ sourceName?: string; entries: FeedEntry[] }> {
+  const key = feed.type === "substack" ? feed.publicationUrl : feed.channelUrl;
+  let listing = feedListingCache.get(key);
+  if (!listing) {
+    listing = await fetchFeedEntries(feed);
+    feedListingCache.set(key, listing);
+  }
+  return listing;
+}
+
 /** A feed entry that still needs a whole-page check. Most carry no item row
  *  at all and are enqueued fresh. An entry whose item exists but was never a
  *  whole-page check, because a reader wrote a note on the page or one
@@ -263,7 +280,7 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
 
   const candidates: Candidate[] = [];
   for (const [feedIndex, { feed, priority }] of (await feedsToWalk()).entries()) {
-    const { sourceName, entries } = await fetchFeedEntries(feed);
+    const { sourceName, entries } = await cachedFeedEntries(feed);
     const latest = entries.slice(0, FEED_CANDIDATE_LIMIT);
     const unprocessed = await unprocessedEntries(feed, latest);
     console.log(`[${feed.project}] ${entries.length} feed entries, ${unprocessed.length} of the newest ${latest.length} unprocessed`);
