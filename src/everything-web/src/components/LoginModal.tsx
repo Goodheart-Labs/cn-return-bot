@@ -62,6 +62,8 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
           <form onSubmit={sendCode} className="space-y-2">
             <input
               type="email"
+              name="email"
+              autoComplete="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -81,6 +83,8 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
             <p className="text-sm text-gray-500 dark:text-gray-400">Enter the code we sent to <span className="font-medium text-gray-700 dark:text-gray-300">{email.trim()}</span>.</p>
             <input
               inputMode="numeric"
+              name="one-time-code"
+              autoComplete="one-time-code"
               autoFocus
               required
               value={code}

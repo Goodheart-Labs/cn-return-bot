@@ -110,6 +110,8 @@ export function LoginPanel({ surface = "settings", onDismiss }: { surface?: "set
         <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); sendCode(); }}>
           <input
             type="email"
+            name="email"
+            autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
@@ -125,6 +127,8 @@ export function LoginPanel({ surface = "settings", onDismiss }: { surface?: "set
           <div className="flex gap-2">
             <input
               inputMode="numeric"
+              name="one-time-code"
+              autoComplete="one-time-code"
               autoFocus
               value={code}
               onChange={(e) => setCode(e.target.value)}
