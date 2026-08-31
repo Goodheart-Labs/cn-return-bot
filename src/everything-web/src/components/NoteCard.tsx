@@ -15,6 +15,7 @@ import { CARD, CHIP, LINK, QUOTE_RAIL } from "../../../everything-shared/ui";
 import { NoteMenu } from "./NoteMenu";
 import { NoteNotNeeded, type NnnApi } from "./NoteNotNeeded";
 import { VoteDonation } from "./VoteDonation";
+import { useVotingNudge, VotingNudge } from "./VotingNudge";
 
 /** The rating states, in the style of Community Notes. Each one carries the
  *  colour of its icon, the copy on its badge, the tint of the note box, and the
@@ -372,6 +373,7 @@ export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug, 
   // automatic Helpful vote minted, so the notice explains the pill that is
   // already lit.
   const [cast, setCast] = useState<MintedDonation | null>(() => takeMintedDonation(note.id));
+  const nudge = useVotingNudge();
   const cardColRef = useRef<HTMLDivElement>(null);
   const [sourcesOpen, setSourcesOpen] = useState(false);
   // The status is computed once per card. The badge, the box tint, the reveal of
@@ -421,14 +423,20 @@ export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug, 
 
       <div className="mb-2">
         <NoteBox note={note} status={status} sourcesOpen={sourcesOpen}>
-          <VoteRatings
-            helpful={note.helpful_count}
-            somewhatHelpful={note.somewhat_helpful_count}
-            notHelpful={note.not_helpful_count}
-            myVote={myVote}
-            showCounts={noteTallyVisible(status, myVote, note.created_at)}
-            onVote={(vote) => void onVote(note, vote).then(setCast)}
-          />
+          <span className="relative inline-flex">
+            {nudge.show && <VotingNudge onDismiss={nudge.dismiss} />}
+            <VoteRatings
+              helpful={note.helpful_count}
+              somewhatHelpful={note.somewhat_helpful_count}
+              notHelpful={note.not_helpful_count}
+              myVote={myVote}
+              showCounts={noteTallyVisible(status, myVote, note.created_at)}
+              onVote={(vote) => {
+                if (nudge.show) nudge.dismiss();
+                void onVote(note, vote).then(setCast);
+              }}
+            />
+          </span>
         </NoteBox>
         {cast && myVote !== undefined && session && (
           <VoteDonation
