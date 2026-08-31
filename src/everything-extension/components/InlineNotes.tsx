@@ -29,6 +29,31 @@ const BADGE_GAP = 4; // Pixels between the end of the passage and the badge.
 const POPOVER_GAP = 8; // Pixels between the passage and the opened popover.
 const VIEWPORT_MARGIN = 8; // The popover stays this many pixels from the edges.
 
+// The margin note style: the marker sits this far into the whitespace right of
+// the article column, and the opened card grows from the same edge. The card
+// is narrower than the classic popover because real margins rarely fit 560px.
+const MARGIN_MARKER_GAP = 24;
+const MARGIN_CARD_WIDTH = 380;
+// Below this much usable margin the style falls back to the classic popover:
+// a cramped margin card is worse than the old overlay.
+const MARGIN_CARD_MIN_WIDTH = 300;
+// Two markers whose passages start on the same line would overlap; later ones
+// are nudged down by one marker height plus breathing room.
+const MARGIN_MARKER_STEP = BADGE_SIZE + 6;
+
+/** Whether an ancestor of the article container would clip content drawn this
+ *  far right of the viewport's left edge. Reader shells sometimes wrap the
+ *  article in an overflow-hidden column; a marker drawn into that margin would
+ *  silently vanish, so such pages fall back to the classic style. */
+function marginClipped(container: Element, rightEdge: number): boolean {
+  for (let el = container.parentElement; el && el !== document.body; el = el.parentElement) {
+    const { overflowX, overflow } = getComputedStyle(el);
+    const clips = (v: string) => v === "hidden" || v === "clip" || v === "auto" || v === "scroll";
+    if ((clips(overflowX) || clips(overflow)) && el.getBoundingClientRect().right < rightEdge) return true;
+  }
+  return false;
+}
+
 /** Gives the range's rectangle relative to the in-content annotation layer. Both
  *  rectangles are read in the same layout pass, so the pair does not change when
  *  the page scrolls. The layer sits inside the article and moves with the text
@@ -107,7 +132,7 @@ type NoteWithActionsVote = React.ComponentProps<typeof NoteWithActions>["onVote"
  *  The two pieces that are fixed to the viewport, the sign-in hint and the write
  *  modal, stay in the host element at body level. There a transform on an
  *  ancestor of the article cannot break position:fixed. */
-export function InlineNotesApp({ groups: initialGroups, item, onPosted, container, inlineContainer }: {
+export function InlineNotesApp({ groups: initialGroups, item, onPosted, container, inlineContainer, noteStyle }: {
   groups: AnchoredGroup[];
   item: PageItem;
   onPosted: () => void;
@@ -117,6 +142,10 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
   /** The React root element of the annotation layer, which sits inside
    *  `container`. */
   inlineContainer: HTMLElement;
+  /** "margin" puts the marker and the opened card in the whitespace right of
+   *  the article; "classic" is the old badge-and-popover style. Margin falls
+   *  back to classic on its own when there is no usable margin. */
+  noteStyle: "margin" | "classic";
 }) {
   const projectSlug = item.projectSlug;
   const [groups, setGroups] = useState(initialGroups);
@@ -269,8 +298,50 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
     // different scroll positions, and the result would no longer hold as the
     // page scrolls.
     const origin = inlineContainer.getBoundingClientRect();
-    return groups.map((group) => {
-      const rect = relRect(group.range, origin);
+
+    // Whether the margin style can actually be drawn here. The body fallback
+    // container has no margin by construction; a too-narrow window has no room
+    // for the card; a clipping ancestor would swallow the marker. Every
+    // failure falls back to the classic style rather than to nothing.
+    const containerRect = container.getBoundingClientRect();
+    const marginLeft = containerRect.right + MARGIN_MARKER_GAP;
+    const availableMargin = window.innerWidth - marginLeft - VIEWPORT_MARGIN;
+    const useMargin =
+      noteStyle === "margin" &&
+      container !== document.body &&
+      availableMargin >= MARGIN_CARD_MIN_WIDTH &&
+      !marginClipped(container, marginLeft + BADGE_SIZE);
+
+    // Markers of passages that start on the same lines would land on top of
+    // each other; walking them from top to bottom and pushing each below the
+    // previous keeps every one clickable. The nudged tops are computed per
+    // group first, because `groups` arrives in fetch order, not page order.
+    const rects = groups.map((group) => relRect(group.range, origin));
+    const marginTops = new Map<AnchoredGroup, number>();
+    if (useMargin) {
+      let previousBottom = -Infinity;
+      for (const index of [...groups.keys()].sort((a, b) => rects[a]!.top - rects[b]!.top)) {
+        const top = Math.max(rects[index]!.top, previousBottom + MARGIN_MARKER_STEP - BADGE_SIZE);
+        previousBottom = top + BADGE_SIZE;
+        marginTops.set(groups[index]!, top);
+      }
+    }
+
+    return groups.map((group, index) => {
+      const rect = rects[index]!;
+      if (useMargin) {
+        const left = marginLeft - origin.left;
+        return {
+          group,
+          badgeStyle: { top: marginTops.get(group)!, left, width: BADGE_SIZE, height: BADGE_SIZE } satisfies React.CSSProperties,
+          popoverStyle: {
+            top: rect.top,
+            left,
+            width: Math.min(MARGIN_CARD_WIDTH, availableMargin),
+            zIndex: 2,
+          } satisfies React.CSSProperties,
+        };
+      }
       // Keep the popover inside the viewport, with the numbers expressed in the
       // layer's own coordinates. A client x equals the layer x plus origin.left,
       // so a viewport edge at M becomes M - origin.left here.
@@ -295,7 +366,7 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
       };
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [groups, layoutTick, inlineContainer]);
+  }, [groups, layoutTick, inlineContainer, container, noteStyle]);
 
   return (
     // Absorb both mouse and keyboard events here. A mousedown would otherwise

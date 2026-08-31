@@ -15,7 +15,7 @@ import { recordPageVisit } from "./linkVisits";
 import { mountStatusOverlay } from "./mountStatusOverlay";
 import { mountWriteAnywhere } from "./mountWriteAnywhere";
 import { listenForRequestInfo } from "./requestInfo";
-import { getSettings, onNoteFiltersChanged } from "./settings";
+import { getSettings, onNoteFiltersChanged, onSettingsChanged, type NoteStyle } from "./settings";
 import { isPageDark, observePageTheme } from "./pageTheme";
 import { InlineNotesApp, type AnchoredGroup } from "../components/InlineNotes";
 import { track } from "../../everything-shared/analytics";
@@ -138,6 +138,10 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     });
   }
 
+  // The note style is read once here and kept fresh by the settings listener
+  // below, so flipping it in the settings applies without a reload.
+  let noteStyle: NoteStyle = (await getSettings()).noteStyle;
+
   // The transient status card tells the reader how this page stands: checked
   // in full, carrying notes, or holding only a reader's note with the whole
   // page still uncheckable. That last state matters most, because nothing
@@ -210,6 +214,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
         onPosted={refresh}
         container={container}
         inlineContainer={inlineUi.uiContainer}
+        noteStyle={noteStyle}
       />,
     );
   };
@@ -227,6 +232,14 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   // When the user flips a tickbox in the popup, we re-fetch the notes through the
   // new filters right away.
   const stopFilters = onNoteFiltersChanged(() => void refresh());
+  // A note-style flip in the settings re-renders the markers in place.
+  const stopSettings = onSettingsChanged(() => {
+    void getSettings().then((settings) => {
+      if (settings.noteStyle === noteStyle) return;
+      noteStyle = settings.noteStyle;
+      render();
+    });
+  });
 
   const ui = await createShadowRootUi(ctx, {
     name: "common-notes-ui",
@@ -276,6 +289,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
 
   return () => {
     stopFilters();
+    stopSettings();
     stopTheme();
     observer.disconnect();
     clearTimeout(timer);

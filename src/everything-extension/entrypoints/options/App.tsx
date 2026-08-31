@@ -109,6 +109,25 @@ function AdvancedSettings({ settings, onToggle }: {
       </Section>
 
       <Section title="Notes">
+        <p className="text-sm text-gray-600">Where a note opens on article pages.</p>
+        <label className="flex items-center gap-2 text-sm text-gray-700">
+          <input
+            type="radio"
+            name="note-style"
+            checked={settings.noteStyle === "margin"}
+            onChange={() => onToggle({ noteStyle: "margin" })}
+          />
+          In the margin, beside the text
+        </label>
+        <label className="flex items-center gap-2 text-sm text-gray-700">
+          <input
+            type="radio"
+            name="note-style"
+            checked={settings.noteStyle === "classic"}
+            onChange={() => onToggle({ noteStyle: "classic" })}
+          />
+          Classic: a badge in the text, the note on top of it
+        </label>
         {filters && <NoteFilterToggles filters={filters} onToggle={toggleFilters} />}
       </Section>
 
