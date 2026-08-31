@@ -162,7 +162,10 @@ async function persist(): Promise<void> {
   const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
   const { count: submitted24h, error: countErr } = await client
     .from("notes")
-    .select("*", { count: "exact", head: true })
+    // Ask for submitted_at, not "*": probe_writer is granted select on that one
+    // column, and a select over every column is denied outright. The count is
+    // the same either way, since a head request returns no rows.
+    .select("submitted_at", { count: "exact", head: true })
     .gte("submitted_at", since24h);
   if (countErr) throw countErr;
 
