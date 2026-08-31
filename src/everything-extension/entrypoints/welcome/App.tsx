@@ -51,7 +51,7 @@ export function WelcomeApp() {
           ) : (
             <p className="text-sm font-medium text-green-700">
               {answered
-                ? "Thanks! We'll pick up the authors you read and check their new posts."
+                ? "Thanks! We will check new posts of the creators you visit."
                 : "All right, we won't save your visits. Notes still show on everything we check."}
             </p>
           )}
