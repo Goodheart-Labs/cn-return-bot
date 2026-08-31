@@ -41,6 +41,8 @@ jobs:
       YTDLP_PROXY_URL: ${{ secrets.YTDLP_PROXY_URL }}
       # Daily spend cap in USD (repo variable; empty falls back to the code default of about 50 EUR)
       EVERYTHING_DAILY_SPEND_CAP_USD: ${{ vars.EVERYTHING_DAILY_SPEND_CAP_USD }}
+      # "on" also walks creators readers visit without following (repo variable; anything else only reorders the followed feeds)
+      EVERYTHING_VISIT_CREATORS: ${{ vars.EVERYTHING_VISIT_CREATORS }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
