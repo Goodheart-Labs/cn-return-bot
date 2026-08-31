@@ -99,6 +99,17 @@ describe("rankCreators", () => {
     expect(await rankedSlugs()).toEqual(["zvi", "stranger"]);
   });
 
+  test("an unfollowed creator below the visit minimum stays out, a followed one does not", async () => {
+    process.env.EVERYTHING_VISIT_CREATORS = "on";
+    dbState.followedFeeds = [feed("zvi")];
+    dbState.visitCounts = [
+      { feed_url: "https://zvi.substack.com", visits: 1 },
+      { feed_url: "https://oneclick.substack.com", visits: 1 },
+      { feed_url: "https://twoclicks.substack.com", visits: 2 },
+    ];
+    expect(await rankedSlugs()).toEqual(["twoclicks", "zvi"]);
+  });
+
   test("a visited feed URL of no known shape is skipped", async () => {
     process.env.EVERYTHING_VISIT_CREATORS = "on";
     dbState.visitCounts = [{ feed_url: "https://example.com/some-blog", visits: 7 }];
