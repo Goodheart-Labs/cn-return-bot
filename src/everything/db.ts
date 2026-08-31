@@ -9,6 +9,9 @@ import type { ItemSource, NoteSourceCitation } from "./types";
 /** The queue's priority tiers. The worker takes the highest tier first, and the
  *  newest published content within a tier. */
 export const QUEUE_PRIORITY = {
+  /** An errored item on a repeat attempt. It already had its turn once, so it
+   *  must never crowd out fresh content and drains last. */
+  retry: -1,
   /** The curated priority feeds. */
   backlog: 0,
   /** A post from a feed a reader asked us to follow. */
@@ -255,6 +258,44 @@ export async function requeueItem(id: string): Promise<void> {
   throwOnError(await getSupabaseClient().from("everything_items").update({ status: "queued" }).eq("id", id));
 }
 
+/** An errored item that still has repeat attempts left. */
+export interface RetryableErrorItem {
+  id: string;
+  url: string;
+  retries: number;
+  priority: number;
+}
+
+/** Returns the errored items that have been requeued fewer than `maxRetries`
+ *  times. */
+export async function fetchRetryableErrorItems(maxRetries: number): Promise<RetryableErrorItem[]> {
+  return throwOnError(
+    await getSupabaseClient()
+      .from("everything_items")
+      .select("id, url, retries, priority")
+      .eq("status", "error")
+      .lt("retries", maxRetries),
+  ) as RetryableErrorItem[];
+}
+
+/** Puts an errored item back in the queue for a repeat attempt and counts the
+ *  attempt. The last error text stays on the row until the item finishes, so a
+ *  waiting retry still shows why the item failed. A requested page keeps its
+ *  tier, because a reader is waiting for it. Every other item drains at the
+ *  retry tier, behind all fresh content. */
+export async function requeueErroredItem(item: RetryableErrorItem): Promise<void> {
+  throwOnError(
+    await getSupabaseClient()
+      .from("everything_items")
+      .update({
+        status: "queued",
+        retries: item.retries + 1,
+        priority: item.priority >= QUEUE_PRIORITY.requested ? item.priority : QUEUE_PRIORITY.retry,
+      })
+      .eq("id", item.id),
+  );
+}
+
 export interface ItemClaimRow {
   id: string;
   claim: string;
@@ -312,7 +353,7 @@ export async function markItemDone(id: string): Promise<void> {
   throwOnError(
     await getSupabaseClient()
       .from("everything_items")
-      .update({ status: "done", processed_at: new Date().toISOString() })
+      .update({ status: "done", error: null, processed_at: new Date().toISOString() })
       .eq("id", id),
   );
 }

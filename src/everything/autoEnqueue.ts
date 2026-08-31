@@ -31,8 +31,10 @@ import {
   fetchItemUrlsContaining,
   fetchItemUrlsIn,
   fetchOrphanedProcessingItems,
+  fetchRetryableErrorItems,
   markItemError,
   promoteItemToWholePage,
+  requeueErroredItem,
   requeueItem,
   resolveProjectId,
   type EnqueueRow,
@@ -127,10 +129,11 @@ export async function unprocessedEntries(feed: PriorityFeed, entries: FeedEntry[
  *  already saved. We put such an item back in the queue, and the worker will
  *  redo only the unfinished claims.
  *
- *  If the item has no claims yet, the run died during extraction. Requeueing
- *  it would repeat the whole extraction, and if extraction is what killed the
- *  run, that could repeat forever. So we mark it as an error instead. A human
- *  sees it and can put it back in the queue by hand.
+ *  If the item has no claims yet, the run died during extraction, and a resume
+ *  would repeat the whole extraction. So we mark it as an error instead. The
+ *  retry sweep below then gives it a bounded number of fresh attempts, and if
+ *  extraction is what keeps killing the run, the item stays in error for a
+ *  human to look at rather than looping forever.
  *
  *  This only runs while no worker is active. Inside the workflow that is
  *  guaranteed by its concurrency group; for local runs see the warning in
@@ -144,6 +147,25 @@ async function triageOrphanedItems(): Promise<void> {
       await markItemError(item.id, "orphaned in processing before claim extraction finished");
       console.log(`Orphaned in processing (no claims) → error: ${item.url}`);
     }
+  }
+}
+
+/** How many repeat attempts an errored item gets before it stays an error a
+ *  human has to look at. */
+const MAX_ITEM_RETRIES = 2;
+
+/** Puts errored items back in the queue for a bounded number of repeat
+ *  attempts. Most of our item errors have been transient: a flagged proxy IP
+ *  that made a transcript look missing, or an exhausted API key. Without a
+ *  retry each of those failures killed its item forever, because the feed
+ *  walker treats every existing whole-page item as processed. Retried items
+ *  drain at the retry tier, so they never delay fresh content. An item that
+ *  still fails after its retries stays in error, and the row's error text says
+ *  why. */
+async function retryErroredItems(): Promise<void> {
+  for (const item of await fetchRetryableErrorItems(MAX_ITEM_RETRIES)) {
+    await requeueErroredItem(item);
+    console.log(`Errored item requeued for attempt ${item.retries + 2}/${MAX_ITEM_RETRIES + 1}: ${item.url}`);
   }
 }
 
@@ -164,7 +186,10 @@ async function feedsToWalk(): Promise<{ feed: PriorityFeed; priority: number }[]
 /** Runs one pass of triage, selection, and enqueueing. Returns how many items
  *  were enqueued. */
 export async function runAutoEnqueue(dryRun = false): Promise<number> {
-  if (!dryRun) await triageOrphanedItems();
+  if (!dryRun) {
+    await triageOrphanedItems();
+    await retryErroredItems();
+  }
 
   const picks: { feed: PriorityFeed; priority: number; entry: UnprocessedEntry; sourceName?: string }[] = [];
   for (const { feed, priority } of await feedsToWalk()) {
