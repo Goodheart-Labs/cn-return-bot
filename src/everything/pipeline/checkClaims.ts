@@ -22,8 +22,10 @@ import type { ClaimCheck, ExtractedClaim, ItemSource, NoteSourceCitation } from 
 // too many claims that were worth checking. We also force the claim-check search
 // prompt, because a claim here is an excerpt from a transcript or an article and
 // not an X post.
-// The models are pinned. Search runs on Opus 5, the writer on Sonnet 5, and the
-// source verifier on Gemini 3 Flash.
+// The models are pinned. Search and writer run on Sonnet 5, and the source
+// verifier on Gemini 3 Flash. Search ran on Opus 5 until August 2026, when the
+// daily spend cap was exhausted by early morning several days in a row; Sonnet
+// is the X pipeline's main search arm and costs a fraction.
 // verifier_citations is on, so every accepted source carries a verbatim
 // supporting quote and an explanation. We save those per source.
 // verifier_claim_based is pinned to "classic", the single-call flow that accepts
@@ -33,7 +35,7 @@ const FORCED_PICKS: Record<string, string> = {
   bot: "simple-bot",
   note_prefilter: "off",
   search_claim: "on",
-  simple_bot_search: "opus5-native",
+  simple_bot_search: "sonnet5-native",
   simple_bot_writer: "sonnet5",
   simple_bot_verifier: "gemini-flash",
   verifier_citations: "on",
