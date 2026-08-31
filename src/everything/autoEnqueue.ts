@@ -162,16 +162,20 @@ async function triageOrphanedItems(): Promise<void> {
  *  human has to look at. */
 const MAX_ITEM_RETRIES = 2;
 
+/** How long an errored item rests before its next attempt. */
+const RETRY_COOLDOWN_HOURS = 6;
+
 /** Puts errored items back in the queue for a bounded number of repeat
  *  attempts. Most of our item errors have been transient: a flagged proxy IP
  *  that made a transcript look missing, or an exhausted API key. Without a
  *  retry each of those failures killed its item forever, because the feed
  *  walker treats every existing whole-page item as processed. Retried items
- *  drain at the retry tier, so they never delay fresh content. An item that
- *  still fails after its retries stays in error, and the row's error text says
- *  why. */
+ *  drain at the retry tier, so they never delay fresh content, and an item
+ *  rests between attempts so a cause that lasts a while does not burn every
+ *  retry at once. An item that still fails after its retries stays in error,
+ *  and the row's error text says why. */
 async function retryErroredItems(): Promise<void> {
-  for (const item of await fetchRetryableErrorItems(MAX_ITEM_RETRIES)) {
+  for (const item of await fetchRetryableErrorItems(MAX_ITEM_RETRIES, RETRY_COOLDOWN_HOURS)) {
     await requeueErroredItem(item);
     console.log(`Errored item requeued for attempt ${item.retries + 2}/${MAX_ITEM_RETRIES + 1}: ${item.url}`);
   }

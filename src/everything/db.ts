@@ -267,14 +267,18 @@ export interface RetryableErrorItem {
 }
 
 /** Returns the errored items that have been requeued fewer than `maxRetries`
- *  times. */
-export async function fetchRetryableErrorItems(maxRetries: number): Promise<RetryableErrorItem[]> {
+ *  times and whose last failure is at least `cooldownHours` old. The cool-down
+ *  spaces the attempts out. Without it a failure whose cause lasts a while,
+ *  say a broken proxy or an exhausted API key, would burn every retry within
+ *  minutes and the item would be dead again before the cause clears. */
+export async function fetchRetryableErrorItems(maxRetries: number, cooldownHours: number): Promise<RetryableErrorItem[]> {
   return throwOnError(
     await getSupabaseClient()
       .from("everything_items")
       .select("id, url, retries, priority")
       .eq("status", "error")
-      .lt("retries", maxRetries),
+      .lt("retries", maxRetries)
+      .lt("processed_at", new Date(Date.now() - cooldownHours * 3600_000).toISOString()),
   ) as RetryableErrorItem[];
 }
 
