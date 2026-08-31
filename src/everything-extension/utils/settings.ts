@@ -37,7 +37,9 @@ export async function addRequestedFollow(feedUrl: string): Promise<void> {
 const NOTE_FILTERS_KEY = "cn:noteFilters";
 
 export type NoteFilters = { showNeedsRatings: boolean; showUnhelpful: boolean };
-const DEFAULT_NOTE_FILTERS: NoteFilters = { showNeedsRatings: true, showUnhelpful: false };
+// Both filters default on since 2026-08-31 (Jim's call): a fresh install shows
+// unhelpful notes too, and hiding them is the opt-in.
+const DEFAULT_NOTE_FILTERS: NoteFilters = { showNeedsRatings: true, showUnhelpful: true };
 
 export async function getNoteFilters(): Promise<NoteFilters> {
   const stored = (await browser.storage.sync.get(NOTE_FILTERS_KEY))[NOTE_FILTERS_KEY] as Partial<NoteFilters> | undefined;
