@@ -1,24 +1,31 @@
 import { useEffect, useState } from "react";
 import {
+  fetchCreators,
   fetchDaily,
   fetchFunnel,
   WINDOWS,
+  type CreatorRow,
   type DailyRow,
   type FunnelRow,
   type TimeWindow,
 } from "./lib/queries";
 import { FunnelTable } from "./components/FunnelTable";
 import { DailyChart } from "./components/DailyChart";
+import { CreatorLeaderboard } from "./components/CreatorLeaderboard";
 
 export function App() {
   const [timeWindow, setWindow] = useState<TimeWindow>(WINDOWS[1]!);
   const [funnel, setFunnel] = useState<FunnelRow[] | null>(null);
   const [daily, setDaily] = useState<DailyRow[] | null>(null);
+  const [creators, setCreators] = useState<CreatorRow[] | null>(null);
+  const [creatorsError, setCreatorsError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setFunnel(null);
     setDaily(null);
+    setCreators(null);
+    setCreatorsError(null);
     setError(null);
     Promise.all([fetchFunnel(timeWindow.days), fetchDaily(timeWindow.days)])
       .then(([f, d]) => {
@@ -26,6 +33,11 @@ export function App() {
         setDaily(d);
       })
       .catch((e: Error) => setError(e.message));
+    // The leaderboard loads on its own, so a backend missing its function
+    // (migration 084 not applied yet) blanks only this section, not the page.
+    fetchCreators(timeWindow.days)
+      .then(setCreators)
+      .catch((e: Error) => setCreatorsError(e.message));
   }, [timeWindow]);
 
   return (
@@ -64,9 +76,17 @@ export function App() {
       )}
 
       {daily && (
-        <section>
+        <section style={{ marginBottom: 40 }}>
           <h2 style={{ fontSize: 17, marginBottom: 16 }}>Daily activity</h2>
           <DailyChart rows={daily} days={timeWindow.days} />
+        </section>
+      )}
+
+      {(creators || creatorsError) && (
+        <section>
+          <h2 style={{ fontSize: 17, marginBottom: 16 }}>Creators by visits</h2>
+          {creatorsError && <p style={{ color: "#b91c1c" }}>Failed to load: {creatorsError}</p>}
+          {creators && <CreatorLeaderboard rows={creators} />}
         </section>
       )}
     </div>

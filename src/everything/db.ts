@@ -497,17 +497,21 @@ export interface FollowedFeed {
   /** The QUEUE_PRIORITY tier this feed's items enqueue at: `followed` for a
    *  reader-requested feed, `backlog` for the curated ones. */
   priority: number;
+  /** While this lies in the future, the creator ranks strictly above every
+   *  unflagged creator. Set by the everything-prioritize script. */
+  priority_until: string | null;
 }
 
-/** Every feed the pipeline polls, in walk order: highest priority tier first,
- *  then the feed's own sort_order, then age. Migration 077 seeds the curated
- *  feeds (Zvi, Dwarkesh, …); reader follows are added by the request
- *  consumer. */
+/** Every feed the pipeline polls, in stored order: highest priority tier
+ *  first, then the feed's own sort_order, then age. The creator ranking
+ *  reorders this by reader attention before the feeds are walked. Migration
+ *  077 seeds the curated feeds (Zvi, Dwarkesh, …); reader follows are added
+ *  by the request consumer. */
 export async function fetchFollowedFeeds(): Promise<FollowedFeed[]> {
   return throwOnError(
     await getSupabaseClient()
       .from("everything_followed_feeds")
-      .select("project_slug, feed_type, feed_url, priority")
+      .select("project_slug, feed_type, feed_url, priority, priority_until")
       .order("priority", { ascending: false })
       .order("sort_order")
       .order("created_at"),
@@ -516,12 +520,33 @@ export async function fetchFollowedFeeds(): Promise<FollowedFeed[]> {
 
 /** Adds a reader-requested feed to the followed list, at the followed tier
  *  (the column default). A feed we already follow is left alone. */
-export async function insertFollowedFeed(feed: Omit<FollowedFeed, "priority">): Promise<void> {
+export async function insertFollowedFeed(feed: Omit<FollowedFeed, "priority" | "priority_until">): Promise<void> {
   throwOnError(
     await getSupabaseClient()
       .from("everything_followed_feeds")
       .upsert(feed, { onConflict: "feed_url", ignoreDuplicates: true }),
   );
+}
+
+/** Flags a creator as priority until the given time, creating the feed row if
+ *  we do not follow them yet (at the followed tier, like a reader follow). */
+export async function upsertFeedPriority(
+  feed: Omit<FollowedFeed, "priority" | "priority_until">,
+  until: Date,
+): Promise<void> {
+  throwOnError(
+    await getSupabaseClient()
+      .from("everything_followed_feeds")
+      .upsert({ ...feed, priority_until: until.toISOString() }, { onConflict: "feed_url" }),
+  );
+}
+
+/** Visit counts per creator feed since the given time, summed in the database
+ *  (see everything_visit_counts, migration 083). */
+export async function fetchVisitCounts(since: Date): Promise<{ feed_url: string; visits: number }[]> {
+  return (throwOnError(
+    await getSupabaseClient().rpc("everything_visit_counts", { since: since.toISOString() }),
+  ) ?? []) as { feed_url: string; visits: number }[];
 }
 
 /** Total LLM cost in USD recorded in everything_pipeline_runs since the given
