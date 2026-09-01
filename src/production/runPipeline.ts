@@ -106,10 +106,15 @@ const MAX_POSTS_FALLBACK = 5;
 const PANGRAM_PIPELINE_ENABLED = false;
 
 // Activates the misinfo-monitoring pre-pass, and only for the topics listed
-// below. The evergreen topics are not included. A live run writes real notes and
-// submits them to X. Set this to false to switch the pre-pass off.
-const MISINFO_PIPELINE_ENABLED = true;
-const MISINFO_ACTIVE_TOPIC_IDS: MisinfoTopicId[] = ["trump_election_security"];
+// below. A live run writes real notes and submits them to X. Set this to false
+// to switch the pre-pass off.
+// Switched off 2026-09-01 (GOO-94): of the 174 topic notes submitted since
+// June, zero were rated helpful, against 11.3% for regular notes in the same
+// window. To turn topics back on, set this to true and list the active topic
+// ids again. The empty topic list below also keeps the regular feed's topic
+// curation off.
+const MISINFO_PIPELINE_ENABLED = false;
+const MISINFO_ACTIVE_TOPIC_IDS: MisinfoTopicId[] = [];
 
 const globalTimeout = setTimeout(async () => {
   console.log("[pipeline] Maximum runtime reached (27 minutes), forcing exit");
