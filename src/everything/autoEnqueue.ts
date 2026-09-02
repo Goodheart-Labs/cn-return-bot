@@ -49,7 +49,9 @@ import type { SourceKind } from "./types";
 
 /** How many items one run enqueues, and therefore processes, across all feeds. */
 const BATCH_SIZE = 1;
-const CHANNEL_FETCH_LIMIT = 15;
+/** How many entries a feed listing fetches: YouTube channel videos and forum
+ *  author posts. Substack's RSS feed has its own fixed window of about 20. */
+const FEED_FETCH_LIMIT = 15;
 /** Only a feed's newest posts are ever candidates. A newly followed creator
  *  therefore backfills at most this many posts, instead of their whole 15 to
  *  20 entry feed window. Whole-window backfills used to eat the daily spend
@@ -107,7 +109,7 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<{ sourceName?: stri
     return { sourceName, entries };
   }
   if (feed.type === "lesswrong") {
-    const { authorName, posts } = await fetchAuthorPosts(feed.url, CHANNEL_FETCH_LIMIT);
+    const { authorName, posts } = await fetchAuthorPosts(feed.url, FEED_FETCH_LIMIT);
     const entries = posts.map((p) => ({
       source: "lesswrong" as const,
       url: p.url,
@@ -119,7 +121,7 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<{ sourceName?: stri
     }));
     return { sourceName: authorName, entries };
   }
-  const { channelName, videos } = fetchChannelVideos(feed.url, CHANNEL_FETCH_LIMIT);
+  const { channelName, videos } = fetchChannelVideos(feed.url, FEED_FETCH_LIMIT);
   const entries = videos
     // A video with no duration is an upcoming premiere. It cannot be watched
     // yet, and enqueueing it would leave the item in a permanent error state.
