@@ -1,8 +1,8 @@
 /**
  * The note-needed prefilter is a cheap deepseek-v4-flash gate. It decides
  * whether a post is worth running the full and expensive bot on. Its steps run
- * in order: the satire gate, then the query writer, then SearXNG, then the
- * search analyzer. Last comes a reframed note-needed judge. The satire gate
+ * in order: the satire gate, then the query writer, then the Serper search,
+ * then the search analyzer. Last comes a reframed note-needed judge. The satire gate
  * answers "no note needed" right away when the post is overt satire that its
  * audience is in on, so we never search, analyze, or judge a joke. It is tuned
  * for precision: it must not fire on fabricated content that imitates real
@@ -31,7 +31,7 @@ import {
 import { runQueryWriter } from "./queryWriter";
 import { runSatireDetector } from "./satireDetector";
 import { runSearchAnalyzer } from "./searchAnalyzer";
-import { fetchSearxngResults, formatSearxngResults, type SearxngResult } from "../tool-calling/tools";
+import { fetchSearchResults, formatSearchResults, type SearchResult } from "../tool-calling/tools";
 import { runJsonLlmCall } from "../utils/jsonLlmCall";
 import { createTweetLog, withTweetLog, getTweetLog, type TweetLogMap } from "../utils/tweetLog";
 import { withCostTracker, getCostTracker, trackLlmCall } from "../cost-tracking/costTracker";
@@ -42,7 +42,7 @@ const MAX_RESULTS_PER_QUERY = 6;
 const QUERY_WRITER_MAX_ATTEMPTS = 3;
 
 /** The self-contained config for the prefilter's own steps. Every call runs on
- *  deepseek-v4-flash and searches through SearXNG, with reasoning effort high
+ *  deepseek-v4-flash and searches through Serper, with reasoning effort high
  *  and temperature 0, the deterministic settings. We enter it
  *  with withBotConfig so the config of the bot that was picked stays untouched.
  *  The video_description_strategy field is required by the type but unused here,
@@ -53,7 +53,7 @@ const PREFILTER_CONFIG: BotConfig = {
   search_model: DEEPSEEK,
   search_analyzer_model: DEEPSEEK,
   note_judge_model: DEEPSEEK,
-  web_search: "searxng",
+  web_search: "serper",
   video_description_strategy: "frames",
   parallel_research: false,
   reasoning_effort: "high",
@@ -80,22 +80,22 @@ async function runQueryWriterRetryOnEmpty(userMessage: string): Promise<{ querie
   return { queries, attempts };
 }
 
-/** Fetches SearXNG results for every query and hands them to the search
+/** Fetches Serper results for every query and hands them to the search
  *  analyzer, which turns them into a research brief. Returns null when not a
  *  single query produced a result. */
 async function gatherFindings(userMessage: string, queries: string[]): Promise<string | null> {
   const sections: string[] = [];
   let total = 0;
   for (const q of queries) {
-    let results: SearxngResult[] = [];
+    let results: SearchResult[] = [];
     try {
-      results = await fetchSearxngResults(q);
+      results = await fetchSearchResults(q);
     } catch {
       // One failed query should not sink the whole prefilter.
     }
     const top = results.slice(0, MAX_RESULTS_PER_QUERY);
     total += top.length;
-    sections.push(`## Query: ${q}\n${formatSearxngResults(top)}`);
+    sections.push(`## Query: ${q}\n${formatSearchResults(top)}`);
   }
   const rawFindings = sections.join("\n\n");
   const log = getTweetLog();
