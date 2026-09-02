@@ -17,6 +17,7 @@ import { fetchWebPage } from "../pipeline/tool-calling/tools";
 import { closeBrowser } from "../pipeline/utils/browserManager";
 import { claimNextQueuedItem, fetchItemClaims, fillProjectDisplayName, markItemDone, markItemError, requeueItem, type EverythingItem } from "./db";
 import { processFetchedContent, resumeItemClaims } from "./pipeline/processContent";
+import { fetchForumPost } from "./sources/lesswrong";
 import { fetchSubstackPost, imageMarker } from "./sources/substack";
 import { ensureYtDlp, fetchYoutubeContent, fetchYoutubeTranscriptContent } from "./sources/youtube";
 import { describeSpend, spendCapReached, todaySpendUsd } from "./spendCap";
@@ -102,6 +103,15 @@ async function fetchContent(item: EverythingItem): Promise<FetchedContent> {
         // web-fetch ladder still has a route to the post: the archives, and a
         // headless browser render as the last step.
         console.log(`  Substack fetch failed (${err?.message}) — trying the web-fetch ladder`);
+        return fetchWebContent(item);
+      }
+    case "lesswrong":
+      try {
+        return await fetchForumPost(item.url);
+      } catch (err: any) {
+        // If the forum's GraphQL API refuses our runner, the web-fetch ladder
+        // still has a route to the post through its headless browser render.
+        console.log(`  Forum fetch failed (${err?.message}) — trying the web-fetch ladder`);
         return fetchWebContent(item);
       }
     default:

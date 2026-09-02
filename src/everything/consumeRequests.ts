@@ -28,7 +28,7 @@ import "dotenv/config";
 import { extractYoutubeVideoId } from "../everything-shared/pageUrls";
 import { WEB_PROJECT_SLUG } from "../everything-shared/projects";
 import { cleanCapturedPageText } from "./pipeline/cleanCapturedText";
-import { canonicalSubstackFeed, canonicalYoutubeFeed, type CanonicalFeed } from "./feedUrls";
+import { canonicalLesswrongFeed, canonicalSubstackFeed, canonicalYoutubeFeed, type CanonicalFeed } from "./feedUrls";
 import {
   fetchPendingFollowRequests,
   fetchPendingNoteRequests,
@@ -47,8 +47,7 @@ import {
   type FollowRequestRow,
   type NoteRequestRow,
 } from "./db";
-import { fetchFeedPosts } from "./sources/substack";
-import { fetchChannelVideos } from "./sources/youtube";
+import { fetchFeedDisplayName } from "./sources/feedName";
 import type { ItemSource } from "./types";
 
 /** A requested YouTube video is its own source kind, because the worker
@@ -146,6 +145,9 @@ function normalizeFollowFeed(request: FollowRequestRow): CanonicalFeed | { inval
   if (request.feed_type === "substack") {
     return canonicalSubstackFeed(request.feed_url) ?? { invalid: "not a *.substack.com publication URL" };
   }
+  if (request.feed_type === "lesswrong") {
+    return canonicalLesswrongFeed(request.feed_url) ?? { invalid: "not a LessWrong or Alignment Forum author URL" };
+  }
   return canonicalYoutubeFeed(request.feed_url) ?? { invalid: "not a YouTube channel URL" };
 }
 
@@ -176,10 +178,7 @@ export async function consumeFollowRequests(): Promise<void> {
       // when that project already exists under a placeholder. A project that
       // does not exist yet is created by the auto-enqueue with the name it
       // reads from the same feed.
-      const sourceName =
-        feed.feed_type === "substack"
-          ? (await fetchFeedPosts(feed.feed_url)).title
-          : fetchChannelVideos(feed.feed_url, 1).channelName;
+      const sourceName = await fetchFeedDisplayName(feed);
       await fillProjectDisplayNameBySlug(feed.project_slug, sourceName);
       await insertFollowedFeed(feed);
       known.add(feed.feed_url.toLowerCase());

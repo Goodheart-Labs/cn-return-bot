@@ -16,7 +16,7 @@
  */
 
 import { fetchFollowedFeeds, fetchVisitCounts, QUEUE_PRIORITY } from "./db";
-import { canonicalFeed } from "./feedUrls";
+import { canonicalFeed, type FeedType } from "./feedUrls";
 
 export const VISIT_RANKING_WINDOW_DAYS = 14;
 
@@ -28,7 +28,7 @@ export const MIN_VISITS_FOR_UNFOLLOWED_CREATOR = 2;
 
 export interface RankedCreator {
   project_slug: string;
-  feed_type: "substack" | "youtube";
+  feed_type: FeedType;
   feed_url: string;
   /** The QUEUE_PRIORITY tier this creator's items enqueue at. */
   priority: number;

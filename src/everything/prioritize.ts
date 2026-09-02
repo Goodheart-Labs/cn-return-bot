@@ -6,7 +6,8 @@
  *
  * Takes one or more creator links: a *.substack.com publication root, a
  * custom-domain Substack publication page (the page names its *.substack.com
- * form inside its preloads blob), or a YouTube channel URL. Each feed is
+ * form inside its preloads blob), a YouTube channel URL, or a LessWrong or
+ * Alignment Forum author page. Each feed is
  * listed once before it is stored, the same validation a reader's follow
  * request gets, and a creator we do not follow yet gets a feed row at the
  * followed tier.
@@ -18,8 +19,8 @@
 import "dotenv/config";
 import { fillProjectDisplayNameBySlug, upsertFeedPriority } from "./db";
 import { canonicalFeed, canonicalSubstackFeed, type CanonicalFeed } from "./feedUrls";
-import { fetchFeedPosts } from "./sources/substack";
-import { ensureYtDlp, fetchChannelVideos } from "./sources/youtube";
+import { fetchFeedDisplayName } from "./sources/feedName";
+import { ensureYtDlp } from "./sources/youtube";
 
 const PRIORITY_FLAG_DAYS = 7;
 
@@ -33,16 +34,13 @@ async function resolveCreator(url: string): Promise<CanonicalFeed> {
   if (!res.ok) throw new Error(`not a known creator URL shape, and fetching it failed (${res.status})`);
   const m = (await res.text()).match(/subdomain\\?":\\?"([\w-]+)\\?"/);
   const feed = m && canonicalSubstackFeed(`https://${m[1]!.toLowerCase()}.substack.com`);
-  if (!feed) throw new Error("not a Substack publication or YouTube channel URL");
+  if (!feed) throw new Error("not a Substack publication, YouTube channel, or forum author URL");
   return feed;
 }
 
 async function prioritizeCreator(url: string, until: Date): Promise<void> {
   const feed = await resolveCreator(url);
-  const sourceName =
-    feed.feed_type === "substack"
-      ? (await fetchFeedPosts(feed.feed_url)).title
-      : fetchChannelVideos(feed.feed_url, 1).channelName;
+  const sourceName = await fetchFeedDisplayName(feed);
   await fillProjectDisplayNameBySlug(feed.project_slug, sourceName);
   await upsertFeedPriority(feed, until);
   console.log(`priority until ${until.toISOString().slice(0, 10)}: [${feed.feed_type}] ${feed.feed_url} (${sourceName ?? feed.project_slug})`);

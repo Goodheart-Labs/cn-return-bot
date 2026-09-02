@@ -1,6 +1,6 @@
 import type { SubtitleCue } from "../pipeline/media/ytDlpDownload";
 
-export type SourceKind = "youtube" | "substack";
+export type SourceKind = "youtube" | "substack" | "lesswrong";
 
 /** Everything an item row's source column can hold. `web` is an arbitrary page:
  *  either one a reader wrote the first note on, or one a reader requested notes
