@@ -29,6 +29,59 @@ const BADGE_GAP = 4; // Pixels between the end of the passage and the badge.
 const POPOVER_GAP = 8; // Pixels between the passage and the opened popover.
 const VIEWPORT_MARGIN = 8; // The popover stays this many pixels from the edges.
 
+// The margin note style: the marker sits this far into the whitespace right of
+// the article column, and the opened card grows from the same edge. The card
+// is narrower than the classic popover because real margins rarely fit 560px.
+const MARGIN_MARKER_GAP = 24;
+const MARGIN_CARD_WIDTH = 380;
+// Below this much usable margin the style falls back to the classic popover:
+// a cramped margin card is worse than the old overlay.
+const MARGIN_CARD_MIN_WIDTH = 300;
+// Two markers whose passages start on the same line would overlap; later ones
+// are nudged down by one marker height plus breathing room.
+const MARGIN_MARKER_STEP = BADGE_SIZE + 6;
+
+/** The element (the container itself or an ancestor) that would clip content
+ *  drawn this far right of the viewport's left edge, or null when nothing
+ *  clips. Reader shells sometimes wrap the article in an overflow-hidden or
+ *  scrollable column; a marker drawn into that margin would silently vanish
+ *  or add a horizontal scrollbar, so such pages fall back to the classic
+ *  style. */
+function marginClipper(container: Element, rightEdge: number): Element | null {
+  for (let el: Element | null = container; el && el !== document.body; el = el.parentElement) {
+    const { overflowX, overflow } = getComputedStyle(el);
+    const clips = (v: string) => v === "hidden" || v === "clip" || v === "auto" || v === "scroll";
+    if ((clips(overflowX) || clips(overflow)) && el.getBoundingClientRect().right < rightEdge) return el;
+  }
+  return null;
+}
+
+/** The right edge, in viewport coordinates, of the text block a passage sits
+ *  in. This is the honest edge of the text column: the container found by
+ *  findContainer can be a full-width wrapper (Substack's logged-in renderer
+ *  centers a narrow column inside a page-wide article element), so measuring
+ *  the margin from the container box would see no margin where the eye sees
+ *  plenty. */
+function passageBlockRight(range: Range, container: Element): number {
+  let el: Element | null =
+    range.startContainer instanceof Element ? range.startContainer : range.startContainer.parentElement;
+  while (el && el !== container) {
+    const display = getComputedStyle(el).display;
+    if (display !== "inline" && display !== "contents") return el.getBoundingClientRect().right;
+    el = el.parentElement;
+  }
+  return container.getBoundingClientRect().right;
+}
+
+/* Says once per page why the margin style is not being drawn, so a "why is
+ * this the old look" report can be answered from the console. */
+let lastFallbackReason: string | null = null;
+function logMarginFallback(reason: string | null) {
+  if (reason === lastFallbackReason) return;
+  lastFallbackReason = reason;
+  if (reason) console.info(`[common-notes] margin style fell back to classic: ${reason}`);
+}
+
 /** Gives the range's rectangle relative to the in-content annotation layer. Both
  *  rectangles are read in the same layout pass, so the pair does not change when
  *  the page scrolls. The layer sits inside the article and moves with the text
@@ -46,7 +99,7 @@ function relRect(range: Range, origin: DOMRect) {
 
 /** The small badge at the end of an anchored passage. It draws the blue
  *  community glyph on a surface that follows the host page's light or dark
- *  theme. */
+ *  theme. This is the classic style's marker. */
 function Badge({ open, onClick, style }: { open: boolean; onClick: () => void; style: React.CSSProperties }) {
   return (
     <button
@@ -57,6 +110,32 @@ function Badge({ open, onClick, style }: { open: boolean; onClick: () => void; s
       className={`absolute flex items-center justify-center rounded-full border shadow transition-transform hover:scale-110 bg-white border-gray-300 text-blue-600 dark:bg-gray-900 dark:border-gray-600 dark:text-blue-400 ${open ? "ring-2 ring-blue-500" : ""}`}
     >
       <GroupIcon />
+    </button>
+  );
+}
+
+/** The margin style's marker: a quiet gray dot that turns blue with a soft
+ *  halo when the pointer is near (Jim picked this over the circled glyph,
+ *  2026-08-31). While the note is open the dot sits under the card and stays
+ *  plain gray: an open-state blue faded back to gray on close and read as a
+ *  flicker. The button box stays badge-sized so the positioning and collision
+ *  math is shared; the dot is drawn smaller inside it. */
+function MarginDot({ open, onClick, style }: { open: boolean; onClick: () => void; style: React.CSSProperties }) {
+  return (
+    <button
+      onClick={onClick}
+      title="Community note on this passage"
+      aria-expanded={open}
+      style={style}
+      className="absolute flex items-center justify-center group"
+    >
+      <span
+        className={`h-2.5 w-2.5 rounded-full bg-gray-400 dark:bg-gray-500 ${
+          open
+            ? ""
+            : "transition-colors group-hover:bg-blue-600 group-hover:ring-4 group-hover:ring-blue-500/20 dark:group-hover:bg-blue-400 dark:group-hover:ring-blue-400/25"
+        }`}
+      />
     </button>
   );
 }
@@ -107,7 +186,7 @@ type NoteWithActionsVote = React.ComponentProps<typeof NoteWithActions>["onVote"
  *  The two pieces that are fixed to the viewport, the sign-in hint and the write
  *  modal, stay in the host element at body level. There a transform on an
  *  ancestor of the article cannot break position:fixed. */
-export function InlineNotesApp({ groups: initialGroups, item, onPosted, container, inlineContainer }: {
+export function InlineNotesApp({ groups: initialGroups, item, onPosted, container, inlineContainer, noteStyle }: {
   groups: AnchoredGroup[];
   item: PageItem;
   onPosted: () => void;
@@ -117,6 +196,10 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
   /** The React root element of the annotation layer, which sits inside
    *  `container`. */
   inlineContainer: HTMLElement;
+  /** "margin" puts the marker and the opened card in the whitespace right of
+   *  the article; "classic" is the old badge-and-popover style. Margin falls
+   *  back to classic on its own when there is no usable margin. */
+  noteStyle: "margin" | "classic";
 }) {
   const projectSlug = item.projectSlug;
   const [groups, setGroups] = useState(initialGroups);
@@ -269,8 +352,63 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
     // different scroll positions, and the result would no longer hold as the
     // page scrolls.
     const origin = inlineContainer.getBoundingClientRect();
-    return groups.map((group) => {
-      const rect = relRect(group.range, origin);
+
+    // Whether the margin style can actually be drawn here. The body fallback
+    // container has no margin by construction; a too-narrow window has no room
+    // for the card; a clipping ancestor would swallow the marker. Every
+    // failure falls back to the classic style rather than to nothing.
+    // The markers all sit on one vertical rail just right of the text column.
+    // The column's edge is the widest passage block, capped at the container
+    // box (a block cannot honestly be wider than the article).
+    const containerRect = container.getBoundingClientRect();
+    const columnRight = groups.length
+      ? Math.min(containerRect.right, Math.max(...groups.map((g) => passageBlockRight(g.range, container))))
+      : containerRect.right;
+    const marginLeft = columnRight + MARGIN_MARKER_GAP;
+    const availableMargin = window.innerWidth - marginLeft - VIEWPORT_MARGIN;
+    const clipper = marginClipper(container, marginLeft + BADGE_SIZE);
+    const fallbackReason =
+      noteStyle !== "margin"
+        ? null // Classic was chosen in the settings; nothing to explain.
+        : availableMargin < MARGIN_CARD_MIN_WIDTH
+          ? `only ${Math.round(availableMargin)}px of margin right of the text column, the card needs ${MARGIN_CARD_MIN_WIDTH}px`
+          : clipper
+            ? `an element would clip the margin (<${clipper.tagName.toLowerCase()} class="${clipper.className}">)`
+            : null;
+    logMarginFallback(fallbackReason);
+    const useMargin = noteStyle === "margin" && fallbackReason === null;
+
+    // Markers of passages that start on the same lines would land on top of
+    // each other; walking them from top to bottom and pushing each below the
+    // previous keeps every one clickable. The nudged tops are computed per
+    // group first, because `groups` arrives in fetch order, not page order.
+    const rects = groups.map((group) => relRect(group.range, origin));
+    const marginTops = new Map<AnchoredGroup, number>();
+    if (useMargin) {
+      let previousBottom = -Infinity;
+      for (const index of [...groups.keys()].sort((a, b) => rects[a]!.top - rects[b]!.top)) {
+        const top = Math.max(rects[index]!.top, previousBottom + MARGIN_MARKER_STEP - BADGE_SIZE);
+        previousBottom = top + BADGE_SIZE;
+        marginTops.set(groups[index]!, top);
+      }
+    }
+
+    return groups.map((group, index) => {
+      const rect = rects[index]!;
+      if (useMargin) {
+        const left = marginLeft - origin.left;
+        return {
+          group,
+          margin: true,
+          badgeStyle: { top: marginTops.get(group)!, left, width: BADGE_SIZE, height: BADGE_SIZE } satisfies React.CSSProperties,
+          popoverStyle: {
+            top: rect.top,
+            left,
+            width: Math.min(MARGIN_CARD_WIDTH, availableMargin),
+            zIndex: 2,
+          } satisfies React.CSSProperties,
+        };
+      }
       // Keep the popover inside the viewport, with the numbers expressed in the
       // layer's own coordinates. A client x equals the layer x plus origin.left,
       // so a viewport edge at M becomes M - origin.left here.
@@ -280,6 +418,7 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
       );
       return {
         group,
+        margin: false,
         badgeStyle: {
           top: rect.top - BADGE_SIZE / 2,
           left: rect.right + BADGE_GAP,
@@ -295,7 +434,7 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
       };
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [groups, layoutTick, inlineContainer]);
+  }, [groups, layoutTick, inlineContainer, container, noteStyle]);
 
   return (
     // Absorb both mouse and keyboard events here. A mousedown would otherwise
@@ -319,13 +458,21 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
           document-level listeners. */}
       {createPortal(
         <div {...ABSORB_KEYS} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
-          {positioned.map(({ group, badgeStyle, popoverStyle }) => (
+          {positioned.map(({ group, badgeStyle, popoverStyle, margin }) => (
             <div key={group.claimId}>
-              <Badge
-                open={openClaim === group.claimId}
-                onClick={() => setOpenClaim((cur) => (cur === group.claimId ? null : group.claimId))}
-                style={badgeStyle}
-              />
+              {margin ? (
+                <MarginDot
+                  open={openClaim === group.claimId}
+                  onClick={() => setOpenClaim((cur) => (cur === group.claimId ? null : group.claimId))}
+                  style={badgeStyle}
+                />
+              ) : (
+                <Badge
+                  open={openClaim === group.claimId}
+                  onClick={() => setOpenClaim((cur) => (cur === group.claimId ? null : group.claimId))}
+                  style={badgeStyle}
+                />
+              )}
               {openClaim === group.claimId && (
                 <NotePopover
                   group={group}

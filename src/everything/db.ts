@@ -9,6 +9,9 @@ import type { ItemSource, NoteSourceCitation } from "./types";
 /** The queue's priority tiers. The worker takes the highest tier first, and the
  *  newest published content within a tier. */
 export const QUEUE_PRIORITY = {
+  /** An errored item on a repeat attempt. It already had its turn once, so it
+   *  must never crowd out fresh content and drains last. */
+  retry: -1,
   /** The curated priority feeds. */
   backlog: 0,
   /** A post from a feed a reader asked us to follow. */
@@ -255,6 +258,48 @@ export async function requeueItem(id: string): Promise<void> {
   throwOnError(await getSupabaseClient().from("everything_items").update({ status: "queued" }).eq("id", id));
 }
 
+/** An errored item that still has repeat attempts left. */
+export interface RetryableErrorItem {
+  id: string;
+  url: string;
+  retries: number;
+  priority: number;
+}
+
+/** Returns the errored items that have been requeued fewer than `maxRetries`
+ *  times and whose last failure is at least `cooldownHours` old. The cool-down
+ *  spaces the attempts out. Without it a failure whose cause lasts a while,
+ *  say a broken proxy or an exhausted API key, would burn every retry within
+ *  minutes and the item would be dead again before the cause clears. */
+export async function fetchRetryableErrorItems(maxRetries: number, cooldownHours: number): Promise<RetryableErrorItem[]> {
+  return throwOnError(
+    await getSupabaseClient()
+      .from("everything_items")
+      .select("id, url, retries, priority")
+      .eq("status", "error")
+      .lt("retries", maxRetries)
+      .lt("processed_at", new Date(Date.now() - cooldownHours * 3600_000).toISOString()),
+  ) as RetryableErrorItem[];
+}
+
+/** Puts an errored item back in the queue for a repeat attempt and counts the
+ *  attempt. The last error text stays on the row until the item finishes, so a
+ *  waiting retry still shows why the item failed. A requested page keeps its
+ *  tier, because a reader is waiting for it. Every other item drains at the
+ *  retry tier, behind all fresh content. */
+export async function requeueErroredItem(item: RetryableErrorItem): Promise<void> {
+  throwOnError(
+    await getSupabaseClient()
+      .from("everything_items")
+      .update({
+        status: "queued",
+        retries: item.retries + 1,
+        priority: item.priority >= QUEUE_PRIORITY.requested ? item.priority : QUEUE_PRIORITY.retry,
+      })
+      .eq("id", item.id),
+  );
+}
+
 export interface ItemClaimRow {
   id: string;
   claim: string;
@@ -312,7 +357,7 @@ export async function markItemDone(id: string): Promise<void> {
   throwOnError(
     await getSupabaseClient()
       .from("everything_items")
-      .update({ status: "done", processed_at: new Date().toISOString() })
+      .update({ status: "done", error: null, processed_at: new Date().toISOString() })
       .eq("id", id),
   );
 }
@@ -452,17 +497,21 @@ export interface FollowedFeed {
   /** The QUEUE_PRIORITY tier this feed's items enqueue at: `followed` for a
    *  reader-requested feed, `backlog` for the curated ones. */
   priority: number;
+  /** While this lies in the future, the creator ranks strictly above every
+   *  unflagged creator. Set by the everything-prioritize script. */
+  priority_until: string | null;
 }
 
-/** Every feed the pipeline polls, in walk order: highest priority tier first,
- *  then the feed's own sort_order, then age. Migration 077 seeds the curated
- *  feeds (Zvi, Dwarkesh, …); reader follows are added by the request
- *  consumer. */
+/** Every feed the pipeline polls, in stored order: highest priority tier
+ *  first, then the feed's own sort_order, then age. The creator ranking
+ *  reorders this by reader attention before the feeds are walked. Migration
+ *  077 seeds the curated feeds (Zvi, Dwarkesh, …); reader follows are added
+ *  by the request consumer. */
 export async function fetchFollowedFeeds(): Promise<FollowedFeed[]> {
   return throwOnError(
     await getSupabaseClient()
       .from("everything_followed_feeds")
-      .select("project_slug, feed_type, feed_url, priority")
+      .select("project_slug, feed_type, feed_url, priority, priority_until")
       .order("priority", { ascending: false })
       .order("sort_order")
       .order("created_at"),
@@ -471,12 +520,33 @@ export async function fetchFollowedFeeds(): Promise<FollowedFeed[]> {
 
 /** Adds a reader-requested feed to the followed list, at the followed tier
  *  (the column default). A feed we already follow is left alone. */
-export async function insertFollowedFeed(feed: Omit<FollowedFeed, "priority">): Promise<void> {
+export async function insertFollowedFeed(feed: Omit<FollowedFeed, "priority" | "priority_until">): Promise<void> {
   throwOnError(
     await getSupabaseClient()
       .from("everything_followed_feeds")
       .upsert(feed, { onConflict: "feed_url", ignoreDuplicates: true }),
   );
+}
+
+/** Flags a creator as priority until the given time, creating the feed row if
+ *  we do not follow them yet (at the followed tier, like a reader follow). */
+export async function upsertFeedPriority(
+  feed: Omit<FollowedFeed, "priority" | "priority_until">,
+  until: Date,
+): Promise<void> {
+  throwOnError(
+    await getSupabaseClient()
+      .from("everything_followed_feeds")
+      .upsert({ ...feed, priority_until: until.toISOString() }, { onConflict: "feed_url" }),
+  );
+}
+
+/** Visit counts per creator feed since the given time, summed in the database
+ *  (see everything_visit_counts, migration 083). */
+export async function fetchVisitCounts(since: Date): Promise<{ feed_url: string; visits: number }[]> {
+  return (throwOnError(
+    await getSupabaseClient().rpc("everything_visit_counts", { since: since.toISOString() }),
+  ) ?? []) as { feed_url: string; visits: number }[];
 }
 
 /** Total LLM cost in USD recorded in everything_pipeline_runs since the given

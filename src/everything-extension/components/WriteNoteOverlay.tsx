@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
+import { ensureUser } from "../../everything-shared/auth";
 import { ensureWebItem } from "../../everything-shared/ensureWebItem";
 import { postClaimWithNote } from "../../everything-shared/postNote";
 import type { PageItem } from "../../everything-shared/notesQuery";
@@ -30,6 +31,16 @@ export function WriteNoteOverlay({ item, pageForItem, selection, session, onClos
   // Bylines are opt-in, so a note is anonymous by default. That is how
   // Community Notes works on X. Nathan asked for this on 2026-07-14.
   const [signed, setSigned] = useState(false);
+
+  // A reader with no session gets an invisible anonymous account, and the
+  // composer below renders as soon as that session reaches this component.
+  // The sign-in form only appears when even that fails; until then the modal
+  // shows neither form, so the sign-in never flashes up during the silent
+  // sign-in.
+  const [anonFailed, setAnonFailed] = useState(false);
+  useEffect(() => {
+    if (!session) void ensureUser().then((user) => setAnonFailed(!user));
+  }, [session]);
 
   const submit = async () => {
     if (!session) return;
@@ -68,7 +79,7 @@ export function WriteNoteOverlay({ item, pageForItem, selection, session, onClos
           // Signing in happens right here in the overlay. Once the session
           // lands, this branch flips to the composer and the selection is
           // still in place.
-          <LoginPanel surface="overlay" />
+          anonFailed && <LoginPanel surface="overlay" />
         ) : (
           <>
             <textarea

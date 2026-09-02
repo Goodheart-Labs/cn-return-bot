@@ -12,8 +12,9 @@ import {
 } from "./followTarget";
 
 /** Runs inside the watch page, so it must stay self-contained: executeScript
- *  serializes the function and imports would not exist over there. */
-function readWatchPageChannel() {
+ *  serializes the function and imports would not exist over there. The visit
+ *  recorder also calls it directly, because its content script IS the page. */
+export function readWatchPageChannel() {
   const link = document.querySelector<HTMLAnchorElement>("ytd-video-owner-renderer ytd-channel-name a");
   return link?.href ? { href: link.href, name: link.textContent ?? "" } : null;
 }

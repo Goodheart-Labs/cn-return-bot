@@ -95,12 +95,15 @@ async function capture(event: string, props?: Record<string, unknown>) {
   // user_id must match the JWT the insert carries (RLS checks
   // user_id = auth.uid()), so it comes from the live session, not from the
   // stored id — a stored id with an expired session would fail the check.
+  // An anonymous session carries no user_id: it is not a signed-in user, and
+  // stamping its events would flatten the sign-up funnel.
   const { data } = await supabase.auth.getSession();
+  const user = data.session?.user;
   await supabase.from("everything_events").insert({
     event,
     platform: "extension",
     device_id: await deviceId(),
-    user_id: data.session?.user.id ?? null,
+    user_id: user && !user.is_anonymous ? user.id : null,
     props: {
       browser: import.meta.env.BROWSER,
       app_version: browser.runtime.getManifest().version,
@@ -136,13 +139,17 @@ function watchAuthChanges() {
 }
 
 async function handleAuthChange(newValue: unknown) {
-  let user: { id?: string; app_metadata?: { provider?: string } } | null = null;
+  let user: { id?: string; is_anonymous?: boolean; app_metadata?: { provider?: string } } | null = null;
   try {
     const session = typeof newValue === "string" ? JSON.parse(newValue) : newValue;
     user = session?.user ?? null;
   } catch {
     // The value is not a session payload, so we treat the user as signed out.
   }
+  // The silent anonymous sign-in is not the funnel's sign-in step, and it must
+  // not trigger the sign-out reset either. When that account is later
+  // upgraded, the flag flips false on the same id and the sign-in counts then.
+  if (user?.is_anonymous) return;
   const known = await knownUserId();
   if (user?.id && user.id !== known) {
     await identify(user.id);

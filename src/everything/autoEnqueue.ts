@@ -1,20 +1,21 @@
 /**
  * Auto-enqueue the next unprocessed content of the feeds we keep fact-checked.
- * The feeds live in everything_followed_feeds: reader-requested follows are
- * walked first, then the curated ones migration 077 seeded, in their stored
- * order. The everything-priority-feeds workflow runs this right before the
- * worker drains the queue.
+ * The feeds live in everything_followed_feeds, and the walk order comes from
+ * the creator ranking: manually flagged creators first, then everyone by
+ * reader attention (see creatorRanking.ts). The everything-priority-feeds
+ * workflow runs this right before the worker drains the queue.
  *
  * For every feed we fetch its latest entries, newest first. A Substack feed
  * comes from its RSS feed, which goes through our Cloudflare Worker when we run
- * in CI. A YouTube feed comes from the channel's /videos tab. We then drop
- * every entry that already has an everything_items row. Any status counts as
- * processed, including an item that finished with zero notes and an item that
- * errored. The entries that are left are enqueued newest first. New posts must
- * never wait behind an old backlog; a gap further back is acceptable and a
- * later run fills it once the feed is otherwise caught up. A feed only lists
- * its 15 to 20 latest entries, and that bounds how far back this can ever
- * reach.
+ * in CI. A YouTube feed comes from the channel's /videos tab. Only a feed's
+ * newest few entries are candidates, and we drop every candidate that already
+ * has a whole-page everything_items row. Any status counts as processed there,
+ * including an item that finished with zero notes; an errored item is handled
+ * by the retry sweep instead. The remaining candidates from all feeds are
+ * ranked together, by the average of a recency rank and an author-priority
+ * rank, and the best ones are enqueued. New posts must never wait behind an
+ * old backlog. A gap deeper than the candidate window is left unfilled on
+ * purpose.
  *
  * A Substack post is enqueued with its RSS body already in full_text. That way
  * the worker never has to fetch Substack, which blocks our CI runners.
@@ -24,27 +25,36 @@
  */
 
 import "dotenv/config";
+import { rankCreators } from "./creatorRanking";
 import {
   enqueueItems,
-  fetchFollowedFeeds,
   fetchItemClaims,
   fetchItemUrlsContaining,
   fetchItemUrlsIn,
   fetchOrphanedProcessingItems,
+  fetchRetryableErrorItems,
   markItemError,
   promoteItemToWholePage,
+  requeueErroredItem,
   requeueItem,
   resolveProjectId,
   type EnqueueRow,
   type KnownItemUrl,
 } from "./db";
 import { fetchFeedPosts, htmlToText } from "./sources/substack";
-import { ensureYtDlp, fetchChannelVideos } from "./sources/youtube";
+import { ensureYtDlp, fetchChannelVideos, fetchVideoMeta } from "./sources/youtube";
 import type { SourceKind } from "./types";
 
 /** How many items one run enqueues, and therefore processes, across all feeds. */
 const BATCH_SIZE = 1;
 const CHANNEL_FETCH_LIMIT = 15;
+/** Only a feed's newest posts are ever candidates. A newly followed creator
+ *  therefore backfills at most this many posts, instead of their whole 15 to
+ *  20 entry feed window. Whole-window backfills used to eat the daily spend
+ *  cap; one follow brought in archive posts years old while fresh posts from
+ *  other feeds waited. A gap deeper than this window stays unfilled on
+ *  purpose. */
+const FEED_CANDIDATE_LIMIT = 5;
 
 /** A followed feed in the shape the fetchers work with. */
 export type PriorityFeed =
@@ -100,6 +110,23 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<{ sourceName?: stri
   return { sourceName: channelName, entries };
 }
 
+/** Feed listings fetched this process, keyed by feed URL. The cycles of one
+ *  dispatch reuse them, so a growing feed set does not multiply listing
+ *  fetches by the cycle count; a post published mid-dispatch simply waits for
+ *  the next dispatch. The unprocessed check against the database still runs
+ *  every cycle, so an entry enqueued in an earlier cycle is not picked again. */
+const feedListingCache = new Map<string, { sourceName?: string; entries: FeedEntry[] }>();
+
+async function cachedFeedEntries(feed: PriorityFeed): Promise<{ sourceName?: string; entries: FeedEntry[] }> {
+  const key = feed.type === "substack" ? feed.publicationUrl : feed.channelUrl;
+  let listing = feedListingCache.get(key);
+  if (!listing) {
+    listing = await fetchFeedEntries(feed);
+    feedListingCache.set(key, listing);
+  }
+  return listing;
+}
+
 /** A feed entry that still needs a whole-page check. Most carry no item row
  *  at all and are enqueued fresh. An entry whose item exists but was never a
  *  whole-page check, because a reader wrote a note on the page or one
@@ -127,10 +154,11 @@ export async function unprocessedEntries(feed: PriorityFeed, entries: FeedEntry[
  *  already saved. We put such an item back in the queue, and the worker will
  *  redo only the unfinished claims.
  *
- *  If the item has no claims yet, the run died during extraction. Requeueing
- *  it would repeat the whole extraction, and if extraction is what killed the
- *  run, that could repeat forever. So we mark it as an error instead. A human
- *  sees it and can put it back in the queue by hand.
+ *  If the item has no claims yet, the run died during extraction, and a resume
+ *  would repeat the whole extraction. So we mark it as an error instead. The
+ *  retry sweep below then gives it a bounded number of fresh attempts, and if
+ *  extraction is what keeps killing the run, the item stays in error for a
+ *  human to look at rather than looping forever.
  *
  *  This only runs while no worker is active. Inside the workflow that is
  *  guaranteed by its concurrency group; for local runs see the warning in
@@ -147,33 +175,137 @@ async function triageOrphanedItems(): Promise<void> {
   }
 }
 
-/** The feeds to walk. fetchFollowedFeeds already returns them in walk order:
- *  reader-followed feeds first, because their items also rank above the
- *  curated backlog in the queue, then the curated feeds in their stored
- *  order. */
-async function feedsToWalk(): Promise<{ feed: PriorityFeed; priority: number }[]> {
-  return (await fetchFollowedFeeds()).map((f) => ({
+/** How many repeat attempts an errored item gets before it stays an error a
+ *  human has to look at. */
+const MAX_ITEM_RETRIES = 2;
+
+/** How long an errored item rests before its next attempt. */
+const RETRY_COOLDOWN_HOURS = 6;
+
+/** Puts errored items back in the queue for a bounded number of repeat
+ *  attempts. Most of our item errors have been transient: a flagged proxy IP
+ *  that made a transcript look missing, or an exhausted API key. Without a
+ *  retry each of those failures killed its item forever, because the feed
+ *  walker treats every existing whole-page item as processed. Retried items
+ *  drain at the retry tier, so they never delay fresh content, and an item
+ *  rests between attempts so a cause that lasts a while does not burn every
+ *  retry at once. An item that still fails after its retries stays in error,
+ *  and the row's error text says why. */
+async function retryErroredItems(): Promise<void> {
+  for (const item of await fetchRetryableErrorItems(MAX_ITEM_RETRIES, RETRY_COOLDOWN_HOURS)) {
+    await requeueErroredItem(item);
+    console.log(`Errored item requeued for attempt ${item.retries + 2}/${MAX_ITEM_RETRIES + 1}: ${item.url}`);
+  }
+}
+
+/** The feeds to walk, most important creator first. rankCreators orders them
+ *  by reader attention: manually flagged creators, then visit counts inside
+ *  the ranking window, then the stored feed order. With the visited-creators
+ *  switch on it also adds creators readers visit without following. */
+async function feedsToWalk(): Promise<{ feed: PriorityFeed; priority: number; flagged: boolean }[]> {
+  return (await rankCreators()).map((c) => ({
     feed:
-      f.feed_type === "substack"
-        ? { project: f.project_slug, type: "substack" as const, publicationUrl: f.feed_url }
-        : { project: f.project_slug, type: "youtube" as const, channelUrl: f.feed_url },
-    priority: f.priority,
+      c.feed_type === "substack"
+        ? { project: c.project_slug, type: "substack" as const, publicationUrl: c.feed_url }
+        : { project: c.project_slug, type: "youtube" as const, channelUrl: c.feed_url },
+    priority: c.priority,
+    flagged: c.flagged,
   }));
+}
+
+/** An unprocessed entry together with the feed it came from, ready for the
+ *  cross-feed ranking. `publishedAt` is an ISO date. A missing date sorts
+ *  newest, the same way the queue treats an item with no published date. */
+interface Candidate {
+  feed: PriorityFeed;
+  priority: number;
+  /** The feed's position in the walk order. This is the author-priority rank
+   *  input: the creator ranking puts the most-visited creators first. */
+  feedIndex: number;
+  /** A manually flagged creator's posts rank strictly above the blended
+   *  ranking, right below individually requested pages. */
+  flagged: boolean;
+  entry: UnprocessedEntry;
+  sourceName?: string;
+  publishedAt?: string;
+}
+
+/** The two rank inputs: where the candidate's feed sits in the walk order,
+ *  and when the post was published. */
+interface Rankable {
+  feedIndex: number;
+  publishedAt?: string;
+}
+
+const recencyKey = (c: Rankable) => c.publishedAt ?? "9999";
+
+/** Orders the candidates of all feeds by the average of two ranks: a recency
+ *  rank (newest post first) and an author rank (the feed walk order, recency
+ *  breaking ties within a feed). A top author's older post and a lower
+ *  author's brand-new post take turns this way, instead of one kind starving
+ *  the other. Ties in the average go to the more recent post. */
+export function rankCandidates<T extends Rankable>(candidates: T[]): T[] {
+  const byRecency = [...candidates].sort((a, b) => recencyKey(b).localeCompare(recencyKey(a)));
+  const byAuthor = [...candidates].sort(
+    (a, b) => a.feedIndex - b.feedIndex || recencyKey(b).localeCompare(recencyKey(a)),
+  );
+  const score = (c: T) => byRecency.indexOf(c) + byAuthor.indexOf(c);
+  return [...candidates].sort((a, b) => score(a) - score(b) || byRecency.indexOf(a) - byRecency.indexOf(b));
+}
+
+/** Upload dates fetched this process, keyed by video id. A channel listing
+ *  carries no upload dates, so a YouTube candidate's date costs one metadata
+ *  call. The cycles of one auto-run reuse the answer. */
+const uploadDateCache = new Map<string, string | undefined>();
+
+function videoUploadDate(entry: UnprocessedEntry): string | undefined {
+  if (!uploadDateCache.has(entry.matchKey)) {
+    try {
+      uploadDateCache.set(entry.matchKey, fetchVideoMeta(entry.url).uploadDate);
+    } catch (err: any) {
+      // The ranking can live with an unknown date, so a failed metadata fetch
+      // does not kill the run. The date stays unknown and sorts newest, and if
+      // the video is genuinely unreachable the worker's own fetch will surface
+      // that as an item error.
+      console.warn(`Upload date fetch failed for ${entry.url}: ${err?.message}`);
+      uploadDateCache.set(entry.matchKey, undefined);
+    }
+  }
+  return uploadDateCache.get(entry.matchKey);
 }
 
 /** Runs one pass of triage, selection, and enqueueing. Returns how many items
  *  were enqueued. */
 export async function runAutoEnqueue(dryRun = false): Promise<number> {
-  if (!dryRun) await triageOrphanedItems();
-
-  const picks: { feed: PriorityFeed; priority: number; entry: UnprocessedEntry; sourceName?: string }[] = [];
-  for (const { feed, priority } of await feedsToWalk()) {
-    if (picks.length >= BATCH_SIZE) break;
-    const { sourceName, entries } = await fetchFeedEntries(feed);
-    const unprocessed = await unprocessedEntries(feed, entries);
-    console.log(`[${feed.project}] ${entries.length} feed entries, ${unprocessed.length} unprocessed`);
-    for (const entry of unprocessed.slice(0, BATCH_SIZE - picks.length)) picks.push({ feed, priority, entry, sourceName });
+  if (!dryRun) {
+    await triageOrphanedItems();
+    await retryErroredItems();
   }
+
+  const candidates: Candidate[] = [];
+  for (const [feedIndex, { feed, priority, flagged }] of (await feedsToWalk()).entries()) {
+    const { sourceName, entries } = await cachedFeedEntries(feed);
+    const latest = entries.slice(0, FEED_CANDIDATE_LIMIT);
+    const unprocessed = await unprocessedEntries(feed, latest);
+    console.log(`[${feed.project}] ${entries.length} feed entries, ${unprocessed.length} of the newest ${latest.length} unprocessed`);
+    for (const entry of unprocessed) {
+      candidates.push({
+        feed,
+        priority,
+        feedIndex,
+        flagged,
+        entry,
+        sourceName,
+        publishedAt: entry.source === "youtube" ? videoUploadDate(entry) : entry.publishedAt,
+      });
+    }
+  }
+  // A flagged creator's posts come strictly before the blended ranking, so a
+  // flag means "next", not "sooner". Within each partition the blend applies.
+  const picks = [
+    ...rankCandidates(candidates.filter((c) => c.flagged)),
+    ...rankCandidates(candidates.filter((c) => !c.flagged)),
+  ].slice(0, BATCH_SIZE);
 
   if (picks.length === 0) {
     console.log("All priority feeds are caught up — nothing to enqueue");
@@ -193,7 +325,7 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
   // above.
   const rows: EnqueueRow[] = [];
   let promoted = 0;
-  for (const { feed, priority, entry, sourceName } of picks) {
+  for (const { feed, priority, entry, sourceName, publishedAt } of picks) {
     if (entry.existingItem) {
       await promoteItemToWholePage(entry.existingItem.id, entry.fullText ?? null, priority);
       console.log(`  promoted to a whole-page check: ${entry.url}`);
@@ -206,7 +338,11 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
       url: entry.url,
       title: entry.title,
       full_text: entry.fullText,
-      published_at: entry.publishedAt,
+      // The candidate's date also covers YouTube, whose upload date the
+      // ranking already fetched. The worker used to fill it in after the
+      // fetch; setting it here keeps the queue's own ordering honest from the
+      // start.
+      published_at: publishedAt,
       priority,
     });
   }

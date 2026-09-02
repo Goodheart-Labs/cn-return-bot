@@ -5,19 +5,16 @@ import { IconButton } from "../../everything-web/src/components/IconButton";
 /** How long the overlay stays before it fades out on its own. Hovering pauses
  *  the clock, so a reader who is about to click never loses the card. */
 const AUTO_HIDE_MS = 7_000;
-/** After a request or follow succeeded the card lingers to show the
- *  confirmation, then leaves. */
-const DONE_HIDE_MS = 6_000;
 /** How long the fade-out takes once the clock has run out. Hovering during the
  *  fade brings the card back. */
 const FADE_MS = 700;
 
 type ActionPhase = "idle" | "busy" | "done" | "error";
 
-/** One overlay action: the button label, the confirmation text once it ran,
- *  and what it does. `alreadyDone` starts true when the user already asked
- *  earlier, so reopening the page shows the confirmation instead of the
- *  button. */
+/** One action button: the label, the confirmation text once it ran, and what
+ *  it does. `alreadyDone` starts true when the user already asked earlier, so
+ *  reopening the page shows the confirmation instead of the button. The popup
+ *  renders its follow button through this. */
 export interface StatusAction {
   label: string;
   doneLabel: string;
@@ -26,25 +23,14 @@ export interface StatusAction {
 }
 
 export interface StatusOverlayProps {
-  /** The card's first line. Null on an author surface, where the follow
-   *  button carries all the information by itself. */
-  headline: string | null;
+  /** The card's first line. */
+  headline: string;
   /** Makes the headline clickable. The note-count card passes the jump here,
    *  so clicking the card walks the notes like the popup's jump button. */
   onHeadlineClick?: () => void;
-  request: StatusAction | null;
-  follow: StatusAction | null;
-  /** Called once the card has actually been shown: it finished its fade-out,
-   *  or the reader dismissed it. The one-shot cards spend their single
-   *  showing here rather than at mount, so a card in a background tab does
-   *  not burn it unseen. */
-  onDisplayed?: () => void;
 }
 
-export function ActionButton({ action, onDone }: {
-  action: StatusAction;
-  onDone?: () => void;
-}) {
+export function ActionButton({ action }: { action: StatusAction }) {
   const [phase, setPhase] = useState<ActionPhase>(action.alreadyDone ? "done" : "idle");
 
   const run = async () => {
@@ -52,7 +38,6 @@ export function ActionButton({ action, onDone }: {
     try {
       await action.run();
       setPhase("done");
-      onDone?.();
     } catch {
       setPhase("error");
     }
@@ -69,23 +54,13 @@ export function ActionButton({ action, onDone }: {
   );
 }
 
-/** The transient status card shown when a page opens. It says whether we have
- *  checked the page, offers the request and follow buttons, and fades away
- *  after a few seconds so it never becomes furniture. */
-export function StatusOverlay({ headline, onHeadlineClick, request, follow, onDisplayed }: StatusOverlayProps) {
+/** The transient status card shown when a page opens. It says how the page
+ *  stands, and it fades away after a few seconds so it never becomes
+ *  furniture. */
+export function StatusOverlay({ headline, onHeadlineClick }: StatusOverlayProps) {
   const [phase, setPhase] = useState<"shown" | "fading" | "hidden">("shown");
   const hideTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const fadeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const displayed = useRef(false);
-
-  const recordDisplayed = () => {
-    if (displayed.current) return;
-    // A card in a tab nobody is looking at was never shown, so its showing is
-    // not spent. The tab that opened in the background keeps its offer.
-    if (document.visibilityState !== "visible") return;
-    displayed.current = true;
-    onDisplayed?.();
-  };
 
   const clearTimers = () => {
     clearTimeout(hideTimer.current);
@@ -95,8 +70,6 @@ export function StatusOverlay({ headline, onHeadlineClick, request, follow, onDi
   const hideAfter = (ms: number) => {
     clearTimers();
     hideTimer.current = setTimeout(() => {
-      // The card stood on screen for its full time, so its showing counts.
-      recordDisplayed();
       setPhase("fading");
       fadeTimer.current = setTimeout(() => setPhase("hidden"), FADE_MS);
     }, ms);
@@ -121,31 +94,19 @@ export function StatusOverlay({ headline, onHeadlineClick, request, follow, onDi
       onMouseLeave={() => hideAfter(AUTO_HIDE_MS)}
     >
       <div className="flex items-start justify-between gap-2">
-        {headline &&
-          (onHeadlineClick ? (
-            <button
-              onClick={onHeadlineClick}
-              className="text-left text-sm font-medium text-gray-900 underline-offset-2 hover:underline dark:text-gray-100"
-            >
-              {headline}
-            </button>
-          ) : (
-            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{headline}</p>
-          ))}
-        <IconButton
-          label="Dismiss"
-          className="ml-auto"
-          onClick={() => {
-            recordDisplayed();
-            setPhase("hidden");
-          }}
-        >
+        {onHeadlineClick ? (
+          <button
+            onClick={onHeadlineClick}
+            className="text-left text-sm font-medium text-gray-900 underline-offset-2 hover:underline dark:text-gray-100"
+          >
+            {headline}
+          </button>
+        ) : (
+          <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{headline}</p>
+        )}
+        <IconButton label="Dismiss" className="ml-auto" onClick={() => setPhase("hidden")}>
           ✕
         </IconButton>
-      </div>
-      <div className="mt-2 space-y-2">
-        {request && <ActionButton action={request} onDone={() => hideAfter(DONE_HIDE_MS)} />}
-        {follow && <ActionButton action={follow} onDone={() => hideAfter(DONE_HIDE_MS)} />}
       </div>
     </div>
   );

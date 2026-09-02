@@ -1,18 +1,34 @@
 /**
- * Writing Limit Probe — read-only.
+ * Writing Limit Probe — read-only with respect to the pipeline.
  *
  * Fetches every note this account has written from X's notes_written API and
  * prints the writing-limit formula's inputs (NH_5, NH_10, HR_R, HR_100,
- * HR_14d, DN_30) plus the cap the formula predicts. Writes nothing anywhere —
- * this exists purely so we can watch WHY the daily cap moves.
+ * HR_14d, DN_30) plus the cap the formula predicts, so we can watch WHY the
+ * daily cap moves.
  *
  * The formula is the community-documented reconstruction of X's limit, ported
  * from the disabled updateWritingLimit.ts. That module was retired because
- * feeding its prediction back into pipeline state misbehaved; printing the
- * variables has no such failure mode.
+ * feeding its prediction back into pipeline state misbehaved. This one only
+ * ever reads pipeline state and appends to its own table, so it cannot affect
+ * posting behaviour.
+ *
+ * Since 2026-08-24 each run also APPENDS a row to writing_limit_probe_readings
+ * (migration 081), because the printed series was expiring with the GitHub
+ * Action logs (~90 days). What makes the row worth keeping is the pairing:
+ * alongside the prediction it records what X actually allowed — trailing-24h
+ * submissions, the stored ratchet value, and the last real 403 and its count.
+ * The formula's arithmetic underpredicts our observed cap by roughly 2.4x
+ * (2026-08-17..20: posted 87/110/80/91 against predicted 37/38/41/42, no
+ * refusal; last 403 was 2026-08-14 at 90), and until both halves live in one
+ * row on one day that ratio stays a guess re-derived by hand each time it
+ * matters. If saving the reading fails, the whole run fails with it. A green
+ * run has to mean a reading was stored, otherwise the workflow reports success
+ * on the exact days it recorded nothing, which is the failure this file was
+ * written to end.
  */
 
 import axios from "axios";
+import { createClient } from "@supabase/supabase-js";
 import { getOAuth1Headers } from "../api/getOAuthToken";
 
 type WrittenNote = { id: string; status: string | undefined };
@@ -113,6 +129,101 @@ console.log(`Branch: ${branch}`);
 console.log(`WL_L (quality term)  = ${WL_L === null ? "n/a" : WL_L.toFixed(1)}`);
 console.log(`DN_30 * 5 (volume term) = ${(DN_30 * 5).toFixed(0)}`);
 console.log(`Predicted writing limit = ${WL}`);
+const binding = WL_L !== null && DN_30 * 5 < WL_L ? "VOLUME" : "QUALITY";
 console.log(
-  `Binding constraint: ${WL_L !== null && DN_30 * 5 < WL_L ? "VOLUME (DN_30*5)" : "QUALITY (WL_L)"}`,
+  `Binding constraint: ${binding === "VOLUME" ? "VOLUME (DN_30*5)" : "QUALITY (WL_L)"}`,
 );
+
+// ── The observed half ───────────────────────────────────────────────────────
+// Everything above is what the formula THINKS the cap is. What follows is what
+// X actually did, so the two can be compared later without re-deriving either.
+//
+// Three different kinds of number, deliberately kept apart:
+//   submitted_24h  — what we got away with. A lower bound on the cap unless a
+//                    403 also fired, since we may simply not have had more to
+//                    post (which is the usual case: we run under the ceiling).
+//   stored_limit   — pipeline_state.writing_limit. A ratchet guess that climbs
+//                    +1 per success. NOT an observation, and not even enforced
+//                    once 12h pass without a 403.
+//   last_403_value — the trailing-24h count at the moment X refused. The only
+//                    hard observation of the real cap we ever get.
+async function persist(): Promise<void> {
+  // Deliberately NOT getSupabaseClient(): that returns the service-role client,
+  // which bypasses RLS and can read every table in the database. This job needs
+  // three things, so it runs on a key scoped to the probe_writer role
+  // (migration 082, minted by scripts/mintProbeKey.ts). Falls back to the
+  // service key only so the probe keeps working before the scoped key is set.
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_PROBE_KEY ?? process.env.SUPABASE_SERVICE_KEY;
+  if (!url || !key) throw new Error("SUPABASE_URL and a Supabase key are required");
+  if (!process.env.SUPABASE_PROBE_KEY) {
+    console.warn("[probe] SUPABASE_PROBE_KEY unset — falling back to the service key (over-privileged)");
+  }
+  const client = createClient(url, key, { auth: { persistSession: false } });
+
+  const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const { count: submitted24h, error: countErr } = await client
+    .from("notes")
+    // Ask for submitted_at, not "*": probe_writer is granted select on that one
+    // column, and a select over every column is denied outright. The count is
+    // the same either way, since a head request returns no rows.
+    .select("submitted_at", { count: "exact", head: true })
+    .gte("submitted_at", since24h);
+  if (countErr) throw countErr;
+
+  const { data: stateRows, error: stateErr } = await client
+    .from("pipeline_state")
+    .select("key, value")
+    .in("key", ["writing_limit", "limit_hit_at", "limit_hit_value"]);
+  if (stateErr) throw stateErr;
+  const state = new Map((stateRows ?? []).map((r) => [r.key, r.value]));
+
+  const lastHitAt = state.get("limit_hit_at") ?? null;
+  const lastHitMs = lastHitAt ? Date.parse(lastHitAt) : NaN;
+  const toInt = (v: string | undefined) => {
+    const n = Number(v);
+    return v !== undefined && Number.isFinite(n) ? Math.round(n) : null;
+  };
+
+  const { error: insertErr } = await client.from("writing_limit_probe_readings").insert({
+    nh_5: NH_5,
+    nh_10: NH_10,
+    hr_r: HR_R,
+    hr_100: HR_100,
+    hr_14d: HR_14d,
+    hr_l: HR_L,
+    dn_30: DN_30,
+    wl_l: WL_L,
+    volume_term: DN_30 * 5,
+    predicted_limit: WL,
+    branch,
+    binding,
+    notes_total: sorted.length,
+    status_counts: statusCounts,
+    submitted_24h: submitted24h ?? null,
+    stored_limit: toInt(state.get("writing_limit")),
+    last_403_at: lastHitAt,
+    last_403_value: toInt(state.get("limit_hit_value")),
+    hours_since_last_403: Number.isFinite(lastHitMs)
+      ? (Date.now() - lastHitMs) / 3_600_000
+      : null,
+  });
+  if (insertErr) throw insertErr;
+
+  console.log("");
+  console.log(`Observed: ${submitted24h ?? "?"} notes submitted in the trailing 24h`);
+  console.log(`Stored writing_limit (ratchet guess): ${state.get("writing_limit") ?? "?"}`);
+  console.log(
+    `Last real 403: ${lastHitAt ?? "never"}` +
+      (state.get("limit_hit_value") ? ` at ${state.get("limit_hit_value")} notes` : ""),
+  );
+  console.log("Reading saved to writing_limit_probe_readings.");
+}
+
+// Deliberately not wrapped in a try/catch. Most of the ways this can fail are
+// permanent: the key expires, its role loses a permission, a column is renamed.
+// Every one of those fails again tomorrow and every day after, so a run that
+// swallowed them would report success forever while the table stayed empty.
+// A transient database problem will turn one run red, and the next run fixes
+// it by succeeding.
+await persist();

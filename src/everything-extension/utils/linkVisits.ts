@@ -1,8 +1,15 @@
 import { supabase } from "../../everything-shared/supabase";
 import type { PageItem } from "../../everything-shared/notesQuery";
 import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
-import { isSubstackPostPage } from "./followTarget";
-import { getSettings, getSettingsOnboardingDone, type VisitSiteKind } from "./settings";
+import { readWatchPageChannel } from "./authorFeed";
+import {
+  isSubstackPostPage,
+  readSubstackPublicationFromPage,
+  substackFollowTarget,
+  substackTargetFromPublication,
+  youtubeChannelTarget,
+} from "./followTarget";
+import { getSettings, getWelcomeSeen, type VisitSiteKind } from "./settings";
 
 // Visits are recorded on Substack, YouTube, and LessWrong, and only for
 // content pages: a post or a video, never a homepage or a feed. Visit counts
@@ -29,26 +36,54 @@ function visitSiteKind(pageUrl: string, item: PageItem | null): VisitSiteKind | 
   return null;
 }
 
+/** A YouTube watch page renders its owner box late on cold loads, so the
+ *  channel read polls for a while before giving up. */
+const WATCH_CHANNEL_POLL_MS = 500;
+const WATCH_CHANNEL_POLL_TRIES = 20;
+
+/** The creator's feed URL for the visited page, read out of the page itself:
+ *  the Substack publication from the hostname or the page's preloads blob, the
+ *  YouTube channel from the watch page's owner box. Null when the page has no
+ *  followable creator; LessWrong is not a followable feed type. The pipeline
+ *  ranks creators by these (creatorRanking.ts), which is why the visit
+ *  records the creator at all: a creator is not derivable on the server from
+ *  a watch URL or a custom-domain post URL. */
+async function pageFeedUrl(kind: VisitSiteKind, pageUrl: string): Promise<string | null> {
+  if (kind === "substack") {
+    const target = substackFollowTarget(pageUrl) ?? substackTargetFromPublication(readSubstackPublicationFromPage());
+    return target?.feedUrl ?? null;
+  }
+  if (kind !== "youtube") return null;
+  for (let attempt = 0; attempt < WATCH_CHANNEL_POLL_TRIES; attempt++) {
+    const channel = readWatchPageChannel();
+    if (channel) return youtubeChannelTarget(channel.href, channel.name)?.feedUrl ?? null;
+    await new Promise((resolve) => setTimeout(resolve, WATCH_CHANNEL_POLL_MS));
+  }
+  return null;
+}
+
 /** Records that a post or video on one of the tracked sites was opened, so the
  *  team can see which links are read and where notes are needed most. `item`
  *  is the page's ingested row when it has one, and null for a page we have not
  *  checked; both count. The row stores the item's own URL when there is one,
- *  so every variant of the same page counts under one link. It is anonymous:
- *  no user id, just the URL, the item if any, and the time. A failed insert is
- *  dropped, because a visit count is not worth an error surface.
+ *  so every variant of the same page counts under one link, plus the creator's
+ *  feed URL read out of the page. It is anonymous: no user id, just the URL,
+ *  the creator, the item if any, and the time. A failed insert is dropped,
+ *  because a visit count is not worth an error surface.
  *
- *  Recording is consentful twice over. Nothing is recorded until the settings
- *  onboarding has shown the user the checkboxes, and nothing is recorded for a
- *  site kind whose checkbox the user unticked. */
+ *  Recording is consentful twice over. Nothing is recorded until the welcome
+ *  page has asked the user the visit-recording question, and nothing is
+ *  recorded for a site kind the user turned off. */
 export function recordPageVisit(pageUrl: string, item: PageItem | null): void {
   const kind = visitSiteKind(pageUrl, item);
   if (!kind) return;
   void (async () => {
-    const [onboarded, settings] = await Promise.all([getSettingsOnboardingDone(), getSettings()]);
-    if (!onboarded || !settings.saveVisits[kind]) return;
+    const [welcomed, settings] = await Promise.all([getWelcomeSeen(), getSettings()]);
+    if (!welcomed || !settings.saveVisits[kind]) return;
+    const feedUrl = await pageFeedUrl(kind, pageUrl);
     const { error } = await supabase
       .from("everything_link_visits")
-      .insert({ url: item?.url ?? pageUrl, item_id: item?.id ?? null });
+      .insert({ url: item?.url ?? pageUrl, item_id: item?.id ?? null, feed_url: feedUrl });
     if (error) console.debug(`[common-notes] visit not recorded: ${error.message}`);
   })();
 }

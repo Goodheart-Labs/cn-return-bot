@@ -3,7 +3,7 @@ import { BUTTON, LINK } from "../../everything-shared/ui";
 import type { Session } from "@supabase/supabase-js";
 import { useProjectFeed, useProjects } from "./lib/useFeedData";
 import { fetchProjectIdsWithItems } from "./lib/feedData";
-import { useSession, signOut } from "../../everything-shared/auth";
+import { ensureUser, useSession, signOut } from "../../everything-shared/auth";
 import { castVote, clearVote, fetchMyVotes, type Vote } from "../../everything-shared/votes";
 import { castNnnVote, clearNnnVote, fetchMyNnnVotes } from "../../everything-shared/noteNotNeeded";
 import { donationPair, priorTally } from "./lib/donationScoring";
@@ -19,10 +19,13 @@ function AuthCorner({ session, onSignIn, onSignOut }: {
   onSignIn: () => void;
   onSignOut: () => void;
 }) {
-  if (!session) {
+  // An anonymous session is invisible to the reader: it exists only so their
+  // votes have an account to live on. The corner keeps offering the real
+  // sign-in, which upgrades that account in place.
+  if (!session || session.user.is_anonymous) {
     return (
       <button onClick={onSignIn} className={`${BUTTON} shrink-0`}>
-        Sign in to vote
+        Sign in
       </button>
     );
   }
@@ -104,7 +107,9 @@ export function App() {
   const signedInFor = useRef<string | null>(null);
   const identifiedAs = useRef<string | null>(null);
   useEffect(() => {
-    if (session) {
+    // An anonymous session is not a signed-in user. Attaching analytics to it
+    // would count every voter as signed in and flatten the sign-up funnel.
+    if (session && !session.user.is_anonymous) {
       identifiedAs.current = session.user.id;
       identifyUser(session.user.id, { auth_provider: session.user.app_metadata?.provider });
     } else if (identifiedAs.current) {
@@ -112,19 +117,29 @@ export function App() {
       resetAnalytics();
       signedInFor.current = null; // Let a later sign-in count as a fresh one.
     }
-  }, [session?.user.id]);
+    // is_anonymous is a dependency because the email upgrade keeps the user id
+    // and only flips that flag.
+  }, [session?.user.id, session?.user.is_anonymous]);
 
   // This is the sign-in step of the funnel. SIGNED_IN fires on a real sign-in,
   // meaning an email code or a return from OAuth. A returning user's restored
   // session arrives as INITIAL_SESSION instead, so it does not count. The
   // per-user guard drops the duplicate SIGNED_IN that supabase-js emits when the
   // tab regains focus, so each sign-in is counted exactly once.
+  const wasAnonymous = useRef(false);
   useEffect(() => {
-    if (authEvent === "SIGNED_IN" && session && signedInFor.current !== session.user.id) {
+    const anonymous = !!session?.user.is_anonymous;
+    // The silent anonymous sign-in also arrives as SIGNED_IN, and it is not
+    // the funnel's sign-in step. The email upgrade of an anonymous account
+    // arrives as USER_UPDATED on the same user id instead, so that
+    // anonymous-to-permanent flip counts as the sign-in.
+    const signedIn = authEvent === "SIGNED_IN" || (authEvent === "USER_UPDATED" && wasAnonymous.current);
+    if (signedIn && session && !anonymous && signedInFor.current !== session.user.id) {
       signedInFor.current = session.user.id;
       track("signed_in", { provider: session.user.app_metadata?.provider });
     }
-  }, [authEvent, session?.user.id]);
+    wasAnonymous.current = anonymous;
+  }, [authEvent, session?.user.id, session?.user.is_anonymous]);
 
   // Every note gets its own card, whether the AI wrote it, a user wrote it, or it
   // improves another note. The feed ranking below treats all three the same. The
@@ -247,8 +262,11 @@ export function App() {
   // returns null, since no vote is cast at all. A vote on your own note mints
   // like any other vote.
   const handleVote = async (note: NoteRow, vote: Vote): Promise<MintedDonation | null> => {
-    if (!session) {
-      // An anonymous reader hit the vote wall — the funnel's sign-in prompt.
+    // A reader with no session gets an invisible anonymous account on the
+    // spot, so the vote just happens. Only when even that fails does the
+    // sign-in form appear.
+    const user = session?.user ?? (await ensureUser());
+    if (!user) {
       track("vote_gated_login", { note_id: note.id });
       setLoginOpen(true);
       return null;
@@ -263,12 +281,12 @@ export function App() {
     }
     next.set(note.id, vote);
     setMyVotes(next);
-    const voteId = await castVote(note.id, session.user.id, vote, "web");
+    const voteId = await castVote(note.id, user.id, vote, "web");
     if (!voteId) return null;
     const pair = donationPair(priorTally(note, current), vote);
     // The donation goes to the charity remembered on the account. The donation
     // box lets the voter redirect it afterwards.
-    const charity = preferredCharity(session.user);
+    const charity = preferredCharity(user);
     // A backend without migration 061 rejects the pair of amount columns. We
     // keep the vote in that case. We just do not promise the user a donation the
     // ledger never recorded.
@@ -277,7 +295,8 @@ export function App() {
   };
 
   const handleNnnVote = async (entry: NnnRow, vote: Vote) => {
-    if (!session) {
+    const user = session?.user ?? (await ensureUser());
+    if (!user) {
       setLoginOpen(true);
       return;
     }
@@ -290,7 +309,7 @@ export function App() {
     } else {
       next.set(entry.id, vote);
       setMyNnnVotes(next);
-      await castNnnVote(entry.id, session.user.id, vote);
+      await castNnnVote(entry.id, user.id, vote);
     }
   };
 
