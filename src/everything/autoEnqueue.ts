@@ -41,6 +41,8 @@ import {
   type EnqueueRow,
   type KnownItemUrl,
 } from "./db";
+import type { FeedType } from "./feedUrls";
+import { fetchAuthorPosts } from "./sources/lesswrong";
 import { fetchFeedPosts, htmlToText } from "./sources/substack";
 import { ensureYtDlp, fetchChannelVideos, fetchVideoMeta } from "./sources/youtube";
 import type { SourceKind } from "./types";
@@ -56,22 +58,26 @@ const CHANNEL_FETCH_LIMIT = 15;
  *  purpose. */
 const FEED_CANDIDATE_LIMIT = 5;
 
-/** A followed feed in the shape the fetchers work with. */
-export type PriorityFeed =
-  | { project: string; type: "substack"; publicationUrl: string }
-  | { project: string; type: "youtube"; channelUrl: string };
+/** A followed feed in the shape the fetchers work with. `url` is the feed's
+ *  canonical URL: the Substack publication root, the YouTube channel URL, or
+ *  the forum author's profile URL. */
+export interface PriorityFeed {
+  project: string;
+  type: FeedType;
+  url: string;
+}
 
 interface FeedEntry {
   source: SourceKind;
   url: string;
   /** What to match existing item urls against. For YouTube this is the video
-   *  id, because the stored URL forms vary. For Substack it is the canonical
-   *  url itself. */
+   *  id and for a forum post the post id, because the stored URL forms vary.
+   *  For Substack it is the canonical url itself. */
   matchKey: string;
   label: string;
-  /** Substack only. This is the post body taken from the RSS feed. We enqueue
-   *  it with the item so the worker never has to fetch Substack, which blocks
-   *  our CI runners. */
+  /** The post body, when the feed listing already carries it. A Substack body
+   *  comes from the RSS feed and a forum body from the GraphQL listing. We
+   *  enqueue it with the item so the worker never has to fetch the page. */
   fullText?: string;
   title?: string;
   publishedAt?: string;
@@ -80,7 +86,7 @@ interface FeedEntry {
 /** A feed's latest entries, newest first, and the source's display name. */
 async function fetchFeedEntries(feed: PriorityFeed): Promise<{ sourceName?: string; entries: FeedEntry[] }> {
   if (feed.type === "substack") {
-    const { title: sourceName, posts } = await fetchFeedPosts(feed.publicationUrl);
+    const { title: sourceName, posts } = await fetchFeedPosts(feed.url);
     // A paid post's RSS body is only the free preview. Fact-checking a
     // fragment gives bad results, so the automated path leaves paid posts out.
     // Someone enqueues them by hand with the full text from a subscriber inbox,
@@ -100,7 +106,20 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<{ sourceName?: stri
     }));
     return { sourceName, entries };
   }
-  const { channelName, videos } = fetchChannelVideos(feed.channelUrl, CHANNEL_FETCH_LIMIT);
+  if (feed.type === "lesswrong") {
+    const { authorName, posts } = await fetchAuthorPosts(feed.url, CHANNEL_FETCH_LIMIT);
+    const entries = posts.map((p) => ({
+      source: "lesswrong" as const,
+      url: p.url,
+      matchKey: p.postId,
+      label: `${p.postedAt.slice(0, 10)} ${p.title}`,
+      fullText: p.text,
+      title: p.title,
+      publishedAt: p.postedAt.slice(0, 10),
+    }));
+    return { sourceName: authorName, entries };
+  }
+  const { channelName, videos } = fetchChannelVideos(feed.url, CHANNEL_FETCH_LIMIT);
   const entries = videos
     // A video with no duration is an upcoming premiere. It cannot be watched
     // yet, and enqueueing it would leave the item in a permanent error state.
@@ -118,11 +137,10 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<{ sourceName?: stri
 const feedListingCache = new Map<string, { sourceName?: string; entries: FeedEntry[] }>();
 
 async function cachedFeedEntries(feed: PriorityFeed): Promise<{ sourceName?: string; entries: FeedEntry[] }> {
-  const key = feed.type === "substack" ? feed.publicationUrl : feed.channelUrl;
-  let listing = feedListingCache.get(key);
+  let listing = feedListingCache.get(feed.url);
   if (!listing) {
     listing = await fetchFeedEntries(feed);
-    feedListingCache.set(key, listing);
+    feedListingCache.set(feed.url, listing);
   }
   return listing;
 }
@@ -204,10 +222,7 @@ async function retryErroredItems(): Promise<void> {
  *  switch on it also adds creators readers visit without following. */
 async function feedsToWalk(): Promise<{ feed: PriorityFeed; priority: number; flagged: boolean }[]> {
   return (await rankCreators()).map((c) => ({
-    feed:
-      c.feed_type === "substack"
-        ? { project: c.project_slug, type: "substack" as const, publicationUrl: c.feed_url }
-        : { project: c.project_slug, type: "youtube" as const, channelUrl: c.feed_url },
+    feed: { project: c.project_slug, type: c.feed_type, url: c.feed_url },
     priority: c.priority,
     flagged: c.flagged,
   }));

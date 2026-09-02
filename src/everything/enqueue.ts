@@ -10,8 +10,10 @@
  *   bun run src/everything/enqueue.ts --project <slug> [args...]
  *
  * Args (mix freely):
- *   <url>                     live YouTube video, Substack post, or Substack
- *                             profile (expands to its --latest N free posts)
+ *   <url>                     live YouTube video, Substack post, Substack
+ *                             profile (expands to its --latest N free posts),
+ *                             or LessWrong/Alignment Forum post or author page
+ *                             (an author expands to their --latest N posts)
  *   --doc [<url>] <file>      a local .md/.txt <file> whose text is the extraction
  *                             body. If you also give a source <url>, a YouTube
  *                             url still makes the worker fetch the video's cues
@@ -32,6 +34,7 @@ import "dotenv/config";
 import * as fs from "fs";
 import * as path from "path";
 import { enqueueItems, resolveProjectId, syntheticDocUrl, type EnqueueRow } from "./db";
+import { fetchAuthorPosts, parseAuthorFeedUrl, parsePostUrl } from "./sources/lesswrong";
 import { fetchLatestFreePosts, parseProfileHandle } from "./sources/substack";
 import type { SourceKind } from "./types";
 
@@ -40,7 +43,8 @@ const DEFAULT_LATEST_POSTS = 5;
 /** A YouTube link has its claims snapped onto the video's cues. Anything else is
  *  treated as an article. */
 function classifyUrl(url: string): SourceKind {
-  return /youtube\.com|youtu\.be/.test(url) ? "youtube" : "substack";
+  if (/youtube\.com|youtu\.be/.test(url)) return "youtube";
+  return parsePostUrl(url) ? "lesswrong" : "substack";
 }
 
 /** Expands a live URL into the items it stands for. A YouTube video and a
@@ -52,12 +56,18 @@ async function expandLiveUrl(
 ): Promise<{ items: { source: SourceKind; url: string }[]; projectName?: string }> {
   if (/youtube\.com|youtu\.be/.test(url)) return { items: [{ source: "youtube", url }] };
   if (/\.substack\.com\/p\//.test(url)) return { items: [{ source: "substack", url }] };
+  if (parsePostUrl(url)) return { items: [{ source: "lesswrong", url }] };
   if (parseProfileHandle(url)) {
     const { publicationName, posts } = await fetchLatestFreePosts(url, latest);
     console.log(`Profile ${url} → ${posts.length} latest free posts`);
     return { items: posts.map((post) => ({ source: "substack" as const, url: post.url })), projectName: publicationName };
   }
-  throw new Error(`Unsupported URL (need a YouTube video, Substack post, or Substack profile): ${url}`);
+  if (parseAuthorFeedUrl(url)) {
+    const { authorName, posts } = await fetchAuthorPosts(url, latest);
+    console.log(`Author ${url} → ${posts.length} latest posts`);
+    return { items: posts.map((post) => ({ source: "lesswrong" as const, url: post.url })), projectName: authorName };
+  }
+  throw new Error(`Unsupported URL (need a YouTube video, Substack post or profile, or a LessWrong/Alignment Forum post or author): ${url}`);
 }
 
 /** Turns a page path into a title. "/supplements/alignment-roadmap" becomes
@@ -88,7 +98,7 @@ function stripNav(text: string): string {
 function docRow(projectId: string, url: string, text: string, title: string): EnqueueRow {
   const source = classifyUrl(url);
   const row: EnqueueRow = { project_id: projectId, source, url, full_text: text };
-  if (source === "substack") row.title = title;
+  if (source !== "youtube") row.title = title;
   return row;
 }
 

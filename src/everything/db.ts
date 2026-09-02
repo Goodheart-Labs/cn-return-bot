@@ -4,6 +4,7 @@
 import { getSupabaseClient } from "../api/supabaseClient";
 import { extractYoutubeVideoId } from "../everything-shared/pageUrls";
 import { stripNullChars } from "../utils/stripNullChars";
+import type { FeedType } from "./feedUrls";
 import type { ItemSource, NoteSourceCitation } from "./types";
 
 /** The queue's priority tiers. The worker takes the highest tier first, and the
@@ -463,7 +464,7 @@ export async function resolveNoteRequest(
 
 export interface FollowRequestRow {
   id: string;
-  feed_type: "substack" | "youtube";
+  feed_type: FeedType;
   feed_url: string;
   title: string;
 }
@@ -492,7 +493,7 @@ export async function resolveFollowRequest(id: string, status: FollowRequestStat
 
 export interface FollowedFeed {
   project_slug: string;
-  feed_type: "substack" | "youtube";
+  feed_type: FeedType;
   feed_url: string;
   /** The QUEUE_PRIORITY tier this feed's items enqueue at: `followed` for a
    *  reader-requested feed, `backlog` for the curated ones. */
