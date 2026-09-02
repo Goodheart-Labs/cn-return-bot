@@ -29,6 +29,25 @@ Date: 2026-08-30
   validation is blocked until the key lands there.
 - No code references Serper anywhere yet.
 
+## Decisions (Jim, 2026-09-02)
+
+- Replace the **whole search layer** with Serper, not just the precheck's
+  search. The simplification the ticket means is deleting the SearXNG
+  machinery; the prefilter's LLM chain stays exactly as it is.
+- Ship directly and watch submissions/day; no offline replay comparison first.
+- Jim pasted the Serper key into the local env file; the CI secret already
+  existed.
+
+## Verification done
+
+- One-off probe of the Serper API: HTTP 200, organic results with
+  title/link/snippet(/date).
+- `fetchSearchResults` smoke test through the new client: 8 results, formatted
+  output identical in shape to the old formatter's.
+- Full prefilter chain run locally on a fabricated false claim ("Eiffel Tower
+  is 500m, tallest in Europe"): satire gate → query writer → Serper → search
+  analyzer → judge returned `needsNote: true` with correct reasoning.
+
 ## Prior validation baseline
 
 The old prefilter was validated offline against simple-bot's own decisions
