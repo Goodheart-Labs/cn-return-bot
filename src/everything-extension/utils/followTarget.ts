@@ -5,9 +5,9 @@ import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
  *  answered by feedIsFollowed in followedFeeds.ts against the synced list. */
 
 export interface FollowTarget {
-  feedType: "substack" | "youtube";
+  feedType: "substack" | "youtube" | "lesswrong";
   /** The feed in the form the pipeline stores: the *.substack.com publication
-   *  root, or the YouTube channel URL. */
+   *  root, the YouTube channel URL, or the forum author's profile URL. */
   feedUrl: string;
   /** What the follow button calls the person: "author" or "youtuber". */
   kind: "author" | "youtuber";
@@ -71,7 +71,7 @@ export function isSubstackPostPage(pageUrl: string): boolean {
 /** Whether requesting a check makes sense for this URL. On the platforms
  *  whose URL shapes we know, only an actual post or video is checkable:
  *  youtube.com must be a watch page, a substack.com host must be a /p/ post
- *  (so messages, inboxes and profiles offer nothing), lesswrong.com must be a
+ *  (so messages, inboxes and profiles offer nothing), a forum host must be a
  *  /posts/ page. Any other site keeps the offer, because we cannot know its
  *  URL shapes and a wrong guess would hide the feature. The search-engine
  *  exclusion lives separately in the popup. */
@@ -80,10 +80,75 @@ export function requestMakesSenseForUrl(pageUrl: string): boolean {
     const url = new URL(pageUrl);
     if (/(^|\.)youtube\.com$/.test(url.hostname)) return !!extractYoutubeVideoId(pageUrl);
     if (/(^|\.)substack\.com$/.test(url.hostname)) return isSubstackPostPage(pageUrl);
-    if (/(^|\.)lesswrong\.com$/.test(url.hostname)) return url.pathname.startsWith("/posts/");
+    if (forumOrigin(pageUrl)) return isForumPostPage(pageUrl);
     return true;
   } catch {
     return false;
+  }
+}
+
+/** LessWrong and the Alignment Forum both run ForumMagnum, the same forum
+ *  codebase, and share their user accounts. One feed type covers both; the
+ *  host in the feed URL says which site's posts the pipeline walks. */
+const FORUM_HOSTNAMES: Record<string, string> = {
+  "lesswrong.com": "https://www.lesswrong.com",
+  "alignmentforum.org": "https://www.alignmentforum.org",
+};
+
+/** The canonical origin for a LessWrong or Alignment Forum URL, or null when
+ *  the URL belongs to neither site. */
+export function forumOrigin(pageUrl: string): string | null {
+  try {
+    const hostname = new URL(pageUrl).hostname.replace(/^www\./, "");
+    return FORUM_HOSTNAMES[hostname] ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** True for a forum post page, so a /posts/<id>/... path on either site. */
+export function isForumPostPage(pageUrl: string): boolean {
+  try {
+    return forumOrigin(pageUrl) !== null && new URL(pageUrl).pathname.startsWith("/posts/");
+  } catch {
+    return false;
+  }
+}
+
+/** The follow target for a forum author page such as lesswrong.com/users/zvi.
+ *  `title` is the author's name as the caller knows it; without one the slug
+ *  stands in, and the pipeline fills in the real display name when it lists
+ *  the feed. Null when the URL is not an author page. */
+export function forumAuthorTarget(pageUrl: string, title?: string): FollowTarget | null {
+  const origin = forumOrigin(pageUrl);
+  if (!origin) return null;
+  const slug = new URL(pageUrl).pathname.match(/^\/users\/([\w.-]+)\/?$/)?.[1]?.toLowerCase();
+  if (!slug) return null;
+  return { feedType: "lesswrong", feedUrl: `${origin}/users/${slug}`, kind: "author", title: title?.trim() || slug };
+}
+
+/** Resolves a forum post page to its author's follow target by asking the
+ *  site's own GraphQL API for the post's author. The post id sits in the URL
+ *  path. Null when the URL is not a post or the API call failed. */
+export async function forumPostAuthorTarget(pageUrl: string): Promise<FollowTarget | null> {
+  const origin = forumOrigin(pageUrl);
+  const postId = isForumPostPage(pageUrl) ? new URL(pageUrl).pathname.match(/^\/posts\/(\w+)/)?.[1] : null;
+  if (!origin || !postId) return null;
+  try {
+    const res = await fetch(`${origin}/graphql`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "omit",
+      body: JSON.stringify({
+        query: `{ post(input: {selector: {_id: "${postId}"}}) { result { user { slug displayName } } } }`,
+      }),
+    });
+    if (!res.ok) return null;
+    const user = (await res.json())?.data?.post?.result?.user;
+    if (!user?.slug) return null;
+    return forumAuthorTarget(`${origin}/users/${user.slug}`, user.displayName);
+  } catch {
+    return null;
   }
 }
 

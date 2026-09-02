@@ -3,6 +3,8 @@ import type { PageItem } from "../../everything-shared/notesQuery";
 import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
 import { readWatchPageChannel } from "./authorFeed";
 import {
+  forumPostAuthorTarget,
+  isForumPostPage,
   isSubstackPostPage,
   readSubstackPublicationFromPage,
   substackFollowTarget,
@@ -11,26 +13,20 @@ import {
 } from "./followTarget";
 import { getSettings, getWelcomeSeen, type VisitSiteKind } from "./settings";
 
-// Visits are recorded on Substack, YouTube, and LessWrong, and only for
-// content pages: a post or a video, never a homepage or a feed. Visit counts
-// per link are what tells the team where notes are needed, so the page does
-// NOT have to be covered already. An ingested page is recognized by its item's
-// source, which also catches newsletters on custom domains and videos from the
-// old podcast pipeline. A page we have not ingested is recognized by its URL:
-// a watch URL on YouTube, a /p/ post path on Substack (content scripts only
-// run on hosts we know, so a /p/ path there is a Substack post), a /posts/
-// path on LessWrong.
-const LESSWRONG_HOSTNAME = /(^|\.)lesswrong\.com$/;
-
+// Visits are recorded on Substack, YouTube, and the LessWrong / Alignment
+// Forum pair, and only for content pages: a post or a video, never a homepage
+// or a feed. Visit counts per link are what tells the team where notes are
+// needed, so the page does NOT have to be covered already. An ingested page is
+// recognized by its item's source, which also catches newsletters on custom
+// domains and videos from the old podcast pipeline. A page we have not
+// ingested is recognized by its URL: a watch URL on YouTube, a /p/ post path
+// on Substack (content scripts only run on hosts we know, so a /p/ path there
+// is a Substack post), a /posts/ path on a forum host.
 function visitSiteKind(pageUrl: string, item: PageItem | null): VisitSiteKind | null {
   if (item?.source === "substack") return "substack";
   if (item?.source === "youtube" || item?.source === "podcast") return "youtube";
-  try {
-    const url = new URL(pageUrl);
-    if (LESSWRONG_HOSTNAME.test(url.hostname)) return url.pathname.startsWith("/posts/") ? "lesswrong" : null;
-  } catch {
-    return null;
-  }
+  if (item?.source === "lesswrong") return "lesswrong";
+  if (isForumPostPage(pageUrl)) return "lesswrong";
   if (extractYoutubeVideoId(pageUrl)) return "youtube";
   if (isSubstackPostPage(pageUrl)) return "substack";
   return null;
@@ -41,18 +37,19 @@ function visitSiteKind(pageUrl: string, item: PageItem | null): VisitSiteKind | 
 const WATCH_CHANNEL_POLL_MS = 500;
 const WATCH_CHANNEL_POLL_TRIES = 20;
 
-/** The creator's feed URL for the visited page, read out of the page itself:
- *  the Substack publication from the hostname or the page's preloads blob, the
- *  YouTube channel from the watch page's owner box. Null when the page has no
- *  followable creator; LessWrong is not a followable feed type. The pipeline
- *  ranks creators by these (creatorRanking.ts), which is why the visit
- *  records the creator at all: a creator is not derivable on the server from
- *  a watch URL or a custom-domain post URL. */
+/** The creator's feed URL for the visited page: the Substack publication from
+ *  the hostname or the page's preloads blob, the YouTube channel from the
+ *  watch page's owner box, the forum author from the site's own API. Null when
+ *  the page has no followable creator. The pipeline ranks creators by these
+ *  (creatorRanking.ts), which is why the visit records the creator at all: a
+ *  creator is not derivable on the server from a watch URL or a custom-domain
+ *  post URL. */
 async function pageFeedUrl(kind: VisitSiteKind, pageUrl: string): Promise<string | null> {
   if (kind === "substack") {
     const target = substackFollowTarget(pageUrl) ?? substackTargetFromPublication(readSubstackPublicationFromPage());
     return target?.feedUrl ?? null;
   }
+  if (kind === "lesswrong") return (await forumPostAuthorTarget(pageUrl))?.feedUrl ?? null;
   if (kind !== "youtube") return null;
   for (let attempt = 0; attempt < WATCH_CHANNEL_POLL_TRIES; attempt++) {
     const channel = readWatchPageChannel();

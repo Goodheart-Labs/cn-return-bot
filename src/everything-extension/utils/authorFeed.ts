@@ -2,6 +2,9 @@ import { browser } from "#imports";
 import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
 import { unlessFollowed } from "./followedFeeds";
 import {
+  forumAuthorTarget,
+  forumPostAuthorTarget,
+  isForumPostPage,
   readSubstackPublicationFromPage,
   resolveProfileFollowTarget,
   substackFollowTarget,
@@ -20,10 +23,12 @@ export function readWatchPageChannel() {
 }
 
 /** The feed a tab's author could be followed as: a Substack publication (from
- *  its subdomain or a profile page) or a YouTube channel (from a channel page,
- *  or read out of a watch page's owner box). Null when the page has no author
- *  feed. Reading the watch page's owner box needs the tab to be scriptable,
- *  which the popup and a context-menu click both have through activeTab. */
+ *  its subdomain or a profile page), a YouTube channel (from a channel page,
+ *  or read out of a watch page's owner box), or a LessWrong / Alignment Forum
+ *  author (from their profile page, or asked of the site's own API on a post
+ *  page). Null when the page has no author feed. Reading the watch page's
+ *  owner box needs the tab to be scriptable, which the popup and a
+ *  context-menu click both have through activeTab. */
 export async function authorFeedForTab(tab: { id?: number; url?: string; title?: string }): Promise<FollowTarget | null> {
   const url = tab.url;
   if (!url) return null;
@@ -33,6 +38,11 @@ export async function authorFeedForTab(tab: { id?: number; url?: string; title?:
   if (handle) return resolveProfileFollowTarget(handle);
   const channelTarget = youtubeChannelTarget(url, (tab.title ?? "").replace(/ - YouTube$/, ""));
   if (channelTarget) return channelTarget;
+  // A forum profile tab is titled like "Zvi — LessWrong"; the suffix is not
+  // part of the author's name.
+  const forumTarget = forumAuthorTarget(url, (tab.title ?? "").replace(/\s[—–-]\s*(LessWrong|AI Alignment Forum)$/, ""));
+  if (forumTarget) return forumTarget;
+  if (isForumPostPage(url)) return forumPostAuthorTarget(url);
   if (extractYoutubeVideoId(url) && tab.id != null) {
     try {
       const [result] = await browser.scripting.executeScript({ target: { tabId: tab.id }, func: readWatchPageChannel });

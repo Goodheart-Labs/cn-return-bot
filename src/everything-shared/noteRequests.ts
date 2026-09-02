@@ -34,7 +34,7 @@ export async function submitNoteRequest(params: {
  *  and the pipeline's consumer validates the feed and starts following it.
  *  Anonymous requests are allowed. */
 export async function submitFollowRequest(params: {
-  feedType: "substack" | "youtube";
+  feedType: "substack" | "youtube" | "lesswrong";
   feedUrl: string;
   title?: string;
 }) {
