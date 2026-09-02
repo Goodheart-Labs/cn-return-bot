@@ -48,6 +48,28 @@ Date: 2026-08-30
   is 500m, tallest in Europe"): satire gate → query writer → Serper → search
   analyzer → judge returned `needsNote: true` with correct reasoning.
 
+## Measured search volume (2026-09-02, `count_daily_searches.py`)
+
+Counted from the last 7 days of prod `pipeline_runs` logs: prefilter searches
+are the query writer's final query list per run (each query becomes one Serper
+request), loop searches are the google_search tool calls of the kimi/glm search
+arms.
+
+| day        | runs | prefilter searches | loop searches | total |
+|------------|------|--------------------|---------------|-------|
+| 2026-08-27 | 827  | 2434               | 93            | 2527  |
+| 2026-08-28 | 346  | 1012               | 36            | 1048  |
+| 2026-08-29 | 343  | 1053               | 48            | 1101  |
+| 2026-08-30 | 754  | 2131               | 124           | 2255  |
+| 2026-08-31 | 885  | 2403               | 135           | 2538  |
+| 2026-09-01 | 782  | 2065               | 115           | 2180  |
+
+Average ~1,950 searches per day, peak ~2,550. The prefilter is ~95% of the
+volume. At Serper's Starter rate ($1.00 per 1k) that is about $2/day, so a $50
+pack of 50k credits lasts roughly 25 days at current volume — effectively
+~$60/month. Credit expiry (6 months) never matters at this burn rate. Serper is
+prepaid packs, not a subscription.
+
 ## Prior validation baseline
 
 The old prefilter was validated offline against simple-bot's own decisions
