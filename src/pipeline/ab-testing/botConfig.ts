@@ -116,15 +116,6 @@ export interface BotConfig {
   video_description_strategy: VideoDescriptionStrategy;
   parallel_research: boolean;
   /**
-   * When this is true, simple-bot's search agent gets an extra instruction in its
-   * system prompt. On a political post it should prefer sources associated with
-   * the post author's own political side. The idea behind this is bridging. A
-   * note is more likely to be rated helpful when it cites sources the author's
-   * audience already trusts. This applies to simple-bot only.
-   * SIMPLE_BOT_POLITICAL_SOURCES_TEST sets it and it defaults to false.
-   */
-  search_political_sources?: boolean;
-  /**
    * When this is true, simple-bot's search agent uses the "anti-pedantic" prompt
    * variant. That variant flags a correction only when the post's main claim or
    * argument is wrong, and not when a minor side detail is wrong. This applies to
@@ -160,13 +151,6 @@ export interface BotConfig {
    * SIMPLE_BOT_CLAIM_TEST sets it and it defaults to false.
    */
   search_claim?: boolean;
-  /**
-   * When this is true, the writer's system prompt gains a few-shot block of real
-   * notes the community rated helpful. They are all simple, direct, and short, so
-   * they pull the writer toward that style. SIMPLE_BOT_WRITER_EXAMPLES_TEST sets
-   * it and it defaults to false.
-   */
-  writer_examples?: boolean;
   /**
    * The misinfo topic this run matched, when it came from the XXL-feed misinfo
    * pre-pass. This mirrors the forced misinfo_topic pick into the config, so
