@@ -63,6 +63,7 @@ export async function barFor(logger: SupabaseLogger, scorerName: string, cap: nu
   return barWithFloor(week, month, cap);
 }
 
+// On by default. Set the repo variable CAPACITY_BAR_ENABLED=false to switch it off.
 export function barEnabled(): boolean {
-  return process.env.CAPACITY_BAR_ENABLED === "true";
+  return process.env.CAPACITY_BAR_ENABLED !== "false";
 }
