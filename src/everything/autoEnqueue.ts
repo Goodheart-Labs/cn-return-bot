@@ -17,6 +17,13 @@
  * old backlog. A gap deeper than the candidate window is left unfilled on
  * purpose.
  *
+ * With EVERYTHING_TOP_POSTS=on each creator's all-time top posts join the
+ * candidates too (GOO-81, see topPosts.ts). In the author rank they line up
+ * behind the creator's recent posts, ordered by popularity, and in the
+ * recency rank they carry their real old publish dates. The blend therefore
+ * keeps them at the back: an evergreen hit is only enqueued on a run where
+ * the feeds are otherwise caught up.
+ *
  * A Substack post is enqueued with its RSS body already in full_text. That way
  * the worker never has to fetch Substack, which blocks our CI runners.
  *
@@ -25,9 +32,11 @@
  */
 
 import "dotenv/config";
+import { extractYoutubeVideoId } from "../everything-shared/pageUrls";
 import { rankCreators } from "./creatorRanking";
 import {
   enqueueItems,
+  fetchAllTopPosts,
   fetchItemClaims,
   fetchItemUrlsContaining,
   fetchItemUrlsIn,
@@ -40,9 +49,11 @@ import {
   resolveProjectId,
   type EnqueueRow,
   type KnownItemUrl,
+  type TopPostRow,
 } from "./db";
-import { fetchFeedPosts, htmlToText } from "./sources/substack";
+import { fetchFeedPosts, fetchPostBodyText, htmlToText } from "./sources/substack";
 import { ensureYtDlp, fetchChannelVideos, fetchVideoMeta } from "./sources/youtube";
+import { loadTopPosts, topPostsEnabled } from "./topPosts";
 import type { SourceKind } from "./types";
 
 /** How many items one run enqueues, and therefore processes, across all feeds. */
@@ -75,6 +86,10 @@ interface FeedEntry {
   fullText?: string;
   title?: string;
   publishedAt?: string;
+  /** Set when the entry is one of the creator's all-time top posts rather
+   *  than a recent one: the platform's popularity count (views or likes).
+   *  Such entries rank behind the creator's recent posts. */
+  topPopularity?: number;
 }
 
 /** A feed's latest entries, newest first, and the source's display name. */
@@ -228,29 +243,59 @@ interface Candidate {
   entry: UnprocessedEntry;
   sourceName?: string;
   publishedAt?: string;
+  topPopularity?: number;
 }
 
-/** The two rank inputs: where the candidate's feed sits in the walk order,
- *  and when the post was published. */
+/** The rank inputs: where the candidate's feed sits in the walk order, when
+ *  the post was published, and the popularity count when the candidate is an
+ *  all-time top post rather than a recent one. */
 interface Rankable {
   feedIndex: number;
   publishedAt?: string;
+  topPopularity?: number;
 }
 
 const recencyKey = (c: Rankable) => c.publishedAt ?? "9999";
+const isTopPost = (c: Rankable) => c.topPopularity !== undefined;
+
+/** Within one feed's slice of the author rank: recent posts come before the
+ *  feed's all-time top posts. Recent posts order by recency, top posts by
+ *  their popularity count. */
+function withinFeedOrder(a: Rankable, b: Rankable): number {
+  if (isTopPost(a) !== isTopPost(b)) return Number(isTopPost(a)) - Number(isTopPost(b));
+  if (isTopPost(a) && isTopPost(b)) return b.topPopularity! - a.topPopularity!;
+  return recencyKey(b).localeCompare(recencyKey(a));
+}
 
 /** Orders the candidates of all feeds by the average of two ranks: a recency
- *  rank (newest post first) and an author rank (the feed walk order, recency
- *  breaking ties within a feed). A top author's older post and a lower
+ *  rank (newest post first) and an author rank (the feed walk order, ordered
+ *  within a feed by withinFeedOrder). A top author's older post and a lower
  *  author's brand-new post take turns this way, instead of one kind starving
- *  the other. Ties in the average go to the more recent post. */
+ *  the other. An all-time top post carries its real old publish date, so the
+ *  recency rank keeps it low: it only wins on a day when the feeds are
+ *  otherwise caught up. Ties in the average go to the more recent post. */
 export function rankCandidates<T extends Rankable>(candidates: T[]): T[] {
   const byRecency = [...candidates].sort((a, b) => recencyKey(b).localeCompare(recencyKey(a)));
-  const byAuthor = [...candidates].sort(
-    (a, b) => a.feedIndex - b.feedIndex || recencyKey(b).localeCompare(recencyKey(a)),
-  );
+  const byAuthor = [...candidates].sort((a, b) => a.feedIndex - b.feedIndex || withinFeedOrder(a, b));
   const score = (c: T) => byRecency.indexOf(c) + byAuthor.indexOf(c);
   return [...candidates].sort((a, b) => score(a) - score(b) || byRecency.indexOf(a) - byRecency.indexOf(b));
+}
+
+/** Turns a feed's cached top posts into feed entries, leaving out the ones
+ *  already among the feed's recent entries so a recent viral post is not a
+ *  candidate twice. Exported for the tests. */
+export function topPostEntries(tops: TopPostRow[], recent: FeedEntry[]): FeedEntry[] {
+  return tops
+    .map((t) => ({
+      source: t.source,
+      url: t.url,
+      matchKey: t.source === "youtube" ? extractYoutubeVideoId(t.url) ?? t.url : t.url,
+      label: `all-time #${t.rank} (${t.popularity.toLocaleString("en-US")}) ${t.title ?? t.url}`,
+      title: t.title ?? undefined,
+      publishedAt: t.published_at?.slice(0, 10),
+      topPopularity: t.popularity,
+    }))
+    .filter((t) => !recent.some((e) => e.matchKey === t.matchKey));
 }
 
 /** Upload dates fetched this process, keyed by video id. A channel listing
@@ -282,12 +327,20 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
     await retryErroredItems();
   }
 
+  const feedUrlOf = (feed: PriorityFeed) => (feed.type === "substack" ? feed.publicationUrl : feed.channelUrl);
+  // The creators' all-time top posts join the walk only while the switch is
+  // on. A dry run must not write, so it reads the cache without refreshing it.
+  const topRows = !topPostsEnabled() ? [] : dryRun ? await fetchAllTopPosts() : await loadTopPosts();
+
   const candidates: Candidate[] = [];
   for (const [feedIndex, { feed, priority, flagged }] of (await feedsToWalk()).entries()) {
     const { sourceName, entries } = await cachedFeedEntries(feed);
     const latest = entries.slice(0, FEED_CANDIDATE_LIMIT);
-    const unprocessed = await unprocessedEntries(feed, latest);
-    console.log(`[${feed.project}] ${entries.length} feed entries, ${unprocessed.length} of the newest ${latest.length} unprocessed`);
+    const tops = topPostEntries(topRows.filter((t) => t.feed_url === feedUrlOf(feed)), latest);
+    const unprocessed = await unprocessedEntries(feed, [...latest, ...tops]);
+    console.log(
+      `[${feed.project}] ${entries.length} feed entries and ${tops.length} cached top posts, ${unprocessed.length} of the newest ${latest.length} plus tops unprocessed`,
+    );
     for (const entry of unprocessed) {
       candidates.push({
         feed,
@@ -296,7 +349,13 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
         flagged,
         entry,
         sourceName,
-        publishedAt: entry.source === "youtube" ? videoUploadDate(entry) : entry.publishedAt,
+        topPopularity: entry.topPopularity,
+        // A top YouTube post carries its upload date from the cache, so only a
+        // fresh video costs a metadata call here.
+        publishedAt:
+          entry.source === "youtube" && entry.topPopularity === undefined
+            ? videoUploadDate(entry)
+            : entry.publishedAt,
       });
     }
   }
@@ -326,6 +385,17 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
   const rows: EnqueueRow[] = [];
   let promoted = 0;
   for (const { feed, priority, entry, sourceName, publishedAt } of picks) {
+    // An all-time top Substack post is too old to appear in the RSS feed, so
+    // its body is fetched here through the API, one call for the picked post.
+    // If that fails the item is enqueued bare, and the worker's web-fetch
+    // ladder is the fallback.
+    if (feed.type === "substack" && entry.topPopularity !== undefined && !entry.fullText) {
+      try {
+        entry.fullText = await fetchPostBodyText(feed.publicationUrl, entry.url);
+      } catch (err: any) {
+        console.warn(`  body fetch failed for ${entry.url}: ${err?.message}`);
+      }
+    }
     if (entry.existingItem) {
       await promoteItemToWholePage(entry.existingItem.id, entry.fullText ?? null, priority);
       console.log(`  promoted to a whole-page check: ${entry.url}`);

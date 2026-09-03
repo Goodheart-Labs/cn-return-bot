@@ -18,9 +18,20 @@ export const dbState = {
     feed_url: string;
     priority: number;
     priority_until: string | null;
+    top_posts_refreshed_at?: string | null;
   }[],
   /** What fetchVisitCounts answers. */
   visitCounts: [] as { feed_url: string; visits: number }[],
+  /** What fetchAllTopPosts answers. */
+  topPosts: [] as {
+    feed_url: string;
+    source: "substack" | "youtube";
+    url: string;
+    title: string | null;
+    published_at: string | null;
+    popularity: number;
+    rank: number;
+  }[],
   /** Every recorded call, keyed by function name. */
   calls: {} as Record<string, unknown[][]>,
 };
@@ -30,6 +41,7 @@ export const resetDbState = () => {
   dbState.existingItem = null;
   dbState.followedFeeds = [];
   dbState.visitCounts = [];
+  dbState.topPosts = [];
   dbState.calls = {};
 };
 
@@ -48,6 +60,8 @@ export const dbMock = () => ({
   fetchItemUrlsContaining: () => Promise.resolve(dbState.knownItems),
   fetchFollowedFeeds: () => Promise.resolve(dbState.followedFeeds),
   fetchVisitCounts: () => Promise.resolve(dbState.visitCounts),
+  fetchAllTopPosts: () => Promise.resolve(dbState.topPosts),
+  replaceFeedTopPosts: record("replaceFeedTopPosts"),
   upsertFeedPriority: record("upsertFeedPriority"),
   fetchItemClaims: () => Promise.resolve([]),
   fetchOrphanedProcessingItems: () => Promise.resolve([]),
