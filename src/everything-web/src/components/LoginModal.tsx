@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { BUTTON, INPUT, QUIET_LINK } from "../../../everything-shared/ui";
 import { Modal } from "./Modal";
-import { EMAIL_OTP_LENGTH, getSignedInBefore, signInWithEmailCode, verifyEmailCode, signInWithTwitter, type EmailFlow } from "../../../everything-shared/auth";
+import { EMAIL_OTP_LENGTH, getSignedInBefore, signInWithEmailCode, verifyEmailCode, signInWithX, X_SIGN_IN_METHOD_LABEL, type EmailFlow } from "../../../everything-shared/auth";
 import { track } from "../../../everything-shared/analytics";
 
 const X_SIGNIN_ENABLED = true;
@@ -123,7 +123,7 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
               <span className="flex-1 border-t border-gray-200 dark:border-gray-700" /> or <span className="flex-1 border-t border-gray-200 dark:border-gray-700" />
             </div>
             <button
-              onClick={() => { track("sign_in_started", { method: "twitter" }); signInWithTwitter(); }}
+              onClick={() => { track("sign_in_started", { method: X_SIGN_IN_METHOD_LABEL }); signInWithX(); }}
               className="w-full bg-black text-white border border-gray-800 dark:border-gray-600 rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-gray-800 disabled:opacity-40"
             >
               Sign in with 𝕏
