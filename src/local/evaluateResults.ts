@@ -297,7 +297,7 @@ export function inferStageBlock(row: CsvRow, logsObj: any): StageBlock {
 
   const reason = String(logsObj?.outcome?.reason ?? row.outcome ?? "");
   if (/satire_detected/i.test(reason)) return "satire_rejected";
-  if (/searxng_all_providers_exhausted|no_evidence_found/i.test(reason)) return "search_exhausted";
+  if (/searxng_all_providers_exhausted|serper_unavailable|no_evidence_found/i.test(reason)) return "search_exhausted";
   if (/writer_returned_empty/i.test(reason)) return "writer_abstained";
   if (/verification_failed/i.test(reason)) return "verifier_rejected";
 

@@ -32,8 +32,8 @@ jobs:
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
       # xAI API key for Grok X search
       XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
-      # Brave Search API key — fallback search provider
-      BRAVE_API_KEY: ${{ secrets.BRAVE_API_KEY }}
+      # Serper API key, the pipeline's web search backend
+      SERPER_API_KEY: ${{ secrets.SERPER_API_KEY }}
       # Cloudflare Worker relaying Substack RSS fetches (Substack 403s runner IPs)
       SUBSTACK_PROXY_URL: ${{ secrets.SUBSTACK_PROXY_URL }}
       SUBSTACK_PROXY_KEY: ${{ secrets.SUBSTACK_PROXY_KEY }}

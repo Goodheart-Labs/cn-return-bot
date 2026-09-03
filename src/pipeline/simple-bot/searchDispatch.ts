@@ -16,7 +16,6 @@ import { getMonitoringContext, buildReferenceBlock } from "../misinfo-monitoring
 import {
   buildSearchSystemPrompt,
   SEARCH_SYSTEM_PROMPT_CLAIM,
-  SEARCH_POLITICAL_SOURCES_INSTRUCTION,
   SEARCH_TIME_TRAVEL_INSTRUCTION,
   SEARCH_RESPONSE_FORMAT,
   SEARCH_INLINE_RESPONSE_SCHEMA,
@@ -72,7 +71,6 @@ export function getSearchSystemPrompt(): string {
     referenceBlock: monitoring ? buildReferenceBlock(monitoring) : null,
   });
   if (config.time_travel_prompt) prompt += SEARCH_TIME_TRAVEL_INSTRUCTION;
-  if (config.search_political_sources) prompt += SEARCH_POLITICAL_SOURCES_INSTRUCTION;
   return prompt;
 }
 
@@ -164,9 +162,9 @@ export async function dispatchSearch(
     case "native_grok":    return searchWithGrokNative(userMessage, costName);
     case "native_openai":  return searchWithOpenaiNative(userMessage, costName);
     case "bundled":        return searchWithSonarBundled(userMessage, costName);
-    case "searxng":
-    case "searxng_summarized":
-                           return searchWithSearxngLoop(userMessage, costName);
+    case "serper":
+    case "serper_summarized":
+                           return searchWithSerperLoop(userMessage, costName);
     case "perplexity":
       throw new Error(`simple-bot search arch "${config.web_search}" not yet implemented`);
   }
@@ -365,15 +363,15 @@ async function searchWithSonarBundled(
   };
 }
 
-const SEARXNG_MAX_TURNS = 6;
+const SEARCH_LOOP_MAX_TURNS = 6;
 
 /**
  * The tool-calling loop for models that have no native web search, such as
  * Kimi, GLM, DeepSeek, and Qwen. The model issues google_search calls, which we
- * dispatch to SearXNG, and eventually returns its findings as JSON. It reuses
+ * dispatch to Serper, and eventually returns its findings as JSON. It reuses
  * executeToolCall from the agent flow rather than forking it.
  */
-async function searchWithSearxngLoop(
+async function searchWithSerperLoop(
   userMessage: string,
   costName: string,
 ): Promise<SearchDispatchResult> {
@@ -393,7 +391,7 @@ You have access to a google_search tool. Issue search queries to gather evidence
   const totalCost: TokenCost = emptyTokenCost();
   const toolCosts: ToolCallCost[] = [];
 
-  for (let turn = 1; turn <= SEARXNG_MAX_TURNS; turn++) {
+  for (let turn = 1; turn <= SEARCH_LOOP_MAX_TURNS; turn++) {
     // Turn 1 forces a tool call. Without that, some models prefer the JSON
     // schema and stop straight away with empty findings and
     // correction_needed=false, without ever searching. We saw DeepSeek v4 Flash
@@ -415,7 +413,7 @@ You have access to a google_search tool. Issue search queries to gather evidence
 
     const message = response.choices?.[0]?.message;
     if (!message) {
-      throw new Error(`searxng loop: empty response on turn ${turn}`);
+      throw new Error(`serper loop: empty response on turn ${turn}`);
     }
 
     if (message.tool_calls?.length) {
@@ -445,7 +443,7 @@ You have access to a google_search tool. Issue search queries to gather evidence
       continue;
     }
 
-    const parsed = parseSearchJson(message.content ?? "", `searxng loop final (turn ${turn})`);
+    const parsed = parseSearchJson(message.content ?? "", `serper loop final (turn ${turn})`);
     log?.set(`${STEP.search}.messages.final`, { turn, content: parsed });
 
     return {
@@ -473,8 +471,8 @@ You have access to a google_search tool. Issue search queries to gather evidence
   } as any);
   addTokenCost(totalCost, extractOpenRouterCost(finalResp));
   const finalContent = finalResp.choices?.[0]?.message?.content ?? "";
-  const parsed = parseSearchJson(finalContent, `searxng forced synthesis (after ${SEARXNG_MAX_TURNS} turns)`);
-  log?.set(`${STEP.search}.messages.final`, { turn: SEARXNG_MAX_TURNS + 1, content: parsed });
+  const parsed = parseSearchJson(finalContent, `serper forced synthesis (after ${SEARCH_LOOP_MAX_TURNS} turns)`);
+  log?.set(`${STEP.search}.messages.final`, { turn: SEARCH_LOOP_MAX_TURNS + 1, content: parsed });
   return {
     findings: parsed.findings,
     correctionNeeded: parsed.correction_needed,

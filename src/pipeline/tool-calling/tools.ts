@@ -19,10 +19,10 @@ import {
   calculateGrokCost, extractOpenRouterCost,
   type TokenCost,
 } from "../cost-tracking/pricing";
-import { fetchSearxngResults, formatSearxngResults, SearxngExhaustedError, type SearxngResult } from "./searxng";
-import { buildSearxngSummarizePrompt } from "../prompts/tool-calling/searxngSummarize";
-export { fetchSearxngResults, formatSearxngResults, SearxngExhaustedError };
-export type { SearxngResult };
+import { fetchSearchResults, formatSearchResults, SearchUnavailableError, type SearchResult } from "./serper";
+import { buildSearchSummarizePrompt } from "../prompts/tool-calling/searchSummarize";
+export { fetchSearchResults, formatSearchResults, SearchUnavailableError };
+export type { SearchResult };
 
 const turndown = new TurndownService({ headingStyle: "atx", codeBlockStyle: "fenced" });
 
@@ -80,7 +80,7 @@ export async function executeToolCall(
     case "perplexity_search":
       return handlePerplexitySearch(args.prompt ?? args.query);
     case "google_search":
-      return getBotConfig().web_search === "searxng_summarized"
+      return getBotConfig().web_search === "serper_summarized"
         ? handleGoogleSearchSummarized(args.query)
         : handleGoogleSearchRaw(args.query);
     case "web_fetch":
@@ -136,22 +136,22 @@ export async function handlePerplexitySearch(prompt: string): Promise<ToolResult
 
 export async function handleGoogleSearchRaw(query: string): Promise<ToolResult> {
   try {
-    const results = await fetchSearxngResults(query);
-    return { output: { results: formatSearxngResults(results) }, isTerminal: false };
+    const results = await fetchSearchResults(query);
+    return { output: { results: formatSearchResults(results) }, isTerminal: false };
   } catch (err: any) {
     return { output: { error: `Google search failed: ${err?.message}` }, isTerminal: false };
   }
 }
 
 export async function handleGoogleSearchSummarized(query: string): Promise<ToolResult> {
-  let results: SearxngResult[];
+  let results: SearchResult[];
   try {
-    results = await fetchSearxngResults(query);
+    results = await fetchSearchResults(query);
   } catch (err: any) {
     return { output: { error: `Google search failed: ${err?.message}` }, isTerminal: false };
   }
 
-  const prompt = buildSearxngSummarizePrompt(query, formatSearxngResults(results));
+  const prompt = buildSearchSummarizePrompt(query, formatSearchResults(results));
 
   const response = await llm.create({
     model: GEMINI_MODEL,
