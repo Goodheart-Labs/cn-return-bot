@@ -70,6 +70,25 @@ pack of 50k credits lasts roughly 25 days at current volume — effectively
 ~$60/month. Credit expiry (6 months) never matters at this burn rate. Serper is
 prepaid packs, not a subscription.
 
+## Local end-to-end run (2026-09-03, `runPipeline.ts --local`)
+
+Ran the pipeline locally on the 5 fastest-moving feed posts with the prefilter
+forced on (`--pick note_prefilter=deepseek`), against the local Supabase (X
+pipeline migrations applied that day) with `LD_LIBRARY_PATH` pointing at the
+cached Chromium libs. Results, all as expected:
+
+| post | prefilter path | outcome |
+|------|----------------|---------|
+| ABC News / UNEP report | 3 queries, 18 Serper results | rejected: post accurately reflects the report |
+| satire meme video | satire gate, no search | rejected: overt satire |
+| (opinion post) | query writer returned no queries | rejected: nothing checkable |
+| Ted Lieu clip mislabeled | 5 queries, 26 Serper results | needs note → full bot wrote a candidate (eval 0.53, dry-run submit) |
+| video post | never reached prefilter | abandoned at the soft deadline, stuck in media analysis (no ffmpeg / no YouTube proxy locally) |
+
+Zero Serper errors and zero empty-result responses. The abandoned post and the
+"Made with AI" label-check timeouts are local-environment artifacts (missing
+ffmpeg, YouTube datacenter-IP block, headless VPS), not related to the change.
+
 ## Prior validation baseline
 
 The old prefilter was validated offline against simple-bot's own decisions
