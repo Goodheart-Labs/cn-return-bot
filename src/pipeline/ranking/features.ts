@@ -9,6 +9,7 @@ export interface RankFeatures {
   tierRank: number | null;
 }
 
+// Cut points fitted on Aug 10-30 2026 labelled notes; they age. Recheck with `bun run replay-ranking`.
 export const FLAG_FOLLOWER_CEILING = 1_000_000;
 export const FLAG_VELOCITY_FLOOR_PER_HOUR = 15_000;
 export const FLAG_AGE_MIN_HOURS = 3;
