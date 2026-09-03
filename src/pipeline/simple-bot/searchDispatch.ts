@@ -16,7 +16,6 @@ import { getMonitoringContext, buildReferenceBlock } from "../misinfo-monitoring
 import {
   buildSearchSystemPrompt,
   SEARCH_SYSTEM_PROMPT_CLAIM,
-  SEARCH_POLITICAL_SOURCES_INSTRUCTION,
   SEARCH_TIME_TRAVEL_INSTRUCTION,
   SEARCH_RESPONSE_FORMAT,
   SEARCH_INLINE_RESPONSE_SCHEMA,
@@ -72,7 +71,6 @@ export function getSearchSystemPrompt(): string {
     referenceBlock: monitoring ? buildReferenceBlock(monitoring) : null,
   });
   if (config.time_travel_prompt) prompt += SEARCH_TIME_TRAVEL_INSTRUCTION;
-  if (config.search_political_sources) prompt += SEARCH_POLITICAL_SOURCES_INSTRUCTION;
   return prompt;
 }
 
