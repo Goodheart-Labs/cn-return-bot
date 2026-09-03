@@ -1,0 +1,46 @@
+name: Ranking Drift Check
+
+# Monthly replay of the ranking scorers over the trailing six weeks, posted as an
+# issue so the flag cut points get re-read instead of quietly aging.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "23 8 1 * *"
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - run: bun install
+      - name: Replay the trailing six weeks
+        run: |
+          FROM=$(date -u -d '49 days ago' +%F)
+          TO=$(date -u -d '7 days ago' +%F)
+          bun run replay-ranking --from "$FROM" --to "$TO" --top 40 | tee replay.txt
+      - name: Open an issue with the result
+        run: |
+          TITLE="Ranking drift check $(date -u +%Y-%m)"
+          {
+            echo "Replay of every registered scorer over the trailing six weeks (notes 7+ days old, so labels are final)."
+            echo
+            echo "Read: the ≤2-flag band should still sit well below the 3/4 band, and flags_then_eval should still keep more helpfuls and fewer not-helpfuls than pipeline order. If not, the cut points in src/pipeline/ranking/scorers.ts have aged."
+            echo
+            echo '```'
+            cat replay.txt
+            echo '```'
+          } > body.md
+          gh issue create --title "$TITLE" --body-file body.md --label ranking

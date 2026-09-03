@@ -17,7 +17,8 @@ export function featuresFromPost(
 ): RankFeatures {
   const createdMs = post.created_at ? new Date(post.created_at).getTime() : NaN;
   return {
-    hasMedia: Array.isArray(post.media) && post.media.length > 0,
+    // Photo or video only, matching tweets.has_photo/has_video, which the flag was fitted on.
+    hasMedia: Array.isArray(post.media) && post.media.some((m) => m?.type === "photo" || m?.type === "video"),
     authorFollowers: post.author_followers ?? null,
     velocityPerHour: velocity ?? velocityPerHour(post, asOfMs),
     ageHoursAtFetch: Number.isFinite(createdMs) ? (asOfMs - createdMs) / 3_600_000 : null,

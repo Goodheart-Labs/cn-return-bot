@@ -46,6 +46,11 @@ describe("featuresFromPost", () => {
     expect(f.tierRank).toBe(0);
   });
 
+  test("a gif or link card is not media, matching the tweets table", () => {
+    const gif = { ...post, media: [{ type: "animated_gif" }] } as unknown as Post;
+    expect(featuresFromPost(gif, undefined, 0, now).hasMedia).toBe(false);
+  });
+
   test("prefers the frozen velocity", () => {
     expect(featuresFromPost(post, 55_000, 0, now).velocityPerHour).toBe(55_000);
   });

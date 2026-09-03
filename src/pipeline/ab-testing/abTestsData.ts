@@ -538,6 +538,17 @@ const AUTHOR_HISTORY_TEST: ABTest = {
   ],
 };
 
+// Picked once per run in runPipeline and forced onto every post of that run,
+// because ordering belongs to the batch. Names are scorer names.
+export const RANKING_POLICY_TEST: ABTest = {
+  name: "ranking_policy",
+  defaultVariant: "velocity_only",
+  variants: [
+    { variant: { name: "velocity_only",   overrides: { ranking_policy: "velocity_only"   } }, weight: 50 },
+    { variant: { name: "flags_then_eval", overrides: { ranking_policy: "flags_then_eval" } }, weight: 50 },
+  ],
+};
+
 export const AB_TESTS: ABTest[] = [
   BOT_TEST,
   SIMPLE_BOT_SEARCH_TEST,
@@ -563,4 +574,5 @@ export const AB_TESTS: ABTest[] = [
   PANGRAM_MONITORING_TEST,
   PANGRAM_NOTE_TEST,
   AUTHOR_HISTORY_TEST,
+  RANKING_POLICY_TEST,
 ];
