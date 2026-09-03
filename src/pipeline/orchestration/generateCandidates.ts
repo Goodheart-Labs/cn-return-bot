@@ -30,6 +30,8 @@ import {
   REGULAR_VELOCITY_FLOOR_PER_HOUR,
   MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR,
 } from "../utils/velocity";
+import { featuresFromPost } from "../ranking/features";
+import { shadowScores } from "../ranking/scorers";
 import type { Post } from "../../api/fetchEligiblePosts";
 import PQueue from "p-queue";
 
@@ -318,6 +320,9 @@ export async function processPosts(
       const log = createTweetLog();
       log.set("tweet.index", idx + 1);
       log.set("tweet.total", items.length);
+      const rankFeatures = featuresFromPost(item.post, item.velocity, item.feedSize ? REGULAR_FEED_LADDER.indexOf(item.feedSize) : null);
+      log.set("ranking.features", rankFeatures);
+      log.set("ranking.admission", shadowScores(rankFeatures));
 
       const tweetResult = await withTweetLog(log, () =>
         withWarnings(() =>

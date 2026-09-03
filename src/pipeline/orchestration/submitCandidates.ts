@@ -19,6 +19,8 @@ import { submitNoteForTweet } from "./submitNoteForTweet";
 import type { Post } from "../../api/fetchEligiblePosts";
 import type { ProcessTweetResult } from "./processTweet";
 import { velocityPerHour, formatVelocity, isAboveVelocityFloor, REGULAR_VELOCITY_FLOOR_PER_HOUR } from "../utils/velocity";
+import { featuresFromPost } from "../ranking/features";
+import { SCORERS } from "../ranking/scorers";
 
 // We prefer the velocity that was frozen when the post was fetched, which is
 // what the regular feed does. Candidates from the pre-passes arrive without one,
@@ -217,6 +219,13 @@ export async function submitCandidates(
     const ordered = kept;
 
     console.log(`[submit] ${ordered.length} candidates to submit (velocity floor applied, pipeline order)`);
+    for (const c of ordered) {
+      const f = featuresFromPost(c.post, c.velocity, null);
+      const scores = Object.values(SCORERS)
+        .map((s) => `${s.name}=${s.scoreSubmit(f, c.tweetResult.evaluationScore ?? null).toFixed(2)}`)
+        .join(" ");
+      console.log(`[submit]   shadow ${c.post.id} ${scores}`);
+    }
 
     if (dryRun) {
       for (const f of floorCut) {
