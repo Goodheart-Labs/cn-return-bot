@@ -1,4 +1,4 @@
-import { flagCount, type RankFeatures } from "./features";
+import { flagCount, type FlagCuts, type RankFeatures } from "./features";
 
 export interface Scorer {
   name: string;
@@ -17,11 +17,24 @@ export const velocityOnly: Scorer = {
   scoreSubmit: (f) => logVelocity(f.velocityPerHour),
 };
 
-export const flagsThenEval: Scorer = {
-  name: "flags_then_eval",
-  scoreAdmission: (f) => flagCount(f) * 10 + logVelocity(f.velocityPerHour),
-  scoreSubmit: (f, evalScore) => flagCount(f) * 10 + clampEval(evalScore),
+export const FLAG_CUTS_2026_08: FlagCuts = {
+  followerCeiling: 1_000_000,
+  velocityFloorPerHour: 15_000,
+  ageMinHours: 3,
+  ageMaxHours: 12,
+  fittedOn: "2026-08-10..2026-08-30",
 };
+
+export function makeFlagsThenEval(name: string, cuts: FlagCuts): Scorer & { cuts: FlagCuts } {
+  return {
+    name,
+    cuts,
+    scoreAdmission: (f) => flagCount(f, cuts) * 10 + logVelocity(f.velocityPerHour),
+    scoreSubmit: (f, evalScore) => flagCount(f, cuts) * 10 + clampEval(evalScore),
+  };
+}
+
+export const flagsThenEval = makeFlagsThenEval("flags_then_eval", FLAG_CUTS_2026_08);
 
 export const SCORERS: Record<string, Scorer> = {
   [velocityOnly.name]: velocityOnly,

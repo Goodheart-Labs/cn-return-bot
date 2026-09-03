@@ -9,12 +9,6 @@ export interface RankFeatures {
   tierRank: number | null;
 }
 
-// Cut points fitted on Aug 10-30 2026 labelled notes; they age. Recheck with `bun run replay-ranking`.
-export const FLAG_FOLLOWER_CEILING = 1_000_000;
-export const FLAG_VELOCITY_FLOOR_PER_HOUR = 15_000;
-export const FLAG_AGE_MIN_HOURS = 3;
-export const FLAG_AGE_MAX_HOURS = 12;
-
 export function featuresFromPost(
   post: Post,
   velocity: number | null | undefined,
@@ -54,6 +48,14 @@ export function featuresFromTweetRow(row: TweetRow): RankFeatures {
   };
 }
 
+export interface FlagCuts {
+  followerCeiling: number;
+  velocityFloorPerHour: number;
+  ageMinHours: number;
+  ageMaxHours: number;
+  fittedOn: string;
+}
+
 export interface Flags {
   media: boolean;
   smallAuthor: boolean;
@@ -62,18 +64,17 @@ export interface Flags {
 }
 
 // Unknown values count as passing, matching the fail-open velocity floor.
-export function flagsOf(f: RankFeatures): Flags {
+export function flagsOf(f: RankFeatures, cuts: FlagCuts): Flags {
   return {
     media: f.hasMedia,
-    smallAuthor: f.authorFollowers === null || f.authorFollowers < FLAG_FOLLOWER_CEILING,
-    fast: f.velocityPerHour === null || f.velocityPerHour >= FLAG_VELOCITY_FLOOR_PER_HOUR,
+    smallAuthor: f.authorFollowers === null || f.authorFollowers < cuts.followerCeiling,
+    fast: f.velocityPerHour === null || f.velocityPerHour >= cuts.velocityFloorPerHour,
     freshWindow:
-      f.ageHoursAtFetch === null ||
-      (f.ageHoursAtFetch >= FLAG_AGE_MIN_HOURS && f.ageHoursAtFetch < FLAG_AGE_MAX_HOURS),
+      f.ageHoursAtFetch === null || (f.ageHoursAtFetch >= cuts.ageMinHours && f.ageHoursAtFetch < cuts.ageMaxHours),
   };
 }
 
-export function flagCount(f: RankFeatures): number {
-  const fl = flagsOf(f);
+export function flagCount(f: RankFeatures, cuts: FlagCuts): number {
+  const fl = flagsOf(f, cuts);
   return Number(fl.media) + Number(fl.smallAuthor) + Number(fl.fast) + Number(fl.freshWindow);
 }

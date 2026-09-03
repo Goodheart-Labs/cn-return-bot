@@ -9,7 +9,7 @@
 import "dotenv/config";
 import { getSupabaseClient } from "../api/supabaseClient";
 import { featuresFromTweetRow, flagCount, type RankFeatures, type TweetRow } from "../pipeline/ranking/features";
-import { SCORERS, getScorer } from "../pipeline/ranking/scorers";
+import { FLAG_CUTS_2026_08, SCORERS, getScorer } from "../pipeline/ranking/scorers";
 
 const arg = (name: string, fallback?: string) => {
   const i = process.argv.indexOf(`--${name}`);
@@ -77,7 +77,7 @@ for (const n of notes) {
   rows.push({
     day: n.submitted_at.slice(0, 10),
     features: f,
-    flags: flagCount(f),
+    flags: flagCount(f, FLAG_CUTS_2026_08),
     evalScore,
     submit: scorer.scoreSubmit(f, evalScore),
     helpful: n.cn_status === "CURRENTLY_RATED_HELPFUL",

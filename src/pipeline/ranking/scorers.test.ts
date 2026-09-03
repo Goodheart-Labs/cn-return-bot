@@ -1,28 +1,28 @@
 import { describe, expect, test } from "bun:test";
 import { featuresFromPost, featuresFromTweetRow, flagCount, flagsOf, type RankFeatures } from "./features";
-import { flagsThenEval, getScorer, velocityOnly } from "./scorers";
+import { FLAG_CUTS_2026_08 as cuts, flagsThenEval, getScorer, makeFlagsThenEval, velocityOnly } from "./scorers";
 import type { Post } from "../../api/fetchEligiblePosts";
 
 const base: RankFeatures = { hasMedia: true, authorFollowers: 50_000, velocityPerHour: 40_000, ageHoursAtFetch: 6, tierRank: 1 };
 
 describe("flags", () => {
   test("all four pass on a media post from a small account, fast and 3-12h old", () => {
-    expect(flagCount(base)).toBe(4);
+    expect(flagCount(base, cuts)).toBe(4);
   });
 
   test("each flag fails at its boundary", () => {
-    expect(flagsOf({ ...base, hasMedia: false }).media).toBe(false);
-    expect(flagsOf({ ...base, authorFollowers: 1_000_000 }).smallAuthor).toBe(false);
-    expect(flagsOf({ ...base, authorFollowers: 999_999 }).smallAuthor).toBe(true);
-    expect(flagsOf({ ...base, velocityPerHour: 14_999 }).fast).toBe(false);
-    expect(flagsOf({ ...base, velocityPerHour: 15_000 }).fast).toBe(true);
-    expect(flagsOf({ ...base, ageHoursAtFetch: 2.9 }).freshWindow).toBe(false);
-    expect(flagsOf({ ...base, ageHoursAtFetch: 12 }).freshWindow).toBe(false);
-    expect(flagsOf({ ...base, ageHoursAtFetch: 3 }).freshWindow).toBe(true);
+    expect(flagsOf({ ...base, hasMedia: false }, cuts).media).toBe(false);
+    expect(flagsOf({ ...base, authorFollowers: 1_000_000 }, cuts).smallAuthor).toBe(false);
+    expect(flagsOf({ ...base, authorFollowers: 999_999 }, cuts).smallAuthor).toBe(true);
+    expect(flagsOf({ ...base, velocityPerHour: 14_999 }, cuts).fast).toBe(false);
+    expect(flagsOf({ ...base, velocityPerHour: 15_000 }, cuts).fast).toBe(true);
+    expect(flagsOf({ ...base, ageHoursAtFetch: 2.9 }, cuts).freshWindow).toBe(false);
+    expect(flagsOf({ ...base, ageHoursAtFetch: 12 }, cuts).freshWindow).toBe(false);
+    expect(flagsOf({ ...base, ageHoursAtFetch: 3 }, cuts).freshWindow).toBe(true);
   });
 
   test("unknown values fail open", () => {
-    expect(flagCount({ hasMedia: true, authorFollowers: null, velocityPerHour: null, ageHoursAtFetch: null, tierRank: null })).toBe(4);
+    expect(flagCount({ hasMedia: true, authorFollowers: null, velocityPerHour: null, ageHoursAtFetch: null, tierRank: null }, cuts)).toBe(4);
   });
 });
 
@@ -79,6 +79,13 @@ describe("scorers", () => {
     const smallSlow = { ...base, tierRank: 0, velocityPerHour: 6_000 };
     const largeFast = { ...base, tierRank: 1, velocityPerHour: 400_000 };
     expect(velocityOnly.scoreAdmission(smallSlow)).toBeGreaterThan(velocityOnly.scoreAdmission(largeFast));
+  });
+
+  test("a second arm can carry different cuts", () => {
+    const strict = makeFlagsThenEval("flags_strict", { ...cuts, followerCeiling: 100_000 });
+    const midAuthor = { ...base, authorFollowers: 500_000 };
+    expect(flagsThenEval.scoreAdmission(midAuthor)).toBeGreaterThan(strict.scoreAdmission(midAuthor));
+    expect(strict.cuts.followerCeiling).toBe(100_000);
   });
 
   test("unknown scorer names throw", () => {
