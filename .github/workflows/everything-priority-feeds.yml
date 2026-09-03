@@ -43,8 +43,6 @@ jobs:
       EVERYTHING_DAILY_SPEND_CAP_USD: ${{ vars.EVERYTHING_DAILY_SPEND_CAP_USD }}
       # "on" also walks creators readers visit without following (repo variable; anything else only reorders the followed feeds)
       EVERYTHING_VISIT_CREATORS: ${{ vars.EVERYTHING_VISIT_CREATORS }}
-      # "on" also offers each creator's all-time top posts as low-priority candidates (repo variable; GOO-81)
-      EVERYTHING_TOP_POSTS: ${{ vars.EVERYTHING_TOP_POSTS }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

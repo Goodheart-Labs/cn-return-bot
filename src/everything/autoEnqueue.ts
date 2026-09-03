@@ -17,12 +17,11 @@
  * old backlog. A gap deeper than the candidate window is left unfilled on
  * purpose.
  *
- * With EVERYTHING_TOP_POSTS=on each creator's all-time top posts join the
- * candidates too (GOO-81, see topPosts.ts). In the author rank they line up
- * behind the creator's recent posts, ordered by popularity, and in the
- * recency rank they carry their real old publish dates. The blend therefore
- * keeps them at the back: an evergreen hit is only enqueued on a run where
- * the feeds are otherwise caught up.
+ * Each creator's all-time top posts join the candidates too (GOO-81, see
+ * topPosts.ts). In the author rank they line up behind the creator's recent
+ * posts, ordered by popularity, and in the recency rank they carry their real
+ * old publish dates. The blend therefore keeps them at the back: an evergreen
+ * hit is only enqueued on a run where the feeds are otherwise caught up.
  *
  * A Substack post is enqueued with its RSS body already in full_text. That way
  * the worker never has to fetch Substack, which blocks our CI runners.
@@ -53,7 +52,7 @@ import {
 } from "./db";
 import { fetchFeedPosts, fetchPostBodyText, htmlToText } from "./sources/substack";
 import { ensureYtDlp, fetchChannelVideos, fetchVideoMeta } from "./sources/youtube";
-import { loadTopPosts, topPostsEnabled } from "./topPosts";
+import { loadTopPosts } from "./topPosts";
 import type { SourceKind } from "./types";
 
 /** How many items one run enqueues, and therefore processes, across all feeds. */
@@ -328,9 +327,9 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
   }
 
   const feedUrlOf = (feed: PriorityFeed) => (feed.type === "substack" ? feed.publicationUrl : feed.channelUrl);
-  // The creators' all-time top posts join the walk only while the switch is
-  // on. A dry run must not write, so it reads the cache without refreshing it.
-  const topRows = !topPostsEnabled() ? [] : dryRun ? await fetchAllTopPosts() : await loadTopPosts();
+  // A dry run must not write, so it reads the cached top lists without
+  // refreshing the stalest one.
+  const topRows = dryRun ? await fetchAllTopPosts() : await loadTopPosts();
 
   const candidates: Candidate[] = [];
   for (const [feedIndex, { feed, priority, flagged }] of (await feedsToWalk()).entries()) {

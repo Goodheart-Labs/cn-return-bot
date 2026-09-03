@@ -11,20 +11,14 @@
  * week, and each walk refreshes at most one creator so a single run never
  * pays for more than one listing. Only followed feeds get top posts;
  * visited-only creators earn a whole-history check by being followed.
- *
- * The whole feature is off until EVERYTHING_TOP_POSTS is set to "on".
  */
 
 import { fetchAllTopPosts, fetchFollowedFeeds, replaceFeedTopPosts, type FollowedFeed, type TopPostRow } from "./db";
 import { fetchTopArchivePosts } from "./sources/substack";
 import { fetchChannelTopVideos, fetchVideoMeta } from "./sources/youtube";
 
-export const TOP_POSTS_PER_FEED = 5;
+const TOP_POSTS_PER_FEED = 5;
 const REFRESH_AGE_DAYS = 7;
-
-export function topPostsEnabled(): boolean {
-  return process.env.EVERYTHING_TOP_POSTS === "on";
-}
 
 async function fetchFreshTopList(feed: FollowedFeed): Promise<Omit<TopPostRow, "feed_url">[]> {
   if (feed.feed_type === "substack") {
