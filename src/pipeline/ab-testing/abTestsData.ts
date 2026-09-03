@@ -90,20 +90,27 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     { variant: { name: "gemini31pro-native",      overrides: { search_model: "google/gemini-3.1-pro-preview",      web_search: "native_gemini" }}, weight: 1 },
     { variant: { name: "sonar-reasoning-pro",     overrides: { search_model: "perplexity/sonar-reasoning-pro",    web_search: "bundled" }},       weight: 0 },
     { variant: { name: "sonar-pro",               overrides: { search_model: "perplexity/sonar-pro",              web_search: "bundled" }},       weight: 0 },
-    { variant: { name: "kimi-k26-searxng",        overrides: { search_model: "moonshotai/kimi-k2.6",              web_search: "searxng" }},       weight: 0 },
-    { variant: { name: "kimi-k3-searxng",         overrides: { search_model: "moonshotai/kimi-k3",                web_search: "searxng" }},       weight: 2 },
-    { variant: { name: "deepseek-v4pro-searxng",  overrides: { search_model: "deepseek/deepseek-v4-pro",          web_search: "searxng" }},       weight: 0 },
-    { variant: { name: "deepseek-v4flash-searxng",overrides: { search_model: "deepseek/deepseek-v4-flash",        web_search: "searxng" }},       weight: 0 },
-    { variant: { name: "glm5-searxng",            overrides: { search_model: "z-ai/glm-5",                        web_search: "searxng" }},       weight: 0 },
-    { variant: { name: "glm52-searxng",           overrides: { search_model: "z-ai/glm-5.2",                      web_search: "searxng" }},       weight: 2 },
-    { variant: { name: "deepseek-v32exp-searxng", overrides: { search_model: "deepseek/deepseek-v3.2-exp",        web_search: "searxng" }},       weight: 0 },
-    { variant: { name: "qwen3max-searxng",        overrides: { search_model: "qwen/qwen3-max",                    web_search: "searxng" }},       weight: 0 },
+    { variant: { name: "kimi-k26-searxng",        overrides: { search_model: "moonshotai/kimi-k2.6",              web_search: "serper" }},       weight: 0 },
+    { variant: { name: "kimi-k3-searxng",         overrides: { search_model: "moonshotai/kimi-k3",                web_search: "serper" }},       weight: 0 },
+    // The -serper arms took over from the -searxng arms of the same models in
+    // September 2026, when Serper replaced the SearXNG search backend. A new
+    // backend is a new treatment, so the arms restart under new names. The
+    // -searxng names stay declared at weight 0 for historical replays; their
+    // overrides point at the current backend, because a replay runs today's code.
+    { variant: { name: "kimi-k3-serper",          overrides: { search_model: "moonshotai/kimi-k3",                web_search: "serper" }},       weight: 2 },
+    { variant: { name: "deepseek-v4pro-searxng",  overrides: { search_model: "deepseek/deepseek-v4-pro",          web_search: "serper" }},       weight: 0 },
+    { variant: { name: "deepseek-v4flash-searxng",overrides: { search_model: "deepseek/deepseek-v4-flash",        web_search: "serper" }},       weight: 0 },
+    { variant: { name: "glm5-searxng",            overrides: { search_model: "z-ai/glm-5",                        web_search: "serper" }},       weight: 0 },
+    { variant: { name: "glm52-searxng",           overrides: { search_model: "z-ai/glm-5.2",                      web_search: "serper" }},       weight: 0 },
+    { variant: { name: "glm52-serper",            overrides: { search_model: "z-ai/glm-5.2",                      web_search: "serper" }},       weight: 2 },
+    { variant: { name: "deepseek-v32exp-searxng", overrides: { search_model: "deepseek/deepseek-v3.2-exp",        web_search: "serper" }},       weight: 0 },
+    { variant: { name: "qwen3max-searxng",        overrides: { search_model: "qwen/qwen3-max",                    web_search: "serper" }},       weight: 0 },
     { variant: { name: "gpt5_4mini-native",       overrides: { search_model: "openai/gpt-5.4-mini",               web_search: "native_openai" }}, weight: 0 },
     { variant: { name: "gpt5-native",             overrides: { search_model: "openai/gpt-5",                      web_search: "native_openai" }}, weight: 0 },
     { variant: { name: "gpt5_6luna-native",       overrides: { search_model: "openai/gpt-5.6-luna",               web_search: "native_openai" }}, weight: 2 },
     { variant: { name: "gpt5_6terra-native",      overrides: { search_model: "openai/gpt-5.6-terra",              web_search: "native_openai" }}, weight: 2 },
     { variant: { name: "gpt5_6sol-native",        overrides: { search_model: "openai/gpt-5.6-sol",                web_search: "native_openai" }}, weight: 1 },
-    { variant: { name: "mistral-large-3-searxng", overrides: { search_model: "mistralai/mistral-large-2512",      web_search: "searxng" }},       weight: 0 },
+    { variant: { name: "mistral-large-3-searxng", overrides: { search_model: "mistralai/mistral-large-2512",      web_search: "serper" }},       weight: 0 },
   ],
 };
 
