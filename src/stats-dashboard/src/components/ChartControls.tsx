@@ -30,7 +30,7 @@ export function ChartControls({
   granularity,
   mode,
   showNonCandidate,
-  showNonCandidateAvailable,
+  devMode,
   onGranularityChange,
   onModeChange,
   onShowNonCandidateChange,
@@ -38,11 +38,18 @@ export function ChartControls({
   granularity: ChartGranularity;
   mode: ChartMode;
   showNonCandidate: boolean;
-  showNonCandidateAvailable: boolean;
+  devMode: boolean;
   onGranularityChange: (g: ChartGranularity) => void;
   onModeChange: (m: ChartMode) => void;
   onShowNonCandidateChange: (v: boolean) => void;
 }) {
+  const modeOptions: { value: ChartMode; label: string }[] = [
+    { value: "absolute", label: "Helpful / unhelpful" },
+    { value: "posted", label: "Posted" },
+    ...(devMode ? [{ value: "ratio" as ChartMode, label: "Ratio" }] : []),
+    { value: "share", label: "% of all notes" },
+  ];
+
   return (
     <div className="flex flex-wrap gap-3 items-center">
       <ToggleGroup
@@ -53,17 +60,8 @@ export function ChartControls({
           { value: "daily", label: "Daily" },
         ]}
       />
-      <ToggleGroup
-        value={mode}
-        onChange={onModeChange}
-        options={[
-          { value: "absolute", label: "Helpful / unhelpful" },
-          { value: "posted", label: "Posted" },
-          { value: "ratio", label: "Ratio" },
-          { value: "share", label: "% of all" },
-        ]}
-      />
-      {showNonCandidateAvailable && mode === "ratio" && (
+      <ToggleGroup value={mode} onChange={onModeChange} options={modeOptions} />
+      {devMode && mode === "ratio" && (
         <label className="inline-flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
           <input
             type="checkbox"
@@ -85,7 +83,7 @@ export function ChartLegend({ mode, showNonCandidate }: { mode: ChartMode; showN
         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-blue-600" /> Our notes</span>
         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-blue-400" /> Top other AI notewriters</span>
         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-blue-200" /> Human-written</span>
-        <span className="text-gray-400">share of rated-helpful Community Notes</span>
+        <span className="text-gray-500">= who wrote all the Community Notes rated <span className="font-medium text-gray-700">Helpful</span> (excludes notes still pending or rated Not Helpful)</span>
       </div>
     );
   }

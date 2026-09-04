@@ -42,13 +42,16 @@ export function App() {
   const [error, setError] = useState<string | null>(null);
   const [granularity, setGranularity] = useState<ChartGranularity>("weekly");
   const [mode, setMode] = useState<ChartMode>("absolute");
-  const [sort, setSort] = useState<NoteSort>("latest_helpful");
+  const [sort, setSort] = useState<NoteSort>("most_views_helpful");
   const [devMode, setDevMode] = useState(false);
   const [showNonCandidate, setShowNonCandidate] = useState(false);
   // The "Posted" mode draws the same helpful and unhelpful chart, but stacks the
   // notes that still need more ratings on top. Each bar then shows how many
   // notes were posted in total.
-  const showNmr = mode === "posted";
+  // Ratio is an internal diagnostic. If developer mode is switched off while
+  // it is selected, return the public chart to its ordinary count view.
+  const effectiveMode = !devMode && mode === "ratio" ? "absolute" : mode;
+  const showNmr = effectiveMode === "posted";
   const [abFilters, setAbFilters] = useState<ABFilters>({});
   const [cmpDims, setCmpDims] = useState<string[]>([]);
   const [cmpStat, setCmpStat] = useState<AbComparisonStat>({ kind: "pct_helpful" });
@@ -183,21 +186,21 @@ export function App() {
           <h2 className="text-lg font-semibold text-gray-800">Notes over time</h2>
           <ChartControls
             granularity={granularity}
-            mode={mode}
+            mode={effectiveMode}
             showNonCandidate={showNonCandidate}
-            showNonCandidateAvailable={devMode}
+            devMode={devMode}
             onGranularityChange={setGranularity}
             onModeChange={setMode}
             onShowNonCandidateChange={setShowNonCandidate}
           />
         </div>
-        <ChartLegend mode={mode} showNonCandidate={useNonCandidate} />
+        <ChartLegend mode={effectiveMode} showNonCandidate={useNonCandidate} />
         <div ref={chartRef} className="w-full">
           <BarChart
             buckets={buckets}
             shareBuckets={shareBuckets}
             granularity={granularity}
-            mode={mode}
+            mode={effectiveMode}
             width={chartWidth}
             showNonCandidate={useNonCandidate}
             showNmr={showNmr}
