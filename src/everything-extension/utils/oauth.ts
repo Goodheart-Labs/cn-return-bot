@@ -7,6 +7,10 @@ import { supabase } from "../../everything-shared/supabase";
  *  window. This is the implicit flow, so the tokens come back in the hash of the
  *  extension's redirect URL, and we hand them to setSession.
  *
+ *  Supabase's "x" provider requires PKCE, but only on the leg between Supabase
+ *  and X, which Supabase runs by itself. The leg between us and Supabase is
+ *  still the implicit flow, so the hash parsing below stays correct.
+ *
  *  The extension's redirect URL must be on the Supabase redirect allow-list. It is
  *  whatever browser.identity.getRedirectURL() returns. That is an address on
  *  chromiumapp.org in Chrome and on extensions.allizom.org in Firefox. */
@@ -21,13 +25,13 @@ export async function signInWithXViaWebAuthFlow(): Promise<{ ok: boolean; error?
     const { data: current } = await supabase.auth.getSession();
     let start;
     if (current.session?.user.is_anonymous) {
-      start = await supabase.auth.linkIdentity({ provider: "twitter", options });
+      start = await supabase.auth.linkIdentity({ provider: "x", options });
       if (start.error) {
         console.warn(`[common-notes] X identity link failed, falling back to sign-in: ${start.error.message}`);
-        start = await supabase.auth.signInWithOAuth({ provider: "twitter", options });
+        start = await supabase.auth.signInWithOAuth({ provider: "x", options });
       }
     } else {
-      start = await supabase.auth.signInWithOAuth({ provider: "twitter", options });
+      start = await supabase.auth.signInWithOAuth({ provider: "x", options });
     }
     const { data, error } = start;
     if (error || !data?.url) return { ok: false, error: error?.message ?? "could not start OAuth" };

@@ -341,12 +341,16 @@ skip_nonce_check = false
 # If enabled, it will allow the user to successfully authenticate when the provider does not return an email address.
 email_optional = false
 
-# "Sign in with X" for Common Notes voting. Create an X/Twitter OAuth 2.0 app and
-# set TWITTER_CLIENT_ID + SUPABASE_AUTH_EXTERNAL_TWITTER_SECRET in .env to enable.
-[auth.external.twitter]
+# "Sign in with X" for Common Notes voting. This is the OAuth 2.0 provider, so
+# the approval screen X shows a reader lists four named permissions instead of
+# one blanket access level. Set X_SIGNIN_CLIENT_ID + X_SIGNIN_CLIENT_SECRET in
+# .env to enable. Those are the credentials of the X app used for signing
+# readers in. They are deliberately not the X_API_KEY credentials, which belong
+# to the account that writes notes.
+[auth.external.x]
 enabled = true
-client_id = "env(TWITTER_CLIENT_ID)"
-secret = "env(SUPABASE_AUTH_EXTERNAL_TWITTER_SECRET)"
+client_id = "env(X_SIGNIN_CLIENT_ID)"
+secret = "env(X_SIGNIN_CLIENT_SECRET)"
 
 # Allow Solana wallet holders to sign in to your project via the Sign in with Solana (SIWS, EIP-4361) standard.
 # You can configure "web3" rate limit in the [auth.rate_limit] section and set up [auth.captcha] if self-hosting.
