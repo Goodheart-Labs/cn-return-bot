@@ -76,6 +76,8 @@ import { probeWritingLimitAfterCooldown } from "../pipeline/orchestration/writin
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
 import { autoOpenInDashboard } from "../local/dashboardAutoOpen";
 import { withForcedPicks } from "../pipeline/ab-testing/abTests";
+import { activeScorer, pickRankingPolicy } from "../pipeline/ranking/policy";
+import { barEnabled, barFor, estimateWindow, type Window } from "../pipeline/capacity/window";
 // import { updateWritingLimit } from "../pipeline/orchestration/updateWritingLimit";
 
 function postUrl(postId: string): string {
@@ -106,10 +108,15 @@ const MAX_POSTS_FALLBACK = 5;
 const PANGRAM_PIPELINE_ENABLED = false;
 
 // Activates the misinfo-monitoring pre-pass, and only for the topics listed
-// below. The evergreen topics are not included. A live run writes real notes and
-// submits them to X. Set this to false to switch the pre-pass off.
-const MISINFO_PIPELINE_ENABLED = true;
-const MISINFO_ACTIVE_TOPIC_IDS: MisinfoTopicId[] = ["trump_election_security"];
+// below. A live run writes real notes and submits them to X. Set this to false
+// to switch the pre-pass off.
+// Switched off 2026-09-01 (GOO-94): of the 174 topic notes submitted since
+// June, zero were rated helpful, against 11.3% for regular notes in the same
+// window. To turn topics back on, set this to true and list the active topic
+// ids again. The empty topic list below also keeps the regular feed's topic
+// curation off.
+const MISINFO_PIPELINE_ENABLED = false;
+const MISINFO_ACTIVE_TOPIC_IDS: MisinfoTopicId[] = [];
 
 const globalTimeout = setTimeout(async () => {
   console.log("[pipeline] Maximum runtime reached (27 minutes), forcing exit");
@@ -279,9 +286,27 @@ async function main() {
       maxPosts = clockBudgetPosts;
     }
 
+    const scorer = activeScorer(rankingPolicy);
+    let window: Window | null = null;
+    let bar: number | null = null;
+    if (supabaseLogger && !isLocal) {
+      try {
+        window = await estimateWindow(supabaseLogger);
+        if (scorer && barEnabled() && window.cap !== null) bar = await barFor(supabaseLogger, scorer.name, window.cap);
+      } catch (err) {
+        console.warn("[ranking] window/bar estimate failed; submitting without a bar:", err);
+      }
+    }
+    console.log(
+      `[ranking] policy=${rankingPolicy}` +
+        (window ? ` cap=${window.cap ?? "?"} (${window.capSource}) used24h=${window.used24h} remaining=${window.remaining ?? "?"}` : "") +
+        (scorer ? ` bar=${bar === null ? "off" : bar.toFixed(2)}` : ""),
+    );
+
     const regularCandidates = await generateCandidates(supabaseLogger, {
       maxPosts,
       deadlineMs: SOFT_DEADLINE_AT_MS,
+      scorer,
       skipPostIds,
       knownTweetIds,
       onTweetProcessed,
@@ -306,7 +331,7 @@ async function main() {
       ...pangramCandidates,
     ];
     if (candidates.length > 0 && supabaseLogger) {
-      const submitted = await submitCandidates(candidates, supabaseLogger, isLocal);
+      const submitted = await submitCandidates(candidates, supabaseLogger, isLocal, { policy: rankingPolicy, scorer, window, bar });
       console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates (${pangramCandidates.length} pangram, ${misinfoCandidates.length} misinfo, ${regularCandidates.length} regular)`);
     } else {
       console.log(`[pipeline] No candidates to submit`);
@@ -328,8 +353,5 @@ async function main() {
   }
 }
 
-if (Object.keys(forcedPicks).length > 0) {
-  withForcedPicks(forcedPicks, main);
-} else {
-  main();
-}
+const rankingPolicy = pickRankingPolicy(forcedPicks.ranking_policy);
+withForcedPicks({ ...forcedPicks, ranking_policy: rankingPolicy }, main);

@@ -7,8 +7,12 @@ name: Capture Trump Election-Fraud Tweets
 # an analyzable dataset. It does NOT register a topic in the note-writer, so
 # nothing is drafted or posted — read + save only. Safe on main.
 #
-# Full-feed pull, every 4h. workflow_dispatch for verification (schedule only
-# fires on the default branch).
+# The 4-hourly schedule was removed 2026-09-01 together with the shutdown of
+# the topic-based note pipeline (GOO-94). The workflow stays and can still be
+# run by hand; restore the schedule block below to resume automatic capture.
+#
+#  schedule:
+#    - cron: "0 */4 * * *" # every 4 hours
 on:
   workflow_dispatch:
     inputs:
@@ -21,8 +25,6 @@ on:
         description: "Max pages (100 posts/page; 300 exhausts the feed)"
         type: string
         default: "300"
-  schedule:
-    - cron: "0 */4 * * *" # every 4 hours
 
 # Needed so the run can commit the grown store back to the repo.
 permissions:

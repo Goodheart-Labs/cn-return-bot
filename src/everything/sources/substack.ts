@@ -16,6 +16,20 @@ async function fetchJson(url: string): Promise<any> {
   return res.json();
 }
 
+/** Substack's API refuses datacenter IPs, so in CI these calls go out through
+ *  the residential proxy that yt-dlp already uses. The RSS relay is no help
+ *  here: it only serves /feed, and Substack rate-limits Cloudflare Workers on
+ *  the API endpoints. On a local machine the variable is unset and we fetch
+ *  directly. Proxy traffic is paid per GB, which is fine at this volume: the
+ *  top-post refresh makes one archive call per publication per week, and one
+ *  body call per enqueued top post. */
+async function fetchJsonViaResidentialProxy(url: string): Promise<any> {
+  const proxy = process.env.YTDLP_PROXY_URL;
+  const res = await fetch(url, proxy ? ({ proxy } as RequestInit) : undefined);
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText} for ${url}`);
+  return res.json();
+}
+
 /** Reads the handle out of a profile URL, so "https://substack.com/@garymarcus/posts"
  *  gives "garymarcus". A URL that is not a profile gives null. */
 export function parseProfileHandle(url: string): string | null {
@@ -59,6 +73,52 @@ export async function fetchLatestFreePosts(
   if (!handle) throw new Error(`Not a substack profile URL: ${profileUrl}`);
   const publication = await fetchPublication(handle);
   return { publicationName: publication.name, posts: await fetchArchivePosts(`https://${publication.subdomain}.substack.com`, n) };
+}
+
+export interface TopArchivePost {
+  url: string;
+  title: string;
+  /** ISO timestamp of publication (the archive API's post_date). */
+  postDate: string;
+  likes: number;
+}
+
+/** A publication's n most liked free text posts of all time, most liked
+ *  first. The archive API's "top" sort is the source listing, but its order
+ *  is Substack's own blend, so the posts are re-sorted by their like counts:
+ *  likes are the popularity signal we rank on, and the only one Substack
+ *  makes public besides restacks. Paid posts are left out, because we could
+ *  not read their bodies anyway. */
+export async function fetchTopArchivePosts(publicationUrl: string, n: number): Promise<TopArchivePost[]> {
+  const archive = await fetchJsonViaResidentialProxy(
+    `${publicationUrl.replace(/\/$/, "")}/api/v1/archive?sort=top&limit=${ARCHIVE_FETCH_LIMIT}`,
+  );
+  return (archive as any[])
+    .filter((p) => p.audience === "everyone" && p.type !== "podcast")
+    .map((p) => ({
+      url: p.canonical_url as string,
+      title: p.title as string,
+      postDate: p.post_date as string,
+      likes: Object.values((p.reactions ?? {}) as Record<string, number>).reduce((a, b) => a + b, 0),
+    }))
+    .sort((a, b) => b.likes - a.likes)
+    .slice(0, n);
+}
+
+/** A post's body as the pipeline's plain text, with inline image markers. The
+ *  top-post enqueue uses this for archive posts that are too old to appear in
+ *  the RSS feed, so the worker never has to fetch Substack itself. The API
+ *  host comes from the publication URL rather than the post URL, because a
+ *  custom-domain publication's canonical post URLs live on that custom domain
+ *  while our stored feed URL keeps the *.substack.com form. */
+export async function fetchPostBodyText(publicationUrl: string, postUrl: string): Promise<string> {
+  const slug = postUrl.match(/\/p\/([\w-]+)/)?.[1];
+  if (!slug) throw new Error(`Not a substack post URL: ${postUrl}`);
+  const post = await fetchJsonViaResidentialProxy(`${publicationUrl.replace(/\/$/, "")}/api/v1/posts/${slug}`);
+  if (!post.body_html) throw new Error(`No body_html for ${postUrl} (paywalled or podcast-only?)`);
+  const text = htmlToText(post.body_html, true);
+  if (!text) throw new Error(`Empty body for ${postUrl}`);
+  return text;
 }
 
 export interface FeedPost {

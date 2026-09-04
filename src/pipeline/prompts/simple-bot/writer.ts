@@ -111,62 +111,6 @@ export const WRITER_TIME_TRAVEL_RULE = `
 ## The time-travel test
 The post context states when the post was published. A post is not wrong for failing to know the future: if your correction relies on facts that only became true after the post was published (a later goal, a completed transfer, an updated figure), the post has not made a correctable error. If your note would not have been accurate and fair at the moment the post was published, return an empty note.`;
 
-/**
- * A few-shot block appended to the writer system prompt when
- * `config.writer_examples` is on. That is the SIMPLE_BOT_WRITER_EXAMPLES_TEST
- * arm. The examples are real notes that performed well. They were picked
- * because they are simple, direct, and far shorter than the character limit.
- * Each example shows the full post context the writer saw. That is the tweet
- * text, any quoted tweet, and any media description. The tweet text is genuine
- * and the media descriptions are real Gemini analyses, fetched with
- * fetchTweetById and analyzeMediaGemini.
- * `note_text` leaves the URLs out because they belong in `sources`. That
- * matches the writer's output schema.
- */
-export const WRITER_FEWSHOT_EXAMPLES = `
-
-## Examples of the target style
-### Example 1
-Tweet: The tiger is saved by the elephant during the flood
-Media Description: A tiger is seen climbing onto the back of an elephant that is wading through a fast-flowing, muddy river. The scene is set against a backdrop of lush green trees and misty hills.
-{ "note_text": "This is an AI generated video.", "sources": ["https://www.foolproofme.org/articles/975-how-to-recognize-ai-generated-images-and-videos-artificial-intelligence"] }
-
-### Example 2
-Tweet: Man claimed a wolf saved his life after he passed out in his yard, but nobody believed him until police saw the footage. The man had been cutting wood outside his home when one swing landed wrong and the axe nicked his leg. It wasn't a deep cut, but it was enough to scare him.
-Media Description: A two-panel image depicting a wolf attack and its aftermath. The top panel, captured by a security camera on April 22, 2024, at 19:21:55, shows a man lying face down on the grass while a wolf-like animal stands over him, howling. The bottom panel shows body-worn camera footage from approximately 40 minutes later, showing emergency responders and a police officer treating the man, who has a bloody and bandaged leg.
-{ "note_text": "There is no evidence this event occurred. The images and story follow a documented pattern of AI-generated \\"emotional animal rescue\\" fictions.", "sources": ["https://leadstories.com/hoax-alert/2026/05/fact-check-fake-video-shows-person-rescuing-a-submerged-wolf-that-was-trapped-under-ice.html", "https://www.snopes.com/collections/2025-ai-slop-rumors/"] }
-
-### Example 3
-Tweet: Drivers with 8 titles. - Sir Lewis Hamilton. - Jarno Opmeer. End of list. 🐐
-Quoted Tweet: @jarno_opmeer becomes the first driver in PSGL history to win eight top tier titles. A big congratulations to the @redbullsimrace driver. #PSGLS40
-Media Description: A 2x2 grid of racing personalities — a blonde sim racer (left panels, one with a headset and team jersey) and Formula 1 driver Lewis Hamilton (right panels: in racing gear with a rainbow helmet celebrating, and on a podium holding a trophy with Max Verstappen behind him).
-Quoted Media Description: A celebratory graphic for Jarno Opmeer, champion of PSGL PC F1 Season 40, pointing upward in victory with fireworks behind him and eight trophy icons along the bottom.
-{ "note_text": "Lewis Hamilton has 7 Formula 1 titles.", "sources": ["https://es.wikipedia.org/wiki/Lewis_Hamilton"] }
-
-### Example 4
-Tweet: 25% of Walmart's revenue comes from SNAP
-Media Description: A film still from 'No Country for Old Men' showing Anton Chigurh standing inside a small general store, looking toward someone off-camera, with shelves of merchandise and a snack rack behind him.
-{ "note_text": "Walmart captures 25% of SNAP, which accounts for 3.5% of its revenue.", "sources": ["https://www.supermarketnews.com/grocery-trends-data/walmart-brings-in-the-most-snap-dollars-some-25-of-all-sales"] }
-
-### Example 5
-Tweet: Nintendo LOST the palworld lawsuit lets GOOOOOOOOOOOOOO
-{ "note_text": "Nintendo has not lost the Palworld patent lawsuit. It has however faced a setback as a patent application has been denied for lacking originality. The lawsuit is still ongoing as Nintendo can appeal the patent examiner's findings or the judge could rule against the examiner.", "sources": ["https://www.windowscentral.com/gaming/nintendos-palworld-case-japan-patent-office-rejects-claim-not-original-enough"] }
-
-### Example 6
-Tweet: Knicks fans beat a 17-year old into a coma for saying "Spurs in 7". What a pathetic-ass fanbase.
-Quoted Tweet: A 17-year-old boy was beaten into a coma near Madison Square Garden following Game 4 of the NBA Finals, New York City police said Friday while releasing a photo of a suspect sought in connection with the assault.
-{ "note_text": "The 17-year-old victim, a Knicks fan, was beaten by a Spurs fan yelling \\"Spurs in 7,\\" not Knicks fans beating a Spurs fan as claimed.", "sources": ["https://nypost.com/2026/06/12/us-news/teen-beaten-into-coma-by-brute-bellowing-spurs-in-7-during-livestreamed-game-4-brawl-cops-sources/", "https://people.com/teen-beaten-into-coma-on-livestream-following-nba-finals-11996743"] }
-
-### Example 7
-Tweet: GTA 6 has reportedly surpassed 50 million pre-orders, generating an estimated $4+ billion in revenue before launch Rockstar might be the only company capable of turning a game that isn't even out yet into a multi billion dollar success Gaming history is being rewritten before release.
-Media Description: A promotional graphic for Grand Theft Auto VI featuring the game's logo over a synthwave-inspired sunset cityscape. The background shows a coastal city with palm trees, neon-lit buildings, and a sports car. Text on the image highlights a milestone of over 50 million copies sold and more than $4 billion in revenue.
-{ "note_text": "No official pre-order figures for GTA VI have been released since pre-orders opened on June 25; analyst estimates predict $1 billion in pre-orders (about 12.5 million units), not 50 million or $4 billion.", "sources": ["https://www.forbes.com/sites/maryroeloffs/2026/06/24/pre-orders-for-grand-theft-auto-vi-decades-most-anticipated-game-will-open-thursday", "https://www.take2games.com/ir/news/rockstar-games-announces-pre-orders-grand-theft-auto-vi"] }
-
-### Example 8
-Tweet: Did the Simpsons really the predict 3D printer ?
-Media Description: A scene from a classroom in Springfield Elementary where two construction workers walk past a large, blank white board while Bart Simpson looks on from the side. An alphabet banner is visible above the board.
-{ "note_text": "The first 3D printing technologies were invented in the 1980s; the depicted episode aired May 17, 2015.", "sources": ["https://en.wikipedia.org/wiki/3D_printing", "https://en.wikipedia.org/wiki/The_Simpsons_season_26"] }`;
-
 export const WRITER_RESPONSE_FORMAT = jsonSchemaResponseFormat("simple_bot_note", {
   type: "object",
   properties: {

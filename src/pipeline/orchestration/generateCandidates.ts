@@ -30,6 +30,8 @@ import {
   REGULAR_VELOCITY_FLOOR_PER_HOUR,
   MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR,
 } from "../utils/velocity";
+import { featuresFromPost } from "../ranking/features";
+import { shadowScores, type Scorer } from "../ranking/scorers";
 import type { Post } from "../../api/fetchEligiblePosts";
 import PQueue from "p-queue";
 
@@ -56,7 +58,7 @@ const FEED_MAX_PAGES = 500;
 // enough new posts to fill this run's budget. Small-feed posts therefore get
 // priority, and the lower-quality bulk of the large and XL feeds is reached only
 // when it is needed.
-const REGULAR_FEED_LADDER: FeedSize[] = ["small", "large", "xl"];
+export const REGULAR_FEED_LADDER: FeedSize[] = ["small", "large", "xl"];
 
 /**
  * A post together with the feed tier it was fetched from and its velocity. The
@@ -68,7 +70,7 @@ const REGULAR_FEED_LADDER: FeedSize[] = ["small", "large", "xl"];
  * growing. Posts we deliberately selected would then fall below the floor at
  * submission and be dropped.
  */
-interface SourcedPost {
+export interface SourcedPost {
   post: Post;
   feedSize: FeedSize;
   velocity: number | null;
@@ -102,6 +104,7 @@ export async function collectFastPosts(
   knownTweetIds: Set<string>,
   fetchFeed: FeedFetcher,
   asOfMs: number = Date.now(),
+  scorer: Scorer | null = null,
 ): Promise<{ selected: SourcedPost[]; fresh: SourcedPost[] }> {
   const pool = new Map<string, SourcedPost>();
   const allFresh: SourcedPost[] = [];
@@ -126,7 +129,8 @@ export async function collectFastPosts(
         `${fastEnough.length} above the ${formatVelocity(REGULAR_VELOCITY_FLOOR_PER_HOUR)} floor`,
     );
     for (const sourced of fastEnough) pool.set(sourced.post.id, sourced);
-    if (pool.size >= maxPosts) break;
+    // A scorer ranks across tiers, so it needs to see every tier before choosing.
+    if (!scorer && pool.size >= maxPosts) break;
   }
 
   if (pool.size < maxPosts) {
@@ -134,13 +138,12 @@ export async function collectFastPosts(
   }
 
   const tierRank = (feedSize: FeedSize) => REGULAR_FEED_LADDER.indexOf(feedSize);
-  const selected = [...pool.values()]
-    .sort(
-      (a, b) =>
-        tierRank(a.feedSize) - tierRank(b.feedSize) ||
-        (b.velocity ?? -Infinity) - (a.velocity ?? -Infinity),
-    )
-    .slice(0, maxPosts);
+  const byTierThenVelocity = (a: SourcedPost, b: SourcedPost) =>
+    tierRank(a.feedSize) - tierRank(b.feedSize) || (b.velocity ?? -Infinity) - (a.velocity ?? -Infinity);
+  const byScorer = (a: SourcedPost, b: SourcedPost) =>
+    scorer!.scoreAdmission(featuresFromPost(b.post, b.velocity, tierRank(b.feedSize), asOfMs)) -
+    scorer!.scoreAdmission(featuresFromPost(a.post, a.velocity, tierRank(a.feedSize), asOfMs));
+  const selected = [...pool.values()].sort(scorer ? byScorer : byTierThenVelocity).slice(0, maxPosts);
   return { selected, fresh: allFresh };
 }
 
@@ -153,6 +156,7 @@ async function fetchPosts(
   maxPosts: number,
   prefetchedSkipPostIds?: Set<string>,
   prefetchedKnownTweetIds?: Set<string>,
+  scorer: Scorer | null = null,
 ): Promise<{ selected: SourcedPost[]; fresh: SourcedPost[] }> {
   let skipPostIds = prefetchedSkipPostIds;
   let knownTweetIds = prefetchedKnownTweetIds;
@@ -185,6 +189,8 @@ async function fetchPosts(
     maxPosts,
     knownTweetIds,
     (feedSize) => fetchEligiblePosts(FEED_MAX_POSTS, skipPostIds!, FEED_MAX_PAGES, buildPostSelection(feedSize)),
+    Date.now(),
+    scorer,
   );
 }
 
@@ -318,6 +324,9 @@ export async function processPosts(
       const log = createTweetLog();
       log.set("tweet.index", idx + 1);
       log.set("tweet.total", items.length);
+      const rankFeatures = featuresFromPost(item.post, item.velocity, item.feedSize ? REGULAR_FEED_LADDER.indexOf(item.feedSize) : null);
+      log.set("ranking.features", rankFeatures);
+      log.set("ranking.admission", shadowScores(rankFeatures));
 
       const tweetResult = await withTweetLog(log, () =>
         withWarnings(() =>
@@ -412,6 +421,8 @@ export interface GenerateCandidatesOptions {
   skipPostIds?: Set<string>;
   knownTweetIds?: Set<string>;
   onTweetProcessed?: (event: TweetProcessedEvent) => void | Promise<void>;
+  /** Ranks fetched posts across tiers. Null keeps the tier-then-velocity ladder. */
+  scorer?: Scorer | null;
   /** The curated topics to match the regular pool against. A confirmed post gets
    *  the full monitoring treatment, answers to the topic velocity floor instead
    *  of the regular one, and takes a bounded share of maxPosts. See
@@ -422,7 +433,7 @@ export interface GenerateCandidatesOptions {
 
 export async function generateCandidates(
   supabaseLogger: SupabaseLogger | null,
-  { maxPosts, deadlineMs, skipPostIds, knownTweetIds, onTweetProcessed, topicIds }: GenerateCandidatesOptions,
+  { maxPosts, deadlineMs, skipPostIds, knownTweetIds, onTweetProcessed, topicIds, scorer = null }: GenerateCandidatesOptions,
 ): Promise<Candidate[]> {
   const outerForcedPicks = getForcedPicks();
   if (Object.keys(outerForcedPicks).length > 0) {
@@ -432,7 +443,8 @@ export async function generateCandidates(
   const activeBots = botProbs.filter((b) => b.probability > 0);
   console.log(`[generate] Bots: ${activeBots.map((b) => `${b.id} ${b.probability.toFixed(1)}%`).join(", ")}`);
 
-  const { selected, fresh } = await fetchPosts(supabaseLogger, maxPosts, skipPostIds, knownTweetIds);
+  const { selected, fresh } = await fetchPosts(supabaseLogger, maxPosts, skipPostIds, knownTweetIds, scorer);
+  if (scorer) console.log(`[generate] Ranking policy ${scorer.name}: selected across tiers`);
 
   // Archive every new post the ladder surfaced into feed_tweets, including the
   // posts below the floor. The archive freezes the impressions and the tier as
