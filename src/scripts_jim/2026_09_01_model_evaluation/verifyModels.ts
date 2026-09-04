@@ -24,6 +24,16 @@ import { GOOGLE_SEARCH_TOOL, WEB_FETCH_TOOL } from "../../pipeline/tool-calling/
 import { xaiNativeGenerate } from "../../pipeline/llm/xai";
 import { geminiNativeGenerate } from "../../pipeline/llm/gemini";
 
+/* Route this script's OpenRouter calls through Jim's separate testing key when
+ * one is set, so that verification never eats into the production key's budget.
+ * The shared client reads OPENROUTER_API_KEY and builds itself lazily on the
+ * first call, so reassigning the variable here is enough to redirect it. The
+ * pipeline itself never reads OPENROUTER_TESTING_KEY. */
+if (process.env.OPENROUTER_TESTING_KEY) {
+  process.env.OPENROUTER_API_KEY = process.env.OPENROUTER_TESTING_KEY;
+  console.log("Using OPENROUTER_TESTING_KEY for OpenRouter calls.\n");
+}
+
 /** Kept tiny on purpose. We are testing whether the request shape is accepted,
  *  not whether the answer is any good, so every call is a few hundred tokens. */
 const WRITER_PROBE = "Reply with a one-sentence note about the sky being blue, citing https://example.com.";

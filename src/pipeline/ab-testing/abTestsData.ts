@@ -130,15 +130,18 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     // a twelfth of the price, in exchange for Meta being allowed to train on the
     // prompts and completions we send. Everything we send it is a public tweet,
     // public search results, or a note draft written to be published, so the
-    // trade is one we are happy to make. Two consequences worth knowing: the tier
-    // is capped at 60 requests per minute rather than 3000, which is fine at this
-    // weight but would not carry a main arm, and the account has to have
-    // completed the 18+ confirmation in OpenRouter's settings or every call 403s.
+    // trade is one we are happy to make. The tier is also capped at 60 requests
+    // per minute rather than 3000, which is fine at this weight but would not
+    // carry a main arm.
     //
-    // HELD AT WEIGHT 0. That 18+ confirmation is not done yet, so every call to
-    // this model currently returns 403 and the arm could not be verified against
-    // a live request. Set the weight to 4 once the confirmation is done at
-    // https://openrouter.ai/settings/preferences and verifyModels.ts passes.
+    // HELD AT WEIGHT 0, because that trade has to be accepted at the account
+    // level before the model will answer at all. OpenRouter filters the endpoint
+    // out with "paid-model-training-violation-by-account" until someone allows
+    // training-on-prompts providers at
+    // https://openrouter.ai/settings/privacy, and separately requires an 18+
+    // confirmation at https://openrouter.ai/settings/preferences. Until both are
+    // done every call fails, so the arm could not be verified live. Set the
+    // weight to 4 once verifyModels.ts passes on this model.
     { variant: { name: "musespark13c-serper",     overrides: { search_model: "meta/muse-spark-1.3-contributor",   web_search: "serper" }},       weight: 0 },
     { variant: { name: "deepseek-v32exp-searxng", overrides: { search_model: "deepseek/deepseek-v3.2-exp",        web_search: "serper" }},       weight: 0 },
     { variant: { name: "qwen3max-searxng",        overrides: { search_model: "qwen/qwen3-max",                    web_search: "serper" }},       weight: 0 },
@@ -175,9 +178,9 @@ const SIMPLE_BOT_WRITER_TEST: ABTest = {
     { variant: { name: "gemini38flash",    overrides: { writer_model: "google/gemini-3.8-flash"       }}, weight: 10 },
     // See the search test above for what Meta's contributor tier costs us in
     // data rights. HELD AT WEIGHT 0 for the same reason as the search arm: the
-    // account's 18+ confirmation is outstanding, so the model 403s and could not
-    // be verified. Set this to 10 at the same time as the search arm, which puts
-    // this test back to a total weight of 100.
+    // account has not yet opted in to training-on-prompts providers, so the
+    // model cannot be called at all. Set this to 10 at the same time as the
+    // search arm, which puts this test back to a total weight of 100.
     { variant: { name: "musespark13c",     overrides: { writer_model: "meta/muse-spark-1.3-contributor" }}, weight: 0 },
     { variant: { name: "fable51",          overrides: { writer_model: "anthropic/claude-fable-5.1"    }}, weight: 10 },
     // Wound down from 10 to 5 on 2026-09-04: the weakest writer arm so far, but

@@ -12,14 +12,15 @@ means this repository's own check confirmed it.
 
 Six new arms were added and four retired. The strongest find is Meta's Muse Spark
 1.3 on its "contributor" tier, which scores near Opus 5 for a fiftieth of the
-price. Two blockers stop the OpenRouter half of the verification from completing,
-and both need Jim: the account is nearly out of credit, and Muse needs a one-time
-age confirmation on the account.
+price.
 
-Because Muse could not be verified against a live request, both Muse arms ship at
-weight 0. Everything else ships at its intended weight. Search goes from a total
-weight of 25 to 28, and the writer from 100 to 90; enabling the two Muse arms
-later restores those to 32 and 100 and is a change to two numbers.
+Every arm shipping at a live weight has been verified against a real request in
+its real call shape. Muse is the exception: OpenRouter refuses to route to it
+until the account opts in to providers that train on prompts, which is the
+consent mechanism for the very trade that makes the tier cheap. Both Muse arms
+therefore ship at weight 0, so search goes from a total weight of 25 to 28 and
+the writer from 100 to 90. Enabling the two arms afterwards restores those to 32
+and 100 and is a change to two numbers.
 
 ## What we run today [code]
 
@@ -127,33 +128,69 @@ honour every parameter in the request. A model that does not support one of them
 does not degrade quietly; the request fails outright. That is how Perplexity
 Sonar was found to be unusable with `json_schema`.
 
-Results as of 2026-09-04:
+The script sends its OpenRouter calls with `OPENROUTER_TESTING_KEY` when that is
+set, so verification never eats into the production key's budget. The whole run
+costs about a cent.
 
-| Check | Result |
-|---|---|
-| Advertised parameter support, all 6 OpenRouter candidates | **Pass.** All advertise `response_format`, `structured_outputs`, and, where the Serper search loop needs them, `tools` and `tool_choice` |
-| Grok 4.6 on the native xAI API with xSearch | **Pass.** Returned parseable JSON after 2 search calls |
-| Gemini 3.8 Flash on the native Google API with googleSearch | **Pass** |
-| Live OpenRouter calls, all 6 candidates | **Blocked.** See below |
+Results as of 2026-09-04, 14 of 17 checks passing:
 
-The live OpenRouter calls could not run. Two separate blockers:
+| Model | Check | Result |
+|---|---|---|
+| All 6 OpenRouter candidates | Advertised parameter support | **Pass** |
+| anthropic/claude-fable-5.1 | Live writer call, strict json_schema | **Pass**, parsed cleanly, $0.0075 |
+| google/gemini-3.8-flash | Live writer call, strict json_schema | **Pass**, parsed cleanly, $0.0015 |
+| z-ai/glm-5.3 | Live search call, tools forced | **Pass**, called `google_search` |
+| z-ai/glm-5.3 | Live search call, tools plus schema | **Pass**, returned schema JSON |
+| z-ai/glm-5.3-flash | Live search call, tools forced | **Pass**, called `google_search` |
+| z-ai/glm-5.3-flash | Live search call, tools plus schema | **Pass**, chose a tool call |
+| x-ai/grok-4.6 | Live native xAI call with xSearch | **Pass**, parseable JSON after 2 searches |
+| google/gemini-3.8-flash | Live native Google call with googleSearch | **Pass** |
+| meta/muse-spark-1.3-contributor | All three live shapes | **Blocked**, see below |
 
-1. **The OpenRouter key is out of budget.** It carries a $200 monthly limit with
-   $0 remaining, and the account as a whole has $158 of credit left against a
-   burn of roughly $100/day. Every call returns
-   `403 Key limit exceeded (monthly limit)`.
-2. **Muse Spark needs a one-time 18+ confirmation** on the OpenRouter account,
-   at https://openrouter.ai/settings/preferences. Until that is done every call
-   to either Muse tier returns 403, independent of credit. This is why the Muse
-   arms must not go live before someone clicks it.
+So every arm that ships at a live weight in this change has been exercised
+against a real request in its real call shape.
 
-Re-run once both are cleared:
+### Why Muse is still blocked
+
+Muse is the one model that could not be called. The account has to accept the
+data-training trade before OpenRouter will route to the endpoint at all:
+
+```
+404 0 endpoints out of 1 requested are available matching your guardrail
+restrictions and data policy.
+Paid model training violation (account settings): 1 endpoint excluded
+reason: paid-model-training-violation-by-account
+configure at https://openrouter.ai/settings/privacy
+```
+
+That setting is the consent mechanism for exactly the trade described above, so
+it is a deliberate decision rather than a formality. A second setting is also
+needed: on the production key the same calls returned
+`403 ... requires 18+ age confirmation`, set at
+https://openrouter.ai/settings/preferences. The testing key got past that one but
+not the privacy one, so if the two keys belong to different accounts, the account
+production uses needs both.
+
+Both Muse arms therefore ship at weight 0. Re-run the script after changing those
+settings; when Muse passes, set the search arm to 4 and the writer arm to 10.
 
 ```bash
 bun run src/scripts_jim/2026_09_01_model_evaluation/verifyModels.ts
-# or, for the free half only:
+# or, for the free half only, which needs no credit:
 SKIP_LIVE_CHECKS=1 bun run src/scripts_jim/2026_09_01_model_evaluation/verifyModels.ts
 ```
+
+### A separate problem this turned up
+
+The production OpenRouter key is out of budget: a $200 monthly limit with $0
+remaining, so every call on it returns `403 Key limit exceeded (monthly limit)`.
+More importantly the account as a whole had $158.39 of credit left against a burn
+of roughly $100/day, which is about a day and a half of runway. Production was
+still submitting notes at 13:24 UTC on 2026-09-04, so whatever key CI uses is not
+the capped one, but the account ceiling applies to everything.
+
+The `OPENROUTER_MGMT_KEY` in the env file returns 401, so the account's keys
+could not be listed to confirm which one CI uses.
 
 ## The cost-tracking bug this uncovered
 
