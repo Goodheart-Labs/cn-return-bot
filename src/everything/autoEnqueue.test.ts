@@ -11,7 +11,7 @@ beforeEach(resetDbState);
 
 const { unprocessedEntries, rankCandidates, topPostEntries } = await import("./autoEnqueue");
 
-const feed = { project: "test", type: "substack" as const, publicationUrl: "https://test.substack.com" };
+const feed = { project: "test", type: "substack" as const, url: "https://test.substack.com" };
 const entry = (url: string) => ({ source: "substack" as const, url, matchKey: url, label: url });
 
 describe("unprocessedEntries", () => {

@@ -152,7 +152,7 @@ async function main() {
     projectName ??= expanded.projectName;
   }
 
-  const projectId = await resolveProjectId(projectSlug, projectName);
+  const projectId = await resolveProjectId({ slug: projectSlug, displayName: projectName });
   const rows: EnqueueRow[] = liveItems.map((r) => ({ ...r, project_id: projectId }));
   for (const d of docs) {
     const text = fs.readFileSync(d.file, "utf8");

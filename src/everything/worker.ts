@@ -15,7 +15,8 @@
 import "dotenv/config";
 import { fetchWebPage } from "../pipeline/tool-calling/tools";
 import { closeBrowser } from "../pipeline/utils/browserManager";
-import { claimNextQueuedItem, fetchItemClaims, fillProjectDisplayName, markItemDone, markItemError, requeueItem, type EverythingItem } from "./db";
+import { claimNextQueuedItem, fetchItemClaims, fetchQueueOverview, fillProjectDisplayName, markItemDone, markItemError, QUEUE_PRIORITY, requeueItem, type EverythingItem } from "./db";
+import { age, clip, duration, money, ordinal, table } from "./logFormat";
 import { processFetchedContent, resumeItemClaims } from "./pipeline/processContent";
 import { fetchSubstackPost, imageMarker } from "./sources/substack";
 import { ensureYtDlp, fetchYoutubeContent, fetchYoutubeTranscriptContent } from "./sources/youtube";
@@ -25,6 +26,9 @@ import type { FetchedContent } from "./types";
 /** The everything path ingests whole articles, so its fetch cap matches the
  *  page_text column limit rather than a verifier's context window. */
 const WEB_FETCH_MAX_CHARS = 500_000;
+
+/** How many queued items the log lists before summarising the rest. */
+const QUEUE_LINES = 8;
 
 /** The archive and browser steps of the fetch ladder prepend this note to the
  *  content. It must not end up in the article text a claim could quote. */
@@ -109,10 +113,44 @@ async function fetchContent(item: EverythingItem): Promise<FetchedContent> {
   }
 }
 
+/** Names the tier an item is waiting at, for the queue listing. */
+function tierName(priority: number): string {
+  if (priority >= QUEUE_PRIORITY.requested) return "requested";
+  if (priority === QUEUE_PRIORITY.prioritized) return "priority";
+  if (priority === QUEUE_PRIORITY.backlog) return "visits";
+  return "retry";
+}
+
+/** Prints what is waiting, in the order this worker will take it. The worker
+ *  itself only ever holds one item at a time, so without this read a run never
+ *  says how much work is queued or why one item goes before another. */
+async function logQueue(): Promise<number> {
+  const queue = await fetchQueueOverview();
+  if (queue.length === 0) {
+    console.log("\nQUEUE · empty right now");
+    return 0;
+  }
+  const oldest = queue.reduce((a, b) => (a.created_at < b.created_at ? a : b));
+  console.log(`\nQUEUE · ${queue.length} waiting right now, in the order the worker takes them · oldest waiting ${age(oldest.created_at)}`);
+  const rows = queue
+    .slice(0, QUEUE_LINES)
+    .map((item, i) => [
+      ordinal(i + 1),
+      tierName(item.priority),
+      `[${item.source}]`,
+      clip(item.title ?? item.url, 48),
+      `waiting ${age(item.created_at)}`,
+    ]);
+  for (const line of table(["", "tier", "source", "title", ""], rows, ["right"])) console.log(line);
+  if (queue.length > QUEUE_LINES) console.log(`     … and ${queue.length - QUEUE_LINES} more`);
+  return queue.length;
+}
+
 /** Processes queued items until the queue is empty or the daily spend cap is
  *  reached. Returns how many items it finished. */
 export async function drainQueue(): Promise<number> {
   let processed = 0;
+  const queueLength = await logQueue();
   while (true) {
     if (await spendCapReached()) {
       console.log(`\nDaily spend cap reached (${describeSpend(await todaySpendUsd())}) — stopping for today`);
@@ -120,7 +158,9 @@ export async function drainQueue(): Promise<number> {
     }
     const item = await claimNextQueuedItem();
     if (!item) break;
-    console.log(`\n=== [${item.source}] ${item.url}`);
+    const startedAt = Date.now();
+    const spentBefore = await todaySpendUsd();
+    console.log(`\nCHECKING NOW · queue item ${processed + 1} of ${queueLength} · [${item.source}] ${clip(item.title ?? item.url, 60)}`);
     try {
       // Claims left pending or in error mean an earlier run was killed while
       // checking them. We resume exactly those instead of fetching the content
@@ -146,17 +186,23 @@ export async function drainQueue(): Promise<number> {
       // day's run resumes exactly those.
       if (tally.capped > 0) {
         await requeueItem(item.id);
-        console.log(`  Spend cap reached mid-item — requeued with ${tally.capped} claims left`);
+        console.log(`  spend cap reached part way through, put back in the queue with ${tally.capped} claims left`);
         break;
       }
       await markItemDone(item.id);
+      // The per-item cost is already recorded per claim; this is the first time
+      // it is shown. It is what tells you which items are expensive.
+      const cost = (await todaySpendUsd()) - spentBefore;
+      const checked = tally.notes + tally.no_note + tally.errors;
+      console.log(
+        `  finished in ${duration(Date.now() - startedAt)} · cost ${money(cost)} · wrote ${tally.notes} note${tally.notes === 1 ? "" : "s"} from ${checked} claim${checked === 1 ? "" : "s"} checked`,
+      );
     } catch (err: any) {
-      console.error(`  Item failed: ${err?.message}`);
+      console.error(`  failed after ${duration(Date.now() - startedAt)}: ${err?.message}`);
       await markItemError(item.id, err?.message ?? "unknown");
     }
     processed++;
   }
-  console.log(processed ? `\nDone — processed ${processed} item(s)` : "Queue empty — nothing to do");
   return processed;
 }
 

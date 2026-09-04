@@ -11,14 +11,13 @@ export const dbState = {
   knownItems: [] as { id: string; url: string; checked_scope: "page" | "paragraph" | null }[],
   /** What findItemForPageUrl answers. */
   existingItem: null as { id: string; status: string; checked_scope: "page" | "paragraph" | null } | null,
-  /** What fetchFollowedFeeds answers. */
-  followedFeeds: [] as {
+  /** What fetchCreatorProjects answers: every creator we have a project for,
+   *  whether or not their priority window is open. */
+  creatorProjects: [] as {
     project_slug: string;
-    feed_type: "substack" | "youtube";
     feed_url: string;
-    priority: number;
     priority_until: string | null;
-    top_posts_refreshed_at?: string | null;
+    top_posts_refreshed_at: string | null;
   }[],
   /** What fetchVisitCounts answers. */
   visitCounts: [] as { feed_url: string; visits: number }[],
@@ -39,7 +38,7 @@ export const dbState = {
 export const resetDbState = () => {
   dbState.knownItems = [];
   dbState.existingItem = null;
-  dbState.followedFeeds = [];
+  dbState.creatorProjects = [];
   dbState.visitCounts = [];
   dbState.topPosts = [];
   dbState.calls = {};
@@ -53,22 +52,22 @@ const record = (name: string) => (...args: unknown[]) => {
 };
 
 export const dbMock = () => ({
-  QUEUE_PRIORITY: { requested: 2, followed: 1, backlog: 0, retry: -1 },
+  QUEUE_PRIORITY: { requested: 2, prioritized: 1, backlog: 0, retry: -1 },
   fillProjectDisplayName: () => Promise.resolve(),
   fillProjectDisplayNameBySlug: () => Promise.resolve(),
   fetchItemUrlsIn: () => Promise.resolve(dbState.knownItems),
   fetchItemUrlsContaining: () => Promise.resolve(dbState.knownItems),
-  fetchFollowedFeeds: () => Promise.resolve(dbState.followedFeeds),
+  fetchCreatorProjects: () => Promise.resolve(dbState.creatorProjects),
   fetchVisitCounts: () => Promise.resolve(dbState.visitCounts),
   fetchAllTopPosts: () => Promise.resolve(dbState.topPosts),
   replaceFeedTopPosts: record("replaceFeedTopPosts"),
-  upsertFeedPriority: record("upsertFeedPriority"),
+  upsertCreatorPriority: record("upsertCreatorPriority"),
   fetchItemClaims: () => Promise.resolve([]),
   fetchOrphanedProcessingItems: () => Promise.resolve([]),
   fetchRetryableErrorItems: () => Promise.resolve([]),
   requeueErroredItem: record("requeueErroredItem"),
   fetchPendingNoteRequests: () => Promise.resolve([]),
-  fetchPendingFollowRequests: () => Promise.resolve([]),
+  fetchQueueOverview: () => Promise.resolve([]),
   enqueueItems: () => Promise.resolve(0),
   markItemError: () => Promise.resolve(),
   findItemForPageUrl: () => Promise.resolve(dbState.existingItem),

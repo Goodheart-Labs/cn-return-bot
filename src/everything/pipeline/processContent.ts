@@ -24,6 +24,7 @@ import {
   type NewClaimRow,
 } from "../db";
 import { dropSpeculation, extractClaims, shouldFactCheck } from "./extractClaims";
+import { group } from "../logFormat";
 import { spendCapReached } from "../spendCap";
 import type { ExtractedClaim, FetchedContent } from "../types";
 
@@ -71,21 +72,22 @@ async function checkAndRecordClaim(
   item: EverythingItem,
   index: number,
   publishedAt: string | undefined,
+  lines: string[],
 ): Promise<"note" | "no_note" | "error"> {
   try {
     const check = await checkClaim({ claim, source: item.source, itemId: item.id, claimId, index, publishedAt });
     if (check.kind === "note") {
       await insertNote(claimId, check.note, check.sources);
       await setClaimStatus(claimId, "note", null);
-      console.log(`  ⚠️  NOTE — ${claim.claim}\n      ${check.note}`);
+      lines.push(`     ⚠️  NOTE — ${claim.claim}\n         ${check.note}`);
       return "note";
     }
     await setClaimStatus(claimId, "no_note", check.reason ?? check.outcome);
-    console.log(`  ✅ no note (${check.reason ?? check.outcome}) — ${claim.claim}`);
+    lines.push(`     ✅ no note (${check.reason ?? check.outcome}) — ${claim.claim}`);
     return "no_note";
   } catch (err: any) {
     await setClaimStatus(claimId, "error", err?.message ?? "unknown");
-    console.error(`  ❌ error — ${claim.claim}: ${err?.message}`);
+    lines.push(`     ❌ error — ${claim.claim}: ${err?.message}`);
     return "error";
   }
 }
@@ -129,10 +131,14 @@ export async function processFetchedContent(
   const claimIds = await insertClaims(claims.map((c) => buildClaimRow(item.id, c)));
   const toCheck = claims.filter((c) => shouldFactCheck(c.judgement)).length;
   console.log(
-    `  ${extracted.length} claims extracted — dropped ${speculation} speculation, fact-checking ${toCheck} of ${claims.length} (uncertain or below)`,
+    `  ${extracted.length} claims found, ${speculation} were predictions and dropped, ${toCheck} of ${claims.length} worth checking`,
   );
 
   const outcomes: Array<"note" | "no_note" | "error"> = [];
+  // Each claim's verdict is collected rather than printed as it lands, so the
+  // whole block can be shown as one collapsible section. A long item can carry
+  // dozens of these and they used to bury everything else in the run.
+  const claimLines: string[] = [];
   let capped = 0;
   const queue = new PQueue({ concurrency: CHECK_CONCURRENCY });
   claims.forEach((claim, i) => {
@@ -144,10 +150,12 @@ export async function processFetchedContent(
         capped++;
         return;
       }
-      outcomes.push(await checkAndRecordClaim(claimIds[i]!, claim, item, i, content.publishedAt));
+      outcomes.push(await checkAndRecordClaim(claimIds[i]!, claim, item, i, content.publishedAt, claimLines));
     });
   });
   await queue.onIdle();
+  const checksLog = group(`all ${claimLines.length} checks`, claimLines);
+  if (checksLog) console.log(checksLog);
 
   return {
     extracted: extracted.length,
@@ -191,6 +199,10 @@ export async function resumeItemClaims(item: EverythingItem): Promise<ItemTally>
   console.log(`  resuming "${item.title ?? item.url}" — redoing ${redo.length} of ${allClaims.length} claims`);
 
   const outcomes: Array<"note" | "no_note" | "error"> = [];
+  // Each claim's verdict is collected rather than printed as it lands, so the
+  // whole block can be shown as one collapsible section. A long item can carry
+  // dozens of these and they used to bury everything else in the run.
+  const claimLines: string[] = [];
   let capped = 0;
   const queue = new PQueue({ concurrency: CHECK_CONCURRENCY });
   redo.forEach((row, i) => {
@@ -204,10 +216,12 @@ export async function resumeItemClaims(item: EverythingItem): Promise<ItemTally>
         capped++;
         return;
       }
-      outcomes.push(await checkAndRecordClaim(row.id, toExtractedClaim(row), item, i, item.published_at ?? undefined));
+      outcomes.push(await checkAndRecordClaim(row.id, toExtractedClaim(row), item, i, item.published_at ?? undefined, claimLines));
     });
   });
   await queue.onIdle();
+  const resumedLog = group(`all ${claimLines.length} checks`, claimLines);
+  if (resumedLog) console.log(resumedLog);
 
   return {
     extracted: allClaims.length,
