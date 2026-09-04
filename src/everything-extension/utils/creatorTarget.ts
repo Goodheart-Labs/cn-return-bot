@@ -1,10 +1,10 @@
-import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
 
-/** Works out whether the current page belongs to a feed a reader could ask us
- *  to follow. Whether that feed is already followed is a separate question,
- *  answered by feedIsFollowed in followedFeeds.ts against the synced list. */
+/** Works out which creator the current page belongs to, so a reader can ask us
+ *  to check their new posts. Whether that creator is already prioritised is a
+ *  separate question, answered by unlessPrioritized in prioritizedCreators.ts
+ *  against the synced list. */
 
-export interface FollowTarget {
+export interface CreatorTarget {
   feedType: "substack" | "youtube";
   /** The feed in the form the pipeline stores: the *.substack.com publication
    *  root, or the YouTube channel URL. */
@@ -14,14 +14,25 @@ export interface FollowTarget {
   title: string;
 }
 
-export const followButtonLabel = (target: FollowTarget) => `Request notes on all new posts from this ${target.kind}`;
-export const followDoneLabel = (target: FollowTarget) => `Requested. We'll check new posts from this ${target.kind}.`;
+/* A press buys a week of checking, so the copy says a week rather than
+ * promising forever. The reader can press again once it lapses. */
+export const priorityButtonLabel = (target: CreatorTarget) =>
+  target.kind === "youtuber" ? "Check this youtuber's new videos" : "Check this author's new posts";
+export const priorityDoneLabel = (target: CreatorTarget) =>
+  target.kind === "youtuber"
+    ? "Done. We'll check this youtuber's new videos this week."
+    : "Done. We'll check this author's new posts this week.";
+/** What the popup says about a creator whose window is already open. */
+export const priorityActiveLabel = (kind: CreatorTarget["kind"]) =>
+  kind === "youtuber"
+    ? "We're checking this youtuber's new videos this week."
+    : "We're checking this author's new posts this week.";
 
 /** A Substack publication on its own subdomain. A publication on a custom
  *  domain gives null here, because the *.substack.com form the pipeline needs
  *  (the RSS relay accepts nothing else) is not derivable from the page URL.
  *  For those, readSubstackPublicationFromPage reads it out of the page. */
-export function substackFollowTarget(pageUrl: string): FollowTarget | null {
+export function substackCreatorTarget(pageUrl: string): CreatorTarget | null {
   const m = new URL(pageUrl).hostname.match(/^([\w-]+)\.substack\.com$/);
   if (!m || m[1] === "www") return null;
   return { feedType: "substack", feedUrl: `https://${m[1]}.substack.com`, kind: "author", title: m[1]! };
@@ -52,39 +63,9 @@ export function readSubstackPublicationFromPage(): { subdomain: string; name: st
 }
 
 /** The follow target for a publication read out of a page. */
-export function substackTargetFromPublication(pub: { subdomain: string; name: string } | null): FollowTarget | null {
+export function substackTargetFromPublication(pub: { subdomain: string; name: string } | null): CreatorTarget | null {
   if (!pub) return null;
   return { feedType: "substack", feedUrl: `https://${pub.subdomain}.substack.com`, kind: "author", title: pub.name };
-}
-
-/** Substack post pages live under /p/, on subdomains and custom domains alike.
- *  The "we have not checked this yet" overlay only makes sense on a post, not
- *  on a homepage or an archive. */
-export function isSubstackPostPage(pageUrl: string): boolean {
-  try {
-    return new URL(pageUrl).pathname.startsWith("/p/");
-  } catch {
-    return false;
-  }
-}
-
-/** Whether requesting a check makes sense for this URL. On the platforms
- *  whose URL shapes we know, only an actual post or video is checkable:
- *  youtube.com must be a watch page, a substack.com host must be a /p/ post
- *  (so messages, inboxes and profiles offer nothing), lesswrong.com must be a
- *  /posts/ page. Any other site keeps the offer, because we cannot know its
- *  URL shapes and a wrong guess would hide the feature. The search-engine
- *  exclusion lives separately in the popup. */
-export function requestMakesSenseForUrl(pageUrl: string): boolean {
-  try {
-    const url = new URL(pageUrl);
-    if (/(^|\.)youtube\.com$/.test(url.hostname)) return !!extractYoutubeVideoId(pageUrl);
-    if (/(^|\.)substack\.com$/.test(url.hostname)) return isSubstackPostPage(pageUrl);
-    if (/(^|\.)lesswrong\.com$/.test(url.hostname)) return url.pathname.startsWith("/posts/");
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 /** The handle of a Substack profile page such as substack.com/@thezvi, or null
@@ -104,7 +85,7 @@ export function substackProfileHandle(pageUrl: string): string | null {
  *  the API knows their *.substack.com form, which is not derivable from their
  *  page URLs. Null when the author has no publication or the API call
  *  failed. */
-export async function resolveProfileFollowTarget(handle: string): Promise<FollowTarget | null> {
+export async function resolveProfileCreatorTarget(handle: string): Promise<CreatorTarget | null> {
   try {
     const res = await fetch(`https://substack.com/api/v1/user/${handle}/public_profile`, { credentials: "omit" });
     if (!res.ok) return null;
@@ -139,7 +120,7 @@ export function youtubeChannelPath(pageUrl: string): string | null {
 /** The follow target for a YouTube channel link or channel page URL. `title`
  *  is the channel name as the caller knows it. Null when the URL is not a
  *  channel path. */
-export function youtubeChannelTarget(href: string, title: string): FollowTarget | null {
+export function youtubeChannelTarget(href: string, title: string): CreatorTarget | null {
   const path = youtubeChannelPath(href);
   if (!path) return null;
   return { feedType: "youtube", feedUrl: `https://www.youtube.com/${path}`, kind: "youtuber", title };

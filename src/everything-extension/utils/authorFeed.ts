@@ -1,15 +1,15 @@
 import { browser } from "#imports";
 import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
-import { unlessFollowed } from "./followedFeeds";
+import { unlessPrioritized } from "./prioritizedCreators";
 import {
   readSubstackPublicationFromPage,
-  resolveProfileFollowTarget,
-  substackFollowTarget,
+  resolveProfileCreatorTarget,
+  substackCreatorTarget,
   substackProfileHandle,
   substackTargetFromPublication,
   youtubeChannelTarget,
-  type FollowTarget,
-} from "./followTarget";
+  type CreatorTarget,
+} from "./creatorTarget";
 
 /** Runs inside the watch page, so it must stay self-contained: executeScript
  *  serializes the function and imports would not exist over there. The visit
@@ -19,18 +19,18 @@ export function readWatchPageChannel() {
   return link?.href ? { href: link.href, name: link.textContent ?? "" } : null;
 }
 
-/** The feed a tab's author could be followed as: a Substack publication (from
+/** The creator a tab belongs to: a Substack publication (from
  *  its subdomain or a profile page) or a YouTube channel (from a channel page,
  *  or read out of a watch page's owner box). Null when the page has no author
  *  feed. Reading the watch page's owner box needs the tab to be scriptable,
  *  which the popup and a context-menu click both have through activeTab. */
-export async function authorFeedForTab(tab: { id?: number; url?: string; title?: string }): Promise<FollowTarget | null> {
+export async function authorFeedForTab(tab: { id?: number; url?: string; title?: string }): Promise<CreatorTarget | null> {
   const url = tab.url;
   if (!url) return null;
-  const subdomainTarget = substackFollowTarget(url);
+  const subdomainTarget = substackCreatorTarget(url);
   if (subdomainTarget) return subdomainTarget;
   const handle = substackProfileHandle(url);
-  if (handle) return resolveProfileFollowTarget(handle);
+  if (handle) return resolveProfileCreatorTarget(handle);
   const channelTarget = youtubeChannelTarget(url, (tab.title ?? "").replace(/ - YouTube$/, ""));
   if (channelTarget) return channelTarget;
   if (extractYoutubeVideoId(url) && tab.id != null) {
@@ -60,16 +60,16 @@ export async function authorFeedForTab(tab: { id?: number; url?: string; title?:
   return null;
 }
 
-/** How a tab relates to author feeds: it has none, it has one we already
- *  follow, or it has one that could still be followed. */
+/** How a tab relates to creators: it has none, it has one whose priority window
+ *  is already open, or it has one a reader could press. */
 export type AuthorFeedStatus =
   | { kind: "none" }
-  | { kind: "followed"; feed: FollowTarget }
-  | { kind: "followable"; target: FollowTarget };
+  | { kind: "prioritized"; feed: CreatorTarget }
+  | { kind: "pressable"; target: CreatorTarget };
 
 export async function authorFeedStatusForTab(tab: { id?: number; url?: string; title?: string }): Promise<AuthorFeedStatus> {
   const feed = await authorFeedForTab(tab);
   if (!feed) return { kind: "none" };
-  const target = await unlessFollowed(feed);
-  return target ? { kind: "followable", target } : { kind: "followed", feed };
+  const target = await unlessPrioritized(feed);
+  return target ? { kind: "pressable", target } : { kind: "prioritized", feed };
 }

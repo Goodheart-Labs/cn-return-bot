@@ -219,12 +219,14 @@ export async function fetchCoveredPageUrls(): Promise<CoveredPages | null> {
   };
 }
 
-/** Returns the URL of every feed the pipeline actually follows. The extension
- *  caches it next to the coverage list and hides the follow button only for
- *  feeds on this list. Returns null when the query failed, so a caller does not
- *  mistake an outage for "we follow nothing". */
-export async function fetchFollowedFeedUrls(): Promise<string[] | null> {
-  const { data, error } = await supabase.from("everything_followed_feeds").select("feed_url");
+/** Returns the feed URL of every creator whose priority window is open right
+ *  now. The extension caches it next to the coverage list, and the button
+ *  surfaces read it to say "we're already checking this author" instead of
+ *  offering the press again. A row-level policy hides creators whose window has
+ *  lapsed, so this is exactly the live set. Returns null when the query failed,
+ *  so a caller does not mistake an outage for "nobody is prioritised". */
+export async function fetchPrioritizedCreatorUrls(): Promise<string[] | null> {
+  const { data, error } = await supabase.from("everything_projects").select("feed_url").not("feed_url", "is", null);
   if (error) return null;
   return (data ?? []).map((r: any) => r.feed_url as string);
 }
