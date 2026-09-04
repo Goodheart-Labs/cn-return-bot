@@ -5,7 +5,7 @@
  * verifier. The search stage hands the work to one of several provider
  * helpers, picked by config.web_search. The choices are Anthropic native
  * search, Gemini native search, Grok native search, OpenAI native search,
- * Perplexity Sonar with its bundled search, and a SearXNG tool-calling loop.
+ * Perplexity Sonar with its bundled search, and a Serper tool-calling loop.
  *
  * generateCandidates.ts puts the bot config on AsyncLocalStorage and starts
  * cost tracking before this runs, so there is nothing left to set up here.

@@ -10,6 +10,8 @@ export interface BotConfig {
    *  it with withForcedPicks. */
   botId: string;
   model: string;
+  /** Per-run ranking policy; a scorer name from src/pipeline/ranking/scorers.ts. */
+  ranking_policy?: string;
   /** Step-specific model overrides. Each defaults to `model` when unset. */
   search_model?: string;
   /** Model for the prefilter's search analyzer. When it is unset the analyzer
@@ -65,7 +67,7 @@ export interface BotConfig {
   /**
    * When this is true, a cheap deepseek-v4-flash note-needed prefilter runs
    * before the bot. The prefilter is its own small chain: a query writer, then
-   * SearXNG, then the analyzer, then a reframed note-needed judge. If it decides
+   * the Serper search, then the analyzer, then a reframed note-needed judge. If it decides
    * no note is needed, the bot is skipped and the run is recorded as rejected
    * with the reason prefilter_no_note. This is what lets us screen a large feed
    * cheaply. NOTE_PREFILTER_TEST sets it and it defaults to false.
@@ -111,19 +113,10 @@ export interface BotConfig {
     | "native_openai"      // The OpenAI Responses API runs web_search_preview through OpenRouter.
     | "bundled"            // Perplexity Sonar has search built into the model.
     | "perplexity"         // The model calls Perplexity as a tool.
-    | "searxng"            // A tool-calling loop calls google_search for raw SearXNG results.
-    | "searxng_summarized";// A tool-calling loop calls google_search, and Gemini summarizes the SearXNG results.
+    | "serper"             // A tool-calling loop calls google_search for raw Serper results.
+    | "serper_summarized"; // A tool-calling loop calls google_search, and Gemini summarizes the Serper results.
   video_description_strategy: VideoDescriptionStrategy;
   parallel_research: boolean;
-  /**
-   * When this is true, simple-bot's search agent gets an extra instruction in its
-   * system prompt. On a political post it should prefer sources associated with
-   * the post author's own political side. The idea behind this is bridging. A
-   * note is more likely to be rated helpful when it cites sources the author's
-   * audience already trusts. This applies to simple-bot only.
-   * SIMPLE_BOT_POLITICAL_SOURCES_TEST sets it and it defaults to false.
-   */
-  search_political_sources?: boolean;
   /**
    * When this is true, simple-bot's search agent uses the "anti-pedantic" prompt
    * variant. That variant flags a correction only when the post's main claim or
@@ -160,13 +153,6 @@ export interface BotConfig {
    * SIMPLE_BOT_CLAIM_TEST sets it and it defaults to false.
    */
   search_claim?: boolean;
-  /**
-   * When this is true, the writer's system prompt gains a few-shot block of real
-   * notes the community rated helpful. They are all simple, direct, and short, so
-   * they pull the writer toward that style. SIMPLE_BOT_WRITER_EXAMPLES_TEST sets
-   * it and it defaults to false.
-   */
-  writer_examples?: boolean;
   /**
    * The misinfo topic this run matched, when it came from the XXL-feed misinfo
    * pre-pass. This mirrors the forced misinfo_topic pick into the config, so

@@ -1,7 +1,7 @@
 /**
  * Prefilter step: search analyzer
  *
- * This step sits between the raw SearXNG fetch and the writer. The model reads
+ * This step sits between the raw search fetch and the writer. The model reads
  * the post context and the messy search results, thinks about what is going on,
  * and produces a clean research brief with the source URLs inline. The writer
  * then works from this brief instead of the raw search snippets.

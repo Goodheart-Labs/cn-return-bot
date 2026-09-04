@@ -26,7 +26,7 @@ const STEP = "topic_filter";
 const TOPIC_FILTER_CONFIG: BotConfig = {
   botId: "blocked-topic-filter",
   model: DEEPSEEK,
-  web_search: "searxng",
+  web_search: "serper",
   video_description_strategy: "frames",
   parallel_research: false,
   reasoning_effort: "high",
