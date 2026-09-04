@@ -500,6 +500,9 @@ export interface FollowedFeed {
   /** While this lies in the future, the creator ranks strictly above every
    *  unflagged creator. Set by the everything-prioritize script. */
   priority_until: string | null;
+  /** When the creator's everything_top_posts rows were last recomputed. Null
+   *  means never. */
+  top_posts_refreshed_at: string | null;
 }
 
 /** Every feed the pipeline polls, in stored order: highest priority tier
@@ -511,7 +514,7 @@ export async function fetchFollowedFeeds(): Promise<FollowedFeed[]> {
   return throwOnError(
     await getSupabaseClient()
       .from("everything_followed_feeds")
-      .select("project_slug, feed_type, feed_url, priority, priority_until")
+      .select("project_slug, feed_type, feed_url, priority, priority_until, top_posts_refreshed_at")
       .order("priority", { ascending: false })
       .order("sort_order")
       .order("created_at"),
@@ -520,7 +523,7 @@ export async function fetchFollowedFeeds(): Promise<FollowedFeed[]> {
 
 /** Adds a reader-requested feed to the followed list, at the followed tier
  *  (the column default). A feed we already follow is left alone. */
-export async function insertFollowedFeed(feed: Omit<FollowedFeed, "priority" | "priority_until">): Promise<void> {
+export async function insertFollowedFeed(feed: Omit<FollowedFeed, "priority" | "priority_until" | "top_posts_refreshed_at">): Promise<void> {
   throwOnError(
     await getSupabaseClient()
       .from("everything_followed_feeds")
@@ -531,13 +534,55 @@ export async function insertFollowedFeed(feed: Omit<FollowedFeed, "priority" | "
 /** Flags a creator as priority until the given time, creating the feed row if
  *  we do not follow them yet (at the followed tier, like a reader follow). */
 export async function upsertFeedPriority(
-  feed: Omit<FollowedFeed, "priority" | "priority_until">,
+  feed: Omit<FollowedFeed, "priority" | "priority_until" | "top_posts_refreshed_at">,
   until: Date,
 ): Promise<void> {
   throwOnError(
     await getSupabaseClient()
       .from("everything_followed_feeds")
       .upsert({ ...feed, priority_until: until.toISOString() }, { onConflict: "feed_url" }),
+  );
+}
+
+/** A cached top post of a followed creator (everything_top_posts, migration
+ *  085). Popularity is the platform's own signal: view count for a YouTube
+ *  video, like count for a Substack post. */
+export interface TopPostRow {
+  feed_url: string;
+  source: "substack" | "youtube";
+  url: string;
+  title: string | null;
+  published_at: string | null;
+  popularity: number;
+  rank: number;
+}
+
+/** Every cached top post, most popular first within each feed. The whole
+ *  table is a few rows per followed creator. */
+export async function fetchAllTopPosts(): Promise<TopPostRow[]> {
+  return throwOnError(
+    await getSupabaseClient()
+      .from("everything_top_posts")
+      .select("feed_url, source, url, title, published_at, popularity, rank")
+      .order("feed_url")
+      .order("rank"),
+  ) as TopPostRow[];
+}
+
+/** Replaces one feed's cached top list with a fresh one and stamps the feed
+ *  as refreshed. The stamp is set even for an empty list, because a creator
+ *  with no checkable top posts must not look permanently stale. */
+export async function replaceFeedTopPosts(feedUrl: string, rows: Omit<TopPostRow, "feed_url">[]): Promise<void> {
+  const db = getSupabaseClient();
+  throwOnError(await db.from("everything_top_posts").delete().eq("feed_url", feedUrl));
+  if (rows.length > 0) {
+    throwOnError(await db.from("everything_top_posts").insert(rows.map((r) => ({ ...r, feed_url: feedUrl }))));
+  }
+  throwOnError(
+    await db
+      .from("everything_followed_feeds")
+      .update({ top_posts_refreshed_at: new Date().toISOString() })
+      .eq("feed_url", feedUrl),
   );
 }
 
