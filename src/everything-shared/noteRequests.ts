@@ -29,21 +29,17 @@ export async function submitNoteRequest(params: {
   if (error) throw new Error(error.message);
 }
 
-/** Records that a reader asked us to keep a whole Substack publication or
- *  YouTube channel fact-checked. The request lands in everything_follow_requests
- *  and the pipeline's consumer validates the feed and starts following it.
- *  Anonymous requests are allowed. */
-export async function submitFollowRequest(params: {
-  feedType: "substack" | "youtube";
-  feedUrl: string;
-  title?: string;
-}) {
-  const { data } = await supabase.auth.getSession();
-  const { error } = await supabase.from("everything_follow_requests").insert({
-    feed_type: params.feedType,
-    feed_url: params.feedUrl,
-    title: params.title ?? "",
-    user_id: data.session?.user.id ?? null,
-  });
+/** Records that a reader wants a whole Substack publication or YouTube channel
+ *  fact-checked for the next week. This writes straight into the creator's
+ *  project row: the database decides the window, because the key this runs with
+ *  is public. See migration 086. Anonymous presses are allowed.
+ *
+ *  Pressing a creator we already know updates their row instead of inserting,
+ *  which the database's own trigger does. That path deliberately affects no
+ *  rows, so an empty result is success and not failure. */
+export async function requestCreatorPriority(params: { feedUrl: string }) {
+  const { error } = await supabase
+    .from("everything_projects")
+    .insert({ feed_url: params.feedUrl }, { count: undefined });
   if (error) throw new Error(error.message);
 }

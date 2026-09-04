@@ -1,18 +1,18 @@
 import { createRoot, type Root } from "react-dom/client";
 import { createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
-import { submitFollowRequest } from "../../everything-shared/noteRequests";
+import { requestCreatorPriority } from "../../everything-shared/noteRequests";
 import { StatusOverlay, type StatusAction } from "../components/StatusOverlay";
 import type { NoteCounts } from "./claimGroups";
-import { followButtonLabel, followDoneLabel, type FollowTarget } from "./followTarget";
+import { priorityButtonLabel, priorityDoneLabel, type CreatorTarget } from "./creatorTarget";
+import { rememberPressed } from "./prioritizedCreators";
 import { isPageDark } from "./pageTheme";
-import { addRequestedFollow, getRequestedFollows } from "./settings";
 
 export interface StatusOverlayParams {
   noun: "post" | "video" | "page";
   /** The note counts of the page's item (utils/claimGroups.ts). Null means we
-   *  have not checked the page; only the popup renders that sentence, the card
-   *  is mounted with counts alone. */
+   *  have not checked the page; only the popup renders that sentence, because
+   *  the in-page card is mounted with counts alone. */
   counts: NoteCounts | null;
   /** Whether the pipeline has read this page in full
    *  (everything-shared/notesQuery.ts isWholePageChecked). */
@@ -48,16 +48,19 @@ export function headline(params: Pick<StatusOverlayParams, "noun" | "counts" | "
   return `${notes(helpful)} on this ${surface}${ratings}`;
 }
 
-/** The follow action for a target. The ask is remembered on the device, so the
- *  popup shows the confirmation instead of offering the button again. */
-export async function buildFollowAction(target: FollowTarget): Promise<StatusAction> {
+/** The press that gives a creator a week of checking. The button is only built
+ *  for a creator whose window is closed (see unlessPrioritized), so it always
+ *  starts offering the press rather than a confirmation. On success the creator
+ *  is added to the cached list straight away, so the button shows its done
+ *  state without waiting for the next sync. */
+export async function buildPriorityAction(target: CreatorTarget): Promise<StatusAction> {
   return {
-    label: followButtonLabel(target),
-    doneLabel: followDoneLabel(target),
-    alreadyDone: (await getRequestedFollows()).includes(target.feedUrl),
+    label: priorityButtonLabel(target),
+    doneLabel: priorityDoneLabel(target),
+    alreadyDone: false,
     run: async () => {
-      await submitFollowRequest({ feedType: target.feedType, feedUrl: target.feedUrl, title: target.title });
-      await addRequestedFollow(target.feedUrl).catch(() => {});
+      await requestCreatorPriority({ feedUrl: target.feedUrl });
+      await rememberPressed(target).catch(() => {});
     },
   };
 }
