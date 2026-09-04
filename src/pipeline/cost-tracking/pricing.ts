@@ -17,9 +17,17 @@ export const GEMINI_MODEL = "google/gemini-3-flash-preview";
 // The rates come from https://docs.x.ai/docs/models. xAI bills every xSearch tool
 // call at the same flat rate, whichever model made the call.
 
-const GROK_PRICING: Record<string, { in: number; out: number }> = {
+/** Every model that a native_grok A/B arm can select needs a row here. A model
+ *  that is missing records its runs at cost 0, which quietly understates spend
+ *  and makes the cost-per-helpful-note comparison between arms wrong rather than
+ *  merely incomplete. `pricingCoverage.test.ts` fails when an arm has no row.
+ *  These are the rates for requests under 200k tokens, which is every request we
+ *  make. Above that xAI charges double. */
+export const GROK_PRICING: Record<string, { in: number; out: number }> = {
   "grok-4-fast": { in: 0.20,  out: 0.50 },
   "grok-4.3":    { in: 1.25,  out: 2.50 },
+  "grok-4.5":    { in: 2.00,  out: 6.00 },
+  "grok-4.6":    { in: 2.00,  out: 6.00 },
 };
 const GROK_XSEARCH_PER_CALL = 0.005;
 
@@ -67,9 +75,10 @@ export function calculateGrokCost(
 // The rates come from cloud.google.com/vertex-ai/pricing. The native Gemini API
 // returns no usage.cost the way OpenRouter does, so src/pipeline/llm/gemini.ts
 // works the cost out from these numbers.
-const GEMINI_PRICING: Record<string, { in: number; out: number; searchPerCall: number }> = {
+export const GEMINI_PRICING: Record<string, { in: number; out: number; searchPerCall: number }> = {
   "gemini-3-flash-preview": { in: 0.50, out: 3.00,  searchPerCall: 0.014 },
   "gemini-3.1-pro-preview": { in: 2.00, out: 12.00, searchPerCall: 0.014 },
+  "gemini-3.8-flash":       { in: 0.75, out: 3.75,  searchPerCall: 0.014 },
 };
 
 export function calculateGeminiCost(

@@ -80,14 +80,26 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     // Opus 5 now, and we are watching them for the same failure.
     { variant: { name: "opus48-native",           overrides: { search_model: "anthropic/claude-opus-4.8",         web_search: "native" }},        weight: 0 },
     { variant: { name: "opus5-native",            overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native" }},        weight: 1 },
-    { variant: { name: "opus5-native-medium",     overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native", search_reasoning_effort: "medium" }}, weight: 1 },
+    // Raised from 1 to 2 on 2026-09-04: the best quality profile in the table
+    // over the preceding 45 days, at a competitive cost per helpful note.
+    { variant: { name: "opus5-native-medium",     overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native", search_reasoning_effort: "medium" }}, weight: 2 },
     { variant: { name: "haiku45-native",          overrides: { search_model: "anthropic/claude-haiku-4.5",        web_search: "native" }},        weight: 0 },
     { variant: { name: "grok43-native",           overrides: { search_model: "x-ai/grok-4.3",                     web_search: "native_grok" }},   weight: 2 },
     { variant: { name: "grok45-native",           overrides: { search_model: "x-ai/grok-4.5",                     web_search: "native_grok" }},   weight: 2 },
+    // Grok 4.6 is the same price as 4.5 and scores well above it on the public
+    // benchmarks, but independent testing reports it fabricating more confidently
+    // than 4.5 does. Both arms run side by side until our own not-helpful counts
+    // settle the question.
+    { variant: { name: "grok46-native",           overrides: { search_model: "x-ai/grok-4.6",                     web_search: "native_grok" }},   weight: 2 },
     { variant: { name: "gemini3flash-native",     overrides: { search_model: "google/gemini-3-flash-preview",     web_search: "native_gemini" }}, weight: 1 },
     { variant: { name: "gemini35flash-native",    overrides: { search_model: "google/gemini-3.5-flash",           web_search: "native_gemini" }}, weight: 0 },
-    { variant: { name: "gemini36flash-native",    overrides: { search_model: "google/gemini-3.6-flash",           web_search: "native_gemini" }}, weight: 2 },
-    { variant: { name: "gemini31pro-native",      overrides: { search_model: "google/gemini-3.1-pro-preview",      web_search: "native_gemini" }}, weight: 1 },
+    // Retired 2026-09-04: superseded by 3.8 Flash at the same price, and it
+    // submitted notes at about half the rate of the other arms.
+    { variant: { name: "gemini36flash-native",    overrides: { search_model: "google/gemini-3.6-flash",           web_search: "native_gemini" }}, weight: 0 },
+    { variant: { name: "gemini38flash-native",    overrides: { search_model: "google/gemini-3.8-flash",           web_search: "native_gemini" }}, weight: 2 },
+    // Retired 2026-09-04: weak helpful rate and the most expensive arm per
+    // helpful note over the 45 days to 2026-09-03.
+    { variant: { name: "gemini31pro-native",      overrides: { search_model: "google/gemini-3.1-pro-preview",      web_search: "native_gemini" }}, weight: 0 },
     { variant: { name: "sonar-reasoning-pro",     overrides: { search_model: "perplexity/sonar-reasoning-pro",    web_search: "bundled" }},       weight: 0 },
     { variant: { name: "sonar-pro",               overrides: { search_model: "perplexity/sonar-pro",              web_search: "bundled" }},       weight: 0 },
     { variant: { name: "kimi-k26-searxng",        overrides: { search_model: "moonshotai/kimi-k2.6",              web_search: "searxng" }},       weight: 0 },
@@ -95,14 +107,37 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     { variant: { name: "deepseek-v4pro-searxng",  overrides: { search_model: "deepseek/deepseek-v4-pro",          web_search: "searxng" }},       weight: 0 },
     { variant: { name: "deepseek-v4flash-searxng",overrides: { search_model: "deepseek/deepseek-v4-flash",        web_search: "searxng" }},       weight: 0 },
     { variant: { name: "glm5-searxng",            overrides: { search_model: "z-ai/glm-5",                        web_search: "searxng" }},       weight: 0 },
-    { variant: { name: "glm52-searxng",           overrides: { search_model: "z-ai/glm-5.2",                      web_search: "searxng" }},       weight: 2 },
+    // Retired 2026-09-04: the worst false-positive profile of any arm. 13 of its
+    // 28 rated notes came back not-helpful, against 8% to 29% everywhere else.
+    { variant: { name: "glm52-searxng",           overrides: { search_model: "z-ai/glm-5.2",                      web_search: "searxng" }},       weight: 0 },
+    { variant: { name: "glm53-searxng",           overrides: { search_model: "z-ai/glm-5.3",                      web_search: "searxng" }},       weight: 2 },
+    { variant: { name: "glm53flash-searxng",      overrides: { search_model: "z-ai/glm-5.3-flash",                web_search: "searxng" }},       weight: 2 },
+    // Meta has no native web-search integration here, so Muse Spark runs the
+    // searxng tool-calling loop. It advertises tools, tool_choice and strict
+    // json_schema, which is everything that loop sends.
+    // This is Meta's "contributor" tier: the same model as meta/muse-spark-1.3 at
+    // a twelfth of the price, in exchange for Meta being allowed to train on the
+    // prompts and completions we send. Everything we send it is a public tweet,
+    // public search results, or a note draft written to be published, so the
+    // trade is one we are happy to make. Two consequences worth knowing: the tier
+    // is capped at 60 requests per minute rather than 3000, which is fine at this
+    // weight but would not carry a main arm, and the account has to have
+    // completed the 18+ confirmation in OpenRouter's settings or every call 403s.
+    //
+    // HELD AT WEIGHT 0. That 18+ confirmation is not done yet, so every call to
+    // this model currently returns 403 and the arm could not be verified against
+    // a live request. Set the weight to 4 once the confirmation is done at
+    // https://openrouter.ai/settings/preferences and verifyModels.ts passes.
+    { variant: { name: "musespark13c-searxng",    overrides: { search_model: "meta/muse-spark-1.3-contributor",   web_search: "searxng" }},       weight: 0 },
     { variant: { name: "deepseek-v32exp-searxng", overrides: { search_model: "deepseek/deepseek-v3.2-exp",        web_search: "searxng" }},       weight: 0 },
     { variant: { name: "qwen3max-searxng",        overrides: { search_model: "qwen/qwen3-max",                    web_search: "searxng" }},       weight: 0 },
     { variant: { name: "gpt5_4mini-native",       overrides: { search_model: "openai/gpt-5.4-mini",               web_search: "native_openai" }}, weight: 0 },
     { variant: { name: "gpt5-native",             overrides: { search_model: "openai/gpt-5",                      web_search: "native_openai" }}, weight: 0 },
     { variant: { name: "gpt5_6luna-native",       overrides: { search_model: "openai/gpt-5.6-luna",               web_search: "native_openai" }}, weight: 2 },
     { variant: { name: "gpt5_6terra-native",      overrides: { search_model: "openai/gpt-5.6-terra",              web_search: "native_openai" }}, weight: 2 },
-    { variant: { name: "gpt5_6sol-native",        overrides: { search_model: "openai/gpt-5.6-sol",                web_search: "native_openai" }}, weight: 1 },
+    // Retired 2026-09-04: weak helpful rate at the highest cost per run of any
+    // OpenAI arm.
+    { variant: { name: "gpt5_6sol-native",        overrides: { search_model: "openai/gpt-5.6-sol",                web_search: "native_openai" }}, weight: 0 },
     { variant: { name: "mistral-large-3-searxng", overrides: { search_model: "mistralai/mistral-large-2512",      web_search: "searxng" }},       weight: 0 },
   ],
 };
@@ -114,12 +149,29 @@ const SIMPLE_BOT_WRITER_TEST: ABTest = {
   // down to a small continuity arm, and two current-generation Anthropic arms
   // added (Fable 5 at $10/$50, Opus 5 at $5/$25 per MTok — low weights keep
   // the cost a few notes/day each).
+  //
+  // Refreshed again 2026-09-04. Fable moves to 5.1, which costs the same as 5.0
+  // and scores above it. Two cheap modern arms join, funded by halving the
+  // Gemini 3 Flash arm, which still runs the December 2025 model. The writer is
+  // one call per attempt rather than a many-turn search loop, so a cheap model
+  // is worth more here than anywhere else in the pipeline.
   variants: [
     { variant: { name: "sonnet5",          overrides: { writer_model: "anthropic/claude-sonnet-5"      }}, weight: 40 },
-    { variant: { name: "gemini-flash",     overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 30 },
-    { variant: { name: "fable5",           overrides: { writer_model: "anthropic/claude-fable-5"      }}, weight: 10 },
-    { variant: { name: "opus5",            overrides: { writer_model: "anthropic/claude-opus-5"       }}, weight: 10 },
+    { variant: { name: "gemini-flash",     overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 15 },
+    { variant: { name: "gemini38flash",    overrides: { writer_model: "google/gemini-3.8-flash"       }}, weight: 10 },
+    // See the search test above for what Meta's contributor tier costs us in
+    // data rights. HELD AT WEIGHT 0 for the same reason as the search arm: the
+    // account's 18+ confirmation is outstanding, so the model 403s and could not
+    // be verified. Set this to 10 at the same time as the search arm, which puts
+    // this test back to a total weight of 100.
+    { variant: { name: "musespark13c",     overrides: { writer_model: "meta/muse-spark-1.3-contributor" }}, weight: 0 },
+    { variant: { name: "fable51",          overrides: { writer_model: "anthropic/claude-fable-5.1"    }}, weight: 10 },
+    // Wound down from 10 to 5 on 2026-09-04: the weakest writer arm so far, but
+    // its notes are mostly still unrated, so it is reduced rather than retired.
+    { variant: { name: "opus5",            overrides: { writer_model: "anthropic/claude-opus-5"       }}, weight: 5 },
     { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 10 },
+    // Superseded by fable51. Kept at weight 0 so old picks still resolve.
+    { variant: { name: "fable5",           overrides: { writer_model: "anthropic/claude-fable-5"      }}, weight: 0 },
     { variant: { name: "deepseek-v4flash", overrides: { writer_model: "deepseek/deepseek-v4-flash"    }}, weight: 0 },
   ],
 };
