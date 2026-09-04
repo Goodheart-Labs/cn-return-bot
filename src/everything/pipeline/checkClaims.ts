@@ -6,7 +6,7 @@
 
 import type { Post } from "../../api/fetchEligiblePosts";
 import { getBotById } from "../../bots/index";
-import { processSingleTweet } from "../../pipeline/orchestration/processTweet";
+import { processSingleTweet, type ProcessTweetResult } from "../../pipeline/orchestration/processTweet";
 import { withBotConfig } from "../../pipeline/ab-testing/botConfig";
 import { withCostTracker } from "../../pipeline/cost-tracking/costTracker";
 import { runABTests, withForcedPicks } from "../../pipeline/ab-testing/abTests";
@@ -15,6 +15,7 @@ import { createTweetLog, getLoggedBotIdentity, nestDotKeys, withTweetLog, type T
 import type { TokenCost } from "../../pipeline/cost-tracking/pricing";
 import type { EvaluatedSource } from "../../pipeline/prompts/verify/citations";
 import { insertClaimPipelineRun } from "../db";
+import type { ClaimRunRecord } from "../../service/contract";
 import type { ClaimCheck, ExtractedClaim, ItemSource, NoteSourceCitation } from "../types";
 
 // We run simple-bot with the note-needed prefilter turned off, so every checked
@@ -89,9 +90,11 @@ export function buildClaimPost(params: ClaimPostParams): Post {
   };
 }
 
-export async function checkClaim(params: ClaimPostParams): Promise<ClaimCheck> {
-  const post = buildClaimPost(params);
-
+/** Runs one already-wrapped post through the note pipeline and reports both the
+ *  outcome and everything needed to record the run. It touches no database, so
+ *  the claim-check service can serve it and hand the record back to whoever
+ *  called, and an in-process caller can store it directly. */
+export async function runClaimCheck(post: Post): Promise<{ check: ClaimCheck; run: ClaimRunRecord }> {
   const { config, picks } = withForcedPicks(FORCED_PICKS, () => runABTests(AB_TESTS));
   const bot = getBotById(config.botId);
   if (!bot) throw new Error(`No bot registered for id "${config.botId}"`);
@@ -107,8 +110,16 @@ export async function checkClaim(params: ClaimPostParams): Promise<ClaimCheck> {
     ),
   );
 
-  if (params.claimId) await recordClaimRun(params.claimId, result, log);
+  return { check: buildClaimCheck(result), run: buildRunRecord(result, log) };
+}
 
+export async function checkClaim(params: ClaimPostParams): Promise<ClaimCheck> {
+  const { check, run } = await runClaimCheck(buildClaimPost(params));
+  if (params.claimId) await recordClaimRun(params.claimId, run);
+  return check;
+}
+
+function buildClaimCheck(result: ProcessTweetResult): ClaimCheck {
   if (result.outcome === "candidate") {
     return {
       kind: "note",
@@ -122,25 +133,34 @@ export async function checkClaim(params: ClaimPostParams): Promise<ClaimCheck> {
   return { kind: "no_note", outcome: result.outcome, reason: result.outcomeReason ?? null };
 }
 
+function buildRunRecord(result: ProcessTweetResult, log: TweetLogMap): ClaimRunRecord {
+  const bot = getLoggedBotIdentity("simple-bot", log);
+  return {
+    botName: bot.name,
+    outcome: result.outcome,
+    outcomeReason: result.outcomeReason ?? null,
+    finalStage: result.finalStage ?? null,
+    abTestPicks: bot.picks ?? null,
+    botConfig: bot.config ?? null,
+    logs: nestDotKeys(Object.fromEntries(log)),
+    costUsd: (log.get("costs.total") as TokenCost | undefined)?.cost ?? null,
+  };
+}
+
 /** Saves the run's tweet log and LLM cost to everything_pipeline_runs. This is
  *  best effort. A failure to record must never make the claim itself fail. */
-async function recordClaimRun(
-  claimId: string,
-  result: Awaited<ReturnType<typeof processSingleTweet>>,
-  log: TweetLogMap,
-): Promise<void> {
-  const bot = getLoggedBotIdentity("simple-bot", log);
+export async function recordClaimRun(claimId: string, run: ClaimRunRecord): Promise<void> {
   try {
     await insertClaimPipelineRun({
       claim_id: claimId,
-      bot_name: bot.name,
-      outcome: result.outcome,
-      outcome_reason: result.outcomeReason ?? null,
-      final_stage: result.finalStage ?? null,
-      ab_test_picks: bot.picks ?? null,
-      bot_config: bot.config ?? null,
-      logs: nestDotKeys(Object.fromEntries(log)),
-      cost: (log.get("costs.total") as TokenCost | undefined)?.cost ?? null,
+      bot_name: run.botName,
+      outcome: run.outcome,
+      outcome_reason: run.outcomeReason,
+      final_stage: run.finalStage,
+      ab_test_picks: run.abTestPicks,
+      bot_config: run.botConfig,
+      logs: run.logs,
+      cost: run.costUsd,
     });
   } catch (err: any) {
     console.warn(`  [checkClaim] failed to record pipeline run for claim ${claimId}: ${err?.message}`);
