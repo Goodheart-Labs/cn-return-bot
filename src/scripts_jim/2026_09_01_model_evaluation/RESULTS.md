@@ -33,6 +33,18 @@ Before this change: search carried 14 live arms at total weight 25, the writer 5
 arms at total weight 100. Recorded pipeline spend was $50.97/day over the 45 days
 to 2026-09-03 [DB].
 
+Note on naming: while this work was in progress, main replaced the SearXNG search
+backend with Serper and restarted the affected arms under `-serper` names, on the
+principle that a new backend is a new treatment. The new tool-calling arms here
+follow that convention, so they are `glm53-serper`, `glm53flash-serper` and
+`musespark13c-serper`.
+
+One judgement call came out of that merge. Main had just restarted GLM 5.2 as
+`glm52-serper` at weight 2 to re-measure it on the new backend. It is retired to
+weight 0 here instead, because its false-positive rate is a property of the
+model's judgement rather than of the search backend, and GLM 5.3 replaces it in
+the same slot. Worth a second opinion if you disagree.
+
 ## The candidates
 
 Reference points: Sonnet 5 scores 55.3 at $2/$10 per million tokens, Opus 5
@@ -119,7 +131,7 @@ Results as of 2026-09-04:
 
 | Check | Result |
 |---|---|
-| Advertised parameter support, all 6 OpenRouter candidates | **Pass.** All advertise `response_format`, `structured_outputs`, and, where the searxng loop needs them, `tools` and `tool_choice` |
+| Advertised parameter support, all 6 OpenRouter candidates | **Pass.** All advertise `response_format`, `structured_outputs`, and, where the Serper search loop needs them, `tools` and `tool_choice` |
 | Grok 4.6 on the native xAI API with xSearch | **Pass.** Returned parseable JSON after 2 search calls |
 | Gemini 3.8 Flash on the native Google API with googleSearch | **Pass** |
 | Live OpenRouter calls, all 6 candidates | **Blocked.** See below |

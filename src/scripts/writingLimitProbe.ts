@@ -154,7 +154,8 @@ async function persist(): Promise<void> {
   // (migration 082, minted by scripts/mintProbeKey.ts). Falls back to the
   // service key only so the probe keeps working before the scoped key is set.
   const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_PROBE_KEY ?? process.env.SUPABASE_SERVICE_KEY;
+  // GitHub passes an unset secret as "", which ?? would keep; || falls through to the service key.
+  const key = process.env.SUPABASE_PROBE_KEY || process.env.SUPABASE_SERVICE_KEY;
   if (!url || !key) throw new Error("SUPABASE_URL and a Supabase key are required");
   if (!process.env.SUPABASE_PROBE_KEY) {
     console.warn("[probe] SUPABASE_PROBE_KEY unset — falling back to the service key (over-privileged)");

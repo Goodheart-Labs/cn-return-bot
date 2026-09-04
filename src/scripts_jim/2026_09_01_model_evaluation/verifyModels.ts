@@ -61,7 +61,7 @@ async function checkWriterShape(model: string) {
   }
 }
 
-/** The searxng search loop, turn 1: tools attached and a tool call forced. */
+/** The Serper search loop, turn 1: tools attached and a tool call forced. */
 async function checkSearchToolsForced(model: string) {
   try {
     const response = await llm.create({
@@ -78,7 +78,7 @@ async function checkSearchToolsForced(model: string) {
   }
 }
 
-/** The searxng search loop, turns 2 and later: tools plus the json_schema
+/** The Serper search loop, turns 2 and later: tools plus the json_schema
  *  response format at the same time. This pairing is the one that breaks most
  *  often, so it gets its own check. */
 async function checkSearchToolsPlusSchema(model: string) {
@@ -197,7 +197,7 @@ async function main() {
     await checkWriterShape(model);
   }
 
-  console.log("\n--- Search arms on the searxng path (OpenRouter, tools) ---");
+  console.log("\n--- Search arms on the Serper path (OpenRouter, tools) ---");
   for (const model of [
     "meta/muse-spark-1.3-contributor",
     "z-ai/glm-5.3",
