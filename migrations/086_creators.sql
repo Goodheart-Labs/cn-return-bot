@@ -174,13 +174,6 @@ begin
     raise exception 'not a creator feed we recognise: %', new.feed_url using errcode = 'check_violation';
   end if;
 
-  -- Nothing else rate-limits a public key that causes spending, so a press is
-  -- refused while this many creators already hold priority. The daily spend cap
-  -- is the other bound.
-  if (select count(*) from everything_projects where priority_until > now()) >= 200 then
-    raise exception 'too many creators are prioritised right now' using errcode = 'check_violation';
-  end if;
-
   -- A creator we already know: extend the window, never shorten it, and leave
   -- their name, slug and everything else alone.
   select id into existing_id
