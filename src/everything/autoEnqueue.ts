@@ -20,8 +20,12 @@
  * Each creator's all-time top posts join the candidates too (GOO-81, see
  * topPosts.ts). In the author rank they line up behind the creator's recent
  * posts, ordered by popularity, and in the recency rank they carry their real
- * old publish dates. The blend therefore keeps them at the back: an evergreen
- * hit is only enqueued on a run where the feeds are otherwise caught up.
+ * old publish dates. Nothing gates them beyond that. Sitting last in both
+ * ranks is what keeps them at the back, so in practice an evergreen hit is
+ * picked on a run where the feeds are otherwise caught up. The one case where
+ * a top post comes early is a flagged creator: flagged candidates are ranked
+ * ahead of everyone else, so a creator you flagged who has no unchecked new
+ * posts contributes their top posts next. That is what flagging is for.
  *
  * A Substack post is enqueued with its RSS body already in full_text. That way
  * the worker never has to fetch Substack, which blocks our CI runners.
