@@ -111,13 +111,6 @@ export const WRITER_TIME_TRAVEL_RULE = `
 ## The time-travel test
 The post context states when the post was published. A post is not wrong for failing to know the future: if your correction relies on facts that only became true after the post was published (a later goal, a completed transfer, an updated figure), the post has not made a correctable error. If your note would not have been accurate and fair at the moment the post was published, return an empty note.`;
 
-/**
- * This block is appended to the writer system prompt when
- * `config.writer_last_check` is on. That is the WRITER_LAST_CHECK_TEST arm. The
- * writer's brief frames an empty note as a failure to find a dispute. This block
- * makes abstaining a judgment call instead: draft the note, then read it as a
- * rater would. The bullets are the modes that recur among not-helpful notes.
- */
 export const WRITER_LAST_CHECK = `
 
 ## Last check

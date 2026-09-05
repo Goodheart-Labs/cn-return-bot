@@ -226,20 +226,7 @@ const TIMING_TREATMENT_TEST: ABTest = {
   ],
 };
 
-// Gives the writer a "Last check" block: draft the note, read it as a rater
-// would, and return empty if the post is a joke or an opinion, the post was
-// early rather than wrong, the dispute is over a definition, the note only holds
-// with a qualifier, corrects a side detail, rests on an absence of evidence, or
-// only says the media is AI-made. Two corrections collapse to the strongest one.
-//
-// The trigger was the Lindsay Clancy mistrial note of 2026-09-04, which hedged
-// itself with "at post time" and was rated not helpful within hours. Of the 57
-// not-helpful notes from the 30 days before that, about 35 fall into modes the
-// writer could have seen at draft time; the rest are correct notes that raters
-// rejected. The classification is in docs/not-helpful-modes-2026-09-04.md.
-//
-// Read the abstention rate first as a guard, then net helpful of labeled at 48
-// hours. This test has prerequisites, so it declares no defaultVariant.
+// Tests whether a final abstention check reduces not-helpful notes.
 const WRITER_LAST_CHECK_TEST: ABTest = {
   name: "writer_last_check",
   prerequisites: { botId: "simple-bot" },
