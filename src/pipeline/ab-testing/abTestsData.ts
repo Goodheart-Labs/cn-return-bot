@@ -226,6 +226,16 @@ const TIMING_TREATMENT_TEST: ABTest = {
   ],
 };
 
+// Tests whether a final abstention check reduces not-helpful notes.
+const WRITER_LAST_CHECK_TEST: ABTest = {
+  name: "writer_last_check",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off", overrides: { writer_last_check: false } }, weight: 50 },
+    { variant: { name: "on",  overrides: { writer_last_check: true  } }, weight: 50 },
+  ],
+};
+
 // This test was retired on 2026-08-05 in favour of the "instruction" arm of
 // TIMING_TREATMENT_TEST. It stays declared at weight 0 so that picks from old
 // runs still resolve.
@@ -557,6 +567,7 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_ANTI_PEDANTIC_TEST,
   TIME_TRAVEL_PROMPT_TEST,
   TIMING_TREATMENT_TEST,
+  WRITER_LAST_CHECK_TEST,
   SIMPLE_BOT_CLAIM_TEST,
   SIMPLE_BOT_CORRECTION_EXTRACTION_TEST,
   TOPIC_FILTER_TEST,

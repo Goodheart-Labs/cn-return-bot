@@ -145,6 +145,8 @@ export interface BotConfig {
    * to simple-bot only. TIMING_CONTEXT_TEST sets it and it defaults to false.
    */
   timing_context?: boolean;
+  /** Enables the writer's final abstention check. */
+  writer_last_check?: boolean;
   /**
    * When this is true, simple-bot's search step uses the claim-check prompt. The
    * input is then a claim extracted from a podcast, an interview, or an article,
