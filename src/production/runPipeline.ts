@@ -78,7 +78,6 @@ import { autoOpenInDashboard } from "../local/dashboardAutoOpen";
 import { withForcedPicks } from "../pipeline/ab-testing/abTests";
 import { activeScorer, pickRankingPolicy } from "../pipeline/ranking/policy";
 import { barEnabled, barFor, estimateWindow, type Window } from "../pipeline/capacity/window";
-// import { updateWritingLimit } from "../pipeline/orchestration/updateWritingLimit";
 
 function postUrl(postId: string): string {
   return `https://x.com/i/status/${postId}`;
