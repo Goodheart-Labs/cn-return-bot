@@ -146,6 +146,14 @@ export interface BotConfig {
    */
   timing_context?: boolean;
   /**
+   * When this is true, simple-bot's writer prompt gains a "Last check" block: a
+   * short list of reasons to return an empty note even though the search step
+   * found a dispute. The list comes from the not-helpful notes of Aug to Sep
+   * 2026. See docs/not-helpful-modes-2026-09-04.md. This applies to
+   * simple-bot only. WRITER_LAST_CHECK_TEST sets it and it defaults to false.
+   */
+  writer_last_check?: boolean;
+  /**
    * When this is true, simple-bot's search step uses the claim-check prompt. The
    * input is then a claim extracted from a podcast, an interview, or an article,
    * together with its surrounding context, rather than an X post. The everything
