@@ -9,10 +9,7 @@
 
 import { jsonSchemaResponseFormat } from "../responseFormat";
 
-// The anti-pedantic phrasing points the model at the post's main claim or
-// argument and never at a minor side error. It won
-// SIMPLE_BOT_ANTI_PEDANTIC_TEST and became the base prompt when that test closed
-// on 2026-08-06.
+// The anti-pedantic wording won its A/B test and became the base prompt on 2026-08-06.
 export const SEARCH_SYSTEM_PROMPT = `You are a research agent for Community Notes fact-checking on X/Twitter.
 
 Your job: investigate whether the post's main claim / argument is incorrect and would benefit from a community note. Use the web_search tool to find evidence.

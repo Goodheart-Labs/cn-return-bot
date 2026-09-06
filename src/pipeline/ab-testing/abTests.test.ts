@@ -1,6 +1,45 @@
 import { describe, expect, test } from "bun:test";
-import { runABTests, withForcedPicks, resolvePicks } from "./abTests";
-import { AB_TESTS } from "./abTestsData";
+import { runABTests, withForcedPicks, resolvePicks, pickVariantName } from "./abTests";
+import { AB_TESTS, PANGRAM_NOTE_TEST } from "./abTestsData";
+import { buildAbTestSlots, matchesAbFilters } from "../../dashboard-shared/abFilters";
+
+describe("retired and standalone A/B picks", () => {
+  test("ordinary runs neither sample nor backfill a Pangram note label", () => {
+    const { picks, config } = runABTests(AB_TESTS);
+    expect(picks.pangram_note).toBeUndefined();
+    expect(resolvePicks(picks).pangram_note).toBeUndefined();
+    expect(resolvePicks(null).pangram_note).toBeUndefined();
+    expect(picks.simple_bot_anti_pedantic).toBeUndefined();
+    expect(config).not.toHaveProperty("search_anti_pedantic");
+  });
+
+  for (const variant of ["plain", "fp_context"]) {
+    test(`Pangram's standalone picker still supports ${variant}`, () => {
+      expect(withForcedPicks({ pangram_note: variant }, () => pickVariantName(PANGRAM_NOTE_TEST)))
+        .toBe(variant);
+    });
+  }
+
+  for (const variant of ["off", "on"]) {
+    test(`forcing retired anti-pedantic ${variant} fails explicitly`, () => {
+      expect(() => withForcedPicks(
+        { bot: "simple-bot", simple_bot_anti_pedantic: variant },
+        () => runABTests(AB_TESTS),
+      )).toThrow('A/B test "simple_bot_anti_pedantic" is retired');
+    });
+  }
+
+  test("historical labels remain readable and filterable", () => {
+    const historical = { pangram_note: "fp_context", simple_bot_anti_pedantic: "off" };
+    const picks = resolvePicks(historical);
+    expect(picks).toMatchObject(historical);
+    expect(matchesAbFilters(picks, historical)).toBe(true);
+    const slots = buildAbTestSlots([{ picks }], AB_TESTS);
+    for (const [name, variant] of Object.entries(historical)) {
+      expect(slots.find(slot => slot.name === name)?.variants).toContain(variant);
+    }
+  });
+});
 
 describe("writer_last_check test", () => {
   test("forced on sets writer_last_check on the config", () => {

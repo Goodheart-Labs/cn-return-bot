@@ -149,32 +149,6 @@ const SIMPLE_BOT_VERIFIER_TEST: ABTest = {
   ],
 };
 
-// This test swapped simple-bot's search prompt for an "anti-pedantic" version.
-// That prompt only reports a correction when the post's main claim or argument
-// is wrong, never when a minor side detail is off. The bet was that pedantic
-// nitpicks hurt both the helpful rate and the false positive rate.
-//
-// Jim closed the test on 2026-08-06 in favour of "on". Community Notes statuses
-// settle within about 48 hours, so the audit counted a note as mature after 48
-// hours rather than after two weeks. That keeps the most recent weeks in the
-// sample, and those are the weeks where "on" led. Over the window where both
-// arms were live, Jun 24 to Aug 3, settled notes came out at +7.1% net for "on"
-// (n=945, 76% of rated notes helpful) against +6.1% for "off" (n=918, 73%).
-//
-// The winning prompt is now part of SEARCH_SYSTEM_PROMPT, so the flag no longer
-// changes anything. Every weight is 0, which makes live sampling skip the test
-// while picks from old runs still resolve. Reopen the test if settled outcomes
-// reverse the gap once the recent weeks fully mature. This test has
-// prerequisites, so it declares no defaultVariant.
-const SIMPLE_BOT_ANTI_PEDANTIC_TEST: ABTest = {
-  name: "simple_bot_anti_pedantic",
-  prerequisites: { botId: "simple-bot" },
-  variants: [
-    { variant: { name: "off", overrides: { search_anti_pedantic: false } }, weight: 0 },
-    { variant: { name: "on",  overrides: { search_anti_pedantic: true  } }, weight: 0 },
-  ],
-};
-
 // One three-arm test for the time-travel problem. The idea being tested is that
 // a correction must have been accurate and fair at the moment the post was
 // published. A claim that only later events made outdated is not an error.
@@ -488,7 +462,6 @@ const PANGRAM_MONITORING_TEST: ABTest = {
 // never goes through BotConfig, so the overrides are empty.
 export const PANGRAM_NOTE_TEST: ABTest = {
   name: "pangram_note",
-  defaultVariant: "plain",
   variants: [
     { variant: { name: "plain",      overrides: {} }, weight: 50 },
     { variant: { name: "fp_context", overrides: {} }, weight: 50 },
@@ -564,7 +537,6 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_SEARCH_TEST,
   SIMPLE_BOT_WRITER_TEST,
   SIMPLE_BOT_VERIFIER_TEST,
-  SIMPLE_BOT_ANTI_PEDANTIC_TEST,
   TIME_TRAVEL_PROMPT_TEST,
   TIMING_TREATMENT_TEST,
   WRITER_LAST_CHECK_TEST,
@@ -583,7 +555,6 @@ export const AB_TESTS: ABTest[] = [
   // the misinfo_topic config field that test records.
   MISINFO_CONCEDE_SHAPE_TEST,
   PANGRAM_MONITORING_TEST,
-  PANGRAM_NOTE_TEST,
   AUTHOR_HISTORY_TEST,
   RANKING_POLICY_TEST,
 ];

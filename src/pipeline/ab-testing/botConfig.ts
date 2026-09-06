@@ -118,14 +118,6 @@ export interface BotConfig {
   video_description_strategy: VideoDescriptionStrategy;
   parallel_research: boolean;
   /**
-   * When this is true, simple-bot's search agent uses the "anti-pedantic" prompt
-   * variant. That variant flags a correction only when the post's main claim or
-   * argument is wrong, and not when a minor side detail is wrong. This applies to
-   * simple-bot only. SIMPLE_BOT_ANTI_PEDANTIC_TEST sets it and it defaults to
-   * false.
-   */
-  search_anti_pedantic?: boolean;
-  /**
    * When this is true, both simple-bot's search prompt and its writer prompt gain
    * the time-travel test. A correction must have been accurate and fair at the
    * moment the post was published. A claim that only later events made outdated

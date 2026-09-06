@@ -111,6 +111,9 @@ export function runABTests(tests: ABTest[]): {
 const forcedPicksStorage = new AsyncLocalStorage<Record<string, string>>();
 
 export function withForcedPicks<T>(picks: Record<string, string>, fn: () => T): T {
+  if ("simple_bot_anti_pedantic" in picks) {
+    throw new Error('A/B test "simple_bot_anti_pedantic" is retired; its winning prompt is always enabled.');
+  }
   return forcedPicksStorage.run(picks, fn);
 }
 
