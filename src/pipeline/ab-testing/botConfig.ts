@@ -153,17 +153,8 @@ export interface BotConfig {
    * CONCEDE_SHAPE_TOPIC_IDS. It defaults to false.
    */
   concede_shape?: boolean;
-  /**
-   * When this is true, the writer's user message includes a block of the post
-   * author's past helpful community notes. That block holds both our own notes
-   * and competing notes on tweets we have noted. See getAuthorNoteHistory. The
-   * lookup was silently broken from migration 033 until June 2026, because it
-   * queried the pipeline_runs.author_id column after that column had been
-   * dropped. So this input was effectively off that whole time.
-   * AUTHOR_HISTORY_TEST now sets it, and both of its live arms turn it on.
-   * Nothing gates it on a prerequisite, so it runs for every bot. Defaults to
-   * false.
-   */
+  /** Include the author's past helpful notes in the writer input.
+   * AUTHOR_HISTORY_TEST enables this; absent in historical/ad-hoc configs. */
   author_history?: boolean;
   /**
    * When this is true, the author-history block also lists past notes on this
