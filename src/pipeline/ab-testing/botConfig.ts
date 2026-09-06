@@ -52,19 +52,6 @@ export interface BotConfig {
   /** Model for the note-needed-judge step. Defaults to `model` when unset. */
   note_judge_model?: string;
   /**
-   * When this is true, simple-bot runs an LLM step between search and writer.
-   * That step extracts atomic corrections from the search findings and grades
-   * each one as clear_error, minor_error, critical_context, useful_context, or
-   * not_useful. The writer then receives only the high-value ones, which are the
-   * clear_error and critical_context corrections, instead of the raw findings. If
-   * none of them grade high, the run exits early as no_correction. This applies
-   * to simple-bot only. SIMPLE_BOT_CORRECTION_EXTRACTION_TEST sets it and it
-   * defaults to false.
-   */
-  correction_extraction?: boolean;
-  /** Model for the correction-extractor step. Defaults to `model` when unset. */
-  correction_extraction_model?: string;
-  /**
    * When this is true, a cheap deepseek-v4-flash note-needed prefilter runs
    * before the bot. The prefilter is its own small chain: a query writer, then
    * the Serper search, then the analyzer, then a reframed note-needed judge. If it decides
@@ -118,20 +105,11 @@ export interface BotConfig {
   video_description_strategy: VideoDescriptionStrategy;
   parallel_research: boolean;
   /**
-   * When this is true, simple-bot's search agent uses the "anti-pedantic" prompt
-   * variant. That variant flags a correction only when the post's main claim or
-   * argument is wrong, and not when a minor side detail is wrong. This applies to
-   * simple-bot only. SIMPLE_BOT_ANTI_PEDANTIC_TEST sets it and it defaults to
-   * false.
-   */
-  search_anti_pedantic?: boolean;
-  /**
    * When this is true, both simple-bot's search prompt and its writer prompt gain
    * the time-travel test. A correction must have been accurate and fair at the
    * moment the post was published. A claim that only later events made outdated
-   * is not an error. This was backtested on 2026-07-28. See
-   * docs/improvement-menu-2026-07-25.md, item T2. This applies to simple-bot
-   * only. TIME_TRAVEL_PROMPT_TEST sets it and it defaults to false.
+   * is not an error. The instruction arm of TIMING_TREATMENT_TEST sets this;
+   * the context arm sets timing_context instead.
    */
   time_travel_prompt?: boolean;
   /**
@@ -141,8 +119,8 @@ export interface BotConfig {
    * was still going on, counts as a fog-window post. Such a post gets a
    * timing-context block piped into the writer's user message, plus a
    * pre-computed Post-age line. This is information for the writer, not a gate.
-   * It is independent of time_travel_prompt, so the two form a 2x2. This applies
-   * to simple-bot only. TIMING_CONTEXT_TEST sets it and it defaults to false.
+   * The context arm of TIMING_TREATMENT_TEST sets this instead of
+   * time_travel_prompt. This applies to simple-bot only.
    */
   timing_context?: boolean;
   /** Enables the writer's final abstention check. */
@@ -175,17 +153,8 @@ export interface BotConfig {
    * CONCEDE_SHAPE_TOPIC_IDS. It defaults to false.
    */
   concede_shape?: boolean;
-  /**
-   * When this is true, the writer's user message includes a block of the post
-   * author's past helpful community notes. That block holds both our own notes
-   * and competing notes on tweets we have noted. See getAuthorNoteHistory. The
-   * lookup was silently broken from migration 033 until June 2026, because it
-   * queried the pipeline_runs.author_id column after that column had been
-   * dropped. So this input was effectively off that whole time.
-   * AUTHOR_HISTORY_TEST now sets it, and both of its live arms turn it on.
-   * Nothing gates it on a prerequisite, so it runs for every bot. Defaults to
-   * false.
-   */
+  /** Include the author's past helpful notes in the writer input.
+   * AUTHOR_HISTORY_TEST enables this; absent in historical/ad-hoc configs. */
   author_history?: boolean;
   /**
    * When this is true, the author-history block also lists past notes on this

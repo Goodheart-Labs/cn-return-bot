@@ -22,6 +22,7 @@ import { DEFAULT_CONFIG } from "./botConfig";
 import {
   AB_TESTS,
   BOT_TEST,
+  PANGRAM_NOTE_TEST,
   type ABTest,
   type ABVariant,
   type Prerequisites,
@@ -38,17 +39,22 @@ function matchesPrerequisites(config: Partial<BotConfig>, prereqs: Prerequisites
 
 function sampleVariantByWeight(
   variants: { variant: ABVariant; weight: number }[],
+  rng: () => number = Math.random,
 ): ABVariant {
-  const total = variants.reduce((s, v) => s + v.weight, 0);
+  if (variants.some((v) => !Number.isFinite(v.weight) || v.weight < 0)) {
+    throw new Error("A/B variant weights must be finite and non-negative");
+  }
+  const live = variants.filter((v) => v.weight > 0);
+  const total = live.reduce((s, v) => s + v.weight, 0);
   if (total <= 0) {
     throw new Error("Cannot sample from variants with total weight 0");
   }
-  let r = Math.random() * total;
-  for (const { variant, weight } of variants) {
+  let r = rng() * total;
+  for (const { variant, weight } of live) {
     r -= weight;
-    if (r <= 0) return variant;
+    if (r < 0) return variant;
   }
-  return variants[variants.length - 1]!.variant;
+  return live[live.length - 1]!.variant;
 }
 
 function findVariantByName(test: ABTest, name: string): ABVariant {
@@ -66,9 +72,14 @@ function findVariantByName(test: ABTest, name: string): ABVariant {
  * no bot config at all. The Pangram pre-pass uses it to choose the note wording
  * for each candidate.
  */
-export function pickVariantName(test: ABTest): string {
-  const forced = getForcedPicks()[test.name];
-  return forced ? findVariantByName(test, forced).name : sampleVariantByWeight(test.variants).name;
+export function pickVariantName(
+  test: ABTest,
+  forced: string | undefined = getForcedPicks()[test.name],
+  rng: () => number = Math.random,
+): string {
+  return forced !== undefined
+    ? findVariantByName(test, forced).name
+    : sampleVariantByWeight(test.variants, rng).name;
 }
 
 /**
@@ -111,6 +122,20 @@ export function runABTests(tests: ABTest[]): {
 const forcedPicksStorage = new AsyncLocalStorage<Record<string, string>>();
 
 export function withForcedPicks<T>(picks: Record<string, string>, fn: () => T): T {
+  if ("simple_bot_correction_extraction" in picks) {
+    throw new Error('A/B test "simple_bot_correction_extraction" is retired; search findings now go directly to the writer.');
+  }
+  if ("time_travel_prompt" in picks) {
+    throw new Error('A/B test "time_travel_prompt" is retired; use "timing_treatment" instead.');
+  }
+  if ("simple_bot_anti_pedantic" in picks) {
+    throw new Error('A/B test "simple_bot_anti_pedantic" is retired; its winning prompt is always enabled.');
+  }
+  for (const [name, variant] of Object.entries(picks)) {
+    const test = [...AB_TESTS, PANGRAM_NOTE_TEST].find((test) => test.name === name);
+    if (!test) throw new Error(`Unknown A/B test "${name}"`);
+    findVariantByName(test, variant);
+  }
   return forcedPicksStorage.run(picks, fn);
 }
 

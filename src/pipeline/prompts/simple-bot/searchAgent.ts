@@ -9,10 +9,7 @@
 
 import { jsonSchemaResponseFormat } from "../responseFormat";
 
-// The anti-pedantic phrasing points the model at the post's main claim or
-// argument and never at a minor side error. It won
-// SIMPLE_BOT_ANTI_PEDANTIC_TEST and became the base prompt when that test closed
-// on 2026-08-06.
+// The anti-pedantic wording won its A/B test and became the base prompt on 2026-08-06.
 export const SEARCH_SYSTEM_PROMPT = `You are a research agent for Community Notes fact-checking on X/Twitter.
 
 Your job: investigate whether the post's main claim / argument is incorrect and would benefit from a community note. Use the web_search tool to find evidence.
@@ -34,15 +31,8 @@ Return JSON with two fields:
 - Include what each source says that's relevant.
 - If no correction is needed, the findings can be brief — just explain why.`;
 
-/** Appended to the search prompt when `config.time_travel_prompt` is on, which
- *  is the TIME_TRAVEL_PROMPT_TEST arm. It makes the model score the correction
- *  against the moment the post was published rather than against now. A post
- *  that was right when it was written has not made a correctable error. The
- *  timestamps are already in the user message, added in issue #186, and this
- *  instruction only tells the model to use them. A backtest on 2026-07-28 over
- *  398 rated notes found that it flags 9 notes that raters had rated not
- *  helpful, against about 3 that raters had rated helpful. See
- *  docs/improvement-menu-2026-07-25.md, entry T2. */
+/** The instruction arm of timing_treatment: judge the correction at the time
+ *  the post was published, using the timestamps already in the user message. */
 export const SEARCH_TIME_TRAVEL_INSTRUCTION = `
 
 ## Timing — the time-travel test

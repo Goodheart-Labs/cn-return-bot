@@ -20,12 +20,7 @@ import { getTweetLog } from "../utils/tweetLog";
 import { STEP } from "../utils/noteWriterSteps";
 import { verifySources } from "../verify/sourceVerifier";
 import { withWriterCache, type WriterStageResult } from "../replay/writerCache";
-import {
-  HIGH_VALUE_CATEGORIES,
-  formatCorrectionsForWriter,
-} from "../prompts/simple-bot/correctionExtractor";
 import { runSearch } from "./search";
-import { runCorrectionExtractor } from "./correctionExtractor";
 import { runTimingStage } from "./timingStage";
 import { runWriter } from "./writer";
 import { topicSourcelessRejection } from "../utils/noteLint";
@@ -54,42 +49,19 @@ async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterS
     return { kind: "early_exit", outcome: { type: "no_correction", reason: search.findings } };
   }
 
-  // The timing stage runs only on the timing_context ON arm. That arm is
-  // independent of the time_travel_prompt instruction test, so the two form a
-  // 2x2. A post about an event that has already settled passes through
-  // untouched. A post published within six hours of its event, or in the middle
-  // of the event, gets a block of timing context added to the writer's user
-  // message. The block is information and not a gate. The writer still decides.
+  // The context arm of timing_treatment adds information for fog-window posts,
+  // not a gate. The instruction arm skips this stage and uses prompt rules.
   let timingContext: string | undefined;
   if (getBotConfig().timing_context) {
     const timing = await runTimingStage({ userMessage, findings: search.findings, postCreatedAt: post.created_at });
     if (timing.action === "inform") timingContext = timing.contextBlock;
   }
 
-  let writerFindings = search.findings;
-  if (getBotConfig().correction_extraction) {
-    const corrections = await runCorrectionExtractor(search.findings);
-    const highValue = corrections.filter((c) => HIGH_VALUE_CATEGORIES.includes(c.category));
-    if (highValue.length === 0) {
-      return {
-        kind: "early_exit",
-        outcome: {
-          type: "no_correction",
-          reason: `correction extractor found no clear_error / critical_context items (${corrections.length} lower-value dropped)`,
-        },
-      };
-    }
-    writerFindings = formatCorrectionsForWriter(highValue);
-  }
-
-  const note = await runWriter(userMessage, writerFindings, { timingContext });
+  const note = await runWriter(userMessage, search.findings, { timingContext });
   return {
     kind: "writer_done",
     userMessage,
-    // This holds the filtered corrections, or the raw findings when correction
-    // extraction is off. The writer and the source verifier both read it as
-    // stage.findings, and it is also what gets logged.
-    findings: writerFindings,
+    findings: search.findings,
     queries: [],
     noteText: note.noteText,
     sources: note.sources,
