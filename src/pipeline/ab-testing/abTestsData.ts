@@ -246,32 +246,6 @@ const MISINFO_CONCEDE_SHAPE_TEST: ABTest = {
   ],
 };
 
-// Adds an LLM step between simple-bot's search and its writer. The step pulls
-// the individual corrections out of the search findings and grades each one as
-// clear_error, minor_error, critical_context, useful_context or not_useful. The
-// writer then sees only the corrections graded clear_error or critical_context,
-// instead of the raw findings. When nothing grades that high, the run exits
-// early with no_correction. The "off" arm is the current behaviour, where the
-// writer sees the full findings. The two "on" arms trialled Gemini 3 Flash
-// against Sonnet 5 as the extractor.
-//
-// Jim closed the test on 2026-09-02 in favour of "off". Counting a note as
-// settled 48 hours after submission, "off" led in both windows: since Aug 1 it
-// was at +10.3% net (n=622, 13.3% of settled notes helpful) against +8.7% for
-// gemini3flash (n=583) and +9.1% for sonnet5 (n=560), z about 0.9 against each
-// extractor arm. The extraction step also costs an extra LLM call per run. The
-// extractor arms stay declared at weight 0 so picks from old runs still
-// resolve. This test has prerequisites, so it declares no defaultVariant.
-const SIMPLE_BOT_CORRECTION_EXTRACTION_TEST: ABTest = {
-  name: "simple_bot_correction_extraction",
-  prerequisites: { botId: "simple-bot" },
-  variants: [
-    { variant: { name: "off",          overrides: { correction_extraction: false } }, weight: 100 },
-    { variant: { name: "gemini3flash", overrides: { correction_extraction: true, correction_extraction_model: "google/gemini-3-flash-preview" } }, weight: 0 },
-    { variant: { name: "sonnet5",      overrides: { correction_extraction: true, correction_extraction_model: "anthropic/claude-sonnet-5" } }, weight: 0 },
-  ],
-};
-
 // A blocked-topic gate that runs before everything else, even before the
 // note-needed prefilter. One deepseek-v4-flash call, with reasoning and no
 // tools, checks the post against BLOCKED_TOPICS. On a hit the run is skipped and
@@ -528,7 +502,6 @@ export const AB_TESTS: ABTest[] = [
   TIMING_TREATMENT_TEST,
   WRITER_LAST_CHECK_TEST,
   SIMPLE_BOT_CLAIM_TEST,
-  SIMPLE_BOT_CORRECTION_EXTRACTION_TEST,
   TOPIC_FILTER_TEST,
   NOTE_PREFILTER_TEST,
   VERIFIER_MEDIA_SOURCES_TEST,

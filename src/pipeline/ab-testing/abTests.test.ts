@@ -66,6 +66,25 @@ describe("timing treatment", () => {
   });
 });
 
+describe("retired correction extractor", () => {
+  test("new runs have no extractor flag or synthetic off label", () => {
+    const { config, picks } = runABTests(AB_TESTS);
+    expect(config).not.toHaveProperty("correction_extraction");
+    expect(config).not.toHaveProperty("correction_extraction_model");
+    expect(resolvePicks(picks).simple_bot_correction_extraction).toBeUndefined();
+  });
+
+  test("old arms remain readable but cannot be forced", () => {
+    for (const variant of ["off", "gemini3flash", "sonnet5"]) {
+      const historical = { simple_bot_correction_extraction: variant };
+      expect(resolvePicks(historical)).toMatchObject(historical);
+      expect(matchesAbFilters(resolvePicks(historical), historical)).toBe(true);
+      expect(() => withForcedPicks(historical, () => runABTests(AB_TESTS)))
+        .toThrow('A/B test "simple_bot_correction_extraction" is retired');
+    }
+  });
+});
+
 describe("writer_last_check test", () => {
   test("forced on sets writer_last_check on the config", () => {
     const { config, picks } = withForcedPicks(

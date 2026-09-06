@@ -52,19 +52,6 @@ export interface BotConfig {
   /** Model for the note-needed-judge step. Defaults to `model` when unset. */
   note_judge_model?: string;
   /**
-   * When this is true, simple-bot runs an LLM step between search and writer.
-   * That step extracts atomic corrections from the search findings and grades
-   * each one as clear_error, minor_error, critical_context, useful_context, or
-   * not_useful. The writer then receives only the high-value ones, which are the
-   * clear_error and critical_context corrections, instead of the raw findings. If
-   * none of them grade high, the run exits early as no_correction. This applies
-   * to simple-bot only. SIMPLE_BOT_CORRECTION_EXTRACTION_TEST sets it and it
-   * defaults to false.
-   */
-  correction_extraction?: boolean;
-  /** Model for the correction-extractor step. Defaults to `model` when unset. */
-  correction_extraction_model?: string;
-  /**
    * When this is true, a cheap deepseek-v4-flash note-needed prefilter runs
    * before the bot. The prefilter is its own small chain: a query writer, then
    * the Serper search, then the analyzer, then a reframed note-needed judge. If it decides
