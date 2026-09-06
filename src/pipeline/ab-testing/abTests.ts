@@ -22,6 +22,7 @@ import { DEFAULT_CONFIG } from "./botConfig";
 import {
   AB_TESTS,
   BOT_TEST,
+  PANGRAM_NOTE_TEST,
   type ABTest,
   type ABVariant,
   type Prerequisites,
@@ -129,6 +130,11 @@ export function withForcedPicks<T>(picks: Record<string, string>, fn: () => T): 
   }
   if ("simple_bot_anti_pedantic" in picks) {
     throw new Error('A/B test "simple_bot_anti_pedantic" is retired; its winning prompt is always enabled.');
+  }
+  for (const [name, variant] of Object.entries(picks)) {
+    const test = [...AB_TESTS, PANGRAM_NOTE_TEST].find((test) => test.name === name);
+    if (!test) throw new Error(`Unknown A/B test "${name}"`);
+    findVariantByName(test, variant);
   }
   return forcedPicksStorage.run(picks, fn);
 }

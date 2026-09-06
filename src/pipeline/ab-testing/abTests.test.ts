@@ -85,6 +85,42 @@ describe("retired correction extractor", () => {
   });
 });
 
+describe("forced picks", () => {
+  test("unknown tests and variants fail before starting work", () => {
+    const invalidPicks: Record<string, string>[] = [
+      { typo: "on" },
+      { timing_treatment: "typo" },
+      { timing_treatment: "" },
+      { pangram_note: "typo" },
+      { misinfo_concede_shape: "typo" },
+    ];
+    for (const picks of invalidPicks) {
+      let started = false;
+      expect(() => withForcedPicks(picks, () => { started = true; })).toThrow();
+      expect(started).toBe(false);
+    }
+  });
+
+  test("Common Notes can still force its fixed and zero-weight arms", () => {
+    const forced = {
+      bot: "simple-bot", note_prefilter: "off", search_claim: "on",
+      simple_bot_search: "sonnet5-native", simple_bot_writer: "sonnet5",
+      simple_bot_verifier: "gemini-flash", verifier_citations: "on", verifier_claim_based: "classic",
+    };
+    const { picks, config } = withForcedPicks(forced, () => runABTests(AB_TESTS));
+    expect(picks).toMatchObject(forced);
+    expect(config).toMatchObject({
+      note_prefilter: false, search_claim: true,
+      verifier_citations: true, verifier_claim_based: false,
+    });
+  });
+
+  test("a valid topic-only override does not fire on ordinary posts", () => {
+    const { picks } = withForcedPicks({ misinfo_concede_shape: "on" }, () => runABTests(AB_TESTS));
+    expect(picks.misinfo_concede_shape).toBeUndefined();
+  });
+});
+
 describe("writer_last_check test", () => {
   test("forced on sets writer_last_check on the config", () => {
     const { config, picks } = withForcedPicks(
