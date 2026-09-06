@@ -38,17 +38,22 @@ function matchesPrerequisites(config: Partial<BotConfig>, prereqs: Prerequisites
 
 function sampleVariantByWeight(
   variants: { variant: ABVariant; weight: number }[],
+  rng: () => number = Math.random,
 ): ABVariant {
-  const total = variants.reduce((s, v) => s + v.weight, 0);
+  if (variants.some((v) => !Number.isFinite(v.weight) || v.weight < 0)) {
+    throw new Error("A/B variant weights must be finite and non-negative");
+  }
+  const live = variants.filter((v) => v.weight > 0);
+  const total = live.reduce((s, v) => s + v.weight, 0);
   if (total <= 0) {
     throw new Error("Cannot sample from variants with total weight 0");
   }
-  let r = Math.random() * total;
-  for (const { variant, weight } of variants) {
+  let r = rng() * total;
+  for (const { variant, weight } of live) {
     r -= weight;
-    if (r <= 0) return variant;
+    if (r < 0) return variant;
   }
-  return variants[variants.length - 1]!.variant;
+  return live[live.length - 1]!.variant;
 }
 
 function findVariantByName(test: ABTest, name: string): ABVariant {
@@ -66,9 +71,14 @@ function findVariantByName(test: ABTest, name: string): ABVariant {
  * no bot config at all. The Pangram pre-pass uses it to choose the note wording
  * for each candidate.
  */
-export function pickVariantName(test: ABTest): string {
-  const forced = getForcedPicks()[test.name];
-  return forced ? findVariantByName(test, forced).name : sampleVariantByWeight(test.variants).name;
+export function pickVariantName(
+  test: ABTest,
+  forced: string | undefined = getForcedPicks()[test.name],
+  rng: () => number = Math.random,
+): string {
+  return forced !== undefined
+    ? findVariantByName(test, forced).name
+    : sampleVariantByWeight(test.variants, rng).name;
 }
 
 /**
