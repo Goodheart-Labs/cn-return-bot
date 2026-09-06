@@ -98,14 +98,7 @@ export const MISINFO_CONCEDE_SHAPE_RULE = `
 ## Opening shape for this topic (concede the true core, then correct)
 The reference document has a "Note shape — concede the true core first" section with a "True core:" line per claim. When the post's central claim contains a component a True core line affirms, OPEN the note with that concession in one short impersonal clause ("The raid did occur —", "The released files are real —"), then make your single correction of the false extension and stop. This concession is part of the one-claim shape, not extra background: concede only what a True core line affirms, never improvise balance, never address the poster ("you're right…"). If no True core line applies, or the concession would crowd out the correction, write the correction straight.`;
 
-/**
- * This block is appended to the writer system prompt when
- * `config.time_travel_prompt` is on. That is the TIME_TRAVEL_PROMPT_TEST arm.
- * It is the companion of SEARCH_TIME_TRAVEL_INSTRUCTION. The writer is the
- * second chance to catch a correction that is only true because events moved
- * on after the post was published. It was backtested on 2026-07-28. See item
- * T2 in docs/improvement-menu-2026-07-25.md.
- */
+/** The instruction arm of timing_treatment, paired with SEARCH_TIME_TRAVEL_INSTRUCTION. */
 export const WRITER_TIME_TRAVEL_RULE = `
 
 ## The time-travel test

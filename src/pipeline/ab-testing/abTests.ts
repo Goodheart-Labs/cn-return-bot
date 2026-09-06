@@ -111,6 +111,9 @@ export function runABTests(tests: ABTest[]): {
 const forcedPicksStorage = new AsyncLocalStorage<Record<string, string>>();
 
 export function withForcedPicks<T>(picks: Record<string, string>, fn: () => T): T {
+  if ("time_travel_prompt" in picks) {
+    throw new Error('A/B test "time_travel_prompt" is retired; use "timing_treatment" instead.');
+  }
   if ("simple_bot_anti_pedantic" in picks) {
     throw new Error('A/B test "simple_bot_anti_pedantic" is retired; its winning prompt is always enabled.');
   }

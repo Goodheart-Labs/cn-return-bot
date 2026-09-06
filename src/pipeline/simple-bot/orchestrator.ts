@@ -54,12 +54,8 @@ async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterS
     return { kind: "early_exit", outcome: { type: "no_correction", reason: search.findings } };
   }
 
-  // The timing stage runs only on the timing_context ON arm. That arm is
-  // independent of the time_travel_prompt instruction test, so the two form a
-  // 2x2. A post about an event that has already settled passes through
-  // untouched. A post published within six hours of its event, or in the middle
-  // of the event, gets a block of timing context added to the writer's user
-  // message. The block is information and not a gate. The writer still decides.
+  // The context arm of timing_treatment adds information for fog-window posts,
+  // not a gate. The instruction arm skips this stage and uses prompt rules.
   let timingContext: string | undefined;
   if (getBotConfig().timing_context) {
     const timing = await runTimingStage({ userMessage, findings: search.findings, postCreatedAt: post.created_at });

@@ -179,7 +179,7 @@ const SIMPLE_BOT_VERIFIER_TEST: ABTest = {
 // Nathan's breaking-news tag rate. The cn_status per arm will stay underpowered
 // for months. Each run writes its timing verdict to the tweet log under
 // logs.timing.*. The background is in docs/improvement-menu-2026-07-25.md, item
-// T2. This test supersedes TIME_TRAVEL_PROMPT_TEST below. It has prerequisites,
+// T2. This test supersedes the retired time_travel_prompt test. It has prerequisites,
 // so it declares no defaultVariant.
 //
 // The off arm was retired on 2026-08-23 (Nathan's call, on the first 7-day-
@@ -207,18 +207,6 @@ const WRITER_LAST_CHECK_TEST: ABTest = {
   variants: [
     { variant: { name: "off", overrides: { writer_last_check: false } }, weight: 50 },
     { variant: { name: "on",  overrides: { writer_last_check: true  } }, weight: 50 },
-  ],
-};
-
-// This test was retired on 2026-08-05 in favour of the "instruction" arm of
-// TIMING_TREATMENT_TEST. It stays declared at weight 0 so that picks from old
-// runs still resolve.
-const TIME_TRAVEL_PROMPT_TEST: ABTest = {
-  name: "time_travel_prompt",
-  prerequisites: { botId: "simple-bot" },
-  variants: [
-    { variant: { name: "off", overrides: { time_travel_prompt: false } }, weight: 0 },
-    { variant: { name: "on",  overrides: { time_travel_prompt: true  } }, weight: 0 },
   ],
 };
 
@@ -537,7 +525,6 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_SEARCH_TEST,
   SIMPLE_BOT_WRITER_TEST,
   SIMPLE_BOT_VERIFIER_TEST,
-  TIME_TRAVEL_PROMPT_TEST,
   TIMING_TREATMENT_TEST,
   WRITER_LAST_CHECK_TEST,
   SIMPLE_BOT_CLAIM_TEST,

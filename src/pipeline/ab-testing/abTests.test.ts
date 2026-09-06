@@ -41,6 +41,31 @@ describe("retired and standalone A/B picks", () => {
   });
 });
 
+describe("timing treatment", () => {
+  for (const [variant, instruction, context] of [
+    ["off", false, false],
+    ["instruction", true, false],
+    ["context", false, true],
+  ] as const) {
+    test(`${variant} remains the sole timing control`, () => {
+      const { config, picks } = withForcedPicks({ timing_treatment: variant }, () => runABTests(AB_TESTS));
+      expect(config.time_travel_prompt).toBe(instruction);
+      expect(config.timing_context).toBe(context);
+      expect(picks.timing_treatment).toBe(variant);
+      expect(picks.time_travel_prompt).toBeUndefined();
+    });
+  }
+
+  test("the obsolete switch fails explicitly, but historical picks survive", () => {
+    for (const variant of ["on", "off"]) {
+      expect(() => withForcedPicks({ time_travel_prompt: variant }, () => runABTests(AB_TESTS)))
+        .toThrow('use "timing_treatment" instead');
+      expect(resolvePicks({ time_travel_prompt: variant }).time_travel_prompt).toBe(variant);
+    }
+    expect(resolvePicks(null).time_travel_prompt).toBeUndefined();
+  });
+});
+
 describe("writer_last_check test", () => {
   test("forced on sets writer_last_check on the config", () => {
     const { config, picks } = withForcedPicks(
