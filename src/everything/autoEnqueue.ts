@@ -55,7 +55,7 @@ import {
   type TopPostRow,
 } from "./db";
 import type { FeedType } from "./feedUrls";
-import { group, table, tally } from "./logFormat";
+import { fixedRow, groupClose, groupOpen, tally } from "./logFormat";
 import { fetchAuthorPosts } from "./sources/lesswrong";
 import { fetchFeedPosts, fetchPostBodyText, htmlToText } from "./sources/substack";
 import { ensureYtDlp, fetchChannelVideos, fetchVideoMeta } from "./sources/youtube";
@@ -346,6 +346,10 @@ function videoUploadDate(entry: UnprocessedEntry): string | undefined {
   return uploadDateCache.get(entry.matchKey);
 }
 
+/** Column widths of the walk table, fixed so rows can print as they arrive. */
+const CREATOR_COLUMNS = [4, 24, 20, 6, 9];
+const CREATOR_ALIGN: ("left" | "right")[] = ["right", "left", "left", "right", "right"];
+
 /** How much of a creator's priority window is left, for the walk table. Rounded
  *  down to whole days, because the exact hour is not worth a column. */
 function priorityLeft(priorityUntil: string | null): string {
@@ -370,9 +374,20 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
   const topRows = dryRun ? await fetchAllTopPosts() : await loadTopPosts(walked.map((w) => w.creator));
 
   const candidates: Candidate[] = [];
-  const creatorRows: string[][] = [];
   const skipped: string[] = [];
   const paidByCreator = new Map<string, number>();
+
+  // The header and the group open before the walk, and each creator's row is
+  // printed the moment their feed has been listed. The walk can take minutes
+  // (each YouTube channel is a yt-dlp call), and a log that said nothing until
+  // the end read as a hang.
+  const byPriority = walked.filter((w) => w.creator.prioritized).length;
+  console.log(
+    `\nCREATORS WALKED · ${walked.length} to walk · ${byPriority} by priority, ${walked.length - byPriority} by visits · visits counted over the last ${VISIT_RANKING_WINDOW_DAYS} days`,
+  );
+  console.log(groupOpen(`each of the ${walked.length}, as listed`));
+  console.log(fixedRow(["rank", "creator", "why", "visits", "unchecked"], CREATOR_COLUMNS, CREATOR_ALIGN));
+  let listed = 0;
 
   for (const [feedIndex, { feed, creator }] of walked.entries()) {
     let listing;
@@ -386,6 +401,7 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
       // visits drops out when those age out of the fourteen-day window, so a
       // dead feed costs one failed request per cycle for at most two weeks.
       skipped.push(`  could not list ${feed.project}: ${err?.message ?? "unknown error"}`);
+      console.log(fixedRow([String(feedIndex + 1), feed.project, "could not list", "", ""], CREATOR_COLUMNS, CREATOR_ALIGN));
       continue;
     }
     const { sourceName, entries, paidPosts } = listing;
@@ -394,13 +410,20 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
     const tops = topPostEntries(topRows.filter((t) => t.feed_url === feed.url), latest);
     const unprocessed = await unprocessedEntries(feed, [...latest, ...tops]);
 
-    creatorRows.push([
-      String(feedIndex + 1),
-      feed.project,
-      creator.prioritized ? `priority, ${priorityLeft(creator.priorityUntil)} left` : "visits",
-      String(creator.visits),
-      String(unprocessed.length),
-    ]);
+    listed++;
+    console.log(
+      fixedRow(
+        [
+          String(feedIndex + 1),
+          feed.project,
+          creator.prioritized ? `priority, ${priorityLeft(creator.priorityUntil)} left` : "visits",
+          String(creator.visits),
+          String(unprocessed.length),
+        ],
+        CREATOR_COLUMNS,
+        CREATOR_ALIGN,
+      ),
+    );
 
     for (const entry of unprocessed) {
       candidates.push({
@@ -421,15 +444,9 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
     }
   }
 
-  const byPriority = walked.filter((w) => w.creator.prioritized).length;
-  console.log(
-    `\nCREATORS WALKED · ${walked.length} right now · ${byPriority} by priority, ${walked.length - byPriority} by visits · visits counted over the last ${VISIT_RANKING_WINDOW_DAYS} days`,
-  );
-  const creatorTable = group(
-    `the full list of ${creatorRows.length}`,
-    table(["rank", "creator", "why", "visits", "unchecked posts"], creatorRows, ["right", "left", "left", "right", "right"]),
-  );
-  if (creatorTable) console.log(creatorTable);
+  const closing = groupClose();
+  if (closing) console.log(closing);
+  console.log(`  listed ${listed} of ${walked.length}${skipped.length ? `, ${skipped.length} could not be listed` : ""}`);
   for (const line of skipped) console.log(line);
   if (paidByCreator.size > 0) {
     console.log(`  paid posts we cannot read, waiting for the subscriber inbox: ${tally(paidByCreator)}`);

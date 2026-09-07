@@ -1,5 +1,5 @@
 # /// script
-# dependencies = ["psycopg2-binary", "python-dotenv"]
+# dependencies = []
 # ///
 """Applies migration 086 to production the safe way, or explains why it will not.
 
@@ -12,25 +12,51 @@ The order matters. The migration drops two tables the current pipeline reads,
 so the dispatch is paused first and only resumed once the new code is on main;
 between apply and resume a run would fail. Every step refuses to go on if the
 one before it is not in the state it expects.
+
+SQL goes through Supabase's management API, authenticated with the CLI's access
+token (`supabase login`), so no database password is needed. That endpoint runs
+a multi-statement script as one implicit transaction: a failing statement rolls
+back everything before it, which was checked before trusting it with this.
 """
-import os, subprocess, sys, time, urllib.parse
+import json, subprocess, sys, time, urllib.request
 from pathlib import Path
-from dotenv import load_dotenv
-import psycopg2
 
 REPO = Path(__file__).resolve().parent.parent
+PROJECT_REF = "ugytvkevhsmcpunfvncw"
 JOB = "dispatch-everything-priority-feeds"
 WORKFLOW = "everything-priority-feeds.yml"
 
 
+class Db:
+    """The one method the steps need: run SQL, get rows back."""
+
+    def __init__(self):
+        self.token = Path.home().joinpath(".supabase/access-token").read_text().strip()
+
+    def query(self, sql: str, params=()):
+        # The endpoint takes no bind parameters, so the few values the steps
+        # interpolate are quoted here. They are all literals from this file.
+        for value in params:
+            sql = sql.replace("%s", "'" + str(value).replace("'", "''") + "'", 1)
+        req = urllib.request.Request(
+            f"https://api.supabase.com/v1/projects/{PROJECT_REF}/database/query",
+            data=json.dumps({"query": sql}).encode(),
+            headers={"Authorization": f"Bearer {self.token}", "Content-Type": "application/json", "User-Agent": "curl/8.5.0"},
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=300) as r:
+                return json.loads(r.read() or b"[]")
+        except urllib.error.HTTPError as e:
+            sys.exit(f"SQL failed (HTTP {e.code}): {e.read().decode()[:800]}")
+
+    def scalar(self, sql: str, params=()):
+        rows = self.query(sql, params)
+        return next(iter(rows[0].values())) if rows else None
+
+
 def connect():
-    load_dotenv(REPO / ".env")
-    raw = os.environ["PROD_DB_URL"].strip().strip('"').strip("'")
-    creds, hostpart = raw.split("://", 1)[1].rsplit("@", 1)
-    user, password = creds.split(":", 1)
-    hostname, port = hostpart.split("/", 1)[0].split(":")
-    return psycopg2.connect(host=hostname, port=int(port), user=user, password=urllib.parse.unquote(password),
-                            dbname="postgres", connect_timeout=15)
+    return Db()
 
 
 def runs_in_progress() -> int:
@@ -39,14 +65,11 @@ def runs_in_progress() -> int:
     return int(out.stdout.strip() or 0)
 
 
-def pause(conn):
-    cur = conn.cursor()
-    cur.execute("select count(*) from cron.job where jobname = %s", (JOB,))
-    if cur.fetchone()[0] == 0:
+def pause(db):
+    if db.scalar("select count(*) from cron.job where jobname = %s", (JOB,)) == 0:
         print("dispatch is already unscheduled")
     else:
-        cur.execute("select cron.unschedule(jobid) from cron.job where jobname = %s", (JOB,))
-        conn.commit()
+        db.query("select cron.unschedule(jobid) from cron.job where jobname = %s", (JOB,))
         print("dispatch unscheduled")
     while (n := runs_in_progress()) > 0:
         print(f"  {n} run(s) still in progress, waiting 30s")
@@ -54,10 +77,8 @@ def pause(conn):
     print("no run in progress")
 
 
-def preflight(conn):
-    cur = conn.cursor()
-    cur.execute("select count(*) from cron.job where jobname = %s", (JOB,))
-    if cur.fetchone()[0]:
+def preflight(db):
+    if db.scalar("select count(*) from cron.job where jobname = %s", (JOB,)):
         sys.exit("STOP: the dispatch is still scheduled; run `pause` first")
     checks = {
         "already applied": "select count(*) from information_schema.columns where table_name='everything_projects' and column_name='feed_url'",
@@ -80,16 +101,12 @@ def preflight(conn):
               and regexp_replace(f.feed_url,'/+$','') !~ '^https://www\\.(lesswrong\\.com|alignmentforum\\.org)/users/[\\w.-]+$'""",
     }
     for label, sql in checks.items():
-        cur.execute(sql)
-        print(f"  {label}: {cur.fetchone()[0]}")
+        print(f"  {label}: {db.scalar(sql)}")
 
 
-def apply(conn):
-    preflight(conn)
-    sql = (REPO / "migrations" / "086_creators.sql").read_text()
-    cur = conn.cursor()
-    cur.execute(sql)
-    conn.commit()
+def apply(db):
+    preflight(db)
+    db.query((REPO / "migrations" / "086_creators.sql").read_text())
     print("migration 086 applied")
     for label, q in {
         "projects with a feed": "select count(*) from everything_projects where feed_url is not null",
@@ -97,23 +114,16 @@ def apply(conn):
         "views under the old names": "select count(*) from information_schema.views where table_name in ('everything_followed_feeds','everything_follow_requests')",
         "the three renamed": "select string_agg(slug, ', ') from everything_projects where slug in ('thezvi','dwarkeshpatel','astralcodexten')",
     }.items():
-        cur.execute(q)
-        print(f"  {label}: {cur.fetchone()[0]}")
+        print(f"  {label}: {db.scalar(q)}")
 
 
-def resume(conn):
-    sql = (REPO / "migrations" / "071_reschedule_everything_dispatch.sql").read_text()
-    cur = conn.cursor()
-    cur.execute(sql)
-    conn.commit()
-    cur.execute("select schedule, active from cron.job where jobname = %s", (JOB,))
-    print("dispatch rescheduled:", cur.fetchone())
+def resume(db):
+    db.query((REPO / "migrations" / "071_reschedule_everything_dispatch.sql").read_text())
+    print("dispatch rescheduled:", db.query("select schedule, active from cron.job where jobname = %s", (JOB,)))
 
 
 if __name__ == "__main__":
     step = sys.argv[1] if len(sys.argv) > 1 else ""
     if step not in ("pause", "preflight", "apply", "resume"):
         sys.exit(__doc__)
-    conn = connect()
-    {"pause": pause, "preflight": preflight, "apply": apply, "resume": resume}[step](conn)
-    conn.close()
+    {"pause": pause, "preflight": preflight, "apply": apply, "resume": resume}[step](connect())

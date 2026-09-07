@@ -67,6 +67,4 @@ uv run scripts/apply_086.py resume     # reschedule the dispatch
 gh workflow run everything-priority-feeds.yml && gh run watch   # read the first run's log end to end
 ```
 
-It needs `PROD_DB_URL` in `.env` to authenticate. The password may contain
-characters a URL would need escaped; the script splits the URL by hand for
-that reason, so paste the password in as it is.
+It authenticates with the Supabase CLI's access token (`supabase login`), so the database password is not needed.
