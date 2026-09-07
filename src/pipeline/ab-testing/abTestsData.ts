@@ -134,14 +134,21 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     // per minute rather than 3000, which is fine at this weight but would not
     // carry a main arm.
     //
-    // HELD AT WEIGHT 0, because that trade has to be accepted at the account
-    // level before the model will answer at all. OpenRouter filters the endpoint
-    // out with "paid-model-training-violation-by-account" until someone allows
-    // training-on-prompts providers at
-    // https://openrouter.ai/settings/privacy, and separately requires an 18+
-    // confirmation at https://openrouter.ai/settings/preferences. Until both are
-    // done every call fails, so the arm could not be verified live. Set the
-    // weight to 4 once verifyModels.ts passes on this model.
+    // HELD AT WEIGHT 0, because the account has to clear two OpenRouter gates
+    // before the model will answer at all, and neither is done yet. They fail in
+    // this order, so the second only becomes visible once the first is cleared:
+    //
+    //   1. An 18+ confirmation, at https://openrouter.ai/settings/preferences.
+    //      This is what our account currently fails on, for both Muse tiers.
+    //   2. Permission to use providers that train on prompts, at
+    //      https://openrouter.ai/settings/privacy. A different account failed
+    //      here with "paid-model-training-violation-by-account", so we expect to
+    //      meet this gate next. That permission is account-wide and cannot be
+    //      confined to a workspace.
+    //
+    // Set the weight to 4 once verifyModels.ts passes on this model. Every other
+    // arm in this file has been verified against a live call; this is the only
+    // one that has not, which is the whole reason it sits at 0.
     { variant: { name: "musespark13c-serper",     overrides: { search_model: "meta/muse-spark-1.3-contributor",   web_search: "serper" }},       weight: 0 },
     { variant: { name: "deepseek-v32exp-searxng", overrides: { search_model: "deepseek/deepseek-v3.2-exp",        web_search: "serper" }},       weight: 0 },
     { variant: { name: "qwen3max-searxng",        overrides: { search_model: "qwen/qwen3-max",                    web_search: "serper" }},       weight: 0 },

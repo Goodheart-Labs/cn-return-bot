@@ -132,7 +132,9 @@ The script sends its OpenRouter calls with `OPENROUTER_TESTING_KEY` when that is
 set, so verification never eats into the production key's budget. The whole run
 costs about a cent.
 
-Results as of 2026-09-04, 14 of 17 checks passing:
+Results as of 2026-09-07, 14 of 17 checks passing. The run was repeated on the
+production account's own key, so these are the settings that actually govern the
+pipeline, not a side account's:
 
 | Model | Check | Result |
 |---|---|---|
@@ -152,27 +154,46 @@ against a real request in its real call shape.
 
 ### Why Muse is still blocked
 
-Muse is the one model that could not be called. The account has to accept the
-data-training trade before OpenRouter will route to the endpoint at all:
+Muse is the one model that could not be called. OpenRouter puts two account-level
+gates in front of it, and they fail in a fixed order, so the second only becomes
+visible once the first is cleared.
+
+**Gate 1, the 18+ confirmation.** This is what the production account fails on
+today, for both Muse tiers:
+
+```
+403 This model requires you to complete the following before use:
+    18+ age confirmation
+missing_attestation_types: ["age_18plus"]
+failed_routing_step: "Gate Endpoints with Attestations"
+```
+
+Cleared at https://openrouter.ai/settings/preferences.
+
+**Gate 2, permission to use providers that train on prompts.** A separate account
+that had already cleared gate 1 failed here instead:
 
 ```
 404 0 endpoints out of 1 requested are available matching your guardrail
-restrictions and data policy.
+    restrictions and data policy.
 Paid model training violation (account settings): 1 endpoint excluded
 reason: paid-model-training-violation-by-account
-configure at https://openrouter.ai/settings/privacy
+failed_routing_step: "Filter by Guardrails"
 ```
 
-That setting is the consent mechanism for exactly the trade described above, so
-it is a deliberate decision rather than a formality. A second setting is also
-needed: on the production key the same calls returned
-`403 ... requires 18+ age confirmation`, set at
-https://openrouter.ai/settings/preferences. The testing key got past that one but
-not the privacy one, so if the two keys belong to different accounts, the account
-production uses needs both.
+Cleared at https://openrouter.ai/settings/privacy. This one is the consent
+mechanism for exactly the data-training trade described above, so it is a real
+decision rather than a formality. Note that it is account-wide: OpenRouter scopes
+data policy to the account, and a workspace can only be more restrictive, never
+less, so the permission cannot be confined to the Muse arm. If that becomes a
+concern, the per-request routing field `provider: { data_collection: "deny" }`
+could be set as the default in `llm.ts` and omitted only for Muse, which would
+keep every other call away from training providers. That is untested.
 
-Both Muse arms therefore ship at weight 0. Re-run the script after changing those
-settings; when Muse passes, set the search arm to 4 and the writer arm to 10.
+Because the production account has not cleared gate 1, we still do not know
+whether it satisfies gate 2. Both Muse arms therefore ship at weight 0. Re-run
+the script after the settings change; when Muse passes, set the search arm to 4
+and the writer arm to 10.
 
 ```bash
 bun run src/scripts_jim/2026_09_01_model_evaluation/verifyModels.ts
