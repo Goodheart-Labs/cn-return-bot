@@ -7,7 +7,7 @@
  * daily cap moves.
  *
  * The formula is the community-documented reconstruction of X's limit, ported
- * from the disabled updateWritingLimit.ts. That module was retired because
+ * from the retired updateWritingLimit.ts. That module was removed because
  * feeding its prediction back into pipeline state misbehaved. This one only
  * ever reads pipeline state and appends to its own table, so it cannot affect
  * posting behaviour.

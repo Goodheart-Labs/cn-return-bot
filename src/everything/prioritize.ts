@@ -1,27 +1,34 @@
 /**
- * Flags creators as priority for the next 7 days (GOO-60). A flagged creator
- * ranks strictly above every unflagged creator in the auto-enqueue walk, right
- * below individually requested pages. Running the script again extends the
- * window from now.
+ * Gives creators priority for the next 7 days (GOO-60, reworked by GOO-107).
+ * A creator holding priority is walked ahead of every creator we walk only
+ * because readers visited them, and behind individually requested pages.
+ * Running the script again extends the window from now.
+ *
+ * This is the same grant the button in the extension makes. The button writes
+ * its own row through the database trigger in migration 086; this script does
+ * it with the service key, so it can also prioritise a creator whose URL shape
+ * the extension would not recognise.
  *
  * Takes one or more creator links: a *.substack.com publication root, a
  * custom-domain Substack publication page (the page names its *.substack.com
- * form inside its preloads blob), or a YouTube channel URL. Each feed is
- * listed once before it is stored, the same validation a reader's follow
- * request gets, and a creator we do not follow yet gets a feed row at the
- * followed tier.
+ * form inside its preloads blob), a YouTube channel URL, or a LessWrong or
+ * Alignment Forum author page.
+ *
+ * The feed is not listed to check it exists. That check used to run here and in
+ * the follow-request consumer, and it was throwing away about one request in
+ * six whenever our Substack relay answered 503. A creator whose feed cannot be
+ * read is skipped by the walk with a line in the log, and drops out by
+ * themselves when the window lapses.
  *
  * Usage:
  *   bun run everything-prioritize <creator-url...>
  */
 
 import "dotenv/config";
-import { fillProjectDisplayNameBySlug, upsertFeedPriority } from "./db";
+import { upsertCreatorPriority } from "./db";
 import { canonicalFeed, canonicalSubstackFeed, type CanonicalFeed } from "./feedUrls";
-import { fetchFeedPosts } from "./sources/substack";
-import { ensureYtDlp, fetchChannelVideos } from "./sources/youtube";
 
-const PRIORITY_FLAG_DAYS = 7;
+const PRIORITY_DAYS = 7;
 
 /** Resolves a creator link to its canonical feed. A URL of no known shape is
  *  fetched once: a custom-domain Substack page names its subdomain inside the
@@ -33,19 +40,14 @@ async function resolveCreator(url: string): Promise<CanonicalFeed> {
   if (!res.ok) throw new Error(`not a known creator URL shape, and fetching it failed (${res.status})`);
   const m = (await res.text()).match(/subdomain\\?":\\?"([\w-]+)\\?"/);
   const feed = m && canonicalSubstackFeed(`https://${m[1]!.toLowerCase()}.substack.com`);
-  if (!feed) throw new Error("not a Substack publication or YouTube channel URL");
+  if (!feed) throw new Error("not a Substack publication, YouTube channel, or forum author URL");
   return feed;
 }
 
 async function prioritizeCreator(url: string, until: Date): Promise<void> {
   const feed = await resolveCreator(url);
-  const sourceName =
-    feed.feed_type === "substack"
-      ? (await fetchFeedPosts(feed.feed_url)).title
-      : fetchChannelVideos(feed.feed_url, 1).channelName;
-  await fillProjectDisplayNameBySlug(feed.project_slug, sourceName);
-  await upsertFeedPriority(feed, until);
-  console.log(`priority until ${until.toISOString().slice(0, 10)}: [${feed.feed_type}] ${feed.feed_url} (${sourceName ?? feed.project_slug})`);
+  await upsertCreatorPriority(feed, until);
+  console.log(`priority until ${until.toISOString().slice(0, 10)}: [${feed.feed_type}] ${feed.feed_url}`);
 }
 
 async function main() {
@@ -54,9 +56,8 @@ async function main() {
     console.error("Usage: bun run everything-prioritize <creator-url...>");
     process.exit(1);
   }
-  if (urls.some((u) => canonicalFeed(u)?.feed_type === "youtube")) ensureYtDlp();
 
-  const until = new Date(Date.now() + PRIORITY_FLAG_DAYS * 24 * 3600_000);
+  const until = new Date(Date.now() + PRIORITY_DAYS * 24 * 3600_000);
   let failed = false;
   for (const url of urls) {
     try {

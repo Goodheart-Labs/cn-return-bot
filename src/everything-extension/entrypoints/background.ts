@@ -1,6 +1,6 @@
 import { defineBackground } from "#imports";
 import { browser } from "#imports";
-import { fetchCoveredPageUrls, fetchFollowedFeedUrls, fetchItemForUrl, fetchNotedPageCounts, fetchReaderCanonical, isWholePageChecked } from "../../everything-shared/notesQuery";
+import { fetchCoveredPageUrls, fetchPrioritizedCreatorUrls, fetchItemForUrl, fetchNotedPageCounts, fetchReaderCanonical, isWholePageChecked } from "../../everything-shared/notesQuery";
 import { submitNoteRequest } from "../../everything-shared/noteRequests";
 import { canonicalizePageUrl, isSubstackReaderUrl } from "../../everything-shared/pageUrls";
 import { track } from "../../everything-shared/analytics";
@@ -8,7 +8,7 @@ import { initBackgroundAnalytics } from "../utils/analytics";
 import { signInWithXViaWebAuthFlow } from "../utils/oauth";
 import { authorFeedStatusForTab } from "../utils/authorFeed";
 import { CHECKED_PAGE_URLS_KEY, COVERED_PAGE_URLS_KEY, NOTED_PAGE_STATUS_COUNTS_KEY } from "../utils/coveredPages";
-import { FOLLOWED_FEED_URLS_KEY } from "../utils/followedFeeds";
+import { PRIORITIZED_CREATOR_URLS_KEY } from "../utils/prioritizedCreators";
 import { GENERIC_SCRIPT_PREFIX, hostnamePattern, registerGenericScripts, genericScriptId } from "../utils/genericScript";
 import { capturePageFromTab } from "../utils/pageCapture";
 import { addRequestedPage, getSettingsOnboardingDone, getWelcomeSeen, markWelcomeSeen } from "../utils/settings";
@@ -68,16 +68,16 @@ async function injectIntoOpenTabs(hostnames: string[]) {
  *  The content scripts use both for their on-device checks. */
 async function syncNotedSites() {
   try {
-    const [covered, counts, followedFeeds] = await Promise.all([
+    const [covered, counts, prioritized] = await Promise.all([
       fetchCoveredPageUrls(),
       fetchNotedPageCounts(),
-      fetchFollowedFeedUrls(),
+      fetchPrioritizedCreatorUrls(),
     ]);
     // The listing badges and count cards draw their per-page note counts from
     // this cache.
     if (counts) await browser.storage.local.set({ [NOTED_PAGE_STATUS_COUNTS_KEY]: counts });
     // The follow-button surfaces hide the button for feeds on this list.
-    if (followedFeeds) await browser.storage.local.set({ [FOLLOWED_FEED_URLS_KEY]: followedFeeds });
+    if (prioritized) await browser.storage.local.set({ [PRIORITIZED_CREATOR_URLS_KEY]: prioritized });
     if (covered) {
       const urls = covered.all;
       await browser.storage.local.set({
@@ -208,9 +208,9 @@ async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: 
     console.warn("[common-notes] item lookup failed, submitting the request anyway:", err);
   }
   const authorFeed = await authorFeedStatusForTab(tab);
-  if (authorFeed.kind === "followed") {
+  if (authorFeed.kind === "prioritized") {
     const what = authorFeed.feed.kind === "youtuber" ? "video from this youtuber" : "post from this author";
-    await showRequestInfo(tab, `We already check every new ${what}.`);
+    await showRequestInfo(tab, `We are already checking every new ${what} this week.`);
     return;
   }
   try {

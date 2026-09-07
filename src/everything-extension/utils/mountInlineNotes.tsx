@@ -9,7 +9,7 @@ import { indexContainer, findQuoteRange } from "./anchor";
 import { fetchClaimGroups, type ClaimGroup } from "./claimGroups";
 import { mountCoverageBadges } from "./coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "./coveredPages";
-import { isSubstackPostPage } from "./followTarget";
+import { isSubstackPostPage } from "./pageShape";
 import { jumpToNextNote } from "./jumpBus";
 import { recordPageVisit } from "./linkVisits";
 import { mountStatusOverlay } from "./mountStatusOverlay";

@@ -12,9 +12,10 @@ const FADE_MS = 700;
 type ActionPhase = "idle" | "busy" | "done" | "error";
 
 /** One action button: the label, the confirmation text once it ran, and what
- *  it does. `alreadyDone` starts true when the user already asked earlier, so
- *  reopening the page shows the confirmation instead of the button. The popup
- *  renders its follow button through this. */
+ *  it does. `alreadyDone` starts true when the action has already been taken,
+ *  so the card shows the confirmation instead of the button. Only the popup
+ *  renders one of these; the in-page card has been headline-only since the
+ *  request and follow cards were removed (GOO-71). */
 export interface StatusAction {
   label: string;
   doneLabel: string;

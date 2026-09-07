@@ -46,4 +46,27 @@ describe("collectFastPosts", () => {
     // x1 and l1 have all four flags and the highest velocity; the slow small posts lose.
     expect(selected.map((s) => s.post.id)).toEqual(["x1", "l1"]);
   });
+
+  test("a post already past the stale cutoff is not selected, however fast it is", async () => {
+    // The stale post is 30 hours old with a huge velocity. Selecting it would
+    // waste a run, because the submit phase discards notes on tweets past 24h.
+    const staleFeeds: Record<FeedSize, Post[]> = {
+      small: [post("fresh", 6_000), post("stale", 500_000, { ageH: 30 })],
+      large: [],
+      xl: [],
+      xxl: [],
+    };
+    const { selected, fresh } = await collectFastPosts(2, new Set(), async (size) => staleFeeds[size] ?? [], NOW);
+    expect(selected.map((s) => s.post.id)).toEqual(["fresh"]);
+    // The stale post stays discoverable for topic curation, which works on the
+    // longer 48h misinfo window.
+    expect(fresh.map((s) => s.post.id)).toContain("stale");
+  });
+
+  test("a post whose age cannot be worked out is kept", async () => {
+    const undatable = { ...post("nodate", 8_000), id: "not-a-snowflake", created_at: undefined } as unknown as Post;
+    const noAgeFeeds: Record<FeedSize, Post[]> = { small: [undatable], large: [], xl: [], xxl: [] };
+    const { selected } = await collectFastPosts(1, new Set(), async (size) => noAgeFeeds[size] ?? [], NOW);
+    expect(selected.map((s) => s.post.id)).toEqual(["not-a-snowflake"]);
+  });
 });
