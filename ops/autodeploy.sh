@@ -57,7 +57,10 @@ main() {
   done
   cp "$REPO_DIR/ops/cn-autodeploy.timer" /etc/systemd/system/cn-autodeploy.timer
   systemctl daemon-reload
-  systemctl restart "${UNITS[@]}"
+  # try-restart, not restart: it restarts only units that are already running.
+  # A unit someone stopped on purpose (intake stays off until the cutover PR
+  # merges) must not be switched back on by a deploy.
+  systemctl try-restart "${UNITS[@]}"
   echo "deployed ${upstream:0:10}"
 }
 
