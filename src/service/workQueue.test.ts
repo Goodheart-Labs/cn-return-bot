@@ -107,6 +107,27 @@ describe("WorkQueue", () => {
   test("an empty queue reports no wait at all", () => {
     const queue = new WorkQueue({ concurrency: 1, reservedForReader: 0 });
     expect(queue.health("extraction").oldestWaitSeconds).toBeNull();
+    expect(queue.health("extraction").oldestInFlightSeconds).toBeNull();
+  });
+
+  test("reports the age of the oldest call in flight, so a wedge with an empty queue is visible", () => {
+    const queue = new WorkQueue({ concurrency: 2, reservedForReader: 0 });
+    const stuck = [heldTask(), heldTask()];
+    stuck.forEach((task) => queue.run("feed", task.run));
+
+    // Both slots are occupied and nothing is waiting, which is exactly the
+    // state the waiting number cannot tell apart from a healthy idle service.
+    const health = queue.health("claim-check");
+    expect(health.waiting).toBe(0);
+    expect(health.oldestWaitSeconds).toBeNull();
+    expect(health.oldestInFlightSeconds).toBeGreaterThanOrEqual(0);
+
+    stuck.forEach((task) => task.release());
+  });
+
+  test("refuses a configuration that reserves every slot", () => {
+    expect(() => new WorkQueue({ concurrency: 2, reservedForReader: 2 })).toThrow("reservedForReader");
+    expect(() => new WorkQueue({ concurrency: 0, reservedForReader: 0 })).toThrow("concurrency");
   });
 
   test("a failing task frees its slot", async () => {

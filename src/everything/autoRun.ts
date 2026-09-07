@@ -28,35 +28,39 @@ import { drainQueue } from "./worker";
 
 const RUN_TIME_BUDGET_MS = 5 * 60_000;
 
-/** Asks both services how they are before any work starts.
+/** Asks both services how they are, and throws when one is unwell.
  *
- * This run is also the only thing watching them. A service that cannot be
- * reached fails the run, which is how a machine that is down becomes visible
- * instead of silently doing nothing. A service whose queue is far behind is
- * left alone rather than given more work, because a backlog that long means it
- * is stuck rather than busy, and this run would only wait on it for nothing. */
-async function servicesAreReady(): Promise<boolean> {
-  const [claimCheck, extraction] = await Promise.all([fetchClaimCheckHealth(), fetchExtractionHealth()]);
-  for (const health of [claimCheck, extraction]) {
+ * This run is also the only thing watching them, so a sick service must fail
+ * the run. A red run in the Actions list is how a machine that is down or
+ * wedged becomes visible, exactly the way a broken pipeline is visible today.
+ * A queue that is far behind counts as sick too: a backlog that long means the
+ * service is stuck rather than busy, and piling more work onto it would only
+ * hide that. */
+async function assertServicesReady(): Promise<void> {
+  const healths = await Promise.all([fetchClaimCheckHealth(), fetchExtractionHealth()]);
+  for (const health of healths) {
+    const oldest = (label: string, seconds: number | null) => (seconds === null ? "" : `, oldest ${label} ${seconds}s`);
     console.log(
       `[${health.service}] ${health.inFlight} in flight, ${health.waiting} waiting` +
-        (health.oldestWaitSeconds === null ? "" : `, oldest waiting ${health.oldestWaitSeconds}s`),
+        oldest("waiting", health.oldestWaitSeconds) +
+        oldest("in flight", health.oldestInFlightSeconds),
     );
     if (queueIsStuck(health)) {
-      console.log(`[${health.service}] queue is stuck — not adding to it this run`);
-      return false;
+      throw new Error(`The ${health.service} service is stuck. Failing the run so this is seen.`);
     }
   }
-  return true;
 }
 
 async function main() {
   ensureYtDlp();
-  if (!(await servicesAreReady())) return;
   const start = Date.now();
   for (let cycle = 1; ; cycle++) {
     console.log(`\n––– cycle ${cycle} (${Math.round((Date.now() - start) / 1000)}s elapsed)`);
+    // Requests are consumed before the services are even asked about, because
+    // consumption costs nothing and turns request rows into queue items. A run
+    // that then fails on a sick service has still done that much.
     await consumeRequests();
+    await assertServicesReady();
     // On a day whose cap is spent we still consume the request inboxes above,
     // but we do not walk the feeds. Every later dispatch of the day would
     // otherwise enqueue one more backlog item nobody can process yet.

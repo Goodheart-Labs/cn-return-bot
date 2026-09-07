@@ -24,13 +24,19 @@ import {
  *  ceiling for a service that has stopped rather than a normal wait. */
 const DEFAULT_CALL_TIMEOUT_MS = 30 * 60_000;
 
-/** A scheduled caller stops rather than adding to a queue this far behind. An
- *  hour is well past any healthy backlog, so a wait this long means the service
- *  is stuck rather than merely busy. */
+/** A scheduled caller fails rather than adding to a queue this far behind. An
+ *  hour is well past anything healthy on either measure: a claim check takes
+ *  about a minute and a half, so neither a waiting call nor an in-flight one
+ *  ever legitimately reaches this age. The in-flight age matters because the
+ *  most likely wedge is every slot stuck on a network request that never
+ *  returns, and in that state nothing is waiting at all. */
 export const QUEUE_STUCK_AFTER_SECONDS = 60 * 60;
 
 export function queueIsStuck(health: HealthResponse): boolean {
-  return (health.oldestWaitSeconds ?? 0) >= QUEUE_STUCK_AFTER_SECONDS;
+  return (
+    (health.oldestWaitSeconds ?? 0) >= QUEUE_STUCK_AFTER_SECONDS ||
+    (health.oldestInFlightSeconds ?? 0) >= QUEUE_STUCK_AFTER_SECONDS
+  );
 }
 
 export async function requestClaimCheck(body: CheckClaimRequest): Promise<CheckClaimResponse> {

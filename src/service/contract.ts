@@ -112,6 +112,11 @@ export interface HealthResponse {
   /** How long the oldest waiting call has waited, in seconds. Null when nothing
    *  is waiting. */
   oldestWaitSeconds: number | null;
+  /** How long the oldest call being worked has been in flight, in seconds. Null
+   *  when nothing is in flight. This is what exposes the wedge the waiting
+   *  number cannot see: every slot stuck on a network request that never
+   *  returns, with an empty queue behind it. */
+  oldestInFlightSeconds: number | null;
   /** How many calls this service works at once. */
   concurrency: number;
 }

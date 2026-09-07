@@ -3,6 +3,7 @@
  * long-response handling that keeps a slow answer from being cut off.
  */
 
+import { createHash, timingSafeEqual } from "node:crypto";
 import {
   HEALTH_PATH,
   SERVICE_AUTH_HEADER,
@@ -37,11 +38,15 @@ export interface ServiceOptions<Body, Answer> extends WorkQueueOptions {
   name: ServiceName;
   port: number;
   route: ServiceRoute<Body, Answer>;
+  /** Only tests set this. They shrink the interval so a test that crosses the
+   *  keepalive finishes in milliseconds instead of waiting 15 seconds. */
+  keepaliveIntervalMs?: number;
 }
 
 export function startService<Body, Answer>(options: ServiceOptions<Body, Answer>) {
   const queue = new WorkQueue(options);
   const secret = requiredEnv("SERVICE_AUTH_SECRET");
+  const keepaliveMs = options.keepaliveIntervalMs ?? KEEPALIVE_INTERVAL_MS;
 
   const server = Bun.serve({
     port: options.port,
@@ -49,7 +54,7 @@ export function startService<Body, Answer>(options: ServiceOptions<Body, Answer>
     fetch: async (request) => {
       const url = new URL(request.url);
 
-      if (request.headers.get(SERVICE_AUTH_HEADER) !== secret) {
+      if (!secretMatches(request.headers.get(SERVICE_AUTH_HEADER), secret)) {
         return errorResponse("Wrong or missing service key", 401);
       }
       if (url.pathname === HEALTH_PATH) {
@@ -69,7 +74,10 @@ export function startService<Body, Answer>(options: ServiceOptions<Body, Answer>
         return errorResponse("Body is not valid JSON", 400);
       }
 
-      return streamWhileWorking(() => queue.run(options.route.priorityOf(body), () => options.route.handle(body)));
+      return streamWhileWorking(
+        () => queue.run(options.route.priorityOf(body), () => options.route.handle(body)),
+        keepaliveMs,
+      );
     },
   });
 
@@ -80,31 +88,43 @@ export function startService<Body, Answer>(options: ServiceOptions<Body, Answer>
   return server;
 }
 
+/** The secret is compared in constant time, because the port is reachable from
+ *  anywhere the callers are, and GitHub runners have no fixed addresses, so
+ *  this header is the only thing standing between the internet and a paid model
+ *  call. Comparing hashes sidesteps the length leak a direct comparison has. */
+function secretMatches(given: string | null, secret: string): boolean {
+  if (given === null) return false;
+  const hash = (value: string) => createHash("sha256").update(value).digest();
+  return timingSafeEqual(hash(given), hash(secret));
+}
+
 /** Answers with a stream that stays alive while the work runs and ends with the
  *  JSON answer. A failure becomes an error answer on the same stream, because
  *  by then the status line has already gone out and cannot be changed. The
  *  caller tells the two apart by looking for the `error` field. */
-function streamWhileWorking<Answer>(work: () => Promise<Answer>): Response {
+function streamWhileWorking<Answer>(work: () => Promise<Answer>, keepaliveMs: number): Response {
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
       const encoder = new TextEncoder();
-      const keepalive = setInterval(() => {
+      // Every enqueue can throw once the caller has hung up. The work itself
+      // carries on either way and its result is simply dropped, which is what a
+      // retry from the caller expects, so a dead connection is never an error.
+      const send = (text: string) => {
         try {
-          controller.enqueue(encoder.encode("\n"));
-        } catch {
-          // The caller hung up. The work itself carries on and its result is
-          // simply dropped, which is what a retry from the caller expects.
-        }
-      }, KEEPALIVE_INTERVAL_MS);
+          controller.enqueue(encoder.encode(text));
+        } catch {}
+      };
+      const keepalive = setInterval(() => send("\n"), keepaliveMs);
       try {
         const answer = await work();
-        controller.enqueue(encoder.encode(JSON.stringify(answer)));
+        send(JSON.stringify(answer));
       } catch (err: any) {
-        const failure: ServiceErrorResponse = { error: err?.message ?? String(err) };
-        controller.enqueue(encoder.encode(JSON.stringify(failure)));
+        send(JSON.stringify({ error: err?.message ?? String(err) } satisfies ServiceErrorResponse));
       } finally {
         clearInterval(keepalive);
-        controller.close();
+        try {
+          controller.close();
+        } catch {}
       }
     },
   });

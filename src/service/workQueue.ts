@@ -16,6 +16,11 @@ interface WaitingCall {
   start: () => void;
 }
 
+interface InFlightCall {
+  priority: WorkPriority;
+  startedAt: number;
+}
+
 export interface WorkQueueOptions {
   /** How many calls the service works at once. */
   concurrency: number;
@@ -27,10 +32,21 @@ export interface WorkQueueOptions {
 
 export class WorkQueue {
   private readonly waiting: WaitingCall[] = [];
-  private inFlight = 0;
-  private inFlightBesidesReader = 0;
+  private readonly inFlight = new Set<InFlightCall>();
 
-  constructor(private readonly options: WorkQueueOptions) {}
+  constructor(private readonly options: WorkQueueOptions) {
+    if (options.concurrency < 1) {
+      throw new Error(`concurrency must be at least 1, got ${options.concurrency}`);
+    }
+    // Reserving every slot would mean nothing but reader work can ever start,
+    // silently and forever. Failing here turns that misconfiguration into a
+    // startup crash instead.
+    if (options.reservedForReader < 0 || options.reservedForReader >= options.concurrency) {
+      throw new Error(
+        `reservedForReader must be between 0 and ${options.concurrency - 1}, got ${options.reservedForReader}`,
+      );
+    }
+  }
 
   /** Waits for a free slot, then runs the task. The returned promise settles
    *  with whatever the task settles with. */
@@ -40,13 +56,12 @@ export class WorkQueue {
         priority,
         enqueuedAt: Date.now(),
         start: () => {
-          this.inFlight++;
-          if (priority !== "reader") this.inFlightBesidesReader++;
+          const call: InFlightCall = { priority, startedAt: Date.now() };
+          this.inFlight.add(call);
           task()
             .then(resolve, reject)
             .finally(() => {
-              this.inFlight--;
-              if (priority !== "reader") this.inFlightBesidesReader--;
+              this.inFlight.delete(call);
               this.pump();
             });
         },
@@ -56,15 +71,12 @@ export class WorkQueue {
   }
 
   health(service: HealthResponse["service"]): HealthResponse {
-    const oldest = this.waiting.reduce<number | null>(
-      (earliest, call) => (earliest === null || call.enqueuedAt < earliest ? call.enqueuedAt : earliest),
-      null,
-    );
     return {
       service,
-      inFlight: this.inFlight,
+      inFlight: this.inFlight.size,
       waiting: this.waiting.length,
-      oldestWaitSeconds: oldest === null ? null : Math.round((Date.now() - oldest) / 1000),
+      oldestWaitSeconds: ageOfOldest(this.waiting.map((call) => call.enqueuedAt)),
+      oldestInFlightSeconds: ageOfOldest([...this.inFlight].map((call) => call.startedAt)),
       concurrency: this.options.concurrency,
     };
   }
@@ -81,10 +93,16 @@ export class WorkQueue {
   }
 
   private canStart(priority: WorkPriority): boolean {
-    if (this.inFlight >= this.options.concurrency) return false;
+    if (this.inFlight.size >= this.options.concurrency) return false;
     if (priority === "reader") return true;
-    return this.inFlightBesidesReader < this.options.concurrency - this.options.reservedForReader;
+    const besidesReader = [...this.inFlight].filter((call) => call.priority !== "reader").length;
+    return besidesReader < this.options.concurrency - this.options.reservedForReader;
   }
+}
+
+function ageOfOldest(timestamps: number[]): number | null {
+  if (timestamps.length === 0) return null;
+  return Math.round((Date.now() - Math.min(...timestamps)) / 1000);
 }
 
 /** Picks the call that should run next out of those that may start at all: the
