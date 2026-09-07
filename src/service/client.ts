@@ -8,11 +8,14 @@
 
 import {
   CHECK_CLAIM_PATH,
+  CHECK_TWEET_PATH,
   EXTRACT_CLAIMS_PATH,
   HEALTH_PATH,
   SERVICE_AUTH_HEADER,
   type CheckClaimRequest,
   type CheckClaimResponse,
+  type CheckTweetRequest,
+  type CheckTweetResponse,
   type ExtractClaimsRequest,
   type ExtractClaimsResponse,
   type HealthResponse,
@@ -41,6 +44,10 @@ export function queueIsStuck(health: HealthResponse): boolean {
 
 export async function requestClaimCheck(body: CheckClaimRequest): Promise<CheckClaimResponse> {
   return call<CheckClaimResponse>(serviceUrl("CLAIM_CHECK_URL"), CHECK_CLAIM_PATH, body);
+}
+
+export async function requestTweetCheck(body: CheckTweetRequest): Promise<CheckTweetResponse> {
+  return call<CheckTweetResponse>(serviceUrl("CLAIM_CHECK_URL"), CHECK_TWEET_PATH, body);
 }
 
 export async function requestClaimExtraction(body: ExtractClaimsRequest): Promise<ExtractClaimsResponse> {

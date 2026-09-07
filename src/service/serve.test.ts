@@ -1,6 +1,6 @@
 import { afterAll, describe, expect, test } from "bun:test";
 import { CHECK_CLAIM_PATH, HEALTH_PATH, SERVICE_AUTH_HEADER, type HealthResponse } from "./contract";
-import { startService } from "./serve";
+import { startService, type ServiceRoute } from "./serve";
 
 /* These tests cover the HTTP shell: the secret, the routing, and above all the
  * keepalive stream, which is the part most likely to regress. The handler is a
@@ -12,21 +12,23 @@ process.env.SERVICE_AUTH_SECRET = "test-secret";
 const TEST_KEEPALIVE_MS = 20;
 const CROSSES_KEEPALIVE_MS = 90;
 
-const server = startService<{ priority: "reader" | "x" | "feed"; delayMs: number }, { echoed: number }>({
+const echoRoute: ServiceRoute<{ priority: "reader" | "x" | "feed"; delayMs: number }, { echoed: number }> = {
+  path: CHECK_CLAIM_PATH,
+  priorityOf: (body) => body.priority,
+  handle: async (body) => {
+    await Bun.sleep(body.delayMs);
+    if (body.delayMs < 0) throw new Error("negative delay");
+    return { echoed: body.delayMs };
+  },
+};
+
+const server = startService({
   name: "claim-check",
   port: 0,
   concurrency: 2,
   reservedForReader: 1,
   keepaliveIntervalMs: TEST_KEEPALIVE_MS,
-  route: {
-    path: CHECK_CLAIM_PATH,
-    priorityOf: (body) => body.priority,
-    handle: async (body) => {
-      await Bun.sleep(body.delayMs);
-      if (body.delayMs < 0) throw new Error("negative delay");
-      return { echoed: body.delayMs };
-    },
-  },
+  routes: [echoRoute],
 });
 
 const base = `http://localhost:${server.port}`;

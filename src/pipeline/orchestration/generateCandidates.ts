@@ -8,18 +8,14 @@
 
 import { fetchEligiblePosts } from "../../api/fetchEligiblePosts";
 import { SupabaseLogger } from "../../api/supabaseClient";
-import { getBotById } from "../../bots/index";
-import { processSingleTweet, type ProcessTweetResult } from "./processTweet";
+import { beginTweetRun, finishTweetRun, type ProcessTweetResult } from "./processTweet";
+import { requestTweetCheck } from "../../service/client";
 import { STALE_TWEET_CUTOFF_HOURS, tweetAgeHours, type Candidate } from "./submitCandidates";
-import { createTweetLog, withTweetLog, formatTweetLogSummary, formatTweetLogFull, formatRunSummary, getLoggedBotId, type TweetLogMap } from "../utils/tweetLog";
+import { createTweetLog, formatTweetLogSummary, formatTweetLogFull, formatRunSummary, getLoggedBotId, type TweetLogMap } from "../utils/tweetLog";
 import { buildPostSelection, type FeedSize } from "./utils/feedSizeStrategy";
 import { ageInHours, formatCount } from "./utils/tweetSorting";
-import { runABTests, getBotProbabilities, getForcedPicks, withForcedPicks } from "../ab-testing/abTests";
-import { AB_TESTS } from "../ab-testing/abTestsData";
-import { withBotConfig } from "../ab-testing/botConfig";
-import { withCostTracker } from "../cost-tracking/costTracker";
-import { withWarnings } from "../utils/warnings";
-import { withMonitoringContext, type MonitoringContext } from "../misinfo-monitoring/monitoringContext";
+import { getBotProbabilities, getForcedPicks } from "../ab-testing/abTests";
+import type { MonitoringContext } from "../misinfo-monitoring/monitoringContext";
 import { curateRegularFeedPosts, fillWithTopicPriority } from "../misinfo-monitoring/regularFeedTopicCuration";
 import type { MisinfoTopic } from "../misinfo-monitoring/topics";
 import type { MisinfoTopicId } from "../misinfo-monitoring/topicIds";
@@ -318,7 +314,7 @@ export async function processPosts(
     // So we force feed_size to the tier this post actually came from.
     const feedSizePick: Record<string, string> = item.feedSize ? { feed_size: item.feedSize } : {};
     const perPostPicks = { ...outerForcedPicks, ...feedSizePick, ...monitoringPicks };
-    queue.add(() => withForcedPicks(perPostPicks, () => withMonitoringContext(item.monitoring, async () => {
+    queue.add(async () => {
       // The deadline is checked the moment the post would start, not when it
       // was enqueued. Work already in flight is left to finish; what the
       // deadline cuts is only the posts nobody has touched yet.
@@ -326,44 +322,40 @@ export async function processPosts(
         skippedByIndex[idx] = item.post;
         return;
       }
-      // Any forced picks are already in the async-local store, put there by
-      // runPipeline.ts through withForcedPicks. runABTests honours them for
-      // whichever tests fire.
-      const { config, picks } = runABTests(AB_TESTS);
-      const selectedBot = getBotById(config.botId);
-      if (!selectedBot) {
-        throw new Error(`No bot registered for id "${config.botId}" picked by AB_TESTS`);
-      }
 
-      const log = createTweetLog();
-      log.set("tweet.index", idx + 1);
-      log.set("tweet.total", items.length);
+      // What this run knows before the check: the post's place in the batch and
+      // its ranking features. The check itself happens on the claim-check
+      // service under the picks forced here, and everything the service logged
+      // comes back and is merged with these local entries, so the stored log
+      // reads exactly as it did when the check ran in this process.
+      const localLog = createTweetLog();
+      localLog.set("tweet.index", idx + 1);
+      localLog.set("tweet.total", items.length);
       const rankFeatures = featuresFromPost(item.post, item.velocity, item.feedSize ? REGULAR_FEED_LADDER.indexOf(item.feedSize) : null);
-      log.set("ranking.features", rankFeatures);
-      log.set("ranking.admission", shadowScores(rankFeatures));
+      localLog.set("ranking.features", rankFeatures);
+      localLog.set("ranking.admission", shadowScores(rankFeatures));
 
-      const tweetResult = await withTweetLog(log, () =>
-        withWarnings(() =>
-          withBotConfig(config, () =>
-            withCostTracker(() => {
-              log.set("bot.id", config.botId);
-              log.set("bot.picks", picks);
-              log.set("bot.config", config);
-              return processSingleTweet({
-                post: item.post,
-                bot: selectedBot,
-                logger: supabaseLogger,
-                commitSha: commit,
-              });
-            }),
-          ),
-        ),
-      );
+      // The run row is opened before the check starts. The early row is
+      // load-bearing: a post abandoned mid-check, by a crash or by the soft
+      // deadline, leaves a started-but-incomplete row, and the next run's
+      // sweep and skip set are built on exactly those.
+      const pipelineRunId = await beginTweetRun(supabaseLogger, item.post, commit);
+      const { output } = await requestTweetCheck({
+        priority: "x",
+        post: item.post,
+        picks: perPostPicks,
+        monitoring: item.monitoring,
+      });
+      for (const [key, value] of localLog) {
+        if (!(key in output.flatLog)) output.flatLog[key] = value;
+      }
+      const tweetResult = await finishTweetRun(supabaseLogger, pipelineRunId, output);
 
+      const log = new Map(Object.entries(output.flatLog)) as TweetLogMap;
       console.log(`${formatTweetLogSummary(log)}\n${formatTweetLogFull(log)}`);
       allLogs.push(log);
 
-      const botId = getLoggedBotId(selectedBot.id, log);
+      const botId = getLoggedBotId(output.bot.name, log);
       if (onTweetProcessed) {
         try { await onTweetProcessed({ post: item.post, tweetResult, log, botId }); }
         catch (err) { console.warn(`[${label}] onTweetProcessed hook failed:`, err); }
@@ -372,7 +364,7 @@ export async function processPosts(
       if (tweetResult.outcome === "candidate" && tweetResult.pipelineRunId) {
         candidateByIndex[idx] = { post: item.post, tweetResult, botId, velocity: item.velocity };
       }
-    })));
+    });
   }
 
   // Waiting for stragglers past the deadline is how the hard kill used to land

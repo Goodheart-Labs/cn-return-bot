@@ -13,7 +13,7 @@ import "dotenv/config";
 import { extractClaims } from "../../everything/pipeline/extractClaims";
 import { aggregateAndLogCosts, withCostTracker } from "../../pipeline/cost-tracking/costTracker";
 import { EXTRACT_CLAIMS_PATH, type ExtractClaimsRequest, type ExtractClaimsResponse } from "../contract";
-import { numberFromEnv, startService } from "../serve";
+import { numberFromEnv, startService, type ServiceRoute } from "../serve";
 
 /** Two documents at a time. Each one is already several large-model calls that
  *  run their chunks in parallel inside the call, so a third document in flight
@@ -33,26 +33,27 @@ const DEFAULT_PORT = 8788;
 
 const chunkConcurrency = numberFromEnv("EXTRACTION_CHUNK_CONCURRENCY", DEFAULT_CHUNK_CONCURRENCY);
 
-startService<ExtractClaimsRequest, ExtractClaimsResponse>({
+const extractClaimsRoute: ServiceRoute<ExtractClaimsRequest, ExtractClaimsResponse> = {
+  path: EXTRACT_CLAIMS_PATH,
+  priorityOf: (body) => body.priority,
+  handle: async (body) => {
+    if (!body?.content?.kind) throw new Error("Extraction needs content with a kind");
+    // The cost tracker collects what the extraction's model calls cost, both
+    // the per-chunk extraction calls and the image descriptions. The caller
+    // records the total against the daily spend cap.
+    const { claims, cost } = await withCostTracker(async () => {
+      const found = await extractClaims(body.content, chunkConcurrency);
+      return { claims: found, cost: aggregateAndLogCosts() };
+    });
+    console.log(`[extraction] ${body.priority} ${body.content.kind} ${body.content.url}: ${claims.length} claims`);
+    return { claims, costUsd: cost?.cost ?? null };
+  },
+};
+
+startService({
   name: "extraction",
   port: numberFromEnv("EXTRACTION_PORT", DEFAULT_PORT),
   concurrency: numberFromEnv("EXTRACTION_CONCURRENCY", DEFAULT_CONCURRENCY),
   reservedForReader: RESERVED_FOR_READER,
-  route: {
-    path: EXTRACT_CLAIMS_PATH,
-    priorityOf: (body) => body.priority,
-    handle: async (body) => {
-      if (!body?.content?.kind) throw new Error("Extraction needs content with a kind");
-      // The cost tracker collects whatever the extraction reports. Today that
-      // is the image descriptions only, because the claim extractor still calls
-      // the model directly and reports nothing. Once it reports its own calls
-      // this number becomes the full cost with no change here.
-      const { claims, cost } = await withCostTracker(async () => {
-        const found = await extractClaims(body.content, chunkConcurrency);
-        return { claims: found, cost: aggregateAndLogCosts() };
-      });
-      console.log(`[extraction] ${body.priority} ${body.content.kind} ${body.content.url}: ${claims.length} claims`);
-      return { claims, costUsd: cost?.cost ?? null };
-    },
-  },
+  routes: [extractClaimsRoute],
 });

@@ -16,6 +16,7 @@
  */
 
 import { captureProdSupabaseCreds } from "../local/prodSupabaseCreds";
+import { fetchClaimCheckHealth, queueIsStuck } from "../service/client";
 
 function takeAllPicks(): Record<string, string> {
   const picks: Record<string, string> = {};
@@ -149,8 +150,23 @@ const EST_WALL_MS_PER_POST = 1 * 60 * 1000;
 // the pre-pass leaves, which this floor keeps at ~15 of the 22 minutes.
 const MISINFO_PROCESSING_BUDGET_MS = 7 * 60 * 1000;
 
+/** The tweets are checked by the claim-check service, so a run without a
+ *  healthy service can only burn its dispatch slot. Failing here makes a dead
+ *  or wedged machine show up as a red run, which is the only monitoring the
+ *  machine has. */
+async function assertCheckServiceHealthy(): Promise<void> {
+  const health = await fetchClaimCheckHealth();
+  console.log(
+    `[pipeline] claim-check service: ${health.inFlight} in flight, ${health.waiting} waiting`,
+  );
+  if (queueIsStuck(health)) {
+    throw new Error("The claim-check service is stuck. Failing the run so this is seen.");
+  }
+}
+
 async function main() {
   try {
+    await assertCheckServiceHealthy();
     let supabaseLogger: SupabaseLogger | null = null;
     if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY) {
       try {

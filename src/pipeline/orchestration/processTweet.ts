@@ -71,6 +71,28 @@ export interface ProcessTweetResult {
   pipelineRunId: string | null;
 }
 
+/** Everything one tweet's run produced, with none of it written anywhere yet.
+ *  This is what the claim-check service sends back for a tweet, and what
+ *  recordTweetRun then writes, so the compute can happen on another machine
+ *  while the database rows stay the caller's job and keep their exact shape.
+ *  The log travels flat; `new Map(Object.entries(flatLog))` reconstitutes the
+ *  tweet log map, and nesting happens where the row is written. */
+export interface TweetComputeOutput {
+  pipelineResult: PipelineResult | null;
+  outcome: "candidate" | "rejected" | "failed";
+  outcomeReason?: string;
+  finalStage: string;
+  errorMessage?: string;
+  noteStatus?: string;
+  evaluationScore?: number;
+  noteText?: string;
+  scores: ScoreEntry[];
+  warnings?: string[];
+  costUsd?: number;
+  flatLog: Record<string, unknown>;
+  bot: { name: string; picks?: Record<string, string>; config?: Record<string, unknown> };
+}
+
 // ---------------------------------------------------------------------------
 // Layer 1: Run the bot pipeline. No database writes and no scoring.
 // ---------------------------------------------------------------------------
@@ -347,13 +369,7 @@ function buildSuccessCompletionData(
 const STACK_FRAMES_TO_KEEP = 12;
 const ERROR_MESSAGE_MAX_LEN = 2000;
 
-async function recordFailedRun(
-  logger: SupabaseLogger | null,
-  pipelineRunId: string | null,
-  post: Post,
-  bot: Bot,
-  err: any,
-): Promise<ProcessTweetResult> {
+function failedComputeOutput(post: Post, bot: Bot, err: any): TweetComputeOutput {
   console.error(`[processTweet] Bot pipeline failed for ${post.id}:`, err);
 
   const outcomeReason = err instanceof PipelineError ? err.outcomeReason : "bot_error";
@@ -362,8 +378,6 @@ async function recordFailedRun(
     ? err.stack.split("\n").slice(0, STACK_FRAMES_TO_KEEP).join("\n")
     : undefined;
 
-  const cost = aggregateAndLogCosts()?.cost;
-
   const log = getTweetLog();
   log?.set("outcome.result", "failed");
   log?.set("outcome.reason", outcomeReason);
@@ -371,78 +385,35 @@ async function recordFailedRun(
   log?.set("error.message", message);
   if (stack) log?.set("error.stack", stack);
 
-  if (logger && pipelineRunId) {
-    const logs = log ? nestDotKeys(Object.fromEntries(log)) : undefined;
-    const loggedBot = getLoggedBotIdentity(bot.id, log);
-    try {
-      await logger.completePipelineRun(pipelineRunId, {
-        outcome: "failed",
-        outcome_reason: outcomeReason,
-        error_message: message.slice(0, ERROR_MESSAGE_MAX_LEN),
-        warnings: collectWarnings(),
-        final_stage: "error",
-        bot_name: loggedBot.name,
-        ab_test_picks: loggedBot.picks,
-        bot_config: loggedBot.config,
-        logs,
-        cost,
-      });
-    } catch (dbErr) {
-      console.warn(`[processTweet] Failed to record failure DB row:`, dbErr);
-    }
-  }
-
   return {
     pipelineResult: null,
     outcome: "failed",
     outcomeReason,
     finalStage: "error",
+    errorMessage: message,
     scores: [],
-    pipelineRunId,
+    warnings: collectWarnings(),
+    costUsd: aggregateAndLogCosts()?.cost,
+    flatLog: log ? Object.fromEntries(log) : {},
+    bot: getLoggedBotIdentity(bot.id, log),
   };
 }
 
-/** Completes the run as rejected at one of the early gates, before the bot ever
- *  ran, and builds the ProcessTweetResult the caller returns. */
-async function recordGateRejection(
-  logger: SupabaseLogger | null,
-  pipelineRunId: string | null,
-  bot: Bot,
-  outcomeReason: string,
-  finalStage: string,
-): Promise<ProcessTweetResult> {
+function gateComputeOutput(bot: Bot, gate: Outcome): TweetComputeOutput {
   const log = getTweetLog();
-  log?.set("outcome.result", "rejected");
-  log?.set("outcome.reason", outcomeReason);
-  log?.set("outcome.finalStage", finalStage);
-  const cost = aggregateAndLogCosts()?.cost;
-
-  if (logger && pipelineRunId) {
-    const logs = log ? nestDotKeys(Object.fromEntries(log)) : undefined;
-    const loggedBot = getLoggedBotIdentity(bot.id, log);
-    try {
-      await logger.completePipelineRun(pipelineRunId, {
-        outcome: "rejected",
-        outcome_reason: outcomeReason,
-        final_stage: finalStage,
-        bot_name: loggedBot.name,
-        ab_test_picks: loggedBot.picks,
-        bot_config: loggedBot.config,
-        logs,
-        cost,
-      });
-    } catch (err) {
-      console.warn(`[processTweet] Failed to record ${outcomeReason} rejection:`, err);
-    }
-  }
+  log?.set("outcome.result", gate.outcome);
+  log?.set("outcome.reason", gate.outcomeReason ?? "");
+  log?.set("outcome.finalStage", gate.finalStage);
 
   return {
     pipelineResult: null,
-    outcome: "rejected",
-    outcomeReason,
-    finalStage,
+    outcome: gate.outcome,
+    outcomeReason: gate.outcomeReason,
+    finalStage: gate.finalStage,
     scores: [],
-    pipelineRunId,
+    costUsd: aggregateAndLogCosts()?.cost,
+    flatLog: log ? Object.fromEntries(log) : {},
+    bot: getLoggedBotIdentity(bot.id, log),
   };
 }
 
@@ -454,19 +425,14 @@ async function recordGateRejection(
  * blocked_topic and the bot never runs. It returns null when the filter is off
  * or the post is clean, and the caller then carries on.
  */
-async function runTopicFilterGate(
-  logger: SupabaseLogger | null,
-  pipelineRunId: string | null,
-  userMessage: string,
-  bot: Bot,
-): Promise<ProcessTweetResult | null> {
+async function runTopicFilterGate(userMessage: string): Promise<Outcome | null> {
   if (!getBotConfig().topic_filter) return null;
 
   // runBlockedTopicFilter writes its own messages and its verdict onto the
   // ambient tweet log under the topic_filter prefix.
   const verdict = await runBlockedTopicFilter(userMessage);
   if (!verdict.blocked) return null;
-  return recordGateRejection(logger, pipelineRunId, bot, "blocked_topic", "topic_filter");
+  return { outcome: "rejected", outcomeReason: "blocked_topic", finalStage: "topic_filter" };
 }
 
 /**
@@ -477,12 +443,7 @@ async function runTopicFilterGate(
  * caller skip the bot, which is the expensive part. It returns null when the
  * prefilter is off or says a note may be needed, and the bot then runs.
  */
-async function runPrefilterGate(
-  logger: SupabaseLogger | null,
-  pipelineRunId: string | null,
-  userMessage: string,
-  bot: Bot,
-): Promise<ProcessTweetResult | null> {
+async function runPrefilterGate(userMessage: string): Promise<Outcome | null> {
   if (!getBotConfig().note_prefilter || getMonitoringContext()) return null;
 
   // runNoteNeededPrefilter writes its own steps and its verdict onto the tweet
@@ -490,23 +451,19 @@ async function runPrefilterGate(
   // run total.
   const verdict = await runNoteNeededPrefilter(userMessage);
   if (verdict.needsNote) return null;
-  return recordGateRejection(logger, pipelineRunId, bot, "prefilter_no_note", "prefilter");
+  return { outcome: "rejected", outcomeReason: "prefilter_no_note", finalStage: "prefilter" };
 }
 
 // ---------------------------------------------------------------------------
 // Orchestrator
 // ---------------------------------------------------------------------------
 
-export async function processSingleTweet(
-  options: ProcessTweetOptions
-): Promise<ProcessTweetResult> {
-  const { post, bot, logger, commitSha } = options;
-
-  let pipelineRunId: string | null = null;
-  if (logger) {
-    pipelineRunId = await initPipelineRun(logger, post, commitSha);
-  }
-
+/** Runs one tweet through gates, bot, scoring and outcome, and reports
+ *  everything, writing nothing. This is the half that can run on the services
+ *  machine. It reads the ambient tweet log, bot config, cost tracker, warnings
+ *  and monitoring context, so the caller wraps it in those the same way
+ *  processSingleTweet always was wrapped. */
+export async function computeTweetResult(post: Post, bot: Bot): Promise<TweetComputeOutput> {
   try {
     // The shared bot input is built exactly once, here. Both gates below read
     // the resulting user message directly. The bot asks for the input again
@@ -515,11 +472,11 @@ export async function processSingleTweet(
     const input = await createBotInput(post, `processTweet:${post.id}`);
     const userMessage = buildUserMessageFromInput(post, input);
 
-    const topicFiltered = await runTopicFilterGate(logger, pipelineRunId, userMessage, bot);
-    if (topicFiltered) return topicFiltered;
+    const topicFiltered = await runTopicFilterGate(userMessage);
+    if (topicFiltered) return gateComputeOutput(bot, topicFiltered);
 
-    const prefiltered = await runPrefilterGate(logger, pipelineRunId, userMessage, bot);
-    if (prefiltered) return prefiltered;
+    const prefiltered = await runPrefilterGate(userMessage);
+    if (prefiltered) return gateComputeOutput(bot, prefiltered);
 
     const { result } = await runBotPipeline(post, bot);
     if (!result) {
@@ -527,8 +484,6 @@ export async function processSingleTweet(
     }
 
     const scoring = await scorePipelineResult(result);
-    await logScoresToDb(logger, pipelineRunId, scoring.scores);
-
     const outcome = determineOutcome(result, scoring);
 
     const log = getTweetLog();
@@ -544,32 +499,97 @@ export async function processSingleTweet(
       log?.set("sourceCheck.result", result.checkResult.trim().toUpperCase());
     }
 
-    const cost = aggregateAndLogCosts()?.cost;
-    const warnings = collectWarnings();
-
-    if (logger && pipelineRunId) {
-      const logs = log ? nestDotKeys(Object.fromEntries(log)) : undefined;
-      const loggedBot = getLoggedBotIdentity(bot.id, log);
-      const completionData = buildSuccessCompletionData(result, loggedBot, outcome, warnings, logs, cost);
-      try {
-        await logger.completePipelineRun(pipelineRunId, completionData);
-      } catch (err) {
-        console.warn(`[processTweet] Failed to complete pipeline run:`, err);
-      }
-    }
-
     return {
       pipelineResult: result,
       outcome: outcome.outcome,
       outcomeReason: outcome.outcomeReason,
       finalStage: outcome.finalStage,
+      errorMessage: outcome.errorMessage,
       noteStatus: result.noteResult.status,
       evaluationScore: scoring.evalGate.score,
-      noteText: joinNoteAndUrl(result.noteResult.note, result.noteResult.url),
+      noteText: submittedNote,
       scores: scoring.scores,
-      pipelineRunId,
+      warnings: collectWarnings(),
+      costUsd: aggregateAndLogCosts()?.cost,
+      flatLog: log ? Object.fromEntries(log) : {},
+      bot: getLoggedBotIdentity(bot.id, log),
     };
   } catch (err: any) {
-    return await recordFailedRun(logger, pipelineRunId, post, bot, err);
+    return failedComputeOutput(post, bot, err);
   }
+}
+
+/** Opens the run's database row before the compute starts. The early row is
+ *  load-bearing: a run abandoned mid-compute, by a crash or by the soft
+ *  deadline, leaves a started-but-incomplete row behind, and the next run's
+ *  sweep and skip set are built on exactly those. */
+export async function beginTweetRun(
+  logger: SupabaseLogger | null,
+  post: Post,
+  commitSha: string | undefined,
+): Promise<string | null> {
+  if (!logger) return null;
+  return initPipelineRun(logger, post, commitSha);
+}
+
+/** Writes one computed tweet run to the database: the completion of the
+ *  pipeline_runs row opened by beginTweetRun, and the score rows. This is the
+ *  half that stays with whoever holds the logger, and it produces the exact
+ *  rows the one-piece path always produced. Returns the ProcessTweetResult the
+ *  rest of the run works with. */
+export async function finishTweetRun(
+  logger: SupabaseLogger | null,
+  pipelineRunId: string | null,
+  out: TweetComputeOutput,
+): Promise<ProcessTweetResult> {
+  if (logger && pipelineRunId) {
+    const logs = Object.keys(out.flatLog).length ? nestDotKeys(out.flatLog) : undefined;
+    const outcome: Outcome = {
+      outcome: out.outcome,
+      outcomeReason: out.outcomeReason,
+      finalStage: out.finalStage,
+      errorMessage: out.errorMessage,
+    };
+    const completionData = out.pipelineResult
+      ? buildSuccessCompletionData(out.pipelineResult, out.bot, outcome, out.warnings, logs, out.costUsd)
+      : {
+          outcome: out.outcome,
+          outcome_reason: out.outcomeReason,
+          error_message: out.errorMessage?.slice(0, ERROR_MESSAGE_MAX_LEN),
+          warnings: out.warnings,
+          final_stage: out.finalStage,
+          bot_name: out.bot.name,
+          ab_test_picks: out.bot.picks,
+          bot_config: out.bot.config,
+          logs,
+          cost: out.costUsd,
+        };
+    try {
+      await logger.completePipelineRun(pipelineRunId, completionData);
+    } catch (err) {
+      console.warn(`[processTweet] Failed to complete pipeline run:`, err);
+    }
+    await logScoresToDb(logger, pipelineRunId, out.scores);
+  }
+
+  return {
+    pipelineResult: out.pipelineResult,
+    outcome: out.outcome,
+    outcomeReason: out.outcomeReason,
+    finalStage: out.finalStage,
+    noteStatus: out.noteStatus,
+    evaluationScore: out.evaluationScore,
+    noteText: out.noteText,
+    scores: out.scores,
+    pipelineRunId,
+  };
+}
+
+export async function processSingleTweet(
+  options: ProcessTweetOptions
+): Promise<ProcessTweetResult> {
+  const { post, bot, logger, commitSha } = options;
+  const pipelineRunId = await beginTweetRun(logger, post, commitSha);
+  const out = await computeTweetResult(post, bot);
+  return finishTweetRun(logger, pipelineRunId, out);
 }

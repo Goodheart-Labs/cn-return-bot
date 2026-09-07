@@ -12,8 +12,11 @@
 
 import type { Post } from "../api/fetchEligiblePosts";
 import type { ExtractedClaim, FetchedContent, ClaimCheck } from "../everything/types";
+import type { TweetComputeOutput } from "../pipeline/orchestration/processTweet";
+import type { MonitoringContext } from "../pipeline/misinfo-monitoring/monitoringContext";
 
 export const CHECK_CLAIM_PATH = "/check-claim";
+export const CHECK_TWEET_PATH = "/check-tweet";
 export const EXTRACT_CLAIMS_PATH = "/extract-claims";
 export const HEALTH_PATH = "/health";
 
@@ -69,6 +72,33 @@ export interface CheckClaimResponse {
    *  written. This is the same shape the in-process path returns today. */
   check: ClaimCheck;
   run: ClaimRunRecord;
+}
+
+// ---------------------------------------------------------------------------
+// Checking one tweet, for the X note writer
+// ---------------------------------------------------------------------------
+
+/** A tweet goes through its own route because it runs the X pipeline's own
+ *  configuration: its AB tests, its prefilters, its scoring. The claim route
+ *  pins the claim-check configuration instead. The service draws the AB tests
+ *  once, honouring the picks the caller forces, exactly as the in-process path
+ *  drew them, so a run's picks stay a single draw. */
+export interface CheckTweetRequest {
+  priority: WorkPriority;
+  post: Post;
+  /** The picks the caller already decided: the feed tier the post came from,
+   *  and the monitoring picks for a curated-topic post. Everything else is
+   *  drawn by the service. */
+  picks: Record<string, string>;
+  /** The curated-topic context for a misinfo-monitoring post; absent on a
+   *  regular post. */
+  monitoring?: MonitoringContext;
+}
+
+/** The full compute output, because the caller writes the database rows the
+ *  in-process path wrote, and needs every field to do that faithfully. */
+export interface CheckTweetResponse {
+  output: TweetComputeOutput;
 }
 
 // ---------------------------------------------------------------------------

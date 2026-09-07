@@ -34,16 +34,18 @@ export interface ServiceRoute<Body, Answer> {
   handle: (body: Body) => Promise<Answer>;
 }
 
-export interface ServiceOptions<Body, Answer> extends WorkQueueOptions {
+export interface ServiceOptions extends WorkQueueOptions {
   name: ServiceName;
   port: number;
-  route: ServiceRoute<Body, Answer>;
+  /** The work endpoints. They share the service's one queue, so a tweet check
+   *  and a claim check on the same service compete for the same slots. */
+  routes: Array<ServiceRoute<any, unknown>>;
   /** Only tests set this. They shrink the interval so a test that crosses the
    *  keepalive finishes in milliseconds instead of waiting 15 seconds. */
   keepaliveIntervalMs?: number;
 }
 
-export function startService<Body, Answer>(options: ServiceOptions<Body, Answer>) {
+export function startService(options: ServiceOptions) {
   const queue = new WorkQueue(options);
   const secret = requiredEnv("SERVICE_AUTH_SECRET");
   const keepaliveMs = options.keepaliveIntervalMs ?? KEEPALIVE_INTERVAL_MS;
@@ -60,22 +62,23 @@ export function startService<Body, Answer>(options: ServiceOptions<Body, Answer>
       if (url.pathname === HEALTH_PATH) {
         return Response.json(queue.health(options.name) satisfies HealthResponse);
       }
-      if (url.pathname !== options.route.path) {
+      const route = options.routes.find((candidate) => candidate.path === url.pathname);
+      if (!route) {
         return errorResponse(`No such path: ${url.pathname}`, 404);
       }
       if (request.method !== "POST") {
-        return errorResponse(`${options.route.path} takes POST`, 405);
+        return errorResponse(`${route.path} takes POST`, 405);
       }
 
-      let body: Body;
+      let body: unknown;
       try {
-        body = (await request.json()) as Body;
+        body = await request.json();
       } catch {
         return errorResponse("Body is not valid JSON", 400);
       }
 
       return streamWhileWorking(
-        () => queue.run(options.route.priorityOf(body), () => options.route.handle(body)),
+        () => queue.run(route.priorityOf(body), () => route.handle(body)),
         keepaliveMs,
       );
     },
