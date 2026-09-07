@@ -25,6 +25,31 @@ export function group(label: string, lines: string[]): string {
   return `  ${label}\n${body}`;
 }
 
+/** The two halves of a collapsible section whose lines arrive over time, such
+ *  as a walk that lists one creator every few seconds. `group` above wants the
+ *  whole body up front, which would leave a multi-minute walk printing nothing
+ *  until it was done, and silence that long reads as a hang. Locally the
+ *  markers become a header line and nothing. */
+export const groupOpen = (label: string): string => (onCi() ? `::group::${label}` : `  ${label}`);
+export const groupClose = (): string => (onCi() ? "::endgroup::" : "");
+
+/** One row of a table whose widths are fixed up front, for rows printed as
+ *  they are produced rather than all at once. Cells wider than their column
+ *  are clipped rather than pushing the columns out of line. */
+export function fixedRow(cells: string[], widths: number[], align: ("left" | "right")[] = []): string {
+  return (
+    "     " +
+    cells
+      .map((c, i) => {
+        const w = widths[i]!;
+        const text = c.length > w ? clip(c, w) : c;
+        return align[i] === "right" ? text.padStart(w) : text.padEnd(w);
+      })
+      .join("  ")
+      .trimEnd()
+  );
+}
+
 /** Pads every column to its widest cell so a table reads down its columns.
  *  `align` marks the columns whose values are numbers and should sit right. */
 export function table(headers: string[], rows: string[][], align: ("left" | "right")[] = []): string[] {
