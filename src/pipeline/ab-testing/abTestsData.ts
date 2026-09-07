@@ -143,8 +143,8 @@ const TOPIC_FILTER_TEST: ABTest = {
   name: "topic_filter",
   defaultVariant: "off",
   variants: [
-    { variant: { name: "off", overrides: { topic_filter: false } }, weight: 33 },
-    { variant: { name: "on",  overrides: { topic_filter: true  } }, weight: 67 },
+    { variant: { name: "off", overrides: { topic_filter: false } }, weight: 0 },
+    { variant: { name: "on",  overrides: { topic_filter: true  } }, weight: 100 },
   ],
 };
 
