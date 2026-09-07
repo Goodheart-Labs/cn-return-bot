@@ -2,7 +2,8 @@
 // Weights are relative. Zero-weight variants are force-only, not live traffic.
 // Historical labels remain readable even after a definition is removed.
 // Test and variant names are persisted keys; renaming them splits the history.
-// Closeout numbers and decisions for every test: docs/ab-test-log.md.
+// Per-arm numbers: uv run src/scripts_jim/2026_09_01_ab_test_review/ab_readout.py [test ...]
+// The commit that changes a weight carries the decision and the numbers it rested on.
 
 import type { BotConfig } from "./botConfig";
 import { MISINFO_TOPIC_IDS, CONCEDE_SHAPE_TOPIC_IDS } from "../misinfo-monitoring/topicIds";

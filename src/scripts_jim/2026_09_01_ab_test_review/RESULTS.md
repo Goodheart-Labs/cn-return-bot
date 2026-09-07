@@ -25,8 +25,9 @@ August window.
 | `misinfo_concede_shape` | Left to GOO-94 | 43 settled notes, zero helpful on either arm |
 | `simple_bot_search` | Unchanged | ongoing model scan, not a decidable test |
 
-Weight changes live in `src/pipeline/ab-testing/abTestsData.ts`. The closeout
-numbers for every test, this round and earlier, are in `docs/ab-test-log.md`.
+Weight changes live in `src/pipeline/ab-testing/abTestsData.ts`. The commit that
+changes a weight carries the decision and its numbers; rerun `ab_readout.py` for
+current per-arm tables.
 PR: https://github.com/Goodheart-Labs/cn-return-bot/pull/430
 
 Caveat on the `pangram_note` row: `ab_readout.py` has no `bot_name` filter, and
