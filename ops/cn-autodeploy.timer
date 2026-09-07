@@ -1,0 +1,9 @@
+[Unit]
+Description=Check for a new cn-return-bot commit every few minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+
+[Install]
+WantedBy=timers.target

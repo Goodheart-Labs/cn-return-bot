@@ -17,7 +17,7 @@ ENV_FILE="/etc/cn-return-bot/service.env"
 
 echo "── system packages"
 apt-get update
-apt-get install -y --no-install-recommends ffmpeg git pipx unzip curl
+apt-get install -y --no-install-recommends ffmpeg git pipx unzip curl jq
 
 echo "── service user"
 id "$SERVICE_USER" &>/dev/null || useradd --system --create-home --shell /bin/bash "$SERVICE_USER"
@@ -51,18 +51,24 @@ if [ ! -f "$ENV_FILE" ]; then
 fi
 chmod 0600 "$ENV_FILE"
 
+echo "── swap (a Chromium spike on a small machine becomes slow instead of fatal)"
+if [ ! -f /swapfile ]; then
+  fallocate -l 4G /swapfile
+  chmod 0600 /swapfile
+  mkswap /swapfile
+  swapon /swapfile
+  echo "/swapfile none swap sw 0 0" >> /etc/fstab
+fi
+
 echo "── systemd units"
-for unit in cn-claim-check cn-extraction cn-intake; do
+for unit in cn-claim-check cn-extraction cn-intake cn-autodeploy; do
   cp "$REPO_DIR/ops/$unit.service" "/etc/systemd/system/$unit.service"
 done
+cp "$REPO_DIR/ops/cn-autodeploy.timer" /etc/systemd/system/cn-autodeploy.timer
 systemctl daemon-reload
 systemctl enable cn-claim-check cn-extraction cn-intake
-
-echo "── deploys may restart the services without a password"
-cat > /etc/sudoers.d/cn-restart <<SUDOERS
-$SERVICE_USER ALL=(root) NOPASSWD: /usr/bin/systemctl restart cn-claim-check, /usr/bin/systemctl restart cn-extraction, /usr/bin/systemctl restart cn-intake
-SUDOERS
-chmod 0440 /etc/sudoers.d/cn-restart
+systemctl enable --now cn-autodeploy.timer
+rm -f /etc/sudoers.d/cn-restart
 
 echo "── firewall (only if ufw is active)"
 if command -v ufw &>/dev/null && ufw status | grep -q "Status: active"; then

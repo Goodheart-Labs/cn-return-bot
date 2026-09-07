@@ -72,11 +72,19 @@ EXTRACTION_URL=http://localhost:8788
 
 ## Deploys
 
-`.github/workflows/deploy-service.yml` runs on every push to main: it connects
-over SSH as `cnbot`, resets `/opt/cn-return-bot` to the pushed commit, runs
-`bun install --frozen-lockfile`, and restarts the three units. The repo needs
-two secrets for it: `SERVICE_SSH_HOST` and `SERVICE_SSH_KEY` (a private key
-whose public half is in `/home/cnbot/.ssh/authorized_keys`).
+The machine pulls; GitHub never pushes to it and holds no SSH key for it. A
+systemd timer (`cn-autodeploy.timer`, every 5 minutes) runs `ops/autodeploy.sh`,
+which fetches the branch the checkout is on and, when there is a new commit AND
+both services answer their health endpoint with nothing in flight and nothing
+waiting, resets to it, reinstalls dependencies, refreshes the unit files, and
+restarts the three services. A busy machine simply deploys a few minutes later
+when it drains; a service that does not answer health counts as idle, because
+the new commit may be the fix. So a merge to main is live within about five
+minutes of the machine going quiet.
+
+The checkout tracks whichever branch it is on: the feature branch before the
+cutover PR merges, `main` after (switch once by hand with
+`sudo -u cnbot git -C /opt/cn-return-bot checkout main`).
 
 ## Rollback
 
