@@ -140,12 +140,46 @@ describe("writer_last_check test", () => {
     expect(config.writer_last_check).toBe(false);
   });
 
-  test("a simple-bot run always records a pick for it", () => {
+  test("a simple-bot run never samples it live", () => {
     const { picks } = withForcedPicks({ bot: "simple-bot" }, () => runABTests(AB_TESTS));
-    expect(picks.writer_last_check).toMatch(/^(on|off)$/);
+    expect(picks.writer_last_check).toBeUndefined();
   });
 
   test("resolvePicks leaves it unset on old rows, since it has prerequisites", () => {
     expect(resolvePicks({ bot: "simple-bot" }).writer_last_check).toBeUndefined();
+  });
+
+  test("historical picks still resolve", () => {
+    for (const variant of ["off", "on"]) {
+      expect(resolvePicks({ writer_last_check: variant }).writer_last_check).toBe(variant);
+    }
+  });
+});
+
+describe("materiality_treatment test", () => {
+  test("forced judge_gate turns the gate on and leaves the writer alone", () => {
+    const { config, picks } = withForcedPicks(
+      { bot: "simple-bot", materiality_treatment: "judge_gate" },
+      () => runABTests(AB_TESTS),
+    );
+    expect(picks.materiality_treatment).toBe("judge_gate");
+    expect(config.materiality_gate_threshold).toBe(0.5);
+    expect(config.writer_central_claim).toBe(false);
+  });
+
+  test("forced writer_central changes the writer and leaves the gate off", () => {
+    const { config, picks } = withForcedPicks(
+      { bot: "simple-bot", materiality_treatment: "writer_central" },
+      () => runABTests(AB_TESTS),
+    );
+    expect(picks.materiality_treatment).toBe("writer_central");
+    expect(config.materiality_gate_threshold).toBeUndefined();
+    expect(config.writer_central_claim).toBe(true);
+  });
+
+  test("a simple-bot run records a pick without backfilling old rows", () => {
+    const { picks } = withForcedPicks({ bot: "simple-bot" }, () => runABTests(AB_TESTS));
+    expect(picks.materiality_treatment).toMatch(/^(judge_gate|writer_central)$/);
+    expect(resolvePicks({ bot: "simple-bot" }).materiality_treatment).toBeUndefined();
   });
 });

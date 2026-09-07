@@ -39,6 +39,35 @@ describe("A/B sampling", () => {
     expect(runABTests([BOT_TEST, retired]).picks).toEqual({ bot: "simple-bot" });
   });
 
+  test("materiality_treatment samples only for simple-bot, one fix per run", () => {
+    const experiment = AB_TESTS.find(test => test.name === "materiality_treatment")!;
+    expect(pickVariantName(experiment, undefined, () => 0)).toBe("judge_gate");
+    expect(pickVariantName(experiment, undefined, () => 0.5)).toBe("writer_central");
+    for (const botId of ["simple-bot", "other-bot"]) {
+      const bot: ABTest = {
+        name: "bot",
+        variants: [{ variant: { name: botId, overrides: { botId } }, weight: 100 }],
+      };
+      const { picks, config } = runABTests([bot, experiment]);
+      if (botId === "simple-bot") {
+        expect(picks.materiality_treatment).toMatch(/^(judge_gate|writer_central)$/);
+        const gated = picks.materiality_treatment === "judge_gate";
+        expect(config.materiality_gate_threshold).toBe(gated ? 0.5 : undefined);
+        expect(config.writer_central_claim).toBe(!gated);
+      } else {
+        expect(picks.materiality_treatment).toBeUndefined();
+        expect(config.materiality_gate_threshold).toBeUndefined();
+        expect(config.writer_central_claim).toBeUndefined();
+      }
+    }
+  });
+
+  test("writer_last_check has no live arms", () => {
+    const experiment = AB_TESTS.find(test => test.name === "writer_last_check")!;
+    expect(experiment.variants.every(variant => variant.weight === 0)).toBe(true);
+    expect(runABTests([BOT_TEST, experiment]).picks).toEqual({ bot: "simple-bot" });
+  });
+
   test("every configured experiment draws a live arm at zero", () => {
     for (const experiment of AB_TESTS) {
       if (!experiment.variants.some(v => v.weight > 0)) continue;

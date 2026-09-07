@@ -130,6 +130,7 @@ interface EvalGateDecision {
 interface ScoringOutput {
   scores: ScoreEntry[];
   evalGate: EvalGateDecision;
+  materialityGate: Partial<EvalGateDecision>;
 }
 
 function extractSourceVerificationScore(result: PipelineResult): ScoreEntry | null {
@@ -166,7 +167,7 @@ function extractBotScoringFilterScores(result: PipelineResult): ScoreEntry[] {
   return entries;
 }
 
-async function scorePipelineResult(
+export async function scorePipelineResult(
   result: PipelineResult
 ): Promise<ScoringOutput> {
   const scores: ScoreEntry[] = [];
@@ -174,6 +175,10 @@ async function scorePipelineResult(
   const evalGate: EvalGateDecision = {
     threshold: getBotConfig().eval_submit_threshold ?? 0,
     advisory: getMonitoringContext() !== undefined,
+  };
+  const materialityGate: Partial<EvalGateDecision> = {
+    threshold: getBotConfig().materiality_gate_threshold,
+    advisory: evalGate.advisory,
   };
   const log = getTweetLog();
   log?.set("eval.threshold", evalGate.threshold);
@@ -184,10 +189,6 @@ async function scorePipelineResult(
 
   scores.push(...extractBotScoringFilterScores(result));
 
-  // The materiality judge is a shadow scorer. We log what it says and gate
-  // nothing on it. It only runs when the bot actually wrote a correction,
-  // because an empty note has nothing to judge. A judge failure must never stop
-  // the run, so we swallow the error and continue.
   if (result.noteResult.status === CORRECTION_STATUS && result.noteResult.note) {
     try {
       const materialityScores = await runMaterialityJudge({
@@ -198,11 +199,20 @@ async function scorePipelineResult(
       scores.push(...materialityScores);
       const overall = materialityScores.find((s) => s.type === "materiality_overall");
       log?.set("materiality.overall", overall?.value);
+      if (typeof overall?.value === "number" && Number.isFinite(overall.value)) {
+        materialityGate.score = overall.value;
+        if (materialityGate.threshold !== undefined) {
+          materialityGate.shouldSubmit = overall.value >= materialityGate.threshold;
+        }
+      }
     } catch (err) {
-      log?.set("materiality.error", String(err).slice(0, 200));
-      console.warn("[materiality] judge failed (shadow — continuing):", err);
+      materialityGate.error = String(err).slice(0, 200);
+      log?.set("materiality.error", materialityGate.error);
+      console.warn("[materiality] judge failed (continuing):", err);
     }
   }
+  log?.set("materiality.threshold", materialityGate.threshold);
+  log?.set("materiality.shouldSubmit", materialityGate.shouldSubmit);
 
   const evalResult = await getEvaluationScore(result.post.id, noteText);
   if (evalResult.error) {
@@ -220,7 +230,7 @@ async function scorePipelineResult(
     });
   }
 
-  return { scores, evalGate };
+  return { scores, evalGate, materialityGate };
 }
 
 // ---------------------------------------------------------------------------
@@ -234,7 +244,7 @@ const STATUS_REJECTION_MAP: Record<string, { reason: string; stage: string }> = 
 
 const CORRECTION_STATUS = "CORRECTION WITH TRUSTWORTHY CITATION";
 
-function determineOutcome(result: PipelineResult, scoring: ScoringOutput): Outcome {
+export function determineOutcome(result: PipelineResult, scoring: ScoringOutput): Outcome {
   const statusRejection = STATUS_REJECTION_MAP[result.noteResult.status];
   if (statusRejection) {
     return { outcome: "rejected", outcomeReason: statusRejection.reason, finalStage: statusRejection.stage };
@@ -257,6 +267,16 @@ function determineOutcome(result: PipelineResult, scoring: ScoringOutput): Outco
       outcomeReason: checkErrored ? "check_error" : "check_failed",
       finalStage: "check",
       errorMessage: checkRaw ? `check: ${checkRaw}` : undefined,
+    };
+  }
+
+  if (scoring.materialityGate.shouldSubmit === false && !scoring.materialityGate.advisory) {
+    const { score, threshold } = scoring.materialityGate;
+    return {
+      outcome: "rejected",
+      outcomeReason: "low_materiality_score",
+      finalStage: "evaluation",
+      errorMessage: score !== undefined ? `materiality score ${score} below threshold ${threshold}` : undefined,
     };
   }
 

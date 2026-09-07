@@ -144,6 +144,7 @@ Indexes: `tweet_id`, `outcome`, `final_stage`, `(outcome, created_at DESC) WHERE
 | `prefilter_no_note` | `rejected` | [processTweet.ts](../src/pipeline/orchestration/processTweet.ts) (note-needed prefilter gate) | Cheap deepseek prefilter decided no note is needed. Bot never ran. |
 | `no_correction_needed` | `rejected` | [processTweet.ts](../src/pipeline/orchestration/processTweet.ts) (note status not `CORRECTION WITH TRUSTWORTHY CITATION`) | Bot decided the post needs no note. |
 | `low_evaluation_score` | `rejected` | [processTweet.ts](../src/pipeline/orchestration/processTweet.ts) (`evalShouldSubmit === false`) | Self-eval score below the submission threshold. |
+| `low_materiality_score` | `rejected` | [processTweet.ts](../src/pipeline/orchestration/processTweet.ts) (`materialityGate.shouldSubmit === false`) | Materiality persuasion score below the submission threshold. |
 | `check_failed` | `rejected` | [processTweet.ts](../src/pipeline/orchestration/processTweet.ts) (`checkResult` is "NO: …") | Source verifier read the sources and decided they don't support the note. **Substantive rejection.** |
 | `check_error` | `failed` | [processTweet.ts](../src/pipeline/orchestration/processTweet.ts) (`checkResult` starts with "ERROR") | Verifier returned an error string (legacy path; new code throws instead). |
 | `scoring_filters_failed` | `rejected` | [processTweet.ts](../src/pipeline/orchestration/processTweet.ts) (bot's score filters tripped) | A score on the bot's `scoreFilters` list crossed its threshold. |
