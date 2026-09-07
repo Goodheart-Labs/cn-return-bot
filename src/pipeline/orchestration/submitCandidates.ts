@@ -19,6 +19,11 @@ import { submitNoteForTweet } from "./submitNoteForTweet";
 import type { Post } from "../../api/fetchEligiblePosts";
 import type { ProcessTweetResult } from "./processTweet";
 import { velocityPerHour, formatVelocity, isAboveVelocityFloor, REGULAR_VELOCITY_FLOOR_PER_HOUR } from "../utils/velocity";
+import { featuresFromPost, flagCount } from "../ranking/features";
+import { FLAG_CUTS_2026_08, SCORERS, type Scorer } from "../ranking/scorers";
+import { orderForSubmit, partitionByBar } from "../ranking/submitOrder";
+import type { Window } from "../capacity/window";
+import { EXPLORE_SHARE } from "../capacity/window";
 
 // We prefer the velocity that was frozen when the post was fetched, which is
 // what the regular feed does. Candidates from the pre-passes arrive without one,
@@ -180,10 +185,23 @@ export function partitionByVelocityFloor(candidates: Candidate[]): {
   return { kept, floorCut };
 }
 
+export interface SubmitOptions {
+  policy: string;
+  /** Null keeps pipeline order (the control arm). */
+  scorer: Scorer | null;
+  window: Window | null;
+  /** Null means no bar: everything the scorer orders is submitted. */
+  bar: number | null;
+  rng?: () => number;
+}
+
+const CONTROL_OPTIONS: SubmitOptions = { policy: "velocity_only", scorer: null, window: null, bar: null };
+
 export async function submitCandidates(
   candidates: Candidate[],
   supabaseLogger: SupabaseLogger,
-  dryRun: boolean
+  dryRun: boolean,
+  options: SubmitOptions = CONTROL_OPTIONS,
 ): Promise<number> {
   const inCI = !!process.env.CI;
   if (inCI) {
@@ -210,13 +228,59 @@ export async function submitCandidates(
       );
     }
 
-    // We do not re-sort. `kept` is already in the order runPipeline built: the
-    // reserved misinfo notes, then the regular ones, then any misinfo notes past
-    // the reserve, then the Pangram ones. Each group was ranked where it was
-    // selected.
-    const ordered = kept;
+    // Control arm: `kept` stays in the order runPipeline built. Treatment arm:
+    // the scorer orders it, and the bar (when set) decides who goes out.
+    const { scorer, bar } = options;
+    const submitScore = (c: Candidate, s: Scorer) =>
+      s.scoreSubmit(featuresFromPost(c.post, c.velocity, null), c.tweetResult.evaluationScore ?? null);
+    const scoresOf = (c: Candidate) =>
+      Object.fromEntries(Object.values(SCORERS).map((s) => [s.name, submitScore(c, s)]));
 
-    console.log(`[submit] ${ordered.length} candidates to submit (velocity floor applied, pipeline order)`);
+    const orderedAll = scorer ? orderForSubmit(kept, (c) => submitScore(c, scorer)) : kept;
+    const { above, explored, below } = scorer
+      ? partitionByBar(orderedAll, (c) => submitScore(c, scorer), bar, EXPLORE_SHARE, options.rng)
+      : { above: orderedAll, explored: [] as Candidate[], below: [] as Candidate[] };
+    const ordered = [...above, ...explored];
+    const exploredIds = new Set(explored.map((c) => c.post.id));
+
+    console.log(
+      `[submit] ${ordered.length} candidates to submit (policy=${options.policy}` +
+        `${bar !== null ? `, bar=${bar.toFixed(2)}, ${below.length} below, ${explored.length} explored` : ""})`,
+    );
+    for (const c of orderedAll) {
+      const line = Object.entries(scoresOf(c)).map(([k, v]) => `${k}=${v.toFixed(2)}`).join(" ");
+      console.log(`[submit]   ${c.post.id} ${line}${exploredIds.has(c.post.id) ? " [explore]" : below.includes(c) ? " [below bar]" : ""}`);
+    }
+
+    const decisions: Record<string, unknown>[] = [];
+    const decide = (c: Candidate, decision: string) => {
+      const scorerName = scorer?.name ?? "flags_then_eval";
+      const scores = scoresOf(c);
+      decisions.push({
+        pipeline_run_id: c.tweetResult.pipelineRunId ?? null,
+        tweet_id: c.post.id,
+        policy: options.policy,
+        scorer: scorerName,
+        submit_score: scores[scorerName],
+        scores,
+        flags: flagCount(featuresFromPost(c.post, c.velocity, null), FLAG_CUTS_2026_08),
+        eval_score: c.tweetResult.evaluationScore ?? null,
+        decision,
+        bar,
+        cap: options.window?.cap ?? null,
+        cap_source: options.window?.capSource ?? null,
+        used_24h: options.window?.used24h ?? null,
+        remaining: options.window?.remaining ?? null,
+      });
+    };
+    for (const f of floorCut) decide(f.candidate, "below_velocity_floor");
+    for (const sc of staleCut) decide(sc.candidate, "stale_at_submit");
+    for (const c of below) decide(c, "below_bar");
+    const flushDecisions = async () => {
+      if (dryRun) return;
+      try { await supabaseLogger.insertRankingDecisions(decisions); }
+      catch (err) { console.warn("[submit] ranking_decisions insert failed:", err); }
+    };
 
     if (dryRun) {
       for (const f of floorCut) {
@@ -229,6 +293,18 @@ export async function submitCandidates(
         console.log(`[submit]   (dry run) eval=${c.tweetResult.evaluationScore?.toFixed(2) ?? "?"} vel=${formatVelocity(velocityOf(c))}${c.isMisinfo ? " [misinfo]" : ""} | ${c.post.id}`);
       }
       return 0;
+    }
+
+    for (const c of below) {
+      if (c.tweetResult.pipelineRunId) {
+        try {
+          await supabaseLogger.completePipelineRun(c.tweetResult.pipelineRunId, {
+            outcome: "rejected",
+            outcome_reason: "below_bar",
+            final_stage: "submission",
+          });
+        } catch {}
+      }
     }
 
     // The floor cuts and the stale cuts are recorded before anything is
@@ -271,13 +347,16 @@ export async function submitCandidates(
 
       if (result.status === "submitted") {
         submitted++;
+        decide(candidate, exploredIds.has(candidate.post.id) ? "explored" : "submitted");
         console.log(`[submit] submitted ${candidate.post.id} (eval=${evalStr}, vel=${formatVelocity(velocityOf(candidate))}) → note ${result.noteId}`);
       } else if (result.status === "daily_limit") {
         limitHit = true;
         console.log(`[submit] daily limit reached after ${submitted} submissions`);
         const remaining = ordered.slice(ordered.indexOf(candidate) + 1);
         limitSkipped = remaining.length + 1;
+        decide(candidate, "daily_limit_reached");
         for (const r of remaining) {
+          decide(r, "daily_limit_reached");
           if (r.tweetResult.pipelineRunId) {
             try {
               await supabaseLogger.completePipelineRun(r.tweetResult.pipelineRunId, {
@@ -291,12 +370,15 @@ export async function submitCandidates(
         break;
       } else if (result.status === "expired") {
         expired++;
+        decide(candidate, "expired");
         console.log(`[submit] expired ${candidate.post.id} (${result.reason}) — skipping`);
       } else {
         errors++;
+        decide(candidate, "error");
         console.log(`[submit] error ${candidate.post.id}: ${result.message} — will not retry`);
       }
     }
+    await flushDecisions();
 
     const breakdown = [
       `${submitted} submitted`,
@@ -305,6 +387,8 @@ export async function submitCandidates(
       expired ? `${expired} expired` : null,
       errors ? `${errors} errors` : null,
       limitHit ? `${limitSkipped} skipped (daily limit)` : null,
+      below.length ? `${below.length} below bar` : null,
+      explored.length ? `${explored.length} explored` : null,
     ].filter(Boolean).join(", ");
     console.log(`[submit] result: ${breakdown}`);
 

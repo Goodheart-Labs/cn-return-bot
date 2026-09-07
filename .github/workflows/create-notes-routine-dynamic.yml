@@ -32,6 +32,7 @@ jobs:
       # Supabase credentials for data storage
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      CAPACITY_BAR_ENABLED: ${{ vars.CAPACITY_BAR_ENABLED }}
       # Groq API key for Whisper audio transcription (video analysis)
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
       # xAI API key for Grok X search

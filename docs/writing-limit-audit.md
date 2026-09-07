@@ -48,7 +48,7 @@ Closing line on the page: *"We will require that AI Note Writers write notes reg
 
 ## SOURCE B — our implementation of Source A
 
-File: `src/pipeline/orchestration/updateWritingLimit.ts`
+Historical source: [retired updateWritingLimit.ts](https://github.com/Goodheart-Labs/cn-return-bot/blob/f3ac8593/src/pipeline/orchestration/updateWritingLimit.ts). The disabled module has since been removed; the excerpts below describe that old implementation.
 
 > ⟢ **CHECK** — **the entire file is commented out.** Lines 1-6:
 ```

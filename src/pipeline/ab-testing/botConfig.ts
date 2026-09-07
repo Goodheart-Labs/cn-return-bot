@@ -10,6 +10,8 @@ export interface BotConfig {
    *  it with withForcedPicks. */
   botId: string;
   model: string;
+  /** Per-run ranking policy; a scorer name from src/pipeline/ranking/scorers.ts. */
+  ranking_policy?: string;
   /** Step-specific model overrides. Each defaults to `model` when unset. */
   search_model?: string;
   /** Model for the prefilter's search analyzer. When it is unset the analyzer
@@ -143,6 +145,8 @@ export interface BotConfig {
    * to simple-bot only. TIMING_CONTEXT_TEST sets it and it defaults to false.
    */
   timing_context?: boolean;
+  /** Enables the writer's final abstention check. */
+  writer_last_check?: boolean;
   /**
    * When this is true, simple-bot's search step uses the claim-check prompt. The
    * input is then a claim extracted from a podcast, an interview, or an article,

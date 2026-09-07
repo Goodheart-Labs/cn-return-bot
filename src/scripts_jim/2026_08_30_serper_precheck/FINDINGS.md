@@ -89,6 +89,37 @@ Zero Serper errors and zero empty-result responses. The abandoned post and the
 "Made with AI" label-check timeouts are local-environment artifacts (missing
 ffmpeg, YouTube datacenter-IP block, headless VPS), not related to the change.
 
+## Production after the merge (2026-09-03, `compare_prefilter_rate.py`)
+
+PR #422 merged at 15:46 UTC. The first two create-notes runs on the new code:
+
+| run | posts | prefilter search | outcome |
+|-----|-------|------------------|---------|
+| 15:48 (33774776759) | 19 | 4 to 30 results per post, no failures | 4 candidates, 3 notes submitted |
+| 16:18 (33777790902) | 19 | 17 to 30 results per post, no failures | 0 candidates |
+
+Zero Serper errors, zero "Google search failed" tool results, and zero
+fail-open events across both runs.
+
+Prefilter health before and after the swap, over the last 7 days:
+
+| period | prefiltered posts | pass rate | zero-result searches | avg results per post |
+|--------|-------------------|-----------|----------------------|----------------------|
+| before (SearXNG) | 4130 | 45.4% | 2 | 21.0 |
+| after (Serper) | 50 | 34.0% | 0 | 20.8 |
+
+Average result count is unchanged (20.8 vs 21.0), which is the signal that
+matters: the search layer sees the same amount of evidence per post. The lower
+pass rate is not significant on 50 posts (z = -1.62, two-sided p = 0.11) and
+sits inside the normal per-run spread: across the last 170 runs the pass rate
+ranged from 12% to 74% with a median of 44%, and 39 of them were at or below
+34%. The 0-candidate second run is likewise routine, 22 of the last 185 runs
+produced no candidates.
+
+The two failures in the second run were `unfetchable_sources` (the source
+verifier could not fetch cited pages) and one `check_failed` (the eval gate
+rejecting a weak note). Neither involves search.
+
 ## Prior validation baseline
 
 The old prefilter was validated offline against simple-bot's own decisions

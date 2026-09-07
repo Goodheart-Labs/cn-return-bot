@@ -1,6 +1,6 @@
 /**
- * This script generates the main report. The documentation for it is in
- * docs/main-report.md.
+ * Run: bun run src/reports/generateMainReport.ts [--local]
+ * Writes tmp/reports/full-bot-report.html and opens it in the browser.
  */
 import "dotenv/config";
 
@@ -1058,7 +1058,7 @@ const html = `<!DOCTYPE html>
     updateCharts();
   </script>
 
-  <p class="data-source">Generated ${new Date().toISOString().slice(0, 16)} UTC &mdash; <a href="https://github.com/user/cn-return-bot/blob/main/docs/main-report.md">Report docs</a></p>
+  <p class="data-source">Generated ${new Date().toISOString().slice(0, 16)} UTC</p>
 </body>
 </html>`;
 

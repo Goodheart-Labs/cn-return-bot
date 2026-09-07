@@ -13,6 +13,7 @@ test-runs/
 dataset_runs/
 
 # Local run outputs / caches (regeneratable; kept on disk, not committed)
+/tmp/
 /output/
 /podcast_results/
 /podcast_results.zip
