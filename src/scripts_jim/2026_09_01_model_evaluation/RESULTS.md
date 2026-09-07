@@ -18,9 +18,17 @@ Every arm shipping at a live weight has been verified against a real request in
 its real call shape. Muse is the exception: OpenRouter refuses to route to it
 until the account opts in to providers that train on prompts, which is the
 consent mechanism for the very trade that makes the tier cheap. Both Muse arms
-therefore ship at weight 0, so search goes from a total weight of 25 to 28 and
-the writer from 100 to 90. Enabling the two arms afterwards restores those to 32
-and 100 and is a change to two numbers.
+therefore ship at weight 0, so search goes from a total weight of 25 to 28.
+Enabling the search arm afterwards takes it to 32, a change to one number.
+
+The **writer** ended up somewhere else. Rather than carrying five exploratory
+arms, Jim narrowed it on 2026-09-07 to a straight 50/50 between the latest Sonnet
+and the latest Gemini Flash, so the writer now runs `sonnet5` and `gemini38flash`
+at 50 each and everything else sits at 0. That answers the cheap-writer question
+directly and leaves the search test as the place where models are explored. Fable
+5.1 is a casualty of that: it is verified and declared, but at weight 0, so the
+"is Fable worth it" question stays open rather than being answered by this
+change.
 
 ## What we run today [code]
 
