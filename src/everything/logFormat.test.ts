@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { clip, duration, group, ordinal, table, tally } from "./logFormat";
+import { clip, duration, fixedRow, group, groupClose, groupOpen, ordinal, table, tally } from "./logFormat";
 
 /* The run log is the only window into what the pipeline did, so its formatting
  * is worth pinning down. The collapsing behaviour in particular differs
@@ -86,5 +86,23 @@ describe("clip", () => {
 describe("tally", () => {
   test("renders counts biggest first", () => {
     expect(tally(new Map([["natesilver", 7], ["slowboring", 16]]))).toBe("slowboring 16, natesilver 7");
+  });
+});
+
+describe("fixedRow", () => {
+  test("pads to the given widths and clips a cell that would overflow", () => {
+    const row = fixedRow(["1", "averyveryverylongcreatorname", "visits", "52"], [4, 12, 8, 6], ["right", "left", "left", "right"]);
+    expect(row).toBe("        1  averyveryve…  visits        52");
+  });
+});
+
+describe("groupOpen and groupClose", () => {
+  test("bracket a streamed section on CI and degrade to a header locally", () => {
+    process.env.CI = "true";
+    expect(groupOpen("each creator")).toBe("::group::each creator");
+    expect(groupClose()).toBe("::endgroup::");
+    delete process.env.CI;
+    expect(groupOpen("each creator")).toBe("  each creator");
+    expect(groupClose()).toBe("");
   });
 });
