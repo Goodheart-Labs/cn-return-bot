@@ -28,6 +28,9 @@ export interface EverythingItem {
   title: string | null;
   published_at: string | null;
   status: "queued" | "processing" | "done" | "error";
+  /** Which queue tier the item sits in, from QUEUE_PRIORITY. It is what tells a
+   *  page a reader is waiting on apart from the backlog. */
+  priority: number;
   /** The body text supplied up front for a local `--doc` item, read from a file
    *  at enqueue time. It is null for a live URL that the worker fetches. Once an
    *  item has been ingested this column also holds the text that the public
@@ -35,7 +38,7 @@ export interface EverythingItem {
   full_text: string | null;
 }
 
-const ITEM_COLUMNS = "id, project_id, source, url, title, published_at, status, full_text";
+const ITEM_COLUMNS = "id, project_id, source, url, title, published_at, status, priority, full_text";
 
 export type ClaimStatus = "pending" | "skipped" | "no_note" | "note" | "error";
 

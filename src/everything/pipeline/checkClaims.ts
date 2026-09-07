@@ -49,10 +49,6 @@ export interface ClaimPostParams {
   /** The everything_items.id. The synthetic post id built from it contains a
    *  hyphen, so it can never be mistaken for a real tweet id. */
   itemId: string;
-  /** The everything_claims.id. The run record with its logs and cost is keyed to
-   *  it. Passing null skips recording the run, which is what the debug harnesses
-   *  and ad-hoc scripts do. */
-  claimId: string | null;
   index: number;
   /** The date the content was published. It becomes the synthetic post's posting
    *  date, the same way the tweet pipeline uses a tweet's date. */
@@ -113,12 +109,6 @@ export async function runClaimCheck(post: Post): Promise<{ check: ClaimCheck; ru
   return { check: buildClaimCheck(result), run: buildRunRecord(result, log) };
 }
 
-export async function checkClaim(params: ClaimPostParams): Promise<ClaimCheck> {
-  const { check, run } = await runClaimCheck(buildClaimPost(params));
-  if (params.claimId) await recordClaimRun(params.claimId, run);
-  return check;
-}
-
 function buildClaimCheck(result: ProcessTweetResult): ClaimCheck {
   if (result.outcome === "candidate") {
     return {
@@ -163,7 +153,7 @@ export async function recordClaimRun(claimId: string, run: ClaimRunRecord): Prom
       cost: run.costUsd,
     });
   } catch (err: any) {
-    console.warn(`  [checkClaim] failed to record pipeline run for claim ${claimId}: ${err?.message}`);
+    console.warn(`  [recordClaimRun] failed to record pipeline run for claim ${claimId}: ${err?.message}`);
   }
 }
 

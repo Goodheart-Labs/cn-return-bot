@@ -19,6 +19,7 @@
 
 import "dotenv/config";
 import { closeBrowser } from "../pipeline/utils/browserManager";
+import { fetchClaimCheckHealth, fetchExtractionHealth, queueIsStuck } from "../service/client";
 import { runAutoEnqueue } from "./autoEnqueue";
 import { consumeRequests } from "./consumeRequests";
 import { ensureYtDlp } from "./sources/youtube";
@@ -27,8 +28,31 @@ import { drainQueue } from "./worker";
 
 const RUN_TIME_BUDGET_MS = 5 * 60_000;
 
+/** Asks both services how they are before any work starts.
+ *
+ * This run is also the only thing watching them. A service that cannot be
+ * reached fails the run, which is how a machine that is down becomes visible
+ * instead of silently doing nothing. A service whose queue is far behind is
+ * left alone rather than given more work, because a backlog that long means it
+ * is stuck rather than busy, and this run would only wait on it for nothing. */
+async function servicesAreReady(): Promise<boolean> {
+  const [claimCheck, extraction] = await Promise.all([fetchClaimCheckHealth(), fetchExtractionHealth()]);
+  for (const health of [claimCheck, extraction]) {
+    console.log(
+      `[${health.service}] ${health.inFlight} in flight, ${health.waiting} waiting` +
+        (health.oldestWaitSeconds === null ? "" : `, oldest waiting ${health.oldestWaitSeconds}s`),
+    );
+    if (queueIsStuck(health)) {
+      console.log(`[${health.service}] queue is stuck — not adding to it this run`);
+      return false;
+    }
+  }
+  return true;
+}
+
 async function main() {
   ensureYtDlp();
+  if (!(await servicesAreReady())) return;
   const start = Date.now();
   for (let cycle = 1; ; cycle++) {
     console.log(`\n––– cycle ${cycle} (${Math.round((Date.now() - start) / 1000)}s elapsed)`);

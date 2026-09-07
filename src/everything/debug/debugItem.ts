@@ -23,12 +23,12 @@
  *   sources/substack.ts:fetchSubstackPost   — HTML fetch + strip
  *   extractClaims.ts:extractClaims          — Opus claim extraction + parsing
  *   extractClaims.ts:shouldFactCheck        — which claims get checked
- *   checkClaims.ts:checkClaim               — claim → synthetic post → note pipeline
+ *   checkClaims.ts:runClaimCheck            — claim → synthetic post → note pipeline
  *   pipeline/orchestration/processTweet.ts  — search / write / verify
  */
 
 import "dotenv/config";
-import { checkClaim } from "../pipeline/checkClaims";
+import { buildClaimPost, runClaimCheck } from "../pipeline/checkClaims";
 import { dropSpeculation, extractClaims, shouldFactCheck } from "../pipeline/extractClaims";
 import { fetchSubstackPost } from "../sources/substack";
 import { ensureYtDlp, fetchYoutubeContent } from "../sources/youtube";
@@ -88,7 +88,7 @@ async function main() {
     return;
   }
 
-  // ── Step 3: fact-check (breakpoint inside checkClaim → processSingleTweet) ──
+  // ── Step 3: fact-check (breakpoint inside runClaimCheck → processSingleTweet) ──
   const targets = all ? toCheck : [toCheck[claimIndex]].filter(Boolean);
   if (targets.length === 0) {
     console.log(`--claim ${claimIndex} out of range (0..${toCheck.length - 1}).`);
@@ -98,7 +98,8 @@ async function main() {
   for (let i = 0; i < targets.length; i++) {
     const claim = targets[i]!;
     console.log(`\n--- checking claim: ${claim.claim}`);
-    const check = await checkClaim({ claim, source, itemId: `debugitm-${i}`, claimId: null, index: i, publishedAt: content.publishedAt });
+    const post = buildClaimPost({ claim, source, itemId: `debugitm-${i}`, index: i, publishedAt: content.publishedAt });
+    const { check } = await runClaimCheck(post);
     if (check.kind === "note") {
       console.log(`  ⚠️  NOTE: ${check.note}`);
       check.sources.forEach((s) => console.log(`      source: ${s.url}${s.quote ? `\n        “${s.quote}”` : ""}`));

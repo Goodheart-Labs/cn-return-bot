@@ -10,8 +10,9 @@
  */
 
 import PQueue from "p-queue";
-import { checkClaim } from "./checkClaims";
+import { buildClaimPost, recordClaimRun } from "./checkClaims";
 import {
+  QUEUE_PRIORITY,
   fetchClaimIdsWithAiNotes,
   fetchItemClaims,
   insertClaims,
@@ -23,12 +24,23 @@ import {
   type ItemClaimRow,
   type NewClaimRow,
 } from "../db";
-import { dropSpeculation, extractClaims, shouldFactCheck } from "./extractClaims";
+import { dropSpeculation, shouldFactCheck } from "./extractClaims";
+import { requestClaimCheck, requestClaimExtraction } from "../../service/client";
+import type { WorkPriority } from "../../service/contract";
 import { spendCapReached } from "../spendCap";
 import type { ExtractedClaim, FetchedContent } from "../types";
 
-const EXTRACTION_CONCURRENCY = 3;
-const CHECK_CONCURRENCY = 4;
+/** How many claims of one item are in flight at once. The services decide the
+ *  real capacity, so this is not a capacity limit. It paces the work so the
+ *  daily spend cap is still consulted as the item progresses, which is what
+ *  lets an item stop partway and resume later. */
+const CHECK_REQUEST_CONCURRENCY = 6;
+
+/** A page someone asked for and is waiting on is served before anything from
+ *  the backlog. Everything else this file processes is backlog. */
+function workPriorityOf(item: EverythingItem): WorkPriority {
+  return item.priority >= QUEUE_PRIORITY.requested ? "reader" : "feed";
+}
 
 /** Where every extracted claim ended up, for one item. */
 export interface ItemTally {
@@ -73,7 +85,12 @@ async function checkAndRecordClaim(
   publishedAt: string | undefined,
 ): Promise<"note" | "no_note" | "error"> {
   try {
-    const check = await checkClaim({ claim, source: item.source, itemId: item.id, claimId, index, publishedAt });
+    const { check, run } = await requestClaimCheck({
+      priority: workPriorityOf(item),
+      post: buildClaimPost({ claim, source: item.source, itemId: item.id, index, publishedAt }),
+    });
+    // The service cannot store anything, so recording the run is ours to do.
+    await recordClaimRun(claimId, run);
     if (check.kind === "note") {
       await insertNote(claimId, check.note, check.sources);
       await setClaimStatus(claimId, "note", null);
@@ -120,7 +137,7 @@ export async function processFetchedContent(
   });
   console.log(`  "${content.title}" (${content.publishedAt?.slice(0, 10) ?? "no date"})`);
 
-  const extracted = await extractClaims(content, EXTRACTION_CONCURRENCY);
+  const { claims: extracted } = await requestClaimExtraction({ priority: workPriorityOf(item), content });
   const fresh = dropSpeculation(extracted);
   const duplicates = fresh.filter((c) => repeatsExistingClaim(c, existingClaims)).length;
   if (duplicates > 0) console.log(`  dropped ${duplicates} claims the item already carries`);
@@ -134,7 +151,7 @@ export async function processFetchedContent(
 
   const outcomes: Array<"note" | "no_note" | "error"> = [];
   let capped = 0;
-  const queue = new PQueue({ concurrency: CHECK_CONCURRENCY });
+  const queue = new PQueue({ concurrency: CHECK_REQUEST_CONCURRENCY });
   claims.forEach((claim, i) => {
     if (!shouldFactCheck(claim.judgement)) return;
     queue.add(async () => {
@@ -192,7 +209,7 @@ export async function resumeItemClaims(item: EverythingItem): Promise<ItemTally>
 
   const outcomes: Array<"note" | "no_note" | "error"> = [];
   let capped = 0;
-  const queue = new PQueue({ concurrency: CHECK_CONCURRENCY });
+  const queue = new PQueue({ concurrency: CHECK_REQUEST_CONCURRENCY });
   redo.forEach((row, i) => {
     queue.add(async () => {
       if (alreadyNoted.has(row.id)) {
