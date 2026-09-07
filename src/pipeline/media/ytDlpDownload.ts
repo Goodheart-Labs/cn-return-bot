@@ -8,7 +8,8 @@
  * `fetchYtDlpMetadata`, `downloadVideoWithYtDlp` and `fetchAutoSubs` instead.
  */
 
-import { execFileSync } from "child_process";
+import { execFile, execFileSync } from "child_process";
+import { promisify } from "util";
 import * as fs from "fs";
 import * as path from "path";
 import { decodeHtmlEntities } from "../utils/html";
@@ -59,6 +60,7 @@ function classifyByExtension(filePath: string): YtDlpKind | null {
 }
 
 const YT_DLP_TIMEOUT_MS = 120_000;
+const execFileAsync = promisify(execFile);
 const LOW_QUALITY_FORMAT = "worst[height<=240]/worst";
 
 export type YtDlpQuality = "default" | "low";
@@ -93,6 +95,33 @@ export function execYtDlp(url: string, args: string[]): string {
         stdio: ["pipe", "pipe", "pipe"],
       });
     } catch (err) {
+      lastError = err;
+      if (attempt < attempts) console.warn(`yt-dlp attempt ${attempt}/${attempts} failed for ${url}, retrying with a fresh proxy IP`);
+    }
+  }
+  throw lastError;
+}
+
+/** The asynchronous twin of execYtDlp, for calls that run several at once.
+ *  Same proxy rule and the same retry on a flagged proxy IP. It resolves with
+ *  stdout even when yt-dlp exits non-zero, because a multi-URL call keeps
+ *  going past a video it cannot read (a private or removed one) and reports
+ *  the failure through its exit code while the other videos' lines are
+ *  already on stdout; those lines are the point. */
+export async function execYtDlpAsync(url: string, args: string[]): Promise<string> {
+  const proxyArgs = ytDlpProxyArgs(url);
+  const attempts = proxyArgs.length > 0 ? PROXY_RETRY_ATTEMPTS : 1;
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      const { stdout } = await execFileAsync("yt-dlp", [...proxyArgs, ...args], {
+        timeout: YT_DLP_TIMEOUT_MS,
+        encoding: "utf8",
+        maxBuffer: 16 * 1024 * 1024,
+      });
+      return stdout;
+    } catch (err: any) {
+      if (typeof err?.stdout === "string" && err.stdout.trim()) return err.stdout;
       lastError = err;
       if (attempt < attempts) console.warn(`yt-dlp attempt ${attempt}/${attempts} failed for ${url}, retrying with a fresh proxy IP`);
     }
