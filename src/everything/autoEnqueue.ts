@@ -55,9 +55,9 @@ import {
   type TopPostRow,
 } from "./db";
 import type { FeedType } from "./feedUrls";
-import { fixedRow, groupClose, groupOpen, tally } from "./logFormat";
+import { duration, fixedRow, groupClose, groupOpen, tally } from "./logFormat";
 import { fetchFeedPosts, fetchPostBodyText, htmlToText } from "./sources/substack";
-import { ensureYtDlp, fetchChannelVideos, fetchVideoMeta } from "./sources/youtube";
+import { ensureYtDlp, fetchChannelVideos, fetchUploadDates } from "./sources/youtube";
 import { loadTopPosts } from "./topPosts";
 import type { SourceKind } from "./types";
 
@@ -143,7 +143,6 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedListing> {
       url: v.url,
       matchKey: v.videoId,
       label: v.title,
-      publishedAt: v.uploadDate,
     }));
   return { sourceName: channelName, entries, paidPosts: 0 };
 }
@@ -316,25 +315,29 @@ export function topPostEntries(tops: TopPostRow[], recent: FeedEntry[]): FeedEnt
     .filter((t) => !recent.some((e) => e.matchKey === t.matchKey));
 }
 
-/** Upload dates fetched per video this process, keyed by video id. This is
- *  the fallback for a listed video yt-dlp could not date from the tab text,
- *  which should be rare. The cycles of one auto-run reuse the answer. */
-const uploadDateCache = new Map<string, string | undefined>();
+/** Upload dates learned this process, keyed by video id, so the later cycles
+ *  of one auto-run do not ask again for a video the first cycle already dated. */
+const uploadDateCache = new Map<string, string>();
 
-function videoUploadDate(entry: UnprocessedEntry): string | undefined {
-  if (!uploadDateCache.has(entry.matchKey)) {
-    try {
-      uploadDateCache.set(entry.matchKey, fetchVideoMeta(entry.url).uploadDate);
-    } catch (err: any) {
-      // The ranking can live with an unknown date, so a failed metadata fetch
-      // does not kill the run. The date stays unknown and sorts newest, and if
-      // the video is genuinely unreachable the worker's own fetch will surface
-      // that as an item error.
-      console.warn(`Upload date fetch failed for ${entry.url}: ${err?.message}`);
-      uploadDateCache.set(entry.matchKey, undefined);
-    }
+/** Fills in the publication date of every YouTube candidate that does not
+ *  have one yet, in one batched pass after the walk. A recent video's listing
+ *  carries no date and the recency rank needs one; a top post arrives dated
+ *  from its cache and is left alone. Videos yt-dlp could not date stay
+ *  undated and sort as newest, the same as before, and are logged. */
+async function dateYoutubeCandidates(candidates: Candidate[]): Promise<void> {
+  const undated = candidates.filter((c) => c.entry.source === "youtube" && !c.publishedAt);
+  const toFetch = [...new Set(undated.filter((c) => !uploadDateCache.has(c.entry.matchKey)).map((c) => c.entry.url))];
+  if (toFetch.length > 0) {
+    const started = Date.now();
+    for (const [id, day] of await fetchUploadDates(toFetch)) uploadDateCache.set(id, day);
+    console.log(`  dated ${toFetch.length} YouTube candidates in ${duration(Date.now() - started)}`);
   }
-  return uploadDateCache.get(entry.matchKey);
+  let missing = 0;
+  for (const c of undated) {
+    c.publishedAt = uploadDateCache.get(c.entry.matchKey);
+    if (!c.publishedAt) missing++;
+  }
+  if (missing > 0) console.warn(`  ${missing} YouTube candidate${missing === 1 ? "" : "s"} could not be dated and will rank as newest`);
 }
 
 /** Column widths of the walk table, fixed so rows can print as they arrive. */
@@ -425,13 +428,9 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
         entry,
         sourceName,
         topPopularity: entry.topPopularity,
-        // A recent video carries its date from the channel listing and a top
-        // post from the cache; only a video with neither costs a metadata call
-        // here.
-        publishedAt:
-          entry.source === "youtube" && entry.topPopularity === undefined && !entry.publishedAt
-            ? videoUploadDate(entry)
-            : entry.publishedAt,
+        // A top post arrives dated from its cache; a recent YouTube video is
+        // dated after the walk, in one batched pass (dateYoutubeCandidates).
+        publishedAt: entry.publishedAt,
       });
     }
   }
@@ -440,6 +439,7 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
   if (closing) console.log(closing);
   console.log(`  listed ${listed} of ${walked.length}${skipped.length ? `, ${skipped.length} could not be listed` : ""}`);
   for (const line of skipped) console.log(line);
+  await dateYoutubeCandidates(candidates);
   if (paidByCreator.size > 0) {
     console.log(`  paid posts we cannot read, waiting for the subscriber inbox: ${tally(paidByCreator)}`);
   }

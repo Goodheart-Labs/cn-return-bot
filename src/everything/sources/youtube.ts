@@ -2,7 +2,7 @@ import { execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import { tmpdir } from "os";
-import { execYtDlp, fetchTimedTranscript, type SubtitleCue } from "../../pipeline/media/ytDlpDownload";
+import { execYtDlp, execYtDlpAsync, fetchTimedTranscript, type SubtitleCue } from "../../pipeline/media/ytDlpDownload";
 import type { FetchedContent } from "../types";
 
 export function ensureYtDlp(): void {
@@ -46,11 +46,6 @@ export interface ChannelVideo {
   url: string;
   title: string;
   durationSeconds: number | null;
-  /** The upload day as YYYY-MM-DD, approximate: yt-dlp derives it from the
-   *  "3 weeks ago" text on the listing, so it runs a few days late and more
-   *  so for older videos. Ordering within a channel is exact. The worker
-   *  replaces it with the real date once it fetches the video. */
-  uploadDate?: string;
 }
 
 export interface ChannelListing {
@@ -62,13 +57,8 @@ export interface ChannelListing {
 /** List the channel's name and the latest videos on its /videos tab with a
  *  single flat-playlist yt-dlp call. The newest video comes first and Shorts
  *  are left out, because that tab does not list them. The duration is null for
- *  a premiere and for a video that has not aired yet.
- *
- *  The listing also carries each video's upload day. A flat listing has no
- *  real dates, but the `approximate_date` extractor argument makes yt-dlp
- *  derive one from the "3 weeks ago" text the tab shows, in this same call.
- *  Before this, every candidate video cost a separate metadata call for its
- *  date, and those calls were most of the walk's running time. */
+ *  a premiere and for a video that has not aired yet. The listing carries no
+ *  upload dates; fetchUploadDates supplies those in bulk. */
 export function fetchChannelVideos(channelUrl: string, limit: number): ChannelListing {
   // The per-video lines print first, one per video. The playlist-level print
   // runs once after them, so the channel name is always the last line.
@@ -77,10 +67,8 @@ export function fetchChannelVideos(channelUrl: string, limit: number): ChannelLi
     "--no-warnings",
     "--playlist-items",
     `1:${limit}`,
-    "--extractor-args",
-    "youtubetab:approximate_date",
     "--print",
-    "%(id)s\t%(duration)s\t%(upload_date)s\t%(title)s",
+    "%(id)s\t%(duration)s\t%(title)s",
     "--print",
     "playlist:%(channel)s",
     `${channelUrl.replace(/\/$/, "")}/videos`,
@@ -95,13 +83,12 @@ export function parseChannelListing(out: string, channelUrl: string): ChannelLis
   // tabbed last line means the playlist print did not run.
   const channelName = lines.at(-1)?.includes("\t") ? undefined : ytDlpField(lines.pop() ?? "");
   const videos = lines.map((line) => {
-    const [videoId = "", duration = "", uploadDate = "", ...titleParts] = line.split("\t");
+    const [videoId = "", duration = "", ...titleParts] = line.split("\t");
     return {
       videoId,
       url: `https://www.youtube.com/watch?v=${videoId}`,
       title: titleParts.join(" "),
       durationSeconds: /^\d/.test(duration) ? Number.parseFloat(duration) : null,
-      uploadDate: parseUploadDate(uploadDate),
     };
   });
   // A channel's videos tab is never empty, so an empty listing means yt-dlp
@@ -113,6 +100,63 @@ export function parseChannelListing(out: string, channelUrl: string): ChannelLis
   return { channelName, videos };
 }
 
+
+/** How many videos one yt-dlp process is asked to date. One process per
+ *  video paid a second of interpreter startup each time; ten per process
+ *  shares it and the HTTP session. */
+const DATE_BATCH_SIZE = 10;
+/** How many of those processes run at once. Enough to take most of the wall
+ *  time off a walk with a few hundred candidates, few enough to look like a
+ *  person to the proxy's residential exits. */
+const DATE_CONCURRENCY = 5;
+
+/** The exact upload day, YYYY-MM-DD, of each video, keyed by video id. The
+ *  walk needs one per candidate for its recency rank, and the flat listing
+ *  carries none. Before this the walk made one yt-dlp call per video, one
+ *  after another, and those calls were most of its running time; this asks
+ *  for the same field in batches, several at once.
+ *
+ *  Skipping the watch page makes yt-dlp read the date from the player API
+ *  alone, which is the same value and far fewer bytes through a proxy paid for
+ *  by the gigabyte. A video yt-dlp cannot read is left out of the map rather
+ *  than failing the batch; the caller treats a missing date as unknown. */
+export async function fetchUploadDates(videoUrls: string[]): Promise<Map<string, string>> {
+  const dates = new Map<string, string>();
+  const batches: string[][] = [];
+  for (let i = 0; i < videoUrls.length; i += DATE_BATCH_SIZE) batches.push(videoUrls.slice(i, i + DATE_BATCH_SIZE));
+
+  const runBatch = async (batch: string[]) => {
+    try {
+      const out = await execYtDlpAsync(batch[0]!, [
+        "--skip-download",
+        "--ignore-no-formats-error",
+        "--ignore-errors",
+        "--no-warnings",
+        "--extractor-args",
+        "youtube:player_skip=webpage,configs,js",
+        "--print",
+        "%(id)s\t%(upload_date)s",
+        ...batch,
+      ]);
+      for (const line of out.split("\n")) {
+        const [id, raw] = line.split("\t");
+        const day = raw ? parseUploadDate(raw) : undefined;
+        if (id && day) dates.set(id, day);
+      }
+    } catch (err: any) {
+      console.warn(`  upload dates failed for a batch of ${batch.length} videos: ${err?.message?.split("\n")[0]}`);
+    }
+  };
+
+  // A fixed number of workers each pull the next batch until none is left.
+  let next = 0;
+  await Promise.all(
+    Array.from({ length: Math.min(DATE_CONCURRENCY, batches.length) }, async () => {
+      while (next < batches.length) await runBatch(batches[next++]!);
+    }),
+  );
+  return dates;
+}
 
 /** How deep into a channel's /videos tab the top-videos scan looks. Our
  *  largest followed channels have around 2000 videos, so this covers a whole
