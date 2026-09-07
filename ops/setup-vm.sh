@@ -39,7 +39,16 @@ sudo -u "$SERVICE_USER" bash -c "cd $REPO_DIR && ~/.bun/bin/bun install --frozen
 
 echo "── playwright chromium (the claim checker's web-fetch ladder ends in a headless browser)"
 sudo -u "$SERVICE_USER" bash -c "cd $REPO_DIR && ~/.bun/bin/bunx playwright install chromium"
-bash -c "cd $REPO_DIR && npx --yes playwright install-deps chromium"
+# playwright's own install-deps wants to run apt itself via node and sudo,
+# neither of which fits this machine. Its dry-run prints the missing package
+# names (indented, one per line), so we collect them and install them here.
+mapfile -t chromium_deps < <(
+  sudo -u "$SERVICE_USER" bash -c "cd $REPO_DIR && ~/.bun/bin/bunx playwright install-deps chromium --dry-run" \
+    | grep -E '^[[:space:]]+[^[:space:]]+$' | awk '{print $1}' || true
+)
+if [ "${#chromium_deps[@]}" -gt 0 ]; then
+  apt-get install -y --no-install-recommends "${chromium_deps[@]}"
+fi
 
 echo "── environment file"
 mkdir -p "$(dirname "$ENV_FILE")"
