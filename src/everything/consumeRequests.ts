@@ -46,9 +46,18 @@ function classifyRequestSource(pageUrl: string): ItemSource {
   return extractYoutubeVideoId(pageUrl) ? "youtube" : "web";
 }
 
-/** Consumes one note request. Returns a log line describing what happened.
- *  Exported for the tests, which mock the db module underneath it. */
-export async function consumeNoteRequest(request: NoteRequestRow): Promise<string> {
+/** What became of one reader request. `queued` covers every way a page ends up
+ *  waiting for the worker: enqueued fresh, promoted to a whole-page check, or
+ *  bumped up the queue. `deferred` is a page a worker is holding right now, so
+ *  the request stays pending for the next cycle. */
+export type NoteRequestOutcome = {
+  kind: "queued" | "already_checked" | "deferred";
+  detail: string;
+};
+
+/** Consumes one note request. Exported for the tests, which mock the db module
+ *  underneath it. */
+export async function consumeNoteRequest(request: NoteRequestRow): Promise<NoteRequestOutcome> {
   const existing = await findItemForPageUrl(request.page_url);
   if (existing) {
     // Only a finished whole-page check refuses the request. An item that
@@ -56,12 +65,12 @@ export async function consumeNoteRequest(request: NoteRequestRow): Promise<strin
     // paragraph was checked, is promoted to a whole-page check instead.
     if (existing.status === "done" && existing.checked_scope === "page") {
       await resolveNoteRequest(request.id, "done", "page was already checked", existing.id);
-      return `already checked: ${request.page_url}`;
+      return { kind: "already_checked", detail: `already checked: ${request.page_url}` };
     }
     // A worker is holding this item right now. Taking the row away mid-run
     // would race it, so the request stays pending and the next cycle retries.
     if (existing.status === "processing") {
-      return `item is being processed, request stays pending: ${request.page_url}`;
+      return { kind: "deferred", detail: `a worker is on it now, request stays pending: ${request.page_url}` };
     }
     if (existing.checked_scope !== "page") {
       // The promotion overwrites full_text. A paragraph item's old text would
@@ -78,7 +87,7 @@ export async function consumeNoteRequest(request: NoteRequestRow): Promise<strin
       // says so.
       const reason = request.selection ? "checked the whole page instead" : null;
       await resolveNoteRequest(request.id, "enqueued", reason, existing.id);
-      return `promoted existing item to a whole-page check: ${request.page_url}`;
+      return { kind: "queued", detail: `promoted existing item to a whole-page check: ${request.page_url}` };
     }
     // A whole-page item that is queued or errored goes back in the queue at
     // the requested tier. Its full_text stays as it is. A Substack item's RSS
@@ -86,7 +95,7 @@ export async function consumeNoteRequest(request: NoteRequestRow): Promise<strin
     if (existing.status === "error") await requeueItem(existing.id);
     await raiseItemPriority(existing.id, QUEUE_PRIORITY.requested);
     await resolveNoteRequest(request.id, "enqueued", null, existing.id);
-    return `bumped existing item to requested priority: ${request.page_url}`;
+    return { kind: "queued", detail: `bumped existing item to requested priority: ${request.page_url}` };
   }
 
   const source = classifyRequestSource(request.page_url);
@@ -110,7 +119,7 @@ export async function consumeNoteRequest(request: NoteRequestRow): Promise<strin
     checked_scope: request.selection ? "paragraph" : "page",
   });
   await resolveNoteRequest(request.id, "enqueued", null, itemId);
-  return `enqueued [${source}]: ${request.page_url}`;
+  return { kind: "queued", detail: `enqueued [${source}]: ${request.page_url}` };
 }
 
 export async function consumeNoteRequests(): Promise<void> {
@@ -123,16 +132,14 @@ export async function consumeNoteRequests(): Promise<void> {
     console.log("  none");
     return;
   }
-  let queued = 0;
-  let alreadyChecked = 0;
+  const counts = { queued: 0, already_checked: 0, deferred: 0 };
   let failed = 0;
   const detail: string[] = [];
   for (const request of pending) {
     try {
       const outcome = await consumeNoteRequest(request);
-      if (outcome.startsWith("already checked")) alreadyChecked++;
-      else queued++;
-      detail.push(`     ${outcome}`);
+      counts[outcome.kind]++;
+      detail.push(`     ${outcome.detail}`);
     } catch (err: any) {
       // A broken request must not block the rest of the inbox. The failure is
       // recorded on the request row, where a human sees it and can set the row
@@ -142,9 +149,13 @@ export async function consumeNoteRequests(): Promise<void> {
       detail.push(`     could not read ${request.page_url}: ${err?.message}`);
     }
   }
+  const { queued, already_checked, deferred } = counts;
   console.log(`  ${queued} page${queued === 1 ? "" : "s"} readers asked for ${queued === 1 ? "is" : "are"} now in the queue`);
-  if (alreadyChecked > 0) {
-    console.log(`  ${alreadyChecked} pointed at a page we had already checked, so we answered without redoing it`);
+  if (already_checked > 0) {
+    console.log(`  ${already_checked} pointed at a page we had already checked, so we answered without redoing it`);
+  }
+  if (deferred > 0) {
+    console.log(`  ${deferred} pointed at a page a worker is checking right now, so ${deferred === 1 ? "it waits" : "they wait"} for the next cycle`);
   }
   console.log(`  ${failed} could not be read`);
   const detailLog = group(`each of the ${pending.length}`, detail);

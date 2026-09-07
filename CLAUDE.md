@@ -64,7 +64,7 @@ There are some ranked strategic cruxes (Mar 2026) in Claude's auto-memory coveri
 
 ### Vocabulary
 
-- **Project** — how the public website groups notes, one row in `everything_projects`, with a slug like `zvi` and a display name. Usually one creator, but not always: `ai-2040` is a website we imported once, and "Around the web" is the catch-all for one-off pages. Since migration 086 a project also carries the creator's `feed_url` and their `priority_until`.
+- **Project** — how the public website groups notes, one row in `everything_projects`, with a slug like `zvi` and a display name. Usually one creator, but not always: `ai-2040` is a website we imported once, and "Around the web" is the catch-all for one-off pages. Since migration 086 a project also carries the creator's `feed_url` and their `priority_until`, and its slug is always the one `canonicalFeed()` derives from that URL (with a `-2` suffix if two creators share a handle), so the URL is the key and the slug is only a name.
 - **Feed** — the address we poll for a creator's new work: a Substack publication root or a YouTube channel.
 - **Item** — one post, video or page. A row in `everything_items` and the unit of work; its status is `queued`, `processing`, `done` or `error`.
 - **Queue** — every item whose status is `queued`. **Tier** is its ordering: a page a reader asked for outranks a post from a creator holding priority, which outranks a post from a creator we walk on visits alone.

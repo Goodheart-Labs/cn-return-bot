@@ -23,7 +23,7 @@
  */
 
 import { fetchCreatorProjects, fetchVisitCounts, QUEUE_PRIORITY } from "./db";
-import { canonicalFeed } from "./feedUrls";
+import { canonicalFeed, type FeedType } from "./feedUrls";
 
 export const VISIT_RANKING_WINDOW_DAYS = 14;
 
@@ -34,6 +34,8 @@ export const MIN_VISITS_TO_WALK_CREATOR = 2;
 
 export interface RankedCreator {
   project_slug: string;
+  /** Derived from the URL at read time, never stored, so it cannot drift. */
+  feed_type: FeedType;
   feed_url: string;
   /** The QUEUE_PRIORITY tier this creator's items enqueue at. */
   priority: number;
@@ -70,22 +72,32 @@ export async function rankCreators(): Promise<RankedCreator[]> {
     else visitsByUrl.set(key, { feed_url: c.feed_url.replace(/\/+$/, ""), visits: c.visits });
   }
 
-  // Known creators are indexed by feed URL rather than by slug, because a slug
-  // is not always what the URL derives to: thezvi.substack.com is project
-  // `zvi`, @DwarkeshPatel is `dwarkesh` and astralcodexten is `acx`. Matching
-  // on the URL is what keeps a creator walked on visits alone attached to the
-  // project their notes already live in.
+  // Known creators are indexed by feed URL rather than by slug. The URL is the
+  // key everything shares, and it is what keeps a creator walked on visits
+  // alone attached to the project their notes already live in, even when that
+  // project's slug carries a collision suffix.
   const knownByUrl = new Map(projects.map((p) => [normalizeFeedUrl(p.feed_url), p]));
 
-  const ranked: RankedCreator[] = projects.filter((p) => isOpen(p.priority_until)).map((p) => ({
-    project_slug: p.project_slug,
-    feed_url: p.feed_url,
-    priority: QUEUE_PRIORITY.prioritized,
-    prioritized: true,
-    priorityUntil: p.priority_until,
-    visits: visitsByUrl.get(normalizeFeedUrl(p.feed_url))?.visits ?? 0,
-    top_posts_refreshed_at: p.top_posts_refreshed_at,
-  }));
+  const ranked: RankedCreator[] = [];
+  for (const p of projects.filter((p) => isOpen(p.priority_until))) {
+    // The shape CHECK on the column should make this impossible; if it ever
+    // happens the walk says so rather than guessing a feed type.
+    const feed = canonicalFeed(p.feed_url);
+    if (!feed) {
+      console.warn(`  skipping ${p.project_slug}: stored feed url is not a shape we can walk (${p.feed_url})`);
+      continue;
+    }
+    ranked.push({
+      project_slug: p.project_slug,
+      feed_type: feed.feed_type,
+      feed_url: p.feed_url,
+      priority: QUEUE_PRIORITY.prioritized,
+      prioritized: true,
+      priorityUntil: p.priority_until,
+      visits: visitsByUrl.get(normalizeFeedUrl(p.feed_url))?.visits ?? 0,
+      top_posts_refreshed_at: p.top_posts_refreshed_at,
+    });
+  }
   const alreadyRanked = new Set(ranked.map((c) => normalizeFeedUrl(c.feed_url)));
 
   for (const [key, { feed_url, visits }] of visitsByUrl) {
@@ -95,10 +107,14 @@ export async function rankCreators(): Promise<RankedCreator[]> {
     // skipped rather than walked blindly. The pipeline has no other way to tell
     // what kind of feed it is, since the type is derived from the URL.
     const feed = canonicalFeed(feed_url);
-    if (!feed) continue;
+    if (!feed) {
+      console.warn(`  skipping a visited creator: feed url is not a shape we can walk (${feed_url})`);
+      continue;
+    }
     const known = knownByUrl.get(key);
     ranked.push({
       project_slug: known?.project_slug ?? feed.project_slug,
+      feed_type: feed.feed_type,
       feed_url: known?.feed_url ?? feed.feed_url,
       priority: QUEUE_PRIORITY.backlog,
       prioritized: false,

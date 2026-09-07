@@ -72,13 +72,13 @@ describe("rankCreators", () => {
   });
 
   test("a creator we know keeps their project when they qualify on visits alone", async () => {
-    // thezvi.substack.com is project "zvi" by hand. Deriving the slug from the
-    // URL would say "thezvi", create a second project and split their notes on
-    // the public site.
-    dbState.creatorProjects = [{ ...creator("zvi"), feed_url: "https://thezvi.substack.com" }];
+    // A project's slug can carry a collision suffix, so deriving it from the
+    // URL would say "thezvi", miss the real project, create a second one and
+    // split the creator's notes on the public site. The URL is the key.
+    dbState.creatorProjects = [{ ...creator("thezvi-2"), feed_url: "https://thezvi.substack.com" }];
     dbState.visitCounts = [{ feed_url: "https://thezvi.substack.com", visits: 4 }];
     const ranked = await rankCreators();
-    expect(ranked.map((c) => c.project_slug)).toEqual(["zvi"]);
+    expect(ranked.map((c) => c.project_slug)).toEqual(["thezvi-2"]);
     expect(ranked[0]!.prioritized).toBe(false);
   });
 

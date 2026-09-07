@@ -54,7 +54,7 @@ import {
   type KnownItemUrl,
   type TopPostRow,
 } from "./db";
-import { canonicalFeed, type FeedType } from "./feedUrls";
+import type { FeedType } from "./feedUrls";
 import { group, table, tally } from "./logFormat";
 import { fetchFeedPosts, fetchPostBodyText, htmlToText } from "./sources/substack";
 import { ensureYtDlp, fetchChannelVideos, fetchVideoMeta } from "./sources/youtube";
@@ -235,7 +235,7 @@ async function retryErroredItems(): Promise<void> {
  *  stored, so a row can never disagree with itself. */
 async function feedsToWalk(): Promise<{ feed: PriorityFeed; creator: RankedCreator }[]> {
   return (await rankCreators()).map((c) => ({
-    feed: { project: c.project_slug, type: canonicalFeed(c.feed_url)?.feed_type ?? "substack", url: c.feed_url },
+    feed: { project: c.project_slug, type: c.feed_type, url: c.feed_url },
     creator: c,
   }));
 }
@@ -347,12 +347,14 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
     await retryErroredItems();
   }
 
+  // The creators are ranked once here and handed to the top-posts refresh,
+  // rather than ranked again inside it, so one cycle costs one ranking.
+  const walked = await feedsToWalk();
   // A dry run must not write, so it reads the cached top lists without
   // refreshing the stalest one.
-  const topRows = dryRun ? await fetchAllTopPosts() : await loadTopPosts();
+  const topRows = dryRun ? await fetchAllTopPosts() : await loadTopPosts(walked.map((w) => w.creator));
 
   const candidates: Candidate[] = [];
-  const walked = await feedsToWalk();
   const creatorRows: string[][] = [];
   const skipped: string[] = [];
   const paidByCreator = new Map<string, number>();

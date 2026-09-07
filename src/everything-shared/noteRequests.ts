@@ -38,8 +38,6 @@ export async function submitNoteRequest(params: {
  *  which the database's own trigger does. That path deliberately affects no
  *  rows, so an empty result is success and not failure. */
 export async function requestCreatorPriority(params: { feedUrl: string }) {
-  const { error } = await supabase
-    .from("everything_projects")
-    .insert({ feed_url: params.feedUrl }, { count: undefined });
+  const { error } = await supabase.from("everything_projects").insert({ feed_url: params.feedUrl });
   if (error) throw new Error(error.message);
 }

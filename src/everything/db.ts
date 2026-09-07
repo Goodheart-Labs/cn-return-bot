@@ -64,7 +64,10 @@ interface ProjectRow {
   id: string;
   slug: string;
   name: string;
+  feed_url: string | null;
 }
+
+const PROJECT_COLUMNS = "id, slug, name, feed_url";
 
 /** Writes a project's real display name once a fetch has learned it. A project
  *  created before its name was known carries its slug as the name, and only
@@ -76,15 +79,30 @@ async function fillDisplayName(project: ProjectRow, displayName: string | undefi
   console.log(`Project "${project.slug}" display name set to "${displayName}"`);
 }
 
+/** The first of `base`, `base-2`, `base-3`, ... that no project uses yet. The
+ *  same rule the press trigger in migration 086 applies, so a creator gets the
+ *  same slug whichever path first meets them. */
+async function freeSlug(base: string): Promise<string> {
+  const db = getSupabaseClient();
+  for (let suffix = 1; ; suffix++) {
+    const candidate = suffix === 1 ? base : `${base}-${suffix}`;
+    const taken = throwOnError(
+      await db.from("everything_projects").select("id").eq("slug", candidate).maybeSingle(),
+    ) as { id: string } | null;
+    if (!taken) return candidate;
+  }
+}
+
 /** Returns the project id for a creator or a slug, creating the project if we
- *  have never seen it.
+ *  have never seen it. A creator is looked up by feed URL first, because that
+ *  is the key everything shares, and by slug second.
  *
- *  The feed URL is tried first when the caller has one, because a creator's
- *  slug is not always what their URL derives to. Three creators were given a
- *  short slug by hand: thezvi.substack.com is project `zvi`, @DwarkeshPatel is
- *  `dwarkesh` and astralcodexten is `acx`. Looking those up by a derived slug
- *  would miss them and create a second, empty project, which would split their
- *  notes on the public site.
+ *  Two different creators can derive the same slug, such as a YouTube channel
+ *  and a Substack that both go by the same handle. When the slug is taken by a
+ *  project that already carries some other feed URL, that is a different
+ *  creator, and the new one gets a suffixed slug rather than being merged into
+ *  the wrong project. A slug-matched project with no feed URL yet is the same
+ *  creator ingested before we tracked feeds, and learns its URL here.
  *
  *  On an existing project the display name only fills in a slug placeholder;
  *  see fillDisplayName. */
@@ -98,7 +116,7 @@ export async function resolveProjectId(params: {
 
   if (feedUrl) {
     const byFeed = throwOnError(
-      await db.from("everything_projects").select("id, slug, name").eq("feed_url", feedUrl).maybeSingle(),
+      await db.from("everything_projects").select(PROJECT_COLUMNS).eq("feed_url", feedUrl).maybeSingle(),
     ) as ProjectRow | null;
     if (byFeed) {
       await fillDisplayName(byFeed, displayName);
@@ -107,23 +125,23 @@ export async function resolveProjectId(params: {
   }
 
   const bySlug = throwOnError(
-    await db.from("everything_projects").select("id, slug, name").eq("slug", slug).maybeSingle(),
+    await db.from("everything_projects").select(PROJECT_COLUMNS).eq("slug", slug).maybeSingle(),
   ) as ProjectRow | null;
-  if (bySlug) {
+  const sameCreator = bySlug && (!feedUrl || !bySlug.feed_url || bySlug.feed_url === feedUrl);
+  if (bySlug && sameCreator) {
     await fillDisplayName(bySlug, displayName);
-    // A project ingested before we knew its feed learns it now, so the next
-    // lookup finds it by feed URL.
-    if (feedUrl) {
-      throwOnError(await db.from("everything_projects").update({ feed_url: feedUrl }).eq("id", bySlug.id).is("feed_url", null));
+    if (feedUrl && !bySlug.feed_url) {
+      throwOnError(await db.from("everything_projects").update({ feed_url: feedUrl }).eq("id", bySlug.id));
     }
     return bySlug.id;
   }
 
+  const newSlug = bySlug ? await freeSlug(slug) : slug;
   return (
     throwOnError(
       await db
         .from("everything_projects")
-        .insert({ slug, name: displayName ?? slug, feed_url: feedUrl ?? null })
+        .insert({ slug: newSlug, name: displayName ?? newSlug, feed_url: feedUrl ?? null })
         .select("id")
         .single(),
     ) as { id: string }
@@ -135,7 +153,7 @@ export async function resolveProjectId(params: {
 export async function fillProjectDisplayName(projectId: string | null, displayName?: string): Promise<void> {
   if (!projectId || !displayName) return;
   const project = throwOnError(
-    await getSupabaseClient().from("everything_projects").select("id, slug, name").eq("id", projectId).maybeSingle(),
+    await getSupabaseClient().from("everything_projects").select(PROJECT_COLUMNS).eq("id", projectId).maybeSingle(),
   ) as ProjectRow | null;
   if (project) await fillDisplayName(project, displayName);
 }
@@ -489,8 +507,10 @@ export async function resolveNoteRequest(
 }
 
 /** A creator we already know: a project row carrying the feed we poll. A
- *  creator IS a project (migration 086), so this is where their hand-picked
- *  slug, their priority window and their top-posts stamp all live. */
+ *  creator IS a project (migration 086), so this is where their slug, their
+ *  priority window and their top-posts stamp all live. The slug is derived
+ *  from the URL, with a suffix when two creators share a handle, so the URL is
+ *  the reliable key and the slug is not. */
 export interface CreatorProject {
   project_slug: string;
   feed_url: string;

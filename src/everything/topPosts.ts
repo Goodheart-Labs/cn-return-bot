@@ -14,8 +14,7 @@
  */
 
 import { fetchAllTopPosts, replaceFeedTopPosts, type TopPostRow } from "./db";
-import { rankCreators, type RankedCreator } from "./creatorRanking";
-import { canonicalFeed } from "./feedUrls";
+import type { RankedCreator } from "./creatorRanking";
 import { fetchTopArchivePosts } from "./sources/substack";
 import { fetchChannelTopVideos, fetchVideoMeta } from "./sources/youtube";
 
@@ -23,7 +22,7 @@ const TOP_POSTS_PER_FEED = 5;
 const REFRESH_AGE_DAYS = 7;
 
 async function fetchFreshTopList(feed: RankedCreator): Promise<Omit<TopPostRow, "feed_url">[]> {
-  if (canonicalFeed(feed.feed_url)?.feed_type === "substack") {
+  if (feed.feed_type === "substack") {
     return (await fetchTopArchivePosts(feed.feed_url, TOP_POSTS_PER_FEED)).map((p, i) => ({
       source: "substack" as const,
       url: p.url,
@@ -54,11 +53,12 @@ const isStale = (feed: RankedCreator): boolean =>
  *  one, at most one per call so a single run never pays for more than one
  *  listing. A failed refresh is logged and the walk goes on with the cached
  *  lists; the same feed is retried on the next run, so a lasting failure
- *  shows up in every run's log rather than killing the dispatch. Returns the
+ *  shows up in every run's log rather than killing the dispatch. Takes the
+ *  creators the walk already ranked, so a cycle ranks once. Returns the
  *  up-to-date rows. */
-export async function loadTopPosts(): Promise<TopPostRow[]> {
+export async function loadTopPosts(creators: RankedCreator[]): Promise<TopPostRow[]> {
   const existing = await fetchAllTopPosts();
-  const stale = (await rankCreators()).find(isStale);
+  const stale = creators.find(isStale);
   if (!stale) return existing;
   try {
     const rows = await fetchFreshTopList(stale);

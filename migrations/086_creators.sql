@@ -16,6 +16,12 @@
 -- reasons the pipeline walks a creator: an unexpired priority_until, or at
 -- least two visits in the last fourteen days. Nothing is permanent.
 --
+-- The three hand-picked slugs are renamed to what their URLs derive to, so from
+-- here on every creator's slug follows one rule and nothing has to remember an
+-- exception. The rows keep their ids, so their items and notes stay attached;
+-- only the string in the public URL changes, and the site falls back to its
+-- default project for a link that names a slug it no longer knows.
+--
 -- The browser extension writes this table directly with the public anon key.
 -- A press grants exactly seven days and cannot name a project, because anon
 -- holds an insert privilege on feed_url alone and the trigger below fills in
@@ -107,9 +113,11 @@ comment on column everything_projects.top_posts_refreshed_at is
   'When this creator''s everything_top_posts rows were last recomputed (GOO-81). Null means never. Moved here from everything_followed_feeds by migration 086.';
 
 -- ---------------------------------------------------------------------------
--- 3. Carry the old list over. This join is the only record anywhere that
---    thezvi.substack.com is project 'zvi', so it has to happen before the drop
---    at the end of this file.
+-- 3. Carry the old list over. The join on project_slug is what attaches each
+--    feed to the project that already holds that creator's items and notes,
+--    which for the three hand-picked slugs is not the project the URL would
+--    name. The slug itself is replaced in the next step; the id, and so the
+--    attachment, is what this step preserves.
 --
 --    greatest() ignores nulls, so a creator with no manual flag gets exactly
 --    "seven days from when they were requested", which for most of the list is
@@ -132,6 +140,27 @@ select f.project_slug,
        f.top_posts_refreshed_at
   from everything_followed_feeds f
  where not exists (select 1 from everything_projects p where p.slug = f.project_slug);
+
+-- Every creator's slug becomes the one its URL derives to. Stopped, not
+-- silently merged, if a derived slug is already taken by some other project.
+do $$
+declare clash record;
+begin
+  select p.slug as old_slug, everything_feed_slug(p.feed_url) as new_slug into clash
+    from everything_projects p
+    join everything_projects q on q.slug = everything_feed_slug(p.feed_url) and q.id <> p.id
+   where p.feed_url is not null
+   limit 1;
+  if found then
+    raise exception 'renaming project % to % would collide with an existing project', clash.old_slug, clash.new_slug;
+  end if;
+end
+$$;
+
+update everything_projects
+   set slug = everything_feed_slug(feed_url)
+ where feed_url is not null
+   and slug <> everything_feed_slug(feed_url);
 
 -- ---------------------------------------------------------------------------
 -- 4. A press grants seven days, decided here rather than by the client.

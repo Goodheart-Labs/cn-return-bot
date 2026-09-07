@@ -21,10 +21,13 @@ sudo docker stop cn-migration-test
 
 What the checks prove, in the order they run:
 
-1. The hand-picked slugs survive. `thezvi.substack.com` stays project `zvi`,
-   `@DwarkeshPatel` stays `dwarkesh`, `astralcodexten` stays `acx`. This is the
-   bug the migration exists to prevent, and it is irreversible once the old
-   table is dropped.
+1. Every slug becomes the one its URL derives to: `zvi` is renamed `thezvi`,
+   `dwarkesh` becomes `dwarkeshpatel`, `acx` becomes `astralcodexten`. The rows
+   keep their ids, which the check proves by showing an item ingested under the
+   old slug still hanging off the renamed project. This rename is why the
+   backfill joins on the old slug before the old table is dropped: the join is
+   what attaches each feed to the right project, and it is irreversible once
+   that table is gone.
 2. A priority someone set deliberately is kept rather than overwritten by the
    date derived from when the creator was first requested.
 3. Creators requested long ago arrive expired; recent ones keep their window.
@@ -34,7 +37,8 @@ What the checks prove, in the order they run:
    into a seven-day grant.
 6. A current build's press works.
 7. A client cannot choose its own window.
-8. A client cannot name a project or take a slug that is in use.
+8. A client cannot name a project, and a second creator who shares a handle
+   with one we know gets a suffixed slug rather than being merged into them.
 9. Pressing again extends the window instead of duplicating the creator, and
    never shortens a longer window the pipeline set.
 10. A client cannot update or delete.

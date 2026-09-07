@@ -1,13 +1,15 @@
 \set ON_ERROR_STOP on
 \pset pager off
-\echo '--- 1. the hand-picked slugs survived (this is the bug the migration exists to prevent)'
+\echo '--- 1. every slug is now the one its URL derives to, and the rows kept their ids'
 select slug, feed_url, priority_until is not null as has_window from everything_projects where feed_url is not null order by slug;
+\echo '    (the item ingested under the old slug "zvi" must still hang off the renamed project)'
+select p.slug, count(i.id) as items from everything_projects p join everything_items i on i.project_id = p.id group by p.slug;
 
 \echo '--- 2. a deliberate manual flag was kept, not overwritten by created_at + 7d'
-select slug, (priority_until > now()) as still_live from everything_projects where slug = 'zvi';
+select slug, (priority_until > now()) as still_live from everything_projects where slug = 'thezvi';
 
 \echo '--- 3. old rows arrive expired, recent ones still live'
-select slug, (priority_until > now()) as still_live from everything_projects where slug in ('acx','kurzgesagt','nathanpmyoung') order by slug;
+select slug, (priority_until > now()) as still_live from everything_projects where slug in ('astralcodexten','kurzgesagt','nathanpmyoung') order by slug;
 
 \echo '--- 4. OLD extension read: select feed_url from everything_followed_feeds'
 set role anon;
@@ -36,11 +38,11 @@ insert into everything_projects (feed_url, priority_until) values ('https://chea
 \set ON_ERROR_STOP on
 reset role;
 
-\echo '--- 8. anon cannot name a project, and cannot squat a taken slug'
+\echo '--- 8. anon cannot name a project, and a second creator with the same handle gets a suffix'
 set role anon;
-insert into everything_projects (feed_url) values ('https://zvi.substack.com');
+insert into everything_projects (feed_url) values ('https://www.youtube.com/@thezvi');
 reset role;
-select slug, name from everything_projects where feed_url = 'https://zvi.substack.com';
+select slug, name from everything_projects where feed_url = 'https://www.youtube.com/@thezvi';
 
 \echo '--- 9. re-press extends rather than duplicating, and never shortens'
 update everything_projects set priority_until = now() + interval '30 days' where feed_url = 'https://newclient.substack.com';
