@@ -41,14 +41,21 @@ There are some ranked strategic cruxes (Mar 2026) in Claude's auto-memory coveri
 ## Key directories
 
 - `src/pipeline/` - Core logic organized into subfolders:
-  - `search/` - Context search (Perplexity, Grok)
-  - `write/` - Note generation variants
+  - `simple-bot/` - The bot itself: searchDispatch (every web-search strategy), writer, timing, correction extraction
+  - `prefilter/` - The cheap gates that run before the bot: blocked topics, satire, query writing, note-needed judge
   - `verify/` - Source verification
-  - `score/` - Note scoring, ranking, evaluation filter
-  - `llm/` - LLM client, xAI client, schemas
+  - `score/` - noteEvaluationFilter, which calls X's evaluate_note endpoint (not an LLM call)
+  - `llm/` - OpenRouter client, native xAI and Gemini clients, the Gemini free-key adapter
+  - `ab-testing/` - abTestsData (every A/B arm, including which model each stage uses) and botConfig
+  - `cost-tracking/` - pricing tables and the per-call cost tracker
+  - `tool-calling/` - the tool definitions and handlers the Serper search loop calls
+  - `input/` - building the bot's input: comments, author history, caching
+  - `prompts/` - prompt text and the json_schema response formats
   - `media/` - Media analysis
   - `orchestration/` - processTweet, generateCandidates, submitCandidates
-  - `utils/` - tweetLog, browserManager, parseStatusNoteUrl
+  - `replay/` - the writer cache that makes `tryoutNotes --from-db` work
+  - `misinfo-monitoring/`, `pangram-monitoring/` - the optional pre-passes
+  - `utils/` - tweetLog, browserManager, parseStatusNoteUrl, jsonLlmCall
 - `src/bots/` - Bot configurations (simple-bot is the only active bot)
 - `src/production/` - GitHub Actions entry points (runPipeline, updateNoteFeedback)
 - `src/local/` - Local testing tools (tryoutNotes, runOnVideos, evaluateResults)
@@ -81,7 +88,7 @@ Ingestion is unified under `everything-enqueue` — the only front door. A **bar
 
 **All-time top posts** (GOO-81, `src/everything/topPosts.ts`): the walk also offers each followed creator's 5 most popular posts of all time as candidates — YouTube by view count (one full-channel flat-playlist listing, cap 3000), Substack by like count (the archive API's top sort, re-sorted by likes; fetched through the residential proxy in CI because Substack 403s datacenter IPs and the CF relay only serves `/feed`). In the author rank they line up behind that creator's recent posts (ordered by popularity), while the recency rank uses their real old publish dates, so the blend keeps them at the back: in practice an evergreen hit is picked on a run where the feeds are otherwise caught up, and it enqueues at the feed's normal tier. That is a consequence of the ranking, not a rule the code enforces; a **flagged** creator's top posts do come early, because flagged candidates are ranked ahead of everyone else's. Top lists are cached in `everything_top_posts` (migration 085) and refreshed weekly, at most one creator per run; the refresh stamp lives on `everything_followed_feeds.top_posts_refreshed_at` (on the feed, not the rows, so an empty top list still counts as refreshed). A picked top Substack post gets its body fetched via the posts API at enqueue time; if that fails it is enqueued bare and the worker's web-fetch ladder is the fallback.
 
-Pipeline: per claim it forces `bot=simple-bot, note_prefilter=off, search_claim=on`; search runs on Opus 5 (`simple_bot_search=opus5-native`), the writer on Sonnet 5 (`simple_bot_writer=sonnet5`), the source verifier on Gemini 3 Flash, non-claim-based (`verifier_claim_based=classic`, the single-call accept/reject flow) with `verifier_citations=on` (accepted sources carry a verbatim supporting quote + explanation). Confident-true claims skipped (`shouldFactCheck`). Substack images are fed inline to the Opus claim extractor, so a claim can rest on text, an image, or both (`context_quote` nullable, `image_urls` carries the images).
+Pipeline: per claim it forces `bot=simple-bot, note_prefilter=off, search_claim=on`; search runs on Sonnet 5 (`simple_bot_search=sonnet5-native`, moved off Opus 5 in August 2026 because it kept exhausting the daily spend cap), the writer on Sonnet 5 (`simple_bot_writer=sonnet5`), the source verifier on Gemini 3 Flash, non-claim-based (`verifier_claim_based=classic`, the single-call accept/reject flow) with `verifier_citations=on` (accepted sources carry a verbatim supporting quote + explanation). Confident-true claims skipped (`shouldFactCheck`). Substack images are fed inline to the Opus claim extractor, so a claim can rest on text, an image, or both (`context_quote` nullable, `image_urls` carries the images).
 
 Data model (migration 050): `everything_projects → items → claims → notes`, plus `everything_votes`. Migration 081 added `everything_items.checked_scope` (`page` / `paragraph` / null): only `done`+`page` counts as a checked page; null means a reader's note created the row and the page was never read, so it stays requestable, and `consumeRequests`/`autoEnqueue` promote such items to whole-page checks instead of skipping them. Migration 050 also locks the anon role out of every other table (anon key is baked into the public site). Migration 053 dropped the one-note-per-claim constraint (a claim can hold the AI note plus user drafts); migration 055 dropped the old `everything_note_suggestions` table. Migration 056 moved a note's citations out of the `everything_notes.sources` jsonb column into a dedicated `everything_note_sources` table (`url, quote, explanation`), one row per supporting snippet. Migration 057 added `everything_claims.image_urls` (images a claim is grounded in) and made `context_quote` nullable (image-only claims carry no text excerpt). Each claim carries a `context_quote` (the highlighted span) and a wider `context_paragraph` (surrounding passage), both produced by the Opus extraction step. `everything_items.full_text` (migration 054) is the item's body text and is now persisted on ingest for every source (what the public write-note flow searches) — no backfill needed. Migration 058 added `everything_notes.improved_from_note_id` (an improvement's link to its original) + a trigger auto-casting the author's helpful vote on their own note. Migration 059 gave `everything_votes` a surrogate `id` and a `reasoning` column (the column is now unused — the UI posts comments instead of private reasoning), plus the private `everything_donations` ledger (`vote_id unique, charity, amount_usd`; own-rows RLS, no anon access). Migration 061 turned the donation ledger outcome-contingent: `amount_if_helpful` / `amount_if_not_helpful` (the pair frozen at vote time), with `amount_usd` now the settled amount (null until the note's rating locks in; old flat-$2 rows keep `amount_usd = 2`). Migration 063 added `everything_note_not_needed` (+ `_votes`, counter/self-vote triggers mirroring notes) and dropped the comments tables from migration 060 (`everything_comments` + `everything_comment_votes`, data discarded).
 
