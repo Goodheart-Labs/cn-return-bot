@@ -3,9 +3,11 @@
  *  in CI. A YouTube feed is the channel URL. The follow-request consumer, the
  *  creator ranking, and the prioritize script all normalize through here. */
 
+export type FeedType = "substack" | "youtube";
+
 export interface CanonicalFeed {
   project_slug: string;
-  feed_type: "substack" | "youtube";
+  feed_type: FeedType;
   feed_url: string;
 }
 

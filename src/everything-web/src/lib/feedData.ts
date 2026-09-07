@@ -11,15 +11,19 @@ import type { FeedItemRow, FeedProjectRow, NnnRow, NoteRow } from "../../../ever
 
 const ITEM_COLS = "id, project_id, url, title, published_at, created_at";
 
-/** Every project, for the sidebar. There are a handful of them and the sidebar
- *  lists all of them, so this is the one query that is not narrowed by project. */
+/** The projects the sidebar lists. A project with no content is left out, and
+ *  since GOO-107 that matters: pressing "check this author's new posts" creates
+ *  the creator's project immediately, and until the pipeline has actually
+ *  checked something there is nothing to show under it. The anon key can create
+ *  such a row, so the sidebar must not put whatever it names on the public
+ *  site. */
 export async function fetchProjects(): Promise<FeedProjectRow[]> {
-  const { data, error } = await supabase
-    .from("everything_projects")
-    .select("id, slug, name, sort_order")
-    .order("sort_order");
+  const [{ data, error }, withItems] = await Promise.all([
+    supabase.from("everything_projects").select("id, slug, name, sort_order").order("sort_order"),
+    fetchProjectIdsWithItems(),
+  ]);
   if (error) throw error;
-  return (data ?? []) as FeedProjectRow[];
+  return ((data ?? []) as FeedProjectRow[]).filter((p) => withItems.has(p.id));
 }
 
 /** The ids of the projects that have at least one item. The website opens on the

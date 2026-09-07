@@ -22,6 +22,7 @@ import { closeBrowser } from "../pipeline/utils/browserManager";
 import { runAutoEnqueue } from "./autoEnqueue";
 import { consumeRequests } from "./consumeRequests";
 import { ensureYtDlp } from "./sources/youtube";
+import { duration } from "./logFormat";
 import { describeSpend, spendCapReached, todaySpendUsd } from "./spendCap";
 import { drainQueue } from "./worker";
 
@@ -31,7 +32,9 @@ async function main() {
   ensureYtDlp();
   const start = Date.now();
   for (let cycle = 1; ; cycle++) {
-    console.log(`\n––– cycle ${cycle} (${Math.round((Date.now() - start) / 1000)}s elapsed)`);
+    console.log(
+      `\n═══ cycle ${cycle} · started ${duration(Date.now() - start)} ago · today so far: ${describeSpend(await todaySpendUsd())}`,
+    );
     await consumeRequests();
     // On a day whose cap is spent we still consume the request inboxes above,
     // but we do not walk the feeds. Every later dispatch of the day would
@@ -42,9 +45,12 @@ async function main() {
     }
     await runAutoEnqueue();
     const processed = await drainQueue();
+    console.log(
+      `\n═══ cycle ${cycle} done · checked ${processed} item${processed === 1 ? "" : "s"} · today so far: ${describeSpend(await todaySpendUsd())}`,
+    );
     if (processed === 0) break;
     if (Date.now() - start >= RUN_TIME_BUDGET_MS) {
-      console.log(`Time budget spent (${Math.round((Date.now() - start) / 1000)}s) — stopping after this cycle`);
+      console.log(`Time budget spent (${duration(Date.now() - start)}) — stopping after this cycle`);
       break;
     }
   }
