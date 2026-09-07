@@ -51,6 +51,8 @@
     "check": "bun run typecheck && bun run typecheck-review && bun run typecheck-ext && bunx knip",
     "prepare": "husky",
     "update-feedback": "bun run src/production/updateNoteFeedback.ts",
+    "replay-ranking": "bun run src/scripts/replayRanking.ts",
+    "backfill-ranking-decisions": "bun run src/scripts/backfillRankingDecisions.ts",
     "dev-review": "cd src/review-dashboard && bunx vite --port 8001",
     "build-review": "cd src/review-dashboard && bunx vite build",
     "serve-review": "bun run src/review-dashboard/server.ts",
@@ -89,9 +91,7 @@
     "ignoreFiles": [
       "src/everything/debug/debugItem.ts",
       "src/everything/substack-proxy-worker/index.ts",
-      "src/dashboard-shared/media.ts",
       "src/stats-dashboard/vite.config.ts",
-      "src/stats-dashboard/src/lib/**",
       "src/everything-web/vite.config.ts"
     ]
   }

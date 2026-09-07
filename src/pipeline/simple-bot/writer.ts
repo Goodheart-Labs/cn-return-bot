@@ -13,8 +13,8 @@ import { lintWriterNote } from "../utils/noteLint";
 import { runJsonLlmCall, type ChatMessage } from "../utils/jsonLlmCall";
 import {
   WRITER_SYSTEM_PROMPT,
-  WRITER_FEWSHOT_EXAMPLES,
   WRITER_TIME_TRAVEL_RULE,
+  WRITER_LAST_CHECK,
   WRITER_RESPONSE_FORMAT,
   MISINFO_SOURCING_RULE,
   MISINFO_NOTE_SHAPE_RULE,
@@ -41,8 +41,12 @@ export async function runWriter(
   const log = getTweetLog();
   const config = getBotConfig();
   const monitoring = getMonitoringContext();
-  let systemPrompt = config.writer_examples ? WRITER_SYSTEM_PROMPT + WRITER_FEWSHOT_EXAMPLES : WRITER_SYSTEM_PROMPT;
+  let systemPrompt = WRITER_SYSTEM_PROMPT;
   if (config.time_travel_prompt) systemPrompt += WRITER_TIME_TRAVEL_RULE;
+  if (config.writer_last_check) {
+    systemPrompt += WRITER_LAST_CHECK;
+    log?.set("writer.lastCheck", true);
+  }
   if (opts?.timingContext) log?.set("writer.timingContext", true);
 
   // On a curated misinfo topic we prepend the topic's vetted in-group and

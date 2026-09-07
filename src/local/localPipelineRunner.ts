@@ -438,12 +438,9 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
   let completedCount = 0;
   let errorCount = 0;
 
-  // Every search goes through one global queue that leaves a 3 second gap
-  // between queries. With 5 workers each making about 3 queries, the wait in
-  // that queue alone can be 45 seconds or more. Add SearXNG cool-downs and
-  // retries on top and a single tweet can legitimately take over 15 minutes. A
-  // 20 minute limit catches a real hang without killing a row that is slow but
-  // still making progress.
+  // A tweet can spend a long time in LLM calls, media analysis, and search
+  // retries. A 20 minute limit catches a real hang without killing a row that
+  // is slow but still making progress.
   const PER_TWEET_TIMEOUT_MS = 20 * 60 * 1000;
   const queue = new PQueue({ concurrency, timeout: PER_TWEET_TIMEOUT_MS, throwOnTimeout: true });
 

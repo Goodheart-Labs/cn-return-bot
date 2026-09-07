@@ -64,62 +64,57 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
   name: "simple_bot_search",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    // An August 2026 split across many models. Sonnet 5 stays the main arm, and
-    // the other live arms carry small exploratory weights. The weights are
-    // relative to each other rather than percentages, so they do not have to add
-    // up to 100. A retired arm stays declared at weight 0, so that picks from
-    // old runs still resolve to a variant.
     { variant: { name: "sonnet46-native",         overrides: { search_model: "anthropic/claude-sonnet-4.6",       web_search: "native" }},        weight: 0 },
-    // Each Claude model appears twice, once with reasoning and once without. The
-    // reasoning arm sets search_reasoning_effort to medium. The other arm leaves
-    // it unset, and Claude then does no reasoning at all.
     { variant: { name: "sonnet5-native",          overrides: { search_model: "anthropic/claude-sonnet-5",         web_search: "native" }},        weight: 4 },
     { variant: { name: "sonnet5-native-medium",   overrides: { search_model: "anthropic/claude-sonnet-5",         web_search: "native", search_reasoning_effort: "medium" }}, weight: 2 },
-    // The opus48-native arm garbled about 80% of its runs, because native web
-    // search collided with the json_schema response format. The Opus arms run
-    // Opus 5 now, and we are watching them for the same failure.
     { variant: { name: "opus48-native",           overrides: { search_model: "anthropic/claude-opus-4.8",         web_search: "native" }},        weight: 0 },
     { variant: { name: "opus5-native",            overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native" }},        weight: 1 },
-    { variant: { name: "opus5-native-medium",     overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native", search_reasoning_effort: "medium" }}, weight: 1 },
+    { variant: { name: "opus5-native-medium",     overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native", search_reasoning_effort: "medium" }}, weight: 2 },
     { variant: { name: "haiku45-native",          overrides: { search_model: "anthropic/claude-haiku-4.5",        web_search: "native" }},        weight: 0 },
     { variant: { name: "grok43-native",           overrides: { search_model: "x-ai/grok-4.3",                     web_search: "native_grok" }},   weight: 2 },
     { variant: { name: "grok45-native",           overrides: { search_model: "x-ai/grok-4.5",                     web_search: "native_grok" }},   weight: 2 },
+    { variant: { name: "grok46-native",           overrides: { search_model: "x-ai/grok-4.6",                     web_search: "native_grok" }},   weight: 2 },
     { variant: { name: "gemini3flash-native",     overrides: { search_model: "google/gemini-3-flash-preview",     web_search: "native_gemini" }}, weight: 1 },
     { variant: { name: "gemini35flash-native",    overrides: { search_model: "google/gemini-3.5-flash",           web_search: "native_gemini" }}, weight: 0 },
-    { variant: { name: "gemini36flash-native",    overrides: { search_model: "google/gemini-3.6-flash",           web_search: "native_gemini" }}, weight: 2 },
-    { variant: { name: "gemini31pro-native",      overrides: { search_model: "google/gemini-3.1-pro-preview",      web_search: "native_gemini" }}, weight: 1 },
+    { variant: { name: "gemini36flash-native",    overrides: { search_model: "google/gemini-3.6-flash",           web_search: "native_gemini" }}, weight: 0 },
+    { variant: { name: "gemini38flash-native",    overrides: { search_model: "google/gemini-3.8-flash",           web_search: "native_gemini" }}, weight: 2 },
+    { variant: { name: "gemini31pro-native",      overrides: { search_model: "google/gemini-3.1-pro-preview",      web_search: "native_gemini" }}, weight: 0 },
     { variant: { name: "sonar-reasoning-pro",     overrides: { search_model: "perplexity/sonar-reasoning-pro",    web_search: "bundled" }},       weight: 0 },
     { variant: { name: "sonar-pro",               overrides: { search_model: "perplexity/sonar-pro",              web_search: "bundled" }},       weight: 0 },
-    { variant: { name: "kimi-k26-searxng",        overrides: { search_model: "moonshotai/kimi-k2.6",              web_search: "searxng" }},       weight: 0 },
-    { variant: { name: "kimi-k3-searxng",         overrides: { search_model: "moonshotai/kimi-k3",                web_search: "searxng" }},       weight: 2 },
-    { variant: { name: "deepseek-v4pro-searxng",  overrides: { search_model: "deepseek/deepseek-v4-pro",          web_search: "searxng" }},       weight: 0 },
-    { variant: { name: "deepseek-v4flash-searxng",overrides: { search_model: "deepseek/deepseek-v4-flash",        web_search: "searxng" }},       weight: 0 },
-    { variant: { name: "glm5-searxng",            overrides: { search_model: "z-ai/glm-5",                        web_search: "searxng" }},       weight: 0 },
-    { variant: { name: "glm52-searxng",           overrides: { search_model: "z-ai/glm-5.2",                      web_search: "searxng" }},       weight: 2 },
-    { variant: { name: "deepseek-v32exp-searxng", overrides: { search_model: "deepseek/deepseek-v3.2-exp",        web_search: "searxng" }},       weight: 0 },
-    { variant: { name: "qwen3max-searxng",        overrides: { search_model: "qwen/qwen3-max",                    web_search: "searxng" }},       weight: 0 },
+    { variant: { name: "kimi-k26-searxng",        overrides: { search_model: "moonshotai/kimi-k2.6",              web_search: "serper" }},       weight: 0 },
+    { variant: { name: "kimi-k3-searxng",         overrides: { search_model: "moonshotai/kimi-k3",                web_search: "serper" }},       weight: 0 },
+    { variant: { name: "kimi-k3-serper",          overrides: { search_model: "moonshotai/kimi-k3",                web_search: "serper" }},       weight: 2 },
+    { variant: { name: "deepseek-v4pro-searxng",  overrides: { search_model: "deepseek/deepseek-v4-pro",          web_search: "serper" }},       weight: 0 },
+    { variant: { name: "deepseek-v4flash-searxng",overrides: { search_model: "deepseek/deepseek-v4-flash",        web_search: "serper" }},       weight: 0 },
+    { variant: { name: "glm5-searxng",            overrides: { search_model: "z-ai/glm-5",                        web_search: "serper" }},       weight: 0 },
+    { variant: { name: "glm52-searxng",           overrides: { search_model: "z-ai/glm-5.2",                      web_search: "serper" }},       weight: 0 },
+    { variant: { name: "glm52-serper",            overrides: { search_model: "z-ai/glm-5.2",                      web_search: "serper" }},       weight: 0 },
+    { variant: { name: "glm53-serper",            overrides: { search_model: "z-ai/glm-5.3",                      web_search: "serper" }},       weight: 2 },
+    { variant: { name: "glm53flash-serper",       overrides: { search_model: "z-ai/glm-5.3-flash",                web_search: "serper" }},       weight: 2 },
+    { variant: { name: "musespark13c-serper",     overrides: { search_model: "meta/muse-spark-1.3-contributor",   web_search: "serper" }},       weight: 0 },
+    { variant: { name: "deepseek-v32exp-searxng", overrides: { search_model: "deepseek/deepseek-v3.2-exp",        web_search: "serper" }},       weight: 0 },
+    { variant: { name: "qwen3max-searxng",        overrides: { search_model: "qwen/qwen3-max",                    web_search: "serper" }},       weight: 0 },
     { variant: { name: "gpt5_4mini-native",       overrides: { search_model: "openai/gpt-5.4-mini",               web_search: "native_openai" }}, weight: 0 },
     { variant: { name: "gpt5-native",             overrides: { search_model: "openai/gpt-5",                      web_search: "native_openai" }}, weight: 0 },
     { variant: { name: "gpt5_6luna-native",       overrides: { search_model: "openai/gpt-5.6-luna",               web_search: "native_openai" }}, weight: 2 },
     { variant: { name: "gpt5_6terra-native",      overrides: { search_model: "openai/gpt-5.6-terra",              web_search: "native_openai" }}, weight: 2 },
-    { variant: { name: "gpt5_6sol-native",        overrides: { search_model: "openai/gpt-5.6-sol",                web_search: "native_openai" }}, weight: 1 },
-    { variant: { name: "mistral-large-3-searxng", overrides: { search_model: "mistralai/mistral-large-2512",      web_search: "searxng" }},       weight: 0 },
+    { variant: { name: "gpt5_6sol-native",        overrides: { search_model: "openai/gpt-5.6-sol",                web_search: "native_openai" }}, weight: 0 },
+    { variant: { name: "mistral-large-3-searxng", overrides: { search_model: "mistralai/mistral-large-2512",      web_search: "serper" }},       weight: 0 },
   ],
 };
 
 const SIMPLE_BOT_WRITER_TEST: ABTest = {
   name: "simple_bot_writer",
   prerequisites: { botId: "simple-bot" },
-  // Refreshed 2026-08-18: Sonnet 5 promoted to co-baseline, Sonnet 4.6 wound
-  // down to a small continuity arm, and two current-generation Anthropic arms
-  // added (Fable 5 at $10/$50, Opus 5 at $5/$25 per MTok — low weights keep
-  // the cost a few notes/day each).
   variants: [
-    { variant: { name: "sonnet5",          overrides: { writer_model: "anthropic/claude-sonnet-5"      }}, weight: 40 },
-    { variant: { name: "gemini-flash",     overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 30 },
-    { variant: { name: "fable5",           overrides: { writer_model: "anthropic/claude-fable-5"      }}, weight: 10 },
-    { variant: { name: "opus5",            overrides: { writer_model: "anthropic/claude-opus-5"       }}, weight: 10 },
-    { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 10 },
+    { variant: { name: "sonnet5",          overrides: { writer_model: "anthropic/claude-sonnet-5"      }}, weight: 50 },
+    { variant: { name: "gemini38flash",    overrides: { writer_model: "google/gemini-3.8-flash"       }}, weight: 50 },
+    { variant: { name: "gemini-flash",     overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 0 },
+    { variant: { name: "fable51",          overrides: { writer_model: "anthropic/claude-fable-5.1"    }}, weight: 0 },
+    { variant: { name: "opus5",            overrides: { writer_model: "anthropic/claude-opus-5"       }}, weight: 0 },
+    { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 0 },
+    { variant: { name: "fable5",           overrides: { writer_model: "anthropic/claude-fable-5"      }}, weight: 0 },
+    { variant: { name: "musespark13c",     overrides: { writer_model: "meta/muse-spark-1.3-contributor" }}, weight: 0 },
     { variant: { name: "deepseek-v4flash", overrides: { writer_model: "deepseek/deepseek-v4-flash"    }}, weight: 0 },
   ],
 };
@@ -136,21 +131,6 @@ const SIMPLE_BOT_VERIFIER_TEST: ABTest = {
   variants: [
     { variant: { name: "gemini-flash",     overrides: { verifier_model: "google/gemini-3-flash-preview" }}, weight: 50 },
     { variant: { name: "deepseek-v4flash", overrides: { verifier_model: "deepseek/deepseek-v4-flash"    }}, weight: 0  },
-  ],
-};
-
-// Adds an instruction to simple-bot's search prompt. On a political post it
-// tells the search step to prefer sources that lean the same way as the post's
-// author. The bet is that a correction cited to outlets the author already
-// trusts is more likely to be rated helpful. The "on" arm used to be half of all
-// runs and is now down to 10%, so "off" is the main arm. This test has
-// prerequisites, so it declares no defaultVariant.
-const SIMPLE_BOT_POLITICAL_SOURCES_TEST: ABTest = {
-  name: "simple_bot_political_sources",
-  prerequisites: { botId: "simple-bot" },
-  variants: [
-    { variant: { name: "off", overrides: { search_political_sources: false } }, weight: 90 },
-    { variant: { name: "on",  overrides: { search_political_sources: true  } }, weight: 10 },
   ],
 };
 
@@ -231,6 +211,16 @@ const TIMING_TREATMENT_TEST: ABTest = {
   ],
 };
 
+// Tests whether a final abstention check reduces not-helpful notes.
+const WRITER_LAST_CHECK_TEST: ABTest = {
+  name: "writer_last_check",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off", overrides: { writer_last_check: false } }, weight: 50 },
+    { variant: { name: "on",  overrides: { writer_last_check: true  } }, weight: 50 },
+  ],
+};
+
 // This test was retired on 2026-08-05 in favour of the "instruction" arm of
 // TIMING_TREATMENT_TEST. It stays declared at weight 0 so that picks from old
 // runs still resolve.
@@ -254,23 +244,6 @@ const SIMPLE_BOT_CLAIM_TEST: ABTest = {
   variants: [
     { variant: { name: "off", overrides: { search_claim: false } }, weight: 100 },
     { variant: { name: "on",  overrides: { search_claim: true  } }, weight: 0   },
-  ],
-};
-
-// Appends a block of example notes to simple-bot's writer system prompt. The
-// examples are real notes that performed well, and they are all simple, direct
-// and short. The question is whether concrete examples pull the writer toward
-// that style better than a prompt that only states principles does. The writer
-// model and every other step are the same in both arms, so the prompt is the
-// only thing that differs. The test runs as an even split on simple-bot. Watch
-// the helpful rate and the false positive rate of the "on" arm. This test has
-// prerequisites, so it declares no defaultVariant.
-const SIMPLE_BOT_WRITER_EXAMPLES_TEST: ABTest = {
-  name: "simple_bot_writer_examples",
-  prerequisites: { botId: "simple-bot" },
-  variants: [
-    { variant: { name: "off", overrides: { writer_examples: false } }, weight: 50 },
-    { variant: { name: "on",  overrides: { writer_examples: true  } }, weight: 50 },
   ],
 };
 
@@ -302,16 +275,23 @@ const MISINFO_CONCEDE_SHAPE_TEST: ABTest = {
 // writer then sees only the corrections graded clear_error or critical_context,
 // instead of the raw findings. When nothing grades that high, the run exits
 // early with no_correction. The "off" arm is the current behaviour, where the
-// writer sees the full findings. The two "on" arms trial Gemini 3 Flash against
-// Sonnet 5 as the extractor. This test has prerequisites, so it declares no
-// defaultVariant.
+// writer sees the full findings. The two "on" arms trialled Gemini 3 Flash
+// against Sonnet 5 as the extractor.
+//
+// Jim closed the test on 2026-09-02 in favour of "off". Counting a note as
+// settled 48 hours after submission, "off" led in both windows: since Aug 1 it
+// was at +10.3% net (n=622, 13.3% of settled notes helpful) against +8.7% for
+// gemini3flash (n=583) and +9.1% for sonnet5 (n=560), z about 0.9 against each
+// extractor arm. The extraction step also costs an extra LLM call per run. The
+// extractor arms stay declared at weight 0 so picks from old runs still
+// resolve. This test has prerequisites, so it declares no defaultVariant.
 const SIMPLE_BOT_CORRECTION_EXTRACTION_TEST: ABTest = {
   name: "simple_bot_correction_extraction",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "off",          overrides: { correction_extraction: false } }, weight: 34 },
-    { variant: { name: "gemini3flash", overrides: { correction_extraction: true, correction_extraction_model: "google/gemini-3-flash-preview" } }, weight: 33 },
-    { variant: { name: "sonnet5",      overrides: { correction_extraction: true, correction_extraction_model: "anthropic/claude-sonnet-5" } }, weight: 33 },
+    { variant: { name: "off",          overrides: { correction_extraction: false } }, weight: 100 },
+    { variant: { name: "gemini3flash", overrides: { correction_extraction: true, correction_extraction_model: "google/gemini-3-flash-preview" } }, weight: 0 },
+    { variant: { name: "sonnet5",      overrides: { correction_extraction: true, correction_extraction_model: "anthropic/claude-sonnet-5" } }, weight: 0 },
   ],
 };
 
@@ -371,15 +351,23 @@ const VERIFIER_MEDIA_SOURCES_TEST: ABTest = {
 // that only accepts or rejects each source. The claim-based flow first extracts
 // the note's distinct claims. It then maps each claim to the cited sources that
 // support it. It submits the good sources only when every claim has one.
-// verifySources runs for every bot, so this test has no
-// prerequisites. Its defaultVariant is "classic", which resolves rows written
-// before the test to the older flow.
+//
+// Jim closed the test on 2026-09-02 in favour of "claim-based". The two flows
+// were statistically tied on quality per submitted note (z about 1.1 on the
+// helpful rate), but they differ a lot in strictness. In August, from equal
+// traffic, classic submitted 1235 notes (134 helpful, 39 not helpful) while
+// claim-based submitted 698 (86 helpful, 15 not helpful). Jim chose the
+// stricter flow: fewer unhelpful notes reach X, at the cost of volume. The
+// classic arm stays declared at weight 0 so picks from old runs still resolve.
+// verifySources runs for every bot, so this test has no prerequisites. Its
+// defaultVariant is "classic", which resolves rows written before the test to
+// the older flow.
 const VERIFIER_CLAIM_BASED_TEST: ABTest = {
   name: "verifier_claim_based",
   defaultVariant: "classic",
   variants: [
-    { variant: { name: "classic",     overrides: { verifier_claim_based: false } }, weight: 50 },
-    { variant: { name: "claim-based", overrides: { verifier_claim_based: true  } }, weight: 50 },
+    { variant: { name: "classic",     overrides: { verifier_claim_based: false } }, weight: 0 },
+    { variant: { name: "claim-based", overrides: { verifier_claim_based: true  } }, weight: 100 },
   ],
 };
 
@@ -387,15 +375,23 @@ const VERIFIER_CLAIM_BASED_TEST: ABTest = {
 // gathers verbatim snippets and a plain-language explanation of how the source
 // supports or refutes the note. Only then does it call the source good or bad.
 // This test is independent of verifier_claim_based. Both of those flows have a
-// citations variant, so the two tests can be combined freely. verifySources runs
-// in both bots, so this test has no prerequisites. Its defaultVariant is "off",
-// which lets rows written before the test resolve.
+// citations variant, so the two tests can be combined freely.
+//
+// Jim closed the test on 2026-09-02 in favour of "off". After seven weeks and
+// about 2100 settled notes, "off" sat slightly ahead (since Aug 1: +10.5% net,
+// n=866, against +8.3%, n=899; z about 0.9 on the helpful rate), so the extra
+// reasoning bought nothing on X. The Common Notes pipeline still forces "on"
+// in src/everything/pipeline/checkClaims.ts, because its public site displays
+// the per-source quotes; that forced pick resolves against the arm declared at
+// weight 0 here. verifySources runs in both bots, so this test has no
+// prerequisites. Its defaultVariant is "off", which lets rows written before
+// the test resolve.
 const VERIFIER_CITATIONS_TEST: ABTest = {
   name: "verifier_citations",
   defaultVariant: "off",
   variants: [
-    { variant: { name: "off", overrides: { verifier_citations: false } }, weight: 50 },
-    { variant: { name: "on",  overrides: { verifier_citations: true  } }, weight: 50 },
+    { variant: { name: "off", overrides: { verifier_citations: false } }, weight: 100 },
+    { variant: { name: "on",  overrides: { verifier_citations: true  } }, weight: 0 },
   ],
 };
 
@@ -509,26 +505,42 @@ const EVAL_SUBMIT_THRESHOLD_TEST: ABTest = {
 // prerequisites. Its defaultVariant is "off", which resolves older rows to the
 // behaviour they actually had, with no author context.
 //
-// The one open question left is an even split. Does it help to add the author's
-// rejected notes to that block as well? About 10% of the posts we process come
-// from an author with at least one not-helpful note on record. Those rejections
-// are the tell of a satire or opinion account, and both the writer and the
-// note-needed prefilter get to see them. The arm with no history is pinned to
-// weight 0. It stays declared so that its historical picks and the
-// defaultVariant still resolve.
+// The "off" arm was retired earlier because it was clearly worse: over the
+// whole test it reached only +3.5% net (n=579) against +8.4% and +8.9% for the
+// two history arms, z about 3.4 on the helpful rate. That is the one decisive
+// result of the 2026-09-01 A/B review.
+//
+// Jim closed the remaining question on 2026-09-02 in favour of
+// "on_with_unhelpful". After five weeks the two history arms were
+// indistinguishable (since Aug 1: 12.1% against 12.8% of settled notes
+// helpful, z about 0.4), so the rejected-notes block costs nothing, and it has
+// a plausible mechanism as the tell of a satire or opinion account. The other
+// arms stay declared at weight 0 so historical picks and the defaultVariant
+// still resolve.
 const AUTHOR_HISTORY_TEST: ABTest = {
   name: "author_history",
   defaultVariant: "off",
   variants: [
-    { variant: { name: "off", overrides: { author_history: false } }, weight: 0  },
-    { variant: { name: "on",  overrides: { author_history: true  } }, weight: 50 },
+    { variant: { name: "off", overrides: { author_history: false } }, weight: 0 },
+    { variant: { name: "on",  overrides: { author_history: true  } }, weight: 0 },
     {
       variant: {
         name: "on_with_unhelpful",
         overrides: { author_history: true, author_history_unhelpful: true },
       },
-      weight: 50,
+      weight: 100,
     },
+  ],
+};
+
+// Picked once per run in runPipeline and forced onto every post of that run,
+// because ordering belongs to the batch. Names are scorer names.
+export const RANKING_POLICY_TEST: ABTest = {
+  name: "ranking_policy",
+  defaultVariant: "velocity_only",
+  variants: [
+    { variant: { name: "velocity_only",   overrides: { ranking_policy: "velocity_only"   } }, weight: 50 },
+    { variant: { name: "flags_then_eval", overrides: { ranking_policy: "flags_then_eval" } }, weight: 50 },
   ],
 };
 
@@ -540,9 +552,8 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_ANTI_PEDANTIC_TEST,
   TIME_TRAVEL_PROMPT_TEST,
   TIMING_TREATMENT_TEST,
+  WRITER_LAST_CHECK_TEST,
   SIMPLE_BOT_CLAIM_TEST,
-  SIMPLE_BOT_WRITER_EXAMPLES_TEST,
-  SIMPLE_BOT_POLITICAL_SOURCES_TEST,
   SIMPLE_BOT_CORRECTION_EXTRACTION_TEST,
   TOPIC_FILTER_TEST,
   NOTE_PREFILTER_TEST,
@@ -559,4 +570,5 @@ export const AB_TESTS: ABTest[] = [
   PANGRAM_MONITORING_TEST,
   PANGRAM_NOTE_TEST,
   AUTHOR_HISTORY_TEST,
+  RANKING_POLICY_TEST,
 ];

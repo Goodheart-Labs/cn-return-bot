@@ -34,16 +34,6 @@ Return JSON with two fields:
 - Include what each source says that's relevant.
 - If no correction is needed, the findings can be brief — just explain why.`;
 
-/** Appended to the search prompt when `config.search_political_sources` is on,
- *  which is the SIMPLE_BOT_POLITICAL_SOURCES_TEST arm. It steers the sourcing
- *  toward the author's own political side. A note that cites sources the
- *  author's own audience already trusts is more likely to bridge the two sides
- *  and be rated helpful. */
-export const SEARCH_POLITICAL_SOURCES_INSTRUCTION = `
-
-## Political topics
-For political posts, prefer sources associated with the post author's own political side when they support the correction, if possible. A note is far more likely to be rated helpful when it cites sources the author's own audience already trusts.`;
-
 /** Appended to the search prompt when `config.time_travel_prompt` is on, which
  *  is the TIME_TRAVEL_PROMPT_TEST arm. It makes the model score the correction
  *  against the moment the post was published rather than against now. A post
