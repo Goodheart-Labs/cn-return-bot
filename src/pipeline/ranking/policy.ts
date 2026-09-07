@@ -1,17 +1,10 @@
 import { RANKING_POLICY_TEST } from "../ab-testing/abTestsData";
+import { pickVariantName } from "../ab-testing/abTests";
 import { getScorer, type Scorer } from "./scorers";
 
 // One pick per run. A forced pick (CLI or replay) wins; otherwise sample by weight.
 export function pickRankingPolicy(forced: string | undefined, rng: () => number = Math.random): string {
-  if (forced) return forced;
-  const live = RANKING_POLICY_TEST.variants.filter((v) => v.weight > 0);
-  const total = live.reduce((n, v) => n + v.weight, 0);
-  let r = rng() * total;
-  for (const v of live) {
-    r -= v.weight;
-    if (r < 0) return v.variant.name;
-  }
-  return live[live.length - 1]?.variant.name ?? RANKING_POLICY_TEST.defaultVariant!;
+  return pickVariantName(RANKING_POLICY_TEST, forced, rng);
 }
 
 export const CONTROL_POLICY = "velocity_only";

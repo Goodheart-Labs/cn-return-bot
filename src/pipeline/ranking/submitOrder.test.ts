@@ -40,6 +40,11 @@ describe("pickRankingPolicy", () => {
     expect(pickRankingPolicy("flags_then_eval", () => 0.01)).toBe("flags_then_eval");
   });
 
+  test("an unknown forced policy is rejected before ranking", () => {
+    expect(() => pickRankingPolicy("typo")).toThrow('has no variant named "typo"');
+    expect(() => pickRankingPolicy("")).toThrow('has no variant named ""');
+  });
+
   test("samples by weight", () => {
     expect(pickRankingPolicy(undefined, () => 0.01)).toBe("velocity_only");
     expect(pickRankingPolicy(undefined, () => 0.99)).toBe("flags_then_eval");
