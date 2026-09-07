@@ -49,3 +49,24 @@ What the checks prove, in the order they run:
 
 The fixture and the checks can be deleted once the compatibility views are
 dropped and nobody is running an extension from before this change.
+
+# Applying it to production
+
+`scripts/apply_086.py` does it in four steps, each refusing to run unless the
+one before left things as expected. The order matters because the migration
+drops two tables the current pipeline reads: the dispatch is paused first and
+resumed only once the new code is on main, and a run between apply and resume
+would fail.
+
+```bash
+uv run scripts/apply_086.py pause      # unschedule the pg_cron dispatch, wait for any run to finish
+uv run scripts/apply_086.py preflight  # read-only; prints what will be renamed and created
+uv run scripts/apply_086.py apply      # one transaction, then post-checks
+gh pr merge 441 --merge                # the new code reaches main
+uv run scripts/apply_086.py resume     # reschedule the dispatch
+gh workflow run everything-priority-feeds.yml && gh run watch   # read the first run's log end to end
+```
+
+It needs `PROD_DB_URL` in `.env` to authenticate. The password may contain
+characters a URL would need escaped; the script splits the URL by hand for
+that reason, so paste the password in as it is.
