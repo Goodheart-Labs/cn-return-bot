@@ -177,21 +177,32 @@ export function verifyEmailCode(email: string, code: string, flow: EmailFlow = "
   return supabase.auth.verifyOtp({ email, token: code, type: flow === "upgrade" ? "email_change" : "email" });
 }
 
+/** The label the X button reports as the sign-in method in analytics. It still
+ *  says "twitter" even though the provider is now "x", because every
+ *  sign_in_started row recorded so far carries that label. Changing it would
+ *  split one funnel into two and make the X sign-ins look like they stopped. */
+export const X_SIGN_IN_METHOD_LABEL = "twitter";
+
 /** X sign-in. With an anonymous session held, the X identity is linked onto
  *  that account instead, which keeps its votes and notes. Linking fails
  *  before the redirect when manual linking is disabled on the backend; we
  *  fall back to the ordinary sign-in then. An X identity that already
  *  belongs to another account fails after the redirect, and the reader
- *  simply stays anonymous and can try again. */
-export async function signInWithTwitter() {
+ *  simply stays anonymous and can try again.
+ *
+ *  The provider is Supabase's "x", which speaks OAuth 2.0 and asks X for four
+ *  named permissions. The older provider, "twitter", speaks OAuth 1.0a, where
+ *  the app has one blanket permission level and the approval screen X shows
+ *  the reader is correspondingly broad. */
+export async function signInWithX() {
   const options = { redirectTo: window.location.href };
   const { data } = await supabase.auth.getSession();
   if (data.session?.user.is_anonymous) {
-    const { error } = await supabase.auth.linkIdentity({ provider: "twitter", options });
+    const { error } = await supabase.auth.linkIdentity({ provider: "x", options });
     if (!error) return { error: null };
     console.warn(`[common-notes] X identity link failed, falling back to sign-in: ${error.message}`);
   }
-  return supabase.auth.signInWithOAuth({ provider: "twitter", options });
+  return supabase.auth.signInWithOAuth({ provider: "x", options });
 }
 
 export function signOut() {

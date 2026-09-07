@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { browser } from "#imports";
 import { BUTTON, INPUT, QUIET_LINK, SECONDARY_BUTTON } from "../../everything-shared/ui";
 import { IconButton } from "../../everything-web/src/components/IconButton";
-import { EMAIL_OTP_LENGTH, getSignedInBefore, signInWithEmailCode, verifyEmailCode, type EmailFlow } from "../../everything-shared/auth";
+import { EMAIL_OTP_LENGTH, getSignedInBefore, signInWithEmailCode, verifyEmailCode, X_SIGN_IN_METHOD_LABEL, type EmailFlow } from "../../everything-shared/auth";
 import { track } from "../../everything-shared/analytics";
 
 // The login form closes when the user switches away to their mail client to
@@ -98,7 +98,7 @@ export function LoginPanel({ surface = "settings", onDismiss }: { surface?: "set
   const signInWithX = async () => {
     setBusy(true);
     setError(null);
-    track("sign_in_started", { method: "twitter", surface });
+    track("sign_in_started", { method: X_SIGN_IN_METHOD_LABEL, surface });
     const result = await browser.runtime.sendMessage({ type: "cn-signin-x" }) as { ok: boolean; error?: string };
     setBusy(false);
     if (!result?.ok) setError(result?.error ?? "X sign-in failed");
