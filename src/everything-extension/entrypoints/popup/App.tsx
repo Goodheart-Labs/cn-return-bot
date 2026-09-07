@@ -9,9 +9,9 @@ import { authorFeedStatusForTab, type AuthorFeedStatus } from "../../utils/autho
 import { noteVisible, type NoteCounts } from "../../utils/claimGroups";
 import { genericScriptId } from "../../utils/genericScript";
 import { resolveReaderCanonical } from "../../utils/readerCanonical";
-import type { FollowTarget } from "../../utils/followTarget";
-import { buildFollowAction, headline } from "../../utils/mountStatusOverlay";
-import { isSubstackPostPage, requestMakesSenseForUrl } from "../../utils/followTarget";
+import { priorityActiveLabel, type CreatorTarget } from "../../utils/creatorTarget";
+import { buildPriorityAction, headline } from "../../utils/mountStatusOverlay";
+import { isSubstackPostPage, requestMakesSenseForUrl } from "../../utils/pageShape";
 import { capturePageFromTab } from "../../utils/pageCapture";
 import { addRequestedPage, getRequestedPages } from "../../utils/settings";
 import { ActionButton, type StatusAction } from "../../components/StatusOverlay";
@@ -203,10 +203,10 @@ function useAuthorFeed(state: PageState): AuthorFeedStatus | null {
 }
 
 /** The popup's version of the status card's follow button. */
-function FollowButton({ target }: { target: FollowTarget }) {
+function PriorityButton({ target }: { target: CreatorTarget }) {
   const [action, setAction] = useState<StatusAction | null>(null);
   useEffect(() => {
-    void buildFollowAction(target).then(setAction);
+    void buildPriorityAction(target).then(setAction);
   }, [target]);
   if (!action) return null;
   return <ActionButton action={action} />;
@@ -275,8 +275,8 @@ function PrimaryAction({ state, counts, jumped, access }: {
   // homepage and archive pages are held to the same post rule.
   const pageUrl = state.kind === "item" ? state.item.url : state.pageUrl;
   const substackFeed =
-    (authorFeed.kind === "followable" && authorFeed.target.feedType === "substack") ||
-    (authorFeed.kind === "followed" && authorFeed.feed.feedType === "substack");
+    (authorFeed.kind === "pressable" && authorFeed.target.feedType === "substack") ||
+    (authorFeed.kind === "prioritized" && authorFeed.feed.feedType === "substack");
   const postShaped = requestMakesSenseForUrl(pageUrl) && (!substackFeed || isSubstackPostPage(pageUrl));
   const requestable = postShaped && (state.kind === "no_item" || !isWholePageChecked(state.item));
 
@@ -298,23 +298,19 @@ function PrimaryAction({ state, counts, jumped, access }: {
         <p className="text-sm font-medium text-gray-900">{statusLine}</p>
       )}
       {requestable &&
-        (authorFeed.kind === "followed" ? (
-          // A page by an author we already follow needs no request. Every new
-          // post gets checked on its own, so the button would only submit
-          // noise.
-          <p className="text-sm text-gray-600">
-            {authorFeed.feed.kind === "youtuber"
-              ? "We check every new video from this youtuber."
-              : "We check every new post from this author."}
-          </p>
+        (authorFeed.kind === "prioritized" ? (
+          // A page by a creator whose week is already running needs no press.
+          // Every new post gets checked on its own, so the button would only
+          // submit noise.
+          <p className="text-sm text-gray-600">{priorityActiveLabel(authorFeed.feed.kind)}</p>
         ) : state.kind === "item" ? (
           <RequestNoteButton label="Check this whole page" doneLabel="You asked us to check this whole page" />
         ) : (
           <RequestNoteButton label="Request notes on this page" doneLabel="You requested notes on this page" />
         ))}
-      {/* Following an author must not depend on catching the transient in-page
-          card, so the popup offers it on covered pages too. */}
-      {authorFeed.kind === "followable" && <FollowButton target={authorFeed.target} />}
+      {/* The press must not depend on catching a transient in-page card, so the
+          popup offers it on covered pages too. */}
+      {authorFeed.kind === "pressable" && <PriorityButton target={authorFeed.target} />}
     </div>
   );
 }

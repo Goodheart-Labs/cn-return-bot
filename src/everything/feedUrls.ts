@@ -8,6 +8,7 @@ import { parseAuthorFeedUrl } from "./sources/lesswrong";
 
 export type FeedType = "substack" | "youtube" | "lesswrong";
 
+
 export interface CanonicalFeed {
   project_slug: string;
   feed_type: FeedType;

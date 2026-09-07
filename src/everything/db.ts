@@ -4,7 +4,7 @@
 import { getSupabaseClient } from "../api/supabaseClient";
 import { extractYoutubeVideoId } from "../everything-shared/pageUrls";
 import { stripNullChars } from "../utils/stripNullChars";
-import type { FeedType } from "./feedUrls";
+import type { CanonicalFeed } from "./feedUrls";
 import type { ItemSource, NoteSourceCitation } from "./types";
 
 /** The queue's priority tiers. The worker takes the highest tier first, and the
@@ -13,10 +13,11 @@ export const QUEUE_PRIORITY = {
   /** An errored item on a repeat attempt. It already had its turn once, so it
    *  must never crowd out fresh content and drains last. */
   retry: -1,
-  /** The curated priority feeds. */
+  /** A post by a creator we walk only because readers visited them. */
   backlog: 0,
-  /** A post from a feed a reader asked us to follow. */
-  followed: 1,
+  /** A post by a creator whose priority window is still open, because someone
+   *  pressed the button or ran everything-prioritize. */
+  prioritized: 1,
   /** A page a reader explicitly requested notes on. */
   requested: 2,
 } as const;
@@ -63,7 +64,10 @@ interface ProjectRow {
   id: string;
   slug: string;
   name: string;
+  feed_url: string | null;
 }
+
+const PROJECT_COLUMNS = "id, slug, name, feed_url";
 
 /** Writes a project's real display name once a fetch has learned it. A project
  *  created before its name was known carries its slug as the name, and only
@@ -75,44 +79,84 @@ async function fillDisplayName(project: ProjectRow, displayName: string | undefi
   console.log(`Project "${project.slug}" display name set to "${displayName}"`);
 }
 
-/** Returns the project id for a slug. A slug we have not seen before creates
- *  the project, named by `displayName` when the caller knows it and by the
- *  slug otherwise. On an existing project the display name only fills in a
- *  slug placeholder; see fillDisplayName. */
-export async function resolveProjectId(slug: string, displayName?: string): Promise<string> {
+/** The first of `base`, `base-2`, `base-3`, ... that no project uses yet. The
+ *  same rule the press trigger in migration 086 applies, so a creator gets the
+ *  same slug whichever path first meets them. */
+async function freeSlug(base: string): Promise<string> {
   const db = getSupabaseClient();
-  const existing = throwOnError(
-    await db.from("everything_projects").select("id, slug, name").eq("slug", slug).maybeSingle(),
-  ) as ProjectRow | null;
-  if (existing) {
-    await fillDisplayName(existing, displayName);
-    return existing.id;
+  for (let suffix = 1; ; suffix++) {
+    const candidate = suffix === 1 ? base : `${base}-${suffix}`;
+    const taken = throwOnError(
+      await db.from("everything_projects").select("id").eq("slug", candidate).maybeSingle(),
+    ) as { id: string } | null;
+    if (!taken) return candidate;
   }
+}
+
+/** Returns the project id for a creator or a slug, creating the project if we
+ *  have never seen it. A creator is looked up by feed URL first, because that
+ *  is the key everything shares, and by slug second.
+ *
+ *  Two different creators can derive the same slug, such as a YouTube channel
+ *  and a Substack that both go by the same handle. When the slug is taken by a
+ *  project that already carries some other feed URL, that is a different
+ *  creator, and the new one gets a suffixed slug rather than being merged into
+ *  the wrong project. A slug-matched project with no feed URL yet is the same
+ *  creator ingested before we tracked feeds, and learns its URL here.
+ *
+ *  On an existing project the display name only fills in a slug placeholder;
+ *  see fillDisplayName. */
+export async function resolveProjectId(params: {
+  slug: string;
+  displayName?: string;
+  feedUrl?: string;
+}): Promise<string> {
+  const { slug, displayName, feedUrl } = params;
+  const db = getSupabaseClient();
+
+  if (feedUrl) {
+    const byFeed = throwOnError(
+      await db.from("everything_projects").select(PROJECT_COLUMNS).eq("feed_url", feedUrl).maybeSingle(),
+    ) as ProjectRow | null;
+    if (byFeed) {
+      await fillDisplayName(byFeed, displayName);
+      return byFeed.id;
+    }
+  }
+
+  const bySlug = throwOnError(
+    await db.from("everything_projects").select(PROJECT_COLUMNS).eq("slug", slug).maybeSingle(),
+  ) as ProjectRow | null;
+  const sameCreator = bySlug && (!feedUrl || !bySlug.feed_url || bySlug.feed_url === feedUrl);
+  if (bySlug && sameCreator) {
+    await fillDisplayName(bySlug, displayName);
+    if (feedUrl && !bySlug.feed_url) {
+      throwOnError(await db.from("everything_projects").update({ feed_url: feedUrl }).eq("id", bySlug.id));
+    }
+    return bySlug.id;
+  }
+
+  const newSlug = bySlug ? await freeSlug(slug) : slug;
   return (
     throwOnError(
-      await db.from("everything_projects").insert({ slug, name: displayName ?? slug }).select("id").single(),
+      await db
+        .from("everything_projects")
+        .insert({ slug: newSlug, name: displayName ?? newSlug, feed_url: feedUrl ?? null })
+        .select("id")
+        .single(),
     ) as { id: string }
   ).id;
 }
 
-async function fillDisplayNameWhere(column: "id" | "slug", value: string, displayName: string | undefined): Promise<void> {
-  if (!displayName) return;
+/** Fills a project's display name by project id; see fillDisplayName. The
+ *  worker calls this with the author name of the content it just fetched. */
+export async function fillProjectDisplayName(projectId: string | null, displayName?: string): Promise<void> {
+  if (!projectId || !displayName) return;
   const project = throwOnError(
-    await getSupabaseClient().from("everything_projects").select("id, slug, name").eq(column, value).maybeSingle(),
+    await getSupabaseClient().from("everything_projects").select(PROJECT_COLUMNS).eq("id", projectId).maybeSingle(),
   ) as ProjectRow | null;
   if (project) await fillDisplayName(project, displayName);
 }
-
-/** Fills a project's display name by project id; see fillDisplayName. The
- *  worker calls this with the author name of the content it just fetched. */
-export const fillProjectDisplayName = (projectId: string | null, displayName?: string): Promise<void> =>
-  projectId ? fillDisplayNameWhere("id", projectId, displayName) : Promise.resolve();
-
-/** Fills a project's display name by slug, without creating the project; see
- *  fillDisplayName. The follow-request consumer calls this, because a followed
- *  feed's project may or may not exist yet. */
-export const fillProjectDisplayNameBySlug = (slug: string, displayName?: string): Promise<void> =>
-  fillDisplayNameWhere("slug", slug, displayName);
 
 // A local doc with no url still needs a unique, non-null `url`, because the
 // column is NOT NULL UNIQUE. We mint a synthetic key under this prefix. Such a
@@ -462,84 +506,152 @@ export async function resolveNoteRequest(
   );
 }
 
-export interface FollowRequestRow {
-  id: string;
-  feed_type: FeedType;
-  feed_url: string;
-  title: string;
-}
-
-export type FollowRequestStatus = "accepted" | "skipped" | "error";
-
-/** The unconsumed follow requests, oldest first. */
-export async function fetchPendingFollowRequests(): Promise<FollowRequestRow[]> {
-  return throwOnError(
-    await getSupabaseClient()
-      .from("everything_follow_requests")
-      .select("id, feed_type, feed_url, title")
-      .eq("status", "pending")
-      .order("created_at"),
-  ) as FollowRequestRow[];
-}
-
-export async function resolveFollowRequest(id: string, status: FollowRequestStatus, reason: string | null): Promise<void> {
-  throwOnError(
-    await getSupabaseClient()
-      .from("everything_follow_requests")
-      .update({ status, status_reason: reason })
-      .eq("id", id),
-  );
-}
-
-export interface FollowedFeed {
+/** A creator we already know: a project row carrying the feed we poll. A
+ *  creator IS a project (migration 086), so this is where their slug, their
+ *  priority window and their top-posts stamp all live. The slug is derived
+ *  from the URL, with a suffix when two creators share a handle, so the URL is
+ *  the reliable key and the slug is not. */
+export interface CreatorProject {
   project_slug: string;
-  feed_type: FeedType;
   feed_url: string;
-  /** The QUEUE_PRIORITY tier this feed's items enqueue at: `followed` for a
-   *  reader-requested feed, `backlog` for the curated ones. */
-  priority: number;
-  /** While this lies in the future, the creator ranks strictly above every
-   *  unflagged creator. Set by the everything-prioritize script. */
+  /** While this lies in the future the creator is walked ahead of creators that
+   *  qualify only on visits. Null means they are walked only if readers visit
+   *  them. */
   priority_until: string | null;
+  /** When the creator's everything_top_posts rows were last recomputed. Null
+   *  means never. */
+  top_posts_refreshed_at: string | null;
 }
 
-/** Every feed the pipeline polls, in stored order: highest priority tier
- *  first, then the feed's own sort_order, then age. The creator ranking
- *  reorders this by reader attention before the feeds are walked. Migration
- *  077 seeds the curated feeds (Zvi, Dwarkesh, …); reader follows are added
- *  by the request consumer. */
-export async function fetchFollowedFeeds(): Promise<FollowedFeed[]> {
+/** Every creator we have a project for, whether or not they hold priority right
+ *  now. The ranking needs the whole set, not just the prioritised ones: a
+ *  creator walked on visits alone still has to be recognised as their existing
+ *  project, or their notes would land in a second one under a derived slug. */
+export async function fetchCreatorProjects(): Promise<CreatorProject[]> {
+  const rows = throwOnError(
+    await getSupabaseClient()
+      .from("everything_projects")
+      .select("slug, feed_url, priority_until, top_posts_refreshed_at")
+      .not("feed_url", "is", null),
+  ) as { slug: string; feed_url: string; priority_until: string | null; top_posts_refreshed_at: string | null }[];
+  return rows.map((r) => ({
+    project_slug: r.slug,
+    feed_url: r.feed_url,
+    priority_until: r.priority_until,
+    top_posts_refreshed_at: r.top_posts_refreshed_at,
+  }));
+}
+
+/** Gives a creator priority until the given time, creating their project if we
+ *  have never seen them. An existing window is extended, never shortened, so a
+ *  press cannot cut short a longer window the pipeline set. This is the
+ *  service-role path used by the everything-prioritize script; a press from the
+ *  extension goes through the trigger in migration 086 instead. */
+export async function upsertCreatorPriority(feed: CanonicalFeed, until: Date): Promise<void> {
+  const db = getSupabaseClient();
+  const existing = throwOnError(
+    await db.from("everything_projects").select("id, priority_until").eq("feed_url", feed.feed_url).maybeSingle(),
+  ) as { id: string; priority_until: string | null } | null;
+
+  if (existing) {
+    if (existing.priority_until && Date.parse(existing.priority_until) >= until.getTime()) return;
+    throwOnError(
+      await db.from("everything_projects").update({ priority_until: until.toISOString() }).eq("id", existing.id),
+    );
+    return;
+  }
+  // The creator may already have a project under their slug without a feed URL,
+  // which is how a project created by an ingest before migration 086 looks.
+  const bySlug = throwOnError(
+    await db.from("everything_projects").select("id").eq("slug", feed.project_slug).maybeSingle(),
+  ) as { id: string } | null;
+  if (bySlug) {
+    throwOnError(
+      await db
+        .from("everything_projects")
+        .update({ feed_url: feed.feed_url, priority_until: until.toISOString() })
+        .eq("id", bySlug.id),
+    );
+    return;
+  }
+  throwOnError(
+    await db.from("everything_projects").insert({
+      slug: feed.project_slug,
+      name: feed.project_slug,
+      feed_url: feed.feed_url,
+      priority_until: until.toISOString(),
+    }),
+  );
+}
+
+/** A cached top post of a followed creator (everything_top_posts, migration
+ *  085). Popularity is the platform's own signal: view count for a YouTube
+ *  video, like count for a Substack post. */
+export interface TopPostRow {
+  feed_url: string;
+  source: "substack" | "youtube";
+  url: string;
+  title: string | null;
+  published_at: string | null;
+  popularity: number;
+  rank: number;
+}
+
+/** Every cached top post, most popular first within each feed. The whole
+ *  table is a few rows per followed creator. */
+export async function fetchAllTopPosts(): Promise<TopPostRow[]> {
   return throwOnError(
     await getSupabaseClient()
-      .from("everything_followed_feeds")
-      .select("project_slug, feed_type, feed_url, priority, priority_until")
+      .from("everything_top_posts")
+      .select("feed_url, source, url, title, published_at, popularity, rank")
+      .order("feed_url")
+      .order("rank"),
+  ) as TopPostRow[];
+}
+
+/** Replaces one feed's cached top list with a fresh one and stamps the feed
+ *  as refreshed. The stamp is set even for an empty list, because a creator
+ *  with no checkable top posts must not look permanently stale. */
+export async function replaceFeedTopPosts(feedUrl: string, rows: Omit<TopPostRow, "feed_url">[]): Promise<void> {
+  const db = getSupabaseClient();
+  throwOnError(await db.from("everything_top_posts").delete().eq("feed_url", feedUrl));
+  if (rows.length > 0) {
+    throwOnError(await db.from("everything_top_posts").insert(rows.map((r) => ({ ...r, feed_url: feedUrl }))));
+  }
+  throwOnError(
+    await db
+      .from("everything_projects")
+      .update({ top_posts_refreshed_at: new Date().toISOString() })
+      .eq("feed_url", feedUrl),
+  );
+}
+
+/** One waiting item, for the queue overview the run logs. */
+export interface QueuedItemSummary {
+  id: string;
+  status: "queued" | "processing";
+  source: ItemSource;
+  url: string;
+  title: string | null;
+  priority: number;
+  created_at: string;
+}
+
+/** Everything waiting or in flight, in the order the worker takes it. The
+ *  worker itself only ever sees one row at a time (claimNextQueuedItem), so
+ *  this is the one read that can say how long the queue is and what is on it.
+ *  It names its columns rather than selecting everything, so it never pulls the
+ *  large full_text bodies. */
+export async function fetchQueueOverview(): Promise<QueuedItemSummary[]> {
+  return throwOnError(
+    await getSupabaseClient()
+      .from("everything_items")
+      .select("id, status, source, url, title, priority, created_at")
+      .in("status", ["queued", "processing"])
       .order("priority", { ascending: false })
-      .order("sort_order")
+      .order("published_at", { ascending: false, nullsFirst: true })
       .order("created_at"),
-  ) as FollowedFeed[];
-}
-
-/** Adds a reader-requested feed to the followed list, at the followed tier
- *  (the column default). A feed we already follow is left alone. */
-export async function insertFollowedFeed(feed: Omit<FollowedFeed, "priority" | "priority_until">): Promise<void> {
-  throwOnError(
-    await getSupabaseClient()
-      .from("everything_followed_feeds")
-      .upsert(feed, { onConflict: "feed_url", ignoreDuplicates: true }),
-  );
-}
-
-/** Flags a creator as priority until the given time, creating the feed row if
- *  we do not follow them yet (at the followed tier, like a reader follow). */
-export async function upsertFeedPriority(
-  feed: Omit<FollowedFeed, "priority" | "priority_until">,
-  until: Date,
-): Promise<void> {
-  throwOnError(
-    await getSupabaseClient()
-      .from("everything_followed_feeds")
-      .upsert({ ...feed, priority_until: until.toISOString() }, { onConflict: "feed_url" }),
-  );
+  ) as QueuedItemSummary[];
 }
 
 /** Visit counts per creator feed since the given time, summed in the database

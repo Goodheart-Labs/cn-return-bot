@@ -80,11 +80,13 @@ export function tweetAgeHours(post: Post, nowMs: number): number | null {
 }
 
 /**
- * Splits the candidates at the stale-tweet cutoff. This is the submit-time
- * counterpart of the velocity floor we apply at fetch time. It means a candidate
- * that aged in the queue is checked again every time it comes up. A candidate
- * whose age we cannot work out is kept. The function is pure and is exported for
- * the tests.
+ * Splits the candidates at the stale-tweet cutoff. The regular feed applies the
+ * same 24h cut at selection (see collectFastPosts), so for regular candidates
+ * this is a backstop that only bites when a post ages past the cutoff during
+ * the run itself. It is still the primary cut for candidates that skip feed
+ * selection (the Pangram pre-pass) and for the misinfo candidates with their
+ * longer 48h window. A candidate whose age we cannot work out is kept. The
+ * function is pure and is exported for the tests.
  */
 export function partitionByStaleCutoff(
   candidates: Candidate[],

@@ -26,23 +26,24 @@ beforeEach(resetDbState);
 describe("consumeNoteRequest", () => {
   test("a finished whole-page check refuses the request", async () => {
     dbState.existingItem = { id: "item-1", status: "done", checked_scope: "page" };
-    const line = await consumeNoteRequest(request() as never);
-    expect(line).toContain("already checked");
+    const outcome = await consumeNoteRequest(request() as never);
+    expect(outcome.kind).toBe("already_checked");
     expect(dbState.calls.resolveNoteRequest?.[0]).toEqual(["req-1", "done", "page was already checked", "item-1"]);
     expect(dbState.calls.promoteItemToWholePage).toBeUndefined();
   });
 
   test("an item a worker is holding leaves the request pending", async () => {
     dbState.existingItem = { id: "item-1", status: "processing", checked_scope: "page" };
-    const line = await consumeNoteRequest(request() as never);
-    expect(line).toContain("stays pending");
+    const outcome = await consumeNoteRequest(request() as never);
+    expect(outcome.kind).toBe("deferred");
     expect(dbState.calls.resolveNoteRequest).toBeUndefined();
   });
 
   test("a reader-note item is promoted with the cleaned page text", async () => {
     dbState.existingItem = { id: "item-1", status: "done", checked_scope: null };
-    const line = await consumeNoteRequest(request({ page_text: "body" }) as never);
-    expect(line).toContain("promoted");
+    const outcome = await consumeNoteRequest(request({ page_text: "body" }) as never);
+    expect(outcome.kind).toBe("queued");
+    expect(outcome.detail).toContain("promoted");
     expect(dbState.calls.promoteItemToWholePage?.[0]).toEqual(["item-1", "cleaned:body", 2]);
     expect(dbState.calls.resolveNoteRequest?.[0]).toEqual(["req-1", "enqueued", null, "item-1"]);
   });
@@ -62,8 +63,9 @@ describe("consumeNoteRequest", () => {
 
   test("a queued whole-page item is only bumped, keeping its body text", async () => {
     dbState.existingItem = { id: "item-1", status: "queued", checked_scope: "page" };
-    const line = await consumeNoteRequest(request() as never);
-    expect(line).toContain("bumped");
+    const outcome = await consumeNoteRequest(request() as never);
+    expect(outcome.kind).toBe("queued");
+    expect(outcome.detail).toContain("bumped");
     expect(dbState.calls.promoteItemToWholePage).toBeUndefined();
     expect(dbState.calls.requeueItem).toBeUndefined();
     expect(dbState.calls.raiseItemPriority?.[0]).toEqual(["item-1", 2]);

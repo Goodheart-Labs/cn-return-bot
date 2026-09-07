@@ -94,6 +94,52 @@ export function fetchChannelVideos(channelUrl: string, limit: number): ChannelLi
   return { channelName, videos };
 }
 
+/** How deep into a channel's /videos tab the top-videos scan looks. Our
+ *  largest followed channels have around 2000 videos, so this covers a whole
+ *  channel; on an even larger one the scan simply misses the tail, which at
+ *  that depth holds no all-time hits. */
+const TOP_VIDEOS_SCAN_LIMIT = 3000;
+
+export interface ChannelTopVideo {
+  videoId: string;
+  url: string;
+  title: string;
+  viewCount: number;
+}
+
+/** The channel's n most viewed videos, most viewed first, from one
+ *  flat-playlist call over the whole /videos tab. That tab leaves Shorts out.
+ *  A premiere that has not aired yet has no view count and is dropped. */
+export function fetchChannelTopVideos(channelUrl: string, n: number): ChannelTopVideo[] {
+  const out = execYtDlp(channelUrl, [
+    "--flat-playlist",
+    "--no-warnings",
+    "--playlist-items",
+    `1:${TOP_VIDEOS_SCAN_LIMIT}`,
+    "--print",
+    "%(view_count)s\t%(id)s\t%(title)s",
+    `${channelUrl.replace(/\/$/, "")}/videos`,
+  ]);
+  const videos = out
+    .trim()
+    .split("\n")
+    .filter(Boolean)
+    .map((line) => {
+      const [views = "", videoId = "", ...titleParts] = line.split("\t");
+      return {
+        videoId,
+        url: `https://www.youtube.com/watch?v=${videoId}`,
+        title: titleParts.join(" "),
+        viewCount: /^\d/.test(views) ? Number.parseInt(views, 10) : NaN,
+      };
+    })
+    .filter((v) => Number.isFinite(v.viewCount));
+  if (videos.length === 0) {
+    throw new Error(`yt-dlp listed zero viewable videos for ${channelUrl} — it is probably outdated or blocked`);
+  }
+  return videos.sort((a, b) => b.viewCount - a.viewCount).slice(0, n);
+}
+
 const TRANSCRIPT_LANG = "en";
 
 /** Fetch the video's timestamped cues. The temporary directory is always

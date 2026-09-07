@@ -2,15 +2,15 @@ import { supabase } from "../../everything-shared/supabase";
 import type { PageItem } from "../../everything-shared/notesQuery";
 import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
 import { readWatchPageChannel } from "./authorFeed";
+import { isSubstackPostPage } from "./pageShape";
 import {
   forumPostAuthorTarget,
   isForumPostPage,
-  isSubstackPostPage,
   readSubstackPublicationFromPage,
-  substackFollowTarget,
+  substackCreatorTarget,
   substackTargetFromPublication,
   youtubeChannelTarget,
-} from "./followTarget";
+} from "./creatorTarget";
 import { getSettings, getWelcomeSeen, type VisitSiteKind } from "./settings";
 
 // Visits are recorded on Substack, YouTube, and the LessWrong / Alignment
@@ -46,7 +46,7 @@ const WATCH_CHANNEL_POLL_TRIES = 20;
  *  post URL. */
 async function pageFeedUrl(kind: VisitSiteKind, pageUrl: string): Promise<string | null> {
   if (kind === "substack") {
-    const target = substackFollowTarget(pageUrl) ?? substackTargetFromPublication(readSubstackPublicationFromPage());
+    const target = substackCreatorTarget(pageUrl) ?? substackTargetFromPublication(readSubstackPublicationFromPage());
     return target?.feedUrl ?? null;
   }
   if (kind === "lesswrong") return (await forumPostAuthorTarget(pageUrl))?.feedUrl ?? null;
