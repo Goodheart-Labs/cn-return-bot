@@ -1,0 +1,97 @@
+# The services machine
+
+One always-on Linux server runs three systemd services:
+
+| Unit | What it does | Port |
+|---|---|---|
+| `cn-claim-check` | one claim in, a note with verified sources out | 8787 |
+| `cn-extraction` | text in, the claims in it out | 8788 |
+| `cn-intake` | watches reader requests and drives them through the other two | none |
+
+The first two are pure functions behind HTTP and hold no database credentials.
+Intake is a caller: it holds the service key and writes the rows. The Actions
+pipelines are the monitor; nothing on this machine phones home.
+
+## First-time setup
+
+```bash
+# as root on a fresh Ubuntu server
+git clone https://github.com/Goodheart-Labs/cn-return-bot.git /opt/cn-return-bot
+bash /opt/cn-return-bot/ops/setup-vm.sh
+# fill in /etc/cn-return-bot/service.env (below)
+systemctl start cn-claim-check cn-extraction cn-intake
+```
+
+## /etc/cn-return-bot/service.env
+
+Every variable, one per line, `NAME=value`. The services fail at startup on a
+missing required one, which is intended.
+
+```
+# Shared secret the callers present. Generate once: openssl rand -hex 32
+SERVICE_AUTH_SECRET=
+
+# Model access (claim checking and extraction)
+OPENROUTER_API_KEY=
+GEMINI_API_KEY=
+GEMINI_API_KEY_FREE=
+GROQ_API_KEY=
+XAI_API_KEY=
+SERPER_API_KEY=
+
+# The scoring step inside a claim check calls X's evaluate-note API
+# (read by src/api/getOAuthToken.ts)
+X_API_KEY=
+X_API_KEY_SECRET=
+X_ACCESS_TOKEN=
+X_ACCESS_TOKEN_SECRET=
+
+# Intake only: it writes the rows the browser watches
+SUPABASE_URL=
+SUPABASE_SERVICE_KEY=
+
+# Intake calls the other two services on this same machine
+CLAIM_CHECK_URL=http://localhost:8787
+EXTRACTION_URL=http://localhost:8788
+
+# Leave unset first and watch error rates: an ordinary VPS reaches YouTube and
+# Substack directly, unlike GitHub's runners. Setting them turns the proxies on.
+#YTDLP_PROXY_URL=
+#SUBSTACK_PROXY_URL=
+#SUBSTACK_PROXY_KEY=
+
+# Optional knobs, with their defaults
+#CLAIM_CHECK_PORT=8787
+#CLAIM_CHECK_CONCURRENCY=6
+#CLAIM_CHECK_RESERVED_FOR_READER=2
+#EXTRACTION_PORT=8788
+#EXTRACTION_CONCURRENCY=2
+#EVERYTHING_DAILY_SPEND_CAP_USD=55
+#EVERYTHING_REQUEST_RESERVE_USD=10
+```
+
+## Deploys
+
+`.github/workflows/deploy-service.yml` runs on every push to main: it connects
+over SSH as `cnbot`, resets `/opt/cn-return-bot` to the pushed commit, runs
+`bun install --frozen-lockfile`, and restarts the three units. The repo needs
+two secrets for it: `SERVICE_SSH_HOST` and `SERVICE_SSH_KEY` (a private key
+whose public half is in `/home/cnbot/.ssh/authorized_keys`).
+
+## Rollback
+
+```bash
+systemctl stop cn-claim-check cn-extraction cn-intake
+```
+
+Then re-enable the old in-process path by reverting the cutover commit on main,
+or by dispatching the workflows manually while investigating. The Actions runs
+fail loudly while the machine is down, which is the intended signal, not a
+side effect.
+
+## Looking at it
+
+```bash
+journalctl -u cn-intake -f                 # live logs, same for the other units
+curl -H "x-cn-service-key: $SECRET" http://localhost:8787/health
+```

@@ -1,0 +1,21 @@
+# The cn-claim-check service. Installed by ops/setup-vm.sh; the environment file is
+# written by hand once, see ops/README.md.
+[Unit]
+Description=Common Notes claim-check service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=cnbot
+WorkingDirectory=/opt/cn-return-bot
+EnvironmentFile=/etc/cn-return-bot/service.env
+Environment=PATH=/home/cnbot/.bun/bin:/home/cnbot/.local/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/home/cnbot/.bun/bin/bun run src/service/claimCheck/main.ts
+Restart=always
+RestartSec=5
+# Each service gets its own private /tmp, wiped on restart, so a long-lived
+# machine never collects yt-dlp and browser leftovers.
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

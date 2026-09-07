@@ -16,7 +16,7 @@
  */
 
 import PQueue from "p-queue";
-import { llm } from "../../pipeline/llm/llm";
+import { trackLlmCall, trackedLlmCreate } from "../../pipeline/cost-tracking/costTracker";
 import { jsonSchemaResponseFormat } from "../../pipeline/prompts/responseFormat";
 import { stripJsonFences } from "../../pipeline/utils/jsonOutput";
 import type { SubtitleCue } from "../../pipeline/media/ytDlpDownload";
@@ -151,9 +151,12 @@ function renderImageDescriptions(text: string, descriptions: Map<string, GeminiM
   });
 }
 
-/** One Opus extraction call over a rendered text chunk. */
+/** One Opus extraction call over a rendered text chunk. The call goes through
+ *  the tracked wrapper so its cost lands in the active cost tracker. For years
+ *  it did not, which made the daily spend cap undercount by exactly the
+ *  extraction spend. */
 async function runExtraction(content: string): Promise<RawClaim[]> {
-  const response: any = await llm.create({
+  const { response, costEntry } = await trackedLlmCreate("claim_extraction", {
     model: CLAIM_EXTRACTION_MODEL,
     messages: [
       { role: "system", content: extractionSystemPrompt() },
@@ -162,7 +165,8 @@ async function runExtraction(content: string): Promise<RawClaim[]> {
     response_format: claimsResponseFormat(),
     reasoning_effort: "high",
   } as any);
-  const content2 = response.choices?.[0]?.message?.content ?? "{}";
+  trackLlmCall(costEntry);
+  const content2 = (response as any).choices?.[0]?.message?.content ?? "{}";
   return (JSON.parse(stripJsonFences(content2)) as { claims: RawClaim[] }).claims ?? [];
 }
 

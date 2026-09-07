@@ -20,7 +20,7 @@ import { age, clip, duration, money, ordinal, table } from "./logFormat";
 import { processFetchedContent, resumeItemClaims } from "./pipeline/processContent";
 import { fetchSubstackPost, imageMarker } from "./sources/substack";
 import { ensureYtDlp, fetchYoutubeContent, fetchYoutubeTranscriptContent } from "./sources/youtube";
-import { describeSpend, spendCapReached, todaySpendUsd } from "./spendCap";
+import { describeSpend, feedBudgetExhausted, todaySpendUsd } from "./spendCap";
 import type { FetchedContent } from "./types";
 
 /** The everything path ingests whole articles, so its fetch cap matches the
@@ -146,61 +146,73 @@ async function logQueue(): Promise<number> {
   return queue.length;
 }
 
-/** Processes queued items until the queue is empty or the daily spend cap is
- *  reached. Returns how many items it finished. */
+/** Runs one claimed item through fetch, extraction and checking, and records
+ *  where it ended: done, put back because a budget ran out part way, or
+ *  errored. Both workers use this: the Actions feed run for the backlog tiers,
+ *  and the intake service for reader-requested items. */
+export async function processQueuedItem(item: EverythingItem): Promise<"done" | "capped" | "error"> {
+  const startedAt = Date.now();
+  const spentBefore = await todaySpendUsd();
+  try {
+    // Claims left pending or in error mean an earlier run was killed while
+    // checking them. We resume exactly those instead of fetching the content
+    // and extracting all over again. An item whose claims are all finished
+    // still goes through extraction. That is what makes a promoted item
+    // work: a page that only carried a reader's note, or a checked
+    // paragraph, is read in full now, and the duplicate guard inside
+    // processFetchedContent keeps the finished claims from being extracted
+    // a second time.
+    const claims = await fetchItemClaims(item.id);
+    let tally;
+    if (claims.some((c) => c.status === "pending" || c.status === "error")) {
+      tally = await resumeItemClaims(item);
+    } else {
+      const content = await fetchContent(item);
+      // The fetch is also where the source's display name comes from, so a
+      // project created knowing only its slug gets its real name here.
+      await fillProjectDisplayName(item.project_id, content.authorName);
+      tally = await processFetchedContent(item, content, claims);
+    }
+    // An item cut short by its budget goes back in the queue rather than
+    // being marked done. Its unchecked claims are still pending, so the next
+    // run resumes exactly those.
+    if (tally.capped > 0) {
+      await requeueItem(item.id);
+      console.log(`  budget reached part way through, put back in the queue with ${tally.capped} claims left`);
+      return "capped";
+    }
+    await markItemDone(item.id);
+    // The per-item cost is already recorded per claim; this is the first time
+    // it is shown. It is what tells you which items are expensive.
+    const cost = (await todaySpendUsd()) - spentBefore;
+    const checked = tally.notes + tally.no_note + tally.errors;
+    console.log(
+      `  finished in ${duration(Date.now() - startedAt)} · cost ${money(cost)} · wrote ${tally.notes} note${tally.notes === 1 ? "" : "s"} from ${checked} claim${checked === 1 ? "" : "s"} checked`,
+    );
+    return "done";
+  } catch (err: any) {
+    console.error(`  failed after ${duration(Date.now() - startedAt)}: ${err?.message}`);
+    await markItemError(item.id, err?.message ?? "unknown");
+    return "error";
+  }
+}
+
+/** Processes the backlog tiers until they are empty or the feed budget is
+ *  spent. Reader-requested items are not taken here; the intake service on the
+ *  machine owns that tier. Returns how many items it finished. */
 export async function drainQueue(): Promise<number> {
   let processed = 0;
   const queueLength = await logQueue();
   while (true) {
-    if (await spendCapReached()) {
-      console.log(`\nDaily spend cap reached (${describeSpend(await todaySpendUsd())}) — stopping for today`);
+    if (await feedBudgetExhausted()) {
+      console.log(`\nFeed budget reached (${describeSpend(await todaySpendUsd())}) — stopping for today`);
       break;
     }
-    const item = await claimNextQueuedItem();
+    const item = await claimNextQueuedItem("feed");
     if (!item) break;
-    const startedAt = Date.now();
-    const spentBefore = await todaySpendUsd();
     console.log(`\nCHECKING NOW · queue item ${processed + 1} of ${queueLength} · [${item.source}] ${clip(item.title ?? item.url, 60)}`);
-    try {
-      // Claims left pending or in error mean an earlier run was killed while
-      // checking them. We resume exactly those instead of fetching the content
-      // and extracting all over again. An item whose claims are all finished
-      // still goes through extraction. That is what makes a promoted item
-      // work: a page that only carried a reader's note, or a checked
-      // paragraph, is read in full now, and the duplicate guard inside
-      // processFetchedContent keeps the finished claims from being extracted
-      // a second time.
-      const claims = await fetchItemClaims(item.id);
-      let tally;
-      if (claims.some((c) => c.status === "pending" || c.status === "error")) {
-        tally = await resumeItemClaims(item);
-      } else {
-        const content = await fetchContent(item);
-        // The fetch is also where the source's display name comes from, so a
-        // project created knowing only its slug gets its real name here.
-        await fillProjectDisplayName(item.project_id, content.authorName);
-        tally = await processFetchedContent(item, content, claims);
-      }
-      // An item cut short by the spend cap goes back in the queue rather than
-      // being marked done. Its unchecked claims are still pending, so the next
-      // day's run resumes exactly those.
-      if (tally.capped > 0) {
-        await requeueItem(item.id);
-        console.log(`  spend cap reached part way through, put back in the queue with ${tally.capped} claims left`);
-        break;
-      }
-      await markItemDone(item.id);
-      // The per-item cost is already recorded per claim; this is the first time
-      // it is shown. It is what tells you which items are expensive.
-      const cost = (await todaySpendUsd()) - spentBefore;
-      const checked = tally.notes + tally.no_note + tally.errors;
-      console.log(
-        `  finished in ${duration(Date.now() - startedAt)} · cost ${money(cost)} · wrote ${tally.notes} note${tally.notes === 1 ? "" : "s"} from ${checked} claim${checked === 1 ? "" : "s"} checked`,
-      );
-    } catch (err: any) {
-      console.error(`  failed after ${duration(Date.now() - startedAt)}: ${err?.message}`);
-      await markItemError(item.id, err?.message ?? "unknown");
-    }
+    const ended = await processQueuedItem(item);
+    if (ended === "capped") break;
     processed++;
   }
   return processed;
