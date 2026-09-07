@@ -111,6 +111,20 @@ export const WRITER_TIME_TRAVEL_RULE = `
 ## The time-travel test
 The post context states when the post was published. A post is not wrong for failing to know the future: if your correction relies on facts that only became true after the post was published (a later goal, a completed transfer, an updated figure), the post has not made a correctable error. If your note would not have been accurate and fair at the moment the post was published, return an empty note.`;
 
+export const WRITER_LAST_CHECK = `
+
+## Last check
+Draft the note, then read it as a rater would. Return an empty note if any of these hold:
+- the post is a joke, hyperbole, a rhetorical question, or an opinion
+- the post was early, or was overtaken by later events, rather than wrong
+- the dispute is over a definition or a framing, not a checkable fact
+- the note only holds with a qualifier ("at post time", "formally", "technically")
+- the note corrects a side detail while the post's main claim stands
+- the note rests on not finding something ("no reporting confirms", "the page does not list")
+- the note's only correction is that the media is AI-made or unofficial, and the post never said it was real
+If you have two corrections, keep the strongest one.
+A not-helpful note costs more than a missed post.`;
+
 export const WRITER_RESPONSE_FORMAT = jsonSchemaResponseFormat("simple_bot_note", {
   type: "object",
   properties: {

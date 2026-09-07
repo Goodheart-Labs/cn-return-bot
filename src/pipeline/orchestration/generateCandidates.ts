@@ -10,7 +10,7 @@ import { fetchEligiblePosts } from "../../api/fetchEligiblePosts";
 import { SupabaseLogger } from "../../api/supabaseClient";
 import { getBotById } from "../../bots/index";
 import { processSingleTweet, type ProcessTweetResult } from "./processTweet";
-import type { Candidate } from "./submitCandidates";
+import { STALE_TWEET_CUTOFF_HOURS, tweetAgeHours, type Candidate } from "./submitCandidates";
 import { createTweetLog, withTweetLog, formatTweetLogSummary, formatTweetLogFull, formatRunSummary, getLoggedBotId, type TweetLogMap } from "../utils/tweetLog";
 import { buildPostSelection, type FeedSize } from "./utils/feedSizeStrategy";
 import { ageInHours, formatCount } from "./utils/tweetSorting";
@@ -81,9 +81,10 @@ type FeedFetcher = (feedSize: FeedSize) => Promise<Post[]>;
 /**
  * Walk the feed ladder one tier at a time. For each tier this fetches the posts,
  * drops the ones already seen, computes each post's velocity, and keeps only the
- * posts that clear the floor. It stops as soon as `maxPosts` of them are pooled,
- * and otherwise broadens to the next tier. Filtering here rather than at
- * submission means a slow post never costs a pipeline run.
+ * posts that clear the floor and are not already past the stale cutoff. It stops
+ * as soon as `maxPosts` of them are pooled, and otherwise broadens to the next
+ * tier. Filtering here rather than at submission means a slow or already-stale
+ * post never costs a pipeline run.
  *
  * `selected` is ordered by feed tier first, so every above-floor small post
  * comes before any large one, and every large one before any XL one. Within a
@@ -124,11 +125,24 @@ export async function collectFastPosts(
       .map((post) => ({ post, feedSize, velocity: velocityPerHour(post, asOfMs) }));
     allFresh.push(...fresh);
     const fastEnough = fresh.filter((s) => isAboveVelocityFloor(s.velocity));
+    // The submit phase discards any regular note whose tweet is older than the
+    // stale cutoff. A post that is already past the cutoff here can therefore
+    // never be submitted, and admitting it would pay a full pipeline run for a
+    // note that is guaranteed to be thrown away. On Aug 30 - Sep 1 that was
+    // ~30 finished notes a day, almost all on posts that were 24h+ old at
+    // selection. A post whose age cannot be worked out is kept, matching the
+    // fail-open behaviour of the submit-time cut.
+    const admissible = fastEnough.filter((s) => {
+      const age = tweetAgeHours(s.post, asOfMs);
+      return age === null || age <= STALE_TWEET_CUTOFF_HOURS;
+    });
+    const staleCount = fastEnough.length - admissible.length;
     console.log(
       `[generate] Feed ${feedSize}: ${posts.length} posts, ${fresh.length} new, ` +
-        `${fastEnough.length} above the ${formatVelocity(REGULAR_VELOCITY_FLOOR_PER_HOUR)} floor`,
+        `${fastEnough.length} above the ${formatVelocity(REGULAR_VELOCITY_FLOOR_PER_HOUR)} floor` +
+        (staleCount > 0 ? `, ${staleCount} dropped as already past the ${STALE_TWEET_CUTOFF_HOURS}h stale cutoff` : ""),
     );
-    for (const sourced of fastEnough) pool.set(sourced.post.id, sourced);
+    for (const sourced of admissible) pool.set(sourced.post.id, sourced);
     // A scorer ranks across tiers, so it needs to see every tier before choosing.
     if (!scorer && pool.size >= maxPosts) break;
   }

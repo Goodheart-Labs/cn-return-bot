@@ -9,8 +9,8 @@ import { formatViews } from "../lib/format";
 const PAGE_SIZE = 10;
 
 const SORT_OPTIONS: { value: NoteSort; label: string }[] = [
-  { value: "latest_helpful", label: "Latest helpful" },
   { value: "most_views_helpful", label: "Most views (helpful)" },
+  { value: "latest_helpful", label: "Latest helpful" },
   { value: "latest_unhelpful", label: "Latest unhelpful" },
 ];
 
