@@ -2,7 +2,8 @@ import { browser } from "#imports";
 import type { CreatorTarget } from "./creatorTarget";
 
 // The feed URLs of the creators whose priority window is open right now, from
-// everything_projects. The background's sync writes the list next to the
+// everything_projects, filtered by the query rather than by a policy (anon can
+// read every project, because the public site lists them). The background's sync writes the list next to the
 // covered-pages cache, and the button surfaces read it to decide whether to
 // offer a press or say we are already on it. Ingested pages are no proxy for
 // that: a reader can request a single page, and that must not hide the button

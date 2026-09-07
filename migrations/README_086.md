@@ -1,0 +1,47 @@
+# Testing migration 086 before it touches production
+
+The migration rewrites how creators are stored and drops two tables, so it is
+worth running against a throwaway database first. `086_creators.fixture.sql`
+builds a miniature of production, `086_creators.verify.sql` exercises the
+result, including the exact queries an extension build from before this change
+sends.
+
+```bash
+sudo docker run -d --rm --name cn-migration-test -e POSTGRES_PASSWORD=test -p 55432:5432 postgres:15
+until sudo docker exec cn-migration-test pg_isready -U postgres; do sleep 1; done
+
+export PGPASSWORD=test
+PSQL="psql -h 127.0.0.1 -p 55432 -U postgres -v ON_ERROR_STOP=1 -q"
+$PSQL -f migrations/086_creators.fixture.sql
+$PSQL --single-transaction -f migrations/086_creators.sql
+psql -h 127.0.0.1 -p 55432 -U postgres -q -f migrations/086_creators.verify.sql
+
+sudo docker stop cn-migration-test
+```
+
+What the checks prove, in the order they run:
+
+1. The hand-picked slugs survive. `thezvi.substack.com` stays project `zvi`,
+   `@DwarkeshPatel` stays `dwarkesh`, `astralcodexten` stays `acx`. This is the
+   bug the migration exists to prevent, and it is irreversible once the old
+   table is dropped.
+2. A priority someone set deliberately is kept rather than overwritten by the
+   date derived from when the creator was first requested.
+3. Creators requested long ago arrive expired; recent ones keep their window.
+4. An extension build from **before** this change can still read which creators
+   we are checking, through the compatibility view.
+5. That same old build's press still works. The insert it sends is redirected
+   into a seven-day grant.
+6. A current build's press works.
+7. A client cannot choose its own window.
+8. A client cannot name a project or take a slug that is in use.
+9. Pressing again extends the window instead of duplicating the creator, and
+   never shortens a longer window the pipeline set.
+10. A client cannot update or delete.
+11. A feed URL the parser cannot read is refused rather than stored.
+12. The analytics dashboard's function still runs after the tables it used to
+    join are gone.
+13. Both old tables are now views.
+
+The fixture and the checks can be deleted once the compatibility views are
+dropped and nobody is running an extension from before this change.

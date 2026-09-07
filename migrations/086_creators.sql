@@ -140,30 +140,55 @@ select f.project_slug,
 --    the backfill would have re-stamped all two dozen historical rows with a
 --    fresh seven days and silently re-prioritised every creator we own.
 --
---    SECURITY DEFINER so the re-press path can update a row whose priority has
---    already expired, which the select policy hides and which anon has no
---    privilege to update. That is also why re-pressing cannot go through an
---    ordinary upsert: INSERT ... ON CONFLICT DO UPDATE requires the UPDATE
---    privilege whether or not a conflict happens, and anon deliberately has
---    none. The trigger performs the update itself and returns null to skip the
---    insert, so the statement affects no rows and the client must not read an
---    empty result as failure.
+--    Two functions rather than one, because of how SECURITY DEFINER works. A
+--    definer function runs as its owner, and current_user becomes that owner
+--    inside it, so a trigger that both switches on the caller's role AND needs
+--    elevated rights cannot be one function: the role test would always see the
+--    owner. The trigger therefore stays SECURITY INVOKER, where current_user is
+--    honestly the caller, and hands the one privileged step to a definer helper
+--    that can do nothing except move a single creator's window forward.
+
+--    Extends an existing creator's window, or reports that we have never seen
+--    them. SECURITY DEFINER because anon holds no update privilege on the
+--    table, and deliberately narrow: it takes a feed URL, it only ever moves
+--    that creator's priority_until forward, and it can touch nothing else.
+create or replace function everything_extend_priority(target_feed_url text, granted timestamptz)
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  found_id uuid;
+begin
+  select id into found_id from everything_projects where lower(feed_url) = lower(target_feed_url);
+  if not found then
+    return false;
+  end if;
+  -- greatest() so a press can never cut short a longer window the pipeline set.
+  update everything_projects
+     set priority_until = greatest(priority_until, granted)
+   where id = found_id;
+  return true;
+end;
+$$;
+
+grant execute on function everything_extend_priority(text, timestamptz) to anon, authenticated;
 
 create or replace function everything_projects_press()
 returns trigger
 language plpgsql
-security definer
-set search_path = public
 as $$
 declare
   granted timestamptz := now() + interval '7 days';
   base_slug text;
   candidate text;
   suffix int := 1;
-  existing_id uuid;
 begin
   -- The pipeline on service_role, and this migration on postgres, keep full
-  -- control of every column. Only the two public PostgREST roles are overridden.
+  -- control of every column: an ingest creates a project with no window at all,
+  -- and everything-prioritize sets its own. Only the two public PostgREST roles
+  -- are overridden. This test is why the function is not SECURITY DEFINER.
   if current_user not in ('anon', 'authenticated') then
     return new;
   end if;
@@ -174,16 +199,10 @@ begin
     raise exception 'not a creator feed we recognise: %', new.feed_url using errcode = 'check_violation';
   end if;
 
-  -- A creator we already know: extend the window, never shorten it, and leave
-  -- their name, slug and everything else alone.
-  select id into existing_id
-    from everything_projects
-   where lower(feed_url) = lower(new.feed_url)
-     for update;
-  if found then
-    update everything_projects
-       set priority_until = greatest(priority_until, granted)
-     where id = existing_id;
+  -- A creator we already know: extend their window and insert nothing. The
+  -- statement then affects no rows, so the client must not read an empty result
+  -- as failure.
+  if everything_extend_priority(new.feed_url, granted) then
     return null;
   end if;
 
@@ -323,14 +342,19 @@ drop table everything_follow_requests;
 drop table everything_followed_feeds;
 
 -- ---------------------------------------------------------------------------
--- 8. A view under the old name, for the extensions already installed in
---    people's browsers. They query everything_followed_feeds by name to decide
---    whether to offer the button, and they cannot be updated in step with this
---    migration. Without the view every one of them reads the error as "we
---    follow nobody" and shows the button on every author until its user
---    updates. security_invoker makes the view obey the base table's own policy
---    and column grants, so it exposes nothing new. A later migration drops it.
+-- 8. Two views under the old names, so the extension copies already installed
+--    in people's browsers keep working. They matter more here than they
+--    usually would: the extension is installed unpacked from a GitHub release,
+--    so nothing auto-updates it and an old copy can stay in use indefinitely.
+--
+--    Both are shims. Delete them in a later migration once the old versions are
+--    gone. security_invoker makes each view obey the base table's own policy
+--    and column grants, so neither exposes anything the caller could not
+--    already read.
 
+-- The read side. An old client asks this table which authors it should stop
+-- offering the button for. Without the view the query errors, the client reads
+-- that as "we follow nobody", and the button appears on every author forever.
 create view everything_followed_feeds
   with (security_invoker = true)
   as select feed_url from everything_projects where priority_until > now();
@@ -339,3 +363,52 @@ grant select on everything_followed_feeds to anon, authenticated;
 
 comment on view everything_followed_feeds is
   'Compatibility shim for extension versions shipped before GOO-107. Drop once those versions are gone.';
+
+-- The write side. An old client posts a follow request here when someone
+-- presses the button. Without this the press fails and the button can never
+-- succeed again on that copy of the extension, which would quietly break the
+-- main way creators enter the queue for anyone who has not reinstalled.
+--
+-- The columns are the ones an old client sends. Nothing reads them back, so
+-- feed_type is derived rather than stored, and user_id is dropped: a press
+-- records no author now.
+create view everything_follow_requests
+  with (security_invoker = true)
+  as select
+       id,
+       case
+         when feed_url like '%.substack.com' then 'substack'
+         when feed_url like 'https://www.youtube.com/%' then 'youtube'
+         else 'other'
+       end as feed_type,
+       feed_url,
+       name as title,
+       null::uuid as user_id,
+       'accepted'::text as status,
+       created_at
+     from everything_projects
+    where feed_url is not null;
+
+-- The redirect. Inserting into everything_projects fires the press trigger
+-- above, which grants the seven days and derives the slug, so the old path and
+-- the new one run exactly the same logic and there is no second copy of it to
+-- drift. A press for a creator we already know updates their row and inserts
+-- nothing, which the old client reads as success, the same as the new one does.
+create or replace function everything_follow_requests_press()
+returns trigger
+language plpgsql
+as $$
+begin
+  insert into everything_projects (feed_url) values (new.feed_url);
+  return new;
+end;
+$$;
+
+create trigger everything_follow_requests_press
+  instead of insert on everything_follow_requests
+  for each row execute function everything_follow_requests_press();
+
+grant select, insert on everything_follow_requests to anon, authenticated;
+
+comment on view everything_follow_requests is
+  'Compatibility shim for extension versions shipped before GOO-107: an insert here becomes a press. Drop once those versions are gone.';
