@@ -13,6 +13,7 @@ import { jumpToNextNote } from "../utils/jumpBus";
 import { mountStatusOverlay } from "../utils/mountStatusOverlay";
 import { isPageDark, observePageTheme } from "../utils/pageTheme";
 import { listenForRequestInfo } from "../utils/requestInfo";
+import { listenForLiveRequests } from "../utils/requestLive";
 import { getSettings } from "../utils/settings";
 import { registerDevReloadHook } from "../utils/devReload";
 import { initUiAnalytics } from "../utils/analytics";
@@ -175,6 +176,7 @@ export default defineContentScript({
     // The background answers a needless request, for example on an already
     // checked video, with an explanation card through this listener.
     listenForRequestInfo(ctx);
+    listenForLiveRequests(ctx);
     // Listing badges mark noted videos on channel pages and in other video
     // lists. They live independently of the watch-page overlay below.
     const stopBadges = await mountCoverageBadges(ctx);

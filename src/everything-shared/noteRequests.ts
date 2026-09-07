@@ -11,22 +11,37 @@ export const MAX_PAGE_TEXT_LENGTH = 500_000;
  *  no selection; a request on a highlighted paragraph carries it. `pageText` is
  *  the page's body text captured on the reader's device. It lets the pipeline
  *  fact-check pages it cannot fetch itself, so send it whenever the caller can
- *  read the page. Anonymous requests are allowed. */
+ *  read the page. Anonymous requests are allowed.
+ *
+ *  Returns the request's client token (migration 087), the device's only
+ *  handle on its own request: exchanging it via everything_request_status is
+ *  how the extension shows live progress. The table has no select policy, so
+ *  without the token the row is unreachable. Against a backend that predates
+ *  the token column the request is still submitted, and null says live
+ *  progress is unavailable. */
 export async function submitNoteRequest(params: {
   pageUrl: string;
   pageTitle: string;
   selection: string | null;
   pageText?: string | null;
-}) {
+}): Promise<string | null> {
   const { data } = await supabase.auth.getSession();
-  const { error } = await supabase.from("everything_note_requests").insert({
+  const row = {
     page_url: params.pageUrl,
     page_title: params.pageTitle,
     selection: params.selection,
     page_text: params.pageText?.slice(0, MAX_PAGE_TEXT_LENGTH) || null,
     user_id: data.session?.user.id ?? null,
-  });
-  if (error) throw new Error(error.message);
+  };
+  const token = crypto.randomUUID();
+  const { error } = await supabase.from("everything_note_requests").insert({ ...row, client_token: token });
+  if (!error) return token;
+  // An old backend has no client_token column and rejects the whole insert.
+  // The request matters more than the progress card, so we retry without it.
+  if (!error.message.includes("client_token")) throw new Error(error.message);
+  const { error: retryError } = await supabase.from("everything_note_requests").insert(row);
+  if (retryError) throw new Error(retryError.message);
+  return null;
 }
 
 /** Records that a reader wants a whole Substack publication or YouTube channel

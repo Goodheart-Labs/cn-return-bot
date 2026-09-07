@@ -14,6 +14,7 @@ import { jumpToNextNote } from "./jumpBus";
 import { recordPageVisit } from "./linkVisits";
 import { mountStatusOverlay } from "./mountStatusOverlay";
 import { mountWriteAnywhere } from "./mountWriteAnywhere";
+import { REQUEST_NOTES_CHANGED_EVENT } from "./requestLive";
 import { listenForRequestInfo } from "./requestInfo";
 import { getSettings, onNoteFiltersChanged, onSettingsChanged, type NoteStyle } from "./settings";
 import { isPageDark, observePageTheme } from "./pageTheme";
@@ -372,6 +373,11 @@ export async function mountInlineNotes(ctx: ContentScriptContext): Promise<void>
     cleanup = teardown;
   };
   await remount(location.href);
+  // A live request writes its notes while the reader is on the page, and a page
+  // that was uncovered at load has no notes UI to show them. The live card's
+  // watcher announces every new note, and the remount here is what turns it
+  // into a highlight on the spot.
+  ctx.addEventListener(window, REQUEST_NOTES_CHANGED_EVENT, () => void remount(location.href));
   // In browsers with the Navigation API this event fires before the navigation
   // commits. At that moment location.href can still point at the previous page. So
   // we resolve the item from the event's destination URL and never from location.
