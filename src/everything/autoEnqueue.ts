@@ -56,6 +56,7 @@ import {
 } from "./db";
 import type { FeedType } from "./feedUrls";
 import { duration, fixedRow, groupClose, groupOpen, tally } from "./logFormat";
+import { fetchAuthorPosts } from "./sources/lesswrong";
 import { fetchFeedPosts, fetchPostBodyText, htmlToText } from "./sources/substack";
 import { ensureYtDlp, fetchChannelVideos, fetchUploadDates } from "./sources/youtube";
 import { loadTopPosts } from "./topPosts";
@@ -63,8 +64,8 @@ import type { SourceKind } from "./types";
 
 /** How many items one run enqueues, and therefore processes, across all feeds. */
 const BATCH_SIZE = 1;
-/** How many entries a feed listing fetches. Substack's RSS feed has its own
- *  fixed window of about twenty. */
+/** How many entries a feed listing fetches: YouTube channel videos and forum
+ *  author posts. Substack's RSS feed has its own fixed window of about twenty. */
 const FEED_FETCH_LIMIT = 15;
 /** Only a feed's newest posts are ever candidates. A newly followed creator
  *  therefore backfills at most this many posts, instead of their whole 15 to
@@ -75,7 +76,8 @@ const FEED_FETCH_LIMIT = 15;
 const FEED_CANDIDATE_LIMIT = 5;
 
 /** A creator's feed in the shape the fetchers work with. `url` is the feed's
- *  canonical URL: a Substack publication root or a YouTube channel. */
+ *  canonical URL: a Substack publication root, a YouTube channel, or a forum
+ *  author's profile. */
 export interface PriorityFeed {
   project: string;
   type: FeedType;
@@ -86,13 +88,13 @@ interface FeedEntry {
   source: SourceKind;
   url: string;
   /** What to match existing item urls against. For YouTube this is the video
-   *  id, because the stored URL forms vary. For Substack it is the canonical
-   *  url itself. */
+   *  id and for a forum post the post id, because the stored URL forms vary.
+   *  For Substack it is the canonical url itself. */
   matchKey: string;
   label: string;
-  /** Substack only. This is the post body taken from the RSS feed. We enqueue
-   *  it with the item so the worker never has to fetch Substack, which blocks
-   *  our CI runners. */
+  /** The post body, when the feed listing already carries it. A Substack body
+   *  comes from the RSS feed and a forum body from the GraphQL listing. We
+   *  enqueue it with the item so the worker never has to fetch the page. */
   fullText?: string;
   title?: string;
   publishedAt?: string;
@@ -131,6 +133,19 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedListing> {
       publishedAt: p.publishedAt.slice(0, 10),
     }));
     return { sourceName, entries, paidPosts };
+  }
+  if (feed.type === "lesswrong") {
+    const { authorName, posts } = await fetchAuthorPosts(feed.url, FEED_FETCH_LIMIT);
+    const entries = posts.map((p) => ({
+      source: "lesswrong" as const,
+      url: p.url,
+      matchKey: p.postId,
+      label: `${p.postedAt.slice(0, 10)} ${p.title}`,
+      fullText: p.text,
+      title: p.title,
+      publishedAt: p.postedAt.slice(0, 10),
+    }));
+    return { sourceName: authorName, entries, paidPosts: 0 };
   }
   const { channelName, videos } = fetchChannelVideos(feed.url, FEED_FETCH_LIMIT);
   const entries = videos

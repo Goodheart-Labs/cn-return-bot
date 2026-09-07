@@ -22,6 +22,11 @@ const TOP_POSTS_PER_FEED = 5;
 const REFRESH_AGE_DAYS = 7;
 
 async function fetchFreshTopList(feed: RankedCreator): Promise<Omit<TopPostRow, "feed_url">[]> {
+  // A forum author has no all-time list yet: LessWrong's API exposes karma, but
+  // nothing reads it here, so the creator's stamp is set with an empty list and
+  // only their new posts are walked. Returning nothing rather than throwing is
+  // what keeps them from being retried on every run.
+  if (feed.feed_type === "lesswrong") return [];
   if (feed.feed_type === "substack") {
     return (await fetchTopArchivePosts(feed.feed_url, TOP_POSTS_PER_FEED)).map((p, i) => ({
       source: "substack" as const,
