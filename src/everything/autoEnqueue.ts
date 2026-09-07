@@ -138,7 +138,13 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedListing> {
     // yet, and enqueueing it would leave the item in a permanent error state.
     // A later run picks it up once the video is live.
     .filter((v) => v.durationSeconds !== null)
-    .map((v) => ({ source: "youtube" as const, url: v.url, matchKey: v.videoId, label: v.title }));
+    .map((v) => ({
+      source: "youtube" as const,
+      url: v.url,
+      matchKey: v.videoId,
+      label: v.title,
+      publishedAt: v.uploadDate,
+    }));
   return { sourceName: channelName, entries, paidPosts: 0 };
 }
 
@@ -310,9 +316,9 @@ export function topPostEntries(tops: TopPostRow[], recent: FeedEntry[]): FeedEnt
     .filter((t) => !recent.some((e) => e.matchKey === t.matchKey));
 }
 
-/** Upload dates fetched this process, keyed by video id. A channel listing
- *  carries no upload dates, so a YouTube candidate's date costs one metadata
- *  call. The cycles of one auto-run reuse the answer. */
+/** Upload dates fetched per video this process, keyed by video id. This is
+ *  the fallback for a listed video yt-dlp could not date from the tab text,
+ *  which should be rare. The cycles of one auto-run reuse the answer. */
 const uploadDateCache = new Map<string, string | undefined>();
 
 function videoUploadDate(entry: UnprocessedEntry): string | undefined {
@@ -419,10 +425,11 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
         entry,
         sourceName,
         topPopularity: entry.topPopularity,
-        // A top YouTube post carries its upload date from the cache, so only a
-        // fresh video costs a metadata call here.
+        // A recent video carries its date from the channel listing and a top
+        // post from the cache; only a video with neither costs a metadata call
+        // here.
         publishedAt:
-          entry.source === "youtube" && entry.topPopularity === undefined
+          entry.source === "youtube" && entry.topPopularity === undefined && !entry.publishedAt
             ? videoUploadDate(entry)
             : entry.publishedAt,
       });

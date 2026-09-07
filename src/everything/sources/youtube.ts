@@ -46,6 +46,11 @@ export interface ChannelVideo {
   url: string;
   title: string;
   durationSeconds: number | null;
+  /** The upload day as YYYY-MM-DD, approximate: yt-dlp derives it from the
+   *  "3 weeks ago" text on the listing, so it runs a few days late and more
+   *  so for older videos. Ordering within a channel is exact. The worker
+   *  replaces it with the real date once it fetches the video. */
+  uploadDate?: string;
 }
 
 export interface ChannelListing {
@@ -57,7 +62,13 @@ export interface ChannelListing {
 /** List the channel's name and the latest videos on its /videos tab with a
  *  single flat-playlist yt-dlp call. The newest video comes first and Shorts
  *  are left out, because that tab does not list them. The duration is null for
- *  a premiere and for a video that has not aired yet. */
+ *  a premiere and for a video that has not aired yet.
+ *
+ *  The listing also carries each video's upload day. A flat listing has no
+ *  real dates, but the `approximate_date` extractor argument makes yt-dlp
+ *  derive one from the "3 weeks ago" text the tab shows, in this same call.
+ *  Before this, every candidate video cost a separate metadata call for its
+ *  date, and those calls were most of the walk's running time. */
 export function fetchChannelVideos(channelUrl: string, limit: number): ChannelListing {
   // The per-video lines print first, one per video. The playlist-level print
   // runs once after them, so the channel name is always the last line.
@@ -66,23 +77,31 @@ export function fetchChannelVideos(channelUrl: string, limit: number): ChannelLi
     "--no-warnings",
     "--playlist-items",
     `1:${limit}`,
+    "--extractor-args",
+    "youtubetab:approximate_date",
     "--print",
-    "%(id)s\t%(duration)s\t%(title)s",
+    "%(id)s\t%(duration)s\t%(upload_date)s\t%(title)s",
     "--print",
     "playlist:%(channel)s",
     `${channelUrl.replace(/\/$/, "")}/videos`,
   ]);
+  return parseChannelListing(out, channelUrl);
+}
+
+/** Turns the listing's printed lines into videos. Exported for the tests. */
+export function parseChannelListing(out: string, channelUrl: string): ChannelListing {
   const lines = out.trim().split("\n").filter(Boolean);
   // A video line always contains tabs and a channel name never does, so a
   // tabbed last line means the playlist print did not run.
   const channelName = lines.at(-1)?.includes("\t") ? undefined : ytDlpField(lines.pop() ?? "");
   const videos = lines.map((line) => {
-    const [videoId = "", duration = "", ...titleParts] = line.split("\t");
+    const [videoId = "", duration = "", uploadDate = "", ...titleParts] = line.split("\t");
     return {
       videoId,
       url: `https://www.youtube.com/watch?v=${videoId}`,
       title: titleParts.join(" "),
       durationSeconds: /^\d/.test(duration) ? Number.parseFloat(duration) : null,
+      uploadDate: parseUploadDate(uploadDate),
     };
   });
   // A channel's videos tab is never empty, so an empty listing means yt-dlp
@@ -93,6 +112,7 @@ export function fetchChannelVideos(channelUrl: string, limit: number): ChannelLi
   }
   return { channelName, videos };
 }
+
 
 /** How deep into a channel's /videos tab the top-videos scan looks. Our
  *  largest followed channels have around 2000 videos, so this covers a whole
