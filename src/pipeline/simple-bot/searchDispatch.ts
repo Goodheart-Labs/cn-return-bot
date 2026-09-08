@@ -365,6 +365,55 @@ async function searchWithSonarBundled(
 
 const SEARCH_LOOP_MAX_TURNS = 6;
 
+/** The provider refused the value we gave for tool_choice, rather than failing
+ *  for some passing reason. OpenRouter wraps an upstream failure as a 400 and
+ *  puts the provider's own error body in metadata.raw, so that string is where
+ *  the offending parameter name appears. */
+export function rejectsForcedToolCall(err: any): boolean {
+  const status = err?.status ?? err?.response?.status;
+  if (status !== 400) return false;
+  return String(err?.error?.metadata?.raw ?? "").includes("tool_choice");
+}
+
+/** Runs one turn of the Serper loop.
+ *
+ *  Some providers accept only "auto" for tool_choice and reject "required"
+ *  outright. Meta is one, which is what stopped the Muse arm from running at
+ *  all. That is a fixed property of the provider rather than a passing failure,
+ *  so the only way to get the turn done is to ask again without forcing the
+ *  tool call, which also means attaching the response format the forced call
+ *  left off.
+ *
+ *  We lose the guarantee that the model searches on this turn, which is the
+ *  thing forcing was added to provide. Muse called google_search on all five
+ *  samples we tried, so in practice it still searches. A provider that accepts
+ *  "required" never reaches the fallback, so no other arm changes behaviour. */
+async function callSearchTurn(
+  model: string,
+  messages: any[],
+  tools: any[],
+  forceToolCall: boolean,
+) {
+  const request = {
+    model,
+    messages,
+    tools,
+    tool_choice: forceToolCall ? "required" : "auto",
+    ...(forceToolCall ? {} : { response_format: SEARCH_RESPONSE_FORMAT }),
+  };
+  try {
+    return await llm.create(request as any);
+  } catch (err) {
+    if (!forceToolCall || !rejectsForcedToolCall(err)) throw err;
+    getTweetLog()?.set(`${STEP.search}.forcedToolCallUnsupported`, { model });
+    return await llm.create({
+      ...request,
+      tool_choice: "auto",
+      response_format: SEARCH_RESPONSE_FORMAT,
+    } as any);
+  }
+}
+
 /**
  * The tool-calling loop for models that have no native web search, such as
  * Kimi, GLM, DeepSeek, and Qwen. The model issues google_search calls, which we
@@ -402,13 +451,7 @@ You have access to a google_search tool. Issue search queries to gather evidence
     // among them, also reject json_schema unless tool_choice is "auto". So we
     // attach the schema only on the turns that use "auto".
     const forceToolCall = turn === 1;
-    const response = await llm.create({
-      model,
-      messages,
-      tools,
-      tool_choice: forceToolCall ? "required" : "auto",
-      ...(forceToolCall ? {} : { response_format: SEARCH_RESPONSE_FORMAT }),
-    } as any);
+    const response = await callSearchTurn(model, messages, tools, forceToolCall);
     addTokenCost(totalCost, extractOpenRouterCost(response));
 
     const message = response.choices?.[0]?.message;

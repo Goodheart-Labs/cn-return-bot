@@ -21,11 +21,22 @@ function getClient(): OpenAI {
   return _client;
 }
 
-function isRetryableError(err: any): boolean {
+/** OpenRouter puts the upstream provider's own error body in metadata.raw. A
+ *  provider that calls the request invalid is describing something permanent
+ *  about the request, such as a parameter value it does not accept, so asking
+ *  again in exactly the same way can only fail in exactly the same way. */
+function isProviderInvalidRequest(err: any): boolean {
+  return String(err?.error?.metadata?.raw ?? "").includes("invalid_request_error");
+}
+
+export function isRetryableError(err: any): boolean {
   const status = err?.status ?? err?.response?.status;
   // OpenRouter reports a failure of the upstream provider as a 400 whose message
-  // reads "Provider returned error".
-  if (status === 400 && String(err?.message ?? "").includes("Provider returned error")) return true;
+  // reads "Provider returned error". Most of those are worth another attempt,
+  // but a rejected request is not, so it goes straight back to the caller.
+  if (status === 400 && String(err?.message ?? "").includes("Provider returned error")) {
+    return !isProviderInvalidRequest(err);
+  }
   // The usual retryable status codes. We still check them in case the SDK has used
   // up its own retries.
   if (status === 429 || status === 500 || status === 502 || status === 503 || status === 504) return true;
