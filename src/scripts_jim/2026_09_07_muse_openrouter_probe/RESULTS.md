@@ -1,104 +1,106 @@
 # Is Muse callable with our OpenRouter key yet? (GOO-124)
 
-Re-test on 2026-09-07, asking whether the block found on 2026-09-04 during the
-model evaluation (GOO-95, PR #439) has been lifted.
+Two runs, both asking whether the block found during the model evaluation
+(GOO-95, PR #439) has been lifted.
 
-**Short answer: no. Muse is still stopped at the first of OpenRouter's two
-gates, the 18+ age confirmation. Nobody has clicked it yet.**
+- **2026-09-07:** no. Still stopped at OpenRouter's 18+ age confirmation.
+- **2026-09-08, after the age box was ticked:** both OpenRouter gates are now
+  clear. **The writer arm works. The search arm does not, for a new and
+  unrelated reason: Meta's own API refuses the `tool_choice` value our search
+  loop sends on its first turn.**
 
-## What "gate" means here
+## What the gates were
 
 OpenRouter is the broker we send almost every model call through. It refuses
 some models until the *account* has ticked a box, and it calls those boxes
 **attestations** — a statement the account holder makes about themselves, such
 as being over 18. It calls the filters that act on account-wide policy
-**guardrails** — for example, a rule that this account may not use providers
-who train on the prompts we send them.
+**guardrails** — for example, a rule that this account may not use providers who
+train on the prompts we send them.
 
-Attestations and guardrails are checked at different points, in a fixed order,
-and OpenRouter names the point that failed in the error body under
-`failed_routing_step`. That ordering is why the second gate is invisible until
-the first one is cleared, and it is how you tell the two states apart.
+The two are checked at different points in a fixed order, and OpenRouter names
+the point that failed in the error body under `failed_routing_step`. That
+ordering is why gate 2 was invisible while gate 1 was unsolved.
 
-## The result, per model and per request shape
+Both are now cleared. Gate 1 was cleared by ticking 18+ at
+https://openrouter.ai/settings/preferences. Gate 2, the training-data
+permission, never fired at all once gate 1 was open, so no guardrail is standing
+between this account and Meta's contributor tier.
 
-The check is `verifyModels.ts` in `src/scripts_jim/2026_09_01_model_evaluation/`,
-run as `bun run src/scripts_jim/2026_09_01_model_evaluation/verifyModels.ts --only muse`.
-The `--only` flag was added for this re-test. It imports the pipeline's real
-client and its real response formats, so the three shapes below are the exact
-requests production would send.
+## Where Muse stands today
 
-| Key | Model | Request shape | Result |
+Run as
+`bun run src/scripts_jim/2026_09_01_model_evaluation/verifyModels.ts --only muse`.
+The `--only` flag was added for this re-test. The script imports the pipeline's
+real client and its real response formats, so these are the exact requests
+production would send.
+
+| Model | Request shape | 2026-09-07 | 2026-09-08 |
 |---|---|---|---|
-| Testing (`OPENROUTER_TESTING_KEY`) | meta/muse-spark-1.3-contributor | Advertised parameter support (free) | Pass, has `response_format`, `structured_outputs`, `tools`, `tool_choice`, $0.10/$0.20 |
-| Testing | meta/muse-spark-1.3-contributor | Writer, strict `json_schema` | **403, gate 1** |
-| Testing | meta/muse-spark-1.3-contributor | Search, tools forced | **403, gate 1** |
-| Testing | meta/muse-spark-1.3-contributor | Search, tools plus `json_schema` | **403, gate 1** |
-| Testing | meta/muse-spark-1.3 (standard tier) | Bare call | **403, gate 1** |
-| Testing | meta/muse-spark-1.2-contributor | Bare call | **403, gate 1** |
-| Testing | meta/muse-glimmer-30b | Bare call | Pass, answered from DeepInfra, $0.000023 |
-| Production (`OPENROUTER_API_KEY` in the shared `.env`) | every Muse model | every shape | **Could not test, the key is dead. See below.** |
+| meta/muse-spark-1.3-contributor | Advertised parameter support (free) | Pass | Pass |
+| meta/muse-spark-1.3-contributor | Writer, strict `json_schema` | 403, age gate | **Pass**, parsed cleanly, $0.000135 |
+| meta/muse-spark-1.3-contributor | Search, tools forced (`tool_choice: "required"`) | 403, age gate | **Fail, 400 from Meta** |
+| meta/muse-spark-1.3-contributor | Search, tools plus `json_schema` (`tool_choice: "auto"`) | 403, age gate | **Pass**, chose a tool call |
 
-The whole probe cost $0.000023, which is the one Glimmer call. Every other
-attempt was rejected before it reached a provider, so it was free.
+So the writer arm `musespark13c` is fully verified and could ship today. The
+search arm `musespark13c-serper` cannot, because of the one failing row.
 
-The 403 body is identical across all three Muse Spark models and all three
-request shapes:
+## The new blocker, in detail
+
+Meta's API rejects the request outright:
 
 ```json
 {
-  "error": {
-    "message": "This model requires you to complete the following before use: 18+ age confirmation. Confirm at https://openrouter.ai/settings/preferences.",
-    "code": 403,
-    "metadata": {
-      "missing_attestation_types": ["age_18plus"],
-      "routing_funnel": [{ "step": "Initial Endpoints", "endpoint_count": 1 }],
-      "failed_routing_step": "Gate Endpoints with Attestations"
-    }
+  "message": "Provider returned error", "code": 400,
+  "metadata": {
+    "provider_name": "Meta",
+    "raw": "{\"error\":{\"message\":\"only `\\\"auto\\\"` is supported for `tool_choice`. `\\\"none\\\"`, `\\\"required\\\"`, and named function choices are not currently supported\",\"param\":\"tool_choice\",\"type\":\"invalid_request_error\"}}"
   }
 }
 ```
 
-This is the same error, word for word, that PR #439 recorded three days ago. It
-is gate 1. Gate 2, the training-data permission, has not been reached, so we
-still do not know whether this account would pass it. That question stays open
-until somebody ticks the age box.
+`tool_choice` is the OpenAI-style request field that says how hard the model is
+pushed to call a tool. `"auto"` lets the model decide, `"required"` obliges it
+to call one. Meta supports only `"auto"`.
 
-One correction to PR #439 while we are here. It said a separate account had
-already cleared gate 1 and failed on gate 2 instead. Whichever account that was,
-it is not the one behind `OPENROUTER_TESTING_KEY` today, because that key fails
-on gate 1.
+**This is where our search loop breaks.** `searchWithSerperLoop` in
+`src/pipeline/simple-bot/searchDispatch.ts:409` sends `tool_choice: "required"`
+on turn 1 and `"auto"` from turn 2 onwards. So every single run of the
+`musespark13c-serper` arm would die on its first call. The comment there records
+why turn 1 is forced: without it, some models answer straight from the JSON
+schema with empty findings and `correction_needed: false`, never searching at
+all, which DeepSeek v4 Flash did on 2026-05-23.
 
-## The production key in the shared `.env` no longer works
+Three further facts about it:
 
-This is unrelated to Muse and worth its own line. The `OPENROUTER_API_KEY` in
-`~/dev/env/cn-return-bot/env`, which every worktree symlinks as its `.env`, is
-rejected by OpenRouter at the account level:
+**It is Meta-wide, not a property of the cheap tier.** `meta/muse-spark-1.3`,
+the standard tier at $1.25/$4.25, returns the identical error. Paying twelve
+times more would not buy the parameter.
 
-```
-GET https://openrouter.ai/api/v1/key
-401 {"error":{"message":"User not found.","code":401}}
-```
+**The free pre-check cannot catch this.** OpenRouter's model list advertises
+`tool_choice` as supported for Muse, so `provider: { require_parameters: true }`
+happily routed the request, and the script's cheap "advertised parameters" check
+passes. The advertisement covers the field, not the values the provider accepts.
+That is a general lesson for this script: a green on the free check is weaker
+evidence than it looks.
 
-A 401 on that endpoint means the key does not resolve to an account at all, so
-it has been revoked or replaced. Every Muse call on that key returned the same
-401, which is why the production half of the table above is empty. Note that
-this is a *different* failure from the 403: a dead key never gets far enough to
-be told about the age gate.
+**`"auto"` alone appears to be enough for Muse.** The obvious fix is to stop
+forcing turn 1 for this model, and the risk is the failure mode the forcing was
+added to prevent. `probeToolChoice.ts` in this folder sends the loop's real
+turn-1 shape with `"auto"` and counts how often Muse searches anyway. It called
+`google_search` on **5 of 5 samples**, usually twice, for $0.0003 in total. That
+is a small sample on one claim, so it is encouraging rather than conclusive.
 
-**Production itself is fine.** GitHub Actions holds its own copy of the key as a
-repository secret, and that copy still works: `Create Notes Routine` and
-`Everything Priority Feeds` were green through 19:48 and 20:03 UTC today, and
-production recorded 231 pipeline runs costing $15.00 in the six hours to 19:58
-UTC. So the stale copy only breaks local work. Anything run from this devbox
-that calls OpenRouter on the production key fails, and the "we re-ran this on
-the production account's own key" claim in the GOO-95 writeup cannot be
-reproduced here until the file is refreshed.
+## Cost of finding all this out
+
+$0.000437 across both days. The 2026-09-07 run cost $0.000023, the verification
+re-run $0.000135, and the five `tool_choice` samples $0.000302. Every rejected
+call was free, because it never reached a provider.
 
 ## Is Spark 1.3 still the latest Muse?
 
-Yes. Asking OpenRouter's live model list for everything under `meta/muse-`
-returns seven entries, and the one we declared is the newest:
+Yes. OpenRouter's live model list has seven `meta/muse-` entries and the one we
+declared is the newest and the cheapest:
 
 | Model | Added to OpenRouter | In/Out $/M | Context |
 |---|---|---|---|
@@ -110,27 +112,49 @@ returns seven entries, and the one we declared is the newest:
 | meta/muse-spark-1.2 | 2026-08-05 19:48 UTC | 1.25 / 4.25 | 1,048,576 |
 | meta/muse-spark-1.1 | 2026-07-16 15:29 UTC | 1.25 / 4.25 | 1,048,576 |
 
-Nothing newer than Spark 1.3 exists, and nothing cheaper than the contributor
-tier exists. So the arm we declared at weight 0 is still the right target and
-there is no newer model to switch it to.
+Nothing newer than Spark 1.3 exists and nothing is cheaper than the contributor
+tier, so the arm we declared is still the right target. Muse Glimmer 30B was
+probed on 2026-09-07 only to work out how wide the age gate was; it is older, a
+small 30B model rather than the frontier Spark line, has an eight-times-shorter
+context and costs three times more per input token, so it is not a candidate.
 
-Muse Glimmer 30B is the one Muse model that answers us today, but it is not a
-candidate. It is older, it is a small 30B model rather than the frontier Spark
-line, its context is eight times shorter, and it costs three times more per
-input token than the contributor tier we actually want. It was probed only to
-work out how wide the age gate is, and the answer is that the gate covers the
-Spark line and not Glimmer.
+## The production key in the shared `.env` is still dead
 
-## What unblocks this
+Unrelated to Muse, unchanged between the two runs, and worth its own line. The
+`OPENROUTER_API_KEY` in `~/dev/env/cn-return-bot/env`, which every worktree
+symlinks as its `.env`, is rejected at the account level:
 
-One person with access to the OpenRouter account opens
-https://openrouter.ai/settings/preferences and confirms 18+. Then this same
-command tells us whether gate 2 is also in the way:
-
-```bash
-bun run src/scripts_jim/2026_09_01_model_evaluation/verifyModels.ts --only muse
+```
+GET https://openrouter.ai/api/v1/key
+401 {"error":{"message":"User not found.","code":401}}
 ```
 
-If all three shapes pass, PR #439's instruction is to set `musespark13c-serper`
-to weight 4 in `src/pipeline/ab-testing/abTestsData.ts`. That is Jim's call, not
-an automatic follow-on.
+A 401 there means the key does not resolve to an account at all, so it has been
+revoked or replaced. Everything above therefore runs on
+`OPENROUTER_TESTING_KEY`, not on the production key.
+
+**Production itself is fine.** GitHub Actions holds its own copy of the key as a
+repository secret and that copy works: `Create Notes Routine` and `Everything
+Priority Feeds` were green through 19:48 and 20:03 UTC on 2026-09-07, and
+production recorded 231 pipeline runs costing $15.00 in the six hours to 19:58
+UTC that day. Only local work is broken, and it stays broken until the file is
+refreshed.
+
+This does leave one real gap. The age confirmation is an **account** setting, so
+whether the production account has it depends on which OpenRouter account the
+repository secret belongs to. If it is the same account as the testing key, the
+results above carry over. If it is a different one, the age box may still need
+ticking there. Refreshing the local key file would settle it in one command.
+
+## What is decided and what is not
+
+Decided by the evidence: the writer arm `musespark13c` is verified in its real
+call shape and works.
+
+Not decided, and Jim's call: whether to change
+`searchDispatch.ts` so turn 1 falls back to `"auto"` for providers that reject
+`"required"`, which is what the search arm `musespark13c-serper` needs, and
+whether to move either arm off weight 0. PR #439's standing instruction was to
+set `musespark13c-serper` to 4 once verification passed; verification has passed
+for two of its three shapes, so that instruction does not straightforwardly
+apply.
