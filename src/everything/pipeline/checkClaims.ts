@@ -28,9 +28,7 @@ import type { ClaimCheck, ExtractedClaim, ItemSource, NoteSourceCitation } from 
 // is the X pipeline's main search arm and costs a fraction.
 // verifier_citations is on, so every accepted source carries a verbatim
 // supporting quote and an explanation. We save those per source.
-// verifier_claim_based is pinned to "classic", the single-call flow that accepts
-// or rejects a source in one go. Without pinning it the 50/50 AB test would send
-// half the claims through the two-call claim-based verifier instead.
+// Keep the single-call classic verifier here; X uses the claim-based flow.
 const FORCED_PICKS: Record<string, string> = {
   bot: "simple-bot",
   note_prefilter: "off",

@@ -13,6 +13,8 @@ import { lintWriterNote } from "../utils/noteLint";
 import { runJsonLlmCall, type ChatMessage } from "../utils/jsonLlmCall";
 import {
   WRITER_SYSTEM_PROMPT,
+  WRITER_DEFAULT_RULE,
+  WRITER_CENTRAL_CLAIM_RULE,
   WRITER_TIME_TRAVEL_RULE,
   WRITER_LAST_CHECK,
   WRITER_RESPONSE_FORMAT,
@@ -42,6 +44,10 @@ export async function runWriter(
   const config = getBotConfig();
   const monitoring = getMonitoringContext();
   let systemPrompt = WRITER_SYSTEM_PROMPT;
+  if (config.writer_central_claim) {
+    systemPrompt = systemPrompt.replace(WRITER_DEFAULT_RULE, WRITER_CENTRAL_CLAIM_RULE);
+    log?.set("writer.centralClaim", true);
+  }
   if (config.time_travel_prompt) systemPrompt += WRITER_TIME_TRAVEL_RULE;
   if (config.writer_last_check) {
     systemPrompt += WRITER_LAST_CHECK;

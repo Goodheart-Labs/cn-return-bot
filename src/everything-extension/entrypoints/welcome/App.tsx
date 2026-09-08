@@ -42,7 +42,7 @@ export function WelcomeApp() {
           <h2 className="text-sm font-semibold text-gray-900">One question before you start</h2>
           <p className="text-sm leading-relaxed text-gray-600">
             We generate notes (fact checks or other useful context) on all new posts from specific
-            authors and creators on YouTube, Substack, and LessWrong. If you want, we can save the
+            authors and creators on YouTube, Substack, LessWrong, and the Alignment Forum. If you want, we can save the
             posts you visit, without any user data attached, and then automatically generate notes on
             the authors you read and the channels you watch.
           </p>
