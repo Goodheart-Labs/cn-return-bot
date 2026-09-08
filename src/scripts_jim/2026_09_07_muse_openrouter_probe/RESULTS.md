@@ -146,15 +146,60 @@ repository secret belongs to. If it is the same account as the testing key, the
 results above carry over. If it is a different one, the age box may still need
 ticking there. Refreshing the local key file would settle it in one command.
 
-## What is decided and what is not
+## What it actually costs per run
 
-Decided by the evidence: the writer arm `musespark13c` is verified in its real
-call shape and works.
+The case for Muse rested on list price, where the contributor tier is about a
+fiftieth of Sonnet's. A real run is not that, because Muse emits reasoning
+tokens. Three claims through the full search loop, same claims for each model:
 
-Not decided, and Jim's call: whether to change
-`searchDispatch.ts` so turn 1 falls back to `"auto"` for providers that reject
-`"required"`, which is what the search arm `musespark13c-serper` needs, and
-whether to move either arm off weight 0. PR #439's standing instruction was to
-set `musespark13c-serper` to 4 once verification passed; verification has passed
-for two of its three shapes, so that instruction does not straightforwardly
-apply.
+| Model | Cost per run | Time per run |
+|---|---|---|
+| meta/muse-spark-1.3-contributor | $0.000695 | 15.1s |
+| z-ai/glm-5.3-flash | $0.000366 | 65.0s |
+| moonshotai/kimi-k3 | $0.015480 | 8.9s |
+
+So Muse is **not** the cheapest search arm we have. GLM 5.3 Flash does the same
+work for about half the money, though it takes four times as long. What Muse is,
+is roughly **22 times cheaper than Kimi K3**, which is a live arm today at the
+same kind of weight. Against the mainstream arms the saving is large and real;
+against the other cheap arm it is not a saving at all.
+
+Three claims is a small sample and this says nothing about quality, which is the
+thing the A/B test exists to measure. It is here only so the cost claim in
+PR #439 is not carried forward unexamined.
+
+## What shipped
+
+Jim's decisions on 2026-09-08:
+
+**The search loop now falls back.** When a provider rejects
+`tool_choice: "required"`, that turn is retried once without the forced tool
+call, with the response format attached as an unforced turn would have it. The
+matching is on the provider's error body rather than on a model name, so the
+next provider with this restriction is covered without another change. A
+provider that accepts `"required"` never reaches the fallback, so no other arm
+changes behaviour.
+
+**The client no longer retries a rejected request.** `isRetryableError` in
+`llm.ts` used to treat every provider 400 as worth another attempt, so this
+error was retried four times over seven seconds of backoff before surfacing. A
+provider that calls a request invalid will say so again, so those now fail on
+the first attempt. Both behaviours are pinned by `searchToolChoice.test.ts`
+against the verbatim error body.
+
+**Both Muse arms are live.** `musespark13c-serper` at weight 4, which is 4 of 32
+and about 12.5% of searches. `musespark13c` at weight 10, which is 10 of 110 and
+about 9.1% of writes; Sonnet and Gemini Flash keep their 50/50 relationship to
+each other and simply accumulate data 9% more slowly.
+
+Verified end to end: the real `dispatchSearch` against real Serper traffic
+completed the whole loop on Muse in 14.3s and returned a correct, sourced
+answer. `z-ai/glm-5.3-flash` was run as a control and is unaffected.
+
+## Still open
+
+The production key question. Jim's judgement is that the 18+ box was ticked on
+the same OpenRouter account the bot runs on, so production is covered. That is
+an assumption rather than something measured, because the local copy of the
+production key is dead and could not be used to check. If Muse arms start
+failing in production with a 403 naming an age confirmation, this is why.
