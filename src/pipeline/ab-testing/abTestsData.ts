@@ -115,13 +115,24 @@ const TIMING_TREATMENT_TEST: ABTest = {
   ],
 };
 
-// Does a final writer abstention check reduce not-helpful notes?
+// Retained for historical picks; central-claim wording is the live experiment.
 const WRITER_LAST_CHECK_TEST: ABTest = {
   name: "writer_last_check",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "off", overrides: { writer_last_check: false } }, weight: 50 },
-    { variant: { name: "on",  overrides: { writer_last_check: true  } }, weight: 50 },
+    { variant: { name: "off", overrides: { writer_last_check: false } }, weight: 0 },
+    { variant: { name: "on",  overrides: { writer_last_check: true  } }, weight: 0 },
+  ],
+};
+
+// Two fixes for side-detail notes, never on the same run: gate on the
+// materiality judge, or aim the writer at the post's central argument.
+const MATERIALITY_TREATMENT_TEST: ABTest = {
+  name: "materiality_treatment",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "judge_gate",     overrides: { materiality_gate_threshold: 0.5, writer_central_claim: false } }, weight: 50 },
+    { variant: { name: "writer_central", overrides: { materiality_gate_threshold: undefined, writer_central_claim: true } }, weight: 50 },
   ],
 };
 
@@ -293,6 +304,7 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_VERIFIER_TEST,
   TIMING_TREATMENT_TEST,
   WRITER_LAST_CHECK_TEST,
+  MATERIALITY_TREATMENT_TEST,
   SIMPLE_BOT_CLAIM_TEST,
   TOPIC_FILTER_TEST,
   NOTE_PREFILTER_TEST,

@@ -1,12 +1,12 @@
 /**
- * The materiality and persuasion judge. It is a shadow scorer.
+ * The materiality and persuasion judge.
  *
  * It runs on every correction we write and logs four rows into pipeline_scores.
- * It gates nothing. Before it may gate anything it has to be benchmarked against
- * the hand labels in the review dashboard. The labels "did not engage" and
- * "pedantic" almost always mean the note ended up rated not helpful. The judge
- * has to show that it catches those notes without rejecting too many helpful
- * ones.
+ * Whether it also gates submission is decided by the materiality_gate_threshold
+ * config field, which MATERIALITY_TREATMENT_TEST sets on its judge_gate arm.
+ * Five weeks of shadow scores (Aug 4 to Sep 7, 2026) put notes it scored under
+ * 0.5 at 58% helpful against 80% above, and it caught four of the seven notes
+ * Nathan tagged pedantic in that window.
  *
  * Two earlier rubric scorers were retired in issue #154 because they cost too
  * much. They reached an AUC of 0.70 for note_not_needed and 0.715 for
@@ -44,8 +44,7 @@ export interface MaterialityScoreEntry {
 
 /** Runs the judge and returns entries shaped like pipeline_scores rows. It
  *  throws when the LLM call fails or its answer cannot be parsed. The caller
- *  catches that error and carries on, because a shadow scorer must never stop a
- *  run. */
+ *  catches that error and carries on, so a judge outage never stops a run. */
 export async function runMaterialityJudge(params: {
   postText: string;
   findings: string;

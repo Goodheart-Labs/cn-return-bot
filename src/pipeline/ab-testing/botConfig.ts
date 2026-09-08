@@ -125,6 +125,8 @@ export interface BotConfig {
   timing_context?: boolean;
   /** Enables the writer's final abstention check. */
   writer_last_check?: boolean;
+  /** Requires the writer to dispute a claim the post's central argument rests on. */
+  writer_central_claim?: boolean;
   /**
    * When this is true, simple-bot's search step uses the claim-check prompt. The
    * input is then a claim extracted from a podcast, an interview, or an article,
@@ -170,6 +172,9 @@ export interface BotConfig {
    * script configs. EVAL_SUBMIT_THRESHOLD_TEST sets it.
    */
   eval_submit_threshold?: number;
+  /** The lowest materiality persuasion score at which a note is submitted.
+   *  Undefined disables the gate. MATERIALITY_TREATMENT_TEST sets it. */
+  materiality_gate_threshold?: number;
 }
 
 // --- Default config ---
