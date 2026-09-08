@@ -20,8 +20,8 @@ const HOST_STYLE = `
 }`;
 
 /** The mounted card's handle: re-render it with the next state, or remove it.
- *  Re-rendering keeps the component's own state, so hovering and the fade
- *  timer survive an update. */
+ *  Re-rendering keeps the component's own state, so an opened readout and the
+ *  fade timer survive an update. */
 export interface RequestProgressHandle {
   update: (progress: RequestProgress) => void;
   teardown: () => void;
