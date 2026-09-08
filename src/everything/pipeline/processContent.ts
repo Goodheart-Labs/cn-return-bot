@@ -3,9 +3,9 @@
  * queue worker calls this for every item it takes, whatever the item's source
  * is.
  *
- * We extract the claims, drop the speculative ones, insert the rest, then
- * fact-check the ones Opus was not confident about through the note pipeline
- * and record every outcome. The return value counts how many claims of this
+ * We extract the claims, drop the speculative ones, rate them with web
+ * research, insert them, then fact-check the ones the rater was not confident
+ * about through the note pipeline and record every outcome. The return value counts how many claims of this
  * item ended in each state, which the caller prints as progress.
  */
 
@@ -23,10 +23,11 @@ import {
   type ItemClaimRow,
   type NewClaimRow,
 } from "../db";
-import { dropSpeculation, extractClaims, shouldFactCheck } from "./extractClaims";
-import { group } from "../logFormat";
+import { dropSpeculation, extractClaims } from "./extractClaims";
+import { rateClaims, shouldFactCheck } from "./rateClaims";
+import { group, money } from "../logFormat";
 import { spendCapReached } from "../spendCap";
-import type { ExtractedClaim, FetchedContent } from "../types";
+import type { ExtractedClaim, FetchedContent, RatedClaim } from "../types";
 
 const EXTRACTION_CONCURRENCY = 3;
 const CHECK_CONCURRENCY = 4;
@@ -35,7 +36,7 @@ const CHECK_CONCURRENCY = 4;
 export interface ItemTally {
   extracted: number;
   speculation: number; // Claims about a future scenario. We drop them before inserting.
-  skipped: number; // Claims Opus was confident are true. We do not fact-check them.
+  skipped: number; // Claims the rater was confident are true. We do not fact-check them.
   notes: number; // Claims we fact-checked and wrote a note on.
   no_note: number; // Claims we fact-checked and found no note was needed.
   errors: number; // Claims whose fact-check threw.
@@ -45,7 +46,7 @@ export interface ItemTally {
   capped: number;
 }
 
-function buildClaimRow(itemId: string, claim: ExtractedClaim): NewClaimRow {
+function buildClaimRow(itemId: string, claim: RatedClaim): NewClaimRow {
   const check = shouldFactCheck(claim.judgement);
   const anchor = claim.anchor;
   return {
@@ -126,13 +127,17 @@ export async function processFetchedContent(
   const fresh = dropSpeculation(extracted);
   const duplicates = fresh.filter((c) => repeatsExistingClaim(c, existingClaims)).length;
   if (duplicates > 0) console.log(`  dropped ${duplicates} claims the item already carries`);
-  const claims = fresh.filter((c) => !repeatsExistingClaim(c, existingClaims));
   const speculation = extracted.length - fresh.length;
+  const rating = await rateClaims(bodyText(content), fresh.filter((c) => !repeatsExistingClaim(c, existingClaims)));
+  const claims = rating.claims;
   const claimIds = await insertClaims(claims.map((c) => buildClaimRow(item.id, c)));
   const toCheck = claims.filter((c) => shouldFactCheck(c.judgement)).length;
   console.log(
-    `  ${extracted.length} claims found, ${speculation} were predictions and dropped, ${toCheck} of ${claims.length} worth checking`,
+    `  ${extracted.length} claims found, ${speculation} were predictions and dropped, ` +
+      `${toCheck} of ${claims.length} worth checking after research (${money(rating.cost.cost)}, ${rating.webSearches} web searches)`,
   );
+  const researchLog = group("research", [rating.research]);
+  if (researchLog) console.log(researchLog);
 
   const outcomes: Array<"note" | "no_note" | "error"> = [];
   // Each claim's verdict is collected rather than printed as it lands, so the
@@ -174,7 +179,6 @@ export async function processFetchedContent(
 function toExtractedClaim(row: ItemClaimRow): ExtractedClaim {
   return {
     claim: row.claim,
-    judgement: row.judgement,
     context: row.context_quote ?? "",
     contextParagraph: row.context_paragraph ?? "",
     imageUrls: row.image_urls ?? [],

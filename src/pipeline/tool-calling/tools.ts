@@ -62,6 +62,18 @@ export const WEB_FETCH_TOOL = {
 // native-search dispatch of simple-bot uses it.
 export const WEB_SEARCH_TOOL = { type: "web_search_20260209" as const, name: "web_search" };
 
+// Claude's built-in web fetch tool, also passed through by OpenRouter. Claude
+// reads the page inside the call, so the page never round-trips through us.
+// The fetched text is billed as input tokens, hence the per-page token cap.
+export function webFetchNativeTool(limits: { maxUses: number; maxContentTokens: number }) {
+  return {
+    type: "web_fetch_20250910" as const,
+    name: "web_fetch",
+    max_uses: limits.maxUses,
+    max_content_tokens: limits.maxContentTokens,
+  };
+}
+
 // --- Tool handlers ---
 
 export interface ToolResult {

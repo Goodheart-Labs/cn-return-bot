@@ -4,8 +4,8 @@
  * We ask Opus, with high thinking effort, to extract every checkable claim from
  * a text. The text is either a timestamped YouTube transcript or a plain
  * article. Each claim comes back in neutral, self-contained language, with a
- * verbatim excerpt of the context around it and a truth judgement on a
- * seven-point scale that Opus makes from its own knowledge.
+ * verbatim excerpt of the context around it. How true a claim is gets decided
+ * afterwards by the rating step in rateClaims.ts, which has web access.
  *
  * A claim from a YouTube video has its context snapped back onto the subtitle
  * cues, which gives us a deep link into the video.
@@ -25,27 +25,7 @@ import { IMAGE_MARKER_RE } from "../sources/substack";
 import type { ClaimAnchor, ExtractedClaim, FetchedContent } from "../types";
 import { normalizeText } from "../../everything-shared/normalizeText";
 
-const CLAIM_EXTRACTION_MODEL = "anthropic/claude-opus-4.6";
-
-// The list runs from most true to most false. A judgement's index in it decides
-// whether the claim gets fact-checked.
-export const JUDGEMENTS = [
-  "certainly true",
-  "likely true",
-  "somewhat likely true",
-  "uncertain",
-  "somewhat likely false",
-  "likely false",
-  "certainly false",
-] as const;
-
-// We only fact-check a claim Opus is not confident about, so "uncertain" and
-// everything below it.
-const FACT_CHECK_FROM = JUDGEMENTS.indexOf("uncertain");
-export function shouldFactCheck(judgement: string): boolean {
-  const idx = (JUDGEMENTS as readonly string[]).indexOf(judgement);
-  return idx === -1 || idx >= FACT_CHECK_FROM; // A judgement we do not recognize is checked to be safe.
-}
+const CLAIM_EXTRACTION_MODEL = "anthropic/claude-opus-5";
 
 function extractionSystemPrompt(): string {
   const fields = [
@@ -53,7 +33,6 @@ function extractionSystemPrompt(): string {
     `- "context": a verbatim excerpt from the text around the claim — its sentence plus enough surrounding sentences that a reader with none of the rest of the text has all the context needed to evaluate it. Verbatim source prose only — never quote an image block's Description/Visible text lines. Leave empty ("") for a claim grounded only in an image.`,
     `- "context_paragraph": a wider verbatim excerpt — the full surrounding paragraph(s) the claim sits in — that contains the "context" excerpt above word-for-word. Shown to readers as the broader passage around the highlighted claim. Same rule: verbatim source prose only. Leave empty ("") when there is no surrounding text.`,
     `- "image_urls": the URLs (from the "Image:" line of each image block) of any images the claim is based on — a chart, screenshot, photo, or diagram. Empty array for a text-only claim.`,
-    `- "judgement": how true the claim is, using only your own knowledge — one of: ${JUDGEMENTS.join(", ")}.`,
     `- "speculation": true if the claim describes a hypothetical or future scenario — something stated as happening in a future year (e.g. "in 2028...") as part of an imagined scenario; false if it is about the present or past (2026 or earlier) or the current state of the world (real events, statistics, and any other real-world claim).`,
   ];
   return `You extract checkable factual claims from a text (podcast transcript or article). The text may contain bracketed image blocks — an "Image: <url>" line followed by "Description:" and/or "Visible text:" lines generated from that image. They are a text rendering of the image (you are not shown the image itself), not part of the article prose.
@@ -78,10 +57,9 @@ function claimsResponseFormat() {
     context: { type: "string", description: "Verbatim excerpt around the claim, or \"\" for an image-only claim." },
     context_paragraph: { type: "string", description: "Wider verbatim excerpt containing the context excerpt word-for-word, or \"\" when there is no surrounding text." },
     image_urls: { type: "array", items: { type: "string" }, description: "URLs of images the claim is based on; empty for a text-only claim." },
-    judgement: { type: "string", enum: [...JUDGEMENTS], description: "How true the claim is, from your own knowledge." },
     speculation: { type: "boolean", description: "True if the claim is about a hypothetical/future scenario; false if about the present or past." },
   };
-  const required = ["claim", "context", "context_paragraph", "image_urls", "judgement", "speculation"];
+  const required = ["claim", "context", "context_paragraph", "image_urls", "speculation"];
   return jsonSchemaResponseFormat("content_claims", {
     type: "object",
     properties: { claims: { type: "array", items: { type: "object", properties, required, additionalProperties: false } } },
@@ -92,7 +70,6 @@ function claimsResponseFormat() {
 
 interface RawClaim {
   claim: string;
-  judgement: string;
   context: string;
   context_paragraph: string;
   image_urls?: string[];
@@ -104,7 +81,6 @@ interface RawClaim {
 function toExtractedClaim(raw: RawClaim, anchor: ClaimAnchor): ExtractedClaim {
   return {
     claim: raw.claim,
-    judgement: raw.judgement,
     context: raw.context ?? "",
     contextParagraph: raw.context_paragraph ?? "",
     imageUrls: raw.image_urls ?? [],
