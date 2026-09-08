@@ -14,11 +14,19 @@ For two-arm tests it also prints a two-proportion z statistic on the helpful
 rate between the arms, so a gap can be told apart from noise.
 
 Run from the workspace root:
-  uv run src/scripts_jim/2026_09_01_ab_test_review/ab_readout.py
+  uv run src/scripts_jim/2026_09_01_ab_test_review/ab_readout.py [test_name ...]
+
+With no arguments it reads every test in LIVE_TESTS. Naming tests reads only
+those, which also works for retired tests such as eval_submit_threshold.
+
+Connection: PROD_DB_URL if set, otherwise the Supabase pooler with
+SUPABASE_DB_PASSWORD from .env (the password has characters a DSN string
+cannot carry, so it goes in as a keyword argument).
 """
 
 import math
 import os
+import sys
 
 import psycopg2
 from dotenv import load_dotenv
@@ -40,6 +48,10 @@ LIVE_TESTS = [
     "misinfo_concede_shape",
     "pangram_note",
     "author_history",
+    "writer_last_check",
+    "simple_bot_verifier",
+    "eval_submit_threshold",
+    "ranking_policy",
 ]
 
 ARM_SQL = """
@@ -102,16 +114,31 @@ def print_pairwise(rows: list[tuple]) -> None:
                 print(f"  z(helpful rate, {a[0]} vs {b[0]}) = {z:+.2f}")
 
 
+def connect():
+    if os.environ.get("PROD_DB_URL"):
+        return psycopg2.connect(os.environ["PROD_DB_URL"])
+    return psycopg2.connect(
+        host="aws-1-eu-west-1.pooler.supabase.com",
+        port=5432,
+        user="postgres.ugytvkevhsmcpunfvncw",
+        password=os.environ["SUPABASE_DB_PASSWORD"],
+        dbname="postgres",
+        connect_timeout=15,
+        options="-c statement_timeout=290000",
+    )
+
+
 def main() -> None:
-    conn = psycopg2.connect(os.environ["PROD_DB_URL"])
+    conn = connect()
     cur = conn.cursor()
+    tests = sys.argv[1:] or LIVE_TESTS
 
     # All time first, then the last 30 days, because several tests changed
     # their weights over the summer and only the recent window compares arms
     # under the same conditions.
     for since in ("2026-01-01", "2026-08-01"):
         print(f"\n{'=' * 70}\n== Window starting {since}\n{'=' * 70}")
-        for test in LIVE_TESTS:
+        for test in tests:
             rows = print_test(cur, test, since)
             if 2 <= len(rows) <= 4:
                 print_pairwise(rows)

@@ -31,7 +31,7 @@ function useExtensionSettings(): [ExtensionSettings | null, (patch: SettingsPatc
 const VISIT_SITES: { kind: VisitSiteKind; label: string }[] = [
   { kind: "substack", label: "Substack" },
   { kind: "youtube", label: "YouTube" },
-  { kind: "lesswrong", label: "LessWrong" },
+  { kind: "lesswrong", label: "LessWrong and the Alignment Forum" },
 ];
 
 function Checkbox({ checked, onChange, children }: { checked: boolean; onChange: (checked: boolean) => void; children: ReactNode }) {
@@ -68,7 +68,7 @@ function VisitRecordingChoice({ settings, onToggle }: {
   return (
     <>
       <p className="text-sm text-gray-600">
-        When you open a post on Substack, YouTube, or LessWrong, the extension can save the link and
+        When you open a post on Substack, YouTube, LessWrong, or the Alignment Forum, the extension can save the link and
         the time. That tells us which posts are worth checking next. It is anonymous: never your
         account or the rest of your browsing.
       </p>

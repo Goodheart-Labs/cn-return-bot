@@ -55,16 +55,17 @@ import {
   type TopPostRow,
 } from "./db";
 import type { FeedType } from "./feedUrls";
-import { fixedRow, groupClose, groupOpen, tally } from "./logFormat";
+import { duration, fixedRow, groupClose, groupOpen, tally } from "./logFormat";
+import { fetchAuthorPosts } from "./sources/lesswrong";
 import { fetchFeedPosts, fetchPostBodyText, htmlToText } from "./sources/substack";
-import { ensureYtDlp, fetchChannelVideos, fetchVideoMeta } from "./sources/youtube";
+import { ensureYtDlp, fetchChannelVideos, fetchUploadDates } from "./sources/youtube";
 import { loadTopPosts } from "./topPosts";
 import type { SourceKind } from "./types";
 
 /** How many items one run enqueues, and therefore processes, across all feeds. */
 const BATCH_SIZE = 1;
-/** How many entries a feed listing fetches. Substack's RSS feed has its own
- *  fixed window of about twenty. */
+/** How many entries a feed listing fetches: YouTube channel videos and forum
+ *  author posts. Substack's RSS feed has its own fixed window of about twenty. */
 const FEED_FETCH_LIMIT = 15;
 /** Only a feed's newest posts are ever candidates. A newly followed creator
  *  therefore backfills at most this many posts, instead of their whole 15 to
@@ -75,7 +76,8 @@ const FEED_FETCH_LIMIT = 15;
 const FEED_CANDIDATE_LIMIT = 5;
 
 /** A creator's feed in the shape the fetchers work with. `url` is the feed's
- *  canonical URL: a Substack publication root or a YouTube channel. */
+ *  canonical URL: a Substack publication root, a YouTube channel, or a forum
+ *  author's profile. */
 export interface PriorityFeed {
   project: string;
   type: FeedType;
@@ -86,13 +88,13 @@ interface FeedEntry {
   source: SourceKind;
   url: string;
   /** What to match existing item urls against. For YouTube this is the video
-   *  id, because the stored URL forms vary. For Substack it is the canonical
-   *  url itself. */
+   *  id and for a forum post the post id, because the stored URL forms vary.
+   *  For Substack it is the canonical url itself. */
   matchKey: string;
   label: string;
-  /** Substack only. This is the post body taken from the RSS feed. We enqueue
-   *  it with the item so the worker never has to fetch Substack, which blocks
-   *  our CI runners. */
+  /** The post body, when the feed listing already carries it. A Substack body
+   *  comes from the RSS feed and a forum body from the GraphQL listing. We
+   *  enqueue it with the item so the worker never has to fetch the page. */
   fullText?: string;
   title?: string;
   publishedAt?: string;
@@ -132,13 +134,31 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedListing> {
     }));
     return { sourceName, entries, paidPosts };
   }
+  if (feed.type === "lesswrong") {
+    const { authorName, posts } = await fetchAuthorPosts(feed.url, FEED_FETCH_LIMIT);
+    const entries = posts.map((p) => ({
+      source: "lesswrong" as const,
+      url: p.url,
+      matchKey: p.postId,
+      label: `${p.postedAt.slice(0, 10)} ${p.title}`,
+      fullText: p.text,
+      title: p.title,
+      publishedAt: p.postedAt.slice(0, 10),
+    }));
+    return { sourceName: authorName, entries, paidPosts: 0 };
+  }
   const { channelName, videos } = fetchChannelVideos(feed.url, FEED_FETCH_LIMIT);
   const entries = videos
     // A video with no duration is an upcoming premiere. It cannot be watched
     // yet, and enqueueing it would leave the item in a permanent error state.
     // A later run picks it up once the video is live.
     .filter((v) => v.durationSeconds !== null)
-    .map((v) => ({ source: "youtube" as const, url: v.url, matchKey: v.videoId, label: v.title }));
+    .map((v) => ({
+      source: "youtube" as const,
+      url: v.url,
+      matchKey: v.videoId,
+      label: v.title,
+    }));
   return { sourceName: channelName, entries, paidPosts: 0 };
 }
 
@@ -310,25 +330,29 @@ export function topPostEntries(tops: TopPostRow[], recent: FeedEntry[]): FeedEnt
     .filter((t) => !recent.some((e) => e.matchKey === t.matchKey));
 }
 
-/** Upload dates fetched this process, keyed by video id. A channel listing
- *  carries no upload dates, so a YouTube candidate's date costs one metadata
- *  call. The cycles of one auto-run reuse the answer. */
-const uploadDateCache = new Map<string, string | undefined>();
+/** Upload dates learned this process, keyed by video id, so the later cycles
+ *  of one auto-run do not ask again for a video the first cycle already dated. */
+const uploadDateCache = new Map<string, string>();
 
-function videoUploadDate(entry: UnprocessedEntry): string | undefined {
-  if (!uploadDateCache.has(entry.matchKey)) {
-    try {
-      uploadDateCache.set(entry.matchKey, fetchVideoMeta(entry.url).uploadDate);
-    } catch (err: any) {
-      // The ranking can live with an unknown date, so a failed metadata fetch
-      // does not kill the run. The date stays unknown and sorts newest, and if
-      // the video is genuinely unreachable the worker's own fetch will surface
-      // that as an item error.
-      console.warn(`Upload date fetch failed for ${entry.url}: ${err?.message}`);
-      uploadDateCache.set(entry.matchKey, undefined);
-    }
+/** Fills in the publication date of every YouTube candidate that does not
+ *  have one yet, in one batched pass after the walk. A recent video's listing
+ *  carries no date and the recency rank needs one; a top post arrives dated
+ *  from its cache and is left alone. Videos yt-dlp could not date stay
+ *  undated and sort as newest, the same as before, and are logged. */
+async function dateYoutubeCandidates(candidates: Candidate[]): Promise<void> {
+  const undated = candidates.filter((c) => c.entry.source === "youtube" && !c.publishedAt);
+  const toFetch = [...new Set(undated.filter((c) => !uploadDateCache.has(c.entry.matchKey)).map((c) => c.entry.url))];
+  if (toFetch.length > 0) {
+    const started = Date.now();
+    for (const [id, day] of await fetchUploadDates(toFetch)) uploadDateCache.set(id, day);
+    console.log(`  dated ${toFetch.length} YouTube candidates in ${duration(Date.now() - started)}`);
   }
-  return uploadDateCache.get(entry.matchKey);
+  let missing = 0;
+  for (const c of undated) {
+    c.publishedAt = uploadDateCache.get(c.entry.matchKey);
+    if (!c.publishedAt) missing++;
+  }
+  if (missing > 0) console.warn(`  ${missing} YouTube candidate${missing === 1 ? "" : "s"} could not be dated and will rank as newest`);
 }
 
 /** Column widths of the walk table, fixed so rows can print as they arrive. */
@@ -419,12 +443,9 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
         entry,
         sourceName,
         topPopularity: entry.topPopularity,
-        // A top YouTube post carries its upload date from the cache, so only a
-        // fresh video costs a metadata call here.
-        publishedAt:
-          entry.source === "youtube" && entry.topPopularity === undefined
-            ? videoUploadDate(entry)
-            : entry.publishedAt,
+        // A top post arrives dated from its cache; a recent YouTube video is
+        // dated after the walk, in one batched pass (dateYoutubeCandidates).
+        publishedAt: entry.publishedAt,
       });
     }
   }
@@ -433,6 +454,7 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
   if (closing) console.log(closing);
   console.log(`  listed ${listed} of ${walked.length}${skipped.length ? `, ${skipped.length} could not be listed` : ""}`);
   for (const line of skipped) console.log(line);
+  await dateYoutubeCandidates(candidates);
   if (paidByCreator.size > 0) {
     console.log(`  paid posts we cannot read, waiting for the subscriber inbox: ${tally(paidByCreator)}`);
   }
