@@ -54,9 +54,14 @@ SUPABASE_SERVICE_KEY=
 CLAIM_CHECK_URL=http://localhost:8787
 EXTRACTION_URL=http://localhost:8788
 
-# Leave unset first and watch error rates: an ordinary VPS reaches YouTube and
-# Substack directly, unlike GitHub's runners. Setting them turns the proxies on.
-#YTDLP_PROXY_URL=
+# YouTube needs the residential proxy here, exactly as it does on GitHub's
+# runners. Measured on this machine on 2026-09-08: every per-video call answers
+# "Sign in to confirm you're not a bot", while channel listings still work. It
+# is the IP, not the client: enabling a JavaScript runtime changes nothing, and
+# a netcup VPS that reached YouTube directly in July is now refused as well.
+YTDLP_PROXY_URL=
+# Substack does not need its relay here. The same measurement fetched two RSS
+# feeds and the api/v1 archive endpoint directly, all 200. Leave these unset.
 #SUBSTACK_PROXY_URL=
 #SUBSTACK_PROXY_KEY=
 
