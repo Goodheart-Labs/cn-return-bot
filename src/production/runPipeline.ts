@@ -70,7 +70,7 @@ import { generateCandidates, type TweetProcessedEvent } from "../pipeline/orches
 import { generatePangramCandidates } from "../pipeline/pangram-monitoring/generatePangramCandidates";
 import { generateMisinfoCandidates } from "../pipeline/misinfo-monitoring/generateMisinfoCandidates";
 import type { MisinfoTopicId } from "../pipeline/misinfo-monitoring/topicIds";
-import { submitCandidates, misinfoReserveRemaining, type Candidate } from "../pipeline/orchestration/submitCandidates";
+import { submitCandidates, misinfoReserveRemaining, type Candidate, type SubmitOptions } from "../pipeline/orchestration/submitCandidates";
 import { computeMaxPosts } from "../pipeline/orchestration/computeMaxPosts";
 import { probeWritingLimitAfterCooldown } from "../pipeline/orchestration/writingLimit";
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
@@ -288,18 +288,24 @@ async function main() {
     const scorer = activeScorer(rankingPolicy);
     let window: Window | null = null;
     let bar: number | null = null;
+    let barState: SubmitOptions["barState"] = scorer ? "off" : "none";
+    const useBar = scorer !== null && barEnabled();
     if (supabaseLogger && !isLocal) {
       try {
         window = await estimateWindow(supabaseLogger);
-        if (scorer && barEnabled() && window.cap !== null) bar = await barFor(supabaseLogger, scorer.name, window.cap);
+        if (scorer && useBar && window.cap !== null) {
+          bar = await barFor(supabaseLogger, scorer.name, window.cap);
+          barState = bar === null ? "off" : bar === -Infinity ? "admit_all" : bar === Infinity ? "reject_all" : "set";
+        }
       } catch (err) {
+        if (useBar) barState = "error";
         console.warn("[ranking] window/bar estimate failed; submitting without a bar:", err);
       }
     }
     console.log(
       `[ranking] policy=${rankingPolicy}` +
-        (window ? ` cap=${window.cap ?? "?"} (${window.capSource}) used24h=${window.used24h} remaining=${window.remaining ?? "?"}` : "") +
-        (scorer ? ` bar=${bar === null ? "off" : bar.toFixed(2)}` : ""),
+        (window ? ` cap=${window.cap ?? "?"} (${window.capSource}) used24h=${window.used24h} headroom=${window.remaining ?? "?"} (estimate; X's 403 is the stop)` : "") +
+        (scorer ? ` bar=${bar === null ? "off" : bar === -Infinity ? "admit-all" : bar === Infinity ? "reject-all" : bar.toFixed(2)}` : ""),
     );
 
     const regularCandidates = await generateCandidates(supabaseLogger, {
@@ -330,7 +336,7 @@ async function main() {
       ...pangramCandidates,
     ];
     if (candidates.length > 0 && supabaseLogger) {
-      const submitted = await submitCandidates(candidates, supabaseLogger, isLocal, { policy: rankingPolicy, scorer, window, bar });
+      const submitted = await submitCandidates(candidates, supabaseLogger, isLocal, { policy: rankingPolicy, scorer, window, bar, barState });
       console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates (${pangramCandidates.length} pangram, ${misinfoCandidates.length} misinfo, ${regularCandidates.length} regular)`);
     } else {
       console.log(`[pipeline] No candidates to submit`);

@@ -33,6 +33,25 @@ describe("partitionByBar", () => {
     expect(p.explored).toEqual([]);
     expect(p.below).toEqual([1, 2, 3]);
   });
+
+  test("seeded exploration samples across the rest and preserves its membership", () => {
+    let seed = 9;
+    const rng = () => {
+      let t = seed += 0x6D2B79F5;
+      t = Math.imul(t ^ t >>> 15, t | 1);
+      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+    const ordered = Array.from({ length: 40 }, (_, i) => 100 - i);
+    const rest = ordered.filter((x) => x < 80);
+    const { explored, below } = partitionByBar(ordered, id, 80, 0.1, rng);
+    expect(explored.length).toBe(2);
+    expect(explored).not.toEqual(rest.slice(0, explored.length));
+    expect(explored.every((x) => rest.includes(x))).toBe(true);
+    expect(explored.every((x) => !below.includes(x))).toBe(true);
+    expect(explored.length + below.length).toBe(rest.length);
+    expect(new Set([...explored, ...below])).toEqual(new Set(rest));
+  });
 });
 
 describe("pickRankingPolicy", () => {

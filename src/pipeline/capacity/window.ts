@@ -31,11 +31,9 @@ export async function estimateWindow(logger: SupabaseLogger): Promise<Window> {
   return { cap, capSource, used24h, remaining: cap === null ? null : Math.max(0, cap - used24h) };
 }
 
-// The score at which `scores` (submit scores of every candidate over `days`) would
-// have yielded `perDay` submissions per day. Null when there isn't enough history.
-export function quantileBar(scores: number[], days: number, perDay: number): number | null {
-  if (days < MIN_DAYS_OF_DECISIONS || scores.length === 0) return null;
-  const want = Math.round(perDay * days);
+export function quantileBar(scores: number[], spanDays: number, perDay: number, distinctDays: number): number | null {
+  if (distinctDays < MIN_DAYS_OF_DECISIONS || scores.length === 0) return null;
+  const want = Math.round(perDay * spanDays);
   if (want <= 0) return Infinity;
   if (want >= scores.length) return -Infinity;
   const sorted = [...scores].sort((a, b) => b - a);
@@ -44,12 +42,12 @@ export function quantileBar(scores: number[], days: number, perDay: number): num
 
 // Trailing-week bar, never below the trailing-month bar.
 export function barWithFloor(
-  week: { scores: number[]; days: number },
-  month: { scores: number[]; days: number },
+  week: { scores: number[]; spanDays: number; distinctDays: number },
+  month: { scores: number[]; spanDays: number; distinctDays: number },
   cap: number,
 ): number | null {
-  const bar7 = quantileBar(week.scores, week.days, cap);
-  const bar30 = quantileBar(month.scores, month.days, cap);
+  const bar7 = quantileBar(week.scores, week.spanDays, cap, week.distinctDays);
+  const bar30 = quantileBar(month.scores, month.spanDays, cap, month.distinctDays);
   if (bar7 === null) return bar30;
   if (bar30 === null) return bar7;
   return Math.max(bar7, bar30);

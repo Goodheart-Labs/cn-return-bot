@@ -194,10 +194,11 @@ export interface SubmitOptions {
   window: Window | null;
   /** Null means no bar: everything the scorer orders is submitted. */
   bar: number | null;
+  barState: "set" | "admit_all" | "reject_all" | "none" | "off" | "error";
   rng?: () => number;
 }
 
-const CONTROL_OPTIONS: SubmitOptions = { policy: "velocity_only", scorer: null, window: null, bar: null };
+const CONTROL_OPTIONS: SubmitOptions = { policy: "velocity_only", scorer: null, window: null, bar: null, barState: "none" };
 
 export async function submitCandidates(
   candidates: Candidate[],
@@ -205,6 +206,13 @@ export async function submitCandidates(
   dryRun: boolean,
   options: SubmitOptions = CONTROL_OPTIONS,
 ): Promise<number> {
+  const asOfMs = Date.now();
+  const decisions: Record<string, unknown>[] = [];
+  const flushDecisions = async () => {
+    if (dryRun || !decisions.length) return;
+    try { await supabaseLogger.insertRankingDecisions(decisions); }
+    catch (err) { console.warn("[submit] ranking_decisions insert failed:", err); }
+  };
   const inCI = !!process.env.CI;
   if (inCI) {
     console.log("::endgroup::");
@@ -233,10 +241,14 @@ export async function submitCandidates(
     // Control arm: `kept` stays in the order runPipeline built. Treatment arm:
     // the scorer orders it, and the bar (when set) decides who goes out.
     const { scorer, bar } = options;
-    const submitScore = (c: Candidate, s: Scorer) =>
-      s.scoreSubmit(featuresFromPost(c.post, c.velocity, null), c.tweetResult.evaluationScore ?? null);
-    const scoresOf = (c: Candidate) =>
-      Object.fromEntries(Object.values(SCORERS).map((s) => [s.name, submitScore(c, s)]));
+    const ranking = new Map<Candidate, { features: ReturnType<typeof featuresFromPost>; scores: Record<string, number>; flags: number }>();
+    for (const c of candidates) {
+      if (ranking.has(c)) continue;
+      const features = featuresFromPost(c.post, c.velocity, null, asOfMs);
+      const scores = Object.fromEntries(Object.values(SCORERS).map((s) => [s.name, s.scoreSubmit(features, c.tweetResult.evaluationScore ?? null)]));
+      ranking.set(c, { features, scores, flags: flagCount(features, FLAG_CUTS_2026_08) });
+    }
+    const submitScore = (c: Candidate, s: Scorer) => ranking.get(c)!.scores[s.name]!;
 
     const orderedAll = scorer ? orderForSubmit(kept, (c) => submitScore(c, scorer)) : kept;
     const { above, explored, below } = scorer
@@ -250,14 +262,13 @@ export async function submitCandidates(
         `${bar !== null ? `, bar=${bar.toFixed(2)}, ${below.length} below, ${explored.length} explored` : ""})`,
     );
     for (const c of orderedAll) {
-      const line = Object.entries(scoresOf(c)).map(([k, v]) => `${k}=${v.toFixed(2)}`).join(" ");
+      const line = Object.entries(ranking.get(c)!.scores).map(([k, v]) => `${k}=${v.toFixed(2)}`).join(" ");
       console.log(`[submit]   ${c.post.id} ${line}${exploredIds.has(c.post.id) ? " [explore]" : below.includes(c) ? " [below bar]" : ""}`);
     }
 
-    const decisions: Record<string, unknown>[] = [];
     const decide = (c: Candidate, decision: string) => {
       const scorerName = scorer?.name ?? "flags_then_eval";
-      const scores = scoresOf(c);
+      const { scores, flags } = ranking.get(c)!;
       decisions.push({
         pipeline_run_id: c.tweetResult.pipelineRunId ?? null,
         tweet_id: c.post.id,
@@ -265,10 +276,11 @@ export async function submitCandidates(
         scorer: scorerName,
         submit_score: scores[scorerName],
         scores,
-        flags: flagCount(featuresFromPost(c.post, c.velocity, null), FLAG_CUTS_2026_08),
+        flags,
         eval_score: c.tweetResult.evaluationScore ?? null,
         decision,
-        bar,
+        bar: Number.isFinite(bar) ? bar : null,
+        bar_state: options.barState,
         cap: options.window?.cap ?? null,
         cap_source: options.window?.capSource ?? null,
         used_24h: options.window?.used24h ?? null,
@@ -278,11 +290,6 @@ export async function submitCandidates(
     for (const f of floorCut) decide(f.candidate, "below_velocity_floor");
     for (const sc of staleCut) decide(sc.candidate, "stale_at_submit");
     for (const c of below) decide(c, "below_bar");
-    const flushDecisions = async () => {
-      if (dryRun) return;
-      try { await supabaseLogger.insertRankingDecisions(decisions); }
-      catch (err) { console.warn("[submit] ranking_decisions insert failed:", err); }
-    };
 
     if (dryRun) {
       for (const f of floorCut) {
@@ -380,7 +387,6 @@ export async function submitCandidates(
         console.log(`[submit] error ${candidate.post.id}: ${result.message} — will not retry`);
       }
     }
-    await flushDecisions();
 
     const breakdown = [
       `${submitted} submitted`,
@@ -396,6 +402,7 @@ export async function submitCandidates(
 
     return submitted;
   } finally {
+    await flushDecisions();
     if (inCI) console.log("::endgroup::");
   }
 }

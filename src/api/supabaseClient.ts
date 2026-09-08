@@ -1395,12 +1395,11 @@ export class SupabaseLogger {
     if (error) throw error;
   }
 
-  /** Submit scores of every candidate scored by `scorer` in the last `days`, plus how many
-   *  distinct days that history actually covers. */
-  async fetchRankingSubmitScores(scorer: string, days: number): Promise<{ scores: number[]; days: number }> {
-    const since = new Date(Date.now() - days * 24 * 3_600_000).toISOString();
+  async fetchRankingSubmitScores(scorer: string, windowDays: number): Promise<{ scores: number[]; spanDays: number; distinctDays: number }> {
+    const since = new Date(Date.now() - windowDays * 86_400_000).toISOString();
     const scores: number[] = [];
     const seenDays = new Set<string>();
+    let earliest = Infinity;
     for (let offset = 0; ; offset += 1000) {
       const { data, error } = await this.client
         .from("ranking_decisions")
@@ -1413,10 +1412,11 @@ export class SupabaseLogger {
       for (const r of data ?? []) {
         scores.push(Number(r.submit_score));
         seenDays.add(String(r.decided_at).slice(0, 10));
+        earliest = Math.min(earliest, Date.parse(r.decided_at));
       }
       if (!data || data.length < 1000) break;
     }
-    return { scores, days: seenDays.size };
+    return { scores, spanDays: scores.length ? Math.min(windowDays, (Date.now() - earliest) / 86_400_000) : 0, distinctDays: seenDays.size };
   }
 
   async countRecentSubmissions(hours: number): Promise<number> {
