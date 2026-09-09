@@ -88,6 +88,8 @@ export async function createBotInput(post: Post, logTag: string): Promise<BotInp
   // on purpose, see buildClaimPost. There is no X status page for them, so we skip
   // the check rather than wait out its page-load timeout on every image-backed
   // claim. The check fails open and never blocks note generation.
+  // The check is switched off at the moment, so this call returns false right
+  // away and no browser starts. See madeWithAiLabel.ts for why.
   const isRealTweetId = /^\d+$/.test(post.id);
   const mediaMadeWithAiLabel = hasMedia && isRealTweetId ? await detectMadeWithAiLabel(post.id, logTag) : false;
 
