@@ -22,9 +22,11 @@ main() {
   branch=$(sudo -u "$SERVICE_USER" git -C "$REPO_DIR" rev-parse --abbrev-ref HEAD)
   sudo -u "$SERVICE_USER" git -C "$REPO_DIR" fetch --quiet origin "$branch"
 
+  # Every git call runs as the owning user. This script runs as root, and git
+  # refuses to read a repository owned by somebody else unless it is told to.
   local here upstream
-  here=$(git -C "$REPO_DIR" rev-parse HEAD)
-  upstream=$(git -C "$REPO_DIR" rev-parse "origin/$branch")
+  here=$(sudo -u "$SERVICE_USER" git -C "$REPO_DIR" rev-parse HEAD)
+  upstream=$(sudo -u "$SERVICE_USER" git -C "$REPO_DIR" rev-parse "origin/$branch")
   if [ "$here" = "$upstream" ]; then
     exit 0
   fi
