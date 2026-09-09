@@ -24,7 +24,7 @@ Unchanged.
 ## storage justification
 
 ```
-Used for: (1) The user's sign-in session (Supabase auth token) in chrome.storage.local, because content scripts cannot share the host page's localStorage. (2) Every 5 minutes the background downloads the list of pages that currently have notes, per-page note counts, and the list of author feeds we already check, and caches them in chrome.storage.local; content scripts consult these local lists first, so browsing a page without notes triggers no note lookup. A cache of resolved Substack reader URLs and a memory of already-shown offer cards serve the same purpose. (3) chrome.storage.local also holds a random device id for our self-hosted usage analytics (regenerated on sign-out) and, during email sign-in, the typed email address for up to 1 hour (content scripts cannot read storage.session). (4) chrome.storage.sync holds small settings: per-site visit-recording consent, overlay toggles, note-type filters, requested pages/authors, and a flag that the settings page was shown once.
+Used for: (1) The user's sign-in session (Supabase auth token) in chrome.storage.local, because content scripts cannot share the host page's localStorage. (2) Every 5 minutes the background downloads the list of pages that currently have notes, per-page note counts, and the list of author feeds we already check, and caches them in chrome.storage.local; content scripts consult these local lists first, so browsing a page without notes triggers no note lookup. A cache of resolved Substack reader URLs and a memory of already-shown offer cards serve the same purpose. (3) chrome.storage.local also holds a random device id for our self-hosted usage analytics (regenerated on sign-out), a random secret used to derive the per-author reader code on visit rows (never sent anywhere itself), and, during email sign-in, the typed email address for up to 1 hour (content scripts cannot read storage.session). (4) chrome.storage.sync holds small settings: per-site visit-recording consent, overlay toggles, note-type filters, requested pages/authors, and a flag that the settings page was shown once.
 ```
 
 Changed because: the analytics device id and the reader-URL cache are new
@@ -77,7 +77,7 @@ Changed because: the tabs.onUpdated consent-page flow it described is gone
 (the per-site grant page was removed together with the optional host
 permission), and the "URLs seen by this listener are never transmitted" claim
 no longer holds as stated — covered pages ARE looked up on the server, and
-visits to Substack/YouTube/LessWrong posts are counted anonymously (opt-out).
+visits to Substack/YouTube/LessWrong posts are counted without an account, under a code that differs per author (opt-out).
 The replacement text states the on-device check accurately without
 overclaiming.
 
@@ -104,7 +104,7 @@ network request" claim was narrowed to note lookups.
 ## Host permission justification
 
 ```
-1) *://*.substack.com/* and *://*.youtube.com/* (static content scripts): the platforms most notes are written about, so the notes script always runs there. 2) https://*.supabase.co/*: our own backend (database and auth); content scripts must fetch notes and submit votes and notes from inside third-party pages. 3) <all_urls> (required at install): notes can exist on any website, and which sites have them changes daily. The background syncs the list of noted hostnames and registers the notes script for exactly those hosts, so a newly noted site reaches users without a store update. Privacy safeguards: pages are checked on-device against the cached noted-pages list before any note lookup. The only other request browsing can cause is the anonymous visit count on Substack, YouTube, and LessWrong posts (address and time, no user id), set by per-site checkboxes shown once after install; off sends nothing. It also lets the background resolve Substack reader links via a cookie-less fetch.
+1) *://*.substack.com/* and *://*.youtube.com/* (static content scripts): the platforms most notes are written about, so the notes script always runs there. 2) https://*.supabase.co/*: our own backend (database and auth); content scripts must fetch notes and submit votes and notes from inside third-party pages. 3) <all_urls> (required at install): notes can exist on any website, and which sites have them changes daily. The background syncs the list of noted hostnames and registers the notes script for exactly those hosts, so a newly noted site reaches users without a store update. Privacy safeguards: pages are checked on-device against the cached noted-pages list before any note lookup. The only other request browsing can cause is the visit count on Substack, YouTube, and LessWrong posts (page address, author address, time, and a reader code that is a one-way scramble of a device-held secret with the author's address, so it differs for every author and is never linked to an account), set by per-site checkboxes shown once after install; off sends nothing. It also lets the background resolve Substack reader links via a cookie-less fetch.
 ```
 
 Changed because: this is the biggest change. `<all_urls>` is now a REQUIRED
@@ -137,7 +137,7 @@ Proposed selections, with what changed:
 | --- | --- | --- | --- |
 | Personenidentifizierbare Informationen (PII) | ✔ | ✔ keep | Email address on email sign-in; X handle, display name, and email on X sign-in. |
 | Authentifizierungsdaten | ✔ | ✔ keep | Supabase session tokens stored in extension storage. |
-| Webprotokoll (web history) | ✔ | ✔ keep | Covered pages are looked up on our server, and on Substack/YouTube/LessWrong every opened post or video is counted (anonymously — page address and time, no user or device id; per-site opt-out checkboxes on the settings page, and nothing is recorded before that page was shown once after install). This is a subset of browsing history, so the box stays checked. |
+| Webprotokoll (web history) | ✔ | ✔ keep | Covered pages are looked up on our server, and on Substack/YouTube/LessWrong every opened post or video is counted (page address, author address and time, plus a reader code that is a one-way scramble of a device-held secret with the author's address; no account id, and a different code for every author, so the rows cannot be joined into one person's reading; per-site opt-out checkboxes on the settings page, and nothing is recorded before that page was shown once after install). This is a subset of browsing history, so the box stays checked. |
 | Websitecontent | ✔ | ✔ keep | Note requests capture the page's title, canonical link, and body text; writing a note captures the selected passage. |
 | Nutzeraktivität (user activity) | ✘ | ✔ **add** | New since the Supabase analytics work: the extension records interaction events in our own database — install, notes shown on a page, sign-in started, a vote blocked pending login, a submission rejected by moderation — under a random device id (plus the account id while signed in). Chrome's definition of user activity includes clicks and interaction monitoring, so declaring it is the safe, honest reading even though the events are first-party and coarse. |
 | Gesundheitsdaten / Finanz- und Zahlungsinformationen / Private Mitteilungen / Standort | ✘ | ✘ keep | Not collected. |
@@ -175,3 +175,12 @@ The manifest's `data_collection_permissions` for AMO declare
   stops it immediately. The settings bullet gained the new checkboxes and the
   local shown-once memory for offer cards, and the email login-code length was
   corrected from 8 to 6 digits.
+- 9 September 2026: visit rows now carry a reader code so we can count how many
+  different people read an author instead of how many times a page was opened.
+  The code is a one-way scramble (SHA-256) of a random secret held on the device
+  with the author's feed address, so it is stable per author, different for
+  every author, never linked to an account, and unchanged by signing out. The
+  device-held secret is never sent anywhere. Three places said a visit carried
+  no user or device identifier and now describe the code instead: the visit
+  bullet in the policy, the host-permission justification, and the web-history
+  row of the data-usage table. The storage justification lists the new secret.

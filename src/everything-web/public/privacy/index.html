@@ -16,7 +16,7 @@
 <body>
 <main>
   <h1>Privacy Policy</h1>
-  <p class="muted">Common Notes (commonnotes.net and the Common Notes browser extension) · Last updated 18 August 2026</p>
+  <p class="muted">Common Notes (commonnotes.net and the Common Notes browser extension) · Last updated 9 September 2026</p>
 
   <h2>What we collect</h2>
   <ul>
@@ -42,13 +42,21 @@
     to our server (together with your login token if you are signed in). The same
     happens for the page you are on when you open the extension's toolbar popup.</li>
     <li><strong>Visit counting on three sites, if you allow it:</strong> on Substack,
-    YouTube, and LessWrong, opening a post or video records an anonymous visit in our
-    database: the page's address and the time, with no user or device identifier. This
-    covers posts with and without notes; the counts tell us which pages our
-    fact-checking pipeline should look at. It is controlled by one checkbox per site,
-    all shown on the extension's settings page that opens once after install. Nothing
-    is recorded before that page has been shown, and unticking a site stops recording
-    there immediately.</li>
+    YouTube, and LessWrong, opening a post or video records a visit in our database:
+    the page's address, the author's or channel's address, and the time. It carries no
+    account and no name. It does carry one more thing, so that we can tell how many
+    different people read an author rather than how many times a page was opened: a
+    reader code. The extension keeps a random secret on your device, which it never
+    sends anywhere, and each visit carries a one-way scramble of that secret together
+    with the author's address. The code is therefore the same on every post of one
+    author and completely different for the next author, so we can count readers of an
+    author while our records can never be joined up into your reading across authors.
+    It is never linked to your account, and signing out does not change it, because
+    there is nothing to unlink. This covers posts with and without notes; the counts
+    tell us which pages our fact-checking pipeline should look at. It is controlled by
+    one checkbox per site, all shown on the extension's settings page that opens once
+    after install. Nothing is recorded before that page has been shown, and unticking a
+    site stops recording there immediately.</li>
     <li><strong>Contributing from the extension:</strong> "Request Common Notes" stores
     the page's address, title, and text (and the paragraph you selected, if any), so our
     pipeline can fact-check pages it cannot download itself. Requesting notes on all new
