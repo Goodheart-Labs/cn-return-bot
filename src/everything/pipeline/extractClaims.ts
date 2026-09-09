@@ -18,6 +18,7 @@
 import PQueue from "p-queue";
 import { trackLlmCall, trackedLlmCreate } from "../../pipeline/cost-tracking/costTracker";
 import { jsonSchemaResponseFormat } from "../../pipeline/prompts/responseFormat";
+import { parseJsonWithRetry } from "../../pipeline/utils/jsonLlmCall";
 import { stripJsonFences } from "../../pipeline/utils/jsonOutput";
 import type { SubtitleCue } from "../../pipeline/media/ytDlpDownload";
 import { describeImageFromUrl, type GeminiMediaDescription } from "../../pipeline/media/mediaAnalysisGemini";
@@ -154,20 +155,40 @@ function renderImageDescriptions(text: string, descriptions: Map<string, GeminiM
 /** One Opus extraction call over a rendered text chunk. The call goes through
  *  the tracked wrapper so its cost lands in the active cost tracker. For years
  *  it did not, which made the daily spend cap undercount by exactly the
- *  extraction spend. */
+ *  extraction spend.
+ *
+ *  It goes through the shared retry loop for the same reason every other JSON
+ *  stage does. A json_schema response format only guarantees that the provider
+ *  accepts the schema, not that it decodes against it, so now and then the model
+ *  answers in prose instead. A page that is mostly navigation, where there is
+ *  little to extract, makes that answer especially likely. Without the retry
+ *  that prose crashed the whole item, and the error said only that some JSON
+ *  failed to parse. */
 async function runExtraction(content: string): Promise<RawClaim[]> {
-  const { response, costEntry } = await trackedLlmCreate("claim_extraction", {
-    model: CLAIM_EXTRACTION_MODEL,
+  const parsed = await parseJsonWithRetry<{ claims?: RawClaim[] }>({
+    source: "claim_extraction",
     messages: [
       { role: "system", content: extractionSystemPrompt() },
       { role: "user", content },
     ],
-    response_format: claimsResponseFormat(),
-    reasoning_effort: "high",
-  } as any);
-  trackLlmCall(costEntry);
-  const content2 = (response as any).choices?.[0]?.message?.content ?? "{}";
-  return (JSON.parse(stripJsonFences(content2)) as { claims: RawClaim[] }).claims ?? [];
+    schemaHint:
+      `{ "claims": [ { "claim": string, "context": string, "context_paragraph": string, ` +
+      `"image_urls": string[], "judgement": string, "speculation": boolean } ] }`,
+    call: async (messages, attempt) => {
+      const callName = attempt === 1 ? "claim_extraction" : `claim_extraction.retry.${attempt - 1}`;
+      const { response, costEntry } = await trackedLlmCreate(callName, {
+        model: CLAIM_EXTRACTION_MODEL,
+        messages,
+        response_format: claimsResponseFormat(),
+        reasoning_effort: "high",
+      } as any);
+      trackLlmCall(costEntry);
+      const answer = (response as any).choices?.[0]?.message?.content ?? "{}";
+      return { toParse: stripJsonFences(answer), assistantEcho: answer };
+    },
+    parse: (toParse) => JSON.parse(toParse),
+  });
+  return parsed.claims ?? [];
 }
 
 function buildVideoLink(videoId: string, seconds: number): string {
