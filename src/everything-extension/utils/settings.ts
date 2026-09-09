@@ -4,16 +4,40 @@ import { browser } from "#imports";
 // page". Reopening the popup on such a page shows the done state instead of creating
 // a second request. The list is a rolling window. Sync storage allows about 8KB per
 // key, so we only remember the most recent requests.
+//
+// Each page is remembered with the time it was asked for, and only while the
+// check could still be running. The memory exists to stop a double submission,
+// not to record history: a check that failed has to be askable again, and a
+// check that succeeded turns the page into one the popup shows notes for. The
+// content script forgets a page as soon as its check ends, and this window is
+// what covers the case where the tab was closed before that happened.
 const REQUESTED_PAGES_KEY = "cn:requestedPages";
 const REQUESTED_PAGES_MAX = 50;
+const REQUESTED_PAGE_TTL_MS = 60 * 60_000;
+
+/** Entries written before this became a timestamped map are read as expired.
+ *  They are a local convenience, and every one of them is long finished. */
+async function readRequestedPages(): Promise<Record<string, number>> {
+  const stored = (await browser.storage.sync.get(REQUESTED_PAGES_KEY))[REQUESTED_PAGES_KEY];
+  if (!stored || Array.isArray(stored)) return {};
+  const cutoff = Date.now() - REQUESTED_PAGE_TTL_MS;
+  return Object.fromEntries(Object.entries(stored as Record<string, number>).filter(([, at]) => at > cutoff));
+}
 
 export async function getRequestedPages(): Promise<string[]> {
-  return ((await browser.storage.sync.get(REQUESTED_PAGES_KEY))[REQUESTED_PAGES_KEY] as string[] | undefined) ?? [];
+  return Object.keys(await readRequestedPages());
 }
 
 export async function addRequestedPage(pageUrl: string): Promise<void> {
-  const pages = [...new Set([...(await getRequestedPages()), pageUrl])];
-  await browser.storage.sync.set({ [REQUESTED_PAGES_KEY]: pages.slice(-REQUESTED_PAGES_MAX) });
+  const pages = Object.entries({ ...(await readRequestedPages()), [pageUrl]: Date.now() });
+  await browser.storage.sync.set({ [REQUESTED_PAGES_KEY]: Object.fromEntries(pages.slice(-REQUESTED_PAGES_MAX)) });
+}
+
+/** Called when a page's check ends, however it ended. */
+export async function forgetRequestedPage(pageUrl: string): Promise<void> {
+  const pages = await readRequestedPages();
+  delete pages[pageUrl];
+  await browser.storage.sync.set({ [REQUESTED_PAGES_KEY]: pages });
 }
 
 // Which note statuses are rendered on a page. Notes rated helpful always show. The

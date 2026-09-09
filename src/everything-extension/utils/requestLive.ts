@@ -6,6 +6,7 @@ import { getLiveRequest, removeLiveRequest, saveLiveRequest, type LiveRequest } 
 import { mountRequestProgress, type RequestProgressHandle } from "./mountRequestProgress";
 import type { RequestProgress } from "../../everything-shared/requestProgress";
 import { watchRequestProgress, type RequestWatch } from "./requestProgressController";
+import { forgetRequestedPage } from "./settings";
 
 /** Fired on the page's window whenever the request behind the live card has
  *  produced a new note, and once when it finishes. The notes mount listens and
@@ -67,7 +68,13 @@ export function listenForLiveRequests(ctx: ContentScriptContext): void {
           seenNotes = Math.max(notes, seenNotes);
           window.dispatchEvent(new CustomEvent(REQUEST_NOTES_CHANGED_EVENT));
         }
-        if (progressIsTerminal(progress)) void removeLiveRequest(entry.pageUrl).catch(() => {});
+        if (progressIsTerminal(progress)) {
+          void removeLiveRequest(entry.pageUrl).catch(() => {});
+          // The popup's button is disabled while a page is remembered as
+          // requested. A check that has ended must be askable again, whether it
+          // wrote notes or failed.
+          void forgetRequestedPage(entry.pageUrl).catch(() => {});
+        }
       },
     });
   };
