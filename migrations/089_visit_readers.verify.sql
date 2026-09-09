@@ -44,8 +44,8 @@ delete from everything_link_visits where reader_hash = repeat('b', 64);
 select everything_two_readers_seen() as proof;
 rollback;
 
-\echo '--- 6. the old function is gone, so nothing can silently keep calling it'
-select count(*) as should_be_zero from pg_proc where proname = 'everything_visit_counts';
+\echo '--- 6. the old counter is still there, so a walk running on the old code keeps working until the merge'
+select count(*) as should_be_one from pg_proc where proname = 'everything_visit_counts';
 
 \echo '--- 7. the dashboard function, read as anon, carries the two new columns'
 set role anon;

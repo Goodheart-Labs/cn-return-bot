@@ -35,17 +35,18 @@ comment on column everything_link_visits.reader_hash is
 create index everything_link_visits_visited_at_idx on everything_link_visits (visited_at desc);
 
 -- ---------------------------------------------------------------------------
--- The numbers the walk ranks by. This replaces everything_visit_counts from
--- migration 083, which returned visits alone. A return type cannot be changed
--- in place, so the old function is dropped rather than replaced.
+-- The numbers the walk ranks by. This supersedes everything_visit_counts from
+-- migration 083, which returned visits alone. That function is deliberately
+-- left in place here and dropped by migration 090 instead: the pipeline running
+-- in production still calls it until this change is merged and deployed, and a
+-- walk that cannot rank its creators does nothing at all for that half hour.
+-- This whole file is therefore additive and safe to apply before the merge.
 --
 -- The creator key is the one migration 083 used and is kept so the visit number
 -- stays comparable: the feed address the extension captured, falling back to
 -- deriving a Substack publication from the page's hostname for rows written
 -- before that capture existed. Those old rows have no reader hash, so they add
 -- to visits and to nothing else.
-
-drop function if exists everything_visit_counts(timestamptz);
 
 create or replace function everything_creator_attention(since timestamptz, min_pages int)
 returns table (
@@ -143,7 +144,10 @@ grant execute on function everything_two_readers_seen() to service_role;
 -- creators: adding reader counts up would count reader-and-creator pairs, not
 -- people.
 
--- A return type cannot be changed in place, so this one is dropped too.
+-- A return type cannot be changed in place, so this one is dropped and created
+-- rather than replaced. It is safe to do before the merge: inside one
+-- transaction there is no moment where the function is missing, and the
+-- deployed dashboard reads the columns it knows and ignores the two new ones.
 drop function if exists everything_creator_visits(int);
 
 create function everything_creator_visits(window_days int default null)
