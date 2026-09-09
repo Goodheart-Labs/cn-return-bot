@@ -328,14 +328,20 @@ export function parseSubtitleToCues(content: string): SubtitleCue[] {
   let prev = "";
   let curStart = 0;
   let curEnd = 0;
+  // No spoken text can come before the first timing line, so everything above
+  // it is a header and is thrown away. Naming the headers one by one is not
+  // enough: a file can open with a style block whose CSS would otherwise be
+  // read as the video's first words.
+  let started = false;
   for (const rawLine of content.split(/\r?\n/)) {
     const line = rawLine.trim();
     if (!line) continue;
     if (line === "WEBVTT") continue;
-    if (line.startsWith("Kind:") || line.startsWith("Language:")) continue;
     if (line.startsWith("NOTE ")) continue;
     const arrow = line.indexOf("-->");
+    if (arrow === -1 && !started) continue;
     if (arrow !== -1) {
+      started = true;
       // A timing line looks like "00:00:00.000 --> 00:00:02.000 align:start position:0%".
       // It can carry extra layout settings, so we keep only the word next to
       // the arrow on each side.
