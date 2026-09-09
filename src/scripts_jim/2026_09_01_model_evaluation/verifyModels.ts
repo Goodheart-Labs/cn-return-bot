@@ -14,6 +14,7 @@
  * copies, so a pass here means the production call shape works.
  *
  * Run: bun run src/scripts_jim/2026_09_01_model_evaluation/verifyModels.ts
+ * Narrow it to one model family with --only, for example --only muse.
  */
 
 import "dotenv/config";
@@ -32,6 +33,17 @@ import { geminiNativeGenerate } from "../../pipeline/llm/gemini";
 if (process.env.OPENROUTER_TESTING_KEY) {
   process.env.OPENROUTER_API_KEY = process.env.OPENROUTER_TESTING_KEY;
   console.log("Using OPENROUTER_TESTING_KEY for OpenRouter calls.\n");
+}
+
+/* Limit the run to the models whose id contains this string. Re-testing a
+ * single model that was blocked last time should not pay for the models that
+ * already passed, so `--only muse` keeps just those checks and skips the rest. */
+const onlyIndex = process.argv.indexOf("--only");
+const modelFilter = onlyIndex === -1 ? null : process.argv[onlyIndex + 1];
+
+function selected(models: string[]): string[] {
+  if (!modelFilter) return models;
+  return models.filter((model) => model.includes(modelFilter));
 }
 
 /** Kept tiny on purpose. We are testing whether the request shape is accepted,
@@ -182,13 +194,13 @@ async function main() {
   console.log("--- Advertised parameter support (free, no credit needed) ---");
   // Writer arms need a strict json_schema response format and nothing else.
   await checkAdvertisedParameters(
-    ["anthropic/claude-fable-5.1", "meta/muse-spark-1.3-contributor", "google/gemini-3.8-flash"],
+    selected(["anthropic/claude-fable-5.1", "meta/muse-spark-1.3-contributor", "google/gemini-3.8-flash"]),
     ["response_format", "structured_outputs"],
   );
   // Searxng search arms need tools and tool_choice as well, because the loop
   // attaches both alongside the schema from turn 2 onwards.
   await checkAdvertisedParameters(
-    ["meta/muse-spark-1.3-contributor", "z-ai/glm-5.3", "z-ai/glm-5.3-flash"],
+    selected(["meta/muse-spark-1.3-contributor", "z-ai/glm-5.3", "z-ai/glm-5.3-flash"]),
     ["response_format", "structured_outputs", "tools", "tool_choice"],
   );
 
@@ -199,27 +211,27 @@ async function main() {
   }
 
   console.log("\n--- Writer arms (OpenRouter, strict json_schema) ---");
-  for (const model of [
+  for (const model of selected([
     "anthropic/claude-fable-5.1",
     "meta/muse-spark-1.3-contributor",
     "google/gemini-3.8-flash",
-  ]) {
+  ])) {
     await checkWriterShape(model);
   }
 
   console.log("\n--- Search arms on the Serper path (OpenRouter, tools) ---");
-  for (const model of [
+  for (const model of selected([
     "meta/muse-spark-1.3-contributor",
     "z-ai/glm-5.3",
     "z-ai/glm-5.3-flash",
-  ]) {
+  ])) {
     await checkSearchToolsForced(model);
     await checkSearchToolsPlusSchema(model);
   }
 
   console.log("\n--- Search arms on native vendor APIs (not OpenRouter) ---");
-  await checkGrokNative("grok-4.6");
-  await checkGeminiNative("gemini-3.8-flash");
+  for (const model of selected(["x-ai/grok-4.6"])) await checkGrokNative(model.replace("x-ai/", ""));
+  for (const model of selected(["google/gemini-3.8-flash"])) await checkGeminiNative(model.replace("google/", ""));
 
   summarize();
 }
