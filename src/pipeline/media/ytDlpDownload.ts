@@ -212,6 +212,12 @@ export function fetchAutoSubs(url: string, outputDir: string, lang: string = "en
  * the subtitles a human wrote and falls back to the automatically generated
  * ones. It returns null when the video has no subtitles at all. The timestamps
  * let us point an extracted claim at the moment in the video where it was said.
+ *
+ * The language is a yt-dlp selector, not a plain code, so `en.*` also picks up
+ * the regional and uploader-specific spellings of a track. A video usually
+ * carries several files that match, and the shortest name is the plain track:
+ * `de` before `de-XwLwiJMB_Xs`. YouTube sometimes fails to serve one of them and
+ * serves another fine, so every downloaded file is tried in that order.
  */
 export function fetchTimedTranscript(url: string, outputDir: string, lang: string = "en"): SubtitleCue[] | null {
   const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
@@ -221,13 +227,64 @@ export function fetchTimedTranscript(url: string, outputDir: string, lang: strin
     // formats, aborts the call before the subtitles are fetched.
     execYtDlp(url, ["--write-subs", "--write-auto-subs", "--sub-lang", lang, "--skip-download", "--ignore-no-formats-error", "-o", outputTemplate, url]);
   } catch {
-    return null;
+    // A failure here still leaves behind whatever finished downloading, and one
+    // good track is all we need, so the files are read either way.
   }
-  const matches = fs.readdirSync(outputDir).filter((f) => f.endsWith(".vtt") || f.endsWith(".ttml") || f.endsWith(".srt"));
-  if (!matches.length) return null;
-  const raw = fs.readFileSync(path.join(outputDir, matches[0]!), "utf-8");
-  const cues = parseSubtitleToCues(raw);
-  return cues.length ? cues : null;
+  const matches = fs
+    .readdirSync(outputDir)
+    .filter((f) => f.endsWith(".vtt") || f.endsWith(".ttml") || f.endsWith(".srt"))
+    .sort((a, b) => a.length - b.length);
+  for (const match of matches) {
+    const cues = parseSubtitleToCues(fs.readFileSync(path.join(outputDir, match), "utf-8"));
+    if (cues.length) return cues;
+  }
+  return null;
+}
+
+/**
+ * The language codes of every caption track a video has, most useful first.
+ *
+ * YouTube offers each video's own track plus a machine translation of it into
+ * every language it knows, and it names them inconsistently: on one video the
+ * translations are `en-de-XwLwiJMB_Xs` and on another plain `en`, so a code
+ * alone does not say whether a track is original or translated. The listing's
+ * Name column does: a translated row reads "Estonian from German", an original
+ * row is either blank or names its own language. So we keep the rows without a
+ * "from" and drop the rest.
+ *
+ * The tracks an uploader supplied come first, because they are real subtitles
+ * rather than speech recognition.
+ */
+export function listOriginalSubtitleLanguages(url: string): string[] {
+  try {
+    return parseSubtitleListing(execYtDlp(url, ["--list-subs", "--skip-download", "--ignore-no-formats-error", "--no-warnings", url]));
+  } catch {
+    return [];
+  }
+}
+
+/** Reads the language codes out of what `yt-dlp --list-subs` prints. */
+export function parseSubtitleListing(listing: string): string[] {
+  const uploaded: string[] = [];
+  const automatic: string[] = [];
+  let section: "uploaded" | "automatic" | null = null;
+  for (const line of listing.split("\n")) {
+    if (/Available subtitles for/i.test(line)) section = "uploaded";
+    else if (/Available automatic captions for/i.test(line)) section = "automatic";
+    else if (/^\s*$/.test(line)) section = null;
+    if (!section) continue;
+
+    // A row is "<code> <name columns> <formats>". The name is what matters and
+    // the columns are only padded with spaces, so the whole rest of the line is
+    // searched for the "from" that marks a translation. A format name never
+    // contains it.
+    const row = /^([A-Za-z0-9_-]+)\s+(\S.*)$/.exec(line);
+    if (!row || row[1] === "Language") continue;
+    const [, code, rest] = row;
+    if (/\bfrom\b/i.test(rest!)) continue;
+    (section === "uploaded" ? uploaded : automatic).push(code!);
+  }
+  return [...uploaded, ...automatic];
 }
 
 function resolveDownloadedFile(meta: YtDlpMetadata, outputDir: string): { filePath: string | null; kind: YtDlpKind | null } {

@@ -140,7 +140,7 @@ async function sendJumpToNote(tabId: number, scriptWasRegistered: boolean) {
 /** The request button, shown on content pages we have not read in full. On a
  *  page with no item it reads "Request notes on this page"; on a page that
  *  already has an item, because a reader wrote a note or one paragraph was
- *  checked, it reads "Check this whole page" so the two meanings stay apart.
+ *  checked, it reads "Check this page" so the two meanings stay apart.
  *  Requested pages are remembered in storage rather than in component state,
  *  so closing and reopening the popup cannot submit the same page twice. */
 function RequestNoteButton({ label, doneLabel, onLive }: {
@@ -392,7 +392,7 @@ function PrimaryAction({ state, counts, jumped, access }: {
           // submit noise.
           <p className="text-sm text-gray-600">{priorityActiveLabel(authorFeed.feed.kind)}</p>
         ) : state.kind === "item" ? (
-          <RequestNoteButton label="Check this whole page" doneLabel="You asked us to check this whole page" onLive={setLiveEntry} />
+          <RequestNoteButton label="Check this page" doneLabel="You asked us to check this page" onLive={setLiveEntry} />
         ) : (
           <RequestNoteButton label="Request notes on this page" doneLabel="You requested notes on this page" onLive={setLiveEntry} />
         ))}

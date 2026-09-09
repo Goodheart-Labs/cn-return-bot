@@ -7,11 +7,11 @@ import { IconButton } from "../../everything-web/src/components/IconButton";
 const DONE_LINGER_MS = 6_000;
 const FADE_MS = 700;
 
-/** The disc the collapsed badge sits on. It carries no border of its own: the
- *  shadow and the faint ring are enough to lift it off the page, so the only
- *  circle a reader actually sees is the spinner. */
-const BADGE =
-  "flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-lg ring-1 ring-black/5 dark:bg-gray-900 dark:ring-white/10";
+/** The disc the collapsed badge sits on. It exists only to keep the glyph
+ *  legible over whatever the page puts behind it, so it has no outline of its
+ *  own and only a soft shadow. Together with the trackless spinner that leaves
+ *  exactly one circle on screen: the turning arc. */
+const BADGE = "flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md dark:bg-gray-900";
 
 const EXPANDED_CARD =
   "flex items-center gap-3 rounded-xl bg-white p-3 shadow-lg ring-1 ring-black/5 dark:bg-gray-900 dark:ring-white/10";
@@ -28,10 +28,12 @@ function ProgressGlyph({ progress }: { progress: RequestProgress }) {
   if (progress.kind === "unavailable") {
     return <span className="text-base font-semibold text-gray-400 dark:text-gray-500">?</span>;
   }
+  // The unfilled part of the ring is transparent rather than grey, so a reader
+  // sees one turning arc instead of an arc drawn on top of a second circle.
   return (
     <span
       aria-hidden
-      className="h-4 w-4 animate-spin rounded-full border-2 border-gray-200 border-t-blue-600 dark:border-gray-700 dark:border-t-blue-400"
+      className="h-5 w-5 animate-spin rounded-full border-2 border-transparent border-t-blue-600 dark:border-t-blue-400"
     />
   );
 }
