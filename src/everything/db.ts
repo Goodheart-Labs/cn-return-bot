@@ -30,6 +30,9 @@ export interface EverythingItem {
   title: string | null;
   published_at: string | null;
   status: "queued" | "processing" | "done" | "error";
+  /** Which queue tier the item sits in, from QUEUE_PRIORITY. It is what tells a
+   *  page a reader is waiting on apart from the backlog. */
+  priority: number;
   /** The body text supplied up front for a local `--doc` item, read from a file
    *  at enqueue time. It is null for a live URL that the worker fetches. Once an
    *  item has been ingested this column also holds the text that the public
@@ -37,7 +40,7 @@ export interface EverythingItem {
   full_text: string | null;
 }
 
-const ITEM_COLUMNS = "id, project_id, source, url, title, published_at, status, full_text";
+const ITEM_COLUMNS = "id, project_id, source, url, title, published_at, status, priority, full_text";
 
 export type ClaimStatus = "pending" | "skipped" | "no_note" | "note" | "error";
 
@@ -371,15 +374,25 @@ export async function fetchItemClaims(itemId: string): Promise<ItemClaimRow[]> {
  *  priority tier wins, and within a tier the newest published content comes
  *  first. An item with no published date yet, which is typically a freshly
  *  requested live URL, sorts before the dated ones of its tier, and the oldest
- *  request among those is served first. Only one worker ever runs, so no
- *  locking is needed. */
-export async function claimNextQueuedItem(): Promise<EverythingItem | null> {
+ *  request among those is served first.
+ *
+ *  The take itself is a read followed by a write, with no locking. That is
+ *  safe because each tier has exactly one worker: the intake service on the
+ *  machine takes only the requested tier, and the Actions feed run takes only
+ *  the tiers below it. Two workers exist, but they can never want the same
+ *  row. */
+export async function claimNextQueuedItem(tier: "requested" | "feed"): Promise<EverythingItem | null> {
   const db = getSupabaseClient();
+  let query = db
+    .from("everything_items")
+    .select(ITEM_COLUMNS)
+    .eq("status", "queued");
+  query =
+    tier === "requested"
+      ? query.gte("priority", QUEUE_PRIORITY.requested)
+      : query.lt("priority", QUEUE_PRIORITY.requested);
   const item = throwOnError<EverythingItem | null>(
-    await db
-      .from("everything_items")
-      .select(ITEM_COLUMNS)
-      .eq("status", "queued")
+    await query
       .order("priority", { ascending: false })
       .order("published_at", { ascending: false, nullsFirst: true })
       .order("created_at")
@@ -402,7 +415,7 @@ export async function markItemDone(id: string): Promise<void> {
   throwOnError(
     await getSupabaseClient()
       .from("everything_items")
-      .update({ status: "done", error: null, processed_at: new Date().toISOString() })
+      .update({ status: "done", error: null, progress: null, processed_at: new Date().toISOString() })
       .eq("id", id),
   );
 }
@@ -411,7 +424,7 @@ export async function markItemError(id: string, error: string): Promise<void> {
   throwOnError(
     await getSupabaseClient()
       .from("everything_items")
-      .update({ status: "error", error, processed_at: new Date().toISOString() })
+      .update({ status: "error", error, progress: null, processed_at: new Date().toISOString() })
       .eq("id", id),
   );
 }
@@ -431,10 +444,25 @@ export async function setClaimStatus(id: string, status: ClaimStatus, reason: st
   );
 }
 
+/** The live stage of an item being worked, shown on the extension's progress
+ *  card. Written at stage boundaries only, and cleared by the terminal writes,
+ *  so a stale stage never survives an item. */
+export type ItemProgress =
+  | { stage: "extracting" }
+  | { stage: "rating" }
+  | { stage: "checking"; total: number }
+  | { stage: "budget_exhausted" };
+
+export async function setItemProgress(id: string, progress: ItemProgress | null): Promise<void> {
+  throwOnError(await getSupabaseClient().from("everything_items").update({ progress }).eq("id", id));
+}
+
 /** One fact-check run of a claim. This is the everything pipeline's counterpart
  *  of a pipeline_runs row. */
 export interface ClaimPipelineRun {
-  claim_id: string;
+  claim_id: string | null;
+  kind?: "check" | "extraction" | "rating";
+  item_id?: string;
   bot_name: string;
   outcome: string;
   outcome_reason: string | null;
@@ -450,6 +478,21 @@ export interface ClaimPipelineRun {
  *  with error 22P05. */
 export async function insertClaimPipelineRun(run: ClaimPipelineRun): Promise<void> {
   throwOnError(await getSupabaseClient().from("everything_pipeline_runs").insert(stripNullChars(run)));
+}
+
+/** Records what one per-item stage cost, so the daily spend cap counts it.
+ *  Extraction and rating each write one such row per item. Until these rows
+ *  existed the cap silently undercounted by exactly that spend. */
+export async function insertItemRun(itemId: string, kind: "extraction" | "rating", costUsd: number): Promise<void> {
+  throwOnError(
+    await getSupabaseClient().from("everything_pipeline_runs").insert({
+      kind,
+      item_id: itemId,
+      claim_id: null,
+      outcome: kind === "extraction" ? "extracted" : "rated",
+      cost: costUsd,
+    }),
+  );
 }
 
 /** Returns the given claims that already have an AI note. An AI note is one with
@@ -480,6 +523,38 @@ export interface NoteRequestRow {
 }
 
 export type NoteRequestStatus = "enqueued" | "done" | "skipped" | "error";
+
+/** Marks every queued reader-requested item as waiting on the spent budget.
+ *  The extension shows the marker as "today's budget is used up". The marker
+ *  needs no clearing of its own: the first progress write of a real run
+ *  overwrites it, and the terminal writes null it. */
+export async function markRequestedQueueBudgetExhausted(): Promise<void> {
+  throwOnError(
+    await getSupabaseClient()
+      .from("everything_items")
+      .update({ progress: { stage: "budget_exhausted" } })
+      .eq("status", "queued")
+      .gte("priority", QUEUE_PRIORITY.requested),
+  );
+}
+
+/** How long the oldest unconsumed note request has waited, in seconds, or
+ *  null when the inbox is empty. The Actions feed run asks this to notice a
+ *  dead intake service: intake consumes requests within seconds, so an old
+ *  pending request means nobody is listening. */
+export async function oldestPendingRequestAgeSeconds(): Promise<number | null> {
+  const row = throwOnError<{ created_at: string } | null>(
+    await getSupabaseClient()
+      .from("everything_note_requests")
+      .select("created_at")
+      .eq("status", "pending")
+      .order("created_at")
+      .limit(1)
+      .maybeSingle(),
+  );
+  if (!row) return null;
+  return Math.round((Date.now() - new Date(row.created_at).getTime()) / 1000);
+}
 
 /** The unconsumed note requests, oldest first. */
 export async function fetchPendingNoteRequests(): Promise<NoteRequestRow[]> {

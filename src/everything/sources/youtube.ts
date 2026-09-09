@@ -2,7 +2,7 @@ import { execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import { tmpdir } from "os";
-import { execYtDlp, execYtDlpAsync, fetchTimedTranscript, type SubtitleCue } from "../../pipeline/media/ytDlpDownload";
+import { execYtDlp, execYtDlpAsync, fetchTimedTranscript, listOriginalSubtitleLanguages, type SubtitleCue } from "../../pipeline/media/ytDlpDownload";
 import type { FetchedContent } from "../types";
 
 export function ensureYtDlp(): void {
@@ -204,16 +204,35 @@ export function fetchChannelTopVideos(channelUrl: string, n: number): ChannelTop
   return videos.sort((a, b) => b.viewCount - a.viewCount).slice(0, n);
 }
 
-const TRANSCRIPT_LANG = "en";
+/** English is asked for first, because everything downstream of the transcript
+ *  is written in English. The `.*` picks up the regional spellings (`en-US`) and
+ *  the marker YouTube puts on an original English track (`en-orig`). */
+const PREFERRED_TRANSCRIPT_LANG = "en.*";
+
+/** How many of the video's own tracks are fetched when English is missing. They
+ *  go in one call and we keep the first that parses. A video rarely has more
+ *  than one original track, and every extra one is paid proxy traffic. */
+const MAX_FALLBACK_LANGUAGES = 3;
 
 /** Fetch the video's timestamped cues. The temporary directory is always
- *  removed afterwards. This throws when the video has no transcript. */
+ *  removed afterwards. This throws when the video has no transcript.
+ *
+ *  A video that is not in English has no English track at all, and its machine
+ *  translations are throttled hard enough by YouTube to be unusable, so we fall
+ *  back to the language the video is actually in. The claims then come out in
+ *  that language, which is the right thing anyway: the note is read by the
+ *  people watching the video. Listing the languages costs an extra call, so it
+ *  only happens once English has come back empty. */
 function fetchCues(url: string): SubtitleCue[] {
   const dir = fs.mkdtempSync(path.join(tmpdir(), "cn-yt-subs-"));
   try {
-    const cues = fetchTimedTranscript(url, dir, TRANSCRIPT_LANG);
-    if (!cues || cues.length === 0) throw new Error(`No ${TRANSCRIPT_LANG} transcript available for ${url}`);
-    return cues;
+    const english = fetchTimedTranscript(url, dir, PREFERRED_TRANSCRIPT_LANG);
+    if (english?.length) return english;
+
+    const languages = listOriginalSubtitleLanguages(url).slice(0, MAX_FALLBACK_LANGUAGES);
+    const own = languages.length ? fetchTimedTranscript(url, dir, languages.join(",")) : null;
+    if (own?.length) return own;
+    throw new Error(`No transcript available for ${url}`);
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }

@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { browser } from "#imports";
 import { fetchItemForUrl, fetchNotesForItem, isWholePageChecked, type PageItem } from "../../../everything-shared/notesQuery";
 import { extractYoutubeVideoId, normalizePageUrl } from "../../../everything-shared/pageUrls";
 import { noteStatus } from "../../../everything-shared/noteScore";
 import type { NoteRow } from "../../../everything-shared/types";
 import { submitNoteRequest } from "../../../everything-shared/noteRequests";
+import { progressIsTerminal, progressLines, type RequestProgress } from "../../../everything-shared/requestProgress";
 import { authorFeedStatusForTab, type AuthorFeedStatus } from "../../utils/authorFeed";
+import { getLiveRequest, removeLiveRequest, saveLiveRequest, type LiveRequest } from "../../utils/liveRequests";
+import { fetchProgressSnapshot } from "../../utils/requestProgressController";
 import { noteVisible, type NoteCounts } from "../../utils/claimGroups";
 import { genericScriptId } from "../../utils/genericScript";
 import { resolveReaderCanonical } from "../../utils/readerCanonical";
@@ -137,10 +140,14 @@ async function sendJumpToNote(tabId: number, scriptWasRegistered: boolean) {
 /** The request button, shown on content pages we have not read in full. On a
  *  page with no item it reads "Request notes on this page"; on a page that
  *  already has an item, because a reader wrote a note or one paragraph was
- *  checked, it reads "Check this whole page" so the two meanings stay apart.
+ *  checked, it reads "Check this page" so the two meanings stay apart.
  *  Requested pages are remembered in storage rather than in component state,
  *  so closing and reopening the popup cannot submit the same page twice. */
-function RequestNoteButton({ label, doneLabel }: { label: string; doneLabel: string }) {
+function RequestNoteButton({ label, doneLabel, onLive }: {
+  label: string;
+  doneLabel: string;
+  onLive: (entry: LiveRequest) => void;
+}) {
   const [phase, setPhase] = useState<"loading" | "idle" | "busy" | "done" | "error">("loading");
 
   useEffect(() => {
@@ -162,9 +169,20 @@ function RequestNoteButton({ label, doneLabel }: { label: string; doneLabel: str
       // cannot fetch arbitrary pages itself. A page we may not inject into
       // still gets a text-less request.
       const captured = tab.id != null ? await capturePageFromTab(tab.id) : null;
-      await submitNoteRequest({ pageUrl, pageTitle: tab.title ?? "", selection: null, pageText: captured?.text });
+      const token = await submitNoteRequest({ pageUrl, pageTitle: tab.title ?? "", selection: null, pageText: captured?.text });
       // This is only a local reminder. The request itself is already saved.
       await addRequestedPage(pageUrl).catch(() => {});
+      // The token is the handle for live progress. Storing the entry is what
+      // survives closing the popup, and the background starts the in-page
+      // card because only it can inject the content script when none runs.
+      if (token) {
+        const entry: LiveRequest = { pageUrl, token, requestedAt: Date.now() };
+        await saveLiveRequest(entry).catch(() => {});
+        if (tab.id != null) {
+          void browser.runtime.sendMessage({ type: "cn-request-live-forward", tabId: tab.id, pageUrl, token }).catch(() => {});
+        }
+        onLive(entry);
+      }
       setPhase("done");
     } catch {
       setPhase("error");
@@ -181,6 +199,74 @@ function RequestNoteButton({ label, doneLabel }: { label: string; doneLabel: str
       </button>
       {phase === "error" && <p className="text-sm text-red-600 dark:text-red-400">Could not save the request (try again)</p>}
     </>
+  );
+}
+
+/** How often the popup rereads a live request's state. The popup lives for
+ *  seconds, so an interval of narrow fetches replaces a realtime channel. */
+const LIVE_LINE_REFRESH_MS = 5_000;
+
+/** The current page's live note request, if this device has one. Loaded from
+ *  storage, and swapped in directly when the request button submits. The
+ *  stored key can be the item's canonical URL or the tab URL, depending on
+ *  which surface submitted, so both are tried. */
+function useLiveRequest(state: PageState): [LiveRequest | null, (entry: LiveRequest) => void] {
+  const [entry, setEntry] = useState<LiveRequest | null>(null);
+  useEffect(() => {
+    if (state.kind !== "no_item" && state.kind !== "item") return;
+    (async () => {
+      const tab = await activeTab();
+      const candidates = [
+        state.kind === "item" ? state.item.url : state.pageUrl,
+        ...(tab?.url ? [normalizePageUrl(tab.url)] : []),
+      ];
+      for (const url of candidates) {
+        const stored = await getLiveRequest(url);
+        if (stored) return setEntry(stored);
+      }
+    })();
+  }, [state]);
+  return [entry, setEntry];
+}
+
+/** The same terse readout the in-page card shows, one fact per line, rendered
+ *  while the popup is open. */
+function LiveRequestLine({ entry }: { entry: LiveRequest }) {
+  const [progress, setProgress] = useState<RequestProgress>({ kind: "saved" });
+  const itemIdRef = useRef<string | undefined>(entry.itemId);
+  useEffect(() => {
+    let cancelled = false;
+    let interval: ReturnType<typeof setInterval> | null = null;
+    const tick = async () => {
+      try {
+        const snapshot = await fetchProgressSnapshot({ token: entry.token, itemId: itemIdRef.current });
+        if (cancelled) return;
+        if (snapshot.itemId && !itemIdRef.current) {
+          itemIdRef.current = snapshot.itemId;
+          void saveLiveRequest({ ...entry, itemId: snapshot.itemId }).catch(() => {});
+        }
+        setProgress(snapshot.progress);
+        if (progressIsTerminal(snapshot.progress)) {
+          if (interval) clearInterval(interval);
+          void removeLiveRequest(entry.pageUrl).catch(() => {});
+        }
+      } catch {
+        // A failed read keeps the last line. The next tick tries again.
+      }
+    };
+    void tick();
+    interval = setInterval(() => void tick(), LIVE_LINE_REFRESH_MS);
+    return () => {
+      cancelled = true;
+      if (interval) clearInterval(interval);
+    };
+  }, [entry.token]);
+  return (
+    <div className="text-sm text-gray-600">
+      {progressLines(progress).map((line) => (
+        <p key={line}>{line}</p>
+      ))}
+    </div>
   );
 }
 
@@ -225,6 +311,7 @@ function PrimaryAction({ state, counts, jumped, access }: {
   access: PageAccess | null;
 }) {
   const authorFeed = useAuthorFeed(state);
+  const [liveEntry, setLiveEntry] = useLiveRequest(state);
 
   if (state.kind === "loading") return <p className="text-sm text-gray-500">Loading notes…</p>;
   if (state.kind === "load_failed") {
@@ -297,6 +384,7 @@ function PrimaryAction({ state, counts, jumped, access }: {
       ) : (
         <p className="text-sm font-medium text-gray-900">{statusLine}</p>
       )}
+      {liveEntry && <LiveRequestLine entry={liveEntry} />}
       {requestable &&
         (authorFeed.kind === "prioritized" ? (
           // A page by a creator whose week is already running needs no press.
@@ -304,9 +392,9 @@ function PrimaryAction({ state, counts, jumped, access }: {
           // submit noise.
           <p className="text-sm text-gray-600">{priorityActiveLabel(authorFeed.feed.kind)}</p>
         ) : state.kind === "item" ? (
-          <RequestNoteButton label="Check this whole page" doneLabel="You asked us to check this whole page" />
+          <RequestNoteButton label="Check this page" doneLabel="You asked us to check this page" onLive={setLiveEntry} />
         ) : (
-          <RequestNoteButton label="Request notes on this page" doneLabel="You requested notes on this page" />
+          <RequestNoteButton label="Request notes on this page" doneLabel="You requested notes on this page" onLive={setLiveEntry} />
         ))}
       {/* The press must not depend on catching a transient in-page card, so the
           popup offers it on covered pages too. */}

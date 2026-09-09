@@ -29,6 +29,10 @@ jobs:
       X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
       # OpenRouter API key for AI models
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      # The claim-check service that runs each tweet's check. The run asks for
+      # its health first and fails when the machine is down or wedged.
+      CLAIM_CHECK_URL: ${{ secrets.CLAIM_CHECK_URL }}
+      SERVICE_AUTH_SECRET: ${{ secrets.SERVICE_AUTH_SECRET }}
       # Supabase credentials for data storage
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}

@@ -1,0 +1,7 @@
+[Unit]
+Description=Pull cn-return-bot and restart the services when idle
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/cn-return-bot/service.env
+ExecStart=/usr/bin/bash /opt/cn-return-bot/ops/autodeploy.sh

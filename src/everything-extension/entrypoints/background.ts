@@ -10,6 +10,7 @@ import { authorFeedStatusForTab } from "../utils/authorFeed";
 import { CHECKED_PAGE_URLS_KEY, COVERED_PAGE_URLS_KEY, NOTED_PAGE_STATUS_COUNTS_KEY } from "../utils/coveredPages";
 import { PRIORITIZED_CREATOR_URLS_KEY } from "../utils/prioritizedCreators";
 import { GENERIC_SCRIPT_PREFIX, hostnamePattern, registerGenericScripts, genericScriptId } from "../utils/genericScript";
+import { saveLiveRequest } from "../utils/liveRequests";
 import { capturePageFromTab } from "../utils/pageCapture";
 import { VISIT_MESSAGE_TYPE, writeVisit, type VisitMessage } from "../utils/linkVisits";
 import { addRequestedPage, getSettingsOnboardingDone, getWelcomeSeen, markWelcomeSeen } from "../utils/settings";
@@ -215,7 +216,7 @@ async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: 
     return;
   }
   try {
-    await submitNoteRequest({
+    const token = await submitNoteRequest({
       pageUrl,
       pageTitle: captured?.title ?? tab.title ?? "",
       selection: selection.trim() || null,
@@ -223,10 +224,19 @@ async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: 
     });
     // This is only a local reminder. The request itself is already saved.
     await addRequestedPage(pageUrl).catch(() => {});
-    // The confirmation is a card in the page. The toolbar tick alone is
-    // invisible to anyone whose toolbar keeps the extension in the overflow
-    // menu, so the click looked like it did nothing.
-    await showRequestInfo(tab, "Requested. We'll check this page when it comes up in our queue.");
+    // The confirmation is the live-progress card in the page, which follows
+    // the request until its notes are written. The entry is stored here, not
+    // only in the tab, so the card also comes back on a later visit even when
+    // the tab could not host it now. A restricted page falls back to the
+    // toolbar tick, and a backend too old to hand out a token falls back to
+    // the static confirmation card.
+    if (token) {
+      await saveLiveRequest({ pageUrl, token, requestedAt: Date.now() }).catch(() => {});
+      const delivered = tab.id != null && (await sendToTabWithInjection(tab.id, { type: "cn-request-live", pageUrl, token }));
+      if (!delivered) flashBadge(tab.id, "✓");
+    } else {
+      await showRequestInfo(tab, "Requested. We'll check this page when it comes up in our queue.");
+    }
   } catch (err) {
     console.warn("[common-notes] note request failed:", err);
     flashBadge(tab.id, "!");
@@ -352,6 +362,13 @@ export default defineBackground(() => {
       // applies; a content script's fetch is bound by CORS and may neither
       // follow the cross-origin redirect nor read the response.
       fetchReaderCanonical((message as { href: string }).href).then(sendResponse);
+      return true; // Keep the message channel open for the async reply.
+    }
+    if ((message as { type?: string })?.type === "cn-request-live-forward") {
+      // The popup asks us to start the tab's progress card, because only the
+      // background can inject the content script when none is running yet.
+      const { tabId, pageUrl, token } = message as { tabId: number; pageUrl: string; token: string };
+      sendToTabWithInjection(tabId, { type: "cn-request-live", pageUrl, token }).then(sendResponse);
       return true; // Keep the message channel open for the async reply.
     }
     if ((message as { type?: string })?.type === VISIT_MESSAGE_TYPE) {

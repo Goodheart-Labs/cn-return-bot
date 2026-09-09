@@ -2,6 +2,7 @@
   "entry": [
     "src/**/*.test.ts",
     "src/production/*.ts",
+    "src/service/*/main.ts",
     "src/local/*.ts",
     "src/scraper/*.ts",
     "src/scripts/*.ts",

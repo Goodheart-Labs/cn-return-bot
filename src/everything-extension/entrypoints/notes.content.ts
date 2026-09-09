@@ -3,6 +3,7 @@ import { defineContentScript } from "#imports";
 import { mountInlineNotes } from "../utils/mountInlineNotes";
 import { registerDevReloadHook } from "../utils/devReload";
 import { initUiAnalytics } from "../utils/analytics";
+import { listenForLiveRequests } from "../utils/requestLive";
 
 // These are the text sites the static manifest injects into. Keep the matches
 // below in sync with utils/staticSites.ts. Newsletters on custom domains and
@@ -14,6 +15,7 @@ export default defineContentScript({
   async main(ctx) {
     initUiAnalytics();
     registerDevReloadHook(ctx);
+    listenForLiveRequests(ctx);
     await mountInlineNotes(ctx);
   },
 });

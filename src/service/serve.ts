@@ -1,0 +1,153 @@
+/**
+ * The HTTP shell both services share: authentication, routing, health, and the
+ * long-response handling that keeps a slow answer from being cut off.
+ */
+
+import { createHash, timingSafeEqual } from "node:crypto";
+import {
+  HEALTH_PATH,
+  SERVICE_AUTH_HEADER,
+  type HealthResponse,
+  type ServiceErrorResponse,
+  type ServiceName,
+  type WorkPriority,
+} from "./contract";
+import { WorkQueue, type WorkQueueOptions } from "./workQueue";
+
+/** A served answer can take minutes, and the server closes a connection that
+ *  has been idle too long. So the response is streamed, and while the work runs
+ *  we send a newline at this interval. The newline keeps the connection busy
+ *  and is harmless in front of JSON, which ignores leading whitespace. It also
+ *  tells the caller early that the service is alive. */
+const KEEPALIVE_INTERVAL_MS = 15_000;
+
+/** The longest a connection may sit with nothing sent on it. Our keepalive is
+ *  well inside this, so reaching it means the process is wedged rather than
+ *  slow. Bun caps this value at 255 seconds. */
+const IDLE_TIMEOUT_SECONDS = 120;
+
+export interface ServiceRoute<Body, Answer> {
+  path: string;
+  /** Reads the priority off a parsed body, so the queue knows how urgent the
+   *  call is before the work starts. */
+  priorityOf: (body: Body) => WorkPriority;
+  handle: (body: Body) => Promise<Answer>;
+}
+
+export interface ServiceOptions extends WorkQueueOptions {
+  name: ServiceName;
+  port: number;
+  /** The work endpoints. They share the service's one queue, so a tweet check
+   *  and a claim check on the same service compete for the same slots. */
+  routes: Array<ServiceRoute<any, unknown>>;
+  /** Only tests set this. They shrink the interval so a test that crosses the
+   *  keepalive finishes in milliseconds instead of waiting 15 seconds. */
+  keepaliveIntervalMs?: number;
+}
+
+export function startService(options: ServiceOptions) {
+  const queue = new WorkQueue(options);
+  const secret = requiredEnv("SERVICE_AUTH_SECRET");
+  const keepaliveMs = options.keepaliveIntervalMs ?? KEEPALIVE_INTERVAL_MS;
+
+  const server = Bun.serve({
+    port: options.port,
+    idleTimeout: IDLE_TIMEOUT_SECONDS,
+    fetch: async (request) => {
+      const url = new URL(request.url);
+
+      if (!secretMatches(request.headers.get(SERVICE_AUTH_HEADER), secret)) {
+        return errorResponse("Wrong or missing service key", 401);
+      }
+      if (url.pathname === HEALTH_PATH) {
+        return Response.json(queue.health(options.name) satisfies HealthResponse);
+      }
+      const route = options.routes.find((candidate) => candidate.path === url.pathname);
+      if (!route) {
+        return errorResponse(`No such path: ${url.pathname}`, 404);
+      }
+      if (request.method !== "POST") {
+        return errorResponse(`${route.path} takes POST`, 405);
+      }
+
+      let body: unknown;
+      try {
+        body = await request.json();
+      } catch {
+        return errorResponse("Body is not valid JSON", 400);
+      }
+
+      return streamWhileWorking(
+        () => queue.run(route.priorityOf(body), () => route.handle(body)),
+        keepaliveMs,
+      );
+    },
+  });
+
+  console.log(
+    `[${options.name}] listening on ${server.port}, ${options.concurrency} at a time, ` +
+      `${options.reservedForReader} reserved for readers`,
+  );
+  return server;
+}
+
+/** The secret is compared in constant time, because the port is reachable from
+ *  anywhere the callers are, and GitHub runners have no fixed addresses, so
+ *  this header is the only thing standing between the internet and a paid model
+ *  call. Comparing hashes sidesteps the length leak a direct comparison has. */
+function secretMatches(given: string | null, secret: string): boolean {
+  if (given === null) return false;
+  const hash = (value: string) => createHash("sha256").update(value).digest();
+  return timingSafeEqual(hash(given), hash(secret));
+}
+
+/** Answers with a stream that stays alive while the work runs and ends with the
+ *  JSON answer. A failure becomes an error answer on the same stream, because
+ *  by then the status line has already gone out and cannot be changed. The
+ *  caller tells the two apart by looking for the `error` field. */
+function streamWhileWorking<Answer>(work: () => Promise<Answer>, keepaliveMs: number): Response {
+  const stream = new ReadableStream<Uint8Array>({
+    async start(controller) {
+      const encoder = new TextEncoder();
+      // Every enqueue can throw once the caller has hung up. The work itself
+      // carries on either way and its result is simply dropped, which is what a
+      // retry from the caller expects, so a dead connection is never an error.
+      const send = (text: string) => {
+        try {
+          controller.enqueue(encoder.encode(text));
+        } catch {}
+      };
+      const keepalive = setInterval(() => send("\n"), keepaliveMs);
+      try {
+        const answer = await work();
+        send(JSON.stringify(answer));
+      } catch (err: any) {
+        send(JSON.stringify({ error: err?.message ?? String(err) } satisfies ServiceErrorResponse));
+      } finally {
+        clearInterval(keepalive);
+        try {
+          controller.close();
+        } catch {}
+      }
+    },
+  });
+  return new Response(stream, { headers: { "content-type": "application/json" } });
+}
+
+function errorResponse(message: string, status: number): Response {
+  return Response.json({ error: message } satisfies ServiceErrorResponse, { status });
+}
+
+export function requiredEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) throw new Error(`Missing required environment variable: ${name}`);
+  return value;
+}
+
+export function numberFromEnv(name: string, fallback: number): number {
+  const raw = process.env[name];
+  if (!raw) return fallback;
+  const value = Number(raw);
+  if (!Number.isFinite(value)) throw new Error(`${name} must be a number, got "${raw}"`);
+  return value;
+}

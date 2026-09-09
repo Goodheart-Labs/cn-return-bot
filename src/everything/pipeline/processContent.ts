@@ -10,8 +10,9 @@
  */
 
 import PQueue from "p-queue";
-import { checkClaim } from "./checkClaims";
+import { buildClaimPost, recordClaimRun } from "./checkClaims";
 import {
+  QUEUE_PRIORITY,
   fetchClaimIdsWithAiNotes,
   fetchItemClaims,
   insertClaims,
@@ -20,17 +21,36 @@ import {
   setClaimStatus,
   updateItemMeta,
   type EverythingItem,
+  insertItemRun,
+  setItemProgress,
   type ItemClaimRow,
   type NewClaimRow,
 } from "../db";
-import { dropSpeculation, extractClaims } from "./extractClaims";
-import { rateClaims, shouldFactCheck } from "./rateClaims";
+import { dropSpeculation } from "./extractClaims";
+import { shouldFactCheck } from "./rateClaims";
+import { requestClaimCheck, requestClaimExtraction, requestClaimRating } from "../../service/client";
+import type { RateClaimsResponse, WorkPriority } from "../../service/contract";
 import { group, money } from "../logFormat";
-import { spendCapReached } from "../spendCap";
+import { feedBudgetExhausted, requestBudgetExhausted } from "../spendCap";
 import type { ExtractedClaim, FetchedContent, RatedClaim } from "../types";
 
-const EXTRACTION_CONCURRENCY = 3;
-const CHECK_CONCURRENCY = 4;
+/** How many claims of one item are in flight at once. The services decide the
+ *  real capacity, so this is not a capacity limit. It paces the work so the
+ *  daily spend cap is still consulted as the item progresses, which is what
+ *  lets an item stop partway and resume later. */
+const CHECK_REQUEST_CONCURRENCY = 6;
+
+/** A page someone asked for and is waiting on is served before anything from
+ *  the backlog. Everything else this file processes is backlog. */
+function workPriorityOf(item: EverythingItem): WorkPriority {
+  return item.priority >= QUEUE_PRIORITY.requested ? "reader" : "feed";
+}
+
+/** Which budget this item's claims spend from. Reader-requested work may use
+ *  the reserve; everything else stops earlier, at the cap minus the reserve. */
+function budgetExhaustedFor(item: EverythingItem): Promise<boolean> {
+  return workPriorityOf(item) === "reader" ? requestBudgetExhausted() : feedBudgetExhausted();
+}
 
 /** Where every extracted claim ended up, for one item. */
 export interface ItemTally {
@@ -76,7 +96,12 @@ async function checkAndRecordClaim(
   lines: string[],
 ): Promise<"note" | "no_note" | "error"> {
   try {
-    const check = await checkClaim({ claim, source: item.source, itemId: item.id, claimId, index, publishedAt });
+    const { check, run } = await requestClaimCheck({
+      priority: workPriorityOf(item),
+      post: buildClaimPost({ claim, source: item.source, itemId: item.id, index, publishedAt }),
+    });
+    // The service cannot store anything, so recording the run is ours to do.
+    await recordClaimRun(claimId, run);
     if (check.kind === "note") {
       await insertNote(claimId, check.note, check.sources);
       await setClaimStatus(claimId, "note", null);
@@ -123,18 +148,29 @@ export async function processFetchedContent(
   });
   console.log(`  "${content.title}" (${content.publishedAt?.slice(0, 10) ?? "no date"})`);
 
-  const extracted = await extractClaims(content, EXTRACTION_CONCURRENCY);
+  await setItemProgress(item.id, { stage: "extracting" });
+  const { claims: extracted, costUsd } = await requestClaimExtraction({ priority: workPriorityOf(item), content });
+  if (costUsd !== null) await insertItemRun(item.id, "extraction", costUsd);
   const fresh = dropSpeculation(extracted);
   const duplicates = fresh.filter((c) => repeatsExistingClaim(c, existingClaims)).length;
   if (duplicates > 0) console.log(`  dropped ${duplicates} claims the item already carries`);
   const speculation = extracted.length - fresh.length;
-  const rating = await rateClaims(bodyText(content), fresh.filter((c) => !repeatsExistingClaim(c, existingClaims)), item.source);
+  const newClaims = fresh.filter((c) => !repeatsExistingClaim(c, existingClaims));
+
+  // The rating call is skipped for an item with nothing new to rate, so an
+  // already-covered page does not pay for an empty research call.
+  await setItemProgress(item.id, { stage: "rating" });
+  const rating: RateClaimsResponse = newClaims.length
+    ? await requestClaimRating({ priority: workPriorityOf(item), text: bodyText(content), claims: newClaims, source: item.source })
+    : { claims: [], research: "", webSearches: 0, costUsd: null };
+  if (rating.costUsd !== null) await insertItemRun(item.id, "rating", rating.costUsd);
   const claims = rating.claims;
   const claimIds = await insertClaims(claims.map((c) => buildClaimRow(item.id, c)));
   const toCheck = claims.filter((c) => shouldFactCheck(c.judgement)).length;
+  await setItemProgress(item.id, { stage: "checking", total: toCheck });
   console.log(
     `  ${extracted.length} claims found, ${speculation} were predictions and dropped, ` +
-      `${toCheck} of ${claims.length} worth checking after research (${money(rating.cost.cost)}, ${rating.webSearches} web searches)`,
+      `${toCheck} of ${claims.length} worth checking after research (${money(rating.costUsd ?? 0)}, ${rating.webSearches} web searches)`,
   );
   const researchLog = group("research", [rating.research]);
   if (researchLog) console.log(researchLog);
@@ -145,13 +181,13 @@ export async function processFetchedContent(
   // dozens of these and they used to bury everything else in the run.
   const claimLines: string[] = [];
   let capped = 0;
-  const queue = new PQueue({ concurrency: CHECK_CONCURRENCY });
+  const queue = new PQueue({ concurrency: CHECK_REQUEST_CONCURRENCY });
   claims.forEach((claim, i) => {
     if (!shouldFactCheck(claim.judgement)) return;
     queue.add(async () => {
       // The cap is checked before every claim, so an item can stop partway.
       // The unchecked claims stay pending and the resume path picks them up.
-      if (await spendCapReached()) {
+      if (await budgetExhaustedFor(item)) {
         capped++;
         return;
       }
@@ -199,6 +235,7 @@ function toExtractedClaim(row: ItemClaimRow): ExtractedClaim {
 export async function resumeItemClaims(item: EverythingItem): Promise<ItemTally> {
   const allClaims = await fetchItemClaims(item.id);
   const redo = allClaims.filter((c) => c.status === "pending" || c.status === "error");
+  await setItemProgress(item.id, { stage: "checking", total: redo.length });
   const alreadyNoted = await fetchClaimIdsWithAiNotes(redo.map((c) => c.id));
   console.log(`  resuming "${item.title ?? item.url}" — redoing ${redo.length} of ${allClaims.length} claims`);
 
@@ -208,7 +245,7 @@ export async function resumeItemClaims(item: EverythingItem): Promise<ItemTally>
   // dozens of these and they used to bury everything else in the run.
   const claimLines: string[] = [];
   let capped = 0;
-  const queue = new PQueue({ concurrency: CHECK_CONCURRENCY });
+  const queue = new PQueue({ concurrency: CHECK_REQUEST_CONCURRENCY });
   redo.forEach((row, i) => {
     queue.add(async () => {
       if (alreadyNoted.has(row.id)) {
@@ -216,7 +253,7 @@ export async function resumeItemClaims(item: EverythingItem): Promise<ItemTally>
         outcomes.push("note");
         return;
       }
-      if (await spendCapReached()) {
+      if (await budgetExhaustedFor(item)) {
         capped++;
         return;
       }

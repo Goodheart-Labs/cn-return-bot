@@ -39,6 +39,12 @@ jobs:
       SUBSTACK_PROXY_KEY: ${{ secrets.SUBSTACK_PROXY_KEY }}
       # Residential proxy for yt-dlp YouTube fetches (YouTube bot-checks runner IPs)
       YTDLP_PROXY_URL: ${{ secrets.YTDLP_PROXY_URL }}
+      # The two services that do the claim extraction and the claim checking.
+      # This run asks each one for its health before starting, and fails if it
+      # cannot reach them, which is how a machine that is down becomes visible.
+      CLAIM_CHECK_URL: ${{ secrets.CLAIM_CHECK_URL }}
+      EXTRACTION_URL: ${{ secrets.EXTRACTION_URL }}
+      SERVICE_AUTH_SECRET: ${{ secrets.SERVICE_AUTH_SECRET }}
       # Daily spend cap in USD (repo variable; empty falls back to the code default of about 50 EUR)
       EVERYTHING_DAILY_SPEND_CAP_USD: ${{ vars.EVERYTHING_DAILY_SPEND_CAP_USD }}
     steps:
