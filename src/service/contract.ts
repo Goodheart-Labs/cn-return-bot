@@ -11,13 +11,14 @@
  */
 
 import type { Post } from "../api/fetchEligiblePosts";
-import type { ExtractedClaim, FetchedContent, ClaimCheck } from "../everything/types";
+import type { ExtractedClaim, FetchedContent, ClaimCheck, ItemSource, RatedClaim } from "../everything/types";
 import type { TweetComputeOutput } from "../pipeline/orchestration/processTweet";
 import type { MonitoringContext } from "../pipeline/misinfo-monitoring/monitoringContext";
 
 export const CHECK_CLAIM_PATH = "/check-claim";
 export const CHECK_TWEET_PATH = "/check-tweet";
 export const EXTRACT_CLAIMS_PATH = "/extract-claims";
+export const RATE_CLAIMS_PATH = "/rate-claims";
 export const HEALTH_PATH = "/health";
 
 /** Callers prove themselves with a shared secret in this header. The services
@@ -120,6 +121,34 @@ export interface ExtractClaimsResponse {
    *  `dropSpeculation`, so that the extraction service stays a pure reader of
    *  text with no policy of its own. */
   claims: ExtractedClaim[];
+  costUsd: number | null;
+}
+
+// ---------------------------------------------------------------------------
+// Rating the extracted claims of one item
+// ---------------------------------------------------------------------------
+
+/** Rating is the step between extraction and checking. One call rates every
+ *  claim of the item, with web research in hand, and the ratings decide which
+ *  claims are worth a costly fact-check. It is one call for the whole item
+ *  because the claims of one text are correlated: a single good source often
+ *  settles most of them. */
+export interface RateClaimsRequest {
+  priority: WorkPriority;
+  /** The item's full body text. The rater reads the whole text, not just the
+   *  claims, so it can judge each claim in its real context. */
+  text: string;
+  claims: ExtractedClaim[];
+  source: ItemSource;
+}
+
+export interface RateClaimsResponse {
+  /** The same claims back, each carrying its judgement. */
+  claims: RatedClaim[];
+  /** What the model found, with its source URLs. The caller logs it; it is
+   *  stored nowhere else. */
+  research: string;
+  webSearches: number;
   costUsd: number | null;
 }
 

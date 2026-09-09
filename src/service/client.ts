@@ -11,6 +11,7 @@ import {
   CHECK_TWEET_PATH,
   EXTRACT_CLAIMS_PATH,
   HEALTH_PATH,
+  RATE_CLAIMS_PATH,
   SERVICE_AUTH_HEADER,
   type CheckClaimRequest,
   type CheckClaimResponse,
@@ -19,6 +20,8 @@ import {
   type ExtractClaimsRequest,
   type ExtractClaimsResponse,
   type HealthResponse,
+  type RateClaimsRequest,
+  type RateClaimsResponse,
   type ServiceErrorResponse,
 } from "./contract";
 
@@ -52,6 +55,10 @@ export async function requestTweetCheck(body: CheckTweetRequest): Promise<CheckT
 
 export async function requestClaimExtraction(body: ExtractClaimsRequest): Promise<ExtractClaimsResponse> {
   return call<ExtractClaimsResponse>(serviceUrl("EXTRACTION_URL"), EXTRACT_CLAIMS_PATH, body);
+}
+
+export async function requestClaimRating(body: RateClaimsRequest): Promise<RateClaimsResponse> {
+  return call<RateClaimsResponse>(serviceUrl("EXTRACTION_URL"), RATE_CLAIMS_PATH, body);
 }
 
 export async function fetchClaimCheckHealth(): Promise<HealthResponse> {

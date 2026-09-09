@@ -38,9 +38,6 @@ export type ClaimAnchor =
 export interface ExtractedClaim {
   /** Neutral, self-contained restatement of the claim. */
   claim: string;
-  /** How true Opus thinks the claim is, judged from its own knowledge alone.
-   *  It is one of seven levels, from "certainly true" to "certainly false". */
-  judgement: string;
   /** Verbatim excerpt with all the context needed to evaluate the claim.
    *  Empty for an image-only claim that carries no supporting text. */
   context: string;
@@ -57,6 +54,14 @@ export interface ExtractedClaim {
    *  fact-checking. */
   speculation: boolean;
   anchor: ClaimAnchor;
+}
+
+/** An extracted claim after the rating step. `judgement` is how true the
+ *  rater thinks the claim is, one of seven levels from "certainly true" to
+ *  "certainly false", judged with web research in hand. It decides whether the
+ *  claim is fact-checked. */
+export interface RatedClaim extends ExtractedClaim {
+  judgement: string;
 }
 
 /** One cited source of a note. It carries the verbatim passage that supports the

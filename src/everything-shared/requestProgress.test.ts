@@ -68,6 +68,11 @@ describe("deriveRequestProgress", () => {
     expect(deriveRequestProgress(row, [], null)).toEqual({ kind: "extracting" });
   });
 
+  test("a processing item stamped rating is rating", () => {
+    const row = item({ status: "processing", progress: { stage: "rating" } });
+    expect(deriveRequestProgress(row, [], null)).toEqual({ kind: "rating" });
+  });
+
   test("a checking item counts finished claims and written notes", () => {
     const row = item({ status: "processing", progress: { stage: "checking", total: 6 } });
     const claims = [claim("note"), claim("no_note"), claim("error"), claim("pending"), claim("pending", "p2")];
@@ -123,6 +128,7 @@ describe("progressIsTerminal", () => {
     expect(progressIsTerminal({ kind: "queued" })).toBe(false);
     expect(progressIsTerminal({ kind: "budget" })).toBe(false);
     expect(progressIsTerminal({ kind: "extracting" })).toBe(false);
+    expect(progressIsTerminal({ kind: "rating" })).toBe(false);
     expect(progressIsTerminal({ kind: "checking", done: 0, total: 1, notes: 0 })).toBe(false);
   });
 });
@@ -148,6 +154,7 @@ describe("progressLines", () => {
       { kind: "queued" },
       { kind: "budget" },
       { kind: "extracting" },
+      { kind: "rating" },
       { kind: "checking", done: 1, total: 2, notes: 1 },
       { kind: "done", notes: 1 },
       { kind: "failed" },

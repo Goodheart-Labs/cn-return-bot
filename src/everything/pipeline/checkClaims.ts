@@ -17,6 +17,7 @@ import type { EvaluatedSource } from "../../pipeline/prompts/verify/citations";
 import { insertClaimPipelineRun } from "../db";
 import type { ClaimRunRecord } from "../../service/contract";
 import type { ClaimCheck, ExtractedClaim, ItemSource, NoteSourceCitation } from "../types";
+import { claimCheckFields } from "./claimCheckFields";
 
 // We run simple-bot with the note-needed prefilter turned off, so every checked
 // claim goes through the full search and write path. The prefilter was dropping
@@ -53,33 +54,16 @@ export interface ClaimPostParams {
   publishedAt?: string;
 }
 
-// We fact-check the author's own words. The synthetic post carries the verbatim
-// highlighted span, the passage around it, and any images the claim rests on. It
-// does not carry Opus's neutral restatement of the claim. That restatement is
-// useful during extraction, because it forces Opus to state the claim, but it
-// can drift away from the source. So we keep it out of the fact-check input and
-// let the search model read what the author actually wrote. The surrounding
-// passage contains the highlighted span word for word, and labelling the span
-// separately tells the model which part of the passage to check.
-// There is one exception. A claim with no highlighted span is grounded in an
-// image, and a single image such as an infographic can carry several claims. In
-// that case the restatement is the only thing that says which claim to check, so
-// it goes back in. The images themselves reach the model through the pipeline's
-// media analysis.
 export function buildClaimPost(params: ClaimPostParams): Post {
   const { claim, source, itemId, index, publishedAt } = params;
-  const origin = source === "youtube" ? "Transcript" : "Article";
-  const highlighted = claim.context.trim();
-  const paragraph = claim.contextParagraph.trim();
-  const lines: string[] = [];
-  if (highlighted) lines.push(`Highlighted claim from ${origin}: ${highlighted}`);
-  else lines.push(`Claim: ${claim.claim}`);
-  if (paragraph) lines.push(`Surrounding context: ${paragraph}`);
+  const text = Object.entries(claimCheckFields(claim, source))
+    .map(([label, value]) => `${label}: ${value}`)
+    .join("\n");
   return {
     id: `${itemId.slice(0, 8)}-${index}`,
     author_id: "unknown",
     created_at: publishedAt ?? new Date().toISOString(),
-    text: lines.join("\n"),
+    text,
     media: claim.imageUrls.map((url) => ({ type: "photo", url })),
   };
 }

@@ -9,6 +9,7 @@
  *  finished. */
 export type ItemProgressStage =
   | { stage: "extracting" }
+  | { stage: "rating" }
   | { stage: "checking"; total: number }
   | { stage: "budget_exhausted" };
 
@@ -48,6 +49,10 @@ export type RequestProgress =
   | { kind: "queued" }
   | { kind: "budget" }
   | { kind: "extracting" }
+  // Rating is the research pass that filters the extracted claims down to the
+  // ones worth a fact-check. The readout calls it filtering, because that is
+  // what a reader sees it do.
+  | { kind: "rating" }
   | { kind: "checking"; done: number; total: number; notes: number }
   | { kind: "done"; notes: number }
   | { kind: "failed" }
@@ -100,6 +105,7 @@ export function deriveRequestProgress(
   }
   if (item.status === "processing") {
     if (item.progress?.stage === "extracting") return { kind: "extracting" };
+    if (item.progress?.stage === "rating") return { kind: "rating" };
     if (item.progress?.stage === "checking" || claims.length > 0) return checkingCounts(item, claims);
     // The worker holds the item but has stamped no stage yet, so it is still
     // reading the page. Extraction is what begins next, and showing that reads
@@ -129,6 +135,8 @@ export function progressLines(progress: RequestProgress): string[] {
       return ["today's checking budget is used up"];
     case "extracting":
       return ["extracting claims ..."];
+    case "rating":
+      return ["filtering claims ..."];
     case "checking": {
       const lines = [`${progress.done} of ${progress.total} claims checked`];
       if (progress.notes > 0) lines.push(notesLine(progress.notes));

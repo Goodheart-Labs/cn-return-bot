@@ -1,18 +1,28 @@
 /**
  * The claim-extraction service. It takes a piece of content and answers with
- * the claims in it.
+ * the claims in it. Its second route rates a list of extracted claims with web
+ * research, which is what decides which of them are worth a fact-check.
  *
  * It writes nothing, checks nothing, and decides nothing. Which claims are
  * worth checking is the caller's business, so every claim found comes back,
- * including the confidently-true ones and the speculation.
+ * including the confidently-true ones and the speculation, and the ratings
+ * come back as judgements rather than as a filtered list.
  *
  *   bun run src/service/extraction/main.ts
  */
 
 import "dotenv/config";
 import { extractClaims } from "../../everything/pipeline/extractClaims";
+import { rateClaims } from "../../everything/pipeline/rateClaims";
 import { aggregateAndLogCosts, withCostTracker } from "../../pipeline/cost-tracking/costTracker";
-import { EXTRACT_CLAIMS_PATH, type ExtractClaimsRequest, type ExtractClaimsResponse } from "../contract";
+import {
+  EXTRACT_CLAIMS_PATH,
+  RATE_CLAIMS_PATH,
+  type ExtractClaimsRequest,
+  type ExtractClaimsResponse,
+  type RateClaimsRequest,
+  type RateClaimsResponse,
+} from "../contract";
 import { numberFromEnv, startService, type ServiceRoute } from "../serve";
 
 /** Two documents at a time. Each one is already several large-model calls that
@@ -50,10 +60,31 @@ const extractClaimsRoute: ServiceRoute<ExtractClaimsRequest, ExtractClaimsRespon
   },
 };
 
+const rateClaimsRoute: ServiceRoute<RateClaimsRequest, RateClaimsResponse> = {
+  path: RATE_CLAIMS_PATH,
+  priorityOf: (body) => body.priority,
+  handle: async (body) => {
+    if (typeof body?.text !== "string" || !Array.isArray(body?.claims)) {
+      throw new Error("Rating needs the item's text and its claims");
+    }
+    const rating = await rateClaims(body.text, body.claims, body.source);
+    console.log(
+      `[extraction] ${body.priority} rated ${rating.claims.length} claims ` +
+        `(${rating.webSearches} web searches, $${rating.cost.cost.toFixed(2)})`,
+    );
+    return {
+      claims: rating.claims,
+      research: rating.research,
+      webSearches: rating.webSearches,
+      costUsd: rating.cost.cost,
+    };
+  },
+};
+
 startService({
   name: "extraction",
   port: numberFromEnv("EXTRACTION_PORT", DEFAULT_PORT),
   concurrency: numberFromEnv("EXTRACTION_CONCURRENCY", DEFAULT_CONCURRENCY),
   reservedForReader: RESERVED_FOR_READER,
-  routes: [extractClaimsRoute],
+  routes: [extractClaimsRoute, rateClaimsRoute],
 });

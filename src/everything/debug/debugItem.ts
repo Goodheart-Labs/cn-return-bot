@@ -2,8 +2,8 @@
  * Step-through debug harness for the everything pipeline on a SINGLE input.
  *
  * It runs the real pipeline functions in the order the queue worker uses. It
- * fetches the content, extracts the claims, drops the speculative ones, and
- * fact-checks the rest. It leaves out everything that touches the queue and the
+ * fetches the content, extracts the claims, drops the speculative ones, rates
+ * them with web research, and fact-checks the ones rated uncertain or worse. It leaves out everything that touches the queue and the
  * database, so it never calls insertClaims or insertNote and never changes an
  * item's status. That makes it safe to run against the prod backend. It reads
  * nothing from the everything_* tables and writes nothing to them. It only
@@ -22,14 +22,16 @@
  * Breakpoint suggestions:
  *   sources/substack.ts:fetchSubstackPost   — HTML fetch + strip
  *   extractClaims.ts:extractClaims          — Opus claim extraction + parsing
- *   extractClaims.ts:shouldFactCheck        — which claims get checked
+ *   rateClaims.ts:rateClaims                — Opus truth rating with web search + fetch
+ *   rateClaims.ts:shouldFactCheck           — which claims get checked
  *   checkClaims.ts:runClaimCheck            — claim → synthetic post → note pipeline
  *   pipeline/orchestration/processTweet.ts  — search / write / verify
  */
 
 import "dotenv/config";
 import { buildClaimPost, runClaimCheck } from "../pipeline/checkClaims";
-import { dropSpeculation, extractClaims, shouldFactCheck } from "../pipeline/extractClaims";
+import { dropSpeculation, extractClaims } from "../pipeline/extractClaims";
+import { rateClaims, shouldFactCheck } from "../pipeline/rateClaims";
 import { fetchSubstackPost } from "../sources/substack";
 import { ensureYtDlp, fetchYoutubeContent } from "../sources/youtube";
 import { closeBrowser } from "../../pipeline/utils/browserManager";
@@ -74,12 +76,16 @@ async function main() {
 
   // ── Step 2: extract claims (breakpoint inside extractClaims) ──
   const extracted = await extractClaims(content, STEP_CONCURRENCY);
-  const claims = dropSpeculation(extracted);
+  const fresh = dropSpeculation(extracted);
+  console.log(`Extracted ${extracted.length} claims — dropped ${extracted.length - fresh.length} speculation\n`);
+
+  // ── Step 3: rate with web research (breakpoint inside rateClaims) ──
+  const text = content.kind === "youtube" ? content.cues.map((c) => c.text).join("\n") : content.text;
+  const rating = await rateClaims(text, fresh, source);
+  const claims = rating.claims;
   const toCheck = claims.filter((c) => shouldFactCheck(c.judgement));
-  console.log(
-    `Extracted ${extracted.length} claims — dropped ${extracted.length - claims.length} speculation, ` +
-      `${toCheck.length} of ${claims.length} are fact-checkable (uncertain or below):\n`,
-  );
+  console.log(`Research ($${rating.cost.cost.toFixed(2)}, ${rating.webSearches} web searches):\n${rating.research}\n`);
+  console.log(`${toCheck.length} of ${claims.length} are fact-checkable (uncertain or below):\n`);
   toCheck.forEach((c, i) => console.log(`  [${i}] (${c.judgement}) ${c.claim}`));
   console.log("");
 
@@ -88,7 +94,7 @@ async function main() {
     return;
   }
 
-  // ── Step 3: fact-check (breakpoint inside runClaimCheck → processSingleTweet) ──
+  // ── Step 4: fact-check (breakpoint inside runClaimCheck → processSingleTweet) ──
   const targets = all ? toCheck : [toCheck[claimIndex]].filter(Boolean);
   if (targets.length === 0) {
     console.log(`--claim ${claimIndex} out of range (0..${toCheck.length - 1}).`);

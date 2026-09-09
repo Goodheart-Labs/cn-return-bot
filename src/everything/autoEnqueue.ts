@@ -36,7 +36,8 @@
 
 import "dotenv/config";
 import { extractYoutubeVideoId } from "../everything-shared/pageUrls";
-import { rankCreators, VISIT_RANKING_WINDOW_DAYS, type RankedCreator } from "./creatorRanking";
+import { rankCreators, VISIT_RANKING_WINDOW_DAYS, type RankedCreator, type RankingRule } from "./creatorRanking";
+import { MIN_PAGES_FOR_A_REGULAR_READER } from "../everything-shared/readers";
 import {
   enqueueItems,
   fetchAllTopPosts,
@@ -253,11 +254,15 @@ async function retryErroredItems(): Promise<void> {
  *  holding priority ahead of the ones we walk because readers visited them;
  *  see creatorRanking.ts. The feed type is derived from the URL rather than
  *  stored, so a row can never disagree with itself. */
-async function feedsToWalk(): Promise<{ feed: PriorityFeed; creator: RankedCreator }[]> {
-  return (await rankCreators()).map((c) => ({
-    feed: { project: c.project_slug, type: c.feed_type, url: c.feed_url },
-    creator: c,
-  }));
+async function feedsToWalk(): Promise<{ walked: { feed: PriorityFeed; creator: RankedCreator }[]; rule: RankingRule }> {
+  const { creators, rule } = await rankCreators();
+  return {
+    walked: creators.map((c) => ({
+      feed: { project: c.project_slug, type: c.feed_type, url: c.feed_url },
+      creator: c,
+    })),
+    rule,
+  };
 }
 
 /** An unprocessed entry together with the feed it came from, ready for the
@@ -356,8 +361,8 @@ async function dateYoutubeCandidates(candidates: Candidate[]): Promise<void> {
 }
 
 /** Column widths of the walk table, fixed so rows can print as they arrive. */
-const CREATOR_COLUMNS = [4, 24, 20, 6, 9];
-const CREATOR_ALIGN: ("left" | "right")[] = ["right", "left", "left", "right", "right"];
+const CREATOR_COLUMNS = [4, 24, 20, 8, 6, 6, 9];
+const CREATOR_ALIGN: ("left" | "right")[] = ["right", "left", "left", "right", "right", "right", "right"];
 
 /** How much of a creator's priority window is left, for the walk table. Rounded
  *  down to whole days, because the exact hour is not worth a column. */
@@ -377,7 +382,7 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
 
   // The creators are ranked once here and handed to the top-posts refresh,
   // rather than ranked again inside it, so one cycle costs one ranking.
-  const walked = await feedsToWalk();
+  const { walked, rule } = await feedsToWalk();
   // A dry run must not write, so it reads the cached top lists without
   // refreshing the stalest one.
   const topRows = dryRun ? await fetchAllTopPosts() : await loadTopPosts(walked.map((w) => w.creator));
@@ -391,11 +396,19 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
   // (each YouTube channel is a yt-dlp call), and a log that said nothing until
   // the end read as a hang.
   const byPriority = walked.filter((w) => w.creator.prioritized).length;
+  // Which rule ranked these is worth a line of its own: the two count different
+  // things, and a reader looking at the table has to know which one produced it.
+  const ruleLine =
+    rule === "readers"
+      ? `ranked by regular readers, a reader who opened at least ${MIN_PAGES_FOR_A_REGULAR_READER} different pages`
+      : "ranked by visit rows, because no creator has had two different readers yet";
   console.log(
-    `\nCREATORS WALKED · ${walked.length} to walk · ${byPriority} by priority, ${walked.length - byPriority} by visits · visits counted over the last ${VISIT_RANKING_WINDOW_DAYS} days`,
+    `\nCREATORS WALKED · ${walked.length} to walk · ${byPriority} by priority, ${walked.length - byPriority} by attention · ${ruleLine} · counted over the last ${VISIT_RANKING_WINDOW_DAYS} days`,
   );
   console.log(groupOpen(`each of the ${walked.length}, as listed`));
-  console.log(fixedRow(["rank", "creator", "why", "visits", "unchecked"], CREATOR_COLUMNS, CREATOR_ALIGN));
+  console.log(
+    fixedRow(["rank", "creator", "why", "regulars", "readers", "pages", "visits", "unchecked"], CREATOR_COLUMNS, CREATOR_ALIGN),
+  );
   let listed = 0;
 
   for (const [feedIndex, { feed, creator }] of walked.entries()) {
@@ -410,7 +423,9 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
       // visits drops out when those age out of the fourteen-day window, so a
       // dead feed costs one failed request per cycle for at most two weeks.
       skipped.push(`  could not list ${feed.project}: ${err?.message ?? "unknown error"}`);
-      console.log(fixedRow([String(feedIndex + 1), feed.project, "could not list", "", ""], CREATOR_COLUMNS, CREATOR_ALIGN));
+      console.log(
+        fixedRow([String(feedIndex + 1), feed.project, "could not list", "", "", "", "", ""], CREATOR_COLUMNS, CREATOR_ALIGN),
+      );
       continue;
     }
     const { sourceName, entries, paidPosts } = listing;
@@ -425,7 +440,10 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
         [
           String(feedIndex + 1),
           feed.project,
-          creator.prioritized ? `priority, ${priorityLeft(creator.priorityUntil)} left` : "visits",
+          creator.prioritized ? `priority, ${priorityLeft(creator.priorityUntil)} left` : "attention",
+          String(creator.regularReaders),
+          String(creator.readers),
+          String(creator.pages),
           String(creator.visits),
           String(unprocessed.length),
         ],

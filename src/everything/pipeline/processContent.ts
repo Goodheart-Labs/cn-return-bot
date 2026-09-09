@@ -3,9 +3,9 @@
  * queue worker calls this for every item it takes, whatever the item's source
  * is.
  *
- * We extract the claims, drop the speculative ones, insert the rest, then
- * fact-check the ones Opus was not confident about through the note pipeline
- * and record every outcome. The return value counts how many claims of this
+ * We extract the claims, drop the speculative ones, rate them with web
+ * research, insert them, then fact-check the ones the rater was not confident
+ * about through the note pipeline and record every outcome. The return value counts how many claims of this
  * item ended in each state, which the caller prints as progress.
  */
 
@@ -21,17 +21,18 @@ import {
   setClaimStatus,
   updateItemMeta,
   type EverythingItem,
-  insertExtractionRun,
+  insertItemRun,
   setItemProgress,
   type ItemClaimRow,
   type NewClaimRow,
 } from "../db";
-import { dropSpeculation, shouldFactCheck } from "./extractClaims";
-import { requestClaimCheck, requestClaimExtraction } from "../../service/client";
-import type { WorkPriority } from "../../service/contract";
-import { group } from "../logFormat";
+import { dropSpeculation } from "./extractClaims";
+import { shouldFactCheck } from "./rateClaims";
+import { requestClaimCheck, requestClaimExtraction, requestClaimRating } from "../../service/client";
+import type { RateClaimsResponse, WorkPriority } from "../../service/contract";
+import { group, money } from "../logFormat";
 import { feedBudgetExhausted, requestBudgetExhausted } from "../spendCap";
-import type { ExtractedClaim, FetchedContent } from "../types";
+import type { ExtractedClaim, FetchedContent, RatedClaim } from "../types";
 
 /** How many claims of one item are in flight at once. The services decide the
  *  real capacity, so this is not a capacity limit. It paces the work so the
@@ -55,7 +56,7 @@ function budgetExhaustedFor(item: EverythingItem): Promise<boolean> {
 export interface ItemTally {
   extracted: number;
   speculation: number; // Claims about a future scenario. We drop them before inserting.
-  skipped: number; // Claims Opus was confident are true. We do not fact-check them.
+  skipped: number; // Claims the rater was confident are true. We do not fact-check them.
   notes: number; // Claims we fact-checked and wrote a note on.
   no_note: number; // Claims we fact-checked and found no note was needed.
   errors: number; // Claims whose fact-check threw.
@@ -65,7 +66,7 @@ export interface ItemTally {
   capped: number;
 }
 
-function buildClaimRow(itemId: string, claim: ExtractedClaim): NewClaimRow {
+function buildClaimRow(itemId: string, claim: RatedClaim): NewClaimRow {
   const check = shouldFactCheck(claim.judgement);
   const anchor = claim.anchor;
   return {
@@ -149,18 +150,30 @@ export async function processFetchedContent(
 
   await setItemProgress(item.id, { stage: "extracting" });
   const { claims: extracted, costUsd } = await requestClaimExtraction({ priority: workPriorityOf(item), content });
-  if (costUsd !== null) await insertExtractionRun(item.id, costUsd);
+  if (costUsd !== null) await insertItemRun(item.id, "extraction", costUsd);
   const fresh = dropSpeculation(extracted);
   const duplicates = fresh.filter((c) => repeatsExistingClaim(c, existingClaims)).length;
   if (duplicates > 0) console.log(`  dropped ${duplicates} claims the item already carries`);
-  const claims = fresh.filter((c) => !repeatsExistingClaim(c, existingClaims));
   const speculation = extracted.length - fresh.length;
+  const newClaims = fresh.filter((c) => !repeatsExistingClaim(c, existingClaims));
+
+  // The rating call is skipped for an item with nothing new to rate, so an
+  // already-covered page does not pay for an empty research call.
+  await setItemProgress(item.id, { stage: "rating" });
+  const rating: RateClaimsResponse = newClaims.length
+    ? await requestClaimRating({ priority: workPriorityOf(item), text: bodyText(content), claims: newClaims, source: item.source })
+    : { claims: [], research: "", webSearches: 0, costUsd: null };
+  if (rating.costUsd !== null) await insertItemRun(item.id, "rating", rating.costUsd);
+  const claims = rating.claims;
   const claimIds = await insertClaims(claims.map((c) => buildClaimRow(item.id, c)));
   const toCheck = claims.filter((c) => shouldFactCheck(c.judgement)).length;
   await setItemProgress(item.id, { stage: "checking", total: toCheck });
   console.log(
-    `  ${extracted.length} claims found, ${speculation} were predictions and dropped, ${toCheck} of ${claims.length} worth checking`,
+    `  ${extracted.length} claims found, ${speculation} were predictions and dropped, ` +
+      `${toCheck} of ${claims.length} worth checking after research (${money(rating.costUsd ?? 0)}, ${rating.webSearches} web searches)`,
   );
+  const researchLog = group("research", [rating.research]);
+  if (researchLog) console.log(researchLog);
 
   const outcomes: Array<"note" | "no_note" | "error"> = [];
   // Each claim's verdict is collected rather than printed as it lands, so the
@@ -202,7 +215,6 @@ export async function processFetchedContent(
 function toExtractedClaim(row: ItemClaimRow): ExtractedClaim {
   return {
     claim: row.claim,
-    judgement: row.judgement,
     context: row.context_quote ?? "",
     contextParagraph: row.context_paragraph ?? "",
     imageUrls: row.image_urls ?? [],
