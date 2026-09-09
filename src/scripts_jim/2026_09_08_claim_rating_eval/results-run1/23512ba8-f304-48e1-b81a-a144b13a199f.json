@@ -1,0 +1,77 @@
+{
+  "itemId": "23512ba8-f304-48e1-b81a-a144b13a199f",
+  "title": "Odds and Ends - Why Texas Might Actually Flip - Gaeten Dugas, Top 30 Politics Trader",
+  "raterCost": {
+    "input_tokens": 264615,
+    "output_tokens": 7191,
+    "cost": 1.57285
+  },
+  "webSearches": 7,
+  "research": "The text is a podcast/video description listing Kalshi market prices \"at time of recording\" (posted around Sept 2026) plus Gaeten Dugas's opinions (opinions are not verifiable facts).\n\nTrader identity: Gaeten Dugas (@GaetenD) is a well-documented top Kalshi trader — Kalshi's own accounts call him a \"supertrader\" and his bio says \"Top 1% Kalshi Trader\" with features in WaPo, Bloomberg, Politico (https://x.com/GaetenD, https://news.kalshi.com/p/trading-this-falls-shutdown-fight, https://x.com/Kalshi_Crypto/status/1993006930848043280 — $530K+ profit, though highlighted mostly for culture markets). \"Top 30 politics trader\" specifically can't be confirmed from public leaderboards, but is plausible for someone of his standing.\n\nHouse control: Kalshi priced Democratic House control ~83.5–86% through Aug–Sept 2026 (https://www.stokastic.com/articles/prediction-markets/house-control-odds ~85%; https://www.predictionedge.com/elections/us-house/party-control/ \"favors Democrats near 84%\"; https://www.oddsshopper.com/articles/prediction-markets/house-control-2026-model-verdict 83.5¢). 84.4% fits well.\n\nSenate control: OddsShopper (Sept 4, 2026) reports Kalshi at Republican 52.5¢ / Democratic 47.5¢ (https://www.oddsshopper.com/articles/prediction-markets/2026-senate-election-odds); earlier August pricing was R 54¢ (https://www.oddsshopper.com/articles/prediction-markets/how-to-bet-senate-elections-kalshi) and Covers had R 57% (https://www.covers.com/betting/prediction-sites/guides/midterm-election-odds-tracker). GOP 52 matches early-September pricing.\n\nMaine: Kalshi has the Democrat (Troy Jackson, after Platner dropped out) at 66–69% through Aug–Sept 2026 — 66¢ Aug 20, 69¢/32¢ on the party market, 68%/32% on Sept 7–9 (https://kalshi.com/markets/senateme/maine-senate-race/senateme-26, https://www.predictionedge.com/elections/us-senate/maine-race/, https://www.oddsshopper.com/articles/prediction-markets/maine-senate-2026-model-verdict). 71/29 is a few points above the observed recent range, so approximately but not exactly right; Kalshi's midterms hub shows 67/34 (https://kalshi.com/category/elections/midterms).\n\nOhio (special, Brown vs. Husted): Kalshi flipped repeatedly; late-Aug pricing Brown 51–52 vs Husted 48–49 (https://www.oddsshopper.com/articles/prediction-markets/ohio-senate-2026-model-verdict), Kalshi news had Brown 49/Husted 47 (https://news.kalshi.com/p/ohio-senate-election-odds-brown-husted), and the live market shows Brown 54¢/Husted 47¢ (https://kalshi.com/markets/senateohs/special-senate-election-in-ohio/senateohs-26). Dem 52/GOP 48 is consistent.\n\nTexas (Paxton vs. Talarico): Kalshi had Paxton favorite at 51.5–53¢ in early September, with Kalshi's hub showing D 48/R 52 (https://www.oddsshopper.com/articles/prediction-markets/2026-senate-election-odds, https://kalshi.com/category/elections/midterms). Dem 46/GOP 54 is slightly more Republican-leaning than current prices but within the cycle's range.\n\n2028 GOP nominee: Vance ~37–39%, Rubio ~26–30% during mid-2026 (Kalshi: Vance 37% / Rubio 26% in April, https://news.kalshi.com/p/vance-rubio-2028-presidential-odds-tied; Vance 38 / Rubio 27 in May, https://floridapolitics.com/archives/795189-marco-rubio-favored-on-kalshi-to-win-presidency-in-2028/; ~39/30 as of Sept 2026, https://federalnewsnetwork.com/markets/politics/election-odds/republican-nominee/). Vance 37.4 / Rubio 27.5 matches this market closely. (The live Kalshi page now shows Vance 46¢ / Rubio 21¢, a very recent move: https://kalshi.com/markets/kxpresnomr/republican-primary-winner/kxpresnomr-28.)\n\n2028 Democratic nominee: the listed figures (Newsom 27.4, AOC 8.4, Ossoff 6.5, Shapiro 6.2, Harris 4.3, Beshear 3.6) do not match any Aug–Sept 2026 snapshot. As of Aug 25–Sept 9, 2026 Kalshi had AOC ~16–19%, Ossoff ~16–17%, Newsom ~13–15%, Harris ~8–9%, Buttigieg ~6%, Shapiro ~5%, Kelly ~5%, Beshear ~4% (https://www.thedailybeast.com/surprise-dem-rockets-into-2028-presidential-lead/, https://federalnewsnetwork.com/prediction-markets/2026/08/ossoff-new-favorite-dem-nominee-prediction-markets-2028-election/, https://predictmarketcap.com/canonical/democratic-presidential-nominee-2028). Newsom at 27% with AOC in single digits corresponds to roughly spring 2026 (Newsom 24% in late June, 36.7% in Dec 2025; AOC 15% by mid-July), i.e. inconsistent with the other prices quoted in the same description, and Newsom is no longer the clear favorite. Also the ordering (Shapiro above Harris; Buttigieg/Kelly omitted) doesn't match current books.",
+  "comparisons": [
+    {
+      "claim": "Gaeten (GaetenD on X) is a top 30 politics trader on Kalshi.",
+      "oldJudgement": "uncertain",
+      "newJudgement": "somewhat likely true",
+      "outcome": "no_note",
+      "outcomeReason": "no_correction_needed",
+      "checkCost": 0.15899645599999998
+    },
+    {
+      "claim": "At the time of recording, the Kalshi prediction market for control of the U.S. House had Democrats at 84.4%.",
+      "oldJudgement": "uncertain",
+      "newJudgement": "likely true",
+      "outcome": "no_note",
+      "outcomeReason": "no_correction_needed",
+      "checkCost": 0.08970522057000001
+    },
+    {
+      "claim": "At the time of recording, the Kalshi prediction market for the Maine Senate race had Democrats at 71% and Republicans at 29%.",
+      "oldJudgement": "uncertain",
+      "newJudgement": "somewhat likely true",
+      "outcome": "no_note",
+      "outcomeReason": "no_correction_needed",
+      "checkCost": 0.133077041064
+    },
+    {
+      "claim": "At the time of recording, the Kalshi prediction market for the Ohio Senate race had Democrats at 52% and Republicans at 48%.",
+      "oldJudgement": "uncertain",
+      "newJudgement": "likely true",
+      "outcome": "no_note",
+      "outcomeReason": "no_correction_needed",
+      "checkCost": 0.056455367482
+    },
+    {
+      "claim": "At the time of recording, the Kalshi prediction market for the Texas Senate race had Democrats at 46% and Republicans at 54%.",
+      "oldJudgement": "uncertain",
+      "newJudgement": "likely true",
+      "outcome": "no_note",
+      "outcomeReason": "no_correction_needed",
+      "checkCost": 0.12025064499999999
+    },
+    {
+      "claim": "At the time of recording, the Kalshi prediction market for the 2028 Republican presidential nominee had JD Vance at 37.4% and Marco Rubio at 27.5%.",
+      "oldJudgement": "uncertain",
+      "newJudgement": "likely true",
+      "outcome": "no_note",
+      "outcomeReason": "no_correction_needed",
+      "checkCost": 0.06176554000000001
+    },
+    {
+      "claim": "At the time of recording, the Kalshi prediction market for the 2028 Democratic presidential nominee had Newsom at 27.4%, AOC at 8.4%, Ossoff at 6.5%, Shapiro at 6.2%, Kamala Harris at 4.3%, and Beshear at 3.6%.",
+      "oldJudgement": "uncertain",
+      "newJudgement": "likely false",
+      "outcome": "no_note",
+      "outcomeReason": "no_correction_needed",
+      "checkCost": 0.1923269006
+    },
+    {
+      "claim": "At the time of recording, the Kalshi prediction market for control of the U.S. Senate had the GOP at 52%.",
+      "oldJudgement": "uncertain",
+      "newJudgement": "likely true",
+      "outcome": "no_note",
+      "outcomeReason": "no_correction_needed",
+      "checkCost": 0.116529729544
+    }
+  ]
+}
