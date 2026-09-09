@@ -65,9 +65,12 @@ export const WEB_SEARCH_TOOL = { type: "web_search_20260209" as const, name: "we
 // Claude's built-in web fetch tool, also passed through by OpenRouter. Claude
 // reads the page inside the call, so the page never round-trips through us.
 // The fetched text is billed as input tokens, hence the per-page token cap.
+// This tool version filters a fetched page with code before it enters the
+// context, so a long page costs a fraction of its full length. The cap bounds
+// what the filter may keep. Neither applies to PDFs, which land in full.
 export function webFetchNativeTool(limits: { maxUses: number; maxContentTokens: number }) {
   return {
-    type: "web_fetch_20250910" as const,
+    type: "web_fetch_20260318" as const,
     name: "web_fetch",
     max_uses: limits.maxUses,
     max_content_tokens: limits.maxContentTokens,

@@ -125,7 +125,7 @@ async function evaluateItem(itemId: string) {
     checkCost: costByClaim.get(row.id) ?? 0,
   }));
 
-  console.log(`\nResearch ($${rating.cost.cost.toFixed(2)}, ${rating.webSearches} web searches, ${rating.cost.input_tokens} in / ${rating.cost.output_tokens} out tokens):\n${rating.research}\n`);
+  console.log(`\nResearch ($${rating.cost.cost.toFixed(2)}, ${rating.webSearches} web searches, ${rating.cost.input_tokens} in (${rating.cachedInputTokens} cached) / ${rating.cost.output_tokens} out tokens):\n${rating.research}\n`);
   for (const c of comparisons) {
     const check = c.outcome === "skipped" ? "never checked" : `${c.outcome}${c.outcomeReason ? ` (${c.outcomeReason})` : ""} $${c.checkCost.toFixed(2)}`;
     const flag = c.outcome === "note" && !shouldFactCheck(c.newJudgement) ? "  <-- NOTE LOST" : "";
@@ -139,7 +139,7 @@ async function evaluateItem(itemId: string) {
   mkdirSync(join(import.meta.dir, "results"), { recursive: true });
   writeFileSync(
     join(import.meta.dir, "results", `${itemId}.json`),
-    JSON.stringify({ itemId, title: item.title, raterCost: rating.cost, webSearches: rating.webSearches, research: rating.research, comparisons }, null, 2),
+    JSON.stringify({ itemId, title: item.title, raterCost: rating.cost, webSearches: rating.webSearches, cachedInputTokens: rating.cachedInputTokens, research: rating.research, comparisons }, null, 2),
   );
 }
 

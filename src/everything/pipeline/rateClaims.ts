@@ -66,6 +66,8 @@ Research first. Use web_search to find sources on the events, people and figures
 
 Then rate EVERY numbered claim on this scale: ${JUDGEMENTS.join(", ")}. Rate from the evidence you found plus your own knowledge. Use "uncertain" only when nothing you found bears on the claim. A claim rated uncertain or worse is sent to a costly fact-check, so be as decisive as the evidence allows.
 
+Rate the claim as stated, not its gist. A claim is true only if its names, numbers, dates and attributions are right. If the substance holds but the claim names the wrong person, source or figure, it is false: that wrong detail is exactly what a note would correct.
+
 Respond with strict JSON only matching: ${RATING_SCHEMA_HINT}
 - research: a dense summary of what you found, with the full https:// URL of each source inline.
 - ratings: one entry per claim number.`;
@@ -112,17 +114,24 @@ export interface ClaimRatingResult {
   research: string;
   cost: TokenCost;
   webSearches: number;
+  /** Input tokens served from Anthropic's prompt cache, at a tenth of the price. */
+  cachedInputTokens: number;
 }
 
 export async function rateClaims(text: string, claims: ExtractedClaim[], source: ItemSource): Promise<ClaimRatingResult> {
-  if (claims.length === 0) return { claims: [], research: "", cost: emptyTokenCost(), webSearches: 0 };
+  if (claims.length === 0) return { claims: [], research: "", cost: emptyTokenCost(), webSearches: 0, cachedInputTokens: 0 };
 
   const messages: any[] = [
     { role: "system", content: RATING_SYSTEM_PROMPT },
-    { role: "user", content: ratingUserMessage(text, claims, source) },
+    // The cache breakpoint marks the text and claims as a prefix Anthropic may
+    // reuse. Every search or fetch inside the call is a new iteration that is
+    // billed for the whole context again, so without it a long item pays for
+    // its text once per iteration.
+    { role: "user", content: [{ type: "text", text: ratingUserMessage(text, claims, source), cache_control: { type: "ephemeral" } }] },
   ];
   const cost = emptyTokenCost();
   let webSearches = 0;
+  let cachedInputTokens = 0;
   // A strict json_schema response_format next to a server-side tool garbles
   // Opus output, so we ask for JSON in the prompt and parse it ourselves. That
   // is the same workaround the native search path of simple-bot uses.
@@ -142,11 +151,12 @@ export async function rateClaims(text: string, claims: ExtractedClaim[], source:
       } as any);
       addTokenCost(cost, extractOpenRouterCost(response));
       webSearches += response.usage?.server_tool_use_details?.web_search_requests ?? 0;
+      cachedInputTokens += response.usage?.prompt_tokens_details?.cached_tokens ?? 0;
       const raw = response.choices?.[0]?.message?.content ?? "";
       return { toParse: extractJsonObject(raw), assistantEcho: raw };
     },
     parse: parseRatingOutput,
   });
 
-  return { claims: applyRatings(claims, output.ratings), research: output.research, cost, webSearches };
+  return { claims: applyRatings(claims, output.ratings), research: output.research, cost, webSearches, cachedInputTokens };
 }
