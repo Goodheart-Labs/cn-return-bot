@@ -48,16 +48,16 @@ describe("applyRatings", () => {
 
 describe("parseRatingOutput", () => {
   test("accepts the expected shape", () => {
-    const out = parseRatingOutput(`{"ratings":[{"claim":1,"rating":"likely true"}]}`);
+    const out = parseRatingOutput(`{"research":"x https://a.b","ratings":[{"claim":1,"rating":"likely true"}]}`);
     expect(out.ratings).toHaveLength(1);
   });
 
   test("rejects a missing ratings list", () => {
-    expect(() => parseRatingOutput(`{}`)).toThrow();
+    expect(() => parseRatingOutput(`{"research":"x"}`)).toThrow();
   });
 
   test("rejects an entry without a claim number", () => {
-    expect(() => parseRatingOutput(`{"ratings":[{"rating":"likely true"}]}`)).toThrow();
+    expect(() => parseRatingOutput(`{"research":"x","ratings":[{"rating":"likely true"}]}`)).toThrow();
   });
 });
 

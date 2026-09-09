@@ -136,6 +136,8 @@ export async function processFetchedContent(
     `  ${extracted.length} claims found, ${speculation} were predictions and dropped, ` +
       `${toCheck} of ${claims.length} worth checking after research (${money(rating.cost.cost)}, ${rating.webSearches} web searches)`,
   );
+  const researchLog = group("research", [rating.research]);
+  if (researchLog) console.log(researchLog);
 
   const outcomes: Array<"note" | "no_note" | "error"> = [];
   // Each claim's verdict is collected rather than printed as it lands, so the

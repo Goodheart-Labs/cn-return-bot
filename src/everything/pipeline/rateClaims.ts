@@ -58,7 +58,7 @@ export function shouldFactCheck(judgement: string): boolean {
 // treated as uncertain, so it still gets checked.
 const UNRATED_JUDGEMENT = "uncertain";
 
-const RATING_SCHEMA_HINT = `{ "ratings": [{ "claim": number, "rating": string }] }`;
+const RATING_SCHEMA_HINT = `{ "research": string, "ratings": [{ "claim": number, "rating": string }] }`;
 
 const RATING_SYSTEM_PROMPT = `You rate how true the factual claims of a text are. You get the full text of an article or transcript and the claims extracted from it as a JSON object keyed by claim number. Each claim is the author's own words, with the passage it sits in.
 
@@ -66,7 +66,9 @@ Research first. Use web_search to find sources on the events, people and figures
 
 Then rate EVERY numbered claim on this scale: ${JUDGEMENTS.join(", ")}. Rate from the evidence you found plus your own knowledge. Use "uncertain" only when nothing you found bears on the claim. A claim rated uncertain or worse is sent to a costly fact-check, so be as decisive as the evidence allows.
 
-Respond with strict JSON only matching: ${RATING_SCHEMA_HINT}, one entry per claim number.`;
+Respond with strict JSON only matching: ${RATING_SCHEMA_HINT}
+- research: a dense summary of what you found, with the full https:// URL of each source inline.
+- ratings: one entry per claim number.`;
 
 // The rater sees each claim exactly as the fact-check will see it, keyed by its
 // number in the list. The number is what the model answers with.
@@ -76,6 +78,7 @@ function ratingUserMessage(text: string, claims: ExtractedClaim[], source: ItemS
 }
 
 interface RatingOutput {
+  research: string;
   ratings: { claim: number; rating: string }[];
 }
 
@@ -84,9 +87,10 @@ interface RatingOutput {
 export function parseRatingOutput(toParse: string): RatingOutput {
   const output = JSON.parse(toParse) as RatingOutput;
   const shapeOk =
+    typeof output.research === "string" &&
     Array.isArray(output.ratings) &&
     output.ratings.every((r) => typeof r?.claim === "number" && typeof r?.rating === "string");
-  if (!shapeOk) throw new Error("rating JSON missing ratings");
+  if (!shapeOk) throw new Error("rating JSON missing research/ratings");
   return output;
 }
 
@@ -103,12 +107,15 @@ export function applyRatings(claims: ExtractedClaim[], ratings: RatingOutput["ra
 
 export interface ClaimRatingResult {
   claims: RatedClaim[];
+  /** What the model found, with its source URLs. This is the only record of the
+   *  research, because the step writes no run row. It is logged, not stored. */
+  research: string;
   cost: TokenCost;
   webSearches: number;
 }
 
 export async function rateClaims(text: string, claims: ExtractedClaim[], source: ItemSource): Promise<ClaimRatingResult> {
-  if (claims.length === 0) return { claims: [], cost: emptyTokenCost(), webSearches: 0 };
+  if (claims.length === 0) return { claims: [], research: "", cost: emptyTokenCost(), webSearches: 0 };
 
   const messages: any[] = [
     { role: "system", content: RATING_SYSTEM_PROMPT },
@@ -141,5 +148,5 @@ export async function rateClaims(text: string, claims: ExtractedClaim[], source:
     parse: parseRatingOutput,
   });
 
-  return { claims: applyRatings(claims, output.ratings), cost, webSearches };
+  return { claims: applyRatings(claims, output.ratings), research: output.research, cost, webSearches };
 }

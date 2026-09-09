@@ -84,7 +84,7 @@ async function main() {
   const rating = await rateClaims(text, fresh, source);
   const claims = rating.claims;
   const toCheck = claims.filter((c) => shouldFactCheck(c.judgement));
-  console.log(`Rated with web research ($${rating.cost.cost.toFixed(2)}, ${rating.webSearches} web searches)\n`);
+  console.log(`Research ($${rating.cost.cost.toFixed(2)}, ${rating.webSearches} web searches):\n${rating.research}\n`);
   console.log(`${toCheck.length} of ${claims.length} are fact-checkable (uncertain or below):\n`);
   toCheck.forEach((c, i) => console.log(`  [${i}] (${c.judgement}) ${c.claim}`));
   console.log("");
