@@ -7,8 +7,8 @@ const BAR_COLOR = "#0d9488";
 
 /** The reader line under a row's bar, e.g. "3 readers, 1 of them regular". A
  *  reader is one browser that opened anything of this creator's in the window,
- *  and a regular reader opened at least two different pages, which is what the
- *  pipeline walks creators on. Rows written before we recorded readers count
+ *  and a regular reader opened at least MIN_PAGES_FOR_A_REGULAR_READER different
+ *  pages, which is what the pipeline walks creators on. Rows written before we recorded readers count
  *  towards visits and nothing else, so a creator can show visits and no
  *  readers. */
 function readerTotals(row: CreatorRow): string | null {

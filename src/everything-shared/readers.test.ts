@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { readerHash } from "./readerHash";
+import { readerHash } from "./readers";
 
 /* The reader hash is what makes unique-reader counting possible, and every
  * property below is one the counting depends on. */

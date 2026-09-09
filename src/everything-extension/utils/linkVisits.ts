@@ -83,7 +83,7 @@ export interface VisitMessage {
  *  The row names no account and no person. It carries a reader hash, which is
  *  one value per browser and per creator, so we can count how many people read
  *  a creator without the rows ever adding up to one person's reading across
- *  creators. See everything-shared/readerHash.ts.
+ *  creators. See everything-shared/readers.ts.
  *
  *  Recording is consentful twice over. Nothing is recorded until the welcome
  *  page has asked the user the visit-recording question, and nothing is

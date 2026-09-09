@@ -40,19 +40,12 @@
 import { fetchCreatorProjects, fetchCreatorAttention, fetchTwoReadersSeen, QUEUE_PRIORITY } from "./db";
 import { canonicalFeed, type FeedType } from "./feedUrls";
 import { normalizeFeedUrl } from "../everything-shared/pageUrls";
+import {
+  MIN_PAGES_FOR_A_REGULAR_READER,
+  MIN_REGULAR_READERS_TO_WALK_CREATOR,
+} from "../everything-shared/readers";
 
 export const VISIT_RANKING_WINDOW_DAYS = 14;
-
-/** How many different pages of one creator a reader must open inside the window
- *  before they count as a regular reader of that creator. One page is a click;
- *  a second, different page is somebody who reads them. */
-export const MIN_PAGES_FOR_A_REGULAR_READER = 2;
-
-/** How many regular readers a creator needs before we walk them on attention
- *  alone. Raise this to two when enough people use the extension for that to
- *  mean something. A creator holding priority is walked whatever their readers,
- *  because someone asked for them. */
-export const MIN_REGULAR_READERS_TO_WALK_CREATOR = 1;
 
 /** The rule that applied before the reader hash existed, and that still applies
  *  until the two-reader proof arrives: how many visit rows inside the window a
@@ -123,7 +116,6 @@ export async function rankCreators(): Promise<{ creators: RankedCreator[]; rule:
   // has to be found from a project row too, and a project stores whatever
   // casing it was created with.
   const attentionByUrl = new Map(attention.map((a) => [normalizeFeedUrl(a.feed_url), a]));
-  const nothingRead = { visits: 0, pages: 0, readers: 0, regular_readers: 0 };
 
   // Known creators are indexed by feed URL rather than by slug. The URL is the
   // key everything shares, and it is what keeps a creator walked on attention
@@ -140,7 +132,7 @@ export async function rankCreators(): Promise<{ creators: RankedCreator[]; rule:
       console.warn(`  skipping ${p.project_slug}: stored feed url is not a shape we can walk (${p.feed_url})`);
       continue;
     }
-    const read = attentionByUrl.get(normalizeFeedUrl(p.feed_url)) ?? nothingRead;
+    const read = attentionByUrl.get(normalizeFeedUrl(p.feed_url));
     ranked.push({
       project_slug: p.project_slug,
       feed_type: feed.feed_type,
@@ -148,10 +140,10 @@ export async function rankCreators(): Promise<{ creators: RankedCreator[]; rule:
       priority: QUEUE_PRIORITY.prioritized,
       prioritized: true,
       priorityUntil: p.priority_until,
-      visits: read.visits,
-      pages: read.pages,
-      readers: read.readers,
-      regularReaders: read.regular_readers,
+      visits: read?.visits ?? 0,
+      pages: read?.pages ?? 0,
+      readers: read?.readers ?? 0,
+      regularReaders: read?.regular_readers ?? 0,
       top_posts_refreshed_at: p.top_posts_refreshed_at,
     });
   }

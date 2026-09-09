@@ -1,4 +1,5 @@
 import { supabase } from "../../../everything-shared/supabase";
+import { MIN_PAGES_FOR_A_REGULAR_READER } from "../../../everything-shared/readers";
 
 // Both queries run through security-definer RPCs (migrations 077 and 080) — the anon
 // key cannot read everything_events or everything_votes directly, and the
@@ -56,8 +57,8 @@ export interface CreatorRow {
    *  window. A reader is one browser, recognised by the reader hash on the
    *  visit row (GOO-135). */
   readers: number;
-  /** How many of those readers opened at least two different pages. This is the
-   *  number the pipeline ranks creators by. */
+  /** How many of those readers opened at least MIN_PAGES_FOR_A_REGULAR_READER
+   *  different pages. This is the number the pipeline ranks creators by. */
   regular_readers: number;
   /** Pipeline totals for the creator's project, unwindowed. All zero when the
    *  visits could not be attributed to a project. */
@@ -67,7 +68,10 @@ export interface CreatorRow {
 }
 
 export async function fetchCreators(days: number | null): Promise<CreatorRow[]> {
-  const { data, error } = await supabase.rpc("everything_creator_visits", { window_days: days });
+  const { data, error } = await supabase.rpc("everything_creator_visits", {
+    window_days: days,
+    min_pages: MIN_PAGES_FOR_A_REGULAR_READER,
+  });
   if (error) throw new Error(`everything_creator_visits failed: ${error.message}`);
   return data as CreatorRow[];
 }

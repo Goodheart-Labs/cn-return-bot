@@ -47,9 +47,12 @@ rollback;
 \echo '--- 6. the old counter is still there, so a walk running on the old code keeps working until the merge'
 select count(*) as should_be_one from pg_proc where proname = 'everything_visit_counts';
 
-\echo '--- 7. the dashboard function, read as anon, carries the two new columns'
+\echo '--- 7. the dashboard function, read as anon, carries the two new columns and takes the same threshold'
 set role anon;
-select creator, visits, readers, regular_readers from everything_creator_visits(14) order by creator;
+select creator, visits, readers, regular_readers from everything_creator_visits(14, 2) order by creator;
+\echo '    at three pages nobody is regular, and a dashboard from before this change still calls it with the window alone'
+select creator, regular_readers from everything_creator_visits(14, 3) order by creator;
+select creator, regular_readers from everything_creator_visits(14) order by creator;
 reset role;
 
 \echo '--- 8. anon still cannot read the visit rows themselves'

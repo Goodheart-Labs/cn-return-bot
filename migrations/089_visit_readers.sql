@@ -21,7 +21,7 @@
 --                   pages of that creator. This is what the walk ranks by.
 
 alter table everything_link_visits
-  add column reader_hash text check (reader_hash is null or reader_hash ~ '^[0-9a-f]{64}$');
+  add column if not exists reader_hash text check (reader_hash is null or reader_hash ~ '^[0-9a-f]{64}$');
 
 comment on column everything_link_visits.reader_hash is
   'SHA-256 of a secret held only by the browser, combined with the creator''s feed address, so it is one value per browser and per creator. Null on rows written before GOO-135, on rows from extension copies that never updated, and on rows whose creator could not be determined on the page.';
@@ -32,7 +32,7 @@ comment on column everything_link_visits.reader_hash is
 
 -- Both reading functions filter on visited_at and there was no index on it.
 -- Counting distinct readers makes that scan hotter than counting rows did.
-create index everything_link_visits_visited_at_idx on everything_link_visits (visited_at desc);
+create index if not exists everything_link_visits_visited_at_idx on everything_link_visits (visited_at desc);
 
 -- ---------------------------------------------------------------------------
 -- The numbers the walk ranks by. This supersedes everything_visit_counts from
@@ -143,14 +143,20 @@ grant execute on function everything_two_readers_seen() to service_role;
 -- keeps its ordering by visits, and it deliberately offers no total across
 -- creators: adding reader counts up would count reader-and-creator pairs, not
 -- people.
+--
+-- min_pages is what makes a reader a regular one, and its callers pass
+-- MIN_PAGES_FOR_A_REGULAR_READER from src/everything-shared/readers.ts, the
+-- same constant the pipeline walks on. The default is only there for a
+-- dashboard build from before this change, which calls with the window alone.
 
 -- A return type cannot be changed in place, so this one is dropped and created
 -- rather than replaced. It is safe to do before the merge: inside one
 -- transaction there is no moment where the function is missing, and the
 -- deployed dashboard reads the columns it knows and ignores the two new ones.
 drop function if exists everything_creator_visits(int);
+drop function if exists everything_creator_visits(int, int);
 
-create function everything_creator_visits(window_days int default null)
+create function everything_creator_visits(window_days int default null, min_pages int default 2)
 returns table (
   creator text,
   visits bigint,
@@ -207,8 +213,7 @@ as $$
     group by creator, reader_hash
   ),
   reader_counts as (
-    -- The 2 mirrors MIN_PAGES_FOR_A_REGULAR_READER in src/everything/creatorRanking.ts.
-    select creator, count(*) as readers, count(*) filter (where pages >= 2) as regular_readers
+    select creator, count(*) as readers, count(*) filter (where pages >= min_pages) as regular_readers
     from reader
     group by creator
   ),
@@ -247,5 +252,5 @@ as $$
   order by vc.visits desc, vc.creator
 $$;
 
-revoke all on function everything_creator_visits(int) from public;
-grant execute on function everything_creator_visits(int) to anon, authenticated;
+revoke all on function everything_creator_visits(int, int) from public;
+grant execute on function everything_creator_visits(int, int) to anon, authenticated;
