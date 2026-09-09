@@ -11,8 +11,29 @@
  * The check fails open. Any navigation or render error returns false, so a flaky
  * page load never blocks note generation. The same holds when X serves our
  * datacenter IP a login wall instead of the post.
+ *
+ * The check is switched off. In GitHub Actions it never once worked. X answered
+ * every request from the runner's datacenter address with a login wall, so the
+ * article element never appeared and the check timed out after fifteen seconds.
+ * That happened on every post with media from the day the file was added, on
+ * 2026-06-01, until it was switched off on 2026-09-09. The label was therefore
+ * never seen in production, and the writer never received the prompt line that
+ * depends on it.
+ *
+ * Turning it back on means setting CHECK_ENABLED to true. On its own that only
+ * restores the old behaviour, because the login wall is still there. The one
+ * idea we have for getting past it is the residential proxy that already carries
+ * our YouTube requests, which reaches X from a home broadband address instead of
+ * a datacenter one. The secret YTDLP_PROXY_URL is already handed to the
+ * create-notes workflow, and Playwright takes a proxy per browser context, so
+ * that is a small change. Nobody has confirmed that the proxy actually gets past
+ * the wall, and confirming it comes first.
  */
 import { getBrowser } from "../utils/browserManager";
+import { addWarning } from "../utils/warnings";
+
+/** Set this to true to run the check again. Read the note above first. */
+const CHECK_ENABLED = false;
 
 const LABEL_TEXT = "Made with AI";
 const NAV_TIMEOUT_MS = 25_000;
@@ -21,6 +42,8 @@ const DESKTOP_UA =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
 
 export async function detectMadeWithAiLabel(tweetId: string, logTag: string): Promise<boolean> {
+  if (!CHECK_ENABLED) return false;
+
   const browser = await getBrowser();
   const context = await browser.newContext({
     userAgent: DESKTOP_UA,
@@ -59,7 +82,12 @@ export async function detectMadeWithAiLabel(tweetId: string, logTag: string): Pr
       return false;
     }, LABEL_TEXT);
   } catch (err: any) {
-    console.warn(`[${logTag}] "Made with AI" label check failed: ${err?.message ?? err} (assuming no label)`);
+    // The failure is recorded as a warning as well as logged. A silent
+    // console.warn is how this check managed to fail on every post for three
+    // months without anything in the database showing it.
+    const message = `"Made with AI" label check failed: ${err?.message ?? err} (assuming no label)`;
+    console.warn(`[${logTag}] ${message}`);
+    addWarning(message);
     return false;
   } finally {
     await context.close();
