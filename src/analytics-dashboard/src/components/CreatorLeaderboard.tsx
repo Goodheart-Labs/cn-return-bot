@@ -5,6 +5,18 @@ const MAX_ROWS = 30;
 
 const BAR_COLOR = "#0d9488";
 
+/** The reader line under a row's bar, e.g. "3 readers, 1 of them regular". A
+ *  reader is one browser that opened anything of this creator's in the window,
+ *  and a regular reader opened at least two different pages, which is what the
+ *  pipeline walks creators on. Rows written before we recorded readers count
+ *  towards visits and nothing else, so a creator can show visits and no
+ *  readers. */
+function readerTotals(row: CreatorRow): string | null {
+  if (row.readers === 0) return null;
+  const readers = row.readers === 1 ? "1 reader" : `${row.readers} readers`;
+  return `${readers}, ${row.regular_readers} of them regular`;
+}
+
 /** The pipeline totals under a row's bar, e.g. "12 posts checked · 47 notes ·
  *  1 in error". Totals are unwindowed and zero when the creator's visits could
  *  not be attributed to a project, in which case the line is left out. */
@@ -17,7 +29,13 @@ function pipelineTotals(row: CreatorRow): string | null {
 
 /** Creators ranked by how many visits their posts got, one labeled bar per
  *  creator, scaled to the top creator. A row's name is the project name when
- *  we can attribute the visit, and the page's hostname when we cannot. */
+ *  we can attribute the visit, and the page's hostname when we cannot.
+ *
+ *  Reader counts are shown per creator and are deliberately never added up
+ *  across creators. A reader is recognised by a value that is different for
+ *  every creator, so one person reading five creators appears as five
+ *  unrelated readers, and a total would count reader-and-creator pairs rather
+ *  than people. */
 export function CreatorLeaderboard({ rows }: { rows: CreatorRow[] }) {
   if (rows.length === 0) {
     return <p style={{ color: "#6b7280", fontSize: 13 }}>No visits recorded in this window.</p>;
@@ -47,11 +65,11 @@ export function CreatorLeaderboard({ rows }: { rows: CreatorRow[] }) {
               }}
             />
           </div>
-          {pipelineTotals(row) && (
-            <div style={{ color: "#9ca3af", fontSize: 12, marginTop: 2, fontVariantNumeric: "tabular-nums" }}>
-              {pipelineTotals(row)}
+          {[readerTotals(row), pipelineTotals(row)].filter(Boolean).map((line) => (
+            <div key={line} style={{ color: "#9ca3af", fontSize: 12, marginTop: 2, fontVariantNumeric: "tabular-nums" }}>
+              {line}
             </div>
-          )}
+          ))}
         </div>
       ))}
       {foldedVisits > 0 && (

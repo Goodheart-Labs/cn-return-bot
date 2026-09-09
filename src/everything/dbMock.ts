@@ -19,8 +19,18 @@ export const dbState = {
     priority_until: string | null;
     top_posts_refreshed_at: string | null;
   }[],
-  /** What fetchVisitCounts answers. */
-  visitCounts: [] as { feed_url: string; visits: number }[],
+  /** What fetchCreatorAttention answers: one row per creator. */
+  creatorAttention: [] as {
+    feed_url: string;
+    visits: number;
+    pages: number;
+    readers: number;
+    regular_readers: number;
+  }[],
+  /** What fetchTwoReadersSeen answers: whether any creator has ever been
+   *  visited by two different readers, which is what switches the walk from the
+   *  old visit rule to the reader rule. */
+  twoReadersSeen: false,
   /** What fetchAllTopPosts answers. */
   topPosts: [] as {
     feed_url: string;
@@ -39,7 +49,8 @@ export const resetDbState = () => {
   dbState.knownItems = [];
   dbState.existingItem = null;
   dbState.creatorProjects = [];
-  dbState.visitCounts = [];
+  dbState.creatorAttention = [];
+  dbState.twoReadersSeen = false;
   dbState.topPosts = [];
   dbState.calls = {};
 };
@@ -58,7 +69,8 @@ export const dbMock = () => ({
   fetchItemUrlsIn: () => Promise.resolve(dbState.knownItems),
   fetchItemUrlsContaining: () => Promise.resolve(dbState.knownItems),
   fetchCreatorProjects: () => Promise.resolve(dbState.creatorProjects),
-  fetchVisitCounts: () => Promise.resolve(dbState.visitCounts),
+  fetchCreatorAttention: () => Promise.resolve(dbState.creatorAttention),
+  fetchTwoReadersSeen: () => Promise.resolve(dbState.twoReadersSeen),
   fetchAllTopPosts: () => Promise.resolve(dbState.topPosts),
   replaceFeedTopPosts: record("replaceFeedTopPosts"),
   upsertCreatorPriority: record("upsertCreatorPriority"),

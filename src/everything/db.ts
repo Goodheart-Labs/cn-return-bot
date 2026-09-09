@@ -506,6 +506,26 @@ export async function resolveNoteRequest(
   );
 }
 
+/** What one creator's visit rows add up to over the ranking window (GOO-135).
+ *  Every number except `visits` is counted over rows that carry a reader hash,
+ *  because a row without one cannot be attributed to a person. */
+export interface CreatorAttention {
+  /** The creator's feed address, in one of the capitalisations it was recorded
+   *  under. Creators are grouped case-insensitively in the database. */
+  feed_url: string;
+  /** Every visit row for this creator, with or without a reader hash. This is
+   *  the number the walk used before GOO-135. */
+  visits: number;
+  /** How many different pages of this creator were opened. Reloading one page
+   *  counts once. */
+  pages: number;
+  /** How many different readers opened anything of this creator's. */
+  readers: number;
+  /** How many of those readers opened at least MIN_PAGES_FOR_A_REGULAR_READER
+   *  different pages. This is what the walk ranks by. */
+  regular_readers: number;
+}
+
 /** A creator we already know: a project row carrying the feed we poll. A
  *  creator IS a project (migration 086), so this is where their slug, their
  *  priority window and their top-posts stamp all live. The slug is derived
@@ -654,12 +674,26 @@ export async function fetchQueueOverview(): Promise<QueuedItemSummary[]> {
   ) as QueuedItemSummary[];
 }
 
-/** Visit counts per creator feed since the given time, summed in the database
- *  (see everything_visit_counts, migration 083). */
-export async function fetchVisitCounts(since: Date): Promise<{ feed_url: string; visits: number }[]> {
+/** What readers did with each creator's pages since the given time, counted in
+ *  the database (see everything_creator_attention, migration 089). `minPages`
+ *  is how many different pages of a creator one reader must have opened to
+ *  count as a regular reader. */
+export async function fetchCreatorAttention(since: Date, minPages: number): Promise<CreatorAttention[]> {
   return (throwOnError(
-    await getSupabaseClient().rpc("everything_visit_counts", { since: since.toISOString() }),
-  ) ?? []) as { feed_url: string; visits: number }[];
+    await getSupabaseClient().rpc("everything_creator_attention", {
+      since: since.toISOString(),
+      min_pages: minPages,
+    }),
+  ) ?? []) as CreatorAttention[];
+}
+
+/** Whether any single creator has ever been visited by two different readers,
+ *  over all recorded history. Visit rows written before GOO-135 carry no reader
+ *  hash and can never satisfy the reader rule, so the walk keeps its old rule
+ *  until this answers true. Reader hashes are per creator by design, so this is
+ *  the only form the question "do we have more than one reader" can take. */
+export async function fetchTwoReadersSeen(): Promise<boolean> {
+  return (throwOnError(await getSupabaseClient().rpc("everything_two_readers_seen")) ?? false) as boolean;
 }
 
 /** Total LLM cost in USD recorded in everything_pipeline_runs since the given

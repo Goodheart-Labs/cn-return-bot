@@ -11,6 +11,7 @@ import { CHECKED_PAGE_URLS_KEY, COVERED_PAGE_URLS_KEY, NOTED_PAGE_STATUS_COUNTS_
 import { PRIORITIZED_CREATOR_URLS_KEY } from "../utils/prioritizedCreators";
 import { GENERIC_SCRIPT_PREFIX, hostnamePattern, registerGenericScripts, genericScriptId } from "../utils/genericScript";
 import { capturePageFromTab } from "../utils/pageCapture";
+import { VISIT_MESSAGE_TYPE, writeVisit, type VisitMessage } from "../utils/linkVisits";
 import { addRequestedPage, getSettingsOnboardingDone, getWelcomeSeen, markWelcomeSeen } from "../utils/settings";
 import { STATIC_SITE_HOSTNAME } from "../utils/staticSites";
 
@@ -352,6 +353,12 @@ export default defineBackground(() => {
       // follow the cross-origin redirect nor read the response.
       fetchReaderCanonical((message as { href: string }).href).then(sendResponse);
       return true; // Keep the message channel open for the async reply.
+    }
+    if ((message as { type?: string })?.type === VISIT_MESSAGE_TYPE) {
+      // A content script has decided this page counts and has read the creator
+      // off it. The row is written here, where the reader secret lives.
+      void writeVisit(message as VisitMessage);
+      return undefined; // Nothing to answer. The content script does not wait.
     }
     if ((message as { type?: string })?.type === "cn-sync-noted-sites") {
       // The popup sends this when it opens, so that a newly covered site

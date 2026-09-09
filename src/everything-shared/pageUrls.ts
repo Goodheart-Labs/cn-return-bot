@@ -79,3 +79,12 @@ export function extractYoutubeVideoId(url: string): string | null {
     return null;
   }
 }
+
+/** The form of a creator's feed address that two places must agree on: the
+ *  extension hashes it into the reader hash on a visit row, and the pipeline
+ *  groups creators by it. Trailing slashes and capitals are the two ways the
+ *  same feed arrives written differently. If the two sides ever disagreed, one
+ *  reader would silently be counted as two. */
+export function normalizeFeedUrl(feedUrl: string): string {
+  return feedUrl.replace(/\/+$/, "").toLowerCase();
+}

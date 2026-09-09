@@ -52,6 +52,13 @@ export async function fetchDaily(days: number | null): Promise<DailyRow[]> {
 export interface CreatorRow {
   creator: string;
   visits: number;
+  /** How many different readers opened anything of this creator's inside the
+   *  window. A reader is one browser, recognised by the reader hash on the
+   *  visit row (GOO-135). */
+  readers: number;
+  /** How many of those readers opened at least two different pages. This is the
+   *  number the pipeline ranks creators by. */
+  regular_readers: number;
   /** Pipeline totals for the creator's project, unwindowed. All zero when the
    *  visits could not be attributed to a project. */
   processed: number;

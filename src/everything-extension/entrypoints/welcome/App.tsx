@@ -43,7 +43,7 @@ export function WelcomeApp() {
           <p className="text-sm leading-relaxed text-gray-600">
             We generate notes (fact checks or other useful context) on all new posts from specific
             authors and creators on YouTube, Substack, LessWrong, and the Alignment Forum. If you want, we can save the
-            posts you visit, without any user data attached, and then automatically generate notes on
+            posts you visit, without your account attached, and then automatically generate notes on
             the authors you read and the channels you watch.
           </p>
           {answered === null ? (

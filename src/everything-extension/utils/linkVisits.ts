@@ -1,3 +1,4 @@
+import { browser } from "#imports";
 import { supabase } from "../../everything-shared/supabase";
 import type { PageItem } from "../../everything-shared/notesQuery";
 import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
@@ -12,6 +13,7 @@ import {
   youtubeChannelTarget,
 } from "./creatorTarget";
 import { getSettings, getWelcomeSeen, type VisitSiteKind } from "./settings";
+import { visitReaderHash } from "./visitReader";
 
 // Visits are recorded on Substack, YouTube, and the LessWrong / Alignment
 // Forum pair, and only for content pages: a post or a video, never a homepage
@@ -59,14 +61,29 @@ async function pageFeedUrl(kind: VisitSiteKind, pageUrl: string): Promise<string
   return null;
 }
 
+/** What a content script sends the background once it has decided a page
+ *  counts. The reader hash is added there, because the secret behind it is
+ *  minted in one place only. */
+export const VISIT_MESSAGE_TYPE = "cn-visit";
+
+export interface VisitMessage {
+  type: typeof VISIT_MESSAGE_TYPE;
+  url: string;
+  itemId: string | null;
+  feedUrl: string | null;
+}
+
 /** Records that a post or video on one of the tracked sites was opened, so the
  *  team can see which links are read and where notes are needed most. `item`
  *  is the page's ingested row when it has one, and null for a page we have not
  *  checked; both count. The row stores the item's own URL when there is one,
  *  so every variant of the same page counts under one link, plus the creator's
- *  feed URL read out of the page. It is anonymous: no user id, just the URL,
- *  the creator, the item if any, and the time. A failed insert is dropped,
- *  because a visit count is not worth an error surface.
+ *  feed URL read out of the page.
+ *
+ *  The row names no account and no person. It carries a reader hash, which is
+ *  one value per browser and per creator, so we can count how many people read
+ *  a creator without the rows ever adding up to one person's reading across
+ *  creators. See everything-shared/readerHash.ts.
  *
  *  Recording is consentful twice over. Nothing is recorded until the welcome
  *  page has asked the user the visit-recording question, and nothing is
@@ -77,10 +94,29 @@ export function recordPageVisit(pageUrl: string, item: PageItem | null): void {
   void (async () => {
     const [welcomed, settings] = await Promise.all([getWelcomeSeen(), getSettings()]);
     if (!welcomed || !settings.saveVisits[kind]) return;
-    const feedUrl = await pageFeedUrl(kind, pageUrl);
-    const { error } = await supabase
-      .from("everything_link_visits")
-      .insert({ url: item?.url ?? pageUrl, item_id: item?.id ?? null, feed_url: feedUrl });
-    if (error) console.debug(`[common-notes] visit not recorded: ${error.message}`);
+    const message: VisitMessage = {
+      type: VISIT_MESSAGE_TYPE,
+      url: item?.url ?? pageUrl,
+      itemId: item?.id ?? null,
+      feedUrl: await pageFeedUrl(kind, pageUrl),
+    };
+    // The catch swallows the "receiving end does not exist" error, which a
+    // content script left behind by an extension reload would otherwise throw.
+    void browser.runtime.sendMessage(message).catch(() => {});
   })();
+}
+
+/** Writes the visit. This runs in the background, for the same two reasons the
+ *  analytics events do: the reader secret has exactly one writer here, and a
+ *  request sent from a content script is subject to the host page's own content
+ *  policy. A failed insert is dropped, because a visit count is not worth an
+ *  error surface. */
+export async function writeVisit(visit: VisitMessage): Promise<void> {
+  const { error } = await supabase.from("everything_link_visits").insert({
+    url: visit.url,
+    item_id: visit.itemId,
+    feed_url: visit.feedUrl,
+    reader_hash: visit.feedUrl ? await visitReaderHash(visit.feedUrl) : null,
+  });
+  if (error) console.debug(`[common-notes] visit not recorded: ${error.message}`);
 }

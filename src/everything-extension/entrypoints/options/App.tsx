@@ -70,7 +70,9 @@ function VisitRecordingChoice({ settings, onToggle }: {
       <p className="text-sm text-gray-600">
         When you open a post on Substack, YouTube, LessWrong, or the Alignment Forum, the extension can save the link and
         the time. That tells us which posts are worth checking next. It is anonymous: never your
-        account or the rest of your browsing.
+        account or the rest of your browsing. Each saved link carries a random code that is
+        different for every author, so we can count how many people read an author without joining
+        your reading together.
       </p>
       <Checkbox checked={anyOn} onChange={setAll}>
         Share which posts you open
