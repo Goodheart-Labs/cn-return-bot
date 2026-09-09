@@ -115,7 +115,7 @@ async function evaluateItem(itemId: string) {
   console.log(`\n### ${item.title} (${item.source}, ${rows.length} claims, text ${item.full_text?.length ?? 0} chars)`);
   if (!item.full_text) throw new Error("item has no stored text");
 
-  const rating = await rateClaims(item.full_text, rows.map(toExtractedClaim));
+  const rating = await rateClaims(item.full_text, rows.map(toExtractedClaim), item.source);
   const comparisons: Comparison[] = rows.map((row, i) => ({
     claim: row.claim,
     oldJudgement: row.judgement,

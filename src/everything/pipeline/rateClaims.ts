@@ -3,7 +3,7 @@
  *
  * Extraction gives us the claims of an item but says nothing about whether they
  * are true. This step rates all of them in one call. Opus gets the item's full
- * text and the claims as a numbered list, together with Claude's built-in web
+ * text and the claims as a numbered JSON object, together with Claude's built-in web
  * search and web fetch tools, and returns one rating per claim on a seven-level
  * scale. The rating decides which claims get fact-checked.
  *
@@ -13,11 +13,12 @@
  */
 
 import { llm } from "../../pipeline/llm/llm";
+import { claimCheckFields } from "./claimCheckFields";
 import { WEB_SEARCH_TOOL, webFetchNativeTool } from "../../pipeline/tool-calling/tools";
 import { parseJsonWithRetry } from "../../pipeline/utils/jsonLlmCall";
 import { extractJsonObject } from "../../pipeline/utils/jsonOutput";
 import { addTokenCost, emptyTokenCost, extractOpenRouterCost, type TokenCost } from "../../pipeline/cost-tracking/pricing";
-import type { ExtractedClaim, RatedClaim } from "../types";
+import type { ExtractedClaim, ItemSource, RatedClaim } from "../types";
 
 const CLAIM_RATING_MODEL = "anthropic/claude-opus-5";
 
@@ -55,19 +56,21 @@ const UNRATED_JUDGEMENT = "uncertain";
 
 const RATING_SCHEMA_HINT = `{ "research": string, "ratings": [{ "claim": number, "rating": string }] }`;
 
-const RATING_SYSTEM_PROMPT = `You rate how true the factual claims of a text are. You get the full text of an article or transcript and a numbered list of claims extracted from it.
+const RATING_SYSTEM_PROMPT = `You rate how true the factual claims of a text are. You get the full text of an article or transcript and the claims extracted from it as a JSON object keyed by claim number. Each claim is the author's own words, with the passage it sits in.
 
 Research first. Use web_search to find sources on the events, people and figures the text is about, and web_fetch to read the most relevant pages in full. Related claims usually share a source, so read the few pages that settle many claims at once.
 
 Then rate EVERY numbered claim on this scale: ${JUDGEMENTS.join(", ")}. Rate from the evidence you found plus your own knowledge. Use "uncertain" only when nothing you found bears on the claim. A claim rated uncertain or worse is sent to a costly fact-check, so be as decisive as the evidence allows.
 
 Respond with strict JSON only matching: ${RATING_SCHEMA_HINT}
-- research: a dense summary of what you found, with the full https:// URL of each source inline.
-- ratings: one entry per numbered claim.`;
+- research: a dense summary of what you found.
+- ratings: one entry per claim number.`;
 
-function ratingUserMessage(text: string, claims: ExtractedClaim[]): string {
-  const list = claims.map((c, i) => `[${i + 1}] ${c.claim}`).join("\n");
-  return `Text:\n\n${text}\n\nClaims:\n${list}`;
+// The rater sees each claim exactly as the fact-check will see it, keyed by its
+// number in the list. The number is what the model answers with.
+function ratingUserMessage(text: string, claims: ExtractedClaim[], source: ItemSource): string {
+  const numbered = Object.fromEntries(claims.map((c, i) => [i + 1, claimCheckFields(c, source)]));
+  return `Text:\n\n${text}\n\nClaims:\n${JSON.stringify(numbered, null, 1)}`;
 }
 
 interface RatingOutput {
@@ -100,18 +103,18 @@ export function applyRatings(claims: ExtractedClaim[], ratings: RatingOutput["ra
 
 export interface ClaimRatingResult {
   claims: RatedClaim[];
-  /** The model's research summary with its source URLs. Logged, not stored. */
+  /** The model's research summary. Logged, not stored. */
   research: string;
   cost: TokenCost;
   webSearches: number;
 }
 
-export async function rateClaims(text: string, claims: ExtractedClaim[]): Promise<ClaimRatingResult> {
+export async function rateClaims(text: string, claims: ExtractedClaim[], source: ItemSource): Promise<ClaimRatingResult> {
   if (claims.length === 0) return { claims: [], research: "", cost: emptyTokenCost(), webSearches: 0 };
 
   const messages: any[] = [
     { role: "system", content: RATING_SYSTEM_PROMPT },
-    { role: "user", content: ratingUserMessage(text, claims) },
+    { role: "user", content: ratingUserMessage(text, claims, source) },
   ];
   const cost = emptyTokenCost();
   let webSearches = 0;

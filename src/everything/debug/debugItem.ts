@@ -81,7 +81,7 @@ async function main() {
 
   // ── Step 3: rate with web research (breakpoint inside rateClaims) ──
   const text = content.kind === "youtube" ? content.cues.map((c) => c.text).join("\n") : content.text;
-  const rating = await rateClaims(text, fresh);
+  const rating = await rateClaims(text, fresh, source);
   const claims = rating.claims;
   const toCheck = claims.filter((c) => shouldFactCheck(c.judgement));
   console.log(`Research ($${rating.cost.cost.toFixed(2)}, ${rating.webSearches} web searches):\n${rating.research}\n`);

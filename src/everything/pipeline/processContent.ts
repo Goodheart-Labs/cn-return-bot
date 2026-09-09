@@ -128,7 +128,7 @@ export async function processFetchedContent(
   const duplicates = fresh.filter((c) => repeatsExistingClaim(c, existingClaims)).length;
   if (duplicates > 0) console.log(`  dropped ${duplicates} claims the item already carries`);
   const speculation = extracted.length - fresh.length;
-  const rating = await rateClaims(bodyText(content), fresh.filter((c) => !repeatsExistingClaim(c, existingClaims)));
+  const rating = await rateClaims(bodyText(content), fresh.filter((c) => !repeatsExistingClaim(c, existingClaims)), item.source);
   const claims = rating.claims;
   const claimIds = await insertClaims(claims.map((c) => buildClaimRow(item.id, c)));
   const toCheck = claims.filter((c) => shouldFactCheck(c.judgement)).length;
