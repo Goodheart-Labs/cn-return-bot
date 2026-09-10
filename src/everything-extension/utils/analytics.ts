@@ -16,6 +16,9 @@ import { setAnalyticsSink } from "../../everything-shared/analytics";
 const MESSAGE_TYPE = "cn-analytics";
 const DEVICE_ID_KEY = "cn-device-id";
 const USER_ID_KEY = "cn-user-id";
+// The UTC day on which this install last sent extension_active, so the
+// background sends one heartbeat per calendar day however often it wakes.
+const ACTIVE_DAY_KEY = "cn:extensionActiveDay";
 // The keys the PostHog-era transport used; adopted on first read so existing
 // installs keep their device identity.
 const LEGACY_DEVICE_ID_KEY = "cn-ph-device-id";
@@ -91,7 +94,9 @@ async function knownUserId(): Promise<string | null> {
   return readWithLegacy(USER_ID_KEY, LEGACY_USER_ID_KEY);
 }
 
-async function capture(event: string, props?: Record<string, unknown>) {
+/** Inserts one event row. Answers whether it landed. The sinks ignore the
+ *  answer; the daily heartbeat waits for it. */
+async function capture(event: string, props?: Record<string, unknown>): Promise<boolean> {
   // user_id must match the JWT the insert carries (RLS checks
   // user_id = auth.uid()), so it comes from the live session, not from the
   // stored id — a stored id with an expired session would fail the check.
@@ -99,7 +104,7 @@ async function capture(event: string, props?: Record<string, unknown>) {
   // stamping its events would flatten the sign-up funnel.
   const { data } = await supabase.auth.getSession();
   const user = data.session?.user;
-  await supabase.from("everything_events").insert({
+  const { error } = await supabase.from("everything_events").insert({
     event,
     platform: "extension",
     device_id: await deviceId(),
@@ -110,6 +115,38 @@ async function capture(event: string, props?: Record<string, unknown>) {
       ...props,
     },
   });
+  return !error;
+}
+
+/** Today as a UTC date, the same day boundary the dashboard buckets on. */
+function utcDay(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+let heartbeat: Promise<void> | null = null;
+
+/** The daily heartbeat: one extension_active event per install per UTC day,
+ *  which is how the dashboard counts installs that are alive. It runs on
+ *  every worker boot and on every sync tick, and the stored day makes all
+ *  but the first of those a no-op. The day is stored only after the row
+ *  landed, because the worker's first boot of the day is often before the
+ *  network is up; the next tick then tries again. Concurrent calls share
+ *  one attempt. A duplicate on the same day is harmless anyway, since the
+ *  dashboard counts distinct devices. */
+export function trackDailyActivity(): Promise<void> {
+  heartbeat ??= sendHeartbeatOnce().finally(() => {
+    heartbeat = null;
+  });
+  return heartbeat;
+}
+
+async function sendHeartbeatOnce(): Promise<void> {
+  const today = utcDay();
+  const stored = await browser.storage.local.get(ACTIVE_DAY_KEY);
+  if (stored[ACTIVE_DAY_KEY] === today) return;
+  if (await capture("extension_active")) {
+    await browser.storage.local.set({ [ACTIVE_DAY_KEY]: today });
+  }
 }
 
 /** Remember which user this install belongs to — only used by the auth

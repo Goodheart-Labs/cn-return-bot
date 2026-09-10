@@ -32,7 +32,9 @@ npx supabase start
 # Apply migrations
 echo ""
 echo "Applying migrations from ${MIGRATIONS_DIR}/..."
-for migration in $(ls "${MIGRATIONS_DIR}"/*.sql 2>/dev/null | sort); do
+# The fixture and verify files next to some migrations are for a throwaway
+# Postgres, not for this stack.
+for migration in $(ls "${MIGRATIONS_DIR}"/*.sql 2>/dev/null | grep -v -e '\.fixture\.sql$' -e '\.verify\.sql$' | sort); do
   echo "  Applying: $(basename "$migration")"
   psql "${POSTGRES_URL}" -f "$migration" -q 2>&1 | grep -v "^$" || true
 done
