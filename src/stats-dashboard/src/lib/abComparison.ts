@@ -4,24 +4,31 @@
 // grouping follows the same style as aggregations.ts.
 //
 // There is one trap here. Two different sources feed the counts. The note
-// records give the helpful, unhelpful and needs-more-ratings counts. The run
-// outcome aggregates give the total and candidate counts. The two are counted
-// in separate passes and are never mixed inside one fraction. A submitted run
-// can have no note row with a submission time, and a note row can have no
-// matching run, so the two denominators can differ slightly.
+// records give the helpful, unhelpful and needs-more-ratings counts, and the
+// individual ratings each note collected. The run outcome aggregates give the
+// total and candidate counts. The two are counted in separate passes and are
+// never mixed inside one fraction. A submitted run can have no note row with a
+// submission time, and a note row can have no matching run, so the two
+// denominators can differ slightly.
 
 import type { AbOutcomeAggregate, NoteRecord } from "./types";
 import { matchesAbFilters, type ABFilters } from "../../../dashboard-shared/abFilters";
 import { humanizeTagName, isNegativeRatingReason } from "../../../dashboard-shared/ratingReasons";
 import { costPerCountCI, proportionCI, proportionDiffCI, type Interval } from "./confidenceIntervals";
 
-// The five metrics that take no parameter.
+// The six metrics that take no parameter.
 export type BaseStatKind =
   | "pct_helpful"
   | "pct_unhelpful"
   | "pct_helpful_minus_unhelpful"
+  | "pct_helpful_ratings"
   | "pct_candidate"
   | "cost_per_helpful";
+
+// A rater can call a note helpful, somewhat helpful or not helpful. The
+// helpful-ratings metric counts a somewhat-helpful rating as half a helpful
+// one. That is the weight X's own scoring gives it.
+const SOMEWHAT_HELPFUL_RATING_WEIGHT = 0.5;
 
 // The metric the comparison is drawn against. Two of them take a parameter. A
 // failure-mode metric names a tag and measures the share of reviewed notes that
@@ -44,10 +51,13 @@ export interface AbComboCounts {
   candidate: number; // Comes from the run aggregates.
   total: number; // Runs that have finished, from the run aggregates.
   cost: number; // Cost added up over the finished runs.
-  // The rating-reason metric divides a reason's count by all the ratings of the
-  // same polarity.
-  positiveRatings: number; // Helpful and somewhat-helpful ratings together.
-  negativeRatings: number; // Not-helpful ratings.
+  // The individual ratings the notes collected, from X's public data dump. The
+  // helpful-ratings metric pools them over every note in the combination. The
+  // rating-reason metric divides a reason's count by all the ratings of the
+  // same polarity, where helpful and somewhat helpful together are positive.
+  helpfulRatings: number;
+  somewhatHelpfulRatings: number;
+  notHelpfulRatings: number;
   ratingReasonCounts: Record<string, number>; // Both tag maps merged into one.
   // The failure-mode metric divides the notes carrying a tag by the notes that
   // somebody has reviewed.
@@ -98,8 +108,9 @@ function emptyCounts(): AbComboCounts {
     candidate: 0,
     total: 0,
     cost: 0,
-    positiveRatings: 0,
-    negativeRatings: 0,
+    helpfulRatings: 0,
+    somewhatHelpfulRatings: 0,
+    notHelpfulRatings: 0,
     ratingReasonCounts: {},
     reviewedNotes: 0,
     failureModeCounts: {},
@@ -152,8 +163,9 @@ export function buildAbCombos(
 
     const rating = note.public_dump_ratings;
     if (rating) {
-      counts.positiveRatings += rating.helpful_count + rating.somewhat_helpful_count;
-      counts.negativeRatings += rating.not_helpful_count;
+      counts.helpfulRatings += rating.helpful_count;
+      counts.somewhatHelpfulRatings += rating.somewhat_helpful_count;
+      counts.notHelpfulRatings += rating.not_helpful_count;
       accumulateReasonCounts(counts.ratingReasonCounts, rating.helpful_tag_counts);
       accumulateReasonCounts(counts.ratingReasonCounts, rating.not_helpful_tag_counts);
     }
@@ -191,10 +203,12 @@ export function buildAbCombos(
  *
  * By default the denominator is the submitted notes. It becomes every finished
  * run when includeNonCandidate is set.
- * Four metrics ignore that setting. pct_candidate always divides by every run.
+ * Five metrics ignore that setting. pct_candidate always divides by every run.
  * cost_per_helpful always divides the cost of every run by the number of
- * helpful notes. The failure-mode metric divides by the reviewed notes, and the
- * rating-type metric divides by the ratings of one polarity.
+ * helpful notes. The failure-mode metric divides by the reviewed notes. The
+ * rating-type metric divides by the ratings of one polarity, and the
+ * helpful-ratings metric by all ratings, with a somewhat-helpful rating
+ * weighted as half a helpful one in the numerator.
  * `n` is the sample size the interval is computed from. For the cost metric
  * that is the helpful-note count.
  */
@@ -222,9 +236,17 @@ export function statInterval(
       return { interval: proportionCI(counts.failureModeCounts[stat.tag] ?? 0, n, z), n };
     }
     case "rating_type": {
-      const n = isNegativeRatingReason(stat.reason) ? counts.negativeRatings : counts.positiveRatings;
+      const n = isNegativeRatingReason(stat.reason)
+        ? counts.notHelpfulRatings
+        : counts.helpfulRatings + counts.somewhatHelpfulRatings;
       if (n === 0) return null;
       return { interval: proportionCI(counts.ratingReasonCounts[stat.reason] ?? 0, n, z), n };
+    }
+    case "pct_helpful_ratings": {
+      const n = counts.helpfulRatings + counts.somewhatHelpfulRatings + counts.notHelpfulRatings;
+      if (n === 0) return null;
+      const weightedHelpful = counts.helpfulRatings + SOMEWHAT_HELPFUL_RATING_WEIGHT * counts.somewhatHelpfulRatings;
+      return { interval: proportionCI(weightedHelpful, n, z), n };
     }
     default: {
       const n = includeNonCandidate ? nAll : nSubmitted;
@@ -263,6 +285,7 @@ const BASE_STAT_LABELS: Record<BaseStatKind, string> = {
   pct_helpful: "Percent Helpful",
   pct_unhelpful: "Percent Unhelpful",
   pct_helpful_minus_unhelpful: "Percent Helpful − Unhelpful",
+  pct_helpful_ratings: "Percent Helpful Ratings (somewhat = ½)",
   pct_candidate: "Percent of Candidate Runs out of all runs",
   cost_per_helpful: "Cost per Helpful Note",
 };
