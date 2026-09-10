@@ -4,7 +4,7 @@ import { fetchCoveredPageUrls, fetchPrioritizedCreatorUrls, fetchItemForUrl, fet
 import { submitNoteRequest } from "../../everything-shared/noteRequests";
 import { canonicalizePageUrl, isSubstackReaderUrl } from "../../everything-shared/pageUrls";
 import { track } from "../../everything-shared/analytics";
-import { initBackgroundAnalytics } from "../utils/analytics";
+import { initBackgroundAnalytics, trackDailyActivity } from "../utils/analytics";
 import { signInWithXViaWebAuthFlow } from "../utils/oauth";
 import { authorFeedStatusForTab } from "../utils/authorFeed";
 import { CHECKED_PAGE_URLS_KEY, COVERED_PAGE_URLS_KEY, NOTED_PAGE_STATUS_COUNTS_KEY } from "../utils/coveredPages";
@@ -298,6 +298,9 @@ function registerDevSelfReload() {
 
 export default defineBackground(() => {
   initBackgroundAnalytics();
+  // A worker boot is the extension's "browser started" and the first chance
+  // of the day to send the heartbeat.
+  void trackDailyActivity();
   registerDevSelfReload();
   // The 5-minute alarm keeps long-lived sessions current (the MV3 worker
   // can't hold a timer), and the popup pings cn-sync-noted-sites on open.
@@ -329,7 +332,11 @@ export default defineBackground(() => {
     }
   });
   browser.alarms.onAlarm.addListener((alarm) => {
-    if (alarm.name === SYNC_ALARM) void syncNotedSites();
+    if (alarm.name !== SYNC_ALARM) return;
+    void syncNotedSites();
+    // A browser left open across midnight has no boot to send the next
+    // day's heartbeat, so the sync tick carries it.
+    void trackDailyActivity();
   });
 
   browser.contextMenus.onClicked.addListener((info, tab) => {
