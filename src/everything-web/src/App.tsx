@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { BUTTON, LINK } from "../../everything-shared/ui";
 import type { Session } from "@supabase/supabase-js";
 import { useProjectFeed, useProjects } from "./lib/useFeedData";
-import { fetchProjectIdsWithItems } from "./lib/feedData";
 import { ensureUser, useSession, signOut } from "../../everything-shared/auth";
 import { castVote, clearVote, fetchMyVotes, type Vote } from "../../everything-shared/votes";
 import { castNnnVote, clearNnnVote, fetchMyNnnVotes } from "../../everything-shared/noteNotNeeded";
@@ -181,22 +180,12 @@ export function App() {
   }, [nnn]);
 
   // The project we open on is the one named by the ?project= slug in the URL. If
-  // there is no such slug, we take the first project in sort order that actually
-  // has content, and asking which projects have content is the only reason the
-  // page ever looks past the project it is showing.
+  // there is no such slug, we take the first project in the list, which is the
+  // most-voted project that has content.
   useEffect(() => {
     if (selectedId || projects.length === 0) return;
     const fromUrl = projects.find((p) => p.slug === readRoute().project);
-    if (fromUrl) {
-      setSelectedId(fromUrl.id);
-      return;
-    }
-    let cancelled = false;
-    fetchProjectIdsWithItems().then((withItems) => {
-      if (cancelled) return;
-      setSelectedId(projects.find((p) => withItems.has(p.id))?.id ?? projects[0]!.id);
-    });
-    return () => { cancelled = true; };
+    setSelectedId(fromUrl?.id ?? projects[0]!.id);
   }, [projects, selectedId]);
 
   // Selecting a project updates the URL. Back and Forward then restore the
