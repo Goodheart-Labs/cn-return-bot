@@ -16,6 +16,9 @@ export interface DayWindow {
 
 const STRIP_HEIGHT = 64;
 const HANDLE_WIDTH = 8;
+/** Room on both sides of the strip, so a handle sitting on the first or the
+ *  last day is drawn whole and can be grabbed. */
+const SIDE_PADDING = HANDLE_WIDTH;
 const DAY_MS = 24 * 60 * 60 * 1000;
 const BAR_COLOR = "#9ca3af";
 const SELECTION_STYLE = { fill: "#2563eb", fillOpacity: 0.15, stroke: "#2563eb", strokeWidth: 1, strokeOpacity: 0.8 };
@@ -34,12 +37,13 @@ const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n
  *  them. */
 function Strip({ days, window, onChange, width }: { days: PipelineDayRow[]; window: DayWindow; onChange: (w: DayWindow) => void; width: number }) {
   const brushRef = useRef<BrushInstance | null>(null);
+  const innerWidth = Math.max(1, width - 2 * SIDE_PADDING);
   const firstDay = dayDate(days[0]!).getTime();
   const dayAfterLast = dayDate(days[days.length - 1]!).getTime() + DAY_MS;
 
   const xScale = useMemo(
-    () => scaleTime<number>({ domain: [new Date(firstDay), new Date(dayAfterLast)], range: [0, width] }),
-    [firstDay, dayAfterLast, width],
+    () => scaleTime<number>({ domain: [new Date(firstDay), new Date(dayAfterLast)], range: [0, innerWidth] }),
+    [firstDay, dayAfterLast, innerWidth],
   );
   const maxItems = Math.max(1, ...days.map((d) => d.items_processed));
   const yScale = useMemo(() => scaleLinear<number>({ domain: [0, maxItems], range: [STRIP_HEIGHT, 0] }), [maxItems]);
@@ -71,8 +75,8 @@ function Strip({ days, window, onChange, width }: { days: PipelineDayRow[]; wind
   };
 
   return (
-    <svg width={width} height={STRIP_HEIGHT} style={{ display: "block" }}>
-      <Group>
+    <svg width={width} height={STRIP_HEIGHT} style={{ display: "block", overflow: "visible" }}>
+      <Group left={SIDE_PADDING}>
         {days.map((day) => {
           const x = xScale(dayDate(day));
           const barWidth = Math.max(0.5, xScale(new Date(dayDate(day).getTime() + DAY_MS)) - x - 0.5);
@@ -84,7 +88,7 @@ function Strip({ days, window, onChange, width }: { days: PipelineDayRow[]; wind
           innerRef={brushRef}
           xScale={xScale}
           yScale={yScale}
-          width={width}
+          width={innerWidth}
           height={STRIP_HEIGHT}
           handleSize={HANDLE_WIDTH}
           resizeTriggerAreas={["left", "right"]}
@@ -94,9 +98,23 @@ function Strip({ days, window, onChange, width }: { days: PipelineDayRow[]; wind
           selectedBoxStyle={SELECTION_STYLE}
           disableDraggingSelection={false}
           useWindowMoveEvents
+          renderBrushHandle={({ x, y, height, isBrushActive, className }) =>
+            isBrushActive && <BrushHandle x={x} y={y} height={height} className={className} />
+          }
         />
       </Group>
     </svg>
+  );
+}
+
+/** A visible grip at each end of the selection. The default handle is an
+ *  invisible hit area, which gives no hint that the ends can be dragged. */
+function BrushHandle({ x, y, height, className }: { x: number; y: number; height: number; className: string }) {
+  const gripHeight = 20;
+  return (
+    <Group left={x + HANDLE_WIDTH / 2} top={y + height / 2 - gripHeight / 2}>
+      <rect className={className} x={-3} width={6} height={gripHeight} rx={3} fill="#2563eb" stroke="#fff" strokeWidth={1} style={{ cursor: "ew-resize" }} />
+    </Group>
   );
 }
 
@@ -116,7 +134,7 @@ export function TimeWindow({ days, window, onChange }: { days: PipelineDayRow[];
         <span style={{ fontVariantNumeric: "tabular-nums" }}>{windowLabel(days, window)}</span>
         <span style={{ color: "#6b7280" }}>Drag the ends to resize, the middle to move. Bars show posts finished per day.</span>
       </div>
-      <ParentSize debounceTime={50}>{({ width }) => width > 0 && <Strip days={days} window={window} onChange={onChange} width={width} />}</ParentSize>
+      <ParentSize debounceTime={50} style={{ height: STRIP_HEIGHT }}>{({ width }) => width > 0 && <Strip days={days} window={window} onChange={onChange} width={width} />}</ParentSize>
     </div>
   );
 }

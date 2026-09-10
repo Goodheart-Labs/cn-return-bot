@@ -282,7 +282,10 @@ export function MetricsGraph() {
       {rows && rows.length === 0 && <p style={{ color: LABEL_COLOR, fontSize: 13 }}>Nothing recorded yet.</p>}
       {rows && rows.length > 0 && (
         <>
-          <ParentSize debounceTime={50}>{({ width }) => <LineChart points={points} granularity={granularity} width={width} />}</ParentSize>
+          {/* ParentSize positions its child absolutely, so it needs the height set. */}
+          <ParentSize debounceTime={50} style={{ height: CHART_HEIGHT }}>
+            {({ width }) => width > 0 && <LineChart points={points} granularity={granularity} width={width} />}
+          </ParentSize>
           <p style={{ color: LABEL_COLOR, fontSize: 12, margin: "4px 0 0" }}>
             {firstRecorded ? `Recorded since ${isoDay(firstRecorded)}. Earlier buckets are left blank.` : "Not recorded yet."}
             {" "}Buckets are UTC days{granularity === "week" ? ", weeks start on Monday" : ""}.

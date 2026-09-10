@@ -10,14 +10,30 @@ import { noteStatus } from "../../../everything-shared/noteScore";
  *  Series that grow one row per bucket page through it. */
 const PAGE_SIZE = 1000;
 
+/** Postgres's code for a statement the server cancelled because it ran past
+ *  the anon role's statement timeout, 3 seconds on this project. */
+const STATEMENT_TIMEOUT_CODE = "57014";
+const RETRY_AFTER_TIMEOUT_MS = 1500;
+
+/** One page of an RPC's rows. A statement timeout is retried once: the
+ *  functions answer in well under a second warm, and the timeout only hits
+ *  on a cold cache or a saturated disk, which the retry usually outlasts. */
+async function rpcPage<T>(fn: string, args: Record<string, unknown>, from: number, retry = true): Promise<T[]> {
+  const { data, error } = await supabase.rpc(fn, args).range(from, from + PAGE_SIZE - 1);
+  if (error?.code === STATEMENT_TIMEOUT_CODE && retry) {
+    await new Promise((resolve) => setTimeout(resolve, RETRY_AFTER_TIMEOUT_MS));
+    return rpcPage(fn, args, from, false);
+  }
+  if (error) throw new Error(`${fn} failed: ${error.message}`);
+  return data as T[];
+}
+
 /** Calls a set-returning RPC page by page until a short page arrives, so a
  *  series longer than PostgREST's cap still comes back whole. */
 async function rpcAllRows<T>(fn: string, args: Record<string, unknown>): Promise<T[]> {
   const rows: T[] = [];
   for (let from = 0; ; from += PAGE_SIZE) {
-    const { data, error } = await supabase.rpc(fn, args).range(from, from + PAGE_SIZE - 1);
-    if (error) throw new Error(`${fn} failed: ${error.message}`);
-    const page = data as T[];
+    const page = await rpcPage<T>(fn, args, from);
     rows.push(...page);
     if (page.length < PAGE_SIZE) return rows;
   }

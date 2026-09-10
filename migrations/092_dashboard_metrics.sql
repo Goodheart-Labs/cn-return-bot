@@ -241,6 +241,15 @@ grant execute on function everything_metric_series(text) to anon, authenticated;
 --                     noteStatus() calls helpful. Hidden notes are withdrawn
 --                     and left out.
 
+-- The claims table is wide (each row carries the claim's text and its context
+-- passage), and reading all of it took five seconds on the production disk,
+-- past the statement timeout PostgREST gives the anon role. This index holds
+-- exactly the columns the function needs, so the planner answers from the
+-- index alone and never touches the heap.
+create index if not exists everything_claims_pipeline_item_status
+  on everything_claims (item_id, status)
+  where created_by is null;
+
 create or replace function everything_pipeline_daily()
 returns table (
   day date,
