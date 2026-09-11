@@ -189,3 +189,30 @@ export function pipelineFunnelBars(days: PipelineDayRow[]): PipelineFunnelBars {
   }
   return bars;
 }
+
+// --- The recently checked posts (migration 094) ---
+
+export interface RecentPostRow {
+  id: string;
+  title: string | null;
+  url: string;
+  project: string | null;
+  /** "paragraph" when a reader asked for one highlighted passage only. */
+  checked_scope: "page" | "paragraph";
+  /** The day the author published the post, when the source says. */
+  published_at: string | null;
+  /** When the pipeline finished the post. */
+  processed_at: string;
+  visits: number;
+  /** Different readers among those visits. A visit carries a reader only when
+   *  the extension could tell whose post it was, so this can be below the
+   *  number of people who really visited. */
+  readers: number;
+  claims_extracted: number;
+  claims_checked: number;
+  notes: number;
+}
+
+export function fetchRecentPosts(maxPosts: number): Promise<RecentPostRow[]> {
+  return rpcAllRows<RecentPostRow>("everything_recent_posts", { max_posts: maxPosts });
+}

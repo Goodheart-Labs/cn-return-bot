@@ -4,6 +4,7 @@ import { FunnelTable } from "./components/FunnelTable";
 import { CreatorLeaderboard } from "./components/CreatorLeaderboard";
 import { MetricsGraph } from "./components/MetricsGraph";
 import { PipelineSection } from "./components/PipelineSection";
+import { RecentPosts } from "./components/RecentPosts";
 import { ToggleGroup } from "./components/ToggleGroup";
 
 const WINDOW_OPTIONS = WINDOWS.map((w) => ({ value: w.label, label: w.label }));
@@ -51,6 +52,10 @@ export function App() {
 
       <Section title="Pipeline funnel">
         <PipelineSection />
+      </Section>
+
+      <Section title="Recently checked posts">
+        <RecentPosts />
       </Section>
 
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16, fontSize: 13, color: "#6b7280" }}>
