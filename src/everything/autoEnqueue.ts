@@ -36,7 +36,8 @@
 
 import "dotenv/config";
 import { extractYoutubeVideoId } from "../everything-shared/pageUrls";
-import { rankCreators, VISIT_RANKING_WINDOW_DAYS, type RankedCreator, type RankingRule } from "./creatorRanking";
+import { rankCreators, type RankedCreator, type RankingRule } from "./creatorRanking";
+import { VISIT_RANKING_WINDOW_DAYS } from "../everything-shared/readers";
 import { MIN_PAGES_FOR_A_REGULAR_READER } from "../everything-shared/readers";
 import {
   enqueueItems,

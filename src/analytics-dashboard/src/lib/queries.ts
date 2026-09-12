@@ -1,5 +1,5 @@
 import { supabase } from "../../../everything-shared/supabase";
-import { MIN_PAGES_FOR_A_REGULAR_READER } from "../../../everything-shared/readers";
+import { MIN_PAGES_FOR_A_REGULAR_READER, VISIT_RANKING_WINDOW_DAYS } from "../../../everything-shared/readers";
 import { noteStatus } from "../../../everything-shared/noteScore";
 
 // Every query runs through a security-definer RPC (migrations 077, 080, 089
@@ -203,16 +203,19 @@ export interface RecentPostRow {
   published_at: string | null;
   /** When the pipeline finished the post. */
   processed_at: string;
-  visits: number;
+  /** Visits to anything by the post's author inside the ranking window. */
+  author_visits: number;
   /** Different readers among those visits. A visit carries a reader only when
-   *  the extension could tell whose post it was, so this can be below the
-   *  number of people who really visited. */
-  readers: number;
+   *  the extension could tell whose post it was, and only since migration 089,
+   *  so this can be below the number of people who really read the author. */
+  author_readers: number;
   claims_extracted: number;
   claims_checked: number;
   notes: number;
 }
 
+/** The author numbers use the window the pipeline walks creators on, so the
+ *  table shows the same attention that decided which posts got checked. */
 export function fetchRecentPosts(maxPosts: number): Promise<RecentPostRow[]> {
-  return rpcAllRows<RecentPostRow>("everything_recent_posts", { max_posts: maxPosts });
+  return rpcAllRows<RecentPostRow>("everything_recent_posts", { max_posts: maxPosts, window_days: VISIT_RANKING_WINDOW_DAYS });
 }
