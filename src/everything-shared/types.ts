@@ -24,9 +24,10 @@ export interface ItemRow {
   checked_scope?: "page" | "paragraph" | null;
 }
 
-/** A project as the website's sidebar loads it. The sidebar shows the name and
- *  the URL carries the slug, so the description is left in the database. */
-export type FeedProjectRow = Pick<ProjectRow, "id" | "slug" | "name" | "sort_order">;
+/** A project as the website's sidebar loads it. The sidebar shows the name,
+ *  the URL carries the slug, and the list is ordered by the votes cast on the
+ *  project's notes. The description is left in the database. */
+export type FeedProjectRow = Pick<ProjectRow, "id" | "slug" | "name"> & { votes: number };
 
 /** An item as the website's feed loads it. The feed only names an item on a
  *  filter chip and orders the chips by date, so it reads these columns and

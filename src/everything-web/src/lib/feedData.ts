@@ -11,29 +11,18 @@ import type { FeedItemRow, FeedProjectRow, NnnRow, NoteRow } from "../../../ever
 
 const ITEM_COLS = "id, project_id, url, title, published_at, created_at";
 
-/** The projects the sidebar lists. A project with no content is left out, and
- *  since GOO-107 that matters: pressing "check this author's new posts" creates
- *  the creator's project immediately, and until the pipeline has actually
- *  checked something there is nothing to show under it. The anon key can create
- *  such a row, so the sidebar must not put whatever it names on the public
- *  site. */
+/** The projects the sidebar lists, most-voted first. A project with no
+ *  content is left out, and since GOO-107 that matters: pressing "check this
+ *  author's new posts" creates the creator's project immediately, and until
+ *  the pipeline has actually checked something there is nothing to show under
+ *  it. The anon key can create such a row, so the sidebar must not put
+ *  whatever it names on the public site. Both the filter and the vote counts
+ *  come from one database function (migration 093), because the anon key
+ *  cannot read the votes table. */
 export async function fetchProjects(): Promise<FeedProjectRow[]> {
-  const [{ data, error }, withItems] = await Promise.all([
-    supabase.from("everything_projects").select("id, slug, name, sort_order").order("sort_order"),
-    fetchProjectIdsWithItems(),
-  ]);
+  const { data, error } = await supabase.rpc("everything_projects_by_votes");
   if (error) throw error;
-  return ((data ?? []) as FeedProjectRow[]).filter((p) => withItems.has(p.id));
-}
-
-/** The ids of the projects that have at least one item. The website opens on the
- *  first project in sort order that has content, and this is how it finds it.
- *  It runs only when the URL does not already name a project, so a shared link
- *  never pays for it. */
-export async function fetchProjectIdsWithItems(): Promise<Set<string>> {
-  const { data, error } = await supabase.from("everything_items").select("project_id");
-  if (error) throw error;
-  return new Set((data ?? []).map((r) => (r as { project_id: string | null }).project_id).filter((id): id is string => !!id));
+  return (data ?? []) as FeedProjectRow[];
 }
 
 /** One project's items. The chip row names them and orders them by date. */

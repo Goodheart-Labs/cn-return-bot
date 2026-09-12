@@ -19,19 +19,24 @@ export function Sidebar({ projects, selectedId, view, onSelect, onSelectLeaderbo
         <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{DESCRIPTION}</p>
       </div>
 
-      <nav className="flex flex-col gap-2">
+      {/* On wide screens the sidebar is exactly one screen tall and stays put
+          while the feed scrolls, so the project list scrolls on its own.
+          Without that, every project past the bottom edge was unreachable. */}
+      <nav className="flex flex-col gap-2 md:min-h-0 md:flex-1">
         <div className={EYEBROW}>Projects</div>
-        {projects.map((p) => (
-          <button
-            key={p.id}
-            onClick={() => onSelect(p.id)}
-            className={`text-left text-sm hover:underline hover:text-blue-600 dark:hover:text-blue-400 ${
-              p.id === selectedId && view === "notes" ? "text-blue-600 dark:text-blue-400 font-medium" : "text-gray-700 dark:text-gray-300"
-            }`}
-          >
-            {p.name}
-          </button>
-        ))}
+        <div className="flex flex-col gap-2 md:min-h-0 md:overflow-y-auto">
+          {projects.map((p) => (
+            <button
+              key={p.id}
+              onClick={() => onSelect(p.id)}
+              className={`text-left text-sm hover:underline hover:text-blue-600 dark:hover:text-blue-400 ${
+                p.id === selectedId && view === "notes" ? "text-blue-600 dark:text-blue-400 font-medium" : "text-gray-700 dark:text-gray-300"
+              }`}
+            >
+              {p.name}
+            </button>
+          ))}
+        </div>
       </nav>
 
       <nav className="flex flex-col gap-2">
