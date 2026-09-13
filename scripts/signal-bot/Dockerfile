@@ -9,7 +9,7 @@ RUN bun install --frozen-lockfile --production --ignore-scripts
 FROM oven/bun:1.3.7 AS runtime
 USER root
 RUN apt-get update \
-    && apt-get install --no-install-recommends -y ca-certificates ffmpeg python3 python3-venv util-linux \
+    && apt-get install --no-install-recommends -y ca-certificates ffmpeg nodejs python3 python3-venv util-linux \
     && python3 -m venv /opt/media-tools \
     && /opt/media-tools/bin/pip install --no-cache-dir yt-dlp gallery-dl \
     && ln -s /opt/media-tools/bin/yt-dlp /usr/local/bin/yt-dlp \
@@ -21,7 +21,7 @@ ENV NODE_ENV=production
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 COPY --from=dependencies /app/node_modules ./node_modules
 # Invoke the installed package's CLI so Chromium always matches bun.lock.
-RUN bun ./node_modules/playwright/cli.js install --with-deps chromium \
+RUN node ./node_modules/playwright/cli.js install --with-deps chromium \
     && chmod -R a+rX /ms-playwright \
     && rm -rf /var/lib/apt/lists/*
 COPY package.json ./
