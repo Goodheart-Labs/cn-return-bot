@@ -5,22 +5,47 @@
 import type { SupabaseLogger } from "../../api/supabaseClient";
 import type { Candidate } from "./submitCandidates";
 import { bumpWritingLimitFromSuccess, recordDailyLimitHit } from "./writingLimit";
+import { isUncertainSubmissionError, type SubmissionAdmission, type SubmissionClaimOutcome, type SubmissionLane } from "../capacity/submissionReserve";
 
 export type SubmissionResult =
   | { status: "submitted"; noteId: string }
   | { status: "daily_limit" }
   | { status: "expired"; reason: string }
+  | Exclude<SubmissionAdmission, { status: "claimed" }>
+  | { status: "uncertain"; message: string }
   | { status: "error"; message: string };
 
 export async function submitNoteForTweet(
   candidate: Candidate,
-  logger: SupabaseLogger
+  logger: SupabaseLogger,
+  options: { lane?: SubmissionLane } = {},
 ): Promise<SubmissionResult> {
   const { post, tweetResult } = candidate;
   const tweetId = post.id;
   const pipelineRunId = tweetResult.pipelineRunId!;
   const noteText = tweetResult.noteText ?? "";
   const sourceUrl = tweetResult.pipelineResult?.noteResult?.url ?? candidate.sourceUrl ?? "";
+
+  // Every route takes an atomic slot immediately before the X request. A failed
+  // RPC never falls back to an unprotected submission, including on Signal.
+  let admission: SubmissionAdmission;
+  try {
+    admission = await logger.claimNoteSubmission(tweetId, options.lane ?? "automatic");
+  } catch (err) {
+    console.error("[submit] Capacity admission failed; no X request sent:", err);
+    return { status: "error", message: "Submission capacity unavailable; no X request sent" };
+  }
+  if (admission.status !== "claimed") return admission;
+  const claimId = admission.claimId;
+  const finishClaim = async (status: SubmissionClaimOutcome, noteId: string | null = null, reason: string | null = null) => {
+    try {
+      await logger.finishNoteSubmissionClaim(claimId, status, noteId, reason);
+    } catch (err) {
+      // The original claim stays in flight if settlement fails, retaining both
+      // its capacity and same-tweet retry protection until it is reconciled.
+      console.error(`[submit] Failed to settle claim ${claimId}; reconcile before retrying:`, err);
+    }
+  };
 
   try {
     const { submitNote } = await import("../../api/submitNote");
@@ -34,8 +59,13 @@ export async function submitNoteForTweet(
     const noteId = response?.data?.id;
     if (!noteId) {
       console.error(`[submit] No note ID returned for tweet ${tweetId}:`, JSON.stringify(response?.data));
-      return { status: "error", message: "No note ID in response" };
+      await finishClaim("uncertain", null, "No note ID in X response");
+      return { status: "uncertain", message: "X returned no note ID; reconcile before retrying" };
     }
+
+    // Persist acceptance before the notes row. The claim then accounts for this
+    // submission even when logging fails, and is deduplicated once notes exists.
+    await finishClaim("submitted", noteId);
 
     // The order of these two writes matters. The notes row has to exist before
     // we set pipeline_runs.note_id. Migration 035 added a foreign key from
@@ -74,7 +104,15 @@ export async function submitNoteForTweet(
       ? JSON.stringify(errorData).slice(0, 500)
       : (err.message || String(err)).slice(0, 500);
 
-    if (errorText.includes("daily limit")) {
+    if (isUncertainSubmissionError(err)) {
+      await finishClaim("uncertain", null, errorText);
+      console.error(`[submit] Uncertain X outcome for ${tweetId}; will not retry:`, errorText);
+      return { status: "uncertain", message: "X submission outcome is uncertain; reconcile before retrying" };
+    }
+
+    await finishClaim("rejected", null, errorText);
+
+    if (errorText.toLowerCase().includes("daily limit")) {
       try {
         await recordDailyLimitHit(logger);
       } catch (stateErr) {

@@ -3,6 +3,7 @@ import { fetchAllRows as fetchAllRowsShared } from "./paging";
 import type { Post } from "./fetchEligiblePosts";
 import type { FeedSize } from "../pipeline/orchestration/utils/feedSizeStrategy";
 import { stripNullChars } from "../utils/stripNullChars";
+import { parseSubmissionAdmission, parseSubmissionCapacity, type SubmissionAdmission, type SubmissionCapacity, type SubmissionClaimOutcome, type SubmissionLane } from "../pipeline/capacity/submissionReserve";
 
 // How often an --incremental scrape may scroll past a note without capturing it
 // before we give up on that note. A note we have given up on no longer anchors
@@ -1425,6 +1426,25 @@ export class SupabaseLogger {
       (head) => this.client.from("notes").select("id", { count: "exact", head }).gte("submitted_at", since).limit(1),
       "recent submissions",
     );
+  }
+
+  async getNoteSubmissionCapacity(): Promise<SubmissionCapacity> {
+    const { data, error } = await this.client.rpc("get_note_submission_capacity");
+    if (error) throw error;
+    return parseSubmissionCapacity(data);
+  }
+
+  async claimNoteSubmission(tweetId: string, lane: SubmissionLane = "automatic"): Promise<SubmissionAdmission> {
+    const { data, error } = await this.client.rpc("claim_note_submission", { p_tweet_id: tweetId, p_lane: lane });
+    if (error) throw error;
+    return parseSubmissionAdmission(data);
+  }
+
+  async finishNoteSubmissionClaim(claimId: string, status: SubmissionClaimOutcome, noteId: string | null = null, reason: string | null = null): Promise<void> {
+    const { error } = await this.client.rpc("finish_note_submission_claim", {
+      p_claim_id: claimId, p_status: status, p_note_id: noteId, p_reason: reason,
+    });
+    if (error) throw error;
   }
 
   /**

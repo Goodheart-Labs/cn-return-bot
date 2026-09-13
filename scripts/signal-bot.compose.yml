@@ -1,0 +1,13 @@
+services:
+  signal-api:
+    image: bbernhard/signal-cli-rest-api:0.100
+    environment:
+      MODE: json-rpc
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - signal-data:/home/.local/share/signal-cli
+    restart: unless-stopped
+
+volumes:
+  signal-data:

@@ -79,6 +79,7 @@ import { autoOpenInDashboard } from "../local/dashboardAutoOpen";
 import { withForcedPicks } from "../pipeline/ab-testing/abTests";
 import { activeScorer, pickRankingPolicy } from "../pipeline/ranking/policy";
 import { barEnabled, barFor, estimateWindow, type Window } from "../pipeline/capacity/window";
+import { automaticGenerationPreflight } from "../pipeline/capacity/submissionReserve";
 
 function postUrl(postId: string): string {
   return `https://x.com/i/status/${postId}`;
@@ -177,6 +178,19 @@ async function main() {
       }
     } else {
       console.log("[pipeline] Supabase logging disabled (env vars not set)");
+    }
+
+    // Check the reserve before paid generation or the old cap-probing path.
+    // Signal and another worker can still spend capacity after this snapshot,
+    // so every actual submission also takes its final atomic database claim.
+    if (!isLocal) {
+      const preflight = await automaticGenerationPreflight(supabaseLogger);
+      if (!preflight.allowed) {
+        console.log(`[pipeline] Skipping automatic generation — ${preflight.reason}`);
+        clearTimeout(globalTimeout);
+        await closeBrowser();
+        return;
+      }
     }
 
     // Clear the in_progress rows left behind by an earlier run that was killed
