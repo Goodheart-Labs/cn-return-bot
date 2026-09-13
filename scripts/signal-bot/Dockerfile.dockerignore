@@ -1,0 +1,21 @@
+# Send only runtime source and dependency manifests to the build daemon.
+**
+!package.json
+!bun.lock
+!src/
+!src/api/
+!src/api/**
+!src/bots/
+!src/bots/**
+!src/pipeline/
+!src/pipeline/**
+!src/signal-bot/
+!src/signal-bot/**
+!src/utils/
+!src/utils/**
+**/*.test.ts
+**/.env*
+**/*.pem
+**/node_modules
+**/output
+**/.cache

@@ -3,6 +3,7 @@
     "src/**/*.test.ts",
     "src/production/*.ts",
     "src/service/*/main.ts",
+    "src/signal-bot/main.ts",
     "src/local/*.ts",
     "src/scraper/*.ts",
     "src/scripts/*.ts",

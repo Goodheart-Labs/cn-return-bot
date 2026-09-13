@@ -349,6 +349,9 @@ export async function submitCandidates(
     let errors = 0;
     let limitHit = false;
     let limitSkipped = 0;
+    let reserveSkipped = 0;
+    let busy = 0;
+    let uncertain = 0;
 
     for (const candidate of ordered) {
       const evalStr = candidate.tweetResult.evaluationScore?.toFixed(2) ?? "?";
@@ -358,6 +361,20 @@ export async function submitCandidates(
         submitted++;
         decide(candidate, exploredIds.has(candidate.post.id) ? "explored" : "submitted");
         console.log(`[submit] submitted ${candidate.post.id} (eval=${evalStr}, vel=${formatVelocity(velocityOf(candidate))}) → note ${result.noteId}`);
+      } else if (result.status === "capacity_reserved") {
+        const remaining = ordered.slice(ordered.indexOf(candidate));
+        reserveSkipped = remaining.length;
+        console.log(`[submit] automatic submissions stopped (${result.reason}); ${result.capacity.remaining ?? "unknown"} estimated slot(s) remain, ${result.capacity.reserve} reserved for Signal`);
+        for (const r of remaining) decide(r, "capacity_reserved");
+        break;
+      } else if (result.status === "submission_busy") {
+        busy++;
+        decide(candidate, "submission_busy");
+        console.log(`[submit] ${candidate.post.id} already has a ${result.reason} submission; skipping`);
+      } else if (result.status === "uncertain") {
+        uncertain++;
+        decide(candidate, "submission_uncertain");
+        console.log(`[submit] ${candidate.post.id}: ${result.message}`);
       } else if (result.status === "daily_limit") {
         limitHit = true;
         console.log(`[submit] daily limit reached after ${submitted} submissions`);
@@ -395,6 +412,9 @@ export async function submitCandidates(
       expired ? `${expired} expired` : null,
       errors ? `${errors} errors` : null,
       limitHit ? `${limitSkipped} skipped (daily limit)` : null,
+      reserveSkipped ? `${reserveSkipped} skipped (Signal reserve)` : null,
+      busy ? `${busy} already claimed` : null,
+      uncertain ? `${uncertain} uncertain (reconciliation required)` : null,
       below.length ? `${below.length} below bar` : null,
       explored.length ? `${explored.length} explored` : null,
     ].filter(Boolean).join(", ");

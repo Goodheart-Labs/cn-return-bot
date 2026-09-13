@@ -134,4 +134,15 @@ describe("submitCandidates ranking", () => {
     expect(submit.mock.calls.map(([c]) => c.post.id)).toEqual(["lower", "higher"]);
     expect(insertRankingDecisions.mock.calls[0]![0].map((r) => r.decision)).toEqual(["submitted", "daily_limit_reached", "daily_limit_reached"]);
   });
+
+  test("stops automation at the shared reserve and keeps the remaining drafts", async () => {
+    const submit = spyOn(submission, "submitNoteForTweet")
+      .mockResolvedValueOnce({ status: "submitted", noteId: "note" })
+      .mockResolvedValueOnce({ status: "capacity_reserved", reason: "reserve", capacity: { cap: 10, used24h: 7, inFlight: 0, remaining: 3, reserve: 3 } });
+    const { logger, insertRankingDecisions, completePipelineRun } = loggerMock();
+    expect(await submitCandidates([candidate("first"), candidate("second"), candidate("third")], logger, false, options)).toBe(1);
+    expect(submit).toHaveBeenCalledTimes(2);
+    expect(completePipelineRun).not.toHaveBeenCalled();
+    expect(insertRankingDecisions.mock.calls[0]![0].map((r) => r.decision)).toEqual(["submitted", "capacity_reserved", "capacity_reserved"]);
+  });
 });
