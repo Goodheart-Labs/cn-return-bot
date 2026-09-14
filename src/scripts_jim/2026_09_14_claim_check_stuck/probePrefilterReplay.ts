@@ -20,6 +20,12 @@ globalThis.fetch = (async (input: any, init?: any) => {
   const n = ++calls, started = Date.now();
   const body = init?.body ? JSON.parse(init.body) : null;
   const step = body?.messages?.[0]?.content?.slice(0, 40).replace(/\n/g, " ");
+  // PROVIDER_ONLY, a comma-separated list of OpenRouter provider slugs, restricts
+  // routing to a shortlist so the probe measures only the candidates.
+  if (process.env.PROVIDER_ONLY && body) {
+    body.provider = { ...(body.provider ?? {}), only: process.env.PROVIDER_ONLY.split(",") };
+    init = { ...init, body: JSON.stringify(body) };
+  }
   const res = await realFetch(input, init);
   const tHeaders = Date.now() - started;
   const text = await res.text();

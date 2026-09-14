@@ -261,3 +261,41 @@ provider.
 **The provider is not logged.** The response JSON carries `provider` and a
 generation `id`; the code keeps neither, which is why this needed a probe
 instead of a query.
+
+## Third pass: which providers to allow
+
+Jim asked for a provider preference list: price matters, quantization must not
+be aggressive, the worst case matters more than the median. OpenRouter's
+`provider.only` keeps price-weighted balancing among the listed providers, which
+is the right field; `provider.order` would disable balancing and pin everything
+to the first entry.
+
+Shortlist by the listing: fp8 and healthy. That drops OpenInference (empties),
+DigitalOcean, Venice, Wafer, Phala and Azure (quantization unlisted; Wafer also
+answered 15 of 16 calls with no reasoning at all), AtlasCloud (fp4) and
+SiliconFlow (39 percent uptime). A 30-minute replay restricted to the nine
+remaining candidates, 690 calls (`data/probe_shortlist_providers.log`):
+
+| provider | $ in / out per M | calls | empties | p50 | p90 | p99 | worst |
+|---|---|---|---|---|---|---|---|
+| Baidu | 0.14 / 0.28 | 231 | 1, instant | 4 s | 12 s | 19 s | 25 s |
+| StreamLake | 0.09 / 0.18 | 151 | 0 | 11 s | 25 s | 45 s | 69 s |
+| Alibaba | 0.13 / 0.27 | 96 | 1, instant | 4 s | 8 s | 17 s | 17 s |
+| NextBit | 0.15 / 0.35 | 69 | 0 | 6 s | 19 s | 36 s | 36 s |
+| Parasail | 0.14 / 0.28 | 52 | 0 | 7 s | 22 s | 25 s | 25 s |
+| DeepInfra | 0.09 / 0.18 | 35 | 0 | 15 s | 41 s | 66 s | 66 s |
+| GMICloud | 0.09 / 0.18 | 29 | 0 | 16 s | 22 s | 29 s | 29 s |
+| Mancer 2 | 0.19 / 0.50 | 21 | 0 | 8 s | 15 s | 64 s | 64 s |
+| Novita | 0.14 / 0.28 | 6 | 0 | 10 s | 17 s | 17 s | 17 s |
+
+Nothing above 69 s in 690 calls, and the two empties were instant, the kind a
+one-second retry fixes. A whole prefilter run took a median of 41 s and at
+most 120 s, against 115 s median and 1322 s worst with the default routing an
+hour earlier.
+
+Recommended: `provider: { only: ["deepinfra", "gmicloud", "streamlake",
+"alibaba", "baidu", "novita", "parasail", "nextbit"] }`. StreamLake earned its
+place in the restricted run despite OpenRouter's degraded flag; Mancer 2 is
+left out for price. This is a list to revisit, not a law: the next cheap
+provider can degrade the same way, so the deadline on the call is still the
+durable fix.
