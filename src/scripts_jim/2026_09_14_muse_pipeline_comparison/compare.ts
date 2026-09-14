@@ -72,6 +72,10 @@ interface StoredCheck {
   final_stage: string | null;
   cost: number;
   findings: string | null;
+  /** The note the writer drafted, whether or not it survived verification. */
+  noteDraft: string | null;
+  /** The source verifier's verdict (YES/NO) and its last reply. */
+  verifier: { result: string | null; reply: string | null };
   note: string | null;
   sources: { url: string; quote: string | null; explanation: string | null }[];
 }
@@ -112,6 +116,8 @@ async function loadItem(itemId: string) {
       final_stage: run.final_stage,
       cost: Number(run.cost ?? 0),
       findings: findingsFrom(run.logs),
+      noteDraft: run.logs?.note?.text ?? null,
+      verifier: verifierFrom(run.logs),
       note: note?.note ?? null,
       sources: (sources ?? []).filter((s) => s.note_id === note?.id).map(({ url, quote, explanation }) => ({ url, quote, explanation })),
     });
@@ -124,6 +130,17 @@ async function loadItem(itemId: string) {
 function findingsFrom(logs: any): string | null {
   const messages = logs?.note_writer_steps?.search?.messages;
   return messages?.["1"]?.content?.findings ?? messages?.final?.content?.findings ?? null;
+}
+
+/** The verifier's verdict and the last thing it said, whichever flow ran. */
+function verifierFrom(logs: any): { result: string | null; reply: string | null } {
+  const result = logs?.sourceCheck?.result ?? null;
+  const turns = logs?.note_writer_steps?.source_verifier?.turn ?? {};
+  const lastTurn = Object.values(turns).at(-1) as any;
+  const messages = lastTurn?.messages ?? logs?.note_writer_steps?.source_verifier?.messages ?? {};
+  const last = Object.values(messages).at(-1) as any;
+  const reply = last?.content ?? null;
+  return { result, reply: reply == null ? null : typeof reply === "string" ? reply : JSON.stringify(reply) };
 }
 
 function toExtractedClaim(row: ClaimRow, url: string): ExtractedClaim {
@@ -271,12 +288,25 @@ async function compareCheck(loaded: Loaded, dir: string) {
             final_stage: run.finalStage,
             cost: run.costUsd ?? 0,
             findings: findingsFrom(run.logs),
+            noteDraft: (run.logs as any)?.note?.text ?? null,
+            verifier: verifierFrom(run.logs),
             note: check.kind === "note" ? check.note : null,
             sources: check.kind === "note" ? check.sources : [],
           };
         } catch (err: any) {
           console.log(`    [${i + 1}/${checked.length}] error: ${err?.message}`);
-          return { claim: i + 1, outcome: "error", outcome_reason: err?.message ?? "unknown", final_stage: null, cost: 0, findings: null, note: null, sources: [] };
+          return {
+            claim: i + 1,
+            outcome: "error",
+            outcome_reason: err?.message ?? "unknown",
+            final_stage: null,
+            cost: 0,
+            findings: null,
+            noteDraft: null,
+            verifier: { result: null, reply: null },
+            note: null,
+            sources: [],
+          };
         }
       }),
     ),
