@@ -13,16 +13,20 @@ const PAGE_SIZE = 1000;
 /** Postgres's code for a statement the server cancelled because it ran past
  *  the anon role's statement timeout, 3 seconds on this project. */
 const STATEMENT_TIMEOUT_CODE = "57014";
-const RETRY_AFTER_TIMEOUT_MS = 1500;
+/** The pauses before each retry of a timed-out call. The functions answer in
+ *  well under a second warm; the timeout hits when the page loads with a cold
+ *  cache and its four calls all read from disk at once, and the first retry
+ *  can still land while the others are running. Three retries with growing
+ *  pauses outlast that on the small production instance. */
+const RETRY_PAUSES_MS = [1500, 3000, 6000];
 
-/** One page of an RPC's rows. A statement timeout is retried once: the
- *  functions answer in well under a second warm, and the timeout only hits
- *  on a cold cache or a saturated disk, which the retry usually outlasts. */
-async function rpcPage<T>(fn: string, args: Record<string, unknown>, from: number, retry = true): Promise<T[]> {
+/** One page of an RPC's rows, retrying a statement timeout. */
+async function rpcPage<T>(fn: string, args: Record<string, unknown>, from: number, attempt = 0): Promise<T[]> {
   const { data, error } = await supabase.rpc(fn, args).range(from, from + PAGE_SIZE - 1);
-  if (error?.code === STATEMENT_TIMEOUT_CODE && retry) {
-    await new Promise((resolve) => setTimeout(resolve, RETRY_AFTER_TIMEOUT_MS));
-    return rpcPage(fn, args, from, false);
+  const pause = RETRY_PAUSES_MS[attempt];
+  if (error?.code === STATEMENT_TIMEOUT_CODE && pause !== undefined) {
+    await new Promise((resolve) => setTimeout(resolve, pause));
+    return rpcPage(fn, args, from, attempt + 1);
   }
   if (error) throw new Error(`${fn} failed: ${error.message}`);
   return data as T[];
