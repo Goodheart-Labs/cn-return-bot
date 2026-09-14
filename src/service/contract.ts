@@ -11,7 +11,7 @@
  */
 
 import type { Post } from "../api/fetchEligiblePosts";
-import type { ExtractedClaim, FetchedContent, ClaimCheck, ItemSource, RatedClaim } from "../everything/types";
+import type { ExtractedClaim, ExtractionResult, FetchedContent, ClaimCheck, ItemSource, RatedClaim } from "../everything/types";
 import type { TweetComputeOutput } from "../pipeline/orchestration/processTweet";
 import type { MonitoringContext } from "../pipeline/misinfo-monitoring/monitoringContext";
 
@@ -115,29 +115,30 @@ export interface ExtractClaimsRequest {
   content: FetchedContent;
 }
 
-export interface ExtractClaimsResponse {
-  /** Every claim found, including the ones not worth checking. The caller
-   *  decides what to do with them, using `shouldFactCheck` and
-   *  `dropSpeculation`, so that the extraction service stays a pure reader of
-   *  text with no policy of its own. */
-  claims: ExtractedClaim[];
-  costUsd: number | null;
-}
+/** Either the gate declined the content, or every claim found, part by part,
+ *  including the ones not worth checking. The caller decides what to do with
+ *  them, using `shouldFactCheck` and `dropSpeculation`, so that the extraction
+ *  service stays a pure reader of text with no policy of its own. The one
+ *  policy it applies is the gate, and only for backlog work: a page a reader
+ *  asked for is never declined. */
+export type ExtractClaimsResponse = ExtractionResult & { costUsd: number | null };
 
 // ---------------------------------------------------------------------------
 // Rating the extracted claims of one item
 // ---------------------------------------------------------------------------
 
 /** Rating is the step between extraction and checking. One call rates every
- *  claim of the item, with web research in hand, and the ratings decide which
- *  claims are worth a costly fact-check. It is one call for the whole item
- *  because the claims of one text are correlated: a single good source often
+ *  claim of one part, with web research in hand, and the ratings decide which
+ *  claims are worth a costly fact-check. It is one call for the whole part
+ *  because the claims of one topic are correlated: a single good source often
  *  settles most of them. */
 export interface RateClaimsRequest {
   priority: WorkPriority;
-  /** The item's full body text. The rater reads the whole text, not just the
-   *  claims, so it can judge each claim in its real context. */
+  /** The part's text. The rater reads the whole part, not just the claims, so
+   *  it can judge each claim in its real context. */
   text: string;
+  /** The piece's introduction, shown ahead of the part as context. */
+  introduction: string | null;
   claims: ExtractedClaim[];
   source: ItemSource;
 }
@@ -149,6 +150,7 @@ export interface RateClaimsResponse {
    *  stored nowhere else. */
   research: string;
   webSearches: number;
+  webFetches: number;
   costUsd: number | null;
 }
 

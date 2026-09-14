@@ -411,11 +411,14 @@ export async function updateItemMeta(
   throwOnError(await getSupabaseClient().from("everything_items").update(meta).eq("id", id));
 }
 
-export async function markItemDone(id: string): Promise<void> {
+/** `skipReason` is why the intent gate declined the item, or null when it was
+ *  processed. It is always written, so an item the gate once declined and a
+ *  reader later promoted to a whole-page check loses its stale reason. */
+export async function markItemDone(id: string, skipReason: string | null): Promise<void> {
   throwOnError(
     await getSupabaseClient()
       .from("everything_items")
-      .update({ status: "done", error: null, progress: null, processed_at: new Date().toISOString() })
+      .update({ status: "done", error: null, progress: null, skip_reason: skipReason, processed_at: new Date().toISOString() })
       .eq("id", id),
   );
 }

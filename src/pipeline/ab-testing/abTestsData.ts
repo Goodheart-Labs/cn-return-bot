@@ -100,6 +100,8 @@ const SIMPLE_BOT_VERIFIER_TEST: ABTest = {
   variants: [
     { variant: { name: "gemini-flash",     overrides: { verifier_model: "google/gemini-3-flash-preview" }}, weight: 50 },
     { variant: { name: "deepseek-v4flash", overrides: { verifier_model: "deepseek/deepseek-v4-flash"    }}, weight: 0  },
+    // Forced by the everything pipeline (GOO-159); not in X traffic.
+    { variant: { name: "musespark13c",     overrides: { verifier_model: "meta/muse-spark-1.3-contributor" }}, weight: 0  },
   ],
 };
 

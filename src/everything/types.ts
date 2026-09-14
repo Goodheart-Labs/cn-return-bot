@@ -56,6 +56,27 @@ export interface ExtractedClaim {
   anchor: ClaimAnchor;
 }
 
+/** One topic part of an item, as the gate and split step cut it, with the
+ *  claims extracted from it. `text` is the part's body in the form the item's
+ *  full_text is stored in: raw article text with its [[IMAGE:url]] markers, or
+ *  the part's subtitle cues joined with newlines. The rater reads it. */
+export interface ContentPart {
+  index: number;
+  title: string;
+  text: string;
+  claims: ExtractedClaim[];
+}
+
+/** What extraction makes of an item. Either the gate declined it, with the
+ *  model's reason, or the item was cut into parts and each part's claims were
+ *  extracted. `introduction` is the text before the first part, which the
+ *  rater shows ahead of each part as context; its own claims are the first
+ *  part's. An item the model chose not to split is one part with no
+ *  introduction. */
+export type ExtractionResult =
+  | { kind: "not_checkable"; reason: string }
+  | { kind: "claims"; introduction: string | null; parts: ContentPart[] };
+
 /** An extracted claim after the rating step. `judgement` is how true the
  *  rater thinks the claim is, one of seven levels from "certainly true" to
  *  "certainly false", judged with web research in hand. It decides whether the

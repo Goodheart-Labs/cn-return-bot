@@ -2,10 +2,11 @@
  * Step-through debug harness for the everything pipeline on a SINGLE input.
  *
  * It runs the real pipeline functions in the order the queue worker uses. It
- * fetches the content, extracts the claims, drops the speculative ones, rates
- * them with web research, and fact-checks the ones rated uncertain or worse. It leaves out everything that touches the queue and the
- * database, so it never calls insertClaims or insertNote and never changes an
- * item's status. That makes it safe to run against the prod backend. It reads
+ * fetches the content, gates and splits it, extracts the claims of every part,
+ * drops the speculative ones, rates each part with web research, and
+ * fact-checks the ones rated uncertain or worse. It leaves out everything that
+ * touches the queue and the database, so it never calls insertClaims or
+ * insertNote and never changes an item's status. That makes it safe to run against the prod backend. It reads
  * nothing from the everything_* tables and writes nothing to them. It only
  * exercises the fetching and the LLM code paths, so you can set a breakpoint
  * anywhere and inspect the data.
@@ -21,8 +22,9 @@
  *
  * Breakpoint suggestions:
  *   sources/substack.ts:fetchSubstackPost   — HTML fetch + strip
- *   extractClaims.ts:extractClaims          — Opus claim extraction + parsing
- *   rateClaims.ts:rateClaims                — Opus truth rating with web search + fetch
+ *   gateAndSplit.ts:gateAndSplit            — intent gate + cut into parts
+ *   extractClaims.ts:extractClaims          — claim extraction + parsing
+ *   rateClaims.ts:rateClaims                — truth rating with the search + fetch loop
  *   rateClaims.ts:shouldFactCheck           — which claims get checked
  *   checkClaims.ts:runClaimCheck            — claim → synthetic post → note pipeline
  *   pipeline/orchestration/processTweet.ts  — search / write / verify
@@ -74,17 +76,34 @@ async function main() {
   const bodyLen = content.kind === "substack" ? content.text.length : content.cues.length;
   console.log(`Body: ${bodyLen}${content.kind === "substack" ? " chars" : " subtitle cues"}\n`);
 
-  // ── Step 2: extract claims (breakpoint inside extractClaims) ──
-  const extracted = await extractClaims(content, STEP_CONCURRENCY);
-  const fresh = dropSpeculation(extracted);
-  console.log(`Extracted ${extracted.length} claims — dropped ${extracted.length - fresh.length} speculation\n`);
+  // ── Step 2: gate, split and extract claims (breakpoints inside gateAndSplit and extractClaims) ──
+  const extraction = await extractClaims(content, STEP_CONCURRENCY);
+  if (extraction.kind === "not_checkable") {
+    console.log(`Not checkable: ${extraction.reason}`);
+    return;
+  }
+  const parts = extraction.parts.map((part) => ({ ...part, claims: dropSpeculation(part.claims) }));
+  for (const part of parts) {
+    console.log(`Part "${part.title}": ${part.claims.length} claims (${extraction.parts[part.index]!.claims.length - part.claims.length} speculation dropped)`);
+  }
+  console.log("");
 
-  // ── Step 3: rate with web research (breakpoint inside rateClaims) ──
-  const text = content.kind === "youtube" ? content.cues.map((c) => c.text).join("\n") : content.text;
-  const rating = await rateClaims(text, fresh, source);
-  const claims = rating.claims;
+  // ── Step 3: rate each part with web research (breakpoint inside rateClaims) ──
+  const claims = [];
+  for (const part of parts) {
+    if (part.claims.length === 0) continue;
+    const rating = await rateClaims({
+      text: part.text,
+      introduction: part.text === extraction.introduction ? null : extraction.introduction,
+      claims: part.claims,
+      source,
+    });
+    claims.push(...rating.claims);
+    console.log(
+      `Research on "${part.title}" ($${rating.cost.cost.toFixed(2)}, ${rating.webSearches} searches, ${rating.webFetches} fetches):\n${rating.research}\n`,
+    );
+  }
   const toCheck = claims.filter((c) => shouldFactCheck(c.judgement));
-  console.log(`Research ($${rating.cost.cost.toFixed(2)}, ${rating.webSearches} web searches):\n${rating.research}\n`);
   console.log(`${toCheck.length} of ${claims.length} are fact-checkable (uncertain or below):\n`);
   toCheck.forEach((c, i) => console.log(`  [${i}] (${c.judgement}) ${c.claim}`));
   console.log("");

@@ -25,13 +25,13 @@ import {
 } from "../contract";
 import { numberFromEnv, startService, type ServiceRoute } from "../serve";
 
-/** Two documents at a time. Each one is already several large-model calls that
- *  run their chunks in parallel inside the call, so a third document in flight
- *  buys little and competes with them. */
+/** Two documents at a time. Each one is already several model calls that run
+ *  their parts in parallel inside the call, so a third document in flight buys
+ *  little and competes with them. */
 const DEFAULT_CONCURRENCY = 2;
 
-/** How many chunks of one document are read at once. This is the number the
- *  in-process path has always used. */
+/** How many extraction calls of one document run at once. A part is normally
+ *  one call, so this is how many parts are read side by side. */
 const DEFAULT_CHUNK_CONCURRENCY = 3;
 
 /** Extraction is quick next to a claim check, so a reader's document is never
@@ -48,15 +48,20 @@ const extractClaimsRoute: ServiceRoute<ExtractClaimsRequest, ExtractClaimsRespon
   priorityOf: (body) => body.priority,
   handle: async (body) => {
     if (!body?.content?.kind) throw new Error("Extraction needs content with a kind");
-    // The cost tracker collects what the extraction's model calls cost, both
-    // the per-chunk extraction calls and the image descriptions. The caller
-    // records the total against the daily spend cap.
-    const { claims, cost } = await withCostTracker(async () => {
-      const found = await extractClaims(body.content, chunkConcurrency);
-      return { claims: found, cost: aggregateAndLogCosts() };
+    // The cost tracker collects what the extraction's model calls cost: the
+    // gate and split call, the per-part extraction calls and the image
+    // descriptions. The caller records the total against the daily spend cap.
+    // The gate applies to backlog work only; a reader's page is never declined.
+    const { result, cost } = await withCostTracker(async () => {
+      const found = await extractClaims(body.content, chunkConcurrency, body.priority !== "reader");
+      return { result: found, cost: aggregateAndLogCosts() };
     });
-    console.log(`[extraction] ${body.priority} ${body.content.kind} ${body.content.url}: ${claims.length} claims`);
-    return { claims, costUsd: cost?.cost ?? null };
+    const summary =
+      result.kind === "not_checkable"
+        ? `not checkable (${result.reason})`
+        : `${result.parts.reduce((n, p) => n + p.claims.length, 0)} claims in ${result.parts.length} parts`;
+    console.log(`[extraction] ${body.priority} ${body.content.kind} ${body.content.url}: ${summary}`);
+    return { ...result, costUsd: cost?.cost ?? null };
   },
 };
 
@@ -67,15 +72,16 @@ const rateClaimsRoute: ServiceRoute<RateClaimsRequest, RateClaimsResponse> = {
     if (typeof body?.text !== "string" || !Array.isArray(body?.claims)) {
       throw new Error("Rating needs the item's text and its claims");
     }
-    const rating = await rateClaims(body.text, body.claims, body.source);
+    const rating = await rateClaims({ text: body.text, introduction: body.introduction ?? null, claims: body.claims, source: body.source });
     console.log(
       `[extraction] ${body.priority} rated ${rating.claims.length} claims ` +
-        `(${rating.webSearches} web searches, $${rating.cost.cost.toFixed(2)})`,
+        `(${rating.webSearches} searches, ${rating.webFetches} fetches, $${rating.cost.cost.toFixed(2)})`,
     );
     return {
       claims: rating.claims,
       research: rating.research,
       webSearches: rating.webSearches,
+      webFetches: rating.webFetches,
       costUsd: rating.cost.cost,
     };
   },

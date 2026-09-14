@@ -191,7 +191,7 @@ export async function processQueuedItem(item: EverythingItem): Promise<"done" | 
       console.log(`  budget reached part way through, put back in the queue with ${tally.capped} claims left`);
       return "capped";
     }
-    await markItemDone(item.id);
+    await markItemDone(item.id, tally.skipReason);
     // The per-item cost is already recorded per claim; this is the first time
     // it is shown. It is what tells you which items are expensive.
     const cost = (await todaySpendUsd()) - spentBefore;
