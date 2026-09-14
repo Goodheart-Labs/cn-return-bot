@@ -1,9 +1,13 @@
 /**
- * Gemini 3 Flash Media Analysis
+ * Media Analysis
  *
- * Analyzes tweet media with Gemini 3 Flash through the native Google Gen AI
- * API. Calling Google natively is what lets these calls share the free-key
- * first, paid-key second routing in ../llm/gemini.
+ * Describes tweet media with the model named by the bot config's `media_model`,
+ * which MEDIA_DESCRIPTION_TEST varies. A Gemini id runs through the native
+ * Google Gen AI API. Calling Google natively is what lets those calls share the
+ * free-key first, paid-key second routing in ../llm/gemini. Any other id runs
+ * through OpenRouter as a vision call with the same prompt and the same JSON
+ * shape. Outside any bot config, for example in the Common Notes claim
+ * extractor, the default config's Gemini model is used.
  *
  * An image goes straight to a vision call that returns structured JSON with a
  * description and the text read off the image.
@@ -20,6 +24,7 @@ import { join } from "path";
 import { readFile, writeFile, rm, mkdir, stat } from "fs/promises";
 import { getTweetLog } from "../utils/tweetLog";
 import { addWarning } from "../utils/warnings";
+import { getBotConfigIfActive } from "../ab-testing/botConfig";
 import { GEMINI_MODEL } from "../cost-tracking/pricing";
 import { trackLlmCall, trackedLlmCreate } from "../cost-tracking/costTracker";
 import { stripJsonFences } from "../utils/jsonOutput";
@@ -32,15 +37,13 @@ import {
   type YtDlpMetadata,
 } from "./ytDlpDownload";
 import { downloadWithGalleryDl } from "./galleryDlDownload";
-import { IMAGE_PROMPT, VIDEO_PROMPT, FRAME_PROMPT } from "../prompts/media/mediaAnalysis";
+import { IMAGE_PROMPT, VIDEO_PROMPT, FRAME_PROMPT, MEDIA_RESPONSE_FORMAT } from "../prompts/media/mediaAnalysis";
 import { getBestMediaUrl } from "./bestMediaUrl";
 
 const execAsync = promisify(exec);
-// Native Gemini API takes the model id without the OpenRouter "google/" prefix.
-const GEMINI_NATIVE_MODEL = GEMINI_MODEL.replace(/^google\//, "");
-// The vision model we fall back to when Gemini is unavailable, for example when
-// it returns a 503 because demand is high. This call goes through OpenRouter,
-// so it keeps working while Google's native API is overloaded.
+// The vision model we fall back to when the configured model fails, for example
+// when Gemini returns a 503 because demand is high. This call goes through
+// OpenRouter, so it keeps working while Google's native API is overloaded.
 const HAIKU_FALLBACK_MODEL = "anthropic/claude-haiku-4.5";
 const FRAME_SAMPLE_COUNT = 5;              // How many frames we sample from a video, spaced evenly across it.
 const LONG_VIDEO_THRESHOLD_MS = 210_000;   // 3.5 minutes. A video this long or shorter can be sent to Gemini whole.
@@ -100,26 +103,74 @@ function formatMediaParts(parts: GeminiContentPart[]): string {
     .join("\n");
 }
 
-/** Makes one native Gemini media call. It sends the parts, records the cost and maps
- *  the JSON response. Both the input and the output are logged under the call's cost
- *  name, so every media description can be inspected afterwards. */
-async function analyzeMediaParts(parts: GeminiContentPart[], costName: string): Promise<GeminiMediaDescription> {
-  const log = getTweetLog();
-  log?.set(`${costName}.input`, formatMediaParts(parts));
+/** The model that describes media on this run. */
+function mediaModel(): string {
+  return getBotConfigIfActive()?.media_model ?? GEMINI_MODEL;
+}
 
+function isGeminiModel(model: string): boolean {
+  return model.startsWith("google/");
+}
+
+function parseMediaDescription(parsed: any): GeminiMediaDescription {
+  return parsed
+    ? { description: parsed.description ?? "", ocrText: parsed.ocr_text ?? "" }
+    : { description: "", ocrText: "" };
+}
+
+/** Makes one native Gemini media call and returns the mapped JSON response. The
+ *  native API takes the model id without the OpenRouter "google/" prefix. */
+async function analyzeMediaPartsNative(parts: GeminiContentPart[], model: string, costName: string): Promise<GeminiMediaDescription> {
   const result = await geminiNativeGenerate({
-    model: GEMINI_NATIVE_MODEL,
+    model: model.replace(/^google\//, ""),
     userParts: parts,
     responseSchema: MEDIA_RESPONSE_SCHEMA,
   });
   trackLlmCall({ name: costName, ...result.cost, tools: [] });
+  return parseMediaDescription(result.parsed);
+}
 
-  const parsed = result.parsed;
-  const description: GeminiMediaDescription = parsed
-    ? { description: parsed.description ?? "", ocrText: parsed.ocr_text ?? "" }
-    : { description: "", ocrText: "" };
+/** Turns one media part into the OpenAI-style content part OpenRouter expects.
+ *  Inline bytes become a data URL. An image goes in as image_url and a video as
+ *  video_url, which OpenRouter forwards to models that take video. */
+function toOpenRouterPart(part: GeminiContentPart): any {
+  if ("text" in part) return { type: "text", text: part.text };
+  const url = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+  return part.inlineData.mimeType.startsWith("video/")
+    ? { type: "video_url", video_url: { url } }
+    : { type: "image_url", image_url: { url } };
+}
+
+/** Makes one media call through OpenRouter. It sends the same parts as the native
+ *  call with the same answer schema, and maps the answer onto the same shape. */
+async function analyzeMediaPartsViaOpenRouter(parts: GeminiContentPart[], model: string, costName: string): Promise<GeminiMediaDescription> {
+  const { response, costEntry } = await trackedLlmCreate(costName, {
+    model,
+    messages: [{ role: "user", content: parts.map(toOpenRouterPart) }],
+    response_format: MEDIA_RESPONSE_FORMAT,
+  } as any);
+  trackLlmCall(costEntry);
+  return parseMediaDescription(JSON.parse(stripJsonFences(response.choices?.[0]?.message?.content ?? "{}")));
+}
+
+/** Makes one media call on the given model. Both the input and the output are
+ *  logged under the call's cost name, so every media description can be
+ *  inspected afterwards. */
+async function analyzeMediaPartsOn(parts: GeminiContentPart[], model: string, costName: string): Promise<GeminiMediaDescription> {
+  const log = getTweetLog();
+  log?.set(`${costName}.model`, model);
+  log?.set(`${costName}.input`, formatMediaParts(parts));
+
+  const description = isGeminiModel(model)
+    ? await analyzeMediaPartsNative(parts, model, costName)
+    : await analyzeMediaPartsViaOpenRouter(parts, model, costName);
   log?.set(`${costName}.output`, description);
   return description;
+}
+
+/** Makes one media call on the run's configured media model. */
+async function analyzeMediaParts(parts: GeminiContentPart[], costName: string): Promise<GeminiMediaDescription> {
+  return analyzeMediaPartsOn(parts, mediaModel(), costName);
 }
 
 async function fetchImageInlineData(imageUrl: string): Promise<{ mimeType: string; data: string }> {
@@ -160,62 +211,28 @@ async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
 
 // --- Image analysis ---
 
-/** Describes an image with Claude Haiku through OpenRouter, for when the native Gemini
- *  call is unavailable. It sends the same prompt and asks for a JSON object, which is
- *  then mapped onto the shape Gemini would have returned. */
-async function describeImageWithHaiku(
-  inline: { mimeType: string; data: string },
-  promptText: string,
-  costName: string,
-): Promise<GeminiMediaDescription> {
-  const log = getTweetLog();
-  log?.set(`${costName}.input`, promptText);
-
-  const { response, costEntry } = await trackedLlmCreate(costName, {
-    model: HAIKU_FALLBACK_MODEL,
-    messages: [
-      {
-        role: "user",
-        content: [
-          { type: "text", text: `${promptText}\n\nRespond with JSON: {"description": string, "ocr_text": string}` },
-          { type: "image_url", image_url: { url: `data:${inline.mimeType};base64,${inline.data}` } },
-        ],
-      },
-    ],
-    response_format: { type: "json_object" },
-  } as any);
-  trackLlmCall(costEntry);
-
-  const parsed = JSON.parse(stripJsonFences(response.choices?.[0]?.message?.content ?? "{}"));
-  const description: GeminiMediaDescription = {
-    description: parsed.description ?? "",
-    ocrText: parsed.ocr_text ?? "",
-  };
-  log?.set(`${costName}.output`, description);
-  return description;
-}
-
-/** Describes an image with Gemini vision, and falls back to Haiku when Gemini throws
- *  or returns nothing usable. A successful description is never empty. So an empty
- *  result counts as a Gemini failure and is retried on Haiku. */
+/** Describes an image with the configured media model, and falls back to Haiku
+ *  when that model throws or returns nothing usable. A successful description is
+ *  never empty. So an empty result counts as a failure and is retried on Haiku. */
 async function describeImage(
   inline: { mimeType: string; data: string },
   url: string,
   costName: string,
   entities?: string[],
 ): Promise<GeminiMediaItem> {
-  const promptText = IMAGE_PROMPT + entityHint(entities);
+  const parts: GeminiContentPart[] = [{ text: IMAGE_PROMPT + entityHint(entities) }, { inlineData: inline }];
+  const model = mediaModel();
 
   try {
-    const description = await analyzeMediaParts([{ text: promptText }, { inlineData: inline }], costName);
+    const description = await analyzeMediaPartsOn(parts, model, costName);
     if (description.description !== "") return { type: "image", url, description };
-    // Gemini returned an empty description, so we fall through to Haiku.
+    // The model returned an empty description, so we fall through to Haiku.
   } catch (err: any) {
-    console.error("[mediaAnalysisGemini] Gemini image analysis failed, falling back to Haiku:", err.message);
+    console.error(`[mediaAnalysis] ${model} image analysis failed, falling back to Haiku:`, err.message);
   }
 
-  const description = await describeImageWithHaiku(inline, promptText, `${costName}.haiku`);
-  addWarning(`Image analysis: Gemini failed, used Claude Haiku fallback (${url})`);
+  const description = await analyzeMediaPartsOn(parts, HAIKU_FALLBACK_MODEL, `${costName}.haiku`);
+  addWarning(`Image analysis: ${model} failed, used Claude Haiku fallback (${url})`);
   return { type: "image", url, description };
 }
 
@@ -305,7 +322,7 @@ async function analyzeVideoFrames(
     `ffmpeg -i "${videoPath}" -vf "fps=${fps},scale=640:-1" -frames:v ${FRAME_SAMPLE_COUNT} "${tmpDir}/frame%03d.jpg" -y 2>&1`,
     { timeout: 60000 },
   ).catch((err) => {
-    console.error("[mediaAnalysisGemini] FFmpeg frame extraction error:", err.message);
+    console.error("[mediaAnalysis] FFmpeg frame extraction error:", err.message);
   });
 
   const frameParts: GeminiContentPart[] = [];
@@ -372,7 +389,7 @@ async function analyzeVideo(
     let description: GeminiMediaDescription;
     if (useFrames) {
       if (!(await checkFfmpeg())) {
-        console.warn("[mediaAnalysisGemini] FFmpeg not available, skipping frames");
+        console.warn("[mediaAnalysis] FFmpeg not available, skipping frames");
         description = { description: "", ocrText: "" };
       } else {
         description = await analyzeVideoFrames(videoPath, tmpDir, costName, durationMs, entities);
@@ -381,11 +398,17 @@ async function analyzeVideo(
       description = await analyzeShortVideo(videoPath, costName, entities);
     }
 
+    // An empty description would silently hand the writer a video with no visual
+    // context, so it is reported on the run like any other media failure.
+    if (description.description === "") {
+      addWarning(`Video analysis: ${mediaModel()} returned no description (${videoUrl})`);
+    }
+
     const transcription = await resolveTranscription(videoPath, tmpDir, precomputedTranscript);
 
     return { type: "video", url: videoUrl, description, transcription };
   } catch (err: any) {
-    console.error("[mediaAnalysisGemini] Video analysis failed:", err.message);
+    console.error("[mediaAnalysis] Video analysis failed:", err.message);
     addWarning(`Video analysis failed, no description (${videoUrl}): ${err.message?.slice(0, 150)}`);
     return { type: "video", url: videoUrl, description: { description: "", ocrText: "" }, };
   } finally {
@@ -408,7 +431,7 @@ async function resolveTranscription(
     const text = await extractAudio(videoPath, tmpDir);
     return text || "(no audio track)";
   } catch (err: any) {
-    console.error("[mediaAnalysisGemini] Audio extraction failed:", err.message);
+    console.error("[mediaAnalysis] Audio extraction failed:", err.message);
     return `(transcription failed: ${err.message?.slice(0, 100)})`;
   }
 }
@@ -434,7 +457,7 @@ async function analyzeMediaItems(
       .map((img) => getBestMediaUrl(img))
       .filter((url): url is string => !!url)
       .map((url) => describeImageFromUrl(url, `${namePrefix}.image.${imageIdx++}`, entities).catch((err) => {
-        console.error("[mediaAnalysisGemini] Image analysis failed (Gemini + Haiku):", err.message);
+        console.error("[mediaAnalysis] Image analysis failed (configured model + Haiku):", err.message);
         addWarning(`Image analysis failed, no description (${url}): ${err.message?.slice(0, 150)}`);
         return { type: "image" as const, url, description: { description: "", ocrText: "" } };
       })),

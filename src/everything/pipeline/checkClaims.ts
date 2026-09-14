@@ -38,6 +38,7 @@ const FORCED_PICKS: Record<string, string> = {
   simple_bot_search: "sonnet5-native",
   simple_bot_writer: "sonnet5",
   simple_bot_verifier: "gemini-flash",
+  media_description: "gemini3flash",
   verifier_citations: "on",
   verifier_claim_based: "classic",
 };
