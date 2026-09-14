@@ -1,0 +1,876 @@
+17:30:55 59 production prompts loaded
+17:30:59 call#3 model=deepseek/deepseek-v4-flash headers=0.8s end=4.0s status=200 provider=Baidu finish=stop content=438 reasoning=249 completion=345 | You are a satire detector for X/Twitter 
+17:31:00 call#1 model=deepseek/deepseek-v4-flash headers=1.4s end=5.2s status=200 provider=NextBit finish=stop content=658 reasoning=198 completion=344 | You are a satire detector for X/Twitter 
+17:31:01 call#4 model=deepseek/deepseek-v4-flash headers=0.9s end=6.8s status=200 provider=Parasail finish=stop content=488 reasoning=137 completion=222 | You are a satire detector for X/Twitter 
+17:31:02 call#2 model=deepseek/deepseek-v4-flash headers=1.1s end=7.8s status=200 provider=StreamLake finish=stop content=558 reasoning=226 completion=350 | You are a satire detector for X/Twitter 
+17:31:08 call#6 model=deepseek/deepseek-v4-flash headers=1.7s end=8.0s status=200 provider=Mancer 2 finish=stop content=15 reasoning=264 completion=234 | You write Google search queries that fin
+17:31:10 call#7 model=deepseek/deepseek-v4-flash headers=1.3s end=8.1s status=200 provider=StreamLake finish=stop content=152 reasoning=328 completion=373 | You write Google search queries that fin
+17:31:11 call#8 model=deepseek/deepseek-v4-flash headers=1.4s end=8.5s status=200 provider=Alibaba finish=stop content=107 reasoning=796 completion=830 | You write Google search queries that fin
+17:31:11 call#9 model=deepseek/deepseek-v4-flash headers=1.4s end=3.1s status=200 provider=Baidu finish=stop content=15 reasoning=124 completion=132 | You write Google search queries that fin
+17:31:16 call#5 model=deepseek/deepseek-v4-flash headers=2.7s end=17.4s status=200 provider=StreamLake finish=stop content=76 reasoning=619 completion=638 | You write Google search queries that fin
+17:31:18 call#10 model=deepseek/deepseek-v4-flash headers=1.3s end=6.6s status=200 provider=Alibaba finish=stop content=195 reasoning=578 completion=628 | You write Google search queries that fin
+17:31:24 call#12 model=deepseek/deepseek-v4-flash headers=0.7s end=9.8s status=200 provider=Baidu finish=stop content=1943 reasoning=595 completion=1110 | You receive a social-media post and raw 
+17:31:26 call#15 model=deepseek/deepseek-v4-flash headers=1.3s end=2.9s status=200 provider=NextBit finish=stop content=265 reasoning=88 completion=152 | You are a Community Notes quality judge 
+17:31:26 [w3] tweet 2099503388501107083 done in 32s: needsNote=false
+17:31:27 call#13 model=deepseek/deepseek-v4-flash headers=0.5s end=9.5s status=200 provider=Baidu finish=stop content=3627 reasoning=177 completion=1080 | You receive a social-media post and raw 
+17:31:29 call#14 model=deepseek/deepseek-v4-flash headers=1.7s end=7.9s status=200 provider=GMICloud finish=stop content=2210 reasoning=671 completion=1241 | You receive a social-media post and raw 
+17:31:33 call#16 model=deepseek/deepseek-v4-flash headers=1.9s end=6.9s status=200 provider=StreamLake finish=stop content=569 reasoning=220 completion=344 | You are a satire detector for X/Twitter 
+17:31:37 call#18 model=deepseek/deepseek-v4-flash headers=0.7s end=8.0s status=200 provider=Parasail finish=stop content=322 reasoning=414 completion=430 | You are a Community Notes quality judge 
+17:31:37 [w0] tweet 2099434279486775591 done in 42s: needsNote=false
+17:31:42 call#20 model=deepseek/deepseek-v4-flash headers=1.2s end=5.3s status=200 provider=NextBit finish=stop content=668 reasoning=189 completion=333 | You are a satire detector for X/Twitter 
+17:31:42 call#19 model=deepseek/deepseek-v4-flash headers=0.9s end=8.5s status=200 provider=Parasail finish=stop content=246 reasoning=449 completion=470 | You write Google search queries that fin
+17:31:44 call#17 model=deepseek/deepseek-v4-flash headers=13.3s end=17.3s status=200 provider=Alibaba finish=stop content=390 reasoning=405 completion=483 | You are a Community Notes quality judge 
+17:31:44 [w2] tweet 2099295893027541000 done in 50s: needsNote=true
+17:31:45 call#21 model=deepseek/deepseek-v4-flash headers=0.7s end=3.1s status=200 provider=Baidu finish=stop content=14 reasoning=265 completion=273 | You write Google search queries that fin
+17:31:46 call#11 model=deepseek/deepseek-v4-flash headers=1.1s end=32.0s status=200 provider=StreamLake finish=stop content=3597 reasoning=962 completion=1870 | You receive a social-media post and raw 
+17:31:47 call#23 model=deepseek/deepseek-v4-flash headers=0.5s end=2.0s status=200 provider=Baidu finish=stop content=14 reasoning=120 completion=128 | You write Google search queries that fin
+17:31:49 call#22 model=deepseek/deepseek-v4-flash headers=0.5s end=4.3s status=200 provider=Parasail finish=stop content=534 reasoning=157 completion=257 | You are a satire detector for X/Twitter 
+17:31:49 call#25 model=deepseek/deepseek-v4-flash headers=0.6s end=2.3s status=200 provider=Baidu finish=stop content=15 reasoning=146 completion=154 | You write Google search queries that fin
+17:31:49 [w0] tweet 2099352016988614852 done in 13s: needsNote=false
+17:31:51 call#24 model=deepseek/deepseek-v4-flash headers=3.1s end=5.5s status=200 provider=StreamLake finish=stop content=335 reasoning=159 completion=237 | You are a Community Notes quality judge 
+17:31:51 [w1] tweet 2099482135702958526 done in 56s: needsNote=true
+17:31:54 call#27 model=deepseek/deepseek-v4-flash headers=0.6s end=4.8s status=200 provider=Baidu finish=stop content=157 reasoning=443 completion=488 | You write Google search queries that fin
+17:32:02 call#29 model=deepseek/deepseek-v4-flash headers=0.2s end=10.8s status=200 provider=DeepInfra finish=stop content=722 reasoning=241 completion=339 | You are a satire detector for X/Twitter 
+17:32:05 call#28 model=deepseek/deepseek-v4-flash headers=12.3s end=15.7s status=200 provider=Alibaba finish=stop content=781 reasoning=255 completion=431 | You are a satire detector for X/Twitter 
+17:32:05 call#26 model=deepseek/deepseek-v4-flash headers=2.3s end=16.8s status=200 provider=GMICloud finish=stop content=3608 reasoning=416 completion=1359 | You receive a social-media post and raw 
+17:32:07 call#32 model=deepseek/deepseek-v4-flash headers=0.7s end=2.4s status=200 provider=Baidu finish=stop content=14 reasoning=154 completion=162 | You write Google search queries that fin
+17:32:09 call#34 model=deepseek/deepseek-v4-flash headers=0.5s end=1.7s status=200 provider=Baidu finish=stop content=14 reasoning=133 completion=141 | You write Google search queries that fin
+17:32:10 call#33 model=deepseek/deepseek-v4-flash headers=1.1s end=4.3s status=200 provider=StreamLake finish=stop content=359 reasoning=117 completion=194 | You are a Community Notes quality judge 
+17:32:10 [w3] tweet 2099199881512456399 done in 43s: needsNote=false
+17:32:11 call#31 model=deepseek/deepseek-v4-flash headers=1.2s end=9.2s status=200 provider=StreamLake finish=stop content=329 reasoning=428 completion=501 | You write Google search queries that fin
+17:32:11 call#35 model=deepseek/deepseek-v4-flash headers=0.5s end=2.2s status=200 provider=Baidu finish=stop content=15 reasoning=185 completion=193 | You write Google search queries that fin
+17:32:11 [w0] tweet 2099202344130932842 done in 22s: needsNote=false
+17:32:12 call#30 model=deepseek/deepseek-v4-flash headers=2.2s end=12.0s status=200 provider=StreamLake finish=stop content=2028 reasoning=200 completion=734 | You receive a social-media post and raw 
+17:32:15 call#38 model=deepseek/deepseek-v4-flash headers=0.5s end=3.4s status=200 provider=Parasail finish=stop content=326 reasoning=176 completion=243 | You are a Community Notes quality judge 
+17:32:15 [w2] tweet 2099430622880256473 done in 31s: needsNote=false
+17:32:15 call#37 model=deepseek/deepseek-v4-flash headers=0.6s end=4.1s status=200 provider=Baidu finish=stop content=283 reasoning=338 completion=403 | You are a satire detector for X/Twitter 
+17:32:19 call#39 model=deepseek/deepseek-v4-flash headers=0.5s end=4.3s status=200 provider=Parasail finish=stop content=402 reasoning=201 completion=255 | You are a satire detector for X/Twitter 
+17:32:23 call#41 model=deepseek/deepseek-v4-flash headers=1.1s end=7.9s status=200 provider=Baidu finish=stop content=2187 reasoning=320 completion=775 | You receive a social-media post and raw 
+17:32:25 call#43 model=deepseek/deepseek-v4-flash headers=0.6s end=2.0s status=200 provider=Baidu finish=stop content=324 reasoning=112 completion=181 | You are a Community Notes quality judge 
+17:32:25 [w1] tweet 2099503167079674202 done in 34s: needsNote=false
+17:32:27 call#42 model=deepseek/deepseek-v4-flash headers=0.7s end=7.3s status=200 provider=Baidu finish=stop content=176 reasoning=746 completion=779 | You write Google search queries that fin
+17:32:29 call#44 model=deepseek/deepseek-v4-flash headers=0.6s end=3.6s status=200 provider=Baidu finish=stop content=341 reasoning=252 completion=326 | You are a satire detector for X/Twitter 
+17:32:31 call#40 model=deepseek/deepseek-v4-flash headers=0.9s end=15.2s status=200 provider=StreamLake finish=stop content=190 reasoning=803 completion=848 | You write Google search queries that fin
+17:32:31 call#36 model=deepseek/deepseek-v4-flash headers=13.0s end=20.8s status=200 provider=Parasail finish=stop content=533 reasoning=171 completion=267 | You are a satire detector for X/Twitter 
+17:32:36 call#45 model=deepseek/deepseek-v4-flash headers=0.7s end=7.1s status=200 provider=Mancer 2 finish=stop content=315 reasoning=478 completion=509 | You write Google search queries that fin
+17:32:40 call#47 model=deepseek/deepseek-v4-flash headers=1.4s end=9.1s status=200 provider=StreamLake finish=stop content=210 reasoning=341 completion=398 | You write Google search queries that fin
+17:32:46 call#46 model=deepseek/deepseek-v4-flash headers=1.1s end=15.7s status=200 provider=StreamLake finish=stop content=2816 reasoning=165 completion=785 | You receive a social-media post and raw 
+17:32:47 call#48 model=deepseek/deepseek-v4-flash headers=1.9s end=11.8s status=200 provider=GMICloud finish=stop content=4044 reasoning=130 completion=1097 | You receive a social-media post and raw 
+17:32:51 call#49 model=deepseek/deepseek-v4-flash headers=2.3s end=9.9s status=200 provider=GMICloud finish=stop content=3041 reasoning=164 completion=812 | You receive a social-media post and raw 
+17:32:54 call#50 model=deepseek/deepseek-v4-flash headers=0.6s end=8.5s status=200 provider=Baidu finish=stop content=2804 reasoning=243 completion=942 | You receive a social-media post and raw 
+17:32:55 call#51 model=deepseek/deepseek-v4-flash headers=1.1s end=8.9s status=200 provider=StreamLake finish=stop content=397 reasoning=264 completion=348 | You are a Community Notes quality judge 
+17:32:55 [w2] tweet 2099431240822628557 done in 40s: needsNote=true
+17:32:55 call#53 model=deepseek/deepseek-v4-flash headers=1.9s end=3.7s status=200 provider=Parasail finish=stop content=231 reasoning=137 completion=161 | You are a Community Notes quality judge 
+17:32:55 [w1] tweet 2099490124056633661 done in 30s: needsNote=false
+17:32:58 call#54 model=deepseek/deepseek-v4-flash headers=1.0s end=3.9s status=200 provider=StreamLake finish=stop content=341 reasoning=102 completion=183 | You are a Community Notes quality judge 
+17:32:58 [w3] tweet 2099499551472165335 done in 48s: needsNote=false
+17:33:00 call#55 model=deepseek/deepseek-v4-flash headers=0.5s end=4.8s status=200 provider=Baidu finish=stop content=387 reasoning=397 completion=488 | You are a satire detector for X/Twitter 
+17:33:00 call#57 model=deepseek/deepseek-v4-flash headers=0.6s end=2.4s status=200 provider=Baidu finish=stop content=406 reasoning=116 completion=207 | You are a satire detector for X/Twitter 
+17:33:02 call#52 model=deepseek/deepseek-v4-flash headers=3.5s end=14.6s status=200 provider=StreamLake finish=stop content=374 reasoning=623 completion=699 | You are a Community Notes quality judge 
+17:33:02 [w0] tweet 2099292783160725871 done in 50s: needsNote=false
+17:33:02 call#58 model=deepseek/deepseek-v4-flash headers=0.7s end=2.5s status=200 provider=Parasail finish=stop content=15 reasoning=132 completion=123 | You write Google search queries that fin
+17:33:04 call#56 model=deepseek/deepseek-v4-flash headers=1.2s end=8.6s status=200 provider=StreamLake finish=stop content=518 reasoning=196 completion=311 | You are a satire detector for X/Twitter 
+17:33:05 call#60 model=deepseek/deepseek-v4-flash headers=0.5s end=3.0s status=200 provider=Baidu finish=stop content=308 reasoning=204 completion=271 | You are a satire detector for X/Twitter 
+17:33:12 call#59 model=deepseek/deepseek-v4-flash headers=0.5s end=12.1s status=200 provider=Baidu finish=stop content=261 reasoning=1301 completion=1369 | You write Google search queries that fin
+17:33:13 call#63 model=deepseek/deepseek-v4-flash headers=0.6s end=8.5s status=200 provider=Baidu finish=stop content=308 reasoning=872 completion=947 | You write Google search queries that fin
+17:33:17 call#61 model=deepseek/deepseek-v4-flash headers=12.6s end=14.8s status=200 provider=StreamLake finish=stop content=15 reasoning=101 completion=109 | You write Google search queries that fin
+17:33:19 call#65 model=deepseek/deepseek-v4-flash headers=0.8s end=1.9s status=200 provider=Parasail finish=stop content=15 reasoning=120 completion=111 | You write Google search queries that fin
+17:33:19 [w2] tweet 2099176511320248659 done in 24s: needsNote=false
+17:33:20 call#62 model=deepseek/deepseek-v4-flash headers=0.9s end=16.4s status=200 provider=Parasail finish=stop content=215 reasoning=1010 completion=988 | You write Google search queries that fin
+17:33:24 call#67 model=deepseek/deepseek-v4-flash headers=0.9s end=5.5s status=200 provider=Alibaba finish=stop content=952 reasoning=314 completion=521 | You are a satire detector for X/Twitter 
+17:33:30 call#68 model=deepseek/deepseek-v4-flash headers=0.5s end=6.1s status=200 provider=Baidu finish=stop content=293 reasoning=562 completion=631 | You write Google search queries that fin
+17:33:33 call#66 model=deepseek/deepseek-v4-flash headers=1.6s end=15.0s status=200 provider=Alibaba finish=stop content=3571 reasoning=824 completion=1688 | You receive a social-media post and raw 
+17:33:33 call#64 model=deepseek/deepseek-v4-flash headers=2.5s end=16.6s status=200 provider=GMICloud finish=stop content=4709 reasoning=343 completion=1502 | You receive a social-media post and raw 
+17:33:36 call#71 model=deepseek/deepseek-v4-flash headers=0.8s end=2.8s status=200 provider=Baidu finish=stop content=476 reasoning=161 completion=277 | You are a Community Notes quality judge 
+17:33:36 [w3] tweet 2099444359800234209 done in 38s: needsNote=false
+17:33:43 call#73 model=deepseek/deepseek-v4-flash headers=1.5s end=7.7s status=200 provider=StreamLake finish=stop content=597 reasoning=137 completion=280 | You are a satire detector for X/Twitter 
+17:33:43 [w3] tweet 2099423494845174049 done in 8s: needsNote=false
+17:33:50 call#74 model=deepseek/deepseek-v4-flash headers=1.6s end=6.3s status=200 provider=StreamLake finish=stop content=525 reasoning=182 completion=303 | You are a satire detector for X/Twitter 
+17:33:50 [w3] tweet 2099358360961429946 done in 6s: needsNote=false
+17:33:53 call#69 model=deepseek/deepseek-v4-flash headers=1.0s end=24.6s status=200 provider=StreamLake finish=stop content=3580 reasoning=565 completion=1478 | You receive a social-media post and raw 
+17:33:55 call#76 model=deepseek/deepseek-v4-flash headers=0.8s end=2.0s status=200 provider=Baidu finish=stop content=338 reasoning=108 completion=180 | You are a Community Notes quality judge 
+17:33:55 [w1] tweet 2099458181302739240 done in 59s: needsNote=true
+17:33:56 call#75 model=deepseek/deepseek-v4-flash headers=1.2s end=5.9s status=200 provider=NextBit finish=stop content=699 reasoning=253 completion=415 | You are a satire detector for X/Twitter 
+17:33:56 call#72 model=deepseek/deepseek-v4-flash headers=1.6s end=20.7s status=200 provider=StreamLake finish=stop content=3404 reasoning=392 completion=1195 | You receive a social-media post and raw 
+17:33:57 call#70 model=deepseek/deepseek-v4-flash headers=1.9s end=24.3s status=200 provider=StreamLake finish=stop content=490 reasoning=1201 completion=1314 | You are a Community Notes quality judge 
+17:33:57 [w0] tweet 2099443049478738212 done in 55s: needsNote=false
+17:33:58 call#78 model=deepseek/deepseek-v4-flash headers=0.7s end=2.0s status=200 provider=Baidu finish=stop content=14 reasoning=141 completion=149 | You write Google search queries that fin
+17:34:00 call#81 model=deepseek/deepseek-v4-flash headers=0.6s end=2.4s status=200 provider=Baidu finish=stop content=14 reasoning=188 completion=196 | You write Google search queries that fin
+17:34:01 call#80 model=deepseek/deepseek-v4-flash headers=0.6s end=4.1s status=200 provider=Baidu finish=stop content=289 reasoning=325 completion=397 | You are a satire detector for X/Twitter 
+17:34:02 call#82 model=deepseek/deepseek-v4-flash headers=0.5s end=1.8s status=200 provider=Baidu finish=stop content=14 reasoning=120 completion=128 | You write Google search queries that fin
+17:34:02 [w3] tweet 2099391188201799991 done in 12s: needsNote=false
+17:34:03 call#77 model=deepseek/deepseek-v4-flash headers=2.5s end=8.0s status=200 provider=StreamLake finish=stop content=600 reasoning=201 completion=332 | You are a satire detector for X/Twitter 
+17:34:03 call#79 model=deepseek/deepseek-v4-flash headers=1.3s end=6.4s status=200 provider=StreamLake finish=stop content=433 reasoning=180 completion=273 | You are a Community Notes quality judge 
+17:34:03 [w2] tweet 2099430165168177313 done in 44s: needsNote=true
+17:34:09 call#84 model=deepseek/deepseek-v4-flash headers=1.2s end=6.8s status=200 provider=NextBit finish=stop content=695 reasoning=318 completion=476 | You are a satire detector for X/Twitter 
+17:34:10 call#85 model=deepseek/deepseek-v4-flash headers=0.5s end=7.6s status=200 provider=Baidu finish=stop content=130 reasoning=719 completion=751 | You write Google search queries that fin
+17:34:12 call#86 model=deepseek/deepseek-v4-flash headers=3.8s end=9.2s status=200 provider=StreamLake finish=stop content=743 reasoning=164 completion=312 | You are a satire detector for X/Twitter 
+17:34:13 call#83 model=deepseek/deepseek-v4-flash headers=1.7s end=11.9s status=200 provider=StreamLake finish=stop content=255 reasoning=474 completion=537 | You write Google search queries that fin
+17:34:22 call#87 model=deepseek/deepseek-v4-flash headers=1.6s end=13.2s status=200 provider=StreamLake finish=stop content=179 reasoning=555 completion=611 | You write Google search queries that fin
+17:34:22 call#88 model=deepseek/deepseek-v4-flash headers=0.2s end=10.4s status=200 provider=DeepInfra finish=stop content=271 reasoning=358 completion=407 | You write Google search queries that fin
+17:34:28 call#90 model=deepseek/deepseek-v4-flash headers=0.5s end=10.4s status=200 provider=Baidu finish=stop content=2687 reasoning=458 completion=1149 | You receive a social-media post and raw 
+17:34:30 call#89 model=deepseek/deepseek-v4-flash headers=4.0s end=16.6s status=200 provider=StreamLake finish=stop content=2708 reasoning=189 completion=930 | You receive a social-media post and raw 
+17:34:33 call#93 model=deepseek/deepseek-v4-flash headers=1.3s end=4.6s status=200 provider=StreamLake finish=stop content=250 reasoning=84 completion=143 | You are a Community Notes quality judge 
+17:34:33 [w0] tweet 2099358136318763030 done in 36s: needsNote=false
+17:34:38 call#95 model=deepseek/deepseek-v4-flash headers=0.8s end=4.9s status=200 provider=Alibaba finish=stop content=641 reasoning=361 completion=505 | You are a satire detector for X/Twitter 
+17:34:38 call#94 model=deepseek/deepseek-v4-flash headers=2.4s end=7.9s status=200 provider=Mancer 2 finish=stop content=335 reasoning=319 completion=353 | You are a Community Notes quality judge 
+17:34:38 [w1] tweet 2099403366724198717 done in 43s: needsNote=true
+17:34:42 call#96 model=deepseek/deepseek-v4-flash headers=0.7s end=3.9s status=200 provider=Baidu finish=stop content=94 reasoning=324 completion=350 | You write Google search queries that fin
+17:34:47 call#91 model=deepseek/deepseek-v4-flash headers=1.2s end=21.7s status=200 provider=NextBit finish=stop content=4236 reasoning=1286 completion=2477 | You receive a social-media post and raw 
+17:34:48 call#97 model=deepseek/deepseek-v4-flash headers=1.1s end=10.4s status=200 provider=StreamLake finish=stop content=590 reasoning=393 completion=526 | You are a satire detector for X/Twitter 
+17:34:51 call#99 model=deepseek/deepseek-v4-flash headers=0.9s end=3.9s status=200 provider=Baidu finish=stop content=318 reasoning=344 completion=424 | You are a Community Notes quality judge 
+17:34:51 [w3] tweet 2099471057144930499 done in 49s: needsNote=false
+17:34:55 call#98 model=deepseek/deepseek-v4-flash headers=0.8s end=11.9s status=200 provider=StreamLake finish=stop content=1685 reasoning=160 completion=560 | You receive a social-media post and raw 
+17:34:55 call#100 model=deepseek/deepseek-v4-flash headers=1.2s end=6.6s status=200 provider=Alibaba finish=stop content=15 reasoning=678 completion=685 | You write Google search queries that fin
+17:34:58 call#101 model=deepseek/deepseek-v4-flash headers=0.7s end=6.7s status=200 provider=Mancer 2 finish=stop content=501 reasoning=276 completion=356 | You are a satire detector for X/Twitter 
+17:35:03 call#104 model=deepseek/deepseek-v4-flash headers=0.6s end=4.9s status=200 provider=Baidu finish=stop content=263 reasoning=419 completion=480 | You write Google search queries that fin
+17:35:10 call#102 model=deepseek/deepseek-v4-flash headers=12.5s end=15.3s status=200 provider=Baidu finish=stop content=312 reasoning=303 completion=384 | You are a Community Notes quality judge 
+17:35:10 [w0] tweet 2099403281235927182 done in 37s: needsNote=false
+17:35:10 call#103 model=deepseek/deepseek-v4-flash headers=12.3s end=15.4s status=200 provider=NextBit finish=stop content=15 reasoning=287 completion=294 | You write Google search queries that fin
+17:35:12 call#92 model=deepseek/deepseek-v4-flash headers=2.3s end=44.6s status=200 provider=StreamLake finish=stop content=4860 reasoning=1416 completion=2565 | You receive a social-media post and raw 
+17:35:13 call#107 model=deepseek/deepseek-v4-flash headers=0.6s end=2.7s status=200 provider=Baidu finish=stop content=14 reasoning=234 completion=242 | You write Google search queries that fin
+17:35:13 [w1] tweet 2099472482914947140 done in 35s: needsNote=false
+17:35:18 call#105 model=deepseek/deepseek-v4-flash headers=1.6s end=9.5s status=200 provider=NextBit finish=stop content=2932 reasoning=260 completion=982 | You receive a social-media post and raw 
+17:35:19 call#106 model=deepseek/deepseek-v4-flash headers=4.3s end=8.9s status=200 provider=StreamLake finish=stop content=455 reasoning=222 completion=318 | You are a satire detector for X/Twitter 
+17:35:20 call#110 model=deepseek/deepseek-v4-flash headers=0.5s end=2.0s status=200 provider=Baidu finish=stop content=310 reasoning=105 completion=177 | You are a Community Notes quality judge 
+17:35:20 [w3] tweet 2099450620847521832 done in 29s: needsNote=false
+17:35:21 call#109 model=deepseek/deepseek-v4-flash headers=1.2s end=7.6s status=200 provider=Mancer 2 finish=stop content=749 reasoning=278 completion=425 | You are a satire detector for X/Twitter 
+17:35:24 call#108 model=deepseek/deepseek-v4-flash headers=2.2s end=12.8s status=200 provider=StreamLake finish=stop content=487 reasoning=512 completion=614 | You are a Community Notes quality judge 
+17:35:24 [w2] tweet 2099463187724738740 done in 82s: needsNote=true
+17:35:30 call#113 model=deepseek/deepseek-v4-flash headers=0.5s end=9.0s status=200 provider=Baidu finish=stop content=274 reasoning=959 completion=1028 | You write Google search queries that fin
+17:35:31 call#114 model=deepseek/deepseek-v4-flash headers=1.4s end=6.6s status=200 provider=Alibaba finish=stop content=714 reasoning=426 completion=585 | You are a satire detector for X/Twitter 
+17:35:32 call#111 model=deepseek/deepseek-v4-flash headers=0.7s end=13.2s status=200 provider=Baidu finish=stop content=216 reasoning=1386 completion=1443 | You write Google search queries that fin
+17:35:33 call#112 model=deepseek/deepseek-v4-flash headers=0.6s end=12.3s status=200 provider=Parasail finish=stop content=585 reasoning=183 completion=294 | You are a satire detector for X/Twitter 
+17:35:36 call#115 model=deepseek/deepseek-v4-flash headers=0.9s end=5.3s status=200 provider=Mancer 2 finish=stop content=229 reasoning=210 completion=283 | You write Google search queries that fin
+17:35:48 call#117 model=deepseek/deepseek-v4-flash headers=1.1s end=14.0s status=200 provider=NextBit finish=stop content=3415 reasoning=419 completion=1196 | You receive a social-media post and raw 
+17:35:49 call#116 model=deepseek/deepseek-v4-flash headers=1.5s end=16.5s status=200 provider=StreamLake finish=stop content=172 reasoning=735 completion=784 | You write Google search queries that fin
+17:35:56 call#120 model=deepseek/deepseek-v4-flash headers=1.2s end=7.8s status=200 provider=NextBit finish=stop content=363 reasoning=584 completion=664 | You are a Community Notes quality judge 
+17:35:56 [w1] tweet 2099347136110346291 done in 43s: needsNote=true
+17:35:57 call#119 model=deepseek/deepseek-v4-flash headers=0.7s end=16.0s status=200 provider=Baidu finish=stop content=5525 reasoning=231 completion=1876 | You receive a social-media post and raw 
+17:35:59 call#122 model=deepseek/deepseek-v4-flash headers=0.9s end=2.6s status=200 provider=Alibaba finish=stop content=458 reasoning=101 completion=203 | You are a satire detector for X/Twitter 
+17:36:00 call#123 model=deepseek/deepseek-v4-flash headers=0.8s end=3.3s status=200 provider=Baidu finish=stop content=367 reasoning=277 completion=360 | You are a Community Notes quality judge 
+17:36:00 [w2] tweet 2099378747988132103 done in 36s: needsNote=false
+17:36:00 call#121 model=deepseek/deepseek-v4-flash headers=0.8s end=6.6s status=200 provider=Alibaba finish=stop content=2513 reasoning=135 completion=713 | You receive a social-media post and raw 
+17:36:03 call#125 model=deepseek/deepseek-v4-flash headers=0.6s end=3.2s status=200 provider=Baidu finish=stop content=448 reasoning=205 completion=297 | You are a satire detector for X/Twitter 
+17:36:05 call#126 model=deepseek/deepseek-v4-flash headers=0.9s end=4.3s status=200 provider=Alibaba finish=stop content=366 reasoning=347 completion=423 | You are a Community Notes quality judge 
+17:36:05 [w3] tweet 2099335535244234934 done in 44s: needsNote=true
+17:36:08 call#127 model=deepseek/deepseek-v4-flash headers=0.5s end=4.9s status=200 provider=Baidu finish=stop content=372 reasoning=413 completion=485 | You write Google search queries that fin
+17:36:09 call#118 model=deepseek/deepseek-v4-flash headers=0.9s end=31.9s status=200 provider=StreamLake finish=stop content=4150 reasoning=858 completion=2090 | You receive a social-media post and raw 
+17:36:10 call#124 model=deepseek/deepseek-v4-flash headers=1.2s end=11.0s status=200 provider=StreamLake finish=stop content=179 reasoning=407 completion=467 | You write Google search queries that fin
+17:36:11 call#128 model=deepseek/deepseek-v4-flash headers=0.8s end=5.9s status=200 provider=StreamLake finish=stop content=484 reasoning=174 completion=285 | You are a satire detector for X/Twitter 
+17:36:11 [w3] tweet 2099384847722770781 done in 6s: needsNote=false
+17:36:13 call#129 model=deepseek/deepseek-v4-flash headers=0.7s end=3.8s status=200 provider=Baidu finish=stop content=401 reasoning=330 completion=422 | You are a Community Notes quality judge 
+17:36:13 [w0] tweet 2099468576436433007 done in 63s: needsNote=true
+17:36:15 call#130 model=deepseek/deepseek-v4-flash headers=1.0s end=4.5s status=200 provider=Alibaba finish=stop content=632 reasoning=313 completion=462 | You are a satire detector for X/Twitter 
+17:36:16 call#131 model=deepseek/deepseek-v4-flash headers=0.5s end=3.2s status=200 provider=Baidu finish=stop content=314 reasoning=249 completion=325 | You are a satire detector for X/Twitter 
+17:36:16 [w0] tweet 2099410504326262838 done in 3s: needsNote=false
+17:36:20 call#134 model=deepseek/deepseek-v4-flash headers=0.6s end=4.0s status=200 provider=Baidu finish=stop content=455 reasoning=285 completion=387 | You are a satire detector for X/Twitter 
+17:36:24 call#132 model=deepseek/deepseek-v4-flash headers=1.4s end=8.5s status=200 provider=StreamLake finish=stop content=15 reasoning=399 completion=407 | You write Google search queries that fin
+17:36:27 call#133 model=deepseek/deepseek-v4-flash headers=0.6s end=11.3s status=200 provider=Baidu finish=stop content=4283 reasoning=170 completion=1272 | You receive a social-media post and raw 
+17:36:30 call#138 model=deepseek/deepseek-v4-flash headers=0.8s end=3.8s status=200 provider=Baidu finish=stop content=380 reasoning=338 completion=426 | You are a Community Notes quality judge 
+17:36:30 [w1] tweet 2099453722082386153 done in 34s: needsNote=true
+17:36:32 call#137 model=deepseek/deepseek-v4-flash headers=0.6s end=8.1s status=200 provider=Baidu finish=stop content=14 reasoning=850 completion=860 | You write Google search queries that fin
+17:36:34 call#136 model=deepseek/deepseek-v4-flash headers=0.9s end=13.6s status=200 provider=Mancer 2 finish=stop content=155 reasoning=631 completion=669 | You write Google search queries that fin
+17:36:35 call#139 model=deepseek/deepseek-v4-flash headers=1.1s end=4.3s status=200 provider=Baidu finish=stop content=430 reasoning=258 completion=365 | You are a satire detector for X/Twitter 
+17:36:35 call#135 model=deepseek/deepseek-v4-flash headers=2.6s end=17.3s status=200 provider=GMICloud finish=stop content=3541 reasoning=490 completion=1305 | You receive a social-media post and raw 
+17:36:43 call#142 model=deepseek/deepseek-v4-flash headers=1.7s end=7.8s status=200 provider=StreamLake finish=stop content=457 reasoning=262 completion=357 | You are a Community Notes quality judge 
+17:36:43 [w2] tweet 2099409340721500162 done in 43s: needsNote=true
+17:36:43 call#140 model=deepseek/deepseek-v4-flash headers=1.6s end=11.9s status=200 provider=Alibaba finish=stop content=151 reasoning=1228 completion=1270 | You write Google search queries that fin
+17:36:46 call#141 model=deepseek/deepseek-v4-flash headers=0.6s end=11.6s status=200 provider=Baidu finish=stop content=175 reasoning=1187 completion=1236 | You write Google search queries that fin
+17:36:46 call#143 model=deepseek/deepseek-v4-flash headers=0.6s end=9.9s status=200 provider=Baidu finish=stop content=3363 reasoning=207 completion=1103 | You receive a social-media post and raw 
+17:36:51 call#145 model=deepseek/deepseek-v4-flash headers=2.0s end=4.8s status=200 provider=StreamLake finish=stop content=269 reasoning=107 completion=169 | You are a Community Notes quality judge 
+17:36:51 [w0] tweet 2099457745996886145 done in 35s: needsNote=false
+17:36:54 call#144 model=deepseek/deepseek-v4-flash headers=1.2s end=10.8s status=200 provider=NextBit finish=stop content=674 reasoning=622 completion=774 | You are a satire detector for X/Twitter 
+17:36:56 call#148 model=deepseek/deepseek-v4-flash headers=1.0s end=4.5s status=200 provider=StreamLake finish=stop content=389 reasoning=111 completion=192 | You are a satire detector for X/Twitter 
+17:36:57 call#149 model=deepseek/deepseek-v4-flash headers=0.6s end=3.5s status=200 provider=Baidu finish=stop content=251 reasoning=262 completion=329 | You write Google search queries that fin
+17:36:57 call#150 model=deepseek/deepseek-v4-flash headers=0.7s end=1.6s status=200 provider=Baidu finish=stop content=14 reasoning=91 completion=99 | You write Google search queries that fin
+17:37:00 call#151 model=deepseek/deepseek-v4-flash headers=0.8s end=2.8s status=200 provider=Baidu finish=stop content=14 reasoning=172 completion=180 | You write Google search queries that fin
+17:37:02 call#152 model=deepseek/deepseek-v4-flash headers=0.5s end=1.5s status=200 provider=Baidu finish=stop content=14 reasoning=103 completion=111 | You write Google search queries that fin
+17:37:02 [w0] tweet 2099393201391968303 done in 10s: needsNote=false
+17:37:05 call#147 model=deepseek/deepseek-v4-flash headers=0.6s end=13.7s status=200 provider=Baidu finish=stop content=4679 reasoning=421 completion=1476 | You receive a social-media post and raw 
+17:37:08 call#153 model=deepseek/deepseek-v4-flash headers=1.1s end=6.1s status=200 provider=StreamLake finish=stop content=482 reasoning=199 completion=303 | You are a satire detector for X/Twitter 
+17:37:13 call#156 model=deepseek/deepseek-v4-flash headers=0.5s end=5.5s status=200 provider=Baidu finish=stop content=15 reasoning=530 completion=538 | You write Google search queries that fin
+17:37:13 call#146 model=deepseek/deepseek-v4-flash headers=1.1s end=26.1s status=200 provider=StreamLake finish=stop content=3923 reasoning=326 completion=1363 | You receive a social-media post and raw 
+17:37:15 call#154 model=deepseek/deepseek-v4-flash headers=0.7s end=12.5s status=200 provider=Baidu finish=stop content=3234 reasoning=600 completion=1414 | You receive a social-media post and raw 
+17:37:16 call#157 model=deepseek/deepseek-v4-flash headers=0.7s end=2.4s status=200 provider=Baidu finish=stop content=14 reasoning=185 completion=193 | You write Google search queries that fin
+17:37:19 call#158 model=deepseek/deepseek-v4-flash headers=1.2s end=5.8s status=200 provider=StreamLake finish=stop content=348 reasoning=199 completion=281 | You are a Community Notes quality judge 
+17:37:19 [w3] tweet 2099391866143899682 done in 69s: needsNote=false
+17:37:20 call#160 model=deepseek/deepseek-v4-flash headers=0.5s end=4.1s status=200 provider=Baidu finish=stop content=14 reasoning=395 completion=403 | You write Google search queries that fin
+17:37:20 [w0] tweet 2099370498790412542 done in 18s: needsNote=false
+17:37:23 call#161 model=deepseek/deepseek-v4-flash headers=1.2s end=3.7s status=200 provider=Alibaba finish=stop content=627 reasoning=179 completion=314 | You are a satire detector for X/Twitter 
+17:37:28 call#155 model=deepseek/deepseek-v4-flash headers=1.4s end=22.8s status=200 provider=Parasail finish=stop content=419 reasoning=1058 completion=979 | You are a Community Notes quality judge 
+17:37:28 [w1] tweet 2099425428460966126 done in 57s: needsNote=false
+17:37:28 call#162 model=deepseek/deepseek-v4-flash headers=0.7s end=8.5s status=200 provider=StreamLake finish=stop content=852 reasoning=203 completion=394 | You are a satire detector for X/Twitter 
+17:37:30 call#159 model=deepseek/deepseek-v4-flash headers=6.3s end=15.0s status=200 provider=StreamLake finish=stop content=478 reasoning=463 completion=567 | You are a Community Notes quality judge 
+17:37:30 [w2] tweet 2099443560622051359 done in 48s: needsNote=true
+17:37:32 call#165 model=deepseek/deepseek-v4-flash headers=1.1s end=3.6s status=200 provider=Alibaba finish=stop content=15 reasoning=321 completion=328 | You write Google search queries that fin
+17:37:34 call#163 model=deepseek/deepseek-v4-flash headers=0.7s end=10.9s status=200 provider=Mancer 2 finish=stop content=268 reasoning=659 completion=682 | You write Google search queries that fin
+17:37:35 call#164 model=deepseek/deepseek-v4-flash headers=0.8s end=6.9s status=200 provider=Parasail finish=stop content=810 reasoning=261 completion=407 | You are a satire detector for X/Twitter 
+17:37:35 call#167 model=deepseek/deepseek-v4-flash headers=1.2s end=3.0s status=200 provider=Alibaba finish=stop content=15 reasoning=236 completion=243 | You write Google search queries that fin
+17:37:38 call#166 model=deepseek/deepseek-v4-flash headers=2.1s end=7.7s status=200 provider=StreamLake finish=stop content=756 reasoning=213 completion=364 | You are a satire detector for X/Twitter 
+17:37:43 call#169 model=deepseek/deepseek-v4-flash headers=0.9s end=8.0s status=200 provider=Alibaba finish=stop content=15 reasoning=717 completion=724 | You write Google search queries that fin
+17:37:43 [w0] tweet 2099438687893209466 done in 23s: needsNote=false
+17:37:44 call#170 model=deepseek/deepseek-v4-flash headers=0.6s end=6.3s status=200 provider=Baidu finish=stop content=228 reasoning=569 completion=633 | You write Google search queries that fin
+17:37:47 call#172 model=deepseek/deepseek-v4-flash headers=1.3s end=4.5s status=200 provider=NextBit finish=stop content=581 reasoning=147 completion=276 | You are a satire detector for X/Twitter 
+17:37:50 call#173 model=deepseek/deepseek-v4-flash headers=1.1s end=2.5s status=200 provider=Alibaba finish=stop content=161 reasoning=124 completion=174 | You write Google search queries that fin
+17:37:53 call#168 model=deepseek/deepseek-v4-flash headers=2.6s end=18.4s status=200 provider=StreamLake finish=stop content=237 reasoning=785 completion=847 | You write Google search queries that fin
+17:37:59 call#174 model=deepseek/deepseek-v4-flash headers=0.9s end=10.1s status=200 provider=Baidu finish=stop content=3575 reasoning=103 completion=1062 | You receive a social-media post and raw 
+17:38:00 call#171 model=deepseek/deepseek-v4-flash headers=1.6s end=19.8s status=200 provider=StreamLake finish=stop content=3132 reasoning=335 completion=1117 | You receive a social-media post and raw 
+17:38:03 call#175 model=deepseek/deepseek-v4-flash headers=0.7s end=9.3s status=200 provider=Baidu finish=stop content=2566 reasoning=346 completion=1013 | You receive a social-media post and raw 
+17:38:04 call#177 model=deepseek/deepseek-v4-flash headers=1.0s end=4.6s status=200 provider=StreamLake finish=stop content=240 reasoning=140 completion=197 | You are a Community Notes quality judge 
+17:38:04 [w2] tweet 2099408639622537352 done in 34s: needsNote=false
+17:38:05 call#179 model=deepseek/deepseek-v4-flash headers=1.1s end=2.5s status=200 provider=NextBit finish=stop content=245 reasoning=81 completion=140 | You are a Community Notes quality judge 
+17:38:05 [w0] tweet 2099460772208271869 done in 23s: needsNote=false
+17:38:07 call#180 model=deepseek/deepseek-v4-flash headers=1.2s end=3.5s status=200 provider=Baidu finish=stop content=256 reasoning=198 completion=257 | You are a satire detector for X/Twitter 
+17:38:10 call#178 model=deepseek/deepseek-v4-flash headers=0.2s end=9.7s status=200 provider=DeepInfra finish=stop content=315 reasoning=188 completion=245 | You are a Community Notes quality judge 
+17:38:10 [w3] tweet 2099361927910793549 done in 51s: needsNote=false
+17:38:12 call#181 model=deepseek/deepseek-v4-flash headers=1.0s end=6.3s status=200 provider=StreamLake finish=stop content=612 reasoning=202 completion=333 | You are a satire detector for X/Twitter 
+17:38:14 call#176 model=deepseek/deepseek-v4-flash headers=0.9s end=17.0s status=200 provider=StreamLake finish=stop content=2916 reasoning=310 completion=1011 | You receive a social-media post and raw 
+17:38:16 call#182 model=deepseek/deepseek-v4-flash headers=1.2s end=8.4s status=200 provider=NextBit finish=stop content=264 reasoning=587 completion=662 | You write Google search queries that fin
+17:38:17 call#185 model=deepseek/deepseek-v4-flash headers=1.0s end=2.9s status=200 provider=Parasail finish=stop content=358 reasoning=146 completion=215 | You are a Community Notes quality judge 
+17:38:17 [w1] tweet 2099397118012403803 done in 49s: needsNote=true
+17:38:19 call#183 model=deepseek/deepseek-v4-flash headers=0.2s end=8.9s status=200 provider=DeepInfra finish=stop content=544 reasoning=202 completion=298 | You are a satire detector for X/Twitter 
+17:38:19 call#186 model=deepseek/deepseek-v4-flash headers=0.6s end=2.5s status=200 provider=Baidu finish=stop content=311 reasoning=132 completion=201 | You are a satire detector for X/Twitter 
+17:38:35 call#187 model=deepseek/deepseek-v4-flash headers=0.2s end=16.1s status=200 provider=DeepInfra finish=stop content=225 reasoning=802 completion=858 | You write Google search queries that fin
+17:38:41 call#189 model=deepseek/deepseek-v4-flash headers=4.0s end=21.5s status=200 provider=GMICloud finish=stop content=2216 reasoning=2884 completion=3517 | You receive a social-media post and raw 
+17:38:44 call#188 model=deepseek/deepseek-v4-flash headers=1.6s end=24.8s status=200 provider=StreamLake finish=stop content=252 reasoning=1150 completion=1219 | You write Google search queries that fin
+17:38:45 call#191 model=deepseek/deepseek-v4-flash headers=1.0s end=3.3s status=200 provider=Alibaba finish=stop content=266 reasoning=222 completion=286 | You are a Community Notes quality judge 
+17:38:45 [w2] tweet 2099263336366194956 done in 41s: needsNote=false
+17:38:48 call#192 model=deepseek/deepseek-v4-flash headers=0.6s end=3.7s status=200 provider=Baidu finish=stop content=481 reasoning=211 completion=324 | You are a satire detector for X/Twitter 
+17:38:48 [w2] tweet 2099160797381623834 done in 4s: needsNote=false
+17:38:52 call#184 model=deepseek/deepseek-v4-flash headers=7.4s end=40.6s status=200 provider=StreamLake finish=stop content=326 reasoning=1673 completion=1748 | You write Google search queries that fin
+17:38:55 call#190 model=deepseek/deepseek-v4-flash headers=0.7s end=17.4s status=200 provider=Baidu finish=stop content=4094 reasoning=893 completion=1922 | You receive a social-media post and raw 
+17:38:56 call#194 model=deepseek/deepseek-v4-flash headers=1.6s end=8.0s status=200 provider=StreamLake finish=stop content=435 reasoning=194 completion=299 | You are a satire detector for X/Twitter 
+17:38:59 call#193 model=deepseek/deepseek-v4-flash headers=0.5s end=10.9s status=200 provider=Baidu finish=stop content=3540 reasoning=325 completion=1240 | You receive a social-media post and raw 
+17:39:08 call#195 model=deepseek/deepseek-v4-flash headers=1.3s end=13.0s status=200 provider=StreamLake finish=stop content=278 reasoning=435 completion=496 | You are a Community Notes quality judge 
+17:39:08 [w3] tweet 2099439399570112881 done in 59s: needsNote=true
+17:39:10 call#197 model=deepseek/deepseek-v4-flash headers=1.2s end=10.6s status=200 provider=NextBit finish=stop content=393 reasoning=803 completion=889 | You are a Community Notes quality judge 
+17:39:10 [w1] tweet 2099241712652574861 done in 53s: needsNote=false
+17:39:11 call#196 model=deepseek/deepseek-v4-flash headers=0.9s end=14.4s status=200 provider=StreamLake finish=stop content=217 reasoning=642 completion=700 | You write Google search queries that fin
+17:39:13 call#198 model=deepseek/deepseek-v4-flash headers=1.0s end=13.1s status=200 provider=Alibaba finish=stop content=4447 reasoning=656 completion=1758 | You receive a social-media post and raw 
+17:39:13 call#199 model=deepseek/deepseek-v4-flash headers=0.5s end=4.3s status=200 provider=Baidu finish=stop content=398 reasoning=334 completion=429 | You are a satire detector for X/Twitter 
+17:39:14 call#201 model=deepseek/deepseek-v4-flash headers=0.7s end=1.7s status=200 provider=Parasail finish=stop content=343 reasoning=165 completion=220 | You are a Community Notes quality judge 
+17:39:14 [w0] tweet 2099248617932615800 done in 69s: needsNote=false
+17:39:19 call#200 model=deepseek/deepseek-v4-flash headers=3.4s end=9.9s status=200 provider=StreamLake finish=stop content=674 reasoning=168 completion=313 | You are a satire detector for X/Twitter 
+17:39:23 call#203 model=deepseek/deepseek-v4-flash headers=1.1s end=9.0s status=200 provider=StreamLake finish=stop content=572 reasoning=230 completion=361 | You are a satire detector for X/Twitter 
+17:39:25 call#206 model=deepseek/deepseek-v4-flash headers=1.2s end=1.9s status=200 provider=Baidu finish=stop content=14 reasoning=78 completion=86 | You write Google search queries that fin
+17:39:27 call#207 model=deepseek/deepseek-v4-flash headers=0.6s end=1.7s status=200 provider=Mancer 2 finish=stop content=15 reasoning=77 completion=77 | You write Google search queries that fin
+17:39:28 call#205 model=deepseek/deepseek-v4-flash headers=1.0s end=8.1s status=200 provider=Mancer 2 finish=stop content=210 reasoning=498 completion=575 | You write Google search queries that fin
+17:39:29 call#208 model=deepseek/deepseek-v4-flash headers=0.6s end=1.6s status=200 provider=Baidu finish=stop content=14 reasoning=114 completion=122 | You write Google search queries that fin
+17:39:29 [w0] tweet 2099183151222288514 done in 14s: needsNote=false
+17:39:35 call#209 model=deepseek/deepseek-v4-flash headers=1.9s end=6.9s status=200 provider=StreamLake finish=stop content=473 reasoning=141 completion=244 | You are a satire detector for X/Twitter 
+17:39:47 call#211 model=deepseek/deepseek-v4-flash headers=0.6s end=11.2s status=200 provider=Parasail finish=stop content=321 reasoning=628 completion=666 | You write Google search queries that fin
+17:39:49 call#204 model=deepseek/deepseek-v4-flash headers=1.1s end=33.5s status=200 provider=StreamLake finish=stop content=2292 reasoning=1354 completion=1916 | You receive a social-media post and raw 
+17:39:49 call#210 model=deepseek/deepseek-v4-flash headers=1.4s end=17.3s status=200 provider=NextBit finish=stop content=4150 reasoning=708 completion=1795 | You receive a social-media post and raw 
+17:39:54 call#212 model=deepseek/deepseek-v4-flash headers=1.1s end=5.1s status=200 provider=Mancer 2 finish=stop content=440 reasoning=254 completion=322 | You are a Community Notes quality judge 
+17:39:54 [w2] tweet 2099201410856325186 done in 66s: needsNote=true
+17:39:55 call#202 model=deepseek/deepseek-v4-flash headers=1.4s end=42.0s status=200 provider=StreamLake finish=stop content=236 reasoning=2195 completion=2253 | You write Google search queries that fin
+17:39:57 call#213 model=deepseek/deepseek-v4-flash headers=0.7s end=7.2s status=200 provider=Baidu finish=stop content=120 reasoning=798 completion=865 | You are a Community Notes quality judge 
+17:39:57 [w1] tweet 2099479953720979868 done in 47s: needsNote=false
+17:39:59 call#215 model=deepseek/deepseek-v4-flash headers=0.9s end=5.2s status=200 provider=Parasail finish=stop content=466 reasoning=384 completion=448 | You are a satire detector for X/Twitter 
+17:40:00 call#216 model=deepseek/deepseek-v4-flash headers=0.9s end=3.2s status=200 provider=Alibaba finish=stop content=663 reasoning=124 completion=261 | You are a satire detector for X/Twitter 
+17:40:02 call#218 model=deepseek/deepseek-v4-flash headers=1.0s end=2.6s status=200 provider=Baidu finish=stop content=15 reasoning=143 completion=151 | You write Google search queries that fin
+17:40:05 call#219 model=deepseek/deepseek-v4-flash headers=1.0s end=4.9s status=200 provider=Alibaba finish=stop content=231 reasoning=436 completion=495 | You write Google search queries that fin
+17:40:05 call#220 model=deepseek/deepseek-v4-flash headers=1.0s end=3.0s status=200 provider=Mancer 2 finish=stop content=15 reasoning=124 completion=128 | You write Google search queries that fin
+17:40:08 call#214 model=deepseek/deepseek-v4-flash headers=1.4s end=16.9s status=200 provider=Novita finish=stop content=3716 reasoning=1468 completion=2406 | You receive a social-media post and raw 
+17:40:10 call#221 model=deepseek/deepseek-v4-flash headers=1.4s end=5.0s status=200 provider=StreamLake finish=stop content=15 reasoning=158 completion=166 | You write Google search queries that fin
+17:40:10 [w2] tweet 2099224765458428140 done in 16s: needsNote=false
+17:40:15 call#222 model=deepseek/deepseek-v4-flash headers=0.7s end=7.0s status=200 provider=Parasail finish=stop content=2753 reasoning=268 completion=880 | You receive a social-media post and raw 
+17:40:15 call#224 model=deepseek/deepseek-v4-flash headers=0.7s end=5.4s status=200 provider=Baidu finish=stop content=403 reasoning=435 completion=528 | You are a satire detector for X/Twitter 
+17:40:18 call#226 model=deepseek/deepseek-v4-flash headers=1.1s end=2.9s status=200 provider=Alibaba finish=stop content=15 reasoning=214 completion=221 | You write Google search queries that fin
+17:40:19 call#223 model=deepseek/deepseek-v4-flash headers=7.0s end=10.5s status=200 provider=StreamLake finish=stop content=329 reasoning=129 completion=195 | You are a Community Notes quality judge 
+17:40:19 [w0] tweet 2099286834027147662 done in 50s: needsNote=false
+17:40:20 call#225 model=deepseek/deepseek-v4-flash headers=0.9s end=4.9s status=200 provider=Alibaba finish=stop content=354 reasoning=424 completion=506 | You are a Community Notes quality judge 
+17:40:20 [w1] tweet 2099136316688482636 done in 24s: needsNote=true
+17:40:21 call#227 model=deepseek/deepseek-v4-flash headers=0.9s end=2.9s status=200 provider=Alibaba finish=stop content=15 reasoning=233 completion=240 | You write Google search queries that fin
+17:40:22 call#228 model=deepseek/deepseek-v4-flash headers=0.9s end=3.3s status=200 provider=Baidu finish=stop content=442 reasoning=157 completion=256 | You are a satire detector for X/Twitter 
+17:40:24 call#229 model=deepseek/deepseek-v4-flash headers=0.5s end=3.5s status=200 provider=Parasail finish=stop content=558 reasoning=353 completion=443 | You are a satire detector for X/Twitter 
+17:40:24 [w1] tweet 2099295893027541000 done in 4s: needsNote=false
+17:40:27 call#232 model=deepseek/deepseek-v4-flash headers=0.9s end=3.0s status=200 provider=Alibaba finish=stop content=538 reasoning=155 completion=274 | You are a satire detector for X/Twitter 
+17:40:29 call#230 model=deepseek/deepseek-v4-flash headers=1.0s end=7.6s status=200 provider=Alibaba finish=stop content=180 reasoning=785 completion=836 | You write Google search queries that fin
+17:40:34 call#233 model=deepseek/deepseek-v4-flash headers=1.2s end=7.7s status=200 provider=StreamLake finish=stop content=176 reasoning=316 completion=372 | You write Google search queries that fin
+17:40:35 call#217 model=deepseek/deepseek-v4-flash headers=0.3s end=36.1s status=200 provider=DeepInfra finish=stop content=4489 reasoning=379 completion=1449 | You receive a social-media post and raw 
+17:40:40 call#234 model=deepseek/deepseek-v4-flash headers=0.5s end=5.1s status=200 provider=Parasail finish=stop content=2414 reasoning=336 completion=860 | You receive a social-media post and raw 
+17:40:42 call#237 model=deepseek/deepseek-v4-flash headers=0.8s end=2.1s status=200 provider=Baidu finish=stop content=308 reasoning=122 completion=191 | You are a Community Notes quality judge 
+17:40:42 [w2] tweet 2099434279486775591 done in 32s: needsNote=false
+17:40:44 call#231 model=deepseek/deepseek-v4-flash headers=4.2s end=21.7s status=200 provider=StreamLake finish=stop content=181 reasoning=829 completion=880 | You write Google search queries that fin
+17:40:52 call#236 model=deepseek/deepseek-v4-flash headers=2.4s end=14.8s status=200 provider=GMICloud finish=stop content=3487 reasoning=391 completion=1310 | You receive a social-media post and raw 
+17:40:53 call#238 model=deepseek/deepseek-v4-flash headers=3.5s end=10.5s status=200 provider=StreamLake finish=stop content=515 reasoning=218 completion=331 | You are a satire detector for X/Twitter 
+17:40:56 call#240 model=deepseek/deepseek-v4-flash headers=1.6s end=3.3s status=200 provider=NextBit finish=stop content=267 reasoning=93 completion=157 | You are a Community Notes quality judge 
+17:40:56 [w1] tweet 2099503388501107083 done in 32s: needsNote=false
+17:40:58 call#239 model=deepseek/deepseek-v4-flash headers=1.3s end=10.1s status=200 provider=Novita finish=stop content=3008 reasoning=265 completion=1032 | You receive a social-media post and raw 
+17:41:00 call#235 model=deepseek/deepseek-v4-flash headers=0.3s end=24.5s status=200 provider=DeepInfra finish=stop content=316 reasoning=976 completion=905 | You are a Community Notes quality judge 
+17:41:00 [w3] tweet 2099198952327217574 done in 111s: needsNote=true
+17:41:00 call#242 model=deepseek/deepseek-v4-flash headers=1.5s end=4.7s status=200 provider=NextBit finish=stop content=595 reasoning=174 completion=297 | You are a satire detector for X/Twitter 
+17:41:03 call#245 model=deepseek/deepseek-v4-flash headers=0.7s end=2.6s status=200 provider=Baidu finish=stop content=15 reasoning=197 completion=205 | You write Google search queries that fin
+17:41:03 call#241 model=deepseek/deepseek-v4-flash headers=4.1s end=10.7s status=200 provider=StreamLake finish=stop content=198 reasoning=361 completion=412 | You write Google search queries that fin
+17:41:04 call#243 model=deepseek/deepseek-v4-flash headers=1.4s end=6.0s status=200 provider=NextBit finish=stop content=339 reasoning=394 completion=474 | You are a Community Notes quality judge 
+17:41:04 [w0] tweet 2099482135702958526 done in 45s: needsNote=true
+17:41:05 call#246 model=deepseek/deepseek-v4-flash headers=0.7s end=2.1s status=200 provider=Baidu finish=stop content=14 reasoning=149 completion=157 | You write Google search queries that fin
+17:41:07 call#248 model=deepseek/deepseek-v4-flash headers=0.6s end=2.2s status=200 provider=Baidu finish=stop content=14 reasoning=136 completion=144 | You write Google search queries that fin
+17:41:07 [w1] tweet 2099352016988614852 done in 12s: needsNote=false
+17:41:11 call#247 model=deepseek/deepseek-v4-flash headers=0.6s end=6.2s status=200 provider=Parasail finish=stop content=725 reasoning=323 completion=462 | You are a satire detector for X/Twitter 
+17:41:11 call#250 model=deepseek/deepseek-v4-flash headers=0.8s end=3.6s status=200 provider=Alibaba finish=stop content=671 reasoning=199 completion=334 | You are a satire detector for X/Twitter 
+17:41:12 call#244 model=deepseek/deepseek-v4-flash headers=0.3s end=12.9s status=200 provider=DeepInfra finish=stop content=606 reasoning=171 completion=285 | You are a satire detector for X/Twitter 
+17:41:14 call#251 model=deepseek/deepseek-v4-flash headers=0.6s end=3.1s status=200 provider=Baidu finish=stop content=14 reasoning=232 completion=240 | You write Google search queries that fin
+17:41:16 call#254 model=deepseek/deepseek-v4-flash headers=0.6s end=2.2s status=200 provider=Baidu finish=stop content=14 reasoning=157 completion=165 | You write Google search queries that fin
+17:41:16 call#249 model=deepseek/deepseek-v4-flash headers=1.1s end=9.7s status=200 provider=Novita finish=stop content=2985 reasoning=253 completion=997 | You receive a social-media post and raw 
+17:41:18 call#255 model=deepseek/deepseek-v4-flash headers=0.5s end=1.8s status=200 provider=Baidu finish=stop content=14 reasoning=132 completion=140 | You write Google search queries that fin
+17:41:18 [w0] tweet 2099202344130932842 done in 13s: needsNote=false
+17:41:18 call#256 model=deepseek/deepseek-v4-flash headers=1.0s end=2.1s status=200 provider=Alibaba finish=stop content=267 reasoning=90 completion=149 | You are a Community Notes quality judge 
+17:41:19 [w2] tweet 2099199881512456399 done in 36s: needsNote=false
+17:41:20 call#253 model=deepseek/deepseek-v4-flash headers=0.6s end=7.8s status=200 provider=Baidu finish=stop content=109 reasoning=748 completion=784 | You write Google search queries that fin
+17:41:20 call#257 model=deepseek/deepseek-v4-flash headers=0.6s end=2.5s status=200 provider=Parasail finish=stop content=555 reasoning=174 completion=274 | You are a satire detector for X/Twitter 
+17:41:21 call#252 model=deepseek/deepseek-v4-flash headers=1.5s end=10.2s status=200 provider=NextBit finish=stop content=211 reasoning=680 completion=727 | You write Google search queries that fin
+17:41:23 call#258 model=deepseek/deepseek-v4-flash headers=0.7s end=4.5s status=200 provider=Baidu finish=stop content=388 reasoning=334 completion=422 | You are a satire detector for X/Twitter 
+17:41:27 call#259 model=deepseek/deepseek-v4-flash headers=1.4s end=6.9s status=200 provider=NextBit finish=stop content=179 reasoning=496 completion=548 | You write Google search queries that fin
+17:41:34 call#261 model=deepseek/deepseek-v4-flash headers=0.7s end=11.1s status=200 provider=Mancer 2 finish=stop content=199 reasoning=511 completion=515 | You write Google search queries that fin
+17:41:35 call#262 model=deepseek/deepseek-v4-flash headers=2.2s end=10.9s status=200 provider=GMICloud finish=stop content=2458 reasoning=423 completion=946 | You receive a social-media post and raw 
+17:41:37 call#264 model=deepseek/deepseek-v4-flash headers=0.7s end=2.9s status=200 provider=Baidu finish=stop content=319 reasoning=194 completion=262 | You are a Community Notes quality judge 
+17:41:37 [w1] tweet 2099503167079674202 done in 30s: needsNote=false
+17:41:38 call#260 model=deepseek/deepseek-v4-flash headers=2.1s end=15.1s status=200 provider=GMICloud finish=stop content=2010 reasoning=803 completion=1343 | You receive a social-media post and raw 
+17:41:40 call#265 model=deepseek/deepseek-v4-flash headers=0.6s end=2.9s status=200 provider=Baidu finish=stop content=279 reasoning=183 completion=242 | You are a satire detector for X/Twitter 
+17:41:42 call#263 model=deepseek/deepseek-v4-flash headers=0.5s end=10.7s status=200 provider=Baidu finish=stop content=3483 reasoning=279 completion=1194 | You receive a social-media post and raw 
+17:41:45 call#268 model=deepseek/deepseek-v4-flash headers=0.9s end=5.0s status=200 provider=Baidu finish=stop content=165 reasoning=401 completion=435 | You write Google search queries that fin
+17:41:48 call#269 model=deepseek/deepseek-v4-flash headers=1.6s end=6.0s status=200 provider=StreamLake finish=stop content=263 reasoning=161 completion=223 | You are a Community Notes quality judge 
+17:41:48 [w0] tweet 2099499551472165335 done in 30s: needsNote=false
+17:41:48 call#266 model=deepseek/deepseek-v4-flash headers=7.0s end=10.2s status=200 provider=StreamLake finish=stop content=303 reasoning=129 completion=199 | You are a Community Notes quality judge 
+17:41:48 [w3] tweet 2099430622880256473 done in 48s: needsNote=false
+17:41:51 call#270 model=deepseek/deepseek-v4-flash headers=0.7s end=2.8s status=200 provider=Parasail finish=stop content=796 reasoning=220 completion=366 | You are a satire detector for X/Twitter 
+17:41:54 call#271 model=deepseek/deepseek-v4-flash headers=1.2s end=6.2s status=200 provider=Alibaba finish=stop content=743 reasoning=459 completion=625 | You are a satire detector for X/Twitter 
+17:41:55 call#273 model=deepseek/deepseek-v4-flash headers=0.5s end=4.5s status=200 provider=Baidu finish=stop content=283 reasoning=409 completion=467 | You write Google search queries that fin
+17:41:56 call#274 model=deepseek/deepseek-v4-flash headers=0.9s end=1.5s status=200 provider=Parasail finish=stop content=15 reasoning=116 completion=107 | You write Google search queries that fin
+17:41:57 call#275 model=deepseek/deepseek-v4-flash headers=0.8s end=1.5s status=200 provider=Parasail finish=stop content=15 reasoning=113 completion=109 | You write Google search queries that fin
+17:41:58 call#267 model=deepseek/deepseek-v4-flash headers=1.8s end=19.1s status=200 provider=StreamLake finish=stop content=2598 reasoning=277 completion=959 | You receive a social-media post and raw 
+17:41:58 call#276 model=deepseek/deepseek-v4-flash headers=0.7s end=1.4s status=200 provider=Parasail finish=stop content=15 reasoning=113 completion=109 | You write Google search queries that fin
+17:41:58 [w3] tweet 2099176511320248659 done in 11s: needsNote=false
+17:42:07 call#277 model=deepseek/deepseek-v4-flash headers=2.4s end=9.0s status=200 provider=StreamLake finish=stop content=254 reasoning=263 completion=322 | You are a Community Notes quality judge 
+17:42:07 [w2] tweet 2099292783160725871 done in 49s: needsNote=false
+17:42:10 call#272 model=deepseek/deepseek-v4-flash headers=2.1s end=21.3s status=200 provider=StreamLake finish=stop content=3588 reasoning=349 completion=1110 | You receive a social-media post and raw 
+17:42:10 call#280 model=deepseek/deepseek-v4-flash headers=0.7s end=3.0s status=200 provider=Baidu finish=stop content=383 reasoning=166 completion=251 | You are a satire detector for X/Twitter 
+17:42:12 call#279 model=deepseek/deepseek-v4-flash headers=0.5s end=11.9s status=200 provider=Baidu finish=stop content=3200 reasoning=652 completion=1352 | You receive a social-media post and raw 
+17:42:17 call#278 model=deepseek/deepseek-v4-flash headers=11.3s end=18.8s status=200 provider=StreamLake finish=stop content=608 reasoning=184 completion=314 | You are a satire detector for X/Twitter 
+17:42:18 call#283 model=deepseek/deepseek-v4-flash headers=0.9s end=5.5s status=200 provider=StreamLake finish=stop content=335 reasoning=146 completion=216 | You are a Community Notes quality judge 
+17:42:18 [w0] tweet 2099490124056633661 done in 30s: needsNote=false
+17:42:18 call#282 model=deepseek/deepseek-v4-flash headers=0.7s end=7.6s status=200 provider=Baidu finish=stop content=228 reasoning=799 completion=860 | You write Google search queries that fin
+17:42:21 call#281 model=deepseek/deepseek-v4-flash headers=0.2s end=10.6s status=200 provider=DeepInfra finish=stop content=447 reasoning=449 completion=453 | You are a Community Notes quality judge 
+17:42:21 [w1] tweet 2099431240822628557 done in 43s: needsNote=true
+17:42:22 call#284 model=deepseek/deepseek-v4-flash headers=1.2s end=5.0s status=200 provider=Baidu finish=stop content=304 reasoning=331 completion=407 | You write Google search queries that fin
+17:42:25 call#286 model=deepseek/deepseek-v4-flash headers=0.9s end=4.5s status=200 provider=Alibaba finish=stop content=893 reasoning=199 completion=395 | You are a satire detector for X/Twitter 
+17:42:26 call#285 model=deepseek/deepseek-v4-flash headers=0.6s end=7.9s status=200 provider=Mancer 2 finish=stop content=560 reasoning=202 completion=291 | You are a satire detector for X/Twitter 
+17:42:40 call#288 model=deepseek/deepseek-v4-flash headers=0.2s end=14.8s status=200 provider=DeepInfra finish=stop content=175 reasoning=791 completion=809 | You write Google search queries that fin
+17:42:44 call#289 model=deepseek/deepseek-v4-flash headers=0.5s end=18.4s status=200 provider=Parasail finish=stop content=363 reasoning=1366 completion=1433 | You write Google search queries that fin
+17:42:47 call#287 model=deepseek/deepseek-v4-flash headers=2.3s end=24.8s status=200 provider=StreamLake finish=stop content=3524 reasoning=443 completion=1305 | You receive a social-media post and raw 
+17:42:50 call#292 model=deepseek/deepseek-v4-flash headers=0.7s end=2.7s status=200 provider=Baidu finish=stop content=240 reasoning=223 completion=279 | You are a Community Notes quality judge 
+17:42:50 [w2] tweet 2099444359800234209 done in 42s: needsNote=false
+17:42:52 call#290 model=deepseek/deepseek-v4-flash headers=1.7s end=24.5s status=200 provider=StreamLake finish=stop content=2673 reasoning=324 completion=981 | You receive a social-media post and raw 
+17:42:53 call#293 model=deepseek/deepseek-v4-flash headers=0.8s end=3.7s status=200 provider=Baidu finish=stop content=441 reasoning=210 completion=305 | You are a satire detector for X/Twitter 
+17:42:56 call#295 model=deepseek/deepseek-v4-flash headers=1.3s end=3.4s status=200 provider=Baidu finish=stop content=292 reasoning=221 completion=286 | You are a Community Notes quality judge 
+17:42:56 [w3] tweet 2099458181302739240 done in 57s: needsNote=true
+17:42:59 call#297 model=deepseek/deepseek-v4-flash headers=0.7s end=3.1s status=200 provider=Baidu finish=stop content=220 reasoning=206 completion=256 | You are a satire detector for X/Twitter 
+17:42:59 [w3] tweet 2099358360961429946 done in 3s: needsNote=false
+17:43:04 call#298 model=deepseek/deepseek-v4-flash headers=1.8s end=4.7s status=200 provider=Parasail finish=stop content=486 reasoning=228 completion=314 | You are a satire detector for X/Twitter 
+17:43:05 call#299 model=deepseek/deepseek-v4-flash headers=0.6s end=1.6s status=200 provider=Baidu finish=stop content=14 reasoning=104 completion=112 | You write Google search queries that fin
+17:43:07 call#300 model=deepseek/deepseek-v4-flash headers=0.6s end=1.7s status=200 provider=Baidu finish=stop content=15 reasoning=126 completion=134 | You write Google search queries that fin
+17:43:09 call#301 model=deepseek/deepseek-v4-flash headers=0.6s end=1.9s status=200 provider=Baidu finish=stop content=14 reasoning=111 completion=119 | You write Google search queries that fin
+17:43:09 [w3] tweet 2099391188201799991 done in 10s: needsNote=false
+17:43:10 call#296 model=deepseek/deepseek-v4-flash headers=2.9s end=16.5s status=200 provider=StreamLake finish=stop content=241 reasoning=600 completion=656 | You write Google search queries that fin
+17:43:13 call#302 model=deepseek/deepseek-v4-flash headers=0.5s end=3.9s status=200 provider=Baidu finish=stop content=550 reasoning=245 completion=371 | You are a satire detector for X/Twitter 
+17:43:20 call#294 model=deepseek/deepseek-v4-flash headers=6.2s end=28.0s status=200 provider=StreamLake finish=stop content=3186 reasoning=535 completion=1280 | You receive a social-media post and raw 
+17:43:22 call#303 model=deepseek/deepseek-v4-flash headers=1.3s end=9.5s status=200 provider=NextBit finish=stop content=158 reasoning=626 completion=671 | You write Google search queries that fin
+17:43:25 call#305 model=deepseek/deepseek-v4-flash headers=1.3s end=5.7s status=200 provider=NextBit finish=stop content=328 reasoning=366 completion=434 | You are a Community Notes quality judge 
+17:43:25 [w0] tweet 2099443049478738212 done in 68s: needsNote=false
+17:43:26 call#291 model=deepseek/deepseek-v4-flash headers=0.2s end=41.4s status=200 provider=DeepInfra finish=stop content=3832 reasoning=727 completion=1632 | You receive a social-media post and raw 
+17:43:32 call#306 model=deepseek/deepseek-v4-flash headers=0.7s end=6.3s status=200 provider=Mancer 2 finish=stop content=665 reasoning=257 completion=393 | You are a satire detector for X/Twitter 
+17:43:34 call#307 model=deepseek/deepseek-v4-flash headers=1.2s end=7.6s status=200 provider=StreamLake finish=stop content=458 reasoning=194 completion=290 | You are a Community Notes quality judge 
+17:43:34 [w1] tweet 2099430165168177313 done in 73s: needsNote=true
+17:43:39 call#310 model=deepseek/deepseek-v4-flash headers=1.6s end=5.1s status=200 provider=NextBit finish=stop content=662 reasoning=172 completion=318 | You are a satire detector for X/Twitter 
+17:43:46 call#309 model=deepseek/deepseek-v4-flash headers=4.9s end=14.4s status=200 provider=StreamLake finish=stop content=235 reasoning=446 completion=520 | You write Google search queries that fin
+17:43:47 call#311 model=deepseek/deepseek-v4-flash headers=0.8s end=8.3s status=200 provider=StreamLake finish=stop content=135 reasoning=322 completion=366 | You write Google search queries that fin
+17:43:50 call#308 model=deepseek/deepseek-v4-flash headers=1.6s end=22.4s status=200 provider=StreamLake finish=stop content=2854 reasoning=280 completion=966 | You receive a social-media post and raw 
+17:43:51 call#304 model=deepseek/deepseek-v4-flash headers=0.9s end=35.0s status=200 provider=Mancer 2 finish=stop content=3438 reasoning=817 completion=1481 | You receive a social-media post and raw 
+17:43:55 call#315 model=deepseek/deepseek-v4-flash headers=0.7s end=3.8s status=200 provider=Baidu finish=stop content=293 reasoning=377 completion=443 | You are a Community Notes quality judge 
+17:43:55 [w2] tweet 2099423494845174049 done in 65s: needsNote=false
+17:43:59 call#312 model=deepseek/deepseek-v4-flash headers=2.0s end=9.2s status=200 provider=StreamLake finish=stop content=351 reasoning=273 completion=356 | You are a Community Notes quality judge 
+17:43:59 [w3] tweet 2099403366724198717 done in 50s: needsNote=true
+17:44:00 call#316 model=deepseek/deepseek-v4-flash headers=0.5s end=5.3s status=200 provider=Baidu finish=stop content=275 reasoning=486 completion=548 | You are a satire detector for X/Twitter 
+17:44:02 call#313 model=deepseek/deepseek-v4-flash headers=0.5s end=11.8s status=200 provider=Baidu finish=stop content=3459 reasoning=453 completion=1341 | You receive a social-media post and raw 
+17:44:04 call#318 model=deepseek/deepseek-v4-flash headers=0.6s end=3.6s status=200 provider=Baidu finish=stop content=211 reasoning=284 completion=338 | You write Google search queries that fin
+17:44:07 call#319 model=deepseek/deepseek-v4-flash headers=1.1s end=4.8s status=200 provider=Baidu finish=stop content=353 reasoning=500 completion=580 | You are a Community Notes quality judge 
+17:44:07 [w1] tweet 2099471057144930499 done in 34s: needsNote=false
+17:44:08 call#317 model=deepseek/deepseek-v4-flash headers=1.2s end=9.1s status=200 provider=StreamLake finish=stop content=553 reasoning=167 completion=293 | You are a satire detector for X/Twitter 
+17:44:10 call#320 model=deepseek/deepseek-v4-flash headers=0.9s end=3.3s status=200 provider=Baidu finish=stop content=243 reasoning=193 completion=254 | You are a satire detector for X/Twitter 
+17:44:14 call#323 model=deepseek/deepseek-v4-flash headers=0.6s end=3.4s status=200 provider=Baidu finish=stop content=14 reasoning=253 completion=261 | You write Google search queries that fin
+17:44:16 call#321 model=deepseek/deepseek-v4-flash headers=1.6s end=7.8s status=200 provider=StreamLake finish=stop content=256 reasoning=318 completion=385 | You write Google search queries that fin
+17:44:18 call#324 model=deepseek/deepseek-v4-flash headers=0.9s end=4.1s status=200 provider=Baidu finish=stop content=0 reasoning=306 completion=306 <== EMPTY | You write Google search queries that fin
+[llm] Empty content (attempt 1/4, model: deepseek/deepseek-v4-flash). Retrying in 1000ms...
+17:44:22 call#325 model=deepseek/deepseek-v4-flash headers=0.5s end=3.4s status=200 provider=Baidu finish=stop content=14 reasoning=311 completion=319 | You write Google search queries that fin
+17:44:25 call#327 model=deepseek/deepseek-v4-flash headers=2.1s end=3.2s status=200 provider=Baidu finish=stop content=15 reasoning=223 completion=233 | You write Google search queries that fin
+17:44:25 [w1] tweet 2099472482914947140 done in 18s: needsNote=false
+17:44:32 call#322 model=deepseek/deepseek-v4-flash headers=1.0s end=23.8s status=200 provider=StreamLake finish=stop content=4471 reasoning=236 completion=1274 | You receive a social-media post and raw 
+17:44:34 call#328 model=deepseek/deepseek-v4-flash headers=1.1s end=8.6s status=200 provider=Parasail finish=stop content=595 reasoning=245 completion=339 | You are a satire detector for X/Twitter 
+17:44:41 call#329 model=deepseek/deepseek-v4-flash headers=0.7s end=8.2s status=200 provider=Baidu finish=stop content=459 reasoning=961 completion=1064 | You are a Community Notes quality judge 
+17:44:41 [w2] tweet 2099463187724738740 done in 46s: needsNote=false
+17:44:44 call#331 model=deepseek/deepseek-v4-flash headers=1.1s end=3.6s status=200 provider=Alibaba finish=stop content=622 reasoning=182 completion=317 | You are a satire detector for X/Twitter 
+17:44:49 call#330 model=deepseek/deepseek-v4-flash headers=1.1s end=15.2s status=200 provider=StreamLake finish=stop content=192 reasoning=588 completion=636 | You write Google search queries that fin
+17:44:57 call#314 model=deepseek/deepseek-v4-flash headers=0.2s end=65.7s status=200 provider=DeepInfra finish=stop content=3088 reasoning=339 completion=1099 | You receive a social-media post and raw 
+17:45:03 call#332 model=deepseek/deepseek-v4-flash headers=2.5s end=19.1s status=200 provider=Baidu finish=stop content=259 reasoning=1153 completion=1231 | You write Google search queries that fin
+17:45:06 call#334 model=deepseek/deepseek-v4-flash headers=0.5s end=9.8s status=200 provider=DeepInfra finish=stop content=470 reasoning=195 completion=266 | You are a Community Notes quality judge 
+17:45:06 [w0] tweet 2099358136318763030 done in 101s: needsNote=false
+17:45:08 call#333 model=deepseek/deepseek-v4-flash headers=2.8s end=13.1s status=200 provider=GMICloud finish=stop content=3034 reasoning=315 completion=1090 | You receive a social-media post and raw 
+17:45:10 call#326 model=deepseek/deepseek-v4-flash headers=0.2s end=48.6s status=200 provider=DeepInfra finish=stop content=2503 reasoning=405 completion=1005 | You receive a social-media post and raw 
+17:45:10 call#337 model=deepseek/deepseek-v4-flash headers=0.8s end=2.2s status=200 provider=Baidu finish=stop content=362 reasoning=99 completion=176 | You are a Community Notes quality judge 
+17:45:10 [w1] tweet 2099450620847521832 done in 44s: needsNote=false
+17:45:12 call#338 model=deepseek/deepseek-v4-flash headers=0.8s end=2.1s status=200 provider=Baidu finish=stop content=247 reasoning=115 completion=176 | You are a Community Notes quality judge 
+17:45:12 [w3] tweet 2099403281235927182 done in 72s: needsNote=false
+17:45:13 call#339 model=deepseek/deepseek-v4-flash headers=0.9s end=3.5s status=200 provider=Alibaba finish=stop content=586 reasoning=175 completion=300 | You are a satire detector for X/Twitter 
+17:45:16 call#340 model=deepseek/deepseek-v4-flash headers=0.9s end=4.4s status=200 provider=Alibaba finish=stop content=745 reasoning=237 completion=395 | You are a satire detector for X/Twitter 
+17:45:18 call#335 model=deepseek/deepseek-v4-flash headers=1.0s end=11.2s status=200 provider=StreamLake finish=stop content=653 reasoning=339 completion=494 | You are a satire detector for X/Twitter 
+17:45:21 call#336 model=deepseek/deepseek-v4-flash headers=2.2s end=13.8s status=200 provider=GMICloud finish=stop content=2647 reasoning=470 completion=1228 | You receive a social-media post and raw 
+17:45:25 call#343 model=deepseek/deepseek-v4-flash headers=0.6s end=7.9s status=200 provider=Baidu finish=stop content=309 reasoning=736 completion=819 | You write Google search queries that fin
+17:45:26 call#344 model=deepseek/deepseek-v4-flash headers=1.6s end=4.6s status=200 provider=Baidu finish=stop content=305 reasoning=346 completion=418 | You are a Community Notes quality judge 
+17:45:26 [w2] tweet 2099468576436433007 done in 45s: needsNote=false
+17:45:29 call#345 model=deepseek/deepseek-v4-flash headers=1.0s end=3.3s status=200 provider=Alibaba finish=stop content=514 reasoning=156 completion=271 | You are a satire detector for X/Twitter 
+17:45:30 call#342 model=deepseek/deepseek-v4-flash headers=1.6s end=13.8s status=200 provider=StreamLake finish=stop content=232 reasoning=618 completion=691 | You write Google search queries that fin
+17:45:31 call#341 model=deepseek/deepseek-v4-flash headers=2.4s end=17.7s status=200 provider=Baidu finish=stop content=272 reasoning=711 completion=774 | You write Google search queries that fin
+17:45:34 call#346 model=deepseek/deepseek-v4-flash headers=1.1s end=5.4s status=200 provider=Alibaba finish=stop content=217 reasoning=451 completion=523 | You write Google search queries that fin
+17:45:43 call#348 model=deepseek/deepseek-v4-flash headers=0.7s end=8.3s status=200 provider=Baidu finish=stop content=2443 reasoning=208 completion=797 | You receive a social-media post and raw 
+17:45:48 call#349 model=deepseek/deepseek-v4-flash headers=2.3s end=10.1s status=200 provider=Baidu finish=stop content=2687 reasoning=242 completion=866 | You receive a social-media post and raw 
+17:45:49 call#350 model=deepseek/deepseek-v4-flash headers=0.7s end=8.5s status=200 provider=Parasail finish=stop content=3207 reasoning=297 completion=1088 | You receive a social-media post and raw 
+17:45:52 call#351 model=deepseek/deepseek-v4-flash headers=2.6s end=8.7s status=200 provider=Baidu finish=stop content=568 reasoning=648 completion=770 | You are a Community Notes quality judge 
+17:45:52 [w3] tweet 2099378747988132103 done in 40s: needsNote=true
+17:45:52 call#352 model=deepseek/deepseek-v4-flash headers=1.0s end=3.7s status=200 provider=Alibaba finish=stop content=312 reasoning=293 completion=362 | You are a Community Notes quality judge 
+17:45:52 [w1] tweet 2099335535244234934 done in 42s: needsNote=true
+17:45:53 call#353 model=deepseek/deepseek-v4-flash headers=2.4s end=3.9s status=200 provider=Baidu finish=stop content=362 reasoning=131 completion=211 | You are a Community Notes quality judge 
+17:45:53 [w2] tweet 2099453722082386153 done in 27s: needsNote=true
+17:45:55 call#347 model=deepseek/deepseek-v4-flash headers=1.6s end=21.9s status=200 provider=StreamLake finish=stop content=2828 reasoning=344 completion=1016 | You receive a social-media post and raw 
+17:45:56 call#354 model=deepseek/deepseek-v4-flash headers=0.9s end=4.1s status=200 provider=Alibaba finish=stop content=677 reasoning=253 completion=397 | You are a satire detector for X/Twitter 
+17:45:57 call#356 model=deepseek/deepseek-v4-flash headers=0.9s end=4.2s status=200 provider=Alibaba finish=stop content=628 reasoning=281 completion=422 | You are a satire detector for X/Twitter 
+17:45:59 call#355 model=deepseek/deepseek-v4-flash headers=2.4s end=7.0s status=200 provider=StreamLake finish=stop content=376 reasoning=254 completion=344 | You are a satire detector for X/Twitter 
+17:45:59 [w1] tweet 2099384847722770781 done in 7s: needsNote=false
+17:46:00 call#357 model=deepseek/deepseek-v4-flash headers=1.6s end=4.4s status=200 provider=NextBit finish=stop content=385 reasoning=209 completion=299 | You are a Community Notes quality judge 
+17:46:00 [w0] tweet 2099347136110346291 done in 53s: needsNote=true
+17:46:04 call#360 model=deepseek/deepseek-v4-flash headers=1.3s end=5.3s status=200 provider=Baidu finish=stop content=465 reasoning=431 completion=533 | You are a satire detector for X/Twitter 
+17:46:05 call#358 model=deepseek/deepseek-v4-flash headers=1.2s end=9.5s status=200 provider=Baidu finish=stop content=243 reasoning=841 completion=900 | You write Google search queries that fin
+17:46:21 call#359 model=deepseek/deepseek-v4-flash headers=5.3s end=23.5s status=200 provider=NextBit finish=stop content=175 reasoning=1567 completion=1614 | You write Google search queries that fin
+17:46:22 call#363 model=deepseek/deepseek-v4-flash headers=1.2s end=12.5s status=200 provider=NextBit finish=stop content=3197 reasoning=576 completion=1282 | You receive a social-media post and raw 
+17:46:23 call#362 model=deepseek/deepseek-v4-flash headers=0.2s end=18.3s status=200 provider=DeepInfra finish=stop content=216 reasoning=895 completion=848 | You write Google search queries that fin
+17:46:24 call#361 model=deepseek/deepseek-v4-flash headers=0.2s end=24.2s status=200 provider=DeepInfra finish=stop content=778 reasoning=418 completion=553 | You are a satire detector for X/Twitter 
+17:46:31 call#365 model=deepseek/deepseek-v4-flash headers=0.9s end=6.7s status=200 provider=Baidu finish=stop content=173 reasoning=580 completion=629 | You write Google search queries that fin
+17:46:32 call#364 model=deepseek/deepseek-v4-flash headers=1.2s end=9.2s status=200 provider=NextBit finish=stop content=542 reasoning=623 completion=736 | You are a Community Notes quality judge 
+17:46:32 [w3] tweet 2099409340721500162 done in 40s: needsNote=true
+17:46:35 call#366 model=deepseek/deepseek-v4-flash headers=1.0s end=8.0s status=200 provider=Alibaba finish=stop content=2934 reasoning=247 completion=957 | You receive a social-media post and raw 
+17:46:36 call#368 model=deepseek/deepseek-v4-flash headers=0.8s end=4.8s status=200 provider=Baidu finish=stop content=379 reasoning=304 completion=387 | You are a satire detector for X/Twitter 
+17:46:47 call#367 model=deepseek/deepseek-v4-flash headers=0.8s end=19.9s status=200 provider=DeepInfra finish=stop content=2356 reasoning=489 completion=1046 | You receive a social-media post and raw 
+17:46:48 call#370 model=deepseek/deepseek-v4-flash headers=2.4s end=13.0s status=200 provider=Baidu finish=stop content=363 reasoning=792 completion=872 | You are a Community Notes quality judge 
+17:46:48 [w1] tweet 2099410504326262838 done in 48s: needsNote=true
+17:46:57 call#371 model=deepseek/deepseek-v4-flash headers=1.3s end=20.4s status=200 provider=StreamLake finish=stop content=171 reasoning=1101 completion=1148 | You write Google search queries that fin
+17:46:57 call#372 model=deepseek/deepseek-v4-flash headers=3.1s end=9.7s status=200 provider=DeepInfra finish=stop content=408 reasoning=148 completion=221 | You are a Community Notes quality judge 
+17:46:57 [w2] tweet 2099391866143899682 done in 64s: needsNote=false
+17:46:59 call#373 model=deepseek/deepseek-v4-flash headers=1.5s end=11.3s status=200 provider=NextBit finish=stop content=608 reasoning=772 completion=910 | You are a satire detector for X/Twitter 
+17:47:07 call#374 model=deepseek/deepseek-v4-flash headers=0.6s end=10.3s status=200 provider=DeepInfra finish=stop content=503 reasoning=151 completion=245 | You are a satire detector for X/Twitter 
+17:47:09 call#377 model=deepseek/deepseek-v4-flash headers=0.8s end=1.9s status=200 provider=Baidu finish=stop content=15 reasoning=97 completion=105 | You write Google search queries that fin
+17:47:10 call#369 model=deepseek/deepseek-v4-flash headers=1.1s end=37.0s status=200 provider=StreamLake finish=stop content=3254 reasoning=1197 completion=2021 | You receive a social-media post and raw 
+17:47:11 call#375 model=deepseek/deepseek-v4-flash headers=4.1s end=11.6s status=200 provider=StreamLake finish=stop content=243 reasoning=401 completion=473 | You write Google search queries that fin
+17:47:11 call#378 model=deepseek/deepseek-v4-flash headers=0.6s end=1.7s status=200 provider=Baidu finish=stop content=14 reasoning=86 completion=94 | You write Google search queries that fin
+17:47:13 call#380 model=deepseek/deepseek-v4-flash headers=0.8s end=2.4s status=200 provider=Baidu finish=stop content=14 reasoning=83 completion=91 | You write Google search queries that fin
+17:47:13 [w2] tweet 2099393201391968303 done in 16s: needsNote=false
+17:47:17 call#379 model=deepseek/deepseek-v4-flash headers=2.4s end=6.5s status=200 provider=Baidu finish=stop content=282 reasoning=202 completion=270 | You are a Community Notes quality judge 
+17:47:17 [w0] tweet 2099457745996886145 done in 77s: needsNote=false
+17:47:19 call#381 model=deepseek/deepseek-v4-flash headers=1.2s end=5.7s status=200 provider=Baidu finish=stop content=312 reasoning=395 completion=465 | You are a satire detector for X/Twitter 
+17:47:20 call#382 model=deepseek/deepseek-v4-flash headers=1.2s end=3.5s status=200 provider=Alibaba finish=stop content=532 reasoning=174 completion=289 | You are a satire detector for X/Twitter 
+17:47:23 call#384 model=deepseek/deepseek-v4-flash headers=2.1s end=4.3s status=200 provider=Baidu finish=stop content=185 reasoning=244 completion=289 | You write Google search queries that fin
+17:47:25 call#385 model=deepseek/deepseek-v4-flash headers=0.5s end=4.3s status=200 provider=Parasail finish=stop content=240 reasoning=644 completion=658 | You write Google search queries that fin
+17:47:26 call#376 model=deepseek/deepseek-v4-flash headers=0.8s end=25.6s status=200 provider=StreamLake finish=stop content=2631 reasoning=654 completion=1282 | You receive a social-media post and raw 
+17:47:37 call#386 model=deepseek/deepseek-v4-flash headers=0.8s end=10.8s status=200 provider=StreamLake finish=stop content=329 reasoning=481 completion=556 | You are a Community Notes quality judge 
+17:47:37 [w3] tweet 2099425428460966126 done in 65s: needsNote=false
+17:47:38 call#387 model=deepseek/deepseek-v4-flash headers=1.4s end=9.3s status=200 provider=Novita finish=stop content=2617 reasoning=281 completion=920 | You receive a social-media post and raw 
+17:47:42 call#389 model=deepseek/deepseek-v4-flash headers=0.5s end=4.6s status=200 provider=Baidu finish=stop content=529 reasoning=147 completion=275 | You are a satire detector for X/Twitter 
+17:47:42 call#390 model=deepseek/deepseek-v4-flash headers=2.2s end=4.2s status=200 provider=Baidu finish=stop content=225 reasoning=189 completion=243 | You are a Community Notes quality judge 
+17:47:42 [w2] tweet 2099370498790412542 done in 29s: needsNote=true
+17:47:42 call#388 model=deepseek/deepseek-v4-flash headers=2.3s end=11.0s status=200 provider=GMICloud finish=stop content=3147 reasoning=203 completion=948 | You receive a social-media post and raw 
+17:47:44 call#391 model=deepseek/deepseek-v4-flash headers=0.9s end=2.1s status=200 provider=Alibaba finish=stop content=15 reasoning=150 completion=157 | You write Google search queries that fin
+17:47:46 call#393 model=deepseek/deepseek-v4-flash headers=1.1s end=3.1s status=200 provider=Alibaba finish=stop content=222 reasoning=218 completion=269 | You are a Community Notes quality judge 
+17:47:46 [w0] tweet 2099361927910793549 done in 29s: needsNote=false
+17:47:46 call#394 model=deepseek/deepseek-v4-flash headers=1.2s end=2.7s status=200 provider=Alibaba finish=stop content=15 reasoning=176 completion=183 | You write Google search queries that fin
+17:47:48 call#392 model=deepseek/deepseek-v4-flash headers=1.0s end=5.8s status=200 provider=Alibaba finish=stop content=814 reasoning=380 completion=554 | You are a satire detector for X/Twitter 
+17:47:49 call#396 model=deepseek/deepseek-v4-flash headers=0.9s end=2.5s status=200 provider=Alibaba finish=stop content=15 reasoning=193 completion=200 | You write Google search queries that fin
+17:47:49 [w3] tweet 2099438687893209466 done in 12s: needsNote=false
+17:47:49 call#395 model=deepseek/deepseek-v4-flash headers=1.1s end=3.8s status=200 provider=Parasail finish=stop content=646 reasoning=250 completion=370 | You are a satire detector for X/Twitter 
+17:47:54 call#383 model=deepseek/deepseek-v4-flash headers=0.8s end=35.6s status=200 provider=DeepInfra finish=stop content=4883 reasoning=655 completion=1811 | You receive a social-media post and raw 
+17:47:54 call#398 model=deepseek/deepseek-v4-flash headers=1.6s end=5.4s status=200 provider=NextBit finish=stop content=725 reasoning=180 completion=347 | You are a satire detector for X/Twitter 
+17:47:58 call#401 model=deepseek/deepseek-v4-flash headers=1.0s end=3.7s status=200 provider=Alibaba finish=stop content=168 reasoning=289 completion=341 | You write Google search queries that fin
+17:48:02 call#400 model=deepseek/deepseek-v4-flash headers=1.0s end=8.5s status=200 provider=Alibaba finish=stop content=386 reasoning=868 completion=963 | You are a Community Notes quality judge 
+17:48:02 [w1] tweet 2099443560622051359 done in 75s: needsNote=true
+17:48:07 call#402 model=deepseek/deepseek-v4-flash headers=0.8s end=4.1s status=200 provider=Baidu finish=stop content=342 reasoning=238 completion=315 | You are a satire detector for X/Twitter 
+17:48:11 call#399 model=deepseek/deepseek-v4-flash headers=9.4s end=21.6s status=200 provider=Parasail finish=stop content=238 reasoning=363 completion=398 | You write Google search queries that fin
+17:48:12 call#397 model=deepseek/deepseek-v4-flash headers=9.5s end=23.3s status=200 provider=Parasail finish=stop content=182 reasoning=362 completion=378 | You write Google search queries that fin
+17:48:12 call#404 model=deepseek/deepseek-v4-flash headers=1.2s end=5.0s status=200 provider=NextBit finish=stop content=154 reasoning=301 completion=345 | You write Google search queries that fin
+17:48:13 call#403 model=deepseek/deepseek-v4-flash headers=1.3s end=9.4s status=200 provider=Novita finish=stop content=2851 reasoning=319 completion=1020 | You receive a social-media post and raw 
+17:48:17 call#405 model=deepseek/deepseek-v4-flash headers=1.5s end=4.1s status=200 provider=NextBit finish=stop content=300 reasoning=163 completion=234 | You are a Community Notes quality judge 
+17:48:17 [w3] tweet 2099460772208271869 done in 28s: needsNote=false
+17:48:27 call#407 model=deepseek/deepseek-v4-flash headers=0.9s end=10.6s status=200 provider=Parasail finish=stop content=737 reasoning=260 completion=385 | You are a satire detector for X/Twitter 
+17:48:30 call#406 model=deepseek/deepseek-v4-flash headers=0.7s end=14.3s status=200 provider=Baidu finish=stop content=3502 reasoning=452 completion=1286 | You receive a social-media post and raw 
+17:48:35 call#408 model=deepseek/deepseek-v4-flash headers=2.4s end=17.9s status=200 provider=GMICloud finish=stop content=3344 reasoning=419 completion=1280 | You receive a social-media post and raw 
+17:48:38 call#411 model=deepseek/deepseek-v4-flash headers=1.3s end=7.3s status=200 provider=NextBit finish=stop content=306 reasoning=356 completion=422 | You are a Community Notes quality judge 
+17:48:38 [w2] tweet 2099397118012403803 done in 55s: needsNote=true
+17:48:44 call#409 model=deepseek/deepseek-v4-flash headers=0.2s end=25.2s status=200 provider=DeepInfra finish=stop content=2593 reasoning=301 completion=921 | You receive a social-media post and raw 
+17:48:47 call#414 model=deepseek/deepseek-v4-flash headers=1.4s end=3.6s status=200 provider=Alibaba finish=stop content=246 reasoning=72 completion=130 | You are a Community Notes quality judge 
+17:48:47 [w0] tweet 2099408639622537352 done in 62s: needsNote=false
+17:48:49 call#412 model=deepseek/deepseek-v4-flash headers=1.0s end=13.8s status=200 provider=StreamLake finish=stop content=354 reasoning=475 completion=563 | You are a Community Notes quality judge 
+17:48:49 [w1] tweet 2099263336366194956 done in 46s: needsNote=false
+17:48:53 call#410 model=deepseek/deepseek-v4-flash headers=2.4s end=25.3s status=200 provider=Baidu finish=stop content=186 reasoning=2007 completion=2059 | You write Google search queries that fin
+17:48:54 call#413 model=deepseek/deepseek-v4-flash headers=2.3s end=16.0s status=200 provider=Parasail finish=stop content=631 reasoning=198 completion=337 | You are a satire detector for X/Twitter 
+17:48:58 call#416 model=deepseek/deepseek-v4-flash headers=0.9s end=9.5s status=200 provider=Parasail finish=stop content=532 reasoning=382 completion=482 | You are a satire detector for X/Twitter 
+17:48:58 [w1] tweet 2099160797381623834 done in 9s: needsNote=false
+17:49:00 call#415 model=deepseek/deepseek-v4-flash headers=2.4s end=12.3s status=200 provider=Baidu finish=stop content=303 reasoning=141 completion=214 | You are a satire detector for X/Twitter 
+17:49:03 call#419 model=deepseek/deepseek-v4-flash headers=1.5s end=4.7s status=200 provider=Baidu finish=stop content=362 reasoning=246 completion=332 | You are a satire detector for X/Twitter 
+17:49:08 call#417 model=deepseek/deepseek-v4-flash headers=2.6s end=14.0s status=200 provider=Baidu finish=stop content=184 reasoning=696 completion=758 | You write Google search queries that fin
+17:49:18 call#421 model=deepseek/deepseek-v4-flash headers=0.9s end=15.2s status=200 provider=StreamLake finish=stop content=240 reasoning=804 completion=871 | You write Google search queries that fin
+17:49:20 call#418 model=deepseek/deepseek-v4-flash headers=1.8s end=24.0s status=200 provider=GMICloud finish=stop content=5371 reasoning=421 completion=1702 | You receive a social-media post and raw 
+17:49:24 call#423 model=deepseek/deepseek-v4-flash headers=0.8s end=3.3s status=200 provider=Baidu finish=stop content=293 reasoning=139 completion=206 | You are a Community Notes quality judge 
+17:49:24 [w3] tweet 2099248617932615800 done in 67s: needsNote=false
+17:49:25 call#420 model=deepseek/deepseek-v4-flash headers=1.2s end=25.2s status=200 provider=StreamLake finish=stop content=219 reasoning=1137 completion=1200 | You write Google search queries that fin
+17:49:30 call#424 model=deepseek/deepseek-v4-flash headers=1.4s end=6.4s status=200 provider=Baidu finish=stop content=246 reasoning=533 completion=589 | You are a satire detector for X/Twitter 
+17:49:42 call#425 model=deepseek/deepseek-v4-flash headers=0.7s end=14.7s status=200 provider=Baidu finish=stop content=3175 reasoning=771 completion=1559 | You receive a social-media post and raw 
+17:49:47 call#422 model=deepseek/deepseek-v4-flash headers=1.5s end=36.1s status=200 provider=NextBit finish=stop content=2741 reasoning=1930 completion=2580 | You receive a social-media post and raw 
+17:49:50 call#428 model=deepseek/deepseek-v4-flash headers=1.4s end=8.4s status=200 provider=StreamLake finish=stop content=285 reasoning=278 completion=345 | You are a Community Notes quality judge 
+17:49:50 [w1] tweet 2099201410856325186 done in 52s: needsNote=true
+17:49:54 call#430 model=deepseek/deepseek-v4-flash headers=1.5s end=3.9s status=200 provider=Baidu finish=stop content=521 reasoning=220 completion=328 | You are a satire detector for X/Twitter 
+17:50:11 call#431 model=deepseek/deepseek-v4-flash headers=1.2s end=17.1s status=200 provider=StreamLake finish=stop content=281 reasoning=748 completion=824 | You write Google search queries that fin
+17:50:22 call#429 model=deepseek/deepseek-v4-flash headers=0.2s end=35.1s status=200 provider=DeepInfra finish=stop content=448 reasoning=912 completion=842 | You are a Community Notes quality judge 
+17:50:22 [w2] tweet 2099439399570112881 done in 104s: needsNote=false
+17:50:28 call#433 model=deepseek/deepseek-v4-flash headers=1.6s end=6.3s status=200 provider=NextBit finish=stop content=515 reasoning=236 completion=347 | You are a satire detector for X/Twitter 
+17:50:32 call#434 model=deepseek/deepseek-v4-flash headers=1.9s end=3.2s status=200 provider=StreamLake finish=stop content=15 reasoning=72 completion=80 | You write Google search queries that fin
+17:50:34 call#426 model=deepseek/deepseek-v4-flash headers=0.9s end=64.2s status=200 provider=Mancer 2 finish=stop content=193 reasoning=1959 completion=1824 | You write Google search queries that fin
+17:50:35 call#435 model=deepseek/deepseek-v4-flash headers=0.9s end=3.2s status=200 provider=Parasail finish=stop content=15 reasoning=77 completion=78 | You write Google search queries that fin
+17:50:37 call#436 model=deepseek/deepseek-v4-flash headers=1.4s end=2.4s status=200 provider=StreamLake finish=stop content=15 reasoning=67 completion=75 | You write Google search queries that fin
+17:50:37 [w2] tweet 2099183151222288514 done in 15s: needsNote=false
+17:50:42 call#427 model=deepseek/deepseek-v4-flash headers=1.0s end=69.1s status=200 provider=StreamLake finish=stop content=2385 reasoning=3501 completion=4096 | You receive a social-media post and raw 
+17:50:44 call#432 model=deepseek/deepseek-v4-flash headers=2.4s end=28.8s status=200 provider=GMICloud finish=stop content=4641 reasoning=1022 completion=2171 | You receive a social-media post and raw 
+17:50:47 call#439 model=deepseek/deepseek-v4-flash headers=1.6s end=5.0s status=200 provider=NextBit finish=stop content=295 reasoning=219 completion=288 | You are a Community Notes quality judge 
+17:50:47 [w0] tweet 2099241712652574861 done in 120s: needsNote=false
+17:50:49 call#440 model=deepseek/deepseek-v4-flash headers=0.8s end=5.2s status=200 provider=Baidu finish=stop content=383 reasoning=516 completion=601 | You are a Community Notes quality judge 
+17:50:49 [w1] tweet 2099479953720979868 done in 59s: needsNote=true
+17:50:52 call#437 model=deepseek/deepseek-v4-flash headers=0.2s end=14.5s status=200 provider=DeepInfra finish=stop content=663 reasoning=230 completion=337 | You are a satire detector for X/Twitter 
+17:50:53 call#442 model=deepseek/deepseek-v4-flash headers=0.9s end=3.2s status=200 provider=Alibaba finish=stop content=543 reasoning=126 completion=247 | You are a satire detector for X/Twitter 
+17:50:57 call#444 model=deepseek/deepseek-v4-flash headers=0.9s end=4.5s status=200 provider=Alibaba finish=stop content=130 reasoning=358 completion=392 | You write Google search queries that fin
+17:50:58 call#443 model=deepseek/deepseek-v4-flash headers=1.9s end=6.1s status=200 provider=Baidu finish=stop content=290 reasoning=400 completion=479 | You write Google search queries that fin
+17:51:02 call#438 model=deepseek/deepseek-v4-flash headers=1.3s end=24.0s status=200 provider=NextBit finish=stop content=5452 reasoning=523 completion=1821 | You receive a social-media post and raw 
+17:51:06 call#441 model=deepseek/deepseek-v4-flash headers=2.6s end=18.8s status=200 provider=NextBit finish=stop content=588 reasoning=300 completion=441 | You are a satire detector for X/Twitter 
+17:51:09 call#448 model=deepseek/deepseek-v4-flash headers=1.1s end=2.6s status=200 provider=Alibaba finish=stop content=15 reasoning=103 completion=110 | You write Google search queries that fin
+17:51:12 call#449 model=deepseek/deepseek-v4-flash headers=1.1s end=3.3s status=200 provider=Alibaba finish=stop content=15 reasoning=177 completion=184 | You write Google search queries that fin
+17:51:13 call#445 model=deepseek/deepseek-v4-flash headers=1.4s end=12.8s status=200 provider=StreamLake finish=stop content=1966 reasoning=192 completion=671 | You receive a social-media post and raw 
+17:51:14 call#450 model=deepseek/deepseek-v4-flash headers=0.8s end=1.8s status=200 provider=Alibaba finish=stop content=15 reasoning=92 completion=99 | You write Google search queries that fin
+17:51:14 [w0] tweet 2099224765458428140 done in 26s: needsNote=false
+17:51:17 call#446 model=deepseek/deepseek-v4-flash headers=1.0s end=15.6s status=200 provider=Parasail finish=stop content=384 reasoning=716 completion=710 | You are a Community Notes quality judge 
+17:51:17 [w3] tweet 2099198952327217574 done in 114s: needsNote=true
+17:51:19 call#452 model=deepseek/deepseek-v4-flash headers=1.4s end=5.0s status=200 provider=Baidu finish=stop content=305 reasoning=309 completion=377 | You are a satire detector for X/Twitter 
+17:51:21 call#453 model=deepseek/deepseek-v4-flash headers=0.7s end=3.7s status=200 provider=Baidu finish=stop content=280 reasoning=229 completion=299 | You are a satire detector for X/Twitter 
+17:51:22 call#454 model=deepseek/deepseek-v4-flash headers=0.9s end=2.8s status=200 provider=Alibaba finish=stop content=15 reasoning=208 completion=215 | You write Google search queries that fin
+17:51:23 call#451 model=deepseek/deepseek-v4-flash headers=6.6s end=10.2s status=200 provider=StreamLake finish=stop content=370 reasoning=132 completion=219 | You are a Community Notes quality judge 
+17:51:23 [w1] tweet 2099136316688482636 done in 33s: needsNote=true
+17:51:23 call#455 model=deepseek/deepseek-v4-flash headers=0.5s end=1.7s status=200 provider=Baidu finish=stop content=14 reasoning=109 completion=117 | You write Google search queries that fin
+17:51:27 call#457 model=deepseek/deepseek-v4-flash headers=0.7s end=4.4s status=200 provider=Baidu finish=stop content=271 reasoning=306 completion=371 | You are a satire detector for X/Twitter 
+17:51:27 [w1] tweet 2099295893027541000 done in 4s: needsNote=false
+17:51:31 call#456 model=deepseek/deepseek-v4-flash headers=1.2s end=9.6s status=200 provider=Alibaba finish=stop content=217 reasoning=835 completion=895 | You write Google search queries that fin
+17:51:31 call#459 model=deepseek/deepseek-v4-flash headers=1.9s end=4.3s status=200 provider=Baidu finish=stop content=308 reasoning=181 completion=252 | You are a satire detector for X/Twitter 
+17:51:38 call#458 model=deepseek/deepseek-v4-flash headers=2.2s end=14.9s status=200 provider=Mancer 2 finish=stop content=197 reasoning=514 completion=554 | You write Google search queries that fin
+17:51:39 call#460 model=deepseek/deepseek-v4-flash headers=0.8s end=7.7s status=200 provider=StreamLake finish=stop content=276 reasoning=316 completion=395 | You write Google search queries that fin
+17:51:41 call#447 model=deepseek/deepseek-v4-flash headers=3.5s end=36.8s status=200 provider=StreamLake finish=stop content=3406 reasoning=1016 completion=1843 | You receive a social-media post and raw 
+17:51:54 call#462 model=deepseek/deepseek-v4-flash headers=11.8s end=13.3s status=200 provider=Alibaba finish=stop content=223 reasoning=123 completion=172 | You are a Community Notes quality judge 
+17:51:54 [w2] tweet 2099286834027147662 done in 77s: needsNote=false
+17:51:59 call#461 model=deepseek/deepseek-v4-flash headers=0.7s end=24.2s status=200 provider=Parasail finish=stop content=3635 reasoning=385 completion=1194 | You receive a social-media post and raw 
+17:52:01 call#465 model=deepseek/deepseek-v4-flash headers=1.7s end=6.5s status=200 provider=StreamLake finish=stop content=520 reasoning=182 completion=288 | You are a satire detector for X/Twitter 
+17:52:02 call#466 model=deepseek/deepseek-v4-flash headers=0.7s end=3.4s status=200 provider=Baidu finish=stop content=263 reasoning=263 completion=321 | You are a Community Notes quality judge 
+17:52:02 [w0] tweet 2099434279486775591 done in 48s: needsNote=false
+17:52:05 call#463 model=deepseek/deepseek-v4-flash headers=2.2s end=22.4s status=200 provider=GMICloud finish=stop content=3906 reasoning=733 completion=1728 | You receive a social-media post and raw 
+17:52:05 call#467 model=deepseek/deepseek-v4-flash headers=1.1s end=4.7s status=200 provider=Baidu finish=stop content=185 reasoning=300 completion=342 | You write Google search queries that fin
+17:52:06 call#464 model=deepseek/deepseek-v4-flash headers=1.0s end=22.5s status=200 provider=Parasail finish=stop content=2353 reasoning=331 completion=968 | You receive a social-media post and raw 
+17:52:08 call#468 model=deepseek/deepseek-v4-flash headers=1.3s end=5.8s status=200 provider=NextBit finish=stop content=480 reasoning=180 completion=290 | You are a satire detector for X/Twitter 
+17:52:09 call#470 model=deepseek/deepseek-v4-flash headers=1.3s end=3.2s status=200 provider=NextBit finish=stop content=271 reasoning=103 completion=164 | You are a Community Notes quality judge 
+17:52:09 [w1] tweet 2099503388501107083 done in 42s: needsNote=false
+17:52:11 call#471 model=deepseek/deepseek-v4-flash headers=0.9s end=3.1s status=200 provider=Baidu finish=stop content=14 reasoning=220 completion=228 | You write Google search queries that fin
+17:52:12 call#469 model=deepseek/deepseek-v4-flash headers=1.5s end=7.4s status=200 provider=NextBit finish=stop content=420 reasoning=312 completion=416 | You are a Community Notes quality judge 
+17:52:12 [w3] tweet 2099482135702958526 done in 55s: needsNote=true
+17:52:13 call#473 model=deepseek/deepseek-v4-flash headers=0.9s end=3.4s status=200 provider=Alibaba finish=stop content=610 reasoning=160 completion=296 | You are a satire detector for X/Twitter 
+17:52:15 call#474 model=deepseek/deepseek-v4-flash headers=0.7s end=3.6s status=200 provider=Baidu finish=stop content=14 reasoning=267 completion=275 | You write Google search queries that fin
+17:52:18 call#477 model=deepseek/deepseek-v4-flash headers=1.1s end=3.2s status=200 provider=Baidu finish=stop content=15 reasoning=171 completion=179 | You write Google search queries that fin
+17:52:18 [w0] tweet 2099352016988614852 done in 16s: needsNote=false
+17:52:20 call#472 model=deepseek/deepseek-v4-flash headers=2.7s end=11.2s status=200 provider=GMICloud finish=stop content=2151 reasoning=207 completion=710 | You receive a social-media post and raw 
+17:52:21 call#475 model=deepseek/deepseek-v4-flash headers=2.3s end=8.3s status=200 provider=Baidu finish=stop content=466 reasoning=184 completion=293 | You are a satire detector for X/Twitter 
+17:52:22 call#476 model=deepseek/deepseek-v4-flash headers=0.6s end=9.4s status=200 provider=Baidu finish=stop content=166 reasoning=867 completion=910 | You write Google search queries that fin
+17:52:23 call#478 model=deepseek/deepseek-v4-flash headers=0.9s end=4.8s status=200 provider=Alibaba finish=stop content=819 reasoning=284 completion=454 | You are a satire detector for X/Twitter 
+17:52:24 call#480 model=deepseek/deepseek-v4-flash headers=0.9s end=3.2s status=200 provider=Baidu finish=stop content=14 reasoning=227 completion=235 | You write Google search queries that fin
+17:52:26 call#482 model=deepseek/deepseek-v4-flash headers=0.7s end=2.3s status=200 provider=Baidu finish=stop content=14 reasoning=133 completion=141 | You write Google search queries that fin
+17:52:29 call#484 model=deepseek/deepseek-v4-flash headers=0.6s end=2.5s status=200 provider=Baidu finish=stop content=14 reasoning=159 completion=167 | You write Google search queries that fin
+17:52:29 [w3] tweet 2099202344130932842 done in 16s: needsNote=false
+17:52:30 call#481 model=deepseek/deepseek-v4-flash headers=1.2s end=6.7s status=200 provider=NextBit finish=stop content=358 reasoning=439 completion=515 | You write Google search queries that fin
+17:52:33 call#479 model=deepseek/deepseek-v4-flash headers=0.2s end=13.6s status=200 provider=DeepInfra finish=stop content=328 reasoning=188 completion=228 | You are a Community Notes quality judge 
+17:52:33 [w2] tweet 2099199881512456399 done in 39s: needsNote=false
+17:52:36 call#485 model=deepseek/deepseek-v4-flash headers=1.1s end=7.3s status=200 provider=Parasail finish=stop content=711 reasoning=166 completion=296 | You are a satire detector for X/Twitter 
+17:52:42 call#488 model=deepseek/deepseek-v4-flash headers=1.3s end=5.9s status=200 provider=NextBit finish=stop content=214 reasoning=369 completion=429 | You write Google search queries that fin
+17:52:44 call#483 model=deepseek/deepseek-v4-flash headers=0.7s end=19.7s status=200 provider=StreamLake finish=stop content=3913 reasoning=292 completion=1312 | You receive a social-media post and raw 
+17:52:45 call#486 model=deepseek/deepseek-v4-flash headers=1.2s end=11.8s status=200 provider=NextBit finish=stop content=561 reasoning=773 completion=905 | You are a satire detector for X/Twitter 
+17:52:47 call#489 model=deepseek/deepseek-v4-flash headers=1.0s end=2.7s status=200 provider=Baidu finish=stop content=298 reasoning=153 completion=224 | You are a Community Notes quality judge 
+17:52:47 [w1] tweet 2099430622880256473 done in 38s: needsNote=false
+17:52:53 call#487 model=deepseek/deepseek-v4-flash headers=1.5s end=19.6s status=200 provider=StreamLake finish=stop content=2641 reasoning=466 completion=1023 | You receive a social-media post and raw 
+17:52:54 call#490 model=deepseek/deepseek-v4-flash headers=0.2s end=8.5s status=200 provider=DeepInfra finish=stop content=182 reasoning=307 completion=336 | You write Google search queries that fin
+17:52:56 call#493 model=deepseek/deepseek-v4-flash headers=1.1s end=3.2s status=200 provider=Baidu finish=stop content=355 reasoning=174 completion=247 | You are a Community Notes quality judge 
+17:52:56 [w0] tweet 2099503167079674202 done in 38s: needsNote=false
+17:52:57 call#492 model=deepseek/deepseek-v4-flash headers=1.1s end=10.3s status=200 provider=StreamLake finish=stop content=500 reasoning=365 completion=475 | You are a satire detector for X/Twitter 
+17:52:59 call#491 model=deepseek/deepseek-v4-flash headers=2.4s end=14.2s status=200 provider=GMICloud finish=stop content=2490 reasoning=483 completion=1119 | You receive a social-media post and raw 
+17:53:02 call#496 model=deepseek/deepseek-v4-flash headers=0.5s end=5.3s status=200 provider=Baidu finish=stop content=165 reasoning=449 completion=480 | You write Google search queries that fin
+17:53:04 call#497 model=deepseek/deepseek-v4-flash headers=1.3s end=4.3s status=200 provider=StreamLake finish=stop content=350 reasoning=100 completion=181 | You are a Community Notes quality judge 
+17:53:04 [w3] tweet 2099499551472165335 done in 35s: needsNote=false
+17:53:08 call#495 model=deepseek/deepseek-v4-flash headers=0.6s end=11.2s status=200 provider=Baidu finish=stop content=2647 reasoning=463 completion=1136 | You receive a social-media post and raw 
+17:53:09 call#498 model=deepseek/deepseek-v4-flash headers=1.1s end=5.6s status=200 provider=Alibaba finish=stop content=771 reasoning=319 completion=488 | You are a satire detector for X/Twitter 
+17:53:11 call#494 model=deepseek/deepseek-v4-flash headers=1.0s end=14.4s status=200 provider=Parasail finish=stop content=696 reasoning=432 completion=523 | You are a satire detector for X/Twitter 
+17:53:12 call#501 model=deepseek/deepseek-v4-flash headers=0.8s end=2.4s status=200 provider=Parasail finish=stop content=15 reasoning=116 completion=111 | You write Google search queries that fin
+17:53:15 call#503 model=deepseek/deepseek-v4-flash headers=1.3s end=3.0s status=200 provider=Parasail finish=stop content=15 reasoning=94 completion=95 | You write Google search queries that fin
+17:53:15 call#500 model=deepseek/deepseek-v4-flash headers=0.8s end=6.8s status=200 provider=StreamLake finish=stop content=329 reasoning=317 completion=393 | You are a Community Notes quality judge 
+17:53:15 [w2] tweet 2099292783160725871 done in 42s: needsNote=true
+17:53:17 call#502 model=deepseek/deepseek-v4-flash headers=1.2s end=6.4s status=200 provider=Alibaba finish=stop content=228 reasoning=556 completion=607 | You write Google search queries that fin
+17:53:18 call#504 model=deepseek/deepseek-v4-flash headers=0.8s end=2.8s status=200 provider=Baidu finish=stop content=14 reasoning=170 completion=178 | You write Google search queries that fin
+17:53:18 [w3] tweet 2099176511320248659 done in 14s: needsNote=false
+17:53:22 call#505 model=deepseek/deepseek-v4-flash headers=1.3s end=7.0s status=200 provider=StreamLake finish=stop content=656 reasoning=180 completion=319 | You are a satire detector for X/Twitter 
+17:53:25 call#499 model=deepseek/deepseek-v4-flash headers=0.6s end=18.4s status=200 provider=Parasail finish=stop content=3103 reasoning=284 completion=907 | You receive a social-media post and raw 
+17:53:26 call#506 model=deepseek/deepseek-v4-flash headers=2.3s end=8.1s status=200 provider=Baidu finish=stop content=388 reasoning=102 completion=197 | You are a satire detector for X/Twitter 
+17:53:28 call#509 model=deepseek/deepseek-v4-flash headers=1.2s end=3.5s status=200 provider=Alibaba finish=stop content=437 reasoning=179 completion=265 | You are a Community Notes quality judge 
+17:53:28 [w1] tweet 2099431240822628557 done in 41s: needsNote=true
+17:53:34 call#511 model=deepseek/deepseek-v4-flash headers=2.3s end=6.4s status=200 provider=Baidu finish=stop content=377 reasoning=128 completion=207 | You are a satire detector for X/Twitter 
+17:53:35 call#507 model=deepseek/deepseek-v4-flash headers=2.3s end=13.1s status=200 provider=Baidu finish=stop content=216 reasoning=562 completion=622 | You write Google search queries that fin
+17:53:36 call#510 model=deepseek/deepseek-v4-flash headers=1.0s end=9.8s status=200 provider=Baidu finish=stop content=185 reasoning=909 completion=966 | You write Google search queries that fin
+17:53:46 call#508 model=deepseek/deepseek-v4-flash headers=1.6s end=23.3s status=200 provider=StreamLake finish=stop content=4074 reasoning=370 completion=1285 | You receive a social-media post and raw 
+17:53:51 call#512 model=deepseek/deepseek-v4-flash headers=1.4s end=16.2s status=200 provider=StreamLake finish=stop content=313 reasoning=978 completion=1064 | You write Google search queries that fin
+17:53:51 call#515 model=deepseek/deepseek-v4-flash headers=1.4s end=5.2s status=200 provider=StreamLake finish=stop content=280 reasoning=113 completion=172 | You are a Community Notes quality judge 
+17:53:51 [w0] tweet 2099490124056633661 done in 55s: needsNote=false
+17:53:54 call#513 model=deepseek/deepseek-v4-flash headers=2.3s end=15.8s status=200 provider=GMICloud finish=stop content=3333 reasoning=497 completion=1403 | You receive a social-media post and raw 
+17:53:55 call#516 model=deepseek/deepseek-v4-flash headers=1.0s end=4.2s status=200 provider=Alibaba finish=stop content=727 reasoning=193 completion=337 | You are a satire detector for X/Twitter 
+17:53:57 call#514 model=deepseek/deepseek-v4-flash headers=2.5s end=17.0s status=200 provider=GMICloud finish=stop content=4401 reasoning=308 completion=1425 | You receive a social-media post and raw 
+17:53:59 call#517 model=deepseek/deepseek-v4-flash headers=1.3s end=4.7s status=200 provider=Baidu finish=stop content=292 reasoning=328 completion=404 | You are a Community Notes quality judge 
+17:53:59 [w3] tweet 2099444359800234209 done in 41s: needsNote=false
+17:54:00 call#520 model=deepseek/deepseek-v4-flash headers=0.8s end=2.7s status=200 provider=Baidu finish=stop content=411 reasoning=124 completion=204 | You are a Community Notes quality judge 
+17:54:00 [w2] tweet 2099458181302739240 done in 45s: needsNote=true
+17:54:06 call#518 model=deepseek/deepseek-v4-flash headers=0.5s end=10.5s status=200 provider=DeepInfra finish=stop content=231 reasoning=405 completion=456 | You write Google search queries that fin
+17:54:09 call#521 model=deepseek/deepseek-v4-flash headers=2.4s end=10.0s status=200 provider=Baidu finish=stop content=341 reasoning=195 completion=279 | You are a satire detector for X/Twitter 
+17:54:09 [w3] tweet 2099423494845174049 done in 10s: needsNote=false
+17:54:14 call#523 model=deepseek/deepseek-v4-flash headers=1.0s end=5.1s status=200 provider=StreamLake finish=stop content=486 reasoning=155 completion=258 | You are a satire detector for X/Twitter 
+17:54:18 call#525 model=deepseek/deepseek-v4-flash headers=1.1s end=3.7s status=200 provider=Baidu finish=stop content=15 reasoning=220 completion=228 | You write Google search queries that fin
+17:54:20 call#526 model=deepseek/deepseek-v4-flash headers=0.5s end=2.4s status=200 provider=Baidu finish=stop content=15 reasoning=189 completion=197 | You write Google search queries that fin
+17:54:22 call#527 model=deepseek/deepseek-v4-flash headers=0.7s end=1.8s status=200 provider=Baidu finish=stop content=14 reasoning=118 completion=126 | You write Google search queries that fin
+17:54:22 [w3] tweet 2099391188201799991 done in 13s: needsNote=false
+17:54:23 call#522 model=deepseek/deepseek-v4-flash headers=2.3s end=23.3s status=200 provider=DeepInfra finish=stop content=593 reasoning=256 completion=342 | You are a satire detector for X/Twitter 
+17:54:23 [w2] tweet 2099358360961429946 done in 23s: needsNote=false
+17:54:23 call#519 model=deepseek/deepseek-v4-flash headers=1.2s end=27.7s status=200 provider=StreamLake finish=stop content=3779 reasoning=1067 completion=1968 | You receive a social-media post and raw 
+17:54:28 call#529 model=deepseek/deepseek-v4-flash headers=1.2s end=5.1s status=200 provider=NextBit finish=stop content=579 reasoning=238 completion=370 | You are a satire detector for X/Twitter 
+17:54:29 call#530 model=deepseek/deepseek-v4-flash headers=1.5s end=5.6s status=200 provider=NextBit finish=stop content=514 reasoning=270 completion=388 | You are a Community Notes quality judge 
+17:54:29 [w1] tweet 2099443049478738212 done in 61s: needsNote=false
+17:54:30 call#528 model=deepseek/deepseek-v4-flash headers=1.4s end=8.1s status=200 provider=StreamLake finish=stop content=648 reasoning=200 completion=341 | You are a satire detector for X/Twitter 
+17:54:35 call#532 model=deepseek/deepseek-v4-flash headers=1.4s end=6.5s status=200 provider=NextBit finish=stop content=693 reasoning=285 completion=431 | You are a satire detector for X/Twitter 
+17:54:37 call#533 model=deepseek/deepseek-v4-flash headers=1.3s end=7.0s status=200 provider=NextBit finish=stop content=204 reasoning=440 completion=496 | You write Google search queries that fin
+17:54:45 call#531 model=deepseek/deepseek-v4-flash headers=0.8s end=17.5s status=200 provider=Parasail finish=stop content=260 reasoning=735 completion=788 | You write Google search queries that fin
+17:54:53 call#524 model=deepseek/deepseek-v4-flash headers=0.3s end=41.8s status=200 provider=DeepInfra finish=stop content=2923 reasoning=793 completion=1483 | You receive a social-media post and raw 
+17:54:54 call#534 model=deepseek/deepseek-v4-flash headers=1.4s end=18.7s status=200 provider=StreamLake finish=stop content=153 reasoning=1132 completion=1180 | You write Google search queries that fin
+17:54:58 call#535 model=deepseek/deepseek-v4-flash headers=2.0s end=16.5s status=200 provider=GMICloud finish=stop content=2643 reasoning=719 completion=1361 | You receive a social-media post and raw 
+17:54:59 call#537 model=deepseek/deepseek-v4-flash headers=1.3s end=6.0s status=200 provider=NextBit finish=stop content=419 reasoning=344 completion=429 | You are a Community Notes quality judge 
+17:54:59 [w0] tweet 2099430165168177313 done in 68s: needsNote=true
+17:55:02 call#536 model=deepseek/deepseek-v4-flash headers=2.2s end=12.7s status=200 provider=GMICloud finish=stop content=2822 reasoning=265 completion=942 | You receive a social-media post and raw 
+17:55:05 call#539 model=deepseek/deepseek-v4-flash headers=1.0s end=7.0s status=200 provider=Alibaba finish=stop content=337 reasoning=380 completion=452 | You are a Community Notes quality judge 
+17:55:05 [w3] tweet 2099403366724198717 done in 43s: needsNote=true
+17:55:07 call#541 model=deepseek/deepseek-v4-flash headers=1.2s end=5.2s status=200 provider=Alibaba finish=stop content=475 reasoning=356 completion=459 | You are a Community Notes quality judge 
+17:55:07 [w2] tweet 2099358136318763030 done in 45s: needsNote=false
+17:55:12 call#538 model=deepseek/deepseek-v4-flash headers=0.7s end=15.3s status=200 provider=Baidu finish=stop content=3968 reasoning=503 completion=1595 | You receive a social-media post and raw 
+17:55:13 call#540 model=deepseek/deepseek-v4-flash headers=0.2s end=14.7s status=200 provider=DeepInfra finish=stop content=752 reasoning=205 completion=316 | You are a satire detector for X/Twitter 
+17:55:14 call#543 model=deepseek/deepseek-v4-flash headers=1.1s end=6.1s status=200 provider=NextBit finish=stop content=609 reasoning=297 completion=427 | You are a satire detector for X/Twitter 
+17:55:15 call#542 model=deepseek/deepseek-v4-flash headers=2.8s end=9.8s status=200 provider=StreamLake finish=stop content=510 reasoning=239 completion=356 | You are a satire detector for X/Twitter 
+17:55:19 call#546 model=deepseek/deepseek-v4-flash headers=0.5s end=4.9s status=200 provider=Baidu finish=stop content=14 reasoning=419 completion=429 | You write Google search queries that fin
+17:55:19 call#544 model=deepseek/deepseek-v4-flash headers=0.9s end=6.3s status=200 provider=Baidu finish=stop content=378 reasoning=523 completion=614 | You are a Community Notes quality judge 
+17:55:19 [w1] tweet 2099471057144930499 done in 50s: needsNote=false
+17:55:19 call#545 model=deepseek/deepseek-v4-flash headers=1.8s end=5.7s status=200 provider=Baidu finish=stop content=193 reasoning=361 completion=411 | You write Google search queries that fin
+17:55:21 call#547 model=deepseek/deepseek-v4-flash headers=0.7s end=6.4s status=200 provider=StreamLake finish=stop content=166 reasoning=281 completion=324 | You write Google search queries that fin
+17:55:23 call#548 model=deepseek/deepseek-v4-flash headers=0.9s end=4.6s status=200 provider=Baidu finish=stop content=14 reasoning=396 completion=404 | You write Google search queries that fin
+17:55:27 call#550 model=deepseek/deepseek-v4-flash headers=1.2s end=4.2s status=200 provider=Baidu finish=stop content=14 reasoning=276 completion=284 | You write Google search queries that fin
+17:55:27 [w2] tweet 2099472482914947140 done in 20s: needsNote=false
+17:55:28 call#549 model=deepseek/deepseek-v4-flash headers=0.8s end=9.9s status=200 provider=Parasail finish=stop content=566 reasoning=285 completion=375 | You are a satire detector for X/Twitter 
+17:55:32 call#553 model=deepseek/deepseek-v4-flash headers=0.9s end=4.5s status=200 provider=Alibaba finish=stop content=433 reasoning=178 completion=272 | You are a satire detector for X/Twitter 
+17:55:39 call#552 model=deepseek/deepseek-v4-flash headers=0.8s end=13.2s status=200 provider=StreamLake finish=stop content=2356 reasoning=336 completion=918 | You receive a social-media post and raw 
+17:55:39 call#555 model=deepseek/deepseek-v4-flash headers=2.2s end=7.6s status=200 provider=Baidu finish=stop content=244 reasoning=483 completion=550 | You write Google search queries that fin
+17:55:40 call#551 model=deepseek/deepseek-v4-flash headers=2.1s end=16.3s status=200 provider=GMICloud finish=stop content=4167 reasoning=317 completion=1323 | You receive a social-media post and raw 
+17:55:42 call#556 model=deepseek/deepseek-v4-flash headers=0.9s end=3.3s status=200 provider=Baidu finish=stop content=298 reasoning=238 completion=311 | You are a Community Notes quality judge 
+17:55:42 [w3] tweet 2099403281235927182 done in 37s: needsNote=false
+17:55:44 call#557 model=deepseek/deepseek-v4-flash headers=0.7s end=3.8s status=200 provider=Baidu finish=stop content=539 reasoning=257 completion=377 | You are a Community Notes quality judge 
+17:55:44 [w0] tweet 2099463187724738740 done in 45s: needsNote=true
+17:55:46 call#554 model=deepseek/deepseek-v4-flash headers=0.8s end=17.8s status=200 provider=Parasail finish=stop content=241 reasoning=523 completion=547 | You write Google search queries that fin
+17:55:47 call#558 model=deepseek/deepseek-v4-flash headers=0.8s end=5.2s status=200 provider=Alibaba finish=stop content=932 reasoning=302 completion=515 | You are a satire detector for X/Twitter 
+17:55:48 call#559 model=deepseek/deepseek-v4-flash headers=0.9s end=3.8s status=200 provider=Alibaba finish=stop content=571 reasoning=202 completion=329 | You are a satire detector for X/Twitter 
+17:55:54 call#562 model=deepseek/deepseek-v4-flash headers=0.7s end=6.1s status=200 provider=Baidu finish=stop content=153 reasoning=535 completion=570 | You write Google search queries that fin
+17:55:55 call#561 model=deepseek/deepseek-v4-flash headers=2.0s end=7.8s status=200 provider=Baidu finish=stop content=227 reasoning=620 completion=680 | You write Google search queries that fin
+17:56:07 call#560 model=deepseek/deepseek-v4-flash headers=4.8s end=22.1s status=200 provider=StreamLake finish=stop content=3303 reasoning=213 completion=1097 | You receive a social-media post and raw 
+17:56:08 call#563 model=deepseek/deepseek-v4-flash headers=2.1s end=16.1s status=200 provider=GMICloud finish=stop content=3462 reasoning=539 completion=1399 | You receive a social-media post and raw 
+17:56:10 call#566 model=deepseek/deepseek-v4-flash headers=0.9s end=3.4s status=200 provider=Baidu finish=stop content=384 reasoning=231 completion=322 | You are a Community Notes quality judge 
+17:56:10 [w2] tweet 2099468576436433007 done in 43s: needsNote=false
+17:56:12 call#567 model=deepseek/deepseek-v4-flash headers=1.1s end=4.2s status=200 provider=Baidu finish=stop content=350 reasoning=289 completion=370 | You are a Community Notes quality judge 
+17:56:12 [w1] tweet 2099450620847521832 done in 53s: needsNote=false
+17:56:15 call#569 model=deepseek/deepseek-v4-flash headers=1.0s end=3.2s status=200 provider=Alibaba finish=stop content=408 reasoning=152 completion=245 | You are a satire detector for X/Twitter 
+17:56:17 call#568 model=deepseek/deepseek-v4-flash headers=1.1s end=6.2s status=200 provider=Alibaba finish=stop content=628 reasoning=203 completion=333 | You are a satire detector for X/Twitter 
+17:56:22 call#570 model=deepseek/deepseek-v4-flash headers=0.9s end=7.2s status=200 provider=Alibaba finish=stop content=177 reasoning=472 completion=528 | You write Google search queries that fin
+17:56:23 call#565 model=deepseek/deepseek-v4-flash headers=0.9s end=24.6s status=200 provider=Parasail finish=stop content=3004 reasoning=489 completion=1150 | You receive a social-media post and raw 
+17:56:26 call#564 model=deepseek/deepseek-v4-flash headers=0.3s end=29.6s status=200 provider=DeepInfra finish=stop content=3144 reasoning=189 completion=936 | You receive a social-media post and raw 
+17:56:28 call#572 model=deepseek/deepseek-v4-flash headers=1.6s end=4.8s status=200 provider=NextBit finish=stop content=356 reasoning=231 completion=314 | You are a Community Notes quality judge 
+17:56:28 [w3] tweet 2099347136110346291 done in 46s: needsNote=true
+17:56:31 call#574 model=deepseek/deepseek-v4-flash headers=1.4s end=4.3s status=200 provider=Alibaba finish=stop content=411 reasoning=273 completion=360 | You are a Community Notes quality judge 
+17:56:31 [w0] tweet 2099335535244234934 done in 47s: needsNote=true
+17:56:31 call#571 model=deepseek/deepseek-v4-flash headers=7.3s end=14.8s status=200 provider=StreamLake finish=stop content=255 reasoning=458 completion=540 | You write Google search queries that fin
+17:56:32 call#575 model=deepseek/deepseek-v4-flash headers=0.9s end=3.3s status=200 provider=Alibaba finish=stop content=712 reasoning=126 completion=281 | You are a satire detector for X/Twitter 
+17:56:41 call#573 model=deepseek/deepseek-v4-flash headers=1.9s end=15.3s status=200 provider=StreamLake finish=stop content=2606 reasoning=321 completion=1046 | You receive a social-media post and raw 
+17:56:43 call#576 model=deepseek/deepseek-v4-flash headers=0.2s end=12.9s status=200 provider=DeepInfra finish=stop content=581 reasoning=214 completion=354 | You are a satire detector for X/Twitter 
+17:56:43 [w0] tweet 2099384847722770781 done in 13s: needsNote=false
+17:56:45 call#579 model=deepseek/deepseek-v4-flash headers=1.3s end=4.3s status=200 provider=Baidu finish=stop content=315 reasoning=297 completion=374 | You are a Community Notes quality judge 
+17:56:45 [w1] tweet 2099453722082386153 done in 33s: needsNote=true
+17:56:46 call#577 model=deepseek/deepseek-v4-flash headers=0.7s end=14.0s status=200 provider=Baidu finish=stop content=191 reasoning=1262 completion=1300 | You write Google search queries that fin
+17:56:47 call#581 model=deepseek/deepseek-v4-flash headers=1.2s end=1.9s status=200 provider=Baidu finish=stop content=260 reasoning=97 completion=156 | You are a satire detector for X/Twitter 
+17:56:47 [w1] tweet 2099410504326262838 done in 2s: needsNote=false
+17:56:48 call#580 model=deepseek/deepseek-v4-flash headers=0.8s end=4.4s status=200 provider=Alibaba finish=error content=268 reasoning=349 completion=418 | You are a satire detector for X/Twitter 
+17:56:50 call#583 model=deepseek/deepseek-v4-flash headers=0.8s end=2.1s status=200 provider=Alibaba finish=stop content=491 reasoning=35 completion=146 | You are a satire detector for X/Twitter 
+17:56:56 call#578 model=deepseek/deepseek-v4-flash headers=2.5s end=19.1s status=200 provider=Baidu finish=stop content=3758 reasoning=179 completion=1159 | You receive a social-media post and raw 
+17:56:59 call#582 model=deepseek/deepseek-v4-flash headers=2.1s end=11.7s status=200 provider=Baidu finish=stop content=476 reasoning=839 completion=953 | You are a satire detector for X/Twitter 
+17:56:59 call#586 model=deepseek/deepseek-v4-flash headers=1.0s end=3.6s status=200 provider=Baidu finish=stop content=362 reasoning=242 completion=319 | You are a Community Notes quality judge 
+17:56:59 [w2] tweet 2099378747988132103 done in 49s: needsNote=true
+17:57:04 call#584 model=deepseek/deepseek-v4-flash headers=1.7s end=14.5s status=200 provider=GMICloud finish=stop content=3040 reasoning=1559 completion=2256 | You receive a social-media post and raw 
+17:57:05 call#588 model=deepseek/deepseek-v4-flash headers=0.8s end=5.8s status=200 provider=Baidu finish=stop content=525 reasoning=401 completion=520 | You are a satire detector for X/Twitter 
+17:57:06 call#585 model=deepseek/deepseek-v4-flash headers=1.4s end=16.2s status=200 provider=NextBit finish=stop content=240 reasoning=1165 completion=1238 | You write Google search queries that fin
+17:57:07 call#587 model=deepseek/deepseek-v4-flash headers=0.8s end=7.7s status=200 provider=StreamLake finish=stop content=187 reasoning=459 completion=511 | You write Google search queries that fin
+17:57:09 call#589 model=deepseek/deepseek-v4-flash headers=1.5s end=5.3s status=200 provider=NextBit finish=stop content=481 reasoning=258 completion=360 | You are a Community Notes quality judge 
+17:57:09 [w3] tweet 2099409340721500162 done in 41s: needsNote=true
+17:57:12 call#590 model=deepseek/deepseek-v4-flash headers=0.6s end=7.1s status=200 provider=Baidu finish=stop content=225 reasoning=602 completion=655 | You write Google search queries that fin
+17:57:18 call#591 model=deepseek/deepseek-v4-flash headers=1.3s end=9.4s status=200 provider=NextBit finish=stop content=774 reasoning=506 completion=683 | You are a satire detector for X/Twitter 
+17:57:19 call#593 model=deepseek/deepseek-v4-flash headers=0.6s end=7.8s status=200 provider=Baidu finish=stop content=2418 reasoning=207 completion=780 | You receive a social-media post and raw 
+17:57:19 call#592 model=deepseek/deepseek-v4-flash headers=1.0s end=8.4s status=200 provider=Alibaba finish=stop content=2907 reasoning=268 completion=1008 | You receive a social-media post and raw 
+17:57:22 call#597 model=deepseek/deepseek-v4-flash headers=1.6s end=2.6s status=200 provider=Baidu finish=stop content=310 reasoning=102 completion=168 | You are a Community Notes quality judge 
+17:57:22 [w1] tweet 2099457745996886145 done in 35s: needsNote=false
+17:57:25 call#598 model=deepseek/deepseek-v4-flash headers=1.0s end=3.5s status=200 provider=Alibaba finish=stop content=558 reasoning=165 completion=278 | You are a satire detector for X/Twitter 
+17:57:25 call#595 model=deepseek/deepseek-v4-flash headers=1.3s end=7.2s status=200 provider=NextBit finish=stop content=245 reasoning=439 completion=510 | You write Google search queries that fin
+17:57:27 call#599 model=deepseek/deepseek-v4-flash headers=0.6s end=1.7s status=200 provider=Baidu finish=stop content=14 reasoning=102 completion=110 | You write Google search queries that fin
+17:57:30 call#596 model=deepseek/deepseek-v4-flash headers=0.2s end=11.2s status=200 provider=DeepInfra finish=stop content=256 reasoning=220 completion=257 | You are a Community Notes quality judge 
+17:57:30 [w0] tweet 2099391866143899682 done in 47s: needsNote=false
+17:57:31 call#600 model=deepseek/deepseek-v4-flash headers=1.9s end=3.8s status=200 provider=Baidu finish=stop content=14 reasoning=76 completion=84 | You write Google search queries that fin
+17:57:31 call#594 model=deepseek/deepseek-v4-flash headers=1.8s end=13.8s status=200 provider=Baidu finish=stop content=4349 reasoning=244 completion=1205 | You receive a social-media post and raw 
+17:57:33 call#602 model=deepseek/deepseek-v4-flash headers=1.7s end=2.5s status=200 provider=Baidu finish=stop content=14 reasoning=89 completion=97 | You write Google search queries that fin
+17:57:33 [w1] tweet 2099393201391968303 done in 12s: needsNote=false
+17:57:36 call#605 model=deepseek/deepseek-v4-flash headers=0.9s end=3.2s status=200 provider=Alibaba finish=stop content=502 reasoning=129 completion=245 | You are a satire detector for X/Twitter 
+17:57:43 call#606 model=deepseek/deepseek-v4-flash headers=1.5s end=6.2s status=200 provider=NextBit finish=stop content=291 reasoning=381 completion=457 | You write Google search queries that fin
+17:57:43 call#603 model=deepseek/deepseek-v4-flash headers=2.2s end=11.8s status=200 provider=StreamLake finish=stop content=331 reasoning=725 completion=799 | You are a Community Notes quality judge 
+17:57:43 [w2] tweet 2099425428460966126 done in 44s: needsNote=false
+17:57:43 call#601 model=deepseek/deepseek-v4-flash headers=1.5s end=12.5s status=200 provider=Mancer 2 finish=stop content=633 reasoning=196 completion=317 | You are a satire detector for X/Twitter 
+17:57:48 call#608 model=deepseek/deepseek-v4-flash headers=1.7s end=4.8s status=200 provider=Baidu finish=stop content=14 reasoning=324 completion=332 | You write Google search queries that fin
+17:57:49 call#607 model=deepseek/deepseek-v4-flash headers=1.1s end=6.1s status=200 provider=NextBit finish=stop content=662 reasoning=238 completion=390 | You are a satire detector for X/Twitter 
+17:57:51 call#604 model=deepseek/deepseek-v4-flash headers=1.2s end=19.2s status=200 provider=NextBit finish=stop content=3513 reasoning=753 completion=1625 | You receive a social-media post and raw 
+17:57:54 call#609 model=deepseek/deepseek-v4-flash headers=0.6s end=6.6s status=200 provider=Baidu finish=stop content=175 reasoning=545 completion=585 | You write Google search queries that fin
+17:57:58 call#612 model=deepseek/deepseek-v4-flash headers=1.0s end=7.0s status=200 provider=Alibaba finish=stop content=565 reasoning=560 completion=676 | You are a Community Notes quality judge 
+17:57:58 [w3] tweet 2099443560622051359 done in 50s: needsNote=true
+17:57:59 call#611 model=deepseek/deepseek-v4-flash headers=6.2s end=10.0s status=200 provider=Alibaba finish=stop content=15 reasoning=402 completion=409 | You write Google search queries that fin
+17:58:01 call#615 model=deepseek/deepseek-v4-flash headers=1.0s end=2.1s status=200 provider=Alibaba finish=stop content=15 reasoning=107 completion=114 | You write Google search queries that fin
+17:58:02 call#614 model=deepseek/deepseek-v4-flash headers=1.1s end=4.1s status=200 provider=Alibaba finish=stop content=658 reasoning=192 completion=331 | You are a satire detector for X/Twitter 
+17:58:04 call#616 model=deepseek/deepseek-v4-flash headers=1.0s end=2.8s status=200 provider=Alibaba finish=stop content=15 reasoning=188 completion=195 | You write Google search queries that fin
+17:58:04 [w2] tweet 2099438687893209466 done in 21s: needsNote=false
+17:58:07 call#618 model=deepseek/deepseek-v4-flash headers=0.5s end=3.3s status=200 provider=Baidu finish=stop content=472 reasoning=138 completion=236 | You are a satire detector for X/Twitter 
+17:58:10 call#613 model=deepseek/deepseek-v4-flash headers=0.9s end=11.7s status=200 provider=Alibaba finish=stop content=3052 reasoning=268 completion=959 | You receive a social-media post and raw 
+17:58:10 call#617 model=deepseek/deepseek-v4-flash headers=1.7s end=7.7s status=200 provider=Baidu finish=stop content=193 reasoning=686 completion=738 | You write Google search queries that fin
+17:58:11 call#610 model=deepseek/deepseek-v4-flash headers=0.5s end=23.0s status=200 provider=DeepInfra finish=stop content=3621 reasoning=205 completion=1065 | You receive a social-media post and raw 
+17:58:14 call#621 model=deepseek/deepseek-v4-flash headers=1.2s end=2.9s status=200 provider=Alibaba finish=stop content=303 reasoning=113 completion=191 | You are a Community Notes quality judge 
+17:58:14 [w1] tweet 2099361927910793549 done in 40s: needsNote=false
+17:58:14 call#620 model=deepseek/deepseek-v4-flash headers=1.3s end=4.2s status=200 provider=Baidu finish=stop content=237 reasoning=310 completion=362 | You are a Community Notes quality judge 
+17:58:14 [w0] tweet 2099370498790412542 done in 44s: needsNote=true
+17:58:15 call#619 model=deepseek/deepseek-v4-flash headers=2.4s end=7.6s status=200 provider=Baidu finish=stop content=245 reasoning=596 completion=653 | You write Google search queries that fin
+17:58:20 call#622 model=deepseek/deepseek-v4-flash headers=1.1s end=6.3s status=200 provider=NextBit finish=stop content=603 reasoning=241 completion=374 | You are a satire detector for X/Twitter 
+17:58:25 call#623 model=deepseek/deepseek-v4-flash headers=3.1s end=10.6s status=200 provider=StreamLake finish=stop content=637 reasoning=388 completion=535 | You are a satire detector for X/Twitter 
+17:58:25 [w0] tweet 2099263336366194956 done in 11s: needsNote=false
+17:58:25 call#624 model=deepseek/deepseek-v4-flash headers=1.0s end=10.3s status=200 provider=Baidu finish=stop content=3005 reasoning=239 completion=960 | You receive a social-media post and raw 
+17:58:27 call#625 model=deepseek/deepseek-v4-flash headers=0.9s end=6.9s status=200 provider=Alibaba finish=stop content=139 reasoning=400 completion=445 | You write Google search queries that fin
+17:58:31 call#628 model=deepseek/deepseek-v4-flash headers=1.5s end=6.0s status=200 provider=NextBit finish=stop content=329 reasoning=309 completion=379 | You are a Community Notes quality judge 
+17:58:31 [w3] tweet 2099397118012403803 done in 32s: needsNote=true
+17:58:31 call#627 model=deepseek/deepseek-v4-flash headers=2.9s end=6.5s status=200 provider=StreamLake finish=stop content=537 reasoning=167 completion=289 | You are a satire detector for X/Twitter 
+17:58:36 call#630 model=deepseek/deepseek-v4-flash headers=1.0s end=5.3s status=200 provider=Alibaba finish=stop content=673 reasoning=345 completion=493 | You are a satire detector for X/Twitter 
+17:58:37 call#626 model=deepseek/deepseek-v4-flash headers=1.2s end=15.4s status=200 provider=StreamLake finish=stop content=3371 reasoning=324 completion=1134 | You receive a social-media post and raw 
+17:58:39 call#633 model=deepseek/deepseek-v4-flash headers=0.9s end=2.4s status=200 provider=Alibaba finish=stop content=352 reasoning=106 completion=181 | You are a Community Notes quality judge 
+17:58:39 [w2] tweet 2099408639622537352 done in 35s: needsNote=false
+17:58:44 call#634 model=deepseek/deepseek-v4-flash headers=0.7s end=4.7s status=200 provider=StreamLake finish=stop content=589 reasoning=143 completion=273 | You are a satire detector for X/Twitter 
+17:58:47 call#631 model=deepseek/deepseek-v4-flash headers=0.6s end=15.3s status=200 provider=Baidu finish=stop content=226 reasoning=1466 completion=1522 | You write Google search queries that fin
+17:58:47 call#632 model=deepseek/deepseek-v4-flash headers=1.0s end=11.3s status=200 provider=StreamLake finish=stop content=201 reasoning=584 completion=664 | You write Google search queries that fin
+17:58:48 call#629 model=deepseek/deepseek-v4-flash headers=3.0s end=18.0s status=200 provider=StreamLake finish=stop content=2611 reasoning=401 completion=1092 | You receive a social-media post and raw 
+17:58:52 call#636 model=deepseek/deepseek-v4-flash headers=1.2s end=3.3s status=200 provider=NextBit finish=stop content=288 reasoning=126 completion=192 | You are a Community Notes quality judge 
+17:58:52 [w1] tweet 2099460772208271869 done in 38s: needsNote=false
+17:58:55 call#635 model=deepseek/deepseek-v4-flash headers=0.7s end=10.8s status=200 provider=Baidu finish=stop content=158 reasoning=1057 completion=1105 | You write Google search queries that fin
+17:58:58 call#639 model=deepseek/deepseek-v4-flash headers=0.9s end=6.2s status=200 provider=StreamLake finish=stop content=459 reasoning=284 completion=402 | You are a satire detector for X/Twitter 
+17:58:58 [w1] tweet 2099160797381623834 done in 6s: needsNote=false
+17:59:06 call#640 model=deepseek/deepseek-v4-flash headers=0.9s end=8.2s status=200 provider=Mancer 2 finish=stop content=475 reasoning=198 completion=284 | You are a satire detector for X/Twitter 
+17:59:12 call#637 model=deepseek/deepseek-v4-flash headers=1.2s end=22.2s status=200 provider=NextBit finish=stop content=5250 reasoning=653 completion=2008 | You receive a social-media post and raw 
+17:59:15 call#642 model=deepseek/deepseek-v4-flash headers=1.0s end=8.4s status=200 provider=Alibaba finish=stop content=230 reasoning=785 completion=840 | You write Google search queries that fin
+17:59:15 call#638 model=deepseek/deepseek-v4-flash headers=2.4s end=23.3s status=200 provider=Baidu finish=stop content=2728 reasoning=857 completion=1514 | You receive a social-media post and raw 
+17:59:16 call#643 model=deepseek/deepseek-v4-flash headers=0.8s end=4.1s status=200 provider=Baidu finish=stop content=375 reasoning=313 completion=394 | You are a Community Notes quality judge 
+17:59:16 [w0] tweet 2099248617932615800 done in 51s: needsNote=false
+17:59:18 call#641 model=deepseek/deepseek-v4-flash headers=1.8s end=17.6s status=200 provider=GMICloud finish=stop content=4195 reasoning=508 completion=1542 | You receive a social-media post and raw 
+17:59:21 call#644 model=deepseek/deepseek-v4-flash headers=0.8s end=6.3s status=200 provider=DeepInfra finish=stop content=350 reasoning=155 completion=202 | You are a Community Notes quality judge 
+17:59:21 [w3] tweet 2099439399570112881 done in 51s: needsNote=false
+17:59:23 call#646 model=deepseek/deepseek-v4-flash headers=1.3s end=4.6s status=200 provider=NextBit finish=stop content=401 reasoning=193 completion=292 | You are a Community Notes quality judge 
+17:59:23 [w2] tweet 2099241712652574861 done in 44s: needsNote=false
+17:59:26 call#645 model=deepseek/deepseek-v4-flash headers=2.4s end=9.7s status=200 provider=Baidu finish=stop content=256 reasoning=518 completion=573 | You are a satire detector for X/Twitter 
+17:59:28 call#649 model=deepseek/deepseek-v4-flash headers=1.4s end=5.1s status=200 provider=NextBit finish=stop content=598 reasoning=184 completion=319 | You are a satire detector for X/Twitter 
+17:59:30 call#651 model=deepseek/deepseek-v4-flash headers=1.2s end=2.4s status=200 provider=StreamLake finish=stop content=15 reasoning=82 completion=90 | You write Google search queries that fin
+17:59:32 call#652 model=deepseek/deepseek-v4-flash headers=0.7s end=2.0s status=200 provider=StreamLake finish=stop content=15 reasoning=71 completion=79 | You write Google search queries that fin
+17:59:34 call#648 model=deepseek/deepseek-v4-flash headers=1.0s end=13.1s status=200 provider=Mancer 2 finish=stop content=779 reasoning=308 completion=436 | You are a satire detector for X/Twitter 
+17:59:34 call#653 model=deepseek/deepseek-v4-flash headers=1.0s end=2.2s status=200 provider=StreamLake finish=stop content=15 reasoning=72 completion=80 | You write Google search queries that fin
+17:59:34 [w2] tweet 2099183151222288514 done in 12s: needsNote=false
+17:59:36 call#647 model=deepseek/deepseek-v4-flash headers=0.8s end=16.0s status=200 provider=StreamLake finish=stop content=3218 reasoning=405 completion=1219 | You receive a social-media post and raw 
+17:59:38 call#655 model=deepseek/deepseek-v4-flash headers=0.7s end=4.0s status=200 provider=Baidu finish=stop content=308 reasoning=264 completion=334 | You are a satire detector for X/Twitter 
+17:59:39 call#656 model=deepseek/deepseek-v4-flash headers=0.7s end=3.2s status=200 provider=Baidu finish=stop content=295 reasoning=214 completion=284 | You are a Community Notes quality judge 
+17:59:39 [w1] tweet 2099201410856325186 done in 41s: needsNote=true
+17:59:42 call#654 model=deepseek/deepseek-v4-flash headers=2.3s end=8.1s status=200 provider=Baidu finish=stop content=159 reasoning=602 completion=652 | You write Google search queries that fin
+17:59:45 call#657 model=deepseek/deepseek-v4-flash headers=0.8s end=6.8s status=200 provider=Baidu finish=stop content=191 reasoning=516 completion=570 | You write Google search queries that fin
+17:59:46 call#658 model=deepseek/deepseek-v4-flash headers=1.4s end=7.2s status=200 provider=NextBit finish=stop content=537 reasoning=385 completion=518 | You are a satire detector for X/Twitter 
+17:59:46 [w1] tweet 2099224765458428140 done in 7s: needsNote=false
+17:59:50 call#659 model=deepseek/deepseek-v4-flash headers=0.8s end=3.6s status=200 provider=Alibaba finish=stop content=761 reasoning=135 completion=296 | You are a satire detector for X/Twitter 
+17:59:55 call#661 model=deepseek/deepseek-v4-flash headers=0.9s end=5.2s status=200 provider=Alibaba finish=stop content=196 reasoning=423 completion=471 | You write Google search queries that fin
+18:00:02 call#662 model=deepseek/deepseek-v4-flash headers=0.8s end=12.0s status=200 provider=Baidu finish=stop content=3802 reasoning=251 completion=1244 | You receive a social-media post and raw 
+18:00:04 call#660 model=deepseek/deepseek-v4-flash headers=2.6s end=16.6s status=200 provider=GMICloud finish=stop content=3618 reasoning=370 completion=1300 | You receive a social-media post and raw 
+18:00:05 call#664 model=deepseek/deepseek-v4-flash headers=0.9s end=2.9s status=200 provider=Alibaba finish=stop content=320 reasoning=183 completion=256 | You are a Community Notes quality judge 
+18:00:05 [w2] tweet 2099286834027147662 done in 31s: needsNote=false
+18:00:06 call#650 model=deepseek/deepseek-v4-flash headers=0.9s end=40.6s status=200 provider=StreamLake finish=stop content=157 reasoning=2460 completion=2497 | You write Google search queries that fin
+18:00:09 call#666 model=deepseek/deepseek-v4-flash headers=0.8s end=4.1s status=200 provider=Alibaba finish=stop content=786 reasoning=219 completion=390 | You are a satire detector for X/Twitter 
+18:00:11 call#663 model=deepseek/deepseek-v4-flash headers=1.8s end=11.8s status=200 provider=Novita finish=stop content=3938 reasoning=206 completion=1193 | You receive a social-media post and raw 
+18:00:12 call#665 model=deepseek/deepseek-v4-flash headers=1.3s end=7.4s status=200 provider=Baidu finish=stop content=310 reasoning=682 completion=757 | You are a Community Notes quality judge 
+18:00:12 [w3] tweet 2099479953720979868 done in 50s: needsNote=true
+18:00:13 call#667 model=deepseek/deepseek-v4-flash headers=0.8s end=3.7s status=200 provider=Alibaba finish=stop content=15 reasoning=310 completion=317 | You write Google search queries that fin
+18:00:15 call#669 model=deepseek/deepseek-v4-flash headers=0.9s end=4.3s status=200 provider=Baidu finish=stop content=390 reasoning=304 completion=399 | You are a Community Notes quality judge 
+18:00:15 [w1] tweet 2099136316688482636 done in 29s: needsNote=true
+18:00:18 call#671 model=deepseek/deepseek-v4-flash headers=0.9s end=4.7s status=200 provider=Alibaba finish=stop content=205 reasoning=387 completion=439 | You write Google search queries that fin
+18:00:24 call#668 model=deepseek/deepseek-v4-flash headers=0.8s end=14.2s status=200 provider=StreamLake finish=stop content=3142 reasoning=176 completion=907 | You receive a social-media post and raw 
+18:00:25 call#672 model=deepseek/deepseek-v4-flash headers=2.5s end=9.7s status=200 provider=Baidu finish=stop content=270 reasoning=385 completion=452 | You are a satire detector for X/Twitter 
+18:00:25 [w1] tweet 2099295893027541000 done in 10s: needsNote=false
+18:00:25 call#670 model=deepseek/deepseek-v4-flash headers=2.4s end=13.8s status=200 provider=Baidu finish=stop content=358 reasoning=197 completion=282 | You are a satire detector for X/Twitter 
+18:00:30 call#675 model=deepseek/deepseek-v4-flash headers=2.4s end=5.1s status=200 provider=Baidu finish=stop content=301 reasoning=132 completion=200 | You are a satire detector for X/Twitter 
+18:00:31 call#674 model=deepseek/deepseek-v4-flash headers=1.2s end=6.8s status=200 provider=Baidu finish=stop content=302 reasoning=565 completion=632 | You are a Community Notes quality judge 
+18:00:31 [w0] tweet 2099198952327217574 done in 75s: needsNote=false
+18:00:31 call#673 model=deepseek/deepseek-v4-flash headers=2.0s end=10.5s status=200 provider=Baidu finish=stop content=2588 reasoning=273 completion=863 | You receive a social-media post and raw 
+18:00:38 call#676 model=deepseek/deepseek-v4-flash headers=0.6s end=12.8s status=200 provider=Parasail finish=stop content=161 reasoning=536 completion=558 | You write Google search queries that fin
+18:00:38 call#677 model=deepseek/deepseek-v4-flash headers=0.8s end=8.1s status=200 provider=StreamLake finish=stop content=197 reasoning=350 completion=409 | You write Google search queries that fin
+18:00:39 call#678 model=deepseek/deepseek-v4-flash headers=1.3s end=7.8s status=200 provider=StreamLake finish=stop content=625 reasoning=249 completion=387 | You are a satire detector for X/Twitter 
+18:00:41 call#679 model=deepseek/deepseek-v4-flash headers=2.3s end=9.9s status=200 provider=Baidu finish=stop content=308 reasoning=375 completion=447 | You are a Community Notes quality judge 
+18:00:41 [w2] tweet 2099434279486775591 done in 36s: needsNote=false
+18:00:47 call#680 model=deepseek/deepseek-v4-flash headers=1.4s end=8.4s status=200 provider=StreamLake finish=stop content=293 reasoning=337 completion=417 | You write Google search queries that fin
+18:00:49 call#682 model=deepseek/deepseek-v4-flash headers=2.3s end=7.8s status=200 provider=StreamLake finish=stop content=644 reasoning=174 completion=319 | You are a satire detector for X/Twitter 
+18:00:55 call#684 model=deepseek/deepseek-v4-flash headers=2.4s end=5.7s status=200 provider=Baidu finish=stop content=14 reasoning=59 completion=67 | You write Google search queries that fin
+18:00:57 call#683 model=deepseek/deepseek-v4-flash headers=1.0s end=15.4s status=200 provider=StreamLake finish=stop content=2693 reasoning=219 completion=917 | You receive a social-media post and raw 
+18:00:58 call#686 model=deepseek/deepseek-v4-flash headers=1.6s end=3.3s status=200 provider=NextBit finish=stop content=15 reasoning=125 completion=132 | You write Google search queries that fin
+18:01:00 call#687 model=deepseek/deepseek-v4-flash headers=1.3s end=2.8s status=200 provider=NextBit finish=stop content=251 reasoning=84 completion=145 | You are a Community Notes quality judge 
+18:01:00 [w1] tweet 2099503388501107083 done in 35s: needsNote=false
+18:01:02 call#688 model=deepseek/deepseek-v4-flash headers=1.4s end=3.8s status=200 provider=NextBit finish=stop content=15 reasoning=203 completion=210 | You write Google search queries that fin
+18:01:02 [w2] tweet 2099352016988614852 done in 21s: needsNote=false
+18:01:05 call#681 model=deepseek/deepseek-v4-flash headers=0.2s end=24.3s status=200 provider=DeepInfra finish=stop content=3058 reasoning=222 completion=993 | You receive a social-media post and raw 
+18:01:08 call#685 model=deepseek/deepseek-v4-flash headers=2.2s end=15.8s status=200 provider=GMICloud finish=stop content=5044 reasoning=184 completion=1402 | You receive a social-media post and raw 
+18:01:11 call#689 model=deepseek/deepseek-v4-flash headers=1.4s end=6.2s status=200 provider=NextBit finish=stop content=315 reasoning=318 completion=391 | You are a Community Notes quality judge 
+18:01:11 [w3] tweet 2099482135702958526 done in 60s: needsNote=true
+18:01:13 call#690 model=deepseek/deepseek-v4-flash headers=1.4s end=4.8s status=200 provider=StreamLake finish=stop content=264 reasoning=134 completion=195 | You are a Community Notes quality judge 
+18:01:13 [w0] tweet 2099199881512456399 done in 42s: needsNote=false
+18:01:13 replay probe done, 690 OpenRouter calls
