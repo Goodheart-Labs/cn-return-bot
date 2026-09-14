@@ -91,11 +91,13 @@ async function main() {
   // ── Step 3: rate each part with web research (breakpoint inside rateClaims) ──
   const claims = [];
   for (const part of parts) {
-    if (part.claims.length === 0) continue;
+    const toRate = part.claims.filter((c) => !c.triviallyTrue);
+    console.log(`Part "${part.title}": ${part.claims.length - toRate.length} trivially true, ${toRate.length} to rate`);
+    if (toRate.length === 0) continue;
     const rating = await rateClaims({
       text: part.text,
       introduction: part.index === 0 ? null : extraction.introduction,
-      claims: part.claims,
+      claims: toRate,
       source,
     });
     claims.push(...rating.claims);

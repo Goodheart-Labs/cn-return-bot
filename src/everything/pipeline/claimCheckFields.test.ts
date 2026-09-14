@@ -7,6 +7,7 @@ const base: ExtractedClaim = {
   context: "the bridge opened in '32",
   contextParagraph: "As everyone knows, the bridge opened in '32, to great fanfare.",
   imageUrls: [],
+  triviallyTrue: false,
   speculation: false,
   anchor: { kind: "substack", url: "https://example.com/p/x" },
 };

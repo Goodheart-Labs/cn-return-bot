@@ -149,7 +149,8 @@ function toExtractedClaim(row: ClaimRow, url: string): ExtractedClaim {
     context: row.context_quote ?? "",
     contextParagraph: row.context_paragraph ?? "",
     imageUrls: row.image_urls ?? [],
-    speculation: false,
+    triviallyTrue: false,
+  speculation: false,
     anchor: { kind: "substack", url },
   };
 }
@@ -187,23 +188,26 @@ async function compareExtraction(loaded: Loaded, dir: string) {
       : {
           kind: result.kind,
           claimCount: result.parts.reduce((n, p) => n + p.claims.length, 0),
+          triviallyTrueCount: result.parts.reduce((n, p) => n + p.claims.filter((c) => c.triviallyTrue).length, 0),
           introduction: result.introduction,
           parts: result.parts.map((p) => ({
             index: p.index,
             title: p.title,
             chars: p.text.length,
             claimCount: p.claims.length,
-            claims: p.claims.map(({ claim, context, contextParagraph, imageUrls, speculation }) => ({
+            triviallyTrueCount: p.claims.filter((c) => c.triviallyTrue).length,
+            claims: p.claims.map(({ claim, context, contextParagraph, imageUrls, triviallyTrue, speculation }) => ({
               claim,
               context_quote: context,
               context_paragraph: contextParagraph,
               image_urls: imageUrls,
+              trivially_true: triviallyTrue,
               speculation,
             })),
           })),
         };
   writeResult(dir, "extraction.new", { step: "extraction", input, costUsd: cost?.cost ?? null, seconds, output });
-  console.log(`  extraction: ${output.kind === "claims" ? `${output.claimCount} claims in ${output.parts.length} parts` : `not checkable (${output.reason})`}, $${(cost?.cost ?? 0).toFixed(3)}, ${seconds.toFixed(0)}s`);
+  console.log(`  extraction: ${output.kind === "claims" ? `${output.claimCount} claims in ${output.parts.length} parts, ${output.triviallyTrueCount} trivially true` : `not checkable (${output.reason})`}, $${(cost?.cost ?? 0).toFixed(3)}, ${seconds.toFixed(0)}s`);
 }
 
 async function compareRating(loaded: Loaded, dir: string) {

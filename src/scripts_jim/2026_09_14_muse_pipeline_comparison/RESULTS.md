@@ -18,8 +18,8 @@ what prod would apply.
 
 | Step | Old (Opus 5 / Sonnet 5 / Gemini) | New (Muse) | Cost old | Cost new |
 |---|---|---|---|---|
-| Extraction, one call per part | 181 claims | 80 claims, 1 part | not recorded | $0.028 |
-| Extraction, 12,000-char chunks (experiment) | 181 claims | 336 claims | not recorded | $0.040 |
+| Extraction, 12,000-char chunks (shipped) | 181 claims | 347 claims, 1 part, 2 trivially true | not recorded | $0.044 |
+| Extraction, one 200,000-char call (experiment) | 181 claims | 80 claims | not recorded | $0.028 |
 | Rating of the same 181 claims | 24 to check | 35 to check, 111 identical judgements | not recorded | $0.007 |
 | Check of the same 24 claims | 2 notes | 2 notes (one of them new), two runs: 1 note $0.32, then 2 notes $0.36 | $2.78 | $0.32 to $0.36 |
 
@@ -31,20 +31,21 @@ Opus at roughly fifty times Muse's token price.
 
 The gate and split call said the essay is checkable and chose not to split it
 (`probeSplit.ts`, two runs, both an empty part list). That is the right answer
-for a single-topic essay, and it means the whole 42,599 characters went into
-one extraction call, as the new 200,000-character limit intends.
+for a single-topic essay, so the whole 42,599 characters formed one part.
 
-That one call found **80 claims**. The same model on the old 12,000-character
-chunks (four calls) found **336**. Opus on the old chunks found 181. So the drop
-from 181 to 80 is not the model being weaker; it is one long call summarising
-where several short calls stay exhaustive, which is exactly why the 12,000
-limit existed. Muse with short chunks is in fact far more thorough than Opus
-was, and both runs cost about four cents.
+The plan first raised the chunk limit from 12,000 to 200,000 characters, so
+that a part would be one call. That one call found **80 claims**. The same
+model on the old 12,000-character chunks (four calls) found **336**, and on a
+second run with the flag below **347**. Opus on the old chunks had found 181.
+So one long call summarises where several short calls stay exhaustive, which
+is exactly why the 12,000 limit existed, and Jim put it back. Muse with short
+chunks is far more thorough than Opus was, at about four cents an item.
 
-The 80 claims read well (see `extraction.new.json`): neutral, self-contained,
-grounded in verbatim quotes. They are simply fewer. Whether 80, 181 or 336 is
-the right number is a judgement about how fine-grained a fact-check should be;
-the code has one constant to turn, `EXTRACTION_CHUNK_CHARS`.
+Each claim now also carries `trivially_true`, which the extractor sets when it
+is extremely confident the claim is correct as stated. Such a claim is stored
+as skipped and never rated or checked. On this item the model set it on 2 of
+347 claims, both textbook genetics ("when new gametes are formed through
+meiosis, chromosomes are chopped up and reassembled"), so it is conservative.
 
 The splitter itself was validated on Zvi's "Monthly Roundup #44: July 2026",
 which is a list of unrelated sections: the model returned 17 parts, every start
@@ -120,8 +121,6 @@ run and in both new runs.
 
 ## What to decide
 
-- Extraction: keep one call per part (80 claims) or go back towards short
-  chunks (336). The constant is `EXTRACTION_CHUNK_CHARS`.
 - Rating: whether Muse is acceptable as the rater given it would have dropped
   both helpful notes here, or whether the rater is the one step to keep on a
   stronger model.
@@ -133,4 +132,4 @@ run and in both new runs.
 
 - `compare.ts`: the harness. `bun run src/scripts_jim/2026_09_14_muse_pipeline_comparison/compare.ts [<item-id>] [--steps extraction,rating,check]`
 - `probeSplit.ts`: shows the gate and split verdict for an item and whether the cutter can locate every start.
-- `results/8764d17a-.../extraction.{old,new}.json`, `extraction.new.chunked12k.json` (the experiment), `rating.{old,new}.json`, `check.{old,new}.json`.
+- `results/8764d17a-.../extraction.{old,new}.json` (new = 12,000-character chunks with the flag), `extraction.new.chunked12k.json` (the first 12k run, before the flag), `extraction.new.onecall200k.json` (the one-call experiment), `rating.{old,new}.json`, `check.{old,new}.json`.

@@ -7,6 +7,7 @@ const claim = (text: string): ExtractedClaim => ({
   context: text,
   contextParagraph: text,
   imageUrls: [],
+  triviallyTrue: false,
   speculation: false,
   anchor: { kind: "substack", url: "https://example.com/p/x" },
 });

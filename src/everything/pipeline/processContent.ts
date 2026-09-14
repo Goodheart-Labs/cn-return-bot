@@ -29,7 +29,7 @@ import {
   type NewClaimRow,
 } from "../db";
 import { dropSpeculation } from "./extractClaims";
-import { shouldFactCheck } from "./rateClaims";
+import { TRIVIALLY_TRUE_JUDGEMENT, shouldFactCheck } from "./rateClaims";
 import { requestClaimCheck, requestClaimExtraction, requestClaimRating } from "../../service/client";
 import type { RateClaimsResponse, WorkPriority } from "../../service/contract";
 import { group, money } from "../logFormat";
@@ -61,7 +61,7 @@ function budgetExhaustedFor(item: EverythingItem): Promise<boolean> {
 export interface ItemTally {
   extracted: number;
   speculation: number; // Claims about a future scenario. We drop them before inserting.
-  skipped: number; // Claims the rater was confident are true. We do not fact-check them.
+  skipped: number; // Claims the extractor or the rater was confident are true. We do not fact-check them.
   notes: number; // Claims we fact-checked and wrote a note on.
   no_note: number; // Claims we fact-checked and found no note was needed.
   errors: number; // Claims whose fact-check threw.
@@ -78,6 +78,7 @@ const EMPTY_TALLY: ItemTally = { extracted: 0, speculation: 0, skipped: 0, notes
 
 function buildClaimRow(itemId: string, claim: RatedClaim): NewClaimRow {
   const check = shouldFactCheck(claim.judgement);
+  const skipReason = claim.triviallyTrue ? "trivially true at extraction" : `judged ${claim.judgement}`;
   const anchor = claim.anchor;
   return {
     item_id: itemId,
@@ -91,7 +92,7 @@ function buildClaimRow(itemId: string, claim: RatedClaim): NewClaimRow {
     start_seconds: anchor.kind === "youtube" && anchor.startSeconds !== undefined ? Math.floor(anchor.startSeconds) : null,
     end_seconds: anchor.kind === "youtube" && anchor.endSeconds !== undefined ? Math.ceil(anchor.endSeconds) : null,
     status: check ? "pending" : "skipped",
-    status_reason: check ? null : `judged ${claim.judgement}`,
+    status_reason: check ? null : skipReason,
   };
 }
 
@@ -180,7 +181,9 @@ function freshClaimsPerPart(
 }
 
 /** Rates every part that still has claims, a couple of parts at a time, and
- *  sums what the rating cost. A part with nothing new to rate is skipped, so an
+ *  sums what the rating cost. A claim the extractor marked trivially true is
+ *  not sent to the rater; it comes back with the top judgement and is stored
+ *  as skipped. A part with nothing left to rate is skipped, so an
  *  already-covered page does not pay for an empty research call. */
 async function ratePartsOfItem(
   item: EverythingItem,
@@ -195,17 +198,22 @@ async function ratePartsOfItem(
   await Promise.all(
     parts.map((part, i) =>
       queue.add(async () => {
-        if (part.claims.length === 0) return;
+        const trivial = part.claims.filter((c) => c.triviallyTrue).map((c) => ({ ...c, judgement: TRIVIALLY_TRUE_JUDGEMENT }));
+        const toRate = part.claims.filter((c) => !c.triviallyTrue);
+        if (toRate.length === 0) {
+          rated[i] = trivial;
+          return;
+        }
         const rating: RateClaimsResponse = await requestClaimRating({
           priority: workPriorityOf(item),
           text: part.text,
           // When there is an introduction it is the first part, and it is not
           // shown its own text as context.
           introduction: part.index === 0 ? null : introduction,
-          claims: part.claims,
+          claims: toRate,
           source: item.source,
         });
-        rated[i] = rating.claims;
+        rated[i] = [...trivial, ...rating.claims];
         if (rating.costUsd !== null) costUsd = (costUsd ?? 0) + rating.costUsd;
         webSearches += rating.webSearches;
         if (rating.research) research.push(parts.length > 1 ? `[${part.title}] ${rating.research}` : rating.research);
@@ -296,6 +304,7 @@ function toExtractedClaim(row: ItemClaimRow): ExtractedClaim {
     context: row.context_quote ?? "",
     contextParagraph: row.context_paragraph ?? "",
     imageUrls: row.image_urls ?? [],
+    triviallyTrue: false,
     speculation: false,
     anchor: { kind: "substack", url: "" },
   };
