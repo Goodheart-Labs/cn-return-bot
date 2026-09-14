@@ -7,7 +7,7 @@ by Opus 5, 24 of them rated uncertain and checked, 2 notes written, both since
 rated helpful by readers.
 
 Method: `compare.ts` runs the new steps in-process on the stored inputs and
-writes six files under `results/<item-id>/`, old and new for each step, each
+writes six files under `results-decker/<item-id>/`, old and new for each step, each
 carrying the identical input so the pair lines up. Nothing was written to the
 database. OpenRouter calls went through `OPENROUTER_TESTING_KEY`. The new
 per-claim checks ran from this VPS, where X's evaluate-note scoring endpoint
@@ -18,10 +18,10 @@ what prod would apply.
 
 | Step | Old (Opus 5 / Sonnet 5 / Gemini) | New (Muse) | Cost old | Cost new |
 |---|---|---|---|---|
-| Extraction, 12,000-char chunks (shipped) | 181 claims | 347 claims, 1 part, 2 trivially true | not recorded | $0.044 |
+| Extraction, 12,000-char chunks (shipped) | 181 claims | 347 claims, 1 part, 2 flagged as very confident (under the earlier "extremely confident" wording) | not recorded | $0.044 |
 | Extraction, one 200,000-char call (experiment) | 181 claims | 80 claims | not recorded | $0.028 |
 | Rating of the same 181 claims | 24 to check | 35 to check, 111 identical judgements | not recorded | $0.007 |
-| Check of the same 24 claims | 2 notes | 2 notes (one of them new), two runs: 1 note $0.32, then 2 notes $0.36 | $2.78 | $0.32 to $0.36 |
+| Check of the same 24 claims | 2 notes | three runs: 1 note $0.32, 2 notes $0.36 (one new), 1 note $0.34 | $2.78 | $0.32 to $0.36 |
 
 The whole item would cost well under a dollar on Muse. The old check step alone
 cost $2.78, and the old extraction and rating were never recorded but ran on
@@ -41,11 +41,20 @@ So one long call summarises where several short calls stay exhaustive, which
 is exactly why the 12,000 limit existed, and Jim put it back. Muse with short
 chunks is far more thorough than Opus was, at about four cents an item.
 
-Each claim now also carries `trivially_true`, which the extractor sets when it
-is extremely confident the claim is correct as stated. Such a claim is stored
-as skipped and never rated or checked. On this item the model set it on 2 of
-347 claims, both textbook genetics ("when new gametes are formed through
-meiosis, chromosomes are chopped up and reassembled"), so it is conservative.
+Each claim now also carries `very_confident_that_its_true`, which the
+extractor sets when it is very confident the claim is correct as stated. Such
+a claim is stored as skipped and never rated or checked. The wording matters a
+great deal. With "extremely confident" the model set it on 2 of 347 claims,
+both textbook genetics. With "very confident", probed on the first 12,000
+characters alone (`probeExtraction.ts`), it set it on 62 of 213 claims, and
+some of those are exactly the statements a reader would want checked: "Children
+in India are on average shorter than children in Africa", "At least several
+hundred thousand Indian workers migrate to Saudi Arabia and the United Arab
+Emirates", "In Uttar Pradesh, water for irrigating the rice crop comes from the
+monsoon season". Most flagged claims are safe (Lucknow is in northern India,
+dowry is illegal in India, the varna order). The same probe also shows
+extraction varies between runs: the first chunk alone gave 213 claims where the
+whole article had given 347 the run before.
 
 The splitter itself was validated on Zvi's "Monthly Roundup #44: July 2026",
 which is a list of unrelated sections: the model returned 17 parts, every start
@@ -95,20 +104,22 @@ next thing to measure, on the Zvi roundup.
 ## Check: eight times cheaper, one note kept, one lost at verification, one new
 
 The same 24 claims were re-checked on Muse for search, writer and verifier,
-twice (the second run also records each note draft and the verifier's reply).
-Cost was $0.32 and then $0.36 against $2.78 before, about 1.5 cents a claim
-against 12 to 37 cents. 21 of the 24 came back "no correction needed" in every
+three times (the later runs also record each note draft, the verifier's reply,
+and the full run log). Cost was $0.32, $0.36 and $0.34 against $2.78 before,
+about 1.5 cents a claim against 12 to 37 cents. The third run is the one in
+`check.new.json` and in the review dashboard; it wrote one note. 21 of the 24 came back "no correction needed" in every
 version, which is the expected shape: the old rater had flagged them as
 uncertain and the check found them fine.
 
-The private-school claim got a note in both runs, with different and better
-sources than before (the 2024-25 Project Approval Board figure of 51.7%, and in
-the first run the ASER rural survey). The second run also wrote a note the old
-pipeline never did, on the claim about caste in elite hiring: it quotes the
-Shukla paper itself, verified with three supporting passages.
+The private-school claim got a note in all three runs, with different and
+better sources than before (the 2024-25 Project Approval Board figure of
+51.7%, and in the first run the ASER rural survey). The second run also wrote a
+note the old pipeline never did, on the claim about caste in elite hiring: it
+quotes the Shukla paper itself, verified with three supporting passages. The
+other two runs did not repeat it, so one in three is the honest rate for it.
 
 The open-defecation claim, a helpful note before, was **lost at the source
-verifier in both runs**. The search found the right evidence both times
+verifier in all three runs**. The search found the right evidence each time
 (WHO/UNICEF JMP 11% in 2022, World Bank 6.7% in 2024, NFHS-5 19% of
 households) and the writer drafted a correct note. But the writer cited an
 NDTV page that failed to fetch and the World Bank indicator page, which
@@ -117,7 +128,7 @@ supporting the figures and answered no. That verdict is right for the sources
 it was given; the miss is the writer choosing sources that do not survive a
 plain fetch. The old run's writer cited Trading Economics and a news article,
 which did. Claim 24 produced an empty draft and failed verification in the old
-run and in both new runs.
+run and in every new run.
 
 ## What to decide
 
@@ -132,4 +143,6 @@ run and in both new runs.
 
 - `compare.ts`: the harness. `bun run src/scripts_jim/2026_09_14_muse_pipeline_comparison/compare.ts [<item-id>] [--steps extraction,rating,check]`
 - `probeSplit.ts`: shows the gate and split verdict for an item and whether the cutter can locate every start.
-- `results/8764d17a-.../extraction.{old,new}.json` (new = 12,000-character chunks with the flag), `extraction.new.chunked12k.json` (the first 12k run, before the flag), `extraction.new.onecall200k.json` (the one-call experiment), `rating.{old,new}.json`, `check.{old,new}.json`.
+- `probeExtraction.ts`: extraction on the first N characters of an item, listing which claims got the very-confident flag.
+- `uploadToReviewDashboard.ts`: puts the old and new check runs into the review dashboard as two dataset uploads.
+- `results-decker/8764d17a-.../extraction.{old,new}.json` (new = 12,000-character chunks with the flag), `extraction.new.chunked12k.json` (the first 12k run, before the flag), `extraction.new.onecall200k.json` (the one-call experiment), `rating.{old,new}.json`, `check.{old,new}.json`.

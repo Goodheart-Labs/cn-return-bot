@@ -15,7 +15,7 @@
  *
  *   bun run src/scripts_jim/2026_09_14_muse_pipeline_comparison/compare.ts [<item-id>] [--steps extraction,rating,check]
  *
- * Results land in results/<item-id>/ next to this script.
+ * Results land in results-decker/<item-id>/ next to this script.
  */
 
 import "dotenv/config";
@@ -338,7 +338,7 @@ async function main() {
   const { itemId, steps } = parseArgs();
   const loaded = await loadItem(itemId);
   console.log(`### ${loaded.item.title} (${loaded.item.source}, ${loaded.rows.length} claims, ${loaded.checks.size} checked, text ${loaded.item.full_text.length} chars)\n`);
-  const dir = join(import.meta.dir, "results", itemId);
+  const dir = join(import.meta.dir, "results-decker", itemId);
   mkdirSync(dir, { recursive: true });
   if (steps.includes("extraction")) await compareExtraction(loaded, dir);
   if (steps.includes("rating")) await compareRating(loaded, dir);
