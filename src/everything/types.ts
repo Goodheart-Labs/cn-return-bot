@@ -49,9 +49,9 @@ export interface ExtractedClaim {
   /** Article images the claim is grounded in. Only Substack articles supply
    *  these. A claim can rest on text, on images, or on both. */
   imageUrls: string[];
-  /** True when the extractor is extremely confident the claim is correct as
+  /** True when the extractor is very confident the claim is correct as
    *  stated. Such a claim is stored as skipped and never rated or checked. */
-  triviallyTrue: boolean;
+  veryConfidentTrue: boolean;
   /** True when the claim describes a hypothetical or future scenario rather
    *  than the present or the past. Such claims are filtered out before
    *  fact-checking. */

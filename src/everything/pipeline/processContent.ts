@@ -29,7 +29,7 @@ import {
   type NewClaimRow,
 } from "../db";
 import { dropSpeculation } from "./extractClaims";
-import { TRIVIALLY_TRUE_JUDGEMENT, shouldFactCheck } from "./rateClaims";
+import { VERY_CONFIDENT_JUDGEMENT, shouldFactCheck } from "./rateClaims";
 import { requestClaimCheck, requestClaimExtraction, requestClaimRating } from "../../service/client";
 import type { RateClaimsResponse, WorkPriority } from "../../service/contract";
 import { group, money } from "../logFormat";
@@ -78,7 +78,7 @@ const EMPTY_TALLY: ItemTally = { extracted: 0, speculation: 0, skipped: 0, notes
 
 function buildClaimRow(itemId: string, claim: RatedClaim): NewClaimRow {
   const check = shouldFactCheck(claim.judgement);
-  const skipReason = claim.triviallyTrue ? "trivially true at extraction" : `judged ${claim.judgement}`;
+  const skipReason = claim.veryConfidentTrue ? "extractor very confident it is true" : `judged ${claim.judgement}`;
   const anchor = claim.anchor;
   return {
     item_id: itemId,
@@ -181,7 +181,7 @@ function freshClaimsPerPart(
 }
 
 /** Rates every part that still has claims, a couple of parts at a time, and
- *  sums what the rating cost. A claim the extractor marked trivially true is
+ *  sums what the rating cost. A claim the extractor marked very confident is
  *  not sent to the rater; it comes back with the top judgement and is stored
  *  as skipped. A part with nothing left to rate is skipped, so an
  *  already-covered page does not pay for an empty research call. */
@@ -198,10 +198,10 @@ async function ratePartsOfItem(
   await Promise.all(
     parts.map((part, i) =>
       queue.add(async () => {
-        const trivial = part.claims.filter((c) => c.triviallyTrue).map((c) => ({ ...c, judgement: TRIVIALLY_TRUE_JUDGEMENT }));
-        const toRate = part.claims.filter((c) => !c.triviallyTrue);
+        const confident = part.claims.filter((c) => c.veryConfidentTrue).map((c) => ({ ...c, judgement: VERY_CONFIDENT_JUDGEMENT }));
+        const toRate = part.claims.filter((c) => !c.veryConfidentTrue);
         if (toRate.length === 0) {
-          rated[i] = trivial;
+          rated[i] = confident;
           return;
         }
         const rating: RateClaimsResponse = await requestClaimRating({
@@ -213,7 +213,7 @@ async function ratePartsOfItem(
           claims: toRate,
           source: item.source,
         });
-        rated[i] = [...trivial, ...rating.claims];
+        rated[i] = [...confident, ...rating.claims];
         if (rating.costUsd !== null) costUsd = (costUsd ?? 0) + rating.costUsd;
         webSearches += rating.webSearches;
         if (rating.research) research.push(parts.length > 1 ? `[${part.title}] ${rating.research}` : rating.research);
@@ -304,7 +304,7 @@ function toExtractedClaim(row: ItemClaimRow): ExtractedClaim {
     context: row.context_quote ?? "",
     contextParagraph: row.context_paragraph ?? "",
     imageUrls: row.image_urls ?? [],
-    triviallyTrue: false,
+    veryConfidentTrue: false,
     speculation: false,
     anchor: { kind: "substack", url: "" },
   };

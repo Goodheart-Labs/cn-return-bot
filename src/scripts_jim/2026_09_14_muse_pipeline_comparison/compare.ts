@@ -67,6 +67,8 @@ interface ClaimRow {
 }
 
 interface StoredCheck {
+  /** The full run log, the same shape everything_pipeline_runs.logs stores. */
+  logs: unknown;
   outcome: string;
   outcome_reason: string | null;
   final_stage: string | null;
@@ -111,6 +113,7 @@ async function loadItem(itemId: string) {
   for (const run of runs ?? []) {
     const note = (notes ?? []).find((n) => n.claim_id === run.claim_id);
     checks.set(run.claim_id, {
+      logs: run.logs,
       outcome: run.outcome,
       outcome_reason: run.outcome_reason,
       final_stage: run.final_stage,
@@ -149,7 +152,7 @@ function toExtractedClaim(row: ClaimRow, url: string): ExtractedClaim {
     context: row.context_quote ?? "",
     contextParagraph: row.context_paragraph ?? "",
     imageUrls: row.image_urls ?? [],
-    triviallyTrue: false,
+    veryConfidentTrue: false,
   speculation: false,
     anchor: { kind: "substack", url },
   };
@@ -188,26 +191,26 @@ async function compareExtraction(loaded: Loaded, dir: string) {
       : {
           kind: result.kind,
           claimCount: result.parts.reduce((n, p) => n + p.claims.length, 0),
-          triviallyTrueCount: result.parts.reduce((n, p) => n + p.claims.filter((c) => c.triviallyTrue).length, 0),
+          veryConfidentCount: result.parts.reduce((n, p) => n + p.claims.filter((c) => c.veryConfidentTrue).length, 0),
           introduction: result.introduction,
           parts: result.parts.map((p) => ({
             index: p.index,
             title: p.title,
             chars: p.text.length,
             claimCount: p.claims.length,
-            triviallyTrueCount: p.claims.filter((c) => c.triviallyTrue).length,
-            claims: p.claims.map(({ claim, context, contextParagraph, imageUrls, triviallyTrue, speculation }) => ({
+            veryConfidentCount: p.claims.filter((c) => c.veryConfidentTrue).length,
+            claims: p.claims.map(({ claim, context, contextParagraph, imageUrls, veryConfidentTrue, speculation }) => ({
               claim,
               context_quote: context,
               context_paragraph: contextParagraph,
               image_urls: imageUrls,
-              trivially_true: triviallyTrue,
+              very_confident_that_its_true: veryConfidentTrue,
               speculation,
             })),
           })),
         };
   writeResult(dir, "extraction.new", { step: "extraction", input, costUsd: cost?.cost ?? null, seconds, output });
-  console.log(`  extraction: ${output.kind === "claims" ? `${output.claimCount} claims in ${output.parts.length} parts, ${output.triviallyTrueCount} trivially true` : `not checkable (${output.reason})`}, $${(cost?.cost ?? 0).toFixed(3)}, ${seconds.toFixed(0)}s`);
+  console.log(`  extraction: ${output.kind === "claims" ? `${output.claimCount} claims in ${output.parts.length} parts, ${output.veryConfidentCount} very confident` : `not checkable (${output.reason})`}, $${(cost?.cost ?? 0).toFixed(3)}, ${seconds.toFixed(0)}s`);
 }
 
 async function compareRating(loaded: Loaded, dir: string) {
@@ -287,6 +290,7 @@ async function compareCheck(loaded: Loaded, dir: string) {
           console.log(`    [${i + 1}/${checked.length}] ${check.kind} (${run.outcome}) $${(run.costUsd ?? 0).toFixed(3)}`);
           return {
             claim: i + 1,
+            logs: run.logs,
             outcome: run.outcome,
             outcome_reason: run.outcomeReason,
             final_stage: run.finalStage,
@@ -301,6 +305,7 @@ async function compareCheck(loaded: Loaded, dir: string) {
           console.log(`    [${i + 1}/${checked.length}] error: ${err?.message}`);
           return {
             claim: i + 1,
+            logs: null,
             outcome: "error",
             outcome_reason: err?.message ?? "unknown",
             final_stage: null,

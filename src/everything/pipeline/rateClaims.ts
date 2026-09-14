@@ -63,10 +63,10 @@ export function shouldFactCheck(judgement: string): boolean {
 // treated as uncertain, so it still gets checked.
 const UNRATED_JUDGEMENT = "uncertain";
 
-/** The judgement a claim the extractor marked trivially true is stored with.
+/** The judgement a claim the extractor marked very confident is stored with.
  *  It never reaches the rater, so this is the rater's top rating applied by
  *  the extractor's confidence instead. */
-export const TRIVIALLY_TRUE_JUDGEMENT = "certainly true";
+export const VERY_CONFIDENT_JUDGEMENT = "certainly true";
 
 const RATING_SCHEMA_HINT = `{ "research": string, "ratings": [{ "claim": number, "rating": string }] }`;
 

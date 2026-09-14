@@ -36,7 +36,7 @@ function extractionSystemPrompt(): string {
     `- "context": a verbatim excerpt from the text around the claim — its sentence plus enough surrounding sentences that a reader with none of the rest of the text has all the context needed to evaluate it. Verbatim source prose only — never quote an image block's Description/Visible text lines. Leave empty ("") for a claim grounded only in an image.`,
     `- "context_paragraph": a wider verbatim excerpt — the full surrounding paragraph(s) the claim sits in — that contains the "context" excerpt above word-for-word. Shown to readers as the broader passage around the highlighted claim. Same rule: verbatim source prose only. Leave empty ("") when there is no surrounding text.`,
     `- "image_urls": the URLs (from the "Image:" line of each image block) of any images the claim is based on — a chart, screenshot, photo, or diagram. Empty array for a text-only claim.`,
-    `- "trivially_true": true only if you are extremely confident the claim is correct as stated, so that no fact-check is needed; false otherwise.`,
+    `- "very_confident_that_its_true": true only if you are very confident the claim is correct as stated, so that no fact-check is needed; false otherwise.`,
     `- "speculation": true if the claim describes a hypothetical or future scenario — something stated as happening in a future year (e.g. "in 2028...") as part of an imagined scenario; false if it is about the present or past (2026 or earlier) or the current state of the world (real events, statistics, and any other real-world claim).`,
   ];
   return `You extract checkable factual claims from a text (podcast transcript or article). The text may contain bracketed image blocks — an "Image: <url>" line followed by "Description:" and/or "Visible text:" lines generated from that image. They are a text rendering of the image (you are not shown the image itself), not part of the article prose.
@@ -63,10 +63,10 @@ function claimsResponseFormat() {
     context: { type: "string", description: "Verbatim excerpt around the claim, or \"\" for an image-only claim." },
     context_paragraph: { type: "string", description: "Wider verbatim excerpt containing the context excerpt word-for-word, or \"\" when there is no surrounding text." },
     image_urls: { type: "array", items: { type: "string" }, description: "URLs of images the claim is based on; empty for a text-only claim." },
-    trivially_true: { type: "boolean", description: "True only if you are extremely confident the claim is correct as stated." },
+    very_confident_that_its_true: { type: "boolean", description: "True only if you are very confident the claim is correct as stated." },
     speculation: { type: "boolean", description: "True if the claim is about a hypothetical/future scenario; false if about the present or past." },
   };
-  const required = ["claim", "context", "context_paragraph", "image_urls", "trivially_true", "speculation"];
+  const required = ["claim", "context", "context_paragraph", "image_urls", "very_confident_that_its_true", "speculation"];
   return jsonSchemaResponseFormat("content_claims", {
     type: "object",
     properties: { claims: { type: "array", items: { type: "object", properties, required, additionalProperties: false } } },
@@ -80,7 +80,7 @@ interface RawClaim {
   context: string;
   context_paragraph: string;
   image_urls?: string[];
-  trivially_true: boolean;
+  very_confident_that_its_true: boolean;
   speculation: boolean;
 }
 
@@ -92,7 +92,7 @@ function toExtractedClaim(raw: RawClaim, anchor: ClaimAnchor): ExtractedClaim {
     context: raw.context ?? "",
     contextParagraph: raw.context_paragraph ?? "",
     imageUrls: raw.image_urls ?? [],
-    triviallyTrue: raw.trivially_true,
+    veryConfidentTrue: raw.very_confident_that_its_true,
     speculation: raw.speculation,
     anchor,
   };
@@ -157,7 +157,7 @@ async function runExtraction(content: string): Promise<RawClaim[]> {
     ],
     schemaHint:
       `{ "claims": [ { "claim": string, "context": string, "context_paragraph": string, ` +
-      `"image_urls": string[], "trivially_true": boolean, "speculation": boolean } ] }`,
+      `"image_urls": string[], "very_confident_that_its_true": boolean, "speculation": boolean } ] }`,
     call: async (messages, attempt) => {
       const callName = attempt === 1 ? "claim_extraction" : `claim_extraction.retry.${attempt - 1}`;
       const { response, costEntry } = await trackedLlmCreate(callName, {
