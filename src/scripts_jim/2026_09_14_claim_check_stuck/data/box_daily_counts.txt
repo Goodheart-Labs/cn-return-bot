@@ -1,0 +1,25 @@
+2026-09-09 finished=335 empty=1 retryable=1 starts=8
+2026-09-10 finished=863 empty=23 retryable=0 starts=2
+2026-09-11 finished=853 empty=21 retryable=2 starts=1
+2026-09-12 finished=726 empty=10 retryable=0 starts=0
+2026-09-13 finished=368 empty=67 retryable=0 starts=1
+2026-09-14 finished=134 empty=38 retryable=6 starts=0
+==
+2026-09-14T07:37:10+00:00 ubuntu-8gb-nbg1-1 bun[314579]: [llm] Retryable error (attempt 1/4, model: deepseek/deepseek-v4-flash): ? The socket connection was closed unexpectedly. For more information, pass `verbose: true` in the second argument to fetch(). Retrying in 1000ms...
+2026-09-14T07:37:10+00:00 ubuntu-8gb-nbg1-1 bun[314579]: [processTweet] Bot pipeline failed for 2099280096083271865: 22 |         }
+2026-09-14T07:37:10+00:00 ubuntu-8gb-nbg1-1 bun[314579]: 23 |         const contentType = response.headers.get('content-type');
+2026-09-14T07:37:10+00:00 ubuntu-8gb-nbg1-1 bun[314579]: 24 |         const mediaType = contentType?.split(';')[0]?.trim();
+2026-09-14T07:37:10+00:00 ubuntu-8gb-nbg1-1 bun[314579]: 25 |         const isJSON = mediaType?.includes('application/json') || mediaType?.endsWith('+json');
+2026-09-14T07:37:10+00:00 ubuntu-8gb-nbg1-1 bun[314579]: 26 |         if (isJSON) {
+2026-09-14T07:37:10+00:00 ubuntu-8gb-nbg1-1 bun[314579]: 27 |             const json = await response.json();
+2026-09-14T07:37:10+00:00 ubuntu-8gb-nbg1-1 bun[314579]:                                              ^
+2026-09-14T07:37:10+00:00 ubuntu-8gb-nbg1-1 bun[314579]: TypeError: [model: deepseek/deepseek-v4-flash] ? The socket connection was closed unexpectedly. For more information, pass `verbose: true` in the second argument to fetch()
+2026-09-14T07:37:10+00:00 ubuntu-8gb-nbg1-1 bun[314579]:   path: "https://openrouter.ai/api/v1/chat/completions",
+2026-09-14T07:37:10+00:00 ubuntu-8gb-nbg1-1 bun[314579]:  errno: 0,
+2026-09-14T07:37:10+00:00 ubuntu-8gb-nbg1-1 bun[314579]:   code: "ECONNRESET"
+2026-09-14T07:37:10+00:00 ubuntu-8gb-nbg1-1 bun[314579]:       at async <anonymous> (/opt/cn-return-bot/node_modules/openai/internal/parse.mjs:27:41)
+2026-09-14T07:37:10+00:00 ubuntu-8gb-nbg1-1 bun[314579]:       at async defaultParseResponse (/opt/cn-return-bot/node_modules/openai/internal/parse.mjs:30:42)
+2026-09-14T07:37:10+00:00 ubuntu-8gb-nbg1-1 bun[314579]: [claim-check] x tweet 2099280096083271865: failed (error)
+2026-09-14T07:37:11+00:00 ubuntu-8gb-nbg1-1 bun[314579]: [llm] Retryable error (attempt 2/4, model: deepseek/deepseek-v4-flash): ? The socket connection was closed unexpectedly. For more information, pass `verbose: true` in the second argument to fetch(). Retrying in 2000ms...
+2026-09-14T07:38:12+00:00 ubuntu-8gb-nbg1-1 bun[314579]: [gemini] Retryable error (free key, attempt 1/4, model: gemini-3.8-flash): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 2000ms...
+2026-09-14T07:38:45+00:00 ubuntu-8gb-nbg1-1 bun[314579]: [gemini] Retryable error (free key, attempt 2/4, model: gemini-3.8-flash): 503 {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}. Retrying in 4000ms...
