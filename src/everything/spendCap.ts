@@ -26,6 +26,9 @@ export const DAILY_SPEND_CAP_USD = Number(process.env.EVERYTHING_DAILY_SPEND_CAP
 
 export const REQUEST_RESERVE_USD = Number(process.env.EVERYTHING_REQUEST_RESERVE_USD || DEFAULT_REQUEST_RESERVE_USD);
 
+/** What feed and backlog work may spend in a day: the cap minus the reserve. */
+export const FEED_BUDGET_USD = DAILY_SPEND_CAP_USD - REQUEST_RESERVE_USD;
+
 /** How long a fetched spend total stays valid. Several claim checks run at
  *  once and each takes minutes, so a short cache keeps the per-claim checks
  *  from hammering the database while staying close enough to the live total. */
@@ -48,7 +51,7 @@ export async function todaySpendUsd(): Promise<number> {
 /** Whether feed and backlog work must stop. It stops early, at the cap minus
  *  the reserve, so the reserve is still there when a reader asks. */
 export async function feedBudgetExhausted(): Promise<boolean> {
-  return (await todaySpendUsd()) >= DAILY_SPEND_CAP_USD - REQUEST_RESERVE_USD;
+  return (await todaySpendUsd()) >= FEED_BUDGET_USD;
 }
 
 /** Whether even reader-requested work must stop. This is the full cap, the

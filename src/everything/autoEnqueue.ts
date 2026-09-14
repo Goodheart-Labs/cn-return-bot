@@ -1,9 +1,9 @@
 /**
  * Auto-enqueue the next unprocessed content of the feeds we keep fact-checked.
- * The feeds live in everything_followed_feeds, and the walk order comes from
- * the creator ranking: manually flagged creators first, then everyone by
- * reader attention (see creatorRanking.ts). The everything-priority-feeds
- * workflow runs this right before the worker drains the queue.
+ * The walk order comes from the creator ranking: creators holding priority
+ * first, then everyone by reader attention (see creatorRanking.ts). The
+ * everything-priority-feeds workflow runs this whenever the pacing gate opens
+ * and nothing is waiting in the feed tiers of the queue.
  *
  * For every feed we fetch its latest entries, newest first. A Substack feed
  * comes from its RSS feed, which goes through our Cloudflare Worker when we run
@@ -382,14 +382,19 @@ function priorityLeft(priorityUntil: string | null): string {
   return days >= 1 ? `${days}d` : "<1d";
 }
 
-/** Runs one pass of triage, selection, and enqueueing. Returns how many items
- *  were enqueued. */
-export async function runAutoEnqueue(dryRun = false): Promise<number> {
-  if (!dryRun) {
-    await triageOrphanedItems();
-    await retryErroredItems();
-  }
+/** Puts back what a killed run stranded and gives errored items their repeat
+ *  attempts. The feed run does this every cycle, before it asks the pacing
+ *  gate, because both steps only touch the database and a requeued item must
+ *  be visible to the gate's "is anything waiting" question. Both steps assume
+ *  no worker is active, which the workflow's concurrency group guarantees. */
+export async function triageQueue(): Promise<void> {
+  await triageOrphanedItems();
+  await retryErroredItems();
+}
 
+/** Runs one pass of selection and enqueueing. Returns how many items were
+ *  enqueued. */
+export async function runAutoEnqueue(dryRun = false): Promise<number> {
   // The creators are ranked once here and handed to the top-posts refresh,
   // rather than ranked again inside it, so one cycle costs one ranking.
   const { walked, rule } = await feedsToWalk();
@@ -560,7 +565,10 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
 
 if (import.meta.main) {
   ensureYtDlp();
-  runAutoEnqueue(process.argv.includes("--dry-run")).catch((err) => {
+  const dryRun = process.argv.includes("--dry-run");
+  (dryRun ? Promise.resolve() : triageQueue())
+    .then(() => runAutoEnqueue(dryRun))
+    .catch((err) => {
     console.error("[autoEnqueue] Fatal error:", err);
     process.exit(1);
   });
