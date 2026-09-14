@@ -293,9 +293,11 @@ one-second retry fixes. A whole prefilter run took a median of 41 s and at
 most 120 s, against 115 s median and 1322 s worst with the default routing an
 hour earlier.
 
-Recommended: `provider: { only: ["deepinfra", "gmicloud", "streamlake",
-"alibaba", "baidu", "novita", "parasail", "nextbit"] }`. StreamLake earned its
-place in the restricted run despite OpenRouter's degraded flag; Mancer 2 is
-left out for price. This is a list to revisit, not a law: the next cheap
-provider can degrade the same way, so the deadline on the call is still the
-durable fix.
+Decided with Jim (2026-09-14): `provider: { only: ["streamlake", "alibaba",
+"baidu", "novita", "parasail", "nextbit"] }`. DeepInfra and GMICloud are out
+because Jim finds their 15 to 21 second mean too long; StreamLake stays despite
+OpenRouter's degraded flag, since it held a 69 second worst case over 151
+calls; Mancer 2 is out for price. This list is not yet in the code: the ticket
+asked for an explanation, not a fix. It is a list to revisit, not a law: the
+next cheap provider can degrade the same way, so the deadline on the call is
+still the durable fix.
