@@ -1,0 +1,300 @@
+2026-09-10T17:03:01Z success 34505814784 :: [claim-check] 0 in flight, 0 waiting
+2026-09-10T17:33:01Z success 34508889990 :: [claim-check] 0 in flight, 0 waiting
+2026-09-10T18:03:02Z success 34511928371 :: [claim-check] 2 in flight, 0 waiting, oldest in flight 492s
+2026-09-10T18:33:01Z success 34515021282 :: [claim-check] 4 in flight, 0 waiting, oldest in flight 643s
+2026-09-10T19:03:01Z success 34518054376 :: [claim-check] 1 in flight, 0 waiting, oldest in flight 582s
+2026-09-10T19:33:01Z success 34521058992 :: [claim-check] 1 in flight, 0 waiting, oldest in flight 333s
+2026-09-10T20:03:01Z success 34524006855 :: [claim-check] 4 in flight, 4 waiting, oldest waiting 285s, oldest in flight 383s
+2026-09-10T20:33:01Z success 34527046977 :: [claim-check] 4 in flight, 0 waiting, oldest in flight 484s
+2026-09-10T21:03:01Z success 34529952761 :: [claim-check] 4 in flight, 6 waiting, oldest waiting 497s, oldest in flight 497s
+2026-09-10T21:33:01Z success 34532794339 :: [claim-check] 0 in flight, 0 waiting
+2026-09-10T22:03:01Z success 34535432143 :: [claim-check] 4 in flight, 4 waiting, oldest waiting 368s, oldest in flight 455s
+2026-09-10T22:33:01Z success 34537990659 :: [claim-check] 4 in flight, 2 waiting, oldest waiting 185s, oldest in flight 507s
+2026-09-10T23:03:01Z success 34540357828 :: [claim-check] 0 in flight, 0 waiting
+2026-09-10T23:33:01Z success 34542647075 :: [claim-check] 0 in flight, 0 waiting
+2026-09-11T00:03:02Z success 34544805270 :: [claim-check] 4 in flight, 6 waiting, oldest waiting 403s, oldest in flight 714s
+2026-09-11T00:33:01Z cancelled 34546956523 :: 
+2026-09-11T01:03:01Z success 34549060146 :: [claim-check] 0 in flight, 0 waiting
+2026-09-11T01:33:01Z success 34551115753 :: [claim-check] 0 in flight, 0 waiting
+2026-09-11T02:03:01Z success 34553093678 :: [claim-check] 4 in flight, 4 waiting, oldest waiting 573s, oldest in flight 633s
+2026-09-11T02:33:01Z success 34555047773 :: [claim-check] 3 in flight, 0 waiting, oldest in flight 97s
+2026-09-11T03:03:01Z failure 34556952025 :: 
+2026-09-11T03:33:01Z success 34558864944 :: [claim-check] 4 in flight, 3 waiting, oldest waiting 206s, oldest in flight 158s
+2026-09-11T04:03:02Z success 34560723010 :: [claim-check] 4 in flight, 5 waiting, oldest waiting 370s, oldest in flight 462s
+2026-09-11T04:33:01Z success 34562616605 :: [claim-check] 4 in flight, 3 waiting, oldest waiting 189s, oldest in flight 650s
+2026-09-11T05:03:01Z success 34564464201 :: [claim-check] 1 in flight, 0 waiting, oldest in flight 989s
+2026-09-11T05:33:01Z success 34566386819 :: [claim-check] 1 in flight, 0 waiting, oldest in flight 490s
+2026-09-11T05:48:01Z success 34567352032 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T06:03:01Z success 34568319671 :: [claim-check] 1 in flight, 0 waiting, oldest in flight 1281s
+2026-09-11T06:18:01Z failure 34569342369 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T06:33:01Z success 34570401769 :: [claim-check] 0 in flight, 0 waiting
+2026-09-11T06:48:01Z success 34571484264 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T07:03:01Z failure 34572590552 :: 
+2026-09-11T07:18:01Z success 34573733905 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T07:33:01Z failure 34574902936 :: 
+2026-09-11T07:48:01Z success 34576083622 :: [pipeline] claim-check service: 1 in flight, 0 waiting
+2026-09-11T08:03:05Z success 34577268683 :: [claim-check] 0 in flight, 0 waiting
+2026-09-11T08:18:01Z success 34578495343 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T08:33:01Z success 34579735359 :: [claim-check] 0 in flight, 0 waiting
+2026-09-11T08:48:01Z success 34580961459 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T09:03:01Z failure 34582209217 :: 
+2026-09-11T09:18:01Z success 34583490528 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T09:33:01Z failure 34584770195 :: 
+2026-09-11T09:48:01Z success 34586025552 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T10:03:01Z success 34587267801 :: [claim-check] 4 in flight, 0 waiting, oldest in flight 480s
+2026-09-11T10:18:01Z success 34588529337 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T10:33:01Z success 34589758849 :: [claim-check] 0 in flight, 0 waiting
+2026-09-11T10:48:01Z success 34590956715 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T11:03:01Z success 34592144358 :: [claim-check] 0 in flight, 0 waiting
+2026-09-11T11:18:02Z success 34593339549 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T11:33:01Z success 34594570756 :: [claim-check] 0 in flight, 0 waiting
+2026-09-11T11:48:01Z success 34595767531 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T12:03:02Z success 34596959595 :: [claim-check] 0 in flight, 0 waiting
+2026-09-11T12:18:01Z success 34598208487 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T12:33:01Z success 34599487516 :: [claim-check] 6 in flight, 0 waiting, oldest in flight 95s
+2026-09-11T12:48:01Z success 34600796682 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T13:03:01Z failure 34602132048 :: 
+2026-09-11T13:18:01Z success 34603517462 :: [pipeline] claim-check service: 1 in flight, 0 waiting
+2026-09-11T13:33:01Z success 34604940429 :: [claim-check] 0 in flight, 0 waiting
+2026-09-11T13:48:01Z success 34606385690 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T14:03:01Z success 34607834691 :: [claim-check] 0 in flight, 0 waiting
+2026-09-11T14:18:01Z success 34609299630 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T14:33:02Z success 34610787255 :: [claim-check] 4 in flight, 0 waiting, oldest in flight 369s
+2026-09-11T14:48:01Z success 34612289641 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T15:03:01Z success 34613791150 :: [claim-check] 4 in flight, 5 waiting, oldest waiting 497s, oldest in flight 738s
+2026-09-11T15:18:02Z success 34615296183 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T15:33:02Z success 34616783164 :: [claim-check] 4 in flight, 6 waiting, oldest waiting 391s, oldest in flight 645s
+2026-09-11T15:48:01Z success 34618266237 :: [pipeline] claim-check service: 1 in flight, 0 waiting
+2026-09-11T16:03:01Z success 34619721312 :: [claim-check] 0 in flight, 0 waiting
+2026-09-11T16:18:01Z success 34621182182 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T16:33:01Z success 34622636073 :: [claim-check] 0 in flight, 0 waiting
+2026-09-11T16:48:02Z success 34624063732 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T17:03:01Z success 34625481325 :: [claim-check] 4 in flight, 6 waiting, oldest waiting 531s, oldest in flight 611s
+2026-09-11T17:18:01Z success 34626897795 :: [pipeline] claim-check service: 1 in flight, 0 waiting
+2026-09-11T17:33:01Z success 34628312471 :: [claim-check] 4 in flight, 6 waiting, oldest waiting 388s, oldest in flight 296s
+2026-09-11T17:48:01Z success 34629718122 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T18:03:01Z success 34631094594 :: [claim-check] 2 in flight, 0 waiting, oldest in flight 265s
+2026-09-11T18:18:01Z success 34632490777 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T18:33:01Z success 34633889997 :: [claim-check] 4 in flight, 2 waiting, oldest waiting 318s, oldest in flight 376s
+2026-09-11T18:48:01Z success 34635318341 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T19:03:01Z success 34636708945 :: [claim-check] 2 in flight, 0 waiting, oldest in flight 134s
+2026-09-11T19:18:01Z success 34638080801 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T19:33:01Z success 34639436923 :: [claim-check] 4 in flight, 3 waiting, oldest waiting 254s, oldest in flight 232s
+2026-09-11T19:48:01Z success 34640777318 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T20:03:02Z success 34642112786 :: [claim-check] 4 in flight, 2 waiting, oldest waiting 409s, oldest in flight 385s
+2026-09-11T20:18:01Z success 34643473767 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T20:33:01Z success 34644808656 :: [claim-check] 4 in flight, 0 waiting, oldest in flight 412s
+2026-09-11T20:48:01Z success 34646107455 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T21:03:01Z success 34647391357 :: [claim-check] 4 in flight, 2 waiting, oldest waiting 380s, oldest in flight 684s
+2026-09-11T21:18:01Z success 34648674926 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T21:33:01Z success 34649918796 :: [claim-check] 4 in flight, 3 waiting, oldest waiting 285s, oldest in flight 732s
+2026-09-11T21:48:01Z success 34651098954 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T22:18:01Z success 34653379888 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T22:48:01Z success 34655543008 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-11T23:18:01Z success 34657524931 :: [pipeline] claim-check service: 1 in flight, 0 waiting
+2026-09-11T23:48:01Z success 34659400667 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T00:18:01Z success 34661160440 :: [pipeline] claim-check service: 6 in flight, 0 waiting
+2026-09-12T00:48:01Z success 34662819308 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T01:18:01Z success 34664408127 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T01:48:01Z success 34665873684 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T02:18:01Z success 34667273411 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T02:48:01Z success 34668646786 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T03:18:01Z success 34669989680 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T03:48:01Z success 34671338549 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T04:18:01Z success 34672635081 :: [pipeline] claim-check service: 1 in flight, 0 waiting
+2026-09-12T04:48:01Z success 34673950962 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T05:18:01Z success 34675229276 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T05:48:01Z success 34676501719 :: [pipeline] claim-check service: 1 in flight, 0 waiting
+2026-09-12T06:18:01Z success 34677768169 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T06:48:01Z success 34679066746 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T07:18:01Z success 34680364368 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T07:48:01Z success 34681660660 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T08:18:01Z success 34682911380 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T08:48:01Z success 34684196452 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T09:18:07Z success 34685483956 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T09:48:01Z success 34686782846 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T10:03:01Z success 34687420268 :: [claim-check] 1 in flight, 0 waiting, oldest in flight 381s
+2026-09-12T10:18:01Z success 34688079311 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T10:33:02Z success 34688745287 :: [claim-check] 1 in flight, 0 waiting, oldest in flight 212s
+2026-09-12T10:48:01Z success 34689392007 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T11:03:01Z success 34690023533 :: [claim-check] 2 in flight, 0 waiting, oldest in flight 533s
+2026-09-12T11:18:01Z success 34690687315 :: [pipeline] claim-check service: 1 in flight, 0 waiting
+2026-09-12T11:33:01Z success 34691337091 :: [claim-check] 0 in flight, 0 waiting
+2026-09-12T11:48:01Z success 34691984421 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T12:03:01Z success 34692616600 :: [claim-check] 3 in flight, 0 waiting, oldest in flight 189s
+2026-09-12T12:18:01Z success 34693295258 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T12:33:01Z success 34693977961 :: [claim-check] 0 in flight, 0 waiting
+2026-09-12T12:48:01Z success 34694660629 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T13:03:01Z success 34695337142 :: [claim-check] 0 in flight, 0 waiting
+2026-09-12T13:18:01Z success 34696042485 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T13:33:01Z success 34696736964 :: [claim-check] 0 in flight, 0 waiting
+2026-09-12T13:48:01Z success 34697426074 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T14:03:01Z success 34698136463 :: [claim-check] 4 in flight, 1 waiting, oldest waiting 427s, oldest in flight 461s
+2026-09-12T14:18:01Z success 34698878044 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T14:33:01Z success 34699611247 :: [claim-check] 0 in flight, 0 waiting
+2026-09-12T14:48:01Z success 34700337602 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T15:03:01Z success 34701050096 :: [claim-check] 0 in flight, 0 waiting
+2026-09-12T15:18:01Z success 34701808826 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T15:33:01Z success 34702564143 :: [claim-check] 1 in flight, 0 waiting, oldest in flight 237s
+2026-09-12T15:48:01Z success 34703313370 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T16:03:02Z success 34704052227 :: [claim-check] 4 in flight, 1 waiting, oldest waiting 105s, oldest in flight 107s
+2026-09-12T16:18:01Z success 34704801775 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T16:33:01Z success 34705575546 :: [claim-check] 0 in flight, 0 waiting
+2026-09-12T16:48:01Z success 34706325681 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T17:03:01Z success 34707054263 :: [claim-check] 0 in flight, 0 waiting
+2026-09-12T17:18:01Z success 34707811960 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T17:33:01Z success 34708556927 :: [claim-check] 0 in flight, 0 waiting
+2026-09-12T17:48:01Z success 34709301642 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T18:03:01Z success 34710017721 :: [claim-check] 0 in flight, 0 waiting
+2026-09-12T18:18:01Z success 34710766582 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T18:33:01Z success 34711536749 :: [claim-check] 0 in flight, 0 waiting
+2026-09-12T18:48:01Z success 34712280459 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T19:03:01Z success 34713005449 :: [claim-check] 1 in flight, 0 waiting, oldest in flight 343s
+2026-09-12T19:18:01Z success 34713763947 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T19:33:01Z success 34714491628 :: [claim-check] 0 in flight, 0 waiting
+2026-09-12T19:48:01Z success 34715214267 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T20:03:01Z success 34715934342 :: [claim-check] 0 in flight, 0 waiting
+2026-09-12T20:18:01Z success 34716684532 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T20:33:01Z success 34717426259 :: [claim-check] 1 in flight, 0 waiting, oldest in flight 168s
+2026-09-12T20:48:01Z success 34718143178 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T21:03:01Z success 34718840901 :: [claim-check] 3 in flight, 0 waiting, oldest in flight 376s
+2026-09-12T21:18:01Z success 34719553608 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T21:33:01Z success 34720269637 :: [claim-check] 1 in flight, 0 waiting, oldest in flight 597s
+2026-09-12T21:48:01Z success 34720971383 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T22:03:01Z success 34721653789 :: [claim-check] 0 in flight, 0 waiting
+2026-09-12T22:18:01Z success 34722361558 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T22:33:02Z success 34723057128 :: [claim-check] 0 in flight, 0 waiting
+2026-09-12T22:48:01Z success 34723708460 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T23:03:01Z success 34724373826 :: [claim-check] 0 in flight, 0 waiting
+2026-09-12T23:18:01Z success 34725043216 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-12T23:33:01Z success 34725705027 :: [claim-check] 4 in flight, 1 waiting, oldest waiting 400s, oldest in flight 478s
+2026-09-12T23:48:01Z success 34726350712 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-13T00:03:01Z success 34726965518 :: [claim-check] 2 in flight, 0 waiting, oldest in flight 250s
+2026-09-13T00:18:01Z success 34727611916 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-13T00:33:01Z success 34728254386 :: [claim-check] 0 in flight, 0 waiting
+2026-09-13T00:48:01Z success 34728898568 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-13T01:03:01Z success 34729541594 :: [claim-check] 1 in flight, 0 waiting, oldest in flight 472s
+2026-09-13T01:18:01Z success 34730183495 :: [pipeline] claim-check service: 1 in flight, 0 waiting
+2026-09-13T01:33:01Z failure 34730809447 :: 
+2026-09-13T01:48:01Z success 34731428561 :: [pipeline] claim-check service: 2 in flight, 0 waiting
+2026-09-13T02:03:01Z failure 34732055639 :: [claim-check] 4 in flight, 8 waiting, oldest waiting 653s, oldest in flight 4073s
+2026-09-13T02:18:01Z failure 34732701271 :: [pipeline] claim-check service: 4 in flight, 6 waiting
+2026-09-13T02:33:01Z failure 34733322980 :: [claim-check] 3 in flight, 0 waiting, oldest in flight 5860s
+2026-09-13T02:48:01Z failure 34733926994 :: [pipeline] claim-check service: 2 in flight, 0 waiting
+2026-09-13T03:03:01Z failure 34734519845 :: [claim-check] 2 in flight, 0 waiting, oldest in flight 7672s
+2026-09-13T03:18:01Z failure 34735136973 :: [pipeline] claim-check service: 2 in flight, 0 waiting
+2026-09-13T03:33:02Z failure 34735764694 :: [claim-check] 2 in flight, 0 waiting, oldest in flight 9460s
+2026-09-13T03:48:01Z failure 34736367869 :: [pipeline] claim-check service: 2 in flight, 0 waiting
+2026-09-13T04:03:04Z failure 34736964652 :: [claim-check] 2 in flight, 0 waiting, oldest in flight 11263s
+2026-09-13T04:18:01Z failure 34737558802 :: [pipeline] claim-check service: 2 in flight, 0 waiting
+2026-09-13T04:33:01Z failure 34738153283 :: [claim-check] 1 in flight, 0 waiting, oldest in flight 9624s
+2026-09-13T04:48:01Z failure 34738739679 :: [pipeline] claim-check service: 1 in flight, 0 waiting
+2026-09-13T05:03:01Z success 34739336562 :: [claim-check] 0 in flight, 0 waiting
+2026-09-13T05:18:01Z success 34739953410 :: [pipeline] claim-check service: 4 in flight, 1 waiting
+2026-09-13T05:33:01Z success 34740573641 :: [claim-check] 2 in flight, 0 waiting, oldest in flight 772s
+2026-09-13T05:48:01Z success 34741185600 :: [pipeline] claim-check service: 2 in flight, 0 waiting
+2026-09-13T06:03:01Z success 34741798962 :: [claim-check] 2 in flight, 0 waiting, oldest in flight 2589s
+2026-09-13T06:18:01Z success 34742405517 :: [pipeline] claim-check service: 4 in flight, 4 waiting
+2026-09-13T06:33:01Z failure 34743020360 :: [claim-check] 2 in flight, 0 waiting, oldest in flight 4372s
+2026-09-13T06:48:01Z failure 34743637419 :: [pipeline] claim-check service: 2 in flight, 0 waiting
+2026-09-13T07:03:01Z success 34744264272 :: [claim-check] 0 in flight, 0 waiting
+2026-09-13T07:18:01Z success 34744884974 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-13T07:33:01Z success 34745509089 :: [claim-check] 0 in flight, 0 waiting
+2026-09-13T07:48:01Z success 34746113904 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-13T08:03:01Z failure 34746713989 :: 
+2026-09-13T08:18:03Z success 34747336968 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-13T08:33:01Z success 34747966245 :: [claim-check] 2 in flight, 0 waiting, oldest in flight 456s
+2026-09-13T09:18:04Z success 34749280577 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-13T09:48:01Z success 34750292913 :: [pipeline] claim-check service: 1 in flight, 0 waiting
+2026-09-13T10:03:04Z success 34750845049 :: [claim-check] 0 in flight, 0 waiting
+2026-09-13T10:18:01Z success 34751484919 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-13T10:33:01Z success 34752145637 :: [claim-check] 4 in flight, 6 waiting, oldest waiting 386s, oldest in flight 662s
+2026-09-13T10:48:01Z success 34752787473 :: [pipeline] claim-check service: 4 in flight, 5 waiting
+2026-09-13T11:03:02Z success 34753419578 :: [claim-check] 4 in flight, 14 waiting, oldest waiting 2137s, oldest in flight 2466s
+2026-09-13T11:18:01Z success 34754077659 :: [pipeline] claim-check service: 4 in flight, 8 waiting
+2026-09-13T11:33:01Z failure 34754726041 :: [claim-check] 4 in flight, 8 waiting, oldest waiting 1858s, oldest in flight 4448s
+2026-09-13T11:48:01Z failure 34755376024 :: [pipeline] claim-check service: 4 in flight, 7 waiting
+2026-09-13T12:03:04Z failure 34756029634 :: [claim-check] 3 in flight, 0 waiting, oldest in flight 5645s
+2026-09-13T12:18:01Z failure 34756708527 :: [pipeline] claim-check service: 3 in flight, 0 waiting
+2026-09-13T12:33:01Z failure 34757397499 :: [claim-check] 3 in flight, 0 waiting, oldest in flight 7427s
+2026-09-13T12:48:01Z failure 34758076759 :: [pipeline] claim-check service: 2 in flight, 0 waiting
+2026-09-13T13:03:01Z failure 34758747907 :: [claim-check] 2 in flight, 0 waiting, oldest in flight 6040s
+2026-09-13T13:18:01Z failure 34759449470 :: [pipeline] claim-check service: 2 in flight, 0 waiting
+2026-09-13T13:33:01Z success 34760151778 :: [claim-check] 0 in flight, 0 waiting
+2026-09-13T13:48:01Z success 34760848098 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-13T14:03:01Z success 34761537116 :: [claim-check] 4 in flight, 1 waiting, oldest waiting 367s, oldest in flight 709s
+2026-09-13T14:18:02Z success 34762258140 :: [pipeline] claim-check service: 3 in flight, 0 waiting
+2026-09-13T14:33:01Z success 34762987457 :: [claim-check] 4 in flight, 8 waiting, oldest waiting 508s, oldest in flight 2497s
+2026-09-13T14:48:01Z success 34763708518 :: [pipeline] claim-check service: 4 in flight, 1 waiting
+2026-09-13T15:03:02Z failure 34764428529 :: [claim-check] 4 in flight, 9 waiting, oldest waiting 704s, oldest in flight 4304s
+2026-09-13T15:18:01Z failure 34765181135 :: [pipeline] claim-check service: 4 in flight, 7 waiting
+2026-09-13T15:33:01Z failure 34765937239 :: [claim-check] 4 in flight, 7 waiting, oldest waiting 2274s, oldest in flight 6094s
+2026-09-13T15:48:01Z failure 34766677774 :: [pipeline] claim-check service: 4 in flight, 7 waiting
+2026-09-13T16:03:01Z failure 34767406959 :: [claim-check] 4 in flight, 7 waiting, oldest waiting 4095s, oldest in flight 7915s
+2026-09-13T16:18:01Z failure 34768157830 :: [pipeline] claim-check service: 4 in flight, 6 waiting
+2026-09-13T16:33:01Z failure 34768917330 :: [claim-check] 3 in flight, 0 waiting, oldest in flight 7560s
+2026-09-13T16:48:01Z failure 34769661778 :: [pipeline] claim-check service: 2 in flight, 0 waiting
+2026-09-13T17:03:01Z failure 34770403799 :: [claim-check] 2 in flight, 0 waiting, oldest in flight 8815s
+2026-09-13T17:18:01Z failure 34771170445 :: [pipeline] claim-check service: 1 in flight, 0 waiting
+2026-09-13T17:33:01Z success 34771925730 :: [claim-check] 0 in flight, 0 waiting
+2026-09-13T17:48:01Z success 34772677536 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-13T18:03:02Z success 34773421683 :: [claim-check] 0 in flight, 0 waiting
+2026-09-13T18:18:01Z success 34774194861 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-13T18:33:01Z success 34774969918 :: [claim-check] 0 in flight, 0 waiting
+2026-09-13T18:48:01Z success 34775738388 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-13T19:03:01Z success 34776486553 :: [claim-check] 0 in flight, 0 waiting
+2026-09-13T19:18:01Z success 34777265608 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-13T19:33:01Z success 34778028203 :: [claim-check] 0 in flight, 0 waiting
+2026-09-13T19:48:01Z success 34778786178 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-13T20:03:01Z success 34779538285 :: [claim-check] 4 in flight, 6 waiting, oldest waiting 707s, oldest in flight 707s
+2026-09-13T20:18:02Z success 34780334381 :: [pipeline] claim-check service: 4 in flight, 6 waiting
+2026-09-13T20:33:01Z success 34781113211 :: [claim-check] 4 in flight, 16 waiting, oldest waiting 2489s, oldest in flight 2490s
+2026-09-13T20:48:01Z success 34781878006 :: [pipeline] claim-check service: 4 in flight, 16 waiting
+2026-09-13T21:03:01Z failure 34782622228 :: [claim-check] 4 in flight, 28 waiting, oldest waiting 6042s, oldest in flight 6042s
+2026-09-13T21:18:01Z failure 34783397183 :: [pipeline] claim-check service: 4 in flight, 28 waiting
+2026-09-13T21:33:01Z failure 34784158330 :: [claim-check] 4 in flight, 28 waiting, oldest waiting 6097s, oldest in flight 6098s
+2026-09-13T21:48:01Z failure 34784894672 :: [pipeline] claim-check service: 4 in flight, 27 waiting
+2026-09-13T22:03:01Z failure 34785605607 :: [claim-check] 4 in flight, 27 waiting, oldest waiting 7880s, oldest in flight 7880s
+2026-09-13T22:18:01Z failure 34786376218 :: [pipeline] claim-check service: 4 in flight, 25 waiting
+2026-09-13T22:33:01Z failure 34787133676 :: [claim-check] 4 in flight, 13 waiting, oldest waiting 7937s, oldest in flight 3367s
+2026-09-13T22:48:01Z failure 34787849002 :: [pipeline] claim-check service: 4 in flight, 7 waiting
+2026-09-13T23:03:01Z failure 34788550253 :: [claim-check] 4 in flight, 6 waiting, oldest waiting 7965s, oldest in flight 5179s
+2026-09-13T23:18:01Z failure 34789298870 :: [pipeline] claim-check service: 4 in flight, 6 waiting
+2026-09-13T23:33:02Z failure 34790021657 :: [claim-check] 4 in flight, 4 waiting, oldest waiting 9752s, oldest in flight 4558s
+2026-09-13T23:48:01Z failure 34790735155 :: [pipeline] claim-check service: 2 in flight, 0 waiting
+2026-09-14T00:03:02Z failure 34791434059 :: [claim-check] 2 in flight, 0 waiting, oldest in flight 5743s
+2026-09-14T00:18:01Z success 34792268013 :: [pipeline] claim-check service: 1 in flight, 0 waiting
+2026-09-14T00:33:01Z success 34793042950 :: [claim-check] 4 in flight, 4 waiting, oldest waiting 353s, oldest in flight 3540s
+2026-09-14T00:48:02Z failure 34793826496 :: [pipeline] claim-check service: 4 in flight, 2 waiting
+2026-09-14T01:03:01Z failure 34794618426 :: [claim-check] 3 in flight, 0 waiting, oldest in flight 5334s
+2026-09-14T01:18:01Z success 34795471548 :: [pipeline] claim-check service: 2 in flight, 0 waiting
+2026-09-14T01:33:01Z failure 34796274010 :: [claim-check] 4 in flight, 6 waiting, oldest waiting 468s, oldest in flight 4252s
+2026-09-14T01:48:01Z failure 34797082515 :: [pipeline] claim-check service: 4 in flight, 1 waiting
+2026-09-14T02:03:01Z failure 34797890571 :: [claim-check] 4 in flight, 1 waiting, oldest waiting 1925s, oldest in flight 6053s
+2026-09-14T02:18:01Z failure 34798751788 :: [pipeline] claim-check service: 4 in flight, 1 waiting
+2026-09-14T02:33:02Z failure 34799581586 :: [claim-check] 4 in flight, 1 waiting, oldest waiting 3742s, oldest in flight 7870s
+2026-09-14T02:48:01Z failure 34800414809 :: [pipeline] claim-check service: 4 in flight, 1 waiting
+2026-09-14T03:03:01Z failure 34801234145 :: [claim-check] 4 in flight, 1 waiting, oldest waiting 5530s, oldest in flight 9659s
+2026-09-14T03:18:01Z failure 34802134814 :: [pipeline] claim-check service: 2 in flight, 0 waiting
+2026-09-14T03:33:01Z failure 34802980748 :: [claim-check] 2 in flight, 0 waiting, oldest in flight 7603s
+2026-09-14T03:48:01Z success 34803822857 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-14T04:03:03Z success 34804645790 :: [claim-check] 4 in flight, 1 waiting, oldest waiting 411s, oldest in flight 576s
+2026-09-14T04:18:01Z success 34805518240 :: [pipeline] claim-check service: 2 in flight, 0 waiting
+2026-09-14T04:33:01Z success 34806468092 :: [claim-check] 4 in flight, 8 waiting, oldest waiting 675s, oldest in flight 2329s
+2026-09-14T04:48:01Z success 34807356517 :: [pipeline] claim-check service: 4 in flight, 6 waiting
+2026-09-14T05:03:01Z failure 34808204157 :: [claim-check] 4 in flight, 10 waiting, oldest waiting 767s, oldest in flight 4124s
+2026-09-14T05:18:01Z failure 34809124300 :: [pipeline] claim-check service: 4 in flight, 9 waiting
+2026-09-14T05:33:01Z failure 34810037143 :: [claim-check] 4 in flight, 9 waiting, oldest waiting 2573s, oldest in flight 5929s
+2026-09-14T05:48:01Z failure 34810945181 :: [pipeline] claim-check service: 4 in flight, 9 waiting
+2026-09-14T06:03:01Z failure 34811839521 :: [claim-check] 4 in flight, 6 waiting, oldest waiting 4380s, oldest in flight 7736s
+2026-09-14T06:18:01Z failure 34812870147 :: [pipeline] claim-check service: 4 in flight, 3 waiting
+2026-09-14T06:33:01Z failure 34813936237 :: [claim-check] 4 in flight, 3 waiting, oldest waiting 6174s, oldest in flight 9530s
+2026-09-14T06:48:01Z failure 34814976732 :: [pipeline] claim-check service: 4 in flight, 3 waiting
+2026-09-14T07:03:01Z failure 34816045597 :: [claim-check] 4 in flight, 2 waiting, oldest waiting 7976s, oldest in flight 11332s
+2026-09-14T07:18:01Z failure 34817222271 :: [pipeline] claim-check service: 3 in flight, 0 waiting
+2026-09-14T07:33:01Z failure 34818373019 :: [claim-check] 3 in flight, 0 waiting, oldest in flight 11197s
+2026-09-14T07:48:01Z success 34819540428 :: [pipeline] claim-check service: 0 in flight, 0 waiting
+2026-09-14T08:03:07Z success 34820736833 :: [claim-check] 4 in flight, 6 waiting, oldest waiting 353s, oldest in flight 693s
+2026-09-14T08:18:01Z success 34822018423 :: [pipeline] claim-check service: 4 in flight, 1 waiting
+2026-09-14T08:33:01Z success 34823287310 :: [claim-check] 4 in flight, 11 waiting, oldest waiting 1662s, oldest in flight 2455s
+2026-09-14T08:48:01Z  34824563403 :: 
