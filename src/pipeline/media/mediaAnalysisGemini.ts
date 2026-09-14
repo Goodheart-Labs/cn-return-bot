@@ -37,7 +37,7 @@ import {
   type YtDlpMetadata,
 } from "./ytDlpDownload";
 import { downloadWithGalleryDl } from "./galleryDlDownload";
-import { IMAGE_PROMPT, VIDEO_PROMPT, FRAME_PROMPT } from "../prompts/media/mediaAnalysis";
+import { IMAGE_PROMPT, VIDEO_PROMPT, FRAME_PROMPT, MEDIA_RESPONSE_FORMAT } from "../prompts/media/mediaAnalysis";
 import { getBestMediaUrl } from "./bestMediaUrl";
 
 const execAsync = promisify(exec);
@@ -142,14 +142,12 @@ function toOpenRouterPart(part: GeminiContentPart): any {
 }
 
 /** Makes one media call through OpenRouter. It sends the same parts as the native
- *  call, asks for a JSON object, and maps the answer onto the same shape. */
+ *  call with the same answer schema, and maps the answer onto the same shape. */
 async function analyzeMediaPartsViaOpenRouter(parts: GeminiContentPart[], model: string, costName: string): Promise<GeminiMediaDescription> {
-  const content = parts.map(toOpenRouterPart);
-  content.push({ type: "text", text: `Respond with JSON: {"description": string, "ocr_text": string}` });
   const { response, costEntry } = await trackedLlmCreate(costName, {
     model,
-    messages: [{ role: "user", content }],
-    response_format: { type: "json_object" },
+    messages: [{ role: "user", content: parts.map(toOpenRouterPart) }],
+    response_format: MEDIA_RESPONSE_FORMAT,
   } as any);
   trackLlmCall(costEntry);
   return parseMediaDescription(JSON.parse(stripJsonFences(response.choices?.[0]?.message?.content ?? "{}")));
@@ -398,6 +396,12 @@ async function analyzeVideo(
       }
     } else {
       description = await analyzeShortVideo(videoPath, costName, entities);
+    }
+
+    // An empty description would silently hand the writer a video with no visual
+    // context, so it is reported on the run like any other media failure.
+    if (description.description === "") {
+      addWarning(`Video analysis: ${mediaModel()} returned no description (${videoUrl})`);
     }
 
     const transcription = await resolveTranscription(videoPath, tmpDir, precomputedTranscript);
