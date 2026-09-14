@@ -43,18 +43,38 @@ describe("unprocessedEntries", () => {
   });
 });
 
-/* Covers the cross-feed ordering: candidates are served by the average of a
- * recency rank and an author-priority rank, so a top author's backlog and a
- * lower author's fresh post take turns. */
+/* Covers the cross-feed ordering: candidates are served by a weighted blend
+ * of an author-priority rank (nine tenths) and a recency rank (one tenth), so
+ * the most-read creators come first and a fresh post needs a nine-candidate
+ * recency lead to make up for one step down the walk order. */
 describe("rankCandidates", () => {
   const c = (name: string, feedIndex: number, publishedAt?: string) => ({ name, feedIndex, publishedAt });
   const names = (candidates: { name: string }[]) => candidates.map((x) => x.name);
+  /* One post each from creators further down the walk order, every one newer
+   * than the top author's old post and older than the second author's fresh
+   * one, so they pad the recency gap between those two without ever ranking
+   * ahead of either. */
+  const fillers = (count: number) =>
+    Array.from({ length: count }, (_, i) => c(`filler-${i}`, 2 + i, `2026-08-${String(10 + i).padStart(2, "0")}`));
 
-  test("a tied average goes to the more recent post", () => {
-    // Top author's old post: recency rank 1, author rank 0. Lower author's new
-    // post: recency rank 0, author rank 1. Equal averages, recency decides.
+  test("the top author's older post beats a lower author's newer post", () => {
+    // Top author's old post: author rank 0, recency rank 1, score 0.1. Lower
+    // author's new post: author rank 1, recency rank 0, score 0.9.
     const ranked = rankCandidates([c("top-old", 0, "2026-08-01"), c("low-new", 1, "2026-08-30")]);
-    expect(names(ranked)).toEqual(["low-new", "top-old"]);
+    expect(names(ranked)).toEqual(["top-old", "low-new"]);
+  });
+
+  test("a tied score goes to the more recent post", () => {
+    // The top author's post is nine recency steps behind the second author's
+    // fresh post, which exactly pays for the one author step: both score 0.9.
+    const ranked = rankCandidates([c("top-old", 0, "2026-08-01"), c("second-new", 1, "2026-08-30"), ...fillers(8)]);
+    expect(names(ranked).slice(0, 2)).toEqual(["second-new", "top-old"]);
+  });
+
+  test("a recency lead of more than nine candidates outranks one author step", () => {
+    // top-old: author 0, recency 10, score 1.0. second-new: author 1, recency 0, score 0.9.
+    const ranked = rankCandidates([c("top-old", 0, "2026-08-01"), c("second-new", 1, "2026-08-30"), ...fillers(9)]);
+    expect(names(ranked).slice(0, 2)).toEqual(["second-new", "top-old"]);
   });
 
   test("the top author's fresh post beats everything", () => {
@@ -66,26 +86,29 @@ describe("rankCandidates", () => {
     expect(names(ranked)[0]).toBe("top-fresh");
   });
 
-  test("a lower author's much newer post outranks a top author's stale backlog", () => {
+  test("a top author's whole backlog is served before a lower author's newer post", () => {
     const ranked = rankCandidates([
       c("top-stale-1", 0, "2023-01-01"),
       c("top-stale-2", 0, "2023-01-02"),
       c("low-new", 3, "2026-08-30"),
     ]);
     // Recency ranks: low-new 0, stale-2 1, stale-1 2. Author ranks: stale-2 0,
-    // stale-1 1, low-new 2. Averages: stale-2 0.5, low-new 1, stale-1 1.5.
-    expect(names(ranked)).toEqual(["top-stale-2", "low-new", "top-stale-1"]);
+    // stale-1 1, low-new 2. Scores: stale-2 0.1, stale-1 1.1, low-new 1.8.
+    // The candidate window caps how long such a backlog can be.
+    expect(names(ranked)).toEqual(["top-stale-2", "top-stale-1", "low-new"]);
   });
 
-  test("an unknown date sorts newest, like the queue's own ordering", () => {
-    const ranked = rankCandidates([c("dated", 0, "2026-08-30"), c("undated", 1)]);
+  test("an unknown date counts as newest, like the queue's own ordering", () => {
+    // Same creator, so only recency separates the two, in both orderings.
+    const ranked = rankCandidates([c("dated", 0, "2026-08-30"), c("undated", 0)]);
     expect(names(ranked)[0]).toBe("undated");
   });
 });
 
 /* Covers the all-time top posts (GOO-81): in the author rank they line up
  * behind the creator's recent posts, and in the recency rank they carry their
- * real old dates, so the blend keeps them at the back of the ordering. */
+ * real old dates. Because the author rank dominates, a creator's top posts
+ * follow that creator's own recent posts and come before lower creators. */
 describe("rankCandidates with top posts", () => {
   const c = (name: string, feedIndex: number, publishedAt?: string, topPopularity?: number) => ({
     name,
@@ -95,15 +118,15 @@ describe("rankCandidates with top posts", () => {
   });
   const names = (candidates: { name: string }[]) => candidates.map((x) => x.name);
 
-  test("every fresh post outranks every top post, even a top post with huge popularity", () => {
+  test("a creator's top post follows their fresh post and precedes a lower creator's fresh post", () => {
     const ranked = rankCandidates([
       c("fresh-a", 0, "2026-08-30"),
       c("top-hit", 0, "2019-05-01", 5_000_000),
       c("fresh-b", 1, "2026-08-31"),
     ]);
-    // Both ranks put the top post last: the author rank because tops come
-    // after the same feed's recent posts, the recency rank because 2019 is old.
-    expect(names(ranked)).toEqual(["fresh-a", "fresh-b", "top-hit"]);
+    // Author ranks: fresh-a 0, top-hit 1, fresh-b 2. Recency ranks: fresh-b 0,
+    // fresh-a 1, top-hit 2. Scores: fresh-a 0.1, top-hit 1.1, fresh-b 1.8.
+    expect(names(ranked)).toEqual(["fresh-a", "top-hit", "fresh-b"]);
   });
 
   test("a feed's top posts sort behind both feeds' fresh posts", () => {
@@ -113,10 +136,11 @@ describe("rankCandidates with top posts", () => {
       c("top-newer", 0, "2023-01-01", 100),
       c("fresh-1", 1, "2026-08-31"),
     ]);
-    // The two tops tie on the blended score. Recency breaks the tie, so the
-    // newer top post goes first despite fewer likes. Popularity only decides
-    // between tops whose dates do not already separate them.
-    expect(names(ranked)).toEqual(["fresh-0", "fresh-1", "top-newer", "top-liked"]);
+    // Author ranks: fresh-0 0, top-liked 1, top-newer 2, fresh-1 3. Recency
+    // ranks: fresh-1 0, fresh-0 1, top-newer 2, top-liked 3. Scores: fresh-0
+    // 0.1, top-liked 1.2, top-newer 2.0, fresh-1 2.7. The popularity order
+    // between the two tops holds because the author rank dominates.
+    expect(names(ranked)).toEqual(["fresh-0", "top-liked", "top-newer", "fresh-1"]);
   });
 
   test("equal-date top posts keep their popularity order", () => {
