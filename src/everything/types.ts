@@ -70,9 +70,10 @@ export interface ContentPart {
 /** What extraction makes of an item. Either the gate declined it, with the
  *  model's reason, or the item was cut into parts and each part's claims were
  *  extracted. `introduction` is the text before the first part, which the
- *  rater shows ahead of each part as context; its own claims are the first
- *  part's. An item the model chose not to split is one part with no
- *  introduction. */
+ *  rater shows ahead of each part as context. When it is set, the first part
+ *  is the introduction itself, so its own claims are extracted once and it is
+ *  never shown its own text as context. An item the model chose not to split
+ *  is one part with no introduction. */
 export type ExtractionResult =
   | { kind: "not_checkable"; reason: string }
   | { kind: "claims"; introduction: string | null; parts: ContentPart[] };

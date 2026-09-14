@@ -94,7 +94,7 @@ async function main() {
     if (part.claims.length === 0) continue;
     const rating = await rateClaims({
       text: part.text,
-      introduction: part.text === extraction.introduction ? null : extraction.introduction,
+      introduction: part.index === 0 ? null : extraction.introduction,
       claims: part.claims,
       source,
     });

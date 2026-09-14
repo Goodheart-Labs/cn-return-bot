@@ -199,8 +199,9 @@ async function ratePartsOfItem(
         const rating: RateClaimsResponse = await requestClaimRating({
           priority: workPriorityOf(item),
           text: part.text,
-          // The introduction's own part has nothing ahead of it.
-          introduction: part.text === introduction ? null : introduction,
+          // When there is an introduction it is the first part, and it is not
+          // shown its own text as context.
+          introduction: part.index === 0 ? null : introduction,
           claims: part.claims,
           source: item.source,
         });

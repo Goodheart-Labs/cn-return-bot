@@ -27,7 +27,7 @@ import { describeImageFromUrl, type GeminiMediaDescription } from "../../pipelin
 import { IMAGE_MARKER_RE } from "../sources/substack";
 import type { ClaimAnchor, ContentPart, ExtractedClaim, ExtractionResult, FetchedContent } from "../types";
 import { normalizeText } from "../../everything-shared/normalizeText";
-import { cutCues, cutText, gateAndSplit, joinCues, type PartStart } from "./gateAndSplit";
+import { cutCues, cutText, gateAndSplit, joinCues, type GateSplitVerdict, type PartStart } from "./gateAndSplit";
 import { EVERYTHING_MODEL } from "./model";
 
 function extractionSystemPrompt(): string {
@@ -369,10 +369,10 @@ const INTRODUCTION_TITLE = "Introduction";
 /** Runs the gate and split call. When the gate is off, a not-checkable verdict
  *  is ignored and the text is treated as one part; a reader who asked for the
  *  page gets it checked whatever it is. */
-async function planStarts(text: string, title: string, gate: boolean): Promise<PartStart[] | { reason: string }> {
+async function gateAndSplitFor(text: string, title: string, gate: boolean): Promise<GateSplitVerdict> {
   const verdict = await gateAndSplit(text, title);
-  if (verdict.kind === "not_checkable") return gate ? { reason: verdict.reason } : [];
-  return verdict.starts;
+  if (verdict.kind === "not_checkable" && !gate) return { kind: "checkable", starts: [] };
+  return verdict;
 }
 
 async function extractPlannedParts(
@@ -456,20 +456,20 @@ function planCueParts(params: {
 export async function extractClaims(content: FetchedContent, concurrency: number, gate = true): Promise<ExtractionResult> {
   switch (content.kind) {
     case "youtube": {
-      const starts = await planStarts(joinCues(content.cues), content.title, gate);
-      if (!Array.isArray(starts)) return { kind: "not_checkable", reason: starts.reason };
-      const { introduction, planned } = planCueParts({ title: content.title, videoId: content.videoId, cues: content.cues, starts });
+      const verdict = await gateAndSplitFor(joinCues(content.cues), content.title, gate);
+      if (verdict.kind === "not_checkable") return verdict;
+      const { introduction, planned } = planCueParts({ title: content.title, videoId: content.videoId, cues: content.cues, starts: verdict.starts });
       return extractPlannedParts(introduction, planned, concurrency);
     }
     case "youtube-transcript": {
-      const starts = await planStarts(content.text, content.title, gate);
-      if (!Array.isArray(starts)) return { kind: "not_checkable", reason: starts.reason };
+      const verdict = await gateAndSplitFor(content.text, content.title, gate);
+      if (verdict.kind === "not_checkable") return verdict;
       // The transcript's wording differs from the cues, so a text offset cannot
       // be mapped onto a cue range. Every part snaps against the full cue list.
       const { introduction, planned } = planTextParts({
         title: content.title,
         text: content.text,
-        starts,
+        starts: verdict.starts,
         render: (text) => text,
         chunkLabel: transcriptChunk,
         anchorFor: youtubeAnchor(content.videoId, content.cues),
@@ -477,8 +477,8 @@ export async function extractClaims(content: FetchedContent, concurrency: number
       return extractPlannedParts(introduction, planned, concurrency);
     }
     case "substack": {
-      const starts = await planStarts(content.text, content.title, gate);
-      if (!Array.isArray(starts)) return { kind: "not_checkable", reason: starts.reason };
+      const verdict = await gateAndSplitFor(content.text, content.title, gate);
+      if (verdict.kind === "not_checkable") return verdict;
       // The images are described once for the whole article. Each part then
       // gets the descriptions spliced into its own text before chunking, so
       // the chunk budget counts the real description text rather than the
@@ -487,7 +487,7 @@ export async function extractClaims(content: FetchedContent, concurrency: number
       const { introduction, planned } = planTextParts({
         title: content.title,
         text: content.text,
-        starts,
+        starts: verdict.starts,
         render: (text) => renderImageDescriptions(text, descriptions),
         chunkLabel: articleChunk,
         anchorFor: () => ({ kind: "substack", url: content.url }),
