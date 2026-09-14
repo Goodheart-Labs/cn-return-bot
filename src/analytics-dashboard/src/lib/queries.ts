@@ -1,9 +1,9 @@
 import { supabase } from "../../../everything-shared/supabase";
-import { MIN_PAGES_FOR_A_REGULAR_READER, VISIT_RANKING_WINDOW_DAYS } from "../../../everything-shared/readers";
+import { VISIT_RANKING_WINDOW_DAYS } from "../../../everything-shared/readers";
 import { noteStatus } from "../../../everything-shared/noteScore";
 
-// Every query runs through a security-definer RPC (migrations 077, 080, 089
-// and 092). The anon key cannot read everything_events or everything_votes
+// Every query runs through a security-definer RPC (migrations 077, 092 and
+// 095). The anon key cannot read everything_events or everything_votes
 // directly, and the RPCs return only aggregates.
 
 /** PostgREST caps every response at this many rows, RPC results included.
@@ -69,32 +69,6 @@ export async function fetchFunnel(days: number | null): Promise<FunnelRow[]> {
   const { data, error } = await supabase.rpc("everything_funnel", { window_days: days });
   if (error) throw new Error(`everything_funnel failed: ${error.message}`);
   return data as FunnelRow[];
-}
-
-export interface CreatorRow {
-  creator: string;
-  visits: number;
-  /** How many different readers opened anything of this creator's inside the
-   *  window. A reader is one browser, recognised by the reader hash on the
-   *  visit row (GOO-135). */
-  readers: number;
-  /** How many of those readers opened at least MIN_PAGES_FOR_A_REGULAR_READER
-   *  different pages. This is the number the pipeline ranks creators by. */
-  regular_readers: number;
-  /** Pipeline totals for the creator's project, unwindowed. All zero when the
-   *  visits could not be attributed to a project. */
-  processed: number;
-  notes: number;
-  errored: number;
-}
-
-export async function fetchCreators(days: number | null): Promise<CreatorRow[]> {
-  const { data, error } = await supabase.rpc("everything_creator_visits", {
-    window_days: days,
-    min_pages: MIN_PAGES_FOR_A_REGULAR_READER,
-  });
-  if (error) throw new Error(`everything_creator_visits failed: ${error.message}`);
-  return data as CreatorRow[];
 }
 
 // --- The metric series behind the line graph (migration 092) ---

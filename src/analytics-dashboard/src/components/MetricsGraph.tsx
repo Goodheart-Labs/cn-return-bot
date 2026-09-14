@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ParentSize } from "@visx/responsive";
 import { scaleLinear, scaleTime } from "@visx/scale";
 import { LinePath } from "@visx/shape";
@@ -178,44 +178,165 @@ function LineChart({ points, granularity, width }: { points: Point[]; granularit
   );
 }
 
-/** The title of the plot. A people metric carries the "at least n times"
- *  control after its label: the threshold reads as a link, and clicking it
- *  opens the slider that changes n. */
-function PlotTitle({ metric, times, sliderOpen, onToggleSlider }: { metric: Metric; times: number; sliderOpen: boolean; onToggleSlider: () => void }) {
-  if (metric.kind === "count") {
-    return (
-      <h3 style={{ margin: "0 0 4px", fontSize: 15, fontWeight: 600 }}>
-        {metric.label}
-        {metric.qualifier && <span style={{ color: LABEL_COLOR, fontWeight: 400 }}> ({metric.qualifier})</span>}
-      </h3>
-    );
-  }
+/** The words a metric shows in the picker: a people metric carries its
+ *  current threshold, so the menu and the header read the same way. */
+function metricTitle(metric: Metric, times: number): string {
+  return metric.kind === "people" ? `${metric.label} at least ${timesLabel(times)}` : metric.label;
+}
+
+/** The plot's title, which is also the metric picker: a framed heading with a
+ *  chevron that opens the list of the seven metrics. A people metric renders
+ *  its threshold as a nested control: clicking "once" opens the slider that
+ *  changes n instead of opening the menu. */
+function MetricPicker({
+  metric,
+  times,
+  sliderOpen,
+  onSelect,
+  onToggleSlider,
+}: {
+  metric: Metric;
+  times: number;
+  sliderOpen: boolean;
+  onSelect: (key: Metric["key"]) => void;
+  onToggleSlider: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const container = useRef<HTMLDivElement>(null);
+
+  // A click anywhere outside the picker closes the menu, as does Escape.
+  useEffect(() => {
+    if (!open) return;
+    const onPointerDown = (event: MouseEvent) => {
+      if (!container.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
+
   return (
-    <h3 style={{ margin: "0 0 4px", fontSize: 15, fontWeight: 600 }}>
-      {metric.label} at least{" "}
-      <button
-        onClick={onToggleSlider}
-        title="Click to change how many times"
+    <div ref={container} style={{ position: "relative", display: "inline-block" }}>
+      <div
+        role="button"
+        tabIndex={0}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setOpen((o) => !o);
+          }
+        }}
         style={{
-          font: "inherit",
-          fontWeight: 600,
-          color: LINE_COLOR,
-          background: sliderOpen ? "#dbeafe" : "none",
-          border: "none",
-          borderBottom: `1px dotted ${LINE_COLOR}`,
-          borderRadius: 3,
-          padding: "0 2px",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 10,
+          padding: "8px 12px",
+          border: `1px solid ${open ? LINE_COLOR : AXIS_COLOR}`,
+          borderRadius: 8,
+          background: "#fff",
           cursor: "pointer",
+          fontSize: 15,
+          fontWeight: 600,
+          userSelect: "none",
         }}
       >
-        {timesLabel(times)}
-      </button>
-    </h3>
+        <span>
+          {metric.kind === "people" ? (
+            <>
+              {metric.label} at least{" "}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleSlider();
+                }}
+                title="Click to change how many times"
+                style={{
+                  font: "inherit",
+                  color: LINE_COLOR,
+                  background: sliderOpen ? "#dbeafe" : "none",
+                  border: "none",
+                  borderBottom: `1px dotted ${LINE_COLOR}`,
+                  borderRadius: 3,
+                  padding: "0 2px",
+                  cursor: "pointer",
+                }}
+              >
+                {timesLabel(times)}
+              </button>
+            </>
+          ) : (
+            <>
+              {metric.label}
+              {metric.qualifier && <span style={{ color: LABEL_COLOR, fontWeight: 400 }}> ({metric.qualifier})</span>}
+            </>
+          )}
+        </span>
+        <span aria-hidden style={{ color: LABEL_COLOR, fontSize: 12 }}>{open ? "▲" : "▼"}</span>
+      </div>
+      {open && (
+        <ul
+          role="listbox"
+          style={{
+            position: "absolute",
+            top: "100%",
+            left: 0,
+            zIndex: 10,
+            margin: "4px 0 0",
+            padding: 4,
+            listStyle: "none",
+            minWidth: "100%",
+            whiteSpace: "nowrap",
+            background: "#fff",
+            border: `1px solid ${AXIS_COLOR}`,
+            borderRadius: 8,
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
+          }}
+        >
+          {METRICS.map((m) => (
+            <li key={m.key} role="option" aria-selected={m.key === metric.key}>
+              <button
+                onClick={() => {
+                  onSelect(m.key);
+                  setOpen(false);
+                }}
+                style={{
+                  display: "block",
+                  width: "100%",
+                  textAlign: "left",
+                  padding: "6px 10px",
+                  border: "none",
+                  borderRadius: 6,
+                  background: m.key === metric.key ? "#eff6ff" : "none",
+                  color: "#111827",
+                  font: "inherit",
+                  fontSize: 14,
+                  fontWeight: m.key === metric.key ? 600 : 400,
+                  cursor: "pointer",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "#f3f4f6")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = m.key === metric.key ? "#eff6ff" : "none")}
+              >
+                {metricTitle(m, times)}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 
-/** The Common Notes metrics section: pick one of seven metrics, pick the
- *  bucket size, and read the line. The series for each bucket size is fetched
+/** The Common Notes metrics section: pick one of seven metrics from the
+ *  title, pick the bucket size, and read the line. The series for each bucket size is fetched
  *  once and kept for the session, and the slider recomputes the line from the
  *  cached rows without another request. */
 export function MetricsGraph() {
@@ -243,32 +364,17 @@ export function MetricsGraph() {
 
   return (
     <div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 16 }}>
-        {METRICS.map((m) => (
-          <button
-            key={m.key}
-            onClick={() => setMetricKey(m.key)}
-            style={{
-              padding: "6px 12px",
-              borderRadius: 999,
-              border: "1px solid #d1d5db",
-              background: m.key === metricKey ? "#111827" : "#fff",
-              color: m.key === metricKey ? "#fff" : "#111827",
-              cursor: "pointer",
-              fontSize: 13,
-              textAlign: "left",
-            }}
-          >
-            {m.kind === "people" ? `${m.label} at least once` : m.label}
-          </button>
-        ))}
-      </div>
-
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 16, flexWrap: "wrap", marginBottom: 8 }}>
-        <div style={{ flex: "1 1 320px" }}>
-          <PlotTitle metric={metric} times={times} sliderOpen={sliderOpen} onToggleSlider={() => setSliderOpen((open) => !open)} />
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginBottom: 12 }}>
+        <div>
+          <MetricPicker
+            metric={metric}
+            times={times}
+            sliderOpen={sliderOpen}
+            onSelect={setMetricKey}
+            onToggleSlider={() => setSliderOpen((open) => !open)}
+          />
           {metric.kind === "people" && sliderOpen && (
-            <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: LABEL_COLOR }}>
+            <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: LABEL_COLOR, marginTop: 8 }}>
               <input type="range" min={1} max={HISTOGRAM_CAP} value={times} onChange={(e) => setTimes(Number(e.target.value))} style={{ width: 220 }} />
               {HISTOGRAM_CAP} means {HISTOGRAM_CAP} or more times
             </label>
