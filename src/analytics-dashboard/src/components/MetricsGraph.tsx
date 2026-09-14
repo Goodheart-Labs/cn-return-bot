@@ -44,6 +44,20 @@ const METRICS: readonly Metric[] = [
 
 const DEFAULT_METRIC_KEY: Metric["key"] = "note_viewers";
 
+/** The denominator's extra choice: dividing by one plots the metric itself. */
+const ONE = "one" as const;
+type SelectionKey = Metric["key"] | typeof ONE;
+
+/** What one picker holds: which metric, the "at least n times" threshold for
+ *  a people metric, and whether its slider is showing. */
+interface Selection {
+  key: SelectionKey;
+  times: number;
+  sliderOpen: boolean;
+}
+
+const metricFor = (key: SelectionKey): Metric | null => METRICS.find((m) => m.key === key) ?? null;
+
 const GRANULARITIES: readonly { value: Granularity; label: string }[] = [
   { value: "day", label: "Daily" },
   { value: "week", label: "Weekly" },
@@ -63,11 +77,22 @@ interface Point {
   value: number | null;
 }
 
-/** The value the selected metric has in one bucket. Null keeps a gap in the
- *  line for buckets before the source began recording. */
-function pointValue(row: MetricSeriesRow, metric: Metric, times: number): number | null {
+/** The value one selection has in one bucket. Null keeps a gap in the line
+ *  for buckets before the source began recording. */
+function selectionValue(row: MetricSeriesRow, selection: Selection): number | null {
+  const metric = metricFor(selection.key);
+  if (!metric) return 1;
   if (metric.kind === "count") return row[metric.key];
-  return peopleAtLeast(row[metric.key], times);
+  return peopleAtLeast(row[metric.key], selection.times);
+}
+
+/** The plotted value: the numerator divided by the denominator. A bucket
+ *  where either side is not recorded, or the denominator is zero, is a gap. */
+function pointValue(row: MetricSeriesRow, numerator: Selection, denominator: Selection): number | null {
+  const above = selectionValue(row, numerator);
+  const below = selectionValue(row, denominator);
+  if (above === null || below === null || below === 0) return null;
+  return above / below;
 }
 
 /** The words after "at least" in the title: "once", "2 times", and "20 or
@@ -92,6 +117,9 @@ const tickFormat = (granularity: Granularity) => (value: Date | { valueOf(): num
 };
 
 const bisectDate = bisector<Point, Date>((p) => p.date).center;
+
+/** Counts print whole; a ratio of two metrics prints with two decimals. */
+const formatValue = (value: number) => value.toLocaleString("en-US", { maximumFractionDigits: 2 });
 
 /** The line itself, sized to its container. Hover shows the bucket under the
  *  pointer, found by bisecting the points on their date. */
@@ -139,7 +167,7 @@ function LineChart({ points, granularity, width }: { points: Point[]; granularit
             numTicks={4}
             stroke={AXIS_COLOR}
             tickStroke={AXIS_COLOR}
-            tickFormat={(v) => Number(v).toLocaleString()}
+            tickFormat={(v) => formatValue(Number(v))}
             tickLabelProps={() => ({ fill: LABEL_COLOR, fontSize: 11, textAnchor: "end", dx: -4, dy: 4 })}
           />
           <AxisBottom
@@ -171,38 +199,39 @@ function LineChart({ points, granularity, width }: { points: Point[]; granularit
       </svg>
       {tooltipData && (
         <TooltipWithBounds left={tooltipLeft} top={tooltipTop} style={{ position: "absolute", fontSize: 12, padding: "4px 8px", background: "#111827", color: "#fff", borderRadius: 4, pointerEvents: "none" }}>
-          {bucketLabel(tooltipData.date, granularity)}: {tooltipData.value?.toLocaleString()}
+          {bucketLabel(tooltipData.date, granularity)}: {tooltipData.value !== null && formatValue(tooltipData.value)}
         </TooltipWithBounds>
       )}
     </div>
   );
 }
 
-/** The words a metric shows in the picker: a people metric carries its
+/** The words a choice shows in the picker: a people metric carries its
  *  current threshold, so the menu and the header read the same way. */
-function metricTitle(metric: Metric, times: number): string {
+function selectionTitle(key: SelectionKey, times: number): string {
+  const metric = metricFor(key);
+  if (!metric) return "1";
   return metric.kind === "people" ? `${metric.label} at least ${timesLabel(times)}` : metric.label;
 }
 
-/** The plot's title, which is also the metric picker: a framed heading with a
- *  chevron that opens the list of the seven metrics. A people metric renders
- *  its threshold as a nested control: clicking "once" opens the slider that
- *  changes n instead of opening the menu. */
+/** One line of the fraction, which is also its picker: a framed heading with
+ *  a chevron that opens the list of the seven metrics, plus "1" for the
+ *  denominator. A people metric renders its threshold as a nested control:
+ *  clicking "once" opens the slider that changes n instead of opening the
+ *  menu. */
 function MetricPicker({
-  metric,
-  times,
-  sliderOpen,
-  onSelect,
-  onToggleSlider,
+  selection,
+  allowOne,
+  onChange,
 }: {
-  metric: Metric;
-  times: number;
-  sliderOpen: boolean;
-  onSelect: (key: Metric["key"]) => void;
-  onToggleSlider: () => void;
+  selection: Selection;
+  allowOne: boolean;
+  onChange: (selection: Selection) => void;
 }) {
   const [open, setOpen] = useState(false);
   const container = useRef<HTMLDivElement>(null);
+  const metric = metricFor(selection.key);
+  const keys: SelectionKey[] = [...(allowOne ? [ONE] : []), ...METRICS.map((m) => m.key)];
 
   // A click anywhere outside the picker closes the menu, as does Escape.
   useEffect(() => {
@@ -250,19 +279,19 @@ function MetricPicker({
         }}
       >
         <span>
-          {metric.kind === "people" ? (
+          {metric?.kind === "people" ? (
             <>
               {metric.label} at least{" "}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onToggleSlider();
+                  onChange({ ...selection, sliderOpen: !selection.sliderOpen });
                 }}
                 title="Click to change how many times"
                 style={{
                   font: "inherit",
                   color: LINE_COLOR,
-                  background: sliderOpen ? "#dbeafe" : "none",
+                  background: selection.sliderOpen ? "#dbeafe" : "none",
                   border: "none",
                   borderBottom: `1px dotted ${LINE_COLOR}`,
                   borderRadius: 3,
@@ -270,13 +299,15 @@ function MetricPicker({
                   cursor: "pointer",
                 }}
               >
-                {timesLabel(times)}
+                {timesLabel(selection.times)}
               </button>
             </>
           ) : (
             <>
-              {metric.label}
-              {metric.qualifier && <span style={{ color: LABEL_COLOR, fontWeight: 400 }}> ({metric.qualifier})</span>}
+              {selectionTitle(selection.key, selection.times)}
+              {metric?.kind === "count" && metric.qualifier && (
+                <span style={{ color: LABEL_COLOR, fontWeight: 400 }}> ({metric.qualifier})</span>
+              )}
             </>
           )}
         </span>
@@ -301,11 +332,11 @@ function MetricPicker({
             boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
           }}
         >
-          {METRICS.map((m) => (
-            <li key={m.key} role="option" aria-selected={m.key === metric.key}>
+          {keys.map((key) => (
+            <li key={key} role="option" aria-selected={key === selection.key}>
               <button
                 onClick={() => {
-                  onSelect(m.key);
+                  onChange({ ...selection, key, sliderOpen: false });
                   setOpen(false);
                 }}
                 style={{
@@ -315,17 +346,17 @@ function MetricPicker({
                   padding: "6px 10px",
                   border: "none",
                   borderRadius: 6,
-                  background: m.key === metric.key ? "#eff6ff" : "none",
+                  background: key === selection.key ? "#eff6ff" : "none",
                   color: "#111827",
                   font: "inherit",
                   fontSize: 14,
-                  fontWeight: m.key === metric.key ? 600 : 400,
+                  fontWeight: key === selection.key ? 600 : 400,
                   cursor: "pointer",
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.background = "#f3f4f6")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = m.key === metric.key ? "#eff6ff" : "none")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = key === selection.key ? "#eff6ff" : "none")}
               >
-                {metricTitle(m, times)}
+                {selectionTitle(key, selection.times)}
               </button>
             </li>
           ))}
@@ -335,15 +366,32 @@ function MetricPicker({
   );
 }
 
-/** The Common Notes metrics section: pick one of seven metrics from the
- *  title, pick the bucket size, and read the line. The series for each bucket size is fetched
- *  once and kept for the session, and the slider recomputes the line from the
- *  cached rows without another request. */
+/** The slider behind a people metric's "at least n times". */
+function TimesSlider({ selection, onChange }: { selection: Selection; onChange: (selection: Selection) => void }) {
+  return (
+    <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: LABEL_COLOR }}>
+      <input
+        type="range"
+        min={1}
+        max={HISTOGRAM_CAP}
+        value={selection.times}
+        onChange={(e) => onChange({ ...selection, times: Number(e.target.value) })}
+        style={{ width: 220 }}
+      />
+      {HISTOGRAM_CAP} means {HISTOGRAM_CAP} or more times
+    </label>
+  );
+}
+
+/** The Common Notes metrics section: the title is a fraction of two pickers.
+ *  The top one picks the metric, the bottom one divides it by another metric
+ *  or by 1, and a switch picks the bucket size. The series for each bucket
+ *  size is fetched once and kept for the session; the pickers and sliders
+ *  recompute the line from the cached rows without another request. */
 export function MetricsGraph() {
-  const [metricKey, setMetricKey] = useState<Metric["key"]>(DEFAULT_METRIC_KEY);
+  const [numerator, setNumerator] = useState<Selection>({ key: DEFAULT_METRIC_KEY, times: 1, sliderOpen: false });
+  const [denominator, setDenominator] = useState<Selection>({ key: ONE, times: 1, sliderOpen: false });
   const [granularity, setGranularity] = useState<Granularity>("day");
-  const [times, setTimes] = useState(1);
-  const [sliderOpen, setSliderOpen] = useState(false);
   const [series, setSeries] = useState<Partial<Record<Granularity, MetricSeriesRow[]>>>({});
   const [error, setError] = useState<string | null>(null);
 
@@ -354,31 +402,24 @@ export function MetricsGraph() {
       .catch((e: Error) => setError(e.message));
   }, [granularity, series]);
 
-  const metric = METRICS.find((m) => m.key === metricKey)!;
   const rows = series[granularity];
   const points = useMemo(
-    () => (rows ?? []).map((row) => ({ date: new Date(row.bucket), value: pointValue(row, metric, times) })),
-    [rows, metric, times],
+    () => (rows ?? []).map((row) => ({ date: new Date(row.bucket), value: pointValue(row, numerator, denominator) })),
+    [rows, numerator, denominator],
   );
   const firstRecorded = points.find((p) => p.value !== null)?.date;
+  const showSlider = (selection: Selection) => selection.sliderOpen && metricFor(selection.key)?.kind === "people";
 
   return (
     <div>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginBottom: 12 }}>
-        <div>
-          <MetricPicker
-            metric={metric}
-            times={times}
-            sliderOpen={sliderOpen}
-            onSelect={setMetricKey}
-            onToggleSlider={() => setSliderOpen((open) => !open)}
-          />
-          {metric.kind === "people" && sliderOpen && (
-            <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: LABEL_COLOR, marginTop: 8 }}>
-              <input type="range" min={1} max={HISTOGRAM_CAP} value={times} onChange={(e) => setTimes(Number(e.target.value))} style={{ width: 220 }} />
-              {HISTOGRAM_CAP} means {HISTOGRAM_CAP} or more times
-            </label>
-          )}
+        {/* The fraction: numerator, a bar as wide as the wider picker, denominator. */}
+        <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+          <MetricPicker selection={numerator} allowOne={false} onChange={setNumerator} />
+          {showSlider(numerator) && <TimesSlider selection={numerator} onChange={setNumerator} />}
+          <div style={{ alignSelf: "stretch", borderTop: "2px solid #111827" }} />
+          <MetricPicker selection={denominator} allowOne onChange={setDenominator} />
+          {showSlider(denominator) && <TimesSlider selection={denominator} onChange={setDenominator} />}
         </div>
         <ToggleGroup options={GRANULARITIES} value={granularity} onChange={setGranularity} />
       </div>
