@@ -10,6 +10,12 @@ on:
 # Never run two workers at once: the queue claim has no locking, and the
 # auto-enqueue's orphan cleanup assumes no worker is live. Queue (don't cancel)
 # so a run is never killed mid-item.
+#
+# A run may wait in place for up to 25 minutes for the pacing gate to open
+# (src/everything/pacing.ts). The next dispatch then queues behind it, and
+# GitHub keeps only the newest pending run per group, so the older pending one
+# shows as cancelled. Grey cancelled runs next to a waiting run are normal;
+# only red runs mean something is wrong.
 concurrency:
   group: everything-priority-feeds
   cancel-in-progress: false
@@ -19,6 +25,8 @@ jobs:
     runs-on: ubuntu-latest
     # A large item (a Zvi post / a podcast episode) can take well over an
     # hour of claim checks; queued dispatch ticks cover the cadence meanwhile.
+    # A run older than 60 minutes never starts a pacing wait, so a wait
+    # followed by a long item stays under this.
     timeout-minutes: 120
     env:
       # OpenRouter API key for AI models (claim extraction, search, writer)
@@ -97,5 +105,5 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
-      - name: Enqueue and process in time-budgeted cycles
+      - name: Enqueue and process, paced across the UTC day
         run: bun run everything-auto-run

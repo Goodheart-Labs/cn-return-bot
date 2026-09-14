@@ -30,6 +30,7 @@ import { fetchFeedPacing, oldestPendingRequestAgeSeconds } from "./db";
 import { ensureYtDlp } from "./sources/youtube";
 import { duration } from "./logFormat";
 import {
+  affordablePostsPerDay,
   computeFeedGate,
   describeGate,
   MAX_IN_RUN_WAIT_MS,
@@ -109,7 +110,7 @@ async function runCycle(runStartedAt: number): Promise<CycleOutcome> {
   }
 
   const queue = await logQueue();
-  if (!feedItemsQueued(queue)) await runAutoEnqueue();
+  if (!feedItemsQueued(queue)) await runAutoEnqueue(affordablePostsPerDay(gate.meanPostCostUsd, FEED_BUDGET_USD));
   const ended = await processNextFeedItem();
   if (ended === "empty") {
     console.log("Nothing to process · every creator we walk is caught up");

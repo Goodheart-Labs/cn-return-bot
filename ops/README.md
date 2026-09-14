@@ -12,6 +12,10 @@ The first two are pure functions behind HTTP and hold no database credentials.
 Intake is a caller: it holds the service key and writes the rows. The Actions
 pipelines are the monitor; nothing on this machine phones home.
 
+Intake is outside the feed pacing. It processes reader-requested pages at once
+and spends from the full daily cap. Its spend still counts in the day's total,
+so a big reader page makes the paced feed run go quiet for the rest of the day.
+
 ## First-time setup
 
 ```bash
