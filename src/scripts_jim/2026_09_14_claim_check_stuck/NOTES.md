@@ -221,7 +221,7 @@ retry is routed by the same price weighting, so it usually lands on the same
 provider.
 
 **The replay probe.** 59 real production prompts, the whole prefilter, four at
-a time like the machine, 40 minutes, 195 OpenRouter calls:
+a time like the machine, 40 minutes, 202 OpenRouter calls (the table covers the 195 that had finished when it was drawn):
 
 | provider | calls | empty answers (finish "error") | median | slowest |
 |---|---|---|---|---|

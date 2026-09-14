@@ -254,3 +254,10 @@
 13:05:18 call#197 model=deepseek/deepseek-v4-flash headers=1.5s end=30.5s status=200 provider=OpenInference finish=stop content=411 reasoning=636 completion=715 | You are a Community Notes quality judge 
 13:05:18 [w0] tweet 2099306139720757431 done in 91s: needsNote=false
 13:13:13 call#194 model=deepseek/deepseek-v4-flash headers=2.1s end=532.3s status=200 provider=DigitalOcean finish=stop content=3603 reasoning=928 completion=1884 <== SLOW | You receive a social-media post and raw 
+13:14:12 call#199 model=deepseek/deepseek-v4-flash headers=2.8s end=58.9s status=200 provider=DigitalOcean finish=stop content=330 reasoning=163 completion=242 | You are a Community Notes quality judge 
+13:14:17 call#200 model=deepseek/deepseek-v4-flash headers=2.7s end=5.3s status=200 provider=Venice finish=stop content=328 reasoning=35 completion=109 | You are a Community Notes quality judge 
+13:14:17 [w1] tweet 2099323813137633786 done in 911s: needsNote=false
+13:14:42 call#201 model=deepseek/deepseek-v4-flash headers=1.6s end=15.1s status=200 provider=AtlasCloud finish=stop content=2947 reasoning=541 completion=1299 | You receive a social-media post and raw 
+13:14:46 call#202 model=deepseek/deepseek-v4-flash headers=0.5s end=4.0s status=200 provider=Wafer finish=stop content=1548 reasoning=0 completion=341 | You are a Community Notes quality judge 
+13:14:46 [w3] tweet 2099236246404919804 done in 802s: needsNote=false
+13:14:46 replay probe done, 202 OpenRouter calls
