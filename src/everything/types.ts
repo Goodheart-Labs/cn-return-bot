@@ -95,7 +95,7 @@ export interface NoteSourceCitation {
 }
 
 /** Outcome of running one claim through the note pipeline. A claim that was
- *  skipped because Opus is confident it is true never reaches the pipeline, and
+ *  skipped because the rater is confident it is true never reaches the pipeline, and
  *  neither does a claim that errored. The worker records those two outcomes
  *  directly on the claim row instead. */
 export type ClaimCheck =
