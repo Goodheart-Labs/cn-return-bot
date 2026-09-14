@@ -34,6 +34,12 @@ This makes paid API calls and writes run results. See the script's flags for
 replaying saved inputs and forcing experiment variants.
 
 Dashboard commands and builds are in [package.json](package.json).
+
+The [Signal group bot](docs/signal-bot.md) checks pasted tweets, drafts and
+discusses notes, and submits the current draft when someone says “yes post”.
+Its shared quota check keeps three estimated submission slots for group requests.
+Run `bun src/signal-bot/main.ts --help` for local usage and setup requirements.
+
 [CLAUDE.md](CLAUDE.md) covers repository operations, including Common Notes ingestion,
 the extension, and the scraper.
 

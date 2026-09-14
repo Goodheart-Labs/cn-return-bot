@@ -25,9 +25,10 @@ export interface ItemRow {
 }
 
 /** A project as the website's sidebar loads it. The sidebar shows the name,
- *  the URL carries the slug, and the list is ordered by the votes cast on the
- *  project's notes. The description is left in the database. */
-export type FeedProjectRow = Pick<ProjectRow, "id" | "slug" | "name"> & { votes: number };
+ *  the URL carries the slug, and the list is ordered by the score of the votes
+ *  on the project's notes (migration 094). The description is left in the
+ *  database. */
+export type FeedProjectRow = Pick<ProjectRow, "id" | "slug" | "name"> & { vote_score: number };
 
 /** An item as the website's feed loads it. The feed only names an item on a
  *  filter chip and orders the chips by date, so it reads these columns and

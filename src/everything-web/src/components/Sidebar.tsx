@@ -29,7 +29,7 @@ export function Sidebar({ projects, selectedId, view, onSelect, onSelectLeaderbo
             <button
               key={p.id}
               onClick={() => onSelect(p.id)}
-              className={`text-left text-sm hover:underline hover:text-blue-600 dark:hover:text-blue-400 ${
+              className={`shrink-0 text-left text-sm hover:underline hover:text-blue-600 dark:hover:text-blue-400 ${
                 p.id === selectedId && view === "notes" ? "text-blue-600 dark:text-blue-400 font-medium" : "text-gray-700 dark:text-gray-300"
               }`}
             >

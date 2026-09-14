@@ -190,7 +190,7 @@ export function pipelineFunnelBars(days: PipelineDayRow[]): PipelineFunnelBars {
   return bars;
 }
 
-// --- The recently checked posts (migration 094) ---
+// --- The recently checked posts (migration 095) ---
 
 export interface RecentPostRow {
   id: string;

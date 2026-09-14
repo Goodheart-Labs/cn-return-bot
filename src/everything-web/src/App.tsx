@@ -181,7 +181,7 @@ export function App() {
 
   // The project we open on is the one named by the ?project= slug in the URL. If
   // there is no such slug, we take the first project in the list, which is the
-  // most-voted project that has content.
+  // most voted project that has content.
   useEffect(() => {
     if (selectedId || projects.length === 0) return;
     const fromUrl = projects.find((p) => p.slug === readRoute().project);

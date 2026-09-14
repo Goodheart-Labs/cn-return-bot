@@ -12,20 +12,24 @@
  * has a whole-page everything_items row. Any status counts as processed there,
  * including an item that finished with zero notes; an errored item is handled
  * by the retry sweep instead. The remaining candidates from all feeds are
- * ranked together, by the average of a recency rank and an author-priority
- * rank, and the best ones are enqueued. New posts must never wait behind an
- * old backlog. A gap deeper than the candidate window is left unfilled on
- * purpose.
+ * ranked together, by a weighted blend of an author-priority rank and a
+ * recency rank, and the best ones are enqueued. The author rank carries most
+ * of the weight, so the creators readers care about most are served first and
+ * a creator who uploads several times a day cannot crowd them out with sheer
+ * volume. The recency share keeps a fresh post from a lower creator ahead of
+ * a slightly higher creator's stale backlog, and the candidate window bounds
+ * how deep any backlog can reach. A gap deeper than the candidate window is
+ * left unfilled on purpose.
  *
  * Each creator's all-time top posts join the candidates too (GOO-81, see
  * topPosts.ts). In the author rank they line up behind the creator's recent
  * posts, ordered by popularity, and in the recency rank they carry their real
- * old publish dates. Nothing gates them beyond that. Sitting last in both
- * ranks is what keeps them at the back, so in practice an evergreen hit is
- * picked on a run where the feeds are otherwise caught up. The one case where
- * a top post comes early is a flagged creator: flagged candidates are ranked
- * ahead of everyone else, so a creator you flagged who has no unchecked new
- * posts contributes their top posts next. That is what flagging is for.
+ * old publish dates. Nothing gates them beyond that. Because the author rank
+ * dominates, a top creator's evergreen hits come before the fresh posts of
+ * creators far down the walk order, and only behind that creator's own
+ * recent posts. A flagged creator's candidates are ranked ahead of everyone
+ * else's, so a creator you flagged who has no unchecked new posts contributes
+ * their top posts next. That is what flagging is for.
  *
  * A Substack post is enqueued with its RSS body already in full_text. That way
  * the worker never has to fetch Substack, which blocks our CI runners.
@@ -305,17 +309,23 @@ function withinFeedOrder(a: Rankable, b: Rankable): number {
   return recencyKey(b).localeCompare(recencyKey(a));
 }
 
-/** Orders the candidates of all feeds by the average of two ranks: a recency
- *  rank (newest post first) and an author rank (the feed walk order, ordered
- *  within a feed by withinFeedOrder). A top author's older post and a lower
- *  author's brand-new post take turns this way, instead of one kind starving
- *  the other. An all-time top post carries its real old publish date, so the
- *  recency rank keeps it low: it only wins on a day when the feeds are
- *  otherwise caught up. Ties in the average go to the more recent post. */
+/** How the two ranks are blended. The author rank carries nine tenths of the
+ *  score, so one step down the walk order costs as much as nine steps of
+ *  recency. With an even split, creators who upload several times a day took
+ *  most of the daily budget because each upload was among the newest
+ *  candidates, while the most-read creators waited for days. */
+const AUTHOR_RANK_WEIGHT = 0.9;
+const RECENCY_RANK_WEIGHT = 0.1;
+
+/** Orders the candidates of all feeds by a weighted blend of two ranks: an
+ *  author rank (the feed walk order, ordered within a feed by
+ *  withinFeedOrder) and a recency rank (newest post first). Each candidate's
+ *  score is its position in each ordering, weighted, and the lowest score is
+ *  served first. Ties in the score go to the more recent post. */
 export function rankCandidates<T extends Rankable>(candidates: T[]): T[] {
   const byRecency = [...candidates].sort((a, b) => recencyKey(b).localeCompare(recencyKey(a)));
   const byAuthor = [...candidates].sort((a, b) => a.feedIndex - b.feedIndex || withinFeedOrder(a, b));
-  const score = (c: T) => byRecency.indexOf(c) + byAuthor.indexOf(c);
+  const score = (c: T) => AUTHOR_RANK_WEIGHT * byAuthor.indexOf(c) + RECENCY_RANK_WEIGHT * byRecency.indexOf(c);
   return [...candidates].sort((a, b) => score(a) - score(b) || byRecency.indexOf(a) - byRecency.indexOf(b));
 }
 

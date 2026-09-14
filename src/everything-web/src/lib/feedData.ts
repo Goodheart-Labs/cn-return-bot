@@ -11,14 +11,14 @@ import type { FeedItemRow, FeedProjectRow, NnnRow, NoteRow } from "../../../ever
 
 const ITEM_COLS = "id, project_id, url, title, published_at, created_at";
 
-/** The projects the sidebar lists, most-voted first. A project with no
- *  content is left out, and since GOO-107 that matters: pressing "check this
- *  author's new posts" creates the creator's project immediately, and until
- *  the pipeline has actually checked something there is nothing to show under
- *  it. The anon key can create such a row, so the sidebar must not put
- *  whatever it names on the public site. Both the filter and the vote counts
- *  come from one database function (migration 093), because the anon key
- *  cannot read the votes table. */
+/** The projects the sidebar lists, the most voted first and ties by name. A
+ *  project with no content is left out, and since GOO-107 that matters:
+ *  pressing "check this author's new posts" creates the creator's project
+ *  immediately, and until the pipeline has actually checked something there is
+ *  nothing to show under it. The anon key can create such a row, so the sidebar
+ *  must not put whatever it names on the public site. Both the filter and the
+ *  vote scores come from one database function (migration 094), because the
+ *  anon key cannot read the votes table. */
 export async function fetchProjects(): Promise<FeedProjectRow[]> {
   const { data, error } = await supabase.rpc("everything_projects_by_votes");
   if (error) throw error;
