@@ -308,13 +308,13 @@ function withinFeedOrder(a: Rankable, b: Rankable): number {
   return recencyKey(b).localeCompare(recencyKey(a));
 }
 
-/** How the two ranks are blended. The author rank carries four fifths of the
- *  score, so one step down the walk order costs as much as four steps of
+/** How the two ranks are blended. The author rank carries nine tenths of the
+ *  score, so one step down the walk order costs as much as nine steps of
  *  recency. With an even split, creators who upload several times a day took
  *  most of the daily budget because each upload was among the newest
  *  candidates, while the most-read creators waited for days. */
-const AUTHOR_RANK_WEIGHT = 0.8;
-const RECENCY_RANK_WEIGHT = 0.2;
+const AUTHOR_RANK_WEIGHT = 0.9;
+const RECENCY_RANK_WEIGHT = 0.1;
 
 /** Orders the candidates of all feeds by a weighted blend of two ranks: an
  *  author rank (the feed walk order, ordered within a feed by
