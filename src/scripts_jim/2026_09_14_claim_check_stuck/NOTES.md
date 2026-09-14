@@ -202,3 +202,62 @@ Not implemented. Listed so the options are on the table.
 5. Let the service drop a call whose caller has hung up, so abandoned calls
    stop holding slots. That is the caller-side timeout reaching the service,
    which today it never does.
+
+## Second pass, same day: the provider caught in the act
+
+Jim asked why a deepseek call would take that long. Two probes from the dev box
+answer it (`probeSlowCalls.ts`, `probePrefilterReplay.ts`, logs in `data/`).
+
+**What OpenRouter does.** Its docs: providers that had no outage in the last
+30 seconds are ranked by price and one is picked "weighted by inverse square of
+the price", so the cheapest provider gets most calls. Fallback to the next
+provider happens only when a provider fails before answering. "Failover also
+stops once part of the answer has reached you", and a provider that fails
+partway yields a 200 with `finish_reason: "error"` and whatever partial content
+there was, billed for the tokens produced. For a reasoning model that partial
+content is nothing, because every token so far was reasoning. Our
+`callWithRetry` sees an empty 200 and asks again after one second, and the
+retry is routed by the same price weighting, so it usually lands on the same
+provider.
+
+**The replay probe.** 59 real production prompts, the whole prefilter, four at
+a time like the machine, 40 minutes, 195 OpenRouter calls:
+
+| provider | calls | empty answers (finish "error") | median | slowest |
+|---|---|---|---|---|
+| OpenInference | 42 | 10 | 32 s | 465 s |
+| DigitalOcean | 41 | 0 | 81 s | 532 s |
+| DeepInfra | 17 | 0 | 16 s | 43 s |
+| StreamLake | 16 | 0 | 14 s | 38 s |
+| the other nine | 79 | 1 (NextBit, after 2 s) | 1 to 16 s | 34 s |
+
+OpenInference is the cheapest provider and the one that answers empty: ten of
+its 42 calls came back as a 200 with no content after 33 to 465 seconds and
+416 to 15,007 reasoning tokens billed. Two of them ended in the same second
+(12:50:30, after 43 s and 105 s), the same "everything in flight ends at once"
+signature the machine showed at 07:37 on 09-14, so this is the provider
+dropping its in-flight work, not the model running long. DigitalOcean, the
+second cheapest, never answers empty but is very slow: median 81 s, up to
+532 s, at under five tokens per second. Both are marked with a negative
+status in OpenRouter's endpoint listing at the time of writing; the healthy
+ones show 0. The slow and empty answers cluster on the search analyzer, the
+prefilter step with the longest prompt, and appear on every step.
+
+One prefilter run in the probe took 1322 s, 22 minutes, purely from these two
+providers and the retries between them. The machine's 30 to 47 minute waits are
+the same thing at a worse moment.
+
+**Before and after 09-13.** In the machine's journal from 09-09 to 09-12 every
+deepseek empty is an "attempt 1" followed by a good answer seconds later, about
+20 a day. From 09-13 the attempts 2 and 3 appear and the attempts of one call
+are 30 to 47 minutes apart. So the cheapest provider went from "sometimes fails
+fast" to "fails after a long wait", and the retry loop multiplied it by four.
+
+**The earlier raw probe** (332 query-writer calls over an hour, no search
+context) found nothing: 316 of them went to OpenInference and all returned
+within 90 seconds. The long prompts of the real prefilter are what trip the
+provider.
+
+**The provider is not logged.** The response JSON carries `provider` and a
+generation `id`; the code keeps neither, which is why this needed a probe
+instead of a query.
