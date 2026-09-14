@@ -88,7 +88,7 @@ const SIMPLE_BOT_WRITER_TEST: ABTest = {
     { variant: { name: "opus5",            overrides: { writer_model: "anthropic/claude-opus-5"       }}, weight: 0 },
     { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 0 },
     { variant: { name: "fable5",           overrides: { writer_model: "anthropic/claude-fable-5"      }}, weight: 0 },
-    { variant: { name: "musespark13c",     overrides: { writer_model: "meta/muse-spark-1.3-contributor" }}, weight: 10 },
+    { variant: { name: "musespark13c",     overrides: { writer_model: "meta/muse-spark-1.3-contributor" }}, weight: 50 },
     { variant: { name: "deepseek-v4flash", overrides: { writer_model: "deepseek/deepseek-v4-flash"    }}, weight: 0 },
   ],
 };
@@ -98,8 +98,9 @@ const SIMPLE_BOT_VERIFIER_TEST: ABTest = {
   name: "simple_bot_verifier",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "gemini-flash",     overrides: { verifier_model: "google/gemini-3-flash-preview" }}, weight: 50 },
-    { variant: { name: "deepseek-v4flash", overrides: { verifier_model: "deepseek/deepseek-v4-flash"    }}, weight: 0  },
+    { variant: { name: "gemini-flash",     overrides: { verifier_model: "google/gemini-3-flash-preview"   }}, weight: 50 },
+    { variant: { name: "musespark13c",     overrides: { verifier_model: "meta/muse-spark-1.3-contributor" }}, weight: 50 },
+    { variant: { name: "deepseek-v4flash", overrides: { verifier_model: "deepseek/deepseek-v4-flash"      }}, weight: 0  },
   ],
 };
 
