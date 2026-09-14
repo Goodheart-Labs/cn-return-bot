@@ -39,4 +39,19 @@ describe("native-API arms have a pricing row", () => {
       expect(GEMINI_PRICING[model], `no GEMINI_PRICING row for "${model}"`).toBeDefined();
     }
   });
+
+  // A Gemini media arm runs on the native API too, so it needs a rate the same way.
+  test("every live Gemini media_description arm is priced", () => {
+    const test = AB_TESTS.find((t) => t.name === "media_description");
+    if (!test) throw new Error("media_description test not found");
+    const models = test.variants
+      .filter((v) => v.weight > 0)
+      .map((v) => String(v.variant.overrides.media_model))
+      .filter((model) => model.startsWith("google/"))
+      .map((model) => model.replace("google/", ""));
+    expect(models.length).toBeGreaterThan(0);
+    for (const model of models) {
+      expect(GEMINI_PRICING[model], `no GEMINI_PRICING row for "${model}"`).toBeDefined();
+    }
+  });
 });
