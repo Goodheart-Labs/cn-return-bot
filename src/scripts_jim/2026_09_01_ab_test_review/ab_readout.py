@@ -50,6 +50,7 @@ LIVE_TESTS = [
     "author_history",
     "writer_last_check",
     "simple_bot_verifier",
+    "media_description",
     "eval_submit_threshold",
     "ranking_policy",
 ]

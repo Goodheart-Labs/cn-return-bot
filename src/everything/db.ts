@@ -72,14 +72,29 @@ interface ProjectRow {
 
 const PROJECT_COLUMNS = "id, slug, name, feed_url";
 
-/** Writes a project's real display name once a fetch has learned it. A project
- *  created before its name was known carries its slug as the name, and only
- *  such a placeholder is ever replaced. A name that differs from the slug was
- *  set deliberately, by a seed migration or by hand, and is left alone. */
-async function fillDisplayName(project: ProjectRow, displayName: string | undefined): Promise<void> {
-  if (!displayName || displayName === project.slug || project.name !== project.slug) return;
+/** Where a display name was learned. The creator's own feed listing (the
+ *  Substack RSS title, the YouTube channel name, the forum author's display
+ *  name) is the name the source shows today. A single post says less: a
+ *  Substack byline names the author, not the publication. */
+type DisplayNameOrigin = "feed" | "post";
+
+/** Writes a project's display name once a fetch has learned it.
+ *
+ *  A project that has a feed always shows the name its source shows, so a name
+ *  learned from that feed's listing replaces whatever the row holds, including
+ *  a name somebody typed in by hand. Jim decided that on 2026-09-14: no
+ *  Substack or YouTube project may carry a custom name.
+ *
+ *  A name learned from a single post only fills in a placeholder. A project
+ *  created before its name was known carries its slug as the name, and that is
+ *  the only name such a fetch may replace. */
+async function fillDisplayName(project: ProjectRow, displayName: string | undefined, origin: DisplayNameOrigin): Promise<void> {
+  if (!displayName || displayName === project.name) return;
+  const sourceNameWins = origin === "feed" && project.feed_url !== null;
+  const isPlaceholder = project.name === project.slug && displayName !== project.slug;
+  if (!sourceNameWins && !isPlaceholder) return;
   throwOnError(await getSupabaseClient().from("everything_projects").update({ name: displayName }).eq("id", project.id));
-  console.log(`Project "${project.slug}" display name set to "${displayName}"`);
+  console.log(`Project "${project.slug}" display name set to "${displayName}" (was "${project.name}")`);
 }
 
 /** The first of `base`, `base-2`, `base-3`, ... that no project uses yet. The
@@ -107,8 +122,9 @@ async function freeSlug(base: string): Promise<string> {
  *  the wrong project. A slug-matched project with no feed URL yet is the same
  *  creator ingested before we tracked feeds, and learns its URL here.
  *
- *  On an existing project the display name only fills in a slug placeholder;
- *  see fillDisplayName. */
+ *  A display name that arrives with a feed URL was read from that feed's
+ *  listing and always wins on the project; one that arrives without only
+ *  fills in a slug placeholder. See fillDisplayName. */
 export async function resolveProjectId(params: {
   slug: string;
   displayName?: string;
@@ -122,7 +138,7 @@ export async function resolveProjectId(params: {
       await db.from("everything_projects").select(PROJECT_COLUMNS).eq("feed_url", feedUrl).maybeSingle(),
     ) as ProjectRow | null;
     if (byFeed) {
-      await fillDisplayName(byFeed, displayName);
+      await fillDisplayName(byFeed, displayName, "feed");
       return byFeed.id;
     }
   }
@@ -132,10 +148,11 @@ export async function resolveProjectId(params: {
   ) as ProjectRow | null;
   const sameCreator = bySlug && (!feedUrl || !bySlug.feed_url || bySlug.feed_url === feedUrl);
   if (bySlug && sameCreator) {
-    await fillDisplayName(bySlug, displayName);
     if (feedUrl && !bySlug.feed_url) {
       throwOnError(await db.from("everything_projects").update({ feed_url: feedUrl }).eq("id", bySlug.id));
+      bySlug.feed_url = feedUrl;
     }
+    await fillDisplayName(bySlug, displayName, feedUrl ? "feed" : "post");
     return bySlug.id;
   }
 
@@ -158,7 +175,7 @@ export async function fillProjectDisplayName(projectId: string | null, displayNa
   const project = throwOnError(
     await getSupabaseClient().from("everything_projects").select(PROJECT_COLUMNS).eq("id", projectId).maybeSingle(),
   ) as ProjectRow | null;
-  if (project) await fillDisplayName(project, displayName);
+  if (project) await fillDisplayName(project, displayName, "post");
 }
 
 // A local doc with no url still needs a unique, non-null `url`, because the

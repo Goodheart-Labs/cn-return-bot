@@ -25,7 +25,8 @@ import { claimCheckFields } from "./claimCheckFields";
 // prompt, because a claim here is an excerpt from a transcript or an article and
 // not an X post.
 // The models are pinned to Muse Spark 1.3 Contributor for search, writer and
-// source verifier alike (GOO-159, see model.ts). Muse has no built-in web
+// source verifier alike (GOO-159, see model.ts); media descriptions stay on
+// Gemini. Muse has no built-in web
 // search, so the search arm is the client-side Serper loop. Before that, search
 // and writer ran on Sonnet 5 and the verifier on Gemini 3 Flash; search ran on
 // Opus 5 until August 2026, when the daily spend cap was exhausted by early
@@ -40,6 +41,7 @@ const FORCED_PICKS: Record<string, string> = {
   simple_bot_search: "musespark13c-serper",
   simple_bot_writer: "musespark13c",
   simple_bot_verifier: "musespark13c",
+  media_description: "gemini3flash",
   verifier_citations: "on",
   verifier_claim_based: "classic",
 };

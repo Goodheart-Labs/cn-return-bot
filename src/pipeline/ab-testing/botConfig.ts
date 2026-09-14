@@ -1,5 +1,6 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import type { MisinfoTopicId } from "../misinfo-monitoring/topicIds";
+import { GEMINI_MODEL } from "../cost-tracking/pricing";
 
 // --- Config type ---
 
@@ -21,8 +22,17 @@ export interface BotConfig {
   search_analyzer_model?: string;
   writer_model?: string;
   /** Model for the source verifier. DEFAULT_CONFIG sets it to
-   *  gemini-3-flash-preview. No dedicated A/B test varies it. */
+   *  gemini-3-flash-preview. SIMPLE_BOT_VERIFIER_TEST varies it. */
   verifier_model?: string;
+  /**
+   * Model that describes the post's images and video frames, and any media a
+   * cited source points at. A Gemini id runs on Google's own API. Any other id
+   * runs through OpenRouter as a vision call. DEFAULT_CONFIG sets it to
+   * gemini-3-flash-preview and MEDIA_DESCRIPTION_TEST varies it. When no bot
+   * config is active at all, for example in the Common Notes claim extractor,
+   * media analysis uses the default.
+   */
+  media_model?: string;
   /**
    * When this is true, the source verifier can judge a cited media URL. It runs
    * an automated Gemini analysis of the media and treats the result as the
@@ -182,7 +192,8 @@ export interface BotConfig {
 export const DEFAULT_CONFIG: BotConfig = {
   botId: "<unset>",
   model: "anthropic/claude-sonnet-4.6",
-  verifier_model: "google/gemini-3-flash-preview", // simple-bot has always verified with gemini-flash.
+  verifier_model: GEMINI_MODEL, // simple-bot has always verified with gemini-flash.
+  media_model: GEMINI_MODEL,
   web_search: "perplexity",
   video_description_strategy: "frames",
   parallel_research: false,
@@ -201,6 +212,13 @@ export function getBotConfig(): BotConfig {
   const config = configStorage.getStore();
   if (!config) throw new Error("getBotConfig() called outside withBotConfig()");
   return config;
+}
+
+/** The active bot config, or undefined when the caller runs outside any bot.
+ *  The media analysis uses this, because the Common Notes claim extractor calls
+ *  it before any claim has a bot config. */
+export function getBotConfigIfActive(): BotConfig | undefined {
+  return configStorage.getStore();
 }
 
 /**
