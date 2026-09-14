@@ -10,7 +10,8 @@ import LinkifyIt from "linkify-it";
 import { llm } from "../llm/llm";
 import { geminiNativeGenerate } from "../llm/gemini";
 import { xaiNativeGenerate } from "../llm/xai";
-import { WEB_SEARCH_TOOL, GOOGLE_SEARCH_TOOL, WEB_FETCH_TOOL, executeToolCall } from "../tool-calling/tools";
+import { WEB_SEARCH_TOOL, GOOGLE_SEARCH_TOOL, WEB_FETCH_TOOL } from "../tool-calling/tools";
+import { runToolLoop } from "../tool-calling/toolLoop";
 import { getBotConfig } from "../ab-testing/botConfig";
 import { getMonitoringContext, buildReferenceBlock } from "../misinfo-monitoring/monitoringContext";
 import {
@@ -22,7 +23,7 @@ import {
   SEARCH_PROMPTED_JSON_INSTRUCTION,
 } from "../prompts/simple-bot/searchAgent";
 import { addTokenCost, emptyTokenCost, extractOpenRouterCost, type TokenCost } from "../cost-tracking/pricing";
-import type { LlmCallCost, ToolCallCost } from "../cost-tracking/costTracker";
+import type { LlmCallCost } from "../cost-tracking/costTracker";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP } from "../utils/noteWriterSteps";
 import { ModelOutputInvalidError } from "../utils/errors";
@@ -365,60 +366,16 @@ async function searchWithSonarBundled(
 
 const SEARCH_LOOP_MAX_TURNS = 6;
 
-/** The provider refused the value we gave for tool_choice, rather than failing
- *  for some passing reason. OpenRouter wraps an upstream failure as a 400 and
- *  puts the provider's own error body in metadata.raw, so that string is where
- *  the offending parameter name appears. */
-export function rejectsForcedToolCall(err: any): boolean {
-  const status = err?.status ?? err?.response?.status;
-  if (status !== 400) return false;
-  return String(err?.error?.metadata?.raw ?? "").includes("tool_choice");
-}
-
-/** Runs one turn of the Serper loop.
- *
- *  Some providers accept only "auto" for tool_choice and reject "required"
- *  outright. Meta is one, which is what stopped the Muse arm from running at
- *  all. That is a fixed property of the provider rather than a passing failure,
- *  so the only way to get the turn done is to ask again without forcing the
- *  tool call, which also means attaching the response format the forced call
- *  left off.
- *
- *  We lose the guarantee that the model searches on this turn, which is the
- *  thing forcing was added to provide. Muse called google_search on all five
- *  samples we tried, so in practice it still searches. A provider that accepts
- *  "required" never reaches the fallback, so no other arm changes behaviour. */
-async function callSearchTurn(
-  model: string,
-  messages: any[],
-  tools: any[],
-  forceToolCall: boolean,
-) {
-  const request = {
-    model,
-    messages,
-    tools,
-    tool_choice: forceToolCall ? "required" : "auto",
-    ...(forceToolCall ? {} : { response_format: SEARCH_RESPONSE_FORMAT }),
-  };
-  try {
-    return await llm.create(request as any);
-  } catch (err) {
-    if (!forceToolCall || !rejectsForcedToolCall(err)) throw err;
-    getTweetLog()?.set(`${STEP.search}.forcedToolCallUnsupported`, { model });
-    return await llm.create({
-      ...request,
-      tool_choice: "auto",
-      response_format: SEARCH_RESPONSE_FORMAT,
-    } as any);
-  }
-}
-
 /**
- * The tool-calling loop for models that have no native web search, such as
- * Kimi, GLM, DeepSeek, and Qwen. The model issues google_search calls, which we
- * dispatch to Serper, and eventually returns its findings as JSON. It reuses
- * executeToolCall from the agent flow rather than forking it.
+ * The search step for models that have no native web search, such as Muse,
+ * Kimi, GLM and DeepSeek. The model issues google_search calls, which we
+ * dispatch to Serper, and eventually returns its findings as JSON. The turn
+ * loop itself is the shared tool loop; this function only supplies the search
+ * prompt, the log keys and the parsing.
+ *
+ * Turn 1 forces a tool call. Without that, some models prefer the JSON schema
+ * and stop straight away with empty findings and correction_needed=false,
+ * without ever searching. We saw DeepSeek v4 Flash do this on 2026-05-23.
  */
 async function searchWithSerperLoop(
   userMessage: string,
@@ -436,90 +393,24 @@ You have access to a google_search tool. Issue search queries to gather evidence
   ];
   log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage, model });
 
-  const tools = [GOOGLE_SEARCH_TOOL, WEB_FETCH_TOOL];
-  const totalCost: TokenCost = emptyTokenCost();
-  const toolCosts: ToolCallCost[] = [];
-
-  for (let turn = 1; turn <= SEARCH_LOOP_MAX_TURNS; turn++) {
-    // Turn 1 forces a tool call. Without that, some models prefer the JSON
-    // schema and stop straight away with empty findings and
-    // correction_needed=false, without ever searching. We saw DeepSeek v4 Flash
-    // do this on 2026-05-23.
-    //
-    // On a forced turn the model has to emit a tool call rather than JSON, so
-    // the response_format would have no effect anyway. Some providers, Mistral
-    // among them, also reject json_schema unless tool_choice is "auto". So we
-    // attach the schema only on the turns that use "auto".
-    const forceToolCall = turn === 1;
-    const response = await callSearchTurn(model, messages, tools, forceToolCall);
-    addTokenCost(totalCost, extractOpenRouterCost(response));
-
-    const message = response.choices?.[0]?.message;
-    if (!message) {
-      throw new Error(`serper loop: empty response on turn ${turn}`);
-    }
-
-    if (message.tool_calls?.length) {
-      messages.push(message);
-      for (const [i, tc] of message.tool_calls.entries()) {
-        const fnName = (tc as any).function?.name ?? "unknown";
-        const args = JSON.parse((tc as any).function?.arguments ?? "{}");
-        const tStart = Date.now();
-        const result = await executeToolCall(fnName, args);
-        const tDuration = Date.now() - tStart;
-
-        const logKey = i === 0 ? fnName : `${fnName}_${i}`;
-        log?.set(`${STEP.search}.turn.${turn}.${logKey}`, {
-          args,
-          result: result.output,
-          durationMs: tDuration,
-        });
-
-        if (result.cost) toolCosts.push({ name: logKey, ...result.cost });
-
-        messages.push({
-          role: "tool",
-          tool_call_id: (tc as any).id,
-          content: typeof result.output === "string" ? result.output : JSON.stringify(result.output),
-        });
-      }
-      continue;
-    }
-
-    const parsed = parseSearchJson(message.content ?? "", `serper loop final (turn ${turn})`);
-    log?.set(`${STEP.search}.messages.final`, { turn, content: parsed });
-
-    return {
-      findings: parsed.findings,
-      correctionNeeded: parsed.correction_needed,
-      costEntry: { name: costName, ...totalCost, tools: toolCosts },
-    };
-  }
-
-  // The loop ran out of turns. Some models, deepseek-v3.2-exp for one, keep
-  // searching past the turn limit and never produce a final answer on their
-  // own. One more call with no tools attached forces them to write one. Every
-  // search result they gathered is already in the message list.
-  log?.set(`${STEP.search}.forced_synthesis`, true);
-  const finalResp = await llm.create({
+  const result = await runToolLoop({
     model,
-    messages: [
-      ...messages,
-      {
-        role: "user",
-        content: "Stop searching. Return your final findings as JSON now.",
-      },
-    ],
-    response_format: SEARCH_RESPONSE_FORMAT,
-  } as any);
-  addTokenCost(totalCost, extractOpenRouterCost(finalResp));
-  const finalContent = finalResp.choices?.[0]?.message?.content ?? "";
-  const parsed = parseSearchJson(finalContent, `serper forced synthesis (after ${SEARCH_LOOP_MAX_TURNS} turns)`);
-  log?.set(`${STEP.search}.messages.final`, { turn: SEARCH_LOOP_MAX_TURNS + 1, content: parsed });
+    messages,
+    tools: [GOOGLE_SEARCH_TOOL, WEB_FETCH_TOOL],
+    maxTurns: SEARCH_LOOP_MAX_TURNS,
+    responseFormat: SEARCH_RESPONSE_FORMAT,
+    log: (key, value) => log?.set(`${STEP.search}.${key}`, value),
+  });
+  const source = result.forcedSynthesis
+    ? `serper forced synthesis (after ${SEARCH_LOOP_MAX_TURNS} turns)`
+    : "serper loop final";
+  const parsed = parseSearchJson(result.content, source);
+  log?.set(`${STEP.search}.messages.final`, { content: parsed });
+
   return {
     findings: parsed.findings,
     correctionNeeded: parsed.correction_needed,
-    costEntry: { name: costName, ...totalCost, tools: toolCosts },
+    costEntry: { name: costName, ...result.cost, tools: result.toolCosts },
   };
 }
 

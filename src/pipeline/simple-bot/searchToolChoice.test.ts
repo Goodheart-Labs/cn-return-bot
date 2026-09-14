@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { rejectsForcedToolCall } from "./searchDispatch";
+import { rejectsForcedToolCall } from "../tool-calling/toolLoop";
 import { isRetryableError } from "../llm/llm";
 
 /** The exact body OpenRouter returned for Muse on 2026-09-08. The whole
