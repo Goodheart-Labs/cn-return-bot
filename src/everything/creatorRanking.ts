@@ -43,15 +43,11 @@
 import { fetchCreatorProjects, fetchCreatorAttention, fetchTwoReadersSeen, QUEUE_PRIORITY } from "./db";
 import { canonicalFeed, type FeedType } from "./feedUrls";
 import { normalizeFeedUrl } from "../everything-shared/pageUrls";
-<<<<<<< HEAD
-import { MIN_PAGES_FOR_A_REGULAR_READER, MIN_REGULAR_READERS_TO_WALK_CREATOR } from "../everything-shared/readers";
-=======
 import {
   MIN_PAGES_FOR_A_REGULAR_READER,
   MIN_REGULAR_READERS_TO_WALK_CREATOR,
   VISIT_RANKING_WINDOW_DAYS,
 } from "../everything-shared/readers";
->>>>>>> origin/main
 
 /** The rule that applied before the reader hash existed, and that still applies
  *  until the two-reader proof arrives: how many visit rows inside the window a
