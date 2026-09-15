@@ -210,14 +210,14 @@ describe("publishingRatePerDay", () => {
  * still walked, priority creators are always walked and counted first, and a
  * creator that cannot be listed is skipped without counting. */
 describe("admitCreators", () => {
-  const creator = (name: string, rate: number | null, prioritized = false) => ({ name, rate, prioritized });
+  const creator = (name: string, rate: number | null, prioritized = false, newPosts?: number) => ({ name, rate, prioritized, newPosts });
   /** The injected walk: answers each creator's own rate, or null for a
    *  creator whose feed will not list, and records who was walked. */
   const walker = () => {
     const walked: string[] = [];
-    const walk = async (c: { name: string; rate: number | null }) => {
+    const walk = async (c: { name: string; rate: number | null; newPosts?: number }) => {
       walked.push(c.name);
-      return c.rate === null ? null : { rate: c.rate };
+      return c.rate === null ? null : { rate: c.rate, newPosts: c.newPosts ?? 1 };
     };
     return { walked, walk };
   };
@@ -252,6 +252,28 @@ describe("admitCreators", () => {
     expect(walked).toEqual(["pressed-1", "pressed-2"]);
     expect(result.cumulativeRate).toBe(4);
     expect(result.cutoffIndex).toBe(2);
+  });
+
+  test("the walk stops once enough creators with posts to process were found, however cheap the day", async () => {
+    const { walked, walk } = walker();
+    const ranked = Array.from({ length: 6 }, (_, i) => creator(`c${i}`, 0.1));
+    const result = await admitCreators(ranked, 1000, walk, 3);
+    expect(walked).toEqual(["c0", "c1", "c2"]);
+    expect(result.cutoff).toBe("enough");
+    expect(result.cutoffIndex).toBe(3);
+  });
+
+  test("a creator with nothing new to process does not count towards that stop", async () => {
+    const { walked, walk } = walker();
+    const ranked = [creator("empty-1", 0.1, false, 0), creator("a", 0.1), creator("empty-2", 0.1, false, 0), creator("b", 0.1), creator("c", 0.1)];
+    const result = await admitCreators(ranked, 1000, walk, 2);
+    expect(walked).toEqual(["empty-1", "a", "empty-2", "b"]);
+    expect(result.cutoff).toBe("enough");
+  });
+
+  test("the budget line is reported as such", async () => {
+    const { walk } = walker();
+    expect((await admitCreators([creator("a", 5), creator("b", 1)], 2, walk)).cutoff).toBe("budget");
   });
 
   test("a creator whose feed will not list is skipped and does not count", async () => {
