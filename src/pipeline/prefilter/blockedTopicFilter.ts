@@ -1,4 +1,6 @@
-/** Enforce excluded topics before research; require a valid verdict from either model. */
+/** Enforce excluded topics before research. DeepSeek answers first, Gemini Flash
+ *  on any failure. If both fail the post passes with a warning: we would rather
+ *  write notes through a provider outage than hold every post on this gate. */
 import { withBotConfig, type BotConfig } from "../ab-testing/botConfig";
 import { AttemptDeadlineError, withDeadline, withLlmAbortSignal } from "../llm/llm";
 import {
@@ -85,7 +87,7 @@ async function runAttempt(userMessage: string, fallback: boolean): Promise<Topic
   }
 }
 
-/** If both attempts fail, propagate the error without clearing the exclusion gate. */
+/** If both attempts fail, fail open: the post carries on unchecked, with a warning. */
 export async function runBlockedTopicFilter(userMessage: string): Promise<TopicFilterVerdict> {
   const log = getTweetLog();
   let verdict: TopicFilterVerdict;
@@ -101,8 +103,13 @@ export async function runBlockedTopicFilter(userMessage: string): Promise<TopicF
     } catch (fallbackError) {
       const fallbackReason = String(fallbackError).slice(0, 1000);
       log?.set(`${STEP}.error`, fallbackReason);
-      console.warn(`[topic_filter] Fallback failed; cannot check this post's exclusions: ${fallbackReason}`);
-      throw fallbackError;
+      log?.set(`${STEP}.failedOpen`, true);
+      verdict = {
+        blocked: false,
+        reasoning: `both models failed — failing open, the post is not checked for excluded topics: ${fallbackReason}`,
+      };
+      addWarning(`Blocked-topic filter: ${verdict.reasoning}`);
+      console.warn(`[topic_filter] ${verdict.reasoning}`);
     }
   }
   log?.set(`${STEP}.verdict`, verdict);

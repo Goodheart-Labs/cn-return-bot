@@ -83,7 +83,7 @@ describe("blocked-topic filter", () => {
     expect(warning).toHaveBeenCalledTimes(1);
   });
 
-  test("two stalled providers fail the post without inventing a verdict", async () => {
+  test("two stalled providers fail open with a warning", async () => {
     shortenDeadlines();
     const signals: AbortSignal[] = [];
     call = spyOn(jsonLlm, "runJsonLlmCall").mockImplementation(() => {
@@ -92,26 +92,33 @@ describe("blocked-topic filter", () => {
     });
     const log = createTweetLog();
 
-    await expect(withTweetLog(log, () => runBlockedTopicFilter("The post")))
-      .rejects.toThrow(`model ${FALLBACK} did not answer within 20s`);
+    await withWarnings(async () => {
+      const verdict = await withTweetLog(log, () => runBlockedTopicFilter("The post"));
+      expect(verdict.blocked).toBe(false);
+      expect(verdict.reasoning).toContain("failing open");
+      expect(getWarnings()).toHaveLength(2);
+      expect(getWarnings()[1]).toContain(`model ${FALLBACK} did not answer within 20s`);
+    });
     expect(call).toHaveBeenCalledTimes(2);
     expect(signals.every(signal => signal.aborted)).toBe(true);
-    expect(log.get("topic_filter.verdict")).toBeUndefined();
+    expect(log.get("topic_filter.failedOpen")).toBe(true);
     expect(log.get("topic_filter.error")).toContain("20s");
     expect(warning).toHaveBeenCalledTimes(2);
   });
 
   for (const invalid of [{}, { blocked: "false", reasoning: "No" }, { blocked: 0, reasoning: "No" },
     { blocked: false }, null]) {
-    test(`does not allow a post from invalid verdict ${JSON.stringify(invalid)}`, async () => {
+    test(`treats invalid verdict ${JSON.stringify(invalid)} as a failure, not a verdict`, async () => {
       warning = spyOn(console, "warn").mockImplementation(() => {});
       call = spyOn(jsonLlm, "runJsonLlmCall").mockResolvedValue(invalid);
       const log = createTweetLog();
 
-      await expect(withTweetLog(log, () => runBlockedTopicFilter("The post")))
-        .rejects.toThrow("expected a boolean blocked verdict and string reasoning");
+      const verdict = await withTweetLog(log, () => runBlockedTopicFilter("The post"));
       expect(call).toHaveBeenCalledTimes(2);
-      expect(log.get("topic_filter.verdict")).toBeUndefined();
+      expect(verdict.blocked).toBe(false);
+      expect(verdict.reasoning).toContain("failing open");
+      expect(log.get("topic_filter.error")).toContain("expected a boolean blocked verdict and string reasoning");
+      expect(log.get("topic_filter.failedOpen")).toBe(true);
     });
   }
 
@@ -136,16 +143,16 @@ describe("blocked-topic filter", () => {
     expect(log.get("topic_filter.fallbackReason")).toContain("expected a boolean blocked verdict");
   });
 
-  test("propagates a fallback provider error without a false allow or rejection", async () => {
+  test("fails open when both providers error, keeping both reasons", async () => {
     warning = spyOn(console, "warn").mockImplementation(() => {});
-    const fallbackError = new Error("fallback provider unavailable");
     call = spyOn(jsonLlm, "runJsonLlmCall")
       .mockRejectedValueOnce(new Error("primary unavailable"))
-      .mockRejectedValueOnce(fallbackError);
+      .mockRejectedValueOnce(new Error("fallback provider unavailable"));
     const log = createTweetLog();
 
-    await expect(withTweetLog(log, () => runBlockedTopicFilter("The post"))).rejects.toBe(fallbackError);
-    expect(log.get("topic_filter.verdict")).toBeUndefined();
+    const verdict = await withTweetLog(log, () => runBlockedTopicFilter("The post"));
+    expect(verdict.blocked).toBe(false);
+    expect(log.get("topic_filter.verdict")).toEqual(verdict);
     expect(log.get("topic_filter.fallbackReason")).toContain("primary unavailable");
     expect(log.get("topic_filter.error")).toContain("fallback provider unavailable");
   });
