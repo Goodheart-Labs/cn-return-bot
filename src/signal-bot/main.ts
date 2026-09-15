@@ -12,7 +12,7 @@ Usage: bun src/signal-bot/main.ts [--dry-run]
 
 Paste a tweet in the configured group for an access check and proposed note.
 Reply to a draft (or prefix a message with #conversation-number) to discuss it.
-‘yes post’ submits the exact current version; ‘yes’ also works when replying
+‘yes post’ submits or queues the exact current version; ‘yes’ also works when replying
 directly to the current draft. ‘draft’ shows it again; ‘cancel’ withdraws it.
 
 --dry-run   Research and reply in Signal, but never submit to X.
@@ -22,7 +22,7 @@ Required: SIGNAL_API_URL, SIGNAL_NUMBER, SIGNAL_GROUP_ID, X_API_KEY,
 X_API_KEY_SECRET, X_ACCESS_TOKEN, X_ACCESS_TOKEN_SECRET, OPENROUTER_API_KEY.
 Search uses Anthropic native web search through OpenRouter.
 Live submission also needs SUPABASE_URL and SUPABASE_SERVICE_KEY,
-and migration 093 applied before both this worker and the scheduled pipeline.
+and migration 100 applied before both this worker and the scheduled pipeline.
 
 State: SIGNAL_STATE_PATH (default output/signal-bot[-dry-run].sqlite).
 Existing personal account: SIGNAL_ACCEPT_SELF_MESSAGES=true handles your phone's
@@ -51,19 +51,24 @@ async function main(): Promise<void> {
   const scope = JSON.stringify([config.number, config.groupId, process.env.SUPABASE_URL ?? "", dryRun]);
   const store = new SignalStore(statePath, scope);
   let transport: SignalTransport | undefined;
+  let retryTimer: ReturnType<typeof setInterval> | undefined;
   try {
     store.acquireWorker();
     let submit: ConstructorParameters<typeof SignalBot>[0]["submit"] = async () => {
       throw new Error("Dry-run submission must never be called.");
     };
+    let cancelSubmission: ConstructorParameters<typeof SignalBot>[0]["cancelSubmission"];
+    let registerSubmission: ConstructorParameters<typeof SignalBot>[0]["registerSubmission"];
     if (!dryRun) {
       const { SupabaseLogger } = await import("../api/supabaseClient");
-      const { createSignalSubmitter } = await import("./submission");
+      const { createSignalSubmitter, createSignalRegistrar } = await import("./submission");
       const logger = new SupabaseLogger();
       // A missing migration or unreadable quota must stop startup before the
       // worker receives approvals it cannot safely carry out.
       await logger.getNoteSubmissionCapacity();
       submit = createSignalSubmitter(logger);
+      registerSubmission = createSignalRegistrar(logger);
+      cancelSubmission = (conversation) => logger.cancelSignalSubmission(conversation.tweetId);
     }
     const onError = (error: unknown) => console.error("[signal]", error instanceof Error ? error.message : "Operation failed");
     transport = new SignalTransport(config, { onError });
@@ -72,6 +77,8 @@ async function main(): Promise<void> {
       drafting: createDraftingAdapter(),
       send: (text, quote) => transport!.send(text, quote),
       submit,
+      cancelSubmission,
+      registerSubmission,
       dryRun,
       onError,
     });
@@ -79,6 +86,7 @@ async function main(): Promise<void> {
     const stop = async () => {
       if (stopping) return;
       stopping = true;
+      clearInterval(retryTimer);
       console.log("[signal] Finishing accepted messages before shutdown…");
       try { await transport!.close(bot.drain()); }
       finally {
@@ -91,10 +99,22 @@ async function main(): Promise<void> {
     process.once("SIGTERM", () => { void stop(); });
     // Queue durable pending messages first, but keep receiving while their
     // research runs. Processing messages from a crash are deliberately skipped.
-    void bot.resumePending();
+    void bot.resumePending().catch(onError);
     transport.connect((message) => bot.handle(message));
+    if (!dryRun) {
+      let retrying = false;
+      const retry = async () => {
+        if (stopping || retrying) return;
+        retrying = true;
+        try { await bot.retryQueued(); }
+        catch (error) { onError(error); }
+        finally { retrying = false; }
+      };
+      retryTimer = setInterval(() => { void retry(); }, 30_000);
+    }
     console.log(`[signal] Listening to the configured group${dryRun ? " (dry run: X submissions disabled)" : ""}.`);
   } catch (error) {
+    clearInterval(retryTimer);
     await transport?.close();
     store.close();
     throw error;

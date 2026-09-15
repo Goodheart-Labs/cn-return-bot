@@ -73,13 +73,12 @@ import { generateMisinfoCandidates } from "../pipeline/misinfo-monitoring/genera
 import type { MisinfoTopicId } from "../pipeline/misinfo-monitoring/topicIds";
 import { submitCandidates, misinfoReserveRemaining, type Candidate, type SubmitOptions } from "../pipeline/orchestration/submitCandidates";
 import { computeMaxPosts } from "../pipeline/orchestration/computeMaxPosts";
-import { probeWritingLimitAfterCooldown } from "../pipeline/orchestration/writingLimit";
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
 import { autoOpenInDashboard } from "../local/dashboardAutoOpen";
 import { withForcedPicks } from "../pipeline/ab-testing/abTests";
 import { activeScorer, pickRankingPolicy } from "../pipeline/ranking/policy";
 import { barEnabled, barFor, estimateWindow, type Window } from "../pipeline/capacity/window";
-import { automaticGenerationPreflight } from "../pipeline/capacity/submissionReserve";
+import { automaticGenerationPreflight, type SubmissionCapacity } from "../pipeline/capacity/submissionReserve";
 
 function postUrl(postId: string): string {
   return `https://x.com/i/status/${postId}`;
@@ -180,9 +179,8 @@ async function main() {
       console.log("[pipeline] Supabase logging disabled (env vars not set)");
     }
 
-    // Check the reserve before paid generation or the old cap-probing path.
-    // Signal and another worker can still spend capacity after this snapshot,
-    // so every actual submission also takes its final atomic database claim.
+    // Submission still takes an atomic claim after this generation snapshot.
+    let capacity: SubmissionCapacity | undefined;
     if (!isLocal) {
       const preflight = await automaticGenerationPreflight(supabaseLogger);
       if (!preflight.allowed) {
@@ -191,6 +189,7 @@ async function main() {
         await closeBrowser();
         return;
       }
+      capacity = preflight.capacity;
     }
 
     // Clear the in_progress rows left behind by an earlier run that was killed
@@ -207,18 +206,9 @@ async function main() {
 
     let { maxPosts } = isLocal
       ? { maxPosts: MAX_POSTS_LOCAL }
-      : supabaseLogger
-        ? await computeMaxPosts(supabaseLogger)
+      : capacity
+        ? computeMaxPosts(capacity)
         : { maxPosts: MAX_POSTS_FALLBACK };
-
-    // At this point we would skip the run because the writing limit is reached.
-    // X's cap may have risen since it last rejected us. So once the cooldown has
-    // elapsed we probe it. We nudge the limit up by one and work out the budget
-    // again, so that we attempt a note instead of skipping outright.
-    if (maxPosts === 0 && supabaseLogger) {
-      const probed = await probeWritingLimitAfterCooldown(supabaseLogger);
-      if (probed) ({ maxPosts } = await computeMaxPosts(supabaseLogger));
-    }
 
     if (maxPosts === 0) {
       console.log("[pipeline] Skipping — writing limit reached for the current 24h window");

@@ -3,7 +3,7 @@ import type { SupabaseLogger } from "../api/supabaseClient";
 import * as api from "../api/submitNote";
 import * as sharedSubmission from "../pipeline/orchestration/submitNoteForTweet";
 import { joinNoteWithSources } from "../pipeline/utils/noteLength";
-import { createSignalSubmitter } from "./submission";
+import { createSignalRegistrar, createSignalSubmitter } from "./submission";
 import type { Conversation } from "./store";
 
 function conversationFixture(): Conversation {
@@ -26,11 +26,14 @@ function conversationFixture(): Conversation {
 
 function loggerFixture() {
   const methods = {
+    queueSignalSubmission: mock(async (_tweetId: string): ReturnType<SupabaseLogger["queueSignalSubmission"]> => null),
+    cancelSignalSubmission: mock(async (_tweetId: string) => {}),
+    getNoteSubmissionCapacity: mock(async () => ({ cap: 10, used24h: 7, inFlight: 0, remaining: 3, reserve: 0, canSubmit: true, probe: false, signalQueued: 1, nextAttemptAt: null })),
     bulkInsertNewTweets: mock(async (_posts: unknown) => {}),
     createPipelineRun: mock(async (_data: unknown) => "pipeline-run-id"),
     completePipelineRun: mock(async (_id: string, _data: unknown) => {}),
     claimNoteSubmission: mock(async () => ({ status: "claimed", claimId: "claim-id",
-      capacity: { cap: 10, used24h: 7, inFlight: 0, remaining: 3, reserve: 3 } })),
+      capacity: { cap: 10, used24h: 7, inFlight: 0, remaining: 3, reserve: 0, canSubmit: true, probe: false, signalQueued: 0, nextAttemptAt: null } })),
     finishNoteSubmissionClaim: mock(async () => {}),
     logNoteSubmission: mock(async () => {}),
     markCandidateSubmitted: mock(async () => {}),
@@ -44,6 +47,78 @@ function loggerFixture() {
 afterEach(() => mock.restore());
 
 describe("approved Signal submission", () => {
+  test("registration alone publishes priority without preparing a run or posting", async () => {
+    const { logger, queueSignalSubmission, createPipelineRun } = loggerFixture();
+    const submit = spyOn(sharedSubmission, "submitNoteForTweet");
+    expect(await createSignalRegistrar(logger)(conversationFixture())).toBeNull();
+    expect(queueSignalSubmission).toHaveBeenCalledTimes(1);
+    expect(createPipelineRun).not.toHaveBeenCalled();
+    expect(submit).not.toHaveBeenCalled();
+  });
+
+  test("a known submission settles locally before capacity checking or run preparation", async () => {
+    const { logger, queueSignalSubmission, getNoteSubmissionCapacity, createPipelineRun } = loggerFixture();
+    const capacity = await getNoteSubmissionCapacity();
+    getNoteSubmissionCapacity.mockClear();
+    queueSignalSubmission.mockResolvedValue({ status: "submission_busy", reason: "submitted", capacity });
+    const submit = spyOn(sharedSubmission, "submitNoteForTweet");
+    expect(await createSignalSubmitter(logger)(conversationFixture()))
+      .toMatchObject({ status: "submission_busy", reason: "submitted" });
+    expect(getNoteSubmissionCapacity).not.toHaveBeenCalled();
+    expect(createPipelineRun).not.toHaveBeenCalled();
+    expect(submit).not.toHaveBeenCalled();
+  });
+
+  test("a full account registers priority without preparing or submitting another run", async () => {
+    const { logger, getNoteSubmissionCapacity, queueSignalSubmission, createPipelineRun, cancelSignalSubmission } = loggerFixture();
+    getNoteSubmissionCapacity.mockResolvedValue({ cap: 10, used24h: 10, inFlight: 0, remaining: 0,
+      reserve: 0, canSubmit: false, probe: false, signalQueued: 1, nextAttemptAt: null });
+    const submit = spyOn(sharedSubmission, "submitNoteForTweet");
+    expect((await createSignalSubmitter(logger)(conversationFixture())).status).toBe("capacity_reserved");
+    expect(queueSignalSubmission).toHaveBeenCalledWith("1234567890123456789");
+    expect(createPipelineRun).not.toHaveBeenCalled();
+    expect(submit).not.toHaveBeenCalled();
+    expect(cancelSignalSubmission).not.toHaveBeenCalled();
+  });
+
+  test("queue registration failure defers safely without an X attempt", async () => {
+    const { logger, queueSignalSubmission, createPipelineRun } = loggerFixture();
+    queueSignalSubmission.mockRejectedValue(new Error("database unavailable"));
+    const submit = spyOn(sharedSubmission, "submitNoteForTweet");
+    expect((await createSignalSubmitter(logger)(conversationFixture())).status).toBe("deferred");
+    expect(createPipelineRun).not.toHaveBeenCalled();
+    expect(submit).not.toHaveBeenCalled();
+  });
+
+  test("retries reuse the persisted run and approved text after a limit rejection", async () => {
+    const conversation = conversationFixture();
+    const { logger, createPipelineRun, cancelSignalSubmission } = loggerFixture();
+    const submit = spyOn(sharedSubmission, "submitNoteForTweet")
+      .mockResolvedValueOnce({ status: "daily_limit" })
+      .mockResolvedValueOnce({ status: "submitted", noteId: "note" });
+    const callbacks = { onPrepared: (id: string) => { conversation.submissionRunId = id; }, onSubmitting: () => {} };
+    const attempt = createSignalSubmitter(logger);
+    expect((await attempt(conversation, callbacks)).status).toBe("daily_limit");
+    expect(cancelSignalSubmission).not.toHaveBeenCalled();
+    expect((await attempt(conversation, callbacks)).status).toBe("submitted");
+    expect(createPipelineRun).toHaveBeenCalledTimes(1);
+    expect(submit.mock.calls.map(([candidate]) => candidate.tweetResult.pipelineRunId))
+      .toEqual(["pipeline-run-id", "pipeline-run-id"]);
+    expect(submit.mock.calls.map(([candidate]) => candidate.tweetResult.noteText))
+      .toEqual([conversation.approval!.text, conversation.approval!.text]);
+    expect(cancelSignalSubmission).toHaveBeenCalledTimes(1);
+  });
+
+  test("persists the prepared run and submitting state before the actual X call", async () => {
+    const { logger, queueSignalSubmission } = loggerFixture();
+    const order: string[] = [];
+    queueSignalSubmission.mockImplementation(async () => { order.push("priority"); return null; });
+    spyOn(api, "submitNote").mockImplementation(async () => { order.push("X"); return { data: { id: "note" } }; });
+    const callbacks = { onPrepared: () => { order.push("prepared"); }, onSubmitting: () => { order.push("submitting"); } };
+    expect((await createSignalSubmitter(logger)(conversationFixture(), callbacks)).status).toBe("submitted");
+    expect(order).toEqual(["priority", "prepared", "submitting", "X"]);
+  });
+
   test("passes the exact approved text and source order through the Signal lane", async () => {
     const fixture = conversationFixture();
     const { logger } = loggerFixture();
@@ -91,7 +166,7 @@ describe("approved Signal submission", () => {
     if (stage === "completion") completePipelineRun.mockRejectedValue(new Error("DB unavailable"));
     const submit = spyOn(sharedSubmission, "submitNoteForTweet").mockImplementation(async () => { throw new Error("Must not submit"); });
     const result = await createSignalSubmitter(logger)(conversationFixture());
-    expect(result.status).toBe("error");
+    expect(result.status).toBe("deferred");
     expect(submit).not.toHaveBeenCalled();
   });
 
@@ -124,12 +199,12 @@ describe("approved Signal submission", () => {
     expect(markCandidateSubmitted).toHaveBeenCalledTimes(1);
   });
 
-  test("logging a rejected attempt cannot replace the actual submission outcome", async () => {
+  test("a daily-limit rejection leaves the prepared run queued", async () => {
     const { logger, completePipelineRun } = loggerFixture();
     completePipelineRun.mockResolvedValueOnce(undefined).mockRejectedValueOnce(new Error("Outcome logging unavailable"));
     spyOn(console, "warn").mockImplementation(() => {});
     spyOn(sharedSubmission, "submitNoteForTweet").mockResolvedValue({ status: "daily_limit" });
     expect(await createSignalSubmitter(logger)(conversationFixture())).toEqual({ status: "daily_limit" });
-    expect(completePipelineRun).toHaveBeenCalledTimes(2);
+    expect(completePipelineRun).toHaveBeenCalledTimes(1);
   });
 });

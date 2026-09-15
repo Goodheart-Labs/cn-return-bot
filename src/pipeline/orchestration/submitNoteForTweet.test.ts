@@ -5,7 +5,7 @@ import type { SubmissionAdmission, SubmissionClaimOutcome } from "../capacity/su
 import type { Candidate } from "./submitCandidates";
 import { submitNoteForTweet } from "./submitNoteForTweet";
 
-const capacity = { cap: 10, used24h: 6, inFlight: 0, remaining: 4, reserve: 3 };
+const capacity = { cap: 10, used24h: 6, inFlight: 0, remaining: 4, reserve: 0, canSubmit: true, probe: false, signalQueued: 0, nextAttemptAt: null };
 const candidate: Candidate = {
   post: { id: "1234", author_id: "author", created_at: new Date().toISOString(), text: "claim", media: [] },
   tweetResult: { pipelineResult: null, outcome: "candidate", finalStage: "evaluation", scores: [], pipelineRunId: "run", noteText: "A sourced correction." },
@@ -41,6 +41,15 @@ beforeEach(() => {
 afterEach(() => mock.restore());
 
 describe("shared note submission admission", () => {
+  test("a message received during preparation can defer the claimed note before X", async () => {
+    const { logger, finishNoteSubmissionClaim } = loggerMock();
+    const submit = spyOn(api, "submitNote");
+    const result = await submitNoteForTweet(candidate, logger, { lane: "signal", onSubmitting: () => false });
+    expect(result.status).toBe("deferred");
+    expect(submit).not.toHaveBeenCalled();
+    expect(finishNoteSubmissionClaim).toHaveBeenCalledWith("claim-id", "rejected", null, "signal_submission_deferred");
+  });
+
   test("claims automatic capacity before X and records acceptance before notes logging", async () => {
     const { logger, calls, claimNoteSubmission, finishNoteSubmissionClaim } = loggerMock();
     const submit = spyOn(api, "submitNote").mockImplementation(async () => { calls.push("X"); return { data: { id: "note" } }; });
@@ -59,8 +68,8 @@ describe("shared note submission admission", () => {
   });
 
   test.each([
-    { status: "capacity_reserved", reason: "reserve", capacity },
-    { status: "capacity_reserved", reason: "unknown_capacity", capacity: { ...capacity, cap: null, remaining: null } },
+    { status: "capacity_reserved", reason: "signal_priority", capacity },
+    { status: "capacity_reserved", reason: "capacity_exhausted", capacity: { ...capacity, cap: null, remaining: null } },
     { status: "submission_busy", reason: "uncertain", capacity },
   ] as Exclude<SubmissionAdmission, { status: "claimed" }>[])("never calls X when admission returns %j", async (admission) => {
     const { logger, claimNoteSubmission, finishNoteSubmissionClaim } = loggerMock();
@@ -75,8 +84,8 @@ describe("shared note submission admission", () => {
     const { logger, claimNoteSubmission } = loggerMock();
     claimNoteSubmission.mockRejectedValue(new Error("database unavailable"));
     const submit = spyOn(api, "submitNote");
-    expect((await submitNoteForTweet(candidate, logger)).status).toBe("error");
-    expect((await submitNoteForTweet(candidate, logger, { lane: "signal" })).status).toBe("error");
+    expect((await submitNoteForTweet(candidate, logger)).status).toBe("deferred");
+    expect((await submitNoteForTweet(candidate, logger, { lane: "signal" })).status).toBe("deferred");
     expect(submit).not.toHaveBeenCalled();
   });
 
@@ -96,13 +105,13 @@ describe("shared note submission admission", () => {
     expect(finishNoteSubmissionClaim).toHaveBeenCalledWith("claim-id", "uncertain", null, "No note ID in X response");
   });
 
-  test("a daily-limit rejection releases the claim and preserves observed limit updates", async () => {
+  test("a daily-limit rejection settles with its reason so admission can record the limit atomically", async () => {
     const { logger, finishNoteSubmissionClaim, setPipelineState } = loggerMock();
     spyOn(api, "submitNote").mockRejectedValue({ response: { status: 403, data: { detail: "daily limit exceeded" } } });
     expect(await submitNoteForTweet(candidate, logger)).toEqual({ status: "daily_limit" });
     expect(finishNoteSubmissionClaim.mock.calls[0]?.[1]).toBe("rejected");
-    expect(setPipelineState).toHaveBeenCalledWith("writing_limit", "7");
-    expect(setPipelineState).toHaveBeenCalledWith("limit_hit_value", "7");
+    expect(finishNoteSubmissionClaim).toHaveBeenCalledWith("claim-id", "rejected", null, '{"detail":"daily limit exceeded"}');
+    expect(setPipelineState).not.toHaveBeenCalled();
   });
 
   test("an ineligible rejection releases capacity and expires the candidate", async () => {

@@ -4,7 +4,7 @@
 
 import type { SupabaseLogger } from "../../api/supabaseClient";
 import type { Candidate } from "./submitCandidates";
-import { bumpWritingLimitFromSuccess, recordDailyLimitHit } from "./writingLimit";
+import { bumpWritingLimitFromSuccess } from "./writingLimit";
 import { isUncertainSubmissionError, type SubmissionAdmission, type SubmissionClaimOutcome, type SubmissionLane } from "../capacity/submissionReserve";
 
 export type SubmissionResult =
@@ -13,12 +13,13 @@ export type SubmissionResult =
   | { status: "expired"; reason: string }
   | Exclude<SubmissionAdmission, { status: "claimed" }>
   | { status: "uncertain"; message: string }
+  | { status: "deferred"; message: string }
   | { status: "error"; message: string };
 
 export async function submitNoteForTweet(
   candidate: Candidate,
   logger: SupabaseLogger,
-  options: { lane?: SubmissionLane } = {},
+  options: { lane?: SubmissionLane; onSubmitting?: () => boolean | void } = {},
 ): Promise<SubmissionResult> {
   const { post, tweetResult } = candidate;
   const tweetId = post.id;
@@ -33,7 +34,7 @@ export async function submitNoteForTweet(
     admission = await logger.claimNoteSubmission(tweetId, options.lane ?? "automatic");
   } catch (err) {
     console.error("[submit] Capacity admission failed; no X request sent:", err);
-    return { status: "error", message: "Submission capacity unavailable; no X request sent" };
+    return { status: "deferred", message: "Submission capacity unavailable; no X request sent" };
   }
   if (admission.status !== "claimed") return admission;
   const claimId = admission.claimId;
@@ -49,6 +50,10 @@ export async function submitNoteForTweet(
 
   try {
     const { submitNote } = await import("../../api/submitNote");
+    if (options.onSubmitting?.() === false) {
+      await finishClaim("rejected", null, "signal_submission_deferred");
+      return { status: "deferred", message: "A received message will be handled before this queued submission." };
+    }
     const response = await submitNote(tweetId, {
       classification: "misinformed_or_potentially_misleading",
       misleading_tags: candidate.misleadingTags ?? ["disputed_claim_as_fact"],
@@ -113,11 +118,6 @@ export async function submitNoteForTweet(
     await finishClaim("rejected", null, errorText);
 
     if (errorText.toLowerCase().includes("daily limit")) {
-      try {
-        await recordDailyLimitHit(logger);
-      } catch (stateErr) {
-        console.warn("[submit] Failed to record limit hit state:", stateErr);
-      }
       return { status: "daily_limit" };
     }
 
