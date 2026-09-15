@@ -13,6 +13,8 @@
  * SERPER_API_KEY must be set. The account is billed per search.
  */
 
+import { setTimeout as sleep } from "node:timers/promises";
+
 const SERPER_URL = "https://google.serper.dev/search";
 const DEFAULT_MAX_RESULTS = 10;
 const FETCH_TIMEOUT_MS = 15_000;
@@ -38,8 +40,6 @@ export class SearchUnavailableError extends Error {
   }
 }
 
-const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
-
 interface SerperOrganicResult {
   title?: string;
   link?: string;
@@ -47,22 +47,27 @@ interface SerperOrganicResult {
   date?: string;
 }
 
-export async function fetchSearchResults(query: string): Promise<SearchResult[]> {
+export async function fetchSearchResults(query: string, signal?: AbortSignal): Promise<SearchResult[]> {
+  signal?.throwIfAborted();
   const key = process.env.SERPER_API_KEY;
   if (!key) throw new Error("SERPER_API_KEY missing");
 
   let lastFailure = "";
   for (let attempt = 0; attempt <= RETRY_BACKOFF_MS.length; attempt++) {
-    if (attempt > 0) await sleep(RETRY_BACKOFF_MS[attempt - 1]!);
+    if (attempt > 0) await sleep(RETRY_BACKOFF_MS[attempt - 1]!, undefined, { signal });
+    signal?.throwIfAborted();
     let response: Response;
     try {
       response = await fetch(SERPER_URL, {
         method: "POST",
         headers: { "X-API-KEY": key, "Content-Type": "application/json" },
         body: JSON.stringify({ q: query, num: DEFAULT_MAX_RESULTS }),
-        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+        signal: signal
+          ? AbortSignal.any([signal, AbortSignal.timeout(FETCH_TIMEOUT_MS)])
+          : AbortSignal.timeout(FETCH_TIMEOUT_MS),
       });
     } catch (err) {
+      signal?.throwIfAborted();
       // A network error, or an AbortError from the timeout. Both are transient.
       lastFailure = (err as Error)?.message ?? "network error";
       continue;
@@ -77,6 +82,7 @@ export async function fetchSearchResults(query: string): Promise<SearchResult[]>
     if (!response.ok) throw new Error(`Serper HTTP ${response.status}`);
 
     const data: { organic?: SerperOrganicResult[] } = await response.json();
+    signal?.throwIfAborted();
     const seen = new Set<string>();
     const out: SearchResult[] = [];
     for (const r of data.organic ?? []) {

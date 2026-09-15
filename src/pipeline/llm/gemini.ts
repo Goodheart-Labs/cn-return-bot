@@ -19,7 +19,9 @@
  */
 
 import { GoogleGenAI } from "@google/genai";
+import { setTimeout as sleep } from "node:timers/promises";
 import { calculateGeminiCost, type TokenCost } from "../cost-tracking/pricing";
+import { getLlmAbortSignal } from "./llm";
 
 const MAX_RETRIES = 3;
 const INITIAL_BACKOFF_MS = 2000;
@@ -87,10 +89,6 @@ function isTransientError(err: any): boolean {
   return false;
 }
 
-async function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 /** One part of a multimodal user turn. It is either plain text or inline media
  *  bytes. */
 export type GeminiContentPart =
@@ -152,11 +150,16 @@ async function generateOnce(
   retryQuota: boolean,
 ): Promise<any> {
   const ai = getClient(key.apiKey);
+  const signal = getLlmAbortSignal();
   let lastError: any;
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    signal?.throwIfAborted();
     try {
-      return await ai.models.generateContent(request as any);
+      const response = await ai.models.generateContent(request as any);
+      signal?.throwIfAborted();
+      return response;
     } catch (err: any) {
+      signal?.throwIfAborted();
       lastError = err;
       const retryable = isTransientError(err) || (retryQuota && isQuotaError(err));
       if (attempt < MAX_RETRIES && retryable) {
@@ -164,7 +167,7 @@ async function generateOnce(
         console.warn(
           `[gemini] Retryable error (${key.tier} key, attempt ${attempt + 1}/${MAX_RETRIES + 1}, model: ${request.model}): ${err?.status ?? err?.code} ${err?.message?.slice(0, 200)}. Retrying in ${backoff}ms...`,
         );
-        await sleep(backoff);
+        await sleep(backoff, undefined, { signal });
         continue;
       }
       throw err;
@@ -202,14 +205,17 @@ async function runKeys(
   keys: GeminiKey[],
   retryQuotaOnLastKey: boolean,
 ): Promise<{ response: any; keyTier: "free" | "paid" }> {
+  const signal = getLlmAbortSignal();
   let lastError: any;
   for (let k = 0; k < keys.length; k++) {
+    signal?.throwIfAborted();
     const key = keys[k]!;
     const isLastKey = k === keys.length - 1;
     try {
       const response = await generateOnce(key, request, isLastKey && retryQuotaOnLastKey);
       return { response, keyTier: key.tier };
     } catch (err: any) {
+      signal?.throwIfAborted();
       lastError = err;
       if (!isLastKey && isQuotaError(err)) {
         console.warn(`[gemini] ${key.tier} key out of quota (model: ${request.model}); falling back to next key.`);

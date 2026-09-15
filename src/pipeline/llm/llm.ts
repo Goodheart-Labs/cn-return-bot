@@ -1,4 +1,20 @@
 import OpenAI from "openai";
+import { AsyncLocalStorage } from "node:async_hooks";
+import { setTimeout as delay } from "node:timers/promises";
+
+const abortSignalStorage = new AsyncLocalStorage<AbortSignal>();
+
+export function getLlmAbortSignal(): AbortSignal | undefined {
+  return abortSignalStorage.getStore();
+}
+
+/** Share cancellation within this task, preserving any parent deadline. */
+export async function withLlmAbortSignal<T>(signal: AbortSignal, fn: () => Promise<T>): Promise<T> {
+  const parent = getLlmAbortSignal();
+  const combined = parent ? AbortSignal.any([parent, signal]) : signal;
+  combined.throwIfAborted();
+  return abortSignalStorage.run(combined, fn);
+}
 
 const MAX_RETRIES = 3;
 const INITIAL_BACKOFF_MS = 1000;
@@ -43,27 +59,33 @@ export class AttemptDeadlineError extends Error {
   }
 }
 
-/** Runs `call` with an abort signal that fires after `deadlineMs`. Aborting the
- *  fetch also stops the body from being read, which is what cuts off a provider
- *  that sent its headers and is still trickling whitespace. */
+/** Abort the transport and bound the wait, even if the caller ignores abort. */
 export async function withDeadline<T>(
   deadlineMs: number,
   onTimeout: () => Error,
   call: (signal: AbortSignal) => Promise<T>,
 ): Promise<T> {
   const controller = new AbortController();
-  let timedOut = false;
-  const timer = setTimeout(() => {
-    timedOut = true;
-    controller.abort();
-  }, deadlineMs);
+  const parent = getLlmAbortSignal();
+  const signal = parent ? AbortSignal.any([parent, controller.signal]) : controller.signal;
+  signal.throwIfAborted();
+  const timer = setTimeout(() => controller.abort(onTimeout()), deadlineMs);
+  let onAbort: () => void;
+  const cancelled = new Promise<never>((_resolve, reject) => {
+    onAbort = () => reject(signal.reason);
+    signal.addEventListener("abort", onAbort, { once: true });
+  });
   try {
-    return await call(controller.signal);
-  } catch (err) {
-    if (timedOut) throw onTimeout();
-    throw err;
+    return await Promise.race([
+      Promise.resolve().then(() => {
+        signal.throwIfAborted();
+        return call(signal);
+      }),
+      cancelled,
+    ]);
   } finally {
     clearTimeout(timer);
+    signal.removeEventListener("abort", onAbort!);
   }
 }
 
@@ -134,8 +156,14 @@ function formatErrorDetail(err: any): string {
   return `${status} ${message}${bodyStr}`;
 }
 
-async function sleep(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+async function sleep(ms: number, signal?: AbortSignal) {
+  try {
+    await delay(ms, undefined, { signal });
+  } catch (err) {
+    // Preserve the deadline error instead of the timer's generic AbortError.
+    signal?.throwIfAborted();
+    throw err;
+  }
 }
 
 /** A 200 OK with empty content is a silent provider failure. OpenRouter sometimes
@@ -176,32 +204,40 @@ async function callWithRetry(
     },
   } as OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming;
   const deadlineMs = routing?.attemptDeadlineMs ?? DEFAULT_ATTEMPT_DEADLINE_MS;
+  const scopeSignal = getLlmAbortSignal();
 
   let lastError: any;
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    scopeSignal?.throwIfAborted();
     try {
       const result = await withDeadline(
         deadlineMs,
         () => new AttemptDeadlineError(params.model, deadlineMs),
-        (signal) => getClient().chat.completions.create(routedParams, { signal }),
+        // SDK retry sleeps cannot be aborted; use our loop within a shared budget.
+        (signal) => getClient().chat.completions.create(routedParams, {
+          signal,
+          ...(scopeSignal ? { maxRetries: 0 } : {}),
+        }),
       );
+      scopeSignal?.throwIfAborted();
       if (hasEmptyContent(result) && attempt < MAX_RETRIES) {
         const backoff = INITIAL_BACKOFF_MS * Math.pow(2, attempt);
         console.warn(
           `[llm] Empty content (attempt ${attempt + 1}/${MAX_RETRIES + 1}, model: ${params.model}). Retrying in ${backoff}ms...`
         );
-        await sleep(backoff);
+        await sleep(backoff, scopeSignal);
         continue;
       }
       return result;
     } catch (err: any) {
+      scopeSignal?.throwIfAborted();
       lastError = err;
       if (attempt < MAX_RETRIES && isRetryableError(err)) {
         const backoff = INITIAL_BACKOFF_MS * Math.pow(2, attempt);
         console.warn(
           `[llm] Retryable error (attempt ${attempt + 1}/${MAX_RETRIES + 1}, model: ${params.model}): ${formatErrorDetail(err)}. Retrying in ${backoff}ms...`
         );
-        await sleep(backoff);
+        await sleep(backoff, scopeSignal);
         continue;
       }
       if (err instanceof Error) {

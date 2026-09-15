@@ -24,7 +24,7 @@
  * through media analysis directly.
  */
 
-import { llm } from "./llm";
+import { getLlmAbortSignal, llm } from "./llm";
 import { type TokenCost } from "../cost-tracking/pricing";
 import {
   geminiFreeKey,
@@ -177,6 +177,7 @@ export async function tryGeminiFreeChat(
     };
     return { response, cost: result.cost };
   } catch (err: any) {
+    getLlmAbortSignal()?.throwIfAborted();
     if (!isQuotaError(err)) {
       console.warn(
         `[gemini-route] free-key call failed (model: ${(params as any).model}); falling back to OpenRouter: ${err?.message?.slice(0, 200)}`,
