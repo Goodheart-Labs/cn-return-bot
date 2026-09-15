@@ -76,7 +76,7 @@ import type { FeedType } from "./feedUrls";
 import { fixedRow, groupClose, groupOpen, tally } from "./logFormat";
 import { fetchAuthorPosts } from "./sources/lesswrong";
 import { fetchFeedPosts, fetchPostBodyText, htmlToText } from "./sources/substack";
-import { ensureYtDlp, fetchChannelVideos, fetchUploadDates } from "./sources/youtube";
+import { ensureYtDlp, fetchChannelFeedDates, fetchChannelVideos, fetchUploadDates } from "./sources/youtube";
 import { loadTopPosts } from "./topPosts";
 import type { SourceKind } from "./types";
 
@@ -130,6 +130,8 @@ interface FeedListing {
   /** Paid posts we cannot read. Counted rather than listed: Slow Boring alone
    *  used to print sixteen lines a cycle, which buried everything else. */
   paidPosts: number;
+  /** YouTube only: the channel id its RSS feed is keyed by. */
+  channelId?: string;
 }
 
 async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedListing> {
@@ -165,7 +167,7 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedListing> {
     }));
     return { sourceName: authorName, entries, paidPosts: 0 };
   }
-  const { channelName, videos } = fetchChannelVideos(feed.url, FEED_FETCH_LIMIT);
+  const { channelName, channelId, videos } = fetchChannelVideos(feed.url, FEED_FETCH_LIMIT);
   const entries = videos
     // A video with no duration is an upcoming premiere. It cannot be watched
     // yet, and enqueueing it would leave the item in a permanent error state.
@@ -177,7 +179,7 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedListing> {
       matchKey: v.videoId,
       label: v.title,
     }));
-  return { sourceName: channelName, entries, paidPosts: 0 };
+  return { sourceName: channelName, channelId, entries, paidPosts: 0 };
 }
 
 /** Feed listings fetched this process, keyed by feed URL. The admission walk
@@ -359,13 +361,19 @@ export async function triageQueue(): Promise<void> {
 const uploadDateCache = new Map<string, string>();
 
 /** Fills in the publication date of every YouTube entry in a listing that
- *  does not have one yet, in one batched call per channel. The listing itself
- *  carries no dates, and both the publishing rate and the recency rank need
- *  them. Videos yt-dlp could not date stay undated: they do not count towards
- *  the rate and they sort as newest, and the run says how many there were. */
-async function dateYoutubeEntries(entries: FeedEntry[]): Promise<void> {
-  const undated = entries.filter((e) => !e.publishedAt);
-  const toFetch = [...new Set(undated.filter((e) => !uploadDateCache.has(e.matchKey)).map((e) => e.url))];
+ *  does not have one yet. The listing itself carries no dates, and both the
+ *  publishing rate and the recency rank need them. The channel's RSS feed
+ *  answers for its fifteen newest videos in one direct request; only videos
+ *  the feed does not carry go to yt-dlp through the proxy. Videos neither
+ *  could date stay undated: they do not count towards the rate and they sort
+ *  as newest, and the run says how many there were. */
+async function dateYoutubeEntries(listing: FeedListing): Promise<void> {
+  const undated = listing.entries.filter((e) => !e.publishedAt);
+  const uncached = () => undated.filter((e) => !uploadDateCache.has(e.matchKey));
+  if (listing.channelId && uncached().length > 0) {
+    for (const [id, day] of await fetchChannelFeedDates(listing.channelId)) uploadDateCache.set(id, day);
+  }
+  const toFetch = [...new Set(uncached().map((e) => e.url))];
   if (toFetch.length > 0) {
     for (const [id, day] of await fetchUploadDates(toFetch)) uploadDateCache.set(id, day);
   }
@@ -401,29 +409,44 @@ interface Admitted<C, W> {
   walk: W;
 }
 
-/** Decides which of the ranked creators are walked this run: as many from
- *  the top as the paced budget can feed. A creator holding priority is always
- *  walked and counted first. Then attention creators are walked in order
- *  until the cumulative publishing rate reaches the affordable rate; the
- *  creator who crosses the line is still walked, so the budget is filled
- *  rather than left short, and nobody below the line is even listed. A
- *  creator whose walk returns null could not be listed and is skipped without
- *  counting. Exported for the tests, which inject the walk. */
-export async function admitCreators<C extends { prioritized: boolean }, W extends { rate: number }>(
+/** How many creators with posts to process one walk collects before it stops
+ *  looking further down the ranking. Jim's rule (2026-09-15): a run enqueues
+ *  one post, so five creators' worth of candidates is plenty. Without it a
+ *  cheap day admitted every ranked creator and the walk took 40 minutes. */
+const MAX_CREATORS_WITH_NEW_POSTS = 5;
+
+/** Why the walk stopped where it did, for the log. */
+type Cutoff = "budget" | "enough";
+
+/** Decides which of the ranked creators are walked this run. A creator
+ *  holding priority is always walked and counted first. Then attention
+ *  creators are walked in order until either the cumulative publishing rate
+ *  reaches the affordable rate or enough creators with posts to process have
+ *  been found; the creator who crosses the budget line is still walked, so
+ *  the budget is filled rather than left short, and nobody below the line is
+ *  even listed. A creator whose walk returns null could not be listed and is
+ *  skipped without counting. Exported for the tests, which inject the walk. */
+export async function admitCreators<C extends { prioritized: boolean }, W extends { rate: number; newPosts: number }>(
   ranked: C[],
   affordable: number,
   walk: (creator: C, index: number) => Promise<W | null>,
-): Promise<{ admitted: Admitted<C, W>[]; cumulativeRate: number; cutoffIndex: number | null }> {
+  maxWithNewPosts = MAX_CREATORS_WITH_NEW_POSTS,
+): Promise<{ admitted: Admitted<C, W>[]; cumulativeRate: number; cutoffIndex: number | null; cutoff: Cutoff | null }> {
   const admitted: Admitted<C, W>[] = [];
   let cumulativeRate = 0;
+  let withNewPosts = 0;
   for (const [index, creator] of ranked.entries()) {
-    if (!creator.prioritized && cumulativeRate >= affordable) return { admitted, cumulativeRate, cutoffIndex: index };
+    if (!creator.prioritized) {
+      if (cumulativeRate >= affordable) return { admitted, cumulativeRate, cutoffIndex: index, cutoff: "budget" };
+      if (withNewPosts >= maxWithNewPosts) return { admitted, cumulativeRate, cutoffIndex: index, cutoff: "enough" };
+    }
     const result = await walk(creator, index);
     if (!result) continue;
     admitted.push({ creator, index, walk: result });
     cumulativeRate += result.rate;
+    if (result.newPosts > 0) withNewPosts++;
   }
-  return { admitted, cumulativeRate, cutoffIndex: null };
+  return { admitted, cumulativeRate, cutoffIndex: null, cutoff: null };
 }
 
 /** Column widths of the walk table, fixed so rows can print as they arrive. */
@@ -485,14 +508,14 @@ export async function runAutoEnqueue(affordable: number, dryRun = false): Promis
   );
 
   let cumulativeSoFar = 0;
-  const walkCreator = async (creator: RankedCreator, feedIndex: number): Promise<{ rate: number } | null> => {
+  const walkCreator = async (creator: RankedCreator, feedIndex: number): Promise<{ rate: number; newPosts: number } | null> => {
     const feed: PriorityFeed = { project: creator.project_slug, type: creator.feed_type, url: creator.feed_url };
     let listing;
     try {
       listing = await cachedFeedEntries(feed);
       // Dated here rather than after the walk, because the rate needs the
       // dates now and the cutoff depends on the rate.
-      if (feed.type === "youtube") await dateYoutubeEntries(listing.entries);
+      if (feed.type === "youtube") await dateYoutubeEntries(listing);
     } catch (err: any) {
       // One creator whose feed will not load must not take the run down with
       // it. Readers can prioritise anyone, so an unreachable feed is ordinary
@@ -545,10 +568,10 @@ export async function runAutoEnqueue(affordable: number, dryRun = false): Promis
         publishedAt: entry.publishedAt,
       });
     }
-    return { rate };
+    return { rate, newPosts: unprocessed.length };
   };
 
-  const { admitted, cumulativeRate, cutoffIndex } = await admitCreators(ranked, affordable, walkCreator);
+  const { admitted, cumulativeRate, cutoffIndex, cutoff } = await admitCreators(ranked, affordable, walkCreator);
 
   const closing = groupClose();
   if (closing) console.log(closing);
@@ -559,9 +582,11 @@ export async function runAutoEnqueue(affordable: number, dryRun = false): Promis
   if (cutoffIndex !== null && last) {
     const below = ranked.length - cutoffIndex;
     const attention = rule === "readers" ? `${last.creator.regularReaders} regulars, ${last.creator.pages} pages` : `${last.creator.visits} visits`;
-    console.log(
-      `  cutoff: rank ${last.index + 1} ${last.creator.project_slug} (${attention}) is the last creator walked · ${below} below the line wait for a cheaper day`,
-    );
+    const why =
+      cutoff === "enough"
+        ? `${MAX_CREATORS_WITH_NEW_POSTS} creators already have posts to process, so the ${below} below the line wait for a later run`
+        : `${below} below the line wait for a cheaper day`;
+    console.log(`  cutoff: rank ${last.index + 1} ${last.creator.project_slug} (${attention}) is the last creator walked · ${why}`);
   } else if (byPriority > 0 && admitted.every((a) => a.creator.prioritized) && byPriority < ranked.length) {
     console.log(`  creators holding priority fill the budget by themselves · nobody is walked on attention today`);
   } else {

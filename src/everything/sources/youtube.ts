@@ -51,6 +51,9 @@ export interface ChannelVideo {
 export interface ChannelListing {
   /** The channel's display name. */
   channelName?: string;
+  /** The channel's id, UC followed by 22 characters, which the RSS feed is
+   *  keyed by. Missing when the playlist-level print did not run. */
+  channelId?: string;
   videos: ChannelVideo[];
 }
 
@@ -60,8 +63,8 @@ export interface ChannelListing {
  *  a premiere and for a video that has not aired yet. The listing carries no
  *  upload dates; fetchUploadDates supplies those in bulk. */
 export function fetchChannelVideos(channelUrl: string, limit: number): ChannelListing {
-  // The per-video lines print first, one per video. The playlist-level print
-  // runs once after them, so the channel name is always the last line.
+  // The per-video lines print first, one per video. The playlist-level prints
+  // run once after them, in order: the channel name, then the channel id.
   const out = execYtDlp(channelUrl, [
     "--flat-playlist",
     "--no-warnings",
@@ -71,6 +74,8 @@ export function fetchChannelVideos(channelUrl: string, limit: number): ChannelLi
     "%(id)s\t%(duration)s\t%(title)s",
     "--print",
     "playlist:%(channel)s",
+    "--print",
+    "playlist:%(channel_id)s",
     `${channelUrl.replace(/\/$/, "")}/videos`,
   ]);
   return parseChannelListing(out, channelUrl);
@@ -79,8 +84,11 @@ export function fetchChannelVideos(channelUrl: string, limit: number): ChannelLi
 /** Turns the listing's printed lines into videos. Exported for the tests. */
 export function parseChannelListing(out: string, channelUrl: string): ChannelListing {
   const lines = out.trim().split("\n").filter(Boolean);
-  // A video line always contains tabs and a channel name never does, so a
-  // tabbed last line means the playlist print did not run.
+  // A video line always contains tabs and the playlist-level lines never do.
+  // They come last, the channel id after the channel name, so a trailing line
+  // shaped like a channel id is the id, and a tabbed last line means the
+  // playlist prints did not run.
+  const channelId = CHANNEL_ID_RE.test(lines.at(-1) ?? "") ? lines.pop() : undefined;
   const channelName = lines.at(-1)?.includes("\t") ? undefined : ytDlpField(lines.pop() ?? "");
   const videos = lines.map((line) => {
     const [videoId = "", duration = "", ...titleParts] = line.split("\t");
@@ -97,7 +105,34 @@ export function parseChannelListing(out: string, channelUrl: string): ChannelLis
   if (videos.length === 0) {
     throw new Error(`yt-dlp listed zero videos for ${channelUrl} — it is probably outdated or blocked`);
   }
-  return { channelName, videos };
+  return { channelName, channelId, videos };
+}
+
+const CHANNEL_ID_RE = /^UC[\w-]{22}$/;
+
+/** The publish day, YYYY-MM-DD, of each of a channel's newest videos, keyed
+ *  by video id, read from the channel's RSS feed. YouTube serves that feed to
+ *  any address, no proxy needed, in well under a second, and it carries the
+ *  fifteen newest videos with their publish dates, Shorts included. The walk
+ *  needs exactly those dates for the publishing rate and the recency rank,
+ *  and until 2026-09-15 it paid yt-dlp through the proxy for every one of
+ *  them, which made a walk of 57 creators take 40 minutes. Videos older than
+ *  the feed still go through fetchUploadDates. */
+export async function fetchChannelFeedDates(channelId: string): Promise<Map<string, string>> {
+  const res = await fetch(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`);
+  if (!res.ok) throw new Error(`YouTube feed for channel ${channelId} answered ${res.status}`);
+  return parseChannelFeedDates(await res.text());
+}
+
+/** Reads video ids and publish days out of a channel feed. Exported for the tests. */
+export function parseChannelFeedDates(xml: string): Map<string, string> {
+  const dates = new Map<string, string>();
+  for (const [, entry] of xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)) {
+    const id = entry!.match(/<yt:videoId>([^<]+)<\/yt:videoId>/)?.[1];
+    const published = entry!.match(/<published>([^<]+)<\/published>/)?.[1];
+    if (id && published) dates.set(id, published.slice(0, 10));
+  }
+  return dates;
 }
 
 

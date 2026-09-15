@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { parseChannelListing } from "./youtube";
+import { parseChannelFeedDates, parseChannelListing } from "./youtube";
 
 /* The listing parser turns one yt-dlp call into candidates, so it is pinned
  * against the exact lines yt-dlp prints. The sample is Hank Green's /videos
@@ -40,7 +40,32 @@ describe("parseChannelListing", () => {
     expect(videos).toHaveLength(1);
   });
 
+  test("the channel id, printed after the name, is read and does not eat the name", () => {
+    const { channelName, channelId, videos } = parseChannelListing(`${printed}\nUCsXVk37bltHxD1rDPwtNM8Q`, "x");
+    expect(channelId).toBe("UCsXVk37bltHxD1rDPwtNM8Q");
+    expect(channelName).toBe("Hank Green");
+    expect(videos).toHaveLength(3);
+  });
+
   test("an empty listing fails loudly, because a videos tab is never empty", () => {
     expect(() => parseChannelListing("", "https://www.youtube.com/@x")).toThrow(/zero videos/);
+  });
+});
+
+describe("parseChannelFeedDates", () => {
+  test("reads each entry's video id and publish day from a channel feed", () => {
+    const xml = [
+      '<?xml version="1.0"?><feed xmlns:yt="http://www.youtube.com/xml/schemas/2015" xmlns="http://www.w3.org/2005/Atom">',
+      "<published>2013-01-12T01:40:14+00:00</published>",
+      "<entry><yt:videoId>abc12345678</yt:videoId><published>2026-09-14T17:00:03+00:00</published></entry>",
+      "<entry><yt:videoId>def12345678</yt:videoId><published>2026-09-10T17:00:08+00:00</published></entry>",
+      "<entry><yt:videoId>nodate12345</yt:videoId></entry>",
+      "</feed>",
+    ].join("\n");
+    // The feed's own published date, before the first entry, is not a video.
+    expect([...parseChannelFeedDates(xml)]).toEqual([
+      ["abc12345678", "2026-09-14"],
+      ["def12345678", "2026-09-10"],
+    ]);
   });
 });

@@ -13,13 +13,14 @@
  * then says so instead of spinning.
  *
  * The amounts are in USD because the cost column is in USD. The default cap is
- * about 50 EUR. Set EVERYTHING_DAILY_SPEND_CAP_USD and
- * EVERYTHING_REQUEST_RESERVE_USD to override.
+ * 50 USD a day, 10 USD of it reserved for reader requests (Jim, 2026-09-15).
+ * Set EVERYTHING_DAILY_SPEND_CAP_USD and EVERYTHING_REQUEST_RESERVE_USD to
+ * override.
  */
 
 import { fetchCostSinceUsd } from "./db";
 
-const DEFAULT_DAILY_SPEND_CAP_USD = 55;
+const DEFAULT_DAILY_SPEND_CAP_USD = 50;
 const DEFAULT_REQUEST_RESERVE_USD = 10;
 
 export const DAILY_SPEND_CAP_USD = Number(process.env.EVERYTHING_DAILY_SPEND_CAP_USD || DEFAULT_DAILY_SPEND_CAP_USD);
