@@ -43,9 +43,8 @@ import { normalizeFeedUrl } from "../everything-shared/pageUrls";
 import {
   MIN_PAGES_FOR_A_REGULAR_READER,
   MIN_REGULAR_READERS_TO_WALK_CREATOR,
+  VISIT_RANKING_WINDOW_DAYS,
 } from "../everything-shared/readers";
-
-export const VISIT_RANKING_WINDOW_DAYS = 14;
 
 /** The rule that applied before the reader hash existed, and that still applies
  *  until the two-reader proof arrives: how many visit rows inside the window a
