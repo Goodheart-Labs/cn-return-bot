@@ -9,6 +9,11 @@ import { normalizeFeedUrl } from "./pageUrls";
  *  the database rather than the database holding a copy. */
 export const MIN_PAGES_FOR_A_REGULAR_READER = 2;
 
+/** How many days back a creator's visits and readers count. The pipeline walks
+ *  creators on the numbers inside this window, and the dashboard shows each
+ *  checked post's author with the same numbers, so both read it from here. */
+export const VISIT_RANKING_WINDOW_DAYS = 14;
+
 /** How many regular readers a creator needs before the pipeline walks them on
  *  attention alone. Raise this to two when enough people use the extension for
  *  that to mean something. A creator holding priority is walked whatever their
