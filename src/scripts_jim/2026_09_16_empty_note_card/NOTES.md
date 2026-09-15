@@ -108,7 +108,14 @@ is exactly the kind of dispute the note should have carried.
 
 ## What the website shows
 
-See the section at the end, filled in from the headless check.
+The public website renders the same blank card. Opened headlessly at
+`https://goodheart-labs.github.io/cn-return-bot/notes/?project=joerogan&note=929b0389-aca3-47a6-bdfe-2a7c1833b209`
+(`website_screenshot.ts`, screenshots in `data/website_note*.png`), the card shows the
+context column, the video embed, the quote, the "Needs more ratings" badge, the three
+vote buttons and the action links. The note body paragraph is an empty `<p>` with no
+text node. There is no placeholder and no error state, so to a reader it is a live,
+votable note with no text. The next card in the feed, on the "satellite radio
+tomography" passage of the same video, is blank in the same way; it is one of the 28.
 
 ## Method
 
