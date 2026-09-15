@@ -52,7 +52,7 @@ import { extractYoutubeVideoId } from "../everything-shared/pageUrls";
 import { rankCreators, type RankedCreator } from "./creatorRanking";
 import { VISIT_RANKING_WINDOW_DAYS } from "../everything-shared/readers";
 import { MIN_PAGES_FOR_A_REGULAR_READER } from "../everything-shared/readers";
-import { affordablePostsPerDay, computeNextRun, MEAN_COST_FALLBACK_HOURS, MEAN_COST_MIN_POSTS, MEAN_COST_WINDOW_HOURS } from "./pacing";
+import { affordablePostsPerDay, computeNextRun } from "./pacing";
 import { FEED_BUDGET_USD } from "./spendCap";
 import {
   enqueueItems,
@@ -442,7 +442,7 @@ function priorityLeft(priorityUntil: string | null): string {
  *  the same snapshot the pacing rule reads. The command-line entry point uses
  *  this; the feed run passes the number it already computed. */
 export async function affordablePostsPerDayNow(): Promise<number> {
-  const snapshot = await fetchFeedPacing(MEAN_COST_WINDOW_HOURS, MEAN_COST_MIN_POSTS, MEAN_COST_FALLBACK_HOURS);
+  const snapshot = await fetchFeedPacing();
   return affordablePostsPerDay(computeNextRun(snapshot, FEED_BUDGET_USD).meanPostCostUsd, FEED_BUDGET_USD);
 }
 

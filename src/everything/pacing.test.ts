@@ -25,7 +25,6 @@ const snapshot = (overrides: Partial<FeedPacingSnapshot> = {}): FeedPacingSnapsh
   spentTodayUsd: 0,
   meanPostCostUsd: 3,
   samplePosts: 10,
-  sampleHours: 48,
   lastFeedStartedAt: null,
   ...overrides,
 });

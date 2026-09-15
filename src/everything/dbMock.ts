@@ -48,7 +48,6 @@ export const dbState = {
     spentTodayUsd: 0,
     meanPostCostUsd: 3 as number | null,
     samplePosts: 10,
-    sampleHours: 48,
     lastFeedStartedAt: null as Date | null,
   },
   /** Every recorded call, keyed by function name. */
@@ -67,7 +66,6 @@ export const resetDbState = () => {
     spentTodayUsd: 0,
     meanPostCostUsd: 3,
     samplePosts: 10,
-    sampleHours: 48,
     lastFeedStartedAt: null,
   };
   dbState.calls = {};

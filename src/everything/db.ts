@@ -803,21 +803,19 @@ export async function fetchCostSinceUsd(since: Date): Promise<number> {
 }
 
 /** The pacing snapshot from everything_feed_pacing (migration 096): the
- *  database clock, today's spend, the mean cost of a finished feed post over
- *  the recent window (or the fallback window when the recent one holds fewer
- *  than minPosts), and when the last feed-tier item started. One read, one
+ *  database clock, today's spend, the mean cost of the feed posts finished
+ *  today, and when the last feed-tier item started. One read, one
  *  clock, so the pacing rule never compares the runner's time with the database's. */
-export async function fetchFeedPacing(windowHours: number, minPosts: number, fallbackHours: number): Promise<FeedPacingSnapshot> {
+export async function fetchFeedPacing(): Promise<FeedPacingSnapshot> {
   const row = throwOnError(
     await getSupabaseClient()
-      .rpc("everything_feed_pacing", { window_hours: windowHours, min_posts: minPosts, fallback_hours: fallbackHours })
+      .rpc("everything_feed_pacing")
       .single(),
   ) as {
     db_now: string;
     spent_today_usd: number | string | null;
     mean_post_cost_usd: number | string | null;
     sample_posts: number | string;
-    sample_hours: number;
     last_feed_started_at: string | null;
   };
   return {
@@ -825,7 +823,6 @@ export async function fetchFeedPacing(windowHours: number, minPosts: number, fal
     spentTodayUsd: Number(row.spent_today_usd ?? 0),
     meanPostCostUsd: row.mean_post_cost_usd === null ? null : Number(row.mean_post_cost_usd),
     samplePosts: Number(row.sample_posts),
-    sampleHours: row.sample_hours,
     lastFeedStartedAt: row.last_feed_started_at ? new Date(row.last_feed_started_at) : null,
   };
 }

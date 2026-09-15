@@ -2,8 +2,10 @@
  * When the next feed run should start, so the day's budget is spread across
  * the UTC day instead of spent in a burst after midnight.
  *
- * The rule is the one Jim asked for. Take the average cost of a recent post,
- * the money left in today's feed budget, and the hours left in the day. The
+ * The rule is the one Jim asked for. Take the average cost of the feed posts
+ * finished today, the money left in today's feed budget, and the hours left in
+ * the day. Only today's posts count, because the pipeline gets cheaper in
+ * steps and yesterday's posts would overstate what a post costs now. The
  * interval between posts is hours left times the average cost divided by the
  * money left: that spacing makes the money last until midnight. The next run
  * is due that interval after the last feed post started. Every run computes
@@ -26,14 +28,10 @@
 
 import { duration, money } from "./logFormat";
 
-/** The window the mean post cost is taken over. */
-export const MEAN_COST_WINDOW_HOURS = 48;
-/** Fewer finished posts than this in the window, and the mean is taken over
- *  the fallback window instead, so one or two posts cannot set the day's pace. */
-export const MEAN_COST_MIN_POSTS = 5;
-export const MEAN_COST_FALLBACK_HOURS = 7 * 24;
-/** Used when no feed post finished in either window. About the mean of the
- *  week before pacing shipped. */
+/** Used until the first feed post of the UTC day has finished. About the
+ *  mean of the week before pacing shipped. It matters little: the first post
+ *  of a day is due at the day's start whenever the previous day was spent,
+ *  and from the moment it finishes the mean is that post's real cost. */
 export const DEFAULT_MEAN_POST_COST_USD = 3.5;
 
 /** How long a run that found nothing to process sets the alarm for. Without
@@ -50,10 +48,9 @@ const DAY_MS = 24 * HOUR_MS;
 export interface FeedPacingSnapshot {
   dbNow: Date;
   spentTodayUsd: number;
-  /** Null when no feed post finished in either window. */
+  /** Null until the first feed post of the UTC day has finished. */
   meanPostCostUsd: number | null;
   samplePosts: number;
-  sampleHours: number;
   /** Null until any feed-tier item has ever entered processing. */
   lastFeedStartedAt: Date | null;
 }
@@ -133,8 +130,8 @@ const utcClock = (d: Date) => d.toISOString().slice(11, 16) + " UTC";
  *  explainable from the log alone. */
 export function describePacing(nextRun: NextRun, snapshot: FeedPacingSnapshot, feedBudgetUsd: number): string {
   const sample = nextRun.meanIsDefault
-    ? `default, no feed post finished in the last ${snapshot.sampleHours}h`
-    : `over ${snapshot.samplePosts} post${snapshot.samplePosts === 1 ? "" : "s"} in the last ${snapshot.sampleHours}h`;
+    ? "default, no feed post finished today yet"
+    : `over ${snapshot.samplePosts} post${snapshot.samplePosts === 1 ? "" : "s"} finished today`;
   const lastStart = snapshot.lastFeedStartedAt ? utcClock(snapshot.lastFeedStartedAt) : "never";
   const lines = [
     `PACING · spent ${money(snapshot.spentTodayUsd)} today, ${money(nextRun.moneyLeftUsd)} of the ${money(feedBudgetUsd)} feed budget left, ${nextRun.hoursLeft.toFixed(1)}h left in the UTC day`,
