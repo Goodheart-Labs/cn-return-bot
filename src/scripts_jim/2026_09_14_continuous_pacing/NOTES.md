@@ -45,11 +45,12 @@ hours           0    1    2    3    4    5    6    7    8    9   10   11   12   
 
 ## What it shows
 
-- The real rows put almost all money in the hours right after midnight UTC (Sep 08, 10, 11) or in one evening burst (Sep 09). The paced rows spread the same posts over the day: Sep 12 starts 15 posts between 00:00 and 21:00, Sep 09 fills the evening from the moment its first post existed.
-- When a day closes with its budget spent, the next alarm is midnight, and the first post of the new day starts at 00:01. That is the 19.3 USD post at hour 0 on Sep 11 in both rows. It is one post, not a burst: the alarm after it was three and a half hours out.
-- On Sep 11 the alarm started four posts, then the 50.8 USD reader page at noon used up the feed budget and the next run stopped at the cap. That is the existing budget rule, not pacing: reader spend counts against the day, and pacing does not protect the feed from it.
-- Days that were cheap in reality (Sep 13, Sep 14) come out the same under pacing, spread a little wider. With more money than posts, the rule never holds anything back for long; the idle runs are the pipeline looking for new posts every 30 minutes and finding none.
-- A post outlasts its interval about once a day, and the next run then starts at once. The line "n of them outlasted their interval" counts those.
+- The real rows put almost all money in the hours right after midnight UTC (Sep 08, 10, 11) or in one evening burst (Sep 09). The paced rows spread the same posts over the day: Sep 13 starts 27 posts across the whole day, Sep 09 fills the evening from the moment its first post existed.
+- When a day closes with its budget spent, the next alarm is midnight, and the first post of the new day starts at 00:01. It is one post, not a burst.
+- The mean is over the posts finished the same day, so the first post of a day sets the pace until the second one corrects it. On the expensive days of this week that shows: on Sep 10 a 20 USD first post made the rule expect 20 USD posts, it waited most of the day, and only two posts ran. With the cheap pipeline that merged on Sep 15 posts cost a fraction of that and are far more alike, which is why Jim chose to ignore yesterday's prices.
+- On Sep 11 the 50.8 USD reader page at noon used up the feed budget and the next run stopped at the cap. That is the existing budget rule, not pacing: reader spend counts against the day, and pacing does not protect the feed from it.
+- Days that were cheap in reality (Sep 14) come out the same under pacing, spread a little wider. With more money than posts, the rule never holds anything back for long; the idle runs are the pipeline looking for new posts every 30 minutes and finding none.
+- A post outlasts its interval a few times a day on a busy day, and the next run then starts at once. The line "n of them outlasted their interval" counts those.
 
 ## Caveats of the replay
 
