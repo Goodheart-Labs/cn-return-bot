@@ -217,7 +217,7 @@ export async function processQueuedItem(item: EverythingItem): Promise<"done" | 
 }
 
 /** Takes the next feed-tier item and processes it. "empty" means nothing was
- *  waiting. The Actions feed run calls this once per pacing-gate opening;
+ *  waiting. The Actions feed run calls this once per run;
  *  reader-requested items are never taken here, the intake service on the
  *  machine owns that tier. */
 export async function processNextFeedItem(): Promise<"done" | "capped" | "error" | "empty"> {

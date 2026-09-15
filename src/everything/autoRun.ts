@@ -1,12 +1,18 @@
 /**
- * Runs the paced feed loop. This is what the Everything Priority Feeds
- * workflow runs, every 30 minutes. Each cycle checks that the machine's
- * services are well, tidies the queue, and then asks the pacing gate whether a
- * feed post may start (see pacing.ts). When it may, the cycle walks the
- * creators for one new post if nothing is waiting, and processes exactly one
- * feed item. When it may not, the run waits in place if the gate opens soon,
- * and otherwise leaves the rest to a later dispatch. A long item is never cut
- * short. It runs to completion, and the gate is asked again afterwards.
+ * One feed run. This is what the Everything Priority Feeds workflow runs, and
+ * the database starts it when the alarm the previous run set has come
+ * (everything_feed_schedule, migration 097). A run is a straight line: check
+ * that the machine's services are well, tidy the queue, process one feed
+ * item, set the alarm for the next run (see pacing.ts), and exit. It never
+ * waits and never does a second item. A long item is never cut short; the
+ * next alarm is measured from its start, so a post that outlasts its interval
+ * is followed at once.
+ *
+ * A run does not ask whether it may start. It starts because its time came,
+ * because someone started it by hand, or because the database's backstop
+ * fired after a run that never set its alarm. In the last two cases the post
+ * starts ahead of schedule, and the next alarm, measured from that post with
+ * the money actually left, absorbs it.
  *
  * Reader requests are not consumed here. The intake service on the machine
  * owns them, because a reader is watching a spinner and a half-hour tick is
@@ -14,9 +20,9 @@
  * doing its job, and fails loudly when it is not.
  *
  * The walk for new posts runs only when the feed tiers of the queue are empty.
- * Under pacing there is one item per opening, and a fresh pick, newer and at a
- * higher tier, would otherwise be taken before a resumed or retried item every
- * time and those would never get their turn.
+ * With one item per run, a fresh pick, newer and at a higher tier, would
+ * otherwise be taken before a resumed or retried item every time and those
+ * would never get their turn.
  *
  * Usage:
  *   bun run src/everything/autoRun.ts
@@ -26,19 +32,19 @@ import "dotenv/config";
 import { closeBrowser } from "../pipeline/utils/browserManager";
 import { fetchClaimCheckHealth, fetchExtractionHealth, queueIsStuck } from "../service/client";
 import { runAutoEnqueue, triageQueue } from "./autoEnqueue";
-import { fetchFeedPacing, oldestPendingRequestAgeSeconds } from "./db";
+import { fetchFeedPacing, oldestPendingRequestAgeSeconds, setFeedAlarm } from "./db";
 import { ensureYtDlp } from "./sources/youtube";
 import { duration } from "./logFormat";
 import {
   affordablePostsPerDay,
-  computeFeedGate,
-  describeGate,
-  MAX_IN_RUN_WAIT_MS,
-  MAX_RUN_AGE_TO_WAIT_MS,
+  computeNextRun,
+  describeAlarm,
+  describePacing,
   MEAN_COST_FALLBACK_HOURS,
   MEAN_COST_MIN_POSTS,
   MEAN_COST_WINDOW_HOURS,
-  waitMs,
+  nextAlarm,
+  type FeedPacingSnapshot,
 } from "./pacing";
 import { describeSpend, FEED_BUDGET_USD, feedBudgetExhausted, todaySpendUsd } from "./spendCap";
 import { feedItemsQueued, logQueue, processNextFeedItem } from "./worker";
@@ -79,62 +85,56 @@ async function assertMachineHealthy(): Promise<void> {
   }
 }
 
-/** What one cycle decided, so the loop reads as a list of outcomes. */
-type CycleOutcome = "processed" | "waited" | "stop";
+const readPacing = (): Promise<FeedPacingSnapshot> =>
+  fetchFeedPacing(MEAN_COST_WINDOW_HOURS, MEAN_COST_MIN_POSTS, MEAN_COST_FALLBACK_HOURS);
 
-async function runCycle(runStartedAt: number): Promise<CycleOutcome> {
-  await assertMachineHealthy();
+/** Tidies the queue and processes one feed item. Returns whether an item was
+ *  started, which is what the alarm is measured from. The snapshot is read
+ *  here for the mean post cost, which decides how many creators the walk
+ *  admits. */
+async function processOneFeedItem(): Promise<boolean> {
   await triageQueue();
   if (await feedBudgetExhausted()) {
     console.log(`Feed budget reached (${describeSpend(await todaySpendUsd())}) — not enqueueing or processing today`);
-    return "stop";
+    return false;
   }
-
-  const snapshot = await fetchFeedPacing(MEAN_COST_WINDOW_HOURS, MEAN_COST_MIN_POSTS, MEAN_COST_FALLBACK_HOURS);
-  const gate = computeFeedGate(snapshot, FEED_BUDGET_USD);
-  console.log(describeGate(gate, snapshot, FEED_BUDGET_USD));
-  const wait = waitMs(gate, snapshot);
-  if (wait > 0) {
-    if (gate.closedForToday) return "stop";
-    if (wait > MAX_IN_RUN_WAIT_MS) {
-      console.log(`         longer than this run waits in place · leaving it to a later dispatch`);
-      return "stop";
-    }
-    if (Date.now() - runStartedAt > MAX_RUN_AGE_TO_WAIT_MS) {
-      console.log(`         this run is ${duration(Date.now() - runStartedAt)} old, too old to start a wait · leaving it to a later dispatch`);
-      return "stop";
-    }
-    console.log(`         waiting in place`);
-    await Bun.sleep(wait);
-    return "waited";
-  }
-
+  const snapshot = await readPacing();
+  const nextRun = computeNextRun(snapshot, FEED_BUDGET_USD);
+  console.log(describePacing(nextRun, snapshot, FEED_BUDGET_USD));
   const queue = await logQueue();
-  if (!feedItemsQueued(queue)) await runAutoEnqueue(affordablePostsPerDay(gate.meanPostCostUsd, FEED_BUDGET_USD));
+  if (!feedItemsQueued(queue)) await runAutoEnqueue(affordablePostsPerDay(nextRun.meanPostCostUsd, FEED_BUDGET_USD));
   const ended = await processNextFeedItem();
-  if (ended === "empty") {
-    console.log("Nothing to process · every creator we walk is caught up");
-    return "stop";
-  }
-  // The hard cap cut this item short. It is back in the queue with its
-  // finished claims kept, and tomorrow's first opening resumes it.
-  if (ended === "capped") return "stop";
-  return "processed";
+  if (ended === "empty") console.log("Nothing to process · every creator we walk is caught up");
+  return ended !== "empty";
+}
+
+/** Sets the alarm the database starts the next run on. The snapshot is read
+ *  again here, after the item, so the interval sees this item's start and
+ *  whatever the day has cost by now, reader pages included. */
+async function setNextAlarm(started: boolean): Promise<void> {
+  const snapshot = await readPacing();
+  const nextRun = computeNextRun(snapshot, FEED_BUDGET_USD);
+  const alarm = nextAlarm(nextRun, snapshot, started);
+  console.log(`\n${describePacing(nextRun, snapshot, FEED_BUDGET_USD)}\n${describeAlarm(alarm, snapshot)}`);
+  await setFeedAlarm(alarm.at, alarm.reason);
 }
 
 async function main() {
   ensureYtDlp();
-  const runStartedAt = Date.now();
-  let processed = 0;
-  for (let cycle = 1; ; cycle++) {
-    console.log(
-      `\n═══ cycle ${cycle} · run started ${duration(Date.now() - runStartedAt)} ago · today so far: ${describeSpend(await todaySpendUsd())}`,
-    );
-    const outcome = await runCycle(runStartedAt);
-    if (outcome === "processed") processed++;
-    if (outcome === "stop") break;
+  console.log(`today so far: ${describeSpend(await todaySpendUsd())}`);
+  // A sick machine fails the run before any alarm is set. The alarm then stays
+  // empty, the database's backstop starts another run 45 minutes later, and
+  // that red run every 45 minutes is how the sickness stays visible.
+  await assertMachineHealthy();
+  let started = false;
+  try {
+    started = await processOneFeedItem();
+  } finally {
+    // Whatever the item did, the next run must be scheduled, or the pipeline
+    // would sleep until the backstop.
+    await setNextAlarm(started);
   }
-  console.log(`\n═══ run done · checked ${processed} item${processed === 1 ? "" : "s"} · today so far: ${describeSpend(await todaySpendUsd())}`);
+  console.log(`\nrun done · today so far: ${describeSpend(await todaySpendUsd())}`);
   try {
     await closeBrowser();
   } catch {}

@@ -42,7 +42,7 @@ export const dbState = {
     rank: number;
   }[],
   /** What fetchFeedPacing answers. The default is a fresh day with a known
-   *  mean and no post started yet, so the gate is open. */
+   *  mean and no post started yet, so the next run is due at once. */
   feedPacing: {
     dbNow: new Date("2026-09-15T00:00:00Z"),
     spentTodayUsd: 0,
@@ -92,6 +92,7 @@ export const dbMock = () => ({
   fetchAllTopPosts: () => Promise.resolve(dbState.topPosts),
   fetchFeedPacing: () => Promise.resolve(dbState.feedPacing),
   fetchCostSinceUsd: () => Promise.resolve(0),
+  setFeedAlarm: record("setFeedAlarm"),
   replaceFeedTopPosts: record("replaceFeedTopPosts"),
   upsertCreatorPriority: record("upsertCreatorPriority"),
   fetchItemClaims: () => Promise.resolve([]),

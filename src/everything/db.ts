@@ -803,7 +803,7 @@ export async function fetchCostSinceUsd(since: Date): Promise<number> {
  *  database clock, today's spend, the mean cost of a finished feed post over
  *  the recent window (or the fallback window when the recent one holds fewer
  *  than minPosts), and when the last feed-tier item started. One read, one
- *  clock, so the gate never compares the runner's time with the database's. */
+ *  clock, so the pacing rule never compares the runner's time with the database's. */
 export async function fetchFeedPacing(windowHours: number, minPosts: number, fallbackHours: number): Promise<FeedPacingSnapshot> {
   const row = throwOnError(
     await getSupabaseClient()
@@ -845,4 +845,10 @@ export async function insertNote(claimId: string, note: string, sources: NoteSou
       })),
     ),
   );
+}
+
+/** Sets the alarm the database starts the next feed run on (migration 097).
+ *  The reason is stored next to it so the schedule table explains itself. */
+export async function setFeedAlarm(at: Date, reason: string): Promise<void> {
+  throwOnError(await getSupabaseClient().rpc("everything_set_feed_alarm", { next_at: at.toISOString(), reason }));
 }

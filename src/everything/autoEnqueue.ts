@@ -2,8 +2,8 @@
  * Auto-enqueue the next unprocessed content of the feeds we keep fact-checked.
  * The walk order comes from the creator ranking: creators holding priority
  * first, then everyone by reader attention (see creatorRanking.ts). The
- * everything-priority-feeds workflow runs this whenever the pacing gate opens
- * and nothing is waiting in the feed tiers of the queue.
+ * everything-priority-feeds workflow runs this at the start of every feed run
+ * when nothing is waiting in the feed tiers of the queue.
  *
  * Which creators are walked is decided by the budget (admitCreators): the
  * ranked list is walked from the top until the creators' publishing rates add
@@ -51,7 +51,7 @@ import "dotenv/config";
 import { extractYoutubeVideoId } from "../everything-shared/pageUrls";
 import { rankCreators, VISIT_RANKING_WINDOW_DAYS, type RankedCreator } from "./creatorRanking";
 import { MIN_PAGES_FOR_A_REGULAR_READER } from "../everything-shared/readers";
-import { affordablePostsPerDay, computeFeedGate, MEAN_COST_FALLBACK_HOURS, MEAN_COST_MIN_POSTS, MEAN_COST_WINDOW_HOURS } from "./pacing";
+import { affordablePostsPerDay, computeNextRun, MEAN_COST_FALLBACK_HOURS, MEAN_COST_MIN_POSTS, MEAN_COST_WINDOW_HOURS } from "./pacing";
 import { FEED_BUDGET_USD } from "./spendCap";
 import {
   enqueueItems,
@@ -179,11 +179,11 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedListing> {
   return { sourceName: channelName, entries, paidPosts: 0 };
 }
 
-/** Feed listings fetched this process, keyed by feed URL. The cycles of one
- *  dispatch reuse them, so a growing feed set does not multiply listing
- *  fetches by the cycle count; a post published mid-dispatch simply waits for
- *  the next dispatch. The unprocessed check against the database still runs
- *  every cycle, so an entry enqueued in an earlier cycle is not picked again. */
+/** Feed listings fetched this process, keyed by feed URL. The admission walk
+ *  and the top-posts refresh of one run reuse them, so a feed is listed once
+ *  per run however many steps look at it. The unprocessed check against the
+ *  database still runs on every use, so an entry enqueued earlier in the run
+ *  is not picked again. */
 const feedListingCache = new Map<string, FeedListing>();
 
 async function cachedFeedEntries(feed: PriorityFeed): Promise<FeedListing> {
@@ -343,17 +343,18 @@ export function topPostEntries(tops: TopPostRow[], recent: FeedEntry[]): FeedEnt
 }
 
 /** Puts back what a killed run stranded and gives errored items their repeat
- *  attempts. The feed run does this every cycle, before it asks the pacing
- *  gate, because both steps only touch the database and a requeued item must
- *  be visible to the gate's "is anything waiting" question. Both steps assume
- *  no worker is active, which the workflow's concurrency group guarantees. */
+ *  attempts. The feed run does this at its start, before it looks at the
+ *  queue, because both steps only touch the database and a requeued item must
+ *  be visible to the "is anything waiting" question that decides whether to
+ *  walk. Both steps assume no worker is active, which the workflow's
+ *  concurrency group guarantees. */
 export async function triageQueue(): Promise<void> {
   await triageOrphanedItems();
   await retryErroredItems();
 }
 
-/** Upload dates learned this process, keyed by video id, so the later cycles
- *  of one auto-run do not ask again for a video the first cycle already dated. */
+/** Upload dates learned this process, keyed by video id, so a video dated
+ *  during the admission walk is not dated again when it becomes a candidate. */
 const uploadDateCache = new Map<string, string>();
 
 /** Fills in the publication date of every YouTube entry in a listing that
@@ -399,7 +400,7 @@ interface Admitted<C, W> {
   walk: W;
 }
 
-/** Decides which of the ranked creators are walked this cycle: as many from
+/** Decides which of the ranked creators are walked this run: as many from
  *  the top as the paced budget can feed. A creator holding priority is always
  *  walked and counted first. Then attention creators are walked in order
  *  until the cumulative publishing rate reaches the affordable rate; the
@@ -437,11 +438,11 @@ function priorityLeft(priorityUntil: string | null): string {
 }
 
 /** How many posts a day the budget buys at the current mean post cost, from
- *  the same snapshot the pacing gate reads. The command-line entry point uses
- *  this; the feed run passes the number from the gate it already computed. */
+ *  the same snapshot the pacing rule reads. The command-line entry point uses
+ *  this; the feed run passes the number it already computed. */
 export async function affordablePostsPerDayNow(): Promise<number> {
   const snapshot = await fetchFeedPacing(MEAN_COST_WINDOW_HOURS, MEAN_COST_MIN_POSTS, MEAN_COST_FALLBACK_HOURS);
-  return affordablePostsPerDay(computeFeedGate(snapshot, FEED_BUDGET_USD).meanPostCostUsd, FEED_BUDGET_USD);
+  return affordablePostsPerDay(computeNextRun(snapshot, FEED_BUDGET_USD).meanPostCostUsd, FEED_BUDGET_USD);
 }
 
 /** Runs one pass of admission, selection, and enqueueing. `affordable` is how
