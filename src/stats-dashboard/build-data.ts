@@ -236,7 +236,7 @@ function joinNotes(
       tweet_id: note.tweet_id,
       submitted_at: submittedAt,
       cn_status: note.cn_status as NoteRecord["cn_status"],
-      view_count: note.view_count ?? 0,
+      view_count: note.view_count,
       helpful_count: note.helpful_count ?? 0,
       not_helpful_count: note.not_helpful_count ?? 0,
       rating_count: note.rating_count ?? 0,

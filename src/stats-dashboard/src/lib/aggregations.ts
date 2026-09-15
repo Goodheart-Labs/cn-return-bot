@@ -176,6 +176,29 @@ export function bucketizeOrigin(
 
 // ─── Headline metrics ────────────────────────────────────────────────────────
 
+export interface HelpfulNoteShare {
+  ours: number;
+  total: number;
+  proportion: number;
+  firstDay: string;
+  lastDay: string;
+}
+
+export function computeHelpfulNoteShare(counts: DailyOriginCount[]): HelpfulNoteShare | null {
+  if (counts.length === 0) return null;
+  let ours = 0;
+  let total = 0;
+  const days = counts.map((row) => row.day).sort();
+  for (const row of counts) {
+    if (!Number.isFinite(row.helpful_ours) || !Number.isFinite(row.helpful_total)
+      || row.helpful_ours < 0 || row.helpful_total < row.helpful_ours) return null;
+    ours += row.helpful_ours;
+    total += row.helpful_total;
+  }
+  if (total === 0) return null;
+  return { ours, total, proportion: ours / total, firstDay: days[0]!, lastDay: days[days.length - 1]! };
+}
+
 export interface HeadlineMetrics {
   totalNotes: number;
   helpfulNotes: number;
@@ -183,6 +206,7 @@ export interface HeadlineMetrics {
   nmrNotes: number;
   totalViews: number;
   viewsOnHelpful: number;
+  helpfulNotesWithViews: number;
   totalCost: number | null;            // Null when no cost data matches the filters.
   costPerHelpfulNote: number | null;
   costPerViewOnHelpful: number | null;
@@ -197,8 +221,9 @@ export function computeHeadlineMetrics(
   const helpfulNotes = filteredNotes.filter((n) => n.cn_status === "CURRENTLY_RATED_HELPFUL");
   const unhelpfulNotes = filteredNotes.filter((n) => n.cn_status === "CURRENTLY_RATED_NOT_HELPFUL");
   const nmrNotes = filteredNotes.filter((n) => n.cn_status !== "CURRENTLY_RATED_HELPFUL" && n.cn_status !== "CURRENTLY_RATED_NOT_HELPFUL");
-  const totalViews = filteredNotes.reduce((sum, n) => sum + n.view_count, 0);
-  const viewsOnHelpful = helpfulNotes.reduce((sum, n) => sum + n.view_count, 0);
+  const totalViews = filteredNotes.reduce((sum, n) => sum + (n.view_count ?? 0), 0);
+  const viewsOnHelpful = helpfulNotes.reduce((sum, n) => sum + (n.view_count ?? 0), 0);
+  const helpfulNotesWithViews = helpfulNotes.filter((n) => n.view_count !== null).length;
 
   const matchingAggregates = aggregates.filter((a) => matchesAbFilters(a.ab_test_picks, filters));
   const totalCost = matchingAggregates.reduce((sum, a) => sum + a.total_cost, 0);
@@ -208,7 +233,7 @@ export function computeHeadlineMetrics(
     matchingAggregates.length === 0 || helpfulInCostEra.length === 0
       ? null
       : totalCost / helpfulInCostEra.length;
-  const viewsOnHelpfulInCostEra = helpfulInCostEra.reduce((sum, n) => sum + n.view_count, 0);
+  const viewsOnHelpfulInCostEra = helpfulInCostEra.reduce((sum, n) => sum + (n.view_count ?? 0), 0);
   const costPerViewOnHelpful =
     matchingAggregates.length === 0 || viewsOnHelpfulInCostEra === 0
       ? null
@@ -221,6 +246,7 @@ export function computeHeadlineMetrics(
     nmrNotes: nmrNotes.length,
     totalViews,
     viewsOnHelpful,
+    helpfulNotesWithViews,
     totalCost: matchingAggregates.length === 0 ? null : totalCost,
     costPerHelpfulNote,
     costPerViewOnHelpful,
@@ -238,7 +264,7 @@ export function sortNotesForList(notes: NoteRecord[], sort: NoteSort): NoteRecor
   if (sort === "most_views_helpful") {
     return notes
       .filter((n) => n.cn_status === "CURRENTLY_RATED_HELPFUL")
-      .sort((a, b) => b.view_count - a.view_count);
+      .sort((a, b) => (b.view_count ?? -1) - (a.view_count ?? -1));
   }
   return notes
     .filter((n) => n.cn_status === "CURRENTLY_RATED_NOT_HELPFUL")
