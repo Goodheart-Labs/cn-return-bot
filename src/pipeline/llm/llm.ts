@@ -3,6 +3,70 @@ import OpenAI from "openai";
 const MAX_RETRIES = 3;
 const INITIAL_BACKOFF_MS = 1000;
 
+// Every attempt gets a hard deadline. The SDK's own timeout only covers the wait
+// for the response headers, and OpenRouter sends those within a second and then
+// pads the body with whitespace until the provider answers. So without this a
+// hanging provider can hold a call for as long as it likes. We saw 30 to 47
+// minutes on deepseek-v4-flash in September 2026 (GOO-160). The default is
+// generous, because a research call with built-in web search can legitimately
+// take several minutes.
+const DEFAULT_ATTEMPT_DEADLINE_MS = 15 * 60_000;
+
+interface ModelRouting {
+  /** The only OpenRouter providers this model may be routed to. OpenRouter keeps
+   *  its price-weighted balancing among them. */
+  providers: string[];
+  /** A tighter deadline per attempt than the default. */
+  attemptDeadlineMs: number;
+}
+
+// deepseek-v4-flash runs every note-needed prefilter call. Its cheapest provider,
+// OpenInference, hung for up to 47 minutes and then answered empty, and the next
+// cheapest, DigitalOcean, was very slow. This list is the one Jim chose on
+// 2026-09-14 from a 690-call probe: nothing above 69 seconds, fp8 or better, and
+// a reasonable price (src/scripts_jim/2026_09_14_claim_check_stuck/NOTES.md). The
+// deadline is well above that 69-second worst case, so a healthy call never
+// hits it, but a hanging one is cut off in minutes instead of an hour.
+const MODEL_ROUTING: Record<string, ModelRouting> = {
+  "deepseek/deepseek-v4-flash": {
+    providers: ["streamlake", "alibaba", "baidu", "novita", "parasail", "nextbit"],
+    attemptDeadlineMs: 3 * 60_000,
+  },
+};
+
+/** Raised when an attempt runs past its deadline. It is retryable, because the
+ *  next attempt is routed afresh and usually lands on a healthy provider. */
+export class AttemptDeadlineError extends Error {
+  constructor(model: string, deadlineMs: number) {
+    super(`model ${model} did not answer within ${deadlineMs / 1000}s`);
+    this.name = "AttemptDeadlineError";
+  }
+}
+
+/** Runs `call` with an abort signal that fires after `deadlineMs`. Aborting the
+ *  fetch also stops the body from being read, which is what cuts off a provider
+ *  that sent its headers and is still trickling whitespace. */
+export async function withDeadline<T>(
+  deadlineMs: number,
+  onTimeout: () => Error,
+  call: (signal: AbortSignal) => Promise<T>,
+): Promise<T> {
+  const controller = new AbortController();
+  let timedOut = false;
+  const timer = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, deadlineMs);
+  try {
+    return await call(controller.signal);
+  } catch (err) {
+    if (timedOut) throw onTimeout();
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 let _client: OpenAI | undefined;
 
 function getClient(): OpenAI {
@@ -30,6 +94,7 @@ function isProviderInvalidRequest(err: any): boolean {
 }
 
 export function isRetryableError(err: any): boolean {
+  if (err instanceof AttemptDeadlineError) return true;
   const status = err?.status ?? err?.response?.status;
   // OpenRouter reports a failure of the upstream provider as a 400 whose message
   // reads "Provider returned error". Most of those are worth another attempt,
@@ -91,8 +156,8 @@ function hasEmptyContent(result: OpenAI.Chat.Completions.ChatCompletion): boolea
 /**
  * Wraps an LLM create call with retries and exponential backoff.
  * It retries the OpenRouter "400 Provider returned error", the 429, 500, 502, 503
- * and 504 statuses, network errors, and a 200 OK that comes back with empty
- * content.
+ * and 504 statuses, network errors, an attempt that ran past its deadline, and a
+ * 200 OK that comes back with empty content.
  */
 async function callWithRetry(
   params: OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming
@@ -101,15 +166,25 @@ async function callWithRetry(
   // send. The ones that matter are response_format=json_schema and tools. Without
   // this, OpenRouter can pick a provider that quietly ignores the strict schema.
   // The model then wraps its JSON in ```json fences and we cannot parse it.
+  const routing = MODEL_ROUTING[params.model];
   const routedParams = {
     ...params,
-    provider: { require_parameters: true, ...(params as any).provider },
+    provider: {
+      require_parameters: true,
+      ...(routing ? { only: routing.providers } : {}),
+      ...(params as any).provider,
+    },
   } as OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming;
+  const deadlineMs = routing?.attemptDeadlineMs ?? DEFAULT_ATTEMPT_DEADLINE_MS;
 
   let lastError: any;
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     try {
-      const result = await getClient().chat.completions.create(routedParams);
+      const result = await withDeadline(
+        deadlineMs,
+        () => new AttemptDeadlineError(params.model, deadlineMs),
+        (signal) => getClient().chat.completions.create(routedParams, { signal }),
+      );
       if (hasEmptyContent(result) && attempt < MAX_RETRIES) {
         const backoff = INITIAL_BACKOFF_MS * Math.pow(2, attempt);
         console.warn(
