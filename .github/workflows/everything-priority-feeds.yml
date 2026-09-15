@@ -7,7 +7,7 @@ on:
 # delays/drops runs). There is no fixed timer: every run processes one feed
 # item and stores when the next run is due (src/everything/pacing.ts), and
 # pg_cron checks that alarm once a minute and dispatches when it has come
-# (migrations/097_feed_alarm.sql). A run that never set its alarm is followed
+# (migrations/098_feed_alarm.sql). A run that never set its alarm is followed
 # by another 45 minutes after its dispatch, which is the backstop for a crash.
 #
 # Never run two workers at once: the queue claim has no locking, and the

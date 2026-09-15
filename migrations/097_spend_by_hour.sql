@@ -1,6 +1,6 @@
--- 096: spend per UTC hour, for the dashboard's "Spend by hour" chart.
+-- 097: spend per UTC hour, for the dashboard's "Spend by hour" chart.
 --
--- The feed pacing (migration 095) spreads the day's budget across the UTC
+-- The feed pacing (migration 096) spreads the day's budget across the UTC
 -- day. Whether it does is easiest to see as one bar per hour over the last
 -- week: a paced day is a low flat row, the old pattern one tall bar after
 -- midnight. This is the first anon-callable read of everything_pipeline_runs,

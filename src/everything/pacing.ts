@@ -13,7 +13,7 @@
  * post lengthens it.
  *
  * Every input arrives in one database snapshot (everything_feed_pacing,
- * migration 095), and the alarm is computed in database time. The runner's
+ * migration 096), and the alarm is computed in database time. The runner's
  * clock is never compared with the database's, which is the same rule the X
  * pipeline's submission lock follows. This module has no database access of
  * its own, and the feed budget is passed in, so it is testable without mocks.
@@ -40,7 +40,7 @@ export const DEFAULT_MEAN_POST_COST_USD = 3.5;
  *  it an idle pipeline would be started every minute, since the interval is
  *  measured from a post start that never moves. Thirty minutes is the cadence
  *  the fixed timer had. The other timing rule, the database's 45-minute
- *  backstop for a run that never set its alarm, lives in migration 097. */
+ *  backstop for a run that never set its alarm, lives in migration 098. */
 export const IDLE_RECHECK_MS = 30 * 60_000;
 
 const HOUR_MS = 3600_000;

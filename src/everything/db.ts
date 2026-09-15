@@ -429,11 +429,14 @@ export async function updateItemMeta(
   throwOnError(await getSupabaseClient().from("everything_items").update(meta).eq("id", id));
 }
 
-export async function markItemDone(id: string): Promise<void> {
+/** `skipReason` is why the intent gate declined the item, or null when it was
+ *  processed. It is always written, so an item the gate once declined and a
+ *  reader later promoted to a whole-page check loses its stale reason. */
+export async function markItemDone(id: string, skipReason: string | null): Promise<void> {
   throwOnError(
     await getSupabaseClient()
       .from("everything_items")
-      .update({ status: "done", error: null, progress: null, processed_at: new Date().toISOString() })
+      .update({ status: "done", error: null, progress: null, skip_reason: skipReason, processed_at: new Date().toISOString() })
       .eq("id", id),
   );
 }
@@ -799,7 +802,7 @@ export async function fetchCostSinceUsd(since: Date): Promise<number> {
   return Number(total ?? 0);
 }
 
-/** The pacing snapshot from everything_feed_pacing (migration 095): the
+/** The pacing snapshot from everything_feed_pacing (migration 096): the
  *  database clock, today's spend, the mean cost of a finished feed post over
  *  the recent window (or the fallback window when the recent one holds fewer
  *  than minPosts), and when the last feed-tier item started. One read, one
@@ -847,7 +850,7 @@ export async function insertNote(claimId: string, note: string, sources: NoteSou
   );
 }
 
-/** Sets the alarm the database starts the next feed run on (migration 097).
+/** Sets the alarm the database starts the next feed run on (migration 098).
  *  The reason is stored next to it so the schedule table explains itself. */
 export async function setFeedAlarm(at: Date, reason: string): Promise<void> {
   throwOnError(await getSupabaseClient().rpc("everything_set_feed_alarm", { next_at: at.toISOString(), reason }));

@@ -1,4 +1,4 @@
--- A miniature of what migration 097 touches: the roles, and stand-ins for the
+-- A miniature of what migration 098 touches: the roles, and stand-ins for the
 -- three things the throwaway database does not have, pg_net, pg_cron and the
 -- Vault. Each stand-in records what it was asked to do in a table, so the
 -- checks can read back which dispatches were sent and which jobs registered.
@@ -9,9 +9,9 @@
 --   until sudo docker exec cn-migration-test pg_isready -U postgres; do sleep 1; done
 --   export PGPASSWORD=test
 --   PSQL="psql -h 127.0.0.1 -p 55432 -U postgres -v ON_ERROR_STOP=1 -q"
---   $PSQL -f migrations/097_feed_alarm.fixture.sql
---   $PSQL --single-transaction -f migrations/097_feed_alarm.sql
---   psql -h 127.0.0.1 -p 55432 -U postgres -q -f migrations/097_feed_alarm.verify.sql
+--   $PSQL -f migrations/098_feed_alarm.fixture.sql
+--   $PSQL --single-transaction -f migrations/098_feed_alarm.sql
+--   psql -h 127.0.0.1 -p 55432 -U postgres -q -f migrations/098_feed_alarm.verify.sql
 --   sudo docker stop cn-migration-test
 create role anon nologin;
 create role authenticated nologin;

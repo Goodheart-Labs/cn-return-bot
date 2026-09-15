@@ -1,7 +1,7 @@
 /**
  * One feed run. This is what the Everything Priority Feeds workflow runs, and
  * the database starts it when the alarm the previous run set has come
- * (everything_feed_schedule, migration 097). A run is a straight line: check
+ * (everything_feed_schedule, migration 098). A run is a straight line: check
  * that the machine's services are well, tidy the queue, process one feed
  * item, set the alarm for the next run (see pacing.ts), and exit. It never
  * waits and never does a second item. A long item is never cut short; the

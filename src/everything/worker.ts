@@ -5,7 +5,7 @@
  * It takes the next queued item and fetches its content, which is either a
  * YouTube transcript or a Substack article. It then hands that content to
  * processFetchedContent. That step extracts the claims, drops the speculative
- * ones, fact-checks the ones Opus is not already confident about, and streams
+ * ones, fact-checks the ones the rater is not already confident about, and streams
  * every step into the everything_* tables. Items are processed one at a time.
  * An item that fails does not stop the rest of the queue.
  *
@@ -200,7 +200,7 @@ export async function processQueuedItem(item: EverythingItem): Promise<"done" | 
       console.log(`  budget reached part way through, put back in the queue with ${tally.capped} claims left`);
       return "capped";
     }
-    await markItemDone(item.id);
+    await markItemDone(item.id, tally.skipReason);
     // The per-item cost is already recorded per claim; this is the first time
     // it is shown. It is what tells you which items are expensive.
     const cost = (await todaySpendUsd()) - spentBefore;

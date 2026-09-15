@@ -1,4 +1,4 @@
--- A miniature of production: the three tables migration 095 reads, with the
+-- A miniature of production: the three tables migration 096 reads, with the
 -- same grants, so the snapshot function and the trigger can be exercised for
 -- real. Item ids end in a readable suffix, 101..107, claims 201..203. Times
 -- are relative to now() where the function's windows are relative, and pinned
@@ -10,9 +10,9 @@
 --   until sudo docker exec cn-migration-test pg_isready -U postgres; do sleep 1; done
 --   export PGPASSWORD=test
 --   PSQL="psql -h 127.0.0.1 -p 55432 -U postgres -v ON_ERROR_STOP=1 -q"
---   $PSQL -f migrations/095_feed_pacing.fixture.sql
---   $PSQL --single-transaction -f migrations/095_feed_pacing.sql
---   psql -h 127.0.0.1 -p 55432 -U postgres -q -f migrations/095_feed_pacing.verify.sql
+--   $PSQL -f migrations/096_feed_pacing.fixture.sql
+--   $PSQL --single-transaction -f migrations/096_feed_pacing.sql
+--   psql -h 127.0.0.1 -p 55432 -U postgres -q -f migrations/096_feed_pacing.verify.sql
 --   sudo docker stop cn-migration-test
 create role anon nologin;
 create role authenticated nologin;

@@ -1,4 +1,4 @@
--- 097: start each feed run when the previous run said the next one is due,
+-- 098: start each feed run when the previous run said the next one is due,
 -- instead of on a fixed timer.
 --
 -- Since migration 071 pg_cron dispatched the Everything Priority Feeds

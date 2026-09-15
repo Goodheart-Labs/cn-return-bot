@@ -1,4 +1,4 @@
--- 095: pace feed posts across the UTC day instead of spending the budget in a
+-- 096: pace feed posts across the UTC day instead of spending the budget in a
 -- burst after midnight.
 --
 -- The Actions feed run now asks, before every post, whether enough time has

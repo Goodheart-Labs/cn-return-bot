@@ -3,7 +3,7 @@
  *
  * READ-ONLY against prod. It loads the week's cost rows and items, rebuilds
  * each feed post's real start time, duration and cost, and then replays each
- * UTC day the way src/everything/pacing.ts and migration 097 run it: a run
+ * UTC day the way src/everything/pacing.ts and migration 098 run it: a run
  * starts at the first minute tick after the alarm the previous run set, plus
  * the minute and a half a fresh run takes to start; it processes one post,
  * then sets the next alarm from the money left, the hours left and the mean

@@ -3,10 +3,12 @@
  * queue worker calls this for every item it takes, whatever the item's source
  * is.
  *
- * We extract the claims, drop the speculative ones, rate them with web
- * research, insert them, then fact-check the ones the rater was not confident
- * about through the note pipeline and record every outcome. The return value counts how many claims of this
- * item ended in each state, which the caller prints as progress.
+ * Extraction first gates the item and cuts it into topic parts, then extracts
+ * each part's claims. We drop the speculative ones, rate each part's claims
+ * with web research, insert them all, then fact-check the ones the rater was
+ * not confident about through the note pipeline and record every outcome. The
+ * return value counts how many claims of this item ended in each state, which
+ * the caller prints as progress.
  */
 
 import PQueue from "p-queue";
@@ -27,12 +29,15 @@ import {
   type NewClaimRow,
 } from "../db";
 import { dropSpeculation } from "./extractClaims";
-import { shouldFactCheck } from "./rateClaims";
+import { VERY_CONFIDENT_JUDGEMENT, shouldFactCheck } from "./rateClaims";
 import { requestClaimCheck, requestClaimExtraction, requestClaimRating } from "../../service/client";
 import type { RateClaimsResponse, WorkPriority } from "../../service/contract";
 import { group, money } from "../logFormat";
 import { feedBudgetExhausted, requestBudgetExhausted } from "../spendCap";
-import type { ExtractedClaim, FetchedContent, RatedClaim } from "../types";
+import type { ContentPart, ExtractedClaim, FetchedContent, RatedClaim } from "../types";
+
+/** How many parts of one item are rated at once. */
+const RATING_PART_CONCURRENCY = 2;
 
 /** How many claims of one item are in flight at once. The services decide the
  *  real capacity, so this is not a capacity limit. It paces the work so the
@@ -56,7 +61,7 @@ function budgetExhaustedFor(item: EverythingItem): Promise<boolean> {
 export interface ItemTally {
   extracted: number;
   speculation: number; // Claims about a future scenario. We drop them before inserting.
-  skipped: number; // Claims the rater was confident are true. We do not fact-check them.
+  skipped: number; // Claims the extractor or the rater was confident are true. We do not fact-check them.
   notes: number; // Claims we fact-checked and wrote a note on.
   no_note: number; // Claims we fact-checked and found no note was needed.
   errors: number; // Claims whose fact-check threw.
@@ -64,10 +69,16 @@ export interface ItemTally {
    *  They stay pending in the database, and the caller puts the item back in
    *  the queue so the next day's run resumes exactly these claims. */
   capped: number;
+  /** Why the intent gate declined the item, when it did. Such an item has no
+   *  claims and is marked done with this reason. Null otherwise. */
+  skipReason: string | null;
 }
+
+const EMPTY_TALLY: ItemTally = { extracted: 0, speculation: 0, skipped: 0, notes: 0, no_note: 0, errors: 0, capped: 0, skipReason: null };
 
 function buildClaimRow(itemId: string, claim: RatedClaim): NewClaimRow {
   const check = shouldFactCheck(claim.judgement);
+  const skipReason = claim.veryConfidentTrue ? "extractor very confident it is true" : `judged ${claim.judgement}`;
   const anchor = claim.anchor;
   return {
     item_id: itemId,
@@ -81,7 +92,7 @@ function buildClaimRow(itemId: string, claim: RatedClaim): NewClaimRow {
     start_seconds: anchor.kind === "youtube" && anchor.startSeconds !== undefined ? Math.floor(anchor.startSeconds) : null,
     end_seconds: anchor.kind === "youtube" && anchor.endSeconds !== undefined ? Math.ceil(anchor.endSeconds) : null,
     status: check ? "pending" : "skipped",
-    status_reason: check ? null : `judged ${claim.judgement}`,
+    status_reason: check ? null : skipReason,
   };
 }
 
@@ -136,6 +147,82 @@ function repeatsExistingClaim(claim: ExtractedClaim, existing: ItemClaimRow[]): 
   );
 }
 
+/** The claims of one item across all its parts, minus the speculation, the
+ *  claims the item already carries, and any claim two parts both produced.
+ *  The introduction is shown to every part as context, so a claim from it can
+ *  come back twice despite the prompt's rule; the second copy is dropped here.
+ *  Returns each part with its surviving claims, and the counts the tally
+ *  reports. */
+function freshClaimsPerPart(
+  parts: ContentPart[],
+  existingClaims: ItemClaimRow[],
+): { parts: ContentPart[]; extracted: number; speculation: number; duplicates: number } {
+  const norm = (text: string) => text.trim().toLowerCase();
+  const seen = new Set<string>();
+  let extracted = 0;
+  let speculation = 0;
+  let duplicates = 0;
+  const fresh = parts.map((part) => {
+    extracted += part.claims.length;
+    const notSpeculation = dropSpeculation(part.claims);
+    speculation += part.claims.length - notSpeculation.length;
+    const claims = notSpeculation.filter((claim) => {
+      const key = norm(claim.claim);
+      const quoteKey = claim.context ? `quote:${norm(claim.context)}` : null;
+      const repeated = repeatsExistingClaim(claim, existingClaims) || seen.has(key) || (quoteKey !== null && seen.has(quoteKey));
+      if (repeated) duplicates++;
+      seen.add(key);
+      if (quoteKey) seen.add(quoteKey);
+      return !repeated;
+    });
+    return { ...part, claims };
+  });
+  return { parts: fresh, extracted, speculation, duplicates };
+}
+
+/** Rates every part that still has claims, a couple of parts at a time, and
+ *  sums what the rating cost. A claim the extractor marked very confident is
+ *  not sent to the rater; it comes back with the top judgement and is stored
+ *  as skipped. A part with nothing left to rate is skipped, so an
+ *  already-covered page does not pay for an empty research call. */
+async function ratePartsOfItem(
+  item: EverythingItem,
+  introduction: string | null,
+  parts: ContentPart[],
+): Promise<{ claims: RatedClaim[]; costUsd: number | null; webSearches: number; research: string[] }> {
+  const rated: RatedClaim[][] = parts.map(() => []);
+  const research: string[] = [];
+  let costUsd: number | null = null;
+  let webSearches = 0;
+  const queue = new PQueue({ concurrency: RATING_PART_CONCURRENCY });
+  await Promise.all(
+    parts.map((part, i) =>
+      queue.add(async () => {
+        const confident = part.claims.filter((c) => c.veryConfidentTrue).map((c) => ({ ...c, judgement: VERY_CONFIDENT_JUDGEMENT }));
+        const toRate = part.claims.filter((c) => !c.veryConfidentTrue);
+        if (toRate.length === 0) {
+          rated[i] = confident;
+          return;
+        }
+        const rating: RateClaimsResponse = await requestClaimRating({
+          priority: workPriorityOf(item),
+          text: part.text,
+          // When there is an introduction it is the first part, and it is not
+          // shown its own text as context.
+          introduction: part.index === 0 ? null : introduction,
+          claims: toRate,
+          source: item.source,
+        });
+        rated[i] = [...confident, ...rating.claims];
+        if (rating.costUsd !== null) costUsd = (costUsd ?? 0) + rating.costUsd;
+        webSearches += rating.webSearches;
+        if (rating.research) research.push(parts.length > 1 ? `[${part.title}] ${rating.research}` : rating.research);
+      }),
+    ),
+  );
+  return { claims: rated.flat(), costUsd, webSearches, research };
+}
+
 export async function processFetchedContent(
   item: EverythingItem,
   content: FetchedContent,
@@ -149,30 +236,28 @@ export async function processFetchedContent(
   console.log(`  "${content.title}" (${content.publishedAt?.slice(0, 10) ?? "no date"})`);
 
   await setItemProgress(item.id, { stage: "extracting" });
-  const { claims: extracted, costUsd } = await requestClaimExtraction({ priority: workPriorityOf(item), content });
-  if (costUsd !== null) await insertItemRun(item.id, "extraction", costUsd);
-  const fresh = dropSpeculation(extracted);
-  const duplicates = fresh.filter((c) => repeatsExistingClaim(c, existingClaims)).length;
+  const extraction = await requestClaimExtraction({ priority: workPriorityOf(item), content });
+  if (extraction.costUsd !== null) await insertItemRun(item.id, "extraction", extraction.costUsd);
+  if (extraction.kind === "not_checkable") {
+    console.log(`  not checkable: ${extraction.reason}`);
+    return { ...EMPTY_TALLY, skipReason: extraction.reason };
+  }
+  const { parts, extracted, speculation, duplicates } = freshClaimsPerPart(extraction.parts, existingClaims);
   if (duplicates > 0) console.log(`  dropped ${duplicates} claims the item already carries`);
-  const speculation = extracted.length - fresh.length;
-  const newClaims = fresh.filter((c) => !repeatsExistingClaim(c, existingClaims));
+  if (parts.length > 1) console.log(`  ${parts.length} parts: ${parts.map((p) => p.title).join(" · ")}`);
 
-  // The rating call is skipped for an item with nothing new to rate, so an
-  // already-covered page does not pay for an empty research call.
   await setItemProgress(item.id, { stage: "rating" });
-  const rating: RateClaimsResponse = newClaims.length
-    ? await requestClaimRating({ priority: workPriorityOf(item), text: bodyText(content), claims: newClaims, source: item.source })
-    : { claims: [], research: "", webSearches: 0, costUsd: null };
+  const rating = await ratePartsOfItem(item, extraction.introduction, parts);
   if (rating.costUsd !== null) await insertItemRun(item.id, "rating", rating.costUsd);
   const claims = rating.claims;
   const claimIds = await insertClaims(claims.map((c) => buildClaimRow(item.id, c)));
   const toCheck = claims.filter((c) => shouldFactCheck(c.judgement)).length;
   await setItemProgress(item.id, { stage: "checking", total: toCheck });
   console.log(
-    `  ${extracted.length} claims found, ${speculation} were predictions and dropped, ` +
+    `  ${extracted} claims found, ${speculation} were predictions and dropped, ` +
       `${toCheck} of ${claims.length} worth checking after research (${money(rating.costUsd ?? 0)}, ${rating.webSearches} web searches)`,
   );
-  const researchLog = group("research", [rating.research]);
+  const researchLog = group("research", rating.research);
   if (researchLog) console.log(researchLog);
 
   const outcomes: Array<"note" | "no_note" | "error"> = [];
@@ -199,13 +284,14 @@ export async function processFetchedContent(
   if (checksLog) console.log(checksLog);
 
   return {
-    extracted: extracted.length,
+    extracted,
     speculation,
     skipped: claims.length - toCheck,
     notes: outcomes.filter((o) => o === "note").length,
     no_note: outcomes.filter((o) => o === "no_note").length,
     errors: outcomes.filter((o) => o === "error").length,
     capped,
+    skipReason: null,
   };
 }
 
@@ -218,6 +304,7 @@ function toExtractedClaim(row: ItemClaimRow): ExtractedClaim {
     context: row.context_quote ?? "",
     contextParagraph: row.context_paragraph ?? "",
     imageUrls: row.image_urls ?? [],
+    veryConfidentTrue: false,
     speculation: false,
     anchor: { kind: "substack", url: "" },
   };
@@ -272,5 +359,6 @@ export async function resumeItemClaims(item: EverythingItem): Promise<ItemTally>
     no_note: outcomes.filter((o) => o === "no_note").length,
     errors: outcomes.filter((o) => o === "error").length,
     capped,
+    skipReason: null,
   };
 }

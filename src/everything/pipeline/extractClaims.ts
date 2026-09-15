@@ -1,11 +1,13 @@
 /**
  * Claim extraction for the everything pipeline.
  *
- * We ask Opus, with high thinking effort, to extract every checkable claim from
- * a text. The text is either a timestamped YouTube transcript or a plain
- * article. Each claim comes back in neutral, self-contained language, with a
- * verbatim excerpt of the context around it. How true a claim is gets decided
- * afterwards by the rating step in rateClaims.ts, which has web access.
+ * The gate and split step (gateAndSplit.ts) first decides whether the text is
+ * worth checking at all and cuts it into topic parts. We then ask the model,
+ * with high thinking effort, to extract every checkable claim from each part.
+ * The text is either a timestamped YouTube transcript or a plain article. Each
+ * claim comes back in neutral, self-contained language, with a verbatim excerpt
+ * of the context around it. How true a claim is gets decided afterwards by the
+ * rating step in rateClaims.ts, which has web access.
  *
  * A claim from a YouTube video has its context snapped back onto the subtitle
  * cues, which gives us a deep link into the video.
@@ -23,10 +25,10 @@ import { stripJsonFences } from "../../pipeline/utils/jsonOutput";
 import type { SubtitleCue } from "../../pipeline/media/ytDlpDownload";
 import { describeImageFromUrl, type GeminiMediaDescription } from "../../pipeline/media/mediaAnalysisGemini";
 import { IMAGE_MARKER_RE } from "../sources/substack";
-import type { ClaimAnchor, ExtractedClaim, FetchedContent } from "../types";
+import type { ClaimAnchor, ContentPart, ExtractedClaim, ExtractionResult, FetchedContent } from "../types";
 import { normalizeText } from "../../everything-shared/normalizeText";
-
-const CLAIM_EXTRACTION_MODEL = "anthropic/claude-opus-5";
+import { cutCues, cutText, gateAndSplit, joinCues, type GateSplitVerdict, type PartStart } from "./gateAndSplit";
+import { EVERYTHING_MODEL } from "./model";
 
 function extractionSystemPrompt(): string {
   const fields = [
@@ -34,9 +36,12 @@ function extractionSystemPrompt(): string {
     `- "context": a verbatim excerpt from the text around the claim — its sentence plus enough surrounding sentences that a reader with none of the rest of the text has all the context needed to evaluate it. Verbatim source prose only — never quote an image block's Description/Visible text lines. Leave empty ("") for a claim grounded only in an image.`,
     `- "context_paragraph": a wider verbatim excerpt — the full surrounding paragraph(s) the claim sits in — that contains the "context" excerpt above word-for-word. Shown to readers as the broader passage around the highlighted claim. Same rule: verbatim source prose only. Leave empty ("") when there is no surrounding text.`,
     `- "image_urls": the URLs (from the "Image:" line of each image block) of any images the claim is based on — a chart, screenshot, photo, or diagram. Empty array for a text-only claim.`,
+    `- "very_confident_that_its_true": true only if you are very confident the claim is correct as stated, so that no fact-check is needed; false otherwise.`,
     `- "speculation": true if the claim describes a hypothetical or future scenario — something stated as happening in a future year (e.g. "in 2028...") as part of an imagined scenario; false if it is about the present or past (2026 or earlier) or the current state of the world (real events, statistics, and any other real-world claim).`,
   ];
   return `You extract checkable factual claims from a text (podcast transcript or article). The text may contain bracketed image blocks — an "Image: <url>" line followed by "Description:" and/or "Visible text:" lines generated from that image. They are a text rendering of the image (you are not shown the image itself), not part of the article prose.
+
+The user message may begin with an "Introduction (context only):" block. It is the opening of the whole piece and is there so you understand what the part is about. Do not extract claims from it; extract only from the text after "Part:".
 
 Extract EVERY distinct claim the text makes or relies on, including implicit ones — things presented as background fact or presupposed, not only what is stated outright. This includes claims carried by the images: data in a chart, a figure in a screenshot, what a photo depicts — read these from the image block's Description and Visible text. Split compound statements into separate claims.
 
@@ -58,9 +63,10 @@ function claimsResponseFormat() {
     context: { type: "string", description: "Verbatim excerpt around the claim, or \"\" for an image-only claim." },
     context_paragraph: { type: "string", description: "Wider verbatim excerpt containing the context excerpt word-for-word, or \"\" when there is no surrounding text." },
     image_urls: { type: "array", items: { type: "string" }, description: "URLs of images the claim is based on; empty for a text-only claim." },
+    very_confident_that_its_true: { type: "boolean", description: "True only if you are very confident the claim is correct as stated." },
     speculation: { type: "boolean", description: "True if the claim is about a hypothetical/future scenario; false if about the present or past." },
   };
-  const required = ["claim", "context", "context_paragraph", "image_urls", "speculation"];
+  const required = ["claim", "context", "context_paragraph", "image_urls", "very_confident_that_its_true", "speculation"];
   return jsonSchemaResponseFormat("content_claims", {
     type: "object",
     properties: { claims: { type: "array", items: { type: "object", properties, required, additionalProperties: false } } },
@@ -74,6 +80,7 @@ interface RawClaim {
   context: string;
   context_paragraph: string;
   image_urls?: string[];
+  very_confident_that_its_true: boolean;
   speculation: boolean;
 }
 
@@ -85,6 +92,7 @@ function toExtractedClaim(raw: RawClaim, anchor: ClaimAnchor): ExtractedClaim {
     context: raw.context ?? "",
     contextParagraph: raw.context_paragraph ?? "",
     imageUrls: raw.image_urls ?? [],
+    veryConfidentTrue: raw.very_confident_that_its_true,
     speculation: raw.speculation,
     anchor,
   };
@@ -128,7 +136,7 @@ function renderImageDescriptions(text: string, descriptions: Map<string, GeminiM
   });
 }
 
-/** One Opus extraction call over a rendered text chunk. The call goes through
+/** One extraction call over a rendered text chunk. The call goes through
  *  the tracked wrapper so its cost lands in the active cost tracker. For years
  *  it did not, which made the daily spend cap undercount by exactly the
  *  extraction spend.
@@ -149,11 +157,11 @@ async function runExtraction(content: string): Promise<RawClaim[]> {
     ],
     schemaHint:
       `{ "claims": [ { "claim": string, "context": string, "context_paragraph": string, ` +
-      `"image_urls": string[], "judgement": string, "speculation": boolean } ] }`,
+      `"image_urls": string[], "very_confident_that_its_true": boolean, "speculation": boolean } ] }`,
     call: async (messages, attempt) => {
       const callName = attempt === 1 ? "claim_extraction" : `claim_extraction.retry.${attempt - 1}`;
       const { response, costEntry } = await trackedLlmCreate(callName, {
-        model: CLAIM_EXTRACTION_MODEL,
+        model: EVERYTHING_MODEL,
         messages,
         response_format: claimsResponseFormat(),
         reasoning_effort: "high",
@@ -233,10 +241,12 @@ function containedCueSpan(ctx: string, cues: SubtitleCue[]): { start?: number; e
   return { start, end };
 }
 
-// We split a long text into chunks for two reasons. One giant call tends to
-// summarize or sample the text instead of extracting every claim, so a smaller
-// chunk keeps each call exhaustive. Smaller calls also stay under the model's
-// output token limit.
+// We split a long part into chunks because one giant call summarizes or
+// samples the text instead of extracting every claim, and a smaller chunk
+// keeps each call exhaustive. This holds for Muse as much as it did for Opus:
+// on the Decker test item one call over 42,000 characters found 80 claims and
+// four 12,000-character chunks found 336 (GOO-159, see
+// src/scripts_jim/2026_09_14_muse_pipeline_comparison/RESULTS.md).
 const EXTRACTION_CHUNK_CHARS = 12_000;
 
 // This is the cue version of chunkText. It keeps every cue's timestamp.
@@ -317,13 +327,14 @@ function youtubeAnchor(videoId: string, cues: SubtitleCue[]): AnchorResolver {
   };
 }
 
-/** Extract from pre-rendered chunks, then attach each claim's resolved anchor. */
+/** Extract from pre-rendered chunks, then attach each claim's resolved anchor.
+ *  The queue is shared across the parts of one item, so an item never runs more
+ *  chunks at once than the caller allowed. */
 async function extractChunks(
   renderedChunks: string[],
   anchorFor: AnchorResolver,
-  concurrency: number,
+  queue: PQueue,
 ): Promise<ExtractedClaim[]> {
-  const queue = new PQueue({ concurrency });
   const perChunk = await Promise.all(renderedChunks.map((chunk) => queue.add(() => runExtraction(chunk))));
   return perChunk
     .flat()
@@ -335,31 +346,156 @@ async function extractChunks(
 // timestamps from the cues afterwards, so no [seconds] marker can leak into a
 // claim's verbatim context.
 const transcriptChunk = (text: string) => `Transcript segment:\n\n${text}`;
+const articleChunk = (text: string) => `Article excerpt:\n\n${text}`;
 
-export async function extractClaims(content: FetchedContent, concurrency: number): Promise<ExtractedClaim[]> {
+/** The user message for one chunk of a part. The introduction goes ahead of the
+ *  chunk as context, labelled so the prompt's rule not to extract from it
+ *  applies. The introduction's own part, and an unsplit item, send the chunk
+ *  alone. */
+function partUserMessage(introduction: string | null, chunk: string): string {
+  return introduction ? `Introduction (context only):\n\n${introduction}\n\nPart:\n\n${chunk}` : chunk;
+}
+
+/** One part ready to extract: its stored text, its rendered chunks, and how to
+ *  anchor the claims found in them. */
+interface PlannedPart {
+  title: string;
+  text: string;
+  chunks: string[];
+  anchorFor: AnchorResolver;
+  /** False for the introduction's own part, which has nothing ahead of it. */
+  withIntroduction: boolean;
+}
+
+const INTRODUCTION_TITLE = "Introduction";
+
+/** Runs the gate and split call. When the gate is off, a not-checkable verdict
+ *  is ignored and the text is treated as one part; a reader who asked for the
+ *  page gets it checked whatever it is. */
+async function gateAndSplitFor(text: string, title: string, gate: boolean): Promise<GateSplitVerdict> {
+  const verdict = await gateAndSplit(text, title);
+  if (verdict.kind === "not_checkable" && !gate) return { kind: "checkable", starts: [] };
+  return verdict;
+}
+
+async function extractPlannedParts(
+  introduction: string | null,
+  planned: PlannedPart[],
+  concurrency: number,
+): Promise<ExtractionResult> {
+  const queue = new PQueue({ concurrency });
+  const parts: ContentPart[] = await Promise.all(
+    planned.map(async (part, index) => ({
+      index,
+      title: part.title,
+      text: part.text,
+      claims: await extractChunks(
+        part.chunks.map((chunk) => partUserMessage(part.withIntroduction ? introduction : null, chunk)),
+        part.anchorFor,
+        queue,
+      ),
+    })),
+  );
+  return { kind: "claims", introduction, parts };
+}
+
+/** Plans the parts of a text item. `render` turns a part's stored text into the
+ *  text the model reads, which for an article means splicing in the image
+ *  descriptions. */
+function planTextParts(params: {
+  title: string;
+  text: string;
+  starts: PartStart[];
+  render: (partText: string) => string;
+  chunkLabel: (chunk: string) => string;
+  anchorFor: AnchorResolver;
+}): { introduction: string | null; planned: PlannedPart[] } {
+  const { starts, render, chunkLabel, anchorFor } = params;
+  const chunksOf = (text: string) => chunkText(render(text)).map(chunkLabel);
+  const cut = cutText(params.text, starts);
+  if (!cut) {
+    return {
+      introduction: null,
+      planned: [{ title: params.title, text: params.text, chunks: chunksOf(params.text), anchorFor, withIntroduction: false }],
+    };
+  }
+  const planned: PlannedPart[] = [];
+  if (cut.introduction) {
+    planned.push({ title: INTRODUCTION_TITLE, text: cut.introduction, chunks: chunksOf(cut.introduction), anchorFor, withIntroduction: false });
+  }
+  for (const part of cut.parts) {
+    planned.push({ title: part.title, text: part.text, chunks: chunksOf(part.text), anchorFor, withIntroduction: true });
+  }
+  return { introduction: cut.introduction, planned };
+}
+
+/** Plans the parts of a live YouTube video. A part is a range of whole cues,
+ *  and its claims snap onto those cues only, so a phrase the speaker repeats
+ *  resolves inside the right part. */
+function planCueParts(params: {
+  title: string;
+  videoId: string;
+  cues: SubtitleCue[];
+  starts: PartStart[];
+}): { introduction: string | null; planned: PlannedPart[] } {
+  const { videoId, cues, starts } = params;
+  const plan = (title: string, partCues: SubtitleCue[], withIntroduction: boolean): PlannedPart => ({
+    title,
+    text: joinCues(partCues),
+    chunks: chunkCues(partCues).map((chunk) => transcriptChunk(joinCues(chunk))),
+    anchorFor: youtubeAnchor(videoId, partCues),
+    withIntroduction,
+  });
+  const cut = cutCues(cues, starts);
+  if (!cut) return { introduction: null, planned: [plan(params.title, cues, false)] };
+  const planned: PlannedPart[] = [];
+  if (cut.introduction.length) planned.push(plan(INTRODUCTION_TITLE, cut.introduction, false));
+  for (const part of cut.parts) planned.push(plan(part.title, part.cues, true));
+  return { introduction: cut.introduction.length ? joinCues(cut.introduction) : null, planned };
+}
+
+/** Extracts the claims of one item. `gate` says whether a not-checkable verdict
+ *  ends the item; it is off for pages a reader asked for. */
+export async function extractClaims(content: FetchedContent, concurrency: number, gate = true): Promise<ExtractionResult> {
   switch (content.kind) {
-    case "youtube":
-      return extractChunks(
-        chunkCues(content.cues).map((chunk) => transcriptChunk(chunk.map((c) => c.text).join("\n"))),
-        youtubeAnchor(content.videoId, content.cues),
-        concurrency,
-      );
-    case "youtube-transcript":
-      return extractChunks(
-        chunkText(content.text).map(transcriptChunk),
-        youtubeAnchor(content.videoId, content.cues),
-        concurrency,
-      );
+    case "youtube": {
+      const verdict = await gateAndSplitFor(joinCues(content.cues), content.title, gate);
+      if (verdict.kind === "not_checkable") return verdict;
+      const { introduction, planned } = planCueParts({ title: content.title, videoId: content.videoId, cues: content.cues, starts: verdict.starts });
+      return extractPlannedParts(introduction, planned, concurrency);
+    }
+    case "youtube-transcript": {
+      const verdict = await gateAndSplitFor(content.text, content.title, gate);
+      if (verdict.kind === "not_checkable") return verdict;
+      // The transcript's wording differs from the cues, so a text offset cannot
+      // be mapped onto a cue range. Every part snaps against the full cue list.
+      const { introduction, planned } = planTextParts({
+        title: content.title,
+        text: content.text,
+        starts: verdict.starts,
+        render: (text) => text,
+        chunkLabel: transcriptChunk,
+        anchorFor: youtubeAnchor(content.videoId, content.cues),
+      });
+      return extractPlannedParts(introduction, planned, concurrency);
+    }
     case "substack": {
-      // We describe the images first and only then chunk the rendered text.
-      // That way the chunk budget counts the real description text rather than
-      // the short markers.
+      const verdict = await gateAndSplitFor(content.text, content.title, gate);
+      if (verdict.kind === "not_checkable") return verdict;
+      // The images are described once for the whole article. Each part then
+      // gets the descriptions spliced into its own text before chunking, so
+      // the chunk budget counts the real description text rather than the
+      // short markers.
       const descriptions = await describeArticleImages(content.text);
-      return extractChunks(
-        chunkText(renderImageDescriptions(content.text, descriptions)).map((chunk) => `Article excerpt:\n\n${chunk}`),
-        () => ({ kind: "substack", url: content.url }),
-        concurrency,
-      );
+      const { introduction, planned } = planTextParts({
+        title: content.title,
+        text: content.text,
+        starts: verdict.starts,
+        render: (text) => renderImageDescriptions(text, descriptions),
+        chunkLabel: articleChunk,
+        anchorFor: () => ({ kind: "substack", url: content.url }),
+      });
+      return extractPlannedParts(introduction, planned, concurrency);
     }
   }
 }

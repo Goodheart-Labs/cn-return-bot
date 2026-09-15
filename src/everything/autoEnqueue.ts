@@ -44,12 +44,17 @@
  *
  * --affordable answers "what would the walk admit at that budget" without
  * reading the pacing snapshot, which is also how a dry run works before
- * migration 095 exists on the database it points at.
+ * migration 096 exists on the database it points at.
  */
 
 import "dotenv/config";
 import { extractYoutubeVideoId } from "../everything-shared/pageUrls";
+<<<<<<< HEAD
 import { rankCreators, VISIT_RANKING_WINDOW_DAYS, type RankedCreator } from "./creatorRanking";
+=======
+import { rankCreators, type RankedCreator, type RankingRule } from "./creatorRanking";
+import { VISIT_RANKING_WINDOW_DAYS } from "../everything-shared/readers";
+>>>>>>> origin/main
 import { MIN_PAGES_FOR_A_REGULAR_READER } from "../everything-shared/readers";
 import { affordablePostsPerDay, computeNextRun, MEAN_COST_FALLBACK_HOURS, MEAN_COST_MIN_POSTS, MEAN_COST_WINDOW_HOURS } from "./pacing";
 import { FEED_BUDGET_USD } from "./spendCap";

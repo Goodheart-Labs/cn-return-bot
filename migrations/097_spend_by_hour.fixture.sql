@@ -1,4 +1,4 @@
--- A miniature of production for migration 096: the one table it reads, with
+-- A miniature of production for migration 097: the one table it reads, with
 -- production's grants and row security, and a handful of cost rows placed at
 -- known hours relative to the current hour.
 --
@@ -8,9 +8,9 @@
 --   until sudo docker exec cn-migration-test pg_isready -U postgres; do sleep 1; done
 --   export PGPASSWORD=test
 --   PSQL="psql -h 127.0.0.1 -p 55432 -U postgres -v ON_ERROR_STOP=1 -q"
---   $PSQL -f migrations/096_spend_by_hour.fixture.sql
---   $PSQL --single-transaction -f migrations/096_spend_by_hour.sql
---   psql -h 127.0.0.1 -p 55432 -U postgres -q -f migrations/096_spend_by_hour.verify.sql
+--   $PSQL -f migrations/097_spend_by_hour.fixture.sql
+--   $PSQL --single-transaction -f migrations/097_spend_by_hour.sql
+--   psql -h 127.0.0.1 -p 55432 -U postgres -q -f migrations/097_spend_by_hour.verify.sql
 --   sudo docker stop cn-migration-test
 create role anon nologin;
 create role authenticated nologin;

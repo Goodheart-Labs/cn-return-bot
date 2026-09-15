@@ -1,0 +1,583 @@
+{
+  "chars": 12000,
+  "costUsd": 0.015439699999999999,
+  "claimCount": 115,
+  "veryConfidentCount": 21,
+  "claims": [
+    {
+      "claim": "Mechanize.ai is looking to hire software engineers.",
+      "very_confident_that_its_true": false,
+      "context_quote": "This post is brought to you by Mechanize.ai. They are looking to hire software engineers, and are paying handsomely. Please consider applying."
+    },
+    {
+      "claim": "In rural Indian villages, where people live is strictly delineated by caste and religion.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Where people live is strictly delineated by caste and religion. There are four big hierarchical castes, or varnas, taken in order Brahmins, Kshatriyas, Vaishyas, and Shudras, and underneath everyone the untouchables, or Dalits."
+    },
+    {
+      "claim": "There are four big hierarchical varnas in India, in order Brahmins, Kshatriyas, Vaishyas, and Shudras, with the untouchables or Dalits underneath everyone.",
+      "very_confident_that_its_true": true,
+      "context_quote": "Where people live is strictly delineated by caste and religion. There are four big hierarchical castes, or varnas, taken in order Brahmins, Kshatriyas, Vaishyas, and Shudras, and underneath everyone the untouchables, or Dalits."
+    },
+    {
+      "claim": "Each broad Indian umbrella caste is divided into jati, which traditionally correspond to occupations.",
+      "very_confident_that_its_true": true,
+      "context_quote": "There are four big hierarchical castes, or varnas, taken in order Brahmins, Kshatriyas, Vaishyas, and Shudras, and underneath everyone the untouchables, or Dalits. Each of these umbrella castes is divided up into jati, which traditionally correspond to occupations."
+    },
+    {
+      "claim": "Each jati has its own lane in an Indian village, called a gali.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Each of these umbrella castes is divided up into jati, which traditionally correspond to occupations. Each jati has its own lane in the village, a gali. It looks something like this."
+    },
+    {
+      "claim": "The first photograph depicts a narrow, unpaved rural village street lined with modest single-story homes with weathered white-washed walls and reddish-brown clay tile roofs.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Each jati has its own lane in the village, a gali. It looks something like this."
+    },
+    {
+      "claim": "The first photograph shows villagers including men sitting outside and a child walking, laundry hanging to dry, overhead electrical wires, a bicycle propped against a brick wall, and lush green trees in the background.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Each jati has its own lane in the village, a gali. It looks something like this."
+    },
+    {
+      "claim": "High-caste individuals in a north Indian village, Thakurs who are landowners and Brahmins who are nominally the priestly caste but mostly landowners, live at the center of the village.",
+      "very_confident_that_its_true": false,
+      "context_quote": "At the center of the village are the high caste individuals, the Thakurs (landowners) and Brahmins (priestly caste, though most are simply landowners). Further out are cultivator castes – Yadhavs, Kurmis, Lodhs, Kachhis, etc – each of whom have reputations for specializing in particular things (the Kurmis as tillers of the land and so on), and the service castes, of which there are many."
+    },
+    {
+      "claim": "Cultivator castes in Uttar Pradesh such as Yadhavs, Kurmis, Lodhs and Kachhis live further out from the village center and have reputations for specializing in particular agricultural activities, such as Kurmis as tillers of the land.",
+      "very_confident_that_its_true": false,
+      "context_quote": "At the center of the village are the high caste individuals, the Thakurs (landowners) and Brahmins (priestly caste, though most are simply landowners). Further out are cultivator castes – Yadhavs, Kurmis, Lodhs, Kachhis, etc – each of whom have reputations for specializing in particular things (the Kurmis as tillers of the land and so on), and the service castes, of which there are many."
+    },
+    {
+      "claim": "Traditional service-caste occupations in India include the Nai as barbers, the Lohar as blacksmiths, and the Dhobi as washermen.",
+      "very_confident_that_its_true": true,
+      "context_quote": "Further out are cultivator castes – Yadhavs, Kurmis, Lodhs, Kachhis, etc – each of whom have reputations for specializing in particular things (the Kurmis as tillers of the land and so on), and the service castes, of which there are many. They have a particular job that is theirs by tradition, the Nai being the barbers, the Lohar the blacksmiths, the Dhobi the washermen, and so on."
+    },
+    {
+      "claim": "Service castes traditionally performed their jobs at the command of high-caste individuals in exchange for shares of grain.",
+      "very_confident_that_its_true": false,
+      "context_quote": "They have a particular job that is theirs by tradition, the Nai being the barbers, the Lohar the blacksmiths, the Dhobi the washermen, and so on. Traditionally they would do these jobs at the command of the high caste individuals in exchange for shares of grain, but this part has broken down and they work for cash."
+    },
+    {
+      "claim": "The traditional grain-share system for service-caste labor has broken down and service-caste workers now work for cash.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Traditionally they would do these jobs at the command of the high caste individuals in exchange for shares of grain, but this part has broken down and they work for cash."
+    },
+    {
+      "claim": "In the 2006 round of the Rural Economic Development Survey, covering 202 villages and 99,760 houses in total, there were 3,266 unique sub-castes recorded.",
+      "very_confident_that_its_true": false,
+      "context_quote": "In the 2006 round of the Rural Economic Development Survey, in the 202 villages included, with 99,760 house total, there were 3,266 unique sub-castes."
+    },
+    {
+      "claim": "Dalits, formerly called untouchables, are outside the caste system but have their own particular castes.",
+      "very_confident_that_its_true": false,
+      "context_quote": "The Dalits, formerly the untouchables, are outside the caste system, though they have their own particular castes. They live outside the village because they are dirty, and cannot ritually pollute the well."
+    },
+    {
+      "claim": "Dalits live outside Indian villages to avoid ritually polluting the well.",
+      "very_confident_that_its_true": false,
+      "context_quote": "The Dalits, formerly the untouchables, are outside the caste system, though they have their own particular castes. They live outside the village because they are dirty, and cannot ritually pollute the well."
+    },
+    {
+      "claim": "Indian villages used to be centered around a single well controlled by the high caste.",
+      "very_confident_that_its_true": false,
+      "context_quote": "(It used to be that a village was centered around a single well, controlled by the high caste – to get water, a Dalit would have to get a high caste individual to draw it for him, taking care never to touch him, or to let his shadow fall across the high caste individual. Water access is much more common now, with millions of wells being installed starting in the 1970s.)"
+    },
+    {
+      "claim": "To get water from a high-caste-controlled well, a Dalit had to have a high-caste individual draw it, taking care never to touch him or let his shadow fall across him.",
+      "very_confident_that_its_true": false,
+      "context_quote": "(It used to be that a village was centered around a single well, controlled by the high caste – to get water, a Dalit would have to get a high caste individual to draw it for him, taking care never to touch him, or to let his shadow fall across the high caste individual. Water access is much more common now, with millions of wells being installed starting in the 1970s.)"
+    },
+    {
+      "claim": "Water access in rural India became much more common with millions of wells being installed starting in the 1970s.",
+      "very_confident_that_its_true": false,
+      "context_quote": "(It used to be that a village was centered around a single well, controlled by the high caste – to get water, a Dalit would have to get a high caste individual to draw it for him, taking care never to touch him, or to let his shadow fall across the high caste individual. Water access is much more common now, with millions of wells being installed starting in the 1970s.)"
+    },
+    {
+      "claim": "Dalits now live in hamlets on the outskirts of villages, strictly downstream.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Water access is much more common now, with millions of wells being installed starting in the 1970s.) Now the Dalits live in the outskirts, in a little hamlet, strictly downstream. The dirty jobs, like leatherwork and funerals, are reserved to them, but for the most part they are landless laborers."
+    },
+    {
+      "claim": "Jobs like leatherwork and funerals are reserved to Dalits.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Now the Dalits live in the outskirts, in a little hamlet, strictly downstream. The dirty jobs, like leatherwork and funerals, are reserved to them, but for the most part they are landless laborers."
+    },
+    {
+      "claim": "Dalits are for the most part landless laborers.",
+      "very_confident_that_its_true": false,
+      "context_quote": "The dirty jobs, like leatherwork and funerals, are reserved to them, but for the most part they are landless laborers. There are also government jobs and spots in higher education reserved for Scheduled Castes, Scheduled Tribes, and Other Backwards Castes, including the Dalits."
+    },
+    {
+      "claim": "In India there are government jobs and spots in higher education reserved for Scheduled Castes, Scheduled Tribes, and Other Backward Castes, including Dalits.",
+      "very_confident_that_its_true": true,
+      "context_quote": "The dirty jobs, like leatherwork and funerals, are reserved to them, but for the most part they are landless laborers. There are also government jobs and spots in higher education reserved for Scheduled Castes, Scheduled Tribes, and Other Backwards Castes, including the Dalits."
+    },
+    {
+      "claim": "Muslims in Indian villages live separately but retain their own castes.",
+      "very_confident_that_its_true": false,
+      "context_quote": "The Muslims live separately, but they retain their own castes. Christians are rare in Uttar Pradesh, and there are none in our village of Rampur, but for the sake of completeness I note that they are fairly common in the south of India, especially the parts exposed to trade, and they retain castes."
+    },
+    {
+      "claim": "Christians are rare in Uttar Pradesh.",
+      "very_confident_that_its_true": false,
+      "context_quote": "The Muslims live separately, but they retain their own castes. Christians are rare in Uttar Pradesh, and there are none in our village of Rampur, but for the sake of completeness I note that they are fairly common in the south of India, especially the parts exposed to trade, and they retain castes."
+    },
+    {
+      "claim": "Christians in India are fairly common in the south, especially the parts exposed to trade.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Christians are rare in Uttar Pradesh, and there are none in our village of Rampur, but for the sake of completeness I note that they are fairly common in the south of India, especially the parts exposed to trade, and they retain castes."
+    },
+    {
+      "claim": "Christians in India retain castes.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Christians are rare in Uttar Pradesh, and there are none in our village of Rampur, but for the sake of completeness I note that they are fairly common in the south of India, especially the parts exposed to trade, and they retain castes."
+    },
+    {
+      "claim": "Each village or small cluster of villages in India has its own local government called the gram panchayat.",
+      "very_confident_that_its_true": true,
+      "context_quote": "Each village, or a small cluster of villages, has its own local government, the gram panchayat. These exist mainly as administrators for various government benefits, and do not themselves levy taxes."
+    },
+    {
+      "claim": "Gram panchayats exist mainly as administrators for government benefits and do not levy taxes themselves.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Each village, or a small cluster of villages, has its own local government, the gram panchayat. These exist mainly as administrators for various government benefits, and do not themselves levy taxes. Elections are held every five years."
+    },
+    {
+      "claim": "Gram panchayat elections in India are held every five years.",
+      "very_confident_that_its_true": true,
+      "context_quote": "These exist mainly as administrators for various government benefits, and do not themselves levy taxes. Elections are held every five years. Voting is essentially along caste lines, but only the narrow castes."
+    },
+    {
+      "claim": "Voting in gram panchayat elections is essentially along narrow caste lines.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Elections are held every five years. Voting is essentially along caste lines, but only the narrow castes. Within the backward castes, they are often fighting for the same resources earmarked toward them."
+    },
+    {
+      "claim": "Backward castes in India often compete for the same resources earmarked toward them.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Voting is essentially along caste lines, but only the narrow castes. Within the backward castes, they are often fighting for the same resources earmarked toward them. Landowners and local elites are able to use their control of local resources to influence outcomes (Anderson, Francois, and Kotwal, 2015)."
+    },
+    {
+      "claim": "Landowners and local elites in India are able to use their control of local resources to influence local election outcomes.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Within the backward castes, they are often fighting for the same resources earmarked toward them. Landowners and local elites are able to use their control of local resources to influence outcomes (Anderson, Francois, and Kotwal, 2015)."
+    },
+    {
+      "claim": "People in India only marry within their jati.",
+      "very_confident_that_its_true": false,
+      "context_quote": "People only marry within their jati, the narrow occupational castes. This pattern of endogamy is ancient, dating back at least 2,000 years."
+    },
+    {
+      "claim": "The pattern of endogamy by jati in India dates back at least 2,000 years.",
+      "very_confident_that_its_true": false,
+      "context_quote": "People only marry within their jati, the narrow occupational castes. This pattern of endogamy is ancient, dating back at least 2,000 years. (How do we know this? When people mate, they exchange whole chromosomes."
+    },
+    {
+      "claim": "When people mate, they exchange whole chromosomes.",
+      "very_confident_that_its_true": true,
+      "context_quote": "(How do we know this? When people mate, they exchange whole chromosomes. When they form new gametes through meiosis, these chromosomes get chopped to bits and reassembled."
+    },
+    {
+      "claim": "When forming new gametes through meiosis, chromosomes get chopped up and reassembled.",
+      "very_confident_that_its_true": true,
+      "context_quote": "When people mate, they exchange whole chromosomes. When they form new gametes through meiosis, these chromosomes get chopped to bits and reassembled. We can infer from how “chopped up” people’s genes are how long it must have been since they last intermixed."
+    },
+    {
+      "claim": "The degree to which people's genes are chopped up can be used to infer how long ago populations last intermixed.",
+      "very_confident_that_its_true": true,
+      "context_quote": "When they form new gametes through meiosis, these chromosomes get chopped to bits and reassembled. We can infer from how “chopped up” people’s genes are how long it must have been since they last intermixed. For more, see (Moorjani et al., 2013))."
+    },
+    {
+      "claim": "Higher castes in India tend to have a greater proportion of Aryan ancestry.",
+      "very_confident_that_its_true": false,
+      "context_quote": "We can infer from how “chopped up” people’s genes are how long it must have been since they last intermixed. For more, see (Moorjani et al., 2013)). The higher castes tend to have a greater proportion of Aryan ancestry, but this does not correspond to an American conception of race, with north-south geography being more important for that."
+    },
+    {
+      "claim": "North-south geography in India is more important than caste for correspondence to an American conception of race.",
+      "very_confident_that_its_true": false,
+      "context_quote": "The higher castes tend to have a greater proportion of Aryan ancestry, but this does not correspond to an American conception of race, with north-south geography being more important for that."
+    },
+    {
+      "claim": "People in rural India never marry within their own village.",
+      "very_confident_that_its_true": false,
+      "context_quote": "People never, however, marry within their village. Under no circumstances can someone marry another in the same village, and it would be as shocking as marrying your brother."
+    },
+    {
+      "claim": "Marrying someone from the same village in rural India is regarded as shocking as marrying one's sibling.",
+      "very_confident_that_its_true": false,
+      "context_quote": "People never, however, marry within their village. Under no circumstances can someone marry another in the same village, and it would be as shocking as marrying your brother."
+    },
+    {
+      "claim": "Love marriages in rural India are extremely rare.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Under no circumstances can someone marry another in the same village, and it would be as shocking as marrying your brother. Since these occur at arm’s length, “love marriages” are extremely rare. Less than 5% of marriages were chosen without the involvement of the parents."
+    },
+    {
+      "claim": "Less than 5% of marriages in the described Indian context were chosen without the involvement of parents.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Since these occur at arm’s length, “love marriages” are extremely rare. Less than 5% of marriages were chosen without the involvement of the parents. The bride goes to live with the groom’s family."
+    },
+    {
+      "claim": "In rural India the bride goes to live with the groom's family after marriage.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Less than 5% of marriages were chosen without the involvement of the parents. The bride goes to live with the groom’s family. Since this is a burden to them, a dowry must be paid."
+    },
+    {
+      "claim": "Paying a dowry has been technically illegal in India since 1961.",
+      "very_confident_that_its_true": true,
+      "context_quote": "The paying of a dowry is technically illegal, and has been since 1961, but it is universally ignored."
+    },
+    {
+      "claim": "India's legal prohibition on dowry is universally ignored.",
+      "very_confident_that_its_true": false,
+      "context_quote": "The paying of a dowry is technically illegal, and has been since 1961, but it is universally ignored. This dowry is substantial – it essentially corresponds to an inheritance paid before anyone has died."
+    },
+    {
+      "claim": "An Indian dowry can require a family to transfer several years' worth of income.",
+      "very_confident_that_its_true": false,
+      "context_quote": "This dowry is substantial – it essentially corresponds to an inheritance paid before anyone has died. A family might have to transfer several years worth of income. Conflicts over the size of the dowry are common."
+    },
+    {
+      "claim": "Conflicts over the size of dowries in India are common.",
+      "very_confident_that_its_true": false,
+      "context_quote": "A family might have to transfer several years worth of income. Conflicts over the size of the dowry are common. The receiving family does not want to take on the burden of the daughter without appropriate compensation."
+    },
+    {
+      "claim": "In the author's region of Uttar Pradesh, 2,000 women die every year over dowry disputes.",
+      "very_confident_that_its_true": false,
+      "context_quote": "The receiving family does not want to take on the burden of the daughter without appropriate compensation. In our region of Uttar Pradesh, 2,000 women die every year over dowry disputes, and this is the tip of the iceberg of the violent extortion of the bride’s family."
+    },
+    {
+      "claim": "Women in rural India rarely work formally, and formal work by women declines as families get wealthier.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Women rarely work formally, and this declines as families get wealthier. There is a strong norm against women working, and a stronger norm against working outside the house, where they cannot be supervised and might do something dishonorable with a man."
+    },
+    {
+      "claim": "There is a strong norm against women working in rural India, and an even stronger norm against women working outside the house.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Women rarely work formally, and this declines as families get wealthier. There is a strong norm against women working, and a stronger norm against working outside the house, where they cannot be supervised and might do something dishonorable with a man."
+    },
+    {
+      "claim": "Sons are preferred to daughters at birth in rural India.",
+      "very_confident_that_its_true": false,
+      "context_quote": "There is a strong norm against women working, and a stronger norm against working outside the house, where they cannot be supervised and might do something dishonorable with a man. Men are preferred to women at birth, and especially for later births to families without a son, there will be sex selective abortions and feticide of daughters."
+    },
+    {
+      "claim": "In rural India, families without a son engage in sex-selective abortions and feticide of daughters especially for later births.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Men are preferred to women at birth, and especially for later births to families without a son, there will be sex selective abortions and feticide of daughters."
+    },
+    {
+      "claim": "Agricultural production in the described north Indian area involves two and sometimes three crops per year.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Production revolves around the seasons, with two, sometimes three, crops planted. Water for irrigating the rice crop comes from the monsoon season, with the rain coming in early summer."
+    },
+    {
+      "claim": "Water for irrigating the rice crop in north India comes from the monsoon season with rain in early summer.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Production revolves around the seasons, with two, sometimes three, crops planted. Water for irrigating the rice crop comes from the monsoon season, with the rain coming in early summer. This is harvested in September."
+    },
+    {
+      "claim": "Rice in Uttar Pradesh is harvested in September.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Water for irrigating the rice crop comes from the monsoon season, with the rain coming in early summer. This is harvested in September. Wheat, which is much more drought tolerant, is planted in November and harvested in March."
+    },
+    {
+      "claim": "Wheat in Uttar Pradesh is planted in November and harvested in March, and is more drought tolerant than rice.",
+      "very_confident_that_its_true": false,
+      "context_quote": "This is harvested in September. Wheat, which is much more drought tolerant, is planted in November and harvested in March. Sometimes, a third crop of lentils can be planted immediately after the rice crop is harvested."
+    },
+    {
+      "claim": "A third crop of lentils can sometimes be planted immediately after the rice harvest.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Wheat, which is much more drought tolerant, is planted in November and harvested in March. Sometimes, a third crop of lentils can be planted immediately after the rice crop is harvested. The fields are plowed with oxen, which the Hindus cannot kill."
+    },
+    {
+      "claim": "Fields in the area are plowed with oxen, which Hindus cannot kill.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Sometimes, a third crop of lentils can be planted immediately after the rice crop is harvested. The fields are plowed with oxen, which the Hindus cannot kill. They are kept for dairy, which is a source of both consumption smoothing and protein."
+    },
+    {
+      "claim": "Cattle are kept for dairy, which provides consumption smoothing and protein.",
+      "very_confident_that_its_true": false,
+      "context_quote": "The fields are plowed with oxen, which the Hindus cannot kill. They are kept for dairy, which is a source of both consumption smoothing and protein. Cows are sacred, and stray cattle are a persistent annoyance."
+    },
+    {
+      "claim": "Cows are sacred to Hindus and stray cattle are a persistent annoyance.",
+      "very_confident_that_its_true": true,
+      "context_quote": "They are kept for dairy, which is a source of both consumption smoothing and protein. Cows are sacred, and stray cattle are a persistent annoyance. The Muslims have an important role in doing the dirty work and slaughtering bullocks (in Uttar Pradesh, killing female cows is forbidden)."
+    },
+    {
+      "claim": "Muslims in Uttar Pradesh slaughter bullocks.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Cows are sacred, and stray cattle are a persistent annoyance. The Muslims have an important role in doing the dirty work and slaughtering bullocks (in Uttar Pradesh, killing female cows is forbidden)."
+    },
+    {
+      "claim": "In Uttar Pradesh, killing female cows is forbidden.",
+      "very_confident_that_its_true": false,
+      "context_quote": "The Muslims have an important role in doing the dirty work and slaughtering bullocks (in Uttar Pradesh, killing female cows is forbidden)."
+    },
+    {
+      "claim": "During the agricultural lean season, rural families draw down savings and seek other work.",
+      "very_confident_that_its_true": false,
+      "context_quote": "This cyclicality means that there is either lots of work to do, or very little. During the lean season, families draw down their savings, and try to find some form of work to do. The Indian government guaranteed 100 days a year of employment to rural households (now 125, as of 2025), mostly earthwork – digging ditches, irrigation canals, and the like."
+    },
+    {
+      "claim": "The Indian government guaranteed 100 days a year of employment to rural households, now 125 days as of 2025.",
+      "very_confident_that_its_true": false,
+      "context_quote": "During the lean season, families draw down their savings, and try to find some form of work to do. The Indian government guaranteed 100 days a year of employment to rural households (now 125, as of 2025), mostly earthwork – digging ditches, irrigation canals, and the like."
+    },
+    {
+      "claim": "The government rural employment work consists mostly of earthwork such as digging ditches and irrigation canals.",
+      "very_confident_that_its_true": false,
+      "context_quote": "The Indian government guaranteed 100 days a year of employment to rural households (now 125, as of 2025), mostly earthwork – digging ditches, irrigation canals, and the like. Other common jobs are firing bricks, or making textiles."
+    },
+    {
+      "claim": "Other common lean-season jobs in rural India are firing bricks and making textiles.",
+      "very_confident_that_its_true": false,
+      "context_quote": "The Indian government guaranteed 100 days a year of employment to rural households (now 125, as of 2025), mostly earthwork – digging ditches, irrigation canals, and the like. Other common jobs are firing bricks, or making textiles."
+    },
+    {
+      "claim": "Most temporary migrants return to their home village at the end of the season rather than moving permanently.",
+      "very_confident_that_its_true": false,
+      "context_quote": "The other option is to migrate temporarily, working in the city for a season. Most people do not move permanently, but return to their home village at the end of the season."
+    },
+    {
+      "claim": "At least several hundred thousand Indian workers go abroad to Saudi Arabia and the UAE for longer-term work.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Most people do not move permanently, but return to their home village at the end of the season. If one is willing to work for a longer period, they can go abroad to Saudi Arabia and the UAE, with at least several hundred thousand people doing this."
+    },
+    {
+      "claim": "It is customary in the described area to defecate in the fields before dawn.",
+      "very_confident_that_its_true": false,
+      "context_quote": "A day in the fields begins with walking out before dawn. It is customary to defecate now into the fields. In 2015, 55% of individuals reported open defecation in the countryside."
+    },
+    {
+      "claim": "In 2015, 55% of individuals in the Indian countryside reported open defecation.",
+      "very_confident_that_its_true": false,
+      "context_quote": "It is customary to defecate now into the fields. In 2015, 55% of individuals reported open defecation in the countryside. Since this was something of an embarrassment to the national government, the Swachh Bharat Mission built toilets across India."
+    },
+    {
+      "claim": "India's Swachh Bharat Mission built toilets across India.",
+      "very_confident_that_its_true": true,
+      "context_quote": "In 2015, 55% of individuals reported open defecation in the countryside. Since this was something of an embarrassment to the national government, the Swachh Bharat Mission built toilets across India. However, the open defecation rate remains high, at around 28%."
+    },
+    {
+      "claim": "The open defecation rate in rural India remains high at around 28%.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Since this was something of an embarrassment to the national government, the Swachh Bharat Mission built toilets across India. However, the open defecation rate remains high, at around 28%. This has deleterious effects on the health of the community, and likely accounts for why children are still shorter than in Africa."
+    },
+    {
+      "claim": "Open defecation harms community health and likely explains why Indian children are shorter than African children.",
+      "very_confident_that_its_true": false,
+      "context_quote": "However, the open defecation rate remains high, at around 28%. This has deleterious effects on the health of the community, and likely accounts for why children are still shorter than in Africa."
+    },
+    {
+      "claim": "Indian children are shorter than African children.",
+      "very_confident_that_its_true": false,
+      "context_quote": "This has deleterious effects on the health of the community, and likely accounts for why children are still shorter than in Africa. Muslims are more likely to use toilets than Hindus, and their children are more likely to live, despite being poorer than Hindus, which indicates that what is driving this are customary beliefs about fecal matter being ritually polluting."
+    },
+    {
+      "claim": "Muslims in India are more likely to use toilets than Hindus.",
+      "very_confident_that_its_true": false,
+      "context_quote": "This has deleterious effects on the health of the community, and likely accounts for why children are still shorter than in Africa. Muslims are more likely to use toilets than Hindus, and their children are more likely to live, despite being poorer than Hindus, which indicates that what is driving this are customary beliefs about fecal matter being ritually polluting."
+    },
+    {
+      "claim": "Muslim children in India are more likely to survive than Hindu children despite Muslims being poorer than Hindus.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Muslims are more likely to use toilets than Hindus, and their children are more likely to live, despite being poorer than Hindus, which indicates that what is driving this are customary beliefs about fecal matter being ritually polluting."
+    },
+    {
+      "claim": "Customary Hindu beliefs about fecal matter being ritually polluting drive continued open defecation.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Muslims are more likely to use toilets than Hindus, and their children are more likely to live, despite being poorer than Hindus, which indicates that what is driving this are customary beliefs about fecal matter being ritually polluting. Only the very lowest of the untouchables engage in cleaning out latrines."
+    },
+    {
+      "claim": "Only the very lowest among untouchables clean out latrines in India.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Muslims are more likely to use toilets than Hindus, and their children are more likely to live, despite being poorer than Hindus, which indicates that what is driving this are customary beliefs about fecal matter being ritually polluting. Only the very lowest of the untouchables engage in cleaning out latrines. (Manual scavenging is, like dowry, both illegal and widespread.)"
+    },
+    {
+      "claim": "Manual scavenging in India is both illegal and widespread.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Only the very lowest of the untouchables engage in cleaning out latrines. (Manual scavenging is, like dowry, both illegal and widespread.)"
+    },
+    {
+      "claim": "The second photograph depicts a single-story rural Indian school building painted faded orange with Hindi signs above the doors, where children in light blue and dark blue uniforms play in a dusty courtyard with trees and yellow wildflowers in the foreground.",
+      "very_confident_that_its_true": false,
+      "context_quote": "If they are a child, one would go to school. An ordinary school might look like this."
+    },
+    {
+      "claim": "School enrollment in the described area is universal, with both males and females attending school.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Enrollment is universal. Everyone, both male and female, goes to a school. The school they go to is not unlikely to be private, as around 35% of children in Uttar Pradesh go to private schools."
+    },
+    {
+      "claim": "Around 35% of children in Uttar Pradesh attend private schools.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Everyone, both male and female, goes to a school. The school they go to is not unlikely to be private, as around 35% of children in Uttar Pradesh go to private schools. (I am confident that higher figures are the result of people misreporting where they actually attend school)."
+    },
+    {
+      "claim": "In Uttar Pradesh, private schools are more likely to be attended by boys within a family and by richer castes.",
+      "very_confident_that_its_true": false,
+      "context_quote": "The school they go to is not unlikely to be private, as around 35% of children in Uttar Pradesh go to private schools. (I am confident that higher figures are the result of people misreporting where they actually attend school). Private schools are more likely to be attended by boys within the family, and by richer castes. Females drop out much earlier than men."
+    },
+    {
+      "claim": "Females in Uttar Pradesh drop out of school much earlier than males.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Private schools are more likely to be attended by boys within the family, and by richer castes. Females drop out much earlier than men. The main reason that they go to high school at all is to increase their prospects on the marriage market (Andrew and Adams, 2025), as they are unlikely to be working."
+    },
+    {
+      "claim": "The main reason girls in Uttar Pradesh attend high school is to increase their prospects on the marriage market, since they are unlikely to work.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Females drop out much earlier than men. The main reason that they go to high school at all is to increase their prospects on the marriage market (Andrew and Adams, 2025), as they are unlikely to be working."
+    },
+    {
+      "claim": "In India, a quarter of primary school teachers were absent when enumerators made unannounced visits.",
+      "very_confident_that_its_true": false,
+      "context_quote": "The government schools were notoriously unable to make teachers show up – Chaudhury et al (2006) reported on spot checks around the world. In India, a quarter of primary school teachers were not there when the enumerator dropped, and half of them were not teaching at the moment they dropped by."
+    },
+    {
+      "claim": "In India, half of primary school teachers were not teaching at the moment enumerators visited.",
+      "very_confident_that_its_true": false,
+      "context_quote": "In India, a quarter of primary school teachers were not there when the enumerator dropped, and half of them were not teaching at the moment they dropped by. Across 3,000 schools, they could elicit exactly one case of a teacher being fired for absence."
+    },
+    {
+      "claim": "Across 3,000 Indian schools surveyed, only one case of a teacher being fired for absence could be found.",
+      "very_confident_that_its_true": false,
+      "context_quote": "In India, a quarter of primary school teachers were not there when the enumerator dropped, and half of them were not teaching at the moment they dropped by. Across 3,000 schools, they could elicit exactly one case of a teacher being fired for absence."
+    },
+    {
+      "claim": "India has participated in only one internationally comparable education test.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Learning outcomes are poor. We are not entirely sure how poor, because India has only participated in one internationally comparable test, in 2009."
+    },
+    {
+      "claim": "India's participation in an internationally comparable education test occurred in 2009.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Learning outcomes are poor. We are not entirely sure how poor, because India has only participated in one internationally comparable test, in 2009."
+    },
+    {
+      "claim": "India finished 71st out of 72 nations in the internationally comparable education test it participated in.",
+      "very_confident_that_its_true": false,
+      "context_quote": "We are not entirely sure how poor, because India has only participated in one internationally comparable test, in 2009. They finished 71st out of 72 nations (beating only Kyrgyzstan), and have found lame excuses not to participate in any further testing."
+    },
+    {
+      "claim": "In the internationally comparable test India took, Kyrgyzstan was the only country ranked below India.",
+      "very_confident_that_its_true": false,
+      "context_quote": "We are not entirely sure how poor, because India has only participated in one internationally comparable test, in 2009. They finished 71st out of 72 nations (beating only Kyrgyzstan), and have found lame excuses not to participate in any further testing."
+    },
+    {
+      "claim": "India has not participated in any further internationally comparable education tests after its 2009 participation.",
+      "very_confident_that_its_true": false,
+      "context_quote": "We are not entirely sure how poor, because India has only participated in one internationally comparable test, in 2009. They finished 71st out of 72 nations (beating only Kyrgyzstan), and have found lame excuses not to participate in any further testing."
+    },
+    {
+      "claim": "Students in 8th standard in India are about 13 years old.",
+      "very_confident_that_its_true": true,
+      "context_quote": "Most of the people in our village will be illiterate and innumerate. Across the whole of India, 45% of students in the 8th standard (about 13 years old) could solve arithmetic problems. The census figures, which will tell you that literacy is between 70 and 80%, are wrong, because they are purely from self-reported figures."
+    },
+    {
+      "claim": "Across India, 45% of students in 8th standard can solve arithmetic problems.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Most of the people in our village will be illiterate and innumerate. Across the whole of India, 45% of students in the 8th standard (about 13 years old) could solve arithmetic problems. The census figures, which will tell you that literacy is between 70 and 80%, are wrong, because they are purely from self-reported figures."
+    },
+    {
+      "claim": "India's census figures report a literacy rate between 70% and 80%.",
+      "very_confident_that_its_true": true,
+      "context_quote": "Across the whole of India, 45% of students in the 8th standard (about 13 years old) could solve arithmetic problems. The census figures, which will tell you that literacy is between 70 and 80%, are wrong, because they are purely from self-reported figures. If you actually ask people to read a text at the second grade level, they will perform much worse."
+    },
+    {
+      "claim": "India's census literacy figures are based purely on self-reported data.",
+      "very_confident_that_its_true": true,
+      "context_quote": "Across the whole of India, 45% of students in the 8th standard (about 13 years old) could solve arithmetic problems. The census figures, which will tell you that literacy is between 70 and 80%, are wrong, because they are purely from self-reported figures. If you actually ask people to read a text at the second grade level, they will perform much worse."
+    },
+    {
+      "claim": "India's census literacy figures of 70-80% are inaccurate.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Across the whole of India, 45% of students in the 8th standard (about 13 years old) could solve arithmetic problems. The census figures, which will tell you that literacy is between 70 and 80%, are wrong, because they are purely from self-reported figures. If you actually ask people to read a text at the second grade level, they will perform much worse."
+    },
+    {
+      "claim": "People's actual ability to read a second-grade-level text is much lower than India's self-reported census literacy figures suggest.",
+      "very_confident_that_its_true": false,
+      "context_quote": "The census figures, which will tell you that literacy is between 70 and 80%, are wrong, because they are purely from self-reported figures. If you actually ask people to read a text at the second grade level, they will perform much worse. In Uttar Pradesh, which is middle of the pack, 28% of children in third grade could read a second grade text in 2024 (Aser Report, p. 25) and this is actually a great improvement over the 6% who could in 2014."
+    },
+    {
+      "claim": "Uttar Pradesh ranks in the middle among Indian states in terms of learning outcomes.",
+      "very_confident_that_its_true": false,
+      "context_quote": "If you actually ask people to read a text at the second grade level, they will perform much worse. In Uttar Pradesh, which is middle of the pack, 28% of children in third grade could read a second grade text in 2024 (Aser Report, p. 25) and this is actually a great improvement over the 6% who could in 2014. By the time we get to 8th grade, 67% of students in government schools can read a second grade text, and 45% can do division (p. 62-63)."
+    },
+    {
+      "claim": "In 2024, 28% of third-grade children in Uttar Pradesh could read a second-grade-level text, according to the ASER Report.",
+      "very_confident_that_its_true": false,
+      "context_quote": "If you actually ask people to read a text at the second grade level, they will perform much worse. In Uttar Pradesh, which is middle of the pack, 28% of children in third grade could read a second grade text in 2024 (Aser Report, p. 25) and this is actually a great improvement over the 6% who could in 2014. By the time we get to 8th grade, 67% of students in government schools can read a second grade text, and 45% can do division (p. 62-63)."
+    },
+    {
+      "claim": "In 2014, 6% of third-grade children in Uttar Pradesh could read a second-grade-level text.",
+      "very_confident_that_its_true": false,
+      "context_quote": "If you actually ask people to read a text at the second grade level, they will perform much worse. In Uttar Pradesh, which is middle of the pack, 28% of children in third grade could read a second grade text in 2024 (Aser Report, p. 25) and this is actually a great improvement over the 6% who could in 2014. By the time we get to 8th grade, 67% of students in government schools can read a second grade text, and 45% can do division (p. 62-63)."
+    },
+    {
+      "claim": "In Uttar Pradesh, 67% of government-school students in 8th grade can read a second-grade-level text, according to the ASER Report.",
+      "very_confident_that_its_true": false,
+      "context_quote": "In Uttar Pradesh, which is middle of the pack, 28% of children in third grade could read a second grade text in 2024 (Aser Report, p. 25) and this is actually a great improvement over the 6% who could in 2014. By the time we get to 8th grade, 67% of students in government schools can read a second grade text, and 45% can do division (p. 62-63)."
+    },
+    {
+      "claim": "In Uttar Pradesh, 45% of government-school students in 8th grade can do division, according to the ASER Report.",
+      "very_confident_that_its_true": false,
+      "context_quote": "In Uttar Pradesh, which is middle of the pack, 28% of children in third grade could read a second grade text in 2024 (Aser Report, p. 25) and this is actually a great improvement over the 6% who could in 2014. By the time we get to 8th grade, 67% of students in government schools can read a second grade text, and 45% can do division (p. 62-63)."
+    },
+    {
+      "claim": "India has an official government-provided healthcare network.",
+      "very_confident_that_its_true": true,
+      "context_quote": "Healthcare is similarly provided. There is an official, government provided healthcare network, and there are private providers. The government system is in three tiers, with local nurses for every few villages referring complicated cases up to primary health centers, and then up another tier to district hospitals."
+    },
+    {
+      "claim": "India has private healthcare providers.",
+      "very_confident_that_its_true": true,
+      "context_quote": "Healthcare is similarly provided. There is an official, government provided healthcare network, and there are private providers. The government system is in three tiers, with local nurses for every few villages referring complicated cases up to primary health centers, and then up another tier to district hospitals."
+    },
+    {
+      "claim": "India's government healthcare system is organized in three tiers.",
+      "very_confident_that_its_true": true,
+      "context_quote": "There is an official, government provided healthcare network, and there are private providers. The government system is in three tiers, with local nurses for every few villages referring complicated cases up to primary health centers, and then up another tier to district hospitals. Nevertheless, private providers are common.The private providers are more expensive, but trade that for reliability."
+    },
+    {
+      "claim": "In India's government healthcare system, local nurses covering every few villages refer complicated cases to primary health centers.",
+      "very_confident_that_its_true": true,
+      "context_quote": "There is an official, government provided healthcare network, and there are private providers. The government system is in three tiers, with local nurses for every few villages referring complicated cases up to primary health centers, and then up another tier to district hospitals. Nevertheless, private providers are common.The private providers are more expensive, but trade that for reliability."
+    },
+    {
+      "claim": "In India's government healthcare system, primary health centers refer cases up to district hospitals, which form a higher tier.",
+      "very_confident_that_its_true": false,
+      "context_quote": "There is an official, government provided healthcare network, and there are private providers. The government system is in three tiers, with local nurses for every few villages referring complicated cases up to primary health centers, and then up another tier to district hospitals. Nevertheless, private providers are common.The private providers are more expensive, but trade that for reliability."
+    },
+    {
+      "claim": "Private healthcare providers are common in India.",
+      "very_confident_that_its_true": true,
+      "context_quote": "The government system is in three tiers, with local nurses for every few villages referring complicated cases up to primary health centers, and then up another tier to district hospitals. Nevertheless, private providers are common.The private providers are more expensive, but trade that for reliability. The Chaudhury et al survey found that 40% of healthcare workers were absent when they dropped by."
+    },
+    {
+      "claim": "In India, private healthcare providers are more expensive than government healthcare providers.",
+      "very_confident_that_its_true": true,
+      "context_quote": "The government system is in three tiers, with local nurses for every few villages referring complicated cases up to primary health centers, and then up another tier to district hospitals. Nevertheless, private providers are common.The private providers are more expensive, but trade that for reliability. The Chaudhury et al survey found that 40% of healthcare workers were absent when they dropped by."
+    },
+    {
+      "claim": "In India, private healthcare providers are more reliable than government healthcare providers.",
+      "very_confident_that_its_true": false,
+      "context_quote": "The government system is in three tiers, with local nurses for every few villages referring complicated cases up to primary health centers, and then up another tier to district hospitals. Nevertheless, private providers are common.The private providers are more expensive, but trade that for reliability. The Chaudhury et al survey found that 40% of healthcare workers were absent when they dropped by."
+    },
+    {
+      "claim": "In the Chaudhury et al. survey in India, 40% of healthcare workers were absent when surveyors visited.",
+      "very_confident_that_its_true": false,
+      "context_quote": "Nevertheless, private providers are common.The private providers are more expensive, but trade that for reliability. The Chaudhury et al survey found that 40% of healthcare workers were absent when they dropped by. This absence is aided and abetted by local political forces, who view it as an opportunity for patronage more"
+    },
+    {
+      "claim": "In India, local political forces facilitate healthcare worker absenteeism and view it as an opportunity for patronage.",
+      "very_confident_that_its_true": false,
+      "context_quote": "The Chaudhury et al survey found that 40% of healthcare workers were absent when they dropped by. This absence is aided and abetted by local political forces, who view it as an opportunity for patronage more"
+    }
+  ]
+}

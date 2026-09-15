@@ -1,6 +1,6 @@
 # Continuous pacing: replaying the last week under the alarm
 
-`replayPacing.ts` is read-only against production. It rebuilds each feed post's real start, duration and cost from `everything_pipeline_runs`, then replays every UTC day of the window the way `src/everything/pacing.ts` and migration 097 run it: a run starts at the first minute tick after the alarm the previous run set, plus the minute and a half a fresh run takes to start; it processes one post, then sets the next alarm from the money left, the hours left and the mean post cost at that moment; a run that finds nothing waiting sets the idle alarm 30 minutes out. The reader-requested spend is added at its real time, and posts that did not start by midnight carry into the next day.
+`replayPacing.ts` is read-only against production. It rebuilds each feed post's real start, duration and cost from `everything_pipeline_runs`, then replays every UTC day of the window the way `src/everything/pacing.ts` and migration 098 run it: a run starts at the first minute tick after the alarm the previous run set, plus the minute and a half a fresh run takes to start; it processes one post, then sets the next alarm from the money left, the hours left and the mean post cost at that moment; a run that finds nothing waiting sets the idle alarm 30 minutes out. The reader-requested spend is added at its real time, and posts that did not start by midnight carry into the next day.
 
 ```
 bun run src/scripts_jim/2026_09_14_continuous_pacing/replayPacing.ts [days]

@@ -49,12 +49,37 @@ export interface ExtractedClaim {
   /** Article images the claim is grounded in. Only Substack articles supply
    *  these. A claim can rest on text, on images, or on both. */
   imageUrls: string[];
+  /** True when the extractor is very confident the claim is correct as
+   *  stated. Such a claim is stored as skipped and never rated or checked. */
+  veryConfidentTrue: boolean;
   /** True when the claim describes a hypothetical or future scenario rather
    *  than the present or the past. Such claims are filtered out before
    *  fact-checking. */
   speculation: boolean;
   anchor: ClaimAnchor;
 }
+
+/** One topic part of an item, as the gate and split step cut it, with the
+ *  claims extracted from it. `text` is the part's body in the form the item's
+ *  full_text is stored in: raw article text with its [[IMAGE:url]] markers, or
+ *  the part's subtitle cues joined with newlines. The rater reads it. */
+export interface ContentPart {
+  index: number;
+  title: string;
+  text: string;
+  claims: ExtractedClaim[];
+}
+
+/** What extraction makes of an item. Either the gate declined it, with the
+ *  model's reason, or the item was cut into parts and each part's claims were
+ *  extracted. `introduction` is the text before the first part, which the
+ *  rater shows ahead of each part as context. When it is set, the first part
+ *  is the introduction itself, so its own claims are extracted once and it is
+ *  never shown its own text as context. An item the model chose not to split
+ *  is one part with no introduction. */
+export type ExtractionResult =
+  | { kind: "not_checkable"; reason: string }
+  | { kind: "claims"; introduction: string | null; parts: ContentPart[] };
 
 /** An extracted claim after the rating step. `judgement` is how true the
  *  rater thinks the claim is, one of seven levels from "certainly true" to
@@ -74,7 +99,7 @@ export interface NoteSourceCitation {
 }
 
 /** Outcome of running one claim through the note pipeline. A claim that was
- *  skipped because Opus is confident it is true never reaches the pipeline, and
+ *  skipped because the rater is confident it is true never reaches the pipeline, and
  *  neither does a claim that errored. The worker records those two outcomes
  *  directly on the claim row instead. */
 export type ClaimCheck =
