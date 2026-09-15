@@ -1,14 +1,17 @@
 /**
- * What would the last week have looked like under the pacing gate?
+ * What would the last week have looked like under the pacing alarm?
  *
  * READ-ONLY against prod. It loads the week's cost rows and items, rebuilds
  * each feed post's real start time, duration and cost, and then replays each
- * UTC day with the gate from src/everything/pacing.ts: a dispatch every 30
- * minutes at :03 and :33, one post per opening, a wait in place when the gate
- * opens within 25 minutes, the real reader-requested spend added at its real
- * time, and posts that did not start by midnight carried into the next day.
- * The mean post cost the gate sees is the real one: the mean over feed posts
- * finished in the 48 hours before the tick (7 days when fewer than 5).
+ * UTC day the way src/everything/pacing.ts and migration 097 run it: a run
+ * starts at the first minute tick after the alarm the previous run set, plus
+ * the minute and a half a fresh run takes to start; it processes one post,
+ * then sets the next alarm from the money left, the hours left and the mean
+ * cost at that moment; a run that finds nothing waiting sets the idle alarm.
+ * The real reader-requested spend is added at its real time, and posts that
+ * did not start by midnight carry into the next day. The mean post cost the
+ * rule sees is the real one: the mean over feed posts finished in the 48
+ * hours before the run (7 days when fewer than 5).
  *
  * It prints, per day, the real and the replayed spend per UTC hour, so the
  * burst and its replacement sit next to each other. Both rows include the
@@ -22,22 +25,25 @@
 import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
 import {
-  computeFeedGate,
+  computeNextRun,
   DEFAULT_MEAN_POST_COST_USD,
-  MAX_IN_RUN_WAIT_MS,
   MEAN_COST_FALLBACK_HOURS,
   MEAN_COST_MIN_POSTS,
   MEAN_COST_WINDOW_HOURS,
-  waitMs,
+  nextAlarm,
   type FeedPacingSnapshot,
 } from "../../everything/pacing";
 import { FEED_BUDGET_USD } from "../../everything/spendCap";
 
 const DAYS = Number(process.argv[2] ?? 7);
+const MINUTE_MS = 60_000;
 const HOUR_MS = 3600_000;
 const DAY_MS = 24 * HOUR_MS;
-const DISPATCH_MINUTES = [3, 33];
 const REQUESTED_TIER = 2;
+/** From the alarm to the pipeline actually running: pg_cron's minute tick,
+ *  GitHub picking the dispatch up, and the runner's setup steps. Measured on
+ *  the last successful production run before this change. */
+const RUN_SETUP_MS = 90_000;
 /** A post cut short one day and resumed the next has a real span of days.
  *  The replay treats such a post as if it had run in one go, capped here. */
 const MAX_POST_DURATION_MS = 3 * HOUR_MS;
@@ -123,9 +129,13 @@ function main(posts: Post[], firstDay: number, lastDay: number): void {
 
   // Posts waiting to be replayed, in real start order; a day's leftovers carry over.
   const waiting = [...feed];
-  // Replayed starts, for the mean the gate would have seen.
+  // Replayed starts, for the mean the rule would have seen.
   const replayed: Post[] = [];
+  // The alarm the previous run set. Null means never set, so the first run
+  // starts at once, which is how the pipeline bootstraps.
+  let alarm: number | null = null;
   let runnerBusyUntil = 0;
+  const nextTick = (t: number) => Math.ceil(t / MINUTE_MS) * MINUTE_MS;
 
   for (let day = firstDay; day <= lastDay; day += DAY_MS) {
     const dayEnd = day + DAY_MS;
@@ -140,56 +150,61 @@ function main(posts: Post[], firstDay: number, lastDay: number): void {
       realHours[hourOf(p.start)] += p.cost;
       simHours[hourOf(p.start)] += p.cost;
     }
+    // What the UTC day of `t` has cost by `t`. A run that ends after midnight
+    // sees the new day's total, exactly as the real snapshot does.
+    const spentBy = (t: number) => {
+      const startOfDay = Math.floor(t / DAY_MS) * DAY_MS;
+      return [...replayed, ...reader].filter((p) => p.start >= startOfDay && p.start <= t).reduce((s, p) => s + p.cost, 0);
+    };
 
     let started = 0;
-    let waited = 0;
-    let skipped = 0;
-    // Only posts that really existed by the tick are candidates: a post cannot
-    // be replayed before it was published. Real start stands in for that.
-    for (let tick = day; tick < dayEnd; tick += HOUR_MS) {
-      for (const minute of DISPATCH_MINUTES) {
-        let now = tick + minute * 60_000;
-        if (now < runnerBusyUntil) continue;
-        const next = waiting.find((p) => p.start <= now);
-        if (!next) continue;
-        const spentToday =
-          replayed.filter((p) => p.start >= day && p.start < dayEnd).reduce((s, p) => s + p.cost, 0) +
-          readerToday.filter((p) => p.start <= now).reduce((s, p) => s + p.cost, 0);
-        const { mean, n, hours } = realMean([...replayed, ...reader], now);
-        const lastStart = replayed.at(-1)?.start ?? null;
-        const snapshot: FeedPacingSnapshot = {
-          dbNow: new Date(now),
-          spentTodayUsd: spentToday,
-          meanPostCostUsd: mean,
-          samplePosts: n,
-          sampleHours: hours,
-          lastFeedStartedAt: lastStart ? new Date(lastStart) : null,
-        };
-        const gate = computeFeedGate(snapshot, FEED_BUDGET_USD);
-        const wait = waitMs(gate, snapshot);
-        if (wait > 0) {
-          if (gate.closedForToday || wait > MAX_IN_RUN_WAIT_MS) {
-            skipped++;
-            continue;
-          }
-          waited++;
-          now += wait;
-        }
+    let behind = 0;
+    let idle = 0;
+    let capped = 0;
+    for (;;) {
+      const runStart = nextTick(Math.max(alarm ?? day, runnerBusyUntil, day)) + RUN_SETUP_MS;
+      if (runStart >= dayEnd) break;
+      // Only posts that really existed by then are candidates: a post cannot
+      // be replayed before it was published. Real start stands in for that.
+      const next = waiting.find((p) => p.start <= runStart);
+      let runEnd = runStart;
+      let processed = false;
+      if (spentBy(runStart) >= FEED_BUDGET_USD) {
+        capped++;
+      } else if (!next) {
+        idle++;
+      } else {
         waiting.splice(waiting.indexOf(next), 1);
-        const duration = Math.min(Math.max(next.end - next.start, 60_000), MAX_POST_DURATION_MS);
+        const duration = Math.min(Math.max(next.end - next.start, MINUTE_MS), MAX_POST_DURATION_MS);
         // The real per-claim cap stops a post once the feed budget is spent;
         // the rest of its cost would have waited for another day.
-        const cost = Math.min(next.cost, Math.max(0, FEED_BUDGET_USD - spentToday));
-        replayed.push({ ...next, start: now, end: now + duration, cost });
-        runnerBusyUntil = now + duration;
-        simHours[Math.min(23, hourOf(now))] += cost;
+        const cost = Math.min(next.cost, Math.max(0, FEED_BUDGET_USD - spentBy(runStart)));
+        replayed.push({ ...next, start: runStart, end: runStart + duration, cost });
+        runEnd = runStart + duration;
+        simHours[Math.min(23, hourOf(runStart))] += cost;
         started++;
+        processed = true;
       }
+      runnerBusyUntil = runEnd;
+      // The alarm is set at the end of the run, from what the day has cost by then.
+      const { mean, n, hours } = realMean([...replayed, ...reader], runEnd);
+      const lastStart = replayed.at(-1)?.start ?? null;
+      const snapshot: FeedPacingSnapshot = {
+        dbNow: new Date(runEnd),
+        spentTodayUsd: spentBy(runEnd),
+        meanPostCostUsd: mean,
+        samplePosts: n,
+        sampleHours: hours,
+        lastFeedStartedAt: lastStart ? new Date(lastStart) : null,
+      };
+      const alarmSet = nextAlarm(computeNextRun(snapshot, FEED_BUDGET_USD), snapshot, processed);
+      if (processed && alarmSet.at.getTime() <= runEnd) behind++;
+      alarm = alarmSet.at.getTime();
     }
     const label = new Date(day).toISOString().slice(5, 10);
     console.log(hourRow(`${label} real`, realHours));
     console.log(hourRow(`${label} paced`, simHours));
-    console.log(`         ${started} started, ${waited} after a wait in place, ${skipped} ticks left to a later dispatch, ${waiting.filter((p) => p.start < dayEnd).length} carried over\n`);
+    console.log(`         ${started} started, ${behind} of them outlasted their interval, ${idle} idle runs, ${capped} runs stopped by the cap, ${waiting.filter((p) => p.start < dayEnd).length} carried over\n`);
   }
 }
 
