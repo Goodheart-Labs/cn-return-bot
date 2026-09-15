@@ -9,9 +9,10 @@ import { dbMock, dbState, resetDbState } from "./dbMock";
  *
  * Which counting rule applies is decided by the two-reader proof: until some
  * creator has been visited by two different readers, the walk counts visit rows
- * exactly as it did before, and after that it counts people. Any attention at
- * all puts a creator on the list; how far down the list the walk goes is the
- * budget's decision, covered in autoEnqueue.test.ts. */
+ * exactly as it did before, and after that it counts people. Either way there
+ * is a floor, one regular reader or two visit rows, below which a creator is
+ * not on the list at all; how far down the list the walk goes above the floor
+ * is the budget's decision, covered in autoEnqueue.test.ts. */
 
 mock.module("./db", dbMock);
 
@@ -56,12 +57,10 @@ describe("rankCreators, before any creator has had two different readers", () =>
     expect((await rankCreators()).rule).toBe("visits");
   });
 
-  test("a single visit row is enough even with no readers at all", async () => {
-    // There is no fixed minimum any more; the budget decides how far down
-    // the list the walk goes.
-    dbState.creatorAttention = [read("https://oneclick.substack.com", { visits: 0 })];
-    expect(await rankedSlugs()).toEqual([]);
+  test("two visit rows are the floor, one is not enough", async () => {
     dbState.creatorAttention = [read("https://oneclick.substack.com", { visits: 1 })];
+    expect(await rankedSlugs()).toEqual([]);
+    dbState.creatorAttention = [read("https://oneclick.substack.com", { visits: 2 })];
     expect(await rankedSlugs()).toEqual(["oneclick"]);
   });
 
@@ -83,15 +82,15 @@ describe("rankCreators, once two different readers have been seen", () => {
     expect((await rankCreators()).rule).toBe("readers");
   });
 
-  test("one reader on one page is enough, and visit rows on their own are not", async () => {
-    // A regular reader is not required to be ranked; regulars only order the
-    // list. Rows without a reader hash count for nothing under this rule.
+  test("one regular reader is the floor: a reader of one page is not, and neither are visit rows on their own", async () => {
+    // Rows without a reader hash count for nothing under this rule, however
+    // many there are.
     dbState.creatorAttention = [
       read("https://oneclick.substack.com", { visits: 9, pages: 1, readers: 1, regulars: 0 }),
       read("https://read.substack.com", { visits: 2, pages: 2, readers: 1, regulars: 1 }),
       read("https://hashless.substack.com", { visits: 30, pages: 0, readers: 0, regulars: 0 }),
     ];
-    expect(await rankedSlugs()).toEqual(["read", "oneclick"]);
+    expect(await rankedSlugs()).toEqual(["read"]);
   });
 
   test("rows with no reader behind them stop counting", async () => {

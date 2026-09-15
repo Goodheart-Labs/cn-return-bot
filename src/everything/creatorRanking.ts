@@ -10,9 +10,10 @@
  *
  * Prioritised creators come first, then everyone by attention. A creator in
  * neither set is not ranked at all, so attention that fades takes its spend
- * with it. The list has no fixed minimum any more: how far down it the walk
- * goes is decided by the budget, in autoEnqueue.ts, so more money per day
- * admits creators further down and less money raises the bar.
+ * with it. Attention has a floor, one regular reader, below which a creator
+ * is not walked however much money is left. Above the floor, how far down
+ * the list the walk goes is decided by the budget, in autoEnqueue.ts, so more
+ * money per day admits creators further down and less money raises the bar.
  *
  * Both sides are needed because a creator nobody has ever checked has no row
  * anywhere. Prioritised creators are project rows; read creators are
@@ -42,9 +43,14 @@
 import { fetchCreatorProjects, fetchCreatorAttention, fetchTwoReadersSeen, QUEUE_PRIORITY } from "./db";
 import { canonicalFeed, type FeedType } from "./feedUrls";
 import { normalizeFeedUrl } from "../everything-shared/pageUrls";
-import { MIN_PAGES_FOR_A_REGULAR_READER } from "../everything-shared/readers";
+import { MIN_PAGES_FOR_A_REGULAR_READER, MIN_REGULAR_READERS_TO_WALK_CREATOR } from "../everything-shared/readers";
 
 export const VISIT_RANKING_WINDOW_DAYS = 14;
+
+/** The rule that applied before the reader hash existed, and that still applies
+ *  until the two-reader proof arrives: how many visit rows inside the window a
+ *  creator needs, counted without regard to who wrote them. */
+export const MIN_VISITS_TO_WALK_CREATOR = 2;
 
 /** Which of the two rules a run used. The auto-enqueue prints it, so a walk's
  *  output is never ambiguous about how its numbers were produced. */
@@ -79,14 +85,16 @@ export interface RankedCreator {
 const isOpen = (priorityUntil: string | null): boolean =>
   priorityUntil != null && Date.parse(priorityUntil) > Date.now();
 
-/** Any attention at all in the governing metric qualifies a creator for the
- *  ranked list. How far down that list the walk goes is not decided here: the
- *  auto-enqueue admits creators from the top until what they publish per day
- *  fills the paced budget (see admitCreators in autoEnqueue.ts). Under the
- *  reader rule rows without a reader hash count for nothing, so a creator
- *  with visits but no reader does not qualify. */
+/** The floor: at least one regular reader, or before the proof at least two
+ *  visit rows. A creator below it is not walked at all, whatever the budget.
+ *  How far down the list above the floor the walk goes is not decided here:
+ *  the auto-enqueue admits creators from the top until what they publish per
+ *  day fills the paced budget (see admitCreators in autoEnqueue.ts). Under the
+ *  reader rule rows without a reader hash count for nothing. */
 const qualifies = (creator: RankedCreator, rule: RankingRule): boolean =>
-  rule === "readers" ? creator.readers > 0 : creator.visits > 0;
+  rule === "readers"
+    ? creator.regularReaders >= MIN_REGULAR_READERS_TO_WALK_CREATOR
+    : creator.visits >= MIN_VISITS_TO_WALK_CREATOR;
 
 /** Most attention first. Under the reader rule the primary number is people;
  *  different pages breaks the ties, which today is most of them, because it

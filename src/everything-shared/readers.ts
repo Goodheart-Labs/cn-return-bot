@@ -9,6 +9,13 @@ import { normalizeFeedUrl } from "./pageUrls";
  *  the database rather than the database holding a copy. */
 export const MIN_PAGES_FOR_A_REGULAR_READER = 2;
 
+/** How many regular readers a creator needs before the pipeline walks them on
+ *  attention alone. Below this nothing of theirs is processed however much
+ *  money is left; above it the budget decides how far down the ranking the
+ *  walk goes. A creator holding priority is walked whatever their readers,
+ *  because someone asked for them. */
+export const MIN_REGULAR_READERS_TO_WALK_CREATOR = 1;
+
 /** The value a visit row carries instead of an identifier: one per browser and
  *  per creator (GOO-135).
  *
