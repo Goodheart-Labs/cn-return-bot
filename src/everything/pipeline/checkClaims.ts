@@ -24,10 +24,13 @@ import { claimCheckFields } from "./claimCheckFields";
 // too many claims that were worth checking. We also force the claim-check search
 // prompt, because a claim here is an excerpt from a transcript or an article and
 // not an X post.
-// The models are pinned. Search and writer run on Sonnet 5, and the source
-// verifier on Gemini 3 Flash. Search ran on Opus 5 until August 2026, when the
-// daily spend cap was exhausted by early morning several days in a row; Sonnet
-// is the X pipeline's main search arm and costs a fraction.
+// The models are pinned to Muse Spark 1.3 Contributor for search, writer and
+// source verifier alike (GOO-159, see model.ts); media descriptions stay on
+// Gemini. Muse has no built-in web
+// search, so the search arm is the client-side Serper loop. Before that, search
+// and writer ran on Sonnet 5 and the verifier on Gemini 3 Flash; search ran on
+// Opus 5 until August 2026, when the daily spend cap was exhausted by early
+// morning several days in a row.
 // verifier_citations is on, so every accepted source carries a verbatim
 // supporting quote and an explanation. We save those per source.
 // Keep the single-call classic verifier here; X uses the claim-based flow.
@@ -35,9 +38,9 @@ const FORCED_PICKS: Record<string, string> = {
   bot: "simple-bot",
   note_prefilter: "off",
   search_claim: "on",
-  simple_bot_search: "sonnet5-native",
-  simple_bot_writer: "sonnet5",
-  simple_bot_verifier: "gemini-flash",
+  simple_bot_search: "musespark13c-serper",
+  simple_bot_writer: "musespark13c",
+  simple_bot_verifier: "musespark13c",
   media_description: "gemini3flash",
   verifier_citations: "on",
   verifier_claim_based: "classic",

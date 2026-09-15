@@ -2,8 +2,8 @@ import type { ExtractedClaim, ItemSource } from "../types";
 
 // We fact-check the author's own words. The claim text carries the verbatim
 // highlighted span, the passage around it, and any images the claim rests on. It
-// does not carry Opus's neutral restatement of the claim. That restatement is
-// useful during extraction, because it forces Opus to state the claim, but it
+// does not carry the extractor's neutral restatement of the claim. That restatement is
+// useful during extraction, because it forces the model to state the claim, but it
 // can drift away from the source. So we keep it out of the fact-check input and
 // let the search model read what the author actually wrote. The surrounding
 // passage contains the highlighted span word for word, and labelling the span
