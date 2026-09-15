@@ -183,6 +183,7 @@ export interface HeadlineMetrics {
   nmrNotes: number;
   totalViews: number;
   viewsOnHelpful: number;
+  helpfulNotesWithViews: number;
   totalCost: number | null;            // Null when no cost data matches the filters.
   costPerHelpfulNote: number | null;
   costPerViewOnHelpful: number | null;
@@ -197,8 +198,9 @@ export function computeHeadlineMetrics(
   const helpfulNotes = filteredNotes.filter((n) => n.cn_status === "CURRENTLY_RATED_HELPFUL");
   const unhelpfulNotes = filteredNotes.filter((n) => n.cn_status === "CURRENTLY_RATED_NOT_HELPFUL");
   const nmrNotes = filteredNotes.filter((n) => n.cn_status !== "CURRENTLY_RATED_HELPFUL" && n.cn_status !== "CURRENTLY_RATED_NOT_HELPFUL");
-  const totalViews = filteredNotes.reduce((sum, n) => sum + n.view_count, 0);
-  const viewsOnHelpful = helpfulNotes.reduce((sum, n) => sum + n.view_count, 0);
+  const totalViews = filteredNotes.reduce((sum, n) => sum + (n.view_count ?? 0), 0);
+  const viewsOnHelpful = helpfulNotes.reduce((sum, n) => sum + (n.view_count ?? 0), 0);
+  const helpfulNotesWithViews = helpfulNotes.filter((n) => n.view_count !== null).length;
 
   const matchingAggregates = aggregates.filter((a) => matchesAbFilters(a.ab_test_picks, filters));
   const totalCost = matchingAggregates.reduce((sum, a) => sum + a.total_cost, 0);
@@ -208,7 +210,7 @@ export function computeHeadlineMetrics(
     matchingAggregates.length === 0 || helpfulInCostEra.length === 0
       ? null
       : totalCost / helpfulInCostEra.length;
-  const viewsOnHelpfulInCostEra = helpfulInCostEra.reduce((sum, n) => sum + n.view_count, 0);
+  const viewsOnHelpfulInCostEra = helpfulInCostEra.reduce((sum, n) => sum + (n.view_count ?? 0), 0);
   const costPerViewOnHelpful =
     matchingAggregates.length === 0 || viewsOnHelpfulInCostEra === 0
       ? null
@@ -221,6 +223,7 @@ export function computeHeadlineMetrics(
     nmrNotes: nmrNotes.length,
     totalViews,
     viewsOnHelpful,
+    helpfulNotesWithViews,
     totalCost: matchingAggregates.length === 0 ? null : totalCost,
     costPerHelpfulNote,
     costPerViewOnHelpful,
@@ -228,6 +231,11 @@ export function computeHeadlineMetrics(
 }
 
 // ─── Note list sorting ───────────────────────────────────────────────────────
+
+export function selectHighImpactNotes(notes: NoteRecord[]): NoteRecord[] {
+  return notes.filter((note) => note.high_value === true)
+    .sort((a, b) => (b.view_count ?? -1) - (a.view_count ?? -1));
+}
 
 export function sortNotesForList(notes: NoteRecord[], sort: NoteSort): NoteRecord[] {
   if (sort === "latest_helpful") {
@@ -238,7 +246,7 @@ export function sortNotesForList(notes: NoteRecord[], sort: NoteSort): NoteRecor
   if (sort === "most_views_helpful") {
     return notes
       .filter((n) => n.cn_status === "CURRENTLY_RATED_HELPFUL")
-      .sort((a, b) => b.view_count - a.view_count);
+      .sort((a, b) => (b.view_count ?? -1) - (a.view_count ?? -1));
   }
   return notes
     .filter((n) => n.cn_status === "CURRENTLY_RATED_NOT_HELPFUL")

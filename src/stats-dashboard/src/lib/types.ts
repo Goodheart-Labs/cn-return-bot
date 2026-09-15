@@ -22,7 +22,8 @@ export interface NoteRecord {
   tweet_id: string;
   submitted_at: string;
   cn_status: CnStatus;
-  view_count: number;
+  view_count: number | null;
+  high_value?: boolean;
   helpful_count: number;
   not_helpful_count: number;
   rating_count: number;

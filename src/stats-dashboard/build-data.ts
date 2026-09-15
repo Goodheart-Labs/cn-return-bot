@@ -30,6 +30,7 @@ import type {
 } from "./src/lib/types";
 import { resolvePicks } from "../pipeline/ab-testing/abTests.ts";
 import { AB_TESTS } from "../pipeline/ab-testing/abTestsData.ts";
+import { loadPipelineHealth } from "./health-data";
 
 dotenv.config({ path: join(process.cwd(), ".env") });
 
@@ -98,6 +99,7 @@ interface RawAnnotationRow {
   target_id: string; // For a note annotation this is the plain note_id.
   failure_modes: string[] | null;
   seen: boolean;
+  high_value: boolean | null;
 }
 
 interface RawTweetRow {
@@ -220,6 +222,7 @@ function joinNotes(
   // note_id below. An annotation with seen set to false means nobody has
   // reviewed that note yet, and we record null for it.
   const failureModesByNoteId = new Map<string, string[] | null>();
+  const highValueNoteIds = new Set(annotations.filter((a) => a.high_value === true).map((a) => a.target_id));
   for (const a of annotations) {
     failureModesByNoteId.set(a.target_id, a.seen ? (a.failure_modes ?? []) : null);
   }
@@ -236,7 +239,7 @@ function joinNotes(
       tweet_id: note.tweet_id,
       submitted_at: submittedAt,
       cn_status: note.cn_status as NoteRecord["cn_status"],
-      view_count: note.view_count ?? 0,
+      view_count: note.view_count,
       helpful_count: note.helpful_count ?? 0,
       not_helpful_count: note.not_helpful_count ?? 0,
       rating_count: note.rating_count ?? 0,
@@ -265,6 +268,7 @@ function joinNotes(
           }
         : null,
       failure_modes: failureModesByNoteId.get(note.note_id) ?? null,
+      high_value: highValueNoteIds.has(note.note_id),
     });
   }
   records.sort((a, b) => a.submitted_at.localeCompare(b.submitted_at));
@@ -319,7 +323,7 @@ async function loadAnnotations(): Promise<RawAnnotationRow[]> {
     () =>
       supabase
         .from("review_dashboard_annotations")
-        .select("id, target_id, failure_modes, seen")
+        .select("id, target_id, failure_modes, seen, high_value")
         .eq("source", "production"),
     "id",
     { label: "review_dashboard_annotations" },
@@ -370,10 +374,11 @@ async function buildSnapshot(): Promise<StatsSnapshot> {
 
 async function main() {
   console.log(`[build-data] Building snapshot from ${useLocal ? "LOCAL" : "PROD"} Supabase...`);
-  const snapshot = await buildSnapshot();
+  const [snapshot, health] = await Promise.all([buildSnapshot(), loadPipelineHealth(supabase)]);
   const outPath = join(import.meta.dir, "public", "stats-data.json");
   mkdirSync(dirname(outPath), { recursive: true });
   writeFileSync(outPath, JSON.stringify(snapshot));
+  writeFileSync(join(import.meta.dir, "public", "pipeline-health.json"), JSON.stringify(health));
   const sizeKb = (Buffer.byteLength(JSON.stringify(snapshot)) / 1024).toFixed(1);
   console.log(`[build-data] Wrote ${outPath} (${sizeKb} KB)`);
   console.log(`[build-data] notes=${snapshot.notes.length} aggregates=${snapshot.pipeline_run_aggregates.length} outcome_aggs=${snapshot.ab_outcome_aggregates.length} run_days=${snapshot.pipeline_runs_by_day.length} slots=${snapshot.ab_test_slots.length} origin_days=${snapshot.daily_note_origin_counts.length}`);
