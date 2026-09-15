@@ -45,7 +45,7 @@ const QUERY_WRITER_MAX_ATTEMPTS = 3;
 // One budget for the entire cheap gate, including searches, JSON repairs and
 // provider retries. This gate saves research cost; a stalled gate should let
 // the full bot research the post rather than occupy a service slot for minutes.
-const PREFILTER_DEADLINE_MS = 60_000;
+const PREFILTER_DEADLINE_MS = 90_000;
 
 class PrefilterDeadlineError extends Error {
   constructor(deadlineMs: number) {

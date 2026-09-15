@@ -7,7 +7,7 @@ retries, JSON repair and retry backoff.
 | Gate | Budget | When it cannot finish |
 |---|---|---|
 | Blocked topics | DeepSeek: 30 seconds; Gemini Flash fallback: 20 seconds | Try the fallback after an error, invalid verdict or timeout. If neither returns a valid verdict, fail the post's check. Never assume it clears the excluded topics. |
-| Note needed | 60 seconds for all steps combined | Cancel outstanding work and pass the post to the full bot for research. |
+| Note needed | 90 seconds for all steps combined | Cancel outstanding work and pass the post to the full bot for research. |
 
 The note-needed budget includes satire detection, query writing, Serper searches,
 research analysis and the note-needed judge. A timely negative verdict still
