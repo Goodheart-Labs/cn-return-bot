@@ -1,7 +1,8 @@
 /**
  * The blocked-topic filter checks whether a post is about one of the
- * BLOCKED_TOPICS we never write notes on. It is a single deepseek-v4-flash call
- * with reasoning turned on, no tools and no search.
+ * BLOCKED_TOPICS we never write notes on. DeepSeek gets 30 seconds including
+ * retries, then a Gemini fallback gets 20 seconds. Neither uses tools or search.
+ * If neither can decide, the post fails instead of bypassing the exclusions.
  * It only runs when `config.topic_filter` is on, which is the TOPIC_FILTER_TEST
  * arm. It runs before every other step, including the note-needed prefilter.
  * It receives the shared bot-input user message that processSingleTweet builds
@@ -9,17 +10,23 @@
  * message.
  */
 import { withBotConfig, type BotConfig } from "../ab-testing/botConfig";
+import { AttemptDeadlineError, withDeadline, withLlmAbortSignal } from "../llm/llm";
 import {
   TOPIC_FILTER_SYSTEM_PROMPT,
   TOPIC_FILTER_RESPONSE_FORMAT,
 } from "../prompts/prefilter/blockedTopics";
 import { runJsonLlmCall } from "../utils/jsonLlmCall";
+import { ModelOutputInvalidError } from "../utils/errors";
 import { getTweetLog } from "../utils/tweetLog";
+import { addWarning } from "../utils/warnings";
 
 const DEEPSEEK = "deepseek/deepseek-v4-flash";
+const FALLBACK_MODEL = "google/gemini-3-flash-preview";
+const PRIMARY_BUDGET_MS = 30_000;
+const FALLBACK_BUDGET_MS = 20_000;
 const STEP = "topic_filter";
 
-/** The config for the filter's one LLM call. It runs deepseek-v4-flash with
+/** The config for the primary call. It runs deepseek-v4-flash with
  *  reasoning effort high and temperature 0, the same deterministic settings the
  *  note-needed prefilter uses. The web_search and video_description_strategy
  *  fields are required by the type, but this filter never uses them. */
@@ -38,29 +45,82 @@ export interface TopicFilterVerdict {
   reasoning: string;
 }
 
-/** Decides whether the post in `userMessage` is about a blocked topic. It logs
- *  its messages and its verdict under `topic_filter.*` on the ambient tweet log.
- *  The cost of the call lands in the ambient cost tracker under the
- *  `topic_filter` group. */
+function validateVerdict(parsed: unknown): TopicFilterVerdict {
+  if (!parsed || typeof parsed !== "object"
+    || typeof (parsed as TopicFilterVerdict).blocked !== "boolean"
+    || typeof (parsed as TopicFilterVerdict).reasoning !== "string") {
+    throw new ModelOutputInvalidError("topic_filter: expected a boolean blocked verdict and string reasoning");
+  }
+  const { blocked, reasoning } = parsed as TopicFilterVerdict;
+  return { blocked, reasoning };
+}
+
+async function runAttempt(userMessage: string, fallback: boolean): Promise<TopicFilterVerdict> {
+  const log = getTweetLog();
+  const model = fallback ? FALLBACK_MODEL : DEEPSEEK;
+  const deadlineMs = fallback ? FALLBACK_BUDGET_MS : PRIMARY_BUDGET_MS;
+  const attemptKey = `${STEP}.attempts.${fallback ? 1 : 0}`;
+  const startedAt = Date.now();
+  log?.set(`${STEP}.model`, model);
+  log?.set(`${STEP}.messages.0`, { systemPrompt: TOPIC_FILTER_SYSTEM_PROMPT, userMessage, model });
+  log?.set(`${attemptKey}.model`, model);
+  log?.set(`${attemptKey}.budgetMs`, deadlineMs);
+  try {
+    return await withBotConfig({
+      ...TOPIC_FILTER_CONFIG,
+      model,
+      reasoning_effort: fallback ? "low" : "high",
+    }, () => withDeadline(
+      deadlineMs,
+      () => new AttemptDeadlineError(model, deadlineMs),
+      (signal) => withLlmAbortSignal(signal, async () => {
+        const parsed = await runJsonLlmCall<unknown>({
+          costName: fallback ? `${STEP}.fallback` : STEP,
+          model,
+          messages: [
+            { role: "system", content: TOPIC_FILTER_SYSTEM_PROMPT },
+            { role: "user", content: userMessage },
+          ],
+          responseFormat: TOPIC_FILTER_RESPONSE_FORMAT,
+          schemaHint: `{ "reasoning": string, "blocked": boolean }`,
+        });
+        signal.throwIfAborted();
+        log?.set(`${attemptKey}.response`, parsed);
+        const verdict = validateVerdict(parsed);
+        log?.set(`${STEP}.messages.1`, { content: verdict });
+        return verdict;
+      }),
+    ));
+  } catch (err) {
+    log?.set(`${attemptKey}.error`, String(err).slice(0, 1000));
+    throw err;
+  } finally {
+    log?.set(`${attemptKey}.durationMs`, Date.now() - startedAt);
+  }
+}
+
+/** Decides whether the post is about a blocked topic. Logs retain both attempts
+ * and the actual deciding model. Costs remain in the topic_filter group, with
+ * a fallback suffix when used. A failed check never becomes an allow verdict. */
 export async function runBlockedTopicFilter(userMessage: string): Promise<TopicFilterVerdict> {
   const log = getTweetLog();
-  log?.set(`${STEP}.messages.0`, { systemPrompt: TOPIC_FILTER_SYSTEM_PROMPT, userMessage, model: DEEPSEEK });
-
-  const parsed = await withBotConfig(TOPIC_FILTER_CONFIG, () =>
-    runJsonLlmCall<{ reasoning: string; blocked: boolean }>({
-      costName: STEP,
-      model: DEEPSEEK,
-      messages: [
-        { role: "system", content: TOPIC_FILTER_SYSTEM_PROMPT },
-        { role: "user", content: userMessage },
-      ],
-      responseFormat: TOPIC_FILTER_RESPONSE_FORMAT,
-      schemaHint: `{ "reasoning": string, "blocked": boolean }`,
-    }),
-  );
-
-  log?.set(`${STEP}.messages.1`, { content: parsed });
-  const verdict = { blocked: !!parsed.blocked, reasoning: parsed.reasoning ?? "" };
+  let verdict: TopicFilterVerdict;
+  try {
+    verdict = await runAttempt(userMessage, false);
+  } catch (err) {
+    const reason = String(err).slice(0, 1000);
+    log?.set(`${STEP}.fallbackReason`, reason);
+    addWarning(`Blocked-topic filter: ${DEEPSEEK} failed; trying ${FALLBACK_MODEL}: ${reason}`);
+    console.warn(`[topic_filter] ${DEEPSEEK} failed; trying ${FALLBACK_MODEL}: ${reason}`);
+    try {
+      verdict = await runAttempt(userMessage, true);
+    } catch (fallbackError) {
+      const fallbackReason = String(fallbackError).slice(0, 1000);
+      log?.set(`${STEP}.error`, fallbackReason);
+      console.warn(`[topic_filter] Fallback failed; cannot check this post's exclusions: ${fallbackReason}`);
+      throw fallbackError;
+    }
+  }
   log?.set(`${STEP}.verdict`, verdict);
   return verdict;
 }

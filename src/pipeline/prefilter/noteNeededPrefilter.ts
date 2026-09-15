@@ -36,10 +36,23 @@ import { runJsonLlmCall } from "../utils/jsonLlmCall";
 import { createTweetLog, withTweetLog, getTweetLog, type TweetLogMap } from "../utils/tweetLog";
 import { withCostTracker, getCostTracker, trackLlmCall } from "../cost-tracking/costTracker";
 import { STEP, COST } from "../utils/noteWriterSteps";
+import { withDeadline, withLlmAbortSignal } from "../llm/llm";
+import { addWarning } from "../utils/warnings";
 
 const DEEPSEEK = "deepseek/deepseek-v4-flash";
 const MAX_RESULTS_PER_QUERY = 6;
 const QUERY_WRITER_MAX_ATTEMPTS = 3;
+// One budget for the entire cheap gate, including searches, JSON repairs and
+// provider retries. This gate saves research cost; a stalled gate should let
+// the full bot research the post rather than occupy a service slot for minutes.
+const PREFILTER_DEADLINE_MS = 60_000;
+
+class PrefilterDeadlineError extends Error {
+  constructor(deadlineMs: number) {
+    super(`note-needed prefilter exceeded ${deadlineMs / 1000}s`);
+    this.name = "PrefilterDeadlineError";
+  }
+}
 
 /** The self-contained config for the prefilter's own steps. Every call runs on
  *  deepseek-v4-flash and searches through Serper, with reasoning effort high
@@ -68,12 +81,14 @@ export interface PrefilterVerdict {
 /** Runs the query writer and retries it while it returns no queries. The file
  *  header explains why. runQueryWriter logs its own messages.0 and messages.1
  *  and its cost under the query_writer step. Here we add the attempt count. */
-async function runQueryWriterRetryOnEmpty(userMessage: string): Promise<{ queries: string[]; attempts: number }> {
+async function runQueryWriterRetryOnEmpty(userMessage: string, signal: AbortSignal): Promise<{ queries: string[]; attempts: number }> {
   let queries: string[] = [];
   let attempts = 0;
   for (; attempts < QUERY_WRITER_MAX_ATTEMPTS; ) {
+    signal.throwIfAborted();
     attempts++;
     queries = (await runQueryWriter(userMessage)).queries;
+    signal.throwIfAborted();
     if (queries.length > 0) break;
   }
   getTweetLog()?.set(`${STEP.queryWriter}.attempts`, attempts);
@@ -83,16 +98,19 @@ async function runQueryWriterRetryOnEmpty(userMessage: string): Promise<{ querie
 /** Fetches Serper results for every query and hands them to the search
  *  analyzer, which turns them into a research brief. Returns null when not a
  *  single query produced a result. */
-async function gatherFindings(userMessage: string, queries: string[]): Promise<string | null> {
+async function gatherFindings(userMessage: string, queries: string[], signal: AbortSignal): Promise<string | null> {
   const sections: string[] = [];
   let total = 0;
   for (const q of queries) {
+    signal.throwIfAborted();
     let results: SearchResult[] = [];
     try {
-      results = await fetchSearchResults(q);
+      results = await fetchSearchResults(q, signal);
     } catch {
+      signal.throwIfAborted();
       // One failed query should not sink the whole prefilter.
     }
+    signal.throwIfAborted();
     const top = results.slice(0, MAX_RESULTS_PER_QUERY);
     total += top.length;
     sections.push(`## Query: ${q}\n${formatSearchResults(top)}`);
@@ -104,6 +122,7 @@ async function gatherFindings(userMessage: string, queries: string[]): Promise<s
   if (total === 0) return null;
   // runSearchAnalyzer logs its own messages.0 and messages.1 and its cost under
   // the search_analyzer step.
+  log?.set("note_prefilter_steps.activeStage", "search_analyzer");
   return runSearchAnalyzer(userMessage, rawFindings);
 }
 
@@ -130,20 +149,29 @@ async function runPrefilterJudge(postContext: string, findings: string): Promise
  *  its own messages.0 and messages.1 and its cost to the active tweet log and
  *  cost tracker. The caller isolates that log and that tracker, so the entries
  *  land in the prefilter's own namespace instead of the bot's. */
-async function runPrefilterSteps(userMessage: string): Promise<PrefilterVerdict> {
+async function runPrefilterSteps(userMessage: string, signal: AbortSignal): Promise<PrefilterVerdict> {
+  const stage = (name: string) => {
+    signal.throwIfAborted();
+    getTweetLog()?.set("note_prefilter_steps.activeStage", name);
+  };
   // The satire gate runs first. runSatireDetector logs its own messages.0 and
   // messages.1 and its cost under the satire_detector step.
+  stage("satire_detector");
   const satire = await runSatireDetector(userMessage);
+  signal.throwIfAborted();
   if (satire.isSatire) {
     return { needsNote: false, reasoning: `overt satire — ${satire.reasoning}` };
   }
 
-  const { queries } = await runQueryWriterRetryOnEmpty(userMessage);
+  stage("query_writer");
+  const { queries } = await runQueryWriterRetryOnEmpty(userMessage, signal);
   if (queries.length === 0) {
     return { needsNote: false, reasoning: "query writer returned no queries — opinion/joke/non-checkable" };
   }
 
-  const findings = await gatherFindings(userMessage, queries);
+  stage("search");
+  const findings = await gatherFindings(userMessage, queries, signal);
+  signal.throwIfAborted();
   if (!findings) {
     // Fail OPEN. Zero results across every query almost never means the claim
     // is unsearchable — on a healthy day it happens ~2 times. It means the
@@ -156,7 +184,9 @@ async function runPrefilterSteps(userMessage: string): Promise<PrefilterVerdict>
     return { needsNote: true, reasoning: "search returned zero results for every query — failing open, the bot's own search and gates decide" };
   }
 
+  stage("note_needed_judge");
   const judge = await runPrefilterJudge(userMessage, findings);
+  signal.throwIfAborted();
   return { needsNote: judge.needsNote, reasoning: judge.reasoning };
 }
 
@@ -171,33 +201,53 @@ async function runPrefilterSteps(userMessage: string): Promise<PrefilterVerdict>
  * The cost entries are re-emitted under `note_prefilter.*`, so the whole
  * prefilter shows up as a single cost group.
  */
-export async function runNoteNeededPrefilter(userMessage: string): Promise<PrefilterVerdict> {
+export async function runNoteNeededPrefilter(
+  userMessage: string,
+  { deadlineMs = PREFILTER_DEADLINE_MS }: { deadlineMs?: number } = {},
+): Promise<PrefilterVerdict> {
   const outerLog = getTweetLog();
   const stepLog: TweetLogMap = createTweetLog();
+  let costs: ReturnType<typeof getCostTracker> = [];
+  const startedAt = Date.now();
 
-  const { verdict, costs } = await withBotConfig(PREFILTER_CONFIG, () =>
-    withTweetLog(stepLog, () =>
-      withCostTracker(async () => {
-        const verdict = await runPrefilterSteps(userMessage);
-        return { verdict, costs: [...getCostTracker()] };
-      }),
-    ),
-  );
-
-  if (outerLog) {
-    // Graft the LLM step logs under note_prefilter_steps.*.
+  try {
+    const verdict = await withBotConfig(PREFILTER_CONFIG, () =>
+      withTweetLog(stepLog, () =>
+        withCostTracker(() => {
+          costs = getCostTracker();
+          return withDeadline(
+            deadlineMs,
+            () => new PrefilterDeadlineError(deadlineMs),
+            (signal) => withLlmAbortSignal(signal, () => runPrefilterSteps(userMessage, signal)),
+          );
+        }),
+      ),
+    );
+    stepLog.set("note_prefilter_steps.verdict", verdict);
+    return verdict;
+  } catch (err) {
+    if (!(err instanceof PrefilterDeadlineError)) throw err;
+    const verdict = {
+      needsNote: true,
+      reasoning: `${err.message} — failing open, the bot's own research and gates decide`,
+    };
+    stepLog.set("note_prefilter_steps.timeout", {
+      deadlineMs,
+      stage: stepLog.get("note_prefilter_steps.activeStage"),
+      action: "fail_open",
+    });
+    stepLog.set("note_prefilter_steps.verdict", verdict);
+    addWarning(verdict.reasoning);
+    console.warn(`[prefilter] ${verdict.reasoning}`);
+    return verdict;
+  } finally {
+    stepLog.set("note_prefilter_steps.elapsedMs", Date.now() - startedAt);
+    // Preserve completed steps and costs on timeout or error as well as success.
     for (const [key, value] of stepLog) {
-      outerLog.set(key.replace(/^note_writer_steps\b/, "note_prefilter_steps"), value);
+      outerLog?.set(key.replace(/^note_writer_steps\b/, "note_prefilter_steps"), value);
     }
-    outerLog.set("note_prefilter_steps.verdict", verdict);
+    for (const entry of costs) {
+      trackLlmCall({ ...entry, name: `note_prefilter.${entry.name}` });
+    }
   }
-
-  // Fold the prefilter's costs into the run total. Each entry name gets the
-  // "note_prefilter" prefix, so the entries group together instead of colliding
-  // with the bot's steps of the same name.
-  for (const entry of costs) {
-    trackLlmCall({ ...entry, name: `note_prefilter.${entry.name}` });
-  }
-
-  return verdict;
 }

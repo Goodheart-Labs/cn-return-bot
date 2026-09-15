@@ -7,7 +7,7 @@
  */
 
 import { AsyncLocalStorage } from "node:async_hooks";
-import { llm } from "../llm/llm";
+import { getLlmAbortSignal, llm } from "../llm/llm";
 import { tryGeminiFreeChat } from "../llm/geminiChatAdapter";
 import { getTweetLog } from "../utils/tweetLog";
 import { type TokenCost, extractOpenRouterCost, addTokenCost, emptyTokenCost } from "./pricing";
@@ -54,7 +54,12 @@ export async function trackedLlmCreate(
   // A Gemini call that uses no tools prefers Google's free native key. A null
   // result means the call was not routable that way, or that the free key
   // failed. In both cases we fall through to OpenRouter.
-  const native = await tryGeminiFreeChat(params);
+  // The native free-key adapter has its own retry loop and cannot yet obey a
+  // caller's cancellation. Deadline-bound gates use the abortable OpenRouter
+  // transport, including the blocked-topic gate's Gemini fallback.
+  const signal = getLlmAbortSignal();
+  signal?.throwIfAborted();
+  const native = signal ? null : await tryGeminiFreeChat(params);
   if (native) {
     return { response: native.response, costEntry: { name, ...native.cost, tools: [] } };
   }
