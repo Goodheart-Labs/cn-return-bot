@@ -96,7 +96,7 @@ function StatsNoteCard({ note, variant, rank }: { note: NoteRecord; variant: "pu
   );
 
   return (
-    <article className={`bg-white rounded-lg shadow-sm border border-gray-200 p-4 ${isPublic ? "sm:p-5 break-words [&_img]:max-w-full" : ""}`}>
+    <article className={`bg-white rounded-lg shadow-sm border border-gray-200 p-4 break-words [&_img]:max-w-full ${isPublic ? "sm:p-5" : ""}`}>
       {isPublic ? (
         <div className="flex items-start justify-between gap-3 mb-4">
           <div className="flex items-start gap-3 min-w-0">

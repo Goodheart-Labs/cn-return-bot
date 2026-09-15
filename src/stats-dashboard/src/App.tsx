@@ -32,6 +32,7 @@ import {
 } from "./lib/abComparison";
 import type { ConfidenceLevel } from "./lib/confidenceIntervals";
 import { WritingLimitPanel } from "./components/WritingLimitPanel";
+import { PipelineHealthPanel } from "./components/PipelineHealthPanel";
 import { useResizeWidth } from "./lib/useResizeWidth";
 
 // One shared empty object. Handing the useMemos below a fresh {} on every render
@@ -140,35 +141,28 @@ export function App() {
 
   const [chartRef, chartWidth] = useResizeWidth<HTMLDivElement>();
 
-  if (error) {
-    return (
-      <div className="max-w-3xl mx-auto p-8">
-        <h1 className="text-2xl font-semibold text-red-700 mb-2">Failed to load stats data</h1>
-        <p className="text-sm text-gray-700 whitespace-pre-wrap">{error}</p>
-      </div>
-    );
-  }
-  if (!snapshot || !metrics) {
-    return (
-      <div className="max-w-3xl mx-auto p-8 text-sm text-gray-500">Loading…</div>
-    );
-  }
-
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900">AI-written Community Notes</h1>
           <p className="mt-2 text-sm text-gray-600">
-            {devMode ? "Performance, experiments and writing limits." : "Explore our Helpful notes, starting with the ones seen most on X."}
+            {devMode ? "Pipeline health, performance and experiments." : "Explore our Helpful notes, starting with the ones seen most on X."}
           </p>
-          <p className="mt-1 text-xs text-gray-500">
+          {snapshot && <p className="mt-1 text-xs text-gray-500">
             Snapshot updated {new Date(snapshot.generated_at).toLocaleString()}.
-          </p>
+          </p>}
         </div>
         <ViewSwitcher devMode={devMode} onChange={changeView} />
       </header>
 
+      {devMode && <PipelineHealthPanel />}
+      {error && <div role="alert" className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+        Failed to load historical stats. {error}
+      </div>}
+      {!error && (!snapshot || !metrics) && <p className="text-sm text-gray-500">Loading stats…</p>}
+
+      {snapshot && metrics && <>
       {!devMode && (
         <>
           <PublicMetrics metrics={metrics} noteShare={helpfulNoteShare} />
@@ -239,6 +233,7 @@ export function App() {
       {devMode && writingLimitMetrics && <WritingLimitPanel metrics={writingLimitMetrics} />}
 
       {devMode && <NoteList key="developer" variant="developer" notes={sortedNotes} sort={sort} onSortChange={setSort} />}
+      </>}
     </div>
   );
 }

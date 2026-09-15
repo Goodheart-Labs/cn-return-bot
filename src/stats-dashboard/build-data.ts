@@ -30,6 +30,7 @@ import type {
 } from "./src/lib/types";
 import { resolvePicks } from "../pipeline/ab-testing/abTests.ts";
 import { AB_TESTS } from "../pipeline/ab-testing/abTestsData.ts";
+import { loadPipelineHealth } from "./health-data";
 
 dotenv.config({ path: join(process.cwd(), ".env") });
 
@@ -370,10 +371,11 @@ async function buildSnapshot(): Promise<StatsSnapshot> {
 
 async function main() {
   console.log(`[build-data] Building snapshot from ${useLocal ? "LOCAL" : "PROD"} Supabase...`);
-  const snapshot = await buildSnapshot();
+  const [snapshot, health] = await Promise.all([buildSnapshot(), loadPipelineHealth(supabase)]);
   const outPath = join(import.meta.dir, "public", "stats-data.json");
   mkdirSync(dirname(outPath), { recursive: true });
   writeFileSync(outPath, JSON.stringify(snapshot));
+  writeFileSync(join(import.meta.dir, "public", "pipeline-health.json"), JSON.stringify(health));
   const sizeKb = (Buffer.byteLength(JSON.stringify(snapshot)) / 1024).toFixed(1);
   console.log(`[build-data] Wrote ${outPath} (${sizeKb} KB)`);
   console.log(`[build-data] notes=${snapshot.notes.length} aggregates=${snapshot.pipeline_run_aggregates.length} outcome_aggs=${snapshot.ab_outcome_aggregates.length} run_days=${snapshot.pipeline_runs_by_day.length} slots=${snapshot.ab_test_slots.length} origin_days=${snapshot.daily_note_origin_counts.length}`);
