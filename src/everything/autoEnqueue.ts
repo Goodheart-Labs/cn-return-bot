@@ -411,9 +411,9 @@ interface Admitted<C, W> {
 
 /** How many creators with posts to process one walk collects before it stops
  *  looking further down the ranking. Jim's rule (2026-09-15): a run enqueues
- *  one post, so ten creators' worth of candidates is plenty. Without it a
+ *  one post, so five creators' worth of candidates is plenty. Without it a
  *  cheap day admitted every ranked creator and the walk took 40 minutes. */
-const MAX_CREATORS_WITH_NEW_POSTS = 10;
+const MAX_CREATORS_WITH_NEW_POSTS = 5;
 
 /** Why the walk stopped where it did, for the log. */
 type Cutoff = "budget" | "enough";
