@@ -84,8 +84,6 @@ export interface NextRun {
   meanPostCostUsd: number;
   /** True when the default stood in for a missing mean. */
   meanIsDefault: boolean;
-  /** True when a thin sample's mean was raised to the default. */
-  meanIsFloored: boolean;
   moneyLeftUsd: number;
   hoursLeft: number;
   /** The spacing between feed posts that makes the money last until midnight. */
@@ -111,28 +109,21 @@ export function nextUtcMidnight(now: Date): Date {
 
 /** The mean the rule uses. A null mean means no data. A zero mean means the
  *  cost rows of every sampled post are missing, which can happen because
- *  they are written best-effort. Both take the default. A sample of fewer
- *  than MEAN_COST_RULE.minPosts posts is held to at least the default: on
- *  2026-09-15 one post that found no claims and cost 0.0002 USD was the whole
- *  sample, the rule concluded it could afford 238,600 posts a day, admitted
- *  every creator, and the walk ran for hours. The floor only raises a thin
- *  mean, never lowers one, and stops applying once the sample is full. */
-function usableMean(snapshot: FeedPacingSnapshot): { mean: number; isDefault: boolean; isFloored: boolean } {
-  const mean = snapshot.meanPostCostUsd;
-  if (mean === null || mean <= 0) return { mean: DEFAULT_MEAN_POST_COST_USD, isDefault: true, isFloored: false };
-  if (snapshot.samplePosts < MEAN_COST_RULE.minPosts && mean < DEFAULT_MEAN_POST_COST_USD) {
-    return { mean: DEFAULT_MEAN_POST_COST_USD, isDefault: false, isFloored: true };
-  }
-  return { mean, isDefault: false, isFloored: false };
+ *  they are written best-effort; treating that as no data keeps a zero from
+ *  making every run due at once. */
+function usableMean(meanPostCostUsd: number | null): { mean: number; isDefault: boolean } {
+  return meanPostCostUsd !== null && meanPostCostUsd > 0
+    ? { mean: meanPostCostUsd, isDefault: false }
+    : { mean: DEFAULT_MEAN_POST_COST_USD, isDefault: true };
 }
 
 export function computeNextRun(snapshot: FeedPacingSnapshot, feedBudgetUsd: number): NextRun {
-  const { mean, isDefault, isFloored } = usableMean(snapshot);
+  const { mean, isDefault } = usableMean(snapshot.meanPostCostUsd);
   const moneyLeftUsd = feedBudgetUsd - snapshot.spentTodayUsd;
   const midnight = nextUtcMidnight(snapshot.dbNow);
   const hoursLeft = (midnight.getTime() - snapshot.dbNow.getTime()) / HOUR_MS;
   if (moneyLeftUsd < mean) {
-    return { meanPostCostUsd: mean, meanIsDefault: isDefault, meanIsFloored: isFloored, moneyLeftUsd, hoursLeft, intervalMs: Infinity, dueAt: midnight, closedForToday: true };
+    return { meanPostCostUsd: mean, meanIsDefault: isDefault, moneyLeftUsd, hoursLeft, intervalMs: Infinity, dueAt: midnight, closedForToday: true };
   }
   const intervalMs = (hoursLeft * HOUR_MS * mean) / moneyLeftUsd;
   // Only "never started" makes a run due at once. A post that started at
@@ -141,7 +132,7 @@ export function computeNextRun(snapshot: FeedPacingSnapshot, feedBudgetUsd: numb
   const dueAt = snapshot.lastFeedStartedAt
     ? new Date(snapshot.lastFeedStartedAt.getTime() + intervalMs)
     : snapshot.dbNow;
-  return { meanPostCostUsd: mean, meanIsDefault: isDefault, meanIsFloored: isFloored, moneyLeftUsd, hoursLeft, intervalMs, dueAt, closedForToday: false };
+  return { meanPostCostUsd: mean, meanIsDefault: isDefault, moneyLeftUsd, hoursLeft, intervalMs, dueAt, closedForToday: false };
 }
 
 /** The alarm a run sets at its end. `started` says whether this run started a
@@ -163,12 +154,9 @@ const utcClock = (d: Date) => d.toISOString().slice(11, 16) + " UTC";
 /** The one block the run log prints, so a strange interval is always
  *  explainable from the log alone. */
 export function describePacing(nextRun: NextRun, snapshot: FeedPacingSnapshot, feedBudgetUsd: number): string {
-  const posts = `${snapshot.samplePosts} post${snapshot.samplePosts === 1 ? "" : "s"} in the last ${snapshot.sampleHours}h`;
   const sample = nextRun.meanIsDefault
     ? `default, no feed post finished in the last ${snapshot.sampleHours}h`
-    : nextRun.meanIsFloored
-      ? `held at the ${money(DEFAULT_MEAN_POST_COST_USD)} default: only ${posts}, ${money(snapshot.meanPostCostUsd ?? 0)} on average, ${MEAN_COST_RULE.minPosts} needed`
-      : `over ${posts}`;
+    : `over ${snapshot.samplePosts} post${snapshot.samplePosts === 1 ? "" : "s"} in the last ${snapshot.sampleHours}h`;
   const lastStart = snapshot.lastFeedStartedAt ? utcClock(snapshot.lastFeedStartedAt) : "never";
   const lines = [
     `PACING · spent ${money(snapshot.spentTodayUsd)} today, ${money(nextRun.moneyLeftUsd)} of the ${money(feedBudgetUsd)} feed budget left, ${nextRun.hoursLeft.toFixed(1)}h left in the UTC day`,
