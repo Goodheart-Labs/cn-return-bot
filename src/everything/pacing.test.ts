@@ -4,6 +4,7 @@ import {
   computeNextRun,
   DEFAULT_MEAN_POST_COST_USD,
   IDLE_RECHECK_MS,
+  MEAN_COST_RULE,
   nextAlarm,
   nextUtcMidnight,
   type FeedPacingSnapshot,
@@ -77,6 +78,18 @@ describe("computeNextRun", () => {
     expect(next.closedForToday).toBe(true);
     expect(next.dueAt.toISOString()).toBe("2026-09-16T00:00:00.000Z");
     expect(dueIn(snap)).toBe(14 * HOUR_MS);
+  });
+
+  test("a thin sample is held to at least the default, a full sample is not, and a thin dear sample stays", () => {
+    const thinCheap = computeNextRun(snapshot({ meanPostCostUsd: 0.0002, samplePosts: 1 }), BUDGET);
+    expect(thinCheap.meanPostCostUsd).toBe(DEFAULT_MEAN_POST_COST_USD);
+    expect(thinCheap.meanIsFloored).toBe(true);
+    expect(thinCheap.meanIsDefault).toBe(false);
+    const fullCheap = computeNextRun(snapshot({ meanPostCostUsd: 0.0002, samplePosts: MEAN_COST_RULE.minPosts }), BUDGET);
+    expect(fullCheap.meanPostCostUsd).toBe(0.0002);
+    expect(fullCheap.meanIsFloored).toBe(false);
+    const thinDear = computeNextRun(snapshot({ meanPostCostUsd: 4, samplePosts: 1 }), BUDGET);
+    expect(thinDear.meanPostCostUsd).toBe(4);
   });
 
   test("a missing mean takes the default, and so does a zero", () => {
