@@ -8,8 +8,11 @@
  * the average, because it would overstate what a post costs now. The
  * interval between posts is hours left times the average cost divided by the
  * money left: that spacing makes the money last until midnight. The next run
- * is due that interval after the last feed post started. Every run computes
- * this at its end and stores the result as an alarm, and the database starts
+ * is due that interval after the last feed post started. An attempt that
+ * ended in error, a fetch that failed for instance, spent nothing and does
+ * not count as that post: the next post is due as if it had never run
+ * (migration 099). Every run computes this at its end and stores the result
+ * as an alarm, and the database starts
  * the next run when the alarm has come (everything_feed_schedule, migration
  * 097). A cheap post shortens the next interval a little and an expensive
  * post lengthens it.
