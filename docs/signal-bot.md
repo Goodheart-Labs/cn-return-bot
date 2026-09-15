@@ -28,7 +28,7 @@ Use Signal replies or `#1`, `#2`, etc. to identify the conversation. When exactl
 one conversation is open, unquoted messages can refer to it. With several open
 conversations the bot asks which tweet you mean. Send one tweet per message.
 
-- `yes post`: submits or queues the current displayed version, including its source order.
+- `yes post`: submits the current displayed version, including its source order.
   Plain `yes` works only as a reply to a message displaying the current draft.
   Replies to an older version and approvals sent before a draft was displayed
   are rejected. Approvals are bound to the displayed version at receipt, so a
@@ -43,11 +43,10 @@ conversations the bot asks which tweet you mean. Send one tweet per message.
   this source”, or “make it shorter” can produce a new version. Up to three
   supplied source pages are read per message; blocked/login-only pages are
   reported as unread, not treated as verified evidence.
-- `cancel` or `withdraw`: removes the draft and any queued approval.
-- A writing-limit rejection queues the approved version for automatic retry.
-  Requesting changes withdraws its approval before editing.
-- After a failed check, repeat your request or say `retry`. Other definitive
-  rejections need another approval; uncertain X outcomes need reconciliation.
+- `cancel` or `withdraw`: removes the current draft.
+- After a failed check, repeat your request or say `retry`. A known X rejection
+  keeps the draft available for another explicit approval. An uncertain X
+  outcome blocks retries until reconciled.
 
 Tweet readability is separate from permission to write a note. Inspection uses
 the ordinary X lookup and one bounded page of the eligible-posts feed. A match
@@ -114,7 +113,7 @@ and source fallbacks). Do not configure the real Google Chrome application.
    Signal group. `yes post` reports what would be submitted without writing to
    X or creating a quota claim. Dry-run state uses a separate database.
 6. Before live startup, apply
-   migrations 093 and `100_signal_submission_queue.sql` through the normal database
+   `migrations/093_signal_submission_reserve.sql` through the normal database
    migration process. Deploy the updated scheduled pipeline and let any run
    using the old submission code finish. Then start:
 
@@ -134,16 +133,28 @@ Signal automation uses the unofficial
 its [API examples](https://github.com/bbernhard/signal-cli-rest-api/blob/master/doc/EXAMPLES.md)
 cover linking and groups. Keep the bridge compatible with Signal when upgrading.
 
-## Submission priority
+## Three-slot reserve
 
-Migration 100 removes the standing reserve. All approved Signal notes enter a
-shared priority queue; automation waits while that queue is nonempty. The
-worker polls every 30 seconds and keeps each approved version unchanged.
+Migration 093 enforces admission under one database transaction lock across
+scheduled and Signal workers:
 
-Estimated caps are advisory. After X reports its writing limit, submissions
-wait for capacity to age out or a single probe after 95 minutes. A successful
-probe allows writing to continue. Queued approvals and withdrawals survive
-restarts; an uncertain submission is never retried automatically.
+```text
+remaining = max(0, estimated cap − submissions in rolling 24h − unresolved claims)
+automatic may claim only when remaining > 3
+Signal may claim when remaining > 0, or attempt when the cap is unknown
+```
+
+This is rolling spare capacity, not three notes per calendar day. People can
+use the reserve; it refills as capacity returns. X may lower its cap without
+notice, so three is a target, not a guaranteed allowance. Unknown capacity
+blocks automatic submissions until an estimate is established. With a known
+cap of three or fewer, all available slots are kept for Signal. The scheduled
+pipeline checks capacity before paid generation or cap probing and skips when
+the reserve binds, the cap is unknown, or the check fails. The final atomic
+claim still decides whether a completed note can submit. The reserve can
+also slow discovery of a raised cap, because automatic submissions stop before
+the old “keep submitting until rejected” exploration reaches the limit. No
+automatic probe bypasses the reserve.
 
 The shared ledger retains claims until the X outcome is recorded. Confirmed
 claims cover accepted notes even if inserting their `notes` row fails, and are
