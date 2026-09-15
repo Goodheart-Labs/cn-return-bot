@@ -99,6 +99,7 @@ interface RawAnnotationRow {
   target_id: string; // For a note annotation this is the plain note_id.
   failure_modes: string[] | null;
   seen: boolean;
+  high_value: boolean | null;
 }
 
 interface RawTweetRow {
@@ -221,6 +222,7 @@ function joinNotes(
   // note_id below. An annotation with seen set to false means nobody has
   // reviewed that note yet, and we record null for it.
   const failureModesByNoteId = new Map<string, string[] | null>();
+  const highValueNoteIds = new Set(annotations.filter((a) => a.high_value === true).map((a) => a.target_id));
   for (const a of annotations) {
     failureModesByNoteId.set(a.target_id, a.seen ? (a.failure_modes ?? []) : null);
   }
@@ -266,6 +268,7 @@ function joinNotes(
           }
         : null,
       failure_modes: failureModesByNoteId.get(note.note_id) ?? null,
+      high_value: highValueNoteIds.has(note.note_id),
     });
   }
   records.sort((a, b) => a.submitted_at.localeCompare(b.submitted_at));
@@ -320,7 +323,7 @@ async function loadAnnotations(): Promise<RawAnnotationRow[]> {
     () =>
       supabase
         .from("review_dashboard_annotations")
-        .select("id, target_id, failure_modes, seen")
+        .select("id, target_id, failure_modes, seen, high_value")
         .eq("source", "production"),
     "id",
     { label: "review_dashboard_annotations" },

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { computeHeadlineMetrics, computeHelpfulNoteShare, sortNotesForList } from "./aggregations";
+import { computeHeadlineMetrics, selectHighImpactNotes, sortNotesForList } from "./aggregations";
 import type { NoteRecord } from "./types";
 
 const note = (id: string, views: number | null, status: NoteRecord["cn_status"] = "CURRENTLY_RATED_HELPFUL"): NoteRecord => ({
@@ -10,20 +10,24 @@ const note = (id: string, views: number | null, status: NoteRecord["cn_status"] 
 });
 
 describe("public impact", () => {
-  test("uses matched platform counts across the stated dates, weighted by note count", () => {
-    expect(computeHelpfulNoteShare([
-      { day: "2026-09-02", helpful_ours: 9, helpful_total: 90, helpful_other_ai: 4 },
-      { day: "2026-09-01", helpful_ours: 5, helpful_total: 10, helpful_other_ai: 1 },
-    ])).toEqual({ ours: 14, total: 100, proportion: 0.14, firstDay: "2026-09-01", lastDay: "2026-09-02" });
+  test("uses the starred selection regardless of rating, ordered by views", () => {
+    const notes = [
+      { ...note("starred-helpful", 50), high_value: true },
+      { ...note("unstarred-helpful", 10000), high_value: false },
+      { ...note("starred-pending", 100, "NEEDS_MORE_RATINGS"), high_value: true },
+      { ...note("starred-unhelpful", 10, "CURRENTLY_RATED_NOT_HELPFUL"), high_value: true },
+    ];
+    expect(selectHighImpactNotes(notes).map((n) => n.note_id)).toEqual(["starred-pending", "starred-helpful", "starred-unhelpful"]);
+    expect(notes[0]?.note_id).toBe("starred-helpful");
   });
 
-  test("does not invent a percentage when platform counts are missing or inconsistent", () => {
-    expect(computeHelpfulNoteShare([])).toBeNull();
-    for (const [ours, total] of [[0, 0], [2, 1], [-1, 10], [1, NaN], [1, Infinity]]) {
-      expect(computeHelpfulNoteShare([
-        { day: "2026-09-01", helpful_ours: ours!, helpful_total: total!, helpful_other_ai: 0 },
-      ])).toBeNull();
-    }
+  test("missing stars do not enter the public selection; unknown views sort after zero", () => {
+    expect(selectHighImpactNotes([note("legacy", 500)])).toEqual([]);
+    const notes = [
+      { ...note("unknown", null), high_value: true },
+      { ...note("zero", 0), high_value: true },
+    ];
+    expect(selectHighImpactNotes(notes).map((n) => n.note_id)).toEqual(["zero", "unknown"]);
   });
 
   test("ranks only Helpful notes by views, keeping unknown views distinct from zero", () => {

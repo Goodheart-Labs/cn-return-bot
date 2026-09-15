@@ -34,8 +34,8 @@ export function NoteList({
     <section>
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div>
-          <h2 className="text-lg font-semibold text-gray-800">{isPublic ? "Highest-impact notes" : "Notes"}</h2>
-          {isPublic && <p className="mt-1 text-sm text-gray-500">Rated Helpful, ordered by note views.</p>}
+          <h2 className="text-lg font-semibold text-gray-800">{isPublic ? "High-impact notes" : "Notes"}</h2>
+          {isPublic && <p className="mt-1 text-sm text-gray-500">★ {notes.length} selected notes, ordered by note views.</p>}
         </div>
         {!isPublic && <div className="flex items-center gap-2 text-sm">
           <label htmlFor={sortId} className="text-gray-500">Show:</label>
@@ -54,7 +54,7 @@ export function NoteList({
 
       {visibleNotes.length === 0 ? (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-sm text-gray-500 text-center">
-          {isPublic ? "No Helpful notes to show yet." : "No notes match the current selection."}
+          {isPublic ? "No starred notes to show yet." : "No notes match the current selection."}
         </div>
       ) : (
         <div className="flex flex-col gap-4">

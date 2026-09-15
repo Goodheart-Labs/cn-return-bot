@@ -176,29 +176,6 @@ export function bucketizeOrigin(
 
 // ─── Headline metrics ────────────────────────────────────────────────────────
 
-export interface HelpfulNoteShare {
-  ours: number;
-  total: number;
-  proportion: number;
-  firstDay: string;
-  lastDay: string;
-}
-
-export function computeHelpfulNoteShare(counts: DailyOriginCount[]): HelpfulNoteShare | null {
-  if (counts.length === 0) return null;
-  let ours = 0;
-  let total = 0;
-  const days = counts.map((row) => row.day).sort();
-  for (const row of counts) {
-    if (!Number.isFinite(row.helpful_ours) || !Number.isFinite(row.helpful_total)
-      || row.helpful_ours < 0 || row.helpful_total < row.helpful_ours) return null;
-    ours += row.helpful_ours;
-    total += row.helpful_total;
-  }
-  if (total === 0) return null;
-  return { ours, total, proportion: ours / total, firstDay: days[0]!, lastDay: days[days.length - 1]! };
-}
-
 export interface HeadlineMetrics {
   totalNotes: number;
   helpfulNotes: number;
@@ -254,6 +231,11 @@ export function computeHeadlineMetrics(
 }
 
 // ─── Note list sorting ───────────────────────────────────────────────────────
+
+export function selectHighImpactNotes(notes: NoteRecord[]): NoteRecord[] {
+  return notes.filter((note) => note.high_value === true)
+    .sort((a, b) => (b.view_count ?? -1) - (a.view_count ?? -1));
+}
 
 export function sortNotesForList(notes: NoteRecord[], sort: NoteSort): NoteRecord[] {
   if (sort === "latest_helpful") {

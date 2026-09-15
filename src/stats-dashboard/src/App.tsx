@@ -11,7 +11,7 @@ import {
   bucketize,
   bucketizeOrigin,
   computeHeadlineMetrics,
-  computeHelpfulNoteShare,
+  selectHighImpactNotes,
   dropInProgressWeek,
   filterNotes,
   sortNotesForList,
@@ -127,12 +127,8 @@ export function App() {
     [snapshot],
   );
   const sortedNotes = useMemo(
-    () => sortNotesForList(filteredNotes, devMode ? sort : "most_views_helpful"),
+    () => devMode ? sortNotesForList(filteredNotes, sort) : selectHighImpactNotes(filteredNotes),
     [filteredNotes, devMode, sort],
-  );
-  const helpfulNoteShare = useMemo(
-    () => computeHelpfulNoteShare(snapshot?.daily_note_origin_counts ?? []),
-    [snapshot],
   );
   const writingLimitMetrics = useMemo(
     () => (devMode && snapshot ? computeWritingLimitMetrics(snapshot.notes) : null),
@@ -147,7 +143,7 @@ export function App() {
         <div>
           <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900">AI-written Community Notes</h1>
           <p className="mt-2 text-sm text-gray-600">
-            {devMode ? "Pipeline health, performance and experiments." : "Explore our Helpful notes, starting with the ones seen most on X."}
+            {devMode ? "Pipeline health, performance and experiments." : "Explore our selected high-impact notes, starting with the ones seen most on X."}
           </p>
           {snapshot && <p className="mt-1 text-xs text-gray-500">
             Snapshot updated {new Date(snapshot.generated_at).toLocaleString()}.
@@ -165,7 +161,7 @@ export function App() {
       {snapshot && metrics && <>
       {!devMode && (
         <>
-          <PublicMetrics metrics={metrics} noteShare={helpfulNoteShare} />
+          <PublicMetrics notes={sortedNotes} />
           <NoteList key="public" variant="public" notes={sortedNotes} sort="most_views_helpful" onSortChange={setSort} />
         </>
       )}
