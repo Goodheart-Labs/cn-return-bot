@@ -8,9 +8,7 @@ export function getLlmAbortSignal(): AbortSignal | undefined {
   return abortSignalStorage.getStore();
 }
 
-/** Shares a cancellation budget across every LLM call and retry in this task,
- *  without changing other posts running concurrently. Nested scopes retain the
- *  caller's cancellation as well as their own. */
+/** Share cancellation within this task, preserving any parent deadline. */
 export async function withLlmAbortSignal<T>(signal: AbortSignal, fn: () => Promise<T>): Promise<T> {
   const parent = getLlmAbortSignal();
   const combined = parent ? AbortSignal.any([parent, signal]) : signal;
@@ -61,9 +59,7 @@ export class AttemptDeadlineError extends Error {
   }
 }
 
-/** Aborts the transport, including an unfinished response body, when either the
- *  attempt deadline or its surrounding budget expires. Racing cancellation also
- *  bounds callers that ignore abort; Promise.race observes any late rejection. */
+/** Abort the transport and bound the wait, even if the caller ignores abort. */
 export async function withDeadline<T>(
   deadlineMs: number,
   onTimeout: () => Error,
@@ -164,8 +160,7 @@ async function sleep(ms: number, signal?: AbortSignal) {
   try {
     await delay(ms, undefined, { signal });
   } catch (err) {
-    // Preserve the scope's reason, rather than replacing it with the timer's
-    // generic AbortError, so callers can distinguish their exhausted budget.
+    // Preserve the deadline error instead of the timer's generic AbortError.
     signal?.throwIfAborted();
     throw err;
   }
@@ -218,8 +213,7 @@ async function callWithRetry(
       const result = await withDeadline(
         deadlineMs,
         () => new AttemptDeadlineError(params.model, deadlineMs),
-        // The SDK's retry sleep is not abortable. Inside a shared budget our
-        // own loop supplies retries, with cancellation-aware backoff instead.
+        // SDK retry sleeps cannot be aborted; use our loop within a shared budget.
         (signal) => getClient().chat.completions.create(routedParams, {
           signal,
           ...(scopeSignal ? { maxRetries: 0 } : {}),

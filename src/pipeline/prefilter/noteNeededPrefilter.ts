@@ -1,27 +1,4 @@
-/**
- * The note-needed prefilter is a cheap deepseek-v4-flash gate. It decides
- * whether a post is worth running the full and expensive bot on. Its steps run
- * in order: the satire gate, then the query writer, then the Serper search,
- * then the search analyzer. Last comes a reframed note-needed judge. The satire gate
- * answers "no note needed" right away when the post is overt satire that its
- * audience is in on, so we never search, analyze, or judge a joke. It is tuned
- * for precision: it must not fire on fabricated content that imitates real
- * media, because that deceives people and still needs a note. That judge sees the post
- * and the research brief but no proposed note, and answers whether the post
- * needs a note at all. The prefilter never writes a note and never verifies
- * sources.
- *
- * It runs on a large feed, which generateCandidates assembles. It screens many
- * posts cheaply, and only the ones it flags reach the bot. We validated it
- * offline against simple-bot's own decisions. It missed about 10% of the posts
- * simple-bot would have noted, and it correctly filtered out 72% of the rest.
- * See src/scripts_jim/2026_06_06_deepseek_note_filter.
- *
- * The query writer is not deterministic even at temperature 0. On identical
- * input it flips between an empty list and real queries. So we retry while it
- * returns an empty list. We stop at the first non-empty result, and we accept
- * "no queries" only after QUERY_WRITER_MAX_ATTEMPTS empty answers.
- */
+/** Cheap screening before full research. A timeout passes the post to the bot. */
 import { withBotConfig, type BotConfig } from "../ab-testing/botConfig";
 import {
   PREFILTER_JUDGE_SYSTEM_PROMPT,
@@ -42,9 +19,7 @@ import { addWarning } from "../utils/warnings";
 const DEEPSEEK = "deepseek/deepseek-v4-flash";
 const MAX_RESULTS_PER_QUERY = 6;
 const QUERY_WRITER_MAX_ATTEMPTS = 3;
-// One budget for the entire cheap gate, including searches, JSON repairs and
-// provider retries. This gate saves research cost; a stalled gate should let
-// the full bot research the post rather than occupy a service slot for minutes.
+// Total budget, including searches and retries.
 const PREFILTER_DEADLINE_MS = 90_000;
 
 class PrefilterDeadlineError extends Error {
@@ -54,12 +29,6 @@ class PrefilterDeadlineError extends Error {
   }
 }
 
-/** The self-contained config for the prefilter's own steps. Every call runs on
- *  deepseek-v4-flash and searches through Serper, with reasoning effort high
- *  and temperature 0, the deterministic settings. We enter it
- *  with withBotConfig so the config of the bot that was picked stays untouched.
- *  The video_description_strategy field is required by the type but unused here,
- *  because the caller builds the bot input, not this file. */
 const PREFILTER_CONFIG: BotConfig = {
   botId: "note-needed-prefilter",
   model: DEEPSEEK,
@@ -78,9 +47,7 @@ export interface PrefilterVerdict {
   reasoning: string;
 }
 
-/** Runs the query writer and retries it while it returns no queries. The file
- *  header explains why. runQueryWriter logs its own messages.0 and messages.1
- *  and its cost under the query_writer step. Here we add the attempt count. */
+// Empty query lists vary even at temperature zero; require three before rejecting.
 async function runQueryWriterRetryOnEmpty(userMessage: string, signal: AbortSignal): Promise<{ queries: string[]; attempts: number }> {
   let queries: string[] = [];
   let attempts = 0;
@@ -95,9 +62,7 @@ async function runQueryWriterRetryOnEmpty(userMessage: string, signal: AbortSign
   return { queries, attempts };
 }
 
-/** Fetches Serper results for every query and hands them to the search
- *  analyzer, which turns them into a research brief. Returns null when not a
- *  single query produced a result. */
+/** Return a research brief, or null when every search is empty. */
 async function gatherFindings(userMessage: string, queries: string[], signal: AbortSignal): Promise<string | null> {
   const sections: string[] = [];
   let total = 0;
@@ -120,8 +85,6 @@ async function gatherFindings(userMessage: string, queries: string[], signal: Ab
   log?.set(`${STEP.fetchAndFormatSearch}.findings`, rawFindings.slice(0, 4000));
   log?.set(`${STEP.fetchAndFormatSearch}.resultCount`, total);
   if (total === 0) return null;
-  // runSearchAnalyzer logs its own messages.0 and messages.1 and its cost under
-  // the search_analyzer step.
   log?.set("note_prefilter_steps.activeStage", "search_analyzer");
   return runSearchAnalyzer(userMessage, rawFindings);
 }
@@ -144,18 +107,11 @@ async function runPrefilterJudge(postContext: string, findings: string): Promise
   return { needsNote: !!parsed.note_needed, reasoning: parsed.reasoning ?? "" };
 }
 
-/** Runs the prefilter's steps under the deepseek config. The shared steps are
- *  the query writer, the search, the analyzer and the judge. Each of them logs
- *  its own messages.0 and messages.1 and its cost to the active tweet log and
- *  cost tracker. The caller isolates that log and that tracker, so the entries
- *  land in the prefilter's own namespace instead of the bot's. */
 async function runPrefilterSteps(userMessage: string, signal: AbortSignal): Promise<PrefilterVerdict> {
   const stage = (name: string) => {
     signal.throwIfAborted();
     getTweetLog()?.set("note_prefilter_steps.activeStage", name);
   };
-  // The satire gate runs first. runSatireDetector logs its own messages.0 and
-  // messages.1 and its cost under the satire_detector step.
   stage("satire_detector");
   const satire = await runSatireDetector(userMessage);
   signal.throwIfAborted();
@@ -173,14 +129,7 @@ async function runPrefilterSteps(userMessage: string, signal: AbortSignal): Prom
   const findings = await gatherFindings(userMessage, queries, signal);
   signal.throwIfAborted();
   if (!findings) {
-    // Fail OPEN. Zero results across every query almost never means the claim
-    // is unsearchable — on a healthy day it happens ~2 times. It means the
-    // search layer is broken, and treating blindness as absence is how a
-    // broken search layer silently rejected the entire feed for days in Aug
-    // 2026 (submissions ~90/day -> 6/day, every CI run green). Passing the
-    // post through costs one full-bot run, and the bot still has its own
-    // native search plus the note-needed judge, the eval gate, and the source
-    // verifier between here and a submission.
+    // Empty searches can mean an outage; let the full bot decide.
     return { needsNote: true, reasoning: "search returned zero results for every query — failing open, the bot's own search and gates decide" };
   }
 
@@ -190,17 +139,7 @@ async function runPrefilterSteps(userMessage: string, signal: AbortSignal): Prom
   return { needsNote: judge.needsNote, reasoning: judge.reasoning };
 }
 
-/**
- * Decides whether the post in `userMessage` needs a note. That message is the
- * shared bot-input user message, which processSingleTweet builds once.
- * The steps run under their own deepseek config, and in a tweet log and a cost
- * tracker that are isolated from the caller's.
- * Afterwards the step logs are grafted onto the caller's log under
- * `note_prefilter_steps.*`. That sits parallel to the bot's own
- * `note_writer_steps.*`, so the two can never collide.
- * The cost entries are re-emitted under `note_prefilter.*`, so the whole
- * prefilter shows up as a single cost group.
- */
+/** Isolate prefilter logs and costs, then fold them into the caller's record. */
 export async function runNoteNeededPrefilter(
   userMessage: string,
   { deadlineMs = PREFILTER_DEADLINE_MS }: { deadlineMs?: number } = {},
