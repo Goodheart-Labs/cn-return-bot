@@ -5,6 +5,7 @@ import { getSupabaseClient } from "../api/supabaseClient";
 import { extractYoutubeVideoId } from "../everything-shared/pageUrls";
 import { stripNullChars } from "../utils/stripNullChars";
 import type { CanonicalFeed } from "./feedUrls";
+import type { FeedPacingSnapshot, MeanCostRule } from "./pacing";
 import type { ItemSource, NoteSourceCitation } from "./types";
 
 /** The queue's priority tiers. The worker takes the highest tier first, and the
@@ -801,6 +802,40 @@ export async function fetchCostSinceUsd(since: Date): Promise<number> {
   return Number(total ?? 0);
 }
 
+/** The pacing snapshot from everything_feed_pacing (migration 096): the
+ *  database clock, today's spend, the mean cost of a finished feed post over
+ *  the rule's window (or its fallback window when the recent one holds fewer
+ *  than minPosts, and never from before its cutoff), and when the last
+ *  feed-tier item started. One read, one
+ *  clock, so the pacing rule never compares the runner's time with the database's. */
+export async function fetchFeedPacing(rule: MeanCostRule): Promise<FeedPacingSnapshot> {
+  const row = throwOnError(
+    await getSupabaseClient()
+      .rpc("everything_feed_pacing", {
+        window_hours: rule.windowHours,
+        min_posts: rule.minPosts,
+        fallback_hours: rule.fallbackHours,
+        not_before: rule.notBefore.toISOString(),
+      })
+      .single(),
+  ) as {
+    db_now: string;
+    spent_today_usd: number | string | null;
+    mean_post_cost_usd: number | string | null;
+    sample_posts: number | string;
+    sample_hours: number;
+    last_feed_started_at: string | null;
+  };
+  return {
+    dbNow: new Date(row.db_now),
+    spentTodayUsd: Number(row.spent_today_usd ?? 0),
+    meanPostCostUsd: row.mean_post_cost_usd === null ? null : Number(row.mean_post_cost_usd),
+    samplePosts: Number(row.sample_posts),
+    sampleHours: row.sample_hours,
+    lastFeedStartedAt: row.last_feed_started_at ? new Date(row.last_feed_started_at) : null,
+  };
+}
+
 /** Inserts an AI note and one everything_note_sources row per cited snippet. */
 export async function insertNote(claimId: string, note: string, sources: NoteSourceCitation[]): Promise<void> {
   const db = getSupabaseClient();
@@ -819,4 +854,10 @@ export async function insertNote(claimId: string, note: string, sources: NoteSou
       })),
     ),
   );
+}
+
+/** Sets the alarm the database starts the next feed run on (migration 098).
+ *  The reason is stored next to it so the schedule table explains itself. */
+export async function setFeedAlarm(at: Date, reason: string): Promise<void> {
+  throwOnError(await getSupabaseClient().rpc("everything_set_feed_alarm", { next_at: at.toISOString(), reason }));
 }

@@ -9,8 +9,11 @@
  *   2. Readers read them inside the ranking window.
  *
  * Prioritised creators come first, then everyone by attention. A creator in
- * neither set is not walked at all, so attention that fades takes its spend
- * with it.
+ * neither set is not ranked at all, so attention that fades takes its spend
+ * with it. Attention has a floor, one regular reader, below which a creator
+ * is not walked however much money is left. Above the floor, how far down
+ * the list the walk goes is decided by the budget, in autoEnqueue.ts, so more
+ * money per day admits creators further down and less money raises the bar.
  *
  * Both sides are needed because a creator nobody has ever checked has no row
  * anywhere. Prioritised creators are project rows; read creators are
@@ -84,6 +87,12 @@ export interface RankedCreator {
 const isOpen = (priorityUntil: string | null): boolean =>
   priorityUntil != null && Date.parse(priorityUntil) > Date.now();
 
+/** The floor: at least one regular reader, or before the proof at least two
+ *  visit rows. A creator below it is not walked at all, whatever the budget.
+ *  How far down the list above the floor the walk goes is not decided here:
+ *  the auto-enqueue admits creators from the top until what they publish per
+ *  day fills the paced budget (see admitCreators in autoEnqueue.ts). Under the
+ *  reader rule rows without a reader hash count for nothing. */
 const qualifies = (creator: RankedCreator, rule: RankingRule): boolean =>
   rule === "readers"
     ? creator.regularReaders >= MIN_REGULAR_READERS_TO_WALK_CREATOR
@@ -100,7 +109,8 @@ const byAttention = (rule: RankingRule) => (a: RankedCreator, b: RankedCreator) 
   (rule === "readers" ? b.regularReaders - a.regularReaders || b.pages - a.pages : b.visits - a.visits) ||
   a.feed_url.localeCompare(b.feed_url);
 
-/** Every creator the auto-enqueue should walk, most important first. */
+/** Every creator with priority or attention, most important first. The
+ *  auto-enqueue walks a prefix of this list, as far as the budget reaches. */
 export async function rankCreators(): Promise<{ creators: RankedCreator[]; rule: RankingRule }> {
   const since = new Date(Date.now() - VISIT_RANKING_WINDOW_DAYS * 24 * 3600_000);
   const [projects, attention, twoReadersSeen] = await Promise.all([

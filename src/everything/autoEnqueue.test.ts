@@ -9,7 +9,7 @@ mock.module("./db", dbMock);
 
 beforeEach(resetDbState);
 
-const { unprocessedEntries, rankCandidates, topPostEntries } = await import("./autoEnqueue");
+const { unprocessedEntries, rankCandidates, topPostEntries, publishingRatePerDay, admitCreators } = await import("./autoEnqueue");
 
 const feed = { project: "test", type: "substack" as const, url: "https://test.substack.com" };
 const entry = (url: string) => ({ source: "substack" as const, url, matchKey: url, label: url });
@@ -176,5 +176,89 @@ describe("topPostEntries", () => {
     const recent = [{ source: "substack" as const, url: "https://s/p/viral", matchKey: "https://s/p/viral", label: "x" }];
     const entries = topPostEntries([row("https://s/p/viral", "substack", 1), row("https://s/p/old", "substack", 2)], recent);
     expect(entries.map((e) => e.url)).toEqual(["https://s/p/old"]);
+  });
+});
+
+/* Covers the publishing rate: dated entries inside the last 14 days, divided
+ * by 14. Undated entries do not count. */
+describe("publishingRatePerDay", () => {
+  const now = new Date("2026-09-15T12:00:00Z");
+  const dated = (...days: string[]) => days.map((publishedAt) => ({ publishedAt }));
+
+  test("seven posts in the window is half a post a day", () => {
+    const entries = dated("2026-09-15", "2026-09-13", "2026-09-11", "2026-09-09", "2026-09-07", "2026-09-05", "2026-09-03");
+    expect(publishingRatePerDay(entries, now)).toBeCloseTo(0.5, 5);
+  });
+
+  test("posts older than the window and undated posts do not count", () => {
+    const entries = [...dated("2026-09-14", "2026-08-01", "2025-01-01"), { publishedAt: undefined }];
+    expect(publishingRatePerDay(entries, now)).toBeCloseTo(1 / 14, 5);
+  });
+
+  test("the window edge is inclusive on the day", () => {
+    expect(publishingRatePerDay(dated("2026-09-01"), now)).toBeCloseTo(1 / 14, 5);
+    expect(publishingRatePerDay(dated("2026-08-31"), now)).toBe(0);
+  });
+
+  test("an empty listing is a rate of zero", () => {
+    expect(publishingRatePerDay([], now)).toBe(0);
+  });
+});
+
+/* Covers the budget-driven admission: creators are walked from the top until
+ * their rates add up to the affordable posts a day, the crossing creator is
+ * still walked, priority creators are always walked and counted first, and a
+ * creator that cannot be listed is skipped without counting. */
+describe("admitCreators", () => {
+  const creator = (name: string, rate: number | null, prioritized = false) => ({ name, rate, prioritized });
+  /** The injected walk: answers each creator's own rate, or null for a
+   *  creator whose feed will not list, and records who was walked. */
+  const walker = () => {
+    const walked: string[] = [];
+    const walk = async (c: { name: string; rate: number | null }) => {
+      walked.push(c.name);
+      return c.rate === null ? null : { rate: c.rate };
+    };
+    return { walked, walk };
+  };
+
+  test("creators are walked in order until their rates fill the budget, and the crossing creator is still walked", async () => {
+    const { walked, walk } = walker();
+    const ranked = [creator("a", 1), creator("b", 1), creator("c", 1), creator("d", 1)];
+    const result = await admitCreators(ranked, 2.5, walk);
+    expect(walked).toEqual(["a", "b", "c"]);
+    expect(result.admitted.map((x) => x.creator.name)).toEqual(["a", "b", "c"]);
+    expect(result.cumulativeRate).toBe(3);
+    expect(result.cutoffIndex).toBe(3);
+  });
+
+  test("nobody below the line is even listed", async () => {
+    const { walked, walk } = walker();
+    await admitCreators([creator("a", 5), creator("b", 1)], 2, walk);
+    expect(walked).toEqual(["a"]);
+  });
+
+  test("when every creator fits there is no cutoff", async () => {
+    const { walk } = walker();
+    const result = await admitCreators([creator("a", 0.5), creator("b", 0.5)], 10, walk);
+    expect(result.admitted).toHaveLength(2);
+    expect(result.cutoffIndex).toBeNull();
+  });
+
+  test("a creator holding priority is always walked, even past the line, and counts first", async () => {
+    const { walked, walk } = walker();
+    const ranked = [creator("pressed-1", 2, true), creator("pressed-2", 2, true), creator("read", 1)];
+    const result = await admitCreators(ranked, 1, walk);
+    expect(walked).toEqual(["pressed-1", "pressed-2"]);
+    expect(result.cumulativeRate).toBe(4);
+    expect(result.cutoffIndex).toBe(2);
+  });
+
+  test("a creator whose feed will not list is skipped and does not count", async () => {
+    const { walked, walk } = walker();
+    const result = await admitCreators([creator("dead", null), creator("b", 1), creator("c", 1)], 1, walk);
+    expect(walked).toEqual(["dead", "b"]);
+    expect(result.admitted.map((x) => x.creator.name)).toEqual(["b"]);
+    expect(result.cumulativeRate).toBe(1);
   });
 });

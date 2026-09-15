@@ -1,11 +1,16 @@
 /**
  * Auto-enqueue the next unprocessed content of the feeds we keep fact-checked.
- * The feeds live in everything_followed_feeds, and the walk order comes from
- * the creator ranking: manually flagged creators first, then everyone by
- * reader attention (see creatorRanking.ts). The everything-priority-feeds
- * workflow runs this right before the worker drains the queue.
+ * The walk order comes from the creator ranking: creators holding priority
+ * first, then everyone by reader attention (see creatorRanking.ts). The
+ * everything-priority-feeds workflow runs this at the start of every feed run
+ * when nothing is waiting in the feed tiers of the queue.
  *
- * For every feed we fetch its latest entries, newest first. A Substack feed
+ * Which creators are walked is decided by the budget (admitCreators): the
+ * ranked list is walked from the top until the creators' publishing rates add
+ * up to the posts a day the paced budget affords, and nobody below that line
+ * is listed. Creators holding priority are always walked and counted first.
+ *
+ * For every walked feed we fetch its latest entries, newest first. A Substack feed
  * comes from its RSS feed, which goes through our Cloudflare Worker when we run
  * in CI. A YouTube feed comes from the channel's /videos tab. Only a feed's
  * newest few entries are candidates, and we drop every candidate that already
@@ -35,17 +40,24 @@
  * the worker never has to fetch Substack, which blocks our CI runners.
  *
  * Usage:
- *   bun run src/everything/autoEnqueue.ts [--dry-run]
+ *   bun run src/everything/autoEnqueue.ts [--dry-run] [--affordable <posts per day>]
+ *
+ * --affordable answers "what would the walk admit at that budget" without
+ * reading the pacing snapshot, which is also how a dry run works before
+ * migration 096 exists on the database it points at.
  */
 
 import "dotenv/config";
 import { extractYoutubeVideoId } from "../everything-shared/pageUrls";
-import { rankCreators, type RankedCreator, type RankingRule } from "./creatorRanking";
+import { rankCreators, type RankedCreator } from "./creatorRanking";
 import { VISIT_RANKING_WINDOW_DAYS } from "../everything-shared/readers";
 import { MIN_PAGES_FOR_A_REGULAR_READER } from "../everything-shared/readers";
+import { affordablePostsPerDay, computeNextRun, MEAN_COST_RULE } from "./pacing";
+import { FEED_BUDGET_USD } from "./spendCap";
 import {
   enqueueItems,
   fetchAllTopPosts,
+  fetchFeedPacing,
   fetchItemClaims,
   fetchItemUrlsContaining,
   fetchItemUrlsIn,
@@ -61,7 +73,7 @@ import {
   type TopPostRow,
 } from "./db";
 import type { FeedType } from "./feedUrls";
-import { duration, fixedRow, groupClose, groupOpen, tally } from "./logFormat";
+import { fixedRow, groupClose, groupOpen, tally } from "./logFormat";
 import { fetchAuthorPosts } from "./sources/lesswrong";
 import { fetchFeedPosts, fetchPostBodyText, htmlToText } from "./sources/substack";
 import { ensureYtDlp, fetchChannelVideos, fetchUploadDates } from "./sources/youtube";
@@ -168,11 +180,11 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedListing> {
   return { sourceName: channelName, entries, paidPosts: 0 };
 }
 
-/** Feed listings fetched this process, keyed by feed URL. The cycles of one
- *  dispatch reuse them, so a growing feed set does not multiply listing
- *  fetches by the cycle count; a post published mid-dispatch simply waits for
- *  the next dispatch. The unprocessed check against the database still runs
- *  every cycle, so an entry enqueued in an earlier cycle is not picked again. */
+/** Feed listings fetched this process, keyed by feed URL. The admission walk
+ *  and the top-posts refresh of one run reuse them, so a feed is listed once
+ *  per run however many steps look at it. The unprocessed check against the
+ *  database still runs on every use, so an entry enqueued earlier in the run
+ *  is not picked again. */
 const feedListingCache = new Map<string, FeedListing>();
 
 async function cachedFeedEntries(feed: PriorityFeed): Promise<FeedListing> {
@@ -255,21 +267,6 @@ async function retryErroredItems(): Promise<void> {
   }
 }
 
-/** The creators to walk, most important first. rankCreators puts the ones
- *  holding priority ahead of the ones we walk because readers visited them;
- *  see creatorRanking.ts. The feed type is derived from the URL rather than
- *  stored, so a row can never disagree with itself. */
-async function feedsToWalk(): Promise<{ walked: { feed: PriorityFeed; creator: RankedCreator }[]; rule: RankingRule }> {
-  const { creators, rule } = await rankCreators();
-  return {
-    walked: creators.map((c) => ({
-      feed: { project: c.project_slug, type: c.feed_type, url: c.feed_url },
-      creator: c,
-    })),
-    rule,
-  };
-}
-
 /** An unprocessed entry together with the feed it came from, ready for the
  *  cross-feed ranking. `publishedAt` is an ISO date. A missing date sorts
  *  newest, the same way the queue treats an item with no published date. */
@@ -346,57 +343,118 @@ export function topPostEntries(tops: TopPostRow[], recent: FeedEntry[]): FeedEnt
     .filter((t) => !recent.some((e) => e.matchKey === t.matchKey));
 }
 
-/** Upload dates learned this process, keyed by video id, so the later cycles
- *  of one auto-run do not ask again for a video the first cycle already dated. */
+/** Puts back what a killed run stranded and gives errored items their repeat
+ *  attempts. The feed run does this at its start, before it looks at the
+ *  queue, because both steps only touch the database and a requeued item must
+ *  be visible to the "is anything waiting" question that decides whether to
+ *  walk. Both steps assume no worker is active, which the workflow's
+ *  concurrency group guarantees. */
+export async function triageQueue(): Promise<void> {
+  await triageOrphanedItems();
+  await retryErroredItems();
+}
+
+/** Upload dates learned this process, keyed by video id, so a video dated
+ *  during the admission walk is not dated again when it becomes a candidate. */
 const uploadDateCache = new Map<string, string>();
 
-/** Fills in the publication date of every YouTube candidate that does not
- *  have one yet, in one batched pass after the walk. A recent video's listing
- *  carries no date and the recency rank needs one; a top post arrives dated
- *  from its cache and is left alone. Videos yt-dlp could not date stay
- *  undated and sort as newest, the same as before, and are logged. */
-async function dateYoutubeCandidates(candidates: Candidate[]): Promise<void> {
-  const undated = candidates.filter((c) => c.entry.source === "youtube" && !c.publishedAt);
-  const toFetch = [...new Set(undated.filter((c) => !uploadDateCache.has(c.entry.matchKey)).map((c) => c.entry.url))];
+/** Fills in the publication date of every YouTube entry in a listing that
+ *  does not have one yet, in one batched call per channel. The listing itself
+ *  carries no dates, and both the publishing rate and the recency rank need
+ *  them. Videos yt-dlp could not date stay undated: they do not count towards
+ *  the rate and they sort as newest, and the run says how many there were. */
+async function dateYoutubeEntries(entries: FeedEntry[]): Promise<void> {
+  const undated = entries.filter((e) => !e.publishedAt);
+  const toFetch = [...new Set(undated.filter((e) => !uploadDateCache.has(e.matchKey)).map((e) => e.url))];
   if (toFetch.length > 0) {
-    const started = Date.now();
     for (const [id, day] of await fetchUploadDates(toFetch)) uploadDateCache.set(id, day);
-    console.log(`  dated ${toFetch.length} YouTube candidates in ${duration(Date.now() - started)}`);
   }
   let missing = 0;
-  for (const c of undated) {
-    c.publishedAt = uploadDateCache.get(c.entry.matchKey);
-    if (!c.publishedAt) missing++;
+  for (const e of undated) {
+    e.publishedAt = uploadDateCache.get(e.matchKey);
+    if (!e.publishedAt) missing++;
   }
-  if (missing > 0) console.warn(`  ${missing} YouTube candidate${missing === 1 ? "" : "s"} could not be dated and will rank as newest`);
+  if (missing > 0) console.warn(`  ${missing} YouTube video${missing === 1 ? "" : "s"} could not be dated and will rank as newest`);
+}
+
+/** How many days of a feed's listing the publishing rate is measured over. */
+const PUBLISHING_RATE_WINDOW_DAYS = 14;
+
+const DAY_MS = 24 * 3600_000;
+
+/** A creator's publishing rate in posts per day: the listed entries dated
+ *  inside the window, divided by the window's length. Undated entries do not
+ *  count. A listing holds about 15 to 20 entries, so a creator who posts more
+ *  than that inside the window is undercounted at roughly 1.1 to 1.4 a day.
+ *  That is acceptable, because such a creator fills a budget on their own
+ *  either way. Exported for the tests. */
+export function publishingRatePerDay(entries: { publishedAt?: string }[], now: Date): number {
+  const since = new Date(now.getTime() - PUBLISHING_RATE_WINDOW_DAYS * DAY_MS).toISOString().slice(0, 10);
+  return entries.filter((e) => e.publishedAt !== undefined && e.publishedAt >= since).length / PUBLISHING_RATE_WINDOW_DAYS;
+}
+
+/** What admitting one creator produced: at least their publishing rate. */
+interface Admitted<C, W> {
+  creator: C;
+  /** The creator's position in the ranked list, which is the author rank. */
+  index: number;
+  walk: W;
+}
+
+/** Decides which of the ranked creators are walked this run: as many from
+ *  the top as the paced budget can feed. A creator holding priority is always
+ *  walked and counted first. Then attention creators are walked in order
+ *  until the cumulative publishing rate reaches the affordable rate; the
+ *  creator who crosses the line is still walked, so the budget is filled
+ *  rather than left short, and nobody below the line is even listed. A
+ *  creator whose walk returns null could not be listed and is skipped without
+ *  counting. Exported for the tests, which inject the walk. */
+export async function admitCreators<C extends { prioritized: boolean }, W extends { rate: number }>(
+  ranked: C[],
+  affordable: number,
+  walk: (creator: C, index: number) => Promise<W | null>,
+): Promise<{ admitted: Admitted<C, W>[]; cumulativeRate: number; cutoffIndex: number | null }> {
+  const admitted: Admitted<C, W>[] = [];
+  let cumulativeRate = 0;
+  for (const [index, creator] of ranked.entries()) {
+    if (!creator.prioritized && cumulativeRate >= affordable) return { admitted, cumulativeRate, cutoffIndex: index };
+    const result = await walk(creator, index);
+    if (!result) continue;
+    admitted.push({ creator, index, walk: result });
+    cumulativeRate += result.rate;
+  }
+  return { admitted, cumulativeRate, cutoffIndex: null };
 }
 
 /** Column widths of the walk table, fixed so rows can print as they arrive. */
-const CREATOR_COLUMNS = [4, 24, 20, 8, 6, 6, 9];
-const CREATOR_ALIGN: ("left" | "right")[] = ["right", "left", "left", "right", "right", "right", "right"];
+const CREATOR_COLUMNS = [4, 24, 20, 8, 7, 5, 6, 9, 9, 6];
+const CREATOR_ALIGN: ("left" | "right")[] = ["right", "left", "left", "right", "right", "right", "right", "right", "right", "right"];
 
 /** How much of a creator's priority window is left, for the walk table. Rounded
  *  down to whole days, because the exact hour is not worth a column. */
 function priorityLeft(priorityUntil: string | null): string {
   if (!priorityUntil) return "0d";
-  const days = Math.floor((Date.parse(priorityUntil) - Date.now()) / (24 * 3600_000));
+  const days = Math.floor((Date.parse(priorityUntil) - Date.now()) / DAY_MS);
   return days >= 1 ? `${days}d` : "<1d";
 }
 
-/** Runs one pass of triage, selection, and enqueueing. Returns how many items
- *  were enqueued. */
-export async function runAutoEnqueue(dryRun = false): Promise<number> {
-  if (!dryRun) {
-    await triageOrphanedItems();
-    await retryErroredItems();
-  }
+/** How many posts a day the budget buys at the current mean post cost, from
+ *  the same snapshot the pacing rule reads. The command-line entry point uses
+ *  this; the feed run passes the number it already computed. */
+export async function affordablePostsPerDayNow(): Promise<number> {
+  const snapshot = await fetchFeedPacing(MEAN_COST_RULE);
+  return affordablePostsPerDay(computeNextRun(snapshot, FEED_BUDGET_USD).meanPostCostUsd, FEED_BUDGET_USD);
+}
 
-  // The creators are ranked once here and handed to the top-posts refresh,
-  // rather than ranked again inside it, so one cycle costs one ranking.
-  const { walked, rule } = await feedsToWalk();
-  // A dry run must not write, so it reads the cached top lists without
-  // refreshing the stalest one.
-  const topRows = dryRun ? await fetchAllTopPosts() : await loadTopPosts(walked.map((w) => w.creator));
+/** Runs one pass of admission, selection, and enqueueing. `affordable` is how
+ *  many posts a day the budget buys; the walk admits creators until their
+ *  publishing rates add up to it. Returns how many items were enqueued. */
+export async function runAutoEnqueue(affordable: number, dryRun = false): Promise<number> {
+  const { creators: ranked, rule } = await rankCreators();
+  // The cached top lists serve this walk. The stalest admitted creator's list
+  // is refreshed after the walk, once the admitted set is known, and the fresh
+  // rows serve the next cycle.
+  const topRows = await fetchAllTopPosts();
 
   const candidates: Candidate[] = [];
   const skipped: string[] = [];
@@ -406,7 +464,7 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
   // printed the moment their feed has been listed. The walk can take minutes
   // (each YouTube channel is a yt-dlp call), and a log that said nothing until
   // the end read as a hang.
-  const byPriority = walked.filter((w) => w.creator.prioritized).length;
+  const byPriority = ranked.filter((c) => c.prioritized).length;
   // Which rule ranked these is worth a line of its own: the two count different
   // things, and a reader looking at the table has to know which one produced it.
   const ruleLine =
@@ -414,18 +472,27 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
       ? `ranked by regular readers, a reader who opened at least ${MIN_PAGES_FOR_A_REGULAR_READER} different pages`
       : "ranked by visit rows, because no creator has had two different readers yet";
   console.log(
-    `\nCREATORS WALKED · ${walked.length} to walk · ${byPriority} by priority, ${walked.length - byPriority} by attention · ${ruleLine} · counted over the last ${VISIT_RANKING_WINDOW_DAYS} days`,
+    `\nCREATORS · ${ranked.length} ranked · ${byPriority} by priority, ${ranked.length - byPriority} by attention · ${ruleLine} · counted over the last ${VISIT_RANKING_WINDOW_DAYS} days`,
   );
-  console.log(groupOpen(`each of the ${walked.length}, as listed`));
+  console.log(`  the budget affords ${affordable.toFixed(1)} posts a day · creators are walked from the top until their posts per day add up to that`);
+  console.log(groupOpen("the walk, in rank order"));
   console.log(
-    fixedRow(["rank", "creator", "why", "regulars", "readers", "pages", "visits", "unchecked"], CREATOR_COLUMNS, CREATOR_ALIGN),
+    fixedRow(
+      ["rank", "creator", "why", "regulars", "readers", "pages", "visits", "unchecked", "posts/day", "cum."],
+      CREATOR_COLUMNS,
+      CREATOR_ALIGN,
+    ),
   );
-  let listed = 0;
 
-  for (const [feedIndex, { feed, creator }] of walked.entries()) {
+  let cumulativeSoFar = 0;
+  const walkCreator = async (creator: RankedCreator, feedIndex: number): Promise<{ rate: number } | null> => {
+    const feed: PriorityFeed = { project: creator.project_slug, type: creator.feed_type, url: creator.feed_url };
     let listing;
     try {
       listing = await cachedFeedEntries(feed);
+      // Dated here rather than after the walk, because the rate needs the
+      // dates now and the cutoff depends on the rate.
+      if (feed.type === "youtube") await dateYoutubeEntries(listing.entries);
     } catch (err: any) {
       // One creator whose feed will not load must not take the run down with
       // it. Readers can prioritise anyone, so an unreachable feed is ordinary
@@ -435,17 +502,18 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
       // dead feed costs one failed request per cycle for at most two weeks.
       skipped.push(`  could not list ${feed.project}: ${err?.message ?? "unknown error"}`);
       console.log(
-        fixedRow([String(feedIndex + 1), feed.project, "could not list", "", "", "", "", ""], CREATOR_COLUMNS, CREATOR_ALIGN),
+        fixedRow([String(feedIndex + 1), feed.project, "could not list", "", "", "", "", "", "", ""], CREATOR_COLUMNS, CREATOR_ALIGN),
       );
-      continue;
+      return null;
     }
     const { sourceName, entries, paidPosts } = listing;
     if (paidPosts > 0) paidByCreator.set(feed.project, paidPosts);
+    const rate = publishingRatePerDay(entries, new Date());
+    cumulativeSoFar += rate;
     const latest = entries.slice(0, FEED_CANDIDATE_LIMIT);
     const tops = topPostEntries(topRows.filter((t) => t.feed_url === feed.url), latest);
     const unprocessed = await unprocessedEntries(feed, [...latest, ...tops]);
 
-    listed++;
     console.log(
       fixedRow(
         [
@@ -457,6 +525,8 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
           String(creator.pages),
           String(creator.visits),
           String(unprocessed.length),
+          rate.toFixed(2),
+          cumulativeSoFar.toFixed(1),
         ],
         CREATOR_COLUMNS,
         CREATOR_ALIGN,
@@ -472,30 +542,47 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
         entry,
         sourceName,
         topPopularity: entry.topPopularity,
-        // A top post arrives dated from its cache; a recent YouTube video is
-        // dated after the walk, in one batched pass (dateYoutubeCandidates).
         publishedAt: entry.publishedAt,
       });
     }
-  }
+    return { rate };
+  };
+
+  const { admitted, cumulativeRate, cutoffIndex } = await admitCreators(ranked, affordable, walkCreator);
 
   const closing = groupClose();
   if (closing) console.log(closing);
-  console.log(`  listed ${listed} of ${walked.length}${skipped.length ? `, ${skipped.length} could not be listed` : ""}`);
+  console.log(
+    `  walked ${admitted.length} of ${ranked.length}${skipped.length ? `, ${skipped.length} could not be listed` : ""} · their posts add up to ${cumulativeRate.toFixed(1)} a day against ${affordable.toFixed(1)} affordable`,
+  );
+  const last = admitted.at(-1);
+  if (cutoffIndex !== null && last) {
+    const below = ranked.length - cutoffIndex;
+    const attention = rule === "readers" ? `${last.creator.regularReaders} regulars, ${last.creator.pages} pages` : `${last.creator.visits} visits`;
+    console.log(
+      `  cutoff: rank ${last.index + 1} ${last.creator.project_slug} (${attention}) is the last creator walked · ${below} below the line wait for a cheaper day`,
+    );
+  } else if (byPriority > 0 && admitted.every((a) => a.creator.prioritized) && byPriority < ranked.length) {
+    console.log(`  creators holding priority fill the budget by themselves · nobody is walked on attention today`);
+  } else {
+    console.log(`  every ranked creator fits in the budget`);
+  }
   for (const line of skipped) console.log(line);
-  await dateYoutubeCandidates(candidates);
   if (paidByCreator.size > 0) {
     console.log(`  paid posts we cannot read, waiting for the subscriber inbox: ${tally(paidByCreator)}`);
   }
+  // The weekly top-posts refresh is spent on a creator we actually walk. Its
+  // fresh rows are in the table for the next cycle; this one used the cache.
+  if (!dryRun) await loadTopPosts(admitted.map((a) => a.creator));
 
   // A creator holding priority comes strictly before the blended ranking, so
   // priority means "next", not "sooner". Within each partition the blend
   // applies.
-  const ranked = [
+  const rankedCandidates = [
     ...rankCandidates(candidates.filter((c) => c.prioritized)),
     ...rankCandidates(candidates.filter((c) => !c.prioritized)),
   ];
-  const picks = ranked.slice(0, BATCH_SIZE);
+  const picks = rankedCandidates.slice(0, BATCH_SIZE);
 
   if (picks.length === 0) {
     console.log("\nQUEUE · nothing to add, every creator we walk is caught up");
@@ -505,8 +592,8 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
   for (const { feed, entry } of picks) {
     console.log(`  adding: [${feed.project}] ${entry.label}`);
     console.log(`          ${entry.url}`);
-    if (ranked.length > picks.length) {
-      console.log(`          it beat ${ranked.length - picks.length} other candidate posts`);
+    if (rankedCandidates.length > picks.length) {
+      console.log(`          it beat ${rankedCandidates.length - picks.length} other candidate posts`);
     }
   }
   if (dryRun) {
@@ -546,10 +633,9 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
       url: entry.url,
       title: entry.title,
       full_text: entry.fullText,
-      // The candidate's date also covers YouTube, whose upload date the
-      // ranking already fetched. The worker used to fill it in after the
-      // fetch; setting it here keeps the queue's own ordering honest from the
-      // start.
+      // The candidate's date also covers YouTube, whose upload date the walk
+      // already fetched. Setting it here keeps the queue's own ordering
+      // honest from the start.
       published_at: publishedAt,
       priority,
     });
@@ -561,7 +647,14 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
 
 if (import.meta.main) {
   ensureYtDlp();
-  runAutoEnqueue(process.argv.includes("--dry-run")).catch((err) => {
+  const dryRun = process.argv.includes("--dry-run");
+  const affordableArg = process.argv[process.argv.indexOf("--affordable") + 1];
+  const affordable = process.argv.includes("--affordable") ? Number(affordableArg) : null;
+  if (affordable !== null && !(affordable > 0)) throw new Error("--affordable needs a positive number of posts per day");
+  (dryRun ? Promise.resolve() : triageQueue())
+    .then(() => affordable ?? affordablePostsPerDayNow())
+    .then((posts) => runAutoEnqueue(posts, dryRun))
+    .catch((err) => {
     console.error("[autoEnqueue] Fatal error:", err);
     process.exit(1);
   });

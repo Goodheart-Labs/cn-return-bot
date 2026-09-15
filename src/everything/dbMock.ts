@@ -41,6 +41,16 @@ export const dbState = {
     popularity: number;
     rank: number;
   }[],
+  /** What fetchFeedPacing answers. The default is a fresh day with a known
+   *  mean and no post started yet, so the next run is due at once. */
+  feedPacing: {
+    dbNow: new Date("2026-09-15T00:00:00Z"),
+    spentTodayUsd: 0,
+    meanPostCostUsd: 3 as number | null,
+    samplePosts: 10,
+    sampleHours: 48,
+    lastFeedStartedAt: null as Date | null,
+  },
   /** Every recorded call, keyed by function name. */
   calls: {} as Record<string, unknown[][]>,
 };
@@ -52,6 +62,14 @@ export const resetDbState = () => {
   dbState.creatorAttention = [];
   dbState.twoReadersSeen = false;
   dbState.topPosts = [];
+  dbState.feedPacing = {
+    dbNow: new Date("2026-09-15T00:00:00Z"),
+    spentTodayUsd: 0,
+    meanPostCostUsd: 3,
+    samplePosts: 10,
+    sampleHours: 48,
+    lastFeedStartedAt: null,
+  };
   dbState.calls = {};
 };
 
@@ -72,6 +90,9 @@ export const dbMock = () => ({
   fetchCreatorAttention: () => Promise.resolve(dbState.creatorAttention),
   fetchTwoReadersSeen: () => Promise.resolve(dbState.twoReadersSeen),
   fetchAllTopPosts: () => Promise.resolve(dbState.topPosts),
+  fetchFeedPacing: () => Promise.resolve(dbState.feedPacing),
+  fetchCostSinceUsd: () => Promise.resolve(0),
+  setFeedAlarm: record("setFeedAlarm"),
   replaceFeedTopPosts: record("replaceFeedTopPosts"),
   upsertCreatorPriority: record("upsertCreatorPriority"),
   fetchItemClaims: () => Promise.resolve([]),

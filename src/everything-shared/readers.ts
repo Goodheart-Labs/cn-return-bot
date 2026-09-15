@@ -15,9 +15,10 @@ export const MIN_PAGES_FOR_A_REGULAR_READER = 2;
 export const VISIT_RANKING_WINDOW_DAYS = 14;
 
 /** How many regular readers a creator needs before the pipeline walks them on
- *  attention alone. Raise this to two when enough people use the extension for
- *  that to mean something. A creator holding priority is walked whatever their
- *  readers, because someone asked for them. */
+ *  attention alone. Below this nothing of theirs is processed however much
+ *  money is left; above it the budget decides how far down the ranking the
+ *  walk goes. A creator holding priority is walked whatever their readers,
+ *  because someone asked for them. */
 export const MIN_REGULAR_READERS_TO_WALK_CREATOR = 1;
 
 /** The value a visit row carries instead of an identifier: one per browser and

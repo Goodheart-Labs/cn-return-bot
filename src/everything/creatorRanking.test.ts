@@ -9,7 +9,10 @@ import { dbMock, dbState, resetDbState } from "./dbMock";
  *
  * Which counting rule applies is decided by the two-reader proof: until some
  * creator has been visited by two different readers, the walk counts visit rows
- * exactly as it did before, and after that it counts people. */
+ * exactly as it did before, and after that it counts people. Either way there
+ * is a floor, one regular reader or two visit rows, below which a creator is
+ * not on the list at all; how far down the list the walk goes above the floor
+ * is the budget's decision, covered in autoEnqueue.test.ts. */
 
 mock.module("./db", dbMock);
 
@@ -29,8 +32,9 @@ const creator = (slug: string, overrides: Partial<(typeof dbState.creatorProject
 });
 
 /** One creator's attention row. `visits` defaults to something that satisfies
- *  the old rule, so a test that is about readers does not have to think about
- *  visits and the other way round. */
+ *  the visit rule, and `readers` to something consistent with the regulars and
+ *  pages given, so a test that is about one number does not have to think
+ *  about the others. */
 const read = (
   feedUrl: string,
   counts: { visits?: number; pages?: number; readers?: number; regulars?: number } = {},
@@ -38,7 +42,7 @@ const read = (
   feed_url: feedUrl,
   visits: counts.visits ?? 2,
   pages: counts.pages ?? 0,
-  readers: counts.readers ?? 0,
+  readers: counts.readers ?? Math.max(counts.regulars ?? 0, counts.pages ? 1 : 0),
   regular_readers: counts.regulars ?? 0,
 });
 
@@ -53,7 +57,7 @@ describe("rankCreators, before any creator has had two different readers", () =>
     expect((await rankCreators()).rule).toBe("visits");
   });
 
-  test("two visit rows are enough even with no readers at all", async () => {
+  test("two visit rows are the floor, one is not enough", async () => {
     dbState.creatorAttention = [read("https://oneclick.substack.com", { visits: 1 })];
     expect(await rankedSlugs()).toEqual([]);
     dbState.creatorAttention = [read("https://oneclick.substack.com", { visits: 2 })];
@@ -78,10 +82,13 @@ describe("rankCreators, once two different readers have been seen", () => {
     expect((await rankCreators()).rule).toBe("readers");
   });
 
-  test("one regular reader is enough, and visit rows on their own are not", async () => {
+  test("one regular reader is the floor: a reader of one page is not, and neither are visit rows on their own", async () => {
+    // Rows without a reader hash count for nothing under this rule, however
+    // many there are.
     dbState.creatorAttention = [
-      read("https://reloaded.substack.com", { visits: 9, pages: 1, readers: 1, regulars: 0 }),
+      read("https://oneclick.substack.com", { visits: 9, pages: 1, readers: 1, regulars: 0 }),
       read("https://read.substack.com", { visits: 2, pages: 2, readers: 1, regulars: 1 }),
+      read("https://hashless.substack.com", { visits: 30, pages: 0, readers: 0, regulars: 0 }),
     ];
     expect(await rankedSlugs()).toEqual(["read"]);
   });

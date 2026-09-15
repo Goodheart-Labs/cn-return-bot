@@ -1,7 +1,8 @@
 /**
- * Worker for the everything pipeline. It drains the queue and then exits.
+ * Worker for the everything pipeline. Run directly it drains the queue and
+ * then exits; the paced Actions feed run takes one item at a time from it.
  *
- * It takes the oldest queued item and fetches its content, which is either a
+ * It takes the next queued item and fetches its content, which is either a
  * YouTube transcript or a Substack article. It then hands that content to
  * processFetchedContent. That step extracts the claims, drops the speculative
  * ones, fact-checks the ones the rater is not already confident about, and streams
@@ -15,7 +16,7 @@
 import "dotenv/config";
 import { fetchWebPage } from "../pipeline/tool-calling/tools";
 import { closeBrowser } from "../pipeline/utils/browserManager";
-import { claimNextQueuedItem, fetchItemClaims, fetchQueueOverview, fillProjectDisplayName, markItemDone, markItemError, QUEUE_PRIORITY, requeueItem, type EverythingItem } from "./db";
+import { claimNextQueuedItem, fetchItemClaims, fetchQueueOverview, fillProjectDisplayName, markItemDone, markItemError, QUEUE_PRIORITY, requeueItem, type EverythingItem, type QueuedItemSummary } from "./db";
 import { age, clip, duration, money, ordinal, table } from "./logFormat";
 import { processFetchedContent, resumeItemClaims } from "./pipeline/processContent";
 import { fetchForumPost } from "./sources/lesswrong";
@@ -131,14 +132,16 @@ function tierName(priority: number): string {
   return "retry";
 }
 
-/** Prints what is waiting, in the order this worker will take it. The worker
- *  itself only ever holds one item at a time, so without this read a run never
- *  says how much work is queued or why one item goes before another. */
-async function logQueue(): Promise<number> {
+/** Prints what is waiting, in the order this worker will take it, and returns
+ *  it. The worker itself only ever holds one item at a time, so without this
+ *  read a run never says how much work is queued or why one item goes before
+ *  another. The feed run also reads the rows to decide whether to walk for
+ *  new posts. */
+export async function logQueue(): Promise<QueuedItemSummary[]> {
   const queue = await fetchQueueOverview();
   if (queue.length === 0) {
     console.log("\nQUEUE · empty right now");
-    return 0;
+    return queue;
   }
   const oldest = queue.reduce((a, b) => (a.created_at < b.created_at ? a : b));
   console.log(`\nQUEUE · ${queue.length} waiting right now, in the order the worker takes them · oldest waiting ${age(oldest.created_at)}`);
@@ -153,8 +156,14 @@ async function logQueue(): Promise<number> {
     ]);
   for (const line of table(["", "tier", "source", "title", ""], rows, ["right"])) console.log(line);
   if (queue.length > QUEUE_LINES) console.log(`     … and ${queue.length - QUEUE_LINES} more`);
-  return queue.length;
+  return queue;
 }
+
+/** Whether any feed-tier item is waiting. The feed run walks for new posts
+ *  only when this is false, so a resumed or retried item is finished before
+ *  fresh content is pulled in front of it. */
+export const feedItemsQueued = (queue: QueuedItemSummary[]): boolean =>
+  queue.some((item) => item.status === "queued" && item.priority < QUEUE_PRIORITY.requested);
 
 /** Runs one claimed item through fetch, extraction and checking, and records
  *  where it ended: done, put back because a budget ran out part way, or
@@ -207,22 +216,31 @@ export async function processQueuedItem(item: EverythingItem): Promise<"done" | 
   }
 }
 
+/** Takes the next feed-tier item and processes it. "empty" means nothing was
+ *  waiting. The Actions feed run calls this once per run;
+ *  reader-requested items are never taken here, the intake service on the
+ *  machine owns that tier. */
+export async function processNextFeedItem(): Promise<"done" | "capped" | "error" | "empty"> {
+  const item = await claimNextQueuedItem("feed");
+  if (!item) return "empty";
+  console.log(`\nCHECKING NOW · [${item.source}] ${clip(item.title ?? item.url, 60)}`);
+  return processQueuedItem(item);
+}
+
 /** Processes the backlog tiers until they are empty or the feed budget is
- *  spent. Reader-requested items are not taken here; the intake service on the
- *  machine owns that tier. Returns how many items it finished. */
+ *  spent, with no pacing. This is the local `everything-worker` command, an
+ *  escape hatch that must never run while the paced dispatch is active.
+ *  Returns how many items it finished. */
 export async function drainQueue(): Promise<number> {
   let processed = 0;
-  const queueLength = await logQueue();
+  await logQueue();
   while (true) {
     if (await feedBudgetExhausted()) {
       console.log(`\nFeed budget reached (${describeSpend(await todaySpendUsd())}) — stopping for today`);
       break;
     }
-    const item = await claimNextQueuedItem("feed");
-    if (!item) break;
-    console.log(`\nCHECKING NOW · queue item ${processed + 1} of ${queueLength} · [${item.source}] ${clip(item.title ?? item.url, 60)}`);
-    const ended = await processQueuedItem(item);
-    if (ended === "capped") break;
+    const ended = await processNextFeedItem();
+    if (ended === "empty" || ended === "capped") break;
     processed++;
   }
   return processed;
