@@ -8,6 +8,8 @@
 
 import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { extractClaims } from "../../everything/pipeline/extractClaims";
 import { aggregateAndLogCosts, withCostTracker } from "../../pipeline/cost-tracking/costTracker";
 
@@ -33,6 +35,24 @@ if (result.kind === "not_checkable") throw new Error(`gate declined: ${result.re
 const claims = result.parts.flatMap((p) => p.claims);
 const confident = claims.filter((c) => c.veryConfidentTrue);
 console.log(`${text.length} chars: ${claims.length} claims, ${confident.length} very confident ($${(cost?.cost ?? 0).toFixed(4)})\n`);
+const dir = join(import.meta.dir, "results-decker", itemId);
+mkdirSync(dir, { recursive: true });
+const outFile = join(dir, `probe-extraction-${chars}.json`);
+writeFileSync(
+  outFile,
+  JSON.stringify(
+    {
+      chars: text.length,
+      costUsd: cost?.cost ?? null,
+      claimCount: claims.length,
+      veryConfidentCount: confident.length,
+      claims: claims.map((c) => ({ claim: c.claim, very_confident_that_its_true: c.veryConfidentTrue, context_quote: c.context })),
+    },
+    null,
+    2,
+  ),
+);
+console.log(`wrote ${outFile}\n`);
 for (const c of confident) console.log(`  ✓ ${c.claim}`);
 console.log("\nnot flagged:");
 for (const c of claims.filter((c) => !c.veryConfidentTrue)) console.log(`  · ${c.claim}`);

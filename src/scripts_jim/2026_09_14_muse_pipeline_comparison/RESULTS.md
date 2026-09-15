@@ -43,18 +43,40 @@ chunks is far more thorough than Opus was, at about four cents an item.
 
 Each claim now also carries `very_confident_that_its_true`, which the
 extractor sets when it is very confident the claim is correct as stated. Such
-a claim is stored as skipped and never rated or checked. The wording matters a
-great deal. With "extremely confident" the model set it on 2 of 347 claims,
-both textbook genetics. With "very confident", probed on the first 12,000
-characters alone (`probeExtraction.ts`), it set it on 62 of 213 claims, and
-some of those are exactly the statements a reader would want checked: "Children
-in India are on average shorter than children in Africa", "At least several
-hundred thousand Indian workers migrate to Saudi Arabia and the United Arab
-Emirates", "In Uttar Pradesh, water for irrigating the rice crop comes from the
-monsoon season". Most flagged claims are safe (Lucknow is in northern India,
-dowry is illegal in India, the varna order). The same probe also shows
-extraction varies between runs: the first chunk alone gave 213 claims where the
-whole article had given 347 the run before.
+a claim is stored as skipped and never rated or checked. With the earlier
+"extremely confident" wording the model set it on 2 of 347 claims, both
+textbook genetics. With "very confident", two probes on the first 12,000
+characters alone (`probeExtraction.ts`) flagged 62 of 213 claims and 21 of 115;
+the second run is saved as `probe-extraction-12000.json`.
+
+Every flagged claim of both probes was read by hand. Nearly all are
+encyclopaedic background that no note would ever correct: the varna order,
+Nai as barbers, gram panchayat elections every five years, dowry illegal since
+1961, the three tiers of government healthcare. A handful are imprecise, but
+none would plausibly earn a note:
+
+- "Water for irrigating the rice crop comes from the monsoon season": in Uttar
+  Pradesh much of the rice is irrigated from tubewells, so this is at best half
+  right.
+- "Wheat is harvested in March": in Uttar Pradesh it is mostly late March to
+  April.
+- "When people mate, they exchange whole chromosomes": each parent passes one
+  recombined copy of each chromosome, so this is the author's simplification,
+  not a fact.
+- "Dalits are outside the caste system": outside the four varnas, but they have
+  their own jatis.
+- "The government guaranteed 100 days of employment": true of MGNREGA, but the
+  scheme may have been replaced in late 2025 by a law promising 125 days. That
+  is worth confirming; it is the one flagged claim that could carry a note.
+- "Children in India are on average shorter than children in Africa": a
+  comparative statistic, but a well-documented one (the "Asian enigma" in the
+  child-height literature), so the flag is defensible.
+
+The two claims that earned helpful notes on this item both fall inside the
+probed text, and neither was flagged in either run. So on this evidence the
+flag removes safe background and keeps the claims that matter. Extraction
+itself varies a lot between runs: the same 12,000 characters gave 213 claims
+once and 115 the next time.
 
 The splitter itself was validated on Zvi's "Monthly Roundup #44: July 2026",
 which is a list of unrelated sections: the model returned 17 parts, every start
