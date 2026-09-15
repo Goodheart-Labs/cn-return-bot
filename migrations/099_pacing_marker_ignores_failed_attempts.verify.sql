@@ -39,7 +39,8 @@ select last_feed_started_at = (select started_at from everything_items where id 
 from everything_feed_pacing(48, 2, 168, '-infinity');
 reset role;
 
-\echo '--- 4. the mean still ignores errored items (expected: mean 2.00 over 2 posts, as in the 096 checks)'
+\echo '--- 4. the mean still ignores errored items: 109 is out, and 107, finished at no cost in step 1, is in'
+\echo '    expected: mean 1.3333 over 3 posts (2.50, 1.50 and 0)'
 set role service_role;
 select round(mean_post_cost_usd, 4) as mean, sample_posts from everything_feed_pacing(48, 2, 168, '-infinity');
 reset role;
