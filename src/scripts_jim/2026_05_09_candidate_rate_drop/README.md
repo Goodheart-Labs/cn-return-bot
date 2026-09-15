@@ -2,8 +2,7 @@
 
 ## What this folder is
 
-Canonical "the candidate rate dropped, what broke?" runbook. Mirrors the
-[outcome_reason taxonomy in DATABASE.md](../../../docs/DATABASE.md#pipeline_runs--every-processing-attempt).
+Canonical "the candidate rate dropped, what broke?" runbook.
 After the error-handling refactor (PR `refactor/error-handling`), failure
 rows in `pipeline_runs` are guaranteed to have non-NULL `error_message`,
 populated `logs->'error'->>'stack'`, and an `outcome_reason` from a fixed

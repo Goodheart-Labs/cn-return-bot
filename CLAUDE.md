@@ -166,7 +166,7 @@ bun run review-local  # Local Supabase
 
 ## Database
 
-See [DATABASE.md](docs/DATABASE.md) for full schema, column descriptions, enum values, and data flow. See [community-notes-data.md](docs/community-notes-data.md) for X's public Community Notes data schema.
+Schema changes live in [migrations/](migrations/); application queries and types are in [supabaseClient.ts](src/api/supabaseClient.ts).
 
 Quick guide: use `notes` for performance analysis and submission metadata (the old `canonical_note_information` was merged into it in May 2026), `pipeline_runs` + `pipeline_scores` for debugging.
 

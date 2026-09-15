@@ -71,7 +71,6 @@ comparison-data.json
 # Generated reports
 tmp/reports/
 tryout-results/
-docs/*.html
 
 # Temp notes / not for git
 don't push to git*.md

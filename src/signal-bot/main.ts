@@ -27,7 +27,7 @@ and migration 100 applied before both this worker and the scheduled pipeline.
 State: SIGNAL_STATE_PATH (default output/signal-bot[-dry-run].sqlite).
 Existing personal account: SIGNAL_ACCEPT_SELF_MESSAGES=true handles your phone's
 messages while ignoring the bot's own replies.
-Setup and recovery: docs/signal-bot.md
+Setup and recovery: scripts/signal-bot/README.md
 `;
 
 async function main(): Promise<void> {
