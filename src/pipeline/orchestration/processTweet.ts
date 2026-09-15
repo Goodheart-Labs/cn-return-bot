@@ -431,6 +431,7 @@ function gateComputeOutput(bot: Bot, gate: Outcome): TweetComputeOutput {
     outcomeReason: gate.outcomeReason,
     finalStage: gate.finalStage,
     scores: [],
+    warnings: collectWarnings(),
     costUsd: aggregateAndLogCosts()?.cost,
     flatLog: log ? Object.fromEntries(log) : {},
     bot: getLoggedBotIdentity(bot.id, log),

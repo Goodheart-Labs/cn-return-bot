@@ -1,11 +1,18 @@
-import { afterEach, describe, expect, spyOn, test } from "bun:test";
+import { afterEach, describe, expect, mock, spyOn, test } from "bun:test";
+import type { Post } from "../../api/fetchEligiblePosts";
 import { outcomeToResult } from "../../bots/types";
 import { DEFAULT_CONFIG, withBotConfig } from "../ab-testing/botConfig";
+import { withCostTracker } from "../cost-tracking/costTracker";
+import * as botInput from "../input/createBotInput";
 import { withMonitoringContext } from "../misinfo-monitoring/monitoringContext";
+import * as prefilter from "../prefilter/noteNeededPrefilter";
+import * as userMessage from "../prompts/input/userMessage";
 import * as evaluation from "../score/noteEvaluationFilter";
+import * as jsonLlm from "../utils/jsonLlmCall";
 import { createTweetLog, withTweetLog } from "../utils/tweetLog";
+import { withWarnings } from "../utils/warnings";
 import * as materiality from "./materialityJudge";
-import { determineOutcome, scorePipelineResult } from "./processTweet";
+import { computeTweetResult, determineOutcome, scorePipelineResult } from "./processTweet";
 
 const result = outcomeToResult({ id: "123", text: "The post" }, "simple-bot", {
   type: "note",
@@ -25,6 +32,43 @@ function scoring(materialityGate: ScoringOutput["materialityGate"]): ScoringOutp
     materialityGate,
   };
 }
+
+describe("early gate warnings", () => {
+  const restores: Array<() => void> = [];
+  function keep<T extends { mockRestore(): void }>(spy: T): T {
+    restores.push(() => spy.mockRestore());
+    return spy;
+  }
+  afterEach(() => restores.splice(0).reverse().forEach(restore => restore()));
+
+  test("retains topic-filter fail-open warnings when the note-needed gate rejects", async () => {
+    keep(spyOn(botInput, "createBotInput").mockResolvedValue({} as Awaited<ReturnType<typeof botInput.createBotInput>>));
+    keep(spyOn(userMessage, "buildUserMessageFromInput").mockReturnValue("The post"));
+    const call = keep(spyOn(jsonLlm, "runJsonLlmCall").mockRejectedValue(new Error("provider unavailable")));
+    keep(spyOn(prefilter, "runNoteNeededPrefilter").mockResolvedValue({ needsNote: false, reasoning: "No correction needed" }));
+    keep(spyOn(console, "warn").mockImplementation(() => {}));
+    const botRun = mock(async () => { throw new Error("The full bot should not run"); });
+    const log = createTweetLog();
+
+    const output = await withWarnings(() => withCostTracker(() => withTweetLog(log, () =>
+      withBotConfig({ ...DEFAULT_CONFIG, topic_filter: true, note_prefilter: true }, () =>
+        computeTweetResult({ id: "123", text: "The post" } as Post, {
+          id: "test-bot", name: "Test", description: "Test", runPipeline: botRun,
+        })),
+    )));
+
+    expect(call).toHaveBeenCalledTimes(2);
+    expect(botRun).not.toHaveBeenCalled();
+    expect(output.outcome).toBe("rejected");
+    expect(output.outcomeReason).toBe("prefilter_no_note");
+    expect(output.flatLog["topic_filter.failedOpen"]).toBe(true);
+    expect(output.warnings).toEqual([
+      expect.stringContaining("deepseek/deepseek-v4-flash failed; trying google/gemini-3-flash-preview"),
+      expect.stringContaining("both models failed — failing open"),
+    ]);
+    expect(output.flatLog.warnings).toEqual(output.warnings);
+  });
+});
 
 describe("determineOutcome materiality gate", () => {
   test("a low materiality score rejects despite a passing eval gate", () => {
