@@ -7,8 +7,6 @@
  * snapshots disagree about, settles each disagreement by majority vote, and
  * writes the surviving values into the notes table.
  *
- * The full design is written up in docs/snapshot-reconciliation.md.
- *
  * You can run this file on its own. The scraper also calls it at the end of a run.
  */
 

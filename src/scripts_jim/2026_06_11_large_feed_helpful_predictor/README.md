@@ -38,7 +38,7 @@ With ~2× the positives (all large-feed history) a **weak** signal appears
 
 ## Caveats
 - `tweets` engagement columns are the **latest** refreshed values, not the
-  values at submission time (DATABASE.md) — mild leakage/noise.
+  values at submission time (according to the database guide at the time) — mild leakage/noise.
 - The 7-day window is the binding constraint, not data availability: large-feed
   runs exist for May 16–21 and Jun 6–11, but the window only sees the June slice.
 - To get a usable predictor, either widen the window (use `--all`) or wait for

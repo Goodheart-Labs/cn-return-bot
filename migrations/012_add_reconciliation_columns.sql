@@ -1,5 +1,5 @@
 -- Add reconciliation columns to scraped_notewriter_notes
--- Part of the snapshot reconciliation system (see docs/snapshot-reconciliation.md)
+-- Part of the snapshot reconciliation system
 
 ALTER TABLE scraped_notewriter_notes
   ADD COLUMN IF NOT EXISTS cn_status TEXT,

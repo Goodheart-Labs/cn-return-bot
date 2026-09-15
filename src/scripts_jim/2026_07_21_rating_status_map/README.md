@@ -170,8 +170,8 @@ V(t) ∝ ln(1 + t/τ), τ = 0.8 h:
 
 where V1 = impressions and t1 = tweet age in hours at first sight. The tweets
 table is insert-only, so impressions are frozen at first sight and the (V1, t1)
-pair is exact — not a proxy. (DATABASE.md's "latest values, refreshed every
-run" line described feed_tweets, not tweets; fixed there.)
+pair is exact — not a proxy. (The database guide's "latest values, refreshed every
+run" line described feed_tweets, not tweets; it was corrected during this investigation.)
 
 **The three functions** (all monotone in x):
 

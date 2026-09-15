@@ -26,8 +26,8 @@ error-handling side, plus one dead follow request.
   occasional Grok/Gemini non-JSON answer, two writer char-limit failures.
 - `stale_at_submit` (27 in 3 days) looked alarming as an undocumented reason
   but is an intentional cut of stale candidates in `submitCandidates.ts` from
-  the throughput work. It is missing from DATABASE.md's outcome_reason
-  taxonomy, as is `below_velocity_floor`.
+  the throughput work. Both it and `below_velocity_floor` were absent from
+  the database guide at the time.
 
 ## Everything pipeline: two real problems
 

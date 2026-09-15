@@ -35,9 +35,8 @@ replaying saved inputs and forcing experiment variants.
 
 Dashboard commands and builds are in [package.json](package.json).
 
-The [Signal group bot](docs/signal-bot.md) checks pasted tweets, drafts and
+The [Signal group bot](scripts/signal-bot/README.md) checks pasted tweets, drafts and
 discusses notes, and submits the current draft when someone says “yes post”.
-Its shared quota check keeps three estimated submission slots for group requests.
 Run `bun src/signal-bot/main.ts --help` for local usage and setup requirements.
 
 [CLAUDE.md](CLAUDE.md) covers repository operations, including Common Notes ingestion,
@@ -51,8 +50,6 @@ is dispatched by Supabase cron. Running the production entry point can submit
 real notes; use the tryout script for development.
 
 Supabase migrations live in [migrations/](migrations/) and are applied separately.
-See [DATABASE.md](docs/DATABASE.md) for database reference and
-[community-notes-data.md](docs/community-notes-data.md) for X's public data format.
 
 ## License
 

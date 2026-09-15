@@ -11,11 +11,14 @@ the locked Playwright package's bundled Chromium and OS libraries under
 `/ms-playwright`, readable by the runtime `bun` user. An offline browser launch
 and a credential-free `--help` check run as that user during the image build.
 
-Prepare `/opt/cn-return-bot/config/signal.env` privately with the variables listed
-in `docs/signal-bot.md`, including the selected requests group and
+Prepare `/opt/cn-return-bot/config/signal.env` privately using [`.env.example`](../../.env.example)
+and `bun src/signal-bot/main.ts --help`, including the selected requests group and
 `SIGNAL_ACCEPT_SELF_MESSAGES=true` when reusing the owner's account. Keep this
 file outside the source export, owned by root with mode `0600`. Compose reads
 it as raw environment values, without expanding dollar signs in credentials.
+Use the same X account and Supabase database as the scheduled pipeline.
+`SIGNAL_NUMBER` uses E.164 format; select the notes group's ID from
+`GET /v1/groups/<number>` on the bridge.
 
 Create `/opt/cn-return-bot/state` with mode `0700` and owner UID/GID `1000:1000`
 (the image's `bun` user). All SQLite state is stored here and survives image
@@ -43,6 +46,9 @@ configuration or environment, which contains credentials.
 
 Use `docker compose -f scripts/signal-bot/compose.yml stop worker` for a graceful
 stop. It allows ten minutes to finish accepted messages. A forced stop leaves
-pending messages for replay and requires reconciliation of any uncertain X
-submission, as described in `docs/signal-bot.md`. Preserve the state directory
+pending messages for replay. For an uncertain X submission, stop the worker and
+check X's written notes before reconciling `note_submission_claims` and local
+SQLite state to the verified outcome, restoring any missing `notes` row.
+Preserve draft and approval records; a retry requires a new “yes post”. Never
+clear unresolved claims just to free capacity. Preserve the state directory
 during every upgrade.

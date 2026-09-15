@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { SupabaseLogger } from "../../api/supabaseClient";
-import { writeFileSync } from "fs";
+import { mkdirSync, writeFileSync } from "fs";
 
 const supabase = new SupabaseLogger();
 const notes = await supabase.getNotesWithLatestSnapshots();
@@ -150,5 +150,6 @@ const html = `<!DOCTYPE html>
 </body>
 </html>`;
 
-writeFileSync("docs/notes-per-day.html", html);
-console.log("Report generated: docs/notes-per-day.html");
+mkdirSync("tmp/reports", { recursive: true });
+writeFileSync("tmp/reports/notes-per-day.html", html);
+console.log("Report generated: tmp/reports/notes-per-day.html");
