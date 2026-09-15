@@ -1,6 +1,8 @@
-/** Enforce excluded topics before research. DeepSeek answers first, Gemini Flash
- *  on any failure. If both fail the post passes with a warning: we would rather
- *  write notes through a provider outage than hold every post on this gate. */
+/** Is the post about one of BLOCKED_TOPICS? One deepseek-v4-flash call, no tools,
+ *  run first when config.topic_filter is on, before even the note-needed prefilter.
+ *  DeepSeek gets 30s, then Gemini Flash 20s on any failure. If both fail the post
+ *  passes with a warning: we would rather write notes through a provider outage
+ *  than hold every post on this gate. */
 import { withBotConfig, type BotConfig } from "../ab-testing/botConfig";
 import { AttemptDeadlineError, withDeadline, withLlmAbortSignal } from "../llm/llm";
 import {
@@ -18,6 +20,8 @@ const PRIMARY_BUDGET_MS = 30_000;
 const FALLBACK_BUDGET_MS = 20_000;
 const STEP = "topic_filter";
 
+// Reasoning high, temperature 0. web_search and video_description_strategy are
+// required by the type but unused here.
 const TOPIC_FILTER_CONFIG: BotConfig = {
   botId: "blocked-topic-filter",
   model: DEEPSEEK,

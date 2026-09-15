@@ -1,4 +1,12 @@
-/** Cheap screening before full research. A timeout passes the post to the bot. */
+/**
+ * Cheap deepseek-v4-flash gate: is this post worth the full bot? Steps in order:
+ * satire gate, query writer, Serper search, search analyzer, note-needed judge.
+ * The judge sees the post and a research brief, never a proposed note. The satire
+ * gate is tuned for precision: fabricated content imitating real media is not satire.
+ * Offline it missed ~10% of the posts simple-bot would note and filtered out 72% of
+ * the rest (src/scripts_jim/2026_06_06_deepseek_note_filter). The whole run has a
+ * 90s budget; on timeout the post passes to the bot.
+ */
 import { withBotConfig, type BotConfig } from "../ab-testing/botConfig";
 import {
   PREFILTER_JUDGE_SYSTEM_PROMPT,
@@ -29,6 +37,8 @@ class PrefilterDeadlineError extends Error {
   }
 }
 
+// deepseek + Serper, reasoning high, temperature 0. Entered with withBotConfig so
+// the picked bot's config is untouched. video_description_strategy is unused here.
 const PREFILTER_CONFIG: BotConfig = {
   botId: "note-needed-prefilter",
   model: DEEPSEEK,
@@ -129,7 +139,10 @@ async function runPrefilterSteps(userMessage: string, signal: AbortSignal): Prom
   const findings = await gatherFindings(userMessage, queries, signal);
   signal.throwIfAborted();
   if (!findings) {
-    // Empty searches can mean an outage; let the full bot decide.
+    // Fail OPEN. Zero results for every query almost never means unsearchable; it
+    // means the search layer is broken. In Aug 2026 a broken search silently
+    // rejected the whole feed for days (~90 -> 6 submissions/day, CI green). The
+    // bot still has its own search, the judge, the eval gate and the verifier.
     return { needsNote: true, reasoning: "search returned zero results for every query — failing open, the bot's own search and gates decide" };
   }
 
@@ -139,7 +152,9 @@ async function runPrefilterSteps(userMessage: string, signal: AbortSignal): Prom
   return { needsNote: judge.needsNote, reasoning: judge.reasoning };
 }
 
-/** Isolate prefilter logs and costs, then fold them into the caller's record. */
+/** Runs the steps in their own log and cost tracker, then grafts the logs under
+ *  note_prefilter_steps.* and the costs under note_prefilter.*, parallel to the
+ *  bot's note_writer_steps.* so the two never collide. */
 export async function runNoteNeededPrefilter(
   userMessage: string,
   { deadlineMs = PREFILTER_DEADLINE_MS }: { deadlineMs?: number } = {},
