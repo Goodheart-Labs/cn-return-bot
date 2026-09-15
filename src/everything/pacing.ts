@@ -28,11 +28,12 @@
 
 import { duration, money } from "./logFormat";
 
-/** Used until the first feed post of the UTC day has finished. About the
- *  mean of the week before pacing shipped. It matters little: the first post
- *  of a day is due at the day's start whenever the previous day was spent,
- *  and from the moment it finishes the mean is that post's real cost. */
-export const DEFAULT_MEAN_POST_COST_USD = 3.5;
+/** Used until the first feed post of the UTC day has finished. Jim's guess
+ *  for a post on the cheap pipeline (2026-09-15). It matters little: the
+ *  first post of a day is due at the day's start whenever the previous day
+ *  was spent, and from the moment it finishes the mean is that post's real
+ *  cost. */
+export const DEFAULT_MEAN_POST_COST_USD = 1;
 
 /** How long a run that found nothing to process sets the alarm for. Without
  *  it an idle pipeline would be started every minute, since the interval is

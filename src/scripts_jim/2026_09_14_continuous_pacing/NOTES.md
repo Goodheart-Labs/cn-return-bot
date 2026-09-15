@@ -11,7 +11,7 @@ bun run src/scripts_jim/2026_09_14_continuous_pacing/replayPacing.ts [days]
 Each pair of rows is one UTC day: the real spend per hour above, the replayed spend below. The reader-requested spend (the 50.8 USD page on Sep 11 at noon) is in both rows.
 
 ```
-replaying 7 days · 80 feed posts, 3 reader posts · feed budget $45 · default mean $3.5
+replaying 7 days · 80 feed posts, 3 reader posts · feed budget $45 · default mean $1
 
 hours           0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23
 09-08 real    9.3 12.9  8.3  3.4 11.9 11.3    ·    ·    ·    ·    ·    ·    ·    ·    ·    ·    ·    ·    ·    ·    ·    ·    ·    ·  =  57.08
