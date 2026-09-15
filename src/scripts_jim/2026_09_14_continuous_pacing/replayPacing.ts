@@ -10,8 +10,10 @@
  * cost at that moment; a run that finds nothing waiting sets the idle alarm.
  * The real reader-requested spend is added at its real time, and posts that
  * did not start by midnight carry into the next day. The mean post cost the
- * rule sees is the real one: the mean over the feed posts finished earlier
- * the same UTC day, and the default until the first one.
+ * rule sees is the real one: the mean over feed posts finished in the 48
+ * hours before the run (7 days when fewer than 5). The rule's cutoff, which
+ * ignores posts from before the cheap pipeline shipped, is lifted here,
+ * because the replayed week lies entirely before it.
  *
  * It prints, per day, the real and the replayed spend per UTC hour, so the
  * burst and its replacement sit next to each other. Both rows include the
@@ -27,6 +29,7 @@ import { createClient } from "@supabase/supabase-js";
 import {
   computeNextRun,
   DEFAULT_MEAN_POST_COST_USD,
+  MEAN_COST_RULE,
   nextAlarm,
   type FeedPacingSnapshot,
 } from "../../everything/pacing";
@@ -100,13 +103,18 @@ async function loadPosts(since: Date): Promise<Post[]> {
     .sort((a, b) => a.start - b.start);
 }
 
-/** The real mean over the feed posts finished earlier in the UTC day of
- *  `at`, the way everything_feed_pacing computes it. */
-function realMean(posts: Post[], at: number): { mean: number | null; n: number } {
-  const startOfDay = Math.floor(at / DAY_MS) * DAY_MS;
-  const sample = posts.filter((p) => p.priority < REQUESTED_TIER && p.end >= startOfDay && p.end <= at);
+/** The real mean over feed posts finished in the window before `at`, the way
+ *  everything_feed_pacing computes it, with the cutoff lifted. */
+function realMean(posts: Post[], at: number): { mean: number | null; n: number; hours: number } {
+  const finished = (hours: number) => posts.filter((p) => p.priority < REQUESTED_TIER && p.end <= at && p.end >= at - hours * HOUR_MS);
+  let sample = finished(MEAN_COST_RULE.windowHours);
+  let hours = MEAN_COST_RULE.windowHours;
+  if (sample.length < MEAN_COST_RULE.minPosts) {
+    sample = finished(MEAN_COST_RULE.fallbackHours);
+    hours = MEAN_COST_RULE.fallbackHours;
+  }
   const mean = sample.length ? sample.reduce((s, p) => s + p.cost, 0) / sample.length : null;
-  return { mean, n: sample.length };
+  return { mean, n: sample.length, hours };
 }
 
 function hourRow(label: string, perHour: number[]): string {
@@ -179,13 +187,14 @@ function main(posts: Post[], firstDay: number, lastDay: number): void {
       }
       runnerBusyUntil = runEnd;
       // The alarm is set at the end of the run, from what the day has cost by then.
-      const { mean, n } = realMean([...replayed, ...reader], runEnd);
+      const { mean, n, hours } = realMean([...replayed, ...reader], runEnd);
       const lastStart = replayed.at(-1)?.start ?? null;
       const snapshot: FeedPacingSnapshot = {
         dbNow: new Date(runEnd),
         spentTodayUsd: spentBy(runEnd),
         meanPostCostUsd: mean,
         samplePosts: n,
+        sampleHours: hours,
         lastFeedStartedAt: lastStart ? new Date(lastStart) : null,
       };
       const alarmSet = nextAlarm(computeNextRun(snapshot, FEED_BUDGET_USD), snapshot, processed);
@@ -200,7 +209,7 @@ function main(posts: Post[], firstDay: number, lastDay: number): void {
 }
 
 const since = new Date(Math.floor(Date.now() / DAY_MS) * DAY_MS - DAYS * DAY_MS);
-const posts = await loadPosts(since);
+const posts = await loadPosts(new Date(since.getTime() - MEAN_COST_RULE.fallbackHours * HOUR_MS));
 main(
   posts.filter((p) => p.start >= since.getTime()),
   since.getTime(),

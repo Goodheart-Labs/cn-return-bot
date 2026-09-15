@@ -40,6 +40,7 @@ import {
   computeNextRun,
   describeAlarm,
   describePacing,
+  MEAN_COST_RULE,
   nextAlarm,
 } from "./pacing";
 import { describeSpend, FEED_BUDGET_USD, feedBudgetExhausted, todaySpendUsd } from "./spendCap";
@@ -91,7 +92,7 @@ async function processOneFeedItem(): Promise<boolean> {
     console.log(`Feed budget reached (${describeSpend(await todaySpendUsd())}) — not enqueueing or processing today`);
     return false;
   }
-  const snapshot = await fetchFeedPacing();
+  const snapshot = await fetchFeedPacing(MEAN_COST_RULE);
   const nextRun = computeNextRun(snapshot, FEED_BUDGET_USD);
   console.log(describePacing(nextRun, snapshot, FEED_BUDGET_USD));
   const queue = await logQueue();
@@ -105,7 +106,7 @@ async function processOneFeedItem(): Promise<boolean> {
  *  again here, after the item, so the interval sees this item's start and
  *  whatever the day has cost by now, reader pages included. */
 async function setNextAlarm(started: boolean): Promise<void> {
-  const snapshot = await fetchFeedPacing();
+  const snapshot = await fetchFeedPacing(MEAN_COST_RULE);
   const nextRun = computeNextRun(snapshot, FEED_BUDGET_USD);
   const alarm = nextAlarm(nextRun, snapshot, started);
   console.log(`\n${describePacing(nextRun, snapshot, FEED_BUDGET_USD)}\n${describeAlarm(alarm, snapshot)}`);

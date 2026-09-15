@@ -2,10 +2,10 @@
  * When the next feed run should start, so the day's budget is spread across
  * the UTC day instead of spent in a burst after midnight.
  *
- * The rule is the one Jim asked for. Take the average cost of the feed posts
- * finished today, the money left in today's feed budget, and the hours left in
- * the day. Only today's posts count, because the pipeline gets cheaper in
- * steps and yesterday's posts would overstate what a post costs now. The
+ * The rule is the one Jim asked for. Take the average cost of a post over the
+ * last 48 hours, the money left in today's feed budget, and the hours left in
+ * the day. A post checked before the pipeline's latest cost step never enters
+ * the average, because it would overstate what a post costs now. The
  * interval between posts is hours left times the average cost divided by the
  * money left: that spacing makes the money last until midnight. The next run
  * is due that interval after the last feed post started. Every run computes
@@ -28,11 +28,31 @@
 
 import { duration, money } from "./logFormat";
 
-/** Used until the first feed post of the UTC day has finished. Jim's guess
- *  for a post on the cheap pipeline (2026-09-15). It matters little: the
- *  first post of a day is due at the day's start whenever the previous day
- *  was spent, and from the moment it finishes the mean is that post's real
- *  cost. */
+/** How the mean post cost is sampled. */
+export interface MeanCostRule {
+  /** The window the mean is taken over. */
+  windowHours: number;
+  /** Fewer finished posts than this in the window, and the mean is taken over
+   *  the fallback window instead, so one or two posts cannot set the day's pace. */
+  minPosts: number;
+  fallbackHours: number;
+  /** A post finished before this moment never enters the mean, whichever
+   *  window is used. The pipeline gets cheaper in steps, and a post checked
+   *  before the latest step would overstate what a post costs now. Move it
+   *  forward whenever the cost of a post changes again. */
+  notBefore: Date;
+}
+
+export const MEAN_COST_RULE: MeanCostRule = {
+  windowHours: 48,
+  minPosts: 5,
+  fallbackHours: 7 * 24,
+  // When PR 463, the cheap pipeline (GOO-159), reached main.
+  notBefore: new Date("2026-09-15T13:24:00Z"),
+};
+
+/** Used when no feed post has finished since the latest cost step. Jim's
+ *  guess for a post on the cheap pipeline (2026-09-15). */
 export const DEFAULT_MEAN_POST_COST_USD = 1;
 
 /** How long a run that found nothing to process sets the alarm for. Without
@@ -49,9 +69,10 @@ const DAY_MS = 24 * HOUR_MS;
 export interface FeedPacingSnapshot {
   dbNow: Date;
   spentTodayUsd: number;
-  /** Null until the first feed post of the UTC day has finished. */
+  /** Null when no feed post finished in either window. */
   meanPostCostUsd: number | null;
   samplePosts: number;
+  sampleHours: number;
   /** Null until any feed-tier item has ever entered processing. */
   lastFeedStartedAt: Date | null;
 }
@@ -131,8 +152,8 @@ const utcClock = (d: Date) => d.toISOString().slice(11, 16) + " UTC";
  *  explainable from the log alone. */
 export function describePacing(nextRun: NextRun, snapshot: FeedPacingSnapshot, feedBudgetUsd: number): string {
   const sample = nextRun.meanIsDefault
-    ? "default, no feed post finished today yet"
-    : `over ${snapshot.samplePosts} post${snapshot.samplePosts === 1 ? "" : "s"} finished today`;
+    ? `default, no feed post finished in the last ${snapshot.sampleHours}h`
+    : `over ${snapshot.samplePosts} post${snapshot.samplePosts === 1 ? "" : "s"} in the last ${snapshot.sampleHours}h`;
   const lastStart = snapshot.lastFeedStartedAt ? utcClock(snapshot.lastFeedStartedAt) : "never";
   const lines = [
     `PACING · spent ${money(snapshot.spentTodayUsd)} today, ${money(nextRun.moneyLeftUsd)} of the ${money(feedBudgetUsd)} feed budget left, ${nextRun.hoursLeft.toFixed(1)}h left in the UTC day`,

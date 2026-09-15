@@ -13,8 +13,10 @@
 --    trigger stamps it with database time, so neither worker has to change and
 --    both stamp the same clock. It is also the first record of how long an
 --    item took, next to processed_at.
--- 2. everything_feed_pacing: the snapshot. Today's spend, the mean cost of
---    the feed posts finished today, and when the last feed post started.
+-- 2. everything_feed_pacing: the snapshot. Today's spend, the mean cost of a
+--    finished feed post over the recent window (or a wider one when the recent
+--    window is too thin, and never from before a given moment), and when the
+--    last feed post started.
 
 -- ---------------------------------------------------------------------------
 -- 1. When an item last started processing.
@@ -54,39 +56,38 @@ create trigger everything_items_stamp_started_at
 -- cost. Cost rows attach two ways: extraction and rating rows carry item_id,
 -- check rows carry claim_id and reach the item through everything_claims.
 --
--- The mean is taken over the posts finished today, the UTC day, and nothing
--- earlier. Jim's rule: the pipeline gets cheaper in steps, and a post from
--- before today's step would overstate what a post costs now. Until the first
--- post of the day finishes the mean is null and the caller uses its default;
--- that first post is due at the day's start anyway, and from then on the
--- mean is real. The row says how many posts it saw, so the run log can print
--- it.
+-- The mean is taken over the posts finished in the last window_hours when at
+-- least min_posts of them exist, otherwise over the last fallback_hours. A
+-- post finished before not_before never counts, whichever window is used:
+-- the pipeline gets cheaper in steps, and a post checked by the pipeline
+-- before a step would overstate what a post costs now. The caller passes the
+-- moment of the latest step. The row says which window it used and how many
+-- posts it saw, so the run log can print it. A mean of null means no post in
+-- either window; the caller then uses its default.
 --
 -- spent_today_usd is the same sum everything_cost_since gives for the start of
 -- the UTC day, computed here so it shares the snapshot's clock.
 
-create or replace function everything_feed_pacing()
+create or replace function everything_feed_pacing(window_hours int, min_posts int, fallback_hours int, not_before timestamptz)
 returns table (
   db_now timestamptz,
   spent_today_usd numeric,
   mean_post_cost_usd numeric,
   sample_posts bigint,
+  sample_hours int,
   last_feed_started_at timestamptz
 )
 language sql
 stable
 set search_path = public
 as $$
-  with today as (
-    select date_trunc('day', now() at time zone 'utc') at time zone 'utc' as start
-  ),
-  posts as (
-    select id
-    from everything_items, today
+  with posts as (
+    select id, processed_at
+    from everything_items
     where status = 'done'
       and checked_scope = 'page'
       and priority < 2
-      and processed_at >= today.start
+      and processed_at >= greatest(now() - make_interval(hours => fallback_hours), not_before)
   ),
   cost_rows as (
     select r.item_id, r.cost
@@ -99,23 +100,42 @@ as $$
     join everything_pipeline_runs r on r.claim_id = c.id
   ),
   post_cost as (
-    select p.id, coalesce(sum(cr.cost), 0) as cost
+    select p.id, p.processed_at, coalesce(sum(cr.cost), 0) as cost
     from posts p
     left join cost_rows cr on cr.item_id = p.id
-    group by p.id
+    group by p.id, p.processed_at
+  ),
+  recent as (
+    select count(*) as n, avg(cost) as mean
+    from post_cost
+    where processed_at >= now() - make_interval(hours => window_hours)
+  ),
+  wide as (
+    select count(*) as n, avg(cost) as mean from post_cost
+  ),
+  chosen as (
+    select
+      case when recent.n >= min_posts then recent.mean else wide.mean end as mean,
+      case when recent.n >= min_posts then recent.n else wide.n end as n,
+      case when recent.n >= min_posts then window_hours else fallback_hours end as hours
+    from recent, wide
   )
   select
     now(),
-    (select coalesce(sum(cost), 0) from everything_pipeline_runs, today where created_at >= today.start),
-    (select avg(cost) from post_cost),
-    (select count(*) from post_cost),
-    (select max(started_at) from everything_items where priority < 2);
+    (select coalesce(sum(cost), 0)
+       from everything_pipeline_runs
+      where created_at >= date_trunc('day', now() at time zone 'utc') at time zone 'utc'),
+    chosen.mean,
+    chosen.n,
+    chosen.hours,
+    (select max(started_at) from everything_items where priority < 2)
+  from chosen;
 $$;
 
-comment on function everything_feed_pacing() is
-  'One snapshot of everything the feed pacing needs: the database clock, today''s spend, the mean cost of the feed posts finished today (null until the first one), how many there were, and when the last feed-tier item started. Service role only.';
+comment on function everything_feed_pacing(int, int, int, timestamptz) is
+  'One snapshot of everything the feed pacing needs: the database clock, today''s spend, the mean cost of a finished feed post over the recent window (or the fallback window when the recent one holds fewer than min_posts), never counting a post finished before not_before, and when the last feed-tier item started. Service role only.';
 
 -- Revoking public also strips service_role's inherited execute, so grant it
 -- back explicitly. The pipeline is the only caller.
-revoke execute on function everything_feed_pacing() from public, anon, authenticated;
-grant execute on function everything_feed_pacing() to service_role;
+revoke execute on function everything_feed_pacing(int, int, int, timestamptz) from public, anon, authenticated;
+grant execute on function everything_feed_pacing(int, int, int, timestamptz) to service_role;
