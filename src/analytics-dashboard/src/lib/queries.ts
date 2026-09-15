@@ -2,8 +2,8 @@ import { supabase } from "../../../everything-shared/supabase";
 import { VISIT_RANKING_WINDOW_DAYS } from "../../../everything-shared/readers";
 import { noteStatus } from "../../../everything-shared/noteScore";
 
-// Every query runs through a security-definer RPC (migrations 077, 092 and
-// 095). The anon key cannot read everything_events or everything_votes
+// Every query runs through a security-definer RPC (migrations 077, 092, 095
+// and 097). The anon key cannot read everything_events or everything_votes
 // directly, and the RPCs return only aggregates.
 
 /** PostgREST caps every response at this many rows, RPC results included.
@@ -196,4 +196,21 @@ export interface RecentPostRow {
  *  table shows the same attention that decided which posts got checked. */
 export function fetchRecentPosts(maxPosts: number): Promise<RecentPostRow[]> {
   return rpcAllRows<RecentPostRow>("everything_recent_posts", { max_posts: maxPosts, window_days: VISIT_RANKING_WINDOW_DAYS });
+}
+
+// --- Spend by hour (migration 097) ---
+
+export interface SpendHourRow {
+  /** The start of the UTC hour. */
+  hour: string;
+  /** LLM cost in USD recorded in that hour. */
+  cost: number;
+  /** Pipeline steps recorded in that hour: claim checks, extractions and ratings. */
+  runs: number;
+}
+
+/** The last `days` days of Common Notes spend, one row per UTC hour, empty
+ *  hours included so a chart shows the gaps. */
+export function fetchSpendByHour(days: number): Promise<SpendHourRow[]> {
+  return rpcAllRows<SpendHourRow>("everything_spend_by_hour", { window_days: days });
 }
