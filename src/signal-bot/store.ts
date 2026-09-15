@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { hostname } from "node:os";
 import type { TweetInspection, SignalDraft } from "./drafting";
 import type { IncomingMessage } from "./transport";
+import type { SubmissionResult } from "../pipeline/orchestration/submitNoteForTweet";
 
 export interface DraftVersion extends SignalDraft {
   version: number;
@@ -18,10 +19,17 @@ export interface Conversation {
   history: Array<{ role: "user" | "assistant"; content: string }>;
   draft?: DraftVersion;
   nextVersion: number;
-  status: "open" | "submitting" | "submitted" | "uncertain";
+  status: "open" | "queued" | "cancelling" | "submitting" | "submitted" | "uncertain";
   noteId?: string;
   lastError?: string;
   approval?: { sender: string; timestamp: number; version: number; text: string };
+  queuedAt?: number;
+  queueNotified?: boolean;
+  lastSubmissionAttemptAt?: number;
+  lastSubmissionResult?: SubmissionResult;
+  submissionRunId?: string;
+  withdrawDraft?: boolean;
+  sharedQueueCleared?: boolean;
 }
 
 export interface MessageReference {
@@ -192,6 +200,23 @@ export class SignalStore {
 
   save(conversation: Conversation): void {
     this.db.query("UPDATE conversations SET data = ? WHERE id = ?").run(JSON.stringify(conversation), conversation.id);
+  }
+
+  enqueueApproval(conversation: Conversation): void {
+    this.db.transaction(() => {
+      const previous = this.db.query<{ value: string }, []>("SELECT value FROM metadata WHERE key = 'last_approval_order'").get();
+      conversation.queuedAt = Math.max(Date.now(), Number(previous?.value ?? 0) + 1);
+      conversation.status = "queued";
+      conversation.queueNotified = false;
+      conversation.sharedQueueCleared = false;
+      this.db.query("INSERT OR REPLACE INTO metadata (key, value) VALUES ('last_approval_order', ?)").run(String(conversation.queuedAt));
+      this.save(conversation);
+    }).immediate();
+  }
+
+  queued(): Conversation[] {
+    return this.all().filter(conversation => conversation.status === "queued")
+      .sort((a, b) => (a.queuedAt ?? 0) - (b.queuedAt ?? 0) || a.id - b.id);
   }
 
   reference(messageId: string, conversationId: number, version: number | null, showsDraft = false): void {

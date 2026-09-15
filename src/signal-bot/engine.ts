@@ -9,7 +9,12 @@ interface EngineDependencies {
   store: SignalStore;
   drafting: DraftingAdapter;
   send: (text: string, quote?: IncomingMessage) => Promise<string>;
-  submit: (conversation: Conversation) => Promise<SubmissionResult>;
+  submit: (conversation: Conversation, callbacks?: {
+    onPrepared?: (runId: string) => void;
+    onSubmitting: () => boolean | void;
+  }) => Promise<SubmissionResult>;
+  registerSubmission?: (conversation: Conversation) => Promise<SubmissionResult | null>;
+  cancelSubmission?: (conversation: Conversation) => Promise<void>;
   dryRun?: boolean;
   onError?: (error: unknown) => void;
 }
@@ -66,11 +71,63 @@ export class SignalBot {
   /** Call after acquiring the worker lock, before accepting fresh messages. */
   resumePending(): Promise<void> {
     for (const message of this.dependencies.store.pendingMessages()) this.schedule(message);
-    return this.drain();
+    return this.retryQueued();
   }
 
   drain(): Promise<void> {
     return this.queue;
+  }
+
+  retryQueued(): Promise<void> {
+    const result = this.queue.then(() => this.processQueued());
+    this.queue = result.catch(error => this.dependencies.onError?.(error));
+    return result;
+  }
+
+  private async processQueued(message?: IncomingMessage, approvedId?: number): Promise<void> {
+    const { store, registerSubmission } = this.dependencies;
+    if (store.pendingMessages().length) return;
+    if (registerSubmission) {
+      const results: Array<{ conversation: Conversation; result: SubmissionResult }> = [];
+      let ready = true;
+      for (const conversation of store.queued()) {
+        if (store.pendingMessages().length) return;
+        conversation.lastSubmissionAttemptAt = Date.now();
+        store.save(conversation);
+        let result: SubmissionResult | null;
+        try { result = await registerSubmission(structuredClone(conversation)); }
+        catch (error) {
+          this.dependencies.onError?.(error);
+          result = { status: "deferred", message: "Could not register the approved note. No X request was started; I’ll retry automatically." };
+        }
+        if (!result) continue;
+        results.push({ conversation, result });
+        if (result.status === "deferred" || result.status === "capacity_reserved" || result.status === "daily_limit") {
+          ready = false;
+          break;
+        }
+      }
+      // Register successors before removing a completed or withdrawn head.
+      for (const { conversation, result } of results) {
+        await this.applySubmissionResult(conversation, result, conversation.id === approvedId ? message : undefined);
+      }
+      if (!ready) return;
+    }
+    for (const conversation of store.all()) {
+      if (store.pendingMessages().length) return;
+      if (!conversation.sharedQueueCleared && (conversation.status === "submitted" || conversation.status === "uncertain" ||
+        (conversation.status === "open" && conversation.queuedAt !== undefined))) {
+        await this.clearTerminalPriority(conversation);
+      }
+    }
+    const cancelling = store.all().filter(conversation => conversation.status === "cancelling");
+    for (const conversation of [...cancelling, ...store.queued()]) {
+      // Received commands take priority even when this poll was queued first.
+      if (store.pendingMessages().length) break;
+      if (conversation.status === "cancelling") await this.finishWithdrawal(conversation);
+      else await this.attemptSubmission(conversation, conversation.id === approvedId ? message : undefined);
+      if (conversation.status === "queued" || conversation.status === "cancelling") break;
+    }
   }
 
   private schedule(message: ReceivedMessage): Promise<void> {
@@ -85,7 +142,7 @@ export class SignalBot {
     return result;
   }
 
-  private async reply(text: string, message: IncomingMessage, conversation?: Conversation, showsDraft = false): Promise<void> {
+  private async reply(text: string, message?: IncomingMessage, conversation?: Conversation, showsDraft = false): Promise<void> {
     const body = conversation ? `#${conversation.id} · ${conversation.tweetId}\n${text}` : text;
     this.dependencies.store.recordBotOutput(body);
     const id = await this.dependencies.send(body, message);
@@ -108,7 +165,10 @@ export class SignalBot {
     }
     const note = joinNoteWithSources(draft.text, draft.sources);
     const intro = explanation ? `${explanation.slice(0, 2600)}\n\n` : "";
-    await this.reply(`${intro}Proposed note · v${draft.version}\n\n${note}\n\nDiscuss or suggest changes. Reply ‘yes post’ to submit this version.`, message, conversation, true);
+    const action = conversation.status === "queued"
+      ? "This version is approved and queued for the next available capacity. Say ‘cancel’ to withdraw it; requesting changes withdraws approval."
+      : "Discuss or suggest changes. Reply ‘yes post’ to submit this version.";
+    await this.reply(`${intro}Proposed note · v${draft.version}\n\n${note}\n\n${action}`, message, conversation, true);
   }
 
   private remember(conversation: Conversation, role: "user" | "assistant", content: string): void {
@@ -160,7 +220,7 @@ export class SignalBot {
       bareTargetLink = !parsed.text.replace(TWEET_URL, "").trim();
     }
     if (!conversation) {
-      const open = store.all().filter((item) => item.status === "open");
+      const open = store.all().filter((item) => item.status === "open" || item.status === "queued" || item.status === "cancelling");
       if (open.length === 1) conversation = open[0];
     }
     if (!conversation) {
@@ -169,6 +229,25 @@ export class SignalBot {
     }
 
     store.reference(String(message.timestamp), conversation.id, null);
+    const withdraw = /^(?:cancel|withdraw)[.!]?$/i.test(parsed.text);
+    const show = /^(?:status|draft|show draft)[.!]?$/i.test(parsed.text);
+    const yesPost = /^yes(?:\s*,\s*|\s+)post(?:\s+it)?[.!]?$/i.test(parsed.text);
+    const yes = /^yes[.!]?$/i.test(parsed.text);
+    if (conversation.status === "cancelling") {
+      await this.finishWithdrawal(conversation, message);
+      return;
+    }
+    if (conversation.status === "queued") {
+      if (show || bareTargetLink || yesPost || yes) {
+        await this.showDraft(conversation, message, "Approved and queued. I’ll submit this exact version when capacity is available.");
+        return;
+      }
+      conversation.status = "cancelling";
+      conversation.withdrawDraft = withdraw;
+      store.save(conversation);
+      if (!await this.finishWithdrawal(conversation, message, withdraw)) return;
+      if (withdraw) return;
+    }
     if (conversation.status !== "open") {
       const status = conversation.status === "submitted"
         ? conversation.noteId
@@ -181,8 +260,6 @@ export class SignalBot {
       return;
     }
 
-    const yesPost = /^yes(?:\s*,\s*|\s+)post(?:\s+it)?[.!]?$/i.test(parsed.text);
-    const yes = /^yes[.!]?$/i.test(parsed.text);
     if (yesPost || (yes && quoted?.showsDraft)) {
       await this.approve(conversation, message, quoted);
       return;
@@ -192,12 +269,14 @@ export class SignalBot {
       await this.reply("To submit, reply to the current draft with ‘yes post’. Otherwise tell me what you’d like to discuss or change.", message, conversation);
       return;
     }
-    if (/^(?:status|draft|show draft)[.!]?$/i.test(parsed.text)) {
+    if (show) {
       await this.showDraft(conversation, message, conversation.inspection?.detail);
       return;
     }
-    if (/^(?:cancel|withdraw)[.!]?$/i.test(parsed.text)) {
+    if (withdraw) {
       conversation.draft = undefined;
+      conversation.approval = undefined;
+      conversation.submissionRunId = undefined;
       store.save(conversation);
       await this.reply("Draft withdrawn. You can suggest a new correction or source here.", message, conversation);
       return;
@@ -267,41 +346,128 @@ export class SignalBot {
       version: draft.version,
       text: joinNoteWithSources(draft.text, draft.sources),
     };
-    conversation.status = "submitting";
-    this.dependencies.store.save(conversation);
-    let response: string;
+    conversation.submissionRunId = undefined;
+    conversation.lastError = undefined;
+    conversation.lastSubmissionResult = undefined;
+    this.dependencies.store.enqueueApproval(conversation);
+    await this.processQueued(message, conversation.id);
+    const queued = this.dependencies.store.get(conversation.id)!;
+    if (queued.status === "queued" && !queued.queueNotified) {
+      queued.queueNotified = true;
+      this.dependencies.store.save(queued);
+      await this.reply(`Approved v${draft.version} is queued. I’ll submit this exact version when capacity is available. Say ‘cancel’ to withdraw it.`, message, queued);
+    }
+  }
+
+  private async finishWithdrawal(conversation: Conversation, message?: IncomingMessage, notify = true): Promise<boolean> {
     try {
-      const result = await this.dependencies.submit(structuredClone(conversation));
-      if (result.status === "submitted") {
-        conversation.status = "submitted";
-        conversation.noteId = result.noteId;
-        response = `Submitted v${draft.version}: https://x.com/i/communitynotes/${result.noteId}`;
-      } else if (result.status === "submission_busy" && result.reason === "submitted") {
-        conversation.status = "submitted";
-        response = "A note has already been submitted for this tweet. No duplicate was sent.";
-      } else if (result.status === "uncertain" || result.status === "submission_busy") {
-        conversation.status = "uncertain";
-        conversation.lastError = result.status === "uncertain" ? result.message : "An existing submission claim needs reconciliation.";
-        response = "I can’t confirm whether X accepted the note. I won’t retry automatically; check X and reconcile the submission first.";
-      } else {
-        conversation.status = "open";
-        response = result.status === "daily_limit"
-          ? "X rejected the submission because the writing limit is reached. The draft is saved; say ‘yes post’ again when capacity returns."
-          : result.status === "capacity_reserved"
-            ? "No submission capacity is available. The draft is saved."
-            : result.status === "expired"
-              ? "X rejected the submission: the tweet was deleted or is not eligible for this account. The draft is saved."
-              : `X submission was not completed: ${result.message.slice(0, 300)}. The draft is saved.`;
-      }
+      await this.dependencies.cancelSubmission?.(structuredClone(conversation));
     } catch (error) {
       this.dependencies.onError?.(error);
-      conversation.status = "uncertain";
-      conversation.lastError = "Submission interrupted; outcome must be checked before retrying.";
-      response = "The submission was interrupted, so its outcome is uncertain. Check X before trying again; I won’t retry automatically.";
+      conversation.lastError = "Could not remove the queued submission. Withdrawal will be retried; no submission will start.";
+      this.dependencies.store.save(conversation);
+      if (message) await this.reply(conversation.lastError, message, conversation);
+      return false;
     }
+    const withdrawDraft = conversation.withdrawDraft;
+    if (withdrawDraft) conversation.draft = undefined;
+    conversation.status = "open";
+    conversation.approval = undefined;
+    conversation.submissionRunId = undefined;
+    conversation.queuedAt = undefined;
+    conversation.queueNotified = undefined;
+    conversation.withdrawDraft = undefined;
+    conversation.sharedQueueCleared = true;
+    conversation.lastError = undefined;
     this.dependencies.store.save(conversation);
-    // A failed Signal reply must never change an accepted X submission back to
-    // open or trigger another X request.
-    await this.reply(response, message, conversation);
+    if (notify) await this.reply(withdrawDraft
+      ? "Queued approval and draft withdrawn. You can suggest a new correction or source here."
+      : "Queued approval withdrawn. The draft is saved and needs a new ‘yes post’ before submission.", message, conversation);
+    return true;
+  }
+
+  private async clearTerminalPriority(conversation: Conversation): Promise<void> {
+    try {
+      await this.dependencies.cancelSubmission?.(structuredClone(conversation));
+      conversation.sharedQueueCleared = true;
+      this.dependencies.store.save(conversation);
+    } catch (error) {
+      this.dependencies.onError?.(error);
+    }
+  }
+
+  private async attemptSubmission(conversation: Conversation, message?: IncomingMessage): Promise<void> {
+    const { draft, approval } = conversation;
+    let valid = !!draft && !!approval && draft.version === approval.version &&
+      joinNoteWithSources(draft.text, draft.sources) === approval.text;
+    try { validateSignalDraft(draft); } catch { valid = false; }
+    if (!valid || !draft || !approval) {
+      conversation.status = "cancelling";
+      conversation.withdrawDraft = false;
+      this.dependencies.store.save(conversation);
+      if (await this.finishWithdrawal(conversation, message, false)) {
+        await this.reply("The saved approval no longer matches the draft, so I withdrew it. Show the draft and approve the current version before submitting.", message, conversation);
+      }
+      return;
+    }
+    conversation.lastSubmissionAttemptAt = Date.now();
+    this.dependencies.store.save(conversation);
+    let result: SubmissionResult;
+    try {
+      result = await this.dependencies.submit(structuredClone(conversation), {
+        onPrepared: runId => {
+          conversation.submissionRunId = runId;
+          this.dependencies.store.save(conversation);
+        },
+        onSubmitting: () => {
+          if (this.dependencies.store.pendingMessages().length) return false;
+          conversation.status = "submitting";
+          this.dependencies.store.save(conversation);
+          return true;
+        },
+      });
+    } catch (error) {
+      this.dependencies.onError?.(error);
+      result = conversation.status === "submitting"
+        ? { status: "uncertain", message: "Submission interrupted; outcome must be checked before retrying." }
+        : { status: "deferred", message: "Could not prepare the queued submission. No X request was started; I’ll retry automatically." };
+    }
+    await this.applySubmissionResult(conversation, result, message);
+  }
+
+  private async applySubmissionResult(conversation: Conversation, result: SubmissionResult, message?: IncomingMessage): Promise<void> {
+    conversation.lastSubmissionResult = result;
+    conversation.lastError = undefined;
+    const version = conversation.approval?.version ?? conversation.draft?.version;
+    let response: string;
+    if (result.status === "submitted") {
+      conversation.status = "submitted";
+      conversation.noteId = result.noteId;
+      response = `Submitted v${version}: https://x.com/i/communitynotes/${result.noteId}`;
+    } else if (result.status === "submission_busy" && result.reason === "submitted") {
+      conversation.status = "submitted";
+      response = "A note has already been submitted for this tweet. No duplicate was sent.";
+    } else if (result.status === "uncertain" || result.status === "submission_busy") {
+      conversation.status = "uncertain";
+      conversation.lastError = result.status === "uncertain" ? result.message : "An existing submission claim needs reconciliation.";
+      response = "I can’t confirm whether X accepted the note. I won’t retry automatically; check X and reconcile the submission first.";
+    } else if (result.status === "daily_limit" || result.status === "capacity_reserved" || result.status === "deferred") {
+      conversation.status = "queued";
+      if (result.status === "deferred") conversation.lastError = result.message;
+      response = result.status === "daily_limit"
+        ? `X’s writing limit is reached. Approved v${version} is queued for the next available capacity; I’ll retry automatically. Say ‘cancel’ to withdraw it.`
+        : `Approved v${version} is queued. I’ll submit this exact version when capacity is available and confirm here. Say ‘cancel’ to withdraw it.`;
+    } else {
+      conversation.status = "open";
+      conversation.approval = undefined;
+      response = result.status === "expired"
+        ? "X rejected the submission: the tweet was deleted or is not eligible for this account. The draft is saved."
+        : `X submission was not completed: ${result.message.slice(0, 300)}. The draft is saved.`;
+    }
+    const notify = conversation.status !== "queued" || !conversation.queueNotified;
+    if (conversation.status === "queued") conversation.queueNotified = true;
+    this.dependencies.store.save(conversation);
+    if (conversation.status !== "queued") await this.clearTerminalPriority(conversation);
+    if (notify) await this.reply(response, message, conversation);
   }
 }

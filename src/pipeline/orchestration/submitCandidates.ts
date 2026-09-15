@@ -364,7 +364,7 @@ export async function submitCandidates(
       } else if (result.status === "capacity_reserved") {
         const remaining = ordered.slice(ordered.indexOf(candidate));
         reserveSkipped = remaining.length;
-        console.log(`[submit] automatic submissions stopped (${result.reason}); ${result.capacity.remaining ?? "unknown"} estimated slot(s) remain, ${result.capacity.reserve} reserved for Signal`);
+        console.log(`[submit] automatic submissions stopped (${result.reason}); ${result.capacity.signalQueued} Signal note(s) queued`);
         for (const r of remaining) decide(r, "capacity_reserved");
         break;
       } else if (result.status === "submission_busy") {
@@ -412,7 +412,7 @@ export async function submitCandidates(
       expired ? `${expired} expired` : null,
       errors ? `${errors} errors` : null,
       limitHit ? `${limitSkipped} skipped (daily limit)` : null,
-      reserveSkipped ? `${reserveSkipped} skipped (Signal reserve)` : null,
+      reserveSkipped ? `${reserveSkipped} waiting for submission capacity` : null,
       busy ? `${busy} already claimed` : null,
       uncertain ? `${uncertain} uncertain (reconciliation required)` : null,
       below.length ? `${below.length} below bar` : null,

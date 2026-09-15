@@ -1440,6 +1440,20 @@ export class SupabaseLogger {
     return parseSubmissionAdmission(data);
   }
 
+  async queueSignalSubmission(tweetId: string): Promise<Extract<SubmissionAdmission, { status: "submission_busy" }> | null> {
+    const { data, error } = await this.client.rpc("queue_signal_submission", { p_tweet_id: tweetId });
+    if (error) throw error;
+    if (data?.status === "queued") return null;
+    const admission = parseSubmissionAdmission(data);
+    if (admission.status !== "submission_busy") throw new Error("Invalid Signal queue response");
+    return admission;
+  }
+
+  async cancelSignalSubmission(tweetId: string): Promise<void> {
+    const { error } = await this.client.rpc("cancel_signal_submission", { p_tweet_id: tweetId });
+    if (error) throw error;
+  }
+
   async finishNoteSubmissionClaim(claimId: string, status: SubmissionClaimOutcome, noteId: string | null = null, reason: string | null = null): Promise<void> {
     const { error } = await this.client.rpc("finish_note_submission_claim", {
       p_claim_id: claimId, p_status: status, p_note_id: noteId, p_reason: reason,

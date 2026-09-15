@@ -55,6 +55,30 @@ describe("Signal durable store", () => {
     expect(original.all()).toHaveLength(1);
   });
 
+  test("approval FIFO and pending withdrawal survive reopening while only in-flight submissions become uncertain", () => {
+    const path = statePath();
+    const first = new SignalStore(path, "test");
+    const a = first.forTweet("12345");
+    const b = first.forTweet("67890");
+    first.enqueueApproval(b);
+    first.enqueueApproval(a);
+    expect(b.queuedAt).toBeLessThan(a.queuedAt!);
+    const cancelling = first.forTweet("54321");
+    cancelling.status = "cancelling";
+    cancelling.withdrawDraft = true;
+    first.save(cancelling);
+    const submitting = first.forTweet("98765");
+    submitting.status = "submitting";
+    first.save(submitting);
+    first.close();
+    const resumed = open(path, "test");
+    resumed.acquireWorker();
+    expect(resumed.queued().map(item => item.id)).toEqual([b.id, a.id]);
+    expect(resumed.get(cancelling.id)?.status).toBe("cancelling");
+    expect(resumed.get(cancelling.id)?.withdrawDraft).toBe(true);
+    expect(resumed.get(submitting.id)?.status).toBe("uncertain");
+  });
+
   test("claims are shared by independent connections and timestamp collisions do not route across tweets", () => {
     const path = statePath();
     const first = open(path);

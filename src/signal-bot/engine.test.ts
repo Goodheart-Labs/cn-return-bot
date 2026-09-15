@@ -13,6 +13,7 @@ const draft: SignalDraft = { text: "The photograph was taken in 2020.", sources:
 const revised: SignalDraft = { text: "The original photograph dates to May 2020.", sources: ["https://example.org/original", "https://example.com/archive"] };
 const cleanups: Array<() => void> = [];
 afterEach(() => { for (const cleanup of cleanups.splice(0).reverse()) cleanup(); });
+type SubmissionCallbacks = Parameters<ConstructorParameters<typeof SignalBot>[0]["submit"]>[1];
 
 function fixture(options: {
   store?: SignalStore;
@@ -20,7 +21,9 @@ function fixture(options: {
   onSend?: (text: string) => void;
   inspect?: (tweetId: string) => Promise<TweetInspection>;
   draft?: (context: DraftContext) => Promise<DraftResult>;
-  submit?: (conversation: Conversation) => Promise<SubmissionResult>;
+  submit?: (conversation: Conversation, callbacks?: SubmissionCallbacks) => Promise<SubmissionResult>;
+  registerSubmission?: (conversation: Conversation) => Promise<SubmissionResult | null>;
+  cancelSubmission?: (conversation: Conversation) => Promise<void>;
 } = {}) {
   const store = options.store ?? new SignalStore(":memory:", "test-account/group");
   if (!options.store) cleanups.push(() => store.close());
@@ -30,6 +33,7 @@ function fixture(options: {
   const inspections: string[] = [];
   const draftCalls: DraftContext[] = [];
   const submissions: Conversation[] = [];
+  const cancellations: Conversation[] = [];
   const errors: unknown[] = [];
   const bot = new SignalBot({
     store,
@@ -57,10 +61,17 @@ function fixture(options: {
       sent.push({ id, text, quote });
       return id;
     },
-    submit: async conversation => {
+    submit: async (conversation, callbacks) => {
       submissions.push(structuredClone(conversation));
-      return options.submit ? options.submit(conversation) : { status: "submitted", noteId: "987654321" };
+      if (options.submit) return options.submit(conversation, callbacks);
+      callbacks?.onSubmitting();
+      return { status: "submitted", noteId: "987654321" };
     },
+    cancelSubmission: async conversation => {
+      cancellations.push(structuredClone(conversation));
+      await options.cancelSubmission?.(conversation);
+    },
+    registerSubmission: options.registerSubmission,
     dryRun: options.dryRun,
     onError: error => errors.push(error),
   });
@@ -69,7 +80,7 @@ function fixture(options: {
     return { id: `human:${ts}`, sender: "human", timestamp: ts, text, ...(quoteId ? { quoteId } : {}) };
   }
   return {
-    bot, store, sent, inspections, draftCalls, submissions, errors, message,
+    bot, store, sent, inspections, draftCalls, submissions, cancellations, errors, message,
     failSending: () => { failSend = true; },
     restoreSending: () => { failSend = false; },
     send: async (text: string, quoteId?: string) => bot.handle(message(text, quoteId)),
@@ -310,6 +321,7 @@ describe("Signal draft conversations", () => {
     const first = f.message("yes post", quoteId);
     const second = { ...f.message("yes post", quoteId), sender: "another human", id: "another-human-approval" };
     await Promise.all([f.bot.handle(first), f.bot.handle(second), f.bot.handle(first)]);
+    await f.bot.retryQueued();
     expect(f.submissions).toHaveLength(1);
     expect(f.current().status).toBe("submitted");
   });
@@ -329,25 +341,324 @@ describe("Signal draft conversations", () => {
   });
 
   test("an interrupted X request blocks later retries until reconciliation", async () => {
-    const f = fixture({ submit: async () => { throw new Error("connection reset after send"); } });
+    const f = fixture({ submit: async (_conversation, callbacks) => { callbacks?.onSubmitting(); throw new Error("connection reset after send"); } });
     await f.send("https://x.com/example/status/12345");
     const quote = f.latestDraft().id;
     await f.send("yes post", quote);
     expect(f.current().status).toBe("uncertain");
+    await f.bot.retryQueued();
     await f.send("yes post", quote);
     expect(f.submissions).toHaveLength(1);
     expect(f.sent.at(-1)!.text).toContain("reconcile");
   });
 
-  test("an explicit writing-limit rejection preserves the draft for a new human attempt", async () => {
+  test("an explicit writing-limit rejection queues the exact approved draft", async () => {
     const f = fixture({ submit: async () => ({ status: "daily_limit" }) });
     await f.send("https://x.com/example/status/12345");
     const current = structuredClone(f.current().draft);
     await f.send("yes post", f.latestDraft().id);
-    expect(f.current().status).toBe("open");
+    expect(f.current().status).toBe("queued");
     expect(f.current().draft).toEqual(current);
     expect(f.sent.at(-1)!.text).toContain("writing limit");
     expect(f.submissions).toHaveLength(1);
+  });
+
+  test("blocked retries keep the approved snapshot and prepared run without repeating queue notices or research", async () => {
+    let available = false;
+    const f = fixture({ submit: async (conversation, callbacks) => {
+      expect(f.store.get(conversation.id)?.status).toBe("queued");
+      callbacks?.onPrepared?.("run-for-approved-version");
+      expect(f.current().submissionRunId).toBe("run-for-approved-version");
+      if (!available) return { status: "deferred", message: "Capacity lookup temporarily unavailable" };
+      callbacks?.onSubmitting();
+      expect(f.current().status).toBe("submitting");
+      return { status: "submitted", noteId: "987654321" };
+    } });
+    await f.send("https://x.com/example/status/12345");
+    await f.send("yes post", f.latestDraft().id);
+    const approved = structuredClone(f.current().approval);
+    const sent = f.sent.length;
+    await f.bot.retryQueued();
+    await f.bot.retryQueued();
+    expect(f.sent).toHaveLength(sent);
+    expect(f.current().lastSubmissionResult?.status).toBe("deferred");
+    expect(f.current().lastSubmissionAttemptAt).toBeGreaterThan(0);
+    available = true;
+    await f.bot.retryQueued();
+    expect(f.current().status).toBe("submitted");
+    expect(f.submissions.map(item => item.approval)).toEqual([approved, approved, approved, approved]);
+    expect(f.submissions.slice(1).every(item => item.submissionRunId === "run-for-approved-version")).toBe(true);
+    expect(f.draftCalls).toHaveLength(1);
+    expect(f.inspections).toHaveLength(1);
+    expect(f.sent).toHaveLength(sent + 1);
+  });
+
+  test("queued approvals survive restart and resume the frozen version without another model call", async () => {
+    const directory = mkdtempSync(join(tmpdir(), "signal-queued-restart-"));
+    cleanups.push(() => rmSync(directory, { recursive: true, force: true }));
+    const path = join(directory, "state.sqlite");
+    const firstStore = new SignalStore(path, "same-scope");
+    const first = fixture({ store: firstStore, submit: async (_conversation, callbacks) => {
+      callbacks?.onPrepared?.("durable-run");
+      throw new Error("registration connection interrupted before X");
+    } });
+    await first.send("https://x.com/example/status/12345");
+    await first.send("yes post");
+    const approval = first.current().approval;
+    expect(first.current().status).toBe("queued");
+    firstStore.close();
+    const store = new SignalStore(path, "same-scope");
+    cleanups.push(() => store.close());
+    store.acquireWorker();
+    const resumed = fixture({ store });
+    await resumed.bot.resumePending();
+    await resumed.bot.retryQueued();
+    expect(resumed.submissions[0]?.approval).toEqual(approval);
+    expect(resumed.submissions[0]?.submissionRunId).toBe("durable-run");
+    expect(resumed.current().status).toBe("submitted");
+    expect(resumed.draftCalls).toEqual([]);
+    expect(resumed.inspections).toEqual([]);
+  });
+
+  test("queued approvals retry in worker approval order, including before a newly approved draft", async () => {
+    let available = false;
+    const f = fixture({ submit: async (conversation, callbacks) => {
+      if (!available) return { status: "deferred", message: "Registration unavailable" };
+      callbacks?.onSubmitting();
+      return { status: "submitted", noteId: `note-${conversation.id}` };
+    } });
+    await f.send("https://x.com/example/status/12345");
+    await f.send("https://x.com/example/status/67890");
+    await f.send("#2 yes post");
+    await f.send("#1 yes post");
+    expect(f.submissions.map(item => item.id)).toEqual([2, 2]);
+    expect(f.store.queued().map(item => item.id)).toEqual([2, 1]);
+    const before = f.submissions.length;
+    available = true;
+    await f.bot.retryQueued();
+    expect(f.submissions.slice(before).map(item => item.id)).toEqual([2, 1]);
+    expect(f.store.queued()).toEqual([]);
+  });
+
+  test("registers every approved successor before the head can submit and release shared priority", async () => {
+    let available = false;
+    const registered = new Set<number>();
+    const events: string[] = [];
+    const f = fixture({
+      registerSubmission: async conversation => {
+        events.push(`register:${conversation.id}`);
+        registered.add(conversation.id);
+        return null;
+      },
+      submit: async (conversation, callbacks) => {
+        if (!available) return { status: "daily_limit" };
+        events.push(`submit:${conversation.id}`);
+        expect(f.store.queued().every(item => registered.has(item.id))).toBe(true);
+        callbacks?.onSubmitting();
+        return { status: "submitted", noteId: `note-${conversation.id}` };
+      },
+      cancelSubmission: async conversation => {
+        registered.delete(conversation.id);
+        if (conversation.id === 1) expect(registered.has(2)).toBe(true);
+      },
+    });
+    await f.send("https://x.com/example/status/12345");
+    await f.send("https://x.com/example/status/67890");
+    await f.send("#1 yes post");
+    await f.send("#2 yes post");
+    expect([...registered]).toEqual([1, 2]);
+    events.length = 0;
+    available = true;
+    await f.bot.retryQueued();
+    expect(events).toEqual(["register:1", "register:2", "submit:1", "submit:2"]);
+    expect(registered.size).toBe(0);
+  });
+
+  test("registration failures block all submissions and cannot let a younger approval overtake", async () => {
+    let registrationAvailable = false;
+    const registered: number[] = [];
+    const f = fixture({ registerSubmission: async conversation => {
+      registered.push(conversation.id);
+      return registrationAvailable ? null : { status: "deferred", message: "Registration offline" };
+    } });
+    await f.send("https://x.com/example/status/12345");
+    await f.send("https://x.com/example/status/67890");
+    await f.send("#2 yes post");
+    await f.send("#1 yes post");
+    expect(registered).toEqual([2, 2]);
+    expect(f.submissions).toHaveLength(0);
+    registrationAvailable = true;
+    await f.bot.retryQueued();
+    expect(registered).toEqual([2, 2, 2, 1]);
+    expect(f.submissions.map(item => item.id)).toEqual([2, 1]);
+  });
+
+  test("queued status remains routable and a cancellation removes shared priority before clearing local approval", async () => {
+    const f = fixture({ submit: async () => ({ status: "daily_limit" }), cancelSubmission: async conversation => {
+      expect(conversation.status).toBe("cancelling");
+      expect(f.current().status).toBe("cancelling");
+      expect(f.current().approval).toEqual(conversation.approval);
+      expect(f.current().draft).toBeDefined();
+    } });
+    await f.send("https://x.com/example/status/12345");
+    await f.send("yes post");
+    await f.send("status");
+    expect(f.sent.at(-1)?.text).toContain("approved and queued");
+    expect(f.sent.at(-1)?.text).not.toContain("Reply ‘yes post’");
+    await f.send("cancel");
+    expect(f.cancellations).toHaveLength(1);
+    expect(f.current().status).toBe("open");
+    expect(f.current().approval).toBeUndefined();
+    expect(f.current().draft).toBeUndefined();
+    expect(f.current().submissionRunId).toBeUndefined();
+    await f.bot.retryQueued();
+    expect(f.submissions).toHaveLength(1);
+  });
+
+  test("a failed withdrawal survives restart and resumes cancellation instead of resurrecting approval", async () => {
+    const directory = mkdtempSync(join(tmpdir(), "signal-cancel-restart-"));
+    cleanups.push(() => rmSync(directory, { recursive: true, force: true }));
+    const path = join(directory, "state.sqlite");
+    const firstStore = new SignalStore(path, "same-scope");
+    const first = fixture({ store: firstStore, submit: async () => ({ status: "daily_limit" }),
+      cancelSubmission: async () => { throw new Error("Lost acknowledgement after removing priority"); } });
+    await first.send("https://x.com/example/status/12345");
+    await first.send("yes post");
+    await first.send("withdraw");
+    expect(first.current().status).toBe("cancelling");
+    expect(first.current().approval).toBeDefined();
+    firstStore.close();
+    const store = new SignalStore(path, "same-scope");
+    cleanups.push(() => store.close());
+    store.acquireWorker();
+    const resumed = fixture({ store });
+    await resumed.bot.retryQueued();
+    expect(resumed.cancellations).toHaveLength(1);
+    expect(resumed.submissions).toHaveLength(0);
+    expect(resumed.current().status).toBe("open");
+    expect(resumed.current().draft).toBeUndefined();
+    expect(resumed.current().approval).toBeUndefined();
+  });
+
+  test("revising a queued draft withdraws its approval before drafting and requires approval again", async () => {
+    const f = fixture({ submit: async () => ({ status: "daily_limit" }), draft: async context => {
+      if (!context.currentDraft) return { reply: "First draft", draft };
+      expect(f.cancellations).toHaveLength(1);
+      expect(f.current().status).toBe("open");
+      expect(f.current().approval).toBeUndefined();
+      expect(f.current().submissionRunId).toBeUndefined();
+      return { reply: "Revised", draft: revised };
+    } });
+    await f.send("https://x.com/example/status/12345");
+    await f.send("yes post");
+    await f.send("Use the original date");
+    expect(f.current().draft?.version).toBe(2);
+    await f.bot.retryQueued();
+    expect(f.submissions).toHaveLength(1);
+    await f.send("yes post");
+    expect(f.submissions.at(-1)?.approval?.version).toBe(2);
+  });
+
+  test("a changed queued draft is withdrawn instead of submitting under the earlier approval", async () => {
+    const f = fixture({ submit: async () => ({ status: "daily_limit" }) });
+    await f.send("https://x.com/example/status/12345");
+    await f.send("yes post");
+    const conversation = f.current();
+    conversation.draft = { ...revised, version: 2, shownAt: conversation.draft!.shownAt };
+    f.store.save(conversation);
+    await f.bot.retryQueued();
+    expect(f.submissions).toHaveLength(1);
+    expect(f.cancellations).toHaveLength(1);
+    expect(f.current().status).toBe("open");
+    expect(f.current().approval).toBeUndefined();
+    expect(f.sent.at(-1)?.text).toContain("no longer matches");
+  });
+
+  test("a received cancellation wins even when a retry poll was scheduled first", async () => {
+    const f = fixture({ submit: async () => ({ status: "daily_limit" }) });
+    await f.send("https://x.com/example/status/12345");
+    await f.send("yes post");
+    const retry = f.bot.retryQueued();
+    const cancel = f.send("cancel");
+    await Promise.all([retry, cancel]);
+    expect(f.submissions).toHaveLength(1);
+    expect(f.cancellations).toHaveLength(1);
+    expect(f.current().status).toBe("open");
+  });
+
+  test("cancellation received during submission preparation stops the request at the X boundary", async () => {
+    let started!: () => void;
+    const preparing = new Promise<void>(resolve => { started = resolve; });
+    let release!: () => void;
+    const prepared = new Promise<void>(resolve => { release = resolve; });
+    let xRequests = 0;
+    const f = fixture({ submit: async (_conversation, callbacks) => {
+      started();
+      await prepared;
+      const proceed = callbacks?.onSubmitting();
+      expect(proceed).toBe(false);
+      expect(f.current().status).toBe("queued");
+      if (proceed === false) return { status: "deferred", message: "An incoming command takes priority" };
+      xRequests++;
+      return { status: "submitted", noteId: "987654321" };
+    } });
+    await f.send("https://x.com/example/status/12345");
+    const approval = f.send("yes post");
+    await preparing;
+    const cancellation = f.send("cancel");
+    expect(f.store.pendingMessages()).toHaveLength(1);
+    release();
+    await Promise.all([approval, cancellation]);
+    expect(xRequests).toBe(0);
+    expect(f.cancellations).toHaveLength(1);
+    expect(f.current().status).toBe("open");
+    expect(f.current().approval).toBeUndefined();
+    expect(f.current().draft).toBeUndefined();
+  });
+
+  test("lost queue and submission replies cannot lose approval or duplicate an accepted note", async () => {
+    let available = false;
+    const f = fixture({ submit: async (_conversation, callbacks) => {
+      if (!available) return { status: "daily_limit" };
+      callbacks?.onSubmitting();
+      return { status: "submitted", noteId: "987654321" };
+    } });
+    await f.send("https://x.com/example/status/12345");
+    f.failSending();
+    await expect(f.send("yes post")).rejects.toThrow("Signal is offline");
+    expect(f.current().status).toBe("queued");
+    await f.bot.retryQueued();
+    expect(f.current().status).toBe("queued");
+    available = true;
+    await expect(f.bot.retryQueued()).rejects.toThrow("Signal is offline");
+    expect(f.current().status).toBe("submitted");
+    const count = f.submissions.length;
+    await f.bot.retryQueued();
+    expect(f.submissions).toHaveLength(count);
+  });
+
+  test("an uncertain outcome retries shared priority cleanup without retrying X", async () => {
+    let cleanupAvailable = false;
+    const f = fixture({ submit: async (_conversation, callbacks) => {
+      callbacks?.onSubmitting();
+      throw new Error("connection reset after sending");
+    }, cancelSubmission: async () => {
+      if (!cleanupAvailable) throw new Error("Database offline");
+    } });
+    await f.send("https://x.com/example/status/12345");
+    await f.send("yes post");
+    expect(f.current().status).toBe("uncertain");
+    expect(f.current().sharedQueueCleared).toBe(false);
+    const sent = f.sent.length;
+    await f.bot.retryQueued();
+    cleanupAvailable = true;
+    await f.bot.retryQueued();
+    expect(f.current().sharedQueueCleared).toBe(true);
+    expect(f.submissions).toHaveLength(1);
+    expect(f.cancellations).toHaveLength(3);
+    await f.bot.retryQueued();
+    expect(f.cancellations).toHaveLength(3);
+    expect(f.sent).toHaveLength(sent);
   });
 
   test("dry-run approvals never call the X submission adapter", async () => {
@@ -374,6 +685,9 @@ describe("Signal draft conversations", () => {
     cleanups.push(() => restarted.close());
     restarted.acquireWorker();
     const f = fixture({ store: restarted });
+    await f.bot.resumePending();
+    expect(f.cancellations).toHaveLength(1);
+    expect(f.current().sharedQueueCleared).toBe(true);
     await f.send("yes post", "1799999000000");
     expect(f.current().status).toBe("uncertain");
     expect(f.submissions).toHaveLength(0);
