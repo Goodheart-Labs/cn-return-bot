@@ -1,4 +1,5 @@
 import type { Post } from "../api/fetchEligiblePosts";
+import { TweetLookupError } from "../api/fetchTweetById";
 import type { PipelineOutcome } from "../bots/types";
 import type { BotConfig } from "../pipeline/ab-testing/botConfig";
 import type { ChatMessage } from "../pipeline/utils/jsonLlmCall";
@@ -43,7 +44,6 @@ export interface DraftingAdapter {
 
 export interface DraftingDependencies {
   fetchPost(tweetId: string): Promise<Post>;
-  fetchEligible(): Promise<Post[]>;
   initialDraft(post: Post): Promise<{ outcome: PipelineOutcome; inputContext: string }>;
   discuss(messages: ChatMessage[]): Promise<unknown>;
   readSource(url: string): Promise<DiscussionSource>;
@@ -156,8 +156,6 @@ function createDefaults(overrides: Partial<BotConfig>): DraftingDependencies {
   }
   return {
     fetchPost: async (id) => (await import("../api/fetchTweetById")).fetchTweetById(id),
-    // One bounded page is positive evidence only; absence never proves ineligibility.
-    fetchEligible: async () => (await import("../api/fetchEligiblePosts")).fetchEligiblePosts(100, new Set(), 1),
     initialDraft: (post) => scoped(async () => {
       const { createBotInput } = await import("../pipeline/input/createBotInput");
       const { buildUserMessageFromInput } = await import("../pipeline/prompts/input/userMessage");
@@ -179,6 +177,33 @@ function createDefaults(overrides: Partial<BotConfig>): DraftingDependencies {
   };
 }
 
+function lookupFailureDetail(error: unknown): string {
+  let reason = "The tweet lookup failed unexpectedly.";
+  // Raw API errors can contain credentials or private response data.
+  if (error instanceof TweetLookupError) {
+    switch (error.kind) {
+      case "http":
+        switch (error.status) {
+          case 401: reason = "X could not authenticate the bot's account (HTTP 401)."; break;
+          case 403:
+            reason = error.reason === "client-not-enrolled"
+              ? "X requires the bot's credentials to belong to a developer app attached to an X Project (HTTP 403)."
+              : "X denied the bot access to this tweet lookup (HTTP 403).";
+            break;
+          case 404: reason = "X could not find or provide this tweet (HTTP 404)."; break;
+          case 429: reason = "X rate-limited the tweet lookup (HTTP 429)."; break;
+          default: reason = `X rejected the tweet lookup request${error.status ? ` (HTTP ${error.status})` : ""}.`;
+        }
+        break;
+      case "timeout": reason = "The tweet lookup timed out."; break;
+      case "network": reason = "The bot could not connect to X."; break;
+      case "unavailable": reason = "X returned no tweet data. The tweet may be unavailable to the bot."; break;
+      case "invalid_response": reason = "X returned tweet data the bot could not read."; break;
+    }
+  }
+  return `${reason} I couldn't retrieve the tweet, so research has not started. Reply ‘retry’ to try the lookup again.`;
+}
+
 export function createDraftingAdapter(
   overrides: Partial<DraftingDependencies> = {},
   config: Partial<BotConfig> = {},
@@ -187,20 +212,18 @@ export function createDraftingAdapter(
   const adapter: DraftingAdapter = {
     async inspect(tweetId) {
       if (!/^\d{1,25}$/.test(tweetId)) throw new Error("Invalid tweet ID.");
-      const [lookup, eligible] = await Promise.allSettled([deps.fetchPost(tweetId), deps.fetchEligible()]);
-      const eligiblePost = eligible.status === "fulfilled" ? eligible.value.find((post) => post.id === tweetId) : undefined;
-      const post = lookup.status === "fulfilled" ? lookup.value : eligiblePost;
-      const eligibility = eligiblePost ? "observed_eligible" : "unconfirmed";
-      if (!post) return {
-        tweetId, access: "unavailable", eligibility,
-        detail: "I could not retrieve this tweet with the bot's X account. It may be unavailable, or the API request may have failed. Submission eligibility is unconfirmed.",
-      };
-      return {
-        tweetId, access: "readable", eligibility, post,
-        detail: eligiblePost
-          ? "I can read this tweet and found it in X's eligible-posts feed. I can attempt a note when you approve a draft; X makes the final eligibility decision."
-          : "I can read this tweet. Submission eligibility is unconfirmed: it was not observed in the limited eligible-feed check. I can attempt the approved note and report X's result.",
-      };
+      try {
+        const post = await deps.fetchPost(tweetId);
+        return {
+          tweetId, access: "readable", eligibility: "unconfirmed", post,
+          detail: "I can read this tweet. I can research a note and, after you approve a draft, attempt submission and report X's response.",
+        };
+      } catch (error) {
+        return {
+          tweetId, access: "unavailable", eligibility: "unconfirmed",
+          detail: lookupFailureDetail(error),
+        };
+      }
     },
     async draft(context) {
       const latestHuman = context.history.findLast((entry) => entry.role === "user")?.content ?? "";
