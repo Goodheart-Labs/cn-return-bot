@@ -67,3 +67,49 @@ residential proxy at about a minute each, plus a whole run's overhead.
 - Extraction and claim-check service capacity (idle between items).
 - Runner setup steps (under a minute per run; the yt-dlp install is the
   biggest at 35 seconds).
+
+## Correction, evening of 2026-09-16: the "no captions" videos have captions
+
+Jim asked for URLs and whether they still fail. Four throwaway GitHub Actions
+runs (`.github/workflows/debug-yt-subs.yml` on this branch, runs 35144623067,
+35146250046, 35147991618, 35148154677) ran the same yt-dlp calls the worker
+runs, through the residential proxy, on five of the failing videos and on one
+video the pipeline had fetched successfully at 13:54 that day.
+
+What they showed:
+
+- **Every video, including the one that worked at 13:54, answered "has no
+  subtitles" through the proxy at 20:10.** So "No transcript available" is
+  not a property of the videos.
+- **The cause is inside yt-dlp's YouTube handling.** yt-dlp's default path
+  asks YouTube's player API as the visionOS, TV or Android app. Through the
+  proxy those requests time out: three internal retries of about 20 seconds
+  each, then "Unable to download API page", then "has no subtitles". That is
+  the 85 seconds per call. A JS runtime (deno), a longer socket timeout, and
+  other player clients change nothing. Without the proxy YouTube answers
+  "Sign in to confirm you're not a bot" at once, as expected.
+- **The web client sees the captions but throws them away.** With
+  `player_client=web` yt-dlp finishes in 2 seconds and logs "Some web client
+  subtitles require a PO Token which was not provided. They will be
+  discarded". A PO token (YouTube's "proof of origin" token, which the real
+  web player obtains by running YouTube's attestation JavaScript) is what the
+  web client needs to download captions today.
+- **With a PO token provider the captions download in 10 to 32 seconds.**
+  The `bgutil-ytdlp-pot-provider` plugin plus its Docker container
+  (`brainicism/bgutil-ytdlp-pot-provider`, which yt-dlp asks at
+  127.0.0.1:4416) made both videos' English captions download through the
+  proxy on the first try.
+- **The proxy itself is healthy.** Plain HTTPS through it to ipify,
+  example.com, youtube.com and the channel RSS feed all answered in 1 to 3
+  seconds.
+
+So the fix for the largest single waste is not "skip caption-less videos".
+It is: run yt-dlp with the PO token provider (a container next to the worker
+on GitHub and next to the intake service on the box) and use the web client
+for per-video calls. Also, the code currently turns "could not reach YouTube"
+into the content answer "no transcript"; the fetch should fail as a network
+error instead, so a proxy outage looks like one.
+
+The channel listings (creator walk and top-posts refresh) need no proxy at
+all: the same joerogan listing that timed out through the proxy 28 times took
+2.7 seconds without it from a GitHub runner, and 5.6 seconds from the devbox.
