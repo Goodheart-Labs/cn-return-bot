@@ -1,5 +1,6 @@
 import { describe, expect, mock, spyOn, test } from "bun:test";
 import type { Post } from "../api/fetchEligiblePosts";
+import { TweetLookupError } from "../api/fetchTweetById";
 import { joinNoteWithSources } from "../pipeline/utils/noteLength";
 import {
   createDraftingAdapter, validateSignalDraft, type DraftingDependencies, type SignalDraft,
@@ -14,7 +15,6 @@ const draft: SignalDraft = { text: "The official record gives a different date."
 function dependencies(overrides: Partial<DraftingDependencies> = {}): DraftingDependencies {
   return {
     fetchPost: async () => post,
-    fetchEligible: async () => [],
     initialDraft: async () => ({
       outcome: { type: "note", noteText: draft.text, sources: draft.sources, searchResults: "The record says 2017." },
       inputContext: "Original post and inspected media.",
@@ -60,29 +60,74 @@ describe("Signal draft adapter", () => {
     }
   });
 
-  test("readable tweets absent from the bounded feed remain unconfirmed", async () => {
-    const result = await createDraftingAdapter(dependencies()).inspect(post.id);
-    expect(result.access).toBe("readable");
-    expect(result.eligibility).toBe("unconfirmed");
-    expect(result.detail).toContain("limited eligible-feed check");
-  });
+  test("the default inspection uses only the direct lookup even when the feed is unavailable", async () => {
+    const lookup = await import("../api/fetchTweetById");
+    const feed = await import("../api/fetchEligiblePosts");
+    const lookupCall = spyOn(lookup, "fetchTweetById").mockResolvedValue(post);
+    const feedCall = spyOn(feed, "fetchEligiblePosts").mockRejectedValue(new Error("Feed unavailable"));
+    try {
+      const result = await createDraftingAdapter().inspect(post.id);
+      expect(lookupCall).toHaveBeenCalledWith(post.id);
+      expect(lookupCall).toHaveBeenCalledTimes(1);
+      expect(feedCall).not.toHaveBeenCalled();
+      expect(result.access).toBe("readable");
+      expect(result.eligibility).toBe("unconfirmed");
+      expect(result.post).toEqual(post);
+      expect(result.detail).toContain("after you approve a draft");
+      expect(result.detail).not.toContain("feed");
 
-  test("feed evidence can supply the post after direct lookup fails", async () => {
-    const result = await createDraftingAdapter(dependencies({
-      fetchPost: async () => { throw new Error("X returned 403"); }, fetchEligible: async () => [post],
-    })).inspect(post.id);
-    expect(result.access).toBe("readable");
-    expect(result.eligibility).toBe("observed_eligible");
-    expect(result.post).toEqual(post);
+      lookupCall.mockRejectedValue(new TweetLookupError("timeout", "private API response"));
+      const failed = await createDraftingAdapter().inspect(post.id);
+      expect(failed.access).toBe("unavailable");
+      expect(failed.post).toBeUndefined();
+      expect(failed.detail).toContain("timed out");
+      expect(feedCall).not.toHaveBeenCalled();
+    } finally {
+      lookupCall.mockRestore();
+      feedCall.mockRestore();
+    }
   });
 
   test("lookup failure exposes neither API secrets nor a claim of ineligibility", async () => {
     const result = await createDraftingAdapter(dependencies({
       fetchPost: async () => { throw new Error("private API response"); },
-      fetchEligible: async () => { throw new Error("private API response"); },
     })).inspect(post.id);
     expect(result.access).toBe("unavailable");
     expect(result.eligibility).toBe("unconfirmed");
+    expect(result.detail).toContain("failed unexpectedly");
+    expect(JSON.stringify(result)).not.toContain("private API response");
+  });
+
+  test.each([
+    { kind: "http", status: 400, expected: "HTTP 400" },
+    { kind: "http", status: 401, expected: "authenticate" },
+    { kind: "http", status: 403, expected: "denied" },
+    { kind: "http", status: 404, expected: "find or provide" },
+    { kind: "http", status: 429, expected: "rate-limited" },
+    { kind: "http", status: 503, expected: "HTTP 503" },
+    { kind: "timeout", status: undefined, expected: "timed out" },
+    { kind: "network", status: undefined, expected: "could not connect" },
+    { kind: "unavailable", status: undefined, expected: "no tweet data" },
+    { kind: "invalid_response", status: undefined, expected: "could not read" },
+  ] as const)("lookup failures identify $expected without sharing the raw error", async ({ kind, status, expected }) => {
+    const result = await createDraftingAdapter(dependencies({
+      fetchPost: async () => { throw new TweetLookupError(kind, "private API response", status); },
+    })).inspect(post.id);
+    expect(result.access).toBe("unavailable");
+    expect(result.post).toBeUndefined();
+    expect(result.detail).toContain(expected);
+    expect(result.detail).toContain("research has not started");
+    expect(result.detail).toContain("retry");
+    expect(JSON.stringify(result)).not.toContain("private API response");
+  });
+
+  test("a client-not-enrolled response identifies the developer app configuration problem", async () => {
+    const result = await createDraftingAdapter(dependencies({
+      fetchPost: async () => { throw new TweetLookupError("http", "private API response", 403, "client-not-enrolled"); },
+    })).inspect(post.id);
+    expect(result.access).toBe("unavailable");
+    expect(result.detail).toContain("developer app attached to an X Project");
+    expect(result.detail).toContain("HTTP 403");
     expect(JSON.stringify(result)).not.toContain("private API response");
   });
 
