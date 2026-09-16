@@ -78,8 +78,9 @@ function resized(start: Box, edge: Edge, dx: number, dy: number): Box {
  *  the box the card had at that moment into explicit page coordinates, and
  *  from then on the card keeps its own size and the body scrolls inside it.
  *  Nothing is remembered: a fresh card starts at rest again. */
-export function FloatingWindow({ title, onDismiss, restingStyle, className = "", children, ...divProps }: {
+export function FloatingWindow({ title, dismissLabel, onDismiss, restingStyle, className = "", children, ...divProps }: {
   title: string;
+  dismissLabel: string;
   onDismiss: () => void;
   /** Where the card sits before any interaction, as `left`, `top` and a
    *  `transform` that aligns the card to that point. */
@@ -139,7 +140,7 @@ export function FloatingWindow({ title, onDismiss, restingStyle, className = "",
         className="flex items-start justify-between gap-2 px-4 pt-4 pb-2 cursor-grab select-none"
       >
         <span className={EYEBROW}>{title}</span>
-        <IconButton label="Dismiss for this video" onClick={onDismiss}>✕</IconButton>
+        <IconButton label={dismissLabel} onClick={onDismiss}>✕</IconButton>
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4">{children}</div>
       {GRIPS.map(({ edge, cursor, style: gripStyle }) => (

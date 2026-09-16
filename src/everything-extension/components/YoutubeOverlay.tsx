@@ -254,6 +254,7 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
           // reader dragged the previous one is not remembered.
           key={group.claimId}
           title="Community note on this part of the video"
+          dismissLabel="Dismiss for this video"
           onDismiss={dismiss}
           restingStyle={{ left: playerBox.right - PLAYER_EDGE_INSET_PX, top: playerBox.centreY, width: NOTE_POPOVER_WIDTH, transform: "translate(-100%, -50%)" }}
           {...ABSORB_KEYS}
