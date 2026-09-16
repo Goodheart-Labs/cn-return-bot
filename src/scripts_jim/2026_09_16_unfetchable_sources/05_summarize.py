@@ -13,7 +13,7 @@ from urllib.parse import urlparse
 
 DATA = Path(__file__).parent / "data"
 SOCIAL_HOSTS = ("facebook.com", "instagram.com", "tiktok.com", "youtube.com", "youtu.be", "telegram.me", "t.me", "reddit.com", "redd.it", "x.com", "twitter.com")
-CANDIDATES = ["ladder_from_vps", "curl_cffi", "jina", "exa", "wayback", "commoncrawl", "patchright", "openrouter"]
+CANDIDATES = ["ladder_from_vps", "curl_cffi", "jina", "exa", "exa_fallback", "wayback", "commoncrawl", "patchright", "openrouter"]
 
 
 def host(url: str) -> str:
@@ -49,7 +49,7 @@ def cause(r: dict) -> str:
     if ps is None and cs is None:
         return "network error (DNS, timeout, reset)"
     if ps in (401, 402, 403, 429) or cs in (401, 402, 403, 429):
-        return f"blocked with HTTP {cs or ps}, vendor not identified"
+        return f"blocked with HTTP {ps}/{cs}, vendor not identified"
     if (plain.get("body_head") or "").startswith("%PDF") or (cffi.get("body_head") or "").startswith("%PDF"):
         return "PDF (this diagnosis does not parse PDFs; the pipeline does)"
     if ps == 200 or cs == 200:
@@ -64,12 +64,21 @@ def load_candidate(name: str) -> dict[str, dict]:
     return {r["url"]: r for r in json.loads(path.read_text())}
 
 
-def recovered(name: str, row: dict | None) -> bool | None:
+FETCH_SERVICES = ("jina", "exa", "exa_fallback", "openrouter")
+
+
+def recovered(name: str, row: dict | None, dead: bool) -> bool | None:
+    """A fetch service that answers 200 for a page both direct clients saw as a
+    404 has served the site's own "page not found" page, or a homepage redirect,
+    with enough footer text to pass the length bar. That is not a recovery. The
+    archives are exempt, because an old capture of a since-removed page is one."""
     if row is None:
         return None
     if name == "ladder_from_vps":
         return bool(row["ok"])
-    if name in ("jina", "exa", "openrouter", "wayback", "commoncrawl"):
+    if name in FETCH_SERVICES:
+        return bool(row.get("good")) and not dead
+    if name in ("wayback", "commoncrawl"):
         return bool(row.get("good"))
     return good_now(row)
 
@@ -79,10 +88,11 @@ def main():
     cands = {name: load_candidate(name) for name in CANDIDATES if name != "curl_cffi"}
     rows = []
     for r in diag:
-        row = {"url": r["url"], "host": host(r["url"]), "pipeline": r["pipeline"], "logged_reason": r["logged_reason"], "cause": cause(r),
+        c = cause(r)
+        row = {"url": r["url"], "host": host(r["url"]), "pipeline": r["pipeline"], "logged_reason": r["logged_reason"], "cause": c,
                "curl_cffi": good_now(r["curl_cffi"])}
         for name, table in cands.items():
-            row[name] = recovered(name, table.get(r["url"]))
+            row[name] = recovered(name, table.get(r["url"]), dead=c.startswith("dead link"))
         rows.append(row)
     (DATA / "summary_rows.json").write_text(json.dumps(rows, indent=1))
 

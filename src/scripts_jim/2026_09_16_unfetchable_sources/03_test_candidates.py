@@ -8,7 +8,8 @@ One subcommand per candidate, each writing data/candidate_<name>.json:
   jina         Jina Reader, a hosted service: GET https://r.jina.ai/<url> returns
                the page as markdown. Needs JINA_READER_API in .env.
   exa          Exa's /contents endpoint with live crawling, a hosted service we
-               already pay for. Needs EXA_API_KEY.
+               already pay for. Needs EXA_API_KEY. `exa_fallback` runs the same
+               with livecrawl=fallback, which prefers Exa's cached copy.
   wayback      The Wayback Machine's official CDX API, throttled to one request a
                second with backoff, then the raw snapshot ("id_" flag).
   commoncrawl  Common Crawl's index API for the two newest crawls, then a ranged
@@ -81,16 +82,28 @@ def run_parallel(name: str, urls: list[str], fn, workers: int = 6):
 
 
 # --- Jina Reader ---------------------------------------------------------------
+JINA_FAILURE_MARKS = ["Warning: Target URL returned error", "requiring CAPTCHA", "Title: Just a moment", "Log into Facebook",
+                      "Title: Page not found", "cksync"]
+
+
 def jina(url: str) -> dict:
+    """Jina answers 200 even when the site answered 404 or 403, or served a login
+    or challenge page. It says so in a Warning line of its own header block, and
+    a challenge page shows in the title, so those answers count as failures."""
     r = requests.get(f"https://r.jina.ai/{url}", timeout=TIMEOUT,
                      headers={"Authorization": f"Bearer {os.environ['JINA_READER_API']}", "X-Return-Format": "markdown"})
-    return {"status": r.status_code} | (verdict(r.text) if r.ok else {"good": False, "error": r.text[:300]})
+    if not r.ok:
+        return {"status": r.status_code, "good": False, "error": r.text[:300]}
+    header_block = r.text[:1500]
+    marks = [m for m in JINA_FAILURE_MARKS if m in header_block]
+    v = verdict(r.text)
+    return {"status": r.status_code, "jina_warnings": marks, "header": header_block[:600]} | v | {"good": v["good"] and not marks}
 
 
 # --- Exa contents -----------------------------------------------------------------
-def exa_batch(urls: list[str]) -> list[dict]:
+def exa_batch(urls: list[str], livecrawl: str) -> list[dict]:
     r = requests.post("https://api.exa.ai/contents", timeout=90, headers={"x-api-key": os.environ["EXA_API_KEY"]},
-                      json={"urls": urls, "text": {"maxCharacters": 20000}, "livecrawl": "always"})
+                      json={"urls": urls, "text": {"maxCharacters": 20000}, "livecrawl": livecrawl})
     r.raise_for_status()
     body = r.json()
     by_url = {res.get("url"): res for res in body.get("results", [])}
@@ -103,17 +116,20 @@ def exa_batch(urls: list[str]) -> list[dict]:
     return out
 
 
-def exa(urls: list[str]):
+def exa(urls: list[str], livecrawl: str = "always"):
+    """livecrawl "always" fetches the live page; "fallback" serves Exa's own cached
+    copy when it has one and crawls only otherwise."""
+    name = "exa" if livecrawl == "always" else f"exa_{livecrawl}"
     results = []
     for i in range(0, len(urls), 10):
         batch = urls[i:i + 10]
         try:
-            results += exa_batch(batch)
+            results += exa_batch(batch, livecrawl)
         except Exception as e:
             results += [{"url": u, "error": f"{type(e).__name__}: {str(e)[:200]}", "good": False} for u in batch]
         print(f"exa {i + len(batch)}/{len(urls)} recovered so far {sum(r['good'] for r in results)}", file=sys.stderr, flush=True)
-    (DATA / "candidate_exa.json").write_text(json.dumps(results, indent=1))
-    print(f"exa: {sum(r['good'] for r in results)}/{len(results)} recovered")
+    (DATA / f"candidate_{name}.json").write_text(json.dumps(results, indent=1))
+    print(f"{name}: {sum(r['good'] for r in results)}/{len(results)} recovered")
 
 
 # --- Wayback CDX API (official) ----------------------------------------------------
@@ -224,6 +240,8 @@ if __name__ == "__main__":
         run_parallel("jina", urls, jina, workers=4)
     elif name == "exa":
         exa(urls)
+    elif name == "exa_fallback":
+        exa(urls, livecrawl="fallback")
     elif name == "wayback":
         wayback(urls)
     elif name == "commoncrawl":
