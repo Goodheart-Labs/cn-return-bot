@@ -25,6 +25,8 @@ import { runTimingStage } from "./timingStage";
 import { runWriter } from "./writer";
 import { topicSourcelessRejection } from "../utils/noteLint";
 
+const WRITER_EMPTY_NOTE_REASON = "The writer found nothing in the findings that disputes a claim the post rests on.";
+
 export async function runSimpleBotPipeline(
   post: Post,
   input: BotInput,
@@ -58,6 +60,14 @@ async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterS
   }
 
   const note = await runWriter(userMessage, search.findings, { timingContext });
+  // The writer answers with an empty note when nothing in the findings disputes
+  // a claim the post rests on. That is a "no note needed" answer, the same as
+  // the search step's, and not a note. Without this exit the empty note went on
+  // to the verifier, which sometimes accepted it by judging the findings, and
+  // Common Notes then published notes with no text.
+  if (note.noteText.trim() === "") {
+    return { kind: "early_exit", outcome: { type: "no_correction", reason: WRITER_EMPTY_NOTE_REASON } };
+  }
   return {
     kind: "writer_done",
     userMessage,
