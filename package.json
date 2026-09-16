@@ -63,6 +63,8 @@
     "check": "bun run typecheck && bun run typecheck-review && bun run typecheck-ext && bunx knip",
     "prepare": "husky",
     "draft-tweets": "bun src/local/draftTweets.ts",
+    "review-draft-batch": "bun src/local/reviewDraftBatch.ts",
+    "upload-draft-review": "bun src/local/uploadDraftReview.ts",
     "update-feedback": "bun run src/production/updateNoteFeedback.ts",
     "replay-ranking": "bun run src/scripts/replayRanking.ts",
     "backfill-ranking-decisions": "bun run src/scripts/backfillRankingDecisions.ts",

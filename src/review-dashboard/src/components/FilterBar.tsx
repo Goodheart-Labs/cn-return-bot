@@ -67,7 +67,8 @@ export function FilterBar({ source, filters, counts, topicSetCounts, onFiltersCh
   };
 
   const visibleTypes = (Object.entries(FAILURE_TYPE_CONFIG) as [FailureType, FailureTypeConfig][])
-    .filter(([, cfg]) => source === "production" ? cfg.production : cfg.datasetRun);
+    .filter(([ft, cfg]) => source === "production" ? cfg.production
+      : cfg.datasetRun && (!(counts.draft_review > 0) || (counts[ft] ?? 0) > 0));
 
   const hasGroups = visibleTypes.some(([, cfg]) => cfg.group);
 
@@ -97,10 +98,9 @@ export function FilterBar({ source, filters, counts, topicSetCounts, onFiltersCh
         {filters.seen === "all" ? "All" : filters.seen === "unseen" ? "Unseen" : "Seen"}
       </button>
 
-      {source === "production" && (
         <button
           onClick={toggleHighValue}
-          title="Show only high-value (starred ★) notes, all-time"
+          title={source === "production" ? "Show starred notes from all time" : "Show starred notes in this batch"}
           className={`px-3 py-1 rounded-full text-sm font-medium border transition-colors ${
             filters.highValueOnly
               ? "bg-amber-100 text-amber-800 border-amber-400"
@@ -109,11 +109,10 @@ export function FilterBar({ source, filters, counts, topicSetCounts, onFiltersCh
         >
           {filters.highValueOnly ? "★" : "☆"} High-value notes
         </button>
-      )}
 
       <div className="w-px h-6 bg-gray-300" />
 
-      {source === "production" && (
+      {(source === "production" || Object.keys(topicSetCounts).length > 0) && (
         <>
           <span className="text-xs text-gray-400 font-medium uppercase tracking-wide">Topic</span>
           {TOPIC_SETS.map((ts) => {

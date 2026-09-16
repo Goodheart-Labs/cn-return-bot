@@ -50,6 +50,15 @@ export interface ReviewItem {
   judgeGuidance?: string;
   originalNoteText?: string;
   failureReason?: string;
+  draftReview?: {
+    origin: "chat" | "topic";
+    postedAt?: string;
+    screeningScore?: number;
+    screeningReason?: string;
+    screeningError?: string;
+    reply?: string;
+    warnings: string[];
+  };
 
   // Annotation state
   annotation?: Annotation;
@@ -126,7 +135,7 @@ export type DatasetCategoryV2 =
   | "nnw_fp_published"
   | "nnw_eval_disagrees";
 
-export type FailureType = ProductionFailureType | DatasetCategoryV2 | "uncategorized";
+export type FailureType = ProductionFailureType | DatasetCategoryV2 | "draft_review" | "uncategorized";
 
 export interface FilterState {
   seen: "all" | "seen" | "unseen";
@@ -199,6 +208,7 @@ export const FAILURE_TYPE_CONFIG: Record<FailureType, FailureTypeConfig> = {
   nnw_eval_disagrees:             { label: "Eval disagrees",     defaultOn: true,  production: false, datasetRun: true, color: "bg-purple-100 text-purple-800", group: "non_noteworthy" },
 
   // --- Shared ---
+  draft_review: { label: "Draft review", defaultOn: true, production: false, datasetRun: true, color: "bg-slate-100 text-slate-700" },
   uncategorized: { label: "Uncategorized", defaultOn: false, production: true, datasetRun: true, color: "bg-gray-100 text-gray-500" },
 };
 
@@ -217,6 +227,7 @@ const V2_CATEGORIES: Set<string> = new Set([
 // It handles the version-1 labels, such as "correct" and "missed", as well as the
 // version-2 category strings.
 export function resultToFailureType(result: string | undefined | null): FailureType {
+  if (result === "draft_review") return "draft_review";
   if (!result) return "uncategorized";
   if (V2_CATEGORIES.has(result)) return result as DatasetCategoryV2;
   switch (result) {

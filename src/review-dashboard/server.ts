@@ -13,7 +13,8 @@ if (!supabaseUrl || !supabaseKey) {
   throw new Error(`Missing ${which} — run from a directory whose .env defines them (cwd: ${process.cwd()})`);
 }
 
-const PORT = 8001;
+const PORT = Number(process.env.REVIEW_PORT ?? 8001);
+if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) throw new Error("REVIEW_PORT must be a valid port number");
 
 // WARNING: This injects the Supabase service role key into the page. That key has
 // full access to the database. So this server must only ever run on localhost.
@@ -31,6 +32,7 @@ function injectCredentials(html: string): string {
 }
 
 serve({
+  hostname: "127.0.0.1",
   port: PORT,
   async fetch(req) {
     const url = new URL(req.url);
