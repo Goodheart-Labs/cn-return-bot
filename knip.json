@@ -47,16 +47,5 @@
   ],
   "ignoreWorkspaces": [
     "src/review-dashboard"
-  ],
-  "ignoreBinaries": [
-    "open",
-    "sleep",
-    "scripts/serve-for-mac.sh"
-  ],
-  "ignoreFiles": [
-    "src/everything/debug/debugItem.ts",
-    "src/everything/substack-proxy-worker/index.ts",
-    "src/stats-dashboard/vite.config.ts",
-    "src/everything-web/vite.config.ts"
   ]
 }
