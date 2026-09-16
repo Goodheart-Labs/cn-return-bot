@@ -52,6 +52,7 @@ export interface ReviewItem {
   failureReason?: string;
   draftReview?: {
     origin: "chat" | "topic";
+    postedAt?: string;
     screeningScore?: number;
     screeningReason?: string;
     screeningError?: string;

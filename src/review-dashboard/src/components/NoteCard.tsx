@@ -108,7 +108,7 @@ export function NoteCard({
           )}
           {item.draftReview && (
             <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
-              Draft review · {item.draftReview.origin === "chat" ? "Chat request" : "Topic candidate"}
+              {item.draftReview.origin === "chat" ? "Chat request" : "Topic candidate"}
             </span>
           )}
           {item.competitorLeadTag && (
@@ -116,12 +116,12 @@ export function NoteCard({
               {item.competitorLeadTag}
             </span>
           )}
-          {item.outcome && (
+          {!item.draftReview && item.outcome && (
             <span className="text-xs text-gray-500">
               {item.outcome}{item.outcomeReason ? ` (${item.outcomeReason})` : ""}
             </span>
           )}
-          {item.result && (
+          {!item.draftReview && item.result && (
             <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
               {item.result}
             </span>
@@ -167,6 +167,11 @@ export function NoteCard({
 
       {/* Tweet content */}
       <div className="mb-3">
+        {item.draftReview && (
+          <p className="text-xs text-gray-500 mb-2">
+            Saved tweet snapshot{item.draftReview.postedAt ? ` · Posted ${new Date(item.draftReview.postedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}` : ""}
+          </p>
+        )}
         <TweetCard tweet={reviewItemToTweet(item)} />
       </div>
 

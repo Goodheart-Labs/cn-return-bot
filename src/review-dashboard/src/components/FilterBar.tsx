@@ -67,7 +67,8 @@ export function FilterBar({ source, filters, counts, topicSetCounts, onFiltersCh
   };
 
   const visibleTypes = (Object.entries(FAILURE_TYPE_CONFIG) as [FailureType, FailureTypeConfig][])
-    .filter(([, cfg]) => source === "production" ? cfg.production : cfg.datasetRun);
+    .filter(([ft, cfg]) => source === "production" ? cfg.production
+      : cfg.datasetRun && (!(counts.draft_review > 0) || (counts[ft] ?? 0) > 0));
 
   const hasGroups = visibleTypes.some(([, cfg]) => cfg.group);
 
