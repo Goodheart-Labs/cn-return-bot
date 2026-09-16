@@ -1,0 +1,36 @@
+name: Debug YouTube subtitles (GOO-169)
+
+# Throwaway investigation workflow. Runs the same yt-dlp calls the feed
+# worker runs, through the residential proxy, on the given videos, and prints
+# what YouTube answers and how long each call takes. Also times one channel
+# listing without the proxy.
+
+on:
+  workflow_dispatch:
+    inputs:
+      urls:
+        description: Space-separated video URLs
+        required: true
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      YTDLP_PROXY_URL: ${{ secrets.YTDLP_PROXY_URL }}
+    steps:
+      - run: pipx install yt-dlp && yt-dlp --version
+      - name: Channel listing without proxy
+        run: |
+          time (yt-dlp --flat-playlist --no-warnings --playlist-items 1:200 --print "%(view_count)s %(id)s" https://www.youtube.com/@joerogan/videos | wc -l)
+      - name: Per-video calls through the proxy
+        run: |
+          for url in ${{ inputs.urls }}; do
+            echo "=================== $url"
+            echo "--- list-subs"
+            time (yt-dlp --proxy "$YTDLP_PROXY_URL" --list-subs --skip-download --ignore-no-formats-error -v "$url" 2>&1 | grep -v "^\[debug\] Loaded\|^\[debug\] Python\|exe versions\|Optional lib" | cut -c1-200 | head -60)
+            echo "--- write en.* subs"
+            d=$(mktemp -d)
+            time (yt-dlp --proxy "$YTDLP_PROXY_URL" --write-subs --write-auto-subs --sub-lang "en.*" --skip-download --ignore-no-formats-error -v -o "$d/%(id)s.%(ext)s" "$url" 2>&1 | grep -i "subtitle\|caption\|warning\|error\|player\|client" | cut -c1-200 | head -30)
+            ls -la "$d"
+          done
