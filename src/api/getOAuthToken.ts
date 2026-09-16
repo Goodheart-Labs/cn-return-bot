@@ -17,12 +17,16 @@ function getRequiredEnv(name: string): string {
 export function getOAuth1Headers(
   url: string,
   method: string = "GET",
-  _body?: string
+  _body?: string,
+  profile: "writer" | "reader" = "writer",
 ) {
-  const consumer_key = getRequiredEnv("X_API_KEY");
-  const consumer_secret = getRequiredEnv("X_API_KEY_SECRET");
-  const access_token = getRequiredEnv("X_ACCESS_TOKEN");
-  const access_token_secret = getRequiredEnv("X_ACCESS_TOKEN_SECRET");
+  const readerConfigured = profile === "reader" &&
+    ["API_KEY", "API_KEY_SECRET", "ACCESS_TOKEN", "ACCESS_TOKEN_SECRET"].some((suffix) => process.env[`X_READ_${suffix}`]);
+  const prefix = readerConfigured ? "X_READ" : "X";
+  const consumer_key = getRequiredEnv(`${prefix}_API_KEY`);
+  const consumer_secret = getRequiredEnv(`${prefix}_API_KEY_SECRET`);
+  const access_token = getRequiredEnv(`${prefix}_ACCESS_TOKEN`);
+  const access_token_secret = getRequiredEnv(`${prefix}_ACCESS_TOKEN_SECRET`);
 
   const oauth = new OAuth({
     consumer: {
