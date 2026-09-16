@@ -30,7 +30,7 @@ export async function fetchTweetById(tweetId: string): Promise<Post> {
   try {
     response = await axios.get(fullUrl, {
       headers: {
-        ...getOAuth1Headers(fullUrl, "GET"),
+        ...getOAuth1Headers(fullUrl, "GET", undefined, "reader"),
         "Content-Type": "application/json",
       },
       timeout: 30000,
