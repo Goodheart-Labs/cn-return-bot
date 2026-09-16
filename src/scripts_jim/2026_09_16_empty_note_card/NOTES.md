@@ -90,6 +90,42 @@ change; the code path is unchanged. And the writer's empty answer on this very c
 was itself a poor call: the findings said the crash was in Zaire, not Siberia, which
 is exactly the kind of dispute the note should have carried.
 
+## Is the empty answer an API failure?
+
+Jim asked whether the empty answer could be an API failure rather than the model's
+choice. The output token counts first pointed that way: the writer call on this run
+produced 493 output tokens, while `{"note_text":"","sources":[]}` is about ten. Across
+the 28 empty runs the writer produced between 16 and 1628 output tokens, median 262,
+and runs that wrote a real note produced 128 to 751.
+
+Replaying the exact call resolves it (`replay_writer.ts`, the writer's logged messages
+sent again to `anthropic/claude-sonnet-5` with the same strict JSON schema through the
+testing key). Three replays of this run all came back with the content
+`{"note_text":"","sources":[]}`, finish reason `end_turn`, and 291 to 1050 reasoning
+tokens. Sonnet 5 thinks before answering, and OpenRouter counts the thinking in
+`completion_tokens`, which the cost tracker stores as output tokens. That is where the
+hundreds of tokens went. The reasoning text shows the decision: "the location detail
+(Siberia vs. actual Zaire/Africa crash site) is factually wrong, but ... more like a
+minor geographic mix-up than something that undermines the actual claim". Two replays
+of another empty run (2026-09-11, a comedy timezone claim) answered empty both times.
+Two replays of a third (2026-09-05, a benchmark figure) wrote a real note both times,
+so on borderline claims the model flips between a note and no note. None of the
+replays errored, refused, or returned an empty body.
+
+So the empty answer is the model's own call, made under the prompt's instruction. Is
+the writer asked whether a note is needed? Yes, twice. The search step first answers
+`correction_needed` (`src/pipeline/prompts/simple-bot/searchAgent.ts`); the writer only
+runs when that is true. The writer prompt then tells it to return an empty note when
+the dispute would not topple the post's central argument (the `writer_central` arm of
+`materiality_treatment`, since 2026-09-07; the default rule also allows an empty note
+when nothing is disputed). On this claim the search step said a correction was needed
+and the writer overruled it as immaterial. The code that follows treats the empty
+answer as a written note.
+
+A separate guard exists for a genuinely empty reply: `callWithRetry` in
+`src/pipeline/llm/llm.ts` retries a 200 with empty content. It did not fire here
+because the content was a valid JSON object.
+
 ## Where a check would have stopped it
 
 - **At note writing (best place).** The orchestrator should treat an empty `note_text`
@@ -130,3 +166,5 @@ client covered everything. Scripts, run from the workspace root with `uv run`:
 - `empty_answer_rate.py`: how often the writer answers empty and what each verifier flavour does with it.
 - `x_side.py`, `x_side_detail.py`: the same question on the X pipeline (`pipeline_runs`), over a short window because a longer one hits the statement timeout.
 - `website_screenshot.ts`: headless screenshot of the note on the public website.
+- `writer_tokens_baseline.py`: writer output tokens on runs that produced a real note.
+- `replay_writer.ts`: replays the writer call of an empty run and prints the raw reply (needs `OPENROUTER_TESTING_KEY`).
