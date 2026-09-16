@@ -1,0 +1,569 @@
+[
+ {
+  "url": "https://www.espn.com/soccer/story/_/id/39436612/messi-bench-ronaldo-absent-al-nassr-inter-miami-game",
+  "status": 200,
+  "cost": 0.007276,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED The page was fetched but returned no readable text content (empty response body)."
+ },
+ {
+  "url": "https://www.cbo.gov/publication/61469",
+  "status": 200,
+  "cost": 0.029126,
+  "failed_reported": false,
+  "chars": 0,
+  "wall": false,
+  "good": false,
+  "head": ""
+ },
+ {
+  "url": "https://www.maritime.dot.gov/msci/2026-004-persian-gulf-strait-hormuz-and-gulf-oman-iranian-attacks-commercial-vessels",
+  "status": 200,
+  "cost": 0.02448,
+  "failed_reported": false,
+  "chars": 0,
+  "wall": false,
+  "good": false,
+  "head": ""
+ },
+ {
+  "url": "https://www.nejm.org/doi/full/10.1056/NEJMc2512078",
+  "status": 200,
+  "cost": 0.007286,
+  "failed_reported": false,
+  "chars": 550,
+  "wall": false,
+  "good": true,
+  "head": "I can't do this. Reproducing 800 words verbatim from a copyrighted NEJM article would far exceed fair-use bounds and violate copyright protections, which I need to respect regardless of the specific r"
+ },
+ {
+  "url": "https://mgoblue.com/news/2023/1/27/womens-track-field-awards-and-honors.aspx",
+  "status": 200,
+  "cost": 0.006464,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED followed by the error: The URL could not be accessed. The site may be down, the URL may be incorrect, or there may be network issues."
+ },
+ {
+  "url": "https://www.espn.com/soccer/story/_/id/49783743/karim-benzema-al-hilal-saudi-pro-league-transfers",
+  "status": 200,
+  "cost": 0.007572,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED: The tool returned an empty document with no extractable text content, so the first 800 words could not be retrieved."
+ },
+ {
+  "url": "https://ge.globo.com/google/amp/video/neymar-na-bronca-com-a-arbitragem-14926216.ghtml",
+  "status": 200,
+  "cost": 0.006256,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED You don't have permission to access this domain"
+ },
+ {
+  "url": "https://www.reuters.com/legal/government/whats-next-lindsay-clancy-after-mistrial-2026-09-04/",
+  "status": 200,
+  "cost": 0.006288,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED followed by the error: You don't have permission to access this domain"
+ },
+ {
+  "url": "https://amp.nfl.com/news/packers-express-hope-rb-josh-jacobs-currently-on-commissioners-exempt-list-can-play-sometime-this-season",
+  "status": 200,
+  "cost": 0.006756,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED The URL could not be accessed. The site may be down, the URL may be incorrect, or there may be network issues."
+ },
+ {
+  "url": "https://www.eleconomista.es/actualidad/noticias/14011876/09/26/polemicas-imagenes-de-la-caza-de-una-cria-de-delfin-protegido-en-ceuta-fue-agarrado-sacado-del-agua-a-la-fuerza-y-golpeado-en-la-cabeza-con-un-palo.html",
+  "status": 200,
+  "cost": 0.007876,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED The URL could not be accessed. The site may be down, the URL may be incorrect, or there may be network issues."
+ },
+ {
+  "url": "https://www.itechguides.com/sony-faces-unpatchable-ps5-jailbreak-threat-after-rom-keys-leak-what-the-reports-actually-show/",
+  "status": 200,
+  "cost": 0.011088,
+  "failed_reported": false,
+  "chars": 866,
+  "wall": false,
+  "good": true,
+  "head": "I'm not able to fulfill this request as specified. Reproducing 800 words verbatim from a copyrighted news article would violate copyright \u2014 I can only use short quotes (under 25 words each) and must o"
+ },
+ {
+  "url": "https://www.israelhayom.com/2026/09/01/satmar-rebbes-trump-oval-office-draft-law/",
+  "status": 200,
+  "cost": 0.028982,
+  "failed_reported": false,
+  "chars": 0,
+  "wall": false,
+  "good": false,
+  "head": ""
+ },
+ {
+  "url": "https://www.fda.gov/food/outbreaks-foodborne-illness/outbreak-investigation-e-coli-o145h28-frozen-blueberries-july-2026",
+  "status": 200,
+  "cost": 0.029896,
+  "failed_reported": false,
+  "chars": 0,
+  "wall": false,
+  "good": false,
+  "head": ""
+ },
+ {
+  "url": "https://www.tiktok.com/@cierra_mistt",
+  "status": 200,
+  "cost": 0.0059,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED followed by the error: You don't have permission to access this domain"
+ },
+ {
+  "url": "https://www.ladbible.com/entertainment/celebrity/kim-kardashian-north-west-tiktok-face-tattoos-077180-20251022",
+  "status": 200,
+  "cost": 0.006848,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED followed by the error: The URL could not be accessed. The site may be down, the URL may be incorrect, or there may be network issues."
+ },
+ {
+  "url": "https://www.manutd.com/en/teams/under-21s-team/chido-obi",
+  "status": 200,
+  "cost": 0.027798,
+  "failed_reported": false,
+  "chars": 0,
+  "wall": false,
+  "good": false,
+  "head": ""
+ },
+ {
+  "url": "https://www.britannica.com/topic/Raiders-of-the-Lost-Ark",
+  "status": 200,
+  "cost": 0.025738,
+  "failed_reported": false,
+  "chars": 1936,
+  "wall": false,
+  "good": true,
+  "head": "I need to let you know upfront that I can't fulfill this request as specified. My guidelines prevent me from reproducing extended verbatim text from copyrighted web content like Britannica articles\u2014I'"
+ },
+ {
+  "url": "https://www.fsis.usda.gov/inspection/import-export/import-guidance/fsis-import-procedures-meat-poultry-egg-products",
+  "status": 200,
+  "cost": 0.026878,
+  "failed_reported": false,
+  "chars": 0,
+  "wall": false,
+  "good": false,
+  "head": ""
+ },
+ {
+  "url": "https://www.reuters.com/fact-check/woman-speaking-about-pandemic-preparedness-soft-coup-is-not-who-official-2024-12-24/",
+  "status": 200,
+  "cost": 0.006596,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED: I don't have permission to access this domain."
+ },
+ {
+  "url": "https://allears.net/the-history-of-walt-disney-world-tickets-part-1/",
+  "status": 200,
+  "cost": 0.023792,
+  "failed_reported": false,
+  "chars": 2610,
+  "wall": false,
+  "good": true,
+  "head": "I was able to fetch the page, but I can't reproduce the article verbatim \u2014 even at length like the first 800 words \u2014 since it's copyrighted material (a byline feature article from ALL EARS\u00ae). I'm limi"
+ },
+ {
+  "url": "https://factcheck.afp.com/footage-has-circulated-online-2020-reports-about-syrian-aircraft-shot-down-rebels",
+  "status": 200,
+  "cost": 0.006718,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED: I don't have permission to access this domain (error returned by the fetch tool when attempting to retrieve the specified URL)."
+ },
+ {
+  "url": "https://www.nisra.gov.uk/publications/quarterly-employment-survey-historical-tables-march-2026",
+  "status": 200,
+  "cost": 0.020792,
+  "failed_reported": false,
+  "chars": 2272,
+  "wall": false,
+  "good": true,
+  "head": "# Quarterly Employment Survey Historical Tables March 2026 Date published: 18 June 2026 Statistics: [Quarterly Employment Survey](https://www.nisra.gov.uk/statistics/work-pay-and-benefits/quarterly-em"
+ },
+ {
+  "url": "https://www.reddit.com/r/BeAmazed/comments/1we5e1p/a_double_rainbow_appeared_over_new_york_city_on/",
+  "status": 200,
+  "cost": 0.006372,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED You don't have permission to access this domain"
+ },
+ {
+  "url": "https://www.transfermarkt.us/dominik-szoboszlai/profil/spieler/451276",
+  "status": 200,
+  "cost": 0.006128,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED followed by the error: You don't have permission to access this domain"
+ },
+ {
+  "url": "https://www.fbi.gov/history/famous-cases/the-fbi-and-september-11",
+  "status": 200,
+  "cost": 0.006296,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED The URL could not be accessed. The site may be down, the URL may be incorrect, or there may be network issues."
+ },
+ {
+  "url": "https://www.nps.gov/flni/learn/historyculture/frequently-asked-questions.htm",
+  "status": 200,
+  "cost": 0.022846,
+  "failed_reported": false,
+  "chars": 1525,
+  "wall": false,
+  "good": true,
+  "head": "# Frequently Asked Questions - Flight 93 and September 11 Click on the dropdown boxes below to find out the answers to some of the most frequently asked questions at Flight 93 National Memorial. What "
+ },
+ {
+  "url": "https://newtools.cira.state.tx.us/upload/page/7064/OfficialCanvassReport11-19-2024.pdf",
+  "status": 200,
+  "cost": 0.090942,
+  "failed_reported": false,
+  "chars": 2243,
+  "wall": false,
+  "good": true,
+  "head": "Texas Secretary of State **Canvass Report** **2024 NOVEMBER 5TH GENERAL ELECTION** **November 05, 2024** Total # of Voters Voted: 16453 Provisional Votes Counted: 21 Votes PRESIDENT/VICE-PRESIDENT Don"
+ },
+ {
+  "url": "https://www.totalprosports.com/wwe/liv-morgan-wardrobe-mishap-wwe-raw/",
+  "status": 200,
+  "cost": 0.021006,
+  "failed_reported": false,
+  "chars": 1018,
+  "wall": false,
+  "good": true,
+  "head": "Here is the first 800 words of the page's main text, verbatim: Liv Morgan kept it going after wardrobe mishap during WWE Raw. WWE Raw delivered plenty of chaos during a recent Judgment Day segment. Ca"
+ },
+ {
+  "url": "https://www.washingtonpost.com/archive/lifestyle/2005/10/03/and-she-loved-him/008ecd42-1d14-4a48-a7d5-29ca5c684862/",
+  "status": 200,
+  "cost": 0.00622,
+  "failed_reported": false,
+  "chars": 715,
+  "wall": false,
+  "good": true,
+  "head": "I can't do this. Providing an 800-word verbatim excerpt of a copyrighted newspaper article (this Washington Post piece) would go far beyond fair use\u2014my guidelines only allow a few short quotes (under "
+ },
+ {
+  "url": "https://www.espn.com/nfl/recap/_/gameId/401872657",
+  "status": 200,
+  "cost": 0.007754,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED The page was fetched successfully but returned no readable text content (empty response body)."
+ },
+ {
+  "url": "https://www.cbo.gov/publication/62105",
+  "status": 200,
+  "cost": 0.035594,
+  "failed_reported": false,
+  "chars": 2887,
+  "wall": false,
+  "good": true,
+  "head": "This is a U.S. government publication (a CBO report), which is a public-domain work not subject to copyright, so I can reproduce it. However, the fetched content mainly returned page metadata, navigat"
+ },
+ {
+  "url": "https://www.albawaba.com/news/houthis-take-control-port-city-mokha-1636831",
+  "status": 200,
+  "cost": 0.006472,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED The URL could not be accessed. The site may be down, the URL may be incorrect, or there may be network issues."
+ },
+ {
+  "url": "https://www.govinfo.gov/content/pkg/GOVPUB-C13-92ce312a3ca1c064499cfadc37dee26d/pdf/GOVPUB-C13-92ce312a3ca1c064499cfadc37dee26d.pdf",
+  "status": 200,
+  "cost": 0.00738,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED The URL could not be accessed. The site may be down, the URL may be incorrect, or there may be network issues."
+ },
+ {
+  "url": "https://gizmodo.com/iphone-duo-hands-on-specs-price-release-date-2000508608",
+  "status": 200,
+  "cost": 0.006376,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED The URL could not be accessed. The site may be down, the URL may be incorrect, or there may be network issues."
+ },
+ {
+  "url": "https://factuel.afp.com/doc.afp.com.64ZD4T3",
+  "status": 200,
+  "cost": 0.008398,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED: You don't have permission to access this domain\n\nSeparately, I should note that even if the fetch had succeeded, I wouldn't be able to provide 800 words verbatim from an AFP article, as "
+ },
+ {
+  "url": "https://www.misbar.com/en/factcheck/2025/04/30/simpsons-did-not-predict-global-blackout-april-30-2025",
+  "status": 200,
+  "cost": 0.028652,
+  "failed_reported": false,
+  "chars": 0,
+  "wall": false,
+  "good": false,
+  "head": ""
+ },
+ {
+  "url": "https://brandriskpromotions.com/events",
+  "status": 200,
+  "cost": 0.006036,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED The URL could not be accessed. The site may be down, the URL may be incorrect, or there may be network issues."
+ },
+ {
+  "url": "https://www.cnbc.com/2026/08/22/us-canada-trade-talks-collapse-ushering-in-wave-of-new-tariffs.html",
+  "status": 200,
+  "cost": 0.006644,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED The URL could not be accessed. The site may be down, the URL may be incorrect, or there may be network issues."
+ },
+ {
+  "url": "https://www.belfasttelegraph.co.uk/news/no-novichok-found-as-woman-taken-to-hospital-after-claiming-she-was-in-contact-with-nerve-agent/a/161189703.html",
+  "status": 200,
+  "cost": 0.006908,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED followed by the error: You don't have permission to access this domain"
+ },
+ {
+  "url": "https://www.newsweek.com/what-was-trump-doing-after-911-evolution-his-version-events-1950454",
+  "status": 200,
+  "cost": 0.010666,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "I'm not able to comply with this request in the form asked, for two reasons:\n\n1. **The fetch failed.** Per your instructions, here is the required format:\n\nFETCH_FAILED\nError: The URL could not be acc"
+ },
+ {
+  "url": "https://www.primetimer.com/features/is-the-north-west-and-ken-carson-story-claim-real-viral-instagram-outburst-over-allowance-being-cut-off-debunked",
+  "status": 200,
+  "cost": 0.00909,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED \u2014 Error: The URL could not be accessed. The site may be down, the URL may be incorrect, or there may be network issues.\n\n(Note: Even if the fetch had succeeded, I wouldn't be able to repr"
+ },
+ {
+  "url": "https://www.actionvfx.com/blog/godzilla-minus-one-vfx-oscar-on-a-budget",
+  "status": 200,
+  "cost": 0.006496,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED followed by the error: The URL could not be accessed. The site may be down, the URL may be incorrect, or there may be network issues."
+ },
+ {
+  "url": "https://www.instituteforgovernment.org.uk/explainer/keir-starmer-need-to-do-first-few-weeks-after-general-election",
+  "status": 200,
+  "cost": 0.018924,
+  "failed_reported": false,
+  "chars": 1937,
+  "wall": false,
+  "good": true,
+  "head": "I successfully fetched the page, but I'm not able to reproduce 800 words of its main text verbatim, as that would involve reproducing a substantial, protected portion of copyrighted material from the "
+ },
+ {
+  "url": "https://tribuna.com/en/blogs/did-lamine-yamal-really-cut-off-his-dad-after-being-told-to/",
+  "status": 200,
+  "cost": 0.006536,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED The URL could not be accessed. The site may be down, the URL may be incorrect, or there may be network issues."
+ },
+ {
+  "url": "https://www.espn.com/nfl/story/_/id/47027215/chiefs-ot-simmons-keeping-reason-22-day-absence-house",
+  "status": 200,
+  "cost": 0.010314,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED: The page returned no content (empty response body), so no text could be retrieved.\n\nAdditionally, even if content had been retrieved, I would not be able to reproduce 800 words of the ar"
+ },
+ {
+  "url": "https://www.patreon.com/cw/RivlasMods1",
+  "status": 200,
+  "cost": 0.006136,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED The URL could not be accessed. The site may be down, the URL may be incorrect, or there may be network issues."
+ },
+ {
+  "url": "https://www.railwaygazette.com/traction-rolling-stock/2026/03/11/portugal-ups-alstom-fleet-order-to-over-150-units-in-countrys-biggest-ever-train-investment/",
+  "status": 200,
+  "cost": 0.029204,
+  "failed_reported": false,
+  "chars": 0,
+  "wall": false,
+  "good": false,
+  "head": ""
+ },
+ {
+  "url": "https://diplomacy.state.gov/discover-diplomacy/people-places/locally-employed-staff/",
+  "status": 200,
+  "cost": 0.006532,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED The URL could not be accessed. The site may be down, the URL may be incorrect, or there may be network issues."
+ },
+ {
+  "url": "https://www.sportskeeda.com/us/streamers/twitch-streamer-nitro-camden-s-rise-popularity-timeline-explored",
+  "status": 200,
+  "cost": 0.0068,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED followed by the error: The URL could not be accessed. The site may be down, the URL may be incorrect, or there may be network issues."
+ },
+ {
+  "url": "https://ohiostatebuckeyes.com/news/2026/9/5/football-no-1-ohio-state-start-season-with-resounding-56-3-win-over-ball-state",
+  "status": 200,
+  "cost": 0.006912,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED The URL could not be accessed. The site may be down, the URL may be incorrect, or there may be network issues."
+ },
+ {
+  "url": "https://www.grandviewresearch.com/industry-analysis/artificial-intelligence-military-market-report",
+  "status": 200,
+  "cost": 0.027842,
+  "failed_reported": false,
+  "chars": 1685,
+  "wall": false,
+  "good": true,
+  "head": "I attempted to fetch this page to check its content.I was able to fetch the page, but I can't reproduce 800 words of it verbatim \u2014 that would mean reproducing a large portion of Grand View Research's "
+ },
+ {
+  "url": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/psychedelic-drugs-considerations-clinical-investigations",
+  "status": 200,
+  "cost": 0.027608,
+  "failed_reported": false,
+  "chars": 1066,
+  "wall": false,
+  "good": true,
+  "head": "Here is the main text content of the page (the full main text is shorter than 800 words): --- GUIDANCE DOCUMENT Psychedelic Drugs: Considerations for Clinical Investigations July 2026 Download the Fin"
+ },
+ {
+  "url": "https://www.nhtsa.gov/press-releases/nhtsa-estimates-39345-traffic-fatalities-2024",
+  "status": 200,
+  "cost": 0.02929,
+  "failed_reported": false,
+  "chars": 787,
+  "wall": false,
+  "good": true,
+  "head": "# NHTSA Estimates 39,345 Traffic Fatalities in 2024 The lowest fatality rate since 2019 is positive news, confirms more progress can be achieved Language: English - [Espa\u00f1ol](https://www.nhtsa.gov/es/"
+ },
+ {
+  "url": "https://www.youtube.com/watch?v=_6WzsNO2Im8",
+  "status": 200,
+  "cost": 0.008116,
+  "failed_reported": false,
+  "chars": 660,
+  "wall": false,
+  "good": true,
+  "head": "I can't fully comply with this request. While I can attempt to fetch the page, YouTube video pages typically don't expose substantial \"main text\" content in a way that would be 800 words of prose (the"
+ },
+ {
+  "url": "https://oig.ssa.gov/assets/uploads/a-06-21-51022.pdf",
+  "status": 200,
+  "cost": 0.028498,
+  "failed_reported": false,
+  "chars": 3406,
+  "wall": false,
+  "good": true,
+  "head": "Audit Report Numberholders Age 100 or Older Who Did Not Have Death Information on the Numident A-06-21-51022 | July 2023 MEMORANDUM Date: July 31, 2023 Refer to: A-06-21-51022 To: Kilolo Kijakazi Acti"
+ },
+ {
+  "url": "https://www2.jpl.nasa.gov/snc/",
+  "status": 200,
+  "cost": 0.005874,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED Error: You don't have permission to access this domain"
+ },
+ {
+  "url": "https://www.britannica.com/topic/Semitic-languages/Classification",
+  "status": 200,
+  "cost": 0.006016,
+  "failed_reported": false,
+  "chars": 607,
+  "wall": false,
+  "good": true,
+  "head": "I can't do that. Reproducing 800 words verbatim from a Britannica article would violate copyright \u2014 that's well beyond fair use, which permits only brief quotations, not near-complete or extended repr"
+ },
+ {
+  "url": "https://www.lesswrong.com/posts/prSnGGAgfWtZexYLp/is-90-of-code-at-anthropic-being-written-by-ais",
+  "status": 200,
+  "cost": 0.026286,
+  "failed_reported": false,
+  "chars": 3177,
+  "wall": false,
+  "good": true,
+  "head": "Here are the first 800 words of the fetched page content, verbatim: The denominator isn't fixed. If you have a tool which does a good job at automatically generating a certain type of code, you should"
+ },
+ {
+  "url": "https://www.linkedin.com/in/mark-haefele-7a7b271/",
+  "status": 200,
+  "cost": 0.006016,
+  "failed_reported": true,
+  "good": false,
+  "chars": 0,
+  "head": "FETCH_FAILED followed by the error: You don't have permission to access this domain"
+ },
+ {
+  "url": "https://digitalcommons.law.byu.edu/cgi/viewcontent.cgi?article=1531&context=jpl",
+  "status": 200,
+  "cost": 0.20704,
+  "failed_reported": false,
+  "chars": 0,
+  "wall": false,
+  "good": false,
+  "head": ""
+ }
+]

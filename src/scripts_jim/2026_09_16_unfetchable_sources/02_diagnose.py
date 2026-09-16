@@ -108,5 +108,8 @@ if __name__ == "__main__":
     print(f"{len(rows)} unique failed urls", file=sys.stderr)
     with ThreadPoolExecutor(WORKERS) as pool:
         results = list(pool.map(diagnose, rows))
-    (DATA / "diagnosis.json").write_text(json.dumps(results, indent=1))
+    # A bot challenge answers with a redirect URL that carries a signed token. The
+    # secret scanner in the pre-commit hook flags such tokens, so they are masked.
+    dump = re.sub(r"eyJ[\w-]+\.[\w-]+\.[\w-]+", "<jwt>", json.dumps(results, indent=1))
+    (DATA / "diagnosis.json").write_text(dump)
     print(f"wrote {len(results)} diagnoses")
