@@ -1,10 +1,8 @@
 name: Debug YouTube subtitles (GOO-169)
 
-# Throwaway investigation workflow, fourth probe. The web client sees the
-# captions but discards them without a PO token; the other clients time out
-# on the player API through the proxy. This runs yt-dlp with the bgutil PO
-# token provider (a local Docker container yt-dlp asks for tokens) and the
-# web client, through the proxy, and times it.
+# Throwaway investigation workflow, fifth probe: the walk's own channel
+# listing command, verbose, through the proxy and without it, and the channel
+# RSS feed both ways, each several times with timings.
 
 on:
   push:
@@ -14,33 +12,25 @@ on:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     env:
       YTDLP_PROXY_URL: ${{ secrets.YTDLP_PROXY_URL }}
-      FAILING: https://www.youtube.com/watch?v=J3SIbt2s28Y
-      WORKING: https://www.youtube.com/watch?v=DP2m0zJL15I
     steps:
-      - run: pipx install yt-dlp && pipx inject yt-dlp bgutil-ytdlp-pot-provider && yt-dlp --version
-      - uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
-      - name: Start the PO token provider
+      - run: pipx install yt-dlp && yt-dlp --version
+      - name: Walk listing, verbose
         run: |
-          docker run -d --name bgutil -p 4416:4416 brainicism/bgutil-ytdlp-pot-provider
-          sleep 8
-          curl -sS -m 20 http://127.0.0.1:4416/ping; echo
-      - name: Variants
-        run: |
-          probe() {
+          listing() {
             echo "=================== $1 :: $2"
             shift; shift
-            d=$(mktemp -d)
-            time (yt-dlp --write-subs --write-auto-subs --sub-lang "en.*" --skip-download --ignore-no-formats-error -v -o "$d/%(id)s.%(ext)s" "$@" 2>&1 | grep -i "Downloading .* API JSON\|timed out\|Unable\|subtitle\|caption\|has no\|ERROR\|pot\b\|PO Token\|Sign in\|Writing" | cut -c1-170 | head -20)
-            ls "$d" | head -3
+            time (yt-dlp "$@" --flat-playlist --playlist-items 1:15 -v --print "%(id)s" --print "playlist:%(channel_id)s" 2>&1 | grep -i "Downloading\|Retrying\|timed out\|ERROR\|Unable\|SSL\|^UC" | cut -c1-150 | head -12)
           }
-          for url in "$FAILING" "$WORKING"; do
-            probe web-with-pot "$url" --proxy "$YTDLP_PROXY_URL" --extractor-args "youtube:player_client=web" "$url"
-            probe default-with-pot "$url" --proxy "$YTDLP_PROXY_URL" "$url"
+          for ch in joerogan LilAggy Channel5YouTube; do
+            for i in 1 2; do listing "proxy $i" "$ch" --proxy "$YTDLP_PROXY_URL" "https://www.youtube.com/@$ch/videos"; done
+            listing "direct" "$ch" "https://www.youtube.com/@$ch/videos"
           done
-          probe web-with-pot-list-subs "$FAILING" --proxy "$YTDLP_PROXY_URL" --extractor-args "youtube:player_client=web" --list-subs "$FAILING"
-          docker logs bgutil 2>&1 | tail -5
+      - name: Channel RSS feed
+        run: |
+          for i in 1 2 3; do
+            curl -sS -o /dev/null -m 30 -w "direct  status %{http_code} total %{time_total}s\n" "https://www.youtube.com/feeds/videos.xml?channel_id=UCx_Qyb3447P9bBaT4o8QSjQ"
+            curl -sS -o /dev/null -m 30 -x "$YTDLP_PROXY_URL" -w "proxied status %{http_code} total %{time_total}s\n" "https://www.youtube.com/feeds/videos.xml?channel_id=UCx_Qyb3447P9bBaT4o8QSjQ"
+          done
