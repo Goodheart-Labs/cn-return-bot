@@ -10,7 +10,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": false
@@ -26,7 +26,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -42,7 +42,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -58,7 +58,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -74,7 +74,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -90,7 +90,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -106,7 +106,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -122,7 +122,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -138,7 +138,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -154,7 +154,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": true,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -170,7 +170,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -186,7 +186,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": true,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -202,7 +202,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": true,
   "patchright": false,
   "openrouter": false
@@ -212,13 +212,13 @@
   "host": "shop.wwe.com",
   "pipeline": "x",
   "logged_reason": "HTTP 403 (last attempt: browser)",
-  "cause": "blocked with HTTP 200, vendor not identified",
+  "cause": "blocked with HTTP 403/200, vendor not identified",
   "curl_cffi": false,
   "ladder_from_vps": false,
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": true,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -228,13 +228,13 @@
   "host": "euroshop.wwe.com",
   "pipeline": "x",
   "logged_reason": "HTTP 403 (last attempt: browser)",
-  "cause": "blocked with HTTP 200, vendor not identified",
+  "cause": "blocked with HTTP 403/200, vendor not identified",
   "curl_cffi": false,
   "ladder_from_vps": false,
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -250,7 +250,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -266,7 +266,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -282,7 +282,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -298,7 +298,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": true
@@ -314,7 +314,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -330,7 +330,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -346,7 +346,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -359,10 +359,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -378,7 +378,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -391,10 +391,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -410,7 +410,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -426,7 +426,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -439,10 +439,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -458,7 +458,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -474,7 +474,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -490,7 +490,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": false
@@ -506,7 +506,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -522,7 +522,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -538,7 +538,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -554,7 +554,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -570,7 +570,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -586,7 +586,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -602,7 +602,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -618,7 +618,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -631,10 +631,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -650,7 +650,7 @@
   "jina": false,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -666,7 +666,7 @@
   "jina": false,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -682,7 +682,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -698,7 +698,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -714,7 +714,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -730,7 +730,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -746,7 +746,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -762,7 +762,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -775,10 +775,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -794,7 +794,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -810,7 +810,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -826,7 +826,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -842,7 +842,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -858,7 +858,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -874,7 +874,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -890,7 +890,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -906,7 +906,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -922,7 +922,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -938,7 +938,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -954,7 +954,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -970,7 +970,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": true
@@ -983,10 +983,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1002,7 +1002,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1015,10 +1015,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1034,7 +1034,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1050,7 +1050,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1066,7 +1066,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": true,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -1082,7 +1082,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1098,7 +1098,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1114,7 +1114,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1130,7 +1130,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -1143,10 +1143,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1162,7 +1162,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": true,
   "patchright": true,
   "openrouter": false
@@ -1178,7 +1178,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1194,7 +1194,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1210,7 +1210,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1226,7 +1226,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1242,7 +1242,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -1258,7 +1258,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -1274,7 +1274,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1290,7 +1290,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1303,10 +1303,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1319,10 +1319,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1338,7 +1338,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1354,7 +1354,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -1370,7 +1370,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -1386,7 +1386,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1402,7 +1402,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1418,7 +1418,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -1434,7 +1434,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1450,7 +1450,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": false
@@ -1466,7 +1466,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1482,7 +1482,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1495,10 +1495,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1513,8 +1513,8 @@
   "ladder_from_vps": false,
   "jina": false,
   "exa": false,
-  "exa_fallback": true,
-  "wayback": null,
+  "exa_fallback": false,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1530,7 +1530,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1546,7 +1546,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": true
@@ -1562,7 +1562,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -1578,7 +1578,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -1594,7 +1594,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1610,7 +1610,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1626,7 +1626,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1642,7 +1642,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -1658,7 +1658,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -1674,7 +1674,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -1690,7 +1690,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -1706,7 +1706,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1719,10 +1719,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1738,7 +1738,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -1754,7 +1754,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1770,7 +1770,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -1786,7 +1786,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1802,7 +1802,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1818,7 +1818,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1834,7 +1834,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": true
@@ -1850,7 +1850,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -1866,7 +1866,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1882,7 +1882,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1898,7 +1898,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": true,
   "patchright": false,
   "openrouter": null
@@ -1914,7 +1914,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1930,7 +1930,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -1946,7 +1946,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -1962,7 +1962,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": true,
   "patchright": true,
   "openrouter": null
@@ -1978,7 +1978,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -1994,7 +1994,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -2010,7 +2010,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -2026,7 +2026,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": true
@@ -2042,7 +2042,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2058,7 +2058,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -2074,7 +2074,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -2090,7 +2090,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -2106,7 +2106,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -2122,7 +2122,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -2138,7 +2138,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2154,7 +2154,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2170,7 +2170,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2186,7 +2186,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2202,7 +2202,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2218,7 +2218,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": false
@@ -2231,10 +2231,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2250,7 +2250,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": true,
   "commoncrawl": true,
   "patchright": true,
   "openrouter": null
@@ -2266,7 +2266,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -2276,13 +2276,13 @@
   "host": "gettyimages.com",
   "pipeline": "x",
   "logged_reason": "thin content (mobile, 216 chars)",
-  "cause": "blocked with HTTP 200, vendor not identified",
+  "cause": "blocked with HTTP 429/200, vendor not identified",
   "curl_cffi": false,
   "ladder_from_vps": false,
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -2298,7 +2298,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2314,7 +2314,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -2330,7 +2330,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2346,7 +2346,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": true,
   "patchright": true,
   "openrouter": null
@@ -2362,7 +2362,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2378,7 +2378,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2394,7 +2394,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -2410,7 +2410,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": true,
   "patchright": true,
   "openrouter": true
@@ -2426,7 +2426,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": true,
   "patchright": false,
   "openrouter": null
@@ -2442,7 +2442,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -2458,7 +2458,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2474,7 +2474,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2490,7 +2490,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -2506,7 +2506,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": true
@@ -2522,7 +2522,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2538,7 +2538,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2554,7 +2554,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -2570,7 +2570,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -2586,7 +2586,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2602,7 +2602,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": true
@@ -2618,7 +2618,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2634,7 +2634,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -2647,10 +2647,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2666,7 +2666,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2682,7 +2682,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2698,7 +2698,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": true
@@ -2714,7 +2714,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2727,10 +2727,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2746,7 +2746,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2762,7 +2762,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2778,7 +2778,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2794,7 +2794,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": false
@@ -2810,7 +2810,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2826,7 +2826,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2842,7 +2842,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -2858,7 +2858,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2874,7 +2874,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2890,7 +2890,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": true,
   "patchright": false,
   "openrouter": true
@@ -2906,7 +2906,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2919,10 +2919,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2938,7 +2938,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -2954,7 +2954,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2967,10 +2967,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -2986,7 +2986,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": true,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -3002,7 +3002,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3018,7 +3018,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": true,
   "patchright": false,
   "openrouter": null
@@ -3034,7 +3034,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3050,7 +3050,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -3066,7 +3066,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3082,7 +3082,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -3095,10 +3095,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3114,7 +3114,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3130,7 +3130,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3146,7 +3146,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -3162,7 +3162,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -3178,7 +3178,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -3193,8 +3193,8 @@
   "ladder_from_vps": false,
   "jina": false,
   "exa": false,
-  "exa_fallback": true,
-  "wayback": null,
+  "exa_fallback": false,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3210,7 +3210,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -3226,7 +3226,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3242,7 +3242,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -3258,7 +3258,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3274,7 +3274,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": true,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -3290,7 +3290,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": true,
   "patchright": false,
   "openrouter": null
@@ -3306,7 +3306,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": true,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -3322,7 +3322,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3338,7 +3338,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -3354,7 +3354,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3370,7 +3370,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -3386,7 +3386,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": true,
   "patchright": false,
   "openrouter": null
@@ -3402,7 +3402,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3418,7 +3418,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -3434,7 +3434,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3450,7 +3450,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -3466,7 +3466,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": false
@@ -3482,7 +3482,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3498,7 +3498,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -3511,10 +3511,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3527,10 +3527,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3546,7 +3546,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3562,7 +3562,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": false
@@ -3578,7 +3578,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": true,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -3594,7 +3594,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -3610,7 +3610,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3626,7 +3626,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -3642,7 +3642,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3658,7 +3658,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -3674,7 +3674,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -3690,7 +3690,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3706,7 +3706,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3722,7 +3722,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3738,7 +3738,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3754,7 +3754,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -3767,10 +3767,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3783,10 +3783,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3802,7 +3802,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3818,7 +3818,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -3834,7 +3834,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3850,7 +3850,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -3866,7 +3866,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -3882,7 +3882,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3892,13 +3892,13 @@
   "host": "pewresearch.org",
   "pipeline": "x",
   "logged_reason": "HTTP 404 (last attempt: browser)",
-  "cause": "blocked with HTTP 403, vendor not identified",
+  "cause": "blocked with HTTP 404/403, vendor not identified",
   "curl_cffi": false,
   "ladder_from_vps": false,
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3914,7 +3914,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3930,7 +3930,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -3946,7 +3946,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": false
@@ -3962,7 +3962,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3978,7 +3978,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -3994,7 +3994,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -4010,7 +4010,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4026,7 +4026,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4036,13 +4036,13 @@
   "host": "instituteforgovernment.org.uk",
   "pipeline": "x",
   "logged_reason": "HTTP 403 (last attempt: browser)",
-  "cause": "blocked with HTTP 403, vendor not identified",
+  "cause": "blocked with HTTP 403/403, vendor not identified",
   "curl_cffi": false,
   "ladder_from_vps": false,
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": true
@@ -4058,7 +4058,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4073,8 +4073,8 @@
   "ladder_from_vps": false,
   "jina": false,
   "exa": false,
-  "exa_fallback": true,
-  "wayback": null,
+  "exa_fallback": false,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4090,7 +4090,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4106,7 +4106,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -4122,7 +4122,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4138,7 +4138,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -4154,7 +4154,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4164,13 +4164,13 @@
   "host": "buffalonews.com",
   "pipeline": "x",
   "logged_reason": "thin content (googlebot, 62 chars)",
-  "cause": "blocked with HTTP 200, vendor not identified",
+  "cause": "blocked with HTTP 429/200, vendor not identified",
   "curl_cffi": false,
   "ladder_from_vps": false,
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4180,13 +4180,13 @@
   "host": "wkyc.com",
   "pipeline": "x",
   "logged_reason": "HTTP 403 (last attempt: browser)",
-  "cause": "blocked with HTTP 200, vendor not identified",
+  "cause": "blocked with HTTP 403/200, vendor not identified",
   "curl_cffi": false,
   "ladder_from_vps": false,
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4196,13 +4196,13 @@
   "host": "abc10.com",
   "pipeline": "x",
   "logged_reason": "thin content (mobile, 32 chars)",
-  "cause": "blocked with HTTP 403, vendor not identified",
+  "cause": "blocked with HTTP 403/403, vendor not identified",
   "curl_cffi": false,
   "ladder_from_vps": true,
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4212,13 +4212,13 @@
   "host": "uefa.com",
   "pipeline": "x",
   "logged_reason": "HTTP 404 (last attempt: browser)",
-  "cause": "blocked with HTTP 404, vendor not identified",
+  "cause": "blocked with HTTP 403/404, vendor not identified",
   "curl_cffi": false,
   "ladder_from_vps": false,
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4234,7 +4234,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": false
@@ -4250,7 +4250,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4266,7 +4266,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4282,7 +4282,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4298,7 +4298,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4314,7 +4314,7 @@
   "jina": false,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -4330,7 +4330,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -4346,7 +4346,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4362,7 +4362,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4378,7 +4378,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4388,13 +4388,13 @@
   "host": "nipc.gov.ng",
   "pipeline": "x",
   "logged_reason": "HTTP 403 (last attempt: browser)",
-  "cause": "blocked with HTTP 404, vendor not identified",
+  "cause": "blocked with HTTP 403/404, vendor not identified",
   "curl_cffi": false,
   "ladder_from_vps": false,
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4407,10 +4407,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
-  "exa_fallback": true,
-  "wayback": null,
+  "exa_fallback": false,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4426,7 +4426,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": false
@@ -4442,7 +4442,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4458,7 +4458,7 @@
   "jina": false,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -4474,7 +4474,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4490,7 +4490,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4506,7 +4506,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4522,7 +4522,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -4535,10 +4535,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4554,7 +4554,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4570,7 +4570,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -4586,7 +4586,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": true,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4602,7 +4602,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -4618,7 +4618,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -4634,7 +4634,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -4650,7 +4650,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4666,7 +4666,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -4682,7 +4682,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4695,10 +4695,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4711,10 +4711,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -4727,10 +4727,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4746,7 +4746,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4759,10 +4759,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4775,10 +4775,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4794,7 +4794,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4810,7 +4810,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": true
@@ -4826,7 +4826,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -4842,7 +4842,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -4858,7 +4858,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4874,7 +4874,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4890,7 +4890,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -4906,7 +4906,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": true
@@ -4922,7 +4922,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": true,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4938,7 +4938,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4954,7 +4954,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4970,7 +4970,7 @@
   "jina": false,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -4986,7 +4986,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -5002,7 +5002,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": true,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": true
@@ -5018,7 +5018,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -5034,7 +5034,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5050,7 +5050,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5066,7 +5066,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5082,7 +5082,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5098,7 +5098,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": true
@@ -5114,7 +5114,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5130,7 +5130,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -5146,7 +5146,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -5162,7 +5162,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -5177,8 +5177,8 @@
   "ladder_from_vps": false,
   "jina": false,
   "exa": false,
-  "exa_fallback": true,
-  "wayback": null,
+  "exa_fallback": false,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5193,11 +5193,11 @@
   "ladder_from_vps": false,
   "jina": false,
   "exa": false,
-  "exa_fallback": true,
-  "wayback": null,
+  "exa_fallback": false,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
-  "openrouter": true
+  "openrouter": false
  },
  {
   "url": "https://www.newsnationnow.com",
@@ -5210,7 +5210,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5226,7 +5226,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5242,7 +5242,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -5258,7 +5258,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -5268,13 +5268,13 @@
   "host": "livescience.com",
   "pipeline": "everything",
   "logged_reason": "HTTP 404 (last attempt: browser)",
-  "cause": "blocked with HTTP 404, vendor not identified",
+  "cause": "blocked with HTTP 403/404, vendor not identified",
   "curl_cffi": false,
   "ladder_from_vps": false,
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5290,7 +5290,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -5306,7 +5306,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5322,7 +5322,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5338,7 +5338,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -5354,7 +5354,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -5370,7 +5370,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -5386,7 +5386,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": true
@@ -5402,7 +5402,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5418,7 +5418,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5434,7 +5434,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -5449,8 +5449,8 @@
   "ladder_from_vps": false,
   "jina": false,
   "exa": false,
-  "exa_fallback": true,
-  "wayback": null,
+  "exa_fallback": false,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5466,7 +5466,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -5482,7 +5482,7 @@
   "jina": false,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": true
@@ -5498,7 +5498,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": true,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -5514,7 +5514,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": true,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -5530,7 +5530,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -5546,7 +5546,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5562,7 +5562,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5578,7 +5578,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -5594,7 +5594,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5610,7 +5610,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -5626,7 +5626,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5642,7 +5642,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5658,7 +5658,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5674,7 +5674,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": false
@@ -5690,7 +5690,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -5706,7 +5706,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5722,7 +5722,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5738,7 +5738,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5754,7 +5754,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5770,7 +5770,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5786,7 +5786,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5801,8 +5801,8 @@
   "ladder_from_vps": false,
   "jina": false,
   "exa": false,
-  "exa_fallback": true,
-  "wayback": null,
+  "exa_fallback": false,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5818,7 +5818,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -5834,7 +5834,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -5850,7 +5850,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5866,7 +5866,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -5882,7 +5882,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -5898,7 +5898,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -5914,7 +5914,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -5930,7 +5930,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5946,7 +5946,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5962,7 +5962,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -5978,7 +5978,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -5994,7 +5994,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -6010,7 +6010,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -6026,7 +6026,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -6039,10 +6039,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -6058,7 +6058,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -6074,7 +6074,7 @@
   "jina": true,
   "exa": true,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -6087,10 +6087,10 @@
   "cause": "dead link (404 from every client)",
   "curl_cffi": false,
   "ladder_from_vps": false,
-  "jina": true,
+  "jina": false,
   "exa": false,
-  "exa_fallback": true,
-  "wayback": null,
+  "exa_fallback": false,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -6106,7 +6106,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -6122,7 +6122,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null
@@ -6138,7 +6138,7 @@
   "jina": true,
   "exa": false,
   "exa_fallback": true,
-  "wayback": null,
+  "wayback": true,
   "commoncrawl": false,
   "patchright": true,
   "openrouter": null
@@ -6154,7 +6154,7 @@
   "jina": false,
   "exa": false,
   "exa_fallback": false,
-  "wayback": null,
+  "wayback": false,
   "commoncrawl": false,
   "patchright": false,
   "openrouter": null

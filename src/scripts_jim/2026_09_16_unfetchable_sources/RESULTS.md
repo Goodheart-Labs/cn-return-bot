@@ -62,7 +62,30 @@ answer's headers and body: Akamai leaves an `akamai-grn` header and an
 moment" page, DataDome an `x-datadome` header, Imperva an "Incapsula incident"
 line, AWS WAF a 202 answer whose body sets `awsWafCookieDomainList`.
 
-TABLE_CAUSES
+| cause | urls | share | example |
+|---|---:|---:|---|
+| fetches fine from this VPS with a plain client | 93 | 24% | https://www.nbcchicago.com/entertainment/billy-ray-cyrus-reveals-heartfelt-messa |
+| dead link (404 from every client) | 77 | 20% | https://www.nist.gov/pao/questions-and-answers-about-nist-wtc-towers-investigati |
+| bot defence: cloudflare | 54 | 14% | https://www.sciencedirect.com/science/article/pii/S022352342300805X |
+| TLS fingerprint block (opens once the handshake looks like Chrome) | 45 | 12% | https://www.espn.com/soccer/story/_/id/39436612/messi-bench-ronaldo-absent-al-na |
+| bot defence: datadome | 24 | 6% | https://www.cbo.gov/publication/61469 |
+| social platform (login wall or app shell) | 24 | 6% | https://www.tiktok.com/@maymartins22/video/7528225534640229638 |
+| 200 but no readable text (JavaScript app, consent gate or paywall shell) | 17 | 4% | https://geohub.brampton.ca/pages/profile-diversity |
+| bot defence: akamai | 8 | 2% | https://www.maritime.dot.gov/msci/2026-004-persian-gulf-strait-hormuz-and-gulf-o |
+| AWS WAF JavaScript challenge | 8 | 2% | https://www.imdb.com/name/nm13564038/ |
+| other (HTTP 406/404) | 6 | 2% | https://www.cbsnews.com/news/kennedy-center-ceiling-collapse-renovations/ |
+| PDF (this diagnosis does not parse PDFs; the pipeline does) | 4 | 1% | https://uu.diva-portal.org/smash/get/diva2%3A1927772/FULLTEXT01.pdf |
+| bot defence: imperva | 4 | 1% | https://www.cato.org/blog/5000-check-tariffs-cant-cover |
+| network error (DNS, timeout, reset) | 4 | 1% | https://www.asianetnewsable.com |
+| blocked with HTTP 403/200, vendor not identified | 3 | 1% | https://shop.wwe.com/en/title-belts-side-plates/d-3473903707-4506909353+z-9-1177 |
+| bot defence: human/perimeterx | 3 | 1% | https://www.bloomberg.com/news/articles/2026-09-13/xi-pitches-his-ai-vision-at-b |
+| blocked with HTTP 403/404, vendor not identified | 3 | 1% | https://www.uefa.com/news/02a9-1b32f94c0a5b-096a6058e77a-1000--2026-ballon-d-or- |
+| blocked with HTTP 429/200, vendor not identified | 2 | 1% | https://www.gettyimages.com/photos/trump-epstein |
+| blocked with HTTP 403/403, vendor not identified | 2 | 1% | https://www.instituteforgovernment.org.uk/explainer/keir-starmer-need-to-do-firs |
+| other (HTTP 500/500) | 1 | 0% | https://www.tennessean.com/story/sports/nfl/titans/2026/09/13/titans-moments-jet |
+| blocked with HTTP 404/403, vendor not identified | 1 | 0% | https://www.pewresearch.org/race-and-ethnicity/2023/08/16/facts-on-hispanics-of- |
+| other (HTTP 451/451) | 1 | 0% | https://www.sfweekly.com/archives/orfn-a-life-under-shadows/article_c3dd0a38-ab5 |
+| other (HTTP 999/999) | 1 | 0% | https://www.linkedin.com/in/mark-haefele-7a7b271/ |
 
 Reading the table:
 
@@ -117,7 +140,8 @@ why:
    addresses are treated better by the Internet Archive than this VPS, but each
    failing URL still spends up to 25 seconds on those two steps before the
    browser runs. The official CDX API with a one-request-per-second throttle and
-   backoff is measured in the next section.
+   backoff did no better in the next section: 503 or connection refused on 360
+   of 385 lookups.
 3. **Readability drops pages it cannot parse.** `theifab.com` and `nps.gov`
    come back 200 with 45,000 and 13,000 characters of text, and Readability
    keeps 111 and 84 of them. The ladder then classifies the page as "thin" and
@@ -126,19 +150,105 @@ why:
    content" failures in the sample look like this (a plain fetch here gives
    more than 300 characters of readable text).
 
-TABLE_TOOLS
+## 5. What each candidate tool recovers
 
-TABLE_UNION
+All 385 URLs unless stated. Rows are ordered as the ladder would try them; the
+`ladder_from_vps` row is our current code run from this VPS, the baseline.
+
+| tool | tested | recovered | rate |
+|---|---:|---:|---:|
+| ladder_from_vps | 385 | 125 | 32% |
+| curl_cffi | 385 | 138 | 36% |
+| jina | 385 | 230 | 60% |
+| exa | 385 | 95 | 25% |
+| exa_fallback | 385 | 207 | 54% |
+| wayback | 385 | 15 | 4% |
+| commoncrawl | 385 | 12 | 3% |
+| patchright | 385 | 109 | 28% |
+| openrouter | 60 | 17 | 28% |
+
+Per cause (recovered / tested):
+
+| cause | ladder_from_vps | curl_cffi | jina | exa | exa_fallback | wayback | commoncrawl | patchright | openrouter |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| fetches fine from this VPS with a plain client | 57/93 | 93/93 | 90/93 | 54/93 | 86/93 | 8/93 | 7/93 | 60/93 | 4/18 |
+| dead link (404 from every client) | 0/77 | 0/77 | 0/77 | 0/77 | 0/77 | 0/77 | 0/77 | 0/77 | 0/6 |
+| bot defence: cloudflare | 11/54 | 0/54 | 24/54 | 7/54 | 34/54 | 1/54 | 0/54 | 1/54 | 5/10 |
+| TLS fingerprint block (opens once the handshake looks like Chrome) | 41/45 | 45/45 | 40/45 | 9/45 | 37/45 | 4/45 | 1/45 | 31/45 | 3/9 |
+| bot defence: datadome | 5/24 | 0/24 | 11/24 | 5/24 | 12/24 | 0/24 | 2/24 | 0/24 | 1/4 |
+| social platform (login wall or app shell) | 7/24 | 0/24 | 15/24 | 4/24 | 7/24 | 0/24 | 0/24 | 8/24 | 1/3 |
+| 200 but no readable text (JavaScript app, consent gate or paywall shell) | 2/17 | 0/17 | 16/17 | 6/17 | 9/17 | 0/17 | 0/17 | 5/17 | 1/3 |
+| bot defence: akamai | 0/8 | 0/8 | 2/8 | 1/8 | 4/8 | 0/8 | 2/8 | 1/8 | 0/1 |
+| AWS WAF JavaScript challenge | 0/8 | 0/8 | 7/8 | 0/8 | 4/8 | 0/8 | 0/8 | 1/8 | - |
+| other (HTTP 406/404) | 0/6 | 0/6 | 6/6 | 0/6 | 0/6 | 0/6 | 0/6 | 0/6 | 0/1 |
+| PDF (this diagnosis does not parse PDFs; the pipeline does) | 1/4 | 0/4 | 4/4 | 3/4 | 3/4 | 0/4 | 0/4 | 0/4 | 1/2 |
+| bot defence: imperva | 0/4 | 0/4 | 3/4 | 1/4 | 2/4 | 1/4 | 0/4 | 1/4 | - |
+| network error (DNS, timeout, reset) | 0/4 | 0/4 | 0/4 | 0/4 | 0/4 | 0/4 | 0/4 | 0/4 | 0/1 |
+| blocked with HTTP 403/200, vendor not identified | 0/3 | 0/3 | 3/3 | 0/3 | 0/3 | 1/3 | 0/3 | 0/3 | - |
+| bot defence: human/perimeterx | 0/3 | 0/3 | 3/3 | 2/3 | 3/3 | 0/3 | 0/3 | 0/3 | - |
+| blocked with HTTP 403/404, vendor not identified | 0/3 | 0/3 | 1/3 | 0/3 | 1/3 | 0/3 | 0/3 | 0/3 | - |
+| blocked with HTTP 429/200, vendor not identified | 0/2 | 0/2 | 2/2 | 2/2 | 2/2 | 0/2 | 0/2 | 1/2 | - |
+| blocked with HTTP 403/403, vendor not identified | 1/2 | 0/2 | 0/2 | 0/2 | 1/2 | 0/2 | 0/2 | 0/2 | 1/1 |
+| other (HTTP 500/500) | 0/1 | 0/1 | 1/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | - |
+| blocked with HTTP 404/403, vendor not identified | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | - |
+| other (HTTP 451/451) | 0/1 | 0/1 | 1/1 | 1/1 | 1/1 | 0/1 | 0/1 | 0/1 | - |
+| other (HTTP 999/999) | 0/1 | 0/1 | 1/1 | 0/1 | 1/1 | 0/1 | 0/1 | 0/1 | 0/1 |
+
+What one addition on top of our own ladder buys, counting only pages the ladder
+did not already get from this VPS:
+
+```
+our ladder from this VPS: 125
+  + curl_cffi: +40 -> 165
+  + jina: +116 -> 241
+  + exa: +43 -> 168
+  + exa_fallback: +104 -> 229
+  + wayback: +9 -> 134
+  + commoncrawl: +9 -> 134
+  + patchright: +27 -> 152
+  + openrouter: +12 -> 137
+```
+
+Hosts no tool recovered (71 pages; mostly dead links and DataDome):
+
+```
+3 theguardian.com
+    3 tmz.com
+    3 researchgate.net
+    2 thespun.com
+    2 aol.com
+    2 forbes.com
+    2 kotaku.com
+    2 businesswire.com
+    1 nist.gov
+    1 politifact.com
+    1 atlas.co
+    1 yemenmonitor.com
+    1 foxnews.com
+    1 mgoblue.com
+    1 cp24.com
+    1 health.ec.europa.eu
+    1 acg.org
+    1 factcheck.org
+    1 wikiservice.at
+    1 snopes.com
+    1 twistedvoxel.com
+    1 amp.nfl.com
+    1 justice.gov
+    1 reddit.com
+    1 nps.gov
+  total 108
+```
 
 How to read the tool rows. "Recovered" means at least 300 characters of
 readable text, no login or challenge wall, a 2xx answer, and, for the fetch
 services, not a page both direct clients saw as a 404 (Jina and Exa happily
 return a site's own "page not found" page with enough footer text to pass the
-length bar; 31 of Jina's raw 292 recoveries were that). The `openrouter` row is
+length bar; 31 of Jina's 261 raw recoveries were that). The `openrouter` row is
 a 60-URL sample and undercounts: the prompt asked for verbatim text and the
 model refused on some copyrighted pages it had fetched fine.
 
-## 5. Candidate tools, what they are, what they cost
+## 6. Candidate tools, what they are, what they cost
 
 Terms first. A **TLS fingerprint** (industry term, "JA3" or "JA4" after the
 hashing schemes) is the pattern of a client's TLS handshake: which cipher
@@ -150,7 +260,7 @@ A **managed unblocker** (vendor term, Bright Data calls it "Web Unlocker", Zyte
 "Zyte API") is a hosted service that takes a URL and returns the page, running
 its own proxies, browsers and challenge solvers behind the scenes.
 
-### 5.1 Fix the client: curl-impersonate
+### 6.1 Fix the client: curl-impersonate
 
 - What: a patched curl (MIT, `lexiforest/curl-impersonate`, v2.2.3) whose TLS
   and HTTP/2 handshakes match real Chrome up to version 150, Firefox, Safari and
@@ -167,7 +277,7 @@ its own proxies, browsers and challenge solvers behind the scenes.
   on ESPN, Cloudflare "Just a moment", DataDome's interstitial). It gets past the
   handshake check, which is where most of the 403s come from.
 
-### 5.2 Fetch services with an API
+### 6.2 Fetch services with an API
 
 | service | what it does | free tier | price after | measured here |
 |---|---|---|---|---|
@@ -178,30 +288,30 @@ its own proxies, browsers and challenge solvers behind the scenes.
 | Tavily `/extract` | same idea, aimed at agents | 1,000 credits per month; 5 URLs per credit (basic) | $0.008 per credit | no key yet |
 | Managed unblockers (Zyte API, Bright Data Web Unlocker, Scrapfly, ZenRows, ScrapingBee) | built to pass DataDome, Akamai and Cloudflare; billed per successful page | Bright Data: 5,000 requests/month free; others trials | Zyte from $0.13 per 1,000 plain requests up to about $16 per 1,000 browser-rendered ones; Scrapfly anti-bot $0.50 per 1,000; Bright Data about $1 per 1,000 | no |
 
-### 5.3 Open source fetch libraries
+### 6.3 Open source fetch libraries
 
 | library | what it is | verdict for us |
 |---|---|---|
-| `curl_cffi` (Python) / `curl-impersonate` binary | browser-identical TLS | the one cheap fix; see 5.1 |
+| `curl_cffi` (Python) / `curl-impersonate` binary | browser-identical TLS | the one cheap fix; see 6.1 |
 | Patchright (Python and Node) | Playwright fork with the automation leaks patched at the Chrome DevTools Protocol layer; drop-in for our existing Playwright step | measured here (table above) |
 | Camoufox | a rebuilt Firefox with fingerprints fixed in the engine; strongest on hard targets, slowest, 200 MB download | not measured; the next step up if Patchright is not enough |
 | nodriver / Zendriver | Python, drives Chrome over CDP with no WebDriver | Python only, so it would be a sidecar |
 | crawl4ai | a crawling framework on top of Playwright, returns markdown | measured in May 2026 (`2026_05_27_webfetch_and_queue`): 13 of 21, below our own ladder's 14 of 21; nothing changed since |
 | trafilatura (Python) | text extraction from HTML; used in this investigation's scripts as the readability check | we already have Readability plus Turndown; no reason to switch |
 
-### 5.4 The sites' own official interfaces
+### 6.4 The sites' own official interfaces
 
 | source | official route | finding |
 |---|---|---|
 | Reddit | Data API: free for non-commercial use at 100 queries/min, but since June 2026 every app needs approval under the Responsible Builder Policy; unauthenticated `.json` answers 403 | `old.reddit.com` with a Chrome handshake returned the full post for 6 of 6 sampled links from this VPS (`06_reddit_probe.py`); the `.json` form is blocked either way |
 | YouTube | Data API v3 or yt-dlp | already handled by the media cascade with the residential proxy; the YouTube URLs in this sample reached `fetchWebPage` only because that cascade had failed first |
-| Wayback Machine | Availability API (what the ladder uses) and the CDX API; no key, community limit about 1 request/s, 429 above that since the late-2024 hardening | the availability endpoint answered 429 to this VPS on the first call of the day; the CDX route with 1 request/s and backoff is measured above |
+| Wayback Machine | Availability API (what the ladder uses) and the CDX API; no key, community limit about 1 request/s, 429 above that since the late-2024 hardening | the availability endpoint answered 429 to this VPS on the first call of the day; the CDX route at 1 request/s with backoff answered 503 or refused 360 of 385 lookups and recovered 15 |
 | archive.ph | no API; blocks datacenter addresses (uptime checkers from cloud IPs see it as down) | timed out from this VPS; step 5 of the ladder is dead from CI as well |
-| Common Crawl | index API plus ranged reads of the WARC file, free | measured above |
+| Common Crawl | index API plus ranged reads of the WARC file, free | 12 of 385 have a capture in the two newest crawls; the index itself refused connections for 144 lookups |
 | Cloudflare Web Bot Auth / pay-per-crawl | crawlers sign requests with a published key; sites can allow or charge them; since 2026-09-15 Cloudflare blocks "mixed-use" crawlers on ad-carrying pages by default | a possible long-term route for a fact-checking bot with a public identity; not something to build this quarter |
 
 
-## 6. What I would do, in order
+## 7. What I would do, in order
 
 1. **Replace the three plain HTTP steps with one curl-impersonate call.** Run
    the prebuilt `curl_chrome150` binary as a child process (the yt-dlp pattern),
@@ -215,18 +325,21 @@ its own proxies, browsers and challenge solvers behind the scenes.
    `MIN_GOOD_CONTENT_CHARS` but the stripped page holds far more, use the
    stripped text. One condition in `htmlToMarkdown`.
 3. **Add a hosted fetch service as the step before the headless browser.**
-   Jina Reader is the best measured (+147 pages on top of our ladder: 68% of
-   the whole sample and half of the Cloudflare and DataDome pages, because it
+   Jina Reader is the best measured (+116 pages on top of our ladder: 60% of
+   the whole sample, 24 of the 54 Cloudflare pages and 11 of the 24 DataDome pages, because it
    fetches from its own addresses with a real browser), costs nothing at our
    volume (about 300 failed pages a fortnight against 10M free tokens, then
    $0.02 per million), and needs only the key already in `.env` as
-   `JINA_READER_API`. Exa's cached mode is second (+113) and we already pay for
+   `JINA_READER_API`. Exa's cached mode is second (+104) and we already pay for
    it. Firecrawl and Tavily were not measured for lack of keys; both have free
    tiers of 1,000 pages a month that would cover us.
-4. **Move the archive step to the CDX API with a throttle, or drop archive.ph.**
-   archive.ph is unreachable from any datacenter address and only costs time.
-   Wayback's availability endpoint rate-limits; the CDX endpoint with one request
-   a second is the documented way (numbers in the tool table).
+4. **Drop archive.ph, and give Wayback one short attempt.** archive.ph is
+   unreachable from any datacenter address and only costs time. Wayback is not
+   much better from here: even the official CDX endpoint at one request a second
+   with backoff answered 503 or refused the connection on 360 of 385 lookups
+   (15 pages recovered, all 14-day-old news that has a capture). Production
+   still gets 113 archive hits a fortnight from GitHub's addresses, so keep the
+   availability lookup, but with a 5 second timeout instead of 10 plus 15.
 5. **Do not pay for a managed unblocker yet.** The DataDome and Cloudflare
    group is 24% of failures, and Jina already takes half of it. A managed
    unblocker (Zyte, Bright Data, Scrapfly) is the next step up if that half is
@@ -237,9 +350,9 @@ Not recommended: Patchright as a replacement for the Playwright step (28%,
 below the plain Chrome handshake, because headless Chromium on a datacenter
 address is still visibly a bot); Common Crawl (3% coverage of the pages we
 cite, its crawls are weeks old and news pages rarely make it in); the model's
-own `web_fetch` (30% and $0.018 a page, worse and dearer than Jina).
+own `web_fetch` (28% and $0.018 a page, worse and dearer than Jina).
 
-## 7. Caveats
+## 8. Caveats
 
 - Nothing here was run from GitHub Actions. The "fine from this VPS" group
   mixes "GitHub's addresses are blocked" with "Bun's handshake is blocked", and
