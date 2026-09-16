@@ -1,10 +1,9 @@
 name: Debug YouTube subtitles (GOO-169)
 
-# Throwaway investigation workflow, second probe. The first probe showed that
-# every per-video call through the proxy times out on YouTube's player API
-# and then reports "no subtitles". This one tries the same video with a JS
-# runtime installed, with other player clients, with a longer socket timeout,
-# and without the proxy, to find which change makes the call succeed.
+# Throwaway investigation workflow, third probe: is the residential proxy
+# itself healthy? Plain HTTPS requests through it to YouTube and to an
+# unrelated site, with timings and status codes, plus the proxy's own answer
+# when it refuses.
 
 on:
   push:
@@ -14,30 +13,23 @@ on:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 15
     env:
       YTDLP_PROXY_URL: ${{ secrets.YTDLP_PROXY_URL }}
-      FAILING: https://www.youtube.com/watch?v=J3SIbt2s28Y
-      WORKING: https://www.youtube.com/watch?v=DP2m0zJL15I
     steps:
-      - run: pipx install yt-dlp && yt-dlp --version
-      - uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
-      - name: Variants
+      - name: Plain requests through the proxy
         run: |
-          probe() {
-            echo "=================== $1 :: $2"
-            shift; shift
-            d=$(mktemp -d)
-            time (yt-dlp --write-subs --write-auto-subs --sub-lang "en.*" --skip-download --ignore-no-formats-error -v -o "$d/%(id)s.%(ext)s" "$@" 2>&1 | grep -i "Downloading .* API JSON\|timed out\|Unable\|subtitle\|caption\|has no\|ERROR\|player_client\|Sign in\|bot\|js runtime\|deno" | cut -c1-160 | head -20)
-            ls "$d" | head -3
+          req() {
+            echo "=================== $1"
+            for i in 1 2 3; do
+              curl -sS -o /tmp/body -x "$YTDLP_PROXY_URL" -m 40 -w "  status %{http_code}  connect %{time_connect}s  ttfb %{time_starttransfer}s  total %{time_total}s  bytes %{size_download}\n" "$1" 2>&1 | tail -2
+              head -c 300 /tmp/body | tr '\n' ' ' | sed 's/[A-Za-z0-9+/=]\{40,\}/…/g'; echo
+            done
           }
-          for url in "$FAILING" "$WORKING"; do
-            probe default-with-deno "$url" --proxy "$YTDLP_PROXY_URL" "$url"
-            probe socket-timeout-60 "$url" --proxy "$YTDLP_PROXY_URL" --socket-timeout 60 "$url"
-            probe client-web "$url" --proxy "$YTDLP_PROXY_URL" --extractor-args "youtube:player_client=web" "$url"
-            probe client-tv "$url" --proxy "$YTDLP_PROXY_URL" --extractor-args "youtube:player_client=tv" "$url"
-            probe client-android "$url" --proxy "$YTDLP_PROXY_URL" --extractor-args "youtube:player_client=android" "$url"
-            probe no-proxy "$url" "$url"
-          done
+          req https://api.ipify.org
+          req https://example.com/
+          req https://www.youtube.com/
+          req "https://www.youtube.com/feeds/videos.xml?channel_id=UCzQUP1qoWDoEbmsQxvdjxgQ"
+          req "https://www.youtube.com/youtubei/v1/player?prettyPrint=false"
+          echo "=================== proxy host reachability (no TLS to the target)"
+          curl -sS -o /dev/null -x "$YTDLP_PROXY_URL" -m 40 -w "status %{http_code} total %{time_total}s\n" http://example.com/ 2>&1 | tail -2
