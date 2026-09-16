@@ -157,12 +157,14 @@ Distribution without stores: `.github/workflows/build-extension.yml` keeps a rol
 
 ## Review dashboard
 
-Dashboard listens on port 8001 — free it first in case a previous run is still bound.
-
 ```bash
-bun run review        # Production Supabase
+bun run review        # Production Supabase, port 8001
 bun run review-local  # Local Supabase
 ```
+
+## Showing a dashboard to Jim on his Mac
+
+Jim looks at every local web UI in Chrome on his Mac, at `http://localhost:<port>/`. The Mac reaches the VPS's ports through one permanent SSH tunnel that lives on the Mac (a LaunchAgent that forwards ports 3000 to 3009, 3118, 5173 and 8000 to 8010; explained in the devbox README under "mac-tunnel"). Never build a tunnel from a session. Start the dashboard with its `bun run` command (`review`, `stats`, `commonnotes`, `commonnotes-dashboard`, or their `-local` variants): each goes through `scripts/serve-for-mac.sh`, which stops whatever other checkout's server holds the port, starts this one, confirms from the Mac that `http://localhost:<port>/` serves exactly this checkout's page, and prints the line to give Jim: `open http://localhost:8004/ on the Mac (HTTP 200, served from <worktree>)`. Quote that line to him. When the check fails, the server keeps running and the reason is printed; fix the cause (usually the Mac is asleep) and run `mac-tunnel check <port>` again, or `mac-tunnel status` to see every port on both sides. A new port goes into the plist in the devbox repo and needs `mac-tunnel install`.
 
 ## Database
 
