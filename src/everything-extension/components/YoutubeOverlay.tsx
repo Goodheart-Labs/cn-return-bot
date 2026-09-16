@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { EYEBROW, FLOATING_CARD, QUOTE_RAIL } from "../../everything-shared/ui";
-import { IconButton } from "../../everything-web/src/components/IconButton";
+import { QUOTE_RAIL } from "../../everything-shared/ui";
 import type { NnnApi } from "../../everything-web/src/components/NoteNotNeeded";
 import type { NnnRow, NoteRow } from "../../everything-shared/types";
 import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
 import { setJumpHandler } from "../utils/jumpBus";
 import { onNoteFiltersChanged } from "../utils/settings";
 import { ABSORB_KEYS, ClaimNoteStack, NOTE_POPOVER_WIDTH, OverlayLogin } from "./ClaimNoteStack";
+import { FloatingWindow } from "./FloatingWindow";
 import { ScrubberPins } from "./ScrubberPins";
 import { useNoteVoting, replaceNoteInGroup } from "./useNoteVoting";
 
@@ -37,6 +37,8 @@ const FADE_MS = 400;
 const HOLD_AFTER_INTERACTION_MS = 10_000;
 
 const QUOTE_PREVIEW_CHARS = 160;
+// How far from the player's right edge a fresh card sits.
+const PLAYER_EDGE_INSET_PX = 16;
 
 function quotePreview(group: TimedGroup): string | null {
   const quote = group.primary.claim?.context_quote;
@@ -44,13 +46,32 @@ function quotePreview(group: TimedGroup): string | null {
   return quote.length > QUOTE_PREVIEW_CHARS ? `${quote.slice(0, QUOTE_PREVIEW_CHARS)}…` : quote;
 }
 
+/** The player's box in page coordinates, kept current while the player
+ *  changes size, which theater mode, fullscreen and window resizing all do.
+ *  A fresh card is placed relative to this box. */
+function usePlayerBox(player: HTMLElement) {
+  const [box, setBox] = useState(() => player.getBoundingClientRect());
+  useEffect(() => {
+    const update = () => setBox(player.getBoundingClientRect());
+    const observer = new ResizeObserver(update);
+    observer.observe(player);
+    window.addEventListener("resize", update);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", update);
+    };
+  }, [player]);
+  return { right: box.right + window.scrollX, centreY: box.top + box.height / 2 + window.scrollY };
+}
+
 /** A community note shown over the YouTube player when the video reaches the
- *  claim. The card is the same size as the Substack popover and sits at the
- *  right edge, vertically centered. It only shows while playback is inside the
- *  claim's span, and it fades out as soon as playback leaves that span. It
- *  stays up while the pointer is on it and the reader is mid-interaction.
- *  Pins on the scrub bar mark every claim, and clicking one seeks into that
- *  claim's span. */
+ *  claim. The card is the same width as the Substack popover and starts at
+ *  the player's right edge, vertically centered. From there it can be
+ *  dragged anywhere on the page and resized, like a desktop window. It only
+ *  shows while playback is inside the claim's span, and it fades out as soon
+ *  as playback leaves that span. It stays up while the pointer is on it and
+ *  the reader is mid-interaction. Pins on the scrub bar mark every claim, and
+ *  clicking one seeks into that claim's span. */
 export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, player, refetch }: {
   groups: TimedGroup[];
   projectSlug: string | null;
@@ -222,40 +243,39 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
     void refresh();
   };
   const nnnApi: NnnApi = { myVotes: myNnnVotes, onVote: handleNnnVote, onAuthored: recordNnnAuthored, onDeleted: () => void refresh() };
+  const playerBox = usePlayerBox(player);
 
   return (
     <div className="pointer-events-auto text-left">
       <ScrubberPins groups={groups} video={video} player={player} onPinClick={jumpToPin} />
       {group && (
-        <div
+        <FloatingWindow
+          // A new claim gets a fresh card at the resting spot. Where the
+          // reader dragged the previous one is not remembered.
+          key={group.claimId}
+          title="Community note on this part of the video"
+          onDismiss={dismiss}
+          restingStyle={{ left: playerBox.right - PLAYER_EDGE_INSET_PX, top: playerBox.centreY, width: NOTE_POPOVER_WIDTH, transform: "translate(-100%, -50%)" }}
           {...ABSORB_KEYS}
-          // Clicks on the card must not reach the player's own handlers
-          // either. They are retargeted to the shadow host element, so
-          // YouTube reads them as clicks on the player's own controls.
+          // Clicks on the card must not reach the page's own handlers. They
+          // are retargeted to the shadow host element, so the page would read
+          // them as clicks on empty surface.
           onMouseDown={(e) => e.stopPropagation()}
           onClick={(e) => e.stopPropagation()}
           // These run in the capture phase. Otherwise the stopPropagation in
-          // ABSORB_KEYS would stop them from ever firing.
+          // ABSORB_KEYS would stop them from ever firing. A press starting a
+          // drag or a resize counts as an interaction too.
           onClickCapture={() => { lastInteraction.current = Date.now(); }}
+          onPointerDownCapture={() => { lastInteraction.current = Date.now(); }}
           onKeyDownCapture={() => { lastInteraction.current = Date.now(); }}
           onMouseEnter={() => { hovered.current = true; }}
           onMouseLeave={() => {
             hovered.current = false;
             if (!inWindow.current && !engaged()) beginHide();
           }}
-          style={{ width: NOTE_POPOVER_WIDTH }}
-          // The select-text class is needed. Inside the shadow root
-          // `user-select` resets to `auto`, which resolves to the parent's
-          // used value. The parent here is #movie_player, where YouTube sets
-          // `none` across the whole player. Without opting back in explicitly
-          // the note text could not be copied.
-          className={`select-text max-w-[85vw] max-h-[70vh] overflow-y-auto overscroll-contain ${FLOATING_CARD} p-4 transition-opacity duration-[400ms] ease-out ${visible ? "opacity-100" : "opacity-0"}`}
+          className={`transition-opacity duration-[400ms] ease-out ${visible ? "opacity-100" : "opacity-0"}`}
         >
           {loginOpen && !session && <OverlayLogin onDismiss={closeLogin} />}
-          <div className="flex items-start justify-between gap-2 mb-2">
-            <span className={EYEBROW}>Community note on this part of the video</span>
-            <IconButton label="Dismiss for this video" onClick={dismiss}>✕</IconButton>
-          </div>
           {quotePreview(group) && (
             <blockquote className={`${QUOTE_RAIL} mb-2 text-sm text-gray-600 dark:text-gray-300 italic`}>“{quotePreview(group)}”</blockquote>
           )}
@@ -271,7 +291,7 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
             onDeleted={() => void refresh()}
             nnnApi={nnnApi}
           />
-        </div>
+        </FloatingWindow>
       )}
     </div>
   );
