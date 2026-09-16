@@ -5,6 +5,8 @@ import { join } from "node:path";
 import { Database } from "bun:sqlite";
 import { SignalBot } from "./engine";
 import { SignalStore, type Conversation } from "./store";
+import { createDraftingAdapter } from "./drafting";
+import { TweetLookupError } from "../api/fetchTweetById";
 import type { DraftContext, DraftResult, SignalDraft, TweetInspection } from "./drafting";
 import type { IncomingMessage } from "./transport";
 import type { SubmissionResult } from "../pipeline/orchestration/submitNoteForTweet";
@@ -98,6 +100,36 @@ describe("Signal draft conversations", () => {
     expect(f.current().draft).toBeUndefined();
     await f.send("yes post");
     expect(f.submissions).toHaveLength(0);
+  });
+
+  test("a failed direct lookup saves a useful status and retry can draft before human approval", async () => {
+    let attempts = 0;
+    const adapter = createDraftingAdapter({
+      fetchPost: async tweetId => {
+        if (++attempts === 1) throw new TweetLookupError("http", "private API response", 429);
+        return { id: tweetId, author_id: "1", text: "This photo was taken today.", created_at: "2026-09-13T00:00:00Z", media: [] };
+      },
+    });
+    const f = fixture({ inspect: adapter.inspect });
+    await f.send("https://x.com/example/status/12345");
+    expect(f.current().inspection?.detail).toContain("rate-limited");
+    expect(f.draftCalls).toHaveLength(0);
+    expect(f.submissions).toHaveLength(0);
+    expect(JSON.stringify(f.current())).not.toContain("private API response");
+
+    await f.send("#1 status");
+    expect(f.sent.at(-1)!.text).toContain("HTTP 429");
+    expect(attempts).toBe(1);
+
+    await f.send("#1 retry");
+    expect(attempts).toBe(2);
+    expect(f.current().inspection?.access).toBe("readable");
+    expect(f.current().inspection?.eligibility).toBe("unconfirmed");
+    expect(f.draftCalls).toHaveLength(1);
+    expect(f.submissions).toHaveLength(0);
+    await f.send("yes post", f.latestDraft().id);
+    expect(f.submissions).toHaveLength(1);
+    expect(f.current().status).toBe("submitted");
   });
 
   test("discussion retains the current draft and cannot post via model prose", async () => {
