@@ -106,6 +106,11 @@ export function NoteCard({
               ★ High-value
             </span>
           )}
+          {item.draftReview && (
+            <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
+              Draft review · {item.draftReview.origin === "chat" ? "Chat request" : "Topic candidate"}
+            </span>
+          )}
           {item.competitorLeadTag && (
             <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-amber-100 text-amber-800">
               {item.competitorLeadTag}
@@ -167,6 +172,21 @@ export function NoteCard({
 
       {/* Our note */}
       <OurNoteCard noteId={item.noteId} noteText={item.noteText} className="mb-3" />
+
+      {item.draftReview && (
+        <div className="rounded border border-slate-200 bg-slate-50 p-3 mb-3 text-sm text-slate-700">
+          {item.draftReview.screeningScore !== undefined && (
+            <>
+              <p className="font-medium">Relevance and persuasion: {item.draftReview.screeningScore.toFixed(2)} / 1</p>
+              <p className="text-xs text-slate-500">Uncalibrated model score. This does not give the chance of reaching Helpful.</p>
+            </>
+          )}
+          {item.draftReview.screeningReason && <p className="mt-2">{item.draftReview.screeningReason}</p>}
+          {item.draftReview.screeningError && <p className="mt-2">Assessment unavailable: {item.draftReview.screeningError}</p>}
+          {item.draftReview.reply && <p className="mt-2">{item.draftReview.reply}</p>}
+          {item.draftReview.warnings.map((warning, i) => <p key={i} className="mt-2 text-amber-800">{warning}</p>)}
+        </div>
+      )}
 
       {/* Stats row */}
       <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500 mb-3">

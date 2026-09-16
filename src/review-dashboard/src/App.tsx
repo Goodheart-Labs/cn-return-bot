@@ -183,6 +183,7 @@ import {
   type ABFilters,
 } from "../../dashboard-shared/abFilters";
 import { topicSetFor } from "../../dashboard-shared/topicSets";
+import { matchesDatasetFilters } from "./lib/draftReview";
 import { AB_TESTS } from "../../pipeline/ab-testing/abTestsData";
 
 
@@ -202,23 +203,6 @@ function byCreatedDesc(a: ReviewItem, b: ReviewItem): number {
   const da = a.createdAt ? new Date(a.createdAt).getTime() : 0;
   const db = b.createdAt ? new Date(b.createdAt).getTime() : 0;
   return db - da;
-}
-
-// Production items are filtered by the server, through compileFilters and the page
-// function. Dataset-run items are all loaded into the browser instead, so they
-// keep this local test. When tags are selected it matches on the tags alone.
-// Otherwise it matches on the failure-type pills and the seen state.
-function matchesDatasetFilters(filters: FilterState) {
-  return (item: ReviewItem) => {
-    if (filters.failureModes.size > 0) {
-      const itemModes = item.annotation?.failureModes ?? [];
-      return itemModes.some((m) => filters.failureModes.has(m));
-    }
-    if (filters.failureTypes.size > 0 && !filters.failureTypes.has(item.failureType)) return false;
-    if (filters.seen === "seen" && !(item.annotation?.seen)) return false;
-    if (filters.seen === "unseen" && item.annotation?.seen) return false;
-    return true;
-  };
 }
 
 function initialDatasetFromUrl(): DatasetOption {
@@ -537,12 +521,18 @@ export function App() {
   // sets lives in TypeScript, so the folding happens here.
   const topicSetCounts = useMemo(() => {
     const c: Record<string, number> = {};
+    if (dataset.type === "dataset_run") {
+      for (const item of items) {
+        if (item.topicSet) c[item.topicSet] = (c[item.topicSet] ?? 0) + 1;
+      }
+      return c;
+    }
     for (const t of countsData?.topicCounts ?? []) {
       const set = topicSetFor(t.topic);
       if (set) c[set] = (c[set] ?? 0) + t.count;
     }
     return c;
-  }, [countsData]);
+  }, [countsData, dataset.type, items]);
 
   // The burndown backlog. It counts the unseen rated and underwater notes over all
   // time, as reported by the counts function. Marking a note seen decrements it

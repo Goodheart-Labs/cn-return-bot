@@ -12,6 +12,7 @@ import { resultToFailureType, FAILURE_TYPE_CONFIG } from "./types";
 import { fetchAllRows, fetchInBatches } from "../../../dashboard-shared/supabasePaging";
 import { csvRowToReviewItemInsert } from "../../../dashboard-shared/reviewUpload";
 import { topicSetFor, topicIdsForSets } from "../../../dashboard-shared/topicSets";
+import { draftReviewMetadata } from "./draftReview";
 import type { ABFilters } from "../../../dashboard-shared/abFilters";
 
 // ─── Production data ─────────────────────────────────────────────────────────
@@ -317,6 +318,7 @@ export async function fetchDatasetRunItems(uploadId: string): Promise<ReviewItem
     failureReason: row.failure_reason ?? undefined,
     evaluationScore: row.evaluation_score ? Number(row.evaluation_score) : undefined,
     logs: row.logs,
+    ...draftReviewMetadata(row.logs),
     comparisonNotes: row.ground_truth_note
       ? [{ noteId: "ground_truth", noteText: row.ground_truth_note, status: "Ground Truth" }]
       : [],

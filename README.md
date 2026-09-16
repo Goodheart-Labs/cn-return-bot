@@ -45,6 +45,28 @@ The experimental runner, `bun run src/local/tryoutNotes.ts <tweet-url-or-id>`,
 supports replaying saved inputs and forcing experiment variants. It also selects
 alternate credentials and uploads results to the review dashboard.
 
+For a batch of saved tweet snapshots, including curated-topic candidates:
+
+```sh
+bun run review-draft-batch --input saved-posts.json
+bun run upload-draft-review --input output/draft-review-batches/<run>/results.json --name "Draft review"
+```
+
+The input is a JSON array of `{post, origin: "chat" | "topic", topicId?, fetchedAt?}`;
+each `post` is a complete saved `Post` object. Topic inputs require a known topic
+ID and use that topic's reference document. The runner researches up to 20 unique
+posts, with three running at once; `--max` and `--concurrency` adjust these limits.
+It saves results incrementally and never submits notes. Its relevance/persuasion
+assessment is an uncalibrated screening score, not a probability of reaching
+Helpful. A low score does not hide a draft from review.
+
+The separate upload command writes only to the review dashboard's dataset tables.
+It prints a review link without opening a browser. Cards show the draft, sources,
+assessment, and warnings; use **High-value** to star promising drafts, then filter
+by stars or topic. Starring does not submit a note. The dashboard uses
+`bun run build-review && bun run serve-review`; set `REVIEW_PORT` and the uploader's
+`--dashboard-url` if port 8001 is already in use. The server binds to localhost.
+
 Dashboard commands and builds are in [package.json](package.json).
 
 The [Signal group bot](scripts/signal-bot/README.md) checks pasted tweets, drafts and
