@@ -5,12 +5,12 @@ name: Debug YouTube subtitles (GOO-169)
 # what YouTube answers and how long each call takes. Also times one channel
 # listing without the proxy.
 
+# Runs on push to the investigation branch, because a workflow that is not
+# on main cannot be dispatched by hand.
 on:
-  workflow_dispatch:
-    inputs:
-      urls:
-        description: Space-separated video URLs
-        required: true
+  push:
+    branches: [sandbox/common-notes-bottleneck]
+    paths: [.github/workflows/debug-yt-subs.yml]
 
 jobs:
   probe:
@@ -18,6 +18,7 @@ jobs:
     timeout-minutes: 30
     env:
       YTDLP_PROXY_URL: ${{ secrets.YTDLP_PROXY_URL }}
+      URLS: https://www.youtube.com/watch?v=J3SIbt2s28Y https://www.youtube.com/watch?v=cuckk-vSE-Y https://www.youtube.com/watch?v=r2ali4LgCQ8 https://www.youtube.com/watch?v=QlF9o9IEp3c https://www.youtube.com/watch?v=DP2m0zJL15I
     steps:
       - run: pipx install yt-dlp && yt-dlp --version
       - name: Channel listing without proxy
@@ -25,7 +26,7 @@ jobs:
           time (yt-dlp --flat-playlist --no-warnings --playlist-items 1:200 --print "%(view_count)s %(id)s" https://www.youtube.com/@joerogan/videos | wc -l)
       - name: Per-video calls through the proxy
         run: |
-          for url in ${{ inputs.urls }}; do
+          for url in $URLS; do
             echo "=================== $url"
             echo "--- list-subs"
             time (yt-dlp --proxy "$YTDLP_PROXY_URL" --list-subs --skip-download --ignore-no-formats-error -v "$url" 2>&1 | grep -v "^\[debug\] Loaded\|^\[debug\] Python\|exe versions\|Optional lib" | cut -c1-200 | head -60)
