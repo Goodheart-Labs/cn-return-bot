@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# One-time setup of the machine that runs the claim-check, extraction and
-# intake services. Run as root on a fresh Ubuntu server:
+# One-time setup of the machine that runs the claim-check and extraction
+# services, the intake service and the feed worker. Run as root on a fresh Ubuntu server:
 #
 #   bash setup-vm.sh
 #
@@ -70,12 +70,12 @@ if [ ! -f /swapfile ]; then
 fi
 
 echo "── systemd units"
-for unit in cn-claim-check cn-extraction cn-intake cn-autodeploy cn-pot-provider; do
+for unit in cn-claim-check cn-extraction cn-intake cn-feed cn-autodeploy cn-pot-provider; do
   cp "$REPO_DIR/ops/$unit.service" "/etc/systemd/system/$unit.service"
 done
 cp "$REPO_DIR/ops/cn-autodeploy.timer" /etc/systemd/system/cn-autodeploy.timer
 systemctl daemon-reload
-systemctl enable cn-claim-check cn-extraction cn-intake
+systemctl enable cn-claim-check cn-extraction cn-intake cn-feed
 # The token provider holds no secrets, so it can start right away.
 systemctl enable --now cn-pot-provider
 systemctl enable --now cn-autodeploy.timer
@@ -90,5 +90,5 @@ fi
 echo
 echo "Done. Next steps, in order:"
 echo "  1. Fill in $ENV_FILE (see ops/README.md)."
-echo "  2. systemctl start cn-claim-check cn-extraction cn-intake"
+echo "  2. systemctl start cn-claim-check cn-extraction cn-intake cn-feed"
 echo "  3. curl each health endpoint from outside, with the secret header."

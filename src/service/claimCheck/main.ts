@@ -24,14 +24,15 @@ import {
 } from "../contract";
 import { numberFromEnv, startService, type ServiceRoute } from "../serve";
 
-/** Six at a time. A check takes about a minute and a half, nearly all of it
- *  waiting on searches and model calls, so running several costs little and the
- *  queue drains that much faster. */
-const DEFAULT_CONCURRENCY = 6;
+/** Twelve at a time. A check takes under a minute, nearly all of it waiting
+ *  on searches and model calls, so the machine's four cores are not what
+ *  limits this. It was six while the feed worked one post at a time; the feed
+ *  worker now has three posts in flight, each sending up to six claims. */
+const DEFAULT_CONCURRENCY = 12;
 
-/** Two of the six are held for reader work, so someone waiting on a page they
- *  asked for never queues behind a long video. */
-const DEFAULT_RESERVED_FOR_READER = 2;
+/** Four of the twelve are held for reader work, so someone waiting on a page
+ *  they asked for never queues behind the feed's videos. */
+const DEFAULT_RESERVED_FOR_READER = 4;
 
 const DEFAULT_PORT = 8787;
 

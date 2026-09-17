@@ -1,0 +1,34 @@
+name: Everything Feed Watchdog
+
+on:
+  workflow_dispatch:
+
+# Started by Supabase pg_cron every half hour (migrations/102). The feed itself
+# no longer runs here: a permanent worker on the services machine checks the
+# posts (src/service/feed/main.ts). This run only asks whether that machine is
+# well: both HTTP services answer and are not stuck, the intake service is
+# consuming reader requests, and the feed worker's heartbeat is fresh. It fails
+# when any of that is not so, and a red run here is how a dead machine is seen.
+concurrency:
+  group: everything-feed-watchdog
+  cancel-in-progress: false
+
+jobs:
+  watchdog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      CLAIM_CHECK_URL: ${{ secrets.CLAIM_CHECK_URL }}
+      EXTRACTION_URL: ${{ secrets.EXTRACTION_URL }}
+      SERVICE_AUTH_SECRET: ${{ secrets.SERVICE_AUTH_SECRET }}
+      EVERYTHING_DAILY_SPEND_CAP_USD: ${{ vars.EVERYTHING_DAILY_SPEND_CAP_USD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - run: bun install
+      - name: Check the services machine and both workers
+        run: bun run everything-watchdog

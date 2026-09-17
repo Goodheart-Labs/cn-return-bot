@@ -3,8 +3,7 @@ import {
   affordablePostsPerDay,
   computeNextRun,
   DEFAULT_MEAN_POST_COST_USD,
-  IDLE_RECHECK_MS,
-  nextAlarm,
+  nextFeedStart,
   nextUtcMidnight,
   type FeedPacingSnapshot,
 } from "./pacing";
@@ -97,38 +96,27 @@ describe("computeNextRun", () => {
   });
 });
 
-describe("nextAlarm", () => {
-  test("after a post the alarm is one interval after that post started", () => {
+describe("nextFeedStart", () => {
+  test("right after a post the next one waits out the rest of its interval", () => {
     const snap = snapshot({ lastFeedStartedAt: at("2026-09-15T10:00:00Z"), dbNow: at("2026-09-15T10:05:00Z"), spentTodayUsd: 3 });
-    const alarm = nextAlarm(computeNextRun(snap, BUDGET), snap, true);
-    expect(alarm.reason).toBe("interval");
-    expect(alarm.at.toISOString()).toBe(computeNextRun(snap, BUDGET).dueAt.toISOString());
-    expect(alarm.at.getTime()).toBeGreaterThan(snap.dbNow.getTime());
+    const nextRun = computeNextRun(snap, BUDGET);
+    expect(nextFeedStart(nextRun, snap)).toEqual({ type: "interval", waitMs: nextRun.dueAt.getTime() - snap.dbNow.getTime() });
   });
 
-  test("a post that outlasted its interval leaves the alarm in the past, so the next run starts at once", () => {
-    // 15 posts a day is one every 96 minutes; this post took two hours.
+  test("a post that outlasted its interval does not hold the next one back", () => {
+    // 15 posts a day is one every 96 minutes; this post has run for two hours.
     const snap = snapshot({ lastFeedStartedAt: at("2026-09-15T10:00:00Z"), dbNow: at("2026-09-15T12:00:00Z"), spentTodayUsd: 3 });
-    const alarm = nextAlarm(computeNextRun(snap, BUDGET), snap, true);
-    expect(alarm.reason).toBe("interval");
-    expect(alarm.at.getTime()).toBeLessThan(snap.dbNow.getTime());
+    expect(nextFeedStart(computeNextRun(snap, BUDGET), snap)).toEqual({ type: "due" });
   });
 
-  test("when the money left does not cover one average post the alarm is midnight", () => {
+  test("when the money left does not cover one average post the wait is until midnight", () => {
     const snap = snapshot({ dbNow: at("2026-09-15T10:00:00Z"), spentTodayUsd: 43, lastFeedStartedAt: at("2026-09-15T09:00:00Z") });
-    const alarm = nextAlarm(computeNextRun(snap, BUDGET), snap, true);
-    expect(alarm).toEqual({ at: at("2026-09-16T00:00:00Z"), reason: "midnight" });
+    expect(nextFeedStart(computeNextRun(snap, BUDGET), snap)).toEqual({ type: "midnight", waitMs: 14 * 3600_000 });
   });
 
-  test("a run that found nothing to process asks again after the idle wait", () => {
-    const snap = snapshot({ dbNow: at("2026-09-15T10:00:00Z"), lastFeedStartedAt: at("2026-09-15T06:00:00Z") });
-    const alarm = nextAlarm(computeNextRun(snap, BUDGET), snap, false);
-    expect(alarm).toEqual({ at: new Date(snap.dbNow.getTime() + IDLE_RECHECK_MS), reason: "idle" });
-  });
-
-  test("an idle run on a spent day still waits for midnight, not the idle wait", () => {
-    const snap = snapshot({ dbNow: at("2026-09-15T10:00:00Z"), spentTodayUsd: 45 });
-    expect(nextAlarm(computeNextRun(snap, BUDGET), snap, false).reason).toBe("midnight");
+  test("a worker that has never started a post starts at once", () => {
+    const snap = snapshot({ dbNow: at("2026-09-15T10:00:00Z"), lastFeedStartedAt: null });
+    expect(nextFeedStart(computeNextRun(snap, BUDGET), snap)).toEqual({ type: "due" });
   });
 });
 

@@ -309,12 +309,24 @@ export async function fetchItemUrlsContaining(fragments: string[]): Promise<Know
   ) as KnownItemUrl[];
 }
 
-/** Returns the items that a killed run left stranded in `processing`. This is
- *  only meaningful while no worker is running. The workflow's concurrency group
- *  guarantees that. */
-export async function fetchOrphanedProcessingItems(): Promise<{ id: string; url: string }[]> {
+/** The two halves of the queue, each owned by exactly one worker on the
+ *  services machine: the intake service takes what readers asked for, and the
+ *  feed worker takes everything below it. */
+export type QueueTier = "requested" | "feed";
+
+/** Narrows an everything_items query to one worker's half of the queue. */
+function inTier<Query extends { gte(column: string, value: number): Query; lt(column: string, value: number): Query }>(query: Query, tier: QueueTier): Query {
+  return tier === "requested" ? query.gte("priority", QUEUE_PRIORITY.requested) : query.lt("priority", QUEUE_PRIORITY.requested);
+}
+
+/** Returns the items of one tier that a killed worker left stranded in
+ *  `processing`. A worker asks this about its own tier when it starts, which
+ *  is the one moment it knows it has nothing in flight. It must never ask
+ *  about the other worker's tier: that worker's in-flight items look exactly
+ *  like orphans. */
+export async function fetchOrphanedProcessingItems(tier: QueueTier): Promise<{ id: string; url: string }[]> {
   return throwOnError(
-    await getSupabaseClient().from("everything_items").select("id, url").eq("status", "processing"),
+    await inTier(getSupabaseClient().from("everything_items").select("id, url").eq("status", "processing"), tier),
   ) as { id: string; url: string }[];
 }
 
@@ -395,20 +407,13 @@ export async function fetchItemClaims(itemId: string): Promise<ItemClaimRow[]> {
  *  request among those is served first.
  *
  *  The take itself is a read followed by a write, with no locking. That is
- *  safe because each tier has exactly one worker: the intake service on the
- *  machine takes only the requested tier, and the Actions feed run takes only
- *  the tiers below it. Two workers exist, but they can never want the same
- *  row. */
-export async function claimNextQueuedItem(tier: "requested" | "feed"): Promise<EverythingItem | null> {
+ *  safe because each tier has exactly one worker: the intake service takes
+ *  only the requested tier, and the feed worker takes only the tiers below
+ *  it. The feed worker works several items side by side, but it takes them
+ *  one after another from a single loop, so two takes never overlap. */
+export async function claimNextQueuedItem(tier: QueueTier): Promise<EverythingItem | null> {
   const db = getSupabaseClient();
-  let query = db
-    .from("everything_items")
-    .select(ITEM_COLUMNS)
-    .eq("status", "queued");
-  query =
-    tier === "requested"
-      ? query.gte("priority", QUEUE_PRIORITY.requested)
-      : query.lt("priority", QUEUE_PRIORITY.requested);
+  const query = inTier(db.from("everything_items").select(ITEM_COLUMNS).eq("status", "queued"), tier);
   const item = throwOnError<EverythingItem | null>(
     await query
       .order("priority", { ascending: false })
@@ -560,7 +565,7 @@ export async function markRequestedQueueBudgetExhausted(): Promise<void> {
 }
 
 /** How long the oldest unconsumed note request has waited, in seconds, or
- *  null when the inbox is empty. The Actions feed run asks this to notice a
+ *  null when the inbox is empty. The watchdog run asks this to notice a
  *  dead intake service: intake consumes requests within seconds, so an old
  *  pending request means nobody is listening. */
 export async function oldestPendingRequestAgeSeconds(): Promise<number | null> {
@@ -871,8 +876,15 @@ export async function insertNote(claimId: string, note: string, sources: NoteSou
   );
 }
 
-/** Sets the alarm the database starts the next feed run on (migration 098).
- *  The reason is stored next to it so the schedule table explains itself. */
-export async function setFeedAlarm(at: Date, reason: string): Promise<void> {
-  throwOnError(await getSupabaseClient().rpc("everything_set_feed_alarm", { next_at: at.toISOString(), reason }));
+/** Records that the feed worker is alive, in database time (migration 102).
+ *  The worker calls this on every pass of its loop, at least every few
+ *  minutes, and the watchdog run fails when it has gone quiet. */
+export async function recordFeedWorkerSeen(): Promise<void> {
+  throwOnError(await getSupabaseClient().rpc("everything_feed_worker_seen"));
+}
+
+/** How long ago the feed worker was last seen, in seconds, measured by the
+ *  database so no two clocks are compared. Null when it has never run. */
+export async function feedWorkerSilentSeconds(): Promise<number | null> {
+  return throwOnError(await getSupabaseClient().rpc("everything_feed_worker_silent_seconds")) as number | null;
 }

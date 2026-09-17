@@ -72,9 +72,13 @@ export interface ItemTally {
   /** Why the intent gate declined the item, when it did. Such an item has no
    *  claims and is marked done with this reason. Null otherwise. */
   skipReason: string | null;
+  /** What this attempt at the item spent, summed from what the services
+   *  reported for each call. The day's spend cannot give this number any
+   *  more, because several items are worked side by side. */
+  costUsd: number;
 }
 
-const EMPTY_TALLY: ItemTally = { extracted: 0, speculation: 0, skipped: 0, notes: 0, no_note: 0, errors: 0, capped: 0, skipReason: null };
+const EMPTY_TALLY: ItemTally = { extracted: 0, speculation: 0, skipped: 0, notes: 0, no_note: 0, errors: 0, capped: 0, skipReason: null, costUsd: 0 };
 
 function buildClaimRow(itemId: string, claim: RatedClaim): NewClaimRow {
   const check = shouldFactCheck(claim.judgement);
@@ -96,8 +100,14 @@ function buildClaimRow(itemId: string, claim: RatedClaim): NewClaimRow {
   };
 }
 
-/** Fact-checks one claim and records the result. Returns the claim's final
- *  status so the caller can tally it. */
+/** One claim's fact-check as the tally needs it: where the claim ended and
+ *  what the check spent. */
+interface ClaimOutcome {
+  status: "note" | "no_note" | "error";
+  costUsd: number;
+}
+
+/** Fact-checks one claim and records the result. */
 async function checkAndRecordClaim(
   claimId: string,
   claim: ExtractedClaim,
@@ -105,7 +115,7 @@ async function checkAndRecordClaim(
   index: number,
   publishedAt: string | undefined,
   lines: string[],
-): Promise<"note" | "no_note" | "error"> {
+): Promise<ClaimOutcome> {
   try {
     const { check, run } = await requestClaimCheck({
       priority: workPriorityOf(item),
@@ -117,15 +127,15 @@ async function checkAndRecordClaim(
       await insertNote(claimId, check.note, check.sources);
       await setClaimStatus(claimId, "note", null);
       lines.push(`     ⚠️  NOTE — ${claim.claim}\n         ${check.note}`);
-      return "note";
+      return { status: "note", costUsd: run.costUsd ?? 0 };
     }
     await setClaimStatus(claimId, "no_note", check.reason ?? check.outcome);
     lines.push(`     ✅ no note (${check.reason ?? check.outcome}) — ${claim.claim}`);
-    return "no_note";
+    return { status: "no_note", costUsd: run.costUsd ?? 0 };
   } catch (err: any) {
     await setClaimStatus(claimId, "error", err?.message ?? "unknown");
     lines.push(`     ❌ error — ${claim.claim}: ${err?.message}`);
-    return "error";
+    return { status: "error", costUsd: 0 };
   }
 }
 
@@ -240,7 +250,7 @@ export async function processFetchedContent(
   if (extraction.costUsd !== null) await insertItemRun(item.id, "extraction", extraction.costUsd);
   if (extraction.kind === "not_checkable") {
     console.log(`  not checkable: ${extraction.reason}`);
-    return { ...EMPTY_TALLY, skipReason: extraction.reason };
+    return { ...EMPTY_TALLY, skipReason: extraction.reason, costUsd: extraction.costUsd ?? 0 };
   }
   const { parts, extracted, speculation, duplicates } = freshClaimsPerPart(extraction.parts, existingClaims);
   if (duplicates > 0) console.log(`  dropped ${duplicates} claims the item already carries`);
@@ -260,7 +270,7 @@ export async function processFetchedContent(
   const researchLog = group("research", rating.research);
   if (researchLog) console.log(researchLog);
 
-  const outcomes: Array<"note" | "no_note" | "error"> = [];
+  const outcomes: ClaimOutcome[] = [];
   // Each claim's verdict is collected rather than printed as it lands, so the
   // whole block can be shown as one collapsible section. A long item can carry
   // dozens of these and they used to bury everything else in the run.
@@ -287,13 +297,16 @@ export async function processFetchedContent(
     extracted,
     speculation,
     skipped: claims.length - toCheck,
-    notes: outcomes.filter((o) => o === "note").length,
-    no_note: outcomes.filter((o) => o === "no_note").length,
-    errors: outcomes.filter((o) => o === "error").length,
+    notes: outcomes.filter((o) => o.status === "note").length,
+    no_note: outcomes.filter((o) => o.status === "no_note").length,
+    errors: outcomes.filter((o) => o.status === "error").length,
     capped,
     skipReason: null,
+    costUsd: (extraction.costUsd ?? 0) + (rating.costUsd ?? 0) + checksCostUsd(outcomes),
   };
 }
+
+const checksCostUsd = (outcomes: ClaimOutcome[]): number => outcomes.reduce((sum, outcome) => sum + outcome.costUsd, 0);
 
 /** Rebuilds an extracted claim from its stored row. The check path only reads
  *  the claim text and its context. The anchor fields were already saved by the
@@ -326,7 +339,7 @@ export async function resumeItemClaims(item: EverythingItem): Promise<ItemTally>
   const alreadyNoted = await fetchClaimIdsWithAiNotes(redo.map((c) => c.id));
   console.log(`  resuming "${item.title ?? item.url}" — redoing ${redo.length} of ${allClaims.length} claims`);
 
-  const outcomes: Array<"note" | "no_note" | "error"> = [];
+  const outcomes: ClaimOutcome[] = [];
   // Each claim's verdict is collected rather than printed as it lands, so the
   // whole block can be shown as one collapsible section. A long item can carry
   // dozens of these and they used to bury everything else in the run.
@@ -337,7 +350,7 @@ export async function resumeItemClaims(item: EverythingItem): Promise<ItemTally>
     queue.add(async () => {
       if (alreadyNoted.has(row.id)) {
         await setClaimStatus(row.id, "note", null);
-        outcomes.push("note");
+        outcomes.push({ status: "note", costUsd: 0 });
         return;
       }
       if (await budgetExhaustedFor(item)) {
@@ -355,10 +368,11 @@ export async function resumeItemClaims(item: EverythingItem): Promise<ItemTally>
     extracted: allClaims.length,
     speculation: 0,
     skipped: allClaims.filter((c) => c.status === "skipped").length,
-    notes: outcomes.filter((o) => o === "note").length,
-    no_note: outcomes.filter((o) => o === "no_note").length,
-    errors: outcomes.filter((o) => o === "error").length,
+    notes: outcomes.filter((o) => o.status === "note").length,
+    no_note: outcomes.filter((o) => o.status === "no_note").length,
+    errors: outcomes.filter((o) => o.status === "error").length,
     capped,
     skipReason: null,
+    costUsd: checksCostUsd(outcomes),
   };
 }

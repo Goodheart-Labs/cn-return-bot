@@ -14,7 +14,7 @@ pipelines are the monitor; nothing on this machine phones home.
 
 Intake is outside the feed pacing. It processes reader-requested pages at once
 and spends from the full daily cap. Its spend still counts in the day's total,
-so a big reader page makes the paced feed run go quiet for the rest of the day.
+so a big reader page makes the paced feed worker go quiet for the rest of the day.
 
 ## First-time setup
 
@@ -59,7 +59,7 @@ CLAIM_CHECK_URL=http://localhost:8787
 EXTRACTION_URL=http://localhost:8788
 
 # YouTube Data API key (intake): video details for a requested YouTube page.
-# The same key the feed run uses; 10,000 free quota units a day per project.
+# The feed worker uses it for every channel listing; 10,000 free quota units a day per project.
 YOUTUBE_DATA_V3_API_KEY=
 
 # YouTube needs the residential proxy here, exactly as it does on GitHub's
@@ -75,13 +75,33 @@ YTDLP_PROXY_URL=
 
 # Optional knobs, with their defaults
 #CLAIM_CHECK_PORT=8787
-#CLAIM_CHECK_CONCURRENCY=6
-#CLAIM_CHECK_RESERVED_FOR_READER=2
+#CLAIM_CHECK_CONCURRENCY=12
+#CLAIM_CHECK_RESERVED_FOR_READER=4
 #EXTRACTION_PORT=8788
-#EXTRACTION_CONCURRENCY=2
+#EXTRACTION_CONCURRENCY=4
+#FEED_MAX_ITEMS_IN_FLIGHT=3
 #EVERYTHING_DAILY_SPEND_CAP_USD=50
 #EVERYTHING_REQUEST_RESERVE_USD=10
 ```
+
+## The feed worker
+
+`cn-feed` is the permanent program that checks creators' posts
+(`src/service/feed/main.ts`). It reads the same environment file as intake and
+needs nothing beyond it. It works up to three posts side by side, paces its
+starts across the day by sleeping, and writes a heartbeat the watchdog run on
+GitHub reads.
+
+```bash
+journalctl -u cn-feed -f            # every line of an item carries the first 8 characters of its id
+systemctl stop cn-feed              # finishes the posts in flight, starts nothing new; can take an hour
+systemctl kill -s SIGKILL cn-feed   # stops at once; the next start resumes the unfinished claims
+```
+
+A deploy stops it the gentle way and starts it again afterwards, so a push
+reaches this machine only once the posts in flight have finished. Never start
+a second feed worker anywhere, and never run `everything-worker` by hand
+while this one runs: both would take the same items.
 
 ## The PO token provider (caption downloads)
 

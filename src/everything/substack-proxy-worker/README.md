@@ -1,6 +1,9 @@
 # Substack feed proxy
 
-Cloudflare Worker serving Substack RSS feeds to the priority-feeds workflow.
+Cloudflare Worker serving Substack RSS feeds to callers on GitHub's runners.
+Since GOO-169 the feed runs on the services machine, which reaches Substack
+directly and leaves `SUBSTACK_PROXY_URL` unset, so nothing uses this worker at
+the moment. It stays deployed for anything that lists feeds from a runner again.
 Substack 403s GitHub runner IPs outright and rate-limits Workers' shared
 egress (10–100% success depending on ambient congestion), so the worker keeps
 a KV-cached copy of every requested feed fresh via a 5-min cron trigger and
