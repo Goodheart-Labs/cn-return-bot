@@ -205,8 +205,11 @@ export class SignalBot {
     const quoted = message.quoteId ? store.resolve(message.quoteId) : undefined;
     const addressedByPrefix = BOT_PREFIX.test(parsed.text);
     if (addressedByPrefix) parsed.text = parsed.text.replace(BOT_PREFIX, "").trim();
+    // Exact commands are addressed to the bot by their nature; they still need an
+    // unambiguous conversation below, so a stray "yes" cannot approve anything new.
+    const exactCommandText = /^(?:cancel|withdraw|status|draft|show draft|yes(?:(?:\s*,\s*|\s+)post(?:\s+it)?)?)[.!]?$/i.test(parsed.text);
     if (this.dependencies.addressedOnly && !parsed.tweetIds.length && parsed.threadId === undefined &&
-        !message.mentionsBot && !message.quotesBot && !addressedByPrefix) {
+        !message.mentionsBot && !message.quotesBot && !addressedByPrefix && !exactCommandText) {
       this.dependencies.log?.("ignored: not addressed to the bot");
       return;
     }

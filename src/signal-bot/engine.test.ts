@@ -170,9 +170,10 @@ describe("Signal draft conversations", () => {
   test("addressed-only mode ignores chatter but answers links, #numbers, mentions, quotes, and a leading bot", async () => {
     const f = fixture({ addressedOnly: true, converse: async context => `chat: ${context.text}` });
     await f.send("morning all");
-    await f.send("yes post");
     expect(f.sent).toHaveLength(0);
     expect(f.logs).toContain("ignored: not addressed to the bot");
+    await f.send("yes post");
+    expect(f.sent.at(-1)!.text).toContain("no open conversation");
     await f.send("https://x.com/example/status/12345");
     expect(f.current().draft?.version).toBe(1);
     const shown = f.sent.length;
@@ -186,8 +187,10 @@ describe("Signal draft conversations", () => {
     expect(f.draftCalls.at(-1)!.history.at(-1)!.content).toBe("and the wording?");
     await f.send("Bot: is it ready?");
     expect(f.draftCalls.at(-1)!.history.at(-1)!.content).toBe("is it ready?");
-    await f.bot.handle({ ...f.message("yes post", f.latestDraft().id), quotesBot: true });
+    // A bare exact command with one open conversation is a bot command, not chatter.
+    await f.send("yes post");
     expect(f.submissions).toHaveLength(1);
+    expect(f.current().status).toBe("submitted");
     await f.send("bot what did we post?");
     expect(f.sent.at(-1)!.text).toBe("Bot: chat: what did we post?");
   });
