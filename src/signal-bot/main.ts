@@ -107,10 +107,16 @@ async function main(): Promise<void> {
       // A reply to a listen-only group's message goes back to that group.
       return terminal ? terminal.send(text) : transport!.send(text, quote?.sender === "operator" ? undefined : quote, quote?.fromGroup);
     };
+    const notesForChat = process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY ? async () => {
+      const { SupabaseLogger } = await import("../api/supabaseClient");
+      const rows = await new SupabaseLogger().listNotesSubmittedSince(new Date(Date.now() - 24 * 3600_000).toISOString(), 40);
+      return rows.map((row) => ({ postedAt: row.submitted_at, tweet: `https://x.com/i/status/${row.tweet_id}`, note: row.note_text.slice(0, 300), link: `https://x.com/i/communitynotes/${row.note_id}` }));
+    } : undefined;
     const bot = new SignalBot({
       store,
       drafting: createDraftingAdapter(),
       send,
+      pipelineNotes: notesForChat,
       submit,
       cancelSubmission,
       registerSubmission,
@@ -121,23 +127,35 @@ async function main(): Promise<void> {
     });
     const feedGroupId = process.env.SIGNAL_NOTES_FEED_GROUP_ID?.trim();
     const groupLabel = (id: string) => (feedGroupId && sameGroup(id, feedGroupId) ? "live" : id.slice(0, 14));
-    const handle = (message: Parameters<SignalBot["handle"]>[0]) => {
+    const operatorLabel = process.env.SIGNAL_OPERATOR_LABEL?.trim() || "Claude";
+    const operatorSends = new Set<string>();
+    const handle = (incoming: Parameters<SignalBot["handle"]>[0]) => {
       // Listen-only groups are always surfaced for the operator; the engine only
       // answers there when addressed, and never drafts or approves there.
-      if (message.fromGroup) console.log(`[signal] ← [${groupLabel(message.fromGroup)}] ${message.sender.slice(0, 8)}: ${message.text}`);
-      else if (logContent) console.log(`[signal] ← ${message.sender.slice(0, 8)}: ${message.text}`);
+      if (incoming.fromGroup) console.log(`[signal] ← [${groupLabel(incoming.fromGroup)}] ${incoming.sender.slice(0, 8)}: ${incoming.text}`);
+      else if (logContent) console.log(`[signal] ← ${incoming.sender.slice(0, 8)}: ${incoming.text}`);
+      // A reply to the operator's own line is a conversation with the operator,
+      // not with the bot, even though both are sent from the bot's account.
+      const message = incoming.quotesBot && ((incoming.quoteId && operatorSends.has(incoming.quoteId)) || incoming.quoteText?.startsWith(`${operatorLabel}:`))
+        ? { ...incoming, quotesBot: false }
+        : incoming;
       return bot.handle(message);
     };
     const operatorPort = Number(process.env.SIGNAL_OPERATOR_PORT?.trim() || 0);
     const operator = operatorPort && transport ? startOperatorEndpoint({
       port: operatorPort,
       // Recorded as bot output so a synced echo of the announcement is ignored.
-      announce: (text, group) => {
+      announce: async (text, group) => {
         store.recordBotOutput(text);
-        if (!group) return send(text);
-        sentTexts.push(`[${group}] ${text}`);
-        if (logContent) console.log(`[signal] → [${group}] ${text}`);
-        return transport!.send(text, undefined, group === "live" && feedGroupId ? feedGroupId : group);
+        let id: string;
+        if (!group) id = await send(text);
+        else {
+          sentTexts.push(`[${group}] ${text}`);
+          if (logContent) console.log(`[signal] → [${group}] ${text}`);
+          id = await transport!.send(text, undefined, group === "live" && feedGroupId ? feedGroupId : group);
+        }
+        operatorSends.add(id);
+        return id;
       },
       handle,
       sent: () => sentTexts,
