@@ -226,6 +226,21 @@ export class SupabaseLogger {
     return data;
   }
 
+  /** Notes any pipeline submitted at or after a time, oldest first; feeds the Signal notes group. */
+  async listNotesSubmittedSince(since: string, limit = 20): Promise<Array<{
+    note_id: string; tweet_id: string; note_text: string; submitted_at: string;
+  }>> {
+    const { data, error } = await this.client
+      .from("notes")
+      .select("note_id, tweet_id, note_text, submitted_at")
+      .gte("submitted_at", since)
+      .order("submitted_at", { ascending: true })
+      .limit(limit);
+    // PostgrestError is a plain object; wrap it so callers see a message.
+    if (error) throw new Error(`notes query failed: ${error.message}`);
+    return (data ?? []) as Array<{ note_id: string; tweet_id: string; note_text: string; submitted_at: string }>;
+  }
+
   async getOrCreateNotewriter(handle: string, displayName?: string): Promise<Notewriter> {
     const { data: existing } = await this.client
       .from("notewriters")

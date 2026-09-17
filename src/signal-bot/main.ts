@@ -5,6 +5,7 @@ import { createDraftingAdapter } from "./drafting";
 import { SignalBot } from "./engine";
 import { SignalStore } from "./store";
 import { createConsoleTransport } from "./console";
+import { NotesFeed } from "./feed";
 import { startOperatorEndpoint } from "./operator";
 import { SignalTransport, loadSignalTransportConfig } from "./transport";
 
@@ -35,6 +36,8 @@ Live submission also needs SUPABASE_URL and SUPABASE_SERVICE_KEY,
 and migration 100 applied before both this worker and the scheduled pipeline.
 
 State: SIGNAL_STATE_PATH (default output/signal-bot[-console][-dry-run].sqlite).
+Notes feed: SIGNAL_NOTES_FEED_GROUP_ID posts every note any pipeline submits to X
+(from the notes table, needs SUPABASE_URL) into that group, checking every minute.
 Local operation: SIGNAL_OPERATOR_PORT=18081 opens a loopback endpoint (see operator.ts)
 that posts a line labelled SIGNAL_OPERATOR_LABEL (default "Claude") to the group and
 feeds it to the bot; SIGNAL_LOG_CONTENT=true
@@ -122,11 +125,32 @@ async function main(): Promise<void> {
       sent: () => sentTexts,
       label: process.env.SIGNAL_OPERATOR_LABEL?.trim() || undefined,
     }) : undefined;
+    const feedGroupId = process.env.SIGNAL_NOTES_FEED_GROUP_ID?.trim();
+    let feedTimer: ReturnType<typeof setInterval> | undefined;
+    if (feedGroupId && config && process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY) {
+      const { SupabaseLogger } = await import("../api/supabaseClient");
+      const feedLogger = new SupabaseLogger();
+      // A send-only transport for the feed group; it is never connected for receiving.
+      const feedTransport = new SignalTransport({ ...config, groupId: feedGroupId }, { onError });
+      const feed = new NotesFeed({
+        store,
+        listNotesSince: (since, limit) => feedLogger.listNotesSubmittedSince(since, limit),
+        send: (text) => feedTransport.send(text),
+        onError,
+      });
+      const pollFeed = async () => {
+        const posted = await feed.poll();
+        if (posted) log(`notes feed posted ${posted} note${posted === 1 ? "" : "s"}`);
+      };
+      feedTimer = setInterval(() => { void pollFeed(); }, 60_000);
+      void pollFeed();
+    }
     let stopping = false;
     const stop = async () => {
       if (stopping) return;
       stopping = true;
       clearInterval(retryTimer);
+      clearInterval(feedTimer);
       operator?.stop();
       console.log("[signal] Finishing accepted messages before shutdown…");
       try {
@@ -165,6 +189,7 @@ async function main(): Promise<void> {
       return;
     }
     if (operator) console.log(`[signal] Operator endpoint on 127.0.0.1:${operator.port}.`);
+    if (feedTimer) console.log("[signal] Notes feed enabled: new submitted notes are posted to the feed group.");
     console.log(`[signal] Listening to the configured group${dryRun ? " (dry run: X submissions disabled)" : ""}.`);
   } catch (error) {
     clearInterval(retryTimer);

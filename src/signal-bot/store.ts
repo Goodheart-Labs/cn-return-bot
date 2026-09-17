@@ -223,6 +223,14 @@ export class SignalStore {
       .sort((a, b) => (a.queuedAt ?? 0) - (b.queuedAt ?? 0) || a.id - b.id);
   }
 
+  getMetadata(key: string): string | undefined {
+    return this.db.query<{ value: string }, [string]>("SELECT value FROM metadata WHERE key = ?").get(key)?.value;
+  }
+
+  setMetadata(key: string, value: string): void {
+    this.db.query("INSERT OR REPLACE INTO metadata (key, value) VALUES (?, ?)").run(key, value);
+  }
+
   /** Short-lived context for messages that belong to no tweet conversation. */
   generalHistory(): ChatTurn[] {
     const row = this.db.query<{ value: string }, []>("SELECT value FROM metadata WHERE key = 'general_history'").get();
