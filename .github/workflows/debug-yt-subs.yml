@@ -1,8 +1,8 @@
 name: Debug YouTube subtitles (GOO-169)
 
-# Throwaway investigation workflow, fifth probe: the walk's own channel
-# listing command, verbose, through the proxy and without it, and the channel
-# RSS feed both ways, each several times with timings.
+# Throwaway investigation workflow, sixth probe: does the web client with the
+# PO token provider need a JavaScript runtime? Same call as the fourth probe
+# but without deno.
 
 on:
   push:
@@ -12,25 +12,17 @@ on:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 15
     env:
       YTDLP_PROXY_URL: ${{ secrets.YTDLP_PROXY_URL }}
     steps:
-      - run: pipx install yt-dlp && yt-dlp --version
-      - name: Walk listing, verbose
+      - run: pipx install yt-dlp && pipx inject yt-dlp bgutil-ytdlp-pot-provider && yt-dlp --version
+      - run: docker run -d --name bgutil -p 127.0.0.1:4416:4416 brainicism/bgutil-ytdlp-pot-provider && sleep 8 && curl -sS -m 20 http://127.0.0.1:4416/ping
+      - name: web client, no JS runtime
         run: |
-          listing() {
-            echo "=================== $1 :: $2"
-            shift; shift
-            time (yt-dlp "$@" --flat-playlist --playlist-items 1:15 -v --print "%(id)s" --print "playlist:%(channel_id)s" 2>&1 | grep -i "Downloading\|Retrying\|timed out\|ERROR\|Unable\|SSL\|^UC" | cut -c1-150 | head -12)
-          }
-          for ch in joerogan LilAggy Channel5YouTube; do
-            for i in 1 2; do listing "proxy $i" "$ch" --proxy "$YTDLP_PROXY_URL" "https://www.youtube.com/@$ch/videos"; done
-            listing "direct" "$ch" "https://www.youtube.com/@$ch/videos"
-          done
-      - name: Channel RSS feed
-        run: |
-          for i in 1 2 3; do
-            curl -sS -o /dev/null -m 30 -w "direct  status %{http_code} total %{time_total}s\n" "https://www.youtube.com/feeds/videos.xml?channel_id=UCx_Qyb3447P9bBaT4o8QSjQ"
-            curl -sS -o /dev/null -m 30 -x "$YTDLP_PROXY_URL" -w "proxied status %{http_code} total %{time_total}s\n" "https://www.youtube.com/feeds/videos.xml?channel_id=UCx_Qyb3447P9bBaT4o8QSjQ"
+          for url in https://www.youtube.com/watch?v=J3SIbt2s28Y https://www.youtube.com/watch?v=r2ali4LgCQ8 https://www.youtube.com/watch?v=cuckk-vSE-Y; do
+            echo "=================== $url"
+            d=$(mktemp -d)
+            time (yt-dlp --proxy "$YTDLP_PROXY_URL" --extractor-args "youtube:player_client=web" --write-subs --write-auto-subs --sub-lang "en.*" --skip-download --ignore-no-formats-error -o "$d/%(id)s.%(ext)s" "$url" 2>&1 | grep -i "WARNING\|ERROR\|Writing\|no subtitles\|PO Token\|runtime\|members" | cut -c1-170 | head -12)
+            ls "$d"
           done
