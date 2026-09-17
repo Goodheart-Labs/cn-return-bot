@@ -166,8 +166,6 @@ export async function fetchChannelUploads(channelUrl: string, limit: number): Pr
 /** A channel's `n` most viewed long-form videos, most viewed first, from a
  *  scan of its newest `scanLimit` uploads. */
 export async function fetchChannelTopVideos(channelUrl: string, n: number, scanLimit = TOP_VIDEOS_SCAN_LIMIT): Promise<{ channel: YoutubeChannel; videos: YoutubeVideo[] }> {
-  const channel = await resolveChannel(channelUrl);
-  const ids = await listPlaylistVideoIds(longFormUploadsPlaylist(channel.id), scanLimit);
-  const videos = await fetchVideos(ids);
+  const { channel, videos } = await fetchChannelUploads(channelUrl, scanLimit);
   return { channel, videos: videos.sort((a, b) => b.viewCount - a.viewCount).slice(0, n) };
 }

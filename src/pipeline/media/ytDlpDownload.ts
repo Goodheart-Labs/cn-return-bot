@@ -78,6 +78,9 @@ function ytDlpProxyArgs(url: string): string[] {
 
 const PROXY_RETRY_ATTEMPTS = 3;
 
+/** How much of yt-dlp's complaint goes into a log line or an error message. */
+const MAX_REASON_LENGTH = 200;
+
 /** Run yt-dlp, adding the proxy flag when the URL needs it. A proxied call is
  *  retried a few times. The proxy pool picks a new egress IP for every
  *  connection, and now and then it hands out an IP that YouTube has already
@@ -196,7 +199,7 @@ async function runCaptionCallUntilReached<Found>(url: string, args: string[], fo
     if (value !== null) return value;
     const unreachableLine = result.stderr.split("\n").find((line) => YOUTUBE_UNREACHABLE_RE.test(line));
     if (!unreachableLine) return null;
-    lastReason = unreachableLine.trim().slice(0, 200);
+    lastReason = unreachableLine.trim().slice(0, MAX_REASON_LENGTH);
     if (attempt < attempts) console.warn(`yt-dlp could not reach YouTube for ${url} (attempt ${attempt}/${attempts}: ${lastReason}), retrying with a fresh proxy IP`);
   }
   throw new YoutubeUnreachableError(url, lastReason);
