@@ -113,3 +113,41 @@ error instead, so a proxy outage looks like one.
 The channel listings (creator walk and top-posts refresh) need no proxy at
 all: the same joerogan listing that timed out through the proxy 28 times took
 2.7 seconds without it from a GitHub runner, and 5.6 seconds from the devbox.
+
+## What was built from this (2026-09-17)
+
+**Listings moved to the YouTube Data API v3** (`youtubeDataApi.ts`). Measured
+with the real key: a creator's 15 newest long-form uploads with dates and
+durations in 0.7 s; Joe Rogan's all-time top five from a 3000-video scan in
+26 s (about 120 quota units of the 10,000 free per day); one video's details
+in 70 ms. The `UULF…` playlist gives the Videos tab without Shorts. No
+listing touches yt-dlp or the proxy any more.
+
+**Why the first caption fix was not enough.** yt-dlp's bgutil plugin worked in
+two probes and then failed for 20 minutes straight: "Error reaching POST
+/get_pot ... timed out". The plugin's source (`getpot_bgutil_http.py`) sends
+yt-dlp's `--proxy` to the token provider, so the token was generated through
+the same residential proxy whose path to Google hangs, with a 20-second
+limit. Asking the provider ourselves without a proxy takes 10 ms, needs
+neither the plugin nor deno, and the token is accepted for a download that
+goes through the proxy.
+
+**End-to-end check on a GitHub runner, 2026-09-17 12:54 UTC**, the worker's
+own `fetchYoutubeContent`:
+
+| video | result |
+|---|---|
+| J3SIbt2s28Y, Joe Rogan #2555 | 4619 cues in 19 s |
+| r2ali4LgCQ8, Ken, "bro" | 560 cues in 5 s |
+| QlF9o9IEp3c, KATU News | 79 cues in 22 s |
+| NW4IgJKTsII, Magnus Midtbø | 308 cues in 34 s |
+| _7ARzqsVmTw, The Elephant Graveyard | 5923 cues in 13 s |
+| DP2m0zJL15I, Channel 5 | 1545 cues in 7 s |
+| cuckk-vSE-Y, Daily Dose of Internet | "No transcript available" in 7 s, correctly: the video is members-only |
+
+All six had been recorded as "No transcript available". Two smaller things
+the probes showed: a caption call that succeeds can still print "HTTP Error
+429" for a page it did not need, so success is judged by the caption files
+and never by the warnings; and about one proxied call in six draws an address
+YouTube has flagged and fails in 3 to 5 seconds, which the fresh-address
+retry covers.
