@@ -198,6 +198,14 @@ export class SignalBot {
       return;
     }
     const parsed = command(message.text);
+    // In a listen-only group the bot never drafts or approves; a mention, quote,
+    // or leading "bot" gets a plain answer there, everything else is ignored.
+    if (message.fromGroup) {
+      const prefixed = BOT_PREFIX.test(parsed.text);
+      if (!message.mentionsBot && !message.quotesBot && !prefixed) return;
+      await this.converse(message, prefixed ? parsed.text.replace(BOT_PREFIX, "").trim() : parsed.text);
+      return;
+    }
     if (parsed.threadId !== undefined && (!Number.isSafeInteger(parsed.threadId) || parsed.threadId < 1)) {
       await this.reply("Use the conversation number shown above the draft, such as #1.", message);
       return;

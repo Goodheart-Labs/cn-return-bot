@@ -104,7 +104,8 @@ async function main(): Promise<void> {
       sentTexts.push(text);
       if (logContent) console.log(`[signal] → ${text}`);
       // Operator-injected messages never existed in Signal, so there is nothing to quote.
-      return terminal ? terminal.send(text) : transport!.send(text, quote?.sender === "operator" ? undefined : quote);
+      // A reply to a listen-only group's message goes back to that group.
+      return terminal ? terminal.send(text) : transport!.send(text, quote?.sender === "operator" ? undefined : quote, quote?.fromGroup);
     };
     const bot = new SignalBot({
       store,
@@ -121,12 +122,10 @@ async function main(): Promise<void> {
     const feedGroupId = process.env.SIGNAL_NOTES_FEED_GROUP_ID?.trim();
     const groupLabel = (id: string) => (feedGroupId && sameGroup(id, feedGroupId) ? "live" : id.slice(0, 14));
     const handle = (message: Parameters<SignalBot["handle"]>[0]) => {
-      // Listen-only groups are surfaced for the operator and never treated as requests.
-      if (message.fromGroup) {
-        console.log(`[signal] ← [${groupLabel(message.fromGroup)}] ${message.sender.slice(0, 8)}: ${message.text}`);
-        return Promise.resolve();
-      }
-      if (logContent) console.log(`[signal] ← ${message.sender.slice(0, 8)}: ${message.text}`);
+      // Listen-only groups are always surfaced for the operator; the engine only
+      // answers there when addressed, and never drafts or approves there.
+      if (message.fromGroup) console.log(`[signal] ← [${groupLabel(message.fromGroup)}] ${message.sender.slice(0, 8)}: ${message.text}`);
+      else if (logContent) console.log(`[signal] ← ${message.sender.slice(0, 8)}: ${message.text}`);
       return bot.handle(message);
     };
     const operatorPort = Number(process.env.SIGNAL_OPERATOR_PORT?.trim() || 0);

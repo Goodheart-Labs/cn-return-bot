@@ -195,6 +195,22 @@ describe("Signal draft conversations", () => {
     expect(f.sent.at(-1)!.text).toBe("Bot: chat: what did we post?");
   });
 
+  test("messages from a listen-only group only get a general answer when addressed, never a draft", async () => {
+    const f = fixture({ converse: async context => `chat: ${context.text}` });
+    const live = "group.live";
+    await f.bot.handle({ ...f.message("what a note"), fromGroup: live });
+    await f.bot.handle({ ...f.message("https://x.com/example/status/12345"), fromGroup: live, mentionsBot: true });
+    expect(f.sent).toHaveLength(1);
+    expect(f.sent[0]!.text).toBe("Bot: chat: https://x.com/example/status/12345");
+    expect(f.sent[0]!.quote?.fromGroup).toBe(live);
+    expect(f.store.all()).toHaveLength(0);
+    await f.bot.handle({ ...f.message("bot which notes went out?"), fromGroup: live });
+    expect(f.sent.at(-1)!.text).toBe("Bot: chat: which notes went out?");
+    await f.bot.handle({ ...f.message("yes post"), fromGroup: live, quotesBot: true });
+    expect(f.sent.at(-1)!.text).toBe("Bot: chat: yes post");
+    expect(f.submissions).toHaveLength(0);
+  });
+
   test("an inaccessible tweet reports failure and does not fabricate a draft", async () => {
     const f = fixture({ inspect: async tweetId => ({ tweetId, access: "unavailable", eligibility: "unconfirmed", detail: "I cannot retrieve this tweet." }) });
     await f.send("https://twitter.com/example/status/12345");
