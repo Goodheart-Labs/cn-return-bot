@@ -24,11 +24,16 @@ jobs:
           bun-version: latest
       - run: bun install
       - uses: ./.github/actions/setup-youtube-captions
-      - run: >
+      - name: Same command from a shell
+        run: |
+          d=$(mktemp -d)
+          time (yt-dlp --proxy "$YTDLP_PROXY_URL" --extractor-args "youtube:player_client=web" --write-subs --write-auto-subs --sub-lang "en.*" --skip-download --ignore-no-formats-error -o "$d/%(id)s.%(ext)s" https://www.youtube.com/watch?v=J3SIbt2s28Y 2>&1 | tail -6)
+          ls "$d"
+      - name: Same command through spawnSync
+        run: bun run src/scripts_jim/2026_09_16_common_notes_bottleneck/captionSpawnDebug.ts https://www.youtube.com/watch?v=J3SIbt2s28Y
+      - name: The worker's own fetch
+        run: >
           bun run src/scripts_jim/2026_09_16_common_notes_bottleneck/captionSmoke.ts
           https://www.youtube.com/watch?v=J3SIbt2s28Y
           https://www.youtube.com/watch?v=r2ali4LgCQ8
-          https://www.youtube.com/watch?v=QlF9o9IEp3c
-          https://www.youtube.com/watch?v=NW4IgJKTsII
-          https://www.youtube.com/watch?v=_7ARzqsVmTw
           https://www.youtube.com/watch?v=cuckk-vSE-Y

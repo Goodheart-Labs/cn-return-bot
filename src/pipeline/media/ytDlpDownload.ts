@@ -118,7 +118,13 @@ export class YoutubeUnreachableError extends Error {
  *  (see ops/cn-pot-provider.service) is not running or not reachable, in
  *  which case the web client sees the captions and discards them. */
 const YOUTUBE_UNREACHABLE_RE =
-  /Unable to download (API page|webpage)|operation timed out|wrong version number|HTTP Error 429|Sign in to confirm|PO Token was not provided|require a PO Token/i;
+  /Unable to download (API page|webpage)|operation timed out|ETIMEDOUT|wrong version number|HTTP Error 429|Sign in to confirm|PO Token was not provided|require a PO Token|Error fetching PO Token/i;
+
+/** How long one caption call may run before it is killed and counted as not
+ *  having reached YouTube. A good call through the proxy takes 15 to 25
+ *  seconds; one that is still running after a minute is hung on a dead proxy
+ *  address, and a fresh address is what helps, not more waiting. */
+const CAPTION_CALL_TIMEOUT_MS = 60_000;
 
 /** Captions are fetched as YouTube's own web player, which is the one client
  *  that lists every caption track, and which needs a PO token (a proof that
@@ -137,7 +143,7 @@ const YOUTUBE_WEB_CLIENT_ARGS = ["--extractor-args", "youtube:player_client=web"
 function runYtDlp(url: string, args: string[]): { status: number | null; stdout: string; stderr: string } {
   const proxyArgs = ytDlpProxyArgs(url);
   const clientArgs = YOUTUBE_URL_RE.test(url) ? YOUTUBE_WEB_CLIENT_ARGS : [];
-  const result = spawnSync("yt-dlp", [...proxyArgs, ...clientArgs, ...args], { timeout: YT_DLP_TIMEOUT_MS, encoding: "utf8" });
+  const result = spawnSync("yt-dlp", [...proxyArgs, ...clientArgs, ...args], { timeout: CAPTION_CALL_TIMEOUT_MS, encoding: "utf8" });
   return { status: result.status, stdout: result.stdout ?? "", stderr: (result.stderr ?? "") + (result.error ? `\n${result.error.message}` : "") };
 }
 
