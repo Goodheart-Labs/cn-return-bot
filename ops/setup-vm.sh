@@ -17,7 +17,7 @@ ENV_FILE="/etc/cn-return-bot/service.env"
 
 echo "── system packages"
 apt-get update
-apt-get install -y --no-install-recommends ffmpeg git pipx unzip curl jq
+apt-get install -y --no-install-recommends ffmpeg git pipx unzip curl jq docker.io
 
 echo "── service user"
 id "$SERVICE_USER" &>/dev/null || useradd --system --create-home --shell /bin/bash "$SERVICE_USER"
@@ -70,12 +70,14 @@ if [ ! -f /swapfile ]; then
 fi
 
 echo "── systemd units"
-for unit in cn-claim-check cn-extraction cn-intake cn-autodeploy; do
+for unit in cn-claim-check cn-extraction cn-intake cn-autodeploy cn-pot-provider; do
   cp "$REPO_DIR/ops/$unit.service" "/etc/systemd/system/$unit.service"
 done
 cp "$REPO_DIR/ops/cn-autodeploy.timer" /etc/systemd/system/cn-autodeploy.timer
 systemctl daemon-reload
 systemctl enable cn-claim-check cn-extraction cn-intake
+# The token provider holds no secrets, so it can start right away.
+systemctl enable --now cn-pot-provider
 systemctl enable --now cn-autodeploy.timer
 rm -f /etc/sudoers.d/cn-restart
 

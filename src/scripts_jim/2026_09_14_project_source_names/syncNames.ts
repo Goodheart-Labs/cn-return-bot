@@ -15,7 +15,7 @@
 import "dotenv/config";
 import { canonicalFeed, type CanonicalFeed } from "../../everything/feedUrls";
 import { fetchFeedPosts } from "../../everything/sources/substack";
-import { fetchChannelVideos } from "../../everything/sources/youtube";
+import { resolveChannel } from "../../everything/sources/youtubeDataApi";
 import { fetchAuthorPosts } from "../../everything/sources/lesswrong";
 
 /** The name a creator's source shows for them today. Each lookup is the same
@@ -26,7 +26,7 @@ async function fetchSourceDisplayName(feed: CanonicalFeed): Promise<string | und
     case "substack":
       return (await fetchFeedPosts(feed.feed_url)).title;
     case "youtube":
-      return fetchChannelVideos(feed.feed_url, 1).channelName;
+      return (await resolveChannel(feed.feed_url)).title;
     case "lesswrong":
       return (await fetchAuthorPosts(feed.feed_url, 1)).authorName;
   }

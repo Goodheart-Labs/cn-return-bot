@@ -42,8 +42,11 @@ jobs:
       # Cloudflare Worker relaying Substack RSS fetches (Substack 403s runner IPs)
       SUBSTACK_PROXY_URL: ${{ secrets.SUBSTACK_PROXY_URL }}
       SUBSTACK_PROXY_KEY: ${{ secrets.SUBSTACK_PROXY_KEY }}
-      # Residential proxy for yt-dlp YouTube fetches (YouTube bot-checks runner IPs)
+      # Residential proxy for yt-dlp caption downloads (YouTube bot-checks runner IPs)
       YTDLP_PROXY_URL: ${{ secrets.YTDLP_PROXY_URL }}
+      # YouTube Data API key: channel listings, publish dates, view counts and
+      # video details. No proxy involved, 10,000 free quota units a day.
+      YOUTUBE_DATA_V3_API_KEY: ${{ secrets.YOUTUBE_DATA_V3_API_KEY }}
       # The two services that do the claim extraction and the claim checking.
       # This run asks each one for its health before starting, and fails if it
       # cannot reach them, which is how a machine that is down becomes visible.
@@ -63,14 +66,11 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Install FFmpeg and yt-dlp for YouTube ingestion
+      - name: Install FFmpeg
         # A hung apt mirror once held this step for over an hour, which ate the
         # dispatch slot while the pipeline never even started. Installs finish
         # in about a minute normally, so this cap only ends runs that are stuck.
         timeout-minutes: 10
-        # Ubuntu's packaged yt-dlp is years old and silently returns an empty
-        # channel listing on today's YouTube, so install the current release
-        # from PyPI instead.
         run: |
           # The runners' default mirror, azure.archive.ubuntu.com, degrades to
           # KB/s every few weeks and stalled this step repeatedly on 2026-08-18.
@@ -84,8 +84,9 @@ jobs:
           fi
           sudo apt-get update -o Acquire::Retries=3
           sudo apt-get install -y --no-install-recommends -o Acquire::Retries=3 ffmpeg
-          pipx install yt-dlp
-          yt-dlp --version
+
+      - name: Set up YouTube caption downloads
+        uses: ./.github/actions/setup-youtube-captions
 
       - name: Get Playwright version
         id: playwright-version
