@@ -55,7 +55,13 @@ ${WRITER_DEFAULT_RULE}
 - Every source must DIRECTLY support your specific correction (not just general background)
 - Don't add redundant sources
 - Tweets or tweet replies can be valid sources
-- Pull source URLs from the research findings — do not invent URLs`;
+- Pull source URLs from the research findings — do not invent URLs
+
+## What the checker will do
+A checker splits your note into its separate factual claims and rejects the whole note if any one claim is not stated by a source you cite. So:
+- Every sentence must be backed by one of your cited URLs. A fact that is in the findings but not in a URL you cite gets the note rejected: cite the URL it came from, or leave the fact out.
+- Make one or two claims. Every extra detail (a date, a name, a second correction, background) is another claim that needs a source and another reason for a rater to reject.
+- Never assert that something did not happen, does not exist, or has no record ("no evidence", "no reports", "never", "still exists") unless a cited source says so in as many words. Say what is true instead.`;
 
 /**
  * This block is appended to the writer system prompt for curated
