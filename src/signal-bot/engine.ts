@@ -19,9 +19,14 @@ interface EngineDependencies {
   /** Stay silent unless a message carries a tweet link, a #number, a quote of or
    * mention of the bot, or a leading "bot". Ordinary group chatter is ignored. */
   addressedOnly?: boolean;
+  /** Stricter still: only an @-mention of the bot or a quote of one of its
+   * messages is handled. Links, #numbers and bare commands are ignored. */
+  mentionOnly?: boolean;
   onError?: (error: unknown) => void;
   /** Operational log line per received message and reply; never message content. */
   log?: (line: string) => void;
+  /** Recent notes the scheduled pipeline posted, for general questions; failures are swallowed. */
+  pipelineNotes?: () => Promise<unknown>;
 }
 
 const MAX_INPUT_CHARS = 6000;
@@ -216,7 +221,12 @@ export class SignalBot {
     // Exact commands are addressed to the bot by their nature; they still need an
     // unambiguous conversation below, so a stray "yes" cannot approve anything new.
     const exactCommandText = /^(?:cancel|withdraw|status|draft|show draft|yes(?:(?:\s*,\s*|\s+)post(?:\s+it)?)?)[.!]?$/i.test(parsed.text);
-    if (this.dependencies.addressedOnly && !parsed.tweetIds.length && parsed.threadId === undefined &&
+    if (this.dependencies.mentionOnly) {
+      if (!message.mentionsBot && !message.quotesBot) {
+        this.dependencies.log?.("ignored: bot not tagged");
+        return;
+      }
+    } else if (this.dependencies.addressedOnly && !parsed.tweetIds.length && parsed.threadId === undefined &&
         !message.mentionsBot && !message.quotesBot && !addressedByPrefix && !exactCommandText) {
       this.dependencies.log?.("ignored: not addressed to the bot");
       return;
@@ -380,9 +390,14 @@ export class SignalBot {
       ...(item.noteId ? { noteId: item.noteId } : {}),
       ...(item.lastActivityAt ? { lastActivityAt: item.lastActivityAt } : {}),
     }));
+    let pipelineNotes: unknown;
+    if (this.dependencies.pipelineNotes) {
+      try { pipelineNotes = await this.dependencies.pipelineNotes(); }
+      catch (error) { this.dependencies.onError?.(error); }
+    }
     let reply: string;
     try {
-      reply = await drafting.converse({ text, history: history.slice(-12), conversations: summaries });
+      reply = await drafting.converse({ text, history: history.slice(-12), conversations: summaries, ...(pipelineNotes !== undefined ? { pipelineNotes } : {}) });
     } catch (error) {
       this.dependencies.onError?.(error);
       await this.reply(NO_TARGET_HELP, message);

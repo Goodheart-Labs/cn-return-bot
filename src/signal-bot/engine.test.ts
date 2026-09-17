@@ -28,6 +28,7 @@ function fixture(options: {
   registerSubmission?: (conversation: Conversation) => Promise<SubmissionResult | null>;
   cancelSubmission?: (conversation: Conversation) => Promise<void>;
   addressedOnly?: boolean;
+  mentionOnly?: boolean;
 } = {}) {
   const store = options.store ?? new SignalStore(":memory:", "test-account/group");
   if (!options.store) cleanups.push(() => store.close());
@@ -81,6 +82,7 @@ function fixture(options: {
     registerSubmission: options.registerSubmission,
     dryRun: options.dryRun,
     addressedOnly: options.addressedOnly,
+    mentionOnly: options.mentionOnly,
     onError: error => errors.push(error),
   });
   function message(text: string, quoteId?: string, timestamp?: number): IncomingMessage {
@@ -193,6 +195,34 @@ describe("Signal draft conversations", () => {
     expect(f.current().status).toBe("submitted");
     await f.send("bot what did we post?");
     expect(f.sent.at(-1)!.text).toBe("Bot: chat: what did we post?");
+  });
+
+  test("mention-only mode ignores links, numbers and bare commands unless the bot is tagged or quoted", async () => {
+    const f = fixture({ mentionOnly: true });
+    await f.send("https://x.com/example/status/12345");
+    await f.send("yes post");
+    await f.send("bot draft");
+    expect(f.sent).toHaveLength(0);
+    expect(f.logs).toContain("ignored: bot not tagged");
+    await f.bot.handle({ ...f.message("https://x.com/example/status/12345"), mentionsBot: true });
+    expect(f.current().draft?.version).toBe(1);
+    await f.send("#1 yes post");
+    expect(f.submissions).toHaveLength(0);
+    await f.bot.handle({ ...f.message("yes post", f.latestDraft().id), quotesBot: true });
+    expect(f.submissions).toHaveLength(1);
+  });
+
+  test("general answers can see the pipeline's recent notes when a provider is given", async () => {
+    const seen: unknown[] = [];
+    const store = new SignalStore(":memory:", "test-account/group");
+    cleanups.push(() => store.close());
+    const bot = new SignalBot({
+      store, send: async () => String(Date.now()), submit: async () => ({ status: "error", message: "unused" }),
+      drafting: { inspect: async () => { throw new Error("unused"); }, draft: async () => { throw new Error("unused"); }, converse: async context => { seen.push(context.pipelineNotes); return "ok"; } },
+      pipelineNotes: async () => [{ tweet: "https://x.com/i/status/1", note: "A note" }],
+    });
+    await bot.handle({ id: "h:1", sender: "human", timestamp: 1_800_000_000_100, text: "what went out today?" });
+    expect(seen).toEqual([[{ tweet: "https://x.com/i/status/1", note: "A note" }]]);
   });
 
   test("messages from a listen-only group only get a general answer when addressed, never a draft", async () => {
