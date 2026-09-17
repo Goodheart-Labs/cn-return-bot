@@ -1,8 +1,7 @@
 /**
- * Turns reader requests into pipeline work. The everything-priority-feeds
- * workflow runs this at the start of every cycle, before anything is enqueued
- * from the feeds. Both consumers are cheap and run even on a day whose spend
- * cap is already reached. The one exception to "no LLM here" is the small
+ * Turns reader requests into pipeline work. The intake service runs this the
+ * moment a request arrives. Both consumers are cheap and run even on a day
+ * whose spend cap is already reached. The one exception to "no LLM here" is the small
  * Flash call that trims a captured page text down to its article.
  *
  * Note requests ("check this page") become queue items at the requested
