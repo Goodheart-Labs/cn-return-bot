@@ -6,6 +6,7 @@ import { SignalBot } from "./engine";
 import { SignalStore } from "./store";
 import { createConsoleTransport } from "./console";
 import { NotesFeed } from "./feed";
+import { RunSummaries } from "./runSummary";
 import { startOperatorEndpoint } from "./operator";
 import { SignalTransport, loadSignalTransportConfig } from "./transport";
 
@@ -38,6 +39,9 @@ and migration 100 applied before both this worker and the scheduled pipeline.
 State: SIGNAL_STATE_PATH (default output/signal-bot[-console][-dry-run].sqlite).
 Notes feed: SIGNAL_NOTES_FEED_GROUP_ID posts every note any pipeline submits to X
 (from the notes table, needs SUPABASE_URL) into that group, checking every minute.
+SIGNAL_RUN_SUMMARIES=true also posts one line-group per scheduled pipeline run there
+(tweets processed, where each stopped, notes posted, writing-limit state);
+SIGNAL_RUN_SUMMARY_LOOKBACK_MIN covers earlier runs on first start.
 Local operation: SIGNAL_OPERATOR_PORT=18081 opens a loopback endpoint (see operator.ts)
 that posts a line labelled SIGNAL_OPERATOR_LABEL (default "Claude") to the group and
 feeds it to the bot; SIGNAL_LOG_CONTENT=true
@@ -138,9 +142,19 @@ async function main(): Promise<void> {
         send: (text) => feedTransport.send(text),
         onError,
       });
+      const summaries = process.env.SIGNAL_RUN_SUMMARIES?.trim().toLowerCase() === "true" ? new RunSummaries({
+        store,
+        listRunsSince: (since, limit) => feedLogger.listPipelineRunsSince(since, limit),
+        capacity: () => feedLogger.getNoteSubmissionCapacity(),
+        send: (text) => feedTransport.send(text),
+        onError,
+        lookbackMs: Number(process.env.SIGNAL_RUN_SUMMARY_LOOKBACK_MIN?.trim() || 0) * 60_000,
+      }) : undefined;
       const pollFeed = async () => {
         const posted = await feed.poll();
         if (posted) log(`notes feed posted ${posted} note${posted === 1 ? "" : "s"}`);
+        const runs = await summaries?.poll();
+        if (runs) log(`posted ${runs} run summar${runs === 1 ? "y" : "ies"}`);
       };
       feedTimer = setInterval(() => { void pollFeed(); }, 60_000);
       void pollFeed();
