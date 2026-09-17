@@ -1,9 +1,9 @@
 name: Debug YouTube subtitles (GOO-169)
 
-# Throwaway investigation workflow, last use: run the worker's own YouTube
-# fetch end to end on six of the videos that were recorded as having no
-# transcript, with the setup the feed workflow now uses. Deleted before the
-# PR is marked ready.
+# Throwaway investigation workflow, eighth probe. The bgutil plugin hands
+# yt-dlp's proxy to the token provider, so the token is generated through the
+# flaky proxy path and times out. Here we ask the provider ourselves, without
+# any proxy, and pass the token to yt-dlp on the command line. No plugin.
 
 on:
   push:
@@ -13,27 +13,35 @@ on:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 25
     env:
       YTDLP_PROXY_URL: ${{ secrets.YTDLP_PROXY_URL }}
-      YOUTUBE_DATA_V3_API_KEY: ${{ secrets.YOUTUBE_DATA_V3_API_KEY }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: latest
-      - run: bun install
-      - uses: ./.github/actions/setup-youtube-captions
-      - name: Same command from a shell
+      - run: pipx install yt-dlp && yt-dlp --version
+      - run: docker run -d --name pot -p 127.0.0.1:4416:4416 brainicism/bgutil-ytdlp-pot-provider:2.0.0 && sleep 8 && curl -sS -m 20 http://127.0.0.1:4416/ping
+      - name: Define the probe
         run: |
-          d=$(mktemp -d)
-          time (yt-dlp --proxy "$YTDLP_PROXY_URL" --extractor-args "youtube:player_client=web" --write-subs --write-auto-subs --sub-lang "en.*" --skip-download --ignore-no-formats-error -o "$d/%(id)s.%(ext)s" https://www.youtube.com/watch?v=J3SIbt2s28Y 2>&1 | tail -6)
-          ls "$d"
-      - name: Same command through spawnSync
-        run: bun run src/scripts_jim/2026_09_16_common_notes_bottleneck/captionSpawnDebug.ts https://www.youtube.com/watch?v=J3SIbt2s28Y
-      - name: The worker's own fetch
-        run: >
-          bun run src/scripts_jim/2026_09_16_common_notes_bottleneck/captionSmoke.ts
-          https://www.youtube.com/watch?v=J3SIbt2s28Y
-          https://www.youtube.com/watch?v=r2ali4LgCQ8
-          https://www.youtube.com/watch?v=cuckk-vSE-Y
+          cat > /tmp/probe.sh <<'SH'
+          probe() {
+            id="$2"
+            echo "=================== $1 :: $id"
+            t0=$(date +%s.%N)
+            token=$(curl -sS -m 60 -X POST -H 'Content-Type: application/json' -d "{\"content_binding\":\"$id\"}" http://127.0.0.1:4416/get_pot | jq -r '.poToken // .error')
+            echo "token after $(echo "$(date +%s.%N) - $t0" | bc | cut -c1-5)s, length ${#token}"
+            d=$(mktemp -d)
+            time (timeout 120 yt-dlp --proxy "$YTDLP_PROXY_URL" --extractor-args "youtube:player_client=web;po_token=web.subs+$token" --write-subs --write-auto-subs --sub-lang "en.*" --skip-download --ignore-no-formats-error -o "$d/%(id)s.%(ext)s" "https://www.youtube.com/watch?v=$id" 2>&1 | grep -i "WARNING\|ERROR\|Writing\|no subtitles" | grep -v "impersonat\|JavaScript runtime\|Only images\|Requested format" | cut -c1-160 | head -6)
+            ls "$d"
+          }
+          SH
+      - name: Without a JS runtime
+        run: |
+          source /tmp/probe.sh
+          probe "no deno" J3SIbt2s28Y
+          probe "no deno" r2ali4LgCQ8
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: With deno
+        run: |
+          source /tmp/probe.sh
+          for id in J3SIbt2s28Y r2ali4LgCQ8 QlF9o9IEp3c NW4IgJKTsII _7ARzqsVmTw DP2m0zJL15I; do probe "deno" $id; done
