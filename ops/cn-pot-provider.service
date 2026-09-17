@@ -1,0 +1,22 @@
+# The PO token provider yt-dlp asks before it downloads YouTube captions.
+# Installed by ops/setup-vm.sh. It needs no environment file and no secrets.
+#
+# yt-dlp downloads captions as YouTube's web player, and that player must
+# present a PO token, a proof that the request comes from a real player.
+# yt-dlp's bgutil plugin asks this server at 127.0.0.1:4416 for one. Without
+# it every caption download on this machine fails as "YouTube could not be
+# reached". The image tag must match the plugin version in setup-vm.sh.
+[Unit]
+Description=PO token provider for yt-dlp caption downloads
+After=docker.service network-online.target
+Requires=docker.service
+
+[Service]
+ExecStartPre=-/usr/bin/docker rm -f cn-pot-provider
+ExecStart=/usr/bin/docker run --rm --name cn-pot-provider -p 127.0.0.1:4416:4416 brainicism/bgutil-ytdlp-pot-provider:2.0.0
+ExecStop=/usr/bin/docker stop cn-pot-provider
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

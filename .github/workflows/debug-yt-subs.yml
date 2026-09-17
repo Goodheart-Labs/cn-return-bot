@@ -1,8 +1,9 @@
 name: Debug YouTube subtitles (GOO-169)
 
-# Throwaway investigation workflow, seventh probe: the exact production
-# setup (deno, the PO token provider container, the web client), through the
-# proxy and without it, twice per video, timed.
+# Throwaway investigation workflow, last use: run the worker's own YouTube
+# fetch end to end on six of the videos that were recorded as having no
+# transcript, with the setup the feed workflow now uses. Deleted before the
+# PR is marked ready.
 
 on:
   push:
@@ -15,24 +16,19 @@ jobs:
     timeout-minutes: 30
     env:
       YTDLP_PROXY_URL: ${{ secrets.YTDLP_PROXY_URL }}
+      YOUTUBE_DATA_V3_API_KEY: ${{ secrets.YOUTUBE_DATA_V3_API_KEY }}
     steps:
-      - run: pipx install yt-dlp && pipx inject yt-dlp bgutil-ytdlp-pot-provider && yt-dlp --version
-      - uses: denoland/setup-deno@v2
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
         with:
-          deno-version: v2.x
-      - run: docker run -d --name bgutil -p 127.0.0.1:4416:4416 brainicism/bgutil-ytdlp-pot-provider && sleep 8 && curl -sS -m 20 http://127.0.0.1:4416/ping
-      - name: Variants
-        run: |
-          probe() {
-            echo "=================== $1 :: $2"
-            shift; shift
-            d=$(mktemp -d)
-            time (timeout 300 yt-dlp "$@" --extractor-args "youtube:player_client=web" --write-subs --write-auto-subs --sub-lang "en.*" --skip-download --ignore-no-formats-error -o "$d/%(id)s.%(ext)s" 2>&1 | grep -i "WARNING\|ERROR\|Writing\|no subtitles\|PO Token\|members\|Sign in" | cut -c1-170 | head -8)
-            ls "$d"
-          }
-          for url in https://www.youtube.com/watch?v=J3SIbt2s28Y https://www.youtube.com/watch?v=DP2m0zJL15I https://www.youtube.com/watch?v=r2ali4LgCQ8; do
-            probe "proxy 1" "$url" --proxy "$YTDLP_PROXY_URL" "$url"
-            probe "proxy 2" "$url" --proxy "$YTDLP_PROXY_URL" "$url"
-            probe "no proxy" "$url" "$url"
-          done
-          docker logs bgutil 2>&1 | tail -3
+          bun-version: latest
+      - run: bun install
+      - uses: ./.github/actions/setup-youtube-captions
+      - run: >
+          bun run src/scripts_jim/2026_09_16_common_notes_bottleneck/captionSmoke.ts
+          https://www.youtube.com/watch?v=J3SIbt2s28Y
+          https://www.youtube.com/watch?v=r2ali4LgCQ8
+          https://www.youtube.com/watch?v=QlF9o9IEp3c
+          https://www.youtube.com/watch?v=NW4IgJKTsII
+          https://www.youtube.com/watch?v=_7ARzqsVmTw
+          https://www.youtube.com/watch?v=cuckk-vSE-Y

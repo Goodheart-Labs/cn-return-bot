@@ -9,7 +9,7 @@ Wants=network-online.target
 User=cnbot
 WorkingDirectory=/opt/cn-return-bot
 EnvironmentFile=/etc/cn-return-bot/service.env
-Environment=PATH=/home/cnbot/.bun/bin:/home/cnbot/.local/bin:/usr/local/bin:/usr/bin:/bin
+Environment=PATH=/home/cnbot/.bun/bin:/home/cnbot/.local/bin:/home/cnbot/.deno/bin:/usr/local/bin:/usr/bin:/bin
 ExecStart=/home/cnbot/.bun/bin/bun run src/service/intake/main.ts
 Restart=always
 RestartSec=5

@@ -141,21 +141,28 @@ function runYtDlp(url: string, args: string[]): { status: number | null; stdout:
   return { status: result.status, stdout: result.stdout ?? "", stderr: (result.stderr ?? "") + (result.error ? `\n${result.error.message}` : "") };
 }
 
-/** Runs a subtitle call until YouTube answers. A call whose output says
- *  YouTube was not reached is run again with a fresh proxy address, up to
- *  PROXY_RETRY_ATTEMPTS times, and then throws YoutubeUnreachableError. A
- *  call YouTube did answer, however it answered, is returned as is. */
-function runYtDlpUntilReached(url: string, args: string[]): { status: number | null; stdout: string; stderr: string } {
+/** Runs a subtitle call until it got what it came for or YouTube has
+ *  answered. `found` reads the result: caption files on disk, or tracks in a
+ *  listing. Success is judged by that and never by the warnings, because a
+ *  call that wrote the captions can still print "HTTP Error 429" for a page
+ *  it did not need. A call that found nothing and whose output says YouTube
+ *  was not reached is run again with a fresh proxy address, up to
+ *  PROXY_RETRY_ATTEMPTS times, and then throws YoutubeUnreachableError. A call
+ *  that found nothing while YouTube did answer returns null: the video has
+ *  nothing to give. */
+function runYtDlpUntilReached<Found>(url: string, args: string[], found: (stdout: string) => Found | null): Found | null {
   const attempts = ytDlpProxyArgs(url).length > 0 ? PROXY_RETRY_ATTEMPTS : 1;
   let lastReason = "";
   for (let attempt = 1; attempt <= attempts; attempt++) {
     const result = runYtDlp(url, args);
-    const unreachable = result.stderr.match(YOUTUBE_UNREACHABLE_RE);
-    if (!unreachable) return result;
-    lastReason = result.stderr.split("\n").find((line) => YOUTUBE_UNREACHABLE_RE.test(line))?.trim() ?? unreachable[0];
-    if (attempt < attempts) console.warn(`yt-dlp could not reach YouTube for ${url} (attempt ${attempt}/${attempts}: ${lastReason.slice(0, 120)}), retrying with a fresh proxy IP`);
+    const value = found(result.stdout);
+    if (value !== null) return value;
+    const unreachableLine = result.stderr.split("\n").find((line) => YOUTUBE_UNREACHABLE_RE.test(line));
+    if (!unreachableLine) return null;
+    lastReason = unreachableLine.trim().slice(0, 200);
+    if (attempt < attempts) console.warn(`yt-dlp could not reach YouTube for ${url} (attempt ${attempt}/${attempts}: ${lastReason}), retrying with a fresh proxy IP`);
   }
-  throw new YoutubeUnreachableError(url, lastReason.slice(0, 200));
+  throw new YoutubeUnreachableError(url, lastReason);
 }
 
 /**
@@ -250,21 +257,24 @@ export function fetchAutoSubs(url: string, outputDir: string, lang: string = "en
  */
 export function fetchTimedTranscript(url: string, outputDir: string, lang: string = "en"): SubtitleCue[] | null {
   const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
+  // The first downloaded track that parses into cues. A non-zero exit still
+  // leaves behind whatever finished downloading, and one good track is all we
+  // need, so the files are read whatever the exit was.
+  const downloadedCues = (): SubtitleCue[] | null => {
+    const files = fs
+      .readdirSync(outputDir)
+      .filter((f) => f.endsWith(".vtt") || f.endsWith(".ttml") || f.endsWith(".srt"))
+      .sort((a, b) => a.length - b.length);
+    for (const file of files) {
+      const cues = parseSubtitleToCues(fs.readFileSync(path.join(outputDir, file), "utf-8"));
+      if (cues.length) return cues;
+    }
+    return null;
+  };
   // Writing subtitles needs no video formats. Without the ignore flag a
-  // degraded player response, which lists no formats, aborts the call before
-  // the subtitles are fetched. A non-zero exit still leaves behind whatever
-  // finished downloading, and one good track is all we need, so the files
-  // are read whatever the exit was.
-  runYtDlpUntilReached(url, ["--write-subs", "--write-auto-subs", "--sub-lang", lang, "--skip-download", "--ignore-no-formats-error", "-o", outputTemplate, url]);
-  const matches = fs
-    .readdirSync(outputDir)
-    .filter((f) => f.endsWith(".vtt") || f.endsWith(".ttml") || f.endsWith(".srt"))
-    .sort((a, b) => a.length - b.length);
-  for (const match of matches) {
-    const cues = parseSubtitleToCues(fs.readFileSync(path.join(outputDir, match), "utf-8"));
-    if (cues.length) return cues;
-  }
-  return null;
+  // player response that lists no formats aborts the call before the
+  // subtitles are fetched.
+  return runYtDlpUntilReached(url, ["--write-subs", "--write-auto-subs", "--sub-lang", lang, "--skip-download", "--ignore-no-formats-error", "-o", outputTemplate, url], downloadedCues);
 }
 
 /**
@@ -282,7 +292,11 @@ export function fetchTimedTranscript(url: string, outputDir: string, lang: strin
  * rather than speech recognition.
  */
 export function listOriginalSubtitleLanguages(url: string): string[] {
-  return parseSubtitleListing(runYtDlpUntilReached(url, ["--list-subs", "--skip-download", "--ignore-no-formats-error", url]).stdout);
+  const listedLanguages = (stdout: string): string[] | null => {
+    const languages = parseSubtitleListing(stdout);
+    return languages.length ? languages : null;
+  };
+  return runYtDlpUntilReached(url, ["--list-subs", "--skip-download", "--ignore-no-formats-error", url], listedLanguages) ?? [];
 }
 
 /** Reads the language codes out of what `yt-dlp --list-subs` prints. */

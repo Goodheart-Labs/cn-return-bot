@@ -17,7 +17,7 @@ ENV_FILE="/etc/cn-return-bot/service.env"
 
 echo "── system packages"
 apt-get update
-apt-get install -y --no-install-recommends ffmpeg git pipx unzip curl jq
+apt-get install -y --no-install-recommends ffmpeg git pipx unzip curl jq docker.io
 
 echo "── service user"
 id "$SERVICE_USER" &>/dev/null || useradd --system --create-home --shell /bin/bash "$SERVICE_USER"
@@ -27,8 +27,12 @@ if ! sudo -u "$SERVICE_USER" test -x "/home/$SERVICE_USER/.bun/bin/bun"; then
   sudo -u "$SERVICE_USER" bash -c "curl -fsSL https://bun.sh/install | bash"
 fi
 
-echo "── yt-dlp"
+echo "── yt-dlp, its PO token plugin, and deno (caption downloads need all three, see cn-pot-provider.service)"
 sudo -u "$SERVICE_USER" bash -c "PIPX_HOME=~/.local/pipx PIPX_BIN_DIR=~/.local/bin pipx install --force yt-dlp"
+sudo -u "$SERVICE_USER" bash -c "PIPX_HOME=~/.local/pipx PIPX_BIN_DIR=~/.local/bin pipx inject --force yt-dlp bgutil-ytdlp-pot-provider==2.0.0"
+if ! sudo -u "$SERVICE_USER" test -x "/home/$SERVICE_USER/.deno/bin/deno"; then
+  sudo -u "$SERVICE_USER" bash -c "curl -fsSL https://deno.land/install.sh | sh -s -- -y --no-modify-path"
+fi
 
 echo "── repository"
 if [ ! -d "$REPO_DIR/.git" ]; then
@@ -70,12 +74,14 @@ if [ ! -f /swapfile ]; then
 fi
 
 echo "── systemd units"
-for unit in cn-claim-check cn-extraction cn-intake cn-autodeploy; do
+for unit in cn-claim-check cn-extraction cn-intake cn-autodeploy cn-pot-provider; do
   cp "$REPO_DIR/ops/$unit.service" "/etc/systemd/system/$unit.service"
 done
 cp "$REPO_DIR/ops/cn-autodeploy.timer" /etc/systemd/system/cn-autodeploy.timer
 systemctl daemon-reload
 systemctl enable cn-claim-check cn-extraction cn-intake
+# The token provider holds no secrets, so it can start right away.
+systemctl enable --now cn-pot-provider
 systemctl enable --now cn-autodeploy.timer
 rm -f /etc/sudoers.d/cn-restart
 

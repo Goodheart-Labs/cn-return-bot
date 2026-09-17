@@ -58,6 +58,10 @@ SUPABASE_SERVICE_KEY=
 CLAIM_CHECK_URL=http://localhost:8787
 EXTRACTION_URL=http://localhost:8788
 
+# YouTube Data API key (intake): video details for a requested YouTube page.
+# The same key the feed run uses; 10,000 free quota units a day per project.
+YOUTUBE_DATA_V3_API_KEY=
+
 # YouTube needs the residential proxy here, exactly as it does on GitHub's
 # runners. Measured on this machine on 2026-09-08: every per-video call answers
 # "Sign in to confirm you're not a bot", while channel listings still work. It
@@ -78,6 +82,33 @@ YTDLP_PROXY_URL=
 #EVERYTHING_DAILY_SPEND_CAP_USD=50
 #EVERYTHING_REQUEST_RESERVE_USD=10
 ```
+
+## The PO token provider (caption downloads)
+
+Intake fetches YouTube captions for pages readers ask for. yt-dlp downloads
+them as YouTube's web player, which must present a PO token, a proof that the
+request comes from a real player. Three things make that work, and
+`setup-vm.sh` installs all of them: the `bgutil-ytdlp-pot-provider` plugin
+inside yt-dlp's pipx environment, the deno runtime (on the intake unit's
+PATH), and the provider itself, a Docker container run by
+`cn-pot-provider.service` on 127.0.0.1:4416. The plugin version and the image
+tag must be the same; both are pinned to 2.0.0.
+
+On a machine set up before this existed, run once as root:
+
+```bash
+apt-get install -y --no-install-recommends docker.io
+sudo -u cnbot bash -c "PIPX_HOME=~/.local/pipx PIPX_BIN_DIR=~/.local/bin pipx inject --force yt-dlp bgutil-ytdlp-pot-provider==2.0.0"
+sudo -u cnbot bash -c "curl -fsSL https://deno.land/install.sh | sh -s -- -y --no-modify-path"
+cp /opt/cn-return-bot/ops/cn-pot-provider.service /etc/systemd/system/
+systemctl daemon-reload && systemctl enable --now cn-pot-provider
+curl -s http://127.0.0.1:4416/ping    # answers with its version
+```
+
+Then add `YOUTUBE_DATA_V3_API_KEY=` to the environment file and
+`systemctl restart cn-intake`. A caption download without the provider fails
+with "YouTube could not be reached ... PO Token", which is the line to look
+for in `journalctl -u cn-intake`.
 
 ## Deploys
 
