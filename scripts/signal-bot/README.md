@@ -12,7 +12,18 @@ line, prints replies, keeps its own state file (`output/signal-bot-console*.sqli
 and submits approved notes through the same shared X queue as the Signal worker.
 Only one console worker can hold that state file at a time.
 
-The Docker worker shares the existing Signal bridge at `127.0.0.1:8080` on the
+With its own Signal account the bot answers only when addressed
+(`SIGNAL_ADDRESSED_ONLY=true`: tweet links, `#n`, @-mentions, quotes of its
+messages, or a leading “bot”). `signal-api.compose.yml` runs a bridge for that
+account on `127.0.0.1:8081`, with the account data in
+`/opt/cn-return-bot/signal-cli-config`. Registration needs the bridge in
+`normal` mode (`SIGNAL_API_MODE=normal … up -d`), a captcha from
+signalcaptchas.org, `POST /v1/register/<number>` with `{"captcha": …}`, the
+SMS code to `POST /v1/register/<number>/verify/<code>`, and
+`PUT /v1/profiles/<number>` for the display name; then recreate the service
+in json-rpc mode and set `SIGNAL_API_URL=http://127.0.0.1:8081` for the worker.
+
+The Docker worker otherwise shares the existing Signal bridge at `127.0.0.1:8080` on the
 Linux host. Its Compose project contains only the new notes worker. The gym
 bridge and watcher continue under their existing project.
 
