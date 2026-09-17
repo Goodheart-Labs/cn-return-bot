@@ -27,6 +27,7 @@ function fixture(options: {
   submit?: (conversation: Conversation, callbacks?: SubmissionCallbacks) => Promise<SubmissionResult>;
   registerSubmission?: (conversation: Conversation) => Promise<SubmissionResult | null>;
   cancelSubmission?: (conversation: Conversation) => Promise<void>;
+  addressedOnly?: boolean;
 } = {}) {
   const store = options.store ?? new SignalStore(":memory:", "test-account/group");
   if (!options.store) cleanups.push(() => store.close());
@@ -79,6 +80,7 @@ function fixture(options: {
     },
     registerSubmission: options.registerSubmission,
     dryRun: options.dryRun,
+    addressedOnly: options.addressedOnly,
     onError: error => errors.push(error),
   });
   function message(text: string, quoteId?: string, timestamp?: number): IncomingMessage {
@@ -163,6 +165,31 @@ describe("Signal draft conversations", () => {
     expect(f.sent.at(-1)!.text).toContain("Which tweet do you mean?");
     expect(f.sent.at(-1)!.text).toContain("#1 · 12345\n#2 · 67890");
     expect(f.sent.filter(item => item.text.startsWith("Bot: general"))).toHaveLength(0);
+  });
+
+  test("addressed-only mode ignores chatter but answers links, #numbers, mentions, quotes, and a leading bot", async () => {
+    const f = fixture({ addressedOnly: true, converse: async context => `chat: ${context.text}` });
+    await f.send("morning all");
+    await f.send("yes post");
+    expect(f.sent).toHaveLength(0);
+    expect(f.logs).toContain("ignored: not addressed to the bot");
+    await f.send("https://x.com/example/status/12345");
+    expect(f.current().draft?.version).toBe(1);
+    const shown = f.sent.length;
+    await f.send("I think the note is fine");
+    expect(f.sent).toHaveLength(shown);
+    await f.send("#1 Does that source establish the date?");
+    expect(f.draftCalls.at(-1)!.history.at(-1)!.content).toBe("Does that source establish the date?");
+    await f.bot.handle({ ...f.message("what is the source?"), mentionsBot: true });
+    expect(f.draftCalls.at(-1)!.history.at(-1)!.content).toBe("what is the source?");
+    await f.bot.handle({ ...f.message("and the wording?"), quotesBot: true });
+    expect(f.draftCalls.at(-1)!.history.at(-1)!.content).toBe("and the wording?");
+    await f.send("Bot: is it ready?");
+    expect(f.draftCalls.at(-1)!.history.at(-1)!.content).toBe("is it ready?");
+    await f.bot.handle({ ...f.message("yes post", f.latestDraft().id), quotesBot: true });
+    expect(f.submissions).toHaveLength(1);
+    await f.send("bot what did we post?");
+    expect(f.sent.at(-1)!.text).toBe("Bot: chat: what did we post?");
   });
 
   test("an inaccessible tweet reports failure and does not fabricate a draft", async () => {

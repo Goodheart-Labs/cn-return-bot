@@ -16,7 +16,9 @@ Paste a tweet in the configured group for an access check and proposed note.
 Reply to a draft (or prefix a message with #conversation-number) to discuss it.
 ‘yes post’ submits or queues the exact current version; ‘yes’ also works when replying
 directly to the current draft. ‘draft’ shows it again; ‘cancel’ withdraws it.
-Other messages get a plain-language answer about the bot and its conversations.
+Other messages get a plain-language answer about the bot and its conversations,
+unless SIGNAL_ADDRESSED_ONLY=true, when the bot stays silent except for tweet links,
+#numbers, quotes of or @-mentions of its account, and messages starting with “bot”.
 Every reply starts with “Bot”, since the bot may post from the owner's own account.
 
 --dry-run   Research and reply, but never submit to X.
@@ -103,6 +105,7 @@ async function main(): Promise<void> {
       cancelSubmission,
       registerSubmission,
       dryRun,
+      addressedOnly: process.env.SIGNAL_ADDRESSED_ONLY?.trim().toLowerCase() === "true",
       onError,
       log: terminal ? undefined : log,
     });

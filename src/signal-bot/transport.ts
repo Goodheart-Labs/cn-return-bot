@@ -7,6 +7,10 @@ export interface IncomingMessage {
   text: string;
   /** Sent from another device linked to this account; requires durable echo suppression. */
   isSelf?: boolean;
+  /** The message @-mentions the bot account. */
+  mentionsBot?: boolean;
+  /** The message quotes something the bot account sent. */
+  quotesBot?: boolean;
   quoteId?: string;
   quoteAuthor?: string;
   /** Display context only; never use quoted text as approval or authorization. */
@@ -138,20 +142,30 @@ export function parseIncomingMessage(event: unknown, config: SignalTransportConf
     return null;
   }
   if (internal !== internalGroupId(config.groupId)) return null;
-  const text = nonempty(data.message);
+  // Mentions arrive as U+FFFC placeholders in the text plus a mentions list.
+  const text = nonempty(data.message)?.replace(/\uFFFC/g, "").trim();
+  const isBot = (identity: unknown) => nonempty(identity) !== undefined && (
+    identity === config.number || (!!config.botUuid && String(identity).toLowerCase() === config.botUuid.toLowerCase()));
+  const mentionsBot = Array.isArray(data.mentions) && data.mentions.some((item) => {
+    const mention = record(item);
+    return !!mention && (isBot(mention.uuid) || isBot(mention.number));
+  });
   // Sync envelopes may be delivered much later than the original human send.
   // Never substitute their envelope timestamp for approval/version ordering.
   const sentAt = timestamp(data.timestamp) ?? (isSelf ? undefined : timestamp(envelope.timestamp));
-  if (!sender || !text || !sentAt) return null;
+  if (!sender || !sentAt || (!text && !mentionsBot)) return null;
   const quote = record(data.quote);
   const quotedAt = timestamp(quote?.id);
   const author = nonempty(quote?.authorUuid) ?? nonempty(quote?.authorNumber) ?? nonempty(quote?.author);
+  const quotesBot = !!quotedAt && (isBot(quote?.authorUuid) || isBot(quote?.authorNumber) || isBot(quote?.author));
   return {
     id: `${sender}:${sentAt}`,
     sender,
     timestamp: sentAt,
-    text,
+    text: text ?? "",
     ...(isSelf ? { isSelf: true } : {}),
+    ...(mentionsBot ? { mentionsBot: true } : {}),
+    ...(quotesBot ? { quotesBot: true } : {}),
     ...(quotedAt ? { quoteId: String(quotedAt) } : {}),
     ...(author ? { quoteAuthor: author } : {}),
     ...(nonempty(quote?.text) ? { quoteText: quote!.text as string } : {}),

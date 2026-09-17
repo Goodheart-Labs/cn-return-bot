@@ -29,8 +29,22 @@ describe("Signal receive parsing", () => {
   test("normalizes REST group IDs and preserves the message and quote identity", () => {
     expect(parseIncomingMessage(event({ quote: { id: sentAt - 1, author: config.number, text: "Draft 1" } }), config)).toEqual({
       id: `${sender}:${sentAt}`, sender, timestamp: sentAt, text: "yes post",
-      quoteId: String(sentAt - 1), quoteAuthor: config.number, quoteText: "Draft 1",
+      quotesBot: true, quoteId: String(sentAt - 1), quoteAuthor: config.number, quoteText: "Draft 1",
     });
+  });
+
+  test("detects mentions and quotes of the bot account and strips mention placeholders", () => {
+    const botUuid = "12345678-1234-1234-1234-123456789abc";
+    const withUuid = { ...config, botUuid };
+    expect(parseIncomingMessage(event({ message: "\uFFFC is this right?", mentions: [{ uuid: botUuid, start: 0, length: 1 }] }), withUuid)).toMatchObject({
+      text: "is this right?", mentionsBot: true,
+    });
+    expect(parseIncomingMessage(event({ message: "\uFFFC", mentions: [{ number: config.number, start: 0, length: 1 }] }), config)).toMatchObject({ text: "", mentionsBot: true });
+    expect(parseIncomingMessage(event({ message: "\uFFFC hi", mentions: [{ uuid: sender, start: 0, length: 1 }] }), withUuid)).toEqual({
+      id: `${sender}:${sentAt}`, sender, timestamp: sentAt, text: "hi",
+    });
+    expect(parseIncomingMessage(event({ quote: { id: sentAt - 1, authorUuid: sender, text: "human text" } }), withUuid)).not.toHaveProperty("quotesBot");
+    expect(parseIncomingMessage(event({ message: "\uFFFC" }), config)).toBeNull();
   });
 
   test("supports groupV2, internal configured IDs, source numbers, and string timestamps", () => {
@@ -72,7 +86,7 @@ describe("Signal receive parsing", () => {
     expect(parseIncomingMessage(selfEvent, config)).toBeNull();
     expect(parseIncomingMessage(selfEvent, { ...config, acceptSelfMessages: true })).toEqual({
       id: `${config.number}:${sentAt}`, sender: config.number, timestamp: sentAt,
-      text: "yes post", isSelf: true, quoteId: String(sentAt - 100), quoteAuthor: config.number, quoteText: "Draft",
+      text: "yes post", isSelf: true, quotesBot: true, quoteId: String(sentAt - 100), quoteAuthor: config.number, quoteText: "Draft",
     });
     expect(parseIncomingMessage(selfEvent, { ...config, acceptSelfMessages: true, botUuid: sender })?.sender).toBe(sender);
   });

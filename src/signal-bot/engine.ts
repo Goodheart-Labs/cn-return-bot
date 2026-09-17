@@ -16,6 +16,9 @@ interface EngineDependencies {
   registerSubmission?: (conversation: Conversation) => Promise<SubmissionResult | null>;
   cancelSubmission?: (conversation: Conversation) => Promise<void>;
   dryRun?: boolean;
+  /** Stay silent unless a message carries a tweet link, a #number, a quote of or
+   * mention of the bot, or a leading "bot". Ordinary group chatter is ignored. */
+  addressedOnly?: boolean;
   onError?: (error: unknown) => void;
   /** Operational log line per received message and reply; never message content. */
   log?: (line: string) => void;
@@ -23,6 +26,7 @@ interface EngineDependencies {
 
 const MAX_INPUT_CHARS = 6000;
 const NO_TARGET_HELP = "Paste a tweet link to get an access check and draft. For an existing tweet, reply to its draft or start your message with its #number.";
+const BOT_PREFIX = /^\s*@?(?:cn\s*)?bot\b[:,]?\s*/i;
 const TWEET_URL = /https?:\/\/(?:(?:www|mobile)\.)?(?:x\.com|twitter\.com)\/(?:[A-Za-z0-9_]+|i\/web)\/status\/(\d{1,25})(?:[/?#][^\s]*)?/gi;
 
 function command(text: string): { text: string; tweetIds: string[]; threadId?: number } {
@@ -199,6 +203,13 @@ export class SignalBot {
       return;
     }
     const quoted = message.quoteId ? store.resolve(message.quoteId) : undefined;
+    const addressedByPrefix = BOT_PREFIX.test(parsed.text);
+    if (addressedByPrefix) parsed.text = parsed.text.replace(BOT_PREFIX, "").trim();
+    if (this.dependencies.addressedOnly && !parsed.tweetIds.length && parsed.threadId === undefined &&
+        !message.mentionsBot && !message.quotesBot && !addressedByPrefix) {
+      this.dependencies.log?.("ignored: not addressed to the bot");
+      return;
+    }
     let conversation = parsed.threadId !== undefined ? store.get(parsed.threadId) : undefined;
     if (parsed.threadId !== undefined && !conversation) {
       await this.reply(`I don’t have a conversation #${parsed.threadId}. Paste the tweet link to start one.`, message);
