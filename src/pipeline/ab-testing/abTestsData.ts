@@ -78,19 +78,19 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
   ],
 };
 
-// 2026-09-17: 80% on the two proven arms, 20% on two newcomers (numbers in the PR).
+// 2026-09-17: two proven arms, three newcomers at 13 each (numbers in the PR).
 const SIMPLE_BOT_WRITER_TEST: ABTest = {
   name: "simple_bot_writer",
   prerequisites: { botId: "simple-bot" },
   variants: [
     { variant: { name: "sonnet5",          overrides: { writer_model: "anthropic/claude-sonnet-5"      }}, weight: 60 },
-    { variant: { name: "gemini38flash",    overrides: { writer_model: "google/gemini-3.8-flash"       }}, weight: 10 },
+    { variant: { name: "gemini38flash",    overrides: { writer_model: "google/gemini-3.8-flash"       }}, weight: 13 },
     { variant: { name: "gemini-flash",     overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 20 },
-    { variant: { name: "fable51",          overrides: { writer_model: "anthropic/claude-fable-5.1"    }}, weight: 10 },
+    { variant: { name: "fable51",          overrides: { writer_model: "anthropic/claude-fable-5.1"    }}, weight: 13 },
     { variant: { name: "opus5",            overrides: { writer_model: "anthropic/claude-opus-5"       }}, weight: 0 },
     { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 0 },
     { variant: { name: "fable5",           overrides: { writer_model: "anthropic/claude-fable-5"      }}, weight: 0 },
-    { variant: { name: "musespark13c",     overrides: { writer_model: "meta/muse-spark-1.3-contributor" }}, weight: 0 },
+    { variant: { name: "musespark13c",     overrides: { writer_model: "meta/muse-spark-1.3-contributor" }}, weight: 13 },
     { variant: { name: "deepseek-v4flash", overrides: { writer_model: "deepseek/deepseek-v4-flash"    }}, weight: 0 },
   ],
 };
