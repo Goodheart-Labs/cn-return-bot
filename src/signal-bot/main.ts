@@ -136,6 +136,7 @@ async function main(): Promise<void> {
       announce: (text, group) => {
         store.recordBotOutput(text);
         if (!group) return send(text);
+        sentTexts.push(`[${group}] ${text}`);
         if (logContent) console.log(`[signal] → [${group}] ${text}`);
         return transport!.send(text, undefined, group === "live" && feedGroupId ? feedGroupId : group);
       },
