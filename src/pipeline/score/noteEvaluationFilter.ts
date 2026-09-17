@@ -31,6 +31,24 @@ export async function evaluateNote(
     "Content-Type": "application/json",
   };
 
+  // X answers this endpoint with 403 when the call comes from GitHub Actions'
+  // network (every pipeline call since 2026-09-09) while the same keys score
+  // fine elsewhere. With a proxy configured, go out through the residential
+  // proxy yt-dlp already uses; Bun's fetch takes the proxy directly. Payloads
+  // are ~1 KB, so the per-GB cost is negligible.
+  const proxy = process.env.EVALUATE_NOTE_PROXY_URL?.trim() || process.env.YTDLP_PROXY_URL?.trim();
+  if (proxy) {
+    const res = await fetch(url, { method: "POST", headers, body, proxy, signal: AbortSignal.timeout(30_000) } as RequestInit);
+    const text = await res.text();
+    if (!res.ok) {
+      const error: any = new Error(`Request failed with status code ${res.status}`);
+      error.response = { status: res.status, data: text.slice(0, 500) };
+      console.error("[noteEvaluationFilter] Error evaluating note (via proxy):", `${error.message} ${text.slice(0, 500)}`);
+      throw error;
+    }
+    return JSON.parse(text);
+  }
+
   try {
     const response = await axios.post(url, data, {
       headers,
