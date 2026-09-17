@@ -21,7 +21,7 @@ directly to the current draft. ‘draft’ shows it again; ‘cancel’ withdraw
 Other messages get a plain-language answer about the bot and its conversations,
 unless SIGNAL_ADDRESSED_ONLY=true, when the bot stays silent except for tweet links,
 #numbers, quotes of or @-mentions of its account, and messages starting with “bot”.
-SIGNAL_TRIGGER=mention is stricter: only an @-mention or a quote of a bot message counts.
+SIGNAL_TRIGGER=mention is stricter: only an @-mention of the bot counts.
 Every reply starts with “Bot”, since the bot may post from the owner's own account.
 
 --dry-run   Research and reply, but never submit to X.

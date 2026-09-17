@@ -207,8 +207,10 @@ describe("Signal draft conversations", () => {
     await f.bot.handle({ ...f.message("https://x.com/example/status/12345"), mentionsBot: true });
     expect(f.current().draft?.version).toBe(1);
     await f.send("#1 yes post");
-    expect(f.submissions).toHaveLength(0);
+    // A quote-reply without a tag is ignored too; only a tagged approval submits.
     await f.bot.handle({ ...f.message("yes post", f.latestDraft().id), quotesBot: true });
+    expect(f.submissions).toHaveLength(0);
+    await f.bot.handle({ ...f.message("yes post", f.latestDraft().id), quotesBot: true, mentionsBot: true });
     expect(f.submissions).toHaveLength(1);
   });
 

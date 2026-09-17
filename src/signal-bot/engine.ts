@@ -19,8 +19,8 @@ interface EngineDependencies {
   /** Stay silent unless a message carries a tweet link, a #number, a quote of or
    * mention of the bot, or a leading "bot". Ordinary group chatter is ignored. */
   addressedOnly?: boolean;
-  /** Stricter still: only an @-mention of the bot or a quote of one of its
-   * messages is handled. Links, #numbers and bare commands are ignored. */
+  /** Stricter still: only an @-mention of the bot is handled. Quotes of its
+   * messages, links, #numbers and bare commands are all ignored. */
   mentionOnly?: boolean;
   onError?: (error: unknown) => void;
   /** Operational log line per received message and reply; never message content. */
@@ -207,7 +207,7 @@ export class SignalBot {
     // or leading "bot" gets a plain answer there, everything else is ignored.
     if (message.fromGroup) {
       const prefixed = BOT_PREFIX.test(parsed.text);
-      if (!message.mentionsBot && !message.quotesBot && !prefixed) return;
+      if (this.dependencies.mentionOnly ? !message.mentionsBot : (!message.mentionsBot && !message.quotesBot && !prefixed)) return;
       await this.converse(message, prefixed ? parsed.text.replace(BOT_PREFIX, "").trim() : parsed.text);
       return;
     }
@@ -222,7 +222,7 @@ export class SignalBot {
     // unambiguous conversation below, so a stray "yes" cannot approve anything new.
     const exactCommandText = /^(?:cancel|withdraw|status|draft|show draft|yes(?:(?:\s*,\s*|\s+)post(?:\s+it)?)?)[.!]?$/i.test(parsed.text);
     if (this.dependencies.mentionOnly) {
-      if (!message.mentionsBot && !message.quotesBot) {
+      if (!message.mentionsBot) {
         this.dependencies.log?.("ignored: bot not tagged");
         return;
       }
