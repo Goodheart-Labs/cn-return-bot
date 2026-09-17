@@ -1,5 +1,5 @@
 /**
- * When the next feed run should start, so the day's budget is spread across
+ * When the next feed post should start, so the day's budget is spread across
  * the UTC day instead of spent in a burst after midnight.
  *
  * The rule is the one Jim asked for. Take the average cost of a post over the
@@ -11,11 +11,12 @@
  * is due that interval after the last feed post started. An attempt that
  * ended in error, a fetch that failed for instance, spent nothing and does
  * not count as that post: the next post is due as if it had never run
- * (migration 099). Every run computes this at its end and stores the result
- * as an alarm, and the database starts
- * the next run when the alarm has come (everything_feed_schedule, migration
- * 097). A cheap post shortens the next interval a little and an expensive
- * post lengthens it.
+ * (migration 099). The feed worker on the services machine
+ * (src/service/feed/main.ts) asks this rule before every start and sleeps
+ * until the next post is due. A cheap post shortens the next interval a
+ * little and an expensive post lengthens it. A post that outlasts its
+ * interval does not hold the next one back: the worker starts it beside the
+ * running one, up to its limit of posts in flight.
  *
  * Every input arrives in one database snapshot (everything_feed_pacing,
  * migration 096), and the alarm is computed in database time. The runner's
@@ -26,7 +27,7 @@
  * Reader-requested pages are outside this entirely. The intake service on the
  * machine processes them at once and spends from the full cap. Their spend
  * still counts in "spent today", exactly as the hard feed stop already counts
- * it, so a big reader page pushes the next feed run out.
+ * it, so a big reader page pushes the next feed post out.
  */
 
 import { duration, money } from "./logFormat";
@@ -58,11 +59,10 @@ export const MEAN_COST_RULE: MeanCostRule = {
  *  guess for a post on the cheap pipeline (2026-09-15). */
 export const DEFAULT_MEAN_POST_COST_USD = 1;
 
-/** How long a run that found nothing to process sets the alarm for. Without
- *  it an idle pipeline would be started every minute, since the interval is
- *  measured from a post start that never moves. Thirty minutes is the cadence
- *  the fixed timer had. The other timing rule, the database's 45-minute
- *  backstop for a run that never set its alarm, lives in migration 098. */
+/** How long the feed worker waits before looking again after it found nothing
+ *  to process. Without it an idle worker would walk every creator's feed in a
+ *  tight loop, since the interval is measured from a post start that never
+ *  moves. Thirty minutes is the cadence the old fixed timer had. */
 export const IDLE_RECHECK_MS = 30 * 60_000;
 
 const HOUR_MS = 3600_000;
@@ -95,13 +95,14 @@ export interface NextRun {
   closedForToday: boolean;
 }
 
-export type AlarmReason = "interval" | "midnight" | "idle";
-
-/** When the database should start the next run, and why that time. */
-export interface FeedAlarm {
-  at: Date;
-  reason: AlarmReason;
-}
+/** Whether the feed worker may start a post now, and if not, how long until
+ *  it may and why. */
+export type FeedStart =
+  | { type: "due" }
+  /** The next post is due one interval after the last one started. */
+  | { type: "interval"; waitMs: number }
+  /** The money left does not cover one average post; the budget resets at midnight. */
+  | { type: "midnight"; waitMs: number };
 
 export function nextUtcMidnight(now: Date): Date {
   return new Date(Math.floor(now.getTime() / DAY_MS) * DAY_MS + DAY_MS);
@@ -135,13 +136,12 @@ export function computeNextRun(snapshot: FeedPacingSnapshot, feedBudgetUsd: numb
   return { meanPostCostUsd: mean, meanIsDefault: isDefault, moneyLeftUsd, hoursLeft, intervalMs, dueAt, closedForToday: false };
 }
 
-/** The alarm a run sets at its end. `started` says whether this run started a
- *  feed item; a run that found nothing to do asks again after the idle wait,
- *  because the interval alone would make it due at once and forever. */
-export function nextAlarm(nextRun: NextRun, snapshot: FeedPacingSnapshot, started: boolean): FeedAlarm {
-  if (nextRun.closedForToday) return { at: nextRun.dueAt, reason: "midnight" };
-  if (!started) return { at: new Date(snapshot.dbNow.getTime() + IDLE_RECHECK_MS), reason: "idle" };
-  return { at: nextRun.dueAt, reason: "interval" };
+/** The pacing rule's answer to "may a post start now". A due time in the
+ *  past means the worker is behind its schedule and starts at once. */
+export function nextFeedStart(nextRun: NextRun, snapshot: FeedPacingSnapshot): FeedStart {
+  const waitMs = nextRun.dueAt.getTime() - snapshot.dbNow.getTime();
+  if (nextRun.closedForToday) return { type: "midnight", waitMs };
+  return waitMs > 0 ? { type: "interval", waitMs } : { type: "due" };
 }
 
 /** How many posts a day the feed budget buys at the current mean. The creator
@@ -170,15 +170,9 @@ export function describePacing(nextRun: NextRun, snapshot: FeedPacingSnapshot, f
   return lines.join("\n");
 }
 
-const ALARM_REASONS: Record<AlarmReason, string> = {
-  interval: "one interval after the last post started",
-  midnight: "the budget resets at midnight",
-  idle: "nothing to process, looking again after the idle wait",
-};
-
-/** The one line that says when the database will start the next run. */
-export function describeAlarm(alarm: FeedAlarm, snapshot: FeedPacingSnapshot): string {
-  const inMs = alarm.at.getTime() - snapshot.dbNow.getTime();
-  const when = inMs <= 0 ? "at once, the pipeline is behind its schedule" : `at ${utcClock(alarm.at)}, in ${duration(inMs)}`;
-  return `ALARM  · next run ${when} · ${ALARM_REASONS[alarm.reason]}`;
+/** The one line that says when the worker will start the next post. */
+export function describeFeedStart(start: FeedStart): string {
+  if (start.type === "due") return "START  · a post is due now";
+  const why = start.type === "midnight" ? "the budget resets at midnight" : "one interval after the last post started";
+  return `WAIT   · next post in ${duration(start.waitMs)} · ${why}`;
 }

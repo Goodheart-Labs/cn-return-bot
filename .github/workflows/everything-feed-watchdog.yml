@@ -1,107 +1,34 @@
-name: Everything Priority Feeds
+name: Everything Feed Watchdog
 
 on:
   workflow_dispatch:
 
-# Triggered by Supabase pg_cron via workflow_dispatch (GitHub's own scheduler
-# delays/drops runs). There is no fixed timer: every run processes one feed
-# item and stores when the next run is due (src/everything/pacing.ts), and
-# pg_cron checks that alarm once a minute and dispatches when it has come
-# (migrations/098_feed_alarm.sql). A run that never set its alarm is followed
-# by another 45 minutes after its dispatch, which is the backstop for a crash.
-#
-# Never run two workers at once: the queue claim has no locking, and the
-# auto-enqueue's orphan cleanup assumes no worker is live. Queue (don't cancel)
-# so a run is never killed mid-item. The backstop can queue a second run
-# behind a post longer than 45 minutes; it waits here and then does one post.
+# Started by Supabase pg_cron every half hour (migrations/102). The feed itself
+# no longer runs here: a permanent worker on the services machine checks the
+# posts (src/service/feed/main.ts). This run only asks whether that machine is
+# well: both HTTP services answer and are not stuck, the intake service is
+# consuming reader requests, and the feed worker's heartbeat is fresh. It fails
+# when any of that is not so, and a red run here is how a dead machine is seen.
 concurrency:
-  group: everything-priority-feeds
+  group: everything-feed-watchdog
   cancel-in-progress: false
 
 jobs:
-  enqueue-and-process:
+  watchdog:
     runs-on: ubuntu-latest
-    # A large item (a Zvi post / a podcast episode) can take well over an
-    # hour of claim checks. A run does exactly one item and never waits, so
-    # only a single very long item can reach this.
-    timeout-minutes: 120
+    timeout-minutes: 10
     env:
-      # OpenRouter API key for AI models (claim extraction, search, writer)
-      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-      # Supabase credentials for the everything_* tables
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-      # Gemini API key for the source verifier and media analysis
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      # Groq API key for Whisper audio transcription (media analysis)
-      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-      # xAI API key for Grok X search
-      XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
-      # Serper API key, the pipeline's web search backend
-      SERPER_API_KEY: ${{ secrets.SERPER_API_KEY }}
-      # Cloudflare Worker relaying Substack RSS fetches (Substack 403s runner IPs)
-      SUBSTACK_PROXY_URL: ${{ secrets.SUBSTACK_PROXY_URL }}
-      SUBSTACK_PROXY_KEY: ${{ secrets.SUBSTACK_PROXY_KEY }}
-      # Residential proxy for yt-dlp caption downloads (YouTube bot-checks runner IPs)
-      YTDLP_PROXY_URL: ${{ secrets.YTDLP_PROXY_URL }}
-      # YouTube Data API key: channel listings, publish dates, view counts and
-      # video details. No proxy involved, 10,000 free quota units a day.
-      YOUTUBE_DATA_V3_API_KEY: ${{ secrets.YOUTUBE_DATA_V3_API_KEY }}
-      # The two services that do the claim extraction and the claim checking.
-      # This run asks each one for its health before starting, and fails if it
-      # cannot reach them, which is how a machine that is down becomes visible.
       CLAIM_CHECK_URL: ${{ secrets.CLAIM_CHECK_URL }}
       EXTRACTION_URL: ${{ secrets.EXTRACTION_URL }}
       SERVICE_AUTH_SECRET: ${{ secrets.SERVICE_AUTH_SECRET }}
-      # Daily spend cap in USD (repo variable; empty falls back to the code default of about 50 EUR)
       EVERYTHING_DAILY_SPEND_CAP_USD: ${{ vars.EVERYTHING_DAILY_SPEND_CAP_USD }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
-
-      - name: Install dependencies
-        run: bun install
-
-      - name: Install FFmpeg
-        # A hung apt mirror once held this step for over an hour, which ate the
-        # dispatch slot while the pipeline never even started. Installs finish
-        # in about a minute normally, so this cap only ends runs that are stuck.
-        timeout-minutes: 10
-        run: |
-          # The runners' default mirror, azure.archive.ubuntu.com, degrades to
-          # KB/s every few weeks and stalled this step repeatedly on 2026-08-18.
-          # The runner image picks its mirror through the mirror+file scheme, so
-          # the mirror list file is what has to change — editing ubuntu.sources
-          # does nothing, which an earlier attempt found out the hard way.
-          # Ubuntu's own archive is a touch slower on good days but does not
-          # have those outages, and the retries cover brief hiccups.
-          if [ -f /etc/apt/apt-mirrors.txt ]; then
-            echo "http://archive.ubuntu.com/ubuntu/	priority:1" | sudo tee /etc/apt/apt-mirrors.txt
-          fi
-          sudo apt-get update -o Acquire::Retries=3
-          sudo apt-get install -y --no-install-recommends -o Acquire::Retries=3 ffmpeg
-
-      - name: Set up YouTube caption downloads
-        uses: ./.github/actions/setup-youtube-captions
-
-      - name: Get Playwright version
-        id: playwright-version
-        run: echo "version=$(npx playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')" >> $GITHUB_OUTPUT
-
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        id: playwright-cache
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
-
-      - name: Install Playwright Browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps
-
-      - name: Process one feed item and set the alarm for the next run
-        run: bun run everything-auto-run
+      - run: bun install
+      - name: Check the services machine and both workers
+        run: bun run everything-watchdog

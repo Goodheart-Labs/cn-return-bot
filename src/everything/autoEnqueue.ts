@@ -1,9 +1,9 @@
 /**
  * Auto-enqueue the next unprocessed content of the feeds we keep fact-checked.
  * The walk order comes from the creator ranking: creators holding priority
- * first, then everyone by reader attention (see creatorRanking.ts). The
- * everything-priority-feeds workflow runs this at the start of every feed run
- * when nothing is waiting in the feed tiers of the queue.
+ * first, then everyone by reader attention (see creatorRanking.ts). The feed
+ * worker (src/service/feed/main.ts) runs this before a start when nothing is
+ * waiting in the feed tiers of the queue.
  *
  * Which creators are walked is decided by the budget (admitCreators): the
  * ranked list is walked from the top until the creators' publishing rates add
@@ -70,6 +70,7 @@ import {
   resolveProjectId,
   type EnqueueRow,
   type KnownItemUrl,
+  type QueueTier,
   type TopPostRow,
 } from "./db";
 import type { FeedType } from "./feedUrls";
@@ -231,11 +232,11 @@ export async function unprocessedEntries(feed: PriorityFeed, entries: FeedEntry[
  *  extraction is what keeps killing the run, the item stays in error for a
  *  human to look at rather than looping forever.
  *
- *  This only runs while no worker is active. Inside the workflow that is
- *  guaranteed by its concurrency group; for local runs see the warning in
- *  CLAUDE.md. */
-async function triageOrphanedItems(): Promise<void> {
-  for (const item of await fetchOrphanedProcessingItems()) {
+ *  A worker calls this for its own tier when it starts, the one moment it
+ *  has nothing in flight. Called later, it would mistake the worker's own
+ *  running items for orphans. For local runs see the warning in CLAUDE.md. */
+export async function triageOrphanedItems(tier: QueueTier): Promise<void> {
+  for (const item of await fetchOrphanedProcessingItems(tier)) {
     if ((await fetchItemClaims(item.id)).length > 0) {
       await requeueItem(item.id);
       console.log(`Orphaned in processing → requeued for resume: ${item.url}`);
@@ -262,7 +263,7 @@ const RETRY_COOLDOWN_HOURS = 6;
  *  rests between attempts so a cause that lasts a while does not burn every
  *  retry at once. An item that still fails after its retries stays in error,
  *  and the row's error text says why. */
-async function retryErroredItems(): Promise<void> {
+export async function retryErroredItems(): Promise<void> {
   for (const item of await fetchRetryableErrorItems(MAX_ITEM_RETRIES, RETRY_COOLDOWN_HOURS)) {
     await requeueErroredItem(item);
     console.log(`Errored item requeued for attempt ${item.retries + 2}/${MAX_ITEM_RETRIES + 1}: ${item.url}`);
@@ -345,14 +346,13 @@ export function topPostEntries(tops: TopPostRow[], recent: FeedEntry[]): FeedEnt
     .filter((t) => !recent.some((e) => e.matchKey === t.matchKey));
 }
 
-/** Puts back what a killed run stranded and gives errored items their repeat
- *  attempts. The feed run does this at its start, before it looks at the
- *  queue, because both steps only touch the database and a requeued item must
- *  be visible to the "is anything waiting" question that decides whether to
- *  walk. Both steps assume no worker is active, which the workflow's
- *  concurrency group guarantees. */
+/** Puts back what a killed feed worker stranded and gives errored items
+ *  their repeat attempts. Only for a moment when no feed worker has anything
+ *  in flight: the feed worker's own start, and the local command-line run.
+ *  Both steps only touch the database, and a requeued item must be visible to
+ *  the "is anything waiting" question that decides whether to walk. */
 export async function triageQueue(): Promise<void> {
-  await triageOrphanedItems();
+  await triageOrphanedItems("feed");
   await retryErroredItems();
 }
 
@@ -434,7 +434,7 @@ function priorityLeft(priorityUntil: string | null): string {
 
 /** How many posts a day the budget buys at the current mean post cost, from
  *  the same snapshot the pacing rule reads. The command-line entry point uses
- *  this; the feed run passes the number it already computed. */
+ *  this; the feed worker passes the number it already computed. */
 export async function affordablePostsPerDayNow(): Promise<number> {
   const snapshot = await fetchFeedPacing(MEAN_COST_RULE);
   return affordablePostsPerDay(computeNextRun(snapshot, FEED_BUDGET_USD).meanPostCostUsd, FEED_BUDGET_USD);

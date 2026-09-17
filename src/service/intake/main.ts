@@ -6,8 +6,8 @@
  * queue item exactly as the batch consumer always has, and then processes the
  * requested tier of the queue right away, calling the extraction and
  * claim-check services like every other caller. Feed and backlog items are not
- * its business; the Actions feed run owns those tiers, which is what makes the
- * two workers unable to want the same row.
+ * its business; the feed worker owns those tiers, which is what makes the two
+ * workers unable to want the same row.
  *
  * It hears about a new request in about a second over Supabase Realtime, and
  * additionally re-reads the inbox on a timer. The timer is not optional:
@@ -15,15 +15,16 @@
  * is reconnecting is never re-delivered, and without the timer such a request
  * would sit forever while the reader watched a spinner.
  *
- * It has no port. The Actions feed run watches it by its effect instead: an
- * unconsumed request older than a few minutes fails that run, because intake
- * alive means requests are consumed within seconds.
+ * It has no port. The watchdog run on GitHub watches it by its effect instead:
+ * an unconsumed request older than a few minutes fails that run, because
+ * intake alive means requests are consumed within seconds.
  *
  *   bun run src/service/intake/main.ts
  */
 
 import "dotenv/config";
 import { getSupabaseClient } from "../../api/supabaseClient";
+import { triageOrphanedItems } from "../../everything/autoEnqueue";
 import { consumeNoteRequests } from "../../everything/consumeRequests";
 import { claimNextQueuedItem, markRequestedQueueBudgetExhausted } from "../../everything/db";
 import { clip } from "../../everything/logFormat";
@@ -75,6 +76,10 @@ async function handlePendingWork(): Promise<void> {
 
 async function main() {
   ensureYtDlp();
+  // Nothing is in flight yet, so a requested item still marked as processing
+  // was stranded when this service last stopped. The feed worker used to put
+  // such items back; it now looks only at its own half of the queue.
+  await triageOrphanedItems("requested");
   subscribeToRequests();
   console.log("[intake] watching for reader requests");
   for (;;) {
