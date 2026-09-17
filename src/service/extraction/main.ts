@@ -25,10 +25,10 @@ import {
 } from "../contract";
 import { numberFromEnv, startService, type ServiceRoute } from "../serve";
 
-/** Two documents at a time. Each one is already several model calls that run
- *  their parts in parallel inside the call, so a third document in flight buys
- *  little and competes with them. */
-const DEFAULT_CONCURRENCY = 2;
+/** Four calls at a time. Extraction and rating share this queue, and the feed
+ *  worker has three posts in flight whose parts are rated two at a time, so
+ *  two slots left a reader's page waiting behind them. */
+const DEFAULT_CONCURRENCY = 4;
 
 /** How many extraction calls of one document run at once. A part is normally
  *  one call, so this is how many parts are read side by side. */

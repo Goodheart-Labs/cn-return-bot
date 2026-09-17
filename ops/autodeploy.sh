@@ -13,7 +13,10 @@ set -euo pipefail
 REPO_DIR="/opt/cn-return-bot"
 ENV_FILE="/etc/cn-return-bot/service.env"
 SERVICE_USER="cnbot"
-UNITS=(cn-claim-check cn-extraction cn-intake)
+UNITS=(cn-claim-check cn-extraction cn-intake cn-feed)
+# Exists while this script has stopped the feed worker for a deploy, so that
+# it is this script, and only then, that starts the worker again.
+DRAIN_MARKER="/run/cn-feed-stopped-for-deploy"
 
 main() {
   # Deploy whatever branch the checkout is on. Before the cutover PR merges
@@ -28,6 +31,23 @@ main() {
   here=$(sudo -u "$SERVICE_USER" git -C "$REPO_DIR" rev-parse HEAD)
   upstream=$(sudo -u "$SERVICE_USER" git -C "$REPO_DIR" rev-parse "origin/$branch")
   if [ "$here" = "$upstream" ]; then
+    # Nothing to deploy. If an earlier pass stopped the feed worker for a
+    # deploy that then went away, for example a reverted push, start it again.
+    if [ -f "$DRAIN_MARKER" ]; then
+      rm -f "$DRAIN_MARKER"
+      systemctl start cn-feed
+    fi
+    exit 0
+  fi
+
+  # The feed worker keeps the claim checker busy all day, so the idle check
+  # below would never pass while it runs. Ask it to stop: it finishes the posts
+  # it has in flight, starts nothing new, and exits. This pass ends here, and a
+  # later pass finds the worker gone and the queues draining.
+  if systemctl is-active --quiet cn-feed; then
+    touch "$DRAIN_MARKER"
+    systemctl stop --no-block cn-feed
+    echo "asked cn-feed to finish its posts before deploying ${upstream:0:10}"
     exit 0
   fi
 
@@ -63,6 +83,10 @@ main() {
   # A unit someone stopped on purpose (intake stays off until the cutover PR
   # merges) must not be switched back on by a deploy.
   systemctl try-restart "${UNITS[@]}"
+  if [ -f "$DRAIN_MARKER" ]; then
+    rm -f "$DRAIN_MARKER"
+    systemctl start cn-feed
+  fi
   echo "deployed ${upstream:0:10}"
 }
 

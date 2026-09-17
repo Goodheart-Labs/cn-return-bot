@@ -1,0 +1,28 @@
+# The cn-feed service: the permanent feed worker. Installed by
+# ops/setup-vm.sh; the environment file is written by hand once, see
+# ops/README.md.
+[Unit]
+Description=Common Notes feed worker
+After=network-online.target cn-pot-provider.service
+Wants=network-online.target
+
+[Service]
+User=cnbot
+WorkingDirectory=/opt/cn-return-bot
+EnvironmentFile=/etc/cn-return-bot/service.env
+Environment=PATH=/home/cnbot/.bun/bin:/home/cnbot/.local/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/home/cnbot/.bun/bin/bun run src/service/feed/main.ts
+Restart=always
+# A crash is usually the database being away. Thirty seconds keeps a long
+# outage from becoming thousands of restarts.
+RestartSec=30
+# On stop the worker finishes the posts it has in flight and starts nothing
+# new. The longest post so far took about an hour, so systemd waits two
+# before it kills. A killed post is not lost: its finished claims are saved
+# and the next start resumes the rest.
+KillSignal=SIGTERM
+TimeoutStopSec=2h
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target
