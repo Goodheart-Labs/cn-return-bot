@@ -1,6 +1,7 @@
 /**
  * Worker for the everything pipeline. Run directly it drains the queue and
- * then exits; the paced Actions feed run takes one item at a time from it.
+ * then exits. The feed worker and the intake service on the services machine
+ * use processQueuedItem from here for every item they take.
  *
  * It takes the next queued item and fetches its content, which is either a
  * YouTube transcript or a Substack article. It then hands that content to
@@ -133,10 +134,9 @@ function tierName(priority: number): string {
 }
 
 /** Prints what is waiting, in the order this worker will take it, and returns
- *  it. The worker itself only ever holds one item at a time, so without this
- *  read a run never says how much work is queued or why one item goes before
- *  another. The feed run also reads the rows to decide whether to walk for
- *  new posts. */
+ *  it. Without this read the log never says how much work is queued or why
+ *  one item goes before another. The feed worker also reads the rows to
+ *  decide whether to walk for new posts. */
 export async function logQueue(): Promise<QueuedItemSummary[]> {
   const queue = await fetchQueueOverview();
   if (queue.length === 0) {
@@ -159,7 +159,7 @@ export async function logQueue(): Promise<QueuedItemSummary[]> {
   return queue;
 }
 
-/** Whether any feed-tier item is waiting. The feed run walks for new posts
+/** Whether any feed-tier item is waiting. The feed worker walks for new posts
  *  only when this is false, so a resumed or retried item is finished before
  *  fresh content is pulled in front of it. */
 export const feedItemsQueued = (queue: QueuedItemSummary[]): boolean =>
@@ -167,11 +167,10 @@ export const feedItemsQueued = (queue: QueuedItemSummary[]): boolean =>
 
 /** Runs one claimed item through fetch, extraction and checking, and records
  *  where it ended: done, put back because a budget ran out part way, or
- *  errored. Both workers use this: the Actions feed run for the backlog tiers,
- *  and the intake service for reader-requested items. */
+ *  errored. Both workers use this: the feed worker for the backlog tiers, and
+ *  the intake service for reader-requested items. */
 export async function processQueuedItem(item: EverythingItem): Promise<"done" | "capped" | "error"> {
   const startedAt = Date.now();
-  const spentBefore = await todaySpendUsd();
   try {
     // Claims left pending or in error mean an earlier run was killed while
     // checking them. We resume exactly those instead of fetching the content
@@ -201,12 +200,9 @@ export async function processQueuedItem(item: EverythingItem): Promise<"done" | 
       return "capped";
     }
     await markItemDone(item.id, tally.skipReason);
-    // The per-item cost is already recorded per claim; this is the first time
-    // it is shown. It is what tells you which items are expensive.
-    const cost = (await todaySpendUsd()) - spentBefore;
     const checked = tally.notes + tally.no_note + tally.errors;
     console.log(
-      `  finished in ${duration(Date.now() - startedAt)} · cost ${money(cost)} · wrote ${tally.notes} note${tally.notes === 1 ? "" : "s"} from ${checked} claim${checked === 1 ? "" : "s"} checked`,
+      `  finished in ${duration(Date.now() - startedAt)} · cost ${money(tally.costUsd)} · wrote ${tally.notes} note${tally.notes === 1 ? "" : "s"} from ${checked} claim${checked === 1 ? "" : "s"} checked`,
     );
     return "done";
   } catch (err: any) {
@@ -217,9 +213,8 @@ export async function processQueuedItem(item: EverythingItem): Promise<"done" | 
 }
 
 /** Takes the next feed-tier item and processes it. "empty" means nothing was
- *  waiting. The Actions feed run calls this once per run;
- *  reader-requested items are never taken here, the intake service on the
- *  machine owns that tier. */
+ *  waiting. Reader-requested items are never taken here, the intake service
+ *  owns that tier. */
 export async function processNextFeedItem(): Promise<"done" | "capped" | "error" | "empty"> {
   const item = await claimNextQueuedItem("feed");
   if (!item) return "empty";
