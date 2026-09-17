@@ -8,7 +8,7 @@ describe("operator endpoint", () => {
     const handled: IncomingMessage[] = [];
     const endpoint = startOperatorEndpoint({
       port: 0,
-      announce: async text => { sent.push(text); },
+      announce: async (text, group) => { sent.push(group ? `[${group}] ${text}` : text); },
       handle: async message => { handled.push(message); sent.push(`Bot: reply to ${message.text}`); },
       sent: () => sent,
     });
@@ -26,10 +26,13 @@ describe("operator endpoint", () => {
       const sayOnly = await fetch(`${base}/message`, { method: "POST", body: JSON.stringify({ text: "re-running the links", handle: false }) });
       expect(await sayOnly.json()).toEqual({ replies: ["Claude: re-running the links"] });
       expect(handled).toHaveLength(2);
+      const elsewhere = await fetch(`${base}/message`, { method: "POST", body: JSON.stringify({ text: "nice note", group: "live" }) });
+      expect(await elsewhere.json()).toEqual({ replies: ["[live] Claude: nice note"] });
+      expect(handled).toHaveLength(2);
       const empty = await fetch(`${base}/message`, { method: "POST", body: "{}" });
       expect(empty.status).toBe(400);
       const later = await fetch(`${base}/replies?since=2`);
-      expect(await later.json()).toEqual({ replies: ["Bot: reply to status", "Claude: re-running the links"], cursor: 4 });
+      expect(await later.json()).toEqual({ replies: ["Bot: reply to status", "Claude: re-running the links", "[live] Claude: nice note"], cursor: 5 });
       expect((await fetch(`${base}/nope`)).status).toBe(404);
     } finally {
       endpoint.stop();

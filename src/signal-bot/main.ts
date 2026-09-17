@@ -8,7 +8,7 @@ import { createConsoleTransport } from "./console";
 import { NotesFeed } from "./feed";
 import { RunSummaries } from "./runSummary";
 import { startOperatorEndpoint } from "./operator";
-import { SignalTransport, loadSignalTransportConfig } from "./transport";
+import { SignalTransport, loadSignalTransportConfig, sameGroup } from "./transport";
 
 const HELP = `Signal Community Notes bot
 
@@ -36,6 +36,8 @@ Search uses Anthropic native web search through OpenRouter.
 Live submission also needs SUPABASE_URL and SUPABASE_SERVICE_KEY,
 and migration 100 applied before both this worker and the scheduled pipeline.
 
+SIGNAL_LISTEN_GROUP_IDS (comma-separated) surfaces other groups' messages in the log
+for the operator without answering them.
 State: SIGNAL_STATE_PATH (default output/signal-bot[-console][-dry-run].sqlite).
 Notes feed: SIGNAL_NOTES_FEED_GROUP_ID posts every note any pipeline submits to X
 (from the notes table, needs SUPABASE_URL) into that group, checking every minute.
@@ -116,7 +118,14 @@ async function main(): Promise<void> {
       onError,
       log: terminal ? undefined : log,
     });
+    const feedGroupId = process.env.SIGNAL_NOTES_FEED_GROUP_ID?.trim();
+    const groupLabel = (id: string) => (feedGroupId && sameGroup(id, feedGroupId) ? "live" : id.slice(0, 14));
     const handle = (message: Parameters<SignalBot["handle"]>[0]) => {
+      // Listen-only groups are surfaced for the operator and never treated as requests.
+      if (message.fromGroup) {
+        console.log(`[signal] ← [${groupLabel(message.fromGroup)}] ${message.sender.slice(0, 8)}: ${message.text}`);
+        return Promise.resolve();
+      }
       if (logContent) console.log(`[signal] ← ${message.sender.slice(0, 8)}: ${message.text}`);
       return bot.handle(message);
     };
@@ -124,12 +133,16 @@ async function main(): Promise<void> {
     const operator = operatorPort && transport ? startOperatorEndpoint({
       port: operatorPort,
       // Recorded as bot output so a synced echo of the announcement is ignored.
-      announce: text => { store.recordBotOutput(text); return send(text); },
+      announce: (text, group) => {
+        store.recordBotOutput(text);
+        if (!group) return send(text);
+        if (logContent) console.log(`[signal] → [${group}] ${text}`);
+        return transport!.send(text, undefined, group === "live" && feedGroupId ? feedGroupId : group);
+      },
       handle,
       sent: () => sentTexts,
       label: process.env.SIGNAL_OPERATOR_LABEL?.trim() || undefined,
     }) : undefined;
-    const feedGroupId = process.env.SIGNAL_NOTES_FEED_GROUP_ID?.trim();
     let feedTimer: ReturnType<typeof setInterval> | undefined;
     if (feedGroupId && config && process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY) {
       const { SupabaseLogger } = await import("../api/supabaseClient");

@@ -3,8 +3,8 @@ import type { IncomingMessage } from "./transport";
 interface OperatorDependencies {
   /** Loopback only. 0 picks a free port. */
   port: number;
-  /** Posts the operator's own line to the group, labelled, so the group sees who asked. */
-  announce: (text: string) => Promise<unknown>;
+  /** Posts the operator's own line, labelled, so the group sees who asked. `group` names another group. */
+  announce: (text: string, group?: string) => Promise<unknown>;
   handle: (message: IncomingMessage) => Promise<void>;
   /** Everything the bot has sent, in order; the endpoint returns the slice after each request. */
   sent: () => readonly string[];
@@ -25,13 +25,15 @@ export function startOperatorEndpoint(dependencies: OperatorDependencies) {
     async fetch(request) {
       const url = new URL(request.url);
       if (request.method === "POST" && url.pathname === "/message") {
-        const body = await request.json().catch(() => null) as { text?: unknown; announce?: unknown; handle?: unknown } | null;
+        const body = await request.json().catch(() => null) as { text?: unknown; announce?: unknown; handle?: unknown; group?: unknown } | null;
         const text = typeof body?.text === "string" ? body.text.trim() : "";
         if (!text) return Response.json({ error: "text is required" }, { status: 400 });
+        const group = typeof body?.group === "string" && body.group.trim() ? body.group.trim() : undefined;
         const before = dependencies.sent().length;
-        if (body?.announce !== false) await dependencies.announce(`${dependencies.label ?? "Claude"}: ${text}`);
+        if (body?.announce !== false) await dependencies.announce(`${dependencies.label ?? "Claude"}: ${text}`, group);
         // "handle": false posts the operator's line without treating it as a request.
-        if (body?.handle === false) return Response.json({ replies: dependencies.sent().slice(before) });
+        // Only the main group's requests reach the engine.
+        if (body?.handle === false || group) return Response.json({ replies: dependencies.sent().slice(before) });
         const timestamp = tick();
         await dependencies.handle({ id: `operator:${timestamp}`, sender: "operator", timestamp, text });
         return Response.json({ replies: dependencies.sent().slice(before) });

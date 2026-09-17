@@ -11,6 +11,8 @@ export interface IncomingMessage {
   mentionsBot?: boolean;
   /** The message quotes something the bot account sent. */
   quotesBot?: boolean;
+  /** Set when the message came from a listen-only group rather than the main group (REST id). */
+  fromGroup?: string;
   quoteId?: string;
   quoteAuthor?: string;
   /** Display context only; never use quoted text as approval or authorization. */
@@ -22,6 +24,8 @@ export interface SignalTransportConfig {
   number: string;
   /** Either the REST group.<base64> ID or signal-cli's internal base64 ID. */
   groupId: string;
+  /** Further groups whose messages are surfaced (tagged fromGroup) but never handled as requests. */
+  listenGroupIds?: string[];
   botUuid?: string;
   /** Opt in only when the caller suppresses its own durable outgoing messages. */
   acceptSelfMessages?: boolean;
@@ -77,6 +81,11 @@ function internalGroupId(value: string): string {
   return bytes.toString("base64");
 }
 
+/** True when two REST or internal group ids name the same group. */
+export function sameGroup(a: string, b: string): boolean {
+  try { return internalGroupId(a) === internalGroupId(b); } catch { return false; }
+}
+
 function validateConfig(config: SignalTransportConfig): SignalTransportConfig {
   let url: URL;
   try {
@@ -89,6 +98,7 @@ function validateConfig(config: SignalTransportConfig): SignalTransportConfig {
   }
   if (!/^\+[1-9]\d{6,14}$/.test(config.number)) throw new Error("SIGNAL_NUMBER must be a linked account's E.164 number (+...)");
   internalGroupId(config.groupId);
+  for (const extra of config.listenGroupIds ?? []) internalGroupId(extra);
   if (config.botUuid && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(config.botUuid)) {
     throw new Error("SIGNAL_BOT_UUID must be the linked account's UUID");
   }
@@ -103,6 +113,7 @@ export function loadSignalTransportConfig(env: Record<string, string | undefined
     apiUrl: env.SIGNAL_API_URL!.trim(),
     number: env.SIGNAL_NUMBER!.trim(),
     groupId: env.SIGNAL_GROUP_ID!.trim(),
+    ...(env.SIGNAL_LISTEN_GROUP_IDS?.trim() ? { listenGroupIds: env.SIGNAL_LISTEN_GROUP_IDS.split(",").map((id) => id.trim()).filter(Boolean) } : {}),
     ...(env.SIGNAL_BOT_UUID?.trim() ? { botUuid: env.SIGNAL_BOT_UUID.trim() } : {}),
     ...(env.SIGNAL_ACCEPT_SELF_MESSAGES?.trim().toLowerCase() === "true" ? { acceptSelfMessages: true } : {}),
   });
@@ -141,7 +152,11 @@ export function parseIncomingMessage(event: unknown, config: SignalTransportConf
   } catch {
     return null;
   }
-  if (internal !== internalGroupId(config.groupId)) return null;
+  let fromGroup: string | undefined;
+  if (internal !== internalGroupId(config.groupId)) {
+    if (!(config.listenGroupIds ?? []).some((extra) => internalGroupId(extra) === internal)) return null;
+    fromGroup = `group.${Buffer.from(internal).toString("base64")}`;
+  }
   // Mentions arrive as U+FFFC placeholders in the text plus a mentions list.
   const text = nonempty(data.message)?.replace(/\uFFFC/g, "").trim();
   const isBot = (identity: unknown) => nonempty(identity) !== undefined && (
@@ -164,6 +179,7 @@ export function parseIncomingMessage(event: unknown, config: SignalTransportConf
     timestamp: sentAt,
     text: text ?? "",
     ...(isSelf ? { isSelf: true } : {}),
+    ...(fromGroup ? { fromGroup } : {}),
     ...(mentionsBot ? { mentionsBot: true } : {}),
     ...(quotesBot ? { quotesBot: true } : {}),
     ...(quotedAt ? { quoteId: String(quotedAt) } : {}),
@@ -313,20 +329,21 @@ export class SignalTransport {
     }, delay);
   }
 
-  /** Returns the actual sent timestamp used by Signal quotes and conversation routing. */
-  async send(text: string, quote?: IncomingMessage): Promise<string> {
+  /** Returns the actual sent timestamp used by Signal quotes and conversation routing.
+   * `groupId` (REST or internal) sends to another group instead of the main one. */
+  async send(text: string, quote?: IncomingMessage, groupId?: string): Promise<string> {
     if (this.closed) throw new Error("Signal transport is closed");
     if (!text.trim()) throw new Error("Cannot send an empty Signal message");
     // A single response must have one routable timestamp. Do not truncate drafts or
     // split them into separately approvable fragments; callers should keep replies short.
     if (text.length > 6_000) throw new Error("Signal reply exceeds 6000 characters; shorten the discussion response");
-    const groupId = `group.${Buffer.from(internalGroupId(this.config.groupId)).toString("base64")}`;
+    const recipient = `group.${Buffer.from(internalGroupId(groupId ?? this.config.groupId)).toString("base64")}`;
     const response = await this.deps.fetch(`${this.config.apiUrl}/v2/send`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         number: this.config.number,
-        recipients: [groupId],
+        recipients: [recipient],
         message: text,
         text_mode: "normal",
         ...(quote ? {

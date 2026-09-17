@@ -33,6 +33,17 @@ describe("Signal receive parsing", () => {
     });
   });
 
+  test("listen-only groups are surfaced with fromGroup while unknown groups stay ignored", () => {
+    const otherInternal = Buffer.alloc(32, 2).toString("base64");
+    const otherRest = `group.${Buffer.from(otherInternal).toString("base64")}`;
+    const strangerInternal = Buffer.alloc(32, 3).toString("base64");
+    const listening = { ...config, listenGroupIds: [otherRest] };
+    expect(parseIncomingMessage(event({ groupInfo: { groupId: otherInternal }, message: "chat" }), listening)).toMatchObject({ text: "chat", fromGroup: otherRest });
+    expect(parseIncomingMessage(event({ message: "main" }), listening)).not.toHaveProperty("fromGroup");
+    expect(parseIncomingMessage(event({ groupInfo: { groupId: strangerInternal }, message: "chat" }), listening)).toBeNull();
+    expect(parseIncomingMessage(event({ groupInfo: { groupId: otherInternal }, message: "chat" }), config)).toBeNull();
+  });
+
   test("detects mentions and quotes of the bot account and strips mention placeholders", () => {
     const botUuid = "12345678-1234-1234-1234-123456789abc";
     const withUuid = { ...config, botUuid };
