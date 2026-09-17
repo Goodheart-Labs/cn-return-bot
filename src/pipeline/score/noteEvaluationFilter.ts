@@ -38,7 +38,9 @@ export async function evaluateNote(
     });
     return response.data;
   } catch (error: any) {
-    console.error("[noteEvaluationFilter] Error evaluating note:", error?.message ?? error);
+    // X puts the reason (enrollment, tier, IP) in the body; the axios message is only the status code.
+    const detail = error?.response?.data ? ` ${JSON.stringify(error.response.data).slice(0, 500)}` : "";
+    console.error("[noteEvaluationFilter] Error evaluating note:", `${error?.message ?? error}${detail}`);
     throw error;
   }
 }
