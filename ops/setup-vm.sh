@@ -27,12 +27,8 @@ if ! sudo -u "$SERVICE_USER" test -x "/home/$SERVICE_USER/.bun/bin/bun"; then
   sudo -u "$SERVICE_USER" bash -c "curl -fsSL https://bun.sh/install | bash"
 fi
 
-echo "── yt-dlp, its PO token plugin, and deno (caption downloads need all three, see cn-pot-provider.service)"
+echo "── yt-dlp"
 sudo -u "$SERVICE_USER" bash -c "PIPX_HOME=~/.local/pipx PIPX_BIN_DIR=~/.local/bin pipx install --force yt-dlp"
-sudo -u "$SERVICE_USER" bash -c "PIPX_HOME=~/.local/pipx PIPX_BIN_DIR=~/.local/bin pipx inject --force yt-dlp bgutil-ytdlp-pot-provider==2.0.0"
-if ! sudo -u "$SERVICE_USER" test -x "/home/$SERVICE_USER/.deno/bin/deno"; then
-  sudo -u "$SERVICE_USER" bash -c "curl -fsSL https://deno.land/install.sh | sh -s -- -y --no-modify-path"
-fi
 
 echo "── repository"
 if [ ! -d "$REPO_DIR/.git" ]; then

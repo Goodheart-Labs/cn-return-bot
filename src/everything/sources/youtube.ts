@@ -40,14 +40,14 @@ const MAX_FALLBACK_LANGUAGES = 3;
  *  that language, which is the right thing anyway: the note is read by the
  *  people watching the video. Listing the languages costs an extra call, so it
  *  only happens once English has come back empty. */
-function fetchCues(url: string): SubtitleCue[] {
+async function fetchCues(url: string): Promise<SubtitleCue[]> {
   const dir = fs.mkdtempSync(path.join(tmpdir(), "cn-yt-subs-"));
   try {
-    const english = fetchTimedTranscript(url, dir, PREFERRED_TRANSCRIPT_LANG);
+    const english = await fetchTimedTranscript(url, dir, PREFERRED_TRANSCRIPT_LANG);
     if (english?.length) return english;
 
-    const languages = listOriginalSubtitleLanguages(url).slice(0, MAX_FALLBACK_LANGUAGES);
-    const own = languages.length ? fetchTimedTranscript(url, dir, languages.join(",")) : null;
+    const languages = (await listOriginalSubtitleLanguages(url)).slice(0, MAX_FALLBACK_LANGUAGES);
+    const own = languages.length ? await fetchTimedTranscript(url, dir, languages.join(",")) : null;
     if (own?.length) return own;
     throw new Error(`No transcript available for ${url}`);
   } finally {
@@ -58,7 +58,7 @@ function fetchCues(url: string): SubtitleCue[] {
 export async function fetchYoutubeContent(url: string): Promise<FetchedContent> {
   const meta = await fetchVideo(url);
   if (meta.upcoming) throw new Error(`${url} is a premiere that has not aired yet`);
-  return { kind: "youtube", url, videoId: meta.videoId, title: meta.title, publishedAt: meta.publishedAt, cues: fetchCues(url), authorName: meta.channelTitle };
+  return { kind: "youtube", url, videoId: meta.videoId, title: meta.title, publishedAt: meta.publishedAt, cues: await fetchCues(url), authorName: meta.channelTitle };
 }
 
 /** The claims are extracted from a transcript the caller supplies. We still
@@ -72,7 +72,7 @@ export async function fetchYoutubeTranscriptContent(url: string, transcriptText:
     title: meta.title,
     publishedAt: meta.publishedAt,
     text: transcriptText,
-    cues: fetchCues(url),
+    cues: await fetchCues(url),
     authorName: meta.channelTitle,
   };
 }

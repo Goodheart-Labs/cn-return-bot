@@ -87,19 +87,16 @@ YTDLP_PROXY_URL=
 
 Intake fetches YouTube captions for pages readers ask for. yt-dlp downloads
 them as YouTube's web player, which must present a PO token, a proof that the
-request comes from a real player. Three things make that work, and
-`setup-vm.sh` installs all of them: the `bgutil-ytdlp-pot-provider` plugin
-inside yt-dlp's pipx environment, the deno runtime (on the intake unit's
-PATH), and the provider itself, a Docker container run by
-`cn-pot-provider.service` on 127.0.0.1:4416. The plugin version and the image
-tag must be the same; both are pinned to 2.0.0.
+request comes from a real player. The pipeline asks a small local server for
+one token per video and passes it to yt-dlp. That server is the
+`brainicism/bgutil-ytdlp-pot-provider` Docker image, run by
+`cn-pot-provider.service` on 127.0.0.1:4416. `setup-vm.sh` installs Docker
+and the unit.
 
 On a machine set up before this existed, run once as root:
 
 ```bash
 apt-get install -y --no-install-recommends docker.io
-sudo -u cnbot bash -c "PIPX_HOME=~/.local/pipx PIPX_BIN_DIR=~/.local/bin pipx inject --force yt-dlp bgutil-ytdlp-pot-provider==2.0.0"
-sudo -u cnbot bash -c "curl -fsSL https://deno.land/install.sh | sh -s -- -y --no-modify-path"
 cp /opt/cn-return-bot/ops/cn-pot-provider.service /etc/systemd/system/
 systemctl daemon-reload && systemctl enable --now cn-pot-provider
 curl -s http://127.0.0.1:4416/ping    # answers with its version
@@ -107,8 +104,8 @@ curl -s http://127.0.0.1:4416/ping    # answers with its version
 
 Then add `YOUTUBE_DATA_V3_API_KEY=` to the environment file and
 `systemctl restart cn-intake`. A caption download without the provider fails
-with "YouTube could not be reached ... PO Token", which is the line to look
-for in `journalctl -u cn-intake`.
+with "The PO token provider at http://127.0.0.1:4416 did not answer", which
+is the line to look for in `journalctl -u cn-intake`.
 
 ## Deploys
 

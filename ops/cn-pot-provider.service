@@ -2,10 +2,11 @@
 # Installed by ops/setup-vm.sh. It needs no environment file and no secrets.
 #
 # yt-dlp downloads captions as YouTube's web player, and that player must
-# present a PO token, a proof that the request comes from a real player.
-# yt-dlp's bgutil plugin asks this server at 127.0.0.1:4416 for one. Without
-# it every caption download on this machine fails as "YouTube could not be
-# reached". The image tag must match the plugin version in setup-vm.sh.
+# present a PO token, a proof that the request comes from a real player. The
+# intake service asks this server at 127.0.0.1:4416 for one per video
+# (fetchPoToken in src/pipeline/media/ytDlpDownload.ts). Without it every
+# caption download on this machine fails with "The PO token provider ... did
+# not answer".
 [Unit]
 Description=PO token provider for yt-dlp caption downloads
 After=docker.service network-online.target
