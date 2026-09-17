@@ -44,7 +44,7 @@ describe("single tweet lookup", () => {
     expect(fields).not.toContain("matched_media_notes");
     expect(fields).not.toContain("note_request_suggestions");
     expect(config).toMatchObject({ timeout: 30_000, headers: { Authorization: "OAuth test" } });
-    expect(headers).toHaveBeenCalledWith(url, "GET");
+    expect(headers).toHaveBeenCalledWith(url, "GET", undefined, "reader");
   });
 
   test("provides HTTP metadata while preserving X's response in the diagnostic message", async () => {
