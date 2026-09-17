@@ -4,27 +4,34 @@ import { dirname, resolve } from "node:path";
 import { createDraftingAdapter } from "./drafting";
 import { SignalBot } from "./engine";
 import { SignalStore } from "./store";
+import { createConsoleTransport } from "./console";
 import { SignalTransport, loadSignalTransportConfig } from "./transport";
 
 const HELP = `Signal Community Notes bot
 
-Usage: bun src/signal-bot/main.ts [--dry-run]
+Usage: bun src/signal-bot/main.ts [--dry-run] [--console]
 
 Paste a tweet in the configured group for an access check and proposed note.
 Reply to a draft (or prefix a message with #conversation-number) to discuss it.
 ‘yes post’ submits or queues the exact current version; ‘yes’ also works when replying
 directly to the current draft. ‘draft’ shows it again; ‘cancel’ withdraws it.
+Other messages get a plain-language answer about the bot and its conversations.
+Every reply starts with “Bot”, since the bot may post from the owner's own account.
 
---dry-run   Research and reply in Signal, but never submit to X.
+--dry-run   Research and reply, but never submit to X.
+--console   Chat from this terminal instead of Signal: one line per message,
+            same engine and submission path, separate state file. Use #n to
+            pick a conversation; ‘yes post’ submits when one is open.
 --help      Show this help without connecting to any service.
 
-Required: SIGNAL_API_URL, SIGNAL_NUMBER, SIGNAL_GROUP_ID, X_API_KEY,
-X_API_KEY_SECRET, X_ACCESS_TOKEN, X_ACCESS_TOKEN_SECRET, OPENROUTER_API_KEY.
+Required: X_API_KEY, X_API_KEY_SECRET, X_ACCESS_TOKEN, X_ACCESS_TOKEN_SECRET,
+OPENROUTER_API_KEY, and (without --console) SIGNAL_API_URL, SIGNAL_NUMBER, SIGNAL_GROUP_ID.
+Optional X_READ_* credentials read tweets when the writer app cannot.
 Search uses Anthropic native web search through OpenRouter.
 Live submission also needs SUPABASE_URL and SUPABASE_SERVICE_KEY,
 and migration 100 applied before both this worker and the scheduled pipeline.
 
-State: SIGNAL_STATE_PATH (default output/signal-bot[-dry-run].sqlite).
+State: SIGNAL_STATE_PATH (default output/signal-bot[-console][-dry-run].sqlite).
 Existing personal account: SIGNAL_ACCEPT_SELF_MESSAGES=true handles your phone's
 messages while ignoring the bot's own replies.
 Setup and recovery: scripts/signal-bot/README.md
@@ -36,9 +43,10 @@ async function main(): Promise<void> {
     console.log(HELP);
     return;
   }
-  if (args.some((arg) => arg !== "--dry-run")) throw new Error("Unknown option. Use --help for usage.");
+  if (args.some((arg) => arg !== "--dry-run" && arg !== "--console")) throw new Error("Unknown option. Use --help for usage.");
   const dryRun = args.includes("--dry-run");
-  const config = loadSignalTransportConfig();
+  const consoleMode = args.includes("--console");
+  const config = consoleMode ? undefined : loadSignalTransportConfig();
   const required = ["X_API_KEY", "X_API_KEY_SECRET", "X_ACCESS_TOKEN", "X_ACCESS_TOKEN_SECRET", "OPENROUTER_API_KEY"];
   if (!dryRun) required.push("SUPABASE_URL", "SUPABASE_SERVICE_KEY");
   const missing = required.filter((key) => !process.env[key]);
@@ -46,9 +54,9 @@ async function main(): Promise<void> {
 
   // SQLite contains private group discussion and approval records.
   process.umask(0o077);
-  const statePath = resolve(process.env.SIGNAL_STATE_PATH?.trim() || `output/signal-bot${dryRun ? "-dry-run" : ""}.sqlite`);
+  const statePath = resolve(process.env.SIGNAL_STATE_PATH?.trim() || `output/signal-bot${consoleMode ? "-console" : ""}${dryRun ? "-dry-run" : ""}.sqlite`);
   mkdirSync(dirname(statePath), { recursive: true, mode: 0o700 });
-  const scope = JSON.stringify([config.number, config.groupId, process.env.SUPABASE_URL ?? "", dryRun]);
+  const scope = JSON.stringify([config?.number ?? "console", config?.groupId ?? "", process.env.SUPABASE_URL ?? "", dryRun]);
   const store = new SignalStore(statePath, scope);
   let transport: SignalTransport | undefined;
   let retryTimer: ReturnType<typeof setInterval> | undefined;
@@ -71,16 +79,19 @@ async function main(): Promise<void> {
       cancelSubmission = (conversation) => logger.cancelSignalSubmission(conversation.tweetId);
     }
     const onError = (error: unknown) => console.error("[signal]", error instanceof Error ? error.message : "Operation failed");
-    transport = new SignalTransport(config, { onError });
+    const log = (line: string) => console.log(`[signal] ${new Date().toISOString()} ${line}`);
+    const terminal = consoleMode ? createConsoleTransport() : undefined;
+    if (config) transport = new SignalTransport(config, { onError });
     const bot = new SignalBot({
       store,
       drafting: createDraftingAdapter(),
-      send: (text, quote) => transport!.send(text, quote),
+      send: terminal ? (text) => terminal.send(text) : (text, quote) => transport!.send(text, quote),
       submit,
       cancelSubmission,
       registerSubmission,
       dryRun,
       onError,
+      log: terminal ? undefined : log,
     });
     let stopping = false;
     const stop = async () => {
@@ -88,7 +99,10 @@ async function main(): Promise<void> {
       stopping = true;
       clearInterval(retryTimer);
       console.log("[signal] Finishing accepted messages before shutdown…");
-      try { await transport!.close(bot.drain()); }
+      try {
+        if (transport) await transport.close(bot.drain());
+        else { terminal?.close(); await bot.drain(); }
+      }
       finally {
         const { closeBrowser } = await import("../pipeline/utils/browserManager");
         try { await closeBrowser(); }
@@ -100,7 +114,7 @@ async function main(): Promise<void> {
     // Queue durable pending messages first, but keep receiving while their
     // research runs. Processing messages from a crash are deliberately skipped.
     void bot.resumePending().catch(onError);
-    transport.connect((message) => bot.handle(message));
+    transport?.connect((message) => bot.handle(message));
     if (!dryRun) {
       let retrying = false;
       const retry = async () => {
@@ -111,6 +125,14 @@ async function main(): Promise<void> {
         finally { retrying = false; }
       };
       retryTimer = setInterval(() => { void retry(); }, 30_000);
+    }
+    const reader = ["API_KEY", "API_KEY_SECRET", "ACCESS_TOKEN", "ACCESS_TOKEN_SECRET"].some((suffix) => process.env[`X_READ_${suffix}`]);
+    console.log(`[signal] Tweet lookup uses the ${reader ? "X_READ_* reader" : "writer app's"} credentials.`);
+    if (terminal) {
+      console.log(`[signal] Console mode${dryRun ? " (dry run: X submissions disabled)" : ""}. Paste a tweet link, or type a message. Ctrl-D to quit.`);
+      await terminal.run((message) => bot.handle(message));
+      await stop();
+      return;
     }
     console.log(`[signal] Listening to the configured group${dryRun ? " (dry run: X submissions disabled)" : ""}.`);
   } catch (error) {

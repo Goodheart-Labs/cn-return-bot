@@ -1,4 +1,4 @@
-import type { DraftingAdapter } from "./drafting";
+import type { ConversationSummary, DraftingAdapter } from "./drafting";
 import { validateSignalDraft } from "./drafting";
 import { joinNoteWithSources } from "../pipeline/utils/noteLength";
 import type { SubmissionResult } from "../pipeline/orchestration/submitNoteForTweet";
@@ -17,9 +17,12 @@ interface EngineDependencies {
   cancelSubmission?: (conversation: Conversation) => Promise<void>;
   dryRun?: boolean;
   onError?: (error: unknown) => void;
+  /** Operational log line per received message and reply; never message content. */
+  log?: (line: string) => void;
 }
 
 const MAX_INPUT_CHARS = 6000;
+const NO_TARGET_HELP = "Paste a tweet link to get an access check and draft. For an existing tweet, reply to its draft or start your message with its #number.";
 const TWEET_URL = /https?:\/\/(?:(?:www|mobile)\.)?(?:x\.com|twitter\.com)\/(?:[A-Za-z0-9_]+|i\/web)\/status\/(\d{1,25})(?:[/?#][^\s]*)?/gi;
 
 function command(text: string): { text: string; tweetIds: string[]; threadId?: number } {
@@ -45,6 +48,9 @@ export class SignalBot {
     // messages only in the transport's memory until it finishes.
     const received: ReceivedMessage = { ...structuredClone(message), approvalReceipt: this.approvalAtReceipt(message) };
     if (!this.dependencies.store.enqueueMessage(received)) return Promise.resolve();
+    const parsed = command(message.text);
+    this.dependencies.log?.(`received ${message.text.length} chars${parsed.threadId !== undefined ? ` for #${parsed.threadId}` : ""}` +
+      `${parsed.tweetIds.length ? ` with ${parsed.tweetIds.length} tweet link${parsed.tweetIds.length > 1 ? "s" : ""}` : ""}${message.quoteId ? " quoting a message" : ""}`);
     return this.schedule(received);
   }
 
@@ -142,9 +148,11 @@ export class SignalBot {
     return result;
   }
 
+  /** Every reply is prefixed "Bot" because the bot may post from the owner's own account. */
   private async reply(text: string, message?: IncomingMessage, conversation?: Conversation, showsDraft = false): Promise<void> {
-    const body = conversation ? `#${conversation.id} · ${conversation.tweetId}\n${text}` : text;
+    const body = conversation ? `Bot · #${conversation.id} · ${conversation.tweetId}\n${text}` : `Bot: ${text}`;
     this.dependencies.store.recordBotOutput(body);
+    this.dependencies.log?.(`reply ${body.length} chars${conversation ? ` on #${conversation.id}` : ""}${showsDraft ? " showing draft" : ""}`);
     const id = await this.dependencies.send(body, message);
     if (conversation) {
       this.dependencies.store.reference(id, conversation.id, conversation.draft?.version ?? null, showsDraft);
@@ -219,20 +227,38 @@ export class SignalBot {
       conversation = store.forTweet(parsed.tweetIds[0]!);
       bareTargetLink = !parsed.text.replace(TWEET_URL, "").trim();
     }
-    if (!conversation) {
-      const open = store.all().filter((item) => item.status === "open" || item.status === "queued" || item.status === "cancelling");
-      if (open.length === 1) conversation = open[0];
-    }
-    if (!conversation) {
-      await this.reply("Paste a tweet link to get an access check and draft. For an existing tweet, reply to its draft or start your message with its #number.", message);
-      return;
-    }
-
-    store.reference(String(message.timestamp), conversation.id, null);
     const withdraw = /^(?:cancel|withdraw)[.!]?$/i.test(parsed.text);
     const show = /^(?:status|draft|show draft)[.!]?$/i.test(parsed.text);
     const yesPost = /^yes(?:\s*,\s*|\s+)post(?:\s+it)?[.!]?$/i.test(parsed.text);
     const yes = /^yes[.!]?$/i.test(parsed.text);
+    const exactCommand = withdraw || show || yesPost || yes;
+    if (!conversation) {
+      const open = store.all().filter((item) => item.status === "open" || item.status === "queued" || item.status === "cancelling");
+      if (open.length === 1) conversation = open[0];
+      else if (open.length > 1) {
+        // Exact commands need an unambiguous target. Ordinary discussion goes to
+        // the tweet the group last talked about; the reply header names it.
+        if (exactCommand) {
+          const list = open.map((item) => `#${item.id} · ${item.tweetId}`).join("\n");
+          await this.reply(`Which tweet do you mean? Reply to its draft or start your message with its #number.\n${list}`, message);
+          return;
+        }
+        conversation = open.reduce((latest, item) =>
+          (item.lastActivityAt ?? 0) > (latest.lastActivityAt ?? 0) ||
+          ((item.lastActivityAt ?? 0) === (latest.lastActivityAt ?? 0) && item.id > latest.id) ? item : latest);
+      }
+    }
+    if (!conversation) {
+      if (exactCommand) await this.reply(`There is no open conversation. ${NO_TARGET_HELP}`, message);
+      else await this.converse(message, parsed.text);
+      return;
+    }
+
+    store.reference(String(message.timestamp), conversation.id, null);
+    // Strictly increasing across conversations: two messages in one millisecond
+    // must still leave the later one as the default target.
+    conversation.lastActivityAt = Math.max(Date.now(), ...store.all().map((item) => (item.lastActivityAt ?? 0) + 1));
+    store.save(conversation);
     if (conversation.status === "cancelling") {
       await this.finishWithdrawal(conversation, message);
       return;
@@ -315,6 +341,33 @@ export class SignalBot {
       this.dependencies.onError?.(error);
       await this.reply("I couldn’t finish that check or revision. No note was submitted. Send ‘retry’ or repeat your request to try again.", message, conversation);
     }
+  }
+
+  /** Messages with no tweet to attach to get a plain-language answer about the
+   * bot and its conversations. Nothing here can draft, approve, or submit. */
+  private async converse(message: ReceivedMessage, text: string): Promise<void> {
+    const { store, drafting } = this.dependencies;
+    if (!drafting.converse) {
+      await this.reply(NO_TARGET_HELP, message);
+      return;
+    }
+    const history = store.generalHistory();
+    const summaries: ConversationSummary[] = store.all().slice(-20).map((item) => ({
+      id: item.id, tweetId: item.tweetId, status: item.status,
+      ...(item.draft ? { draftVersion: item.draft.version, draft: joinNoteWithSources(item.draft.text, item.draft.sources).slice(0, 400) } : {}),
+      ...(item.noteId ? { noteId: item.noteId } : {}),
+      ...(item.lastActivityAt ? { lastActivityAt: item.lastActivityAt } : {}),
+    }));
+    let reply: string;
+    try {
+      reply = await drafting.converse({ text, history: history.slice(-12), conversations: summaries });
+    } catch (error) {
+      this.dependencies.onError?.(error);
+      await this.reply(NO_TARGET_HELP, message);
+      return;
+    }
+    store.saveGeneralHistory([...history, { role: "user" as const, content: text.slice(0, 2_000) }, { role: "assistant" as const, content: reply.slice(0, 2_000) }].slice(-12));
+    await this.reply(reply, message);
   }
 
   private async approve(conversation: Conversation, message: ReceivedMessage, quoted?: MessageReference): Promise<void> {

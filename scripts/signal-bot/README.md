@@ -1,3 +1,17 @@
+Every reply the bot sends starts with “Bot” (plain messages as `Bot: …`, tweet
+conversations as `Bot · #n · <tweet id>`), because it may post from the owner's
+own Signal account. Tweet links start conversations; exact commands (`yes post`,
+`draft`, `cancel`, `#n …`) are matched by the application; any other message
+goes to the current conversation, or, with none, gets a plain-language answer
+about the bot and its conversations from a chat model that cannot draft or submit.
+
+To use the same engine from a terminal instead of Signal, run
+`bun src/signal-bot/main.ts --console [--dry-run]` from a checkout with the
+X, OpenRouter, and (live) Supabase variables set. It reads one message per
+line, prints replies, keeps its own state file (`output/signal-bot-console*.sqlite`),
+and submits approved notes through the same shared X queue as the Signal worker.
+Only one console worker can hold that state file at a time.
+
 The Docker worker shares the existing Signal bridge at `127.0.0.1:8080` on the
 Linux host. Its Compose project contains only the new notes worker. The gym
 bridge and watcher continue under their existing project.

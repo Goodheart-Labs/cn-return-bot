@@ -30,7 +30,11 @@ export interface Conversation {
   submissionRunId?: string;
   withdrawDraft?: boolean;
   sharedQueueCleared?: boolean;
+  /** Worker clock at the last human message routed here; picks the default target. */
+  lastActivityAt?: number;
 }
+
+type ChatTurn = { role: "user" | "assistant"; content: string };
 
 export interface MessageReference {
   conversationId: number;
@@ -217,6 +221,20 @@ export class SignalStore {
   queued(): Conversation[] {
     return this.all().filter(conversation => conversation.status === "queued")
       .sort((a, b) => (a.queuedAt ?? 0) - (b.queuedAt ?? 0) || a.id - b.id);
+  }
+
+  /** Short-lived context for messages that belong to no tweet conversation. */
+  generalHistory(): ChatTurn[] {
+    const row = this.db.query<{ value: string }, []>("SELECT value FROM metadata WHERE key = 'general_history'").get();
+    if (!row) return [];
+    try {
+      const parsed = JSON.parse(row.value);
+      return Array.isArray(parsed) ? parsed as ChatTurn[] : [];
+    } catch { return []; }
+  }
+
+  saveGeneralHistory(history: ChatTurn[]): void {
+    this.db.query("INSERT OR REPLACE INTO metadata (key, value) VALUES ('general_history', ?)").run(JSON.stringify(history));
   }
 
   reference(messageId: string, conversationId: number, version: number | null, showsDraft = false): void {

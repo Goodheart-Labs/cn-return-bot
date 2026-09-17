@@ -7,7 +7,7 @@ import { SignalBot } from "./engine";
 import { SignalStore, type Conversation } from "./store";
 import { createDraftingAdapter } from "./drafting";
 import { TweetLookupError } from "../api/fetchTweetById";
-import type { DraftContext, DraftResult, SignalDraft, TweetInspection } from "./drafting";
+import type { DraftContext, DraftResult, DraftingAdapter, SignalDraft, TweetInspection } from "./drafting";
 import type { IncomingMessage } from "./transport";
 import type { SubmissionResult } from "../pipeline/orchestration/submitNoteForTweet";
 
@@ -23,6 +23,7 @@ function fixture(options: {
   onSend?: (text: string) => void;
   inspect?: (tweetId: string) => Promise<TweetInspection>;
   draft?: (context: DraftContext) => Promise<DraftResult>;
+  converse?: NonNullable<DraftingAdapter["converse"]>;
   submit?: (conversation: Conversation, callbacks?: SubmissionCallbacks) => Promise<SubmissionResult>;
   registerSubmission?: (conversation: Conversation) => Promise<SubmissionResult | null>;
   cancelSubmission?: (conversation: Conversation) => Promise<void>;
@@ -37,6 +38,7 @@ function fixture(options: {
   const submissions: Conversation[] = [];
   const cancellations: Conversation[] = [];
   const errors: unknown[] = [];
+  const logs: string[] = [];
   const bot = new SignalBot({
     store,
     drafting: {
@@ -55,7 +57,9 @@ function fixture(options: {
         if (context.currentDraft) return { reply: "The archive records the date. Shall we discuss the wording?" };
         return { reply: "The source provides the original date.", draft: structuredClone(draft), research: "Archive research" };
       },
+      ...(options.converse ? { converse: options.converse } : {}),
     },
+    log: line => logs.push(line),
     send: async (text, quote) => {
       options.onSend?.(text);
       if (failSend) throw new Error("Signal is offline");
@@ -82,7 +86,7 @@ function fixture(options: {
     return { id: `human:${ts}`, sender: "human", timestamp: ts, text, ...(quoteId ? { quoteId } : {}) };
   }
   return {
-    bot, store, sent, inspections, draftCalls, submissions, cancellations, errors, message,
+    bot, store, sent, inspections, draftCalls, submissions, cancellations, errors, logs, message,
     failSending: () => { failSend = true; },
     restoreSending: () => { failSend = false; },
     send: async (text: string, quoteId?: string) => bot.handle(message(text, quoteId)),
@@ -101,6 +105,64 @@ describe("Signal draft conversations", () => {
     expect(f.latestDraft().text).toContain("v1");
     expect(f.current().draft).toEqual({ ...draft, version: 1, shownAt: Number(f.latestDraft().id) });
     expect(f.submissions).toHaveLength(0);
+  });
+
+  test("every reply is labelled as the bot's, with the conversation header when there is one", async () => {
+    const f = fixture();
+    await f.send("hello?");
+    expect(f.sent[0]!.text).toMatch(/^Bot: /);
+    await f.send("https://x.com/example/status/12345");
+    expect(f.sent.slice(1).every(item => item.text.startsWith("Bot · #1 · 12345\n"))).toBe(true);
+    expect(f.logs.some(line => /^received \d+ chars with 1 tweet link$/.test(line))).toBe(true);
+    expect(f.logs.some(line => /^reply \d+ chars on #1 showing draft$/.test(line))).toBe(true);
+    expect(f.logs.join("\n")).not.toContain("12345");
+  });
+
+  test("messages with no tweet get a general answer built from conversation summaries", async () => {
+    const seen: Array<Parameters<NonNullable<DraftingAdapter["converse"]>>[0]> = [];
+    const f = fixture({ converse: async context => { seen.push(context); return "Paste a link and I will draft a note."; } });
+    await f.send("what can you do?");
+    expect(seen).toEqual([{ text: "what can you do?", history: [], conversations: [] }]);
+    expect(f.sent.at(-1)!.text).toBe("Bot: Paste a link and I will draft a note.");
+    await f.send("https://x.com/example/status/12345");
+    await f.send("yes post");
+    expect(f.current().status).toBe("submitted");
+    await f.send("what did we post?");
+    expect(seen.at(-1)!.conversations).toEqual([{ id: 1, tweetId: "12345", status: "submitted", draftVersion: 1, draft: `${draft.text} ${draft.sources[0]}`, noteId: "987654321", lastActivityAt: expect.any(Number) }]);
+    expect(seen.at(-1)!.history).toEqual([{ role: "user", content: "what can you do?" }, { role: "assistant", content: "Paste a link and I will draft a note." }]);
+    expect(f.draftCalls).toHaveLength(1);
+    expect(f.submissions).toHaveLength(1);
+  });
+
+  test("without a chat model, or when it fails, the fallback still explains how to start", async () => {
+    const plain = fixture();
+    await plain.send("hello?");
+    expect(plain.sent.at(-1)!.text).toContain("Paste a tweet link");
+    const failing = fixture({ converse: async () => { throw new Error("model down"); } });
+    await failing.send("hello?");
+    expect(failing.sent.at(-1)!.text).toContain("Paste a tweet link");
+    expect(failing.errors).toHaveLength(1);
+    await failing.send("yes post");
+    expect(failing.sent.at(-1)!.text).toContain("no open conversation");
+    expect(failing.submissions).toHaveLength(0);
+  });
+
+  test("with several open tweets, discussion goes to the most recently discussed one", async () => {
+    const f = fixture({ converse: async () => "general" });
+    await f.send("https://x.com/example/status/12345");
+    await f.send("https://x.com/example/status/67890");
+    await f.send("Is the date right?");
+    expect(f.draftCalls.at(-1)!.post.id).toBe("67890");
+    expect(f.sent.at(-1)!.text).toMatch(/^Bot · #2 · 67890\n/);
+    await f.send("#1 What about this one?");
+    expect(f.draftCalls.at(-1)!.post.id).toBe("12345");
+    await f.send("And the wording?");
+    expect(f.draftCalls.at(-1)!.post.id).toBe("12345");
+    expect(f.sent.at(-1)!.text).toMatch(/^Bot · #1 · 12345\n/);
+    await f.send("draft");
+    expect(f.sent.at(-1)!.text).toContain("Which tweet do you mean?");
+    expect(f.sent.at(-1)!.text).toContain("#1 · 12345\n#2 · 67890");
+    expect(f.sent.filter(item => item.text.startsWith("Bot: general"))).toHaveLength(0);
   });
 
   test("an inaccessible tweet reports failure and does not fabricate a draft", async () => {
