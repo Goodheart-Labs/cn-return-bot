@@ -35,7 +35,8 @@ export function startOperatorEndpoint(dependencies: OperatorDependencies) {
         // Only the main group's requests reach the engine.
         if (body?.handle === false || group) return Response.json({ replies: dependencies.sent().slice(before) });
         const timestamp = tick();
-        await dependencies.handle({ id: `operator:${timestamp}`, sender: "operator", timestamp, text });
+        // The operator is always addressing the bot, so mention-only mode lets it through.
+        await dependencies.handle({ id: `operator:${timestamp}`, sender: "operator", timestamp, text, mentionsBot: true });
         return Response.json({ replies: dependencies.sent().slice(before) });
       }
       if (request.method === "GET" && url.pathname === "/replies") {

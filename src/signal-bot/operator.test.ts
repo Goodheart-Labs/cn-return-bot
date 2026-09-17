@@ -16,7 +16,7 @@ describe("operator endpoint", () => {
       const base = `http://127.0.0.1:${endpoint.port}`;
       const first = await fetch(`${base}/message`, { method: "POST", body: JSON.stringify({ text: " hello " }) });
       expect(await first.json()).toEqual({ replies: ["Claude: hello", "Bot: reply to hello"] });
-      expect(handled[0]).toMatchObject({ sender: "operator", text: "hello" });
+      expect(handled[0]).toMatchObject({ sender: "operator", text: "hello", mentionsBot: true });
       expect(handled[0]!.id).toBe(`operator:${handled[0]!.timestamp}`);
 
       const quiet = await fetch(`${base}/message`, { method: "POST", body: JSON.stringify({ text: "status", announce: false }) });
