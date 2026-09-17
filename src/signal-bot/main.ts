@@ -5,6 +5,7 @@ import { createDraftingAdapter } from "./drafting";
 import { SignalBot } from "./engine";
 import { SignalStore } from "./store";
 import { createConsoleTransport } from "./console";
+import { startOperatorEndpoint } from "./operator";
 import { SignalTransport, loadSignalTransportConfig } from "./transport";
 
 const HELP = `Signal Community Notes bot
@@ -32,6 +33,10 @@ Live submission also needs SUPABASE_URL and SUPABASE_SERVICE_KEY,
 and migration 100 applied before both this worker and the scheduled pipeline.
 
 State: SIGNAL_STATE_PATH (default output/signal-bot[-console][-dry-run].sqlite).
+Local operation: SIGNAL_OPERATOR_PORT=18081 opens a loopback endpoint (see operator.ts)
+that posts a line labelled SIGNAL_OPERATOR_LABEL (default "Claude") to the group and
+feeds it to the bot; SIGNAL_LOG_CONTENT=true
+logs message and reply text (never on the shared server).
 Existing personal account: SIGNAL_ACCEPT_SELF_MESSAGES=true handles your phone's
 messages while ignoring the bot's own replies.
 Setup and recovery: scripts/signal-bot/README.md
@@ -82,10 +87,18 @@ async function main(): Promise<void> {
     const log = (line: string) => console.log(`[signal] ${new Date().toISOString()} ${line}`);
     const terminal = consoleMode ? createConsoleTransport() : undefined;
     if (config) transport = new SignalTransport(config, { onError });
+    const logContent = process.env.SIGNAL_LOG_CONTENT?.trim().toLowerCase() === "true";
+    const sentTexts: string[] = [];
+    const send = async (text: string, quote?: Parameters<SignalTransport["send"]>[1]): Promise<string> => {
+      sentTexts.push(text);
+      if (logContent) console.log(`[signal] → ${text}`);
+      // Operator-injected messages never existed in Signal, so there is nothing to quote.
+      return terminal ? terminal.send(text) : transport!.send(text, quote?.sender === "operator" ? undefined : quote);
+    };
     const bot = new SignalBot({
       store,
       drafting: createDraftingAdapter(),
-      send: terminal ? (text) => terminal.send(text) : (text, quote) => transport!.send(text, quote),
+      send,
       submit,
       cancelSubmission,
       registerSubmission,
@@ -93,11 +106,25 @@ async function main(): Promise<void> {
       onError,
       log: terminal ? undefined : log,
     });
+    const handle = (message: Parameters<SignalBot["handle"]>[0]) => {
+      if (logContent) console.log(`[signal] ← ${message.sender.slice(0, 8)}: ${message.text}`);
+      return bot.handle(message);
+    };
+    const operatorPort = Number(process.env.SIGNAL_OPERATOR_PORT?.trim() || 0);
+    const operator = operatorPort && transport ? startOperatorEndpoint({
+      port: operatorPort,
+      // Recorded as bot output so a synced echo of the announcement is ignored.
+      announce: text => { store.recordBotOutput(text); return send(text); },
+      handle,
+      sent: () => sentTexts,
+      label: process.env.SIGNAL_OPERATOR_LABEL?.trim() || undefined,
+    }) : undefined;
     let stopping = false;
     const stop = async () => {
       if (stopping) return;
       stopping = true;
       clearInterval(retryTimer);
+      operator?.stop();
       console.log("[signal] Finishing accepted messages before shutdown…");
       try {
         if (transport) await transport.close(bot.drain());
@@ -114,7 +141,7 @@ async function main(): Promise<void> {
     // Queue durable pending messages first, but keep receiving while their
     // research runs. Processing messages from a crash are deliberately skipped.
     void bot.resumePending().catch(onError);
-    transport?.connect((message) => bot.handle(message));
+    transport?.connect(handle);
     if (!dryRun) {
       let retrying = false;
       const retry = async () => {
@@ -130,10 +157,11 @@ async function main(): Promise<void> {
     console.log(`[signal] Tweet lookup uses the ${reader ? "X_READ_* reader" : "writer app's"} credentials.`);
     if (terminal) {
       console.log(`[signal] Console mode${dryRun ? " (dry run: X submissions disabled)" : ""}. Paste a tweet link, or type a message. Ctrl-D to quit.`);
-      await terminal.run((message) => bot.handle(message));
+      await terminal.run(handle);
       await stop();
       return;
     }
+    if (operator) console.log(`[signal] Operator endpoint on 127.0.0.1:${operator.port}.`);
     console.log(`[signal] Listening to the configured group${dryRun ? " (dry run: X submissions disabled)" : ""}.`);
   } catch (error) {
     clearInterval(retryTimer);
