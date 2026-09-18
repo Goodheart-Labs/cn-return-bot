@@ -118,15 +118,17 @@ const MEDIA_DESCRIPTION_TEST: ABTest = {
   ],
 };
 
-// Compare prompt instructions with timing context; never enable both together.
-// The off arm was retired on 2026-08-23; it remains available for explicit comparison.
+// Collapsed to the context arm on 2026-09-17: a timing stage adds dated
+// context for fog-window posts, with no standing prompt rule. Instruction and
+// context were a tie after six weeks (see the commit); both beat off, which
+// was retired on 2026-08-23. Both remain available for explicit comparison.
 const TIMING_TREATMENT_TEST: ABTest = {
   name: "timing_treatment",
   prerequisites: { botId: "simple-bot" },
   variants: [
     { variant: { name: "off",         overrides: { time_travel_prompt: false, timing_context: false } }, weight: 0 },
-    { variant: { name: "instruction", overrides: { time_travel_prompt: true,  timing_context: false } }, weight: 50 },
-    { variant: { name: "context",     overrides: { time_travel_prompt: false, timing_context: true  } }, weight: 50 },
+    { variant: { name: "instruction", overrides: { time_travel_prompt: true,  timing_context: false } }, weight: 0 },
+    { variant: { name: "context",     overrides: { time_travel_prompt: false, timing_context: true  } }, weight: 100 },
   ],
 };
 
