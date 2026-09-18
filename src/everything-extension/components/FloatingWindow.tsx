@@ -91,27 +91,18 @@ export function FloatingWindow({ title, dismissLabel, onDismiss, onPlaced, resti
 } & Omit<HTMLAttributes<HTMLDivElement>, "title" | "style">) {
   const outer = useRef<HTMLDivElement>(null);
   const [box, setBox] = useState<Box | null>(null);
-  // The cursor to show everywhere while a gesture runs. It is drawn by a
-  // layer that covers the whole page, because the pointer leaves the card
-  // during a fast drag and the page underneath would show its own cursors
-  // otherwise. That layer also swallows every click, so it must never outlive
-  // the gesture.
-  const [gestureCursor, setGestureCursor] = useState<string | null>(null);
-
   /** Runs one press-move-release gesture. Pointer capture, a browser feature,
    *  routes every pointer event to the pressed element until the capture
-   *  ends, so the gesture continues when the pointer runs ahead of the card.
+   *  ends. So the gesture continues when the pointer runs ahead of the card,
+   *  and the browser keeps showing the pressed element's cursor meanwhile.
    *
    *  The gesture ends on `lostpointercapture`, the event the browser fires
    *  whenever capture ends for any reason. A normal release ends it, and so
-   *  does a cancelled gesture or another script taking the pointer. Ending on
-   *  the release alone left the page-covering layer up for good whenever
-   *  capture was lost first, because the release then went to the layer.
+   *  does a cancelled gesture or another script taking the pointer.
    *
    *  Capture is taken before any state changes. If the browser refuses it,
-   *  the call throws and the gesture never starts, instead of starting with
-   *  no way to end. */
-  const startGesture = (e: React.PointerEvent, cursor: string, apply: (start: Box, dx: number, dy: number) => Box) => {
+   *  the call throws and the gesture never starts. */
+  const startGesture = (e: React.PointerEvent, apply: (start: Box, dx: number, dy: number) => Box) => {
     if (e.button !== 0 || !outer.current) return;
     const grip = e.currentTarget as HTMLElement;
     grip.setPointerCapture(e.pointerId);
@@ -120,7 +111,6 @@ export function FloatingWindow({ title, dismissLabel, onDismiss, onPlaced, resti
     const origin = { x: e.clientX, y: e.clientY };
     let current = start;
     setBox(start);
-    setGestureCursor(cursor);
     const onMove = (move: PointerEvent) => {
       // A move with no button held means the release happened somewhere the
       // page never heard about, for example outside the browser window. We
@@ -132,7 +122,6 @@ export function FloatingWindow({ title, dismissLabel, onDismiss, onPlaced, resti
     const onEnd = () => {
       grip.removeEventListener("pointermove", onMove);
       grip.removeEventListener("lostpointercapture", onEnd);
-      setGestureCursor(null);
       onPlaced(current);
     };
     grip.addEventListener("pointermove", onMove);
@@ -142,7 +131,7 @@ export function FloatingWindow({ title, dismissLabel, onDismiss, onPlaced, resti
   const startDrag = (e: React.PointerEvent) => {
     // A press on the dismiss button is a click, not the start of a drag.
     if ((e.target as Element).closest("button")) return;
-    startGesture(e, "grabbing", moved);
+    startGesture(e, moved);
   };
 
   const style: CSSProperties = box
@@ -158,7 +147,7 @@ export function FloatingWindow({ title, dismissLabel, onDismiss, onPlaced, resti
     >
       <div
         onPointerDown={startDrag}
-        className="flex items-start justify-between gap-2 px-4 pt-4 pb-2 cursor-grab select-none"
+        className="flex items-start justify-between gap-2 px-4 pt-4 pb-2 cursor-grab active:cursor-grabbing select-none"
       >
         <span className={EYEBROW}>{title}</span>
         <IconButton label={dismissLabel} onClick={onDismiss}>✕</IconButton>
@@ -167,11 +156,10 @@ export function FloatingWindow({ title, dismissLabel, onDismiss, onPlaced, resti
       {GRIPS.map(({ edge, cursor, style: gripStyle }) => (
         <div
           key={edge}
-          onPointerDown={(e) => startGesture(e, cursor, (start, dx, dy) => resized(start, edge, dx, dy))}
+          onPointerDown={(e) => startGesture(e, (start, dx, dy) => resized(start, edge, dx, dy))}
           style={{ position: "absolute", cursor, ...gripStyle }}
         />
       ))}
-      {gestureCursor && <div style={{ position: "fixed", inset: 0, cursor: gestureCursor }} />}
     </div>
   );
 }
