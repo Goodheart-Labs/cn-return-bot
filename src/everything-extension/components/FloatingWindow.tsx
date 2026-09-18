@@ -6,7 +6,7 @@ import { IconButton } from "../../everything-web/src/components/IconButton";
  *  coordinates plus the page's scroll offset, measured from the top-left
  *  corner of the document, so a card placed this way scrolls with the page
  *  like the content around it. */
-interface Box {
+export interface Box {
   left: number;
   top: number;
   width: number;
@@ -77,45 +77,66 @@ function resized(start: Box, edge: Edge, dx: number, dy: number): Box {
  *  content, capped at most of the viewport. The first drag or resize freezes
  *  the box the card had at that moment into explicit page coordinates, and
  *  from then on the card keeps its own size and the body scrolls inside it.
- *  Nothing is remembered: a fresh card starts at rest again. */
-export function FloatingWindow({ title, dismissLabel, onDismiss, restingStyle, className = "", children, ...divProps }: {
+ *  The card itself remembers nothing. It reports its box after every gesture
+ *  through `onPlaced`, and the caller decides what the next card inherits. */
+export function FloatingWindow({ title, dismissLabel, onDismiss, onPlaced, restingStyle, className = "", children, ...divProps }: {
   title: string;
   dismissLabel: string;
   onDismiss: () => void;
-  /** Where the card sits before any interaction, as `left`, `top` and a
-   *  `transform` that aligns the card to that point. */
+  onPlaced: (box: Box) => void;
+  /** Where the card sits before any interaction, as `left`, `top`, a width,
+   *  and optionally a `transform` that aligns the card to that point. */
   restingStyle: CSSProperties;
   children: ReactNode;
 } & Omit<HTMLAttributes<HTMLDivElement>, "title" | "style">) {
   const outer = useRef<HTMLDivElement>(null);
   const [box, setBox] = useState<Box | null>(null);
-  // The cursor to show everywhere while a gesture runs. The pointer leaves
-  // the card during a fast drag, and the page underneath would show its own
-  // cursors otherwise.
+  // The cursor to show everywhere while a gesture runs. It is drawn by a
+  // layer that covers the whole page, because the pointer leaves the card
+  // during a fast drag and the page underneath would show its own cursors
+  // otherwise. That layer also swallows every click, so it must never outlive
+  // the gesture.
   const [gestureCursor, setGestureCursor] = useState<string | null>(null);
 
   /** Runs one press-move-release gesture. Pointer capture, a browser feature,
-   *  routes every pointer event to the pressed element until release, so the
-   *  gesture continues when the pointer runs ahead of the card. */
+   *  routes every pointer event to the pressed element until the capture
+   *  ends, so the gesture continues when the pointer runs ahead of the card.
+   *
+   *  The gesture ends on `lostpointercapture`, the event the browser fires
+   *  whenever capture ends for any reason. A normal release ends it, and so
+   *  does a cancelled gesture or another script taking the pointer. Ending on
+   *  the release alone left the page-covering layer up for good whenever
+   *  capture was lost first, because the release then went to the layer.
+   *
+   *  Capture is taken before any state changes. If the browser refuses it,
+   *  the call throws and the gesture never starts, instead of starting with
+   *  no way to end. */
   const startGesture = (e: React.PointerEvent, cursor: string, apply: (start: Box, dx: number, dy: number) => Box) => {
     if (e.button !== 0 || !outer.current) return;
+    const grip = e.currentTarget as HTMLElement;
+    grip.setPointerCapture(e.pointerId);
     e.preventDefault();
     const start = pageBox(outer.current);
     const origin = { x: e.clientX, y: e.clientY };
+    let current = start;
     setBox(start);
     setGestureCursor(cursor);
-    const grip = e.currentTarget as HTMLElement;
-    grip.setPointerCapture(e.pointerId);
-    const onMove = (move: PointerEvent) => setBox(apply(start, move.clientX - origin.x, move.clientY - origin.y));
+    const onMove = (move: PointerEvent) => {
+      // A move with no button held means the release happened somewhere the
+      // page never heard about, for example outside the browser window. We
+      // let go of the capture, which ends the gesture through onEnd.
+      if (move.buttons === 0) return grip.releasePointerCapture(move.pointerId);
+      current = apply(start, move.clientX - origin.x, move.clientY - origin.y);
+      setBox(current);
+    };
     const onEnd = () => {
       grip.removeEventListener("pointermove", onMove);
-      grip.removeEventListener("pointerup", onEnd);
-      grip.removeEventListener("pointercancel", onEnd);
+      grip.removeEventListener("lostpointercapture", onEnd);
       setGestureCursor(null);
+      onPlaced(current);
     };
     grip.addEventListener("pointermove", onMove);
-    grip.addEventListener("pointerup", onEnd);
-    grip.addEventListener("pointercancel", onEnd);
+    grip.addEventListener("lostpointercapture", onEnd);
   };
 
   const startDrag = (e: React.PointerEvent) => {

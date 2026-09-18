@@ -6,7 +6,7 @@ import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
 import { setJumpHandler } from "../utils/jumpBus";
 import { onNoteFiltersChanged } from "../utils/settings";
 import { ABSORB_KEYS, ClaimNoteStack, NOTE_POPOVER_WIDTH, OverlayLogin } from "./ClaimNoteStack";
-import { FloatingWindow } from "./FloatingWindow";
+import { FloatingWindow, type Box } from "./FloatingWindow";
 import { ScrubberPins } from "./ScrubberPins";
 import { useNoteVoting, replaceNoteInGroup } from "./useNoteVoting";
 
@@ -67,7 +67,8 @@ function usePlayerBox(player: HTMLElement) {
 /** A community note shown over the YouTube player when the video reaches the
  *  claim. The card is the same width as the Substack popover and starts at
  *  the player's right edge, vertically centered. From there it can be
- *  dragged anywhere on the page and resized, like a desktop window. It only
+ *  dragged anywhere on the page and resized, like a desktop window, and the
+ *  next note on the same video opens where the reader left it. It only
  *  shows while playback is inside the claim's span, and it fades out as soon
  *  as playback leaves that span. It stays up while the pointer is on it and
  *  the reader is mid-interaction. Pins on the scrub bar mark every claim, and
@@ -244,19 +245,26 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
   };
   const nnnApi: NnnApi = { myVotes: myNnnVotes, onVote: handleNnnVote, onAuthored: recordNnnAuthored, onDeleted: () => void refresh() };
   const playerBox = usePlayerBox(player);
+  // Where the reader last put a card on this video, and how wide they made
+  // it. The next note opens there. Its height is not kept: a new card fits
+  // its own text, capped at most of the viewport. This state lives as long as
+  // the overlay, which is remounted on every video, so the next video starts
+  // at the player's right edge again.
+  const [placement, setPlacement] = useState<Omit<Box, "height"> | null>(null);
 
   return (
     <div className="pointer-events-auto text-left">
       <ScrubberPins groups={groups} video={video} player={player} onPinClick={jumpToPin} />
       {group && (
         <FloatingWindow
-          // A new claim gets a fresh card at the resting spot. Where the
-          // reader dragged the previous one is not remembered.
+          // A new claim gets a fresh card, which opens where the reader left
+          // the previous one on this video.
           key={group.claimId}
           title="Community note on this part of the video"
           dismissLabel="Dismiss for this video"
           onDismiss={dismiss}
-          restingStyle={{ left: playerBox.right - PLAYER_EDGE_INSET_PX, top: playerBox.centreY, width: NOTE_POPOVER_WIDTH, transform: "translate(-100%, -50%)" }}
+          onPlaced={({ left, top, width }) => setPlacement({ left, top, width })}
+          restingStyle={placement ?? { left: playerBox.right - PLAYER_EDGE_INSET_PX, top: playerBox.centreY, width: NOTE_POPOVER_WIDTH, transform: "translate(-100%, -50%)" }}
           {...ABSORB_KEYS}
           // Clicks on the card must not reach the page's own handlers. They
           // are retargeted to the shadow host element, so the page would read
