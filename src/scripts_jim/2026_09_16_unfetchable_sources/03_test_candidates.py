@@ -6,7 +6,7 @@
 One subcommand per candidate, each writing data/candidate_<name>.json:
 
   jina         Jina Reader, a hosted service: GET https://r.jina.ai/<url> returns
-               the page as markdown. Needs JINA_READER_API in .env.
+               the page as markdown. Needs JINA_API_KEY in .env.
   exa          Exa's /contents endpoint with live crawling, a hosted service we
                already pay for. Needs EXA_API_KEY. `exa_fallback` runs the same
                with livecrawl=fallback, which prefers Exa's cached copy.
@@ -91,7 +91,7 @@ def jina(url: str) -> dict:
     or challenge page. It says so in a Warning line of its own header block, and
     a challenge page shows in the title, so those answers count as failures."""
     r = requests.get(f"https://r.jina.ai/{url}", timeout=TIMEOUT,
-                     headers={"Authorization": f"Bearer {os.environ['JINA_READER_API']}", "X-Return-Format": "markdown"})
+                     headers={"Authorization": f"Bearer {os.environ['JINA_API_KEY']}", "X-Return-Format": "markdown"})
     if not r.ok:
         return {"status": r.status_code, "good": False, "error": r.text[:300]}
     header_block = r.text[:1500]

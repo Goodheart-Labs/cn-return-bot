@@ -1,9 +1,12 @@
 # Sources the verifier could not fetch (GOO-167)
 
 Investigation, 2026-09-16. Everything here was measured from this VPS, a
-netcup datacenter address in Vienna. Production runs on GitHub Actions, which is also a
-datacenter address (Microsoft Azure ranges), so the two see the same class of
-blocks, but not the same individual block lists.
+netcup datacenter address in Vienna. Production fetched from two other
+datacenter addresses during the sample. Until 2026-09-09 14:38 UTC the X bot's
+verifier ran on GitHub Actions runners (Microsoft Azure addresses). From then
+on both the X bot and Common Notes send their claim checks, verifier included,
+to the claim-check service on the Hetzner services machine in Nuremberg. Of the
+385 sampled pages, 203 first failed on GitHub and 182 on Hetzner.
 
 ## 1. Method for finding the sources
 
@@ -93,11 +96,12 @@ Reading the table:
   does not exist: a hallucinated or mangled URL, or an article that was moved.
   No fetcher fixes this. The archives can, when the page once existed.
 - **Fetches fine from this VPS with a plain client (24%).** These failed in
-  production but a plain Python client fetched them here. Part of this is the
-  origin address: GitHub Actions runners come from Microsoft Azure ranges that
-  many sites block outright, and this VPS is not on those lists. Part of it is
-  our client, see section 4, because our own ladder run from this same VPS
-  recovered only 57 of these 93.
+  production but a plain Python client fetched them here. Part of this may be
+  the origin address or the passing of time: our own ladder, run from the VPS,
+  recovered 33% of the pages that failed on GitHub and 32% of those that failed
+  on Hetzner, so neither production address stands out, and a retry days
+  later also meets fewer rate limits and outages. Part of it is our client,
+  see section 4, because that same ladder recovered only 57 of these 93.
 - **TLS fingerprint block (12%).** The plain client is refused, the same request
   with Chrome's handshake is served. ESPN is the big one (17 pages, it serves an
   empty shell to a script handshake), then LessWrong, Britannica, FBI, DHS. The
@@ -136,8 +140,8 @@ why:
    availability lookup answered "429 Too Many Requests" to this VPS on its first
    call of the day, and archive.ph does not answer datacenter addresses at all
    (the connection times out). In the ladder re-run, 0 of 385 pages came from an
-   archive. Production still logs 113 archive fetches in 14 days, so GitHub's
-   addresses are treated better by the Internet Archive than this VPS, but each
+   archive. Production still logs 113 archive fetches in 14 days, so the
+   Internet Archive treats production's addresses better than this VPS, but each
    failing URL still spends up to 25 seconds on those two steps before the
    browser runs. The official CDX API with a one-request-per-second throttle and
    backoff did no better in the next section: 503 or connection refused on 360
@@ -338,7 +342,7 @@ its own proxies, browsers and challenge solvers behind the scenes.
    much better from here: even the official CDX endpoint at one request a second
    with backoff answered 503 or refused the connection on 360 of 385 lookups
    (15 pages recovered, all 14-day-old news that has a capture). Production
-   still gets 113 archive hits a fortnight from GitHub's addresses, so keep the
+   still gets 113 archive hits a fortnight from its addresses, so keep the
    availability lookup, but with a 5 second timeout instead of 10 plus 15.
 5. **Do not pay for a managed unblocker yet.** The DataDome and Cloudflare
    group is 24% of failures, and Jina already takes half of it. A managed
@@ -354,10 +358,11 @@ own `web_fetch` (28% and $0.018 a page, worse and dearer than Jina).
 
 ## 8. Caveats
 
-- Nothing here was run from GitHub Actions. The "fine from this VPS" group
-  mixes "GitHub's addresses are blocked" with "Bun's handshake is blocked", and
-  only the second is measured. A one-off workflow run of `04_rerun_ladder.ts`
-  would split them.
+- Nothing here was run from production's own addresses. The "fine from this
+  VPS" group mixes "production's address is blocked", "the site was down or
+  rate-limiting that day" and "Bun's handshake is blocked", and only the last
+  is measured. Running `04_rerun_ladder.ts` on the services machine at the same
+  moment as on the VPS would separate the first two.
 - The prod database went into disk-IO starvation during this investigation
   (health endpoint: db and rest UNHEALTHY from about 20:20 to 20:59 UTC). The
   cause was my day-by-day regex scans of `pipeline_runs.logs` through the
