@@ -72,7 +72,7 @@ import { generatePangramCandidates } from "../pipeline/pangram-monitoring/genera
 import { generateMisinfoCandidates } from "../pipeline/misinfo-monitoring/generateMisinfoCandidates";
 import type { MisinfoTopicId } from "../pipeline/misinfo-monitoring/topicIds";
 import { submitCandidates, misinfoReserveRemaining, type Candidate, type SubmitOptions } from "../pipeline/orchestration/submitCandidates";
-import { computeMaxPosts } from "../pipeline/orchestration/computeMaxPosts";
+import { computeMaxPosts, type MaxPosts } from "../pipeline/orchestration/computeMaxPosts";
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
 import { autoOpenInDashboard } from "../local/dashboardAutoOpen";
 import { withForcedPicks } from "../pipeline/ab-testing/abTests";
@@ -204,11 +204,15 @@ async function main() {
       }
     }
 
-    let { maxPosts } = isLocal
-      ? { maxPosts: MAX_POSTS_LOCAL }
+    const sizing: MaxPosts = isLocal
+      ? { maxPosts: MAX_POSTS_LOCAL, estimate: MAX_POSTS_LOCAL }
       : capacity
         ? computeMaxPosts(capacity)
-        : { maxPosts: MAX_POSTS_FALLBACK };
+        : { maxPosts: MAX_POSTS_FALLBACK, estimate: MAX_POSTS_FALLBACK };
+    let { maxPosts } = sizing;
+    if (sizing.stopAfterCandidates) {
+      console.log(`[max-posts] cooldown probe: processing up to ${maxPosts} post(s) until ${sizing.stopAfterCandidates} note is ready`);
+    }
 
     if (maxPosts === 0) {
       console.log("[pipeline] Skipping — writing limit reached for the current 24h window");
@@ -331,6 +335,7 @@ async function main() {
     const regularCandidates = await generateCandidates(supabaseLogger, {
       maxPosts,
       deadlineMs: SOFT_DEADLINE_AT_MS,
+      stopAfterCandidates: sizing.stopAfterCandidates,
       scorer,
       skipPostIds,
       knownTweetIds,

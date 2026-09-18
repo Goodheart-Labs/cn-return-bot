@@ -37,11 +37,15 @@ describe("automatic generation capacity preflight", () => {
     expect(computeMaxPosts(snapshot).maxPosts).toBe(0);
   });
 
-  test("an allowed cooldown probe processes one candidate despite zero estimated headroom", async () => {
+  test("an allowed cooldown probe walks the batch until one note is ready, despite zero estimated headroom", async () => {
     const snapshot = { ...capacity, remaining: 0, probe: true };
     const result = await automaticGenerationPreflight({ getNoteSubmissionCapacity: async () => snapshot });
     expect(result.allowed).toBe(true);
-    expect(computeMaxPosts(snapshot).maxPosts).toBe(1);
+    expect(computeMaxPosts(snapshot)).toEqual({ maxPosts: 20, estimate: 1, stopAfterCandidates: 1 });
+  });
+
+  test("a normal run sets no early stop", () => {
+    expect(computeMaxPosts(capacity).stopAfterCandidates).toBeUndefined();
   });
 
 });

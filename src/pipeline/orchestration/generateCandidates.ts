@@ -42,6 +42,8 @@ import PQueue from "p-queue";
 // media steps) and risks rate-limit bursts — step, measure a day of logs,
 // then step again if clean.
 const CONCURRENCY_LIMIT = 10;
+// A probe runs few posts at once, so little is in flight when the first note lands.
+const PROBE_CONCURRENCY = 3;
 // These two are ceilings, not targets. Each feed tier is walked as deep as X
 // will paginate. What actually stops a walk is next_token running out, or a rate
 // limit part-way through, in which case fetchEligiblePosts keeps whatever it
@@ -272,6 +274,14 @@ export interface ProcessPostsOptions {
    *  what the hard kill already did to never-started posts: its tweets row was
    *  written at selection, so it is not refetched. Unset means no deadline. */
   deadlineMs?: number;
+  /** Stop starting posts once this many candidates are ready. Posts already in
+   *  flight finish. Used by the cooldown probe, which needs one note, not a batch. */
+  stopAfterCandidates?: number;
+  /** How many posts run at once. Defaults to CONCURRENCY_LIMIT. */
+  concurrency?: number;
+  /** Write a post's tweets row when the post starts instead of at selection, so
+   *  a post that never starts stays eligible for the next run. */
+  insertTweetOnStart?: boolean;
 }
 
 /**
@@ -285,15 +295,17 @@ export interface ProcessPostsOptions {
 export async function processPosts(
   items: ProcessPostItem[],
   supabaseLogger: SupabaseLogger | null,
-  { onTweetProcessed, label = "generate", deadlineMs }: ProcessPostsOptions,
+  { onTweetProcessed, label = "generate", deadlineMs, stopAfterCandidates, concurrency = CONCURRENCY_LIMIT, insertTweetOnStart = false }: ProcessPostsOptions,
 ): Promise<Candidate[]> {
   if (!items.length) return [];
 
   const commit = process.env.GITHUB_SHA;
   const outerForcedPicks = getForcedPicks();
 
-  const queue = new PQueue({ concurrency: CONCURRENCY_LIMIT });
+  const queue = new PQueue({ concurrency });
   const allLogs: TweetLogMap[] = [];
+  let candidatesReady = 0;
+  let leftForNextRun = 0;
   // Each candidate is stored at its own index rather than pushed. The posts run
   // concurrently, so pushing on completion would return them in whatever order
   // they happened to finish. Submission goes in this order, so it has to stay
@@ -321,6 +333,14 @@ export async function processPosts(
       if (deadlineMs && Date.now() >= deadlineMs) {
         skippedByIndex[idx] = item.post;
         return;
+      }
+      if (stopAfterCandidates && candidatesReady >= stopAfterCandidates) {
+        leftForNextRun++;
+        return;
+      }
+      if (insertTweetOnStart && supabaseLogger) {
+        try { await supabaseLogger.bulkInsertNewTweets([item.post]); }
+        catch (err) { console.warn(`[${label}] Failed to insert tweet ${item.post.id}:`, err); }
       }
 
       // What this run knows before the check: the post's place in the batch and
@@ -363,6 +383,7 @@ export async function processPosts(
 
       if (tweetResult.outcome === "candidate" && tweetResult.pipelineRunId) {
         candidateByIndex[idx] = { post: item.post, tweetResult, botId, velocity: item.velocity };
+        candidatesReady++;
       }
     });
   }
@@ -404,6 +425,12 @@ export async function processPosts(
   }
 
   const candidates = candidateByIndex.filter((c): c is Candidate => c !== undefined);
+  if (leftForNextRun > 0) {
+    console.log(
+      `[${label}] probe: ${candidatesReady} note(s) ready after ${items.length - leftForNextRun - skipped.length} post(s); ` +
+        `${leftForNextRun} selected post(s) left untouched for the next run`,
+    );
+  }
 
   if (process.env.CI) {
     console.log("::endgroup::");
@@ -421,6 +448,9 @@ export interface GenerateCandidatesOptions {
   /** The soft deadline for starting new posts, passed through to processPosts.
    *  See ProcessPostsOptions.deadlineMs. */
   deadlineMs?: number;
+  /** A cooldown probe: walk the ranked batch a few posts at a time and stop once
+   *  this many notes are ready. See computeMaxPosts. */
+  stopAfterCandidates?: number;
   /** These are pre-fetched by runPipeline and shared with the misinfo pre-pass,
    *  so the notes, pipeline_runs and tweets tables are not scanned twice in one
    *  run. A caller that leaves them out makes fetchPosts fetch them instead. */
@@ -439,7 +469,7 @@ export interface GenerateCandidatesOptions {
 
 export async function generateCandidates(
   supabaseLogger: SupabaseLogger | null,
-  { maxPosts, deadlineMs, skipPostIds, knownTweetIds, onTweetProcessed, topicIds, scorer = null }: GenerateCandidatesOptions,
+  { maxPosts, deadlineMs, stopAfterCandidates, skipPostIds, knownTweetIds, onTweetProcessed, topicIds, scorer = null }: GenerateCandidatesOptions,
 ): Promise<Candidate[]> {
   const outerForcedPicks = getForcedPicks();
   if (Object.keys(outerForcedPicks).length > 0) {
@@ -515,7 +545,8 @@ export async function generateCandidates(
   // takes off. The full feed pull is archived separately, in feed_tweets. This
   // runs after curation, so a regular post that curation displaced is not burned
   // and a prioritized topic post is.
-  if (supabaseLogger && final.length) {
+  // A probe stops early, so it records each post as the post starts instead.
+  if (supabaseLogger && final.length && !stopAfterCandidates) {
     try {
       await supabaseLogger.bulkInsertNewTweets(final.map((s) => s.post));
       console.log(`[generate] Inserted ${final.length} new tweets`);
@@ -567,6 +598,7 @@ export async function generateCandidates(
     onTweetProcessed: onProcessed,
     label: "generate",
     deadlineMs,
+    ...(stopAfterCandidates ? { stopAfterCandidates, concurrency: PROBE_CONCURRENCY, insertTweetOnStart: true } : {}),
   });
   // Tag curated candidates the way pre-pass ones are tagged, so that
   // submitCandidates leaves them out of its velocity-floor backstop. They answer
