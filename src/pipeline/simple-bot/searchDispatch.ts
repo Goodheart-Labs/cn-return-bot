@@ -17,7 +17,6 @@ import { getMonitoringContext, buildReferenceBlock } from "../misinfo-monitoring
 import {
   buildSearchSystemPrompt,
   SEARCH_SYSTEM_PROMPT_CLAIM,
-  SEARCH_TIME_TRAVEL_INSTRUCTION,
   SEARCH_RESPONSE_FORMAT,
   SEARCH_INLINE_RESPONSE_SCHEMA,
   SEARCH_PROMPTED_JSON_INSTRUCTION,
@@ -68,11 +67,9 @@ export function getSearchSystemPrompt(): string {
   // below.
   if (config.search_claim) return SEARCH_SYSTEM_PROMPT_CLAIM;
   const monitoring = getMonitoringContext();
-  let prompt = buildSearchSystemPrompt({
+  return buildSearchSystemPrompt({
     referenceBlock: monitoring ? buildReferenceBlock(monitoring) : null,
   });
-  if (config.time_travel_prompt) prompt += SEARCH_TIME_TRAVEL_INSTRUCTION;
-  return prompt;
 }
 
 // --- Public types ---

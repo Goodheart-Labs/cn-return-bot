@@ -10,7 +10,6 @@ import {
   WRITER_DEFAULT_RULE,
   WRITER_LAST_CHECK,
   WRITER_SYSTEM_PROMPT,
-  WRITER_TIME_TRAVEL_RULE,
 } from "../prompts/simple-bot/writer";
 import * as llm from "../utils/jsonLlmCall";
 import { createTweetLog, withTweetLog } from "../utils/tweetLog";
@@ -48,7 +47,6 @@ describe("writer prompt assembly", () => {
       ...DEFAULT_CONFIG,
       writer_central_claim: true,
       writer_last_check: true,
-      time_travel_prompt: true,
       concede_shape: true,
     }, () => withMonitoringContext({
       topicId: "trump_election_security", topicTitle: "A curated topic", document: "Reference findings",
@@ -56,7 +54,7 @@ describe("writer prompt assembly", () => {
     const messages = call.mock.calls[0]![0].messages;
     expect(messages[0]!.content).toBe(
       WRITER_SYSTEM_PROMPT.replace(WRITER_DEFAULT_RULE, WRITER_CENTRAL_CLAIM_RULE)
-      + WRITER_TIME_TRAVEL_RULE + WRITER_LAST_CHECK
+      + WRITER_LAST_CHECK
       + MISINFO_SOURCING_RULE + MISINFO_NOTE_SHAPE_RULE + MISINFO_CONCEDE_SHAPE_RULE,
     );
     expect(messages[1]!.content).toBe(
