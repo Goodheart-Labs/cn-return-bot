@@ -3,6 +3,7 @@ import { fetchAllRows as fetchAllRowsShared } from "./paging";
 import type { Post } from "./fetchEligiblePosts";
 import type { FeedSize } from "../pipeline/orchestration/utils/feedSizeStrategy";
 import { stripNullChars } from "../utils/stripNullChars";
+import { RETRY_WINDOW_HOURS, retryEligibleTweetIds, type RunRow } from "../pipeline/orchestration/retryableFailures";
 import { parseSubmissionAdmission, parseSubmissionCapacity, type SubmissionAdmission, type SubmissionCapacity, type SubmissionClaimOutcome, type SubmissionLane } from "../pipeline/capacity/submissionReserve";
 
 // How often an --incremental scrape may scroll past a note without capturing it
@@ -897,9 +898,10 @@ export class SupabaseLogger {
   }
 
   /**
-   * Returns every tweet id that is already in the tweets table. Those are the
-   * tweets we have seen before from the eligibility endpoint. The caller uses
-   * the set to skip them, so each fetched tweet is processed at most once.
+   * Returns every tweet id that is already in the tweets table, minus the ones
+   * that earned a retry (see retryableFailures.ts). The caller uses the set to
+   * skip tweets it has seen, so each fetched tweet is processed at most once,
+   * or twice when the first attempt died of a transient error.
    */
   async getKnownTweetIds(): Promise<Set<string>> {
     try {
@@ -912,7 +914,25 @@ export class SupabaseLogger {
         "tweet_id",
         "getKnownTweetIds",
       );
-      return new Set(rows.map((r) => r.tweet_id).filter(Boolean));
+      const known = new Set(rows.map((r) => r.tweet_id).filter(Boolean));
+      // A tweet whose only attempt died of a transient error (model returned
+      // prose, run killed, service call lost) gets one more pass. Without this
+      // every such tweet was skipped for good the moment it entered the table.
+      // Any failure here leaves the set as it was, which is the old behaviour.
+      try {
+        const since = new Date(Date.now() - RETRY_WINDOW_HOURS * 3_600_000).toISOString();
+        const recent = await this.fetchAllRows<RunRow & { id: string }>(
+          (client) => client.from("pipeline_runs").select("id, tweet_id, outcome, outcome_reason, created_at").gte("created_at", since),
+          "id",
+          "getKnownTweetIds.recentRuns",
+        );
+        const retry = retryEligibleTweetIds(recent);
+        for (const tweetId of retry) known.delete(tweetId);
+        if (retry.size) console.log(`[SupabaseLogger] ${retry.size} tweet(s) failed once for a transient reason and get another pass`);
+      } catch (error) {
+        console.error("[SupabaseLogger] Error computing retry-eligible tweets (skipping retries this run):", error);
+      }
+      return known;
     } catch (error) {
       console.error("[SupabaseLogger] Error fetching known tweet IDs:", error);
       return new Set();
