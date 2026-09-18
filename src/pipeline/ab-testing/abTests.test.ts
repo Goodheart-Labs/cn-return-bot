@@ -100,14 +100,14 @@ describe("forced picks", () => {
 
   test("Common Notes can still force its fixed and zero-weight arms", () => {
     const forced = {
-      bot: "simple-bot", note_prefilter: "off", search_claim: "on",
+      bot: "simple-bot", note_prefilter: "off", commonnotes_pipeline: "on",
       simple_bot_search: "sonnet5-native", simple_bot_writer: "sonnet5",
       simple_bot_verifier: "gemini-flash", verifier_citations: "on", verifier_claim_based: "classic",
     };
     const { picks, config } = withForcedPicks(forced, () => runABTests(AB_TESTS));
     expect(picks).toMatchObject(forced);
     expect(config).toMatchObject({
-      note_prefilter: false, search_claim: true,
+      note_prefilter: false, commonnotes_pipeline: true,
       verifier_citations: true, verifier_claim_based: false,
     });
   });

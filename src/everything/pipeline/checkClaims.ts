@@ -37,7 +37,7 @@ import { claimCheckFields } from "./claimCheckFields";
 const FORCED_PICKS: Record<string, string> = {
   bot: "simple-bot",
   note_prefilter: "off",
-  search_claim: "on",
+  commonnotes_pipeline: "on",
   simple_bot_search: "musespark13c-serper",
   simple_bot_writer: "musespark13c",
   simple_bot_verifier: "musespark13c",
