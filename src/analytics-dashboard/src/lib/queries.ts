@@ -181,13 +181,14 @@ export interface RecentPostRow {
   published_at: string | null;
   /** When the pipeline finished the post. */
   processed_at: string;
-  /** Visits to anything by the post's author inside the ranking window. */
-  author_visits: number;
   /** Browsers that opened at least MIN_PAGES_FOR_A_READER different pages by
    *  the author, the number the pipeline walks authors on. A visit carries a
    *  browser only when the extension could tell whose post it was, and only
    *  since migration 089, so this can be below the true number. */
   author_readers: number;
+  /** Different pages by the author that anyone opened inside the ranking
+   *  window. The pipeline uses it to order authors with the same readers. */
+  author_pages: number;
   claims_extracted: number;
   claims_checked: number;
   notes: number;

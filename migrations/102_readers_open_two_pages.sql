@@ -134,12 +134,15 @@ drop function if exists everything_two_readers_seen();
 drop function if exists everything_creator_visits(int, int);
 
 -- ---------------------------------------------------------------------------
--- The dashboard's Recent posts table. author_readers now uses the same meaning
--- as the walk, so the dashboard shows the number that decides which creators
--- are checked. min_pages is passed by the dashboard from MIN_PAGES_FOR_A_READER
--- in src/everything-shared/readers.ts, as the pipeline does, so the rule has
--- one home. Everything else is unchanged from migration 095. The new argument
--- changes the signature, so the old function is dropped.
+-- The dashboard's Recent posts table. It now shows the author's two numbers
+-- the walk orders creators by, readers first and different pages second, so
+-- the dashboard shows what decides which creators are checked. Visits are no
+-- longer returned: they decide nothing, and duplicate rows inflate them.
+-- author_pages counts different pages over rows with a reader hash, exactly as
+-- everything_creator_attention does. min_pages is passed by the dashboard from
+-- MIN_PAGES_FOR_A_READER in src/everything-shared/readers.ts, as the pipeline
+-- does, so the rule has one home. Everything else is unchanged from migration 095. The new argument
+-- and the changed columns change the signature, so the old function is dropped.
 drop function if exists everything_recent_posts(int, int);
 
 create function everything_recent_posts(max_posts int, window_days int, min_pages int)
@@ -151,8 +154,8 @@ returns table (
   checked_scope text,
   published_at date,
   processed_at timestamptz,
-  author_visits bigint,
   author_readers bigint,
+  author_pages bigint,
   claims_extracted bigint,
   claims_checked bigint,
   notes bigint
@@ -194,10 +197,11 @@ as $$
       on visit.feed_url is not null
      and lower(feed_project.feed_url) = lower(visit.feed_url)
   ),
-  author_visits as (
-    select attributed.project_id, count(*) as visits
+  author_pages as (
+    select attributed.project_id, count(distinct attributed.page) as pages
     from attributed
     where attributed.project_id in (select recent.project_id from recent)
+      and attributed.reader_hash is not null
     group by attributed.project_id
   ),
   author_browsers as (
@@ -233,11 +237,11 @@ as $$
   )
   select
     r.id, r.title, r.url, p.name, r.checked_scope, r.published_at, r.processed_at,
-    coalesce(av.visits, 0), coalesce(ar.readers, 0),
+    coalesce(ar.readers, 0), coalesce(ap.pages, 0),
     coalesce(cc.extracted, 0), coalesce(cc.checked, 0), coalesce(nc.notes, 0)
   from recent r
   left join everything_projects p on p.id = r.project_id
-  left join author_visits av on av.project_id = r.project_id
+  left join author_pages ap on ap.project_id = r.project_id
   left join author_readers ar on ar.project_id = r.project_id
   left join claim_counts cc on cc.item_id = r.id
   left join note_counts nc on nc.item_id = r.id
@@ -245,7 +249,7 @@ as $$
 $$;
 
 comment on function everything_recent_posts(int, int, int) is
-  'The posts the pipeline finished most recently (up to 200), newest first, with their author''s visits and readers over the last window_days days, claims extracted, claims checked and AI notes written. A reader is one reader hash that opened at least min_pages different pages of the author (GOO-182).';
+  'The posts the pipeline finished most recently (up to 200), newest first, with their author''s readers and different pages over the last window_days days, claims extracted, claims checked and AI notes written. A reader is one reader hash that opened at least min_pages different pages of the author (GOO-182).';
 
 revoke all on function everything_recent_posts(int, int, int) from public;
 grant execute on function everything_recent_posts(int, int, int) to anon, authenticated;

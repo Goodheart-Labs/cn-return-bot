@@ -36,8 +36,8 @@ const COLUMNS: readonly { label: string; title: string }[] = [
   { label: "Post", title: "The post, and the project it belongs to" },
   { label: "Published", title: "When the author published it" },
   { label: "Checked", title: "When the pipeline finished it" },
-  { label: "Author visits", title: `Visits to anything by this author in the last ${VISIT_RANKING_WINDOW_DAYS} days` },
   { label: "Author readers", title: `Browsers that opened at least ${MIN_PAGES_FOR_A_READER} different pages by this author in the last ${VISIT_RANKING_WINDOW_DAYS} days` },
+  { label: "Author pages", title: `Different pages by this author that anyone opened in the last ${VISIT_RANKING_WINDOW_DAYS} days` },
   { label: "Claims", title: "Claims extracted from the post" },
   { label: "Checked claims", title: "Claims that went through a fact-check" },
   { label: "Notes", title: "Notes the pipeline wrote" },
@@ -109,8 +109,8 @@ export function RecentPosts() {
                 <td style={{ ...cell, whiteSpace: "nowrap" }} title={new Date(post.processed_at).toLocaleString()}>
                   {timeAgo(post.processed_at)}
                 </td>
-                <td style={numberCell}>{post.author_visits}</td>
                 <td style={numberCell}>{post.author_readers}</td>
+                <td style={numberCell}>{post.author_pages}</td>
                 <td style={numberCell}>{post.claims_extracted}</td>
                 <td style={numberCell}>{post.claims_checked}</td>
                 <td style={numberCell}>{post.notes}</td>
@@ -129,9 +129,10 @@ export function RecentPosts() {
           </button>
         )}
         <span>
-          Author visits and readers cover the last {VISIT_RANKING_WINDOW_DAYS} days, the numbers the pipeline picks authors by. A reader
-          is a browser that opened at least {MIN_PAGES_FOR_A_READER} different pages by the author. Someone who opened one page is a
-          visit but not a reader.
+          Author readers and pages cover the last {VISIT_RANKING_WINDOW_DAYS} days, the numbers the pipeline picks authors by: readers
+          first, pages to break ties. A reader is a browser that opened at least {MIN_PAGES_FOR_A_READER} different pages by the author.
+          Pages counts every different page by the author that anyone opened, so someone who opened one page adds a page but not a
+          reader.
         </span>
       </div>
     </div>
