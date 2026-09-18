@@ -637,6 +637,9 @@ export interface CreatorProject {
   /** When the creator's everything_top_posts rows were last recomputed. Null
    *  means never. */
   top_posts_refreshed_at: string | null;
+  /** When a refresh was last tried and failed (migration 101). Null means no
+   *  failed attempt since the last success. */
+  top_posts_attempted_at: string | null;
 }
 
 /** Every creator we have a project for, whether or not they hold priority right
@@ -647,14 +650,15 @@ export async function fetchCreatorProjects(): Promise<CreatorProject[]> {
   const rows = throwOnError(
     await getSupabaseClient()
       .from("everything_projects")
-      .select("slug, feed_url, priority_until, top_posts_refreshed_at")
+      .select("slug, feed_url, priority_until, top_posts_refreshed_at, top_posts_attempted_at")
       .not("feed_url", "is", null),
-  ) as { slug: string; feed_url: string; priority_until: string | null; top_posts_refreshed_at: string | null }[];
+  ) as { slug: string; feed_url: string; priority_until: string | null; top_posts_refreshed_at: string | null; top_posts_attempted_at: string | null }[];
   return rows.map((r) => ({
     project_slug: r.slug,
     feed_url: r.feed_url,
     priority_until: r.priority_until,
     top_posts_refreshed_at: r.top_posts_refreshed_at,
+    top_posts_attempted_at: r.top_posts_attempted_at,
   }));
 }
 
@@ -737,7 +741,18 @@ export async function replaceFeedTopPosts(feedUrl: string, rows: Omit<TopPostRow
   throwOnError(
     await db
       .from("everything_projects")
-      .update({ top_posts_refreshed_at: new Date().toISOString() })
+      .update({ top_posts_refreshed_at: new Date().toISOString(), top_posts_attempted_at: null })
+      .eq("feed_url", feedUrl),
+  );
+}
+
+/** Records that a refresh of this feed's top list was tried and failed, so
+ *  the feed is not tried again until the retry wait has passed. */
+export async function stampTopPostsAttempt(feedUrl: string): Promise<void> {
+  throwOnError(
+    await getSupabaseClient()
+      .from("everything_projects")
+      .update({ top_posts_attempted_at: new Date().toISOString() })
       .eq("feed_url", feedUrl),
   );
 }

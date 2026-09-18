@@ -26,11 +26,19 @@ export async function fetchTweetById(tweetId: string): Promise<Post> {
   // them as +, so we swap them back.
   const fullUrl = `https://api.x.com/2/tweets/${tweetId}?${params.toString().replace(/\+/g, "%20")}`;
 
+  // A public tweet lookup only needs app-only auth. Prefer a bearer token when
+  // one is configured: X's pay-per-use apps have been answering OAuth 1.0a user
+  // context with 401 "invalid or expired token" (seen 2026-09-17) while the same
+  // app's bearer token keeps working.
+  const bearer = process.env.X_READ_BEARER_TOKEN?.trim() || process.env.X_BEARER_TOKEN?.trim();
+  const authHeaders = bearer
+    ? { Authorization: `Bearer ${bearer}` }
+    : getOAuth1Headers(fullUrl, "GET", undefined, "reader");
   let response;
   try {
     response = await axios.get(fullUrl, {
       headers: {
-        ...getOAuth1Headers(fullUrl, "GET"),
+        ...authHeaders,
         "Content-Type": "application/json",
       },
       timeout: 30000,
