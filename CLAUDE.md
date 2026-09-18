@@ -44,7 +44,7 @@ There are some ranked strategic cruxes (Mar 2026) in Claude's auto-memory coveri
   - `simple-bot/` - The bot itself: searchDispatch (every web-search strategy), writer, timing, correction extraction
   - `prefilter/` - The cheap gates that run before the bot: blocked topics, satire, query writing, note-needed judge
   - `verify/` - Source verification
-  - `score/` - noteEvaluationFilter, which calls X's evaluate_note endpoint (not an LLM call)
+  - `score/` - noteEvaluationFilter, which calls X's evaluate_note endpoint (not an LLM call). The GitHub Actions run makes this call through `applyEvalGate` after the claim-check service answers, because the service's X keys lack the Community Notes permission (GOO-185)
   - `llm/` - OpenRouter client, native xAI and Gemini clients, the Gemini free-key adapter
   - `ab-testing/` - abTestsData (every A/B arm, including which model each stage uses) and botConfig
   - `cost-tracking/` - pricing tables and the per-call cost tracker

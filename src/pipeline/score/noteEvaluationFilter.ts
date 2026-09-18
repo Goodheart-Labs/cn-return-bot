@@ -1,6 +1,5 @@
 import axios from "axios";
 import { getOAuth1Headers } from "../../api/getOAuthToken";
-import { getTweetLog } from "../utils/tweetLog";
 
 export type NoteEvaluationResponse = {
   data?: {
@@ -8,6 +7,18 @@ export type NoteEvaluationResponse = {
   };
   errors?: any;
 };
+
+export type EvaluationResult = { score: number } | { error: string };
+
+/** How many evaluate_note calls failed in this process. A failed call does not
+ *  stop the note, but the scheduled run reads this count at the end and exits
+ *  with an error, so the workflow turns red instead of submitting without
+ *  scores for days unnoticed. */
+let failedEvaluations = 0;
+
+export function countFailedEvaluations(): number {
+  return failedEvaluations;
+}
 
 /**
  * Calls X's evaluation endpoint to predict how helpful a Community Note is.
@@ -26,32 +37,9 @@ export async function evaluateNote(
   };
 
   const body = JSON.stringify(data);
-  const headers = {
-    ...getOAuth1Headers(url, "POST", body),
-    "Content-Type": "application/json",
-  };
-
-  // X answers this endpoint with 403 when the call comes from GitHub Actions'
-  // network (every pipeline call since 2026-09-09) while the same keys score
-  // fine elsewhere. With a proxy configured, go out through the residential
-  // proxy yt-dlp already uses; Bun's fetch takes the proxy directly. Payloads
-  // are ~1 KB, so the per-GB cost is negligible.
-  const proxy = process.env.EVALUATE_NOTE_PROXY_URL?.trim() || process.env.YTDLP_PROXY_URL?.trim();
-  if (proxy) {
-    const res = await fetch(url, { method: "POST", headers, body, proxy, signal: AbortSignal.timeout(30_000) } as RequestInit);
-    const text = await res.text();
-    if (!res.ok) {
-      const error: any = new Error(`Request failed with status code ${res.status}`);
-      error.response = { status: res.status, data: text.slice(0, 500) };
-      console.error("[noteEvaluationFilter] Error evaluating note (via proxy):", `${error.message} ${text.slice(0, 500)}`);
-      throw error;
-    }
-    return JSON.parse(text);
-  }
-
   try {
     const response = await axios.post(url, data, {
-      headers,
+      headers: { ...getOAuth1Headers(url, "POST", body), "Content-Type": "application/json" },
       timeout: 30000, // 30 second timeout
     });
     return response.data;
@@ -67,12 +55,15 @@ export async function evaluateNote(
  * Fetches the X eval score (`claim_opinion_score`) for a note. The score is
  * recorded for ranking, analysis, and the submission threshold gate. Returns
  * the score, or an error string when the eval API fails or returns an
- * unexpected shape.
+ * unexpected shape. Every error also counts towards countFailedEvaluations.
  */
-export async function getEvaluationScore(
-  postId: string,
-  noteText: string
-): Promise<{ score?: number; error?: string }> {
+export async function getEvaluationScore(postId: string, noteText: string): Promise<EvaluationResult> {
+  const result = await requestEvaluationScore(postId, noteText);
+  if ("error" in result) failedEvaluations++;
+  return result;
+}
+
+async function requestEvaluationScore(postId: string, noteText: string): Promise<EvaluationResult> {
   try {
     const evaluation = await evaluateNote(postId, noteText);
 
@@ -86,9 +77,7 @@ export async function getEvaluationScore(
       return { error: "Invalid response format" };
     }
 
-    const score = evaluation.data.claim_opinion_score;
-    getTweetLog()?.set("eval.score", score);
-    return { score };
+    return { score: evaluation.data.claim_opinion_score };
   } catch (error) {
     console.warn(
       "[noteEvaluationFilter] Evaluation API failed, skipping:",

@@ -4,11 +4,15 @@
  * This file holds the per-tweet pipeline logic. It used to live in
  * generateCandidates.ts. The work is split into three layers.
  *   1. runBotPipeline() runs the bot and returns its raw output.
- *   2. scorePipelineResult() computes the scores, including X's evaluation score.
+ *   2. scorePipelineResult() computes the scores.
  *   3. determineOutcome() is a pure function. It decides the outcome from the
  *      pipeline result and the scores.
  *
  * processSingleTweet() is the thin orchestrator that glues the three together.
+ *
+ * X's evaluation score is not part of these layers. The claim-check service
+ * computes them, and its X keys lack the Community Notes permission, so the
+ * caller runs applyEvalGate() on the service's answer instead (GOO-185).
  */
 
 import type { Post } from "../../api/fetchEligiblePosts";
@@ -137,22 +141,21 @@ function collectWarnings(): string[] | undefined {
 // Layer 2: Score the pipeline result. No outcome decisions are made here.
 // ---------------------------------------------------------------------------
 
-interface EvalGateDecision {
-  threshold: number;
+interface MaterialityGateDecision {
+  threshold?: number;
   score?: number;
   shouldSubmit?: boolean;
   error?: string;
   /** When this is true we still record the score, but it never vetoes a
    *  submission. We set it for misinfo-monitoring posts. We curate those topics
-   *  by hand, so we keep the evaluation score for visibility and let our note
-   *  through whatever the score says. */
+   *  by hand, so we keep the score for visibility and let our note through
+   *  whatever the score says. The eval gate treats those posts the same way. */
   advisory?: boolean;
 }
 
 interface ScoringOutput {
   scores: ScoreEntry[];
-  evalGate: EvalGateDecision;
-  materialityGate: Partial<EvalGateDecision>;
+  materialityGate: MaterialityGateDecision;
 }
 
 function extractSourceVerificationScore(result: PipelineResult): ScoreEntry | null {
@@ -194,17 +197,11 @@ export async function scorePipelineResult(
 ): Promise<ScoringOutput> {
   const scores: ScoreEntry[] = [];
   const noteText = joinNoteAndUrl(result.noteResult.note, result.noteResult.url);
-  const evalGate: EvalGateDecision = {
-    threshold: getBotConfig().eval_submit_threshold ?? 0,
+  const materialityGate: MaterialityGateDecision = {
+    threshold: getBotConfig().materiality_gate_threshold,
     advisory: getMonitoringContext() !== undefined,
   };
-  const materialityGate: Partial<EvalGateDecision> = {
-    threshold: getBotConfig().materiality_gate_threshold,
-    advisory: evalGate.advisory,
-  };
   const log = getTweetLog();
-  log?.set("eval.threshold", evalGate.threshold);
-  log?.set("eval.advisory", evalGate.advisory);
 
   const svScore = extractSourceVerificationScore(result);
   if (svScore) scores.push(svScore);
@@ -236,23 +233,51 @@ export async function scorePipelineResult(
   log?.set("materiality.threshold", materialityGate.threshold);
   log?.set("materiality.shouldSubmit", materialityGate.shouldSubmit);
 
-  const evalResult = await getEvaluationScore(result.post.id, noteText);
-  if (evalResult.error) {
-    evalGate.error = evalResult.error;
-    log?.set("eval.error", evalResult.error);
-  }
-  if (evalResult.score !== undefined) {
-    evalGate.score = evalResult.score;
-    evalGate.shouldSubmit = evalResult.score >= evalGate.threshold;
-    log?.set("eval.shouldSubmit", evalGate.shouldSubmit);
-    scores.push({
-      type: "evaluation",
-      value: evalResult.score,
-      metadata: { threshold: evalGate.threshold, passed: evalGate.shouldSubmit },
-    });
-  }
+  return { scores, materialityGate };
+}
 
-  return { scores, evalGate, materialityGate };
+/**
+ * Asks X's evaluate_note for the score of a note and applies the eval gate to
+ * the run's output. The output is changed in place: the score, its log
+ * entries, and a rejection when the score is below the threshold.
+ *
+ * This runs in the caller, after the claim-check service has answered, because
+ * the service's X keys lack the Community Notes permission (GOO-185). Every
+ * note the bot wrote as a correction is evaluated, so a note rejected earlier
+ * still gets a score for later analysis. Only a candidate can be rejected here.
+ *
+ * On advisory posts, which are the misinfo-monitoring ones, the score is
+ * recorded but never rejects anything. When the call fails, the note is not
+ * rejected either, because it may be good. The failure is counted instead, and
+ * the scheduled run fails at its end (see countFailedEvaluations).
+ */
+export async function applyEvalGate(post: Post, out: TweetComputeOutput, advisory: boolean): Promise<void> {
+  if (out.noteStatus !== CORRECTION_STATUS || !out.noteText) return;
+  const threshold = (out.bot.config?.eval_submit_threshold as number | undefined) ?? 0;
+  const log = out.flatLog;
+  log["eval.threshold"] = threshold;
+  log["eval.advisory"] = advisory;
+
+  const evaluation = await getEvaluationScore(post.id, out.noteText);
+  if ("error" in evaluation) {
+    log["eval.error"] = evaluation.error;
+    return;
+  }
+  const { score } = evaluation;
+  const shouldSubmit = score >= threshold;
+  log["eval.score"] = score;
+  log["eval.shouldSubmit"] = shouldSubmit;
+  out.evaluationScore = score;
+  out.scores.push({ type: "evaluation", value: score, metadata: { threshold, passed: shouldSubmit } });
+
+  if (out.outcome !== "candidate" || shouldSubmit || advisory) return;
+  out.outcome = "rejected";
+  out.outcomeReason = "low_evaluation_score";
+  out.finalStage = "evaluation";
+  out.errorMessage = `eval score ${score} below threshold ${threshold}`;
+  log["outcome.result"] = out.outcome;
+  log["outcome.reason"] = out.outcomeReason;
+  log["outcome.finalStage"] = out.finalStage;
 }
 
 // ---------------------------------------------------------------------------
@@ -299,21 +324,6 @@ export function determineOutcome(result: PipelineResult, scoring: ScoringOutput)
       outcomeReason: "low_materiality_score",
       finalStage: "evaluation",
       errorMessage: score !== undefined ? `materiality score ${score} below threshold ${threshold}` : undefined,
-    };
-  }
-
-  // This gate rejects a note whose evaluation score is below the threshold. If
-  // the evaluation call failed or returned no number, shouldSubmit stays
-  // undefined and we skip the gate rather than reject a note that may be good.
-  // On advisory posts, which are the misinfo-monitoring ones, the score is
-  // recorded but never rejects anything.
-  if (scoring.evalGate.shouldSubmit === false && !scoring.evalGate.advisory) {
-    const { score, threshold } = scoring.evalGate;
-    return {
-      outcome: "rejected",
-      outcomeReason: "low_evaluation_score",
-      finalStage: "evaluation",
-      errorMessage: score !== undefined ? `eval score ${score} below threshold ${threshold}` : undefined,
     };
   }
 
@@ -527,7 +537,6 @@ export async function computeTweetResult(post: Post, bot: Bot): Promise<TweetCom
       finalStage: outcome.finalStage,
       errorMessage: outcome.errorMessage,
       noteStatus: result.noteResult.status,
-      evaluationScore: scoring.evalGate.score,
       noteText: submittedNote,
       scores: scoring.scores,
       warnings: collectWarnings(),

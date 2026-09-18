@@ -8,7 +8,7 @@
 
 import { SupabaseLogger } from "../api/supabaseClient";
 import { getBotById, getEnabledBots } from "../bots/index";
-import { processSingleTweet } from "../pipeline/orchestration/processTweet";
+import { applyEvalGate, beginTweetRun, computeTweetResult, finishTweetRun } from "../pipeline/orchestration/processTweet";
 import { closeBrowser } from "../pipeline/utils/browserManager";
 import { withBotConfig } from "../pipeline/ab-testing/botConfig";
 import { withCostTracker } from "../pipeline/cost-tracking/costTracker";
@@ -485,21 +485,27 @@ export async function runPipeline(options: RunPipelineOptions): Promise<void> {
         const bot = getBotById(config.botId);
         if (!bot) throw new Error(`No bot registered for id "${config.botId}"`);
 
-        const log = createTweetLog();
-        log.set("tweet.index", idx + 1);
-        log.set("tweet.total", inputs.length);
-        const result = await withTweetLog(log, () =>
+        const computeLog = createTweetLog();
+        computeLog.set("tweet.index", idx + 1);
+        computeLog.set("tweet.total", inputs.length);
+        const pipelineRunId = await beginTweetRun(logger, post, undefined);
+        const computed = await withTweetLog(computeLog, () =>
           withBotConfig(config, () =>
             withMonitoringContext(monitoring, () =>
               withCostTracker(() => {
-                log.set("bot.id", config.botId);
-                log.set("bot.picks", picks);
-                log.set("bot.config", config);
-                return processSingleTweet({ post, bot, logger });
+                computeLog.set("bot.id", config.botId);
+                computeLog.set("bot.picks", picks);
+                computeLog.set("bot.config", config);
+                return computeTweetResult(post, bot);
               }),
             ),
           ),
         );
+        // The eval gate runs after the compute, as in the scheduled run, and
+        // writes into the computed run's log. So the rest of this row reads that log.
+        await applyEvalGate(post, computed, monitoring !== undefined);
+        const result = await finishTweetRun(logger, pipelineRunId, computed);
+        const log = new Map(Object.entries(computed.flatLog));
 
         completed.outcome = result.outcome;
         completed.outcomeReason = result.outcomeReason;

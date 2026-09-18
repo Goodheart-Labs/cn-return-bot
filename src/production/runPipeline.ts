@@ -72,6 +72,7 @@ import { generatePangramCandidates } from "../pipeline/pangram-monitoring/genera
 import { generateMisinfoCandidates } from "../pipeline/misinfo-monitoring/generateMisinfoCandidates";
 import type { MisinfoTopicId } from "../pipeline/misinfo-monitoring/topicIds";
 import { submitCandidates, misinfoReserveRemaining, type Candidate, type SubmitOptions } from "../pipeline/orchestration/submitCandidates";
+import { countFailedEvaluations } from "../pipeline/score/noteEvaluationFilter";
 import { computeMaxPosts } from "../pipeline/orchestration/computeMaxPosts";
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
 import { autoOpenInDashboard } from "../local/dashboardAutoOpen";
@@ -364,6 +365,13 @@ async function main() {
 
     if (localOutput) {
       await autoOpenInDashboard(localOutput.csvPath, buildRunName("pipeline", "local"));
+    }
+
+    // Notes without a score were still submitted above. The run fails only
+    // now, so the workflow shows red and nobody misses a broken evaluator.
+    const failedEvaluations = countFailedEvaluations();
+    if (failedEvaluations > 0) {
+      throw new Error(`${failedEvaluations} evaluate_note call(s) failed this run; see the [noteEvaluationFilter] lines above`);
     }
 
     console.log("[pipeline] Pipeline completed successfully");

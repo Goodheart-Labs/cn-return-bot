@@ -43,12 +43,14 @@ GROQ_API_KEY=
 XAI_API_KEY=
 SERPER_API_KEY=
 
-# The scoring step inside a claim check calls X's evaluate-note API
-# (read by src/api/getOAuthToken.ts)
-X_API_KEY=
-X_API_KEY_SECRET=
-X_ACCESS_TOKEN=
-X_ACCESS_TOKEN_SECRET=
+# Not needed at the moment. X's evaluate-note call used to run inside a claim
+# check, but the keys on this machine lack the Community Notes permission, so
+# since GOO-185 the GitHub Actions run makes that call itself. When the right
+# keys are here, the call can move back (read by src/api/getOAuthToken.ts).
+#X_API_KEY=
+#X_API_KEY_SECRET=
+#X_ACCESS_TOKEN=
+#X_ACCESS_TOKEN_SECRET=
 
 # Intake only: it writes the rows the browser watches
 SUPABASE_URL=
