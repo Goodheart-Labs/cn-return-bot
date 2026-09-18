@@ -535,7 +535,7 @@ async function describeWithYtDlp(
   costName: string,
   strategy: "full_video" | "frames",
 ): Promise<MediaSourceDescription> {
-  const meta = fetchYtDlpMetadata(url);
+  const meta = await fetchYtDlpMetadata(url);
   const durationMs = meta.duration ? Math.round(meta.duration * 1000) : undefined;
   const isLongAudio = durationMs != null && durationMs > AUTO_SUBS_THRESHOLD_MS;
   const isLongVideo = durationMs != null && durationMs > LOW_QUALITY_THRESHOLD_MS;
@@ -548,10 +548,10 @@ async function describeWithYtDlp(
       // A video longer than 5 minutes takes its transcript from auto-subs only.
       // When it has none we accept having no transcript at all. Running Whisper
       // over hours of audio would cost far more than the transcript is worth.
-      precomputedTranscript = fetchAutoSubs(url, tmpDir, "en") ?? null;
+      precomputedTranscript = (await fetchAutoSubs(url, tmpDir, "en")) ?? null;
     }
 
-    const { filePath, kind } = downloadVideoWithYtDlp(url, tmpDir, meta, isLongVideo ? "low" : "default");
+    const { filePath, kind } = await downloadVideoWithYtDlp(url, tmpDir, meta, isLongVideo ? "low" : "default");
     if (!filePath || !kind) throw new Error(`yt-dlp produced no usable file for ${url}`);
 
     if (kind === "video") {
