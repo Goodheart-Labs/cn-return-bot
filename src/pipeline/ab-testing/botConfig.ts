@@ -142,6 +142,8 @@ export interface BotConfig {
    * input is then a claim extracted from a podcast, an interview, or an article,
    * together with its surrounding context, rather than an X post. The everything
    * pipeline forces this on. This applies to simple-bot only.
+   * Scoring also reads it: such a claim has no real tweet behind it, so the
+   * pipeline skips X's evaluate_note call.
    * SIMPLE_BOT_CLAIM_TEST sets it and it defaults to false.
    */
   search_claim?: boolean;
