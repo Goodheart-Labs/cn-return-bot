@@ -112,3 +112,7 @@ export function addTokenCost(acc: TokenCost, add: TokenCost): void {
   acc.cost += add.cost;
 }
 
+
+/** Jina Reader's price for the tokens of the text it returns: $50 buys one
+ *  billion tokens (jina.ai/api-dashboard/pricing, September 2026). */
+export const JINA_READER_USD_PER_MILLION_TOKENS = 0.05;

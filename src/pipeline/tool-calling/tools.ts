@@ -20,6 +20,7 @@ import {
   type TokenCost,
 } from "../cost-tracking/pricing";
 import { fetchSearchResults, formatSearchResults, SearchUnavailableError, type SearchResult } from "./serper";
+import { fetchWithJinaReader } from "./jinaReader";
 import { buildSearchSummarizePrompt } from "../prompts/tool-calling/searchSummarize";
 export { fetchSearchResults, formatSearchResults, SearchUnavailableError };
 export type { SearchResult };
@@ -181,11 +182,17 @@ export async function handleGoogleSearchSummarized(query: string): Promise<ToolR
  *   4. If it is still blocked, read a Wayback Machine snapshot.
  *   5. If it is still blocked, read an archive.ph snapshot. That site has
  *      captures of paywalled pages Wayback is refused on.
- *   6. As a last resort, render the page with headless Chromium through the
- *      shared browserManager. This catches single-page apps that only work with
+ *   6. Render the page with headless Chromium through the shared
+ *      browserManager. This catches single-page apps that only work with
  *      JavaScript, and sites that answer 403 to a plain HTTP request but render
  *      fine for a real browser. It costs about 3 seconds, so it only runs when
  *      steps 1 to 5 have all failed.
+ *   7. As a last resort, ask Jina Reader, a paid service that fetches the page
+ *      from its own addresses with its own browsers. Our requests come from
+ *      datacenter addresses and our HTTP client's handshake is on the deny
+ *      lists of many bot defences, so Jina gets through where every step above
+ *      was refused. It costs about $0.0004 per page, so it only runs when
+ *      steps 1 to 6 have all failed. See jinaReader.ts.
  *
  * The HTML each step produces goes through `classifyContent`. That function
  * counts a 200 OK whose body is a login wall as a failure, so we never accept a
@@ -243,6 +250,10 @@ const WALL_PATTERNS = [
   "captcha",
   "verifying you are human",
   "checking your browser",
+  // Cloudflare's challenge page. Jina Reader can come back with it, padded out
+  // with the challenge's script, when it could not pass the challenge either.
+  "just a moment...",
+  "are you a robot",
   "this browser isn't supported",
   // Cookie and consent gateways answer 200 with a privacy prompt instead of the
   // article we asked for. Yahoo's "guce" subdomain is the one we hit most often.
@@ -353,10 +364,14 @@ type ContentClass = "good" | "wall" | "thin";
 
 function classifyContent(html: string | undefined): { cls: ContentClass; markdown: string } {
   if (!html) return { cls: "thin", markdown: "" };
-  const md = htmlToMarkdown(html);
-  if (looksLikeWall(md) || looksLikeWall(html)) return { cls: "wall", markdown: md };
-  if (md.length < MIN_GOOD_CONTENT_CHARS) return { cls: "thin", markdown: md };
-  return { cls: "good", markdown: md };
+  const markdown = htmlToMarkdown(html);
+  return { cls: looksLikeWall(html) ? "wall" : classifyMarkdown(markdown), markdown };
+}
+
+function classifyMarkdown(markdown: string): ContentClass {
+  if (looksLikeWall(markdown)) return "wall";
+  if (markdown.length < MIN_GOOD_CONTENT_CHARS) return "thin";
+  return "good";
 }
 
 async function tryWayback(originalUrl: string): Promise<RawFetchResult> {
@@ -495,8 +510,31 @@ export async function fetchWebPage(url: string, opts?: { maxChars?: number }): P
     attempts.push({ label: "browser", cls: "fail", status: browser.status, chars: 0, markdown: "" });
   }
 
+  // Step 7 asks Jina Reader, which costs money, so it runs only after every
+  // free step has failed. Jina fetches the live page, so the note cites the
+  // original URL, as it does after the browser step.
+  const jina = await fetchWithJinaReader(url);
+  switch (jina.type) {
+    case "page": {
+      const cls = classifyMarkdown(jina.markdown);
+      attempts.push({ label: "jina", cls, status: 200, chars: jina.markdown.length, markdown: jina.markdown });
+      if (cls === "good") {
+        return { content: `[fetched via Jina Reader]\n\n${jina.markdown.slice(0, maxChars)}`, fetchedUrl: url, ok: true };
+      }
+      break;
+    }
+    case "challenge":
+      attempts.push({ label: "jina", cls: "wall", chars: 0, markdown: "" });
+      break;
+    case "target_error":
+    case "failed":
+      attempts.push({ label: "jina", cls: "fail", status: jina.status, chars: 0, markdown: "" });
+      break;
+  }
+
   // Nothing produced good content. We return the most informative diagnostic we
-  // have. A wall or a thin result says more than a ladder of plain failures, so
+  // have. When Jina reports the site's own status, such as a 404, the final
+  // "HTTP <status> (last attempt: jina)" line carries it. A wall or a thin result says more than a ladder of plain failures, so
   // we prefer it. The verifier uses this to decide whether to reject the source.
   const best = attempts.find((a) => a.cls === "wall" || a.cls === "thin");
   if (best) {
