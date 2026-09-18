@@ -2,8 +2,10 @@
  * The timing stage. This is Nathan's design for the time-travel problem. It
  * gives the writer information rather than acting as a gate.
  *
- * It runs between the search and the writer, and only on the timing_context ON
- * arm. One extractor call answers a single question. How close to its event was
+ * It runs between the search and the writer. It began as the context arm of the
+ * timing_treatment A/B test, which tied with a standing prompt rule after six
+ * weeks and was kept because it only intervenes on the posts it applies to.
+ * One extractor call answers a single question. How close to its event was
  * this post published? A post about an event that has already settled is the
  * common case, and it passes through untouched. A post published within
  * LIVE_EVENT_WINDOW_HOURS of its event, or in the middle of the event, gets a
@@ -13,7 +15,7 @@
  * empty-note path do the actual deciding.
  *
  * Every verdict is written to the tweet log under logs.timing. The stage fails
- * soft. Any error makes it pass the post through, exactly as the OFF arm does.
+ * soft. Any error makes it pass the post through with no timing block.
  */
 
 import { runJsonLlmCall } from "../utils/jsonLlmCall";

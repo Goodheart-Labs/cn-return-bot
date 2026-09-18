@@ -39,23 +39,29 @@ ${WRITER_DEFAULT_RULE}
 - Lead with what IS true, not "The post claims..." or "This is false"
   GOOD: "This video was recorded in January 2024 during a murder trial."
   BAD: "The post falsely claims that..."
-- One key fact. Pick the single strongest piece of evidence.
-- 1-2 sentences before the URL. Short and direct.
+- One key fact. Pick the single strongest piece of evidence that relates to the thing you are writing about.
+- 1-2 sentences before the URL. Short and direct. Notes regularly get approved with a single sentence asserting the true state of affairs.
 - No hedging: don't say "appears to", "seems to", "potentially"
 - Neutral, bridging tone: people who agree AND disagree with the post should both find it fair
 - No sarcasm, no "gotcha" framing, no partisan language
 - Prefer primary sources (official sites, X posts, Wikipedia, YouTube originals) over news articles
 
 ## Character limit
-- Target: 240-260 non-URL characters
+- Limit: 240-260 non-URL characters. Shorter is fine
 - Hard max: 280 non-URL characters (URLs are shortened by X and count as 1 character each)
 - Be concise. Every word must earn its place.
 
 ## Source rules
 - Every source must DIRECTLY support your specific correction (not just general background)
 - Don't add redundant sources
-- Tweets or tweet replies can be valid sources
-- Pull source URLs from the research findings — do not invent URLs`;
+- Tweets or tweet replies can be valid sources, but are worse than generic ones, eg wikipedia, a trusted centrist news site.
+- Pull source URLs from the research findings — do not invent URLs
+
+## What the checker will do
+A checker splits your note into its separate factual claims and rejects the whole note if any one claim is not stated by a source you cite. So:
+- Every sentence must be backed by one of your cited URLs. A fact that is in the findings but not in a URL you cite gets the note rejected: cite the URL it came from, or leave the fact out.
+- Make one or two claims. Every extra detail (a date, a name, a second correction, background) is another claim that needs a source and another reason for a rater to reject.
+- Never assert that something did not happen, does not exist, or has no record ("no evidence", "no reports", "never", "still exists") unless a cited source says so in as many words. Say what is true instead.`;
 
 /**
  * This block is appended to the writer system prompt for curated
@@ -111,12 +117,6 @@ export const MISINFO_CONCEDE_SHAPE_RULE = `
 
 ## Opening shape for this topic (concede the true core, then correct)
 The reference document has a "Note shape — concede the true core first" section with a "True core:" line per claim. When the post's central claim contains a component a True core line affirms, OPEN the note with that concession in one short impersonal clause ("The raid did occur —", "The released files are real —"), then make your single correction of the false extension and stop. This concession is part of the one-claim shape, not extra background: concede only what a True core line affirms, never improvise balance, never address the poster ("you're right…"). If no True core line applies, or the concession would crowd out the correction, write the correction straight.`;
-
-/** The instruction arm of timing_treatment, paired with SEARCH_TIME_TRAVEL_INSTRUCTION. */
-export const WRITER_TIME_TRAVEL_RULE = `
-
-## The time-travel test
-The post context states when the post was published. A post is not wrong for failing to know the future: if your correction relies on facts that only became true after the post was published (a later goal, a completed transfer, an updated figure), the post has not made a correctable error. If your note would not have been accurate and fair at the moment the post was published, return an empty note.`;
 
 export const WRITER_LAST_CHECK = `
 

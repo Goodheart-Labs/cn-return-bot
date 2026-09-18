@@ -118,18 +118,6 @@ const MEDIA_DESCRIPTION_TEST: ABTest = {
   ],
 };
 
-// Compare prompt instructions with timing context; never enable both together.
-// The off arm was retired on 2026-08-23; it remains available for explicit comparison.
-const TIMING_TREATMENT_TEST: ABTest = {
-  name: "timing_treatment",
-  prerequisites: { botId: "simple-bot" },
-  variants: [
-    { variant: { name: "off",         overrides: { time_travel_prompt: false, timing_context: false } }, weight: 0 },
-    { variant: { name: "instruction", overrides: { time_travel_prompt: true,  timing_context: false } }, weight: 50 },
-    { variant: { name: "context",     overrides: { time_travel_prompt: false, timing_context: true  } }, weight: 50 },
-  ],
-};
-
 // Retained for historical picks; central-claim wording is the live experiment.
 const WRITER_LAST_CHECK_TEST: ABTest = {
   name: "writer_last_check",
@@ -318,7 +306,6 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_WRITER_TEST,
   SIMPLE_BOT_VERIFIER_TEST,
   MEDIA_DESCRIPTION_TEST,
-  TIMING_TREATMENT_TEST,
   WRITER_LAST_CHECK_TEST,
   MATERIALITY_TREATMENT_TEST,
   SIMPLE_BOT_CLAIM_TEST,
