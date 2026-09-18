@@ -5,27 +5,21 @@
  *   - <sub>.substack.com/api/v1/archive?sort=new&limit=N → the latest posts
  *   - <sub>.substack.com/api/v1/posts/<slug>             → a free post's full body_html
  *   - <sub>.substack.com/feed                            → the latest posts with their bodies
+ *
+ * Substack's API refuses datacenter IPs, so the archive and post calls go
+ * through the residential proxy (fetchJsonViaResidentialProxy). The RSS relay is
+ * no help there: it only serves /feed, and Substack rate-limits Cloudflare
+ * Workers on the API endpoints. Proxy traffic is paid per gigabyte, which is
+ * fine at this volume: the top-post refresh makes one archive call per
+ * publication per week, and one body call per enqueued top post.
  */
 
 import { decodeHtmlEntities } from "../../pipeline/utils/html";
+import { fetchJsonViaResidentialProxy } from "../../pipeline/utils/residentialProxy";
 import type { FetchedContent } from "../types";
 
 async function fetchJson(url: string): Promise<any> {
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText} for ${url}`);
-  return res.json();
-}
-
-/** Substack's API refuses datacenter IPs, so in CI these calls go out through
- *  the residential proxy that yt-dlp already uses. The RSS relay is no help
- *  here: it only serves /feed, and Substack rate-limits Cloudflare Workers on
- *  the API endpoints. On a local machine the variable is unset and we fetch
- *  directly. Proxy traffic is paid per GB, which is fine at this volume: the
- *  top-post refresh makes one archive call per publication per week, and one
- *  body call per enqueued top post. */
-async function fetchJsonViaResidentialProxy(url: string): Promise<any> {
-  const proxy = process.env.YTDLP_PROXY_URL;
-  const res = await fetch(url, proxy ? ({ proxy } as RequestInit) : undefined);
   if (!res.ok) throw new Error(`${res.status} ${res.statusText} for ${url}`);
   return res.json();
 }
