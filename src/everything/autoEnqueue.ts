@@ -76,7 +76,7 @@ import type { FeedType } from "./feedUrls";
 import { fixedRow, groupClose, groupOpen, tally } from "./logFormat";
 import { fetchAuthorPosts } from "./sources/lesswrong";
 import { fetchFeedPosts, fetchPostBodyText, htmlToText } from "./sources/substack";
-import { ensureYtDlp, fetchChannelFeedDates, fetchChannelVideos, fetchUploadDates } from "./sources/youtube";
+import { fetchChannelUploads } from "./sources/youtubeDataApi";
 import { loadTopPosts } from "./topPosts";
 import type { SourceKind } from "./types";
 
@@ -130,8 +130,6 @@ interface FeedListing {
   /** Paid posts we cannot read. Counted rather than listed: Slow Boring alone
    *  used to print sixteen lines a cycle, which buried everything else. */
   paidPosts: number;
-  /** YouTube only: the channel id its RSS feed is keyed by. */
-  channelId?: string;
 }
 
 async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedListing> {
@@ -167,19 +165,21 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedListing> {
     }));
     return { sourceName: authorName, entries, paidPosts: 0 };
   }
-  const { channelName, channelId, videos } = fetchChannelVideos(feed.url, FEED_FETCH_LIMIT);
+  const { channel, videos } = await fetchChannelUploads(feed.url, FEED_FETCH_LIMIT);
   const entries = videos
-    // A video with no duration is an upcoming premiere. It cannot be watched
-    // yet, and enqueueing it would leave the item in a permanent error state.
-    // A later run picks it up once the video is live.
-    .filter((v) => v.durationSeconds !== null)
+    // An upcoming premiere cannot be watched yet, and enqueueing it would
+    // leave the item in a permanent error state. A later run picks it up
+    // once the video is live.
+    .filter((v) => !v.upcoming)
     .map((v) => ({
       source: "youtube" as const,
       url: v.url,
       matchKey: v.videoId,
-      label: v.title,
+      label: `${v.publishedAt} ${v.title}`,
+      title: v.title,
+      publishedAt: v.publishedAt,
     }));
-  return { sourceName: channelName, channelId, entries, paidPosts: 0 };
+  return { sourceName: channel.title, entries, paidPosts: 0 };
 }
 
 /** Feed listings fetched this process, keyed by feed URL. The admission walk
@@ -356,35 +356,6 @@ export async function triageQueue(): Promise<void> {
   await retryErroredItems();
 }
 
-/** Upload dates learned this process, keyed by video id, so a video dated
- *  during the admission walk is not dated again when it becomes a candidate. */
-const uploadDateCache = new Map<string, string>();
-
-/** Fills in the publication date of every YouTube entry in a listing that
- *  does not have one yet. The listing itself carries no dates, and both the
- *  publishing rate and the recency rank need them. The channel's RSS feed
- *  answers for its fifteen newest videos in one direct request; only videos
- *  the feed does not carry go to yt-dlp through the proxy. Videos neither
- *  could date stay undated: they do not count towards the rate and they sort
- *  as newest, and the run says how many there were. */
-async function dateYoutubeEntries(listing: FeedListing): Promise<void> {
-  const undated = listing.entries.filter((e) => !e.publishedAt);
-  const uncached = () => undated.filter((e) => !uploadDateCache.has(e.matchKey));
-  if (listing.channelId && uncached().length > 0) {
-    for (const [id, day] of await fetchChannelFeedDates(listing.channelId)) uploadDateCache.set(id, day);
-  }
-  const toFetch = [...new Set(uncached().map((e) => e.url))];
-  if (toFetch.length > 0) {
-    for (const [id, day] of await fetchUploadDates(toFetch)) uploadDateCache.set(id, day);
-  }
-  let missing = 0;
-  for (const e of undated) {
-    e.publishedAt = uploadDateCache.get(e.matchKey);
-    if (!e.publishedAt) missing++;
-  }
-  if (missing > 0) console.warn(`  ${missing} YouTube video${missing === 1 ? "" : "s"} could not be dated and will rank as newest`);
-}
-
 /** How many days of a feed's listing the publishing rate is measured over. */
 const PUBLISHING_RATE_WINDOW_DAYS = 14;
 
@@ -513,9 +484,6 @@ export async function runAutoEnqueue(affordable: number, dryRun = false): Promis
     let listing;
     try {
       listing = await cachedFeedEntries(feed);
-      // Dated here rather than after the walk, because the rate needs the
-      // dates now and the cutoff depends on the rate.
-      if (feed.type === "youtube") await dateYoutubeEntries(listing);
     } catch (err: any) {
       // One creator whose feed will not load must not take the run down with
       // it. Readers can prioritise anyone, so an unreachable feed is ordinary
@@ -671,7 +639,6 @@ export async function runAutoEnqueue(affordable: number, dryRun = false): Promis
 }
 
 if (import.meta.main) {
-  ensureYtDlp();
   const dryRun = process.argv.includes("--dry-run");
   const affordableArg = process.argv[process.argv.indexOf("--affordable") + 1];
   const affordable = process.argv.includes("--affordable") ? Number(affordableArg) : null;

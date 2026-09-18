@@ -226,6 +226,35 @@ export class SupabaseLogger {
     return data;
   }
 
+  /** Notes any pipeline submitted at or after a time, oldest first; feeds the Signal notes group. */
+  async listNotesSubmittedSince(since: string, limit = 20): Promise<Array<{
+    note_id: string; tweet_id: string; note_text: string; submitted_at: string;
+  }>> {
+    const { data, error } = await this.client
+      .from("notes")
+      .select("note_id, tweet_id, note_text, submitted_at")
+      .gte("submitted_at", since)
+      .order("submitted_at", { ascending: true })
+      .limit(limit);
+    // PostgrestError is a plain object; wrap it so callers see a message.
+    if (error) throw new Error(`notes query failed: ${error.message}`);
+    return (data ?? []) as Array<{ note_id: string; tweet_id: string; note_text: string; submitted_at: string }>;
+  }
+
+  /** Per-tweet pipeline rows after a time, oldest first; feeds the Signal run summaries. */
+  async listPipelineRunsSince(since: string, limit = 500): Promise<Array<{
+    tweet_id: string; created_at: string; outcome: string; outcome_reason: string | null; final_stage: string | null;
+  }>> {
+    const { data, error } = await this.client
+      .from("pipeline_runs")
+      .select("tweet_id, created_at, outcome, outcome_reason, final_stage")
+      .gt("created_at", since)
+      .order("created_at", { ascending: true })
+      .limit(limit);
+    if (error) throw new Error(`pipeline_runs query failed: ${error.message}`);
+    return (data ?? []) as Array<{ tweet_id: string; created_at: string; outcome: string; outcome_reason: string | null; final_stage: string | null }>;
+  }
+
   async getOrCreateNotewriter(handle: string, displayName?: string): Promise<Notewriter> {
     const { data: existing } = await this.client
       .from("notewriters")

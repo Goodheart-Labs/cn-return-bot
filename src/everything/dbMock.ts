@@ -94,6 +94,7 @@ export const dbMock = () => ({
   fetchCostSinceUsd: () => Promise.resolve(0),
   setFeedAlarm: record("setFeedAlarm"),
   replaceFeedTopPosts: record("replaceFeedTopPosts"),
+  stampTopPostsAttempt: record("stampTopPostsAttempt"),
   upsertCreatorPriority: record("upsertCreatorPriority"),
   fetchItemClaims: () => Promise.resolve([]),
   fetchOrphanedProcessingItems: () => Promise.resolve([]),

@@ -30,12 +30,12 @@ const cuesDir = process.argv[2];
 
 const db = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!);
 
-function loadCues(videoId: string, videoUrl: string): SubtitleCue[] | null {
+async function loadCues(videoId: string, videoUrl: string): Promise<SubtitleCue[] | null> {
   const cuesFile = cuesDir ? path.join(cuesDir, `${videoId}.json`) : null;
   if (cuesFile && fs.existsSync(cuesFile)) return JSON.parse(fs.readFileSync(cuesFile, "utf-8"));
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), `cues-${videoId}-`));
   try {
-    return fetchTimedTranscript(videoUrl, tmpDir);
+    return await fetchTimedTranscript(videoUrl, tmpDir);
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   }
@@ -57,7 +57,7 @@ for (const claim of claims ?? []) {
     console.log(`claim ${claim.id}: no video id in ${item.url}, skipping`);
     continue;
   }
-  const cues = loadCues(videoId, item.url);
+  const cues = await loadCues(videoId, item.url);
   if (!cues?.length) {
     console.log(`claim ${claim.id}: no cues available for ${item.url}, skipping`);
     continue;

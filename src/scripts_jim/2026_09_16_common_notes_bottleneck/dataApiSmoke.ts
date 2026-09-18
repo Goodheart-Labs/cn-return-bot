@@ -1,0 +1,11 @@
+import "dotenv/config";
+import { fetchChannelUploads, fetchChannelTopVideos, fetchVideo } from "../../everything/sources/youtubeDataApi";
+let t = Date.now();
+const up = await fetchChannelUploads("https://www.youtube.com/@LilAggy", 15);
+console.log(`uploads ${up.channel.title} in ${Date.now() - t} ms:`, up.videos.slice(0, 3).map((v) => `${v.publishedAt} ${v.durationSeconds}s ${v.title.slice(0, 30)}`).join(" | "), `(${up.videos.length})`);
+t = Date.now();
+const top = await fetchChannelTopVideos("https://www.youtube.com/@joerogan", 5);
+console.log(`top ${top.channel.title} in ${Date.now() - t} ms:`, top.videos.map((v) => `${v.viewCount} ${v.publishedAt} ${v.title.slice(0, 25)}`).join(" | "));
+t = Date.now();
+const v = await fetchVideo("https://www.youtube.com/watch?v=r2ali4LgCQ8");
+console.log(`video in ${Date.now() - t} ms:`, v.title, v.channelTitle, v.publishedAt, v.durationSeconds, v.upcoming);

@@ -19,7 +19,7 @@
 import "dotenv/config";
 import { execSync } from "child_process";
 import { fetchFeedPosts } from "../../everything/sources/substack";
-import { fetchChannelVideos } from "../../everything/sources/youtube";
+import { resolveChannel } from "../../everything/sources/youtubeDataApi";
 
 const url = process.env.SUPABASE_URL!;
 const key = process.env.SUPABASE_SERVICE_KEY!;
@@ -88,7 +88,7 @@ async function main() {
     let name: string | undefined;
     try {
       if (feed?.feed_type === "substack") name = (await fetchFeedPosts(feed.feed_url)).title;
-      else if (feed?.feed_type === "youtube") name = fetchChannelVideos(feed.feed_url, 1).channelName;
+      else if (feed?.feed_type === "youtube") name = (await resolveChannel(feed.feed_url)).title;
       else name = await nameFromItems(project);
     } catch (err: any) {
       console.log(`  (feed lookup for "${project.slug}" failed: ${err?.message})`);

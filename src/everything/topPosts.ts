@@ -13,13 +13,18 @@
  * posts, whether they hold priority or are there on visits alone.
  */
 
-import { fetchAllTopPosts, replaceFeedTopPosts, type TopPostRow } from "./db";
+import { fetchAllTopPosts, replaceFeedTopPosts, stampTopPostsAttempt, type TopPostRow } from "./db";
 import type { RankedCreator } from "./creatorRanking";
 import { fetchTopArchivePosts } from "./sources/substack";
-import { fetchChannelTopVideos, fetchVideoMeta } from "./sources/youtube";
+import { fetchChannelTopVideos } from "./sources/youtubeDataApi";
 
 const TOP_POSTS_PER_FEED = 5;
 const REFRESH_AGE_DAYS = 7;
+
+/** How long a creator whose refresh failed waits before it is tried again.
+ *  Without this a failing creator was the stalest one in every run and paid
+ *  for the same failure all day (28 times on 2026-09-16, GOO-169). */
+const RETRY_AFTER_HOURS = 24;
 
 async function fetchFreshTopList(feed: RankedCreator): Promise<Omit<TopPostRow, "feed_url">[]> {
   // A forum author has no all-time list yet: LessWrong's API exposes karma, but
@@ -37,28 +42,31 @@ async function fetchFreshTopList(feed: RankedCreator): Promise<Omit<TopPostRow, 
       rank: i + 1,
     }));
   }
-  return fetchChannelTopVideos(feed.feed_url, TOP_POSTS_PER_FEED).map((v, i) => ({
+  const { videos } = await fetchChannelTopVideos(feed.feed_url, TOP_POSTS_PER_FEED);
+  return videos.map((v, i) => ({
     source: "youtube" as const,
     url: v.url,
     title: v.title,
-    // A channel listing carries no upload dates, so each top video costs one
-    // metadata call here. That is five calls per channel per week. The ranking
-    // needs the date: it is what keeps an old hit low in the recency rank.
-    published_at: fetchVideoMeta(v.url).uploadDate ?? null,
+    published_at: v.publishedAt,
     popularity: v.viewCount,
     rank: i + 1,
   }));
 }
 
+const olderThan = (stamp: string | null, ms: number): boolean => !stamp || Date.parse(stamp) < Date.now() - ms;
+
+/** A creator is refreshed when their list is a week old and no attempt was
+ *  made in the last day. */
 const isStale = (feed: RankedCreator): boolean =>
-  !feed.top_posts_refreshed_at ||
-  Date.parse(feed.top_posts_refreshed_at) < Date.now() - REFRESH_AGE_DAYS * 24 * 3600_000;
+  olderThan(feed.top_posts_refreshed_at, REFRESH_AGE_DAYS * 24 * 3600_000) &&
+  olderThan(feed.top_posts_attempted_at, RETRY_AFTER_HOURS * 3600_000);
 
 /** Reads every cached top list and refreshes the stalest missing-or-expired
  *  one, at most one per call so a single run never pays for more than one
- *  listing. A failed refresh is logged and the walk goes on with the cached
- *  lists; the same feed is retried on the next run, so a lasting failure
- *  shows up in every run's log rather than killing the dispatch. Takes the
+ *  listing. A failed refresh is logged and stamped as attempted, and the walk
+ *  goes on with the cached lists; the same feed is retried the next day, so
+ *  a lasting failure shows up once a day in the log rather than in every run
+ *  and never kills the dispatch. Takes the
  *  creators the walk already ranked, so a cycle ranks once. Returns the
  *  up-to-date rows. */
 export async function loadTopPosts(creators: RankedCreator[]): Promise<TopPostRow[]> {
@@ -75,7 +83,8 @@ export async function loadTopPosts(creators: RankedCreator[]): Promise<TopPostRo
       ...rows.map((r) => ({ ...r, feed_url: stale.feed_url })),
     ];
   } catch (err: any) {
-    console.warn(`[top-posts] refresh failed for ${stale.feed_url}: ${err?.message}`);
+    console.warn(`[top-posts] refresh failed for ${stale.feed_url}, next try in ${RETRY_AFTER_HOURS}h: ${err?.message}`);
+    await stampTopPostsAttempt(stale.feed_url);
     return existing;
   }
 }
