@@ -32,9 +32,6 @@ export const BOT_TEST: ABTest = {
   ],
 };
 
-// Search model/backend comparison. Reasoning arms set search_reasoning_effort.
-// Historical -searxng names now replay against Serper, not the removed backend.
-// 2026-09-17: 80% on the proven arms, 20% on three newcomers (numbers in the PR).
 const SIMPLE_BOT_SEARCH_TEST: ABTest = {
   name: "simple_bot_search",
   prerequisites: { botId: "simple-bot" },
