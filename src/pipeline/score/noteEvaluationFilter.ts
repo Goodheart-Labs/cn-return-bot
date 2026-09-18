@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getOAuth1Headers } from "../../api/getOAuthToken";
+import { getTweetLog } from "../utils/tweetLog";
 
 export type NoteEvaluationResponse = {
   data?: {
@@ -7,8 +8,6 @@ export type NoteEvaluationResponse = {
   };
   errors?: any;
 };
-
-export type EvaluationResult = { score: number } | { error: string };
 
 /** How many evaluate_note calls failed in this process. A failed call does not
  *  stop the note, but the scheduled run reads this count at the end and exits
@@ -57,13 +56,19 @@ export async function evaluateNote(
  * the score, or an error string when the eval API fails or returns an
  * unexpected shape. Every error also counts towards countFailedEvaluations.
  */
-export async function getEvaluationScore(postId: string, noteText: string): Promise<EvaluationResult> {
+export async function getEvaluationScore(
+  postId: string,
+  noteText: string
+): Promise<{ score?: number; error?: string }> {
   const result = await requestEvaluationScore(postId, noteText);
-  if ("error" in result) failedEvaluations++;
+  if (result.error !== undefined) failedEvaluations++;
   return result;
 }
 
-async function requestEvaluationScore(postId: string, noteText: string): Promise<EvaluationResult> {
+async function requestEvaluationScore(
+  postId: string,
+  noteText: string
+): Promise<{ score?: number; error?: string }> {
   try {
     const evaluation = await evaluateNote(postId, noteText);
 
@@ -77,7 +82,9 @@ async function requestEvaluationScore(postId: string, noteText: string): Promise
       return { error: "Invalid response format" };
     }
 
-    return { score: evaluation.data.claim_opinion_score };
+    const score = evaluation.data.claim_opinion_score;
+    getTweetLog()?.set("eval.score", score);
+    return { score };
   } catch (error) {
     console.warn(
       "[noteEvaluationFilter] Evaluation API failed, skipping:",

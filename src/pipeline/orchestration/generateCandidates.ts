@@ -8,8 +8,9 @@
 
 import { fetchEligiblePosts } from "../../api/fetchEligiblePosts";
 import { SupabaseLogger } from "../../api/supabaseClient";
-import { applyEvalGate, beginTweetRun, finishTweetRun, type ProcessTweetResult } from "./processTweet";
+import { beginTweetRun, finishTweetRun, type ProcessTweetResult } from "./processTweet";
 import { requestTweetCheck } from "../../service/client";
+import { evaluateOnCallerIfMissing } from "./callerEvaluation";
 import { STALE_TWEET_CUTOFF_HOURS, tweetAgeHours, type Candidate } from "./submitCandidates";
 import { createTweetLog, formatTweetLogSummary, formatTweetLogFull, formatRunSummary, getLoggedBotId, type TweetLogMap } from "../utils/tweetLog";
 import { buildPostSelection, type FeedSize } from "./utils/feedSizeStrategy";
@@ -349,7 +350,7 @@ export async function processPosts(
       for (const [key, value] of localLog) {
         if (!(key in output.flatLog)) output.flatLog[key] = value;
       }
-      await applyEvalGate(item.post, output, item.monitoring !== undefined);
+      await evaluateOnCallerIfMissing(item.post, output, item.monitoring !== undefined);
       const tweetResult = await finishTweetRun(supabaseLogger, pipelineRunId, output);
 
       const log = new Map(Object.entries(output.flatLog)) as TweetLogMap;
