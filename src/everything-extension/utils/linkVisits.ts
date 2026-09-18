@@ -73,6 +73,16 @@ export interface VisitMessage {
   feedUrl: string | null;
 }
 
+/** The address this copy of the content script last recorded. The page's notes
+ *  are mounted again whenever its address changes, and after a live request or
+ *  a new note. Many of those changes leave the stored address the same: Substack
+ *  adds a #:~:text= fragment to a quote-share link half a second after load,
+ *  and YouTube fires its navigation event twice for one video. Each of them used
+ *  to write another visit row. A new page load starts a new copy of the script,
+ *  so a reload still counts, and so does coming back after opening another
+ *  page in the same tab. */
+let lastRecordedUrl: string | null = null;
+
 /** Records that a post or video on one of the tracked sites was opened, so the
  *  team can see which links are read and where notes are needed most. `item`
  *  is the page's ingested row when it has one, and null for a page we have not
@@ -90,13 +100,15 @@ export interface VisitMessage {
  *  recorded for a site kind the user turned off. */
 export function recordPageVisit(pageUrl: string, item: PageItem | null): void {
   const kind = visitSiteKind(pageUrl, item);
-  if (!kind) return;
+  const url = item?.url ?? pageUrl;
+  if (!kind || url === lastRecordedUrl) return;
+  lastRecordedUrl = url;
   void (async () => {
     const [welcomed, settings] = await Promise.all([getWelcomeSeen(), getSettings()]);
     if (!welcomed || !settings.saveVisits[kind]) return;
     const message: VisitMessage = {
       type: VISIT_MESSAGE_TYPE,
-      url: item?.url ?? pageUrl,
+      url,
       itemId: item?.id ?? null,
       feedUrl: await pageFeedUrl(kind, pageUrl),
     };
