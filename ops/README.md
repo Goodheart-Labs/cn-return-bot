@@ -42,6 +42,11 @@ GEMINI_API_KEY_FREE=
 GROQ_API_KEY=
 XAI_API_KEY=
 SERPER_API_KEY=
+# Jina Reader: the last step of the web-fetch ladder, after the headless
+# browser. Every service fetches pages (the verifier, the search and rating
+# loops, and requested pages), and a page that fails every free step throws
+# without this key.
+JINA_API_KEY=
 
 # The scoring step inside a claim check calls X's evaluate-note API
 # (read by src/api/getOAuthToken.ts)
