@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchRecentPosts, type RecentPostRow } from "../lib/queries";
-import { VISIT_RANKING_WINDOW_DAYS } from "../../../everything-shared/readers";
+import { MIN_PAGES_FOR_A_READER, VISIT_RANKING_WINDOW_DAYS } from "../../../everything-shared/readers";
 
 /** How many posts are fetched once, and how many more each "Show more" press
  *  reveals from them. */
@@ -37,7 +37,7 @@ const COLUMNS: readonly { label: string; title: string }[] = [
   { label: "Published", title: "When the author published it" },
   { label: "Checked", title: "When the pipeline finished it" },
   { label: "Author visits", title: `Visits to anything by this author in the last ${VISIT_RANKING_WINDOW_DAYS} days` },
-  { label: "Author readers", title: `Different readers of this author in the last ${VISIT_RANKING_WINDOW_DAYS} days` },
+  { label: "Author readers", title: `Browsers that opened at least ${MIN_PAGES_FOR_A_READER} different pages by this author in the last ${VISIT_RANKING_WINDOW_DAYS} days` },
   { label: "Claims", title: "Claims extracted from the post" },
   { label: "Checked claims", title: "Claims that went through a fact-check" },
   { label: "Notes", title: "Notes the pipeline wrote" },
@@ -129,8 +129,9 @@ export function RecentPosts() {
           </button>
         )}
         <span>
-          Author visits and readers cover the last {VISIT_RANKING_WINDOW_DAYS} days, the numbers the pipeline picks authors by. A visit
-          only names a reader when the extension could tell whose post it was, so readers can be lower than the people who visited.
+          Author visits and readers cover the last {VISIT_RANKING_WINDOW_DAYS} days, the numbers the pipeline picks authors by. A reader
+          is a browser that opened at least {MIN_PAGES_FOR_A_READER} different pages by the author. Someone who opened one page is a
+          visit but not a reader.
         </span>
       </div>
     </div>
