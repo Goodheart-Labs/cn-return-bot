@@ -39,22 +39,22 @@ ${WRITER_DEFAULT_RULE}
 - Lead with what IS true, not "The post claims..." or "This is false"
   GOOD: "This video was recorded in January 2024 during a murder trial."
   BAD: "The post falsely claims that..."
-- One key fact. Pick the single strongest piece of evidence.
-- 1-2 sentences before the URL. Short and direct.
+- One key fact. Pick the single strongest piece of evidence that relates to the thing you are writing about.
+- 1-2 sentences before the URL. Short and direct. Notes regularly get approved with a single sentence asserting the true state of affairs.
 - No hedging: don't say "appears to", "seems to", "potentially"
 - Neutral, bridging tone: people who agree AND disagree with the post should both find it fair
 - No sarcasm, no "gotcha" framing, no partisan language
 - Prefer primary sources (official sites, X posts, Wikipedia, YouTube originals) over news articles
 
 ## Character limit
-- Target: 240-260 non-URL characters
+- Limit: 240-260 non-URL characters. Shorter is fine
 - Hard max: 280 non-URL characters (URLs are shortened by X and count as 1 character each)
 - Be concise. Every word must earn its place.
 
 ## Source rules
 - Every source must DIRECTLY support your specific correction (not just general background)
 - Don't add redundant sources
-- Tweets or tweet replies can be valid sources
+- Tweets or tweet replies can be valid sources, but are worse than generic ones, eg wikipedia, a trusted centrist news site.
 - Pull source URLs from the research findings — do not invent URLs
 
 ## What the checker will do
