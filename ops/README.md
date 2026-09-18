@@ -58,6 +58,10 @@ SUPABASE_SERVICE_KEY=
 CLAIM_CHECK_URL=http://localhost:8787
 EXTRACTION_URL=http://localhost:8788
 
+# YouTube Data API key (intake): video details for a requested YouTube page.
+# The same key the feed run uses; 10,000 free quota units a day per project.
+YOUTUBE_DATA_V3_API_KEY=
+
 # YouTube needs the residential proxy here, exactly as it does on GitHub's
 # runners. Measured on this machine on 2026-09-08: every per-video call answers
 # "Sign in to confirm you're not a bot", while channel listings still work. It
@@ -78,6 +82,30 @@ YTDLP_PROXY_URL=
 #EVERYTHING_DAILY_SPEND_CAP_USD=50
 #EVERYTHING_REQUEST_RESERVE_USD=10
 ```
+
+## The PO token provider (caption downloads)
+
+Intake fetches YouTube captions for pages readers ask for. yt-dlp downloads
+them as YouTube's web player, which must present a PO token, a proof that the
+request comes from a real player. The pipeline asks a small local server for
+one token per video and passes it to yt-dlp. That server is the
+`brainicism/bgutil-ytdlp-pot-provider` Docker image, run by
+`cn-pot-provider.service` on 127.0.0.1:4416. `setup-vm.sh` installs Docker
+and the unit.
+
+On a machine set up before this existed, run once as root:
+
+```bash
+apt-get install -y --no-install-recommends docker.io
+cp /opt/cn-return-bot/ops/cn-pot-provider.service /etc/systemd/system/
+systemctl daemon-reload && systemctl enable --now cn-pot-provider
+curl -s http://127.0.0.1:4416/ping    # answers with its version
+```
+
+Then add `YOUTUBE_DATA_V3_API_KEY=` to the environment file and
+`systemctl restart cn-intake`. A caption download without the provider fails
+with "The PO token provider at http://127.0.0.1:4416 did not answer", which
+is the line to look for in `journalctl -u cn-intake`.
 
 ## Deploys
 

@@ -34,61 +34,63 @@ export const BOT_TEST: ABTest = {
 
 // Search model/backend comparison. Reasoning arms set search_reasoning_effort.
 // Historical -searxng names now replay against Serper, not the removed backend.
+// 2026-09-17: 80% on the proven arms, 20% on three newcomers (numbers in the PR).
 const SIMPLE_BOT_SEARCH_TEST: ABTest = {
   name: "simple_bot_search",
   prerequisites: { botId: "simple-bot" },
   variants: [
     { variant: { name: "sonnet46-native",         overrides: { search_model: "anthropic/claude-sonnet-4.6",       web_search: "native" }},        weight: 0 },
-    { variant: { name: "sonnet5-native",          overrides: { search_model: "anthropic/claude-sonnet-5",         web_search: "native" }},        weight: 4 },
-    { variant: { name: "sonnet5-native-medium",   overrides: { search_model: "anthropic/claude-sonnet-5",         web_search: "native", search_reasoning_effort: "medium" }}, weight: 2 },
+    { variant: { name: "sonnet5-native",          overrides: { search_model: "anthropic/claude-sonnet-5",         web_search: "native" }},        weight: 25 },
+    { variant: { name: "sonnet5-native-medium",   overrides: { search_model: "anthropic/claude-sonnet-5",         web_search: "native", search_reasoning_effort: "medium" }}, weight: 0 },
     { variant: { name: "opus48-native",           overrides: { search_model: "anthropic/claude-opus-4.8",         web_search: "native" }},        weight: 0 },
-    { variant: { name: "opus5-native",            overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native" }},        weight: 1 },
-    { variant: { name: "opus5-native-medium",     overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native", search_reasoning_effort: "medium" }}, weight: 1 },
+    { variant: { name: "opus5-native",            overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native" }},        weight: 30 },
+    { variant: { name: "opus5-native-medium",     overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native", search_reasoning_effort: "medium" }}, weight: 15 },
     { variant: { name: "haiku45-native",          overrides: { search_model: "anthropic/claude-haiku-4.5",        web_search: "native" }},        weight: 0 },
     { variant: { name: "grok43-native",           overrides: { search_model: "x-ai/grok-4.3",                     web_search: "native_grok" }},   weight: 0 },
     { variant: { name: "grok45-native",           overrides: { search_model: "x-ai/grok-4.5",                     web_search: "native_grok" }},   weight: 0 },
-    { variant: { name: "grok46-native",           overrides: { search_model: "x-ai/grok-4.6",                     web_search: "native_grok" }},   weight: 3 },
-    { variant: { name: "gemini3flash-native",     overrides: { search_model: "google/gemini-3-flash-preview",     web_search: "native_gemini" }}, weight: 1 },
+    { variant: { name: "grok46-native",           overrides: { search_model: "x-ai/grok-4.6",                     web_search: "native_grok" }},   weight: 7 },
+    { variant: { name: "gemini3flash-native",     overrides: { search_model: "google/gemini-3-flash-preview",     web_search: "native_gemini" }}, weight: 10 },
     { variant: { name: "gemini35flash-native",    overrides: { search_model: "google/gemini-3.5-flash",           web_search: "native_gemini" }}, weight: 0 },
     { variant: { name: "gemini36flash-native",    overrides: { search_model: "google/gemini-3.6-flash",           web_search: "native_gemini" }}, weight: 0 },
-    { variant: { name: "gemini38flash-native",    overrides: { search_model: "google/gemini-3.8-flash",           web_search: "native_gemini" }}, weight: 2 },
+    { variant: { name: "gemini38flash-native",    overrides: { search_model: "google/gemini-3.8-flash",           web_search: "native_gemini" }}, weight: 6 },
     { variant: { name: "gemini31pro-native",      overrides: { search_model: "google/gemini-3.1-pro-preview",      web_search: "native_gemini" }}, weight: 0 },
     { variant: { name: "sonar-reasoning-pro",     overrides: { search_model: "perplexity/sonar-reasoning-pro",    web_search: "bundled" }},       weight: 0 },
     { variant: { name: "sonar-pro",               overrides: { search_model: "perplexity/sonar-pro",              web_search: "bundled" }},       weight: 0 },
     { variant: { name: "kimi-k26-searxng",        overrides: { search_model: "moonshotai/kimi-k2.6",              web_search: "serper" }},       weight: 0 },
     { variant: { name: "kimi-k3-searxng",         overrides: { search_model: "moonshotai/kimi-k3",                web_search: "serper" }},       weight: 0 },
-    { variant: { name: "kimi-k3-serper",          overrides: { search_model: "moonshotai/kimi-k3",                web_search: "serper" }},       weight: 2 },
+    { variant: { name: "kimi-k3-serper",          overrides: { search_model: "moonshotai/kimi-k3",                web_search: "serper" }},       weight: 0 },
     { variant: { name: "deepseek-v4pro-searxng",  overrides: { search_model: "deepseek/deepseek-v4-pro",          web_search: "serper" }},       weight: 0 },
     { variant: { name: "deepseek-v4flash-searxng",overrides: { search_model: "deepseek/deepseek-v4-flash",        web_search: "serper" }},       weight: 0 },
     { variant: { name: "glm5-searxng",            overrides: { search_model: "z-ai/glm-5",                        web_search: "serper" }},       weight: 0 },
     { variant: { name: "glm52-searxng",           overrides: { search_model: "z-ai/glm-5.2",                      web_search: "serper" }},       weight: 0 },
     { variant: { name: "glm52-serper",            overrides: { search_model: "z-ai/glm-5.2",                      web_search: "serper" }},       weight: 0 },
-    { variant: { name: "glm53-serper",            overrides: { search_model: "z-ai/glm-5.3",                      web_search: "serper" }},       weight: 2 },
-    { variant: { name: "glm53flash-serper",       overrides: { search_model: "z-ai/glm-5.3-flash",                web_search: "serper" }},       weight: 4 },
-    { variant: { name: "musespark13c-serper",     overrides: { search_model: "meta/muse-spark-1.3-contributor",   web_search: "serper" }},       weight: 4 },
+    { variant: { name: "glm53-serper",            overrides: { search_model: "z-ai/glm-5.3",                      web_search: "serper" }},       weight: 0 },
+    { variant: { name: "glm53flash-serper",       overrides: { search_model: "z-ai/glm-5.3-flash",                web_search: "serper" }},       weight: 7 },
+    { variant: { name: "musespark13c-serper",     overrides: { search_model: "meta/muse-spark-1.3-contributor",   web_search: "serper" }},       weight: 0 },
     { variant: { name: "deepseek-v32exp-searxng", overrides: { search_model: "deepseek/deepseek-v3.2-exp",        web_search: "serper" }},       weight: 0 },
     { variant: { name: "qwen3max-searxng",        overrides: { search_model: "qwen/qwen3-max",                    web_search: "serper" }},       weight: 0 },
     { variant: { name: "gpt5_4mini-native",       overrides: { search_model: "openai/gpt-5.4-mini",               web_search: "native_openai" }}, weight: 0 },
     { variant: { name: "gpt5-native",             overrides: { search_model: "openai/gpt-5",                      web_search: "native_openai" }}, weight: 0 },
-    { variant: { name: "gpt5_6luna-native",       overrides: { search_model: "openai/gpt-5.6-luna",               web_search: "native_openai" }}, weight: 2 },
-    { variant: { name: "gpt5_6terra-native",      overrides: { search_model: "openai/gpt-5.6-terra",              web_search: "native_openai" }}, weight: 2 },
+    { variant: { name: "gpt5_6luna-native",       overrides: { search_model: "openai/gpt-5.6-luna",               web_search: "native_openai" }}, weight: 0 },
+    { variant: { name: "gpt5_6terra-native",      overrides: { search_model: "openai/gpt-5.6-terra",              web_search: "native_openai" }}, weight: 0 },
     { variant: { name: "gpt5_6sol-native",        overrides: { search_model: "openai/gpt-5.6-sol",                web_search: "native_openai" }}, weight: 0 },
     { variant: { name: "mistral-large-3-searxng", overrides: { search_model: "mistralai/mistral-large-2512",      web_search: "serper" }},       weight: 0 },
   ],
 };
 
+// 2026-09-17: Sonnet 5 carries the writer, three newcomers at 13 each (numbers in the PR).
 const SIMPLE_BOT_WRITER_TEST: ABTest = {
   name: "simple_bot_writer",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "sonnet5",          overrides: { writer_model: "anthropic/claude-sonnet-5"      }}, weight: 50 },
-    { variant: { name: "gemini38flash",    overrides: { writer_model: "google/gemini-3.8-flash"       }}, weight: 50 },
+    { variant: { name: "sonnet5",          overrides: { writer_model: "anthropic/claude-sonnet-5"      }}, weight: 60 },
+    { variant: { name: "gemini38flash",    overrides: { writer_model: "google/gemini-3.8-flash"       }}, weight: 13 },
     { variant: { name: "gemini-flash",     overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 0 },
-    { variant: { name: "fable51",          overrides: { writer_model: "anthropic/claude-fable-5.1"    }}, weight: 0 },
+    { variant: { name: "fable51",          overrides: { writer_model: "anthropic/claude-fable-5.1"    }}, weight: 13 },
     { variant: { name: "opus5",            overrides: { writer_model: "anthropic/claude-opus-5"       }}, weight: 0 },
     { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 0 },
     { variant: { name: "fable5",           overrides: { writer_model: "anthropic/claude-fable-5"      }}, weight: 0 },
-    { variant: { name: "musespark13c",     overrides: { writer_model: "meta/muse-spark-1.3-contributor" }}, weight: 50 },
+    { variant: { name: "musespark13c",     overrides: { writer_model: "meta/muse-spark-1.3-contributor" }}, weight: 13 },
     { variant: { name: "deepseek-v4flash", overrides: { writer_model: "deepseek/deepseek-v4-flash"    }}, weight: 0 },
   ],
 };
@@ -113,18 +115,6 @@ const MEDIA_DESCRIPTION_TEST: ABTest = {
   variants: [
     { variant: { name: "gemini3flash", overrides: { media_model: "google/gemini-3-flash-preview"   }}, weight: 50 },
     { variant: { name: "musespark13c", overrides: { media_model: "meta/muse-spark-1.3-contributor" }}, weight: 50 },
-  ],
-};
-
-// Compare prompt instructions with timing context; never enable both together.
-// The off arm was retired on 2026-08-23; it remains available for explicit comparison.
-const TIMING_TREATMENT_TEST: ABTest = {
-  name: "timing_treatment",
-  prerequisites: { botId: "simple-bot" },
-  variants: [
-    { variant: { name: "off",         overrides: { time_travel_prompt: false, timing_context: false } }, weight: 0 },
-    { variant: { name: "instruction", overrides: { time_travel_prompt: true,  timing_context: false } }, weight: 50 },
-    { variant: { name: "context",     overrides: { time_travel_prompt: false, timing_context: true  } }, weight: 50 },
   ],
 };
 
@@ -316,7 +306,6 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_WRITER_TEST,
   SIMPLE_BOT_VERIFIER_TEST,
   MEDIA_DESCRIPTION_TEST,
-  TIMING_TREATMENT_TEST,
   WRITER_LAST_CHECK_TEST,
   MATERIALITY_TREATMENT_TEST,
   SIMPLE_BOT_CLAIM_TEST,
