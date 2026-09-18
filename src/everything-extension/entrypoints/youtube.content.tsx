@@ -2,7 +2,7 @@ import "../assets/tailwind.css";
 import { createRoot } from "react-dom/client";
 import { defineContentScript, createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
-import { fetchItemForUrl, isWholePageChecked } from "../../everything-shared/notesQuery";
+import { fetchItemForUrl, isWholePageChecked, type PageItem } from "../../everything-shared/notesQuery";
 import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
 import { fetchClaimGroups, type ClaimGroup, type NoteCounts } from "../utils/claimGroups";
 import { mountCoverageBadges } from "../utils/coverageBadges";
@@ -27,6 +27,7 @@ const PLAYER_WAIT_MS = 15_000;
 const PLAYER_POLL_MS = 500;
 
 let lastShownUrl: string | null = null;
+let lastVisitUrl: string | null = null;
 
 function waitFor<T extends Element>(selector: string): Promise<T | null> {
   return new Promise((resolve) => {
@@ -75,13 +76,18 @@ async function mountStatus(ctx: ContentScriptContext, counts: NoteCounts, wholeP
 async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | null> {
   if (!extractYoutubeVideoId(location.href)) return null;
   // Every watch-page visit counts, checked video or not; the counts tell the
-  // team which videos are worth checking. yt-navigate-finish re-fires on the
-  // same URL, and recordPageVisit skips the repeat.
+  // team which videos are worth checking. Once per video, because
+  // yt-navigate-finish re-fires on the same URL.
+  const recordWatchVisit = (item: PageItem | null) => {
+    if (lastVisitUrl === location.href) return;
+    lastVisitUrl = location.href;
+    recordPageVisit(location.href, item);
+  };
   // We check coverage locally first. Most videos are not covered, and finding
   // that out must not cost a backend lookup on every watch page.
   const covered = await getCoveredPageUrls();
   if (covered && !pageIsCovered(location.href, covered)) {
-    recordPageVisit(location.href, null);
+    recordWatchVisit(null);
     return null;
   }
   // A failed lookup or notes fetch mounts nothing. An outage must not read as
@@ -94,10 +100,10 @@ async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | n
     return null;
   }
   if (!item) {
-    recordPageVisit(location.href, null);
+    recordWatchVisit(null);
     return null;
   }
-  recordPageVisit(location.href, item);
+  recordWatchVisit(item);
   // Null on a failed fetch, so the overlay keeps what is on screen.
   const refetch = async () => {
     const next = await fetchClaimGroups(item.id);
