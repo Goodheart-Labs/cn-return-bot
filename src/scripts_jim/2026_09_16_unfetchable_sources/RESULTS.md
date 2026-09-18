@@ -1,7 +1,7 @@
 # Sources the verifier could not fetch (GOO-167)
 
 Investigation, 2026-09-16. Everything here was measured from this VPS, a
-Hetzner datacenter address. Production runs on GitHub Actions, which is also a
+netcup datacenter address in Vienna. Production runs on GitHub Actions, which is also a
 datacenter address (Microsoft Azure ranges), so the two see the same class of
 blocks, but not the same individual block lists.
 
