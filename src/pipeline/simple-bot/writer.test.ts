@@ -36,7 +36,7 @@ describe("writer prompt assembly", () => {
         expect(systemPrompt).toBe(WRITER_SYSTEM_PROMPT);
         expect(systemPrompt).toContain(WRITER_DEFAULT_RULE);
         expect(createHash("sha256").update(systemPrompt).digest("hex"))
-          .toBe("272828738e3d977d6234e4982982d5ee417787999838d71033058069b87799a9");
+          .toBe("740511b9094a5ff1c833b112764073785665d57f8897950719a8a37e2485ee77");
         expect(log.get("writer.centralClaim")).toBeUndefined();
       }
     });
