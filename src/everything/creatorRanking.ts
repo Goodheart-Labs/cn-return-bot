@@ -10,7 +10,7 @@
  *
  * Prioritised creators come first, then everyone by attention. A creator in
  * neither set is not ranked at all, so attention that fades takes its spend
- * with it. Attention has a floor, one regular reader, below which a creator
+ * with it. Attention has a floor, one reader, below which a creator
  * is not walked however much money is left. Above the floor, how far down
  * the list the walk goes is decided by the budget, in autoEnqueue.ts, so more
  * money per day admits creators further down and less money raises the bar.
@@ -23,40 +23,19 @@
  * a project row is made at the moment a creator is pressed or their first item
  * is ingested, and not before.
  *
- * WHAT "READ THEM" MEANS, and why there are two answers (GOO-135). A visit row
- * carries a reader hash: one value per browser and per creator, so the database
- * can count how many different people read a creator without ever being able to
- * join one person's reading across creators. The rule we want is about people:
- * a creator is walked once at least one reader has opened at least two
- * different pages of theirs. Rows written before that hash existed carry none,
- * and neither do rows from extension copies that never updated, so applying the
- * rule straight away would drop every creator off the walk on the day it ships.
- *
- * So the walk waits for proof that the counting works: has any single creator
- * ever been visited by two different readers? Until that is true it keeps the
- * old rule, counting visit rows and ignoring who wrote them. From the moment it
- * is true the reader rule governs and rows without a hash stop counting for
- * anything the decision uses. The proof is asked over all history, so it flips
- * once and never flips back.
+ * WHAT "READ THEM" MEANS (GOO-135, GOO-182). A visit row carries a reader
+ * hash: one value per browser and per creator, so the database can count how
+ * many different browsers read a creator without ever being able to join one
+ * person's reading across creators. A reader of a creator is a browser that
+ * opened at least two different pages of theirs inside the window. One page is
+ * a click, not a reader. Rows without a reader hash, written before the hash
+ * existed or by extension copies that never updated, count for nothing here.
  */
 
-import { fetchCreatorProjects, fetchCreatorAttention, fetchTwoReadersSeen, QUEUE_PRIORITY } from "./db";
+import { fetchCreatorProjects, fetchCreatorAttention, QUEUE_PRIORITY } from "./db";
 import { canonicalFeed, type FeedType } from "./feedUrls";
 import { normalizeFeedUrl } from "../everything-shared/pageUrls";
-import {
-  MIN_PAGES_FOR_A_REGULAR_READER,
-  MIN_REGULAR_READERS_TO_WALK_CREATOR,
-  VISIT_RANKING_WINDOW_DAYS,
-} from "../everything-shared/readers";
-
-/** The rule that applied before the reader hash existed, and that still applies
- *  until the two-reader proof arrives: how many visit rows inside the window a
- *  creator needs, counted without regard to who wrote them. */
-export const MIN_VISITS_TO_WALK_CREATOR = 2;
-
-/** Which of the two rules a run used. The auto-enqueue prints it, so a walk's
- *  output is never ambiguous about how its numbers were produced. */
-export type RankingRule = "readers" | "visits";
+import { MIN_PAGES_FOR_A_READER, MIN_READERS_TO_WALK_CREATOR, VISIT_RANKING_WINDOW_DAYS } from "../everything-shared/readers";
 
 export interface RankedCreator {
   project_slug: string;
@@ -75,11 +54,9 @@ export interface RankedCreator {
   visits: number;
   /** Different pages opened inside the window, over rows with a reader hash. */
   pages: number;
-  /** Different readers inside the window. */
+  /** Browsers that opened at least MIN_PAGES_FOR_A_READER different pages.
+   *  This is what the order is built on. */
   readers: number;
-  /** Readers who opened at least MIN_PAGES_FOR_A_REGULAR_READER different
-   *  pages. Under the reader rule this is what the order is built on. */
-  regularReaders: number;
   /** When this creator's top posts were last recomputed (GOO-81). */
   top_posts_refreshed_at: string | null;
   /** When a refresh was last tried and failed (migration 101). */
@@ -89,38 +66,32 @@ export interface RankedCreator {
 const isOpen = (priorityUntil: string | null): boolean =>
   priorityUntil != null && Date.parse(priorityUntil) > Date.now();
 
-/** The floor: at least one regular reader, or before the proof at least two
- *  visit rows. A creator below it is not walked at all, whatever the budget.
- *  How far down the list above the floor the walk goes is not decided here:
- *  the auto-enqueue admits creators from the top until what they publish per
- *  day fills the paced budget (see admitCreators in autoEnqueue.ts). Under the
- *  reader rule rows without a reader hash count for nothing. */
-const qualifies = (creator: RankedCreator, rule: RankingRule): boolean =>
-  rule === "readers"
-    ? creator.regularReaders >= MIN_REGULAR_READERS_TO_WALK_CREATOR
-    : creator.visits >= MIN_VISITS_TO_WALK_CREATOR;
+/** The floor: at least one reader. A creator below it is not walked at all,
+ *  whatever the budget. How far down the list above the floor the walk goes is
+ *  not decided here: the auto-enqueue admits creators from the top until what
+ *  they publish per day fills the paced budget (see admitCreators in
+ *  autoEnqueue.ts). */
+const qualifies = (creator: RankedCreator): boolean => creator.readers >= MIN_READERS_TO_WALK_CREATOR;
 
-/** Most attention first. Under the reader rule the primary number is people;
- *  different pages breaks the ties, which today is most of them, because it
- *  measures how much of a creator is being read and a reloaded page cannot
- *  inflate it. Before the proof this is the old order, on visit rows alone.
- *  Both end on the feed address, so a tie sorts the same way on every run
- *  rather than depending on how the database returned the rows. */
-const byAttention = (rule: RankingRule) => (a: RankedCreator, b: RankedCreator) =>
+/** Most attention first. The primary number is readers. Different pages breaks
+ *  the ties, which today is most of them, because it measures how much of a
+ *  creator is being read and a reloaded page cannot inflate it. The order ends
+ *  on the feed address, so a tie sorts the same way on every run rather than
+ *  depending on how the database returned the rows. */
+const byAttention = (a: RankedCreator, b: RankedCreator) =>
   Number(b.prioritized) - Number(a.prioritized) ||
-  (rule === "readers" ? b.regularReaders - a.regularReaders || b.pages - a.pages : b.visits - a.visits) ||
+  b.readers - a.readers ||
+  b.pages - a.pages ||
   a.feed_url.localeCompare(b.feed_url);
 
 /** Every creator with priority or attention, most important first. The
  *  auto-enqueue walks a prefix of this list, as far as the budget reaches. */
-export async function rankCreators(): Promise<{ creators: RankedCreator[]; rule: RankingRule }> {
+export async function rankCreators(): Promise<RankedCreator[]> {
   const since = new Date(Date.now() - VISIT_RANKING_WINDOW_DAYS * 24 * 3600_000);
-  const [projects, attention, twoReadersSeen] = await Promise.all([
+  const [projects, attention] = await Promise.all([
     fetchCreatorProjects(),
-    fetchCreatorAttention(since, MIN_PAGES_FOR_A_REGULAR_READER),
-    fetchTwoReadersSeen(),
+    fetchCreatorAttention(since, MIN_PAGES_FOR_A_READER),
   ]);
-  const rule: RankingRule = twoReadersSeen ? "readers" : "visits";
 
   // The database already groups creators case-insensitively, so there is one
   // row per creator here. The key is normalized again because the same creator
@@ -154,7 +125,6 @@ export async function rankCreators(): Promise<{ creators: RankedCreator[]; rule:
       visits: read?.visits ?? 0,
       pages: read?.pages ?? 0,
       readers: read?.readers ?? 0,
-      regularReaders: read?.regular_readers ?? 0,
       top_posts_refreshed_at: p.top_posts_refreshed_at,
       top_posts_attempted_at: p.top_posts_attempted_at,
     });
@@ -182,15 +152,14 @@ export async function rankCreators(): Promise<{ creators: RankedCreator[]; rule:
       visits: read.visits,
       pages: read.pages,
       readers: read.readers,
-      regularReaders: read.regular_readers,
       // A creator with no project yet has no refresh stamp, so their top posts
       // are computed the first time they are walked.
       top_posts_refreshed_at: known?.top_posts_refreshed_at ?? null,
       top_posts_attempted_at: known?.top_posts_attempted_at ?? null,
     };
-    if (qualifies(creator, rule)) ranked.push(creator);
+    if (qualifies(creator)) ranked.push(creator);
   }
 
-  ranked.sort(byAttention(rule));
-  return { creators: ranked, rule };
+  ranked.sort(byAttention);
+  return ranked;
 }

@@ -65,7 +65,7 @@ export function getSearchSystemPrompt(): string {
   // A claim from the everything pipeline is an excerpt plus a claim, not an X
   // post. It gets its own claim-checking prompt and skips the X-only assembly
   // below.
-  if (config.search_claim) return SEARCH_SYSTEM_PROMPT_CLAIM;
+  if (config.commonnotes_pipeline) return SEARCH_SYSTEM_PROMPT_CLAIM;
   const monitoring = getMonitoringContext();
   return buildSearchSystemPrompt({
     referenceBlock: monitoring ? buildReferenceBlock(monitoring) : null,

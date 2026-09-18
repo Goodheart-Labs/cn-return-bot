@@ -32,9 +32,6 @@ export const BOT_TEST: ABTest = {
   ],
 };
 
-// Search model/backend comparison. Reasoning arms set search_reasoning_effort.
-// Historical -searxng names now replay against Serper, not the removed backend.
-// 2026-09-17: 80% on the proven arms, 20% on three newcomers (numbers in the PR).
 const SIMPLE_BOT_SEARCH_TEST: ABTest = {
   name: "simple_bot_search",
   prerequisites: { botId: "simple-bot" },
@@ -79,12 +76,15 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
 };
 
 // 2026-09-17: Sonnet 5 carries the writer, three newcomers at 13 each (numbers in the PR).
+// 2026-09-18: GPT-5.6 Sol takes Gemini 3.8 Flash's share. The arm exists to keep a
+// non-Anthropic writer qualified, and Sol is priced the same as Sonnet 5.
 const SIMPLE_BOT_WRITER_TEST: ABTest = {
   name: "simple_bot_writer",
   prerequisites: { botId: "simple-bot" },
   variants: [
     { variant: { name: "sonnet5",          overrides: { writer_model: "anthropic/claude-sonnet-5"      }}, weight: 60 },
-    { variant: { name: "gemini38flash",    overrides: { writer_model: "google/gemini-3.8-flash"       }}, weight: 13 },
+    { variant: { name: "gemini38flash",    overrides: { writer_model: "google/gemini-3.8-flash"       }}, weight: 0 },
+    { variant: { name: "gpt5_6sol",        overrides: { writer_model: "openai/gpt-5.6-sol"            }}, weight: 13 },
     { variant: { name: "gemini-flash",     overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 0 },
     { variant: { name: "fable51",          overrides: { writer_model: "anthropic/claude-fable-5.1"    }}, weight: 13 },
     { variant: { name: "opus5",            overrides: { writer_model: "anthropic/claude-opus-5"       }}, weight: 0 },
@@ -140,12 +140,12 @@ const MATERIALITY_TREATMENT_TEST: ABTest = {
 };
 
 // Common Notes forces on for extracted claims; ordinary X runs use off.
-const SIMPLE_BOT_CLAIM_TEST: ABTest = {
-  name: "search_claim",
+const COMMONNOTES_PIPELINE_TEST: ABTest = {
+  name: "commonnotes_pipeline",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "off", overrides: { search_claim: false } }, weight: 100 },
-    { variant: { name: "on",  overrides: { search_claim: true  } }, weight: 0   },
+    { variant: { name: "off", overrides: { commonnotes_pipeline: false } }, weight: 100 },
+    { variant: { name: "on",  overrides: { commonnotes_pipeline: true  } }, weight: 0   },
   ],
 };
 
@@ -308,7 +308,7 @@ export const AB_TESTS: ABTest[] = [
   MEDIA_DESCRIPTION_TEST,
   WRITER_LAST_CHECK_TEST,
   MATERIALITY_TREATMENT_TEST,
-  SIMPLE_BOT_CLAIM_TEST,
+  COMMONNOTES_PIPELINE_TEST,
   TOPIC_FILTER_TEST,
   NOTE_PREFILTER_TEST,
   VERIFIER_MEDIA_SOURCES_TEST,

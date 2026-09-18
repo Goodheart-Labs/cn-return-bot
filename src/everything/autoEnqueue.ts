@@ -50,8 +50,7 @@
 import "dotenv/config";
 import { extractYoutubeVideoId } from "../everything-shared/pageUrls";
 import { rankCreators, type RankedCreator } from "./creatorRanking";
-import { VISIT_RANKING_WINDOW_DAYS } from "../everything-shared/readers";
-import { MIN_PAGES_FOR_A_REGULAR_READER } from "../everything-shared/readers";
+import { MIN_PAGES_FOR_A_READER, VISIT_RANKING_WINDOW_DAYS } from "../everything-shared/readers";
 import { affordablePostsPerDay, computeNextRun, MEAN_COST_RULE } from "./pacing";
 import { FEED_BUDGET_USD } from "./spendCap";
 import {
@@ -421,8 +420,8 @@ export async function admitCreators<C extends { prioritized: boolean }, W extend
 }
 
 /** Column widths of the walk table, fixed so rows can print as they arrive. */
-const CREATOR_COLUMNS = [4, 24, 20, 8, 7, 5, 6, 9, 9, 6];
-const CREATOR_ALIGN: ("left" | "right")[] = ["right", "left", "left", "right", "right", "right", "right", "right", "right", "right"];
+const CREATOR_COLUMNS = [4, 24, 20, 7, 5, 6, 9, 9, 6];
+const CREATOR_ALIGN: ("left" | "right")[] = ["right", "left", "left", "right", "right", "right", "right", "right", "right"];
 
 /** How much of a creator's priority window is left, for the walk table. Rounded
  *  down to whole days, because the exact hour is not worth a column. */
@@ -444,7 +443,7 @@ export async function affordablePostsPerDayNow(): Promise<number> {
  *  many posts a day the budget buys; the walk admits creators until their
  *  publishing rates add up to it. Returns how many items were enqueued. */
 export async function runAutoEnqueue(affordable: number, dryRun = false): Promise<number> {
-  const { creators: ranked, rule } = await rankCreators();
+  const ranked = await rankCreators();
   // The cached top lists serve this walk. The stalest admitted creator's list
   // is refreshed after the walk, once the admitted set is known, and the fresh
   // rows serve the next cycle.
@@ -459,20 +458,14 @@ export async function runAutoEnqueue(affordable: number, dryRun = false): Promis
   // (each YouTube channel is a yt-dlp call), and a log that said nothing until
   // the end read as a hang.
   const byPriority = ranked.filter((c) => c.prioritized).length;
-  // Which rule ranked these is worth a line of its own: the two count different
-  // things, and a reader looking at the table has to know which one produced it.
-  const ruleLine =
-    rule === "readers"
-      ? `ranked by regular readers, a reader who opened at least ${MIN_PAGES_FOR_A_REGULAR_READER} different pages`
-      : "ranked by visit rows, because no creator has had two different readers yet";
   console.log(
-    `\nCREATORS · ${ranked.length} ranked · ${byPriority} by priority, ${ranked.length - byPriority} by attention · ${ruleLine} · counted over the last ${VISIT_RANKING_WINDOW_DAYS} days`,
+    `\nCREATORS · ${ranked.length} ranked · ${byPriority} by priority, ${ranked.length - byPriority} by attention · ranked by readers, a browser that opened at least ${MIN_PAGES_FOR_A_READER} different pages · counted over the last ${VISIT_RANKING_WINDOW_DAYS} days`,
   );
   console.log(`  the budget affords ${affordable.toFixed(1)} posts a day · creators are walked from the top until their posts per day add up to that`);
   console.log(groupOpen("the walk, in rank order"));
   console.log(
     fixedRow(
-      ["rank", "creator", "why", "regulars", "readers", "pages", "visits", "unchecked", "posts/day", "cum."],
+      ["rank", "creator", "why", "readers", "pages", "visits", "unchecked", "posts/day", "cum."],
       CREATOR_COLUMNS,
       CREATOR_ALIGN,
     ),
@@ -493,7 +486,7 @@ export async function runAutoEnqueue(affordable: number, dryRun = false): Promis
       // dead feed costs one failed request per cycle for at most two weeks.
       skipped.push(`  could not list ${feed.project}: ${err?.message ?? "unknown error"}`);
       console.log(
-        fixedRow([String(feedIndex + 1), feed.project, "could not list", "", "", "", "", "", "", ""], CREATOR_COLUMNS, CREATOR_ALIGN),
+        fixedRow([String(feedIndex + 1), feed.project, "could not list", "", "", "", "", "", ""], CREATOR_COLUMNS, CREATOR_ALIGN),
       );
       return null;
     }
@@ -511,7 +504,6 @@ export async function runAutoEnqueue(affordable: number, dryRun = false): Promis
           String(feedIndex + 1),
           feed.project,
           creator.prioritized ? `priority, ${priorityLeft(creator.priorityUntil)} left` : "attention",
-          String(creator.regularReaders),
           String(creator.readers),
           String(creator.pages),
           String(creator.visits),
@@ -549,12 +541,11 @@ export async function runAutoEnqueue(affordable: number, dryRun = false): Promis
   const last = admitted.at(-1);
   if (cutoffIndex !== null && last) {
     const below = ranked.length - cutoffIndex;
-    const attention = rule === "readers" ? `${last.creator.regularReaders} regulars, ${last.creator.pages} pages` : `${last.creator.visits} visits`;
-    const why =
+        const why =
       cutoff === "enough"
         ? `${MAX_CREATORS_WITH_NEW_POSTS} creators already have posts to process, so the ${below} below the line wait for a later run`
         : `${below} below the line wait for a cheaper day`;
-    console.log(`  cutoff: rank ${last.index + 1} ${last.creator.project_slug} (${attention}) is the last creator walked · ${why}`);
+    console.log(`  cutoff: rank ${last.index + 1} ${last.creator.project_slug} (${last.creator.readers} readers, ${last.creator.pages} pages) is the last creator walked · ${why}`);
   } else if (byPriority > 0 && admitted.every((a) => a.creator.prioritized) && byPriority < ranked.length) {
     console.log(`  creators holding priority fill the budget by themselves · nobody is walked on attention today`);
   } else {
