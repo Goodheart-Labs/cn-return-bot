@@ -119,13 +119,15 @@ export interface BotConfig {
   /** Requires the writer to dispute a claim the post's central argument rests on. */
   writer_central_claim?: boolean;
   /**
-   * When this is true, simple-bot's search step uses the claim-check prompt. The
-   * input is then a claim extracted from a podcast, an interview, or an article,
-   * together with its surrounding context, rather than an X post. The everything
-   * pipeline forces this on. This applies to simple-bot only.
-   * SIMPLE_BOT_CLAIM_TEST sets it and it defaults to false.
+   * This is true when the run checks a Common Notes claim instead of an X post.
+   * The input is then a claim extracted from a podcast, an interview, or an
+   * article, together with its surrounding context. The Common Notes pipeline
+   * forces this on, and it applies to simple-bot only.
+   * Two steps read it. The search step uses the claim-check prompt. Scoring
+   * skips X's evaluate_note call, because the claim has no real tweet behind it.
+   * COMMONNOTES_PIPELINE_TEST sets it and it defaults to false.
    */
-  search_claim?: boolean;
+  commonnotes_pipeline?: boolean;
   /**
    * The misinfo topic this run matched, when it came from the XXL-feed misinfo
    * pre-pass. This mirrors the forced misinfo_topic pick into the config, so

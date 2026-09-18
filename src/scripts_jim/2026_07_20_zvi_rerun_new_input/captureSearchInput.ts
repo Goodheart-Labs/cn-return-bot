@@ -34,7 +34,7 @@ import type { ExtractedClaim, SourceKind } from "../../everything/types";
 const FORCED_PICKS: Record<string, string> = {
   bot: "simple-bot",
   note_prefilter: "off",
-  search_claim: "on",
+  commonnotes_pipeline: "on",
   simple_bot_search: "opus48-native",
   simple_bot_writer: "sonnet5",
   simple_bot_verifier: "gemini-flash",
