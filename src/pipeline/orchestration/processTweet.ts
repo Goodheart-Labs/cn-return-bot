@@ -237,9 +237,9 @@ export async function scorePipelineResult(
   log?.set("materiality.shouldSubmit", materialityGate.shouldSubmit);
 
   // X's evaluate endpoint scores a note against a real tweet. A Common Notes
-  // claim runs with search_claim on, and its post id is made up, so X can only
-  // refuse the call. We skip it, and the evaluation gate then lets the note pass.
-  if (getBotConfig().search_claim) return { scores, evalGate, materialityGate };
+  // claim has a made-up post id, so X can only refuse the call. We skip it, and
+  // the evaluation gate then lets the note pass.
+  if (getBotConfig().commonnotes_pipeline) return { scores, evalGate, materialityGate };
 
   const evalResult = await getEvaluationScore(result.post.id, noteText);
   if (evalResult.error) {

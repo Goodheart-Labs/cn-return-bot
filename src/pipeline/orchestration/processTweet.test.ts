@@ -198,7 +198,7 @@ describe("materiality scoring", () => {
 
   test("a Common Notes claim never calls X's evaluate endpoint", async () => {
     mockScores(0.8);
-    const output = await withBotConfig({ ...GATED, search_claim: true }, () => scorePipelineResult(result));
+    const output = await withBotConfig({ ...GATED, commonnotes_pipeline: true }, () => scorePipelineResult(result));
     expect(evaluate).not.toHaveBeenCalled();
     expect(output.evalGate.shouldSubmit).toBeUndefined();
     expect(determineOutcome(result, output).outcome).toBe("candidate");

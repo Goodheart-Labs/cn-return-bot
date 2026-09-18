@@ -140,12 +140,12 @@ const MATERIALITY_TREATMENT_TEST: ABTest = {
 };
 
 // Common Notes forces on for extracted claims; ordinary X runs use off.
-const SIMPLE_BOT_CLAIM_TEST: ABTest = {
-  name: "search_claim",
+const COMMONNOTES_PIPELINE_TEST: ABTest = {
+  name: "commonnotes_pipeline",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "off", overrides: { search_claim: false } }, weight: 100 },
-    { variant: { name: "on",  overrides: { search_claim: true  } }, weight: 0   },
+    { variant: { name: "off", overrides: { commonnotes_pipeline: false } }, weight: 100 },
+    { variant: { name: "on",  overrides: { commonnotes_pipeline: true  } }, weight: 0   },
   ],
 };
 
@@ -308,7 +308,7 @@ export const AB_TESTS: ABTest[] = [
   MEDIA_DESCRIPTION_TEST,
   WRITER_LAST_CHECK_TEST,
   MATERIALITY_TREATMENT_TEST,
-  SIMPLE_BOT_CLAIM_TEST,
+  COMMONNOTES_PIPELINE_TEST,
   TOPIC_FILTER_TEST,
   NOTE_PREFILTER_TEST,
   VERIFIER_MEDIA_SOURCES_TEST,

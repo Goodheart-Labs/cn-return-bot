@@ -32,8 +32,8 @@ Return JSON with two fields:
 - If no correction is needed, the findings can be brief — just explain why.`;
 
 /** The search prompt for checking a single claim, used when
- *  `config.search_claim` is on. The input is a verbatim excerpt highlighted from
- *  a podcast, an interview or an article, plus the surrounding passage for
+ *  `config.commonnotes_pipeline` is on. The input is a verbatim excerpt
+ *  highlighted from a podcast, an interview or an article, plus the surrounding passage for
  *  context. It is not an X post and it is not a paraphrase. With the X prompts
  *  the model treats the excerpt as a quoted conversation and refuses to
  *  fact-check it. Naming the input as an extracted claim fixes that. The
