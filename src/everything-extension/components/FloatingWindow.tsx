@@ -1,0 +1,165 @@
+import { useRef, useState, type CSSProperties, type HTMLAttributes, type ReactNode } from "react";
+import { EYEBROW, FLOATING_CARD } from "../../everything-shared/ui";
+import { IconButton } from "../../everything-web/src/components/IconButton";
+
+/** A card's box in page coordinates. Page coordinates are viewport
+ *  coordinates plus the page's scroll offset, measured from the top-left
+ *  corner of the document, so a card placed this way scrolls with the page
+ *  like the content around it. */
+export interface Box {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
+
+const MIN_WIDTH_PX = 280;
+const MIN_HEIGHT_PX = 160;
+/** How wide the invisible strip along each edge and corner is. Inside it the
+ *  pointer turns into a resize cursor and a press starts resizing. */
+const GRIP_PX = 8;
+
+/** The edge or corner a resize gesture pulls on. The letters are compass
+ *  directions, which is also how the CSS cursor names read: `nwse-resize` is
+ *  the diagonal cursor for the north-west and south-east corners. */
+type Edge = "n" | "s" | "e" | "w" | "ne" | "nw" | "se" | "sw";
+
+const GRIPS: { edge: Edge; cursor: string; style: CSSProperties }[] = [
+  { edge: "n", cursor: "ns-resize", style: { top: -GRIP_PX / 2, left: GRIP_PX, right: GRIP_PX, height: GRIP_PX } },
+  { edge: "s", cursor: "ns-resize", style: { bottom: -GRIP_PX / 2, left: GRIP_PX, right: GRIP_PX, height: GRIP_PX } },
+  { edge: "e", cursor: "ew-resize", style: { right: -GRIP_PX / 2, top: GRIP_PX, bottom: GRIP_PX, width: GRIP_PX } },
+  { edge: "w", cursor: "ew-resize", style: { left: -GRIP_PX / 2, top: GRIP_PX, bottom: GRIP_PX, width: GRIP_PX } },
+  { edge: "nw", cursor: "nwse-resize", style: { top: -GRIP_PX / 2, left: -GRIP_PX / 2, width: GRIP_PX, height: GRIP_PX } },
+  { edge: "se", cursor: "nwse-resize", style: { bottom: -GRIP_PX / 2, right: -GRIP_PX / 2, width: GRIP_PX, height: GRIP_PX } },
+  { edge: "ne", cursor: "nesw-resize", style: { top: -GRIP_PX / 2, right: -GRIP_PX / 2, width: GRIP_PX, height: GRIP_PX } },
+  { edge: "sw", cursor: "nesw-resize", style: { bottom: -GRIP_PX / 2, left: -GRIP_PX / 2, width: GRIP_PX, height: GRIP_PX } },
+];
+
+function pageBox(el: HTMLElement): Box {
+  const rect = el.getBoundingClientRect();
+  return { left: rect.left + window.scrollX, top: rect.top + window.scrollY, width: rect.width, height: rect.height };
+}
+
+/** The page's width without its vertical scrollbar. A card is never allowed
+ *  past it, because a card poking out of the right edge would give the page a
+ *  horizontal scrollbar. */
+const pageWidth = () => document.documentElement.clientWidth;
+
+function moved(start: Box, dx: number, dy: number): Box {
+  return {
+    ...start,
+    left: Math.min(Math.max(0, start.left + dx), pageWidth() - start.width),
+    top: Math.max(0, start.top + dy),
+  };
+}
+
+/** Pulling an edge moves that edge and leaves the opposite one in place, so
+ *  the box hitting its minimum size stops the pulled edge rather than moving
+ *  the fixed one. */
+function resized(start: Box, edge: Edge, dx: number, dy: number): Box {
+  const box = { ...start };
+  if (edge.includes("e")) box.width = Math.min(Math.max(MIN_WIDTH_PX, start.width + dx), pageWidth() - start.left);
+  if (edge.includes("w")) {
+    box.width = Math.min(Math.max(MIN_WIDTH_PX, start.width - dx), start.left + start.width);
+    box.left = start.left + start.width - box.width;
+  }
+  if (edge.includes("s")) box.height = Math.max(MIN_HEIGHT_PX, start.height + dy);
+  if (edge.includes("n")) {
+    box.height = Math.min(Math.max(MIN_HEIGHT_PX, start.height - dy), start.top + start.height);
+    box.top = start.top + start.height - box.height;
+  }
+  return box;
+}
+
+/** A card that behaves like a desktop window. Its title bar drags it anywhere
+ *  on the page, and its edges and corners resize it. Until the reader touches
+ *  it, the card sits where `restingStyle` puts it and takes the height of its
+ *  content, capped at most of the viewport. The first drag or resize freezes
+ *  the box the card had at that moment into explicit page coordinates, and
+ *  from then on the card keeps its own size and the body scrolls inside it.
+ *  The card itself remembers nothing. It reports its box after every gesture
+ *  through `onPlaced`, and the caller decides what the next card inherits. */
+export function FloatingWindow({ title, dismissLabel, onDismiss, onPlaced, restingStyle, className = "", children, ...divProps }: {
+  title: string;
+  dismissLabel: string;
+  onDismiss: () => void;
+  onPlaced: (box: Box) => void;
+  /** Where the card sits before any interaction, as `left`, `top`, a width,
+   *  and optionally a `transform` that aligns the card to that point. */
+  restingStyle: CSSProperties;
+  children: ReactNode;
+} & Omit<HTMLAttributes<HTMLDivElement>, "title" | "style">) {
+  const outer = useRef<HTMLDivElement>(null);
+  const [box, setBox] = useState<Box | null>(null);
+  /** Runs one press-move-release gesture. Pointer capture, a browser feature,
+   *  routes every pointer event to the pressed element until the capture
+   *  ends. So the gesture continues when the pointer runs ahead of the card,
+   *  and the browser keeps showing the pressed element's cursor meanwhile.
+   *
+   *  The gesture ends on `lostpointercapture`, the event the browser fires
+   *  whenever capture ends for any reason. A normal release ends it, and so
+   *  does a cancelled gesture or another script taking the pointer.
+   *
+   *  Capture is taken before any state changes. If the browser refuses it,
+   *  the call throws and the gesture never starts. */
+  const startGesture = (e: React.PointerEvent, apply: (start: Box, dx: number, dy: number) => Box) => {
+    if (e.button !== 0 || !outer.current) return;
+    const grip = e.currentTarget as HTMLElement;
+    grip.setPointerCapture(e.pointerId);
+    e.preventDefault();
+    const start = pageBox(outer.current);
+    const origin = { x: e.clientX, y: e.clientY };
+    let current = start;
+    setBox(start);
+    const onMove = (move: PointerEvent) => {
+      // A move with no button held means the release happened somewhere the
+      // page never heard about, for example outside the browser window. We
+      // let go of the capture, which ends the gesture through onEnd.
+      if (move.buttons === 0) return grip.releasePointerCapture(move.pointerId);
+      current = apply(start, move.clientX - origin.x, move.clientY - origin.y);
+      setBox(current);
+    };
+    const onEnd = () => {
+      grip.removeEventListener("pointermove", onMove);
+      grip.removeEventListener("lostpointercapture", onEnd);
+      onPlaced(current);
+    };
+    grip.addEventListener("pointermove", onMove);
+    grip.addEventListener("lostpointercapture", onEnd);
+  };
+
+  const startDrag = (e: React.PointerEvent) => {
+    // A press on the dismiss button is a click, not the start of a drag.
+    if ((e.target as Element).closest("button")) return;
+    startGesture(e, moved);
+  };
+
+  const style: CSSProperties = box
+    ? { position: "absolute", left: box.left, top: box.top, width: box.width, height: box.height }
+    : { position: "absolute", ...restingStyle };
+
+  return (
+    <div
+      ref={outer}
+      {...divProps}
+      style={style}
+      className={`flex flex-col ${box ? "" : "max-w-[85vw] max-h-[70vh]"} ${FLOATING_CARD} ${className}`}
+    >
+      <div
+        onPointerDown={startDrag}
+        className="flex items-start justify-between gap-2 px-4 pt-4 pb-2 cursor-grab active:cursor-grabbing select-none"
+      >
+        <span className={EYEBROW}>{title}</span>
+        <IconButton label={dismissLabel} onClick={onDismiss}>✕</IconButton>
+      </div>
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4">{children}</div>
+      {GRIPS.map(({ edge, cursor, style: gripStyle }) => (
+        <div
+          key={edge}
+          onPointerDown={(e) => startGesture(e, (start, dx, dy) => resized(start, edge, dx, dy))}
+          style={{ position: "absolute", cursor, ...gripStyle }}
+        />
+      ))}
+    </div>
+  );
+}

@@ -124,14 +124,15 @@ async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | n
   if (!player || !video) return statusTeardown;
 
   let themeRoot: HTMLElement | null = null;
+  // The host lives on the page body, not inside the player, so the card can
+  // be dragged over the whole page. Its geometry is set in assets/tailwind.css
+  // under `:host(common-notes-yt)`. The scrub-bar pins reach the player on
+  // their own.
   const ui = await createShadowRootUi(ctx, {
     name: "common-notes-yt",
     position: "inline",
-    anchor: player,
+    anchor: "body",
     onMount(container, _shadow, _shadowHost) {
-      // The host element's geometry is set in assets/tailwind.css under
-      // `:host(common-notes-yt)`. Inline styles set here would have no effect,
-      // because WXT's shadow reset declares `:host{all:initial !important}`.
       // The theme follows YouTube's own theme, sampled from the body element.
       // We cannot sample the player itself, because the #movie_player backdrop
       // is black in both themes.
