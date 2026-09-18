@@ -1,0 +1,34 @@
+name: Set up YouTube caption downloads
+description: >
+  Installs yt-dlp and starts the PO token provider that a caption download
+  from YouTube needs.
+
+# Why a token provider (GOO-169). yt-dlp downloads captions as YouTube's web
+# player. That player must present a PO token, a proof that the request comes
+# from a real player, or YouTube lists the captions and refuses to hand them
+# over. The pipeline asks this local server for a token per video and passes
+# it to yt-dlp (fetchPoToken in src/pipeline/media/ytDlpDownload.ts). Every
+# other yt-dlp client times out on YouTube's internal API through the
+# residential proxy, which for two days was recorded as "No transcript
+# available".
+
+runs:
+  using: composite
+  steps:
+    - name: Install yt-dlp
+      shell: bash
+      # Ubuntu's packaged yt-dlp is years old and silently returns nothing on
+      # today's YouTube, so the current release comes from PyPI.
+      run: pipx install yt-dlp && yt-dlp --version
+    - name: Start the PO token provider
+      shell: bash
+      run: |
+        docker run -d --name pot-provider -p 127.0.0.1:4416:4416 brainicism/bgutil-ytdlp-pot-provider:2.0.0
+        # The provider answers its ping a few seconds after the container
+        # starts. A run without it cannot fetch any captions, so failing here
+        # is the right outcome.
+        for attempt in $(seq 1 20); do
+          curl -fsS -m 5 http://127.0.0.1:4416/ping && exit 0
+          sleep 2
+        done
+        echo "The PO token provider did not come up"; docker logs pot-provider; exit 1

@@ -7,7 +7,7 @@ import { SignalBot } from "./engine";
 import { SignalStore, type Conversation } from "./store";
 import { createDraftingAdapter } from "./drafting";
 import { TweetLookupError } from "../api/fetchTweetById";
-import type { DraftContext, DraftResult, SignalDraft, TweetInspection } from "./drafting";
+import type { DraftContext, DraftResult, DraftingAdapter, SignalDraft, TweetInspection } from "./drafting";
 import type { IncomingMessage } from "./transport";
 import type { SubmissionResult } from "../pipeline/orchestration/submitNoteForTweet";
 
@@ -23,9 +23,12 @@ function fixture(options: {
   onSend?: (text: string) => void;
   inspect?: (tweetId: string) => Promise<TweetInspection>;
   draft?: (context: DraftContext) => Promise<DraftResult>;
+  converse?: NonNullable<DraftingAdapter["converse"]>;
   submit?: (conversation: Conversation, callbacks?: SubmissionCallbacks) => Promise<SubmissionResult>;
   registerSubmission?: (conversation: Conversation) => Promise<SubmissionResult | null>;
   cancelSubmission?: (conversation: Conversation) => Promise<void>;
+  addressedOnly?: boolean;
+  mentionOnly?: boolean;
 } = {}) {
   const store = options.store ?? new SignalStore(":memory:", "test-account/group");
   if (!options.store) cleanups.push(() => store.close());
@@ -37,6 +40,7 @@ function fixture(options: {
   const submissions: Conversation[] = [];
   const cancellations: Conversation[] = [];
   const errors: unknown[] = [];
+  const logs: string[] = [];
   const bot = new SignalBot({
     store,
     drafting: {
@@ -55,7 +59,9 @@ function fixture(options: {
         if (context.currentDraft) return { reply: "The archive records the date. Shall we discuss the wording?" };
         return { reply: "The source provides the original date.", draft: structuredClone(draft), research: "Archive research" };
       },
+      ...(options.converse ? { converse: options.converse } : {}),
     },
+    log: line => logs.push(line),
     send: async (text, quote) => {
       options.onSend?.(text);
       if (failSend) throw new Error("Signal is offline");
@@ -75,6 +81,8 @@ function fixture(options: {
     },
     registerSubmission: options.registerSubmission,
     dryRun: options.dryRun,
+    addressedOnly: options.addressedOnly,
+    mentionOnly: options.mentionOnly,
     onError: error => errors.push(error),
   });
   function message(text: string, quoteId?: string, timestamp?: number): IncomingMessage {
@@ -82,7 +90,7 @@ function fixture(options: {
     return { id: `human:${ts}`, sender: "human", timestamp: ts, text, ...(quoteId ? { quoteId } : {}) };
   }
   return {
-    bot, store, sent, inspections, draftCalls, submissions, cancellations, errors, message,
+    bot, store, sent, inspections, draftCalls, submissions, cancellations, errors, logs, message,
     failSending: () => { failSend = true; },
     restoreSending: () => { failSend = false; },
     send: async (text: string, quoteId?: string) => bot.handle(message(text, quoteId)),
@@ -100,6 +108,138 @@ describe("Signal draft conversations", () => {
     expect(f.latestDraft().text).toContain(`${draft.text} ${draft.sources.join(" ")}`);
     expect(f.latestDraft().text).toContain("v1");
     expect(f.current().draft).toEqual({ ...draft, version: 1, shownAt: Number(f.latestDraft().id) });
+    expect(f.submissions).toHaveLength(0);
+  });
+
+  test("every reply is labelled as the bot's, with the conversation header when there is one", async () => {
+    const f = fixture();
+    await f.send("hello?");
+    expect(f.sent[0]!.text).toMatch(/^Bot: /);
+    await f.send("https://x.com/example/status/12345");
+    expect(f.sent.slice(1).every(item => item.text.startsWith("Bot · #1 · 12345\n"))).toBe(true);
+    expect(f.logs.some(line => /^received \d+ chars with 1 tweet link$/.test(line))).toBe(true);
+    expect(f.logs.some(line => /^reply \d+ chars on #1 showing draft$/.test(line))).toBe(true);
+    expect(f.logs.join("\n")).not.toContain("12345");
+  });
+
+  test("messages with no tweet get a general answer built from conversation summaries", async () => {
+    const seen: Array<Parameters<NonNullable<DraftingAdapter["converse"]>>[0]> = [];
+    const f = fixture({ converse: async context => { seen.push(context); return "Paste a link and I will draft a note."; } });
+    await f.send("what can you do?");
+    expect(seen).toEqual([{ text: "what can you do?", history: [], conversations: [] }]);
+    expect(f.sent.at(-1)!.text).toBe("Bot: Paste a link and I will draft a note.");
+    await f.send("https://x.com/example/status/12345");
+    await f.send("yes post");
+    expect(f.current().status).toBe("submitted");
+    await f.send("what did we post?");
+    expect(seen.at(-1)!.conversations).toEqual([{ id: 1, tweetId: "12345", status: "submitted", draftVersion: 1, draft: `${draft.text} ${draft.sources[0]}`, noteId: "987654321", lastActivityAt: expect.any(Number) }]);
+    expect(seen.at(-1)!.history).toEqual([{ role: "user", content: "what can you do?" }, { role: "assistant", content: "Paste a link and I will draft a note." }]);
+    expect(f.draftCalls).toHaveLength(1);
+    expect(f.submissions).toHaveLength(1);
+  });
+
+  test("without a chat model, or when it fails, the fallback still explains how to start", async () => {
+    const plain = fixture();
+    await plain.send("hello?");
+    expect(plain.sent.at(-1)!.text).toContain("Paste a tweet link");
+    const failing = fixture({ converse: async () => { throw new Error("model down"); } });
+    await failing.send("hello?");
+    expect(failing.sent.at(-1)!.text).toContain("Paste a tweet link");
+    expect(failing.errors).toHaveLength(1);
+    await failing.send("yes post");
+    expect(failing.sent.at(-1)!.text).toContain("no open conversation");
+    expect(failing.submissions).toHaveLength(0);
+  });
+
+  test("with several open tweets, discussion goes to the most recently discussed one", async () => {
+    const f = fixture({ converse: async () => "general" });
+    await f.send("https://x.com/example/status/12345");
+    await f.send("https://x.com/example/status/67890");
+    await f.send("Is the date right?");
+    expect(f.draftCalls.at(-1)!.post.id).toBe("67890");
+    expect(f.sent.at(-1)!.text).toMatch(/^Bot · #2 · 67890\n/);
+    await f.send("#1 What about this one?");
+    expect(f.draftCalls.at(-1)!.post.id).toBe("12345");
+    await f.send("And the wording?");
+    expect(f.draftCalls.at(-1)!.post.id).toBe("12345");
+    expect(f.sent.at(-1)!.text).toMatch(/^Bot · #1 · 12345\n/);
+    await f.send("draft");
+    expect(f.sent.at(-1)!.text).toContain("Which tweet do you mean?");
+    expect(f.sent.at(-1)!.text).toContain("#1 · 12345\n#2 · 67890");
+    expect(f.sent.filter(item => item.text.startsWith("Bot: general"))).toHaveLength(0);
+  });
+
+  test("addressed-only mode ignores chatter but answers links, #numbers, mentions, quotes, and a leading bot", async () => {
+    const f = fixture({ addressedOnly: true, converse: async context => `chat: ${context.text}` });
+    await f.send("morning all");
+    expect(f.sent).toHaveLength(0);
+    expect(f.logs).toContain("ignored: not addressed to the bot");
+    await f.send("yes post");
+    expect(f.sent.at(-1)!.text).toContain("no open conversation");
+    await f.send("https://x.com/example/status/12345");
+    expect(f.current().draft?.version).toBe(1);
+    const shown = f.sent.length;
+    await f.send("I think the note is fine");
+    expect(f.sent).toHaveLength(shown);
+    await f.send("#1 Does that source establish the date?");
+    expect(f.draftCalls.at(-1)!.history.at(-1)!.content).toBe("Does that source establish the date?");
+    await f.bot.handle({ ...f.message("what is the source?"), mentionsBot: true });
+    expect(f.draftCalls.at(-1)!.history.at(-1)!.content).toBe("what is the source?");
+    await f.bot.handle({ ...f.message("and the wording?"), quotesBot: true });
+    expect(f.draftCalls.at(-1)!.history.at(-1)!.content).toBe("and the wording?");
+    await f.send("Bot: is it ready?");
+    expect(f.draftCalls.at(-1)!.history.at(-1)!.content).toBe("is it ready?");
+    // A bare exact command with one open conversation is a bot command, not chatter.
+    await f.send("yes post");
+    expect(f.submissions).toHaveLength(1);
+    expect(f.current().status).toBe("submitted");
+    await f.send("bot what did we post?");
+    expect(f.sent.at(-1)!.text).toBe("Bot: chat: what did we post?");
+  });
+
+  test("mention-only mode ignores links, numbers and bare commands unless the bot is tagged or quoted", async () => {
+    const f = fixture({ mentionOnly: true });
+    await f.send("https://x.com/example/status/12345");
+    await f.send("yes post");
+    await f.send("bot draft");
+    expect(f.sent).toHaveLength(0);
+    expect(f.logs).toContain("ignored: bot not tagged");
+    await f.bot.handle({ ...f.message("https://x.com/example/status/12345"), mentionsBot: true });
+    expect(f.current().draft?.version).toBe(1);
+    await f.send("#1 yes post");
+    // A quote-reply without a tag is ignored too; only a tagged approval submits.
+    await f.bot.handle({ ...f.message("yes post", f.latestDraft().id), quotesBot: true });
+    expect(f.submissions).toHaveLength(0);
+    await f.bot.handle({ ...f.message("yes post", f.latestDraft().id), quotesBot: true, mentionsBot: true });
+    expect(f.submissions).toHaveLength(1);
+  });
+
+  test("general answers can see the pipeline's recent notes when a provider is given", async () => {
+    const seen: unknown[] = [];
+    const store = new SignalStore(":memory:", "test-account/group");
+    cleanups.push(() => store.close());
+    const bot = new SignalBot({
+      store, send: async () => String(Date.now()), submit: async () => ({ status: "error", message: "unused" }),
+      drafting: { inspect: async () => { throw new Error("unused"); }, draft: async () => { throw new Error("unused"); }, converse: async context => { seen.push(context.pipelineNotes); return "ok"; } },
+      pipelineNotes: async () => [{ tweet: "https://x.com/i/status/1", note: "A note" }],
+    });
+    await bot.handle({ id: "h:1", sender: "human", timestamp: 1_800_000_000_100, text: "what went out today?" });
+    expect(seen).toEqual([[{ tweet: "https://x.com/i/status/1", note: "A note" }]]);
+  });
+
+  test("messages from a listen-only group only get a general answer when addressed, never a draft", async () => {
+    const f = fixture({ converse: async context => `chat: ${context.text}` });
+    const live = "group.live";
+    await f.bot.handle({ ...f.message("what a note"), fromGroup: live });
+    await f.bot.handle({ ...f.message("https://x.com/example/status/12345"), fromGroup: live, mentionsBot: true });
+    expect(f.sent).toHaveLength(1);
+    expect(f.sent[0]!.text).toBe("Bot: chat: https://x.com/example/status/12345");
+    expect(f.sent[0]!.quote?.fromGroup).toBe(live);
+    expect(f.store.all()).toHaveLength(0);
+    await f.bot.handle({ ...f.message("bot which notes went out?"), fromGroup: live });
+    expect(f.sent.at(-1)!.text).toBe("Bot: chat: which notes went out?");
+    await f.bot.handle({ ...f.message("yes post"), fromGroup: live, quotesBot: true });
+    expect(f.sent.at(-1)!.text).toBe("Bot: chat: yes post");
     expect(f.submissions).toHaveLength(0);
   });
 

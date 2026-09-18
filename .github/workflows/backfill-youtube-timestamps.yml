@@ -26,8 +26,8 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Install yt-dlp
-        run: pipx install yt-dlp && yt-dlp --version
+      - name: Set up YouTube caption downloads
+        uses: ./.github/actions/setup-youtube-captions
 
       - name: Backfill claim timestamps
         run: bun run src/scripts_jim/2026_08_26_youtube_pin_backfill/backfill.ts

@@ -82,6 +82,8 @@ export interface RankedCreator {
   regularReaders: number;
   /** When this creator's top posts were last recomputed (GOO-81). */
   top_posts_refreshed_at: string | null;
+  /** When a refresh was last tried and failed (migration 101). */
+  top_posts_attempted_at: string | null;
 }
 
 const isOpen = (priorityUntil: string | null): boolean =>
@@ -154,6 +156,7 @@ export async function rankCreators(): Promise<{ creators: RankedCreator[]; rule:
       readers: read?.readers ?? 0,
       regularReaders: read?.regular_readers ?? 0,
       top_posts_refreshed_at: p.top_posts_refreshed_at,
+      top_posts_attempted_at: p.top_posts_attempted_at,
     });
   }
   const alreadyRanked = new Set(ranked.map((c) => normalizeFeedUrl(c.feed_url)));
@@ -183,6 +186,7 @@ export async function rankCreators(): Promise<{ creators: RankedCreator[]; rule:
       // A creator with no project yet has no refresh stamp, so their top posts
       // are computed the first time they are walked.
       top_posts_refreshed_at: known?.top_posts_refreshed_at ?? null,
+      top_posts_attempted_at: known?.top_posts_attempted_at ?? null,
     };
     if (qualifies(creator, rule)) ranked.push(creator);
   }
