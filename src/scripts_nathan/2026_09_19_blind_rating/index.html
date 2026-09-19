@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Blind note rating</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --line:#e3e6ea; --ink:#1b1f24; --mut:#6b7280; --accent:#2563eb; --noteBg:#eff6ff; --noteLine:#dbeafe; --chip:#eef2f7; --chipInk:#374151; }
+  /* Dark before 7am and after 7pm, or whenever the system asks for it. The
+     toggle in the corner overrides either way and is remembered. */
+  :root[data-theme="dark"] { --bg:#14171a; --card:#1c2024; --line:#2b3138; --ink:#e6e9ec; --mut:#9aa3ad; --accent:#6aa3ff; --noteBg:#17233a; --noteLine:#24365a; --chip:#242a31; --chipInk:#c2c9d1; }
+  :root[data-theme="dark"] input[type=range]::-webkit-slider-runnable-track { background:linear-gradient(90deg,#24365a,#6aa3ff); }
+  :root[data-theme="dark"] input[type=range]::-webkit-slider-thumb { background:#1c2024; }
+  * { box-sizing: border-box; }
+  .theme { position:fixed; top:10px; right:12px; z-index:9; font:inherit; font-size:13px; padding:5px 10px;
+    border:1px solid var(--line); background:var(--card); color:var(--mut); border-radius:8px; cursor:pointer; }
+  body { margin:0; font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:var(--bg); color:var(--ink); }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 20px 16px 60px; }
+  .bar { position:sticky; top:0; background:var(--bg); padding:10px 0; border-bottom:1px solid var(--line); margin-bottom:16px; z-index:5; }
+  .bar .row { display:flex; align-items:center; gap:12px; }
+  .prog { flex:1; height:6px; background:var(--line); border-radius:3px; overflow:hidden; }
+  .prog i { display:block; height:100%; background:var(--accent); width:0; }
+  .count { font-variant-numeric: tabular-nums; color:var(--mut); font-size:13px; }
+  .disc { font-size:12px; color:var(--mut); margin-top:6px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px; margin-bottom:14px; }
+  .ctx { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+  .ctx span { font-size:12px; background:var(--chip); color:var(--chipInk); padding:3px 8px; border-radius:99px; }
+  .label { font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--mut); margin-bottom:6px; }
+  .tweet { white-space:pre-wrap; }
+  .note { white-space:pre-wrap; background:var(--noteBg); border:1px solid var(--noteLine); border-radius:8px; padding:12px; }
+  .srcs a { display:block; font-size:13px; color:var(--accent); word-break:break-all; margin-bottom:4px; }
+  .big { font-size:44px; font-weight:700; font-variant-numeric:tabular-nums; text-align:center; margin:4px 0 2px; }
+  .scale { display:flex; justify-content:space-between; font-size:11px; color:var(--mut); margin-top:2px; }
+  input[type=range] { width:100%; height:34px; -webkit-appearance:none; background:transparent; }
+  input[type=range]::-webkit-slider-runnable-track { height:8px; border-radius:4px; background:linear-gradient(90deg,#dbeafe,#2563eb); }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:30px; height:30px; margin-top:-11px; border-radius:50%; background:#fff; border:3px solid var(--accent); cursor:grab; box-shadow:0 1px 4px rgba(0,0,0,.2); }
+  textarea { font:inherit; background:var(--card); color:var(--ink); width:100%; min-height:44px; padding:8px 10px; border:1px solid var(--line); border-radius:8px; resize:vertical; margin-top:6px; }
+  .go { font:inherit; font-size:16px; font-weight:600; padding:12px 26px; background:var(--accent); color:#fff; border:0; border-radius:8px; cursor:pointer; width:100%; margin-top:10px; }
+  .hint { font-size:12px; color:var(--mut); margin-top:8px; text-align:center; }
+  .done { text-align:center; padding:50px 20px; }
+</style>
+</head>
+<body>
+<button class="theme" id="theme" title="Light or dark">◐</button>
+<div class="wrap">
+  <div class="bar">
+    <div class="row">
+      <div class="prog"><i id="pi"></i></div>
+      <div class="count" id="pc">…</div>
+    </div>
+    <div class="disc" id="disc"></div>
+  </div>
+  <div id="app">Loading…</div>
+</div>
+<script>
+// Dark outside 07:00-19:00 local, or if the system asks. A manual choice sticks.
+function applyTheme(t) {
+  document.documentElement.setAttribute("data-theme", t);
+  try { localStorage.setItem("blindRating.theme", t); } catch {}
+}
+(function initTheme() {
+  let saved = null;
+  try { saved = localStorage.getItem("blindRating.theme"); } catch {}
+  const h = new Date().getHours();
+  const systemDark = window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches;
+  const auto = (h < 7 || h >= 19 || systemDark) ? "dark" : "light";
+  document.documentElement.setAttribute("data-theme", saved || auto);
+})();
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("theme").addEventListener("click", () => {
+    applyTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
+  });
+});
+
+const params = new URLSearchParams(location.search);
+const RATER = params.get("rater") || "anon";
+// The slider opens at the disclosed base rate of this set, so the fast path is
+// to nudge rather than to dial a number up from zero.
+const ANCHOR = 33;
+let items = [], done = new Set(), queue = [], cur = null, started = 0;
+
+function esc(s) { return (s ?? "").replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c])); }
+
+function ctxChips(c) {
+  const bits = [];
+  if (c.age_hours != null) bits.push(c.age_hours + "h old when found");
+  if (c.impressions_at_sight != null) bits.push(Number(c.impressions_at_sight).toLocaleString() + " impressions");
+  if (c.velocity_per_hour != null) bits.push(Number(c.velocity_per_hour).toLocaleString() + "/hour");
+  if (c.feed_tier) bits.push(c.feed_tier + " feed");
+  if (c.author_followers != null) bits.push(Number(c.author_followers).toLocaleString() + " followers");
+  if (c.media) bits.push(c.media);
+  bits.push(c.note_requests + " note request" + (c.note_requests === 1 ? "" : "s"));
+  bits.push(c.eval_score == null ? "no eval score" : "eval " + c.eval_score);
+  return bits.map(b => `<span>${esc(b)}</span>`).join("");
+}
+
+function render() {
+  const app = document.getElementById("app");
+  if (!cur) {
+    app.innerHTML = `<div class="done"><h2>All ${items.length} rated.</h2>
+      <p>Saved as <code>ratings_${esc(RATER)}.json</code>. Tell Claude and it will score both of us.</p></div>`;
+    return;
+  }
+  started = Date.now();
+  app.innerHTML = `
+    <div class="card">
+      <div class="ctx">${ctxChips(cur.context)}</div>
+      <div class="label">The post</div>
+      <div class="tweet">${esc(cur.tweet_text)}</div>
+    </div>
+    <div class="card">
+      <div class="label">Our note</div>
+      <div class="note">${esc(cur.note_text)}</div>
+      ${cur.sources.length ? `<div class="label" style="margin-top:12px">Sources</div><div class="srcs">${
+        cur.sources.map(u => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(u)}</a>`).join("")}</div>` : ""}
+    </div>
+    <div class="card">
+      <div class="label">Chance Community Notes rated it helpful</div>
+      <div class="big" id="big">${ANCHOR}%</div>
+      <input type="range" id="p" min="0" max="100" step="1" value="${ANCHOR}">
+      <div class="scale"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+      <textarea id="c" placeholder="Optional: only if it would not be obvious"></textarea>
+      <button class="go" id="go">Save and next</button>
+      <div class="hint">Arrows nudge, up and down jump by 5, Enter saves.</div>
+    </div>`;
+  const p = document.getElementById("p");
+  p.addEventListener("input", () => { document.getElementById("big").textContent = p.value + "%"; });
+  document.getElementById("go").addEventListener("click", save);
+  p.focus();
+}
+
+async function save() {
+  const p = document.getElementById("p");
+  if (!p) return;
+  await fetch("/api/rate", {
+    method: "POST", headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      rater: RATER, note_id: cur.note_id, p_helpful: Number(p.value),
+      comment: document.getElementById("c").value.trim() || null,
+      seconds: Math.round((Date.now() - started) / 1000),
+    }),
+  });
+  done.add(cur.note_id);
+  cur = queue.shift() ?? null;
+  progress(); render();
+}
+
+function progress() {
+  const pct = items.length ? (done.size / items.length) * 100 : 0;
+  document.getElementById("pi").style.width = pct + "%";
+  document.getElementById("pc").textContent = `${done.size} / ${items.length}`;
+}
+
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "TEXTAREA") return;
+  const p = document.getElementById("p");
+  if (!p) return;
+  if (e.key === "Enter") { e.preventDefault(); save(); return; }
+  let d = 0;
+  if (e.key === "ArrowUp") d = 5;
+  if (e.key === "ArrowDown") d = -5;
+  if (!d) return;
+  e.preventDefault();
+  p.value = Math.max(0, Math.min(100, Number(p.value) + d));
+  document.getElementById("big").textContent = p.value + "%";
+});
+
+(async () => {
+  const r = await fetch(`/api/items?rater=${encodeURIComponent(RATER)}`).then(x => x.json());
+  items = r.items; done = new Set(r.done);
+  document.getElementById("disc").textContent = r.disclosure;
+  queue = items.filter(i => !done.has(i.note_id));
+  cur = queue.shift() ?? null;
+  progress(); render();
+})();
+</script>
+</body>
+</html>
