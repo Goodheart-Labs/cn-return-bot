@@ -30,6 +30,7 @@ import { featuresFromPost } from "../ranking/features";
 import { shadowScores, type Scorer } from "../ranking/scorers";
 import type { Post } from "../../api/fetchEligiblePosts";
 import PQueue from "p-queue";
+import { rateCandidate } from "../score/noteRater";
 
 // Ten posts process at once. Five was the long-standing setting, and it left
 // the engine's daily output (~50 notes) below the cap X grants us (~65 and
@@ -362,7 +363,17 @@ export async function processPosts(
       }
 
       if (tweetResult.outcome === "candidate" && tweetResult.pipelineRunId) {
-        candidateByIndex[idx] = { post: item.post, tweetResult, botId, velocity: item.velocity };
+        // The note is a candidate before the forecast comes back, so a slow
+        // rater at the deadline cannot drop it.
+        const candidate: Candidate = { post: item.post, tweetResult, botId, velocity: item.velocity };
+        candidateByIndex[idx] = candidate;
+        candidate.rating = await rateCandidate(supabaseLogger, {
+          tweetId: item.post.id,
+          postText: item.post.text ?? "",
+          noteText: tweetResult.noteText,
+          sourceUrl: tweetResult.pipelineResult?.noteResult?.url,
+          pipelineRunId: tweetResult.pipelineRunId,
+        });
       }
     });
   }

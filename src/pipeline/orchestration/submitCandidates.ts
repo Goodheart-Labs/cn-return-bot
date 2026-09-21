@@ -14,6 +14,7 @@
  * In dry-run mode nothing is submitted and we only log what would have been.
  */
 
+import { raterPriority, type NoteRating } from "../score/noteRater";
 import { SupabaseLogger } from "../../api/supabaseClient";
 import { submitNoteForTweet } from "./submitNoteForTweet";
 import type { Post } from "../../api/fetchEligiblePosts";
@@ -152,6 +153,8 @@ export interface Candidate {
    *  through feed selection have none, and we derive their velocity from the
    *  post instead. */
   velocity?: number | null;
+  /** The note rater's forecast, when it answered. Logged only; nothing acts on it. */
+  rating?: NoteRating | null;
 }
 
 /**
@@ -245,7 +248,8 @@ export async function submitCandidates(
     for (const c of candidates) {
       if (ranking.has(c)) continue;
       const features = featuresFromPost(c.post, c.velocity, null, asOfMs);
-      const scores = Object.fromEntries(Object.values(SCORERS).map((s) => [s.name, s.scoreSubmit(features, c.tweetResult.evaluationScore ?? null)]));
+      const scores: Record<string, number> = Object.fromEntries(Object.values(SCORERS).map((s) => [s.name, s.scoreSubmit(features, c.tweetResult.evaluationScore ?? null)]));
+      if (c.rating) scores.note_rater = raterPriority(c.rating);
       ranking.set(c, { features, scores, flags: flagCount(features, FLAG_CUTS_2026_08) });
     }
     const submitScore = (c: Candidate, s: Scorer) => ranking.get(c)!.scores[s.name]!;

@@ -2,6 +2,8 @@ import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { fetchAllRows as fetchAllRowsShared } from "./paging";
 import type { Post } from "./fetchEligiblePosts";
 import type { FeedSize } from "../pipeline/orchestration/utils/feedSizeStrategy";
+import { NOTE_RATER_SCORE_TYPE } from "../pipeline/prompts/noteRater";
+import type { NoteRating } from "../pipeline/score/noteRater";
 import { stripNullChars } from "../utils/stripNullChars";
 import { parseSubmissionAdmission, parseSubmissionCapacity, type SubmissionAdmission, type SubmissionCapacity, type SubmissionClaimOutcome, type SubmissionLane } from "../pipeline/capacity/submissionReserve";
 
@@ -744,6 +746,24 @@ export class SupabaseLogger {
       console.error("[SupabaseLogger] Error completing pipeline run:", error);
       throw error;
     }
+  }
+
+  /** Stores the note rater's forecast for a finished note. */
+  async recordNoteRating(runId: string, rating: NoteRating): Promise<void> {
+    await this.addPipelineScore(runId, {
+      score_type: NOTE_RATER_SCORE_TYPE,
+      score_value: rating.pHelpful - rating.pNotHelpful,
+      score_label: `${Math.round(rating.pHelpful * 100)}/${Math.round(rating.pNotHelpful * 100)}`,
+      score_metadata: {
+        p_helpful: rating.pHelpful,
+        p_not_helpful: rating.pNotHelpful,
+        model: rating.model,
+        cost: rating.cost,
+        engages: rating.engages,
+        topic: rating.topic,
+        reason: rating.reason,
+      },
+    });
   }
 
   async addPipelineScore(
