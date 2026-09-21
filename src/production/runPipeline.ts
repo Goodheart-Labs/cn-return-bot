@@ -79,6 +79,7 @@ import { withForcedPicks } from "../pipeline/ab-testing/abTests";
 import { activeScorer, pickRankingPolicy } from "../pipeline/ranking/policy";
 import { barEnabled, barFor, estimateWindow, type Window } from "../pipeline/capacity/window";
 import { automaticGenerationPreflight, type SubmissionCapacity } from "../pipeline/capacity/submissionReserve";
+import { loadNoteQueue, mergeWithQueue, noteQueueEnabled } from "../pipeline/orchestration/noteQueue";
 
 function postUrl(postId: string): string {
   return `https://x.com/i/status/${postId}`;
@@ -204,13 +205,32 @@ async function main() {
       }
     }
 
+    // Notes from earlier runs that X had no room for. They compete with this
+    // run's fresh notes for the slots, in note-rater order.
+    const queueOn = noteQueueEnabled() && !isLocal && supabaseLogger !== null;
+    let queued: Candidate[] = [];
+    if (queueOn) {
+      try {
+        queued = await loadNoteQueue(supabaseLogger!);
+      } catch (err) {
+        console.warn("[noteQueue] could not load the queue; this run submits only its own notes:", err);
+      }
+    }
+
     let { maxPosts } = isLocal
       ? { maxPosts: MAX_POSTS_LOCAL }
       : capacity
         ? computeMaxPosts(capacity)
         : { maxPosts: MAX_POSTS_FALLBACK };
 
-    if (maxPosts === 0) {
+    // A cooldown probe needs only one note, and the queue already holds
+    // written ones, so the probe spends no money on new posts.
+    if (capacity?.probe && queued.length > 0) {
+      console.log(`[noteQueue] cooldown probe: trying the best of ${queued.length} queued note(s); no new posts this run`);
+      maxPosts = 0;
+    }
+
+    if (maxPosts === 0 && queued.length === 0) {
       console.log("[pipeline] Skipping — writing limit reached for the current 24h window");
       clearTimeout(globalTimeout);
       await closeBrowser();
@@ -309,7 +329,7 @@ async function main() {
     let window: Window | null = null;
     let bar: number | null = null;
     let barState: SubmitOptions["barState"] = scorer ? "off" : "none";
-    const useBar = scorer !== null && barEnabled();
+    const useBar = scorer !== null && barEnabled() && !queueOn;
     if (supabaseLogger && !isLocal) {
       try {
         window = await estimateWindow(supabaseLogger);
@@ -328,7 +348,7 @@ async function main() {
         (scorer ? ` bar=${bar === null ? "off" : bar === -Infinity ? "admit-all" : bar === Infinity ? "reject-all" : bar.toFixed(2)}` : ""),
     );
 
-    const regularCandidates = await generateCandidates(supabaseLogger, {
+    const regularCandidates = maxPosts === 0 ? [] : await generateCandidates(supabaseLogger, {
       maxPosts,
       deadlineMs: SOFT_DEADLINE_AT_MS,
       scorer,
@@ -349,15 +369,15 @@ async function main() {
     // behind them, so a day heavy with topic posts cannot eat the whole daily
     // cap.
     const misinfoReserve = supabaseLogger ? await misinfoReserveRemaining(supabaseLogger) : 0;
-    const candidates = [
+    const candidates = mergeWithQueue([
       ...misinfoCandidates.slice(0, misinfoReserve),
       ...regularCandidates,
       ...misinfoCandidates.slice(misinfoReserve),
       ...pangramCandidates,
-    ];
+    ], queued);
     if (candidates.length > 0 && supabaseLogger) {
-      const submitted = await submitCandidates(candidates, supabaseLogger, isLocal, { policy: rankingPolicy, scorer, window, bar, barState });
-      console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates (${pangramCandidates.length} pangram, ${misinfoCandidates.length} misinfo, ${regularCandidates.length} regular)`);
+      const submitted = await submitCandidates(candidates, supabaseLogger, isLocal, { policy: rankingPolicy, scorer, window, bar, barState, queue: queueOn });
+      console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates (${pangramCandidates.length} pangram, ${misinfoCandidates.length} misinfo, ${regularCandidates.length} regular, ${candidates.length - regularCandidates.length - misinfoCandidates.length - pangramCandidates.length} queued)`);
     } else {
       console.log(`[pipeline] No candidates to submit`);
     }

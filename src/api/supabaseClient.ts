@@ -3,6 +3,9 @@ import { fetchAllRows as fetchAllRowsShared } from "./paging";
 import type { Post } from "./fetchEligiblePosts";
 import type { FeedSize } from "../pipeline/orchestration/utils/feedSizeStrategy";
 import { stripNullChars } from "../utils/stripNullChars";
+import { NOTE_RATER_SCORE_TYPE } from "../pipeline/prompts/noteRater";
+import type { NoteRating } from "../pipeline/score/noteRater";
+import type { QueuedRun, QueuedTweetRow } from "../pipeline/orchestration/noteQueue";
 import { parseSubmissionAdmission, parseSubmissionCapacity, type SubmissionAdmission, type SubmissionCapacity, type SubmissionClaimOutcome, type SubmissionLane } from "../pipeline/capacity/submissionReserve";
 
 // How often an --incremental scrape may scroll past a note without capturing it
@@ -831,6 +834,96 @@ export class SupabaseLogger {
       console.error("[SupabaseLogger] Error marking candidate expired:", error);
       throw error;
     }
+  }
+
+  /**
+   * Loads the note queue: automatic notes still waiting for a slot, written in
+   * the last `maxAgeHours`, with their tweet rows and note-rater scores. See
+   * pipeline/orchestration/noteQueue.ts.
+   */
+  async fetchQueuedRuns(maxAgeHours: number): Promise<QueuedRun[]> {
+    const since = new Date(Date.now() - maxAgeHours * 3_600_000).toISOString();
+    const { data: runs, error } = await this.client
+      .from("pipeline_runs")
+      .select("id, tweet_id, note_text, source_url, bot_name, created_at, velocity:logs->ranking->features->velocityPerHour")
+      .eq("outcome", "candidate")
+      .eq("final_stage", "candidate")
+      .neq("bot_name", "signal")
+      .gte("created_at", since)
+      .order("created_at", { ascending: true });
+    if (error) throw error;
+    if (!runs?.length) return [];
+
+    const tweetIds = [...new Set(runs.map((r) => r.tweet_id as string))];
+    const runIds = runs.map((r) => r.id as string);
+    const [{ data: tweets, error: tErr }, { data: scores, error: sErr }] = await Promise.all([
+      this.client.from("tweets")
+        .select("tweet_id, author_id, author_name, author_description, author_followers, author_tweet_count, text, posted_at, impressions, likes, retweets, replies, quotes, bookmarks, media, referenced_tweets, referenced_tweet_data")
+        .in("tweet_id", tweetIds),
+      this.client.from("pipeline_scores")
+        .select("pipeline_run_id, score_metadata, created_at")
+        .eq("score_type", NOTE_RATER_SCORE_TYPE)
+        .in("pipeline_run_id", runIds)
+        .order("created_at", { ascending: true }),
+    ]);
+    if (tErr) throw tErr;
+    if (sErr) throw sErr;
+
+    const tweetById = new Map((tweets ?? []).map((t) => [t.tweet_id as string, t as QueuedTweetRow]));
+    const ratingByRun = new Map<string, NoteRating>();
+    for (const s of scores ?? []) {
+      const m = (s.score_metadata ?? {}) as Record<string, unknown>;
+      if (typeof m.p_helpful !== "number" || typeof m.p_not_helpful !== "number") continue;
+      ratingByRun.set(s.pipeline_run_id as string, {
+        pHelpful: m.p_helpful, pNotHelpful: m.p_not_helpful,
+        model: String(m.model ?? ""), cost: Number(m.cost ?? 0),
+      });
+    }
+    return runs.map((r) => ({
+      id: r.id as string,
+      tweet_id: r.tweet_id as string,
+      note_text: r.note_text as string | null,
+      source_url: r.source_url as string | null,
+      bot_name: r.bot_name as string | null,
+      created_at: r.created_at as string,
+      velocity: typeof r.velocity === "number" ? r.velocity : null,
+      tweet: tweetById.get(r.tweet_id as string) ?? null,
+      rating: ratingByRun.get(r.id as string) ?? null,
+    }));
+  }
+
+  /** Closes queued notes written more than `olderThanHours` ago (looking back
+   *  only `lookbackHours`). Returns how many it closed. */
+  async expireQueuedRuns(olderThanHours: number, lookbackHours: number): Promise<number> {
+    const now = Date.now();
+    const { data, error } = await this.client
+      .from("pipeline_runs")
+      .update({ outcome: "rejected", outcome_reason: "queue_expired", final_stage: "submission" })
+      .eq("outcome", "candidate")
+      .eq("final_stage", "candidate")
+      .neq("bot_name", "signal")
+      .lt("created_at", new Date(now - olderThanHours * 3_600_000).toISOString())
+      .gte("created_at", new Date(now - lookbackHours * 3_600_000).toISOString())
+      .select("id");
+    if (error) throw error;
+    return data?.length ?? 0;
+  }
+
+  async recordNoteRating(runId: string, rating: NoteRating): Promise<void> {
+    await this.addPipelineScore(runId, {
+      score_type: NOTE_RATER_SCORE_TYPE,
+      score_value: rating.pHelpful - rating.pNotHelpful,
+      score_label: `${Math.round(rating.pHelpful * 100)}/${Math.round(rating.pNotHelpful * 100)}`,
+      score_metadata: {
+        p_helpful: rating.pHelpful,
+        p_not_helpful: rating.pNotHelpful,
+        model: rating.model,
+        cost: rating.cost,
+        engages: rating.engages,
+        topic: rating.topic,
+        reason: rating.reason,
+      },
+    });
   }
 
   /**

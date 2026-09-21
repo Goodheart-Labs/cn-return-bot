@@ -24,6 +24,9 @@ import { FLAG_CUTS_2026_08, SCORERS, type Scorer } from "../ranking/scorers";
 import { orderForSubmit, partitionByBar } from "../ranking/submitOrder";
 import type { Window } from "../capacity/window";
 import { EXPLORE_SHARE } from "../capacity/window";
+import type { NoteRating } from "../score/noteRater";
+import { raterPriority } from "../score/noteRater";
+import { orderByRater } from "./noteQueue";
 
 // We prefer the velocity that was frozen when the post was fetched, which is
 // what the regular feed does. Candidates from the pre-passes arrive without one,
@@ -152,6 +155,10 @@ export interface Candidate {
    *  through feed selection have none, and we derive their velocity from the
    *  post instead. */
   velocity?: number | null;
+  /** The note rater's forecast. Null when the rater call failed. */
+  rating?: NoteRating | null;
+  /** Set when the candidate came out of the note queue: when it was written. */
+  queuedAt?: string;
 }
 
 /**
@@ -196,6 +203,9 @@ export interface SubmitOptions {
   bar: number | null;
   barState: "set" | "admit_all" | "reject_all" | "none" | "off" | "error";
   rng?: () => number;
+  /** The note queue is on: order by the note rater, skip the bar, and leave
+   *  notes X has no room for as queued candidates instead of rejecting them. */
+  queue?: boolean;
 }
 
 const CONTROL_OPTIONS: SubmitOptions = { policy: "velocity_only", scorer: null, window: null, bar: null, barState: "none" };
@@ -240,30 +250,35 @@ export async function submitCandidates(
 
     // Control arm: `kept` stays in the order runPipeline built. Treatment arm:
     // the scorer orders it, and the bar (when set) decides who goes out.
-    const { scorer, bar } = options;
+    const { scorer, bar, queue } = options;
     const ranking = new Map<Candidate, { features: ReturnType<typeof featuresFromPost>; scores: Record<string, number>; flags: number }>();
     for (const c of candidates) {
       if (ranking.has(c)) continue;
       const features = featuresFromPost(c.post, c.velocity, null, asOfMs);
-      const scores = Object.fromEntries(Object.values(SCORERS).map((s) => [s.name, s.scoreSubmit(features, c.tweetResult.evaluationScore ?? null)]));
+      const scores: Record<string, number> = Object.fromEntries(Object.values(SCORERS).map((s) => [s.name, s.scoreSubmit(features, c.tweetResult.evaluationScore ?? null)]));
+      if (c.rating) scores.note_rater = raterPriority(c.rating);
       ranking.set(c, { features, scores, flags: flagCount(features, FLAG_CUTS_2026_08) });
     }
     const submitScore = (c: Candidate, s: Scorer) => ranking.get(c)!.scores[s.name]!;
 
-    const orderedAll = scorer ? orderForSubmit(kept, (c) => submitScore(c, scorer)) : kept;
-    const { above, explored, below } = scorer
+    // With the queue on, the note rater orders everything and X's refusal is
+    // the only bar: the flags bar never looked at the note itself.
+    const orderedAll = queue ? orderByRater(kept) : scorer ? orderForSubmit(kept, (c) => submitScore(c, scorer)) : kept;
+    const { above, explored, below } = scorer && !queue
       ? partitionByBar(orderedAll, (c) => submitScore(c, scorer), bar, EXPLORE_SHARE, options.rng)
       : { above: orderedAll, explored: [] as Candidate[], below: [] as Candidate[] };
     const ordered = [...above, ...explored];
     const exploredIds = new Set(explored.map((c) => c.post.id));
 
+    const queuedCount = candidates.filter((c) => c.queuedAt).length;
     console.log(
       `[submit] ${ordered.length} candidates to submit (policy=${options.policy}` +
-        `${bar !== null ? `, bar=${bar.toFixed(2)}, ${below.length} below, ${explored.length} explored` : ""})`,
+        (queue ? `, order=note_rater, ${queuedCount} from the queue` : "") +
+        `${bar !== null && !queue ? `, bar=${bar.toFixed(2)}, ${below.length} below, ${explored.length} explored` : ""})`,
     );
     for (const c of orderedAll) {
       const line = Object.entries(ranking.get(c)!.scores).map(([k, v]) => `${k}=${v.toFixed(2)}`).join(" ");
-      console.log(`[submit]   ${c.post.id} ${line}${exploredIds.has(c.post.id) ? " [explore]" : below.includes(c) ? " [below bar]" : ""}`);
+      console.log(`[submit]   ${c.post.id} ${line}${c.queuedAt ? " [queued]" : ""}${exploredIds.has(c.post.id) ? " [explore]" : below.includes(c) ? " [below bar]" : ""}`);
     }
 
     const decide = (c: Candidate, decision: string) => {
@@ -365,7 +380,7 @@ export async function submitCandidates(
         const remaining = ordered.slice(ordered.indexOf(candidate));
         reserveSkipped = remaining.length;
         console.log(`[submit] automatic submissions stopped (${result.reason}); ${result.capacity.signalQueued} Signal note(s) queued`);
-        for (const r of remaining) decide(r, "capacity_reserved");
+        for (const r of remaining) if (!r.queuedAt) decide(r, "capacity_reserved");
         break;
       } else if (result.status === "submission_busy") {
         busy++;
@@ -380,6 +395,12 @@ export async function submitCandidates(
         console.log(`[submit] daily limit reached after ${submitted} submissions`);
         const remaining = ordered.slice(ordered.indexOf(candidate) + 1);
         limitSkipped = remaining.length + 1;
+        if (queue) {
+          // Everything left, the refused note included, stays a candidate and
+          // waits in the queue for the next run with room.
+          for (const r of [candidate, ...remaining]) if (!r.queuedAt) decide(r, "queued_at_limit");
+          break;
+        }
         decide(candidate, "daily_limit_reached");
         for (const r of remaining) {
           decide(r, "daily_limit_reached");
@@ -411,7 +432,7 @@ export async function submitCandidates(
       staleCut.length ? `${staleCut.length} stale-cut` : null,
       expired ? `${expired} expired` : null,
       errors ? `${errors} errors` : null,
-      limitHit ? `${limitSkipped} skipped (daily limit)` : null,
+      limitHit ? `${limitSkipped} ${queue ? "left in the queue" : "skipped"} (daily limit)` : null,
       reserveSkipped ? `${reserveSkipped} waiting for submission capacity` : null,
       busy ? `${busy} already claimed` : null,
       uncertain ? `${uncertain} uncertain (reconciliation required)` : null,
