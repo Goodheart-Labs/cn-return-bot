@@ -386,6 +386,17 @@ export async function submitCandidates(
         busy++;
         decide(candidate, "submission_busy");
         console.log(`[submit] ${candidate.post.id} already has a ${result.reason} submission; skipping`);
+        // The tweet already has our note (e.g. via Signal): close the run, or
+        // the queue would offer it again every run until it expires.
+        if (queue && result.reason === "submitted" && candidate.tweetResult.pipelineRunId) {
+          try {
+            await supabaseLogger.completePipelineRun(candidate.tweetResult.pipelineRunId, {
+              outcome: "rejected",
+              outcome_reason: "already_noted",
+              final_stage: "submission",
+            });
+          } catch {}
+        }
       } else if (result.status === "uncertain") {
         uncertain++;
         decide(candidate, "submission_uncertain");

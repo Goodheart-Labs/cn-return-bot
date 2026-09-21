@@ -71,6 +71,13 @@ describe("submitCandidates with the queue on", () => {
     expect(rows[0]).toMatchObject({ scores: { note_rater: 0.49 } });
   });
 
+  test("a queued note whose tweet already has our note is closed, not retried", async () => {
+    spyOn(submission, "submitNoteForTweet").mockResolvedValueOnce({ status: "submission_busy", reason: "submitted", capacity: {} as any });
+    const { logger, completePipelineRun } = loggerMock();
+    await submitCandidates([candidate("dup", [0.3, 0], "2026-09-21T08:00:00Z")], logger, false, options);
+    expect(completePipelineRun.mock.calls[0]).toEqual(["run-dup", { outcome: "rejected", outcome_reason: "already_noted", final_stage: "submission" }] as any);
+  });
+
   test("without the queue the old behaviour holds: the rest are rejected at the limit", async () => {
     spyOn(submission, "submitNoteForTweet").mockResolvedValueOnce({ status: "daily_limit" });
     const { logger, completePipelineRun } = loggerMock();
