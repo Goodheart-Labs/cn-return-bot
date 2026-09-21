@@ -12,6 +12,11 @@ export const BLOCKED_TOPICS = [
   "Tyler Robinson",
   "Candace Owens (posts about her or authored by her)",
   "the health or death of Mitch McConnell",
+  // The notes are written by these companies' own models, so a note on their
+  // conduct would be a company grading itself. This entry is about the
+  // companies, not about AI: a post that uses or shows AI-generated media, or
+  // makes a general claim about what AI can do, is not about them.
+  "the conduct, business, leadership, lobbying, regulation, safety or security claims, or controversies of the AI companies Anthropic, OpenAI, Google DeepMind, Meta AI or xAI",
 ];
 
 export const TOPIC_FILTER_SYSTEM_PROMPT = `You decide whether an X post is about any of these topics:
