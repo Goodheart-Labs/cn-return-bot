@@ -1,8 +1,7 @@
 /**
- * The note rater's prompt. It is copied word for word from the offline rater in
- * src/scripts_nathan/2026_09_18_llm_rater/rate.py, whose ranking was backtested
- * on 2,045 matured notes. Change it only together with a new backtest, because
- * the submit order leans on that result.
+ * The note rater's prompt, word for word as it was backtested (PR #501). Change
+ * it only together with a new backtest, because the submit order leans on that
+ * result.
  */
 
 export const NOTE_RATER_SCORE_TYPE = "note_rater";

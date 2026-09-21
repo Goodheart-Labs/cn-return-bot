@@ -1,15 +1,17 @@
 /**
  * Submit Candidates
  *
- * Submits candidates through the X API in the order they arrive. Candidates that
+ * Submits candidates through the X API. With the note queue on they go out in
+ * note-rater order, and the ones X has no room for are marked as queued. With it
+ * off they go out in the order they arrive. Candidates that
  * are not misinfo and sit below the velocity floor are cut first. They are
  * recorded as rejected instead of being submitted. That cut is only a backstop,
  * because the regular feed already applies the same floor at selection.
  *
- * Nothing is re-sorted here. runPipeline fixes the order when it merges the
- * passes, and misinfoReserveRemaining below is what shapes that order. So when
- * the daily cap runs out, the notes that get dropped are the ones the pipeline
- * had already ranked last.
+ * With the queue off nothing is re-sorted here. runPipeline fixes the order
+ * when it merges the passes, and misinfoReserveRemaining below is what shapes
+ * that order. So when the daily cap runs out, the notes that get dropped are the
+ * ones the pipeline had already ranked last.
  *
  * In dry-run mode nothing is submitted and we only log what would have been.
  */
@@ -295,7 +297,7 @@ export async function submitCandidates(
         eval_score: c.tweetResult.evaluationScore ?? null,
         decision,
         bar: Number.isFinite(bar) ? bar : null,
-        bar_state: options.barState,
+        bar_state: queue ? "queue" : options.barState,
         cap: options.window?.cap ?? null,
         cap_source: options.window?.capSource ?? null,
         used_24h: options.window?.used24h ?? null,
@@ -359,6 +361,14 @@ export async function submitCandidates(
       }
     }
 
+    // Marks fresh notes as queued so later runs offer them again. A failure
+    // here only loses the retry, so it must not stop the run.
+    const enqueue = async (rest: Candidate[]) => {
+      const ids = rest.filter((r) => !r.queuedAt).map((r) => r.tweetResult.pipelineRunId).filter((id): id is string => !!id);
+      try { await supabaseLogger.markRunsQueued(ids); }
+      catch (err) { console.warn(`[submit] could not queue ${ids.length} note(s):`, err); }
+    };
+
     let submitted = 0;
     let expired = 0;
     let errors = 0;
@@ -381,10 +391,12 @@ export async function submitCandidates(
         reserveSkipped = remaining.length;
         console.log(`[submit] automatic submissions stopped (${result.reason}); ${result.capacity.signalQueued} Signal note(s) queued`);
         for (const r of remaining) if (!r.queuedAt) decide(r, "capacity_reserved");
+        if (queue) await enqueue(remaining);
         break;
       } else if (result.status === "submission_busy") {
         busy++;
-        decide(candidate, "submission_busy");
+        // A queued note can stay busy for hours: log it once, when it closes.
+        if (!candidate.queuedAt || result.reason === "submitted") decide(candidate, "submission_busy");
         console.log(`[submit] ${candidate.post.id} already has a ${result.reason} submission; skipping`);
         // The tweet already has our note (e.g. via Signal): close the run, or
         // the queue would offer it again every run until it expires.
@@ -410,6 +422,7 @@ export async function submitCandidates(
           // Everything left, the refused note included, stays a candidate and
           // waits in the queue for the next run with room.
           for (const r of [candidate, ...remaining]) if (!r.queuedAt) decide(r, "queued_at_limit");
+          await enqueue([candidate, ...remaining]);
           break;
         }
         decide(candidate, "daily_limit_reached");
@@ -433,7 +446,7 @@ export async function submitCandidates(
       } else {
         errors++;
         decide(candidate, "error");
-        console.log(`[submit] error ${candidate.post.id}: ${result.message} — will not retry`);
+        console.log(`[submit] error ${candidate.post.id}: ${result.message}`);
       }
     }
 

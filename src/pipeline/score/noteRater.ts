@@ -2,13 +2,8 @@
  * The note rater: one cheap LLM call that forecasts how raters will treat a
  * finished note. The submit phase orders notes by it, so when X's writing limit
  * leaves room for only some of the notes we wrote, the ones it rates best go
- * first and the rest wait in the queue (see noteQueue.ts).
- *
- * Backtest (2026-09-21, 2,045 matured notes Aug 7 - Sep 11, this exact prompt
- * and model, never fitted): keeping the top half of each day's notes by
- * p_helpful - p_not_helpful raised net (helpful% - not-helpful%) per submitted
- * note from 8.1% to 12.2%, +4.1pp [+3.0, +5.4] day-block bootstrap. It held in
- * both halves: August +4.3pp, September +3.7pp [+1.3, +6.1]. About $0.002 a note.
+ * first and the rest wait in the queue (see noteQueue.ts). About $0.002 a note.
+ * The backtest behind it is in PR #501.
  */
 
 import { trackedLlmCreate } from "../cost-tracking/costTracker";
@@ -58,7 +53,8 @@ interface RawRating {
 
 function parseRating(text: string): RawRating {
   const r = JSON.parse(text) as RawRating;
-  const ok = (v: unknown) => typeof v === "number" && v >= 0 && v <= 100;
+  // Whole percentages only: a 0-1 answer such as 0.3 would otherwise pass as 0.3%.
+  const ok = (v: unknown) => typeof v === "number" && Number.isInteger(v) && v >= 0 && v <= 100;
   if (!ok(r.p_helpful) || !ok(r.p_not_helpful)) throw new Error("rating out of range");
   return r;
 }

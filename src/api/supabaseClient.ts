@@ -6,6 +6,11 @@ import { stripNullChars } from "../utils/stripNullChars";
 import { NOTE_RATER_SCORE_TYPE } from "../pipeline/prompts/noteRater";
 import type { NoteRating } from "../pipeline/score/noteRater";
 import type { QueuedRun, QueuedTweetRow } from "../pipeline/orchestration/noteQueue";
+
+// Only candidate rows carrying this outcome_reason are in the note queue. Other
+// "candidate" rows (older code, local tools, runs cut off before submit) are
+// never loaded or expired.
+const QUEUED_REASON = "queued";
 import { parseSubmissionAdmission, parseSubmissionCapacity, type SubmissionAdmission, type SubmissionCapacity, type SubmissionClaimOutcome, type SubmissionLane } from "../pipeline/capacity/submissionReserve";
 
 // How often an --incremental scrape may scroll past a note without capturing it
@@ -848,6 +853,7 @@ export class SupabaseLogger {
       .select("id, tweet_id, note_text, source_url, bot_name, created_at, velocity:logs->ranking->features->velocityPerHour")
       .eq("outcome", "candidate")
       .eq("final_stage", "candidate")
+      .eq("outcome_reason", QUEUED_REASON)
       .neq("bot_name", "signal")
       .gte("created_at", since)
       .order("created_at", { ascending: true });
@@ -861,8 +867,8 @@ export class SupabaseLogger {
         .select("tweet_id, author_id, author_name, author_description, author_followers, author_tweet_count, text, posted_at, impressions, likes, retweets, replies, quotes, bookmarks, media, referenced_tweets, referenced_tweet_data")
         .in("tweet_id", tweetIds),
       this.client.from("pipeline_scores")
-        .select("pipeline_run_id, score_metadata, created_at")
-        .eq("score_type", NOTE_RATER_SCORE_TYPE)
+        .select("pipeline_run_id, score_type, score_value, score_metadata, created_at")
+        .in("score_type", [NOTE_RATER_SCORE_TYPE, "evaluation"])
         .in("pipeline_run_id", runIds)
         .order("created_at", { ascending: true }),
     ]);
@@ -871,7 +877,12 @@ export class SupabaseLogger {
 
     const tweetById = new Map((tweets ?? []).map((t) => [t.tweet_id as string, t as QueuedTweetRow]));
     const ratingByRun = new Map<string, NoteRating>();
+    const evalByRun = new Map<string, number>();
     for (const s of scores ?? []) {
+      if (s.score_type === "evaluation") {
+        if (typeof s.score_value === "number") evalByRun.set(s.pipeline_run_id as string, s.score_value);
+        continue;
+      }
       const m = (s.score_metadata ?? {}) as Record<string, unknown>;
       if (typeof m.p_helpful !== "number" || typeof m.p_not_helpful !== "number") continue;
       ratingByRun.set(s.pipeline_run_id as string, {
@@ -887,26 +898,37 @@ export class SupabaseLogger {
       bot_name: r.bot_name as string | null,
       created_at: r.created_at as string,
       velocity: typeof r.velocity === "number" ? r.velocity : null,
+      evaluationScore: evalByRun.get(r.id as string) ?? null,
       tweet: tweetById.get(r.tweet_id as string) ?? null,
       rating: ratingByRun.get(r.id as string) ?? null,
     }));
   }
 
-  /** Closes queued notes written more than `olderThanHours` ago (looking back
-   *  only `lookbackHours`). Returns how many it closed. */
-  async expireQueuedRuns(olderThanHours: number, lookbackHours: number): Promise<number> {
-    const now = Date.now();
+  /** Closes queued notes written more than `olderThanHours` ago. Returns how
+   *  many it closed. */
+  async expireQueuedRuns(olderThanHours: number): Promise<number> {
     const { data, error } = await this.client
       .from("pipeline_runs")
       .update({ outcome: "rejected", outcome_reason: "queue_expired", final_stage: "submission" })
       .eq("outcome", "candidate")
       .eq("final_stage", "candidate")
-      .neq("bot_name", "signal")
-      .lt("created_at", new Date(now - olderThanHours * 3_600_000).toISOString())
-      .gte("created_at", new Date(now - lookbackHours * 3_600_000).toISOString())
+      .eq("outcome_reason", QUEUED_REASON)
+      .lt("created_at", new Date(Date.now() - olderThanHours * 3_600_000).toISOString())
       .select("id");
     if (error) throw error;
     return data?.length ?? 0;
+  }
+
+  /** Puts finished notes in the queue: they stay candidates, marked as queued. */
+  async markRunsQueued(runIds: string[]): Promise<void> {
+    if (runIds.length === 0) return;
+    const { error } = await this.client
+      .from("pipeline_runs")
+      .update({ outcome_reason: QUEUED_REASON })
+      .in("id", runIds)
+      .eq("outcome", "candidate")
+      .eq("final_stage", "candidate");
+    if (error) throw error;
   }
 
   async recordNoteRating(runId: string, rating: NoteRating): Promise<void> {
@@ -1528,6 +1550,9 @@ export class SupabaseLogger {
         .from("ranking_decisions")
         .select("submit_score,decided_at")
         .eq("scorer", scorer)
+        // Rows logged while the note queue was on had no bar, and queued notes'
+        // scores are computed late, so they stay out of the bar's history.
+        .or("bar_state.is.null,bar_state.neq.queue")
         .gte("decided_at", since)
         .order("decided_at", { ascending: true })
         .range(offset, offset + 999);

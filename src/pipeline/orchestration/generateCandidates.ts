@@ -363,8 +363,9 @@ export async function processPosts(
       }
 
       if (tweetResult.outcome === "candidate" && tweetResult.pipelineRunId) {
-        const rating = await rateCandidate(supabaseLogger, item.post, tweetResult);
-        candidateByIndex[idx] = { post: item.post, tweetResult, botId, velocity: item.velocity, rating };
+        const candidate: Candidate = { post: item.post, tweetResult, botId, velocity: item.velocity };
+        candidateByIndex[idx] = candidate;
+        candidate.rating = await rateCandidate(supabaseLogger, item.post, tweetResult);
       }
     });
   }

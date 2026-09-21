@@ -71,7 +71,7 @@ import { generateCandidates, type TweetProcessedEvent } from "../pipeline/orches
 import { generatePangramCandidates } from "../pipeline/pangram-monitoring/generatePangramCandidates";
 import { generateMisinfoCandidates } from "../pipeline/misinfo-monitoring/generateMisinfoCandidates";
 import type { MisinfoTopicId } from "../pipeline/misinfo-monitoring/topicIds";
-import { submitCandidates, misinfoReserveRemaining, type Candidate, type SubmitOptions } from "../pipeline/orchestration/submitCandidates";
+import { submitCandidates, misinfoReserveRemaining, partitionByStaleCutoff, type Candidate, type SubmitOptions } from "../pipeline/orchestration/submitCandidates";
 import { computeMaxPosts } from "../pipeline/orchestration/computeMaxPosts";
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
 import { autoOpenInDashboard } from "../local/dashboardAutoOpen";
@@ -225,8 +225,9 @@ async function main() {
 
     // A cooldown probe needs only one note, and the queue already holds
     // written ones, so the probe spends no money on new posts.
-    if (capacity?.probe && queued.length > 0) {
-      console.log(`[noteQueue] cooldown probe: trying the best of ${queued.length} queued note(s); no new posts this run`);
+    const queuedInTime = partitionByStaleCutoff(queued).kept.length;
+    if (capacity?.probe && queuedInTime > 0) {
+      console.log(`[noteQueue] cooldown probe: trying the best of ${queuedInTime} queued note(s); no new posts this run`);
       maxPosts = 0;
     }
 

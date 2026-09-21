@@ -3,7 +3,8 @@ import type { SupabaseLogger } from "../../api/supabaseClient";
 import { flagsThenEval } from "../ranking/scorers";
 import * as submission from "./submitNoteForTweet";
 import { submitCandidates, type Candidate, type SubmitOptions } from "./submitCandidates";
-import { candidateFromQueuedRun, mergeWithQueue, orderByRater, type QueuedRun } from "./noteQueue";
+import { candidateFromQueuedRun, mergeWithQueue, orderByRater, rateCandidate, type QueuedRun } from "./noteQueue";
+import * as noteRater from "../score/noteRater";
 import { splitUrls } from "../score/noteRater";
 
 const now = Date.parse("2026-09-21T12:00:00Z");
@@ -31,8 +32,9 @@ function candidate(id: string, rating: [number, number] | null, queuedAt?: strin
 function loggerMock() {
   const insertRankingDecisions = mock(async (_rows: Record<string, unknown>[]) => {});
   const completePipelineRun = mock(async () => {});
-  const logger = { insertRankingDecisions, completePipelineRun } as unknown as SupabaseLogger;
-  return { logger, insertRankingDecisions, completePipelineRun };
+  const markRunsQueued = mock(async (_ids: string[]) => {});
+  const logger = { insertRankingDecisions, completePipelineRun, markRunsQueued } as unknown as SupabaseLogger;
+  return { logger, insertRankingDecisions, completePipelineRun, markRunsQueued };
 }
 
 beforeEach(() => {
@@ -57,18 +59,38 @@ describe("submitCandidates with the queue on", () => {
     const submit = spyOn(submission, "submitNoteForTweet")
       .mockResolvedValueOnce({ status: "submitted", noteId: "n1" })
       .mockResolvedValueOnce({ status: "daily_limit" });
-    const { logger, insertRankingDecisions, completePipelineRun } = loggerMock();
+    const { logger, insertRankingDecisions, completePipelineRun, markRunsQueued } = loggerMock();
     const fresh = candidate("fresh", [0.1, 0.05]);
     const oldBest = candidate("oldBest", [0.5, 0.01], "2026-09-21T08:00:00Z");
     const oldMid = candidate("oldMid", [0.3, 0.02], "2026-09-21T09:00:00Z");
 
     expect(await submitCandidates([fresh, oldBest, oldMid], logger, false, options)).toBe(1);
     expect(submit.mock.calls.map(([c]) => c.post.id)).toEqual(["oldBest", "oldMid"]);
-    // Nothing is closed: the refused note and the one behind it stay candidates.
+    // Nothing is closed. The fresh note behind the refusal is marked as queued;
+    // the refused note was queued already, so it is not marked again.
     expect(completePipelineRun).not.toHaveBeenCalled();
+    expect(markRunsQueued.mock.calls).toEqual([[["run-fresh"]]]);
     const rows = insertRankingDecisions.mock.calls[0]![0];
     expect(rows.map((r) => [r.tweet_id, r.decision])).toEqual([["oldBest", "submitted"], ["fresh", "queued_at_limit"]]);
-    expect(rows[0]).toMatchObject({ scores: { note_rater: 0.49 } });
+    expect(rows[0]).toMatchObject({ scores: { note_rater: 0.49 }, bar_state: "queue" });
+  });
+
+  test("a queued note whose tweet is past the 24h cutoff is closed as stale, never submitted", async () => {
+    const submit = spyOn(submission, "submitNoteForTweet").mockResolvedValue({ status: "submitted", noteId: "n1" });
+    const { logger, completePipelineRun } = loggerMock();
+    const old = candidate("old", [0.9, 0], "2026-09-21T01:00:00Z");
+    old.post.created_at = new Date(now - 25 * 3_600_000).toISOString();
+    expect(await submitCandidates([old], logger, false, options)).toBe(0);
+    expect(submit).not.toHaveBeenCalled();
+    expect(completePipelineRun.mock.calls[0]).toEqual(["run-old", { outcome: "rejected", outcome_reason: "stale_at_submit", final_stage: "submission" }] as any);
+  });
+
+  test("a queued note that is still busy is not logged again every run", async () => {
+    spyOn(submission, "submitNoteForTweet").mockResolvedValueOnce({ status: "submission_busy", reason: "claimed", capacity: {} as any });
+    const { logger, insertRankingDecisions, completePipelineRun } = loggerMock();
+    await submitCandidates([candidate("busy", [0.3, 0], "2026-09-21T08:00:00Z")], logger, false, options);
+    expect(completePipelineRun).not.toHaveBeenCalled();
+    expect(insertRankingDecisions.mock.calls.flatMap(([rows]) => rows)).toEqual([]);
   });
 
   test("a queued note whose tweet already has our note is closed, not retried", async () => {
@@ -78,10 +100,13 @@ describe("submitCandidates with the queue on", () => {
     expect(completePipelineRun.mock.calls[0]).toEqual(["run-dup", { outcome: "rejected", outcome_reason: "already_noted", final_stage: "submission" }] as any);
   });
 
-  test("without the queue the old behaviour holds: the rest are rejected at the limit", async () => {
-    spyOn(submission, "submitNoteForTweet").mockResolvedValueOnce({ status: "daily_limit" });
-    const { logger, completePipelineRun } = loggerMock();
-    await submitCandidates([candidate("a", [0.5, 0]), candidate("b", [0.1, 0])], logger, false, { ...options, queue: false, bar: null, barState: "off" });
+  test("with the queue off: arrival order, and the rest are rejected at the limit", async () => {
+    const submit = spyOn(submission, "submitNoteForTweet").mockResolvedValueOnce({ status: "daily_limit" });
+    const { logger, completePipelineRun, markRunsQueued } = loggerMock();
+    // "a" arrives first but is rated lower, so rater order leaking in would submit "b" first.
+    await submitCandidates([candidate("a", [0.1, 0]), candidate("b", [0.5, 0])], logger, false, { ...options, queue: false, scorer: null, bar: null, barState: "off" });
+    expect(submit.mock.calls.map(([c]) => c.post.id)).toEqual(["a"]);
+    expect(markRunsQueued).not.toHaveBeenCalled();
     expect(completePipelineRun).toHaveBeenCalledTimes(1);
     expect(completePipelineRun.mock.calls[0]).toEqual(["run-b", { outcome: "rejected", outcome_reason: "daily_limit_reached", final_stage: "submission" }] as any);
   });
@@ -90,7 +115,7 @@ describe("submitCandidates with the queue on", () => {
 describe("queue rows", () => {
   const run: QueuedRun = {
     id: "r1", tweet_id: "2101082614044258712", note_text: "Note text https://example.com",
-    source_url: "https://example.com", bot_name: "simple-bot", created_at: "2026-09-21T08:00:00Z", velocity: 12_000,
+    source_url: "https://example.com", bot_name: "simple-bot", created_at: "2026-09-21T08:00:00Z", velocity: 12_000, evaluationScore: 0.4,
     rating: { pHelpful: 0.3, pNotHelpful: 0.05, model: "m", cost: 0.002 },
     tweet: {
       tweet_id: "2101082614044258712", author_id: "9", author_name: "A", author_description: null, author_followers: 5,
@@ -102,7 +127,7 @@ describe("queue rows", () => {
   test("a queued row becomes a submittable candidate", () => {
     const c = candidateFromQueuedRun(run)!;
     expect(c.post).toMatchObject({ id: run.tweet_id, text: "post", created_at: "2026-09-21T02:00:00Z", author_followers: 5 });
-    expect(c.tweetResult).toMatchObject({ pipelineRunId: "r1", noteText: run.note_text, outcome: "candidate" });
+    expect(c.tweetResult).toMatchObject({ pipelineRunId: "r1", noteText: run.note_text, outcome: "candidate", evaluationScore: 0.4 });
     expect(c).toMatchObject({ velocity: 12_000, queuedAt: run.created_at, sourceUrl: "https://example.com" });
   });
 
@@ -117,6 +142,22 @@ describe("queue rows", () => {
     queued[0]!.tweetResult.pipelineRunId = "older-run";
     expect(mergeWithQueue(fresh, queued).map((c) => c.post.id)).toEqual(["t1", "t2"]);
     expect(mergeWithQueue(fresh, queued)[0]!.rating?.pHelpful).toBe(0.1);
+  });
+});
+
+describe("rateCandidate", () => {
+  const post = { id: "t", author_id: "a", created_at: "", text: "claim", media: [] };
+  const result = { pipelineRunId: "run-t", noteText: "note", pipelineResult: null };
+
+  test("a rater failure returns null and does not throw", async () => {
+    spyOn(noteRater, "rateNote").mockRejectedValueOnce(new Error("provider down"));
+    expect(await rateCandidate(null, post, result)).toBeNull();
+  });
+
+  test("a failure to store the rating still returns the rating", async () => {
+    spyOn(noteRater, "rateNote").mockResolvedValueOnce({ pHelpful: 0.3, pNotHelpful: 0.1, model: "m", cost: 0 });
+    const logger = { recordNoteRating: mock(async () => { throw new Error("db down"); }) } as unknown as SupabaseLogger;
+    expect(await rateCandidate(logger, post, result)).toMatchObject({ pHelpful: 0.3 });
   });
 });
 
