@@ -20,7 +20,7 @@ function post(id: string, impressionsPerHour: number, opts: { media?: boolean; f
 }
 
 const feeds: Record<FeedSize, Post[]> = {
-  small: [post("s1", 16_000), post("s2", 17_000)],
+  small: [post("s1", 6_000), post("s2", 7_000)],
   large: [post("l1", 400_000), post("l2", 50_000, { media: false })],
   xl: [post("x1", 900_000)],
   xxl: [],
@@ -51,7 +51,7 @@ describe("collectFastPosts", () => {
     // The stale post is 30 hours old with a huge velocity. Selecting it would
     // waste a run, because the submit phase discards notes on tweets past 24h.
     const staleFeeds: Record<FeedSize, Post[]> = {
-      small: [post("fresh", 16_000), post("stale", 500_000, { ageH: 30 })],
+      small: [post("fresh", 6_000), post("stale", 500_000, { ageH: 30 })],
       large: [],
       xl: [],
       xxl: [],
@@ -64,7 +64,7 @@ describe("collectFastPosts", () => {
   });
 
   test("a post whose age cannot be worked out is kept", async () => {
-    const undatable = { ...post("nodate", 18_000), id: "not-a-snowflake", created_at: undefined } as unknown as Post;
+    const undatable = { ...post("nodate", 8_000), id: "not-a-snowflake", created_at: undefined } as unknown as Post;
     const noAgeFeeds: Record<FeedSize, Post[]> = { small: [undatable], large: [], xl: [], xxl: [] };
     const { selected } = await collectFastPosts(1, new Set(), async (size) => noAgeFeeds[size] ?? [], NOW);
     expect(selected.map((s) => s.post.id)).toEqual(["not-a-snowflake"]);
