@@ -1,15 +1,17 @@
 /**
  * Submit Candidates
  *
- * Submits candidates through the X API in the order they arrive. Candidates that
+ * Submits candidates through the X API. With the note queue on they go out in
+ * note-rater order, and the ones X has no room for are marked as queued. With it
+ * off they go out in the order they arrive. Candidates that
  * are not misinfo and sit below the velocity floor are cut first. They are
  * recorded as rejected instead of being submitted. That cut is only a backstop,
  * because the regular feed already applies the same floor at selection.
  *
- * Nothing is re-sorted here. runPipeline fixes the order when it merges the
- * passes, and misinfoReserveRemaining below is what shapes that order. So when
- * the daily cap runs out, the notes that get dropped are the ones the pipeline
- * had already ranked last.
+ * With the queue off nothing is re-sorted here. runPipeline fixes the order
+ * when it merges the passes, and misinfoReserveRemaining below is what shapes
+ * that order. So when the daily cap runs out, the notes that get dropped are the
+ * ones the pipeline had already ranked last.
  *
  * In dry-run mode nothing is submitted and we only log what would have been.
  */
@@ -25,6 +27,7 @@ import { FLAG_CUTS_2026_08, SCORERS, type Scorer } from "../ranking/scorers";
 import { orderForSubmit, partitionByBar } from "../ranking/submitOrder";
 import type { Window } from "../capacity/window";
 import { EXPLORE_SHARE } from "../capacity/window";
+import { orderByRater } from "./noteQueue";
 
 // We prefer the velocity that was frozen when the post was fetched, which is
 // what the regular feed does. Candidates from the pre-passes arrive without one,
@@ -153,8 +156,10 @@ export interface Candidate {
    *  through feed selection have none, and we derive their velocity from the
    *  post instead. */
   velocity?: number | null;
-  /** The note rater's forecast, when it answered. Logged only; nothing acts on it. */
+  /** The note rater's forecast. Null when the rater call failed. */
   rating?: NoteRating | null;
+  /** Set when the candidate came out of the note queue: when it was written. */
+  queuedAt?: string;
 }
 
 /**
@@ -199,6 +204,9 @@ export interface SubmitOptions {
   bar: number | null;
   barState: "set" | "admit_all" | "reject_all" | "none" | "off" | "error";
   rng?: () => number;
+  /** The note queue is on: order by the note rater, skip the bar, and leave
+   *  notes X has no room for as queued candidates instead of rejecting them. */
+  queue?: boolean;
 }
 
 const CONTROL_OPTIONS: SubmitOptions = { policy: "velocity_only", scorer: null, window: null, bar: null, barState: "none" };
@@ -243,7 +251,7 @@ export async function submitCandidates(
 
     // Control arm: `kept` stays in the order runPipeline built. Treatment arm:
     // the scorer orders it, and the bar (when set) decides who goes out.
-    const { scorer, bar } = options;
+    const { scorer, bar, queue } = options;
     const ranking = new Map<Candidate, { features: ReturnType<typeof featuresFromPost>; scores: Record<string, number>; flags: number }>();
     for (const c of candidates) {
       if (ranking.has(c)) continue;
@@ -254,20 +262,24 @@ export async function submitCandidates(
     }
     const submitScore = (c: Candidate, s: Scorer) => ranking.get(c)!.scores[s.name]!;
 
-    const orderedAll = scorer ? orderForSubmit(kept, (c) => submitScore(c, scorer)) : kept;
-    const { above, explored, below } = scorer
+    // With the queue on, the note rater orders everything and X's refusal is
+    // the only bar: the flags bar never looked at the note itself.
+    const orderedAll = queue ? orderByRater(kept) : scorer ? orderForSubmit(kept, (c) => submitScore(c, scorer)) : kept;
+    const { above, explored, below } = scorer && !queue
       ? partitionByBar(orderedAll, (c) => submitScore(c, scorer), bar, EXPLORE_SHARE, options.rng)
       : { above: orderedAll, explored: [] as Candidate[], below: [] as Candidate[] };
     const ordered = [...above, ...explored];
     const exploredIds = new Set(explored.map((c) => c.post.id));
 
+    const queuedCount = candidates.filter((c) => c.queuedAt).length;
     console.log(
       `[submit] ${ordered.length} candidates to submit (policy=${options.policy}` +
-        `${bar !== null ? `, bar=${bar.toFixed(2)}, ${below.length} below, ${explored.length} explored` : ""})`,
+        (queue ? `, order=note_rater, ${queuedCount} from the queue` : "") +
+        `${bar !== null && !queue ? `, bar=${bar.toFixed(2)}, ${below.length} below, ${explored.length} explored` : ""})`,
     );
     for (const c of orderedAll) {
       const line = Object.entries(ranking.get(c)!.scores).map(([k, v]) => `${k}=${v.toFixed(2)}`).join(" ");
-      console.log(`[submit]   ${c.post.id} ${line}${exploredIds.has(c.post.id) ? " [explore]" : below.includes(c) ? " [below bar]" : ""}`);
+      console.log(`[submit]   ${c.post.id} ${line}${c.queuedAt ? " [queued]" : ""}${exploredIds.has(c.post.id) ? " [explore]" : below.includes(c) ? " [below bar]" : ""}`);
     }
 
     const decide = (c: Candidate, decision: string) => {
@@ -284,7 +296,7 @@ export async function submitCandidates(
         eval_score: c.tweetResult.evaluationScore ?? null,
         decision,
         bar: Number.isFinite(bar) ? bar : null,
-        bar_state: options.barState,
+        bar_state: queue ? "queue" : options.barState,
         cap: options.window?.cap ?? null,
         cap_source: options.window?.capSource ?? null,
         used_24h: options.window?.used24h ?? null,
@@ -348,6 +360,14 @@ export async function submitCandidates(
       }
     }
 
+    // Marks fresh notes as queued so later runs offer them again. A failure
+    // here only loses the retry, so it must not stop the run.
+    const enqueue = async (rest: Candidate[]) => {
+      const ids = rest.filter((r) => !r.queuedAt).map((r) => r.tweetResult.pipelineRunId).filter((id): id is string => !!id);
+      try { await supabaseLogger.markRunsQueued(ids); }
+      catch (err) { console.warn(`[submit] could not queue ${ids.length} note(s):`, err); }
+    };
+
     let submitted = 0;
     let expired = 0;
     let errors = 0;
@@ -369,12 +389,25 @@ export async function submitCandidates(
         const remaining = ordered.slice(ordered.indexOf(candidate));
         reserveSkipped = remaining.length;
         console.log(`[submit] automatic submissions stopped (${result.reason}); ${result.capacity.signalQueued} Signal note(s) queued`);
-        for (const r of remaining) decide(r, "capacity_reserved");
+        for (const r of remaining) if (!r.queuedAt) decide(r, "capacity_reserved");
+        if (queue) await enqueue(remaining);
         break;
       } else if (result.status === "submission_busy") {
         busy++;
-        decide(candidate, "submission_busy");
+        // A queued note can stay busy for hours: log it once, when it closes.
+        if (!candidate.queuedAt || result.reason === "submitted") decide(candidate, "submission_busy");
         console.log(`[submit] ${candidate.post.id} already has a ${result.reason} submission; skipping`);
+        // The tweet already has our note (e.g. via Signal): close the run, or
+        // the queue would offer it again every run until it expires.
+        if (queue && result.reason === "submitted" && candidate.tweetResult.pipelineRunId) {
+          try {
+            await supabaseLogger.completePipelineRun(candidate.tweetResult.pipelineRunId, {
+              outcome: "rejected",
+              outcome_reason: "already_noted",
+              final_stage: "submission",
+            });
+          } catch {}
+        }
       } else if (result.status === "uncertain") {
         uncertain++;
         decide(candidate, "submission_uncertain");
@@ -384,6 +417,13 @@ export async function submitCandidates(
         console.log(`[submit] daily limit reached after ${submitted} submissions`);
         const remaining = ordered.slice(ordered.indexOf(candidate) + 1);
         limitSkipped = remaining.length + 1;
+        if (queue) {
+          // Everything left, the refused note included, stays a candidate and
+          // waits in the queue for the next run with room.
+          for (const r of [candidate, ...remaining]) if (!r.queuedAt) decide(r, "queued_at_limit");
+          await enqueue([candidate, ...remaining]);
+          break;
+        }
         decide(candidate, "daily_limit_reached");
         for (const r of remaining) {
           decide(r, "daily_limit_reached");
@@ -405,7 +445,7 @@ export async function submitCandidates(
       } else {
         errors++;
         decide(candidate, "error");
-        console.log(`[submit] error ${candidate.post.id}: ${result.message} — will not retry`);
+        console.log(`[submit] error ${candidate.post.id}: ${result.message}`);
       }
     }
 
@@ -415,7 +455,7 @@ export async function submitCandidates(
       staleCut.length ? `${staleCut.length} stale-cut` : null,
       expired ? `${expired} expired` : null,
       errors ? `${errors} errors` : null,
-      limitHit ? `${limitSkipped} skipped (daily limit)` : null,
+      limitHit ? `${limitSkipped} ${queue ? "left in the queue" : "skipped"} (daily limit)` : null,
       reserveSkipped ? `${reserveSkipped} waiting for submission capacity` : null,
       busy ? `${busy} already claimed` : null,
       uncertain ? `${uncertain} uncertain (reconciliation required)` : null,
