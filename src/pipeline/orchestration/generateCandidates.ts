@@ -112,7 +112,12 @@ export async function collectFastPosts(
     try {
       posts = await fetchFeed(feedSize);
     } catch (err) {
-      console.warn(`[generate] Feed ${feedSize} failed (${(err as Error)?.message}); trying next tier`);
+      // X's reason is in the response body. Without it, a stretch of 403s on
+      // the large and xl feeds (as on the night of 20-21 Sep 2026) cannot be
+      // diagnosed from the logs.
+      const r = (err as { response?: { status?: number; data?: unknown } })?.response;
+      const body = r?.data === undefined ? "" : ` body=${JSON.stringify(r.data).slice(0, 300)}`;
+      console.warn(`[generate] Feed ${feedSize} failed (${(err as Error)?.message}${r?.status ? `; status ${r.status}` : ""}${body}); trying next tier`);
       continue;
     }
 

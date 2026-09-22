@@ -80,6 +80,7 @@ import { activeScorer, pickRankingPolicy } from "../pipeline/ranking/policy";
 import { barEnabled, barFor, estimateWindow, type Window } from "../pipeline/capacity/window";
 import { automaticGenerationPreflight, type SubmissionCapacity } from "../pipeline/capacity/submissionReserve";
 import { loadNoteQueue, mergeWithQueue, noteQueueEnabled } from "../pipeline/orchestration/noteQueue";
+import { raterBar } from "../pipeline/score/raterBar";
 
 function postUrl(postId: string): string {
   return `https://x.com/i/status/${postId}`;
@@ -337,6 +338,10 @@ async function main() {
         if (scorer && useBar && window.cap !== null) {
           bar = await barFor(supabaseLogger, scorer.name, window.cap);
           barState = bar === null ? "off" : bar === -Infinity ? "admit_all" : bar === Infinity ? "reject_all" : "set";
+        }
+        if (queueOn) {
+          bar = await raterBar(supabaseLogger);
+          barState = bar === null ? "off" : "set";
         }
       } catch (err) {
         if (useBar) barState = "error";

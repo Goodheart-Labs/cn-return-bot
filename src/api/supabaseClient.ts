@@ -754,6 +754,25 @@ export class SupabaseLogger {
     }
   }
 
+  /** The note rater's scores (helpful minus not helpful) of every note rated
+   *  in the last `windowDays`, for the rater bar. */
+  async fetchNoteRaterScores(windowDays: number): Promise<number[]> {
+    const since = new Date(Date.now() - windowDays * 86_400_000).toISOString();
+    const scores: number[] = [];
+    for (let offset = 0; ; offset += 1000) {
+      const { data, error } = await this.client
+        .from("pipeline_scores")
+        .select("score_value")
+        .eq("score_type", NOTE_RATER_SCORE_TYPE)
+        .gte("created_at", since)
+        .range(offset, offset + 999);
+      if (error) throw error;
+      for (const r of data ?? []) if (typeof r.score_value === "number") scores.push(r.score_value);
+      if (!data || data.length < 1000) break;
+    }
+    return scores;
+  }
+
   /** Stores the note rater's forecast for a finished note. */
   async recordNoteRating(runId: string, rating: NoteRating): Promise<void> {
     await this.addPipelineScore(runId, {

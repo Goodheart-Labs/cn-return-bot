@@ -262,12 +262,21 @@ export async function submitCandidates(
     }
     const submitScore = (c: Candidate, s: Scorer) => ranking.get(c)!.scores[s.name]!;
 
-    // With the queue on, the note rater orders everything and X's refusal is
-    // the only bar: the flags bar never looked at the note itself.
+    // With the queue on, the note rater orders everything and the rater bar
+    // (see score/raterBar.ts) decides who goes out, with a random slice from
+    // below it. A note the rater could not score is never rejected by the bar:
+    // it goes after the rated ones. With the queue off, the flags bar applies.
     const orderedAll = queue ? orderByRater(kept) : scorer ? orderForSubmit(kept, (c) => submitScore(c, scorer)) : kept;
-    const { above, explored, below } = scorer && !queue
-      ? partitionByBar(orderedAll, (c) => submitScore(c, scorer), bar, EXPLORE_SHARE, options.rng)
-      : { above: orderedAll, explored: [] as Candidate[], below: [] as Candidate[] };
+    let above: Candidate[], explored: Candidate[], below: Candidate[];
+    if (queue) {
+      const rated = orderedAll.filter((c) => c.rating); const unrated = orderedAll.filter((c) => !c.rating);
+      ({ above, explored, below } = partitionByBar(rated, (c) => raterPriority(c.rating!), bar, EXPLORE_SHARE, options.rng));
+      above = [...above, ...unrated];
+    } else if (scorer) {
+      ({ above, explored, below } = partitionByBar(orderedAll, (c) => submitScore(c, scorer), bar, EXPLORE_SHARE, options.rng));
+    } else {
+      above = orderedAll; explored = []; below = [];
+    }
     const ordered = [...above, ...explored];
     const exploredIds = new Set(explored.map((c) => c.post.id));
 
@@ -275,7 +284,7 @@ export async function submitCandidates(
     console.log(
       `[submit] ${ordered.length} candidates to submit (policy=${options.policy}` +
         (queue ? `, order=note_rater, ${queuedCount} from the queue` : "") +
-        `${bar !== null && !queue ? `, bar=${bar.toFixed(2)}, ${below.length} below, ${explored.length} explored` : ""})`,
+        `${bar !== null ? `, bar=${bar.toFixed(2)}, ${below.length} below, ${explored.length} explored` : ""})`,
     );
     for (const c of orderedAll) {
       const line = Object.entries(ranking.get(c)!.scores).map(([k, v]) => `${k}=${v.toFixed(2)}`).join(" ");

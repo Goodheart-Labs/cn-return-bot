@@ -10,8 +10,8 @@ const options: SubmitOptions = {
   policy: "flags_then_eval",
   scorer: flagsThenEval,
   window: { cap: 15, capSource: "last_403", used24h: 14, remaining: 1 },
-  bar: 35,
-  barState: "set",
+  bar: null,
+  barState: "off",
   rng: () => 0,
   queue: true,
 };
@@ -53,7 +53,7 @@ describe("orderByRater", () => {
 });
 
 describe("submitCandidates with the queue on", () => {
-  test("submits in rater order, ignores the flags bar, and leaves what X refused queued", async () => {
+  test("submits in rater order and leaves what X refused queued", async () => {
     const submit = spyOn(submission, "submitNoteForTweet")
       .mockResolvedValueOnce({ status: "submitted", noteId: "n1" })
       .mockResolvedValueOnce({ status: "daily_limit" });
@@ -89,6 +89,23 @@ describe("submitCandidates with the queue on", () => {
     await submitCandidates([candidate("busy", [0.3, 0], "2026-09-21T08:00:00Z")], logger, false, options);
     expect(completePipelineRun).not.toHaveBeenCalled();
     expect(insertRankingDecisions.mock.calls.flatMap(([rows]) => rows)).toEqual([]);
+  });
+
+  test("the rater bar rejects notes below it, never an unrated note, and the slice below it is explored", async () => {
+    const submit = spyOn(submission, "submitNoteForTweet").mockResolvedValue({ status: "submitted", noteId: "n" });
+    const { logger, insertRankingDecisions, completePipelineRun } = loggerMock();
+    const good = candidate("good", [0.5, 0.05]);      // 0.45, above the bar
+    const weak = candidate("weak", [0.1, 0.05]);      // 0.05, below it
+    const weak2 = candidate("weak2", [0.12, 0.05]);   // 0.07, below it
+    const unrated = candidate("unrated", null);
+    // rng 0.99 makes the exploration draw want = floor(1 * 0.1 + 0.99) = 1 note from below the bar.
+    expect(await submitCandidates([weak, good, weak2, unrated], logger, false, { ...options, bar: 0.2, barState: "set", rng: () => 0.99 })).toBe(3);
+    const ids = submit.mock.calls.map(([c]) => c.post.id);
+    expect(ids[0]).toBe("good"); expect(ids).toContain("unrated"); expect(ids.length).toBe(3);
+    const rejected = (completePipelineRun.mock.calls as unknown as [string, { outcome_reason: string }][]).map(([id, d]) => [id, d.outcome_reason]);
+    expect(rejected).toEqual([["run-weak", "below_bar"]]);
+    const decisions = insertRankingDecisions.mock.calls.flatMap(([rows]) => rows).map((r) => r.decision);
+    expect(decisions).toContain("explored"); expect(decisions).toContain("below_bar");
   });
 
   test("a queued note whose tweet already has our note is closed, not retried", async () => {
