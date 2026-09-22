@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "A photo of the moon was taken from the International Space Station the day before Artemis 2 launched.",
       "extractor_judgement": "uncertain",
       "context_quote": "This photo was taken from the International Space Station the day before Artemis launched specifically to say, \"Hey everybody, look, this is where they're going.\"",

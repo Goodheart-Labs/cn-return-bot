@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Venezuela's debt-to-GDP ratio was approximately 160% when it experienced a debt crisis around 2017.",
       "extractor_judgement": "uncertain",
       "context_quote": "Venezuela in 2017 at 160%, debt DB",
@@ -61,7 +60,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Trump has proposed doubling the US defense budget.",
       "extractor_judgement": "uncertain",
       "context_quote": "Trump's tax cuts, foreign policy adventures and proposal to double the US defense budget are projected to push it way higher.",

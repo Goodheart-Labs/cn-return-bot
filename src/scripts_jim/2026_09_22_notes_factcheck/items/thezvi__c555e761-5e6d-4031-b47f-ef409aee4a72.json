@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 1
       },
-      "jim_pick": null,
       "claim": "According to Exponential View's analysis, the AI economy (current sales to external end users) is growing at approximately 60% year over year.",
       "extractor_judgement": "uncertain",
       "context_quote": "They conclude it is about enough to pay for infrastructure investments given 6 year depreciation of chips, and is growing at ~60% year over year, and that as tokens drop in price overall spending rises per Jevons Paradox.",
@@ -46,7 +45,6 @@
         "helpful": 1,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Research found that AI agents respond to nudges in similar ways to humans.",
       "extractor_judgement": "uncertain",
       "context_quote": "AI agents respond to nudges in similar ways to humans. The paper presents this as falsifying an assumption of many agent uses, in the standard 'any suboptimal behavior means you fail' standard to which we often hold AIs.",

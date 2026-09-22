@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "In 1870, Comanche leader Quanah Parker launched an assault on the trading post at Adobe Walls.",
       "extractor_judgement": "likely false",
       "context_quote": "In 1870, Comanche leader Quanah Parker launched a last-ditch assault on the trading post at Adobe Walls. It failed.",

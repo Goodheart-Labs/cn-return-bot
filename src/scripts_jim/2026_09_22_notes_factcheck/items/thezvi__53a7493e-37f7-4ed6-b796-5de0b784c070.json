@@ -16,7 +16,6 @@
         "helpful": 1,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "In GRAM testing, the ablated model version still shows improvement in the capabilities that were intended to be removed.",
       "extractor_judgement": "uncertain",
       "context_quote": "Opus (this understandably hit the classifiers on Fable) notes that GRAM is only partially effective, and the ablated model version still shows improvement in the capabilities you want to avoid.",
@@ -56,7 +55,6 @@
         "helpful": 1,
         "not_helpful": 1
       },
-      "jim_pick": null,
       "claim": "Megan Herbst's Wired article based its claims that AI fact checking cannot be trusted exclusively on AI overviews rather than dedicated AI fact-checking tools.",
       "extractor_judgement": "uncertain",
       "context_quote": "Fact checker Megan Herbst gets the facts wrong in Wired, claims AI fact checking cannot be trusted based exclusively on AI overviews.",

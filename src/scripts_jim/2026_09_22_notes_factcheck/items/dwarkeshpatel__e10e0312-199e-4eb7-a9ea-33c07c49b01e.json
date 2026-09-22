@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "After the massacre at Senigallia, it took months for Machiavelli's family to receive word that he was still alive, because the postal system had completely broken down.",
       "extractor_judgement": "uncertain",
       "context_quote": "It took months in the chaos, the postal system had completely broken down. It took months for them to get word that Machiavelli was still alive.",
@@ -51,7 +50,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "St. Dominic lived a couple of centuries before St. Francis of Assisi, according to the speaker.",
       "extractor_judgement": "certainly false",
       "context_quote": "St. Francis of Assisi—and also to some extent St. Dominic a couple of centuries before his time",
@@ -91,7 +89,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Thomas Paine advocated mandatory religious education in schools, while being indifferent to which specific religion was taught, believing that fear of God and posthumous punishment was necessary to make citizens willing to obey the law.",
       "extractor_judgement": "uncertain",
       "context_quote": "So, says Thomas Paine, every country must have religion, and religious education must be mandatory in schools, but it doesn't matter which religion. Thomas Paine advocated mandatory religion in total indifference to what religion it is, with the idea that fearing God and posthumous punishment is necessary to make a citizen, in a practical sense, willing to obey law.",
@@ -141,7 +138,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Machiavelli wrote his Discourses on Livy over a period of approximately two decades.",
       "extractor_judgement": "uncertain",
       "context_quote": "Why does he spend two decades writing Discourses on Livy?",
@@ -181,7 +177,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "\"Old Nick\" is a nickname for the devil that became popular because of Niccolò Machiavelli.",
       "extractor_judgement": "uncertain",
       "context_quote": "Old Nick, which is a nickname for the devil but became popular because of Niccolò Machiavelli. Old Nick, literally a synonym for the devil.",
@@ -226,7 +221,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Spinoza was the first person in a very long time to be targeted with the Jewish equivalent of excommunication.",
       "extractor_judgement": "uncertain",
       "context_quote": "he was the first person in ages and ages to be targeted with the Jewish equivalent of excommunication, the ceremonial, \"Your radicalism is too radical. We are expelling you from the community of Jews.\"",
@@ -276,7 +270,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The Jewish excommunication ceremony used against Spinoza was so rare that the Jews of his region had to send someone traveling around Europe to find a Jew who knew how to perform it.",
       "extractor_judgement": "uncertain",
       "context_quote": "It was such a rare ceremony that the Jews of his region actually had to send somebody traveling all around Europe to find a Jew who knew the ceremony, because it was so incredibly rarely done.",

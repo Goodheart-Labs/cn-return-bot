@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Vanilla comes from a rare orchid found only in Madagascar.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "vanilla from a rare orchid found only in Madagascar",
@@ -66,7 +65,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The first phonographic records date to around 1890.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "As I read Hoel's post, I thought of ultramarine blue. But also, I thought of the first phonographic records. In 1890, hearing Enrico Caruso sing Pagliacci might be the highlight of your life",
@@ -111,7 +109,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Enrico Caruso was performing opera by 1890.",
       "extractor_judgement": "certainly false",
       "context_quote": "In 1890, hearing Enrico Caruso sing Pagliacci might be the highlight of your life",

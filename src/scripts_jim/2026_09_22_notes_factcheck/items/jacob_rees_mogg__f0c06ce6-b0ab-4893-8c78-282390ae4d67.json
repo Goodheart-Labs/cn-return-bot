@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Stable currencies that limit issuance do not suffer from inflation.",
       "extractor_judgement": "likely false",
       "context_quote": "So stable currencies that limit the amount that they issue are less likely to suffer from inflation. Indeed, they should not suffer from inflation.",
@@ -61,7 +60,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Cryptocurrency supply was limited because new coins were not being created.",
       "extractor_judgement": "likely false",
       "context_quote": "because new ones weren't being created and that meant that the supply was limited. Demand to get into them was very high.",

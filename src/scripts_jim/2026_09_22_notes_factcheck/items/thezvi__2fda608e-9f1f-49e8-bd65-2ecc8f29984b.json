@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "RLVR (reinforcement learning from verifiable rewards) was used to make GPT-3 more capable of following directions and doing tasks.",
       "extractor_judgement": "uncertain",
       "context_quote": "Dwarkesh asks, didn't RLVR make GPT-3 more aligned, in that it went from mostly unable to be directed to do tasks into directable to do tasks?",

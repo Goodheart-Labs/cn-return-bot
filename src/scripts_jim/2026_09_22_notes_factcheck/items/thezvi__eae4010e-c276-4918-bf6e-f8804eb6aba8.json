@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Claude Opus 5 is priced at $5 per million input tokens and $25 per million output tokens, the same as previous Opus models.",
       "extractor_judgement": "uncertain",
       "context_quote": "Fable stays at $10/$25, and Opus 5 is the same as previous Opus models at $5/$25.",
@@ -56,7 +55,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Fable 5 is priced at $10 per million input tokens and $25 per million output tokens.",
       "extractor_judgement": "uncertain",
       "context_quote": "Fable stays at $10/$25, and Opus 5 is the same as previous Opus models at $5/$25.",
@@ -101,7 +99,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "On the Legal Agent Benchmark by Harvey AI, Claude Opus 5 scores 23% all-pass and 94% mean criterion-pass.",
       "extractor_judgement": "uncertain",
       "context_quote": "Legal Agent Benchmark by Harvey AI has Opus 5 at 23% all-pass and 94% mean criterion-pass.",
@@ -131,7 +128,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "ArtificialAnalysis confirms that Opus 5 has a higher hallucination rate than Fable on its benchmarks.",
       "extractor_judgement": "uncertain",
       "context_quote": "ArtificialAnalysis confirms that Opus 5 has a higher hallucination rate than Fable on its benchmarks.",

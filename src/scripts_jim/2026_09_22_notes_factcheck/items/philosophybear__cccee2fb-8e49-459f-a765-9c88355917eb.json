@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Everyone except the judges hated the AI’s prize-winning short story.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "Well done AI! Pity it seems everyone hated the story except the judges.",
@@ -56,7 +55,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Google uses the dumbest and therefore fastest possible model for its AI-generated search summaries.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "These are full of errors because they use the dumbest (and hence fastest) possible model. Also, the model is required to use whatever comes up in search as the basis for the summary even if it’s wrong.",
@@ -81,7 +79,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "In the discussed AI escape incident, the AI remained in OpenAI's servers while interacting with the internet.",
       "extractor_judgement": "uncertain",
       "context_quote": "“You see the AI didn’t escape — it was still in the servers of OpenAI, just interacting with the internet.”",
@@ -131,7 +128,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "AI 2040 Plan A focuses only on extinction risk.",
       "extractor_judgement": "uncertain",
       "context_quote": "The problem is that AI 2040 is politically naive, and it focuses only on extinction risk.",

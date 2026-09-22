@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Garfield's 'I hate Mondays' catchphrase inspired a hit single.",
       "extractor_judgement": "uncertain",
       "context_quote": "The quote became a popular sensation, inspiring t-shirts, coffee mugs, and even a hit single.",
@@ -56,7 +55,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The Onion published a twenty-year retrospective on the Dilberito.",
       "extractor_judgement": "uncertain",
       "context_quote": "The Onion, in its twenty year retrospective for the doomed comestible, called it a frustrated groping towards meal replacements like Soylent or Huel, long before the existence of a culture nerdy enough to support them.",
@@ -96,7 +94,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The Onion described the Dilberito as a frustrated groping towards meal replacements like Soylent or Huel, before a culture nerdy enough to support them existed.",
       "extractor_judgement": "uncertain",
       "context_quote": "The Onion, in its twenty year retrospective for the doomed comestible, called it a frustrated groping towards meal replacements like Soylent or Huel, long before the existence of a culture nerdy enough to support them.",

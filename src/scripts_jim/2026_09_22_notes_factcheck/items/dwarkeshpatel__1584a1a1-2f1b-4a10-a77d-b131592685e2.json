@@ -16,7 +16,6 @@
         "helpful": 1,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "A ton. Millions. Millions is way more than Anthropic has.",
       "extractor_judgement": "uncertain",
       "context_quote": "But they do. What's the evidence? Huawei just had the largest single year in the history of their company.\n\nDwarkesh Patel\n\nHow many chips did they ship?\n\nJensen Huang\n\nA ton. Millions. Millions is way more than Anthropic has.",
@@ -35,7 +34,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "China is about 40% of the world's technology industry",
       "extractor_judgement": "uncertain",
       "context_quote": "Can you also acknowledge that we used to have a very large share in that market, and we no longer have a large share in that market? We can also acknowledge that China is about 40% of the world's technology industry. To concede that market for the United States technology industry is a disservice to our country. It is a disservice to our national security. It is a disservice to our technology leadership, all for the benefit of one company. It makes no sense to me.",

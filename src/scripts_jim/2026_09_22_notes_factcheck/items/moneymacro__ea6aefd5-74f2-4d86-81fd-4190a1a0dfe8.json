@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Japan's net government debt (total debt minus financial assets) is approximately 77% of GDP.",
       "extractor_judgement": "uncertain",
       "context_quote": "But netting those two out means that Japan's true government debt suddenly looks far less alarming. Closer to 77% of GDP.",
@@ -56,7 +55,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Japan's consolidated government, including the central bank and public pension funds, holds a massive financial portfolio of stocks and bonds that was worth about 192% of GDP in 2020.",
       "extractor_judgement": "uncertain",
       "context_quote": "Japan's consolidated government, which includes institutions like the central Bank and public pension funds, holds a massive financial portfolio of stocks and bonds that was worth about 192% of GDP in 2020 fourth.",

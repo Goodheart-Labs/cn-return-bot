@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Polly Thompson had no background in literature or politics.",
       "extractor_judgement": "uncertain",
       "context_quote": "replaced by Polly Thompson, a woman with no background in literature or politics, and the output changed immediately.",
@@ -51,7 +50,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Helen Keller published three books in her 20s while she was with Anne Sullivan and Sullivan's husband.",
       "extractor_judgement": "uncertain",
       "context_quote": "During the time Keller was with Sullivan and her husband, she published three books in her 20s.",

@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 1
       },
-      "jim_pick": null,
       "claim": "There is an old aphorism in newspapers that states only 5% of your advertising is working, and you just don't know which 5%.",
       "extractor_judgement": "likely false",
       "context_quote": "There's that old apherism in in newspapers, only 5% of your advertising is working. You just don't know which 5%.",

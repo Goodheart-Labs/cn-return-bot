@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "United Kingdom Labour governments' financial crises were caused by excessive spending and attempting to borrow too much from markets unwilling to lend.",
       "extractor_judgement": "likely false",
       "context_quote": "Every time a financial crisis has got them because they've spent too much and they've tried to borrow too much from markets that were not willing to lend to them.",
@@ -51,7 +50,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The United Kingdom Labour government of the 1930s ended with a financial crisis.",
       "extractor_judgement": "likely false",
       "context_quote": "It is worth remembering that every single Labour government in the 1930s, in the 1940s, in the 1960s, in the 1970s, in the 2000s has ended with a financial crisis.",

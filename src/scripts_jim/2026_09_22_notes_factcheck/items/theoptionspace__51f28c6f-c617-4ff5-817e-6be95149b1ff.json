@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The UN Environment Programme had established an institutional framework for ozone protection before the Montreal Protocol was created.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "This event was only effective because a mature set of solutions was waiting: the UN Environment Programme (UNEP) had already established the necessary institutional framework; chemical giant DuPont had developed profitable CFC alternatives, turning a key opponent into a supporter of regulation; and the proposed treaty included sophisticated governance tools like a \"start-and-strengthen\" design, trade sanctions, and a Multilateral Fund for developing nations.",

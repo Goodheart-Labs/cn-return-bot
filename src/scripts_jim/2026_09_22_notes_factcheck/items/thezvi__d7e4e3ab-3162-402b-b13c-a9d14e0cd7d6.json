@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "When asked, people say they want to be 10s on the traditional 0-10 attractiveness scale.",
       "extractor_judgement": "uncertain",
       "context_quote": "On the traditional 0-10 scale, people want to be 10s when you ask them, but as I understand it 10s actually get less attention than 8s because people are scared to approach someone too far out of their league.",
@@ -56,7 +55,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Each one-point increase in dating-app photo quality on a 1-to-10 scale doubles the number of matches a man gets.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "Optimizing dating app photos is the single most impactful thing you can do. Every point improvement in your photo quality (on a 1-10 scale) doubles your matches.",
@@ -86,7 +84,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "A study found that 4% of marriages are between a Republican and a Democrat.",
       "extractor_judgement": "likely false",
       "context_quote": "The study said that 4% of marriages are between a Republican and a Democrat, which \\*sounds\\* low, but given that something like 30% of people are Republicans and 30% Democrats and 40% Independents, you would only expect 9% from pure mixing.",

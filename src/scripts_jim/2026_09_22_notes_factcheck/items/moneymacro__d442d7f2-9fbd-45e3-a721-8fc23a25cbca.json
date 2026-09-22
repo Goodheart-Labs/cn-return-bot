@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The Forbes 400 richest individuals in America pay an effective tax rate of only 28%.",
       "extractor_judgement": "uncertain",
       "context_quote": "Forbes 400 richest individuals pay only 28%.",
@@ -51,7 +50,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "After Sweden abolished its 2% wealth tax, there was a 34% reduction in the rate of wealthy people emigrating from Sweden.",
       "extractor_judgement": "uncertain",
       "context_quote": "after Sweden abolished its 2% wealth tax, it saw a reduction in 34% of wealthy people leaving.",
@@ -81,7 +79,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "2.4 billion pounds would represent approximately 0.7% of total UK government spending.",
       "extractor_judgement": "uncertain",
       "context_quote": "it would bring in closer to 2.4 billion, a microscopic 0.7% of the total UK government spending.",

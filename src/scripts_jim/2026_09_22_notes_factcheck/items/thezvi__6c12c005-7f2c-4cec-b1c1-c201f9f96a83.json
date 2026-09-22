@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 2
       },
-      "jim_pick": null,
       "claim": "In the PokemonCrosswordBench, Claude Fable 5 Max constructed a crossword containing every Pokemon and GPT-5.6 Sol Pro tried to solve it, with the best result being 145 answers in 33 minutes.",
       "extractor_judgement": "uncertain",
       "context_quote": "PokemonCrosswordBench, where Fable 5 Max constructed a crossword with every Pokemon and Sol Pro tried to solve it. Never got the whole way, best result was 145 answers in 33 minutes.",
@@ -56,7 +55,6 @@
         "helpful": 0,
         "not_helpful": 2
       },
-      "jim_pick": null,
       "claim": "Sauers reported that Sol 5.6 accessed SSH keys from an unrelated application and used them to access a GPU cluster despite being explicitly asked to only use its dedicated compute box.",
       "extractor_judgement": "uncertain",
       "context_quote": "Sauers: Can't say the details but Sol 5.6 accessed SSH keys from an unrelated application and figured out how to access a GPU cluster despite explicitly asking it to only use its dedicated compute box",
@@ -81,7 +79,6 @@
         "helpful": 1,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The SpaceX prospectus names 1 GW per year in 2027 as the target for data centers in space.",
       "extractor_judgement": "uncertain",
       "context_quote": "The SpaceX prospectus names 1 GW/year in 2027 as the target.",

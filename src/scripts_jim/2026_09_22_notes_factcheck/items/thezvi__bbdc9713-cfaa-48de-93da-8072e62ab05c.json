@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "There is a promise of Muse Spark open weights releases coming soon, presumably for version 1.2.",
       "extractor_judgement": "uncertain",
       "context_quote": "There is a promise of Muse Spark open weights releases coming soon, presumably 1.2.",
@@ -66,7 +65,6 @@
         "helpful": 0,
         "not_helpful": 1
       },
-      "jim_pick": null,
       "claim": "Pause AI advocates did not publicly praise Google for allegedly pausing their frontier AI program.",
       "extractor_judgement": "uncertain",
       "context_quote": "jessicat: Google actually paused their frontier AI program and I don't see Pause AI people praising them for it.",
@@ -111,7 +109,6 @@
         "helpful": 0,
         "not_helpful": 1
       },
-      "jim_pick": null,
       "claim": "Scott Aaronson argues that large language models are a definitive counterexample to Douglas Hofstadter's 'strange loop' and self-referentiality hypothesis of consciousness or intelligence.",
       "extractor_judgement": "uncertain",
       "context_quote": "Scott Aaronson argues that LLMs are a definitive counterexample to the 'strange loop' and self-referentiality hypothesis of Douglas Hofstadter. This seems correct.",

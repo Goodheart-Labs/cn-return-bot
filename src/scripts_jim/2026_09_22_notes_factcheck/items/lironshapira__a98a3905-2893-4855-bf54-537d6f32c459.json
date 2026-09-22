@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Doom Debates has hosted White House policymakers as guests.",
       "extractor_judgement": "uncertain",
       "context_quote": "Now the show hosts Nobel Prize and Turing Award winners, White House policymakers, and has earned a reputation for challenging top luminaries to come expose their ideas for critical analysis.",
@@ -46,7 +45,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Moshe Vardi is a Turing Award winner.",
       "extractor_judgement": "likely false",
       "context_quote": "Turing Award winner Moshe Vardi",

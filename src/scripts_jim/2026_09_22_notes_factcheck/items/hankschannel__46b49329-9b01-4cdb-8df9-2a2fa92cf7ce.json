@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 1
       },
-      "jim_pick": null,
       "claim": "The game 4x3 is hosted at hangman.com/4x3.",
       "extractor_judgement": "uncertain",
       "context_quote": "I made a game. It's at hangman.com/4x3. It's called 4x3.",

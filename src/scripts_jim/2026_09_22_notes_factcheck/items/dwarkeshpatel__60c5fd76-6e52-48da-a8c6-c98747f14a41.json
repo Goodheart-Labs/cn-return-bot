@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The Kaplan scaling laws paper was released in 2018.",
       "extractor_judgement": "likely false",
       "context_quote": "When were Chinchilla or Kaplan scaling laws released? 2018.",
@@ -61,7 +60,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The Chinchilla scaling laws paper was released in 2018.",
       "extractor_judgement": "certainly false",
       "context_quote": "When were Chinchilla or Kaplan scaling laws released? 2018.",

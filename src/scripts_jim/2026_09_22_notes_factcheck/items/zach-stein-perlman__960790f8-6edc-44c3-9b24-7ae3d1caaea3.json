@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "In SFF's review system, each application was given an AI-generated name.",
       "extractor_judgement": "uncertain",
       "context_quote": "Each application was given an AI-generated name; many were convoluted, confusing, ambiguous, and/or incorrect. (Overall substantially worse than the names provided by the applicants; often the applicant-provided names were hidden so we could only see the bad AI names.)",

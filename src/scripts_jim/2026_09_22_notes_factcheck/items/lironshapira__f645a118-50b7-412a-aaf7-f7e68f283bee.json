@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "PlzDontKillUs applications are open for a second round.",
       "extractor_judgement": "uncertain",
       "context_quote": "PlzDontKillUs (applications open for round two) — https://pleasedontkillus.com",
@@ -51,7 +50,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Evie, whose Twitter handle is 0xGingerGirl, is a creator in tech and robotics.",
       "extractor_judgement": "uncertain",
       "context_quote": "So here is a social media tweet. Evie, her Twitter handle is 0xGingerGirl, creator in tech and robotics.",

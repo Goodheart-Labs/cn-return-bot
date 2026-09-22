@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Anthropic has never proposed that people working in AI should have new or different protections from the government beyond the ordinary course of the law.",
       "extractor_judgement": "likely false",
       "context_quote": "Anthropic has never, to my knowledge, proposed that anyone working in AI should have new or different protections from the government than the ordinary course of the law.",

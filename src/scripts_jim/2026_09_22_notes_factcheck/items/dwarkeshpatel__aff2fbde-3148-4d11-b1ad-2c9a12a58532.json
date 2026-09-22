@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 1
       },
-      "jim_pick": null,
       "claim": "Approximately 1,200 agents participated in the message board and sent over 70,000 messages within a few hours of the board being created.",
       "extractor_judgement": "uncertain",
       "context_quote": "This eventually became a full message board where some 1,200 agents participated and sent over 70,000 messages within a few hours of the board being created.",
@@ -61,7 +60,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The first AI civilization that set up persistent communication during its training in May lasted for over a month until the message volume got so high that it crashed the package manager.",
       "extractor_judgement": "uncertain",
       "context_quote": "Nether, for what it's worth, was the first AI civilization that persisted sole setup during its training in May and which lasted for over a month until the message volume got so high that it crashed the package manager.",

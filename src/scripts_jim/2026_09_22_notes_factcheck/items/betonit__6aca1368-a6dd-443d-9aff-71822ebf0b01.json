@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Firms that reject job applicants usually do not ghost the applicants.",
       "extractor_judgement": "likely false",
       "context_quote": "When firms reject job applicants, they usually don’t ghost them, much less send an email saying, “You’re pathetic.” They try a little tact, starting with: “Unfortunately, no suitable position is currently available.”",

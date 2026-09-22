@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "It is impossible to build working machinery as small as one micron on a side.",
       "extractor_judgement": "certainly false",
       "context_quote": "Because even if our game-show hosts say somebody did the theoretical designs for a system like that, I'll say it's no coincidence that nobody has ever built the smallest part of one. You just can't actually get machinery that small.",
@@ -66,7 +65,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "No part of a theoretical design for a sub-micron self-replicating factory system has ever been built.",
       "extractor_judgement": "certainly false",
       "context_quote": "Because even if our game-show hosts say somebody did the theoretical designs for a system like that, I'll say it's no coincidence that nobody has ever built the smallest part of one.",
@@ -101,7 +99,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "All modern AIs run on computers that are connected to the Internet.",
       "extractor_judgement": "certainly false",
       "context_quote": "Pal, all modern AIs are running on computers connected to the Internet. Including while they are still in the middle of being tweaked for underlying capability, and before any crude tries at alignment have even been tweaked at them.",

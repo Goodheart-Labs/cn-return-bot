@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "We've now felt thousands of such shakings corresponding to thousands of black hole mergers.",
       "extractor_judgement": "likely false",
       "context_quote": "We've now felt thousands of such shakings corresponding to thousands of black hole mergers.",
@@ -41,7 +40,6 @@
         "helpful": 0,
         "not_helpful": 2
       },
-      "jim_pick": null,
       "claim": "it's totally comprehensible, the disproof of the unit distance conjecture that it came up with",
       "extractor_judgement": "uncertain",
       "context_quote": "The unit distance conjecture, I think, is a good example here for a number of the themes you've been discussing. One is that it's totally comprehensible, the disproof of the unit distance conjecture that it came up with.",
@@ -66,7 +64,6 @@
         "helpful": 2,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "the sun is a few million times the mass of the Earth",
       "extractor_judgement": "likely false",
       "context_quote": "It'd be a million times larger, because the sun is a few million times the mass of the Earth, but then it's also bigger, so that takes it away a little bit.",

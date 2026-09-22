@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "In March 2024, a German astronomer filmed a fast dark object crossing the lunar disc that he could not identify.",
       "extractor_judgement": "uncertain",
       "context_quote": "In March 2024, a German astronomer filmed a fast dark object crossing the lunar disc that he could not identify.",
@@ -61,7 +60,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": "maybe",
       "claim": "There is no existing database dedicated specifically to moon anomalies.",
       "extractor_judgement": "uncertain",
       "context_quote": "You also don't have a database dedicated to moon anomalies. Anomalous moon observations are usually lumped together with general UAP sightings.",

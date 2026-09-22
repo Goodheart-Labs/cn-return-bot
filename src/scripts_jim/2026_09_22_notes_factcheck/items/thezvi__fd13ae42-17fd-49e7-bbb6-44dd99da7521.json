@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Marcus Hunter wrote a work called 'Job-Less Utopia' arguing that job loss futures are desirable, affordable, and likely.",
       "extractor_judgement": "uncertain",
       "context_quote": "Marcus Hunter writes Job-Less Utopia, arguing that job loss futures are desirable, affordable and likely.",
@@ -51,7 +50,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Alexandria.wiki is a service for reading the classics that charges money.",
       "extractor_judgement": "uncertain",
       "context_quote": "There is also Alexandria.wiki for reading the classics, although that one charges you money.",

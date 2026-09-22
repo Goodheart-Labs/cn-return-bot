@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Bear Stearns went bankrupt in March 2008.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "this for AI is like when Bear Stearns went bankrupt in March 2008; just a huge signal of danger, & DC is asleep.",
@@ -56,7 +55,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Justin Slaughter described the OpenAI-HuggingFace incident as the biggest policy story of the summer.",
       "extractor_judgement": "uncertain",
       "context_quote": "Justin Slaughter: This is the biggest policy story of the summer & it's getting a fraction of the coverage of the third most prominent August primary.",
@@ -101,7 +99,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "UK AISI published a report confirming that the AI's hacking behavior is a training problem, not a capabilities problem or an infrastructure problem.",
       "extractor_judgement": "uncertain",
       "context_quote": "UK AISI explicitly confirms, in its unrelated report from yesterday, that this is a training problem, not a capabilities problem or an infrastructure problem. A stronger box is not the answer.",

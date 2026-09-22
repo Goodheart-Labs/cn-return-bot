@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The combined light-collecting ability of two 50-millimeter telescopes observing the same target is equivalent to 100 millimeters of aperture.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "If we have one 50-millimeter telescope and we have another one, that has the opportunity to have an aperture where it's collecting collectively 100 millimeters of light volume.",
@@ -51,7 +50,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The value of a telescope network increases exponentially as more telescopes are added.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "We can exponentially increase the value of one telescope by adding more.",
@@ -86,7 +84,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "One Day Sooner is a longtermism charity.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "one of the main longtermism charities is called One Day Sooner. What One Day Sooner believes is that if we can accelerate humanity's expansion to capture more resources, even if we accelerate that by one day, we could theoretically save billions or even trillions of lives of future humans.",
@@ -126,7 +123,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "One Day Sooner's philosophy is that accelerating humanity's expansion to capture more resources by even one day could theoretically save billions or trillions of lives of future humans.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "What One Day Sooner believes is that if we can accelerate humanity's expansion to capture more resources, even if we accelerate that by one day, we could theoretically save billions or even trillions of lives of future humans.",

@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Mira Murati runs a company called Thinking Labs.",
       "extractor_judgement": "uncertain",
       "context_quote": "What about Thinking Labs, run by Mira Murati?",

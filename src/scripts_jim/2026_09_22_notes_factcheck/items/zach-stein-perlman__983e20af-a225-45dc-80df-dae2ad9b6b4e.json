@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Relevant hedge funds have recently been appreciating at about 5x per year, after fees and before taxes.",
       "extractor_judgement": "uncertain",
       "context_quote": "^400x sounds crazy but also the hedge funds have recently been appreciating at ~5x per year (after fees, before taxes) (for some value of \"recently\"), which is crazy. I think the average AI investment will 15x as a fraction of global wealth, and you can dramatically beat that via (1) smarter investments and (2) leverage.",

@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The head of product at Anthropic attended the Big Technology AI Summit in San Francisco.",
       "extractor_judgement": "uncertain",
       "context_quote": "The head of product at Anthropic was there. Other really big names in the field.",

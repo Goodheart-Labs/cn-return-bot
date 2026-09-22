@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Pangram is an AI detection tool that can differentiate which AI model generated a given text, though it does not reveal this distinction to the user.",
       "extractor_judgement": "uncertain",
       "context_quote": "Pangram will still mark it as AI, at least if you do it the way I'm imagining, and won't be confused about which AI the original came from (the Pangram algorithm can differentiate different AIs, but it doesn't tell the user).",

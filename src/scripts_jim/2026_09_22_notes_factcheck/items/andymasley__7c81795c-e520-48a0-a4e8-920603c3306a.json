@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "0.8 Wh of energy is enough to print a fifth of a page of a physical book.",
       "extractor_judgement": "uncertain",
       "context_quote": "0.8 Wh is enough to:\n\nRun a space heater for 0.7 seconds\n\nPrint a fifth of a page of a physical book",
@@ -51,7 +50,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "There are fewer than 20 AI models of equal size to GPT-4.",
       "extractor_judgement": "uncertain",
       "context_quote": "There aren't 20 AI models of equal size to GPT-4",
@@ -81,7 +79,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Video streaming accounted for 1.5% of all global electricity use.",
       "extractor_judgement": "uncertain",
       "context_quote": "In total, video streaming accounted for 1.5% of all global electricity use, or 375,000 GWh, or the yearly energy use of 33,000,000 households.",
@@ -116,7 +113,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The American energy sector as a whole uses 60 trillion liters of water each year.",
       "extractor_judgement": "uncertain",
       "context_quote": "The American energy sector as a whole uses 60 trillion liters of water each year, enough for 25 million Olympic swimming pools.",
@@ -141,7 +137,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Data centers typically use about 1.8 liters of water per kWh of energy consumed, including both direct cooling water and water used in generating the electricity.",
       "extractor_judgement": "uncertain",
       "context_quote": "data centers typically use about 1.8 liters of water per kWh of energy consumed. This number includes both the water used by the data center itself and the water used in generating the electricity used",
@@ -176,7 +171,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Training GPT-4 required approximately 250 million gallons (about 1 billion liters) of water.",
       "extractor_judgement": "uncertain",
       "context_quote": "A rough estimate based on available info says GPT-4 took about 250 million gallons of water, or about 1 billion liters.",

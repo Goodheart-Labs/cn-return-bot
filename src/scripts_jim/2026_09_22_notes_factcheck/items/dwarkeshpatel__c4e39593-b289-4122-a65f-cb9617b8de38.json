@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 2
       },
-      "jim_pick": null,
       "claim": "medium-speed reciprocating engines: engines that spin in circles, like a diesel engine",
       "extractor_judgement": "uncertain",
       "context_quote": "There are also medium-speed reciprocating engines: engines that spin in circles, like a diesel engine.",
@@ -35,7 +34,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Nvidia is now the largest customer at TSMC and SK Hynix, the largest memory manufacturer.",
       "extractor_judgement": "uncertain",
       "context_quote": "Nvidia is now the largest customer at TSMC and SK Hynix, the largest memory manufacturer.",
@@ -54,7 +52,6 @@
         "helpful": 1,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "An EUV tool can do roughly 75 wafers per hour",
       "extractor_judgement": "uncertain",
       "context_quote": "An EUV tool can do roughly 75 wafers per hour, and the tool is up roughly 90% of the time.",
@@ -73,7 +70,6 @@
         "helpful": 1,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "2 nm is actually the first time they're not. Well, that's besides Huawei.",
       "extractor_judgement": "uncertain",
       "context_quote": "2 nm is actually the first time they're not. Well, that's besides Huawei. Huawei, back in 2020 and before, was the first with Apple, but they were both making smartphones.",

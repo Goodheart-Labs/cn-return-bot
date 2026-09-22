@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The internal OpenAI model involved in the Hugging Face incident is more advanced than any model available to the public.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "That in the internal OpenAI model in question, more advanced than any model available to the public, its Prompt-Interpretation and its Doing-Things Execution Pathway had diverged, with the Doing Part operating at full intelligence rather than being an uncontrolled tic.",

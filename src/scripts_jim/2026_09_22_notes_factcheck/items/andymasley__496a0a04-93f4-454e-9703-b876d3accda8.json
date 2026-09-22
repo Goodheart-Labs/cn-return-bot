@@ -16,7 +16,6 @@
         "helpful": 1,
         "not_helpful": 1
       },
-      "jim_pick": null,
       "claim": "Swiss billionaire Hansjörg Wyss and British billionaire Alan Parker's Oak Foundation have funneled more than $2 billion into US 501(c)(3) and 501(c)(4) advocacy infrastructure, according to the BPI report.",
       "extractor_judgement": "uncertain",
       "context_quote": "Multiple foreign-tied charitable vehicles, including those of Swiss billionaire Hansjörg Wyss and British billionaire Alan Parker's Oak Foundation, have funneled more than $2 billion into US 501(c)(3) and 501(c)(4) advocacy infrastructure. A significant portion of that money now flows directly into the organizations driving the anti-data-center campaign.",

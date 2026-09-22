@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The show 'Doom Debates' has had Turing Award winners as guests.",
       "extractor_judgement": "uncertain",
       "context_quote": "Look at the who's who of people who have come on our show. Nobel Prize winners, Turing Award winners, scientists, executives, people in media, across the board.",
@@ -46,7 +45,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "If asked whether the human species is doomed in about a decade, the average American would say yes.",
       "extractor_judgement": "likely false",
       "context_quote": "The average American, if you ask them, \"Hey, do you think that our species is doomed in a decade or so?\" — they're going to say yes. The average American is literally going to say yes.",

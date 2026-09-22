@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "If a fertility rate of 0.8 is maintained for a generation, the next generation will be approximately 38% smaller than the previous one.",
       "extractor_judgement": "likely false",
       "context_quote": "If you hold that for a generation, the next generation will be 38% smaller than last.",

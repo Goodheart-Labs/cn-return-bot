@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "There are approximately 40,000 nuclear weapons in the world, enough to destroy the world multiple times over.",
       "extractor_judgement": "likely false",
       "context_quote": "And then now we have 40,000 nukes, enough to nuke the world 10 times over? And yet none have been dropped on major cities or major populations other than in World War II.",
@@ -61,7 +60,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Anthropic's revenue has been growing at approximately 50x per year.",
       "extractor_judgement": "uncertain",
       "context_quote": "'cause they're growing, what is it, 50x per year? So a couple more 50xs and you're talking real money.",

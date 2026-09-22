@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "One gigawatt of compute capacity currently generates approximately $100 billion of revenue per year.",
       "extractor_judgement": "uncertain",
       "context_quote": "A gigawatt produces right now $100 billion of revenue.",
@@ -56,7 +55,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Anthropic is not adding $25 billion of annualized run rate revenue every month currently.",
       "extractor_judgement": "uncertain",
       "context_quote": "They're not adding $25 billion of ARR every month now.",
@@ -91,7 +89,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The Chinese semiconductor industry has significantly more subsidies than the rest of the world's semiconductor industries combined.",
       "extractor_judgement": "uncertain",
       "context_quote": "So the Chinese semiconductor industry has significantly more subsidies than the rest of the world's semiconductor industries combined.",

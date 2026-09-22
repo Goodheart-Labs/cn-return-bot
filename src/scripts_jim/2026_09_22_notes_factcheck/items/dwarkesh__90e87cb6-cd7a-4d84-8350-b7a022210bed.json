@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Before fine-tuning, the Talkie model had no knowledge of code.",
       "extractor_judgement": "uncertain",
       "context_quote": "So this model that has no knowledge of code whatsoever can be fine-tuned on a moderate amount of data and behave better as a coding agent than this much larger pre-trained model, which is pretty crazy.",
@@ -56,7 +55,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "AlphaGo was trained without initialization on human data.",
       "extractor_judgement": "likely false",
       "context_quote": "Because it was never initialized on human data, it can think in ways that humans are not even thinking and come up with extremely creative solutions.",

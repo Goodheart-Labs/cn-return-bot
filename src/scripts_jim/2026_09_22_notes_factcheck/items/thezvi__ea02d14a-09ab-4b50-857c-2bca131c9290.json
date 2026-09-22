@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "A new AI auditing firm was launched.",
       "extractor_judgement": "uncertain",
       "context_quote": "Introducing. New AI auditing firm, and The DeepMind Institute.",
@@ -46,7 +45,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "OpenAI has reportedly tasked 10,000 advanced AI agents with attempting to prove P=NP.",
       "extractor_judgement": "likely false",
       "context_quote": "If that is a possibility, what else could your agents do if asked a hard question? Say, if you tasked 10,000 advanced agents with proving P=NP? Which OpenAI is reportedly doing.",
@@ -76,7 +74,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Dario Amodei, Sam Altman, and Elon Musk all publicly warned about AI risk long before they had AI companies to promote.",
       "extractor_judgement": "likely false",
       "context_quote": "Amodei, Altman and Musk were all publicly warning about AI risk long before they had AI companies to promote.",
@@ -151,7 +148,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Anyone to whom a person gives an interview has the right to edit the person's statements into an advertisement without consent.",
       "extractor_judgement": "certainly false",
       "context_quote": "Be aware that they (and by they I mean anyone you talk to) have the right to do that.",

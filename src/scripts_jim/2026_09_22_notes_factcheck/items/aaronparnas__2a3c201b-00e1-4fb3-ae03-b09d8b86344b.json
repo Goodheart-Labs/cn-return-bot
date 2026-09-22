@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Nineteen U.S. states passed 88 new worker-protection laws in 2025.",
       "extractor_judgement": "uncertain",
       "context_quote": "Nineteen states also passed 88 new worker-protection laws in 2025, including paid leave in Virginia and a near-total ban on non-compete agreements in Washington.",
@@ -46,7 +45,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Washington state passed a near-total ban on non-compete agreements in 2025.",
       "extractor_judgement": "uncertain",
       "context_quote": "including paid leave in Virginia and a near-total ban on non-compete agreements in Washington.",
@@ -76,7 +74,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Virginia passed a paid leave law in 2025.",
       "extractor_judgement": "uncertain",
       "context_quote": "including paid leave in Virginia and a near-total ban on non-compete agreements in Washington.",

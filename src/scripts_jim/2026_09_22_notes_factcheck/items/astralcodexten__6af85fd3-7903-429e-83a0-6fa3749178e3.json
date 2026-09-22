@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The name 'Canada' at Auschwitz came from 'Kann er da,' German for 'might there be,' as in 'might there be something of value.'",
       "extractor_judgement": "likely false",
       "context_quote": "The area's name comes from Kann er da, German for \"might there be\"—as in, \"might there be something of value?\"",
@@ -46,7 +45,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Anthony Eden was the UK Prime Minister who received eyewitness testimony of Nazi mass murder by 1943.",
       "extractor_judgement": "likely false",
       "context_quote": "UK Prime Minister Anthony Eden had received eyewitness testimony of Nazi mass murder by 1943",
@@ -86,7 +84,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Rudolf Vrba testified at the Nuremberg trials.",
       "extractor_judgement": "uncertain",
       "context_quote": "Rudi testifies at Nuremberg and in several other high-profile Nazi trials",
@@ -131,7 +128,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The number of Jewish prisoners who successfully escaped from Auschwitz was at best in the single digits.",
       "extractor_judgement": "likely false",
       "context_quote": "Accounts differ as to exactly how many Jewish prisoners escaped from Auschwitz, but it was at best a single-digit number.",
@@ -191,7 +187,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Rezső Kasztner served as a character witness for Adolf Eichmann after World War II.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "Kasztner served as a character witness for Eichmann even after the war, when he presumably had nothing to gain from it.",
@@ -241,7 +236,6 @@
         "helpful": 1,
         "not_helpful": 0
       },
-      "jim_pick": "good",
       "claim": "Czechoslovakia had a larger remaining Jewish population than most other Nazi-occupied countries during the Holocaust.",
       "extractor_judgement": "uncertain",
       "context_quote": "Czechoslovakia has a larger remaining Jewish population than most other Nazi-occupied countries, because the Nazis spared Jewish doctors after realizing that deporting them would leave too few doctors to provide medical care for the rest of the population.",

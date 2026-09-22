@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Developers in India are not allowed to build skyscrapers in slums.",
       "extractor_judgement": "likely false",
       "context_quote": "Developers aren’t even allowed to build skyscrapers in slums — and housing prices in major cities rival those in top Western cities.",
@@ -56,7 +55,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "After World War II, British India was at relative peace before the final push for independence.",
       "extractor_judgement": "certainly false",
       "context_quote": "After World War II, British India was finally at relative peace.",

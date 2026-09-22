@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Sources covering the SpaceX Moon crash story were mostly from the UK.",
       "extractor_judgement": "uncertain",
       "context_quote": "Ground News also gives you a fact check for each news item, tells you who owns the media outlets, and that in this case sources are mostly out of the UK.",

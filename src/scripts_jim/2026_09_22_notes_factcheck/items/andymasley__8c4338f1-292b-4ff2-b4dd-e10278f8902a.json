@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The Los Angeles area has the world's busiest port.",
       "extractor_judgement": "likely false",
       "context_quote": "The LA area has the world's busiest port, which means a constant huge input of diesel exhaust.",
@@ -61,7 +60,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "OECD puts brake and tire wear PM2.5 emissions at 30–60 mg per mile.",
       "extractor_judgement": "uncertain",
       "context_quote": "For PM2.5, a lot's created by brake and tire wear, which OECD puts at 30-60 mg/mile.",
@@ -96,7 +94,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "A study found that CO2-driven wildfire smoke damages are about $15 per ton of CO2 in the US versus about $100 per ton globally.",
       "extractor_judgement": "uncertain",
       "context_quote": "This study says CO2-driven wildfire smoke damages are much bigger globally than in the US, they're about $15/ton here versus around $100/ton globally.",

@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 3
       },
-      "jim_pick": null,
       "claim": "Nathan estimated that MacKenzie Scott's donations bought approximately 1,500 times less health improvement per dollar than the marginal GiveWell dollar.",
       "extractor_judgement": "uncertain",
       "context_quote": "Her donations bought about 1500x less improvement per $ than the marginal GiveWell $",
@@ -61,7 +60,6 @@
         "helpful": 0,
         "not_helpful": 2
       },
-      "jim_pick": null,
       "claim": "Portugal has been stopping every package received from outside the EU with no exceptions for a decade or more.",
       "extractor_judgement": "uncertain",
       "context_quote": "As someone who lives in Portugal which already stops every single package you get from outside EU with no exceptions for a decade or more",
@@ -101,7 +99,6 @@
         "helpful": 1,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "According to a 2026 Newzoo report, two-thirds of gaming time went to games more than 6 years old.",
       "extractor_judgement": "uncertain",
       "context_quote": "2/3rds of gametime went to >6 year old games!",
@@ -141,7 +138,6 @@
         "helpful": 3,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Max Ghenis estimated MacKenzie Scott's charitable giving produced approximately 70,000 QALYs when weighting each study by causal credibility, and approximately 200,000 QALYs when taking every effect at face value.",
       "extractor_judgement": "uncertain",
       "context_quote": "I built an interactive model from her own gift database: ~70,000 QALYs weighting each study by causal credibility, ~200,000 taking every effect at face value.",

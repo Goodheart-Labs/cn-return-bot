@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 1
       },
-      "jim_pick": null,
       "claim": "Postdoc Alexis Machete argued that LLMs are evil because they contribute to the climate crisis.",
       "extractor_judgement": "uncertain",
       "context_quote": "Postdoc Alexis Machete argues that LLMs are evil because they contribute to the climate crisis",
@@ -51,7 +50,6 @@
         "helpful": 0,
         "not_helpful": 1
       },
-      "jim_pick": null,
       "claim": "PhD student Kerwin Hampshire stated he is suffering a profound spiritual crisis due to AI developments in mathematics.",
       "extractor_judgement": "uncertain",
       "context_quote": "PhD student Kerwin Hampshire thinks he's going insane and is suffering a profound spiritual crisis due to these developments.",
@@ -91,7 +89,6 @@
         "helpful": 0,
         "not_helpful": 1
       },
-      "jim_pick": null,
       "claim": "Assistant Professor Maximilian Reich wrote a preprint arguing for total opposition to the use of artificial intelligence in mathematics.",
       "extractor_judgement": "uncertain",
       "context_quote": "Assistant Professor Maximilian Reich has written a preprint in which he makes the case for total opposition to the use of artificial intelligence in mathematics.",

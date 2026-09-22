@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "No paper by Armand & Bikaran 2025 on infrasound, PIEZO1, or related topics can be found.",
       "extractor_judgement": "uncertain",
       "context_quote": "I can't find any paper by Armand & Bikaran 2025 on infrasound, PIEZO1, or anything like it. If anyone reading this can find it, let me know, but as it stands I'm going to treat it as made up until proven otherwise.",
@@ -51,7 +50,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The paper 'Health implications of the rapid rise of data centers in Virginia' was published the same week as Andy's datacenter video.",
       "extractor_judgement": "uncertain",
       "context_quote": "it's important to note that this \"confusing concept of vibration and infrasound being related\" was cited in \"Health implications of the rapid rise of data centers in Virginia\", which was published the same week my datacenter video released.",

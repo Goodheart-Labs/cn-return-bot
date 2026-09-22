@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Eight or nine million Poles died in World War II.",
       "extractor_judgement": "certainly false",
       "context_quote": "How do you wind up with eight or nine million Polish deaths in World War II?",
@@ -51,7 +50,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Russia's current economy is smaller than Mexico's economy.",
       "extractor_judgement": "certainly false",
       "context_quote": "If you fast forward to now I think Russia's entire economy now is less than Mexico.",
@@ -96,7 +94,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "George Bernard Shaw said that a person without socialist sympathies before age 30 has no heart and one who remains socialist after 30 has no brains.",
       "extractor_judgement": "likely false",
       "context_quote": "George Bernard Shaw made a comment that if you haven't been a socialist before the age of 30, you have no heart and if you remain one after the age of 30, you have no brains.",
@@ -151,7 +148,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "In How Asia Works, Studwell describes a Korean factory starting to export goods where workers worked six, seven hour days.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "In the case of Korea, he tells a story where they have this factory where they're starting to export goods and they're working six, seven hour days.",
@@ -191,7 +187,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Afghanistan and Iraq suffer ongoing civil wars in which whichever group holds power oppresses the others, and retaliation follows when power changes hands.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "You've just got a civil war going on there. We're talking about a death ground kind of civil war where the ones in power just ruin the others. And when the others get in power, they ruin the other people. That's what's going on in Afghanistan and Iraq.",
@@ -251,7 +246,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The Chinese government knowingly allowed people who were vectors for spreading COVID-19 to leave China.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "and you clearly were letting people out of the country knowing full well that they were vectors for spreading this disease.",
@@ -291,7 +285,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Most countries in the world have populations above 20 million.",
       "extractor_judgement": "certainly false",
       "context_quote": "Yeah, probably most countries in the world are above that size.",
@@ -356,7 +349,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Imperial Russia fell in World War I because no one supplied it with adequate weapons.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "Why did they fall? No one bothered to focus on supplying them with adequate weapons.",
@@ -396,7 +388,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "China has redrawn its maps to claim that India's Uttar Pradesh is Chinese territory.",
       "extractor_judgement": "likely false",
       "context_quote": "Actually, they've just been redoing their maps. They say what is Uttar Pradesh is ours.",
@@ -441,7 +432,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "In a matter of weeks in 1979, Vietnamese forces killed more Chinese soldiers than total U.S. losses in Afghanistan.",
       "extractor_judgement": "certainly false",
       "context_quote": "The Vietnamese killed more Chinese in a matter of weeks than all US losses in Afghanistan and in fact, all US losses in Vietnam over however many years we were there.",

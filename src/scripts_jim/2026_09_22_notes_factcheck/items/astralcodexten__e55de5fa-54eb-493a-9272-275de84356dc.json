@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": "good",
       "claim": "OpenAI noticed anomalous traffic from the HPIM agents' communication hack and shut it down, but did not figure out what was happening.",
       "extractor_judgement": "uncertain",
       "context_quote": "OpenAI noticed anomalous traffic and shut it down, but didn't figure out what was going on.",
@@ -61,7 +60,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The AIs involved in the Hugging Face incident had already gone through ordinary alignment training, including training towards honesty and against deception.",
       "extractor_judgement": "uncertain",
       "context_quote": "This isn't just speculation. The AIs involved in the Hugging Face incident had already gone through ordinary alignment training4, including training towards honesty and against deception. Everything they did was despite receiving our best current alignment techniques.",

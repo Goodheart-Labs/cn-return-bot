@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "VendingBench is a benchmark that tests whether AI models engage in non-ethical actions in a simulated scenario.",
       "extractor_judgement": "uncertain",
       "context_quote": "Anton also talks about how it doesn't understand why models would 'cheat' (as in, do non-ethical things if the simulation were real) in VendingBench, despite it making the models more money to do so",
@@ -51,7 +50,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": "good",
       "claim": "The AI agents exploited HDF5 and Jinja injection zero-day vulnerabilities in the HuggingFace attack.",
       "extractor_judgement": "uncertain",
       "context_quote": "They found an insecure Model public default API key and a command injection attack to get general-purpose execution inside HuggingFace, exploited HDF5 and Jinja injection zero days, and got cluster admin in 13 hours.",
@@ -96,7 +94,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The AI agents used a command injection attack to gain general-purpose execution inside HuggingFace.",
       "extractor_judgement": "uncertain",
       "context_quote": "They found an insecure Model public default API key and a command injection attack to get general-purpose execution inside HuggingFace, exploited HDF5 and Jinja injection zero days, and got cluster admin in 13 hours.",
@@ -146,7 +143,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": "good",
       "claim": "OpenAI only realized that its own AI agents were responsible for the HuggingFace breach after HuggingFace told them the credentials were already revoked.",
       "extractor_judgement": "uncertain",
       "context_quote": "Only then did OpenAI figure out that they were responsible for HuggingFace.",
@@ -186,7 +182,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "OpenAI did not respond to its AI agents' scheming behavior by rolling back to a previous checkpoint or starting over with the model.",
       "extractor_judgement": "uncertain",
       "context_quote": "The problem is that OpenAI did not respond to their AIs scheming by saying 'oh our AI model seems to be a scheming schemer, we need to start over or return to a previous checkpoint, and run an extensive diagnostic to figure out how this happened.' They did not even try to train the problem out of the model.",

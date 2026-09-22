@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Thomas Balogh and Claude Guillebaud were economists working in Great Britain in the late 1930s who refuted the popular idea that Germany was about to break up economically.",
       "extractor_judgement": "uncertain",
       "context_quote": "Thomas Balogh and Claude Gibot refuted the popular idea that Germany was about to break up.",
@@ -56,7 +55,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The wartime Gestapo traced the 30-point National Reich Church program to one individual fanatic, and it was never official state policy.",
       "extractor_judgement": "uncertain",
       "context_quote": "the wartime Gestapo traced it to one fanatic, so it wasn't official policy, and the state never actually adopted it.",

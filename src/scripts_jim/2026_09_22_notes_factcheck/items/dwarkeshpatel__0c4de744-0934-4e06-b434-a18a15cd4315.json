@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Climate change was a factor driving Mongol expansion, as their herds needed to move south.",
       "extractor_judgement": "uncertain",
       "context_quote": "in another time of climate change when their herds they just had to move south or everyone's going to freeze to death",
@@ -61,7 +60,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The United States acquired Texas through the Mexican-American War.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "the United States did the standard massed armies approach in the Mexican-American War, and that's how the United States gets Texas.",
@@ -101,7 +99,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Total French deaths (military and civilian) in World War II were nearly 1 million.",
       "extractor_judgement": "uncertain",
       "context_quote": "nearly a million dead Frenchmen",
@@ -141,7 +138,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The Suez Canal was closed from 1967 to approximately 1972.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "the Suez Canal is is closed down from 1967 to 19 uh 72-ish.",

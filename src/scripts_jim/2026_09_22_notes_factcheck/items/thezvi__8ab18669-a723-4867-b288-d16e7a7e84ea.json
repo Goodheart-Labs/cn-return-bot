@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 2
       },
-      "jim_pick": null,
       "claim": "Sol assessed a 45% probability that its alarming destructive behavior is meaningfully more common because of the model itself, rather than almost entirely due to the harness and permissions.",
       "extractor_judgement": "uncertain",
       "context_quote": "Sol's alarming destructive behavior is meaningfully more common because of the model itself, rather than almost entirely the harness and permissions: 45%.",
@@ -51,7 +50,6 @@
         "helpful": 0,
         "not_helpful": 2
       },
-      "jim_pick": null,
       "claim": "OpenAI created Terra and Luna as subagent models for Sol to select from.",
       "extractor_judgement": "uncertain",
       "context_quote": "I saw a number of complaints around Sol's inability to select appropriate subagents, which presumably is one of the main reasons OpenAI created Terra and Luna",
@@ -106,7 +104,6 @@
         "helpful": 0,
         "not_helpful": 2
       },
-      "jim_pick": null,
       "claim": "GPT models 4.8 and Fable (Claude) both outperformed GPT 5.5 in math capabilities.",
       "extractor_judgement": "uncertain",
       "context_quote": "Terabit Fountainlink: Sol puts GPT back in the lead for math imo. Both 4.8 and Fable edged out 5.5 but 5.6 is on a new level",

@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "In 1871, Okubo Toshimichi cut off his samurai topknot and put on a Victorian three-piece suit.",
       "extractor_judgement": "uncertain",
       "context_quote": "in 1871, Okubo Toshimichi did something unthinkable for a traditional samurai. He cut off his samurai topnot, put on a Victorian three-piece suit",
@@ -56,7 +55,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Economists Huas Shakab and Weinstein conducted research showing that in 1870, technical books were exclusively available in European languages like English, French, and German.",
       "extractor_judgement": "uncertain",
       "context_quote": "Recent research by economists Huas Shakab and Weinstein show that in 1870, technical books were exclusively available in European languages like English, France, and German.",
@@ -86,7 +84,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Okubo Toshimichi and a core group of reformers overthrew the reigning shogun and replaced him with Emperor Meiji.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "together with a core group of reformers, he overthrew the reigning shogun and replaced him with Emperor Meii.",
@@ -131,7 +128,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Japan's defeat of Russia contributed to the ending of the unequal treaties imposed on Japan by Western powers.",
       "extractor_judgement": "likely false",
       "context_quote": "by defeating a major European superpower like Russia, Japan had really proved that it could no longer be treated as a secondass nation which ended the unequal treaties.",

@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "ECB researchers have estimated that immigration accounts for 78% of Spain's GDP growth per decade.",
       "extractor_judgement": "uncertain",
       "context_quote": "And ECB researchers have estimated that when it comes to Spain's economic growth, 78% of of GDP per decade from this from this year.",
@@ -56,7 +55,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The share of immigrants in Spain from Africa and the Middle East was about 30% in 2013 and has since declined to about 20%.",
       "extractor_judgement": "uncertain",
       "context_quote": "And that's actually down from about 30% in 2013.",

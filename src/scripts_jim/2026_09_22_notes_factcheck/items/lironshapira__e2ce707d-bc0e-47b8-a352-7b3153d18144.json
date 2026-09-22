@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "On April 4th, Holly tweeted a clip of Dean Ball from the show 'Win Win with Liv Berry.'",
       "extractor_judgement": "uncertain",
       "context_quote": "You tweeted on April 4th a clip of him from Win Win with Liv Berry.",
@@ -56,7 +55,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Anthropic is the most valuable startup in the world.",
       "extractor_judgement": "uncertain",
       "context_quote": "And now they're also the most valuable startup in the world.",

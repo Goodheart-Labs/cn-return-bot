@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Uruk's administrative elites pioneered key developments in accounting and contracts that culminated around 2500 BC in a writing system.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "These systems began as verification systems for contracts and aide-mémoires for city bureaucrats, grew increasingly sophisticated and complex, and culminated, around 2500 BC, in - blessing of blessings for historians - a writing system.",
@@ -56,7 +55,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Akkadian is a predecessor of (i.e., in the same language family as) modern Arabic and Hebrew.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "he made Akkadian - a predecessor of modern Arabic and Hebrew - the prestige language and lingua franca",
@@ -101,7 +99,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "By the time the Iliad and Odyssey were composed, knowledge of Akkadian literature was already confined to isolated scribal traditions.",
       "extractor_judgement": "uncertain",
       "context_quote": "by the time the Iliad and Odyssey - the founding texts of Western literary canon - were composed, knowledge of Akkadian literature was already confined to isolated scribal traditions.",
@@ -146,7 +143,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Yoruba writing generally lets people work out tonal inflection from context rather than explicitly marking it.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "just roll with it and let people work out the tonal inflection from context (like Yoruba)",

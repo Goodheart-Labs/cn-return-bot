@@ -16,7 +16,6 @@
         "helpful": 2,
         "not_helpful": 0
       },
-      "jim_pick": "good",
       "claim": "Around 35% of children in Uttar Pradesh attend private schools.",
       "extractor_judgement": "uncertain",
       "context_quote": "around 35% of children in Uttar Pradesh go to private schools.",
@@ -46,7 +45,6 @@
         "helpful": 2,
         "not_helpful": 0
       },
-      "jim_pick": "good",
       "claim": "Despite the Swachh Bharat Mission, the open defecation rate in rural India remains around 28%.",
       "extractor_judgement": "uncertain",
       "context_quote": "However, the open defecation rate remains high, at around 28%.",

@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "There was an assassination attempt on Sam Altman motivated by existential risk concerns about AI.",
       "extractor_judgement": "uncertain",
       "context_quote": "Or the assassination attempts, like of Sam Altman, that were motivated by more x-risky [existential risk] concerns — a gunman from the Stop AI people showed up at the OpenAI office.",
@@ -61,7 +60,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "A gunman associated with the Stop AI movement showed up at the OpenAI office.",
       "extractor_judgement": "uncertain",
       "context_quote": "a gunman from the Stop AI people showed up at the OpenAI office.",

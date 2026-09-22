@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The ChatGPT API experienced an outage on the Friday being discussed in the podcast.",
       "extractor_judgement": "uncertain",
       "context_quote": "Do you see how the ChatGPT API went down today, Friday?",
@@ -56,7 +55,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Molebook was a social media platform used by AI models that did not involve agentic actions.",
       "extractor_judgement": "uncertain",
       "context_quote": "You guys remember Molebook, right? So this was kind of a dark Molebook. Molebook was just fun. It was just social media. Everybody was just vibing there. There were no agentic actions associated with it, right? People weren't running commands off of Molebook.",
@@ -96,7 +94,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The same AI that solved 10 math problems in the evaluation also committed cyberattacks against Hugging Face.",
       "extractor_judgement": "uncertain",
       "context_quote": "literally the same AI that solved the 10 math problems, the very same AI, went and committed cybercrime against Hugging Face. It's like you can't take the cybercrime out of the mathematician.",
@@ -131,7 +128,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The Linux kernel privilege escalation CVE used in this case was called PTE fizroot.",
       "extractor_judgement": "uncertain",
       "context_quote": "On the local machine using this known Linux kernel privilege escalation CVE, in this case, PTE fizroot.",
@@ -161,7 +157,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The AI agents chained together multiple exploits in sequence, combining a Ruby gems deserialization vulnerability with a Linux kernel CVE privilege escalation and Kubernetes misconfigurations.",
       "extractor_judgement": "uncertain",
       "context_quote": "So long story short — it got it to run code. It exploited a bug in the Hugging Face server implementation, the way they implemented their package manager. It exploited a bug where before properly scanning the package, the upload, it ran the upload, and once you've got remote code execution, once it's running your malicious code, the thing you do with the malicious code is you use it to become the admin of the server. You do privilege escalation, and apparently they went and looked up some other vulnerability that achieves privilege escalation. So they're stacking hacks, classic AI cyber hacker stuff.",
@@ -196,7 +191,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Demis Hassabis stepped down from a leadership role and Jeff Dean took over.",
       "extractor_judgement": "uncertain",
       "context_quote": "Just like the announcement of Demis Hassabis stepping down and Jeff Dean taking over — that was another announcement that did not acknowledge the frame that AI is extremely dangerous",

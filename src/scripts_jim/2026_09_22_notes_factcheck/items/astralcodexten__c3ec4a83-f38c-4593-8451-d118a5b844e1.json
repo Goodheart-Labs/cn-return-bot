@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 1
       },
-      "jim_pick": null,
       "claim": "The 26% equity stake that OpenAI gave to its associated nonprofit foundation is worth approximately $300 billion.",
       "extractor_judgement": "uncertain",
       "context_quote": "OpenAI gave 26% of equity to an associated nonprofit foundation; this is worth ~$300 billion.",
@@ -56,7 +55,6 @@
         "helpful": 1,
         "not_helpful": 0
       },
-      "jim_pick": "good",
       "claim": "Existing effective altruist funding is probably only approximately $5 billion per year.",
       "extractor_judgement": "uncertain",
       "context_quote": "it's large by the standards of existing effective altruist funding (probably only ~$5 billion/year, so even if only 25% of AI philanthropic money goes to these causes it could effectively triple it).",

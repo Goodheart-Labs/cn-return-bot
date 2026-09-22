@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Solar cells for use in space are cheaper to manufacture than those for use on the ground because they don't need heavy glass or framing to survive weather events.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "Now, if it's going to space, it costs less and it's easier to make solar cells that go to space because they don't need much glass. They don't need heavy framing because they don't have to survive weather events. There's no weather in space.",
@@ -46,7 +45,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Wernher von Braun was placed on death row in Nazi Germany for stating he did not want to make weapons and only wanted to go to the moon.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "Von Braun, who was one of the greatest rocket engineers ever, was put on death row in Nazi Germany for saying that he didn't want to make weapons and he only wanted to go to the moon. He got pulled off death row at the last minute when they said, \"Hey, you're about to execute your best rocket engineer.\"",
@@ -76,7 +74,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Werner Heisenberg was an enthusiastic Nazi.",
       "extractor_judgement": "likely false",
       "context_quote": "Or like, Heisenberg was actually an enthusiastic Nazi.",
@@ -111,7 +108,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "As of the time of this conversation, no demo robots from other companies have a hand with all the degrees of freedom of a human hand.",
       "extractor_judgement": "uncertain",
       "context_quote": "I haven't seen any, even demo robots, that have a great hand, with all the degrees of freedom of a human hand. Optimus will have that. Optimus does have that.",
@@ -146,7 +142,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Tesla's cathode refinery is the only cathode refinery in America.",
       "extractor_judgement": "uncertain",
       "context_quote": "The cathode team would say, \"we have the largest and the only, actually, cathode refinery in America.\"",
@@ -186,7 +181,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Tesla's cathode and nickel/lithium refinery is the largest such refinery outside of China.",
       "extractor_judgement": "uncertain",
       "context_quote": "This is the largest cathode refinery, largest nickel and lithium refinery, outside of China.",
@@ -221,7 +215,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The oldest living American at the time of this statement is 114 years old.",
       "extractor_judgement": "uncertain",
       "context_quote": "The oldest American is 114.",
@@ -256,7 +249,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "There are over 20 million people marked as alive in the Social Security database who are definitely dead.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "Maybe there shouldn't be 20 million people marked as alive in Social Security who are definitely dead, and over the age of 115.",
@@ -301,7 +293,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "There are over 20 million people marked as alive in the Social Security database who are over the age of 115.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "Maybe there shouldn't be 20 million people marked as alive in Social Security who are definitely dead, and over the age of 115.",

@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "In 2023, Microsoft CTO Kevin Scott publicly stated on a podcast that LLMs posed no real safety threat.",
       "extractor_judgement": "uncertain",
       "context_quote": "I also remember 2023, the CTO of Microsoft, Kevin Scott, got on a podcast, and he's like, \"Trust me, guys. I'm looking at these data centers. I understand what's going on with these LLMs. There's nothing they can really do. We're safe. We're all good.\"",
@@ -51,7 +50,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Leopold Aschenbrenner's fund achieved approximately a 20X (2,000%) return on a multi-hundred million dollar fund.",
       "extractor_judgement": "uncertain",
       "context_quote": "But anyway, those are the things I remember about Leopold Aschenbrenner. He's been relatively quiet in the last two years, but his fund has been under a lot of scrutiny. The way I told you the other day, I'm like, \"Yeah, we're kind of all jealous of Leopold Aschenbrenner because he made a 20X return on a multi-hundred million dollar fund.\" So the guy just printed billions of dollars, no big deal, at age 24 or whatever.",
@@ -91,7 +89,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Anthropic trained a model called Claude Mythos, and training began in or around April 2025 or 2026.",
       "extractor_judgement": "uncertain",
       "context_quote": "\"Hey, back in April when we were training Mythos, it turned out that Mythos, during that training, came out and hacked a bunch of targets.\"",

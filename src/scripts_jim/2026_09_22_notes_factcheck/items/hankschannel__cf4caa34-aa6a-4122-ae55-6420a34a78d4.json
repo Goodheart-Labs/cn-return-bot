@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Siberia used to have massive tundra environments that no longer exist in that form, having been replaced by a different type of grassland.",
       "extractor_judgement": "uncertain",
       "context_quote": "Even Siberia used to be this massive tundra and it's not there anymore. It's a different type of grassland. So we're missing that one.",
@@ -61,7 +60,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Pangaea began to break up in the early Triassic, a little under 200 million years ago.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "and then it breaks up in the early triacic a little under 200 million years ago.",
@@ -91,7 +89,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "There are rocks from Earth that have been found on Mars.",
       "extractor_judgement": "uncertain",
       "context_quote": "And we know that rocks travel between planets because there's Mars rocks on Earth and there's Earth rocks on Mars.",
@@ -121,7 +118,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "In the book Project Hail Mary, the main character could have eaten lab-grown meat made from himself, but this was not included in the story.",
       "extractor_judgement": "uncertain",
       "context_quote": "that was one thing that I was bummed that they didn't put in the movie Project Hail Mary.",
@@ -166,7 +162,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Horseshoe crabs and trilobites evolved at approximately the same time.",
       "extractor_judgement": "uncertain",
       "context_quote": "horseshoe crabs did fine. Eating detritis and being protected from attack, you'd think. I don't know if anybody's ever figured this out. Like why why do we have horseshoe crabs? Why do we not have trilobytes? Because they evolve almost at the exact same time.",

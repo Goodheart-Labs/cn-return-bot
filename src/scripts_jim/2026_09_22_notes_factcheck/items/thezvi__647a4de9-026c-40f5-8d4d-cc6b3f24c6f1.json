@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "AutomationBench is from Zapier.",
       "extractor_judgement": "uncertain",
       "context_quote": "AutomationBench from Zapier improves from 27% to 31%, but note that Gemini 3.7 Flash gets 30%.",
@@ -61,7 +60,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Vals puts Claude Fable 5.1 ahead in composite score at 68.8%, compared to 67.2% for Opus 5 and 66.6% for GPT-6 Astra.",
       "extractor_judgement": "uncertain",
       "context_quote": "Vals has a variety of benchmarks, putting Fable 5.1 ahead in composite at 68.8% versus 67.2% for Opus and 66.6% for Astra. They have Gemini 3.8 Flash in fourth ahead of Muse Spark 1.3.",

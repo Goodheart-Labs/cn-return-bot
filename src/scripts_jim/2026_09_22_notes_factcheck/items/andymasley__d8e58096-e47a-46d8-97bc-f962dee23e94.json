@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The author first became interested in climate change in 2007.",
       "extractor_judgement": "uncertain",
       "context_quote": "When I first became interested in climate in 2007, the dream was still alive that we could avoid 1.5 degrees of warming by 2100.",
@@ -61,7 +60,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The total electricity sector is only responsible for 25% of global emissions.",
       "extractor_judgement": "likely false",
       "context_quote": "The total electricity sector is only responsible for 25% of global emissions.",
@@ -96,7 +94,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "All AI activity in all data centers globally caused roughly 43 million tonnes of CO2 emissions in 2024.",
       "extractor_judgement": "uncertain",
       "context_quote": "But all AI in all data centers in total caused roughly 43million tonnes of CO₂ in 2024, about 0.11% of the world's annual emissions.",
@@ -126,7 +123,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "ChatGPT is the most downloaded app in the world.",
       "extractor_judgement": "uncertain",
       "context_quote": "It's the most downloaded app in the world. Every day 400 million people send 1 billion ChatGPT prompts.",
@@ -161,7 +157,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Manufacturing a cellphone requires approximately 200 kWh of energy (20 times 10 kWh).",
       "extractor_judgement": "uncertain",
       "context_quote": "This is about 1/20th of the energy it takes to make a cellphone.",
@@ -201,7 +196,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Quitting a habit of 2,000 ChatGPT prompts per day for one year prevents approximately 0.2 tonnes of CO2 emissions.",
       "extractor_judgement": "uncertain",
       "context_quote": "Freddy has a debilitating ChatGPT addiction and prompts it 2,000 times per day. About one prompt every second every waking hour. He quits for a year. ... After 1 year, Kate has prevented 70,000 tonnes of CO2 from being emitted. Bob has prevented 0.4 tonnes. Freddy prevented 0.2.",
@@ -231,7 +225,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The average American uses 10,700 kWh of energy per year.",
       "extractor_judgement": "uncertain",
       "context_quote": "The average American uses 10,700 kWh of energy per year.",
@@ -266,7 +259,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "ChatGPT has only 11 million paid users.",
       "extractor_judgement": "uncertain",
       "context_quote": "ChatGPT has 400 million weekly users, but only 11 million paid users.",
@@ -301,7 +293,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Both sides of the debate about AI energy use agree that 0.3 Wh is a reasonable upper bound estimate for the energy used by a single ChatGPT query.",
       "extractor_judgement": "uncertain",
       "context_quote": "it seems like everyone on both sides of the debate agrees 0.3 Wh is a reasonable upper bound guess.",

@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "After Richard Feynman unplugged the machine and told the inventor that a machine needing to be plugged in was not really perpetual, the inventor pushed a button on the control panel and the machine exploded.",
       "extractor_judgement": "likely false",
       "context_quote": "When he unplugged the machine and pointed out to the inventor that a perpetual motion machine that had to be plugged in wasn't really perpetual, the inventor pushed a button on the control panel and the machine exploded.",
@@ -51,7 +50,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Mr. L showed the Extropians mailing list an animated GIF he had made to illustrate his drive.",
       "extractor_judgement": "uncertain",
       "context_quote": "Mr. L showed us all an animated GIF he'd made, which showed a circle with smaller masses rotating counterclockwise around its interior. At the top of the circle, the moving masses sped up; at the bottom of the circle, the masses slowed down. So the masses would move faster on the right side of the cylinder than on the left side, which would generate net thrust in a rightward direction because of the greater centrifugal force.",
@@ -91,7 +89,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The trial over the explosion ended with Richard Feynman not having to pay.",
       "extractor_judgement": "likely false",
       "context_quote": "The trial ended up with my father not having to pay.",
@@ -121,7 +118,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Many AI development proposals advocate first building more capable AIs and then using those AIs to align AI.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "Or also eg (added 2026), many variants on: First we will build more capable AIs [where we can easily check that their capabilities are increasing, and automatically set up outer optimizer loops to increase those capabilities, and also get a tone of money and fame] and then we will use those AIs to align AI [where no (publicly scrutinized) proposal exists to check whether the earlier AI's answers are honest or correct].",

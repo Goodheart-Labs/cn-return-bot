@@ -16,7 +16,6 @@
         "helpful": 1,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Aram Harrow is a philosopher who summarized in a new paper that within 18 months of any quantum advantage demonstrations, they have all been reproduced on a conventional computer or shown to be reproducible.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "as the philosopher Aram Harrow just nicely summarized in a new paper, within 18 months of any of these demonstrations, they've all been reproduced on a conventional computer or at least been shown to be reproducible.",
@@ -56,7 +55,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Enrique Solana is one of the founders of the German startup Keepler Quantum.",
       "extractor_judgement": "uncertain",
       "context_quote": "Enrique Solana, one of the founders of the German startup Keepler Quantum, said that we work to reach a NISQ advantage for use cases within 18 to 36 months.",
@@ -86,7 +84,6 @@
         "helpful": 1,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The one exception Aram Harrow named to quantum advantage claims being reproduced on conventional computers was one of the random sampling cases.",
       "extractor_judgement": "uncertain",
       "context_quote": "The one exception he names was one of those random sampling cases.",

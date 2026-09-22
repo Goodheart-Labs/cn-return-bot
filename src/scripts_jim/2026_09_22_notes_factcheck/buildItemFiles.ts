@@ -48,7 +48,6 @@ for (const n of d.notes) {
     commonnotes_url: `https://commonnotes.net/?project=${projects.get(it.project_id).slug}&note=${n.id}`,
     note: n.note,
     votes: { helpful: n.helpful_count, not_helpful: n.not_helpful_count },
-    jim_pick: JIM_PICKS[n.id] ?? null,
     claim: c.claim,
     extractor_judgement: c.judgement,
     context_quote: c.context_quote,

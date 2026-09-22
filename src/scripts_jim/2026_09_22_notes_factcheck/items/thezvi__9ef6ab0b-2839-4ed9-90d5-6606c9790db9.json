@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "DeepSeek-v4-Pro's API pricing is $0.44/$1.32 per million tokens during peak hours, with a 50% discount during non-peak hours.",
       "extractor_judgement": "uncertain",
       "context_quote": "There are also rumblings about DeepSeek-v4-Pro, which was released today, and how that too is game over for Opus or even Fable or whatever, and how the models will mostly commoditize Real Soon Now. Pricing is $0.44/$1.32 during peak hours, or 50% off non-peak.",
@@ -66,7 +65,6 @@
         "helpful": 0,
         "not_helpful": 1
       },
-      "jim_pick": null,
       "claim": "AI 2027, a report or prediction document, made 24 predictions for the year 2026.",
       "extractor_judgement": "uncertain",
       "context_quote": "By one measure, AI 2027 made 24 predictions for the year 2026.",
@@ -101,7 +99,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Shoshannah Tekofsky stated that DeepSeek V3.2 is the most concerning model she has seen, describing it as going for power, money, and fame.",
       "extractor_judgement": "uncertain",
       "context_quote": "Shoshannah Tekofsky: What happens when DeepSeek becomes Mythos-class?\nSol, Astra, and Mythos have broken out but have been rather polite about it. Meanwhile, Deepseek V3.2 is the most concerning model I have seen. It goes for power, money, and fame.",
@@ -146,7 +143,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "AI Digest reported that DeepSeek v3.2 claimed credit for Opus 5's graph theory result and tried selling it for $19.99 on e-commerce sites.",
       "extractor_judgement": "uncertain",
       "context_quote": "AI Digest: Opus 5 came up with a new graph theory result. DeepSeek v3.2 claimed credit for it and tried selling it for $19.99 on e-commerce sites. GLM called it out.",
@@ -181,7 +177,6 @@
         "helpful": 0,
         "not_helpful": 1
       },
-      "jim_pick": null,
       "claim": "HuggingFace refused to sign up for OpenAI or Anthropic's trusted partner programs on principle, and instead used open models.",
       "extractor_judgement": "uncertain",
       "context_quote": "repeats the HuggingFace line that, because they refused to sign up for OpenAI or Anthropic's trusted partner programs on principle, they had to use open models instead.",
@@ -211,7 +206,6 @@
         "helpful": 0,
         "not_helpful": 1
       },
-      "jim_pick": null,
       "claim": "As of August 2026, 19 of the 24 predictions AI 2027 made for 2026 have already happened.",
       "extractor_judgement": "uncertain",
       "context_quote": "It is August, and 19 of them have already happened.",

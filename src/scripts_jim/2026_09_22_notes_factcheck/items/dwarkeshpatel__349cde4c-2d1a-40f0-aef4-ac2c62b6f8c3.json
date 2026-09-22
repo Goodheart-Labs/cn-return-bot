@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "A lookup table with four bits of input and one bit of output can represent 16 different functions according to the number of rows in the truth table.",
       "extractor_judgement": "certainly false",
       "context_quote": "A lookup table has four bits of input and one bit of output. How many different functions are there from four bits to one bit? There are 16 different functions.",

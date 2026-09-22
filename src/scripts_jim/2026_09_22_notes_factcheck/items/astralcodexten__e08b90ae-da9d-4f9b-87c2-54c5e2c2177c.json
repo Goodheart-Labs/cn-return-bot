@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The 1948 National Health Service compromise required doctors to surrender private practice and submit to a state monopsony.",
       "extractor_judgement": "certainly false",
       "context_quote": "The compromise was this: surrender your private practice and submit to a state monopsony, and in exchange you’ll receive lifetime employment security, generous final-salary pensions, the social prestige of belonging to a respected profession, the right to do private work on the side once you reach the consultant grade, and the moral satisfaction of a job whose nature could not be reduced to a balance sheet.",
@@ -41,7 +40,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "In the UK, every trainee doctor changes hospital on the same day, known as Black Wednesday.",
       "extractor_judgement": "likely false",
       "context_quote": "I find this baffling, accustomed as I was to a very different system. Every single trainee in the country changes hospital on the same day.",

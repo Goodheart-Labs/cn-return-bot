@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Being a traitor requires being British.",
       "extractor_judgement": "certainly false",
       "context_quote": "But being a traitor requires you to be British in the first place.",
@@ -61,7 +60,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Since the middle of the 14th century, England has had a concept of everyone having the same rights under the law, protected by a king who was also subject to the law.",
       "extractor_judgement": "certainly false",
       "context_quote": "So you're talking from the middle of the 14th century, 700 years ago nearly there has been this concept of everybody having rights under the law and the same rights under the law and rights that were protected by the king. A king who was also subject to the law.",
@@ -91,7 +89,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "English people have always used the terms English and British synonymously.",
       "extractor_judgement": "certainly false",
       "context_quote": "This is clearly nonsensical particularly because the English have always used the terms English and British synonymously.",

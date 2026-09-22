@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Fermat's Last Theorem states that the equation xⁿ + yⁿ = zⁿ has no integer solutions when n is greater than 2.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "You ask about xⁿ + yⁿ = zⁿ. Do you have integer solutions for this when n is bigger than three?",

@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The Hadza people live on the Kenyan savannah.",
       "extractor_judgement": "likely false",
       "context_quote": "Pritchard is doing a bait-and-switch where she goes from the fact that perhaps the ancestors of the Hadza people on the Kenyan savannah 10,000 years ago were happier than my model would predict",
@@ -51,7 +50,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The dataset used by Pritchard in her critique mixes happiness numbers from between 2019 and 2024.",
       "extractor_judgement": "uncertain",
       "context_quote": "My statement was correct for my 2024 dataset8. Pritchard seems to be looking at some other dataset that mixes numbers from between 2019 and 2024, where some illiberal countries do exceed the US.",
@@ -91,7 +89,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": "good",
       "claim": "According to 2025 World Happiness data, some illiberal countries tie America's happiness level, but none beat it.",
       "extractor_judgement": "uncertain",
       "context_quote": "According to the 2025 numbers, some illiberal countries tie America's happiness, but none beat it.",

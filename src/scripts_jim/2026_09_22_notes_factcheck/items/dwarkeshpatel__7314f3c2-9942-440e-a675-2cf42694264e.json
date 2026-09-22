@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Chinese civilian deaths during the Maoist period (approximately 1945 to 1975) exceeded all deaths in World War II.",
       "extractor_judgement": "uncertain",
       "context_quote": "There are more Chinese civilian deaths here than all deaths in World War II.",
@@ -56,7 +55,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Samuel B. Griffith is the only translator of Sun Tzu who translates the Chinese term '死地' as 'death ground.'",
       "extractor_judgement": "likely false",
       "context_quote": "He is the only translator of Sun Tzu who translates \"死地\" as \"death ground.\" Other people, it's like, oh, I don't know, I can't remember the words",
@@ -91,7 +89,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The book 'On Guerrilla Warfare' attributed to Mao was not actually written by Mao, but by Peng Dehuai and other generals.",
       "extractor_judgement": "uncertain",
       "context_quote": "Oh, Mao is supposed to have written this book called On Guerrilla Warfare. It is not written by Mao. It took time to figure it out, for outsiders. It's written by Peng Dehuai and others, his generals.",
@@ -121,7 +118,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Peng Dehuai lost several siblings to starvation during China's civil wars.",
       "extractor_judgement": "uncertain",
       "context_quote": "He had lost several of his siblings to starvation over the course of these civil wars.",
@@ -166,7 +162,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Only one train line connected Manchuria to South China during the Chinese Civil War period.",
       "extractor_judgement": "uncertain",
       "context_quote": "The only way, given the Chinese railway system, is that literally one train line connects Manchuria to South China.",

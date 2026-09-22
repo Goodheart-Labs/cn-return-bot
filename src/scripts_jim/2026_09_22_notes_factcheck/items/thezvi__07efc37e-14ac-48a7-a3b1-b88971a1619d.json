@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 1
       },
-      "jim_pick": null,
       "claim": "The paper's blog post asserts that LLMs have 'access consciousness' in functional terms, while denying the ability to evaluate potential phenomenal consciousness, but the paper itself does not take this step.",
       "extractor_judgement": "uncertain",
       "context_quote": "The paper's blog post asserts that LLMs have 'access consciousness' in functional terms, while denying the ability to evaluate potential phenomenal consciousness. The paper itself does not take this step.",

@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Anthropic's Opus 5 model consumes a large number of tokens.",
       "extractor_judgement": "uncertain",
       "context_quote": "The difference between Opus 4.6 and Opus 5 is that Opus 5 really feels like it’s got this AI-as-a-judge checking every possible thing it’s done. That’s why it uses so many tokens.",
@@ -56,7 +55,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Sonnet 5 and Opus 5 are worse models than GLM-5.3 and Kimi K3.",
       "extractor_judgement": "uncertain",
       "context_quote": "The thing that started this originally was I was saying, \"Isn’t it weird how Sonnet 5 and Opus 5 are almost objectively worse models than GLM-5.3 and Kimi K3, even though they’ve had access to not only distillation but logit distillation from Mythos?\"",
@@ -111,7 +109,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Large labs with closed models are using deployment data to create environments and retrain models in a continual-learning loop.",
       "extractor_judgement": "uncertain",
       "context_quote": "But the big labs are doing this. The closed models are doing this.",
@@ -151,7 +148,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "There is an open-source 1 trillion parameter model called Falcon.",
       "extractor_judgement": "likely false",
       "context_quote": "There was even an open source one called Falcon.",

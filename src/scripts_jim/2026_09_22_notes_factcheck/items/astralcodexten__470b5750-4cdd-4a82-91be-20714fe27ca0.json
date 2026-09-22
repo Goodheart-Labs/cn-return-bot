@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Fable (an AI system) believes that it is impossible for any AI to ever play chess so well that it could win with a queen handicap (equivalent to an 8-pawn advantage) unless adversarial examples relative to the human brain could be encoded onto a chessboard.",
       "extractor_judgement": "uncertain",
       "context_quote": "Fable seems extremely convinced that it's impossible for any AI to ever play chess so well that it could win with a queen (=8 pawn) handicap, unless you could somehow encode adversarial-examples-relative-to-the-human-brain onto a chessboard.",

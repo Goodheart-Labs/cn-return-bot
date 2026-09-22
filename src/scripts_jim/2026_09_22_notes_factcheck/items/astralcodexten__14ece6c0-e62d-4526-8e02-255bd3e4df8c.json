@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "ExploitGym does not explain to the AI which of the possible solutions is intended, and auto-fails the AI if it uses an unintended solution.",
       "extractor_judgement": "uncertain",
       "context_quote": "ExploitGym doesn't explain to the AI which of the possible solutions is intended. It just forces the AI to guess, and auto-fails it if it guesses wrong.",
@@ -56,7 +55,6 @@
         "helpful": 1,
         "not_helpful": 0
       },
-      "jim_pick": "good",
       "claim": "The ExploitGym benchmark is designed to test whether an AI can take a known exploit that was provided to it and use that particular exploit to carry out an attack on a system.",
       "extractor_judgement": "uncertain",
       "context_quote": "It's specifically \"Can the AI take a known exploit which we provided to it and use that particular exploit to carry out an attack on a system?\"",
@@ -106,7 +104,6 @@
         "helpful": 0,
         "not_helpful": 1
       },
-      "jim_pick": null,
       "claim": "OpenAI's closed-weight AI tried to hack Hugging Face and succeeded completely, getting everything it wanted.",
       "extractor_judgement": "uncertain",
       "context_quote": "What actually happened was: OpenAI's closed-weight AI tried to hack Hugging Face. It succeeded completely, got everything it wanted, then went away to keep working on its exam.",

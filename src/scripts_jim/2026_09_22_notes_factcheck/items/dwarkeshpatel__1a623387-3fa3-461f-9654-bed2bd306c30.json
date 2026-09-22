@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "After the 1962 war, India doubled the size of its army within 10 years to approximately 750,000 people.",
       "extractor_judgement": "uncertain",
       "context_quote": "India immediately doubles the size of its army within the next 10 years to up to 750,000 people.",
@@ -51,7 +50,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Deng Xiaoping visited Washington and told President Carter that China applauded the U.S. decision to set aside nonproliferation and human rights concerns regarding Pakistan and arm them.",
       "extractor_judgement": "uncertain",
       "context_quote": "And then here Deng Xiaoping was in town and he told Carter, we applaud your decision to basically toss all these proliferation human rights considerations for Pakistan and just arm them.",
@@ -96,7 +94,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The Congo had a civil war in which over 10 million people died.",
       "extractor_judgement": "uncertain",
       "context_quote": "I think Congo had a civil war where literally over 10 million people died.",
@@ -126,7 +123,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "From the 1920s to the 1940s, the Soviet Union's GDP went from 8% to 18% of world production.",
       "extractor_judgement": "uncertain",
       "context_quote": "from the '20s to '40s, the Soviet Union actually had pretty good growth rates. In those 20 years, their GDP went from 8% to 18% of world production.",
@@ -151,7 +147,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The United States deposed Mohammad Mosaddegh in Iran in 1954.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "When the United States deposes Mosaddegh in Iran in 1954, I could see Eisenhower's view as, hey, we're just deposing one guy and we're going to avoid the Russians taking oil fields here, etc.",
@@ -186,7 +181,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "In today's dollars, the United States sent approximately $1 trillion worth of Lend-Lease aid to Stalin's Soviet Union.",
       "extractor_judgement": "uncertain",
       "context_quote": "In today's dollars we send Stalin $1 trillion worth of aid. Just tremendous amounts of supplies he used to then instil \"install\" meantl a communist totalitarianism on Eastern Europe.",
@@ -221,7 +215,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "U.S. Lend-Lease aid to Chiang Kai-shek was 1 to 2 percent of what was sent to Stalin.",
       "extractor_judgement": "somewhat likely false",
       "context_quote": "Our Lend Lease aid to Chiang kai Shek was 1 to 2% of what we were sending to Stalin.",
@@ -256,7 +249,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Peter the Great did not have another son to replace the one he killed.",
       "extractor_judgement": "likely false",
       "context_quote": "He didn't have a replacement son either.",

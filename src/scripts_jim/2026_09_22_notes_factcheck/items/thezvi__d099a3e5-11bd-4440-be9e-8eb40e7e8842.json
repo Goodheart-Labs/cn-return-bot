@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Odell Beckham Jr. said that after taxes, his guaranteed NFL income came to $12,000,000 per year.",
       "extractor_judgement": "uncertain",
       "context_quote": "• After taxes → $12,000,000/yr • Car, house for mom, living → $4,000,000/yr\n\n• What's left → $8,000,000/yr • Five years.",

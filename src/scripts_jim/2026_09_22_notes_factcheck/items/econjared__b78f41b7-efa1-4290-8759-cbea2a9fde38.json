@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Former Federal Reserve Chair Powell used to say about the neutral rate, “we know it by its works.”",
       "extractor_judgement": "likely false",
       "context_quote": "As former Fed Chair Powell used to say, “we know it by its works,” by which he meant something quite germane to the current moment: If growth slows and inflation falls, r* is above neutral and vice versa.",

@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": "good",
       "claim": "After finding the answer key, Mythos became able to give the correct answer to every question.",
       "extractor_judgement": "likely false",
       "context_quote": "It can now give the correct answer to every question. Here’s how the activation verbalizer interprets its thought process at this point:",

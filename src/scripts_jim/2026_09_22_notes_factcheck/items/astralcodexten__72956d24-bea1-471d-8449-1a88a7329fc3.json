@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Nodens is the King of the Fairies.",
       "extractor_judgement": "uncertain",
       "context_quote": "After many digressions - cursed rings, silver hands, the founding of London - he speculated that it came from the root *noudont, meaning “Catcher”, a reference to Nodens’ supposed role as a hunting god. But nothing in Irish or Welsh or English mythology mentions Nodens/Nuada/Lludd/Lud hunting a single animal, or caring about the pastime in the slightest. So I propose a different meaning. To the King of the Fairies, human history is a projectile, shot straight into the void, gathering speed as it goes, until very soon it will be irrecoverable.",
@@ -81,7 +80,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Luddites sent lists of demands to factory owners, and the lists were always signed \"Ned Ludd\".",
       "extractor_judgement": "likely false",
       "context_quote": "When they settled on a common tactic - sending lists of demands to factory-owners - the lists were always signed “Ned Ludd”.",

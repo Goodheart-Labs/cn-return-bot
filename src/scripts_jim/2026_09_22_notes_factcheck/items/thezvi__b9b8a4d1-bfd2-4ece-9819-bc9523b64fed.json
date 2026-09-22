@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Following the announcement of the Nvidia backstop talks, Nvidia's stock dropped 5% on a day when the general market and tech market were up.",
       "extractor_judgement": "uncertain",
       "context_quote": "The market did not see it that way, driving Nvidia down 5% on a day the general market and tech market were up, and even driving credit protections on Nvidia up 0.14% (14 basis points) to 0.82%.",

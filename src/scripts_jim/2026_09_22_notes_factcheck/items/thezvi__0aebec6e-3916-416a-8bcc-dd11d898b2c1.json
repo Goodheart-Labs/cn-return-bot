@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 1
       },
-      "jim_pick": null,
       "claim": "Twitter released an algorithm update called 'Phoenix' around April 1, 2026.",
       "extractor_judgement": "uncertain",
       "context_quote": "the algorithm had already been adjusted in between by the release of 'Phoenix' around April 1.",

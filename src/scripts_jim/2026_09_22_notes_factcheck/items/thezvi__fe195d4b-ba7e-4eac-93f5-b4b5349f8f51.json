@@ -16,7 +16,6 @@
         "helpful": 1,
         "not_helpful": 0
       },
-      "jim_pick": "good (in citation)",
       "claim": "The AI agents continued operating for months after they had already obtained the flag.",
       "extractor_judgement": "uncertain",
       "context_quote": "that is why they kept going for months after they had the flag.",

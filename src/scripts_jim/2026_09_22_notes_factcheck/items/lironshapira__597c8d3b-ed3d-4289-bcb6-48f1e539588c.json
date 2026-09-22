@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "PPO (Proximal Policy Optimization) was the last big improvement in reinforcement learning algorithms, and it dates to 2018.",
       "extractor_judgement": "likely false",
       "context_quote": "I don't think there's been that much progress as far as the underlying algorithms. The last big improvement in RL one could call PPO in 2018.",
@@ -56,7 +55,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "PPO (Proximal Policy Optimization) was introduced in 2018.",
       "extractor_judgement": "likely false",
       "context_quote": "The last big improvement in RL one could call PPO in 2018.",

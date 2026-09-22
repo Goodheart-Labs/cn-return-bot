@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "In Minnesota, SEIU chapters started organizing against autonomous vehicle legislation before Waymo even announced expansion plans in the state.",
       "extractor_judgement": "uncertain",
       "context_quote": "In Minnesota, SEIU chapters started organizing against AV legislation before Waymo even announced expansion plans.",

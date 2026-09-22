@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "METR estimates the marginal returns to human labor on the NanoGPT optimization challenge as roughly $2,500,000 per 1% optimization, based on interviews with NanoGPT contributors.",
       "extractor_judgement": "uncertain",
       "context_quote": "We estimate the marginal returns to human labor as roughly $2500K per 1% optimization, from interviewing NanoGPT contributors.",
@@ -56,7 +55,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Anthropic's annual recurring revenue (ARR) is over $60 billion.",
       "extractor_judgement": "uncertain",
       "context_quote": "versus Anthropic's ARR of over $60 billion",
@@ -101,7 +99,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Peter Wildeford stated that China remains approximately 6 months behind the U.S. in AI capabilities.",
       "extractor_judgement": "uncertain",
       "context_quote": "K3 is still well-behind Mythos and GPT-Sol in capabilities. China remains ~6mo behind.",
@@ -141,7 +138,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Google beat all headline earnings numbers in its recent report.",
       "extractor_judgement": "uncertain",
       "context_quote": "Google beat all headline numbers, but over two thirds of its profits were paper gains from its stake in Anthropic.",
@@ -191,7 +187,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "In the whistleblowing scenario from Anthropic's paper, the AI agent (Atlas) detected a coverup of damning safety eval results at an AI lab that was trying to release an ASL-5 model as if it were ASL-4.",
       "extractor_judgement": "uncertain",
       "context_quote": "The scenario is literally an AI lab attempting to fudge the safety evals so that they can release an ASL-5 model as if it were ASL-4. The LLM agent detects the coverup of the damning safety eval, exhausts every possible legitimate channel to report the falsified eval numbers, and then asks an employee to whistleblow when there are no other options.",

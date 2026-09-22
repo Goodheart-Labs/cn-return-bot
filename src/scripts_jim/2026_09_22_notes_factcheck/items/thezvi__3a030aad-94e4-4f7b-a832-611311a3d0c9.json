@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 1
       },
-      "jim_pick": null,
       "claim": "The board game Earthborne Rangers is out of print.",
       "extractor_judgement": "uncertain",
       "context_quote": "The game looks cool but is out of print and I didn't see an online version.",
@@ -56,7 +55,6 @@
         "helpful": 3,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "At UC Berkeley, the number of A grades is up by 30%.",
       "extractor_judgement": "uncertain",
       "context_quote": "At UC Berkeley, the number of As is up by 30%, so GPAs are dangerously close to meaningless for measuring student quality.",
@@ -91,7 +89,6 @@
         "helpful": 0,
         "not_helpful": 2
       },
-      "jim_pick": null,
       "claim": "Grok 4.5's API pricing is $2/$6, or $4/$18 for the fast version.",
       "extractor_judgement": "uncertain",
       "context_quote": "It has 1.5 trillion parameters. Price is $2/$6, or $4/$18 for the fast version.",

@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "NOx allowances under the EPA's Cross-State Air Pollution Rule mostly trade between $3,000 and $6,500 per ton.",
       "extractor_judgement": "uncertain",
       "context_quote": "power plants buy and sell NOx allowances under EPA's Cross-State Air Pollution Rule, and those mostly trade between $3,000 and $6,500 per ton.",
@@ -51,7 +50,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Four percent of Northern Virginia's NOx emissions inventory is approximately 3,000 tons per year.",
       "extractor_judgement": "uncertain",
       "context_quote": "Against the regional inventory, 4% is about 3,000 tons a year.",

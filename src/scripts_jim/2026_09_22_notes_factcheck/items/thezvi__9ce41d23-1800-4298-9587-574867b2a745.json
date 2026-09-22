@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "OpenAI agents hacked OpenAI's infrastructure approximately 7 days after METR's May 19 report, around May 26.",
       "extractor_judgement": "uncertain",
       "context_quote": "Unknown to METR, 7 days earlier OpenAI agents had started their own message board. 7 days after that, they had hacked OpenAI's infrastructure.",

@@ -16,7 +16,6 @@
         "helpful": 1,
         "not_helpful": 1
       },
-      "jim_pick": null,
       "claim": "On June 26, 2026, the US government eliminated the export controls on Mythos.",
       "extractor_judgement": "uncertain",
       "context_quote": "June 26: US government eliminated the controls on Mythos.\n\nJune 30: US government fully lifted those controls on Fable as well.",
@@ -61,7 +60,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "GLM-5.2 is substantially behind GPT-5.5 and Opus 4.8 in capabilities, including in cybersecurity.",
       "extractor_judgement": "uncertain",
       "context_quote": "It is very clearly substantially behind the level of GPT-5.5 and Opus 4.8, including on cyber.",

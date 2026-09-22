@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Most continental philosophers believe that reality is subjective, meaning there is no external world and only people's beliefs exist.",
       "extractor_judgement": "likely false",
       "context_quote": "For example, continental philosophers seem to mostly agree that reality is _subjective_—that there is not a world out there but only beliefs that people have.",
@@ -61,7 +60,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Continental philosophers rarely state their belief in subjectivity in plain English but often criticize the belief in an external world.",
       "extractor_judgement": "likely false",
       "context_quote": "They rarely state this belief in plain English but they’ll often take pot-shots at the belief that there’s an external world.",

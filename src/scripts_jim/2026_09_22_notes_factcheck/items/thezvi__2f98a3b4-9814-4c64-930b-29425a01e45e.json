@@ -16,7 +16,6 @@
         "helpful": 1,
         "not_helpful": 1
       },
-      "jim_pick": null,
       "claim": "Emil Michael holds the position of Under Secretary of War.",
       "extractor_judgement": "uncertain",
       "context_quote": "Under Secretary of War Emil Michael: Every industry/ecosystem has its supreme village idiot.",
@@ -61,7 +60,6 @@
         "helpful": 1,
         "not_helpful": 1
       },
-      "jim_pick": null,
       "claim": "Ryan Greenblatt estimates that Kimi K3 is approximately 8 months behind the frontier.",
       "extractor_judgement": "uncertain",
       "context_quote": "Ryan Greenblatt, despite being pleasantly surprised by Kimi K3, estimates that the pretrain quality is about halfway between Opus 4 and Opus 4.5 based on forward pass math, but with some other advantages, so ~8 months behind, as one might expect.",

@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": "maybe",
       "claim": "Trump threatened Iran's power plants but ultimately did not follow through.",
       "extractor_judgement": "uncertain",
       "context_quote": "Trump indeed made a big deal out of threatening Iran's power plants, but ultimately backed down because that is barbaric and hurts innocent people",
@@ -51,7 +50,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "Dario Amodei's prediction about AI writing 90 percent of code was made approximately 17 months before the article was written.",
       "extractor_judgement": "uncertain",
       "context_quote": "That exact thing has now, 17 months later, rather clearly happened.",

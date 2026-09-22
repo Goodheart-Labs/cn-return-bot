@@ -16,7 +16,6 @@
         "helpful": 0,
         "not_helpful": 0
       },
-      "jim_pick": null,
       "claim": "The study did not control for the effect of warm building surfaces and pavement replacing grass on the satellite temperature measurements.",
       "extractor_judgement": "uncertain",
       "context_quote": "They're assuming the land has warmed, but it hasn't, and they're only observing that there are additional warm buildings in the areas they are analyzing. They did not control for this at all and don't even reference it as a possibility.",
