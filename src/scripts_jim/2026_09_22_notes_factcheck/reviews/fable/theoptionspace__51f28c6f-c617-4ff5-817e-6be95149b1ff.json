@@ -1,0 +1,18 @@
+{
+  "item_id": "51f28c6f-c617-4ff5-817e-6be95149b1ff",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "4882acce-425f-40bf-9356-24a502e4d1ef",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "send_advice": "Send it paired with the author's exact words, since the pipeline attached it to the wrong claim and the note never quotes the sentence it corrects. Replace the first sentence with: \"The 1987 Montreal Protocol did not include a Multilateral Fund; its Article 10 only promised technical assistance. The Fund came with the 1990 London Amendment and started in 1991, after China and India had refused to join the 1987 treaty over the lack of financial help.\"",
+      "reason": "The words are the author's own, in his summary of the ozone case: \"the proposed treaty included sophisticated governance tools like a 'start-and-strengthen' design, trade sanctions, and a Multilateral Fund for developing nations.\" The note's facts hold up. The UNEP page says the Fund \"was established in 1991 under Article 10 of the treaty\", the Multilateral Fund's own history dates the financial mechanism to the 1990 London Amendment and the interim Fund to 1 January 1991, and the 1987 treaty text on the UN treaty site has an Article 10 headed \"Technical assistance\" with no fund; a 2002 paper on China (Zhao) adds that China refused to sign the 1987 protocol precisely because it offered no adequate financial assistance. That last point makes the correction substantive rather than a date quibble: the author lists the Fund as one of the ready-made solutions that were \"waiting\" when the 1985 ozone hole hit, but the Fund was in fact the product of three more years of bargaining after the treaty, which cuts against the paragraph's argument. Two things keep this at uncertain. The pipeline filed the note under the claim about UNEP's institutional framework, which is true and which the note does not address, so on the site the pairing looks confused and Nathan must quote the right sentence himself. And the author could answer that \"start-and-strengthen\" already concedes the treaty was built to be tightened later and that he meant the Montreal regime as a whole; he would probably accept the date, but it dents his point, so acceptance is not certain."
+    }
+  ]
+}

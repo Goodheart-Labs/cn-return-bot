@@ -1,0 +1,18 @@
+{
+  "item_id": "12758e67-8fb0-4161-be91-36e717b9f460",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "57e385bd-83f5-4384-b864-2ab6b75f7f69",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "The sentence is Slow Boring's own reporting in its Wisconsin section: the Marquette poll \"included former Lieutenant Governor Mandela Barnes, who at the time was no longer in the race but has now stepped back in after Rodriguez pulled out.\" Nobody is being quoted or argued against, so the claim is the author's own. I checked the note's sources myself. The Marquette poll page on Fox6 gives the timeline as July 8 Crowley suspends and endorses Rodriguez, July 17 Rodriguez suspends, July 18 Crowley reenters with Evers's endorsement, and says outright that Crowley was left out of the poll because he suspended before the July 8 to 16 field period and returned after it. WPR says the same and lists Barnes inside the poll at 15 to 18 percent and as the only Democrat leading Tiffany 44 to 40, the very number the post uses in its next sentence. Independent searches confirm Barnes never left the race before this post: AP, NBC and the Guardian all date his one exit to July 30, three days after publication, with no earlier exit and return, and WPR's July 20 story on Crowley's return has Barnes still campaigning and criticising Crowley. So the post attached Crowley's exit and comeback to Barnes, which misleads readers about who is in the field in a races-to-watch item and leaves Crowley, now the Evers-endorsed candidate, out entirely. The note names the swap precisely, and Slow Boring is likely to accept a checkable factual correction of this kind."
+    }
+  ]
+}

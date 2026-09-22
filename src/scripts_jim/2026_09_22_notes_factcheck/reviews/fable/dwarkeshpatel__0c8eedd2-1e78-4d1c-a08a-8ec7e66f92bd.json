@@ -1,0 +1,29 @@
+{
+  "item_id": "0c8eedd2-1e78-4d1c-a08a-8ec7e66f92bd",
+  "reviewer": "fable",
+  "source_read": "fetched:https://www.dwarkesh.com/p/adam-brown-gr",
+  "notes": [
+    {
+      "note_id": "06806a9f-aaea-4725-905c-fbba9b68b7a4",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "no",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "guest",
+      "send_advice": "Replace the second sentence with: 'The LIGO-Virgo-KAGRA catalogue GWTC-5.0, released in May 2026, lists 390 events in total, and the final stretch of the fourth observing run added about 70 more candidates.' Cite https://ligo.org/science-summaries/o4b_catalog_omnibus/ instead of the GWTC-3 page.",
+      "reason": "The words are Adam Brown's, from the lecture he gives in this episode. Dwarkesh publishes the lecture as an introduction to general relativity and never questions this passage, so the episode stands behind it, but a correction still lands on the guest rather than on Dwarkesh. Dwarkesh's own published transcript has exactly the wording 'We've now felt thousands of such shakings corresponding to thousands of black hole mergers', so this is not a caption error. The tally is hundreds, not thousands: the GWTC-5.0 catalogue of May 2026 lists 390 events since 2015, and the last part of the fourth run added 68 more candidates, so the total is under 500 even on a generous count. The note's own second sentence is wrong in the other direction, because it says the catalogues hold about 90 detections 'with O4 adding dozens more', when the fourth run added roughly 300 to the catalogue and the note cites only the old GWTC-3 page. Sent as written, the note undercounts by a factor of three and a physicist would notice at once. The correction is also modest in importance: Adam's point that we have felt many such events survives whether the number is 400 or 4000, so even a fixed note may read as a quibble to him."
+    },
+    {
+      "note_id": "25053799-047c-43e3-93bf-cab327d0376a",
+      "verdict": "good",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "guest",
+      "send_advice": null,
+      "reason": "This is Adam Brown speaking in his lecture, and Dwarkesh presents the lecture as the episode's teaching content without disputing it, so the statement is what the episode teaches even though the words are the guest's. Dwarkesh's published transcript confirms the wording 'the sun is a few million times the mass of the Earth', so this is not a caption artefact. The real ratio is about 333,000 (Wikipedia: 'The solar mass is about 333000 times the mass of Earth'), so he is off by roughly a factor of ten, exactly as the note says. It is a slip inside a worked calculation rather than a simplification: the answer he states one sentence later, the solar surface redshift of 2 x 10^-6, only comes out when you use the true ratio of about 333,000 divided by the sun's radius ratio of about 109, which gives about 3,000 times the Earth value; 'a few million' would give ten times too much. A listener trying to follow the numbers cannot reproduce his result. The number is standard, the note is short and neutral, and a physicist would accept it without argument."
+    }
+  ]
+}

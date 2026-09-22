@@ -1,0 +1,29 @@
+{
+  "item_id": "c3ec4a83-f38c-4593-8451-d118a5b844e1",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "eed4f1e0-adb9-45a9-b159-d5218ada73d4",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "reason": "Scott writes the figure in his own voice while summarising Nan Ransohoff's essay: \"OpenAI gave 26% of equity to an associated nonprofit foundation; this is worth ~$300 billion.\" He then adds Anthropic's $100 billion and turns the $400 billion total into the $40 billion a year flow that the rest of the section is built on, so the number carries weight. The note is right on the substance. OpenAI's last priced valuation before and after the post was $852 billion (the March 2026 round, and the August 2026 employee share sale was done at the same price), which makes a 26% stake about $220 billion, and Ransohoff's own essay, the piece Scott is linking, says \"The OpenAI Foundation holds 26% of OpenAI, worth about $220B at today's valuation.\" So Scott is about $80 billion above his own source; $300 billion would need a valuation near $1.15 trillion, which was only being discussed in September 2026, two months after the post. The reason I stop short of good is the note's own wording. Its opening \"roughly 25.8%\" is a blog-derived dilution figure that contradicts Scott's 26% and the note's own OpenAI source, which says 26%, and it reads as a nitpick stacked on top of the real correction. The trailing $130 billion figure from October 2025 is accurate but stale and adds nothing once the $220 billion figure is there. With those two trimmed the note is a clean correction that Scott would very likely accept.",
+      "send_advice": "Replace the first sentence with \"The OpenAI Foundation holds about 26% of OpenAI Group PBC.\" and drop the clause \"; at the October 2025 recapitalization OpenAI itself valued it at $130B\". Consider adding that Ransohoff's own essay puts the stake at about $220B."
+    },
+    {
+      "note_id": "971736a5-d686-4acf-bd35-70f679ac4b56",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "reason": "This is Scott's own estimate, hedged with \"probably\" but used as the base for his sizing: \"existing effective altruist funding (probably only ~$5 billion/year, so even if only 25% of AI philanthropic money goes to these causes it could effectively triple it)\". The note's core claim holds. Coefficient Giving, the former Open Philanthropy and by far the largest EA funder, directed just over $1 billion in 2025 and calls that the most in its history; GiveWell directed about $427 million in 2025 (partly overlapping with Coefficient); Founders Pledge, Longview, SFF, EA Funds and the rest add a few hundred million more. So existing EA giving was roughly $2 billion a year in 2025, not $5 billion, which is a two to threefold overstatement in the number that anchors the \"triple it\" claim, even though the correction makes Scott's point stronger. Two things give me pause. First, the sentence \"Open Philanthropy's ~$5B figure is cumulative since 2014, not annual\" is a guess about where Scott's number came from. Coefficient's careers page does say \"over $5 billion since 2014\", so such a figure exists, but its home page now says $7 billion and nothing in the post shows Scott used it; stating the diagnosis as fact invites a \"that is not where I got it\" reply. Second, the note's \"$1–2B\" fits 2025, but Coefficient says it is on track to more than double its giving in 2026 and in September 2026 raised its GiveWell commitment to $1 billion, so the current run rate is nearer $3 billion; that growth is the AI windfall arriving rather than the pre-existing base Scott means, but a reader could use it against the note. The EA Forum source the note cites gives its totals only in charts, so the \"$1.5–2 billion\" reading of it cannot be checked from the text; the Coefficient and GiveWell figures are stronger sources.",
+      "send_advice": "Drop the sentence \"Open Philanthropy's ~$5B figure is cumulative since 2014, not annual\" and replace the first two sentences with: \"Existing EA-aligned giving was roughly $2B in 2025, not $5B: Coefficient Giving (formerly Open Philanthropy) directed just over $1B, its highest ever, GiveWell about $0.4B, and the other funders a few hundred million combined.\""
+    }
+  ]
+}
