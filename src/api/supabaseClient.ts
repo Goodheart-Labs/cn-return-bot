@@ -3,7 +3,7 @@ import { fetchAllRows as fetchAllRowsShared } from "./paging";
 import type { Post } from "./fetchEligiblePosts";
 import type { FeedSize } from "../pipeline/orchestration/utils/feedSizeStrategy";
 import { NOTE_RATER_SCORE_TYPE } from "../pipeline/prompts/noteRater";
-import type { NoteRating } from "../pipeline/score/noteRater";
+import { raterPriority, type NoteRating } from "../pipeline/score/noteRater";
 import { stripNullChars } from "../utils/stripNullChars";
 import type { QueuedRun, QueuedTweetRow } from "../pipeline/orchestration/noteQueue";
 
@@ -767,36 +767,18 @@ export class SupabaseLogger {
     return count ?? 0;
   }
 
-  /** The note rater's scores (helpful minus not helpful) of every note rated
-   *  in the last `windowDays`, for the rater bar. */
-  async fetchNoteRaterScores(windowDays: number): Promise<number[]> {
-    const since = new Date(Date.now() - windowDays * 86_400_000).toISOString();
-    const scores: number[] = [];
-    for (let offset = 0; ; offset += 1000) {
-      const { data, error } = await this.client
-        .from("pipeline_scores")
-        .select("score_value")
-        .eq("score_type", NOTE_RATER_SCORE_TYPE)
-        .gte("created_at", since)
-        .order("created_at", { ascending: true })
-        .order("id", { ascending: true })
-        .range(offset, offset + 999);
-      if (error) throw error;
-      for (const r of data ?? []) if (typeof r.score_value === "number") scores.push(r.score_value);
-      if (!data || data.length < 1000) break;
-    }
-    return scores;
-  }
-
   /** Stores the note rater's forecast for a finished note. */
   async recordNoteRating(runId: string, rating: NoteRating): Promise<void> {
     await this.addPipelineScore(runId, {
       score_type: NOTE_RATER_SCORE_TYPE,
-      score_value: rating.pHelpful - rating.pNotHelpful,
+      score_value: raterPriority(rating),
       score_label: `${Math.round(rating.pHelpful * 100)}/${Math.round(rating.pNotHelpful * 100)}`,
       score_metadata: {
         p_helpful: rating.pHelpful,
         p_not_helpful: rating.pNotHelpful,
+        p_helpful_calibrated: rating.pHelpfulCalibrated,
+        p_not_helpful_calibrated: rating.pNotHelpfulCalibrated,
+        calibration_fitted_at: rating.calibrationFittedAt,
         model: rating.model,
         cost: rating.cost,
         engages: rating.engages,
@@ -939,6 +921,8 @@ export class SupabaseLogger {
       if (typeof m.p_helpful !== "number" || typeof m.p_not_helpful !== "number") continue;
       ratingByRun.set(s.pipeline_run_id as string, {
         pHelpful: m.p_helpful, pNotHelpful: m.p_not_helpful,
+        ...(typeof m.p_helpful_calibrated === "number" && typeof m.p_not_helpful_calibrated === "number"
+          ? { pHelpfulCalibrated: m.p_helpful_calibrated, pNotHelpfulCalibrated: m.p_not_helpful_calibrated, calibrationFittedAt: String(m.calibration_fitted_at ?? "") } : {}),
         model: String(m.model ?? ""), cost: Number(m.cost ?? 0),
       });
     }

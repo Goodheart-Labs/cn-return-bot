@@ -10,6 +10,7 @@ import { parseJsonWithRetry } from "../utils/jsonLlmCall";
 import { stripJsonFences } from "../utils/jsonOutput";
 import { withLlmAbortSignal } from "../llm/llm";
 import type { SupabaseLogger } from "../../api/supabaseClient";
+import { calibrate, loadCalibration } from "./raterCalibration";
 import {
   NOTE_RATER_SYSTEM_PROMPT,
   NOTE_RATER_RESPONSE_FORMAT,
@@ -20,6 +21,11 @@ import {
 export const NOTE_RATER_MODEL = "google/gemini-3.8-flash";
 
 export interface NoteRating {
+  /** The raw numbers adjusted by the calibration (score/raterCalibration.ts).
+   *  Missing on a rating stored before calibration existed. */
+  pHelpfulCalibrated?: number;
+  pNotHelpfulCalibrated?: number;
+  calibrationFittedAt?: string;
   pHelpful: number;
   pNotHelpful: number;
   model: string;
@@ -30,7 +36,11 @@ export interface NoteRating {
 }
 
 /** Higher goes first. Probabilities are 0-1. */
-export function raterPriority(r: Pick<NoteRating, "pHelpful" | "pNotHelpful">): number {
+/** The forecast the bot acts on: calibrated chance of helpful minus
+ *  calibrated chance of not helpful. Raw numbers when no calibration was
+ *  applied (older stored ratings). */
+export function raterPriority(r: Pick<NoteRating, "pHelpful" | "pNotHelpful" | "pHelpfulCalibrated" | "pNotHelpfulCalibrated">): number {
+  if (r.pHelpfulCalibrated !== undefined && r.pNotHelpfulCalibrated !== undefined) return r.pHelpfulCalibrated - r.pNotHelpfulCalibrated;
   return r.pHelpful - r.pNotHelpful;
 }
 
@@ -115,11 +125,15 @@ export async function rateCandidate(
   try {
     const rating = await withLlmAbortSignal(AbortSignal.timeout(RATER_TIMEOUT_MS), () =>
       rateNote({ postText: note.postText, noteText, sourceUrl: note.sourceUrl ?? null }));
+    const cal = await loadCalibration(logger);
+    rating.pHelpfulCalibrated = calibrate(rating.pHelpful, cal.helpful);
+    rating.pNotHelpfulCalibrated = calibrate(rating.pNotHelpful, cal.notHelpful);
+    rating.calibrationFittedAt = cal.fittedAt;
     if (logger && note.pipelineRunId) {
       try { await logger.recordNoteRating(note.pipelineRunId, rating); }
       catch (err) { console.warn(`[noteRater] could not store the forecast for ${note.tweetId}:`, err); }
     }
-    console.log(`[noteRater] ${note.tweetId}: helpful ${Math.round(rating.pHelpful * 100)}%, not helpful ${Math.round(rating.pNotHelpful * 100)}%`);
+    console.log(`[noteRater] ${note.tweetId}: helpful ${Math.round(rating.pHelpful * 100)}% -> ${(100 * rating.pHelpfulCalibrated).toFixed(1)}%, not helpful ${Math.round(rating.pNotHelpful * 100)}% -> ${(100 * rating.pNotHelpfulCalibrated).toFixed(1)}%`);
     return rating;
   } catch (err) {
     console.warn(`[noteRater] forecast failed for ${note.tweetId}:`, (err as Error)?.message ?? err);

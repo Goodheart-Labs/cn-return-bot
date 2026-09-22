@@ -17,11 +17,15 @@ afterEach(() => {
 
 describe("rateCandidate", () => {
   test("forecasts the note and stores the forecast against its run", async () => {
-    spyOn(noteRater, "rateNote").mockResolvedValueOnce(rating);
+    spyOn(noteRater, "rateNote").mockResolvedValueOnce({ ...rating });
     const recordNoteRating = mock(async () => {});
     const logger = { recordNoteRating } as unknown as SupabaseLogger;
-    expect(await rateCandidate(logger, note)).toEqual(rating);
-    expect(recordNoteRating.mock.calls).toEqual([["run-1", rating]] as any);
+    const got = await rateCandidate(logger, note);
+    expect(got).toMatchObject({ ...rating, calibrationFittedAt: "2026-09-12" });
+    // The calibration pulls the raw numbers down to the observed level.
+    expect(got!.pHelpfulCalibrated!).toBeLessThan(rating.pHelpful); expect(got!.pNotHelpfulCalibrated!).toBeLessThan(rating.pNotHelpful);
+    const stored = (recordNoteRating.mock.calls as unknown as [string, unknown][])[0]!;
+    expect(stored[0]).toBe("run-1"); expect(stored[1]).toBe(got);
   });
 
   test("a rater failure returns null and does not throw", async () => {
@@ -30,13 +34,13 @@ describe("rateCandidate", () => {
   });
 
   test("a failure to store the forecast still returns it", async () => {
-    spyOn(noteRater, "rateNote").mockResolvedValueOnce(rating);
+    spyOn(noteRater, "rateNote").mockResolvedValueOnce({ ...rating });
     const logger = { recordNoteRating: mock(async () => { throw new Error("db down"); }) } as unknown as SupabaseLogger;
-    expect(await rateCandidate(logger, note)).toEqual(rating);
+    expect(await rateCandidate(logger, note)).toMatchObject(rating);
   });
 
   test("switched off, or with no note text, it makes no call", async () => {
-    const rate = spyOn(noteRater, "rateNote").mockResolvedValue(rating);
+    const rate = spyOn(noteRater, "rateNote").mockResolvedValue({ ...rating });
     expect(await rateCandidate(null, { ...note, noteText: "" })).toBeNull();
     process.env.NOTE_RATER_ENABLED = "false";
     expect(await rateCandidate(null, note)).toBeNull();

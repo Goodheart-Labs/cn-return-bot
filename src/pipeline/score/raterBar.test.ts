@@ -1,21 +1,15 @@
 import { afterEach, expect, test } from "bun:test";
-import { raterBarFrom, raterBarKeepShare } from "./raterBar";
+import { DEFAULT_BAR_MIN_NET, raterBar } from "./raterBar";
 
-afterEach(() => { delete process.env.NOTE_BAR_KEEP_SHARE; });
+afterEach(() => { delete process.env.NOTE_BAR_MIN_NET; });
 
-test("no bar with too few scores, or when everything is kept", () => {
-  expect(raterBarFrom(Array.from({ length: 49 }, (_, i) => i / 100), 0.5)).toBeNull();
-  expect(raterBarFrom(Array.from({ length: 200 }, (_, i) => i / 100), 1)).toBeNull();
+test("the bar comes from the repo variable and defaults to 0.05", () => {
+  expect(raterBar()).toBe(DEFAULT_BAR_MIN_NET);
+  process.env.NOTE_BAR_MIN_NET = "0.08"; expect(raterBar()).toBe(0.08);
+  process.env.NOTE_BAR_MIN_NET = "nonsense"; expect(raterBar()).toBe(DEFAULT_BAR_MIN_NET);
 });
 
-test("keeping the top half puts the bar at the median", () => {
-  const scores = Array.from({ length: 100 }, (_, i) => i / 100);
-  expect(raterBarFrom(scores, 0.5)).toBeCloseTo(0.5);
-  expect(raterBarFrom(scores, 0.2)).toBeCloseTo(0.8);
-});
-
-test("the keep share comes from the repo variable and defaults to a half", () => {
-  expect(raterBarKeepShare()).toBe(0.5);
-  process.env.NOTE_BAR_KEEP_SHARE = "0.3"; expect(raterBarKeepShare()).toBe(0.3);
-  process.env.NOTE_BAR_KEEP_SHARE = "nonsense"; expect(raterBarKeepShare()).toBe(0.5);
+test("off, or a negative number, means no bar", () => {
+  process.env.NOTE_BAR_MIN_NET = "off"; expect(raterBar()).toBeNull();
+  process.env.NOTE_BAR_MIN_NET = "-1"; expect(raterBar()).toBeNull();
 });

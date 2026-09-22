@@ -218,11 +218,8 @@ async function main() {
       } catch (err) {
         console.warn("[noteQueue] could not load the queue; this run submits only its own notes:", err);
       }
-      try {
-        raterBarValue = await raterBar(supabaseLogger!);
-      } catch (err) {
-        console.warn("[raterBar] could not compute the bar; submitting without one:", err);
-      }
+      raterBarValue = raterBar();
+      console.log(`[raterBar] a note goes out when its calibrated helpful minus not-helpful chance is at least ${raterBarValue === null ? "(no bar)" : raterBarValue}`);
       // Exploration is paced over the day: the drawn note goes ahead of the
       // above-bar ones only while explored notes are under their share of
       // what went out, and never fewer than one a day.
