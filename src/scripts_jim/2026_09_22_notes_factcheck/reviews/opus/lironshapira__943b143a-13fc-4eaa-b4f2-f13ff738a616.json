@@ -1,0 +1,25 @@
+{
+  "item_id": "943b143a-13fc-4eaa-b4f2-f13ff738a616",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "c248def6-7110-4de6-af37-8e87afca65fa",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence is not Liron's. It is spoken by his guest Casey Muratori: \"So given that, if you had not ever had the invention of rock and roll, let's say -- right? So kick on one, snare on three.\" It is a throwaway illustration inside an argument about whether an AI could ever discover, rather than imitate, something humans find pleasing. Nothing in that argument depends on where the snare falls. The note is also not clearly right: counted in eighth notes, a basic rock groove really is kick on one and snare on three, so Casey's shorthand is a common way of saying it rather than an error. Correcting a guest's offhand drum analogy on Liron's post is exactly the pedantic, tangential note the review bar is meant to stop."
+    },
+    {
+      "note_id": "c17f533d-fd8c-4cb5-ab87-df143874f9a7",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "Liron says this himself: \"now it's been, what, four years already since that whole bubble? And the Bitcoin price is lower than it was three years ago. It's had a negative return while the S&P and the NASDAQ have been on a tear.\" Taken literally he is wrong. Bitcoin closed June 2023 near $30,500, and Fortune's tracker puts it at $62,651 on 24 June 2026, so the three-year return was about plus 100 percent, not negative. What gives me pause is the sentence right before it. He is really talking about the time since the crypto bubble, and measured from the November 2021 peak near $69,000 the price in June 2026 was indeed slightly lower, so under that looser reading his point stands. The note also leaves out the context that made him say it: Bitcoin was down about 41 percent year on year and about half off its October 2025 record. Liron might accept the correction, but he could just as fairly answer that he meant since the bubble, which is the interval he named in the same breath."
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "item_id": "e1cd59e1-3de3-43a6-90a7-9403a9f2c71b",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "e13116ff-f3f9-466d-92af-38e41b1e7464",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The speaker is one of Dwarkesh's guests giving an impression of how the model behaves in use: \"The difference between Opus 4.6 and Opus 5 is that Opus 5 really feels like it's got this AI-as-a-judge checking every possible thing it's done. That's why it uses so many tokens.\" The comparison he makes is with Opus 4.6, while the note answers with numbers about Opus 4.8, so it does not actually address what he said. The note's numbers are also Anthropic's own launch-post figures for special cases, one trading benchmark and matched quality at max reasoning, and independent write-ups say the opposite for ordinary use, for example layer3labs: \"On hard tasks, Opus 5 usually produces more output tokens than Opus 4.8, because it reasons before it answers.\" Nobody publishes a per-task token count, so the flat statement \"uses fewer tokens than Opus 4.8, not more\" is not established. Correcting a felt impression in a live conversation with vendor marketing figures is the kind of note the guest would simply reject."
+    },
+    {
+      "note_id": "3eb7ac87-8f23-44d3-a5fc-7bf6c2868803",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The guest does assert this himself, but as a quality judgement about how the models behave for users, and the whole passage around it is about benchmarks failing to capture that, ending with \"It's really easy to screw up post-training in some way that doesn't show up in benchmarks.\" Answering a claim about model quality with index scores misses what was said. The note is also selective and partly wrong: it never mentions GLM-5.3, which is half of the claim, and on the Artificial Analysis Intelligence Index Sonnet 5 scores about 45 against Kimi K3's 60, so on that index the guest's claim about Sonnet 5 is right and the note's \"K3 ranks 10th behind Sonnet 5\" reverses the picture by quoting a single other index. The evidence comes from two low-quality aggregator pages, codersera.com and requesty.ai, not from Artificial Analysis or Vals themselves. A note that contradicts a stated opinion with cherry-picked scores from weak sources would embarrass us."
+    },
+    {
+      "note_id": "71ee32e5-5b4d-44fe-a71a-0327dd55b7a0",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "This is the Andy Masley failure exactly. The guest says the live-updating picture is not what is happening: \"What we're all picturing, the holy grail of continual learning, is this very organic, live loop of an individual model getting an experience and live-updating on the spot and learning from that. A lot of things break when you zoom into that level of granularity.\" He then describes the slower thing that is real, companies building environments from their deployment data and doing \"a big post-train of Kimi K3\", and says outright \"There's still a human in the loop\" and \"It's still a longer cadence than maybe the one that you're thinking of.\" The note corrects a belief in live weight updates that he has just disclaimed, and it does not contradict the extracted claim about retraining loops at all, which is accurate. The sources are fine but they are answering a question nobody in the episode asked."
+    },
+    {
+      "note_id": "47f82440-8205-46ac-95ec-ca6d3550ef0e",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The guest really does say it as his own example: \"People have been training 1 trillion parameter models for at least a few years. There was even an open source one called Falcon.\" That is wrong, and I could not find any trillion-parameter Falcon: the largest TII ever released is Falcon 180B, and everything TII shipped in 2026 is small, 7B and below. So the first sentence of the note is solid. The problem is the second sentence. The note explains the mistake as confusing training tokens with parameters, but the guest is clearly talking about total parameters in sparse models, since in the next breath he mentions the Switch Transformer and a 1 trillion parameter sparse experiment. His broader point also stands, because open models above 1 trillion parameters do exist, Kimi K3 being 2.8 trillion, so the note risks reading as if it refuted the point when it only caught the wrong name. Nathan should consider trimming it to the Falcon correction alone before sending it."
+    }
+  ]
+}

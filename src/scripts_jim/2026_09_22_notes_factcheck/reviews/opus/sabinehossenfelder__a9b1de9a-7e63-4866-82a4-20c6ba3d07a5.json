@@ -1,0 +1,34 @@
+{
+  "item_id": "a9b1de9a-7e63-4866-82a4-20c6ba3d07a5",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "df75083c-831a-48a4-9dfb-4c963b4834ed",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note says no postdoc made a climate-based argument that LLMs are evil, and that the essay Sabine really means is Kirwin Hampshire's. Both parts are wrong. The person is Alexis Marchand, a postdoc at IMPAN in Warsaw, whose essay \"Mathematicians, machines, and the Earth\" argues exactly that, citing LLM electricity use and refusing to review papers that use them because of their \"Earth- and human-damaging philosophy\". Sabine's own newsletter version of this script says \"Postdoc Alexis Marchand argues that LLMs are evil because they contribute to the climate crisis\" and links that essay, so she named him correctly and the YouTube auto-captions turned \"Marchand\" into \"Machete\", the same way they turned \"Tasmin Chu\" into \"Tasman Chu\" and \"automates\" into \"auto mates\". Sabine also lists Marchand and Hampshire as two of four separate people, so merging them is a misreading of what she said. Sending this would tell a physicist that a person she correctly cited does not exist."
+    },
+    {
+      "note_id": "c8d77d17-fa40-49da-b292-215f64d6c59c",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The claim being checked is that Kirwin Hampshire says he is suffering a profound spiritual crisis over AI developments in mathematics, and that is simply true, as the note's own sources confirm. The note then corrects two things Sabine did not get wrong. It denies that his crisis is about climate, but Sabine never said it was; she attributed the climate argument to a different person in the previous sentence and then said \"Mathematicians have independently derived the same existential crisis by four different methods\". And it corrects \"Kerwin\" to \"Kirwin\", which is a homophone produced by YouTube's speech recognition, not by Sabine; her written version of the same script spells it \"Kirwin\" and links his essay. Correcting a caption robot's spelling of a name is pedantic and would read as an insult."
+    },
+    {
+      "note_id": "881ce69b-ae2a-47ae-8f82-b0b2b5bc9c87",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note's facts about the preprint are right: \"The crisis of AI-generated mathematics\" (arXiv 2608.02859) is by Max Weinreich and does argue for total opposition to AI in mathematics. But the note's whole content is that Sabine got the author's name wrong, and she did not. Her written version of this script reads \"Assistant professor Max Weinreich has written a preprint in which he makes 'the case for total opposition'\" and links the arXiv page, so \"Maximilian Reich\" is the auto-caption's mishearing, in the same sentence run where it also mangled Tasmin Chu, Alexis Marchand and Kirwin Hampshire. The note itself concedes that everything else she said about the paper is accurate, so even if the name had been wrong in the audio it would not change any reader's belief about the argument. This corrects the transcription tool, not the author."
+    }
+  ]
+}

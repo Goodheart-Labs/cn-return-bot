@@ -1,0 +1,16 @@
+{
+  "item_id": "b9b8a4d1-bfd2-4ece-9819-bc9523b64fed",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "524c0853-5d86-409b-b93f-f1fe73d4beae",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence is Zvi's own comment on the Nvidia backstop story, and the day is right: the Wall Street Journal broke the $250 billion backstop story and Nvidia fell 5% on Monday 27 July 2026. The note is also literally accurate about the index, since the Nasdaq Composite closed down 0.18% that day while the Dow gained about 0.5% and the S&P 500 finished at plus 0.02%. But a 0.18% move is flat, and the whole of Zvi's point is that Nvidia fell 5% while the rest of the market did not, which the numbers confirm rather than contradict. Worse, the Nasdaq was slightly down precisely because Nvidia and the other chip names fell on this news, as the headline the note quotes says outright ('Nasdaq slips as Nvidia leads chip stocks lower'), so the note uses the consequence of the event to correct his description of the backdrop. The note's one hard number, 'SMH down over 2%', is not in any of the accepted source quotes, which mention SOXX being lower without a figure. Zvi would very likely answer that the market was flat and that the index dip was Nvidia's own doing, and he would be right."
+    }
+  ]
+}

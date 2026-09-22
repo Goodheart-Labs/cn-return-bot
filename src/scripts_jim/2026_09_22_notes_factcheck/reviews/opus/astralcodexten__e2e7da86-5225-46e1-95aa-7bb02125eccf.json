@@ -1,0 +1,16 @@
+{
+  "item_id": "e2e7da86-5225-46e1-95aa-7bb02125eccf",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "2aff261e-a3c2-44a8-830e-29279e580c42",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note fact-checks the wrong eclipse. The post is a book review of Hiram Bingham's memoir of Hawaii, and the passage is about the eclipse Bingham predicted for the Hawaiians in 1824: \"In 1824, Hiram demonstrated his astronomical knowledge to the natives by predicting a solar eclipse\", followed by \"The eclipse path. Viewed from Hawaii, this would have been a partial eclipse (I calculate that 43% of the sun was obscured in Honolulu).\" The note instead talks about the total solar eclipse of August 12, 2026, and all three of its sources are about that modern eclipse. That is a different event 202 years later and says nothing about the post. The post's statement is also correct: the total solar eclipse of June 26, 1824 ran across East Asia and the northern Pacific and was visible as a partial eclipse from Hawaii, which is exactly what the reviewer wrote. Sending this would tell an author his correct sentence is wrong on the strength of sources about an unrelated eclipse."
+    }
+  ]
+}

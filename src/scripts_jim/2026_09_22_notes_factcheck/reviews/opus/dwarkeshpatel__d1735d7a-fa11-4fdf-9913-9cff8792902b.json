@@ -1,0 +1,16 @@
+{
+  "item_id": "d1735d7a-fa11-4fdf-9913-9cff8792902b",
+  "reviewer": "opus",
+  "source_read": "fetched:https://www.dwarkesh.com/p/michael-nielsen",
+  "notes": [
+    {
+      "note_id": "c77595ec-ab9c-47f0-87a6-c5cae972d4e6",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "reason": "Dwarkesh does say this himself, in his own question to Michael Nielsen: \"Maybe the clearest example is Aristarchus in the second century BC comes up with the idea of heliocentrism.\" The note's fact is also right. Wikipedia and Britannica both put Aristarchus at roughly 310 to 230 BC, so his heliocentric model belongs to the third century BC, not the second. But the correction does not touch the point he is making. His argument is that a correct idea can sit unverified for a very long time, and he supports it by saying the confirming measurement of stellar parallax only arrived in 1838. Whether the idea is 2,100 or 2,200 years older than that measurement changes nothing about the argument, so a reader who takes the wrong century away from the episode has not been misled about anything that matters. This is a slip of the tongue in a live conversation on a detail nobody is relying on, which is exactly the kind of pedantic note the review is meant to filter out."
+    }
+  ]
+}

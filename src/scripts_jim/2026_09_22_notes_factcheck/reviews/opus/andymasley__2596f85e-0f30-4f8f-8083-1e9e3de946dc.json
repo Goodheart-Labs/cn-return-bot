@@ -1,0 +1,25 @@
+{
+  "item_id": "2596f85e-0f30-4f8f-8083-1e9e3de946dc",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "83277e70-69ea-42ba-834d-1f28d5cfdacb",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "This is Masley speaking in his own voice, replying to a block quote from Benn Jordan: \"I can't find any paper by Armand & Bikaran 2025 on infrasound, PIEZO1, or anything like it. If anyone reading this can find it, let me know, but as it stands I'm going to treat it as made up until proven otherwise.\" The paper exists and is easy to find. Aryna C. Armand and Matin Bikaran, who are listed as having contributed equally, wrote \"The Role of Infrasound and Audible Acoustic Sound in Modulating Wound Healing: A Systematic Review\" with Timothy B. Gardner and Michael K. Matthew of Dartmouth, published 27 April 2025 in the International Wound Journal, volume 22, issue 5, article e70243, doi 10.1111/iwj.70243. It is indexed in PubMed as 40288769, hosted on Wiley, and carries no retraction notice, and its subject is the effect of infrasound of 1 to 20 Hz on tissue and bone. Calling a real citation made up is the strongest accusation in the whole post, so a reader who believes it comes away with a badly wrong impression of Jordan. The note is also fair to Masley, because it adds that the paper is about wound healing and not PIEZO1, which keeps his underlying point that the citation does not support what Jordan used it for. He explicitly asked readers to tell him if they could find it, so he should welcome this."
+    },
+    {
+      "note_id": "87372840-c3eb-422f-aa66-4bb938e6d6bf",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence is not Masley's. It sits inside a long block quote of Benn Jordan's reply, and it gives itself away: \"which was published the same week my datacenter video released\" and \"I'm sure Andy has his work cut out for him in reaching to discredit it in the name of altruism.\" Masley is the one arguing against Jordan here. His very next words are \"This is one of the goated papers on data centers\" and then \"But Jordan is lying about what it says again.\" So the note fact-checks the opponent Masley is himself fact-checking, which is exactly the complaint he already sent back to us. On top of that the correction is tiny. Twelve days apart is a normal thing to call \"the same week\" in loose speech, the timing carries no weight in anyone's argument, and Frontiers articles also have several dates attached to them, so even the twelve-day gap is not a clean fact. Sending this would embarrass us twice over."
+    }
+  ]
+}

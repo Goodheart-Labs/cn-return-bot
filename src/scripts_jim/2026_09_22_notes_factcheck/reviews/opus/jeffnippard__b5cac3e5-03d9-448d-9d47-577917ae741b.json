@@ -1,0 +1,16 @@
+{
+  "item_id": "b5cac3e5-03d9-448d-9d47-577917ae741b",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "978c03b2-a484-435a-bf5e-a2f756b6ceb0",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note takes one sentence literally and ignores the four sentences around it that say what Jeff means. He is talking about showing footage of study participants to his audience: right after the quoted line he says \"even with that permission, we still had to blur out their faces\", then \"I felt like I couldn't showcase exactly what the subjects were doing as well as I wanted to\", then \"Here, we're going to be able to film every single subject in every study that I do, show you exactly what they're doing.\" So his claim is about permission to record subjects for public release, not about pointing a camera at a lifter for analysis. The note's own closing line concedes exactly that, saying the new thing is \"public release of anonymized footage, not permission to film\" - which is Jeff's point rather than a correction of it. The two studies it cites confirm only the uncontested part: the 2021 bench press paper timed sets from a camera recording, and the 2025 coaches' paper had coaches watch videos of trainees, both internal research footage that nobody claims was forbidden. Neither source says anything about a study releasing identifiable participant footage to the public, so the note never tests the claim Jeff actually made. Jeff would read this as a note arguing with a sentence he did not mean."
+    }
+  ]
+}

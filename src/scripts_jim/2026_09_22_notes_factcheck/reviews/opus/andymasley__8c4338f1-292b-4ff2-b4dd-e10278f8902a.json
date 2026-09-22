@@ -1,0 +1,34 @@
+{
+  "item_id": "8c4338f1-292b-4ff2-b4dd-e10278f8902a",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "805c47ce-fc6d-4774-9779-83a601414bc7",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "Masley writes it flatly in his own voice, with no source and no hedge: \"The LA area has the world's busiest port, which means a constant huge input of diesel exhaust.\" It is simply false. The Port of Los Angeles' own facts page says the port ranks 16th in the world on 2024 throughput and that the combined San Pedro Bay complex (Los Angeles plus Long Beach) ranks 9th, while it has been the number one container port in the Western Hemisphere for 26 years. Shanghai is the world's busiest at about 51 million containers a year against Los Angeles' 10 million, so the gap is a factor of five, not a rounding difference. The note is worded fairly, since it credits the Western Hemisphere record before correcting the global one, and it leaves his actual argument intact: the port is still a huge diesel source and California is still an outlier. A careful data blogger like Masley would most likely just accept \"busiest in the Western Hemisphere\"."
+    },
+    {
+      "note_id": "6c68b302-7abb-4f06-8f11-37b03705acbc",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The claim is Masley's own footnote 28, and the words \"OECD puts at 30-60 mg/mile\" link straight to the OECD 2020 report \"Non-exhaust Particulate Emissions from Road Transport\", so the note is checking an attribution he really made. I read that OECD report. Its Table 3.6 gives, for a petrol or diesel passenger car, brake wear PM2.5 of 2.9 mg/km and tyre wear PM2.5 of 4.5 mg/km, which is about 12 mg per mile combined, and even the full non-exhaust total including road wear and road dust is only 12.1 to 16.5 mg/km, about 20 to 27 mg per mile. So the note's headline point is right: nothing in the OECD report puts brake and tyre wear PM2.5 at 30 to 60 mg per mile, and Masley looks to have picked up the PM10 total instead, which is 29.6 mg/km or about 48 mg per mile. My problem is with the note's own numbers. It says the EMEP/EEA guidebook puts tyre wear PM2.5 at 0.2 to 1 mg/km, but the guidebook value that OECD itself uses is 4.5 mg/km, five to twenty times higher, and the note's \"combined roughly 5-16 mg/mile\" does not follow from the two ranges it just gave. None of its three sources is the OECD report it is arguing about. Masley checks his sources, so as written he could rebut the note's numbers even though its conclusion holds. Send it only after rewriting it around the OECD report's own Table 3.6 figures. Worth knowing too that the correction makes his conclusion stronger, not weaker, since a smaller direct PM2.5 figure widens the CO2-versus-direct-emissions ratio he is arguing for."
+    },
+    {
+      "note_id": "87a55d1a-19c4-4e13-91fb-0e9a2ca1cbd4",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "This is Masley's footnote 30 in his own voice, and I checked the link in the published post: \"This study\" really does point at NBER working paper 33829, the paper the note fetched. I read that paper and the peer-reviewed version in PNAS. Both report one figure only, a partial United States social cost of carbon of about $15 per ton from wildfire smoke mortality, and both say in as many words that they count damages occurring inside the United States only. There is no global wildfire-smoke number anywhere in either version, so the footnote's \"around $100/ton globally\" is not in the study he cites, and that footnote is the support for a main-text sentence claiming the harms are many times greater outside the United States. That part of the note is solid and it matters. What gives me pause is the note's second sentence, which asserts that the $100 is Rennert et al.'s all-damages global social cost of carbon. The note cannot know where Masley got the number, and its own source for that sentence reports a mean of $185 per ton, not $100, so the sentence is a guess dressed as a fact and Masley can answer \"that is not what I used\". Drop or reword that sentence and the note becomes a clean sourcing correction; as written it hands him an easy rebuttal."
+    }
+  ]
+}

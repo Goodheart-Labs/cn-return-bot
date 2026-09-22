@@ -1,0 +1,16 @@
+{
+  "item_id": "3aed00c9-05f5-46c5-9493-ee1c69974b39",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "ecf77096-751b-4d41-9c6d-729a114cb1c8",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence is not Liron's. In this episode Peter Clarke is the interviewer and Liron is his guest, and it is Peter who says \"just yesterday I went to a little tech summit in San Francisco... The head of product at Anthropic was there.\" Liron only republished the conversation on his Substack. This is exactly the complaint Andy Masley made, a note on a claim the author never made. The facts in the note do hold up. Anthropic announced on January 13, 2026 that Mike Krieger was moving to the new Labs group and that Ami Vora would lead the Product organization, and the Luma page for the June 18 Big Technology AI Summit bills Krieger as \"Anthropic Labs Co-Lead\". But the note assumes Peter meant Krieger, which he never said, and a job title in a throwaway aside has nothing to do with his point that nobody at these summits is worried about AI risk."
+    }
+  ]
+}

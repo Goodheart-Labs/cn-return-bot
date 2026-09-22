@@ -1,0 +1,25 @@
+{
+  "item_id": "e08b90ae-da9d-4f9b-87c2-54c5e2c2177c",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "83f7b918-9631-44f5-8766-7fdd885f33b2",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note tells the author that consultants were allowed to keep their private practice, but the author says exactly that in the very sentence the note is attached to. The full sentence reads: 'surrender your private practice and submit to a state monopsony, and in exchange you'll receive lifetime employment security, generous final-salary pensions, the social prestige of belonging to a respected profession, the right to do private work on the side once you reach the consultant grade, and the moral satisfaction of a job whose nature could not be reduced to a balance sheet.' The pipeline cut that sentence in half and fact-checked the first clause against the second clause of the same sentence. The source, The Conversation, does say what the accepted quote says, so the note is factually true, but it corrects nothing. This is the same failure Andy Masley complained about: the note argues with a claim the author does not make, and sending it would make us look like we had not read the sentence."
+    },
+    {
+      "note_id": "0b71fcf1-80cb-4da9-a949-c9664f983fd9",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The author writes 'Every single trainee in the country changes hospital on the same day' about Black Wednesday, and the note's first sentence agrees with him: newly qualified doctors start and most resident doctors rotate that day. The only thing the note adds is that foundation doctors also rotate on the first Wednesdays in December and April, and that local arrangements vary. That does not correct the author's point, which is that the August changeover wipes out a ward's institutional memory and that death rates rise. Extra rotations in December and April would, if anything, support his worry rather than undercut it. The sources do say what the accepted quotes claim, but a reader would not come away from this post with any wrong belief that the note fixes. The author is himself an NHS resident doctor who lives this rota, so a note telling him foundation placements also turn over in December would read as a nitpick from someone who does not know the system."
+    }
+  ]
+}

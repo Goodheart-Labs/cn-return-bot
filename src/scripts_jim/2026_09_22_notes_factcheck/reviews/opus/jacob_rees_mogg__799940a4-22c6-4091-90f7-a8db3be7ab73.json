@@ -1,0 +1,25 @@
+{
+  "item_id": "799940a4-22c6-4091-90f7-a8db3be7ab73",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "e5938193-e76f-42cc-9a42-d944ba190377",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "Rees-Mogg does make this claim himself, and it matters to his argument, so the note is aimed at the right target. The problem is that the note states one side of a live political dispute as settled fact. Whether the 2008 crisis was caused by Labour overspending has been the central dividing line between the two British parties for fifteen years, and Rees-Mogg is one of the Conservative politicians who has argued the opposite for that whole time. The note also overstates its own source. The Guardian piece it cites says the OBR took 'a more nuanced view' and that the Treasury was 'less well prepared for the crisis due to a consistently over optimistic view of the revenues', and the note drops that half. It also answers only one of the five Labour governments he listed while reading as a rebuttal of the whole sentence. There is a genuinely checkable error nearby that the note misses: in 2008 to 2010 markets were very willing to lend to the UK and gilt yields fell, which contradicts his 'markets that were not willing to lend to them'. Sending a sitting Conservative a Guardian-sourced note telling him his party's core economic argument is wrong is exactly the kind of note that burns the relationship without correcting a fact."
+    },
+    {
+      "note_id": "68fadabd-1ecd-483e-a0e0-74d4b718cb7e",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "no",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "The claim the pipeline extracted is about the Labour government of the 1930s, but the note answers about the 1945-51 Attlee government instead, so it never addresses the claim it is attached to. On the 1930s Rees-Mogg is right anyway: MacDonald's Labour government collapsed in August 1931 in the May Report sterling crisis. On the 1940s the note is wrong. The Attlee government did end in a financial crisis: the balance of payments went from a 300 million pound surplus in 1950 to a 400 million pound deficit in 1951, described as the most sudden reversal on record up to that time, and by August and September 1951 the Treasury was hit by a full sterling crisis which it handed to the incoming Conservative government. The note's line that 'by 1950 the balance of payments was in surplus' is true but stops exactly one year before the crisis it is denying. Its academic source, Crowcroft and Theakston's 'The End of the Attlee Government: a whimper not a bang', argues only that the government did not fall the way 1931 did, and the same paper says the Korean War rearmament programme placed 'serious strains on... the national finances' and marked the beginning of the end. The closing detail about Labour's 48.8 percent vote share has nothing to do with whether there was a financial crisis and makes the note read as a political defence rather than a fact check."
+    }
+  ]
+}

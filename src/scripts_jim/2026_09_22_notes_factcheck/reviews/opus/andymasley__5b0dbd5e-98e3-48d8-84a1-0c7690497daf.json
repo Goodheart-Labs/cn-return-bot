@@ -1,0 +1,25 @@
+{
+  "item_id": "5b0dbd5e-98e3-48d8-84a1-0c7690497daf",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "bf9792c4-6dda-4d6f-bb45-15606a837321",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence 'Fewer than half read a book in the last year' is Andy's own, so the note is aimed at the right person, but it is not a settled error and the note presents it as one. Different surveys give very different answers because they ask different questions. The National Endowment for the Arts' Survey of Public Participation in the Arts found that 48.5 percent of adults read at least one book for pleasure in the year to July 2022, which supports exactly what Andy wrote. A December 2025 YouGov survey put it at 59 percent. Pew's 75 percent is the highest of the three because Pew counts anyone who read 'all or part of' at least one book, including books read for work or school and audiobooks. The note quotes only Pew, says flatly that 'survey data contradicts this figure', and never mentions that a federal survey backs Andy up. It also leans on a Pew report published around April 2026 about a survey run in October 2025, the same month Andy published. On top of that the number is one of three throwaway illustrations of the point that most people are not well informed, so nothing in his argument turns on it."
+    },
+    {
+      "note_id": "83b9ebb5-9c0e-4cd3-841e-9dba7a3d33c5",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "Again the sentence is Andy's own and carries no source, so there is no risk of blaming him for someone else's number. I checked the note's figures independently and they hold up. The FINRA Foundation's 2024 National Financial Capability Study asked whether money in an account earning 1 percent grows faster than 2 percent inflation, and 58 percent answered correctly, up from 53 percent in 2021. The TIAA and GFLEC Personal Finance Index asked a similar purchasing power question and 48 percent got it right. So nationally about 40 to 50 percent get it wrong, not the two thirds Andy states. Two things give me pause. The note says these surveys test 'this exact concept', but they actually ask the harder question of comparing an interest rate with an inflation rate, and a simpler question would score higher, so the wording slightly overstates the match. And this is a passing statistic in a post about ideological polarisation, so being off by twenty points changes nothing in his argument, which makes it easy for him to read the note as nitpicking. Worth noting that among 18 to 34 year olds in 2021 the failure rate really was about two thirds, so he may have half-remembered a real figure."
+    }
+  ]
+}

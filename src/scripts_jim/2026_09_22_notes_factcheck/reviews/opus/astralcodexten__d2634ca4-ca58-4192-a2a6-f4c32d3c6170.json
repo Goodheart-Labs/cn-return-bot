@@ -1,0 +1,34 @@
+{
+  "item_id": "d2634ca4-ca58-4192-a2a6-f4c32d3c6170",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "f1c077a1-374e-4b30-81ee-896135677970",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "Scott does make this claim himself. He writes that Garfield's line \"became a popular sensation, inspiring t-shirts, coffee mugs, and even a hit single\", and the verb \"inspiring\" covers the single too. The note is right on the facts. Garfield first said \"I hate Mondays\" on 18 September 1978, but Bob Geldof wrote \"I Don't Like Mondays\" in January 1979 after reading a telex about Brenda Spencer's shooting at Grover Cleveland Elementary School in San Diego, and it was a UK number one for four weeks that summer. I checked the only other candidate, Newton Faulkner's \"I Hate Mondays\", and it is a 2010 Australian number eight that came out of a radio show segment, so the Boomtown Rats song is clearly what Scott means. What gives me pause is that this is one clause in a scene-setting sentence and nothing in the essay rests on it, so a public note about it could read as nitpicking a throwaway aside. Against that, the false belief is a memorable one, since the real story behind the song is a school shooting, and Scott is an author who publishes corrections readily."
+    },
+    {
+      "note_id": "982881ee-dfc2-43ef-8df3-e3eb055562e3",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "reason": "The retrospective really is The A.V. Club's, published on 9 March 2020 by Reid McCarter, and it does carry both the New York Times line Scott quotes and the pre-Soylent meal-replacement framing, so the note is technically right. But this is a publication-name technicality that changes nothing about Scott's point, which is that the Dilberito was a doomed product ahead of its nerd audience. The note also leaves out the context that makes Scott's shorthand defensible: The A.V. Club was created in 1993 as The Onion's own supplement, and in March 2020 both were owned by G/O Media, so calling it \"The Onion\" is loose rather than false. Sent publicly to the author, this is exactly the pedantic correction the review bar is meant to catch. It is also a near-duplicate of the other note on the same sentence, which makes sending it worse, not better."
+    },
+    {
+      "note_id": "eff338c7-c45b-40e1-8a29-9281c7cfe696",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "This is the same publication-name nitpick as the other note on the same sentence, so it is tangential for the same reason, and the two would arrive as a pair. It is also wrong in its own right. It says The A.V. Club \"has been editorially separate from The Onion since 1993\", but Wikipedia, the note's own source, says it was created in 1993 as a supplement to The Onion and that the full separation only came in March 2024, when G/O Media sold it to Paste Media. The note's Paste Media detail is beside the point anyway, because the article appeared in March 2020, when The Onion and The A.V. Club were both owned by G/O Media. So the note attacks Scott's shorthand with a history that is itself inaccurate, which is the worst combination to send to an author."
+    }
+  ]
+}
