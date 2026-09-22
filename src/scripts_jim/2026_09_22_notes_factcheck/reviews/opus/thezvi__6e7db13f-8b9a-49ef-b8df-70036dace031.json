@@ -1,0 +1,16 @@
+{
+  "item_id": "6e7db13f-8b9a-49ef-b8df-70036dace031",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "6cb0bb02-fe6b-4151-b0a4-9adc9aa3dd58",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence is Zvi's own, but the note answers a claim he never makes. The note's first line says non-sofic groups was solved by Astra and not by Sol, and Zvi says exactly that himself, several times: he quotes OpenAI's own announcement listing the ten results, and he writes that OpenAI 'asked it to take a crack at a bunch of open math problems, and it solved 10 of them'. His actual claim is about what happened afterwards: that once people knew the problem, Sol and Fable also produced the result in an ordinary chat window, which is his evidence for a 'mathematical proofs overhang'. Public discussion from early August 2026 backs that reading rather than refuting it, for example the r/accelerate thread 'ChatGPT proves nonsofic groups exist with a finitely presented example', whose text says someone then used Fable to reconstruct what may be the proof. The note's second line, that Fable's documented replication was problems 4 to 8 and ran autonomously, is about Levent Alpoge's run, which Zvi reports separately and in full further down the post, so it does not touch the chat-interface sentence at all. The claim that OpenAI staff corrected viral posts crediting Sol is true of tweets like letonyo's, but no source in the note actually shows that correction, and it is not what Zvi wrote. Sending this would read to Zvi as being fact-checked for a mistake he explicitly did not make."
+    }
+  ]
+}

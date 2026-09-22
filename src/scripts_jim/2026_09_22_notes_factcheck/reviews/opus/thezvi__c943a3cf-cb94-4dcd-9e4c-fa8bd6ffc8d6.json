@@ -1,0 +1,25 @@
+{
+  "item_id": "c943a3cf-cb94-4dcd-9e4c-fa8bd6ffc8d6",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "e4515c89-ff9a-4ffd-8b42-b832216983af",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "Zvi writes the timeline himself: \"June 26: US government eliminated the controls on Mythos.\" He introduces it with \"Here is the timeline\", so the wording is his own compression of Anthropic's account, not a block quote he is reporting. Anthropic's own post says only \"June 26: The US government approved restored access to Mythos 5 for a set of US organizations\", and Politico, NBC and BankInfoSecurity all report that Lutnick's June 26 letter restored Mythos 5 to roughly 100 vetted US organizations while Fable 5 stayed offline and the licensing requirement stayed in place. \"Eliminated\" is therefore wrong, and Zvi's next line, \"June 30: US government fully lifted those controls on Fable as well\", makes a reader think the June 26 action was already a full lift. That matters for this post in particular, because Zvi reproduces the Stamos thread about how useless the \"just join the trusted group\" arrangement is, so whether Mythos was open to everyone or to a hundred approved organisations is part of his own argument. The note gets the June 30 full lift right, so it only corrects the one line that is wrong."
+    },
+    {
+      "note_id": "9049c6d4-2e16-44ea-abbb-174fca4fcc60",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence is Zvi's own opinion in a section headed \"GLM-5.2 Being Frontier Remains Obvious Nonsense\", and he states his evidence for it: the ECI score and Artificial Analysis, plus the argument that for open models benchmarks are a ceiling rather than a floor. The note answers him with Semgrep and Graphistry, which are exactly the two studies named in the Politico passage Zvi quotes and then argues against, so it re-runs a disagreement he has already engaged with rather than finding an error. The note also reads the sources more favourably than they read themselves. Semgrep's own table puts GPT 5.5 at 61 percent and Opus 4.8 at 53 percent against GLM 5.2's 39 percent, and the authors warn it is \"one task, one dataset, one run\"; Graphistry ties GLM with Opus at 28 of 59 but says Opus reaches 35 of 59 on a better harness and raises the possibility of illegal distillation. Treating \"led only with specialized scaffolding\" as a disqualifier is itself a judgement, and it is the opposite of the judgement Zvi defends. This is a difference of interpretation on a contested question, not a factual correction, and Zvi would reject it."
+    }
+  ]
+}

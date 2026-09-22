@@ -1,0 +1,25 @@
+{
+  "item_id": "647a4de9-026c-40f5-8d4d-cc6b3f24c6f1",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "5d8b9969-b29f-468d-b754-ce0489cf2ce1",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence sits in Zvi's list of Anthropic's own official benchmarks for Fable 5.1, and he states his convention two paragraphs earlier: 'All improvement or regression numbers by default are versus the best score of either Opus 5 or Mythos 5.' So 'AutomationBench from Zapier improves from 27% to 31%' means Opus 5's 26.9% rising to Fable 5.1's 31.4%, both of which Anthropic's launch page reports exactly. The note instead claims the two numbers are Zapier's dollar cost-per-task for Gemini 3.8 Flash, a model the sentence never mentions, and that figure is invented: Zapier's leaderboard prices Gemini 3.8 Flash at $0.55 and $0.62 per task, not $0.27 and $0.31. The note's own first source explanation admits the $0.27/$0.31 numbers are not in the page it cites. Zvi's remaining clause, 'but note that Gemini 3.7 Flash gets 30%', is confirmed by the note's own Zapier source at 30.44%, so the note contradicts a statement its sources support, and it does not address the extracted claim ('AutomationBench is from Zapier'), which is simply true."
+    },
+    {
+      "note_id": "050d82bc-84ac-4234-bf8b-d4dcf483e211",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The extracted claim is Zvi's composite numbers, and those are right: Vals lists Fable 5.1 at 68.83%, Opus 5 at 67.21% and GPT-6 Astra at 66.61%, which is exactly his 68.8/67.2/66.6. The note does not dispute any of that; it corrects the next sentence, 'They have Gemini 3.8 Flash in fourth ahead of Muse Spark 1.3', and its own correction is wrong. It says Claude Fable 5 at 66.04% ranks fourth, but on the index Zvi was reading Astra at 66.61% sits above Fable 5, so Fable 5 is fifth there, and Vals AI's own post placed Fable 5 third in the earlier snapshot that had no Astra in it. On the current full Vals Index (Sep 21, 2026) Gemini 3.8 Flash is seventh at 62.25%, behind Fable 5, Muse Spark 1.3 Max and GPT-5.6 Sol, so 'fifth' is not the right answer either, while Vals' own default leaderboard view, which shows one model per lab, does put Gemini 3.8 Flash fourth just as Zvi wrote. The part of Zvi's sentence that carries information, that Gemini 3.8 Flash is ahead of Muse Spark 1.3 at 60.31%, is correct. A leaderboard place of fourth versus fifth in a link roundup changes nothing about Zvi's point, so even a correct version of this note would be pedantic."
+    }
+  ]
+}

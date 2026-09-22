@@ -1,0 +1,16 @@
+{
+  "item_id": "2fda608e-9f1f-49e8-bd65-2ecc8f29984b",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "feac9de3-c3dc-4d3e-b56a-c5050206afe5",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence the note attacks is Zvi reporting a question Dwarkesh asked on the podcast, not something Zvi asserts. Zvi says up front how these posts work: \"the baseline bullet points describe key points made, and then the nested statements are my commentary\" and \"If I am quoting directly I use quote marks, otherwise assume paraphrases.\" The passage is one of those baseline bullets: \"Dwarkesh asks, didn't RLVR make GPT-3 more aligned... Ryan responds that an aligned coworker unable to do their tasks would not act like the models do.\" Zvi's own commentary that follows never leans on which training method did it; he writes about \"creating the assistant persona at all\" and about cheating being misalignment rather than a capability gap. The note's history is broadly right, in that InstructGPT's RLHF and instruction tuning made GPT-3 directable and RLVR came later, but it corrects a passing technical label inside a reported question, which changes nothing about the exchange Zvi is describing or the point he draws from it. This is exactly the failure Andy Masley complained about, fact-checking a statement the author is relaying rather than making, and Zvi would very likely reject it."
+    }
+  ]
+}

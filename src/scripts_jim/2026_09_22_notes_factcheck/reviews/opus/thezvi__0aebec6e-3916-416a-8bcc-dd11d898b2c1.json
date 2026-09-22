@@ -1,0 +1,16 @@
+{
+  "item_id": "0aebec6e-3916-416a-8bcc-dd11d898b2c1",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "3c6b0349-f738-4d4e-9175-ee4ef4311f55",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence is Zvi's own aside, so the note is at least aimed at the right person: he writes \"I got 27% in April ... and the algorithm had already been adjusted in between by the release of 'Phoenix' around April 1.\" But the note is wrong to say nothing changed around then. X's head of product Nikita Bier posted on 26 March 2026 that \"The full power of Grok on the algorithm launches next week. It will be the most important change we've done on X\" (reported by pcguide.com on 27 March 2026), and a 19 March 2026 report says Musk confirmed a major recommendation-algorithm update rolling out the following week, calling the updated algorithm \"internally called 'Phoenix'\". So a Phoenix rollout at roughly 1 April is exactly what the record shows, whatever else happened on 20 January. The note's supporting quote \"No confirmed ranking or distribution changes by X from March to June 2026\" does not exist on the page it is attributed to: socialpilot.co says only that no confirmed change was announced for September 2026, and its own timeline lists a ranking change on 13 July 2026. The note also treats GitHub commits as if they were the deployed algorithm, which is how it gets \"next major update didn't occur until May 15, 2026\". Even on the note's own reading the point is tangential: Zvi is explaining in one clause why his 27% differed from Jonathan Stray's 16%, and the date of the change does not affect anything he argues. Sending this to Zvi would look like an AI arguing from a marketing blog against a date he can check on X himself."
+    }
+  ]
+}
