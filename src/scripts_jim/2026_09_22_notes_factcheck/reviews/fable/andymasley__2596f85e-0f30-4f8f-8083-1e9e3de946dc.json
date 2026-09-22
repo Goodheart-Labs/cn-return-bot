@@ -1,0 +1,18 @@
+{
+  "item_id": "2596f85e-0f30-4f8f-8083-1e9e3de946dc",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "83277e70-69ea-42ba-834d-1f28d5cfdacb",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "reason": "This is Andy in his own voice, replying to a block quote from Benn Jordan's rebuttal that cites \"[Armand & Bikaran, 2025; MDPI, 2026]\" for the claim that low-frequency noise can modulate PIEZO1 channels: \"I can't find any paper by Armand & Bikaran 2025 on infrasound, PIEZO1, or anything like it. If anyone reading this can find it, let me know, but as it stands I'm going to treat it as made up until proven otherwise.\" The live post still says this, unchanged. The paper exists and turns up on the first search for the two names plus infrasound: Crossref and Europe PMC both list \"The Role of Infrasound and Audible Acoustic Sound in Modulating Wound Healing: A Systematic Review\" by Aryna C. Armand, Matin Bikaran, Timothy B. Gardner and Michael K. Matthew, International Wound Journal volume 22 issue 5, article e70243, doi 10.1111/iwj.70243, published 27 April 2025, PubMed 40288769, PMC12034371, no retraction. It is a review of infrasound at 1 to 20 Hz and low-frequency sound on wound and bone healing, and the open-access full text does not contain the word PIEZO at all, so the note's last sentence is also right and keeps Andy's real point that the citation does not support what Jordan used it for. Calling a real citation made up is the harshest accusation in a very long post, so a reader who believes it comes away with a wrong belief about Jordan that matters. Andy asked readers to tell him if they could find it, so he should welcome this. Nothing in the note needs changing.",
+      "send_advice": null
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "item_id": "fe1df982-0daa-4498-b49a-0e25b946a7b6",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "3ceca9a7-6ae5-4d82-9894-1c349a59592e",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "The sentence is Caplan's own flat assertion, given as one of his examples of India's absurd regulation: \"Developers aren't even allowed to build skyscrapers in slums.\" No source is cited and nothing nearby hedges it. I fetched the Times of India article and every accepted quote appears in it word for word; it also says the SRA scheme capped rehab buildings at ground plus seven floors in the late 1990s but has since sanctioned 10-15, then 22-23, then 30, and now 42 storeys, and that Piramal is building luxury towers in the sale component on the same slum land. The Indian Express independently reported in August 2023 that about 1,000 families had received keys to these 42-storey towers, so they were occupied more than a year before the post. The flat statement is therefore false for Mumbai, the city with India's most famous slums and one he visited; the only real constraint I found is the airport funnel height limit near Dharavi, which is an aviation rule, not a slum rule. The correction matters because the sentence is offered as evidence for the post's central thesis and a reader would come away believing something untrue. Caplan could reply that the SRA route is itself heavily regulated, with mandatory free rehousing and resident consent, but that reframes the point rather than rescuing the sentence, and he has a track record of conceding factual errors when shown evidence."
+    }
+  ]
+}
