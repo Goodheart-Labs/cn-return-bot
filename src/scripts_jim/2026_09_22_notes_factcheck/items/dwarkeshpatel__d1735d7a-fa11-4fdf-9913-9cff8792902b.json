@@ -1,0 +1,31 @@
+{
+  "item_id": "d1735d7a-fa11-4fdf-9913-9cff8792902b",
+  "project_slug": "dwarkeshpatel",
+  "creator": "Dwarkesh Patel",
+  "source": "podcast",
+  "url": "https://www.youtube.com/watch?v=myP8UjAM1pk",
+  "title": "Michael Nielsen",
+  "published_at": null,
+  "full_text": null,
+  "notes": [
+    {
+      "note_id": "c77595ec-ab9c-47f0-87a6-c5cae972d4e6",
+      "commonnotes_url": "https://commonnotes.net/?project=dwarkeshpatel&note=c77595ec-ab9c-47f0-87a6-c5cae972d4e6",
+      "note": "Aristarchus of Samos proposed his heliocentric model in the 3rd century BC (c. 280–270 BC), not the 2nd century. Historical records place his life between approximately 310 and 230 BC. https://en.wikipedia.org/wiki/Aristarchus_of_Samos https://www.britannica.com/biography/Aristarchus-of-Samos",
+      "votes": {
+        "helpful": 0,
+        "not_helpful": 0
+      },
+      "jim_pick": null,
+      "claim": "Aristarchus in the second century BC comes up with the idea of heliocentrism",
+      "extractor_judgement": "uncertain",
+      "context_quote": "Maybe the clearest example is Aristarchus in the second century BC comes up with the idea of heliocentrism. The ancient Athenians dismiss it on the grounds that we should see as the Earth is moving around the Sun, if really the Sun is the center of the solar system, the stars move relative to the Earth.",
+      "updated_quote": null,
+      "context_paragraph": "… historians of science would certainly disagree. Then there's the obvious stories where Einstein himself later on is said to have not latched onto the correct interpretations of quantum mechanics or cosmology because of his own attachments. Yeah. Here’s the bigger question I have. The muon example is a great example of these long verification loops and how progress seems to happen in the scientific community faster than these verification loops imply. Maybe the clearest example is Aristarchus in the second century BC comes up with the idea of heliocentrism. The ancient Athenians dismiss it on the grounds that we should see as the Earth is moving around the Sun, if really the Sun is the center of the solar system, the stars move relative to the Earth. The only reason that would not be the case is the stars are so far away that you would not observe this. And it's only in 1838 that stellar parallax was actually measured. And so, we didn't need to wait until 1838 to have heliocentrism. We didn't need to wait for the experimental validation to understand that Copernicus is better in some way. In fact, when Copernicus first came up with his theories, it's well known that the Ptolemaic model was more accurate because it …",
+      "context_url": "https://www.youtube.com/watch?v=myP8UjAM1pk&t=912s",
+      "start_seconds": 912,
+      "end_seconds": 929,
+      "sources": []
+    }
+  ]
+}

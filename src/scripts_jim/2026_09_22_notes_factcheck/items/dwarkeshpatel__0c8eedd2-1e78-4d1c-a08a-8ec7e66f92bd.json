@@ -1,0 +1,92 @@
+{
+  "item_id": "0c8eedd2-1e78-4d1c-a08a-8ec7e66f92bd",
+  "project_slug": "dwarkeshpatel",
+  "creator": "Dwarkesh Patel",
+  "source": "podcast",
+  "url": "https://www.youtube.com/watch?v=QbdbAhaJoCQ",
+  "title": "Adam Brown",
+  "published_at": "2026-07-10",
+  "full_text": null,
+  "notes": [
+    {
+      "note_id": "06806a9f-aaea-4725-905c-fbba9b68b7a4",
+      "commonnotes_url": "https://commonnotes.net/?project=dwarkeshpatel&note=06806a9f-aaea-4725-905c-fbba9b68b7a4",
+      "note": "As of mid-2026, LIGO and partner detectors have confirmed roughly a few hundred gravitational wave events total, not thousands. The published catalogs (GWTC-1 through GWTC-3) list ~90 high-confidence detections, with O4 adding dozens more.",
+      "votes": {
+        "helpful": 0,
+        "not_helpful": 0
+      },
+      "jim_pick": null,
+      "claim": "We've now felt thousands of such shakings corresponding to thousands of black hole mergers.",
+      "extractor_judgement": "likely false",
+      "context_quote": "We've now felt thousands of such shakings corresponding to thousands of black hole mergers.",
+      "updated_quote": null,
+      "context_paragraph": "They all shook in exactly the same way, and we were able to back-calculate that the thing causing them to shake was the collision of two ginormous black holes. Two black holes, both of which weighed about 30 times as much as the sun, on the other side of the universe, about 1.6 billion light-years away. That collision happened about 1.6 billion years ago, and just happened to reach the Earth within weeks of us turning on the LIGO detectors. We've now felt thousands of such shakings corresponding to thousands of black hole mergers.",
+      "context_url": "https://www.youtube.com/watch?v=QbdbAhaJoCQ&t=4956s",
+      "start_seconds": 4956,
+      "end_seconds": 4966,
+      "sources": [
+        {
+          "url": "https://www.ligo.org/science/Publication-GWTC3/index.php",
+          "quote": null,
+          "explanation": null
+        }
+      ]
+    },
+    {
+      "note_id": "4e829be1-0b78-4172-94ff-6214e05d8329",
+      "commonnotes_url": "https://commonnotes.net/?project=dwarkeshpatel&note=4e829be1-0b78-4172-94ff-6214e05d8329",
+      "note": "The unit distance problem (Hadwiger–Nelson problem) remains unsolved as of 2026, with the chromatic number of the plane known only to lie between 5 and 7. No disproof exists from any source.",
+      "votes": {
+        "helpful": 0,
+        "not_helpful": 2
+      },
+      "jim_pick": null,
+      "claim": "it's totally comprehensible, the disproof of the unit distance conjecture that it came up with",
+      "extractor_judgement": "uncertain",
+      "context_quote": "The unit distance conjecture, I think, is a good example here for a number of the themes you've been discussing. One is that it's totally comprehensible, the disproof of the unit distance conjecture that it came up with.",
+      "updated_quote": null,
+      "context_paragraph": "There was a follow-up paper by some human mathematicians that took these new, human interpretable ideas that the machine had come up with to prove this Erdős conjecture, and used them to prove new theorems. So that was the exact opposite of that case. It came up with a very human interpretable idea, and then humans were able to fully comprehend it, comprehend it so well they were able to deploy it in a new scenario. We've seen that throughout. The unit distance conjecture, I think, is a good example here for a number of the themes you've been discussing. One is that it's totally comprehensible, the disproof of the unit distance conjecture that it came up with. To you, perhaps. To some mathematicians. I'm not a mathematician. Perhaps the reason that humans haven't disproved the unit distance conjecture is because they erroneously believe the conjecture to be true.",
+      "context_url": "https://www.youtube.com/watch?v=QbdbAhaJoCQ&t=5845s",
+      "start_seconds": 5845,
+      "end_seconds": 5863,
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Hadwiger%E2%80%93Nelson_problem",
+          "quote": null,
+          "explanation": null
+        }
+      ]
+    },
+    {
+      "note_id": "25053799-047c-43e3-93bf-cab327d0376a",
+      "commonnotes_url": "https://commonnotes.net/?project=dwarkeshpatel&note=25053799-047c-43e3-93bf-cab327d0376a",
+      "note": "The Sun's mass is approximately 333,000 times that of the Earth, not several million. This ratio is equivalent to about one-third of a million, making the claim an overstatement by a factor of roughly ten.",
+      "votes": {
+        "helpful": 2,
+        "not_helpful": 0
+      },
+      "jim_pick": null,
+      "claim": "the sun is a few million times the mass of the Earth",
+      "extractor_judgement": "likely false",
+      "context_quote": "It'd be a million times larger, because the sun is a few million times the mass of the Earth, but then it's also bigger, so that takes it away a little bit.",
+      "updated_quote": null,
+      "context_paragraph": "Okay, that's the fraction on the Earth. But this formula tells you that if you have an object that's heavier or more compact, the fraction of energy that you extract by lowering the object down to the surface is going to be larger. For example, if you lower it not down to the Earth's surface but down to the sun's surface, this would be larger. It'd be a million times larger, because the sun is a few million times the mass of the Earth, but then it's also bigger, so that takes it away a little bit. You end up with 2x10⁻⁶, the famous redshift from the sun's surface.",
+      "context_url": "https://www.youtube.com/watch?v=QbdbAhaJoCQ&t=2524s",
+      "start_seconds": 2524,
+      "end_seconds": 2545,
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Solar_mass",
+          "quote": null,
+          "explanation": null
+        },
+        {
+          "url": "https://www.britannica.com/topic/How-Big-Is-the-Sun",
+          "quote": null,
+          "explanation": null
+        }
+      ]
+    }
+  ]
+}

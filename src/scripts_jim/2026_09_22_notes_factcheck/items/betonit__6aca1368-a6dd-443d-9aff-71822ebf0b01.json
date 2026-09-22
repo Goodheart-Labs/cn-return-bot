@@ -1,0 +1,47 @@
+{
+  "item_id": "6aca1368-a6dd-443d-9aff-71822ebf0b01",
+  "project_slug": "betonit",
+  "creator": "Bet On It",
+  "source": "substack",
+  "url": "https://www.betonit.ai/p/the-typical-man-disgusts-the-typical",
+  "title": "The Typical Man Disgusts the Typical Woman",
+  "published_at": "2025-01-13",
+  "full_text": "Ever seen this famous OkCupid graph? The quick summary is just: “Men rate women more highly than women rate men.”\n\n[[IMAGE:https://substackcdn.com/image/fetch/$s_!QMD8!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F50d7b601-db67-4942-a8a9-c185eed592d8_910x1198.jpeg]]\n\nBut the quick summary is quite an understatement!\n\nMen don’t just find women more attractive; men’s ratings closely follow a bell curve, with 6% of women getting the minimum rating and 6% getting the maximum rating.\n\nWomen don’t just find men less attractive; the median and mode rating is 2 out of 7. Even more strikingly, the second most-common rating is 1 out of 7 — and near-zero men in the sample received 7 out of 7. (Over the years, by the way, I’ve repeatedly said “exactly zero,” but if you look close at the original post archived by Gwern, that’s not quite true).\n\nThe OkCupid results are far from unique. But the graphs are stark enough to inspire mutual anger. Common angry male reactions include: “Women have absurdly unrealistic standards” as well as “Women are just cruel.” Common angry female responses include: “It’s not our fault that most men suck” and “Why should I settle?”\n\nBut the only thing less constructive than anger is mutual anger. The data reveal an ugly truth that we all need to face. While there are several ways to capture this ugly truth, my favorite is just: _The typical man disgusts the typical woman._ You can expand this to: _The median man moderately disgusts the typical woman, and the bottom quarter of men strongly disgust the typical woman._\n\nThe good news: Once we all accept these ugly truths, we can replace fruitless anger with mutual understanding and empathy. To start:\n\n1.  Men should stop taking rejection so personally. When the typical women rejects you, the problem isn’t so much that she finds _you_ unappealing. The problem is that the typical woman finds almost _all_ men unappealing. You can’t reasonably say, “I have a job, I combed my hair, and asked nicely. What more does she want?” It really is like trying to get on a Minor League baseball team because you can throw a ball and swing a bat. Protesting, “It’s just the Minor Leagues!” is childish. While they’re not the best in the world, they’re still really good.\n    \n2.  Women should stop taking unwanted advances so personally. When the typical man pesters you, the problem isn’t so much that he refuses to see that you’re out of his league. The problem is that almost _all_ women think they’re out of his league. The typical suitor doesn’t want to make you uncomfortable, much less scare you. He’s just lonely and is doing his best to win you over. “His best isn’t good enough”? Fine, but you can still let him down gently. When firms reject job applicants, they usually don’t ghost them, much less send an email saying, “You’re pathetic.” They try a little tact, starting with: “Unfortunately, no suitable position is currently available.”\n    \n3.  Men should try harder to be less disgusting. Yes, most men start with the odds stacked against them. But instead of thinking, “It’s hopeless, so why bother?,” focus on, “It will work out eventually, so why not try to make it happen sooner?” Clothes, hygiene, table manners, and diction are all places to start.\n    \n4.  Women should try harder to be less disgust_ed_. Most women eventually accept a guy who isn’t visibly attractive. Much of the reason is that superficially unappealing guys win them over with charm, humor, and devotion. So instead of crinkling your nose in physical disgust, it pays to be on the look-out for the winning psychological traits of charm, humor, and devotion.\n    \n\nEvolution can at times seem like a cruel joke. It’s not hard to use evolutionary psychology to explain why the typical man disgusts the typical woman: Since women’s maximum reproductive capacity is strictly limited, they’re evolved to be hypergamous, with a strong preference for mating with the best of the best.\n\nYet it’s absurd to take evolution’s joke personally. “Evolution” is not a conscious actor, but a mindless, impersonal process. Humanity’s response is to listen to the joke with an open mind and an open heart. You probably couldn’t radically change what you find attractive even if you tried. But you _can_ nudge yourself in better directions at the margin, and train yourself to remember that the Kantian generalization of “I’m only human” is “We’re _all_ only human.”\n\nUpdate: Stefan Schubert points out that the OKCupid estimates of the male-female gap are unusually extreme. Emil Kirkegaard agrees after thoroughly reviewing a wide range of measures. True enough, but we should trust the OKCupid data more. The big advantage of the dating website rankings is that they greatly reduce Social Desirability Bias by getting both men and women in a “What do you REALLY think?” frame of mind.\n\nNo posts",
+  "notes": [
+    {
+      "note_id": "d20924f6-56ca-4f01-a33b-b9a97d184d49",
+      "commonnotes_url": "https://commonnotes.net/?project=betonit&note=d20924f6-56ca-4f01-a33b-b9a97d184d49",
+      "note": "About 80% of hiring managers say they have ghosted job candidates.",
+      "votes": {
+        "helpful": 0,
+        "not_helpful": 0
+      },
+      "jim_pick": null,
+      "claim": "Firms that reject job applicants usually do not ghost the applicants.",
+      "extractor_judgement": "likely false",
+      "context_quote": "When firms reject job applicants, they usually don’t ghost them, much less send an email saying, “You’re pathetic.” They try a little tact, starting with: “Unfortunately, no suitable position is currently available.”",
+      "updated_quote": null,
+      "context_paragraph": "Women should stop taking unwanted advances so personally. When the typical man pesters you, the problem isn’t so much that he refuses to see that you’re out of his league. The problem is that almost _all_ women think they’re out of his league. The typical suitor doesn’t want to make you uncomfortable, much less scare you. He’s just lonely and is doing his best to win you over. “His best isn’t good enough”? Fine, but you can still let him down gently. When firms reject job applicants, they usually don’t ghost them, much less send an email saying, “You’re pathetic.” They try a little tact, starting with: “Unfortunately, no suitable position is currently available.”",
+      "context_url": "https://www.betonit.ai/p/the-typical-man-disgusts-the-typical",
+      "start_seconds": null,
+      "end_seconds": null,
+      "sources": [
+        {
+          "url": "http://web.archive.org/web/20260312032131/https://resumegenius.com/blog/job-hunting/job-ghosting",
+          "quote": "8 out of 10 confessed to having ghosted candidates in the past.",
+          "explanation": "8 out of 10 equals 80%, directly supporting the note's claim."
+        },
+        {
+          "url": "http://web.archive.org/web/20260312032131/https://resumegenius.com/blog/job-hunting/job-ghosting",
+          "quote": "Given that **80% of hiring managers** report having ghosted candidates before, the majority of job seekers have likely faced this sudden silence at some point.",
+          "explanation": "Explicitly states the 80% figure claimed in the note."
+        },
+        {
+          "url": "http://web.archive.org/web/20260312032131/https://resumegenius.com/blog/job-hunting/job-ghosting",
+          "quote": "20% of hiring managers report that they **never ghost** candidates",
+          "explanation": "Complementary statistic confirming 80% have ghosted (100% - 20% never = 80%)."
+        }
+      ]
+    }
+  ]
+}

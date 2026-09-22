@@ -1,0 +1,31 @@
+{
+  "item_id": "95f62e4e-7641-4a31-9bed-d87ed2c33e7e",
+  "project_slug": "dwarkeshpatel",
+  "creator": "Dwarkesh Patel",
+  "source": "podcast",
+  "url": "https://www.youtube.com/watch?v=Jj-kBHzUohs",
+  "title": "Phil Trammell",
+  "published_at": null,
+  "full_text": null,
+  "notes": [
+    {
+      "note_id": "34afdb87-14a7-41a8-a144-8a591ac253d2",
+      "commonnotes_url": "https://commonnotes.net/?project=dwarkeshpatel&note=34afdb87-14a7-41a8-a144-8a591ac253d2",
+      "note": "Research showing that labor share remains within historical ranges once accounting for depreciation and taxes is kept constant was published by Benjamin Bridgman of the BEA. Atkinson’s 2009 paper discusses the decline in labor share and policy responses. https://bea.gov/sites/default/files/papers/WP2014-10.pdf http://piketty.pse.ens.fr/files/Atkinson09.pdf",
+      "votes": {
+        "helpful": 0,
+        "not_helpful": 0
+      },
+      "jim_pick": null,
+      "claim": "Atkinson has a paper showing that if you keep the accounting constant over the years, labor share hasn't even fallen ever",
+      "extractor_judgement": "uncertain",
+      "context_quote": "Some might say labor share has been falling in the last 20 to 30 years. But there have been a lot of accounting changes in the last 30 to 40 years. For example, Atkinson has a paper showing that if you keep the accounting constant over the years, labor share hasn't even fallen ever.",
+      "updated_quote": null,
+      "context_paragraph": "… AIs get smarter and better? This is a Kaldor fact. We should stress this. It's incredibly surprising that it's over 60% after the Industrial Revolution and all of the automation we've ever seen. Some people are worried it's an accounting error that it's been so constant. There's even a controversy right now. Some might say labor share has been falling in the last 20 to 30 years. But there have been a lot of accounting changes in the last 30 to 40 years. For example, Atkinson has a paper showing that if you keep the accounting constant over the years, labor share hasn't even fallen ever. But it's not that surprising, right? Phil, you made this point that if labor and capital are complements, you need both to do anything. It would make sense that you'd need to pay both of them to get something done. You have had stuff be completely automated. There's a sense in which nothing has yet been completely automated. Look at the network-adjusted factor shares of a good. Look down the supply chain and not just the final step and how much of that is done by …",
+      "context_url": "https://www.youtube.com/watch?v=Jj-kBHzUohs&t=461s",
+      "start_seconds": 461,
+      "end_seconds": 480,
+      "sources": []
+    }
+  ]
+}

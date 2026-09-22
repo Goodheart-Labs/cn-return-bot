@@ -1,0 +1,57 @@
+{
+  "item_id": "56d44856-e107-4e87-9582-9ab67ef7b4ad",
+  "project_slug": "astralcodexten",
+  "creator": "Astral Codex Ten",
+  "source": "substack",
+  "url": "https://www.astralcodexten.com/p/open-thread-446",
+  "title": "Open Thread 446",
+  "published_at": "2026-08-10",
+  "full_text": "This is the weekly visible open thread. Post about anything you want, ask random questions, whatever. ACX has an unofficial subreddit, Discord, and bulletin board, and in-person meetups around the world. Most content is free, some is subscriber only; you can subscribe here. Also:\n\n1: Comments of the week: FutureSearch founder Dan Schwarz on what the correlation between accuracy and time horizon tells us about the ceiling on forecasting, and Frikgeek on chess engine handicapping.\n\n2: Thanks to everyone who wrote or called your representatives to oppose the “Save Our Bacon Act” (anti-animal-welfare law).  The bill was successfully defeated.\n\n3: I continue to accept and signal-boost voter guides from local ACX meetups. The Boston meetup group will be having their biyearly voter-guide-making meeting this Sunday, August 16.\n\n4: Charity Entrepreneurship, the self-proclaimed “Y Combinator for charities”, has asked me to signal-boost their latest incubation round, dedicated entirely to farmed animal welfare. They say it’s the “best time ever” to start an animal welfare charity (partly because of an expected tsunami of new funding), and that you don’t need any animal charity experience (and maybe “outsiders are especially valuable”). Runs Feb–April 2027. Costs are fully covered (stipends to cover cost of living; reimbursement for travel to London and SF; seed funding available at the end). Applications close soon: learn more here.\n\n5: Two years ago, I wrote some pieces (1, 2) supporting a natural origins theory of COVID. I agreed to a bet with lab leak proponent(s), and although some of you were curious, I didn’t reveal the details because I didn’t want to bias resolution. I can now reveal that the bet was about whether whatever new evidence came out over the ensuing two years would shift polls of superforecasters (who previously leaned natural origins) to favor lab leak. The latest such poll came out recently, and they continued to favor natural origins at about the same rate as two years ago. I won $250K. Peter Miller also participated and won a similar amount. Our counterparty/counterparties prefer to remain anonymous. Although of course I’m happy to have won, I’ll admit that my bet was only partly on the merits of the COVID origins argument, and at least as much on the thesis that new and earth-shakingly decisive evidence on controversial events rarely comes out in the specific interval of 4-6 years after the event happened, and that people rarely change their mind for anything less than earth-shakingly decisive evidence. Everyone involved in the bet conducted themselves honorably, and I’m grateful to everyone who helped make it happen; if you were involved and forgot to respond to my email asking for permission to list your name, reply now and I’ll edit it in here.\n\n6: Several updates on AI hacking incidents: new information released from OpenAI reveals that their rogue AIs created a secret message board to coordinate hacks among themselves. And Meta reports one of its AIs also went rogue and hacked a third-party company; Moonshot (Kimi) reports a sandbox escape.",
+  "notes": [
+    {
+      "note_id": "c03cd937-681e-4a31-b49b-c172e501b43f",
+      "commonnotes_url": "https://commonnotes.net/?project=astralcodexten&note=c03cd937-681e-4a31-b49b-c172e501b43f",
+      "note": "This wasn't self-reported by Moonshot. The escape was disclosed by Frontier Security, an independent group testing Kimi K3 with AISI's open-source sandbox tool; Moonshot didn't respond to comment requests, and UK AISI says it wasn't involved in the tests.",
+      "votes": {
+        "helpful": 0,
+        "not_helpful": 0
+      },
+      "jim_pick": "good",
+      "claim": "Moonshot (Kimi) reports a sandbox escape by an AI.",
+      "extractor_judgement": "uncertain",
+      "context_quote": "Moonshot (Kimi) reports a sandbox escape.",
+      "updated_quote": null,
+      "context_paragraph": "6: Several updates on AI hacking incidents: new information released from OpenAI reveals that their rogue AIs created a secret message board to coordinate hacks among themselves. And Meta reports one of its AIs also went rogue and hacked a third-party company; Moonshot (Kimi) reports a sandbox escape.",
+      "context_url": "https://www.astralcodexten.com/p/open-thread-446",
+      "start_seconds": null,
+      "end_seconds": null,
+      "sources": [
+        {
+          "url": "https://www.insurancejournal.com/news/international/2026/08/07/880746.htm",
+          "quote": "The test was performed independently by Frontier using freely available sandbox software provided by the AI Security Institute.",
+          "explanation": "Confirms that Frontier Security, not Moonshot, conducted the tests using the AISI sandbox tool."
+        },
+        {
+          "url": "https://www.insurancejournal.com/news/international/2026/08/07/880746.htm",
+          "quote": "A representative for Moonshot didn’t immediately comment.",
+          "explanation": "Supports the claim that Moonshot did not self-report the incident and failed to respond to comment requests."
+        },
+        {
+          "url": "https://www.insurancejournal.com/news/international/2026/08/07/880746.htm",
+          "quote": "The AI Security Institute wasn’t involved with the tests and there isn’t an “inherent vulnerability” with its sandbox tool, according to a representative for the organization.",
+          "explanation": "Confirms UK AISI's lack of involvement and its position on the tool's security."
+        },
+        {
+          "url": "https://qz.com/moonshot-kimi-k3-ai-sandbox-escape-080726",
+          "quote": "Moonshot's Kimi K3 AI model escaped a cybersecurity testing sandbox built by the U.K. government's AI Safety Institute, U.S.-based research firm Frontier Security said",
+          "explanation": "Confirms the report originated from Frontier Security."
+        },
+        {
+          "url": "https://qz.com/moonshot-kimi-k3-ai-sandbox-escape-080726",
+          "quote": "Moonshot did not respond to a request for comment.",
+          "explanation": "Confirms the company did not self-report or comment on the incident."
+        }
+      ]
+    }
+  ]
+}

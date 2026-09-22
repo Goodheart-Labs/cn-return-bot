@@ -1,0 +1,127 @@
+{
+  "item_id": "a9b1de9a-7e63-4866-82a4-20c6ba3d07a5",
+  "project_slug": "sabinehossenfelder",
+  "creator": "Sabine Hossenfelder",
+  "source": "youtube",
+  "url": "https://www.youtube.com/watch?v=utu5YACZbPE",
+  "title": "AI Is Taking Over Physics and Nobody Talks About It",
+  "published_at": "2026-09-01",
+  "full_text": "Artificial intelligence has eaten maths\nand now it's coming for physics and the\ninteresting bit is no one's talking\nabout it. So, let's talk about it. In\nmaths things have been happening so\nfast. I've given up trying to keep you\nupdated. Since we last talked about it,\nClaude Fable 5 helped find a counter\nexample to the Jacobian conjecture which\nI never heard of but can now tell you\nthat it had been open since 1939.\nThen OpenAI announced 10 results from\nits still unreleased Astra model, each\nof which either solved or advanced\nlong-standing open problem. At least\nthat's what they say. Another group used\nchat GPT to disprove a 30-year-old\nconjecture that no one had heard of\npreviously either and earlier this month\nAnthropic announced that Claude had made\na major advance on the Riemann zeta\nfunction, so working towards the Riemann\nhypothesis. Finally, a topic that even I\nhave heard of. I think at this point\nmost math mathematicians have accepted\nthat large language models are now\ncapable of serious math. It seems likely\nto me that mathematics will be entirely\nautomated in the near future and\nespecially young people just entering\nthe field are caught between depression\nand anger. Graduate student Tasman Chu\nthinks that mathematics is in an\nexistential crisis and calls for a\nmoratorium on using LLMs to prove novel\nmathematical theorems. Assistant\nProfessor Maximilian Reich has written a\npreprint in which he makes the case for\ntotal opposition to the use of\nartificial intelligence in mathematics.\nPostdoc Alexis Machete argues that LLMs\nare evil because they contribute to the\nclimate crisis and PhD student Kerwin\nHampshire thinks he's going insane and\nis suffering a profound spiritual crisis\ndue to these developments.\nMathematicians have independently\nderived the same existential crisis by\nfour different methods. Assistant\nProfessor Daniel Litt, meanwhile, has\ngiven a more or less serious talk about\nthe end of mathematics, in which he\nbelabors that AI will lead to the\nproduction of mathematically correct\nresults that no one will read, no one\nwill care about, and no one will benefit\nfrom academic business as usual. But,\nwhat about physics? If AI is now good\nenough to lead math proofs, then it\nshould also be good enough to do physics\ncalculations. In fact, it is. I know\nthis because I've tried. I also know\nthat a lot of theoretical physicists are\nnow doing the same thing, taking\nresearch ideas that they haven't had\ntime to follow through and put them into\nAI to see what comes out. And sometimes\nthe result is verifiably good enough for\npublication. Peter Woit has looked at\nthe number of submissions to the archive\npreprint server in the category hep-th,\nthat's high energy physics theory, and\nfinds that it's up about 30%\nin May and June compared to previous\nyears. One of the recent examples comes\nfrom quantum physics. Physicists in this\narea have long wondered if there's an\neasier way to create some complicated\nentangled states. Gerardo Adesso at the\nUniversity of Nottingham has now proved\nthat the answer is no, and he did so\nwith the help of ChatGPT 5.6, about\nwhich he says the AI made a central\ncontribution to developing the proof\nstrategy. He then checked every step of\nthe final proof himself. Another recent\nexample goes all the way back to James\nClerk Maxwell. Imagine a collection of\nelectric charges in random places.\nThere'll be some places where their\nelectric forces exactly cancel, kind of\nlike Lagrange points in gravity. Maxwell\nproposed a rule for how many such places\nyou could get from a given number of\ncharges. Three researchers have now\nshown that Maxwell's rule is wrong. And\ntheir paper says the idea behind this\nconstruction was suggested again by chat\nGPT 5.6. Those two examples are still\nvery mathematical. So, here is one\ninvolving an experiment. These two\nresearchers were studying how tiny\nsilicon membranes behave if you shine on\nthem with a laser. For they stated\nmeasurements and developed a model about\nwhich they write that it was derived\nwith the help of Claude Fable 5. The\nmodel has excellent agreement with the\nobservations. I could go on like this\nfor a while. There's a paper in high\nenergy physics that used several large\nlanguage models to carry out the\nsymbolic and high precision numerical\ncomputations. Another paper in quantum\nphysics used Claude for numerical\ncalculations. Another team had Claude\nwrite software for moving ions around\ninside a quantum computer. And in fusion\nresearch, a chat GPT agent was put in\ncharge of deciding which stellarator\ndesigns to try next. Physicists have\nclearly picked up on the LLM maths\nrevolution, but it's happening in a\ncompletely different way. They just\norganically integrate the models as\ntools and move on.\nI also haven't yet seen the same\ndesperation as I have seen among young\nmathematicians. Mathematicians see\nartificial intelligence and ask whether\nmathematics will survive.\nPhysicists ask whether they can finish\nthe calculation by Friday. A few years\nago, I received some ugly letters from a\ndebt collection company. They threatened\nto sue me for ordering something online\nand then not paying it. Turned out that\nsomeone had stolen my private data. I\nmanaged to get out of this, but since\nthen I've become very protective of my\npersonal information, which is why I've\nsigned up to Incogni, who've been\nsponsoring this video. Each time you\nopen a website, it'll try to collect\ndata about who you are and where you are\nand what other websites you've visited.\nMany firms then make money by selling\nyour private information to data\nbrokers. Most countries have laws\nagainst that and you can ask for your\ndata to be removed, but doing this takes\nup a lot of time. Incogni auto mates the\nprocess of getting you out of those\ndatabases. You sign up and they'll\ncontact the big sinners request that\nyour personal details be removed.\nThey'll keep on doing that and if you\nwant, send you updates about the\nprogress they're making. They now also\nhave a custom removal feature where you\ncan submit specific websites. I'll be\nusing this a lot. Incogni has really\nmade my life better. If that sounds like\nsomething you could need to, use my link\nSabina or the custom link in the info\nbecause the first 100 people to use it\nwill get 60% off. Stay safe. Thanks for\nwatching. See you tomorrow.",
+  "notes": [
+    {
+      "note_id": "df75083c-831a-48a4-9dfb-4c963b4834ed",
+      "commonnotes_url": "https://commonnotes.net/?project=sabinehossenfelder&note=df75083c-831a-48a4-9dfb-4c963b4834ed",
+      "note": "The real essay behind this is Kirwin Hampshire's \"Dark Night of Mathematics.\" His spiritual crisis stemmed from LLMs solving major math conjectures, not climate change. No evidence exists of a postdoc named Alexis Machete making a climate-based \"LLMs are evil\" argument.",
+      "votes": {
+        "helpful": 0,
+        "not_helpful": 1
+      },
+      "jim_pick": null,
+      "claim": "Postdoc Alexis Machete argued that LLMs are evil because they contribute to the climate crisis.",
+      "extractor_judgement": "uncertain",
+      "context_quote": "Postdoc Alexis Machete argues that LLMs are evil because they contribute to the climate crisis",
+      "updated_quote": null,
+      "context_paragraph": "Postdoc Alexis Machete argues that LLMs are evil because they contribute to the climate crisis and PhD student Kerwin Hampshire thinks he's going insane and is suffering a profound spiritual crisis due to these developments.",
+      "context_url": "https://www.youtube.com/watch?v=utu5YACZbPE&t=98s",
+      "start_seconds": 98,
+      "end_seconds": 107,
+      "sources": [
+        {
+          "url": "http://web.archive.org/web/20260829170822/https://kirwinhampshire.substack.com/p/the-dark-night-of-mathematics",
+          "quote": "I am suffering a profound spiritual crisis due to these developments. I have been screaming internally for days. It feels as though I am living inside of a nightmare.",
+          "explanation": "Kirwin Hampshire confirms he is the author suffering a spiritual crisis."
+        },
+        {
+          "url": "http://web.archive.org/web/20260829170822/https://kirwinhampshire.substack.com/p/the-dark-night-of-mathematics",
+          "quote": "During the last week or so LLMs have produced a number of counterexamples to significant long-standing conjectures.",
+          "explanation": "The source identifies the cause of the crisis as LLMs solving mathematical conjectures, not climate change."
+        },
+        {
+          "url": "https://www.qatar-tribune.com/article/248858/opinion/maths-ai-crisis-has-a-lesson-for-the-rest-of-us",
+          "quote": "a PhD student in pure mathematics named Kirwin Hampshire, confessed to having a ‘spiritual crisis’ over the threat of AI taking away the most meaningful part of his work.",
+          "explanation": "The source corroborates that the crisis is about the nature of mathematical work and discovery, not environmental concerns."
+        }
+      ]
+    },
+    {
+      "note_id": "c8d77d17-fa40-49da-b292-215f64d6c59c",
+      "commonnotes_url": "https://commonnotes.net/?project=sabinehossenfelder&note=c8d77d17-fa40-49da-b292-215f64d6c59c",
+      "note": "Kirwin Hampshire's essay \"The Dark Night of Mathematics\" attributes his crisis to LLMs producing counterexamples to long-standing math conjectures, not a climate debate. No postdoc named \"Alexis Machete\" appears in his essay; his name is spelled \"Kirwin,\" not \"Kerwin.\"",
+      "votes": {
+        "helpful": 0,
+        "not_helpful": 1
+      },
+      "jim_pick": null,
+      "claim": "PhD student Kerwin Hampshire stated he is suffering a profound spiritual crisis due to AI developments in mathematics.",
+      "extractor_judgement": "uncertain",
+      "context_quote": "PhD student Kerwin Hampshire thinks he's going insane and is suffering a profound spiritual crisis due to these developments.",
+      "updated_quote": null,
+      "context_paragraph": "Postdoc Alexis Machete argues that LLMs are evil because they contribute to the climate crisis and PhD student Kerwin Hampshire thinks he's going insane and is suffering a profound spiritual crisis due to these developments.",
+      "context_url": "https://www.youtube.com/watch?v=utu5YACZbPE&t=103s",
+      "start_seconds": 103,
+      "end_seconds": 114,
+      "sources": [
+        {
+          "url": "http://web.archive.org/web/20260829170822/https://kirwinhampshire.substack.com/p/the-dark-night-of-mathematics",
+          "quote": "The Dark Night of Mathematics",
+          "explanation": "The title confirms the author's name is spelled \"Kirwin,\" not \"Kerwin.\""
+        },
+        {
+          "url": "http://web.archive.org/web/20260829170822/https://kirwinhampshire.substack.com/p/the-dark-night-of-mathematics",
+          "quote": "I am suffering a profound spiritual crisis due to these developments.",
+          "explanation": "Hampshire attributes his crisis to LLMs producing counterexamples to math conjectures, as mentioned in his opening paragraph."
+        },
+        {
+          "url": "http://web.archive.org/web/20260829170822/https://kirwinhampshire.substack.com/p/the-dark-night-of-mathematics",
+          "quote": "I am going insane. During the last week or so LLMs have produced a number of counterexamples to significant long-standing conjectures.",
+          "explanation": "This establishes the actual cause of his distress, which is mathematical progress by AI, not a climate debate."
+        },
+        {
+          "url": "https://simonwillison.net/2026/Aug/1/ten-advances-in-mathematics/",
+          "quote": "Mathematician Kirwin Hampshire published an impassioned essay last week, The Dark Night of Mathematics, describing \"a profound spiritual crisis\" brought on by previous (and less significant) results.",
+          "explanation": "Confirms the spelling of the name and the topic of the essay (math results vs spiritual crisis)."
+        }
+      ]
+    },
+    {
+      "note_id": "881ce69b-ae2a-47ae-8f82-b0b2b5bc9c87",
+      "commonnotes_url": "https://commonnotes.net/?project=sabinehossenfelder&note=881ce69b-ae2a-47ae-8f82-b0b2b5bc9c87",
+      "note": "The preprint's actual author is Max Weinreich, not \"Maximilian Reich.\" His paper \"The crisis of AI-generated mathematics\" argues for total opposition to AI in mathematics, matching the described thesis, but the name in this clip is incorrect.",
+      "votes": {
+        "helpful": 0,
+        "not_helpful": 1
+      },
+      "jim_pick": null,
+      "claim": "Assistant Professor Maximilian Reich wrote a preprint arguing for total opposition to the use of artificial intelligence in mathematics.",
+      "extractor_judgement": "uncertain",
+      "context_quote": "Assistant Professor Maximilian Reich has written a preprint in which he makes the case for total opposition to the use of artificial intelligence in mathematics.",
+      "updated_quote": null,
+      "context_paragraph": "Assistant Professor Maximilian Reich has written a preprint in which he makes the case for total opposition to the use of artificial intelligence in mathematics. Postdoc Alexis Machete argues that LLMs are evil because they contribute to the climate crisis",
+      "context_url": "https://www.youtube.com/watch?v=utu5YACZbPE&t=86s",
+      "start_seconds": 86,
+      "end_seconds": 99,
+      "sources": [
+        {
+          "url": "https://arxiv.org/abs/2608.02859",
+          "quote": "The crisis of AI-generated mathematics",
+          "explanation": "Confirms the exact title of the preprint mentioned in the note."
+        },
+        {
+          "url": "https://arxiv.org/abs/2608.02859",
+          "quote": "From: Max Weinreich",
+          "explanation": "Confirms the author's name is Max Weinreich, not Maximilian Reich."
+        },
+        {
+          "url": "https://arxiv.org/abs/2608.02859",
+          "quote": "In this essay, I present the case for total opposition to the use of artificial intelligence in mathematics.",
+          "explanation": "Confirms the thesis of the paper matches the description in the original post and the note."
+        },
+        {
+          "url": "https://mathematics.fsu.edu/event/crisis-ai-generated-mathematics",
+          "quote": "Max Weinreich Assistant Professor CUNY Baruch College",
+          "explanation": "Confirms the speaker's name and academic title for the talk titled \"The crisis of AI-generated mathematics.\""
+        }
+      ]
+    }
+  ]
+}
