@@ -1,0 +1,29 @@
+{
+  "item_id": "d442d7f2-9fbd-45e3-a721-8fc23a25cbca",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "fd552c06-2e9f-4647-b765-35eb28a49f1e",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "reason": "The author states the numbers as fact in his own voice in the opening seconds: \"While average Americans pay an effective tax rate of about 30%. Forbes 400 richest individuals pay only 28%.\" He introduces the point with \"according to economists like Gabriel Zucman\" and builds the whole video on it, so he adopts the claim rather than reporting it. The study he is drawing on is Balkir, Saez, Yagan and Zucman, NBER working paper 34170 of August 2025; its abstract, which I read, says the top 0.0002 percent averaged 24 percent in 2018 to 2020 against 30 percent for the full population, and the Berkeley news piece gives 23.8 percent and 30.2 percent, so both accepted quotes are accurate and the 30 percent he uses comes from the same study. No source I could find puts the Forbes 400 at 28 percent; the likely origin of the slip is that 28 percent was the average American rate in Zucman's earlier data, as his 2021 Senate testimony puts it, \"never substantially exceed the average rate of 28%\" while the 400 richest fall \"to less than 25%\". The correction is substantive because 28 against 30 makes the gap that is his premise look almost nonexistent, while the study puts it at six points, and it runs in his favour, so an economist would treat it as a misread number and accept it. I could not obtain an independent transcript, but a caption mishearing of twenty-four as twenty-eight is unlikely, and his next line, that Europe is \"even more extreme\", fits a small stated US gap. Nathan can confirm the spoken number at 0:13 before sending.",
+      "send_advice": null
+    },
+    {
+      "note_id": "c9ddfa9f-91fd-4500-b247-dcf71f085c34",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "reason": "This is the author's own punchline: \"it would bring in closer to 2.4 billion, a microscopic 0.7% of the total UK government spending.\" The arithmetic fails against his own figures. Six minutes earlier he uses a total budget of 1,368 billion pounds, which is the OBR's 2025-26 total managed expenditure, and correctly calls 7.8 billion \"roughly half a percent\"; 2.4 billion out of the same 1,368 billion is 0.18 percent, so the real share is about four times smaller than he says. The note's GOV.UK source holds, the December 2025 release gives 1,288.1 billion pounds of total managed expenditure for 2024-25, and its point that 0.7 percent would need total spending near 340 billion is right for any year. Two things keep me from calling it good. First, the caption could have lost a digit: 2.4 divided by 1,368 is 0.175 percent, so if he actually said \"0.17%\" the note would be embarrassing, and the word \"microscopic\" fits 0.17 percent better than a number larger than the \"half a percent\" he had just called pocket change. Nathan should listen at 14:53 before sending. Second, the note argues from a 2024-25 range of 1.22 to 1.28 trillion, which is a different year from the author's own total and whose lower bound matches nothing in the release, when the cleaner correction uses his own 1,368 billion. The correction strengthens rather than weakens his conclusion, so once the wording is fixed he would very likely accept it.",
+      "send_advice": "Confirm at 14:53 that he says 0.7% and not 0.17%. Then replace the first sentence with: \"By the video's own total of £1,368bn (OBR, 2025-26), £2.4bn is about 0.18% of UK government spending, not 0.7%; the earlier £7.8bn was correctly called roughly half a percent.\" Keep the sentence about 0.7% requiring a £340bn budget."
+    }
+  ]
+}

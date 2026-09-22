@@ -1,0 +1,18 @@
+{
+  "item_id": "1269f073-7949-44c3-9929-f6de2ec80a23",
+  "reviewer": "fable",
+  "source_read": "fetched:https://thezvi.substack.com/p/the-american-people-really-hate-data",
+  "notes": [
+    {
+      "note_id": "6c3ab86e-d1df-4ba7-bfa0-7ff2023bf856",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": "The wording needs no change. Send it as a small name correction and say in the message that his point stands, because Microsoft runs exactly the kind of programs he describes at Mount Pleasant.",
+      "reason": "The live page shows the sentence outside any block quote: Zvi quotes PoliMath's complaint that a tech company spends ten billion dollars on a data center outside a Wisconsin town but will not sponsor a little league team, then answers in his own voice, 'Actually, they do this. Meta and Google have such programs. Meta has such a program at Mount Pleasant.' There is no hyperlink on that sentence, and PoliMath's article names no town, so the Mount Pleasant example is Zvi's own. The note is correct: Meta's own list of United States data centers has twenty-eight sites, none in Mount Pleasant, and its Wisconsin site is Beaver Dam; the Mount Pleasant campus is Microsoft's Fairwater facility, and Microsoft funds the Lamparek Creek restoration with Root-Pike WIN and works with Gateway Technical College on training, as the note says. What keeps this from good is that the error does not touch the argument. A data center operator really does run such community programs at Mount Pleasant, just Microsoft rather than Meta, so a reader who believes the sentence is wrong only about which company. It is the kind of one-word correction Zvi runs without complaint, but it is a name mix-up, not a broken point."
+    }
+  ]
+}

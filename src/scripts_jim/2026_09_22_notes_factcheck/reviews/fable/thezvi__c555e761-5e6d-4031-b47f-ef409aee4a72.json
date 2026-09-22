@@ -1,0 +1,29 @@
+{
+  "item_id": "c555e761-5e6d-4031-b47f-ef409aee4a72",
+  "reviewer": "fable",
+  "source_read": "fetched:https://thezvi.substack.com/p/ai-175-the-fable-continues",
+  "notes": [
+    {
+      "note_id": "258fcf9d-3f4f-4108-8af9-3ccf984b4089",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "The sentence is Zvi's own summary of the Exponential View report, in his voice and outside any block quote: \"They conclude it is about enough to pay for infrastructure investments given 6 year depreciation of chips, and is growing at ~60% year over year.\" I read the report's essay and the 66-page deck it links (ev-state-of-ai-economy-2026.pdf). Neither says 60% of anything. The essay says revenues are \"growing faster than previous IT-oriented waves, roughly three times more rapidly than the mobile or Internet waves\", and the deck's growth slide says \"35% QoQ, equivalent to 3.2x annually\", which is about 220% growth a year. The only 1.6-ish figure in the report is the slide label \"1.6x gap, the spread reflects the growth rate\" next to $110bn trailing revenue and a $175bn run rate; that ratio is what you get at roughly 3x annual growth, not at 60%, so Zvi most likely read that label as a growth rate. The error sits in a paragraph about whether AI revenue can pay for the buildout, where 60% a year versus more than tripling a year changes the answer, so it is not a rounding quibble. All the other numbers in his paragraph (6-year depreciation, 0.4% of GDP, rounding error) check out against the deck, so this is one slip Zvi would want fixed. The note's two source quotes match the essay word for word. Its \"near 200%\" and \"about 220%\" are both loose renderings of 3.2x, which is close enough that no rewording is needed."
+    },
+    {
+      "note_id": "6e5240d0-3715-4c41-9aa2-a6db48f5659e",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "\"AI agents respond to nudges in similar ways to humans\" is Zvi's own one-line summary of the PNAS paper he links, and he builds on it: \"so long as the nudges impacting your agent are not that adversarial, it seems fine, especially since humans will have the same issue.\" The paper (Cherep, Maes and Singh, \"AI agents are sensitive to nudges\", PNAS, arXiv title \"LLM Agents Are Hypersensitive to Nudges\") says the opposite of similarity. Its abstract says LLMs \"are far more responsive to nudges than humans, such that weak cues that slightly shift human behavior have larger effects on model choices\" and that agents \"can be behaviorally brittle under subtle changes in choice architecture, even in the absence of adversarial settings\", which is precisely the reassurance Zvi draws. Its significance statement says many applications assume agents \"will react in roughly human-like ways\" and \"we show this assumption often fails\", so Zvi even inverted the assumption the paper falsifies. I confirmed the note's three PNAS quotes verbatim in the PMC full text and the arXiv quote in that abstract. The arXiv version does mention \"superficial similarities to human choice distributions\", so Zvi's sentence has a kernel, but the finding he omitted is the paper's point and the part his inference rests on. A numerate author who linked the paper would accept that \"more sensitive than humans\" is what it says."
+    }
+  ]
+}

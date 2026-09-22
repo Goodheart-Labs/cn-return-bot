@@ -1,0 +1,18 @@
+{
+  "item_id": "9ef6ab0b-2839-4ed9-90d5-6606c9790db9",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "c6bc38f3-ff6f-4b22-9fc1-aa1def6b1ad2",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "The pricing sentence is Zvi's own, outside the DeepSeek block quote: \"Pricing is $0.44/$1.32 during peak hours, or 50% off non-peak.\" DeepSeek announced the peak and off-peak card on August 13, the day Zvi wrote, effective August 17. I checked the ifeng and 163 reports and Tencent Cloudbase's copy of the notice: V4-Flash peak is 3 yuan cache-miss input and 9 yuan output, V4-Pro peak is 9 and 27 yuan, and DeepSeek's own English rate card gives those as $0.44/$1.32 for Flash and $1.32/$3.96 for Pro. So the pair Zvi gives for V4-Pro is the V4-Flash row, and Pro costs three times what he says. The pre-change V4-Pro price was 3/6 yuan, which does not match his numbers either, and the peak/off-peak structure he describes only exists on the new card, so he was reading the new table. It matters to his point, because the passage is about whether DeepSeek is commoditising the frontier on price. The note's \"roughly $1.30/$3.91\" is a fair yuan conversion of 9/27; DeepSeek's own card says $1.32/$3.96, so Nathan may prefer to cite those, but the note is correct as written."
+    }
+  ]
+}

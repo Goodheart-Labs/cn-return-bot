@@ -1,0 +1,18 @@
+{
+  "item_id": "fd13ae42-17fd-49e7-bbb6-44dd99da7521",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "d37f380d-9b0a-4e12-ba76-c74b97e1096e",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "reason": "The sentence 'Marcus Hunter writes Job-Less Utopia, arguing that job loss futures are desirable, affordable and likely' is Zvi's own summary in the They Took Our Jobs section, not a quote; on the live page 'Marcus Hunter writes' is hyperlinked to x.com/mhutter42, which is Marcus Hutter's own account, so Zvi read Hutter's announcement and misspelled the name. The book PDF at hutter1.net has the title page 'Job-Less Utopia, Macroeconomics in the Age of AGI, Marcus Hutter, 2026' and the copyright line 'Copyright 2026 Marcus Hutter', published by 'AIXI Media', and Fernando Borretti's review opens 'Marcus Hutter, oldheads will remember him from AIXI, recently published a book: Job-Less Utopia'. So the note is correct and its sources say exactly what they are quoted for. It is more than a spelling quibble: a reader is told the book is by a person who does not exist and misses that the author is the AIXI researcher, which is the main reason Zvi's readers would care about an AGI macroeconomics book. The correction does not touch Zvi's summary of the argument, but the fact it fixes is the subject of his sentence. Zvi issues corrections of this kind routinely.",
+      "send_advice": null
+    }
+  ]
+}

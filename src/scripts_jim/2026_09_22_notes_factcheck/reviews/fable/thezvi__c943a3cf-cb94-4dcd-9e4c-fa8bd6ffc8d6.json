@@ -1,0 +1,18 @@
+{
+  "item_id": "c943a3cf-cb94-4dcd-9e4c-fa8bd6ffc8d6",
+  "reviewer": "fable",
+  "source_read": "fetched:https://thezvi.substack.com/p/fable-6-the-return-of-the-king",
+  "notes": [
+    {
+      "note_id": "e4515c89-ff9a-4ffd-8b42-b832216983af",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "The timeline is Zvi's own: after \"Anthropic explains its version of what happened\" (a link to Anthropic's post) he writes \"Here is the timeline:\" and lists the dates in his own words, not in a block quote. Anthropic's post says only \"We have also restored access to Mythos 5 for a set of US organizations, following the US government's approval on June 26\", and NBC (June 26), CNBC and BankInfoSecurity (June 30) all report that Lutnick's June 26 letter restored Mythos 5 to about 100 vetted organisations while the licensing requirement stayed and Fable 5 stayed offline; BankInfoSecurity says the June 30 action \"removes the licensing requirement entirely for both models\". So \"June 26: US government eliminated the controls on Mythos\" is wrong, and Zvi's next line, \"June 30: US government fully lifted those controls on Fable as well\", tells the reader the Mythos controls were already fully gone. A commenter on the post read it exactly that way (\"So it looks like Glasswing only lost 2 weeks?\"), which shows the misreading matters. The scope of who could use Mythos is part of Zvi's own argument in the same post, where he quotes Stamos on how useless \"just join the trusted group\" is. Every source quote in the note matched the cited page, and the June 30 line in the note is correct, so it changes only the one wrong line. Zvi follows this saga closely and would accept a dated correction from Anthropic's own account."
+    }
+  ]
+}
