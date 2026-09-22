@@ -9,6 +9,7 @@ function history(rows: { submit_score: number; decided_at: string }[]) {
     select: mock(() => query),
     eq: mock(() => query),
     gte: mock(() => query),
+    or: mock(() => query),
     order: mock(() => query),
     range: mock(async (start: number, end: number) => ({ data: rows.slice(start, end + 1), error: null })),
   };
@@ -27,6 +28,7 @@ describe("fetchRankingSubmitScores", () => {
     })));
     expect(await logger.fetchRankingSubmitScores("flags_then_eval", 7)).toEqual({ scores: [0, 1, 2, 3, 4], spanDays: 4.25, distinctDays: 5 });
     expect(query.eq).toHaveBeenCalledWith("scorer", "flags_then_eval");
+    expect(query.or).toHaveBeenCalledWith("bar_state.is.null,bar_state.neq.queue");
     expect(query.gte).toHaveBeenCalledWith("decided_at", new Date(now - 7 * dayMs).toISOString());
   });
 
