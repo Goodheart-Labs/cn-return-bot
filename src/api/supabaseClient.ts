@@ -754,6 +754,19 @@ export class SupabaseLogger {
     }
   }
 
+  /** How many ranking decisions of the given kinds were logged in the last
+   *  `hours`. Used to pace the exploration slice. */
+  async countRankingDecisions(decisions: string[], hours: number): Promise<number> {
+    const since = new Date(Date.now() - hours * 3_600_000).toISOString();
+    const { count, error } = await this.client
+      .from("ranking_decisions")
+      .select("id", { count: "exact", head: true })
+      .in("decision", decisions)
+      .gte("decided_at", since);
+    if (error) throw error;
+    return count ?? 0;
+  }
+
   /** The note rater's scores (helpful minus not helpful) of every note rated
    *  in the last `windowDays`, for the rater bar. */
   async fetchNoteRaterScores(windowDays: number): Promise<number[]> {
@@ -765,6 +778,8 @@ export class SupabaseLogger {
         .select("score_value")
         .eq("score_type", NOTE_RATER_SCORE_TYPE)
         .gte("created_at", since)
+        .order("created_at", { ascending: true })
+        .order("id", { ascending: true })
         .range(offset, offset + 999);
       if (error) throw error;
       for (const r of data ?? []) if (typeof r.score_value === "number") scores.push(r.score_value);
@@ -891,7 +906,7 @@ export class SupabaseLogger {
       .eq("outcome", "candidate")
       .eq("final_stage", "candidate")
       .eq("outcome_reason", QUEUED_REASON)
-      .neq("bot_name", "signal")
+      .or("bot_name.is.null,bot_name.neq.signal")
       .gte("created_at", since)
       .order("created_at", { ascending: true });
     if (error) throw error;

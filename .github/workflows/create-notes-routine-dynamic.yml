@@ -41,6 +41,8 @@ jobs:
       NOTE_RATER_ENABLED: ${{ vars.NOTE_RATER_ENABLED }}
       # Set the repo variable to "false" to switch the note queue and rater order off.
       NOTE_QUEUE_ENABLED: ${{ vars.NOTE_QUEUE_ENABLED }}
+      # Share of recent notes that clear the forecast bar (default 0.5); 1 means no bar.
+      NOTE_BAR_KEEP_SHARE: ${{ vars.NOTE_BAR_KEEP_SHARE }}
       # Groq API key for Whisper audio transcription (video analysis)
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
       # xAI API key for Grok X search

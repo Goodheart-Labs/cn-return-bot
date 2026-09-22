@@ -204,9 +204,15 @@ export interface SubmitOptions {
   bar: number | null;
   barState: "set" | "admit_all" | "reject_all" | "none" | "off" | "error";
   rng?: () => number;
-  /** The note queue is on: order by the note rater, skip the bar, and leave
-   *  notes X has no room for as queued candidates instead of rejecting them. */
+  /** The note queue is on: order by the note rater, apply the rater bar, and
+   *  leave notes X has no room for as queued candidates instead of rejecting
+   *  them. */
   queue?: boolean;
+  /** Put the exploration slice ahead of the above-bar notes this run. With
+   *  the queue on, above-bar notes usually outnumber X's slots, so an explored
+   *  note placed after them would be refused every time. runPipeline sets this
+   *  while the last day's explored share is below EXPLORE_SHARE. */
+  exploreFirst?: boolean;
 }
 
 const CONTROL_OPTIONS: SubmitOptions = { policy: "velocity_only", scorer: null, window: null, bar: null, barState: "none" };
@@ -277,7 +283,7 @@ export async function submitCandidates(
     } else {
       above = orderedAll; explored = []; below = [];
     }
-    const ordered = [...above, ...explored];
+    const ordered = options.exploreFirst ? [...explored, ...above] : [...above, ...explored];
     const exploredIds = new Set(explored.map((c) => c.post.id));
 
     const queuedCount = candidates.filter((c) => c.queuedAt).length;
@@ -298,8 +304,10 @@ export async function submitCandidates(
         pipeline_run_id: c.tweetResult.pipelineRunId ?? null,
         tweet_id: c.post.id,
         policy: options.policy,
-        scorer: scorerName,
-        submit_score: scores[scorerName],
+        // With the queue on, the row is on the rater's scale, like `bar`.
+        // An unrated note has no score; -1 is the lowest a rated one can have.
+        scorer: queue ? "note_rater" : scorerName,
+        submit_score: queue ? (scores.note_rater ?? -1) : scores[scorerName],
         scores,
         flags,
         eval_score: c.tweetResult.evaluationScore ?? null,

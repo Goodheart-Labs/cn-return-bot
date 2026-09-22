@@ -71,15 +71,15 @@ import { generateCandidates, type TweetProcessedEvent } from "../pipeline/orches
 import { generatePangramCandidates } from "../pipeline/pangram-monitoring/generatePangramCandidates";
 import { generateMisinfoCandidates } from "../pipeline/misinfo-monitoring/generateMisinfoCandidates";
 import type { MisinfoTopicId } from "../pipeline/misinfo-monitoring/topicIds";
-import { submitCandidates, misinfoReserveRemaining, partitionByStaleCutoff, type Candidate, type SubmitOptions } from "../pipeline/orchestration/submitCandidates";
+import { submitCandidates, misinfoReserveRemaining, type Candidate, type SubmitOptions } from "../pipeline/orchestration/submitCandidates";
 import { computeMaxPosts } from "../pipeline/orchestration/computeMaxPosts";
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
 import { autoOpenInDashboard } from "../local/dashboardAutoOpen";
 import { withForcedPicks } from "../pipeline/ab-testing/abTests";
 import { activeScorer, pickRankingPolicy } from "../pipeline/ranking/policy";
-import { barEnabled, barFor, estimateWindow, type Window } from "../pipeline/capacity/window";
+import { barEnabled, barFor, estimateWindow, EXPLORE_SHARE, type Window } from "../pipeline/capacity/window";
 import { automaticGenerationPreflight, type SubmissionCapacity } from "../pipeline/capacity/submissionReserve";
-import { loadNoteQueue, mergeWithQueue, noteQueueEnabled } from "../pipeline/orchestration/noteQueue";
+import { loadNoteQueue, mergeWithQueue, noteQueueEnabled, submittableQueued } from "../pipeline/orchestration/noteQueue";
 import { raterBar } from "../pipeline/score/raterBar";
 
 function postUrl(postId: string): string {
@@ -210,11 +210,31 @@ async function main() {
     // run's fresh notes for the slots, in note-rater order.
     const queueOn = noteQueueEnabled() && !isLocal && supabaseLogger !== null;
     let queued: Candidate[] = [];
+    let raterBarValue: number | null = null;
+    let exploreFirst = false;
     if (queueOn) {
       try {
         queued = await loadNoteQueue(supabaseLogger!);
       } catch (err) {
         console.warn("[noteQueue] could not load the queue; this run submits only its own notes:", err);
+      }
+      try {
+        raterBarValue = await raterBar(supabaseLogger!);
+      } catch (err) {
+        console.warn("[raterBar] could not compute the bar; submitting without one:", err);
+      }
+      // Exploration is paced over the day: the drawn note goes ahead of the
+      // above-bar ones only while explored notes are under their share of
+      // what went out, and never fewer than one a day.
+      try {
+        const [explored, sent] = await Promise.all([
+          supabaseLogger!.countRankingDecisions(["explored"], 24),
+          supabaseLogger!.countRankingDecisions(["submitted", "explored"], 24),
+        ]);
+        exploreFirst = explored < Math.max(1, EXPLORE_SHARE * sent);
+        console.log(`[raterBar] explored ${explored} of ${sent} sent in the last 24h; the exploration slice goes ${exploreFirst ? "first" : "last"} this run`);
+      } catch (err) {
+        console.warn("[raterBar] could not count recent decisions; the exploration slice goes last:", err);
       }
     }
 
@@ -225,10 +245,12 @@ async function main() {
         : { maxPosts: MAX_POSTS_FALLBACK };
 
     // A cooldown probe needs only one note, and the queue already holds
-    // written ones, so the probe spends no money on new posts.
-    const queuedInTime = partitionByStaleCutoff(queued).kept.length;
-    if (capacity?.probe && queuedInTime > 0) {
-      console.log(`[noteQueue] cooldown probe: trying the best of ${queuedInTime} queued note(s); no new posts this run`);
+    // written ones, so the probe spends no money on new posts. Only a queued
+    // note that would actually be submitted counts: in time, above the
+    // velocity floor, and not below the bar.
+    const queuedReady = submittableQueued(queued, raterBarValue).length;
+    if (capacity?.probe && queuedReady > 0) {
+      console.log(`[noteQueue] cooldown probe: trying the best of ${queuedReady} queued note(s); no new posts this run`);
       maxPosts = 0;
     }
 
@@ -340,7 +362,7 @@ async function main() {
           barState = bar === null ? "off" : bar === -Infinity ? "admit_all" : bar === Infinity ? "reject_all" : "set";
         }
         if (queueOn) {
-          bar = await raterBar(supabaseLogger);
+          bar = raterBarValue;
           barState = bar === null ? "off" : "set";
         }
       } catch (err) {
@@ -351,7 +373,7 @@ async function main() {
     console.log(
       `[ranking] policy=${rankingPolicy}` +
         (window ? ` cap=${window.cap ?? "?"} (${window.capSource}) used24h=${window.used24h} headroom=${window.remaining ?? "?"} (estimate; X's 403 is the stop)` : "") +
-        (scorer ? ` bar=${bar === null ? "off" : bar === -Infinity ? "admit-all" : bar === Infinity ? "reject-all" : bar.toFixed(2)}` : ""),
+        (queueOn ? ` raterBar=${bar === null ? "off" : bar.toFixed(3)}` : scorer ? ` bar=${bar === null ? "off" : bar === -Infinity ? "admit-all" : bar === Infinity ? "reject-all" : bar.toFixed(2)}` : ""),
     );
 
     const regularCandidates = maxPosts === 0 ? [] : await generateCandidates(supabaseLogger, {
@@ -382,7 +404,7 @@ async function main() {
       ...pangramCandidates,
     ], queued);
     if (candidates.length > 0 && supabaseLogger) {
-      const submitted = await submitCandidates(candidates, supabaseLogger, isLocal, { policy: rankingPolicy, scorer, window, bar, barState, queue: queueOn });
+      const submitted = await submitCandidates(candidates, supabaseLogger, isLocal, { policy: rankingPolicy, scorer, window, bar, barState, queue: queueOn, exploreFirst });
       console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates (${pangramCandidates.length} pangram, ${misinfoCandidates.length} misinfo, ${regularCandidates.length} regular, ${candidates.length - regularCandidates.length - misinfoCandidates.length - pangramCandidates.length} queued)`);
     } else {
       console.log(`[pipeline] No candidates to submit`);

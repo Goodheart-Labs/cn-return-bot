@@ -1,8 +1,8 @@
 /**
  * The note rater: one cheap LLM call that forecasts how raters will treat a
  * finished note, made before the note is submitted. The forecast is stored as a
- * pipeline_scores row of type "note_rater". Nothing acts on it yet. About
- * $0.002 a note.
+ * pipeline_scores row of type "note_rater"; the submit phase orders notes by it
+ * and applies the rater bar (score/raterBar.ts). About $0.002 a note.
  */
 
 import { trackedLlmCreate } from "../cost-tracking/costTracker";

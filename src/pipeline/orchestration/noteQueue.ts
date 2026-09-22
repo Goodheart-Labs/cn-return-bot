@@ -9,6 +9,8 @@
  */
 
 import type { Post } from "../../api/fetchEligiblePosts";
+import { isAboveVelocityFloor } from "../utils/velocity";
+import { partitionByStaleCutoff } from "./submitCandidates";
 import type { Candidate } from "./submitCandidates";
 import { orderForSubmit } from "../ranking/submitOrder";
 import { raterPriority, rateCandidate, noteRaterEnabled, type NoteRating } from "../score/noteRater";
@@ -46,9 +48,9 @@ export interface QueuedTweetRow {
   replies: number | null;
   quotes: number | null;
   bookmarks: number | null;
-  media: any[] | null;
-  referenced_tweets: any[] | null;
-  referenced_tweet_data: any | null;
+  media: Post["media"] | null;
+  referenced_tweets: Post["referenced_tweets"] | null;
+  referenced_tweet_data: Post["referenced_tweet_data"] | null;
 }
 
 export interface QueuedRun {
@@ -114,6 +116,13 @@ export function candidateFromQueuedRun(run: QueuedRun): Candidate | null {
       scores: [],
     },
   };
+}
+
+/** The queued notes that submitCandidates would actually send: in time, above
+ *  the velocity floor, and not below the bar (an unrated note is never below it). */
+export function submittableQueued(queued: Candidate[], bar: number | null): Candidate[] {
+  return partitionByStaleCutoff(queued).kept.filter((c) =>
+    isAboveVelocityFloor(c.velocity ?? null) && (bar === null || !c.rating || raterPriority(c.rating) >= bar));
 }
 
 /** Drops queued candidates whose run is already among this run's fresh ones. */

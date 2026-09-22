@@ -32,6 +32,10 @@ export function raterBarFrom(scores: number[], keepShare: number): number | null
 export async function raterBar(logger: SupabaseLogger): Promise<number | null> {
   const scores = await logger.fetchNoteRaterScores(RATER_BAR_WINDOW_DAYS);
   const bar = raterBarFrom(scores, raterBarKeepShare());
-  console.log(`[raterBar] ${scores.length} rater scores in the last ${RATER_BAR_WINDOW_DAYS} days; keep share ${raterBarKeepShare()}; bar ${bar === null ? "none" : bar.toFixed(3)}`);
+  // Scores are whole percentages differenced, so many tie at the bar and the
+  // share that clears it can be well above the target. The log shows the real one.
+  const cleared = bar === null ? scores.length : scores.filter((s) => s >= bar).length;
+  console.log(`[raterBar] ${scores.length} rater scores in the last ${RATER_BAR_WINDOW_DAYS} days; keep share ${raterBarKeepShare()}; bar ${bar === null ? "none" : bar.toFixed(3)}` +
+    (scores.length ? ` (${Math.round(100 * cleared / scores.length)}% of recent notes clear it)` : ""));
   return bar;
 }

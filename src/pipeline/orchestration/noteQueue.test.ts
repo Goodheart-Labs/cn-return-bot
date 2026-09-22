@@ -3,7 +3,7 @@ import type { SupabaseLogger } from "../../api/supabaseClient";
 import { flagsThenEval } from "../ranking/scorers";
 import * as submission from "./submitNoteForTweet";
 import { submitCandidates, type Candidate, type SubmitOptions } from "./submitCandidates";
-import { candidateFromQueuedRun, mergeWithQueue, orderByRater, type QueuedRun } from "./noteQueue";
+import { candidateFromQueuedRun, mergeWithQueue, orderByRater, submittableQueued, type QueuedRun } from "./noteQueue";
 
 const now = Date.parse("2026-09-21T12:00:00Z");
 const options: SubmitOptions = {
@@ -108,6 +108,14 @@ describe("submitCandidates with the queue on", () => {
     expect(decisions).toContain("explored"); expect(decisions).toContain("below_bar");
   });
 
+  test("with exploreFirst the drawn note goes out before the above-bar ones", async () => {
+    const submit = spyOn(submission, "submitNoteForTweet").mockResolvedValue({ status: "submitted", noteId: "n" });
+    const { logger } = loggerMock();
+    const good = candidate("good", [0.5, 0.05]); const weak = candidate("weak", [0.1, 0.05]);
+    await submitCandidates([good, weak], logger, false, { ...options, bar: 0.2, barState: "set", rng: () => 0.99, exploreFirst: true });
+    expect(submit.mock.calls.map(([c]) => c.post.id)).toEqual(["weak", "good"]);
+  });
+
   test("a queued note whose tweet already has our note is closed, not retried", async () => {
     spyOn(submission, "submitNoteForTweet").mockResolvedValueOnce({ status: "submission_busy", reason: "submitted", capacity: {} as any });
     const { logger, completePipelineRun } = loggerMock();
@@ -158,4 +166,12 @@ describe("queue rows", () => {
     expect(mergeWithQueue(fresh, queued).map((c) => c.post.id)).toEqual(["t1", "t2"]);
     expect(mergeWithQueue(fresh, queued)[0]!.rating?.pHelpful).toBe(0.1);
   });
+});
+
+test("submittableQueued keeps only notes in time, above the floor, and not below the bar", () => {
+  const ok = candidate("ok", [0.5, 0.05], "x"); const low = candidate("low", [0.1, 0.05], "x"); const unrated = candidate("unrated", null, "x");
+  const slow = candidate("slow", [0.6, 0.05], "x"); slow.velocity = 8_000;
+  const stale = candidate("stale", [0.6, 0.05], "x"); stale.post.created_at = new Date(now - 25 * 3_600_000).toISOString();
+  expect(submittableQueued([ok, low, unrated, slow, stale], 0.2).map((c) => c.post.id)).toEqual(["ok", "unrated"]);
+  expect(submittableQueued([ok, low], null).map((c) => c.post.id)).toEqual(["ok", "low"]);
 });
