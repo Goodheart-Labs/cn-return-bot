@@ -1,0 +1,41 @@
+{
+  "805c47ce-fc6d-4774-9779-83a601414bc7": {
+    "verdict": "bad",
+    "jim": "In a post about Los Angeles air quality, 'the world's busiest port' plainly means the busiest in the US, which is true. Pedantic."
+  },
+  "6c44692f-12d4-405e-a2c4-8f6ae4018138": {
+    "jim": "The note is correct but mixes JLARC's 4% (actual 2023 emissions) and 'about half' (the permitted maximum) without saying which is which, so it reads as a contradiction. Send the rewording.",
+    "send_instead": "JLARC's figure of 'less than 4%' is data centers' actual 2023 NOx, about 650 tons. It is not the permitted level. JLARC puts the region's total NOx near 18,000 tons, since generators at their permitted maximum would emit about 9,000 tons, 'about half' of it. So 4% is about 700 tons a year, not 3,000, and the true permitted ceiling is about 9,000."
+  },
+  "cf940e50-bc03-4ecf-8c44-9fd11cef38ac": {
+    "verdict": "bad",
+    "jim": "A lab-methods correction on one illustration in a long argument. The flies in the study did show a pain response that a painkiller suppressed, which is all the sentence is used for."
+  },
+  "3ceca9a7-6ae5-4d82-9894-1c349a59592e": {
+    "verdict": "uncertain",
+    "jim": "Mumbai does routinely build 40-plus-storey towers on slum land, so the sentence is wrong as written, but the route is a heavy regulatory scheme (51% consent, free rehousing, most projects stall), so Caplan can reply that it proves his point. Send only with the rewording.",
+    "send_instead": "Mumbai permits, and routinely builds, high-rise towers on slum land under its Slum Rehabilitation scheme, including 42-storey rehab towers at Dhobi Ghat. The scheme is heavily regulated (developers need 51% of slum dwellers' consent, must rehouse them free, and most projects stall), but skyscrapers in slums are allowed."
+  },
+  "258fcf9d-3f4f-4108-8af9-3ccf984b4089": {
+    "kind": "slip",
+    "jim": "Zvi read the slide's '1.6x gap' (run rate over trailing revenue) as 60% growth. The note is right; the rewording names the slide so he sees where the slip came from.",
+    "send_instead": "The report gives no 60% growth figure. Its '1.6x gap' slide is run rate ($175bn) over trailing 12-month revenue ($110bn), not a growth rate; the growth slide says 35% per quarter, about 3.2x a year."
+  },
+  "c6bc38f3-ff6f-4b22-9fc1-aa1def6b1ad2": {
+    "kind": "slip",
+    "jim": "Correct for the August 17 rate card. Flash has since been replaced by the cheaper V4.1 Flash, so today's price page no longer shows the $0.44/$1.32 pair; the rewording says 'at the time'.",
+    "send_instead": "The $0.44/$1.32 figure was DeepSeek-V4-Flash's peak rate on the August 17 rate card, not V4-Pro's. V4-Pro's peak price was and still is ¥9/¥27 per million tokens (about $1.32/$3.96), roughly 3x higher."
+  },
+  "1834fd8c-1b06-44ca-9bd0-16f5d2a10370": {
+    "verdict": "bad",
+    "jim": "The paragraph is about OpenAI's enterprise report and the sentence starts 'They also…', so the enterprise scope is already clear. What remains is a denominator detail."
+  },
+  "d37f380d-9b0a-4e12-ba76-c74b97e1096e": { "kind": "slip" },
+  "e10f4839-9f94-4446-aff3-c2180edaf435": { "kind": "slip" },
+  "4000b5b7-4710-45d2-b1bf-1a12abc77c63": { "kind": "slip" },
+  "6c3ab86e-d1df-4ba7-bfa0-7ff2023bf856": { "kind": "slip" },
+  "a24343d6-ffe9-4545-b9d7-546598288aee": { "kind": "slip" },
+  "5bfa31a1-db8c-4774-bac7-8b3182183e2f": { "kind": "slip" },
+  "e4515c89-ff9a-4ffd-8b42-b832216983af": { "kind": "slip" },
+  "65cc8778-3127-42ec-a1ad-fcfc277c5bb7": { "kind": "slip" }
+}

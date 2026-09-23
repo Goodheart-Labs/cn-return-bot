@@ -2,7 +2,10 @@
 // Section 1: notes both passes call good. Section 2: notes the second pass calls
 // uncertain. Section 3: Jim's hand-picked notes with what the review found.
 // Section 4: a short appendix of everything rejected, one line per note.
-import { existsSync, readdirSync, writeFileSync } from "fs";
+// overrides.json holds Jim's own verdicts from reading the document: a changed
+// verdict, a rewording to send instead of the note, and a "slip" tag for notes
+// that catch a misremembered number, name or date rather than a misreading.
+import { existsSync, writeFileSync } from "fs";
 
 const DIR = "src/scripts_jim/2026_09_22_notes_factcheck";
 const JIM_PICKS: Record<string, string> = {
@@ -20,6 +23,8 @@ const JIM_PICKS: Record<string, string> = {
 };
 // Creators whose politics matter for whether they would accept a note.
 const VIEWPOINT_CREATORS = new Set(["elephantsinrooms", "jacob_rees_mogg"]);
+interface Override { verdict?: "good" | "uncertain" | "bad"; jim?: string; send_instead?: string; kind?: "slip" }
+const OVERRIDES = JSON.parse(await Bun.file(`${DIR}/overrides.json`).text()) as Record<string, Override>;
 
 interface Review { note_id: string; verdict: string; reason: string; whose_words?: string; send_advice?: string | null; author_would_accept?: string }
 interface Entry {
@@ -51,6 +56,8 @@ for (const row of index) {
 }
 
 function finalVerdict(e: Entry): "good" | "uncertain" | "bad" | "pending" {
+  const override = OVERRIDES[e.note_id]?.verdict;
+  if (override) return override;
   if (!e.opus) return "pending";
   if (e.opus.verdict === "bad") return "bad";
   if (!e.fable) return "pending";
@@ -75,6 +82,7 @@ function noteBlock(e: Entry, reason: string): string {
     e.fable?.whose_words ? `- Whose words: ${e.fable.whose_words}` : "",
     VIEWPOINT_CREATORS.has(e.project) && e.fable?.author_would_accept ? `- Would the creator accept it: ${e.fable.author_would_accept}` : "",
     JIM_PICKS[e.note_id] ? `- Jim's pick: ${JIM_PICKS[e.note_id]}` : "",
+    OVERRIDES[e.note_id]?.jim ? `- Jim: ${OVERRIDES[e.note_id].jim}` : "",
     ``,
     `**The passage:** ${quote(e.context_quote) || quote(e.claim)}`,
     ``,
@@ -82,6 +90,7 @@ function noteBlock(e: Entry, reason: string): string {
     ``,
     `**Why:** ${quote(reason)}`,
     e.fable?.send_advice ? `\n**Before sending:** ${quote(e.fable.send_advice)}` : "",
+    OVERRIDES[e.note_id]?.send_instead ? `\n**Send instead:** ${quote(OVERRIDES[e.note_id].send_instead)}` : "",
     ``,
   ];
   return lines.filter((l) => l !== "").join("\n") + "\n";
@@ -95,19 +104,32 @@ const pending = entries.filter((e) => finalVerdict(e) === "pending");
 let md = `# Common Notes worth sending to their authors\n\n`;
 md += `Reviewed on 2026-09-22 for GOO-217. Every AI-written Common Note on a reachable creator was checked twice: an Opus reviewer read the whole post and judged each note, and a Fable reviewer re-read the source and re-judged every note the first pass did not reject. Image-grounded notes, user-written notes and the YouTubers outside Jim's list were left out.\n\n`;
 md += `| | Notes |\n|---|---|\n| Reviewed | ${entries.length} |\n| Confident, send | ${good.length} |\n| Uncertain, Nathan decides | ${uncertain.length} |\n| Rejected | ${bad.length} |\n| Still pending | ${pending.length} |\n\n`;
-md += `The two sections below are ordered by creator. Inside a creator, notes on the same post sit together; when two notes correct the same sentence, the text says which one to send. "Whose words" says whether the corrected sentence is the creator's own, a guest's, or a quoted source's. For Ken LaCorte and Jacob Rees-Mogg the review also says whether the creator would plausibly accept the note.\n\n`;
+md += `Jim then read the document and overruled some verdicts; those notes carry a "Jim:" line, and a "Send instead" line gives his rewording where the note needs one. The two sections below are ordered by creator. Inside a creator, notes on the same post sit together; when two notes correct the same sentence, the text says which one to send. "Whose words" says whether the corrected sentence is the creator's own, a guest's, or a quoted source's. For Ken LaCorte and Jacob Rees-Mogg the review also says whether the creator would plausibly accept the note.\n\n`;
+
+// A creator with any note tagged as a slip gets two sub-lists: the slips, then
+// the notes that catch a misreading of the source.
+function creatorSection(creator: string, xs: Entry[]): string {
+  let out = `### ${creator}\n\n`;
+  const slips = xs.filter((e) => OVERRIDES[e.note_id]?.kind === "slip");
+  if (slips.length === 0) {
+    for (const e of xs) out += noteBlock(e, e.fable!.reason);
+    return out;
+  }
+  const rest = xs.filter((e) => OVERRIDES[e.note_id]?.kind !== "slip");
+  out += `**Small slips: a misremembered number, name or date**\n\n`;
+  for (const e of slips) out += noteBlock(e, e.fable!.reason);
+  if (rest.length) {
+    out += `**Misreadings of the source**\n\n`;
+    for (const e of rest) out += noteBlock(e, e.fable!.reason);
+  }
+  return out;
+}
 
 md += `## 1. Confident: both reviewers call the note correct, fair and substantive\n\n`;
-for (const [creator, xs] of byCreator(good)) {
-  md += `### ${creator}\n\n`;
-  for (const e of xs) md += noteBlock(e, e.fable!.reason);
-}
+for (const [creator, xs] of byCreator(good)) md += creatorSection(creator, xs);
 
 md += `## 2. Uncertain: the second reviewer sees a real point but has a reservation\n\n`;
-for (const [creator, xs] of byCreator(uncertain)) {
-  md += `### ${creator}\n\n`;
-  for (const e of xs) md += noteBlock(e, e.fable!.reason);
-}
+for (const [creator, xs] of byCreator(uncertain)) md += creatorSection(creator, xs);
 
 md += `## 3. Jim's hand-picked notes, and what the review found\n\n`;
 md += `| Note | Jim | Opus | Fable | Short reason |\n|---|---|---|---|---|\n`;
@@ -122,7 +144,8 @@ md += `\n## 4. Rejected notes, one line each\n\n`;
 for (const [creator, xs] of byCreator(bad)) {
   md += `**${creator}**\n\n`;
   for (const e of xs) {
-    const r = e.fable?.verdict === "bad" ? e.fable.reason : e.opus!.reason;
+    const jim = OVERRIDES[e.note_id]?.jim;
+    const r = jim ? `Jim: ${jim}` : e.fable?.verdict === "bad" ? e.fable.reason : e.opus!.reason;
     md += `- [${quote(e.title).slice(0, 60)}](${e.commonnotes_url}): ${quote(r).slice(0, 260)}\n`;
   }
   md += `\n`;
