@@ -1,0 +1,18 @@
+{
+  "item_id": "0b6462dd-c6ff-4e23-8b2e-02a18f230086",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "7702421c-a11a-4afe-9788-cee124b47f2e",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "reason": "The sentence is Andy's own and he leans on it: he computes 14.3 kilotons, writes \"This is about the same as the Little Boy bomb dropped on Hiroshima. While horrible, this is also one of the smallest nuclear weapons ever developed\", and earlier says \"the specific nuclear bomb people are using for this comparison is among the smallest ever made\" as part of his argument that the reporters picked an alarming unit. The live post still says this with no correction. The note's facts hold up: Wikipedia gives Little Boy as about 15 kilotons and the W54 as \"the smallest nuclear weapon in both weight and yield to have entered US service\" with yields of 10 to 1,000 tons across versions, 20 tons in the Davy Crockett round, and the Little Feller II test of a stockpiled W54 gave 22 tons. So Little Boy is roughly a thousand times larger than the smallest fielded weapon, and the sentence is wrong as written. It is not a pure nitpick, because a reader takes away that the journalists reached for one of the smallest bombs ever built to inflate their count, and that is false; but the error does not damage his real point, which is that yields span five orders of magnitude so the unit is meaningless, and the true facts only strengthen it. He may therefore read the note as correcting a throwaway line. One flaw in the note itself: \"it's small only vs megaton-class weapons\" overreaches, since Little Boy is also small next to the ordinary strategic warheads of 90 to 500 kilotons he shows in his own arsenal image.",
+      "send_advice": "Drop the clause \"it's small only vs megaton-class weapons\" and say instead that Little Boy is small next to modern strategic warheads but far from the smallest ever built; keep the W54 comparison as the correction."
+    }
+  ]
+}

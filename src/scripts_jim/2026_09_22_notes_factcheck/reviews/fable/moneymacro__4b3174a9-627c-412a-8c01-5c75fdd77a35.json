@@ -1,0 +1,18 @@
+{
+  "item_id": "4b3174a9-627c-412a-8c01-5c75fdd77a35",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "46a19533-030c-4990-b95c-13e545baaedd",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "reason": "This is the creator's own argument against the Acemoglu paper, not something he reports from it: 'Today, South Korea is at 0.8. If you hold that for a generation, the next generation will be 38% smaller than last.' The arithmetic is wrong in exactly the way the note says. With 0.8 children per woman against a replacement level of 2.1, the next generation is about 38 percent of the size of the last one, so it is about 62 percent smaller; the note's second calculation, 50 women times 0.8 births giving 40 children per 100 people and a 60 percent drop, reaches the same place by a simpler route. The 38 is precisely 0.8 divided by 2.1, so it is the creator's slip of 'percent of' for 'percent smaller', not a caption artefact; no sound-alike phrase would rescue it. His own next sentences show he knows the real magnitude, since he says births fell from around 650,000 a year to about 230,000 and that 'the classrooms behind them are two thirds empty', which is a drop of roughly two thirds and matches the note, not the 38 percent. The sources hold: the Korea Times report says 'The total fertility rate rose by 0.05 to 0.8 in 2025', and the CNBC article carries verbatim both 'The commonly cited \"replacement rate\" for countries to prevent a declining population is 2.1' and 'for every 100 Koreans, they would have about 36 children'. The correction matters to his point rather than nibbling at it: this passage is his main reason why today's ultra-low fertility differs from the 1950s declines the paper studies, and the true figure makes that case stronger. An economist would almost certainly take an arithmetic fix that helps his own argument. The note is dense, quoting both 0.38 and about 40 percent, but the two are consistent and neither needs to change.",
+      "send_advice": null
+    }
+  ]
+}

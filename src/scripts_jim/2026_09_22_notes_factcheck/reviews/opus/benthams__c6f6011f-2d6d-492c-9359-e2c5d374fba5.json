@@ -1,0 +1,25 @@
+{
+  "item_id": "c6f6011f-2d6d-492c-9359-e2c5d374fba5",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "4a49c5e9-4a57-4766-a416-04b1aa64f8ca",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "The claim really is the author's own. He writes that continental philosophers seem to mostly agree that reality is subjective, that there is not a world out there but only beliefs that people have, and he then calls this a loony-toons belief that is a problem for the discipline, so it matters to his point. The correction is also broadly right. Continental philosophy covers Western Marxism, phenomenology, Heidegger and speculative realism, and most of those are not the view that only beliefs exist, so a reader would come away with a false picture of a whole field. What gives me pause is that the note's own evidence partly cuts the other way. The Wikipedia page it cites says speculative realism defines itself against the dominant post-Kantian correlationism and calls itself post-Continental, which is close to conceding the author's point that anti-realism is the mainstream there. The author also hedged with 'seem to mostly agree', and given that this is an openly polemical piece mocking the field, he would most likely answer that a small movement defined by its opposition to the mainstream proves his case rather than refuting it."
+    },
+    {
+      "note_id": "413d4896-a882-4a66-98de-a05129b5483d",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "This note is attached to a different sentence but says almost exactly the same thing as the first one, so sending both would read as one point made twice. The sentence it is attached to is 'They rarely state this belief in plain English but they'll often take pot-shots at the belief that there's an external world.' That is a claim about how continental philosophers write, not about what the field contains, and the note never addresses it. Listing the movements inside continental philosophy does not show whether its authors state their views plainly or whether they snipe at realism. The underlying claim is also a loose impression about rhetorical style rather than a checkable fact, which makes it a poor target for a note at all."
+    }
+  ]
+}

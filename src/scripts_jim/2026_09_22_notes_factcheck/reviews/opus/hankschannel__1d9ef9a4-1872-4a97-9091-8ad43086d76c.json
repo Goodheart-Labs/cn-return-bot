@@ -1,0 +1,16 @@
+{
+  "item_id": "1d9ef9a4-1872-4a97-9091-8ad43086d76c",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "87486778-c7ef-4193-bc2e-daa65869994f",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "reason": "Hank does say \"There's that old apherism in in newspapers, only 5% of your advertising is working. You just don't know which 5%\", so the claim is his own, and the note is factually right: the saying is John Wanamaker's \"half the money I spend on advertising is wasted, and the trouble is I don't know which half\", and I found no traditional version that uses 5%. But this is a one-line aside inside a personal essay about effort, and the point he is making is only that you cannot tell in advance which of your efforts pays off. That point is untouched by whether the proverb says half or five percent, so a reader comes away with no wrong belief that matters. Correcting a misremembered proverb in a video about not wasting effort is the kind of nitpick that makes us look pedantic, which is presumably why the note already has a not-helpful vote."
+    }
+  ]
+}

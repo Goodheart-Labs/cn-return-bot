@@ -1,0 +1,52 @@
+{
+  "item_id": "1c382335-8b20-4f38-86bf-69721f96b74b",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "bb5e86d4-ac6f-4e3c-9321-baaeede234fd",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The correction itself is right. METR's blog post says \"each 1% improvement costs very roughly $2,500 in human labor\" and derives it from about 16 hours at $150 an hour, so the \"$2500K\" in the post is off by a factor of a thousand and makes the quoted $2-$3K crossover points nonsensical. The problem is whose mistake it is. The sentence sits inside a block quote labelled \"METR:\", and METR's own X post and LinkedIn post really do say \"We estimate the marginal returns to human labor as roughly $2500K per 1% optimization\", so Zvi copied his source exactly. In his own voice just above the quote he gets it right, writing that on NanoGPT the horizon \"currently tops up at roughly $3.3k for Opus 4.8 and $2.3k for GPT-5.5\". Zvi could fairly answer that he quoted METR verbatim and the typo is METR's, which is the same complaint Andy Masley made. If Nathan sends it, the framing has to be that METR's social post contains a typo their own report does not, not that Zvi got a number wrong."
+    },
+    {
+      "note_id": "6823a8bc-c387-452c-8b5d-22055ec9e07e",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The claim is Zvi's own sentence, but the note is wrong. It says \"No public disclosure supports an ARR over $60 billion; that figure only appears in forward-looking forecasts\". Bloomberg, Reuters and CNBC all reported on 17 August 2026 that Anthropic told investors its annualized run rate hit $65 billion at the end of July 2026, up from $47 billion in May. Zvi's post is dated 23 July 2026, so his \"over $60 billion\" matches where Anthropic actually was that month rather than contradicting it. The note is resting on a $47 billion figure that was already two months stale for the period Zvi is describing, and one of its own sources is a forecasting site, not a disclosure. Sending this would tell Zvi he was wrong about a number he got right."
+    },
+    {
+      "note_id": "dd8d098d-e259-4bda-aae7-1a18b66bc3e0",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence is a bullet from Peter Wildeford that Zvi quotes, and he does endorse it (\"This below from Peter Wildeford all seems correct\"), so the attribution problem is mild. The real problem is that there is no factual error to correct. How far China trails is an analyst judgement, and the note answers one estimate with two other estimates, from Ion Stoica and Ryan Fedasiuk, who were both quoted in the same week saying the gap is two to three months or a matter of weeks. Both quotes are genuine, but they are opinions, not evidence that \"~6mo\" is false, and they measure something different from what Wildeford means. Zvi argues the opposite position throughout the post, writing that K3 is \"an excellent model, modestly exceeding expectations, but not out of line with trends\" and that the hype echoes the DeepSeek moment before calming down. He would read this as us taking a side in a live disagreement and dressing it up as a correction."
+    },
+    {
+      "note_id": "5bfa31a1-db8c-4774-bac7-8b3182183e2f",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "This is Zvi's own sentence, \"over two thirds of its profits were paper gains from its stake in Anthropic\", and the note's facts all check out. Alphabet's Q2 2026 release reports a $99.0 billion net gain on equity securities lifting net income by $77.1 billion out of $112.1 billion, the 10-Q gives $124.3 billion as the carrying value of non-marketable equity securities under the measurement alternative, and Alphabet's 13F shows 551 million SpaceX shares worth about $94 billion after the June IPO. Fortune's headline is literally \"Anthropic and SpaceX just handed Google the biggest profit quarter ever\", so leaving SpaceX out is a real omission. What gives me pause is how much it matters: nobody publishes the split, Fortune says outright that \"it's unclear how much each of the individual investments contributed\", and Alphabet's roughly 14-15% of Anthropic going from a $350 billion to a $965 billion valuation could by itself account for most of the $99 billion. If that is what happened, Zvi's shorthand is close to true and the note is a nitpick about a secondary contributor that does not change his point about the market's wrong-way move."
+    },
+    {
+      "note_id": "db62005f-6190-4230-8525-067b62728fc9",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The claim is not Zvi's. It comes from a block quote introduced as \"Here are some selected LessWrong comments\", and the words are JohnWittle's. Zvi never repeats the ASL-5 detail in his own voice; he only says he thought the decision in the whistleblowing case was correct and that reasonable people can disagree about direct whistleblowing. This is exactly the failure Andy Masley objected to, fact-checking a commenter the author is merely reporting. The underlying correction is right in substance, since Anthropic's write-up describes \"a fictional Claude 5 ASL-4 safeguards evaluation\" about many-shot jailbreak resistance where the release materials claimed the model held at 150 shots while an older rerun showed it failing at 15, but the note's two accepted source quotes are generic lines that do not actually establish any of that. It is also not substantive: JohnWittle's argument, that the lab was covering up a falsified damning safety eval and the agent was right to act, survives the correction untouched."
+    }
+  ]
+}

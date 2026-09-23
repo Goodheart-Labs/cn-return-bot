@@ -1,0 +1,16 @@
+{
+  "item_id": "470b5750-4cdd-4a82-91be-20714fe27ca0",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "618e868a-fb56-4b4c-a705-afb6852a36da",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note is factually right that the usual textbook value of a queen is nine pawns rather than eight, and its Wikipedia and chess.com sources say so. But it is aimed at a three-word parenthetical inside footnote 11, where Scott is reporting what an AI told him about chess and then immediately disclaims it: \"Fable wasn't able to explain this to me in a way that made sense, but I know nothing about chess, so my incomprehension shouldn't be taken too seriously.\" The footnote's actual content is a claim about where chess engines plateau against grandmasters, at three to five pawns, and nothing in it turns on whether a queen is worth eight pawns or nine. The argument of the post, which is about how much room is left above human forecasters, is untouched either way. Correcting a rounded piece-value in an aside the author has already flagged as something he does not understand is exactly the pedantic, tangential kind of note that annoys an author rather than helping his readers."
+    }
+  ]
+}

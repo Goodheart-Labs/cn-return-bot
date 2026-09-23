@@ -1,0 +1,18 @@
+{
+  "item_id": "5b0dbd5e-98e3-48d8-84a1-0c7690497daf",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "83b9ebb5-9c0e-4cd3-841e-9dba7a3d33c5",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "send_advice": "Replace \"National financial-literacy surveys testing this exact concept (money loses value under inflation) show 40-52% answer incorrectly, not two-thirds.\" with \"National financial-literacy surveys that ask whether savings lose purchasing power when inflation outpaces interest find 40-52% answer incorrectly, not two-thirds.\" The rest of the note can stay.",
+      "reason": "The sentence \"Two thirds don't know that when inflation happens, money loses value\" is Andy's own, stated flatly with no source, in a list of facts about the average American. The note's figures check out against the surveys themselves: FINRA's 2024 National Financial Capability Study reports 58% correct on its inflation question, up from 53% in 2021 (FINRA's own podcast transcript and 2025 press release), and the TIAA/GFLEC P-Fin index question about Akiko's savings had 48% correct (CBS News). The only place a two-thirds failure rate exists is the 18-34 age group in 2021, where FINRA reports 34% correct, so Andy may have half-remembered that subgroup or the older finding that only about a third of Americans pass all three of Lusardi's questions. Two reservations keep this at uncertain. The note says the surveys test \"this exact concept\", but both questions ask the harder thing of comparing an interest rate with an inflation rate, and a bare question about whether inflation erodes money would score higher, so the wording overreaches a little. And the statistic is a throwaway in a post about ideological polarisation: if half rather than two thirds get it wrong, his point that the average person is confused about most things stands unchanged, so he may reasonably read it as a nitpick even though the number as written is wrong."
+    }
+  ]
+}

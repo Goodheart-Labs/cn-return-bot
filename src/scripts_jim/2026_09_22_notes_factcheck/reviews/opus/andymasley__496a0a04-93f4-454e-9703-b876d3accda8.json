@@ -1,0 +1,16 @@
+{
+  "item_id": "496a0a04-93f4-454e-9703-b876d3accda8",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "51e5b26d-bdb9-4ba5-bd1b-9dd8fb0199c2",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The $2 billion sentence is a block quote from the Bitcoin Policy Institute report, introduced by Andy with the words \"The report notes:\". The whole post argues that these reports are weak, so he is quoting the passage in order to attack it. He then makes the note's own point himself, in the very next paragraph: the money \"went to hundreds of advocacy orgs, that focus on things like climate, conservation, social justice, health, and other stuff\", it was given \"mostly over 10 year periods\", and \"We don't know how much of this money was meant for anti-data center advocacy specifically, but it seems likely that it was pretty small\". Earlier he says the same about the $39 million figure: \"The $39 million number that gets shared a lot from this report isn't all going to data center stuff, it's the total amount given to climate orgs and progressive causes in general.\" So the note is telling Andy something he wrote himself, framed as a correction of him. This is precisely the failure he already objected to, that we fact-check a claim he is also fact-checking."
+    }
+  ]
+}

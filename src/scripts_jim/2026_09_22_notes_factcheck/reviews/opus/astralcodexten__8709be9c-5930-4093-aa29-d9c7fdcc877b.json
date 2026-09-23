@@ -1,0 +1,34 @@
+{
+  "item_id": "8709be9c-5930-4093-aa29-d9c7fdcc877b",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "e42351bb-b23c-48f2-b372-3ba62528d463",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "reason": "The facts in the note are right. Vanilla planifolia is native to Mexico and Central America, it was carried to the Indian Ocean by the French in the 1840s, and it is grown commercially in Indonesia, Uganda, Reunion and Mexico as well as Madagascar, so Scott's phrase 'found only in Madagascar' is wrong. But the phrase sits in a one-sentence aside about what an 'ordinary latte might blend', next to an equally loose list of coffee beans 'from Ethiopia, Ghana, and Suriname'. The whole sentence is scene-setting for his real point, which is that we are bored by things that took enormous effort to bring us, and that point is untouched by where the orchid originally grew. Correcting a decorative 'might' clause is the kind of nitpick that makes us look like we are scoring points rather than helping, and the two main sources the pipeline leaned on are a plant nursery's shop page and a Madagascar tourism wiki rather than a botanical authority."
+    },
+    {
+      "note_id": "7dac7af7-6d26-4d5b-bfe6-b78b597ce350",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The claim this note says it is checking is 'The first phonographic records date to around 1890', and that claim is true. The commercial recording industry starts with Edison's musical cylinder account in May 1889, and Columbia was selling a ten-page catalogue of brown wax cylinders by 1890, so Scott's 'I thought of the first phonographic records. In 1890...' is sound. The note text then says nothing about records at all and instead corrects Caruso's biography, so it rebuts a statement it did not extract and leaves the statement it did extract standing. It is also a duplicate of the other Caruso note on the same sentence, and sending both would read as piling on. A reader who checked would see the note contradicting a claim that is actually correct."
+    },
+    {
+      "note_id": "8ec77510-ee49-4ef4-9ef9-9e3c3d1d531f",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "reason": "Every fact in this note checks out. Pagliacci premiered at the Teatro Dal Verme in Milan on 21 May 1892 with Fiorello Giraud as Canio, Caruso was born in 1873 and made his professional stage debut on 15 March 1895, and he first sang Canio at the very end of 1897, so 'In 1890, hearing Enrico Caruso sing Pagliacci' could not have happened. The sentence is Scott's own, not a quotation, so the note is fair to what he wrote. What gives me pause is that the date is only scene-setting for a hypothetical about travelling to Italy, and the argument, which contrasts having to go to Naples with hearing Caruso at home by 1910, works unchanged if you read 1890 as 1900. Scott may well fix the date, since he does correct posts, but he could equally read a public note about an illustrative year as pedantic. Minor wording point: the note says Canio came in 1896-97, while Wikipedia dates the first Canio to 31 December 1897."
+    }
+  ]
+}

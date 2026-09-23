@@ -1,0 +1,88 @@
+{
+  "item_id": "d8e58096-e47a-46d8-97bc-f962dee23e94",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "5b3b4489-d5a7-47e8-a4fc-1439625611cd",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence is a personal aside at the start of a short section about climate despair: \"When I first became interested in climate in 2007, the dream was still alive that we could avoid 1.5 degrees of warming by 2100.\" What he asserts is that in 2007 staying under 1.5 degrees was still achievable, which is true. He does not say that 1.5 degrees was the formally agreed international target in 2007, which is what the note corrects. The note is historically accurate about when 1.5 was adopted, but it corrects a framing the author did not really use, in one line that has nothing to do with the post's argument about ChatGPT and energy. A reader's belief about the history of the 2 degree target does not change anything the post is trying to establish. This is the kind of pedantic note that would irritate the author rather than help him."
+    },
+    {
+      "note_id": "af1339ad-c5c4-4afb-b936-ec97ce1d0128",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The author writes \"The total electricity sector is only responsible for 25% of global emissions\", meaning electricity generation. The note's 33 to 34 percent figures are for \"electricity and heat production\", a wider category that also covers combustion for heat, so the note is comparing two different things. Electricity generation alone emitted about 13.8 billion tonnes of CO2 in 2024 according to the IEA, against roughly 53 billion tonnes of total global greenhouse gases, which is about 26 percent, so the author's 25 percent is a defensible number. The note also asserts the author used outdated 2010 IPCC data, which is a guess about his sourcing that the note does not support. Even if the higher number were right, it would not touch his point, which is that anything running on electricity is easier to decarbonise than vehicles and industrial heat."
+    },
+    {
+      "note_id": "b5817f83-f94a-4419-bc25-3e5a9493deb6",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The author's sentence is about AI only: \"all AI in all data centers in total caused roughly 43 million tonnes of CO2 in 2024\". The note answers with the IEA's figure for all data centre workloads, 180 million tonnes, and calls the author's number four times too low. The note's own accepted quote gives the game away: \"This includes all workloads by data centres, of which AI is a subset.\" The author uses the 180 million tonne figure himself twice in the same post and then takes AI to be about 15 percent of data centre electricity, which lands near 30 million tonnes. So the note fact-checks a subset against the whole and accuses him of an error he did not make. Sending this would be exactly the kind of misreading the author has already complained about."
+    },
+    {
+      "note_id": "86f572d4-1dc7-473e-aa1b-61908c25eb0b",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "reason": "The post says \"Every day 400 million people send 1 billion ChatGPT prompts.\" The note is right that the 400 million number OpenAI gave in February 2025 was weekly active users, and the 1 billion messages a day figure came from December 2024 when OpenAI reported 300 million weekly users, so the sentence mixes two different metrics and turns weekly users into daily ones. Against that, the correction does nothing to the argument, which is only that ChatGPT is used by enormous numbers of people and therefore its total energy use is unsurprising. The numbers are also stale on both sides now: the same post elsewhere cites 2.5 billion prompts a day, and ChatGPT reportedly passed 900 million weekly users during 2026, so a reader may find the note is arguing about a line the author has already moved past. The pipeline also attached this note to the claim \"ChatGPT is the most downloaded app in the world\", which the note never addresses. Worth sending only if Nathan rewrites it as a plain \"weekly, not daily\" fix."
+    },
+    {
+      "note_id": "6927c10b-46db-4c3e-92ac-095fe81ec799",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note says the 310 million kWh Grok training figure could not have existed when the post was published in April 2025. That premise is wrong: this is a living post that the author keeps updating, and the version we checked cites a 2026 laptop, Google's 2025 Gemini efficiency report and 2.5 billion daily prompts, so its content is far newer than the publication date. The note also does not correct anything. It does not dispute the 310 GWh number, the 30 million monthly users, or the 10 kWh per user arithmetic. It only complains about a date. On top of that, the claim the pipeline extracted is about how much energy it takes to manufacture a cellphone, which the note never mentions at all."
+    },
+    {
+      "note_id": "4cee2e16-e79a-433d-b8ae-027857e431f0",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "reason": "The post really does say \"prompts it 2,000 times per day. About one prompt every second every waking hour\", and that is arithmetically impossible: 2,000 prompts spread over a waking day is one every 20 to 30 seconds. I checked the author's own version of the same passage at andymasley.com and it reads \"About one prompt every 20 seconds every waking hour\", so the Substack copy carries a typo. The correction is true and easy for him to verify, and he opens the post by inviting exactly this kind of fix. What holds me back is that it changes nothing: the CO2 figures in the passage are unaffected and the point of the example, that even an absurd ChatGPT habit prevents almost no emissions, still stands. The note's wording also needs fixing before it is sent, because \"The original source (Andy Masley's essay)\" will read strangely to Andy Masley, whose essay this is."
+    },
+    {
+      "note_id": "840d7b9e-9ac5-4a8a-ab3b-c959d6ed0538",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The author writes \"The average American uses 10,700 kWh of energy per year\", and that number is the average American household's annual electricity use, not one person's energy use. EIA puts residential electricity at about 4,437 kWh per person and total primary energy at about 279 million Btu per person, which is roughly 82,000 kWh, so the label is wrong either way. The author uses the number for a ratio, treating one Watt-hour as about half a cent of a personal budget, and the correction actually helps him, because with the real per-person energy figure a Watt-hour is worth about eight times less and his case gets stronger. He also describes the same number correctly elsewhere in the post as \"average household electricity use\", which suggests a slip rather than a belief. Two things give me pause: the note calls the post \"the tweet\", which must be fixed before anyone sends it to a Substack author, and the correction is arguing about a framing error in his favour rather than a mistake that misleads readers about AI."
+    },
+    {
+      "note_id": "3dd175f2-549f-4a23-ab0f-06b7979d5c07",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The underlying facts hold up: by early April 2025 OpenAI had reported more than 500 million weekly users and over 20 million paid subscribers, so the post's \"400 million weekly users, but only 11 million paid users\" was already a little stale when it went up. But the sentence exists only to support \"Almost all ChatGPT users are free users\", and the note's own numbers give 96 percent free instead of 98 percent, which supports the author's point just as well. Correcting 98 to 96 is the definition of pedantic. The note is also stale itself, since ChatGPT reportedly passed 900 million weekly users during 2026, so it swaps one out-of-date pair of numbers for another."
+    },
+    {
+      "note_id": "b99e998b-395e-4f0e-9886-136e7ad7600a",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note says the author really meant 3 Wh and that 0.3 Wh is not his upper bound. That was true of the 2025 version of the post, but the author has since revised it: the current text says \"Throughout this post I'll assume the average ChatGPT query uses 0.3 Wh\", repeats 0.3 Wh in every worked example, and states elsewhere that the guesses \"fall into a rough range with an upper bound for the average prompt's energy at about 0.3 Wh\". So the note corrects the live post using an older draft by the same author, and two of its sources are that older draft. This is precisely the complaint Andy Masley already made about our earlier notes, that we were quoting him against himself, so sending it would do real damage. If there is a genuine note here it is a different one, that not everyone in the debate accepts 0.3 Wh as an upper bound, and this note does not make that argument."
+    }
+  ]
+}

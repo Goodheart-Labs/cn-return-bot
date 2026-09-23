@@ -1,0 +1,25 @@
+{
+  "item_id": "ea6aefd5-74f2-4d86-81fd-4190a1a0dfe8",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "124822e0-fb64-4fc1-8d9f-3684d98674bf",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The 77% figure is not the video's own arithmetic. It is the headline result of the paper the whole video is about, Chien, Du and Lustig's 'Japan's Debt Puzzle', and the St. Louis Fed's write-up of it states that as of the second quarter of 2024 gross liabilities were 270% of GDP, assets 192% of GDP, and net public liabilities 78% of GDP. The video says all three of those numbers and explicitly explains that this netting consolidates the central bank and the public pension funds, which is exactly the definition the authors use. The note's 130-134% is the IMF's narrower net debt measure, which does not consolidate the Bank of Japan and counts fewer assets, so the note presents a difference of definition as if it were an error, and it does so against the very source the author is reporting. The note's supporting material is also unsound: its fourth accepted quote, 'Credit Rating 77.00 Aug 2026', is a stray cell from a Trading Economics page, and the explanation built on it, that the 77 in the post 'is actually a credit rating', is simply invented. Sending this would tell an economist he got his own cited paper wrong when he did not."
+    },
+    {
+      "note_id": "6e4c68f5-4988-41b6-8810-abb62c6a4279",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note is right that the 192% of GDP asset figure is measured at the second quarter of 2024, which I confirmed on the St. Louis Fed page. But the '2020' it corrects is almost certainly not what the author said. The transcript reads 'worth about 192% of GDP in 2020 fourth', which is the automatic captions mangling a spoken '2024 Q2' or similar, in a transcript that also renders Chien, Du and Lustig as 'Tim Dou and Lustig' and the FILP fund as 'filth' and 'film'. So the note most likely fact-checks a caption artifact rather than a statement the author made, which is the exact complaint Andy Masley already made about being misquoted. Even if he had said the wrong year, moving a stock figure from one quarter to another changes nothing about the argument, which is that the consolidated government holds a very large asset portfolio. That makes the note pedantic on top of being unsafe."
+    }
+  ]
+}

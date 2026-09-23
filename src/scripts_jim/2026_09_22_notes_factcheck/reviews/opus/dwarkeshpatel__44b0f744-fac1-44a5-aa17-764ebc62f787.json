@@ -1,0 +1,25 @@
+{
+  "item_id": "44b0f744-fac1-44a5-aa17-764ebc62f787",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "65f6d7d0-2fcf-4b49-9a39-e657974a1b96",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "David Reich does assert this himself and leans on it, so the note is aimed at a real claim. The trouble is the note's own evidence. Its lead argument is that \"The Movius Line places India with Africa, Europe and western Asia as sharing this tradition\", but the Movius Line is about Acheulean handaxes, not about Levallois, and Movius drew it precisely to argue that East Asia lacked Middle Palaeolithic tools. So the note's headline source says something close to the opposite of what the note uses it for, and Reich would see that immediately. The second source is much better: Akhilesh and Pappu reported Levallois flakes and points at Attirampakkam in India at 385,000 to 172,000 years ago in Nature in 2018, which does put real published evidence against Reich's sentence. But that finding is contested, with specialists questioning whether the tools are Levallois at all rather than late Acheulean, and the parallel East Asian evidence from Guanyindong Cave in China has a published refutation. The note presents a live argument among specialists as a settled error, and it answers only the South Asia half of a claim that also covered East Asia. Against the field's leading ancient-DNA researcher, that is too weak to send."
+    },
+    {
+      "note_id": "24571747-a524-47c3-a066-7963bd0df813",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note corrects a weaker claim than the one Reich makes. What he calls crazy is a specific double pattern: \"the mitochondrial DNA and Y chromosome cluster Neanderthals and modern humans, but the rest of the genome clusters Neanderthals and Denisovans\". Both uniparental markers disagree with the autosomes, and in the same direction, which is why he spends the next several minutes saying that a matrilineal or patrilineal expansion \"will solve one of your two problems\" but \"it won't solve the other one\". The note answers with plain mitonuclear discordance, that is mitochondrial DNA disagreeing with nuclear DNA, in rock-wallabies, bats, lizards and birds. That is a very common phenomenon that Reich obviously knows about and works with every day, and the cited Wikipedia page on cytonuclear discordance does not cover joint mitochondrial and Y chromosome discordance at all. So the sources do not support a correction of the claim actually made. Sending this to one of the world's leading population geneticists would read as a gotcha built on a misreading, exactly the failure Andy Masley already complained about."
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "item_id": "fd3b9fd4-2780-4a48-99c0-3cc3365941ea",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "e10f4839-9f94-4446-aff3-c2180edaf435",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "The sentence is Zvi's own commentary on two TickerTrends charts, outside any block quote: 'The obvious interpretation is that June 9 was the release of GPT-5.6-Sol.' The note's dates hold up. OpenAI's own page 'Previewing GPT-5.6 Sol' and its community post are dated June 26, 2026, Engadget (July 8) says all three variants launched publicly on Thursday July 9, and Wikipedia gives the same two dates; the only OpenAI news I can find on June 9 is a policy paper and a GPT-5.5 Instant personalization update. I tested the first reviewer's idea that 'June 9' is a typo for 'July 9' against the chart itself: the Claude Code growth line peaks at the start of June and falls steeply from the 'Jun 8' tick, so the date Zvi names is the date of the break he is explaining, and 'July 9' would not fit the chart. That makes this a real error in his reasoning, not a slip: he attributes a decline that began in early June to a model that was not even previewed until June 26, and his whole paragraph ('After Sol, this is far less obvious... so it makes sense growth for Claude Code would be down') rests on that timing. Zvi issues corrections readily and this one hands him a cleaner story, so I expect him to take it. Nathan could optionally add that the chart's decline starts before Sol's preview, but the note is correct and sendable as written."
+    },
+    {
+      "note_id": "1834fd8c-1b06-44ca-9bd0-16f5d2a10370",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "The live page shows the sentence is Zvi's own summary, not a quotation: the paragraph before it links OpenAI's report 'How enterprises put AI to work', and then he writes in his own voice 'Agentic use now has risen to 64% of all OpenAI tokens, up from almost none a year ago.' OpenAI's wording, confirmed on openai.com search snippets and in a dozen syndicated copies (LinkedIn, Ronnie Chatterji's post, bankinfosecurity, vLLM's blog), is 'As of June, Codex generated 64% of combined Codex and ChatGPT output tokens among enterprise customers', and OpenAI adds that agentic runs produce more output per task, so the figure partly reflects verbosity. The gap is not rounding: 'all OpenAI tokens' takes in the API, consumer ChatGPT and input tokens, none of which are in the denominator, so a reader would believe agents are now most of what OpenAI serves, which the data does not show. Zvi cares about denominators and was paraphrasing a source he linked, so a note that restores the source's own scope should land well. I could not open openai.com directly (403), but the wording is consistent across every independent copy."
+    }
+  ]
+}

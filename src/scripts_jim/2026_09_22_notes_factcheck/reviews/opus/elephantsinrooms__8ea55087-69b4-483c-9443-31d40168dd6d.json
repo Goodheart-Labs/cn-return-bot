@@ -1,0 +1,25 @@
+{
+  "item_id": "8ea55087-69b4-483c-9443-31d40168dd6d",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "5f6c78bb-79c2-4ca9-bfdc-995295ca2175",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note answers a claim LaCorte never makes. The claim the pipeline extracted is that Polly Thomson had no background in literature or politics, and the note says nothing about that, which is a pity because the extracted claim is true: Thomson was a Scottish housekeeper with no literary or political training. Instead the note corrects an implication it has read into the word 'replaced'. LaCorte says 'Sullivan died when Keller was 56 and replaced by Polly Thompson', which is an accurate description of Thomson taking over Sullivan's role as interpreter and companion. He never says Thomson was newly hired at that moment. The facts the note gives are right on their own terms, since Thomson joined the household on 20 October 1914 and Sullivan died in October 1936, but they change nothing about LaCorte's argument, which is that Keller's published output became thinner once Sullivan and John Macy were no longer shaping it. Sending this would look like we did not listen to the video."
+    },
+    {
+      "note_id": "cc0f3659-735d-435d-bce2-eedafa0b1861",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The marriage date in the note is right, since Anne Sullivan married John Macy on 3 May 1905, but the conclusion the note draws from it is wrong. It says the 1902-03 books 'weren't written during the time Keller was with Sullivan and her husband', which invites the reader to think Macy had nothing to do with them. Macy in fact helped prepare The Story of My Life for publication in 1903, two years before the wedding; Wikipedia's own article on Keller says she published it 'with help from Sullivan and Sullivan's husband John Macy'. So the one thing that matters to LaCorte's argument, that Macy's literary hand was on the early work, survives the correction intact. What is left is a technicality about when the couple married, on a sentence where LaCorte is loosely naming the household rather than dating it. Sending a note whose implied point is contradicted by the standard sources would hand the author an easy rebuttal."
+    }
+  ]
+}

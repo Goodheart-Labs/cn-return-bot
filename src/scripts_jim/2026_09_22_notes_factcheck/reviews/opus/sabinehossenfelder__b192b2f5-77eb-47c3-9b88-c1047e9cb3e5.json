@@ -1,0 +1,25 @@
+{
+  "item_id": "b192b2f5-77eb-47c3-9b88-c1047e9cb3e5",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "2ccc1abb-4192-4a36-b3ba-f83081985ba0",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Sabine does assert this herself, as one of three examples of moon sightings that are hard to explain, and the note's facts check out. Sebastian Voltmer's own account, translated in the Metabunk thread, calls it \"a fast, bright something\" and says the brightness made him think of the ISS, so \"dark\" is indeed the wrong word, and ESA's Elliot Sefton-Nash did tell BILD the object looked like a train of low-Earth-orbit satellites. The trouble is that neither point touches what Sabine actually uses the example for. Her claim is that the astronomer could not identify the object, and that is exactly right: Voltmer ruled out the ISS, meteors, birds and insects one by one and still concluded the mystery remains, and Sefton-Nash's Starlink idea is one outside suggestion, not an identification Voltmer accepted. Correcting the colour of the object in a one-sentence aside, in a video where she says two sentences later \"I don't think any of these were alien spacecraft\", is the kind of nitpick that reads as fault-finding rather than fact-checking."
+    },
+    {
+      "note_id": "aa92ccd3-778b-40c1-a8b0-0a9b7bc3dcf8",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "This is her own assertion and it is the setup for her own suggestion that moon anomalies deserve their own record: \"You also don't have a database dedicated to moon anomalies. Anomalous moon observations are usually lumped together with general UAP sightings.\" The two catalogs the note names are real and are dedicated to lunar anomalies alone. NASA Technical Report R-277, the Chronological Catalog of Reported Lunar Events by Middlehurst and Moore, appeared in 1968, and Winifred Cameron's Lunar Transient Phenomena Catalog lists 1,468 reports, with her later version reaching 2,254 events going back to the 6th century. The Association of Lunar and Planetary Observers and the British Astronomical Association still run transient-lunar-phenomena programmes today, so this is not only a historical record. What gives me pause is which anomalies she means. The flashes and glows the catalogs cover are the Apollo sightings she describes just before, but the three cases she lists just after are objects crossing in front of the lunar disc, and those are not in any transient-lunar-phenomena catalog, so she has a fair reply that the note answers a different question from the one she asked."
+    }
+  ]
+}

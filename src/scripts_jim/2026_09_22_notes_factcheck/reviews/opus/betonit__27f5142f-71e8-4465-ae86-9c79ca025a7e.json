@@ -1,0 +1,16 @@
+{
+  "item_id": "27f5142f-71e8-4465-ae86-9c79ca025a7e",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "39ad68b7-41e3-4ba4-a213-675ec2bffb86",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Caplan does write \"Myers-Briggs calls this same personality trait 'Thinking versus Feeling'\" in his own voice, so the claim is his. But the note is on the wrong side of the evidence. The standard reference here is McCrae and Costa's 1989 paper in the Journal of Personality, which found that the four Myers-Briggs scales each measure an aspect of four of the five big factors, and the scale that lines up with Agreeableness is Thinking versus Feeling. Caplan is stating that well known correspondence in lay terms, not inventing it. The note's sources are two consumer blog posts, Truity and TraitLab, and what they actually say is narrower than the note: that no Myers-Briggs scale maps one to one onto a big five dimension. Nobody disputes that, and Caplan is not claiming a perfect mapping. The correction also changes nothing in the post, which is marriage advice; the naming point is a one-line rhetorical aside. An economist who knows this literature would read this as both wrong and pedantic."
+    }
+  ]
+}

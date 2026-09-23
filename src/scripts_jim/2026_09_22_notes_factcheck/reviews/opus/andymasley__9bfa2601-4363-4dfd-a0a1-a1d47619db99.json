@@ -1,0 +1,25 @@
+{
+  "item_id": "9bfa2601-4363-4dfd-a0a1-a1d47619db99",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "a54c5c28-65f0-4fe5-854c-ccdbcde847e4",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "reason": "Masley writes the sentence himself as a cross-check: \"For a sanity check, power plants buy and sell NOx allowances under EPA's Cross-State Air Pollution Rule, and those mostly trade between $3,000 and $6,500 per ton.\" The note's facts hold up. I opened the Argus piece it cites, dated 22 December 2025, and it does say Argus assessed Group 2 allowances at $875 per short ton since 1 December and expanded Group 2 at $850 since 24 October, and it does not assess Group 3 at all. EPA's own market pages show Group 3 opening 2021 at about $3,000 per ton, which is very likely where Masley's stale range comes from, and after the June 2024 Supreme Court stay the Good Neighbor Plan states, Virginia included, were moved into the expanded Group 2 pool that now trades near $850. So the number in the post really is roughly four to seven times too high. What gives me pause is that it changes nothing: the sentence is a throwaway sanity check, and Masley immediately overrides it with \"Even if we assume a pessimistic $10,000 per ton, we're at $30 million a year\", so the correction only makes his own argument cheaper and stronger. He could fairly answer that he chose a deliberately conservative number and that the note is a technicality."
+    },
+    {
+      "note_id": "6c44692f-12d4-405e-a2c4-8f6ae4018138",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "This is Masley's own arithmetic in footnote 8: \"Against the regional inventory, 4% is about 3,000 tons a year\", which only works if Northern Virginia emits about 75,000 tons of NOx a year. I read the JLARC report itself (Rpt598, chapter 5) and it says that under a worst-case outage \"data centers would emit over 9,000 tons of nitrogen oxides in the region. That is equal to about half of what has typically been emitted annually in Northern Virginia by all sources.\" That puts the regional inventory near 18,000 tons, so four percent is roughly 700 to 800 tons, exactly as the note says. Two independent checks agree: Northern Virginia data centers actually emitted about 562 tons of NOx in 2023, which is about three percent of 18,000 and matches JLARC's separate finding that actual emissions were \"only 7 percent of what permits allowed\". The same passage also shows Masley read the report backwards, because JLARC's \"less than 4 percent\" is the actual figure, not the permitted one. The correction does not overturn his conclusion, since a smaller externality is cheaper to offset, but the size of the data center NOx footprint is a headline number in this debate and he overstates it fourfold, so a numerate author who footnotes this carefully should be glad to have it fixed."
+    }
+  ]
+}

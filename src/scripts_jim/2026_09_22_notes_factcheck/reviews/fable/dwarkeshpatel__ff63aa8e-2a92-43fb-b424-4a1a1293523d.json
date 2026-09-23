@@ -1,0 +1,73 @@
+{
+  "item_id": "ff63aa8e-2a92-43fb-b424-4a1a1293523d",
+  "reviewer": "fable",
+  "source_read": "full_text (the published transcript; the first five passages were checked word for word against fetched:https://www.dwarkesh.com/p/sarah-paine, the sixth lies past the point where the fetch was cut off but the stored text is the same edited transcript with speaker labels and curly quotes)",
+  "notes": [
+    {
+      "note_id": "5cc98d5e-b58d-4b1d-bb50-e649f15395f0",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "guest",
+      "send_advice": null,
+      "reason": "The words are Sarah Paine's, said in her own voice to make her own point: \"How do you wind up with eight or nine million Polish deaths in World War II? Think about that. That's a large number.\" Dwarkesh does not challenge the figure; he moves on to ask about the firebombing of Tokyo. The published transcript on dwarkesh.com carries the same wording, so this is not a caption error. Every mainstream count sits near 6 million: the Wikipedia page the note cites gives \"around 6 million Polish citizens\", the 1947 Polish government figure is 6,028,000, the IPN's 2009 study gives 5.6 to 5.8 million, and the highest scholarly figure on that page is about 6.1 million. I searched for any estimate of 8 or 9 million and found none; the highest outlier I found is 6.5 million. Her point that the Poles were massacred survives the correction, but the number is what a listener carries away, it is one of the best known casualty figures of the war, and it is overstated by roughly half. A professional historian would accept a clean correction of it, and since the note corrects the guest, Nathan should frame it as her figure rather than Dwarkesh's."
+    },
+    {
+      "note_id": "90b887dd-c277-47e5-96e8-74401dad9584",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "guest",
+      "send_advice": "Replace the raw API address with a readable World Bank page, for example https://data.worldbank.org/indicator/NY.GDP.MKTP.CD?locations=RU-MX. The note text itself needs no change.",
+      "reason": "Paine says \"If you fast forward to now I think Russia's entire economy now is less than Mexico\" and uses it to argue that Russians overrate their own economic weight, so it is her claim and it carries her point, even with the soft \"I think\". I pulled the World Bank series myself: in current US dollars Russia was 2.29 trillion against Mexico's 1.47 trillion in 2022, 1.83 against 1.32 trillion in 2021, and 2.05 against 1.79 trillion in 2023. Russia is larger in every year, larger still in purchasing power terms, and larger per head too, so no reading of the sentence rescues it. The note's numbers match the source to the digit. The correction matters because \"smaller than Mexico\" is the memorable line, and it is the kind of number a historian would happily concede. The one weakness is presentation: the sources are raw World Bank API addresses that return JSON, which a reader who clicks through cannot read."
+    },
+    {
+      "note_id": "fb495d80-4f0e-4b5a-a9fb-def0ad542b20",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "whose_words": "guest",
+      "send_advice": null,
+      "reason": "Paine does say flatly that \"George Bernard Shaw made a comment that if you haven't been a socialist before the age of 30, you have no heart\", so the attribution is hers. The correction is accurate: Quote Investigator traces the earliest close match to an 1872 letter by Anselme Batbie crediting Burke, finds no citation crediting Shaw with the saying, and shows that Shaw's documented 1933 remark was about revolutionists and did not use the heart-and-head contrast. But the quote is pure decoration. She uses it for one sentence to say that communism appealed to the idealism of the young, and that point stands whoever coined the line; nothing a listener believes about the Cold War changes. That makes the note a nitpick on a misattributed quip in a two-and-a-half-hour history conversation, the kind of tangential correction the review rules call pedantic. The note also overreaches slightly by calling the 1933 speech Shaw's \"only\" similar remark, which Quote Investigator does not claim. Not worth sending."
+    },
+    {
+      "note_id": "6dd87983-b2b1-4633-aedb-17c0cd40c88d",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "guest",
+      "send_advice": "Drop the Somalia and Chile clause, or say the figures are 2026 Worldometers numbers. The episode is from October 2023, when Somalia and Chile were both under 20 million and about 60 countries were above it, so the two-thirds conclusion holds either way but the named cutoff pair did not.",
+      "reason": "Paine asks how many countries have 20 million plus people, Dwarkesh says \"Lots\", and she answers \"Yeah, probably most countries in the world are above that size.\" The words are hers, hedged with \"probably\", in a quick exchange. The correction is right: on the Worldometers list Somalia at 20.3 million is entry 66 and Chile at 19.9 million is the first one below the line, so roughly a third of the 195 countries are above 20 million and two thirds below. What gives me pause is twofold. First, the error goes in her favour: her point is that Taiwan is a normal-sized country that cannot simply be levelled, and the true figure makes Taiwan larger than two thirds of all countries, so the note corrects a guess rather than something the argument rests on, and Dwarkesh's \"Lots\" was itself correct. Second, the note quotes 2026 populations for a 2023 remark; the named cutoff pair, Somalia just above and Chile just below, was not true when she spoke. Paine would probably shrug and accept it, but it will read as tidying up an offhand aside."
+    },
+    {
+      "note_id": "b3273f44-edce-4f8d-9471-3039dc0889dd",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "guest",
+      "send_advice": "Add that she evidently meant Arunachal Pradesh, so the note reads as a transcript correction rather than a rebuttal, for example: \"Paine likely meant Arunachal Pradesh: China's August 2023 standard map claimed that northeastern state and Aksai Chin, not Uttar Pradesh, which is a separate state in north-central India that does not border China.\"",
+      "reason": "Paine says \"they've just been redoing their maps. They say what is Uttar Pradesh is ours. That would be a detail, right?\", using it to argue that China's territorial appetite does not stop at Taiwan. The published transcript on dwarkesh.com has the same wording, so it is not a caption error. The VOA article the note cites, dated August 30 2023, confirms that the 2023 standard map showed Aksai Chin and Arunachal Pradesh as Chinese, and it never mentions Uttar Pradesh; independent coverage from India Today and ThinkChina says the same. So the note is correct, and for a listener who does not know Indian geography it matters, because Uttar Pradesh is India's most populous heartland state and a claim on it would be a far bigger story than the border dispute she is describing. My hesitation is that this is plainly a slip of the tongue for Arunachal Pradesh, five weeks after the map made headlines, and the substance of her point, that China keeps redrawing maps to claim Indian territory, is right. As written the note reads as if she got the fact wrong rather than the name. Sent as a friendly transcript fix it should be accepted; sent as a rebuttal it may look like we are correcting a stumble."
+    },
+    {
+      "note_id": "a56f012d-91c4-4564-aa84-4930804891b4",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "guest",
+      "send_advice": null,
+      "reason": "This is Paine's own argument, offered as evidence that the PLA would perform badly: \"The Vietnamese killed more Chinese in a matter of weeks than all US losses in Afghanistan and in fact, all US losses in Vietnam over however many years we were there.\" She says \"killed\", so the comparison is deaths against deaths. Western estimates of Chinese dead in the four-week 1979 war are about 26,000 (the Wikipedia page the note cites, and the National Interest's summary of external studies), China's own figure is under 7,000, and the US lost 58,220 dead in Vietnam per the National Archives page the note cites, so her Vietnam comparison is off by more than a factor of two on any independent count; the Afghanistan half, 2,459 US deaths, is true and the note grants it. I settled the first reviewer's reservation: even if she meant casualties rather than deaths, the Western estimate of about 63,000 Chinese killed and wounded would have to be set against roughly 360,000 American killed and wounded in Vietnam, so that reading does not save the sentence either. The only figures that would are Hanoi's own wartime claims of 42,000 to 62,500 Chinese killed or lost, which Western analysts treat as inflated, and the note states openly that it rests on Western estimates. A striking number that a listener will repeat, a clean checkable correction, and the kind a military historian accepts."
+    }
+  ]
+}

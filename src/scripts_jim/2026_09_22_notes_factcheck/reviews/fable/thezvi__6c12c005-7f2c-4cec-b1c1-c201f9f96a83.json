@@ -1,0 +1,18 @@
+{
+  "item_id": "6c12c005-7f2c-4cec-b1c1-c201f9f96a83",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "bbdd880f-911a-4170-b6e0-4757fd7bfeca",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "whose_words": "creator",
+      "send_advice": "Do not send as written. If reworked, it would have to say that the 1 GW per year by end of 2027 figure is Musk's June 8 video remark, which SpaceX itself filed with the SEC as a free writing prospectus on June 9 and which Musk hedges as \"not a promise\", while the S-1 and final prospectus say deployment \"as early as 2028\". Drop the clause \"describing a demonstrator\" entirely.",
+      "reason": "The sentence is Zvi's own, outside the block quotes: \"The SpaceX prospectus names 1 GW/year in 2027 as the target. I think this might end up being something approaching securities fraud.\" I read the S-1 and the June 12 final prospectus on EDGAR. Neither contains \"1 GW\"; both say SpaceX expects to begin deploying orbital AI compute satellites \"as early as 2028\", so the note is right about those two documents. But SpaceX filed the transcript of Musk's June 8 Gigasat video with the SEC on June 9 as a Free Writing Prospectus under Rule 433, and in it Musk says the goal is \"to get to roughly an annualized rate of a gigawatt per year by the end of next year in terms of space AI compute\", adding \"this is not a promise\". A free writing prospectus is legally a prospectus and is exactly the kind of offering document a securities-fraud remark is about, so Zvi can answer that the target is in SpaceX's filed offering materials and the note is splitting hairs about which filing. The note's last clause is also wrong: Musk's figure is an annualized production rate, not a demonstrator. The CFO's filed remark that they will \"demonstrate capabilities as soon as next year\" is a separate statement. A note that is half a technicality and half a mischaracterisation would not be accepted."
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "item_id": "7314f3c2-9942-440e-a675-2cf42694264e",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "70c28702-3db7-43dc-8afa-90de626e615f",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "Paine does make this claim herself, reading off her own slide: \"There are more Chinese civilian deaths here than all deaths in World War II.\" Her statement is probably an overstatement, because she herself puts the Great Famine at 40 million and the other Mao-era campaigns add perhaps ten million more, so a correction here could be worth writing. But this note does not carry it. The note says World War II killed 70-85 million, while the only solid source it cites, the Wikipedia article on World War II casualties, actually says \"An estimated total of 60-75 million deaths were caused by the conflict\" - I fetched the page and confirmed that wording. Against 60-75 million, the note's own figure of \"broader syntheses reaching 44-72 million\" for the Mao era does not leave only outliers approaching World War II's total, so the note contradicts itself. On top of that, three of its four source quotes come from factually.co, which is a fact-check site run by one developer that generates its conclusions with AI, not a scholarly source. Sending a Naval War College professor of Chinese military history a death-toll correction built on an AI fact-check site, with a number that its own citation disagrees with, is the kind of thing she would check in two minutes and reject."
+    },
+    {
+      "note_id": "8803380f-0d19-4dcc-b9a7-8b7291418cb5",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Paine does say flatly that Griffith \"is the only translator of Sun Tzu who translates 死地 as death ground,\" so the claim is hers. Her statement is strictly false, because E. F. Calthrop's 1908 translation does list \"death ground\" among the nine grounds, and I confirmed that on the Wikisource page the note cites. But the note names two more translators who do not support it. Ralph Sawyer renders the term \"fatal terrain\" (\"Where if one fights with intensity he will survive... it is 'fatal terrain'\"), and John Minford appears to use \"death terrain,\" not \"death ground.\" So two of the note's three examples are wrong, and Paine, who teaches Sun Tzu for a living, would spot that at once. The remaining example is one obscure 1908 translation that Lionel Giles famously demolished, plus a self-published academia.edu synopsis, which is thin ground for calling her wrong about an aside she makes while praising Griffith's translation. The point is also tangential: nothing in her argument about Griffith depends on the word being unique to him."
+    },
+    {
+      "note_id": "a7341340-6bae-4ef5-a00a-af9be70abfdd",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "This is the strongest note of the five. Paine says outright, \"It's written by Peng Dehuai and others, his generals,\" so the attribution is her own assertion, and a listener would come away believing a famous military text was written by a named man who does not appear in the scholarship on it. I fetched the Small Wars Journal essay and it does say the work was \"the collective work of Mao Zedong, Liu Yalou, Chen Changhao, Xiao Jinguang, and Guo Huaruo,\" and it never mentions Peng Dehuai. What gives me pause is that the whole correction rests on one essay, published in April 2026, more than a year after this lecture, by a research analyst rather than an established historian of the period. The note also argues partly from silence, saying only that Peng Dehuai \"is not named among the contributors in this analysis,\" which is weaker than saying he was not involved. And the same source names Mao as one of the collective authors, which cuts against Paine's stronger line that the book \"is not written by Mao\" - the note leaves that out. Paine may have her own source for the Peng attribution that we cannot see."
+    },
+    {
+      "note_id": "f040c103-ec51-4be5-80fc-9aaeec9e29a5",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "reason": "Paine does say Peng Dehuai \"had lost several of his siblings to starvation over the course of these civil wars,\" and the standard account disagrees: Wikipedia and the reference works say his mother died in 1905 and his six-month-old brother starved during the 1905-06 Hunan drought, when Peng was a small child. So the direction of the correction is right. The trouble is the sourcing and the reach. The note's lead source is Grokipedia, an AI-generated encyclopedia, backed by a children's wiki and a hobbyist Pacific War site, and none of them is something we should put in front of a professional historian. The note also asserts he lost \"only one sibling,\" which goes further than the evidence gathered here supports, since Chinese accounts record two younger brothers killed by Nationalist troops in 1940 - not starvation, but enough to make the flat word \"only\" risky. Most importantly the correction does not change anything she is arguing. Her point is that Peng had personal reason to confront Mao over the famine, and a brother who starved in childhood serves that point just as well as siblings lost later. It is an off-the-cuff detail in an interview answer, and correcting it reads as pedantic."
+    },
+    {
+      "note_id": "cc43ba35-0a56-4f11-a244-00627efe531f",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note answers a claim Paine is not making. Her subject is Manchuria as a salient: \"Manchuria is way up... it's got quite a coastline, but the Soviets had blockaded that, so nothing's getting in that way. The only way, given the Chinese railway system, is that literally one train line connects Manchuria to South China.\" She says the same thing earlier in the lecture - \"There's only one railway system that gets you south out of Manchuria\" - so the point is about a single bottleneck out of Manchuria, through the Shanhaiguan corridor, which is what made Chiang Kai-shek's movements predictable. The note replies that south of Beijing the network split into the Jinghan and Jinpu trunk lines. That is true and completely beside the point: branching south of Beijing does not give Chiang a second way out of Manchuria. So the note does not refute her, and a reader of it would be misled into thinking a real error had been found. It is also tangential to her argument, which is about whether Marshall's 1946 halt order changed the outcome of the civil war."
+    }
+  ]
+}

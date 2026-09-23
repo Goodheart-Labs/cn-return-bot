@@ -1,0 +1,25 @@
+{
+  "item_id": "79b4bbd6-d4df-4931-ab34-dfe3324c4669",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "b470a405-27f6-4d18-80d7-9cefa49790f7",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The post is a lightly edited interview transcript, and the sentence about a gunman from Stop AI is spoken by the guest, Jasmine Sun, not by Nate Silver. Worse, Silver attached footnote 3 to that exact sentence and it already makes the note's correction himself: 'Two incidents have been compressed here in a way that might be confusing. There was a lockdown in November 2025 at the OpenAI offices in San Francisco following a threat from a former StopAI activist. And a different suspect was charged in the April 2026 Molotov cocktail attack at Altman's home; he had participated in anti-AI online forums but was not formally affiliated with Stop AI.' The note's facts are broadly right, since Daniel Moreno-Gama threw a Molotov cocktail at Altman's home and then struck OpenAI's glass doors with a chair, with the handgun found in his hotel room. But telling the author something his own footnote already says is precisely the failure Andy Masley complained about, and the note's own wording is looser than Silver's, calling Moreno-Gama 'the OpenAI intruder' when the attack that drew the attempted murder charge was on Altman's home. Nothing here is left for a reader to get wrong that the post has not already fixed on the same line."
+    },
+    {
+      "note_id": "410b6a80-346f-4918-a5b5-f63f069deb56",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "This is the same sentence again, spoken by the guest Jasmine Sun and already footnoted by Nate Silver, so the note fact-checks a correction the author himself printed on that line. The substance also holds up only in the direction Silver already went: the SF Standard piece confirms Sam Kirchner was expelled by Stop AI over 'volatile, erratic behavior and statements' and that police had not corroborated the seriousness of the threats, which is what footnote 3 summarises as a threat from a 'former StopAI activist'. The knife detail rests on finance.biggo.com, an aggregator rather than a primary report, and the SF Standard account says callers reported Kirchner wanting to buy high-powered weapons and that police warned he could be armed and dangerous, so 'a knife, not a gun' is thinner than the note makes it sound. Sending this to Silver would also mean sending two separate notes on one sentence that neither he nor his footnote left uncorrected. Publicly correcting an author on a point he flagged himself would read as careless rather than helpful."
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "item_id": "caf404c8-df01-412f-b830-b2fea421188a",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "0cc990cb-4e47-4415-8c0d-c2271b32163a",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence is not Liron's. It comes from the segment headed \"Producer Ori's Closing Note\", where the show's producer asks for donations: \"But there's more that we still gotta do. What about xAI? What about Meta? What about Thinking Labs, run by Mira Murati?\" Nothing in the episode rests on the company's exact name, so correcting a spoken shorthand in a fundraising appeal is pedantic, and in a speech transcript it is as likely a transcription artifact as a real mistake. The note is also wrong on its own facts: it says Thinking Machines Lab \"launched out of stealth in 2026\", but Wikipedia, the note's own source, says the company was founded in February 2025 and had already raised $2 billion at a $12 billion valuation by July 2025. The second accepted quote, about Inkling being released on 15 July 2026, does not support the 2026 launch date the note asserts."
+    }
+  ]
+}

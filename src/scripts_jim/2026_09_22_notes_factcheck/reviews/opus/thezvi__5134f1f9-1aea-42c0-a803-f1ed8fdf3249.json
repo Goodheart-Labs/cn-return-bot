@@ -1,0 +1,25 @@
+{
+  "item_id": "5134f1f9-1aea-42c0-a803-f1ed8fdf3249",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "69f1431b-c15b-41bb-92d5-2a4dbb7a4030",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence is Zvi's own aside, written while arguing that nations avoid destroying each other's civilian power supply: \"Trump indeed made a big deal out of threatening Iran's power plants, but ultimately backed down because that is barbaric and hurts innocent people.\" The note's headline sentence, \"The US did not back down\", is wrong about the thing Zvi is talking about. Trump threatened to obliterate Iran's power plants in March 2026, then publicly postponed those strikes for five days on 23 March (CNBC, PBS, NBC), extended the deadline again on 26 March, and on 2 August 2026, three weeks before this post, announced he was cancelling the planned strikes on Iran's energy sites pending a deal (BBC, Reuters, NPR). So the campaign against the power grid that Zvi is referring to really was called off. There is a genuine smaller point here, because US strikes in mid-July did damage part of the Kish Island power plant and distribution networks in the south, which does soften Zvi's \"we civilized folk have collectively agreed you don't do that\". But the note does not make that narrower point, and it also misattributes the Al Jazeera numbers: the article the note cites says the 4,200 MW drop came from war damage compounding chronic underinvestment, aging plants and a heatwave, not from the strikes alone. Zvi would reply that Trump did in fact back down, and the note would look badly researched."
+    },
+    {
+      "note_id": "bbfda2a3-f466-4542-bb25-f299853a0b98",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The extracted claim is about timing, that Dario Amodei's prediction was made about 17 months before the post, and that is simply true: Amodei said it in March 2025 and this post is from late August 2026. The note never addresses that claim. Instead it attacks Zvi's judgement that the prediction \"rather clearly happened\", which is an interpretation, not a checkable number. Zvi makes clear what he means, endorsing Tenobrus's line that \"ai is absolutely *writing* essentially all of the lines of code, with significant amounts of overall direction and design and high level correction from engineers\", and he immediately concedes the very thing the note argues, writing \"Dario overestimated the rate of diffusion. People take a while to get on the ball.\" So the note fact-checks a point the author already granted. The sources are also weak for an August 2026 statement: the Redwood post is from October 2025, the lenz.io page is an auto-generated verification report whose data stops in February 2026, and the Sonar survey is from January 2026. Newer reporting spreads from about a quarter of commits up to 75 percent at Google, so the picture is contested rather than settled against Zvi. This is the kind of note that reads as missing the author's point."
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "item_id": "3a030aad-94e4-4f7b-a832-611311a3d0c9",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "496c64c4-0f6a-4087-9e5f-928127c3158a",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence is Zvi's own aside, so the note is at least aimed at his words: \"The game looks cool but is out of print and I didn't see an online version.\" But the note is wrong on its own evidence. The Noble Knight page it cites as proof of availability is headed \"Out of Print\", shows \"Last Stocked on 4/9/2026\" and offers only a \"Notify Me When Back In-Stock\" button. The Team Covenant preorder page the note leans on is an Earthborne Games announcement from June 2024, and Team Covenant currently lists the core set as a preorder with an estimated release of Q3 2026, which is after this post went out on 9 July 2026. So a reader in July 2026 really could not buy the game, which is exactly what Zvi meant. On top of that the point is a throwaway remark about a board game in a paragraph about an AI benchmark, so even a correct version of this note would be pedantic and would not change anything Zvi argues."
+    },
+    {
+      "note_id": "4a86a1b7-7f38-45b9-88c1-4672c5db31e7",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "This is Zvi writing in his own voice, not a block quote: \"The problem is invalidating grades entirely. At UC Berkeley, the number of As is up by 30%, so GPAs are dangerously close to meaningless for measuring student quality.\" The surrounding block quotes are all attributed to Manuel G. Pascual and concern the Brown cheating scandal, so this sentence is Zvi's own assertion. The note is right. The Berkeley CSHE working paper by Igor Chirikov gives the 30% figure but describes its data only as \"more than 500,000 grades at a large research university\", and the Daily Californian, which reported the study on 2 July 2026, identifies that university as \"a selective public university in Texas\" and adds that \"Between 2019 and spring 2026, A's at UC Berkeley consistently stayed between 30% and 35%\". Both quotes the note was accepted on check out against the sources. The correction matters because Zvi names a specific institution as evidence that grades are collapsing, and at that institution the A share did not move. Zvi routinely posts corrections and this is a clean, well-sourced one, so he is likely to take it."
+    },
+    {
+      "note_id": "ed952676-0441-4dc2-bcf5-34467d77f269",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "The claim is Zvi's own, and the price would matter if he had it wrong, but he does not. A Grok 4.5 Fast tier does exist. Cursor's own model documentation lists Grok 4.5 at \"$2/M input tokens\" and \"$6/M output tokens\" and Grok 4.5 (Fast) at \"$4/M input tokens\" and \"$18/M output tokens\", which is exactly the pair Zvi wrote. Several independent write-ups say the same, for example developersdigest's launch table (\"Grok 4.5 Fast, $4/M, $18/M\") and apidog's description of \"a lower-latency serving tier Cursor lists at $4/M input and $18/M output\". Zvi is quoting Cursor's prices because, as he says two lines later, the model \"was trained in large part by Cursor\". The note confuses this faster-serving tier with xAI's cheap small models such as Grok 4 Fast and with xAI's own priority-processing multiplier, and then tells Zvi that a tier he correctly quoted does not exist. Sending this would be an embarrassing miss."
+    }
+  ]
+}

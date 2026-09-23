@@ -1,0 +1,18 @@
+{
+  "item_id": "cf802714-ff34-437c-8f04-d2f3aeda5f6c",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "ec829964-72a7-4e6d-8ea2-543d43391ff5",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence is a quotation from the Offrange article \"This Land is Their Land\", but Andy does adopt the number for his own argument: \"The 8 million-gallon data center is 0.4% of that. This data center is using as much water as a local 35 acre irrigated farm.\" So the number is fair game in principle. The note fails on correctness and fairness. \"Upwards of 8 million gallons\" is a floor, and the floor is well sourced: the article links it to a WPR story (17 Sep 2025) reporting that Microsoft's closed-loop Mount Pleasant data centers will need up to 8.4 million gallons a year, so a hyperscale campus really can run at that level. The note's \"typically far more\" rests on Google, whose evaporatively cooled sites average 550,000 gallons a day (its 2.8 million a day for Council Bluffs matches Google's 2025 report), but that is the most water-hungry operator, and the facility Andy is actually writing about is the Wolcott campus in White County, whose project site promises closed-loop cooling with \"zero water for cooling\". Andy has written at length on data center water and would answer that the note swaps in the wrong kind of facility; the fairer correction, that the 35-acre-farm comparison only holds for closed-loop designs while evaporative sites use tens to hundreds of millions of gallons a year, is not the note that was written.",
+      "whose_words": "quoted source",
+      "send_advice": null
+    }
+  ]
+}

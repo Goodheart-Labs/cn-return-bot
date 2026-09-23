@@ -1,0 +1,18 @@
+{
+  "item_id": "bc2c0478-54aa-4853-912a-cd4f5c3c3596",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "95ef9e2f-61a0-4dbe-a895-97bd2dc74c43",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "send_advice": "Replace the second sentence, which is about a different particle (extra Higgs bosons), with one about the candidates she names, for example: \"Higgsino-like and electroweak-multiplet particles are made only through the weak force, so they are produced too rarely and decay too softly to stand out; the LHC's current higgsino bound sits near 225 GeV, so 400 GeV is simply not yet excluded.\" Cite a higgsino source (for example the ATLAS March 2026 compressed-higgsino briefing or arXiv:2609.12914) instead of the CMS heavy-Higgs page.",
+      "reason": "This is Sabine's own statement, made flatly in her own voice: the LZ mass of at least 400 GeV \"explains why the Large Hadron Collider hasn't found it. The energy simply wasn't high enough.\" The wording is coherent and the 400 GeV figure matches the interpretation papers (best fits above 400 GeV), so this is not a caption artefact. Taken as said, the sentence is wrong: the LHC collides protons at 13.6 TeV, produces top quark pairs (about 350 GeV) by the million and excludes strongly produced particles above 2 TeV, so a lay viewer would come away believing the machine cannot make a 400 GeV particle, which is a real and large misconception. The correct reason is the one the note gives in spirit: higgsinos and electroweak multiplets are produced only through the weak interaction, so their rate is tiny and their decay products soft; the LHC's higgsino bound is about 225 GeV from disappearing tracks, so 400 GeV is not excluded rather than unreachable. Two things hold me back from good. The note's only source is a CMS page about extra Higgs bosons, a different particle with different couplings, so its evidence does not cover the higgsino and electroweak-multiplet candidates she actually names, and its second sentence is about those Higgs bosons rather than her candidates. And the flat \"collision energy isn't the limit\" overreaches a little, since the production rate of heavy weakly coupled pairs does grow with collider energy and the field's own remedy is a higher-energy machine, which gives her a route to call her sentence shorthand for the LHC's reach. As a physicist she will know 13.6 TeV is far above 400 GeV and may accept the correction, but she is as likely to dismiss it as a quibble with a simplification for a lay audience."
+    }
+  ]
+}

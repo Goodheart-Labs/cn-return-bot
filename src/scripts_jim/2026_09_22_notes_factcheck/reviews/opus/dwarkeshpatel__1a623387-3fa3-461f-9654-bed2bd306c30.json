@@ -1,0 +1,79 @@
+{
+  "item_id": "1a623387-3fa3-461f-9654-bed2bd306c30",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "73915ba6-318b-4dbd-9db1-c7f85572e273",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note is attached to the wrong sentence. The highlighted passage is \"India immediately doubles the size of its army within the next 10 years to up to 750,000 people\", and the extracted claim is about the army doubling, but the note says nothing about either and instead corrects the next sentence, \"Creates 10 mountain divisions useful against China.\" A reader would see a correction that does not match the text it sits on. The correction is also contested: the Bharat-Rakshak history of the 1965 war says of the post-1962 expansion \"It raised ten new Mountain Divisions\", while the Wikipedia sentence the note relies on says seven were raised. The note's stronger claim, that India first reached ten mountain divisions only in the mid-1980s, rests on a single article describing the mid-1980s order of battle, which is a snapshot and no evidence about the 1960s. Sending a disputed count, anchored to a sentence it does not address, is exactly the kind of note that invites a rebuttal."
+    },
+    {
+      "note_id": "2fe2c754-f2f2-4622-956b-01b96b3e7ce1",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "This is Sarah Paine's own assertion in the lecture, not something she quotes in order to dispute it: \"And then here Deng Xiaoping was in town and he told Carter, we applaud your decision to basically toss all these proliferation human rights considerations for Pakistan and just arm them.\" I fetched the State Department's FRUS document the note cites and it confirms the meeting was Secretary of Defense Harold Brown and Vice Premier Deng Xiaoping in Beijing on January 8, 1980, with Deng saying \"We applaud this decision. We give large amounts of assistance to Pakistan.\" The Dawn article gives the same date and participants. Deng's Washington visit was in early 1979, before the Soviet invasion of Afghanistan and before the American decision he was applauding, so the version in the lecture cannot be right. The substance of her point survives, but a quote attributed to the wrong person, place and year is a real error in a history lecture, and a scholar who works from these archives is very likely to accept the correction."
+    },
+    {
+      "note_id": "6df83182-8a54-4345-8fdc-b9410c4cea90",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "Both sources check out: the IRC report says \"5.4 million excess deaths have occurred between August 1998 and April 2007\" and the CFR tracker says \"Since 1996, conflict in eastern DRC has led to approximately six million deaths\", so \"over 10 million\" is well above the usual figures. What gives me pause is that the speaker hedges the number twice in the same breath. She says \"I will eventually compile the stats on this. Not that they're great stats, but it's obscene numbers. I think Congo had a civil war where literally over 10 million people died.\" A note correcting a figure the speaker has just flagged as soft can read as a gotcha. The underlying estimates are also disputed in both directions, since the IRC's 5.4 million has itself been argued down to roughly half that, so the note states a contested range as settled. The correction is still worth making, because a listener would otherwise carry away a number about twice the mainstream one."
+    },
+    {
+      "note_id": "c4ee2a8c-9089-41e9-aaae-1b44545ef02b",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "This is the one claim in the set that Dwarkesh makes himself, as the premise of his question: \"from the '20s to '40s, the Soviet Union actually had pretty good growth rates. In those 20 years, their GDP went from 8% to 18% of world production.\" The note then says that Bairoch and Kennedy data put the Soviet share of world manufacturing output at about 5% in 1928 and only 9 to 10% by the late 1930s. That is the wrong claim about the wrong metric. The famous Bairoch table reproduced in Kennedy's The Rise and Fall of the Great Powers gives the USSR 5.3% of world manufacturing output in 1928 and 17.6% in 1938, which is almost certainly where the 18% comes from, and 9 to 10% would put the Soviet Union behind Germany rather than second in the world, contrary to the standard account. The note's only source is a Wikipedia line giving 1950 GDP levels in 1990 dollars, which states no world share at all and says nothing about the 1920s or 1930s. There is a fair point buried here, namely that 18% is an industrial-output share and not a GDP share, but the note does not make it, and as written it would be rebutted by anyone holding Kennedy's table."
+    },
+    {
+      "note_id": "e29fe306-dd21-4501-b1da-c647a590c1df",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "The speaker states the year as a plain fact in her own analysis: \"When the United States deposes Mosaddegh in Iran in 1954, I could see Eisenhower's view as, hey, we're just deposing one guy.\" The coup was in August 1953, which Britannica and Wikipedia both give, with Eisenhower approving Operation Ajax on July 11, 1953 and Mosaddegh removed on August 19. The note is short, correct and says only what it needs to. It does not change her argument about the long-term cost of the intervention, so it is a small correction, but it is a clean and checkable one on a canonical date in a lecture people will cite, and a historian is more likely to accept a date correction than any other kind. The likely source of the slip is 1954, the year of the Guatemala coup, which the note does not need to mention."
+    },
+    {
+      "note_id": "a1dc2023-0f8a-46f3-bba5-908f4b142956",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The speaker asserts the figure directly: \"In today's dollars we send Stalin $1 trillion worth of aid.\" The National WWII Museum says American Lend-Lease \"transferred over $11 billion dollars of goods to Soviet Russia - roughly the equivalent of $250 billion today\", and Wikipedia's Lend-Lease article gives $11.3 billion to the Soviet Union, about $156 billion in 2024 dollars, out of $50.1 billion for the whole programme. So the figure in the lecture is four to six times the standard inflation-adjusted number, and it is a headline number she uses to carry her argument about the scale of aid to Stalin. The note's second sentence also holds up: the museum says the Soviet share was about 23% of the programme, which puts the whole programme near $1 trillion in today's money, so that is a fair guess at where the number came from. The one reason for caution is that some people adjust wartime spending by share of GDP rather than by prices, and that method does reach roughly $1 trillion, so she may defend the figure on those grounds."
+    },
+    {
+      "note_id": "30eb7189-c666-4c75-8e1a-5998aabda56a",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The claim is stated flatly and is load-bearing for her argument that America starved the main Pacific theatre: \"Our Lend Lease aid to Chiang kai Shek was 1 to 2% of what we were sending to Stalin.\" Wikipedia's Lend-Lease article gives China $1.6 billion against $11.3 billion for the Soviet Union, which is about 14%, and the US Holocaust Memorial Museum page confirms the $11 billion Soviet figure. Even the lower China figure the note mentions leaves the ratio near 8%, so 1 to 2% is wrong by roughly an order of magnitude and the note's numbers are right. One caveat Nathan should know: by tonnage actually delivered, rather than dollars, China's share was much smaller, because almost everything had to be flown over the Himalayas, and she makes that point herself right afterwards with \"We couldn't get it in.\" Dollars are the standard measure of Lend-Lease and the natural reading of her sentence, so the note is fair, but she may answer with the delivery argument."
+    },
+    {
+      "note_id": "e7b933f8-0b4d-44aa-8926-ce59d63d6f7f",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The facts in the note are right. Wikipedia confirms Peter Petrovich was born in November 1715, became heir in February 1718 when Alexei was removed from the succession, was greeted with \"God has sent me a new recruit\", and died in April 1719 aged three, so at the moment Peter the Great had Alexei tortured to death he did have a designated replacement son. My hesitation is that the note ends by conceding the speaker's point, \"leaving Peter without a surviving son\", which is the sense in which most listeners will have heard the remark, and the remark itself is a one-line aside in a passage about Russian cruelty, made in contrast to Stalin. So the note is accurate but close to a technicality, and it does not touch the thing she is actually arguing. It is the weakest of the notes I would let through, and I would not be surprised if the author reads it as a quibble."
+    }
+  ]
+}

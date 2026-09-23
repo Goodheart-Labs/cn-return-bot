@@ -1,0 +1,18 @@
+{
+  "item_id": "e17f2471-bc61-4ac4-b27d-b636961b9493",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "30ab3fd2-17af-47ce-a14c-ded7d79a990c",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "Jeff says this in his own voice while pointing at a molecule graphic: \"Tren is testosterone with this carbon atom removed. Nandrolone is the same thing but with a few less double bonds.\" Fitness Volt's write-up of the video quotes the same wording, so this is not a caption error. The chemistry in the note is right: testosterone minus the C19 methyl group is nandrolone, and trenbolone is nandrolone plus two double bonds, as both the transfemscience article and Wikipedia say. But the first reviewer misread Jeff's second sentence. \"The same thing\" refers to tren, and nandrolone really is tren with fewer double bonds, so Jeff has the tren-to-nandrolone relationship right and only glosses over the double bonds when he introduces tren, most likely because the graphic on screen already shows them. That makes this a loose simplification in a three-second aside, not a real swap of the two drugs, and nothing in the video's argument about the natural FFMI ceiling depends on it. Sending it would read as a chemistry nitpick and is not worth the relationship."
+    }
+  ]
+}

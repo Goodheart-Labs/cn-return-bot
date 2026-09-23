@@ -1,0 +1,18 @@
+{
+  "item_id": "8764d17a-b65c-4789-b0d7-99339f69260f",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "a49ea74e-84a0-41b6-94ac-7453fdcd27ce",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "Decker states the figure flatly as his own and defends it: \"around 35% of children in Uttar Pradesh go to private schools. (I am confident that higher figures are the result of people misreporting where they actually attend school).\" I checked both of the note's sources. The educationforallinindia analysis of the official UDISE+ booklets gives private unaided enrolment in Uttar Pradesh of 20,708,859 of 46,774,404 students (44.27%) in 2021-22 and 20,752,079 of 41,400,917 (50.12%) in 2024-25, and the Factly piece (mirrored on Dataful, since Factly refused the fetch) says UP's private share rose from 42% to 54% between UDISE+ 2022-23 and 2025-26. UDISE+ is filled in by schools, not by households, so his misreporting defence does not reach it; if anything the known bias in school rolls, children kept on government registers for benefits while attending private schools, understates the private share. The strongest objection is that the essay describes a rural village while UDISE+ is statewide and covers every grade, but the rural-only ASER 2024 household survey of Uttar Pradesh (70 of 71 districts) gives 45.5% of children aged 6-14 in private schools against 49.1% in government schools, so the rural framing cannot bring the number down to 35%. The correction matters: a reader takes away that about a third of the village's children are in private schools when every current source says roughly half, and it lands on the one sentence he wrote a parenthetical to defend. He may still dig in because of that parenthetical, but he cites numbers carefully and the correction actually strengthens his sentence that a child's school \"is not unlikely to be private\". Nathan can add the ASER 2024 rural figure of 45.5% if he wants a rural household number beside the administrative one, but the note needs no change."
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+ "item_id": "07efc37e-14ac-48a7-a3b1-b88971a1619d",
+ "reviewer": "opus",
+ "source_read": "full_text",
+ "notes": [
+  {
+   "note_id": "4462af8c-aa6b-4e2c-b1df-011a93e07c3a",
+   "verdict": "bad",
+   "claim_is_authors_own": "yes",
+   "note_is_correct": "no",
+   "substantive": "no",
+   "author_would_accept": "unlikely",
+   "reason": "Zvi's sentence, which I checked against the published post and which does sit outside the Robert Long block quote, is: \"The paper's blog post asserts that LLMs have 'access consciousness' in functional terms, while denying the ability to evaluate potential phenomenal consciousness. The paper itself does not take this step.\" The step he means is asserting that LLMs have access consciousness. He is agreeing with Robert Long, quoted just above, that Anthropic's write-up helps itself to a claim the paper does not make. The note reads \"this step\" as making the distinction between access and phenomenal consciousness, and then corrects a claim Zvi never made. He in fact says the opposite earlier in the same post: \"The paper is careful to note they mean 'conscious' throughout in a strictly functional sense, and are not making any claims that the AI in question is (or is not) conscious.\" The note's own evidence works against it, because the quoted passage, where the paper says access consciousness is \"a purely functional notion\" and \"we take no position\" on its link to subjective experience, is the paper declining to take the step, which is exactly Zvi's point. The note already has one not-helpful vote, and sending a misreading of one sentence to an author who wrote 34,000 words carefully distinguishing these terms would not land well."
+  }
+ ]
+}

@@ -1,0 +1,25 @@
+{
+  "item_id": "72956d24-bea1-471d-8449-1a88a7329fc3",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "58daa739-314d-40e0-84b8-1f23a42df524",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The claim the pipeline attached the note to is \"Nodens is the King of the Fairies\", and the note never addresses it. The note actually argues against a different sentence: Scott's line that \"nothing in Irish or Welsh or English mythology mentions Nodens/Nuada/Lludd/Lud hunting a single animal\". Even against that sentence the note misses, because its main evidence is Gwyn ap Nudd, who is the son of Nudd and not one of the four names Scott listed, and Scott already mentions that son in the essay. The note's other evidence is archaeological rather than mythological, and Scott had already conceded it two sentences earlier when he wrote that Tolkien derived the name from a \"supposed role as a hunting god\". The Lydney dog figurines are described on the note's own source page as healing symbolism, not hunting, so the note also overstates what its sources say. The passage is an openly playful literary proposal in an essay about a god sneaking through fiction, so correcting it is both off-target and pedantic."
+    },
+    {
+      "note_id": "5caa5dd2-dbdb-46b8-8b60-19f9793b11ba",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "It is true that Luddite letters were signed with several variants, and the note's sources support that. But Scott writes \"the lists were always signed 'Ned Ludd'\" and then, in the very next sentence, quotes their marching song \"The Triumph Of General Ludd\", and the essay is titled \"King Ludd\" and opens with a mob shouting \"King Ludd! King Ludd!\". He plainly knows the variants; \"always\" is loose phrasing in a piece whose whole point is that Ned Ludd, General Ludd and King Ludd are one mythic figure. Nothing a reader believes after reading the paragraph changes if the signature was sometimes \"General Ludd\" instead. This is exactly the pedantic correction that annoys an author, and Scott would read it as the note-writer not having read the surrounding lines."
+    }
+  ]
+}

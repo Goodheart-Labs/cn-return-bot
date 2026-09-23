@@ -1,0 +1,18 @@
+{
+  "item_id": "e1cd59e1-3de3-43a6-90a7-9403a9f2c71b",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "47f82440-8205-46ac-95ec-ca6d3550ef0e",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "whose_words": "guest",
+      "send_advice": "If anything is sent at all, cut the whole second sentence and replace the note with one line: Falcon tops out at 180 billion parameters; the open trillion-parameter models are Google's Switch-C (1.6T, weights on Hugging Face since 2022) and Moonshot's Kimi K2 (1T, 2025). Address it to Charlie O'Neill, not to Dwarkesh.",
+      "reason": "The written transcript on dwarkesh.com labels this passage as Charlie O'Neill's, so the wording is confirmed and the words are a guest's, not Dwarkesh's. Dwarkesh had just floated the opposite premise (\"Maybe it's roughly 2x every year for frontier open source models\"), and Charlie is pushing back on him; Dwarkesh never adopts or relies on the Falcon example. The first sentence of the note is correct: TII's own model page and the Hugging Face post list Falcon 180B as the largest Falcon, and no trillion-parameter Falcon exists. But Charlie's actual point, that people have trained trillion-parameter models for years and one was open source, is true: Google's Switch-C (1.6T sparse parameters) has had its weights on Hugging Face since November 2022 and Kimi K2 (1T total) was released open-weight in July 2025, and Charlie names the Switch Transformer in his very next sentence. He only got the name wrong. The note's second sentence then asserts as fact that the trillion figure \"refers to training data\", which is a guess about what he confused, and a reader would come away thinking no open trillion-parameter model exists, which is the opposite of the truth. Correcting a misnamed example in an aside, while leaving the guest's real claim untouched and implying it is false, is pedantic and would not land well with Dwarkesh, whose podcast this is and who made no such claim."
+    }
+  ]
+}

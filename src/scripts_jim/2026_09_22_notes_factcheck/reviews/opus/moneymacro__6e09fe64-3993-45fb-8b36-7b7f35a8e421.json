@@ -1,0 +1,25 @@
+{
+  "item_id": "6e09fe64-3993-45fb-8b36-7b7f35a8e421",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "bba44216-0652-45e8-b1db-36e9e5a18ec0",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The passage the note attacks is not a sentence the author said, it is broken auto-caption text: \"And ECB researchers have estimated that when it comes to Spain's economic growth, 78% of of GDP per decade from this from this year.\" The words \"of of\" and \"from this from this\" show the transcript dropped part of the sentence, and the video was showing a chart at that moment. The pipeline invented a readable claim out of the wreckage and then fact-checked its own invention. Worse, the note's sources are about something else entirely: they are a euronews story on losses from summer heatwaves, droughts and floods, and the note openly guesses that the EU-wide figure of 0.78 per cent of output from that climate study \"may be the source of the garbled '78%' claim\". Nothing in the note actually looks at ECB research on migration and growth, even though such research exists (the ECB blog of 8 May 2025, \"Foreign workers: a lever for economic growth\", has a Spain-specific chart), so the flat assertion \"No ECB research supports a 78%-of-GDP-per-decade figure for Spain\" is unsupported. Sending this to an economist would be embarrassing: it reads as a fact-check of a captioning error using climate-damage numbers."
+    },
+    {
+      "note_id": "588d04f8-a019-44fa-a4a2-cb65b9f1eba4",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note measures a different thing from the video. It rebuts the video with the share of the resident foreign-born population (Elcano: 17 per cent African; MPI: 18 per cent African), but the author is reading off a chart of immigration flows, not of the stock of residents. You can tell from the sentence right before the one under review: \"almost 60% of immigrants are from Latin America\". Sixty per cent is impossible for the stock, where MPI puts Central and South America at about 43 per cent, but it is exactly the flow figure in the paper by the economist the video names minutes earlier. Fernandez-Huertas Moraga's \"The Second Spanish Immigration Boom\" (IZA DP 18185, Figure 7) writes: \"Latin American inflows reached around 30 per cent of the flows in 2013 and increased to almost 60 per cent of the flows ten years later\". So the author's 60 per cent Latin America and his roughly 20 per cent Africa and Middle East are both flow shares from that chart, and a stock series cannot contradict them. The note also silently swaps the author's category \"Africa and the Middle East\" for Africa alone. This is the misquoting failure Andy Masley complained about, and the author would recognise his own cited source being used against him."
+    }
+  ]
+}
