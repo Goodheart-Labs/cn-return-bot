@@ -77,8 +77,10 @@ import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } fro
 import { autoOpenInDashboard } from "../local/dashboardAutoOpen";
 import { withForcedPicks } from "../pipeline/ab-testing/abTests";
 import { activeScorer, pickRankingPolicy } from "../pipeline/ranking/policy";
-import { barEnabled, barFor, estimateWindow, type Window } from "../pipeline/capacity/window";
+import { barEnabled, barFor, estimateWindow, EXPLORE_SHARE, type Window } from "../pipeline/capacity/window";
 import { automaticGenerationPreflight, type SubmissionCapacity } from "../pipeline/capacity/submissionReserve";
+import { loadNoteQueue, mergeWithQueue, noteQueueEnabled, submittableQueued } from "../pipeline/orchestration/noteQueue";
+import { raterBar } from "../pipeline/score/raterBar";
 
 function postUrl(postId: string): string {
   return `https://x.com/i/status/${postId}`;
@@ -204,13 +206,52 @@ async function main() {
       }
     }
 
+    // Notes from earlier runs that X had no room for. They compete with this
+    // run's fresh notes for the slots, in note-rater order.
+    const queueOn = noteQueueEnabled() && !isLocal && supabaseLogger !== null;
+    let queued: Candidate[] = [];
+    let raterBarValue: number | null = null;
+    let exploreFirst = false;
+    if (queueOn) {
+      try {
+        queued = await loadNoteQueue(supabaseLogger!);
+      } catch (err) {
+        console.warn("[noteQueue] could not load the queue; this run submits only its own notes:", err);
+      }
+      raterBarValue = raterBar();
+      console.log(`[raterBar] a note goes out when its calibrated helpful minus not-helpful chance is at least ${raterBarValue === null ? "(no bar)" : raterBarValue}`);
+      // Exploration is paced over the day: the drawn note goes ahead of the
+      // above-bar ones only while explored notes are under their share of
+      // what went out, and never fewer than one a day.
+      try {
+        const [explored, sent] = await Promise.all([
+          supabaseLogger!.countRankingDecisions(["explored"], 24),
+          supabaseLogger!.countRankingDecisions(["submitted", "explored"], 24),
+        ]);
+        exploreFirst = explored < Math.max(1, EXPLORE_SHARE * sent);
+        console.log(`[raterBar] explored ${explored} of ${sent} sent in the last 24h; the exploration slice goes ${exploreFirst ? "first" : "last"} this run`);
+      } catch (err) {
+        console.warn("[raterBar] could not count recent decisions; the exploration slice goes last:", err);
+      }
+    }
+
     let { maxPosts } = isLocal
       ? { maxPosts: MAX_POSTS_LOCAL }
       : capacity
         ? computeMaxPosts(capacity)
         : { maxPosts: MAX_POSTS_FALLBACK };
 
-    if (maxPosts === 0) {
+    // A cooldown probe needs only one note, and the queue already holds
+    // written ones, so the probe spends no money on new posts. Only a queued
+    // note that would actually be submitted counts: in time, above the
+    // velocity floor, and not below the bar.
+    const queuedReady = submittableQueued(queued, raterBarValue).length;
+    if (capacity?.probe && queuedReady > 0) {
+      console.log(`[noteQueue] cooldown probe: trying the best of ${queuedReady} queued note(s); no new posts this run`);
+      maxPosts = 0;
+    }
+
+    if (maxPosts === 0 && queued.length === 0) {
       console.log("[pipeline] Skipping — writing limit reached for the current 24h window");
       clearTimeout(globalTimeout);
       await closeBrowser();
@@ -309,13 +350,17 @@ async function main() {
     let window: Window | null = null;
     let bar: number | null = null;
     let barState: SubmitOptions["barState"] = scorer ? "off" : "none";
-    const useBar = scorer !== null && barEnabled();
+    const useBar = scorer !== null && barEnabled() && !queueOn;
     if (supabaseLogger && !isLocal) {
       try {
         window = await estimateWindow(supabaseLogger);
         if (scorer && useBar && window.cap !== null) {
           bar = await barFor(supabaseLogger, scorer.name, window.cap);
           barState = bar === null ? "off" : bar === -Infinity ? "admit_all" : bar === Infinity ? "reject_all" : "set";
+        }
+        if (queueOn) {
+          bar = raterBarValue;
+          barState = bar === null ? "off" : "set";
         }
       } catch (err) {
         if (useBar) barState = "error";
@@ -325,10 +370,10 @@ async function main() {
     console.log(
       `[ranking] policy=${rankingPolicy}` +
         (window ? ` cap=${window.cap ?? "?"} (${window.capSource}) used24h=${window.used24h} headroom=${window.remaining ?? "?"} (estimate; X's 403 is the stop)` : "") +
-        (scorer ? ` bar=${bar === null ? "off" : bar === -Infinity ? "admit-all" : bar === Infinity ? "reject-all" : bar.toFixed(2)}` : ""),
+        (queueOn ? ` raterBar=${bar === null ? "off" : bar.toFixed(3)}` : scorer ? ` bar=${bar === null ? "off" : bar === -Infinity ? "admit-all" : bar === Infinity ? "reject-all" : bar.toFixed(2)}` : ""),
     );
 
-    const regularCandidates = await generateCandidates(supabaseLogger, {
+    const regularCandidates = maxPosts === 0 ? [] : await generateCandidates(supabaseLogger, {
       maxPosts,
       deadlineMs: SOFT_DEADLINE_AT_MS,
       scorer,
@@ -349,15 +394,15 @@ async function main() {
     // behind them, so a day heavy with topic posts cannot eat the whole daily
     // cap.
     const misinfoReserve = supabaseLogger ? await misinfoReserveRemaining(supabaseLogger) : 0;
-    const candidates = [
+    const candidates = mergeWithQueue([
       ...misinfoCandidates.slice(0, misinfoReserve),
       ...regularCandidates,
       ...misinfoCandidates.slice(misinfoReserve),
       ...pangramCandidates,
-    ];
+    ], queued);
     if (candidates.length > 0 && supabaseLogger) {
-      const submitted = await submitCandidates(candidates, supabaseLogger, isLocal, { policy: rankingPolicy, scorer, window, bar, barState });
-      console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates (${pangramCandidates.length} pangram, ${misinfoCandidates.length} misinfo, ${regularCandidates.length} regular)`);
+      const submitted = await submitCandidates(candidates, supabaseLogger, isLocal, { policy: rankingPolicy, scorer, window, bar, barState, queue: queueOn, exploreFirst });
+      console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates (${pangramCandidates.length} pangram, ${misinfoCandidates.length} misinfo, ${regularCandidates.length} regular, ${candidates.length - regularCandidates.length - misinfoCandidates.length - pangramCandidates.length} queued)`);
     } else {
       console.log(`[pipeline] No candidates to submit`);
     }
