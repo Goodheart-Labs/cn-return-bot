@@ -1,0 +1,2148 @@
+[
+ {
+  "url": "https://www.espn.com/soccer/story/_/id/39436612/messi-bench-ronaldo-absent-al-nassr-inter-miami-game",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.nist.gov/pao/questions-and-answers-about-nist-wtc-towers-investigation",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.sciencedirect.com/science/article/pii/S022352342300805X",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.espn.com/soccer/match/_/gameId/401912656/al-nassr-al-ain",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.cbsnews.com/news/kennedy-center-ceiling-collapse-renovations/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.tennessean.com/story/sports/nfl/titans/2026/09/13/titans-moments-jets-game-top-plays",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.cbo.gov/publication/61469",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.politifact.com/factchecks/2023/dec/13/joe-biden/fact-checking-joe-biden-on-the-creation-of-800000-/",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.nbcchicago.com/entertainment/billy-ray-cyrus-reveals-heartfelt-message-he-received-from-dolly-parton-before-she-died/3980578/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.cbssports.com/nfl/gametracker/live/NFL_20260914_DEN@KC/",
+  "good": true,
+  "cdx_status": 200,
+  "snapshot": "https://web.archive.org/web/20260617200944id_/https://www.cbssports.com/nfl/gametracker/live/NFL_20260914_DEN@KC/",
+  "status": 200,
+  "chars": 964,
+  "wall": false,
+  "head": "Drive Chart | | | | DEN | | KC | No Scoring Plays This page may contain affiliate links. If you click and sign up, make a deposit, or place a wager, we may earn a commission at no additional cost to y"
+ },
+ {
+  "url": "https://www.citizen.co.za/kempton-express/news-headlines/local-crime-news/2026/09/12/saps-probes-links-between-four-bodies-found-in-kempton-park/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.mcdonalds.com/gb/en-gb/help/faq/what-s-the-average-weight-in-grams-of-a-big-mac.html",
+  "good": true,
+  "cdx_status": 200,
+  "snapshot": "https://web.archive.org/web/20230329004841id_/https://www.mcdonalds.com/gb/en-gb/help/faq/what-s-the-average-weight-in-grams-of-a-big-mac.html",
+  "status": 200,
+  "chars": 367,
+  "wall": false,
+  "head": "What's the average weight in grams of a Big Mac\u00ae? May 21, 2018 The un-cooked weight of a Big Mac\u00ae is 240g and is broken down as follows: Bun - 74g, Beef patty - 45g x 2 = 90g, Cheese -14g, Lettuce - 2"
+ },
+ {
+  "url": "https://www.maritime.dot.gov/msci/2026-004-persian-gulf-strait-hormuz-and-gulf-oman-iranian-attacks-commercial-vessels",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://shop.wwe.com/en/title-belts-side-plates/d-3473903707-4506909353+z-9-1177522359",
+  "good": true,
+  "cdx_status": 200,
+  "snapshot": "https://web.archive.org/web/20230129184725id_/https://shop.wwe.com/en/title-belts-side-plates/d-3473903707-4506909353+z-9-1177522359",
+  "status": 200,
+  "chars": 11509,
+  "wall": false,
+  "head": "Skip to Main Content Skip to Filters Skip to Filters Skip to Footer SIGN UP & SAVE 10% WWE.com Gift Cards Track Order Help My Account Fan Cash Learn More Fan Cash Learn More superstars Featured Supers"
+ },
+ {
+  "url": "https://euroshop.wwe.com/en/wwe-finn-balor-sideplate/p-3425254094601225+z-979-286582219",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.imdb.com/name/nm13564038/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://ballotpedia.org/Sherrod_Brown",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://atlas.co/blog/mercator-projection-why-it-distorts-country-sizes",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.nejm.org/doi/full/10.1056/NEJMc2512078",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.nejm.org%2Fdoi%2Ffull%2F10.1056%2FNEJMc2512078&output=json&limit=1&filter=st"
+ },
+ {
+  "url": "https://geohub.brampton.ca/pages/profile-diversity",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fgeohub.brampton.ca%2Fpages%2Fprofile-diversity&output=json&limit=1&filter=status"
+ },
+ {
+  "url": "https://www.yemenmonitor.com/Details/id/98223",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.yemenmonitor.com%2FDetails%2Fid%2F98223&output=json&limit=1&filter=statuscod"
+ },
+ {
+  "url": "https://www.inc.com/amaya-nichole/researchers-tested-avocado-oil-products-90-percent-failed-purity-test/91375204",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.inc.com%2Famaya-nichole%2Fresearchers-tested-avocado-oil-products-90-percent"
+ },
+ {
+  "url": "https://www.foxnews.com/entertainment/jelly-roll-says-planning-take-some-time-off-heal-after-final-tour-stop",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.foxnews.com%2Fentertainment%2Fjelly-roll-says-planning-take-some-time-off-he"
+ },
+ {
+  "url": "https://wordsactuallymatter.substack.com/p/elon-musk-fake-prophecy-quote",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwordsactuallymatter.substack.com%2Fp%2Felon-musk-fake-prophecy-quote&output=json"
+ },
+ {
+  "url": "https://mgoblue.com/news/2023/1/27/womens-track-field-awards-and-honors.aspx",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fmgoblue.com%2Fnews%2F2023%2F1%2F27%2Fwomens-track-field-awards-and-honors.aspx&o"
+ },
+ {
+  "url": "https://www.fastcompany.com/91593814/lindsay-clancy-family-gofundme-reveals-support-during-murder-trial",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.fastcompany.com%2F91593814%2Flindsay-clancy-family-gofundme-reveals-support-"
+ },
+ {
+  "url": "https://www.theguardian.com/music/article/2024/sep/10/selena-gomez-reveals-unable-to-carry-children-lupus",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.cp24.com/world/2026/09/05/us-strikes-3-iranian-oil-tankers-after-saying-warships-were-targeted-with-ballistic-missiles/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.washingtonpost.com/nation/2026/09/04/judge-lindsay-clancy-trial-declines-remove-juror-deliberations-continue/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.washingtonpost.com/sports/colleges/2026/09/05/indiana-hoosiers-football/f9325f82-a94b-11f1-9e38-f705d048bd5a_story.html",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.espn.com/soccer/story/_/id/49783743/karim-benzema-al-hilal-saudi-pro-league-transfers",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.espn.com%2Fsoccer%2Fstory%2F_%2Fid%2F49783743%2Fkarim-benzema-al-hilal-saudi"
+ },
+ {
+  "url": "https://uu.diva-portal.org/smash/get/diva2%3A1927772/FULLTEXT01.pdf",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fuu.diva-portal.org%2Fsmash%2Fget%2Fdiva2%253A1927772%2FFULLTEXT01.pdf&output=jso"
+ },
+ {
+  "url": "https://gamefaqs.gamespot.com/xbox/516688-fable/faqs/32779",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fgamefaqs.gamespot.com%2Fxbox%2F516688-fable%2Ffaqs%2F32779&output=json&limit=1&f"
+ },
+ {
+  "url": "https://health.ec.europa.eu/scientific-committees/scheer-opinions/leds-and-health-effects_en",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fhealth.ec.europa.eu%2Fscientific-committees%2Fscheer-opinions%2Fleds-and-health-"
+ },
+ {
+  "url": "https://www.tiktok.com/@maymartins22/video/7528225534640229638",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.tiktok.com%2F%40maymartins22%2Fvideo%2F7528225534640229638&output=json&limit"
+ },
+ {
+  "url": "https://www.acg.org/nyc/people/roy-danis",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.acg.org%2Fnyc%2Fpeople%2Froy-danis&output=json&limit=1&filter=statuscode%3A2"
+ },
+ {
+  "url": "https://ge.globo.com/google/amp/video/neymar-na-bronca-com-a-arbitragem-14926216.ghtml",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fge.globo.com%2Fgoogle%2Famp%2Fvideo%2Fneymar-na-bronca-com-a-arbitragem-14926216"
+ },
+ {
+  "url": "https://www.factcheck.org/2024/01/scicheck-no-evidence-excess-dna-in-mrna-vaccines-causes-turbo-cancer/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.factcheck.org%2F2024%2F01%2Fscicheck-no-evidence-excess-dna-in-mrna-vaccines"
+ },
+ {
+  "url": "https://www.wikiservice.at/culio/wiki.cgi?CuliosWelt",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.wikiservice.at%2Fculio%2Fwiki.cgi%3FCuliosWelt&output=json&limit=1&filter=st"
+ },
+ {
+  "url": "https://www.snopes.com/fact-check/jesse-owens-and-hitler-shook-hands/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.snopes.com%2Ffact-check%2Fjesse-owens-and-hitler-shook-hands%2F&output=json&"
+ },
+ {
+  "url": "https://thebrakereport.com/chery-claims-first-mass-produced-emb-system/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fthebrakereport.com%2Fchery-claims-first-mass-produced-emb-system%2F&output=json&"
+ },
+ {
+  "url": "https://www.facebook.com/Tubagusjakaa/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.facebook.com%2FTubagusjakaa%2F&output=json&limit=1&filter=statuscode%3A200&f"
+ },
+ {
+  "url": "https://www.reuters.com/legal/government/whats-next-lindsay-clancy-after-mistrial-2026-09-04/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.reuters.com%2Flegal%2Fgovernment%2Fwhats-next-lindsay-clancy-after-mistrial-"
+ },
+ {
+  "url": "https://www.usnews.com/news/top-news/articles/2026-09-04/us-justice-department-pauses-cooperation-with-canadian-government-wsj-reports",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.usnews.com%2Fnews%2Ftop-news%2Farticles%2F2026-09-04%2Fus-justice-department"
+ },
+ {
+  "url": "https://twistedvoxel.com/deltarune-chapter-6-planned-for-2027-toby-fox/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Ftwistedvoxel.com%2Fdeltarune-chapter-6-planned-for-2027-toby-fox%2F&output=json&"
+ },
+ {
+  "url": "https://www.espn.com/soccer/story/_/id/49828781/jose-mourinho-real-madrid-betis-kylian-mbappe-penalty",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.espn.com%2Fsoccer%2Fstory%2F_%2Fid%2F49828781%2Fjose-mourinho-real-madrid-be"
+ },
+ {
+  "url": "https://www.nytimes.com/live/2026/09/04/us/lindsay-clancy-trial-deadlock",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.nytimes.com%2Flive%2F2026%2F09%2F04%2Fus%2Flindsay-clancy-trial-deadlock&out"
+ },
+ {
+  "url": "https://thespun.com/nfl/tmzs-unrecognizable-photo-of-clay-matthews-has-nfl-fans-speechless",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fthespun.com%2Fnfl%2Ftmzs-unrecognizable-photo-of-clay-matthews-has-nfl-fans-spee"
+ },
+ {
+  "url": "https://amp.nfl.com/news/packers-express-hope-rb-josh-jacobs-currently-on-commissioners-exempt-list-can-play-sometime-this-season",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Famp.nfl.com%2Fnews%2Fpackers-express-hope-rb-josh-jacobs-currently-on-commission"
+ },
+ {
+  "url": "https://www.primetimer.com/news/is-mia-khalifa-pregnant-with-b-lou-s-kid-viral-rumor-debunked-as-rapper-reacts-to-the-news",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.primetimer.com%2Fnews%2Fis-mia-khalifa-pregnant-with-b-lou-s-kid-viral-rumor"
+ },
+ {
+  "url": "https://www.justice.gov/epstein-library",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.justice.gov%2Fepstein-library&output=json&limit=1&filter=statuscode%3A200&fr"
+ },
+ {
+  "url": "https://www.reddit.com/r/NFLv2/comments/1w7cktq/removed/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.reddit.com%2Fr%2FNFLv2%2Fcomments%2F1w7cktq%2Fremoved%2F&output=json&limit=1"
+ },
+ {
+  "url": "https://www.tse.jus.br/comunicacao/noticias/2026/Agosto/entrevista-totalizacao-dos-votos-e-processo-aberto-auditavel-e-seguro",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.tse.jus.br%2Fcomunicacao%2Fnoticias%2F2026%2FAgosto%2Fentrevista-totalizacao"
+ },
+ {
+  "url": "https://www.reddit.com/r/theydidthemath/comments/1bmelst/request_at_what_point_does_an_operation_like_this/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.reddit.com%2Fr%2Ftheydidthemath%2Fcomments%2F1bmelst%2Frequest_at_what_point"
+ },
+ {
+  "url": "https://www.eleconomista.es/actualidad/noticias/14011876/09/26/polemicas-imagenes-de-la-caza-de-una-cria-de-delfin-protegido-en-ceuta-fue-agarrado-sacado-del-agua-a-la-fuerza-y-golpeado-en-la-cabeza-con-un-palo.html",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.eleconomista.es%2Factualidad%2Fnoticias%2F14011876%2F09%2F26%2Fpolemicas-ima"
+ },
+ {
+  "url": "https://www.nps.gov/bela/learn/historyculture/about.htm",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.nps.gov%2Fbela%2Flearn%2Fhistoryculture%2Fabout.htm&output=json&limit=1&filt"
+ },
+ {
+  "url": "https://fullfact.org/online/london-white-population-ten-years/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Ffullfact.org%2Fonline%2Flondon-white-population-ten-years%2F&output=json&limit=1"
+ },
+ {
+  "url": "https://www.espn.com/soccer/player/_/id/387984/hugo-camberos",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.espn.com%2Fsoccer%2Fplayer%2F_%2Fid%2F387984%2Fhugo-camberos&output=json&lim"
+ },
+ {
+  "url": "https://www.newsweek.com/kimber-mills-alabama-cheerleader-shot-bonfire-organ-donor-1973059",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.newsweek.com%2Fkimber-mills-alabama-cheerleader-shot-bonfire-organ-donor-197"
+ },
+ {
+  "url": "https://factcheck.afp.com/doc.afp.com.A33U6G3",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Ffactcheck.afp.com%2Fdoc.afp.com.A33U6G3&output=json&limit=1&filter=statuscode%3A"
+ },
+ {
+  "url": "https://www.itechguides.com/sony-faces-unpatchable-ps5-jailbreak-threat-after-rom-keys-leak-what-the-reports-actually-show/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.itechguides.com%2Fsony-faces-unpatchable-ps5-jailbreak-threat-after-rom-keys"
+ },
+ {
+  "url": "https://www.aol.com/lifestyle/low-cut-dress-advertisement-goes-200101390.html",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.aol.com%2Flifestyle%2Flow-cut-dress-advertisement-goes-200101390.html&output"
+ },
+ {
+  "url": "https://www.tabletmag.com/the-scroll/articles/scroll-sep-1-vance-channels-tucker-rjc",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.tabletmag.com%2Fthe-scroll%2Farticles%2Fscroll-sep-1-vance-channels-tucker-r"
+ },
+ {
+  "url": "https://www.tmz.com/2012/08/21/tom-cruise-katie-holmes-divorce-settlement-child-support/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.tmz.com%2F2012%2F08%2F21%2Ftom-cruise-katie-holmes-divorce-settlement-child-"
+ },
+ {
+  "url": "https://www.usopen.org/en_US/news/articles/2026-09-01/alexandra_eala_thrills_2026_us_open_fans_with_dominant_first-round_win.html",
+  "good": false,
+  "cdx_status": 200,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://19thnews.org/2026/08/fauci-texts-miscarriage-rates-covid-vaccine-false-claims/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.israelhayom.com/2026/09/01/satmar-rebbes-trump-oval-office-draft-law/",
+  "good": true,
+  "cdx_status": 200,
+  "snapshot": "https://web.archive.org/web/20260902171029id_/https://www.israelhayom.com/2026/09/01/satmar-rebbes-trump-oval-office-draft-law/",
+  "status": 200,
+  "chars": 5914,
+  "wall": false,
+  "head": "US President Donald Trump is expected to receive a delegation of Hasidic representatives at the White House on Thursday, led by the Satmar rebbes. This marks an unusual meeting, one that members of th"
+ },
+ {
+  "url": "https://otda.ny.gov/programs/rmp/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fotda.ny.gov%2Fprograms%2Frmp%2F&output=json&limit=1&filter=statuscode%3A200&from"
+ },
+ {
+  "url": "https://www.fox9.com/video/fmc-yoec55tglm6n6if0",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.fox9.com%2Fvideo%2Ffmc-yoec55tglm6n6if0&output=json&limit=1&filter=statuscod"
+ },
+ {
+  "url": "https://news.adidas.com/people/adidas-launches-single-shoe-service-for-those-living-with-leg-limb-difference/s/566e1eb1-0e4f-4747-b153-0607890bacef",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fnews.adidas.com%2Fpeople%2Fadidas-launches-single-shoe-service-for-those-living-"
+ },
+ {
+  "url": "https://thej.ca/2026/09/03/idf-veteran-shalev-biton-promotes-adidas-single-shoe-service-in-israel/",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://checkyourfact.com/2021/01/26/fact-check-hillary-clinton-barack-obama-pizza-arrangement/",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.fda.gov/food/outbreaks-foodborne-illness/outbreak-investigation-e-coli-o145h28-frozen-blueberries-july-2026",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.forbes.com/sites/stuartanderson/2026/09/01/employment-based-immigration-backlog-exceeds-1-2-million-people/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.ndtv.com/sports/goat-debate-settled-lionel-messi-breaks-internet-with-receipt-style-instagram-post-12102143",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.whitehouse.gov/briefings-statements/p20260902-6500-signed-into-law/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.instagram.com/p/Dc1I90DjTvA/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://jrocknews.com/2021/02/interview-cdawgva-visual-kei-star-acme.html",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.tiktok.com/@cierra_mistt",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.nytimes.com/2026/08/27/climate/nepal-flooding-climate-change.html",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.nexusmods.com/reddeadredemption2/videos/2560",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.timescolonist.com/world/king-charles-iii-makes-first-address-following-queens-death-read-the-full-transcript-5807183",
+  "good": false,
+  "cdx_status": 200,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.boomlive.in/fact-check/deepfake-king-charles-donald-trump-iran-airstrikes-viral-video-25662",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://telegram.me/aukrop/893",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.ladbible.com/entertainment/celebrity/kim-kardashian-north-west-tiktok-face-tattoos-077180-20251022",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.espn.com/nfl/story/_/id/49794143/travis-kelce-taylor-swift-dog-tommy-hilfiger-kansas-city-chiefs-samoyed",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.theguardian.com/us-news/2022/jun/30/killings-of-black-women-five-findings-investigation",
+  "good": false,
+  "cdx_status": 403,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.usnews.com/news/world/articles/2026-09-02/ceuta-residents-call-for-calm-as-spain-rallies-over-enclaves-migrant-crisis",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.minneapolismn.gov/news/2026/august/shooting-sept-2/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://sustainability.google/operating-sustainably/water/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.manutd.com/en/teams/under-21s-team/chido-obi",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://factcheck.afp.com/doc.afp.com.98NQ2NQ",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Ffactcheck.afp.com%2Fdoc.afp.com.98NQ2NQ&output=json&limit=1&filter=statuscode%3A"
+ },
+ {
+  "url": "https://www.fbi.gov/news/speeches-and-testimony/director-wray-s-remarks-at-press-briefing-on-butler-pennsylvania-assassination-attempt-071424",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.thegamer.com/mario-party-6-day-night-cycle-explained/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://eternityaccountants.com/are-taxi-drivers-self-employed/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Feternityaccountants.com%2Fare-taxi-drivers-self-employed%2F&output=json&limit=1&"
+ },
+ {
+  "url": "https://tvbrics.com/en/news/brics-are-expected-to-contribute-more-than-50-of-global-gdp-by-2030/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Ftvbrics.com%2Fen%2Fnews%2Fbrics-are-expected-to-contribute-more-than-50-of-globa"
+ },
+ {
+  "url": "https://www.britannica.com/topic/Raiders-of-the-Lost-Ark",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.britannica.com%2Ftopic%2FRaiders-of-the-Lost-Ark&output=json&limit=1&filter="
+ },
+ {
+  "url": "https://www.transfermarkt.com/oscar/rueckennummern/spieler/85314",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.transfermarkt.com%2Foscar%2Frueckennummern%2Fspieler%2F85314&output=json&lim"
+ },
+ {
+  "url": "https://www.transfermarkt.com/ross-barkley/rueckennummern/spieler/131978",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.transfermarkt.com%2Fross-barkley%2Frueckennummern%2Fspieler%2F131978&output="
+ },
+ {
+  "url": "https://www.shutterstock.com/video/clip-1106374935-dhaka-bangladesh---july-19-2023-purbachal",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.shutterstock.com%2Fvideo%2Fclip-1106374935-dhaka-bangladesh---july-19-2023-p"
+ },
+ {
+  "url": "https://www.forbes.com/sites/news/2026/09/01/what-to-know-about-the-trees-trump-is-cutting-down-around-dc/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://athlonsports.com/wnba/indiana-fever/aliyah-boston-comments-paige-bueckers-action-toward-caitlin-clark",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.fsis.usda.gov/inspection/import-export/import-guidance/fsis-import-procedures-meat-poultry-egg-products",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://mostpolicyinitiative.org/science-note/data-center-water-use/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fmostpolicyinitiative.org%2Fscience-note%2Fdata-center-water-use%2F&output=json&l"
+ },
+ {
+  "url": "https://kojiki.kokugakuin.ac.jp/about-kojiki/outline/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.rte.ie/news/politics/2026/0617/1578882-eu-international-protection/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.rte.ie%2Fnews%2Fpolitics%2F2026%2F0617%2F1578882-eu-international-protection"
+ },
+ {
+  "url": "https://ew.com/james-mcavoy-reacts-to-christopher-abbott-x-men-casting-12115787",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Few.com%2Fjames-mcavoy-reacts-to-christopher-abbott-x-men-casting-12115787&output"
+ },
+ {
+  "url": "https://www.marketscreener.com/news/iranian-arms-and-advice-helped-yemen-s-houthis-seize-key-red-sea-city-sources-say-cefdedbd18df525",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.marketscreener.com%2Fnews%2Firanian-arms-and-advice-helped-yemen-s-houthis-s"
+ },
+ {
+  "url": "https://www.reuters.com/fact-check/woman-speaking-about-pandemic-preparedness-soft-coup-is-not-who-official-2024-12-24/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.reuters.com%2Ffact-check%2Fwoman-speaking-about-pandemic-preparedness-soft-c"
+ },
+ {
+  "url": "https://www.reuters.com/world/africa/uber-exit-nigeria-after-12-years-operations-2026-09-02/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.reuters.com%2Fworld%2Fafrica%2Fuber-exit-nigeria-after-12-years-operations-2"
+ },
+ {
+  "url": "https://www.espn.com/nfl/game/_/gameId/401872923/saints-lions",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.espn.com%2Fnfl%2Fgame%2F_%2FgameId%2F401872923%2Fsaints-lions&output=json&li"
+ },
+ {
+  "url": "https://www.facebook.com/story.php/?story_fbid=112345678901234",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.facebook.com%2Fstory.php%2F%3Fstory_fbid%3D112345678901234&output=json&limit"
+ },
+ {
+  "url": "https://www.reddit.com/r/PlayWolverine/comments/1wfhjl0/destin_legarie_on_wolverine_qte_autocomplete/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.reddit.com%2Fr%2FPlayWolverine%2Fcomments%2F1wfhjl0%2Fdestin_legarie_on_wolv"
+ },
+ {
+  "url": "https://www.bloomberg.com/news/articles/2026-09-13/xi-pitches-his-ai-vision-at-brics-summit-as-china-duels-with-us",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.bloomberg.com%2Fnews%2Farticles%2F2026-09-13%2Fxi-pitches-his-ai-vision-at-b"
+ },
+ {
+  "url": "https://allears.net/the-history-of-walt-disney-world-tickets-part-1/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fallears.net%2Fthe-history-of-walt-disney-world-tickets-part-1%2F&output=json&lim"
+ },
+ {
+  "url": "https://www.dallasnews.com/news/politics/article/sen-john-cornyn-condemns-bo-french-ut-fans-22429853.php",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.dallasnews.com%2Fnews%2Fpolitics%2Farticle%2Fsen-john-cornyn-condemns-bo-fre"
+ },
+ {
+  "url": "https://www.washingtonpost.com/news/morning-mix/wp/2015/03/11/dzhokhar-tsarnaevs-scrawled-message-we-muslims-are-one-body-you-hurt-one-you-hurt-us-all/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.washingtonpost.com%2Fnews%2Fmorning-mix%2Fwp%2F2015%2F03%2F11%2Fdzhokhar-tsa"
+ },
+ {
+  "url": "https://caselaw.findlaw.com/court/us-dc-circuit/294948.html",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fcaselaw.findlaw.com%2Fcourt%2Fus-dc-circuit%2F294948.html&output=json&limit=1&fi"
+ },
+ {
+  "url": "https://www.tesla.com/roadster",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.tesla.com%2Froadster&output=json&limit=1&filter=statuscode%3A200&from=2023&f"
+ },
+ {
+  "url": "https://kotaku.com/marvels-wolverine-reviews-fart-gas-insomniac-ps5-yellow-paint-handholding-controversy-release-1851833502",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fkotaku.com%2Fmarvels-wolverine-reviews-fart-gas-insomniac-ps5-yellow-paint-handh"
+ },
+ {
+  "url": "https://factcheck.afp.com/footage-has-circulated-online-2020-reports-about-syrian-aircraft-shot-down-rebels",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Ffactcheck.afp.com%2Ffootage-has-circulated-online-2020-reports-about-syrian-airc"
+ },
+ {
+  "url": "https://www.youtube.com/watch?v=4pu-QHO6VHA",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D4pu-QHO6VHA&output=json&limit=1&filter=statuscode%"
+ },
+ {
+  "url": "https://www.theifab.com/laws/latest/the-penalty-kick/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.theifab.com%2Flaws%2Flatest%2Fthe-penalty-kick%2F&output=json&limit=1&filter"
+ },
+ {
+  "url": "https://www.reuters.com/world/china/foreign-holdings-us-treasuries-fall-june-led-by-japan-uk-china-data-shows-2026-08-17/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.reuters.com%2Fworld%2Fchina%2Fforeign-holdings-us-treasuries-fall-june-led-b"
+ },
+ {
+  "url": "https://www.cnbc.com/2026/05/19/central-banks-offload-us-treasuries-china-holdings-at-18-year-low.html",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.cnbc.com%2F2026%2F05%2F19%2Fcentral-banks-offload-us-treasuries-china-holdin"
+ },
+ {
+  "url": "https://wagnerathletics.com/sports/football",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwagnerathletics.com%2Fsports%2Ffootball&output=json&limit=1&filter=statuscode%3A"
+ },
+ {
+  "url": "https://www.nisra.gov.uk/publications/quarterly-employment-survey-historical-tables-march-2026",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.nisra.gov.uk%2Fpublications%2Fquarterly-employment-survey-historical-tables-"
+ },
+ {
+  "url": "https://revolt.tv/article/2024-10-29/50-cent-reveals-advice-he-gave-lil-durk-amid-murder-for-hire-arrest/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Frevolt.tv%2Farticle%2F2024-10-29%2F50-cent-reveals-advice-he-gave-lil-durk-amid-"
+ },
+ {
+  "url": "https://www.nbcboston.com/news/local/lindsay-clancy-holdout-juror-had-history-of-domestic-violence-allegations/4013408/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.nbcboston.com%2Fnews%2Flocal%2Flindsay-clancy-holdout-juror-had-history-of-d"
+ },
+ {
+  "url": "https://www.thepress.co.nz/nz-news/350288144/kiwi-students-join-global-pro-palestine-protests",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.thepress.co.nz%2Fnz-news%2F350288144%2Fkiwi-students-join-global-pro-palesti"
+ },
+ {
+  "url": "https://www.nbclosangeles.com/news/local/verdict-lil-durk-murder-trial-beverly-center-shooting/3940052/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.nbclosangeles.com%2Fnews%2Flocal%2Fverdict-lil-durk-murder-trial-beverly-cen"
+ },
+ {
+  "url": "https://www.tmz.com/2026/09/11/lil-durk-found-not-guilty/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.tmz.com%2F2026%2F09%2F11%2Flil-durk-found-not-guilty%2F&output=json&limit=1&"
+ },
+ {
+  "url": "https://www.reddit.com/r/BeAmazed/comments/1we5e1p/a_double_rainbow_appeared_over_new_york_city_on/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.reddit.com%2Fr%2FBeAmazed%2Fcomments%2F1we5e1p%2Fa_double_rainbow_appeared_o"
+ },
+ {
+  "url": "https://www.essence.com/love/big-sean-proposal-jhene-aiko-instagram-live/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.essence.com%2Flove%2Fbig-sean-proposal-jhene-aiko-instagram-live%2F&output=j"
+ },
+ {
+  "url": "https://www.rwjbh.org/patient-stories/monmouth-medical-center/more-than-the-baby-blues/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.rwjbh.org%2Fpatient-stories%2Fmonmouth-medical-center%2Fmore-than-the-baby-b"
+ },
+ {
+  "url": "https://infomemo.theocc.com/infomemos?number=56035",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Finfomemo.theocc.com%2Finfomemos%3Fnumber%3D56035&output=json&limit=1&filter=stat"
+ },
+ {
+  "url": "https://kotaku.com/marvels-wolverine-fart-gas-debate-insomniac-ps5-1851645065",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fkotaku.com%2Fmarvels-wolverine-fart-gas-debate-insomniac-ps5-1851645065&output=j"
+ },
+ {
+  "url": "https://www.pressreader.com/india/hindustan-times-chandigarh/20191012/281913069869645",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.pressreader.com%2Findia%2Fhindustan-times-chandigarh%2F20191012%2F2819130698"
+ },
+ {
+  "url": "https://www.transfermarkt.us/dominik-szoboszlai/profil/spieler/451276",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.transfermarkt.us%2Fdominik-szoboszlai%2Fprofil%2Fspieler%2F451276&output=jso"
+ },
+ {
+  "url": "https://www.aol.com/articles/wish-never-got-politics-says-172907294.html",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.tmz.com/2025/06/20/kim-zolciak-kroy-biermanns-parenting-plan-for-summer-revealed/",
+  "good": true,
+  "cdx_status": 200,
+  "snapshot": "https://web.archive.org/web/20250620230146id_/https://www.tmz.com/2025/06/20/kim-zolciak-kroy-biermanns-parenting-plan-for-summer-revealed/",
+  "status": 200,
+  "chars": 1905,
+  "wall": false,
+  "head": "Kim Zolciak and Kroy Biermann's Parenting Plan for the Summer Revealed Kim Zolciak & Kroy Biermann Summer Plans for Kids Unveiled ... Kaia's Headed to Montana, Boys Staying in Atlanta Kim Zolciak and "
+ },
+ {
+  "url": "https://www.fishtank.live/clip/303908",
+  "good": false,
+  "cdx_status": 200,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.gettyimages.com/photos/trump-epstein",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://thespun.com/wnba/sophie-cunningham-makes-surprising-dating-life-announcement",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.fbi.gov/history/famous-cases/the-fbi-and-september-11",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://direct.playstation.com/en-us/buy-accessories/dualsense-wireless-controller-grand-theft-auto-vi-black-limited-edition-for-ps5-pc-mac-mobile",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.magnumphotos.com/newsroom/religion/pilgrimage-to-uman/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://kansasreflector.com/2026/07/13/four-years-after-value-them-both-kansas-abortion-rights-are-back-on-the-ballot-aug-4/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.nfl.com/news/lions-trade-rb-d-andre-swift-to-eagles-after-drafting-alabama-s-jahmyr-gibbs-in-ro",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.nbclosangeles.com/video/news/local/lil-durk-not-guilty-murder-for-hire-trial/3940972/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.nps.gov/flni/learn/historyculture/frequently-asked-questions.htm",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.aramco.com/en/news-media/news/2026/aramco-announces-second-quarter-and-half-year-2026-results",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.tmz.com/2026/08/14/pinkchyu-says-famous-musician-contacted-her-after-drake-dating-show/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.washingtonpost.com/opinions/2026/06/11/clinton-bush-trump-turn-80-what-summer-1946-brought/",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.tms.org/pubs/journals/jom/0112/eagar/eagar-0112.html",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.purexbox.com/news/2026/09/sony-dropped-kojimas-physint-over-budget-profits-and-timed-exclusivity-concerns-sources-say",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://newtools.cira.state.tx.us/upload/page/7064/OfficialCanvassReport11-19-2024.pdf",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://lrl.texas.gov/legeleaders/members/memberdisplay.cfm?memberID=5911",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://vault.fbi.gov/9-11-attacks-investigation-and-related-materials/9-11-images/9-11-pentagon-debris-1",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.premiumtimesng.com/regional/north-central/642567-gunmen-attack-teenage-herder-cut-off-his-hands-in-niger-state.html",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://thewhistler.ng/farmer-attacks-12-year-old-fulani-herder-in-niger-state-cuts-off-his-hands/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.reddit.com/r/worldcup/comments/1ufnmy5/sea_of_orange_in_downtown_kansas_city_this_morning/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.reddit.com%2Fr%2Fworldcup%2Fcomments%2F1ufnmy5%2Fsea_of_orange_in_downtown_k"
+ },
+ {
+  "url": "https://www.totalprosports.com/wwe/liv-morgan-wardrobe-mishap-wwe-raw/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.totalprosports.com%2Fwwe%2Fliv-morgan-wardrobe-mishap-wwe-raw%2F&output=json"
+ },
+ {
+  "url": "https://www.redcrossblood.org/donate-blood/how-to-donate/eligibility-requirements/alphabetical-listing.html",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.redcrossblood.org%2Fdonate-blood%2Fhow-to-donate%2Feligibility-requirements%"
+ },
+ {
+  "url": "https://www.fda.gov/consumers/consumer-updates/have-you-given-blood-lately",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.fda.gov%2Fconsumers%2Fconsumer-updates%2Fhave-you-given-blood-lately&output="
+ },
+ {
+  "url": "https://www.911memorial.org/remember/history/personal-stories/welles-crowther",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.911memorial.org%2Fremember%2Fhistory%2Fpersonal-stories%2Fwelles-crowther&ou"
+ },
+ {
+  "url": "https://truthsocial.com/@realDonaldTrump",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Ftruthsocial.com%2F%40realDonaldTrump&output=json&limit=1&filter=statuscode%3A200"
+ },
+ {
+  "url": "https://www.cleveland.com/court-justice/2024/06/woman-accused-of-killing-3-year-old-at-north-olmsted-giant-eagle-was-released-from-jail-days-earlier.html",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.cleveland.com%2Fcourt-justice%2F2024%2F06%2Fwoman-accused-of-killing-3-year-"
+ },
+ {
+  "url": "https://www.washingtonpost.com/archive/lifestyle/2005/10/03/and-she-loved-him/008ecd42-1d14-4a48-a7d5-29ca5c684862/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.washingtonpost.com%2Farchive%2Flifestyle%2F2005%2F10%2F03%2Fand-she-loved-hi"
+ },
+ {
+  "url": "https://www.espncricinfo.com/story/warner-kohli-dhawan-fined-for-altercation-810147",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.espncricinfo.com%2Fstory%2Fwarner-kohli-dhawan-fined-for-altercation-810147&"
+ },
+ {
+  "url": "https://www.tmz.com/2026/08/14/drake-dating-show-pinkchyu-another-celebrity-barking-dms/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.tmz.com%2F2026%2F08%2F14%2Fdrake-dating-show-pinkchyu-another-celebrity-bark"
+ },
+ {
+  "url": "https://www.defense.gov/News/News-Stories/Article/Article/3741245/kabul-airport-attack-review-reaffirms-initial-findings-identifies-attacker/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.defense.gov%2FNews%2FNews-Stories%2FArticle%2FArticle%2F3741245%2Fkabul-airp"
+ },
+ {
+  "url": "https://www.slv.vic.gov.au/explore/our-stories/melbourne-deed",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.slv.vic.gov.au%2Fexplore%2Four-stories%2Fmelbourne-deed&output=json&limit=1&"
+ },
+ {
+  "url": "https://www.washingtontimes.com/news/2026/sep/10/jimmy-kimmel-says-trump-team-forced-james-talarico-interview/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.washingtontimes.com%2Fnews%2F2026%2Fsep%2F10%2Fjimmy-kimmel-says-trump-team-"
+ },
+ {
+  "url": "https://www.espn.com/nfl/recap/_/gameId/401872657",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.espn.com%2Fnfl%2Frecap%2F_%2FgameId%2F401872657&output=json&limit=1&filter=s"
+ },
+ {
+  "url": "https://people.com/golden-globes-2025-ariana-grande-wears-archival-gown-with-wicked-nod-red-carpet-photos-8710302",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fpeople.com%2Fgolden-globes-2025-ariana-grande-wears-archival-gown-with-wicked-no"
+ },
+ {
+  "url": "https://bdnews24.com/bangladesh/0fb7a8d3bf1a",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fbdnews24.com%2Fbangladesh%2F0fb7a8d3bf1a&output=json&limit=1&filter=statuscode%3"
+ },
+ {
+  "url": "https://kotaku.com/final-fantasy-7-rebirth-install-size-download-preload-1851289668",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fkotaku.com%2Ffinal-fantasy-7-rebirth-install-size-download-preload-1851289668&ou"
+ },
+ {
+  "url": "https://time.com/7389146/trump-5000-dividend-republicans-midterms/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Ftime.com%2F7389146%2Ftrump-5000-dividend-republicans-midterms%2F&output=json&lim"
+ },
+ {
+  "url": "https://www.cato.org/blog/5000-check-tariffs-cant-cover",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.cato.org%2Fblog%2F5000-check-tariffs-cant-cover&output=json&limit=1&filter=s"
+ },
+ {
+  "url": "https://www.cbo.gov/publication/62105",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.cbo.gov%2Fpublication%2F62105&output=json&limit=1&filter=statuscode%3A200&fr"
+ },
+ {
+  "url": "https://www.icj-cij.org/sites/default/files/case-related/192/192-20240126-ord-01-00-en.pdf",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.rev.com/blog/transcripts/donald-trump-rally-in-philadelphia-transcript",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.rev.com%2Fblog%2Ftranscripts%2Fdonald-trump-rally-in-philadelphia-transcript"
+ },
+ {
+  "url": "https://www.youtube.com/watch?v=g4qjH2ONjDY",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3Dg4qjH2ONjDY&output=json&limit=1&filter=statuscode%"
+ },
+ {
+  "url": "https://www.cbo.gov/publication/61877",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.cbo.gov%2Fpublication%2F61877&output=json&limit=1&filter=statuscode%3A200&fr"
+ },
+ {
+  "url": "https://investinglive.com/news/commodities-unverified-satellite-data-fuels-talk-of-fresh-hit-on-saudi-arabias-east-west-pipeline-20260910/",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.albawaba.com/news/houthis-take-control-port-city-mokha-1636831",
+  "good": true,
+  "cdx_status": 200,
+  "snapshot": "https://web.archive.org/web/20260910090559id_/https://www.albawaba.com/news/houthis-take-control-port-city-mokha-1636831",
+  "status": 200,
+  "chars": 2488,
+  "wall": false,
+  "head": "ALBAWABA - Several Yemeni government sources confirmed to Reuters on Thursday that Ansar Allah, known as Houthis, took control of the port city of Mokha. Yemeni sources also revealed that government f"
+ },
+ {
+  "url": "https://anthrosource.onlinelibrary.wiley.com/doi/10.1002/sea2.12242",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.cbo.gov/publication/62210",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.researchgate.net/publication/222394541_How_the_airplane_wing_cut_through_the_exterior_columns_of_the_World_Trade_Center",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.tmz.com/2026/09/07/adam22-lena-the-plug-separated/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.washingtonpost.com/archive/politics/2001/09/11/tv-captured-the-terror-here-and-in-new-york/722bc86a-826b-4894-bb6c-0adfe0ee4559/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.govinfo.gov/content/pkg/GOVPUB-C13-92ce312a3ca1c064499cfadc37dee26d/pdf/GOVPUB-C13-92ce312a3ca1c064499cfadc37dee26d.pdf",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.complex.com/music/a/trace-william-cowen/lil-durk-murder-for-hire-trial-verdict-sentencing-possibility",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.espncricket.com/series/pakistan-tour-of-india-2012-13-589300/india-vs-pakistan-3rd-odi-589310/full-scorecard",
+  "good": false,
+  "cdx_status": 200,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.reddit.com/r/popculturechat/comments/1wc94ye/lisa_touched_down_in_new_york_city_for_bvlgaris/",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.qualcomm.com/smartphones/device-finder/xiaomi-mi-mix-fold",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.premiumtimesng.com/entertainment/naija-fashion/908401-regina-daniels-didnt-reconcile-with-ned-nwoko-mother-clarifies.html",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://gizmodo.com/iphone-duo-hands-on-specs-price-release-date-2000508608",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://blarneycastle.ie/pages/kiss-the-blarney-stone",
+  "good": false,
+  "cdx_status": 200,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.espn.com/soccer/story/_/id/49885184/chelsea-6-3-leeds-united-carabao-cup-morgan-rogers-jokes-deserved-player-match-award-not-cole-palmer",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.asianetnewsable.com",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.ctinsider.com/news/article/lindsay-clancy-verdict-watch-friday-juror-inquiry-22417353.php",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://factcheckarabic.afp.com/doc.afp.com.66E8663",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://factuel.afp.com/doc.afp.com.64ZD4T3",
+  "good": true,
+  "cdx_status": 200,
+  "snapshot": "https://web.archive.org/web/20250708231851id_/https://factuel.afp.com/doc.afp.com.64ZD4T3",
+  "status": 200,
+  "chars": 3257,
+  "wall": false,
+  "head": "Cette vid\u00e9o d'un gorille qui sauve un enfant tomb\u00e9 dans son enclos a \u00e9t\u00e9 g\u00e9n\u00e9r\u00e9e par IA - Publi\u00e9 le 08 juillet 2025 \u00e0 10:33 - Lecture : 3 min - Par : AFP France Copyright AFP 2017-2025. Toute r\u00e9utilis"
+ },
+ {
+  "url": "https://www.airuniversity.af.edu/CASI/",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.espn.com/nfl/story/_/id/49886582/seahawks-qb-darnold-injures-hip-opening-drive-vs-patriots",
+  "good": true,
+  "cdx_status": 200,
+  "snapshot": "https://web.archive.org/web/20260910030314id_/https://www.espn.com/nfl/story/_/id/49886582/seahawks-qb-darnold-injures-hip-opening-drive-vs-patriots",
+  "status": 200,
+  "chars": 2257,
+  "wall": false,
+  "head": "SEATTLE -- Seahawks quarterback Sam Darnold has been ruled out for the remainder of the team's season opener against the New England Patriots after suffering a hip injury on the first drive Wednesday "
+ },
+ {
+  "url": "https://time.com/6553860/refaat-alareer-poetry-gaza-israel-war/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.espn.com/nfl/game/_/gameId/401772922/patriots-bills",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.chabad.org/library/article_cdo/aid/7322665/jewish/What-a-Kohen-Needs-to-Know-About-Ritual-Impurity.htm",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.misbar.com/en/factcheck/2025/04/30/simpsons-did-not-predict-global-blackout-april-30-2025",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.sec.gov/news/press/2004-98.htm",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.screenskills.com/job-profiles/browse/unscripted-tv/editorial/vision-mixer/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.youtube.com/watch?v=kYmZ_rYf630",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://twstalker.com/yutokanzakireal",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.sangbadpratidin.in/sports/others/pole-vault-video-of-95-year-old-woman-goes-viral-people-remembers-flo-meiler/pid/1331199",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://brandriskpromotions.com/events",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.washingtonpost.com/politics/2026/09/09/trump-natalie-harp-cash-gifts/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts/lmsi-llckofinas-olive-oil-issues-voluntary-recall-its-garlic-mediterranean-infused-extra-virgin",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://abcnews.go.com/Politics/trump-claims-visited-ground-zero-911-rescue-efforts/story?id=41873112",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.kyivpost.com/post/38743",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://investors.remedygames.com/announcements/remedy-entertainment-enters-agreement-with-rockstar-games-for-new-max-payne-1-2-project/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.cnbc.com/2026/08/22/us-canada-trade-talks-collapse-ushering-in-wave-of-new-tariffs.html",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.transfermarkt.us/alvaro-morata/profil/spieler/128223",
+  "good": true,
+  "cdx_status": 200,
+  "snapshot": "https://web.archive.org/web/20230520070955id_/https://www.transfermarkt.us/alvaro-morata/profil/spieler/128223",
+  "status": 200,
+  "chars": 363,
+  "wall": false,
+  "head": "Name in home country:\u00c1lvaro Borja Morata Mart\u00ednDate of birth:Oct 23, 1992Place of birth:Madrid Age:30Height:1,89 mCitizenship: Spain Position: Attack - Centre-Forward Foot:rightPlayer agent:Niagara Sp"
+ },
+ {
+  "url": "https://www.indiatvnews.com/entertainment/news/hanuman-ansh-nears-rs-100-crore-as-vishal-chaturvedi-reveals-why-an-ott-platform-rejected-his-film-2026-09-06-1053447",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.washingtonpost.com/politics/2026/09/08/trump-gave-45000-cash-gifts-natalie-harp-two-other-close-aides/",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://timeline.911memorial.org/timeline/10681",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.reddit.com/r/PERSoNA/comments/1wbnkkt/persona_4_revival_announced_and_persona_6_for/",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.belfasttelegraph.co.uk/news/no-novichok-found-as-woman-taken-to-hospital-after-claiming-she-was-in-contact-with-nerve-agent/a/161189703.html",
+  "good": false,
+  "cdx_status": 200,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://appleinsider.com/articles/26/09/09/rumor-says-foldable-is-iphone-duo-gets-apple-pencil-starts-at-2000",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fappleinsider.com%2Farticles%2F26%2F09%2F09%2Frumor-says-foldable-is-iphone-duo-g"
+ },
+ {
+  "url": "https://www.reddit.com/r/dostoevsky/comments/1h5d687/the_origin_of_this_line_you_were_destined_for_me/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.reuters.com/world/middle-east/iran-attacks-us-base-jordan-ships-near-hormuz-after-tankers-sunk-2026-09-09/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.mass.gov/doc/2120-function-of-the-jury-what-is-evidence-credibility-of-witnesses/download",
+  "good": false,
+  "cdx_status": 200,
+  "snapshot": "https://web.archive.org/web/20230511233220id_/https://www.mass.gov/doc/2120-function-of-the-jury-what-is-evidence-credibility-of-witnesses/download",
+  "status": 200,
+  "chars": 0,
+  "wall": false,
+  "head": ""
+ },
+ {
+  "url": "https://www.nytimes.com/2026/09/08/us/politics/trump-sept-11-firefighters.html",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.newsweek.com/what-was-trump-doing-after-911-evolution-his-version-events-1950454",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.tmz.com/2026/09/08/jimmy-kimmel-ending-abc-talk-show-next-season/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.cnet.com/tech/mobile/the-iphone-18-pro-max-could-start-at-1300-an-analyst-predicts-you-can-thank-ramageddon-for-that/",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.albawaba.com/news/us-bases-jordan-hit-massive-iranian-1636687",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.espn.com/nfl/team/depth/_/name/cle",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.arsenal.com/news/konsa-delighted-duel-filled-home-debut",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.primetimer.com/features/is-the-north-west-and-ken-carson-story-claim-real-viral-instagram-outburst-over-allowance-being-cut-off-debunked",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://global.espn.com/football/story/_/id/48184766/agent-manchester-city-erling-haaland-rubbishes-claims-barcelona",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://elpais.com/expres/2026-09-02/final-del-mercado-de-fichajes-y-final-del-culebron-julian-alvarez-se-queda-en-el-atletico.html",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.pewresearch.org/race-and-ethnicity/2023/08/16/facts-on-hispanics-of-mexican-origin-in-the-united-states/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://eurweb.com/2025/mel-b-and-eddie-murphys-daughter-embraces-trans-identity/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.yahoo.com/news/science/articles/posts-falsely-claim-ai-generated-065255776.html",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.yahoo.com%2Fnews%2Fscience%2Farticles%2Fposts-falsely-claim-ai-generated-065"
+ },
+ {
+  "url": "https://www.actionvfx.com/blog/godzilla-minus-one-vfx-oscar-on-a-budget",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.actionvfx.com%2Fblog%2Fgodzilla-minus-one-vfx-oscar-on-a-budget&output=json&"
+ },
+ {
+  "url": "https://www.barchart.com/story/news/36286277/fact-file-how-sora-s-ai-videos-made-going-viral-easy-and-tips-on-how-to-spot-them",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.barchart.com%2Fstory%2Fnews%2F36286277%2Ffact-file-how-sora-s-ai-videos-made"
+ },
+ {
+  "url": "https://hypeauditor.com/instagram/jellyroll615/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://en.mediamass.net/people/meryl-streep/deathhoax.html",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fen.mediamass.net%2Fpeople%2Fmeryl-streep%2Fdeathhoax.html&output=json&limit=1&fi"
+ },
+ {
+  "url": "https://cowboystatedaily.com/2026/08/20/mustang-advocates-say-report-proves-wild-horses-from-wyoming-sent-to-slaughter/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.lefigaro.fr/culture/la-tour-eiffel-fermee-en-raison-dune-greve-contre-la-mise-a-lecart-du-personnel-feminin-pour-la-visite-d-un-groupe-hindou-20260907",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.lefigaro.fr%2Fculture%2Fla-tour-eiffel-fermee-en-raison-dune-greve-contre-la"
+ },
+ {
+  "url": "https://www.instituteforgovernment.org.uk/explainer/keir-starmer-need-to-do-first-few-weeks-after-general-election",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.instituteforgovernment.org.uk%2Fexplainer%2Fkeir-starmer-need-to-do-first-fe"
+ },
+ {
+  "url": "https://www.washingtonpost.com/national-security/2025/08/31/trump-gaza-plan-riviera-relocation/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.washingtonpost.com%2Fnational-security%2F2025%2F08%2F31%2Ftrump-gaza-plan-ri"
+ },
+ {
+  "url": "https://en.wikipedia.org/wiki/Higgsfield_AI",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FHiggsfield_AI&output=json&limit=1&filter=statuscode%3A"
+ },
+ {
+  "url": "https://www.sportskeeda.com/us/streamers/news-n3on-ai-streamer-controversy-explained",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.sportskeeda.com%2Fus%2Fstreamers%2Fnews-n3on-ai-streamer-controversy-explain"
+ },
+ {
+  "url": "https://www.espn.com/soccer/story/_/id/49404995/2026-world-cup-golden-ball-spain-unai-simon-pau-cubarsi",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.espn.com%2Fsoccer%2Fstory%2F_%2Fid%2F49404995%2F2026-world-cup-golden-ball-s"
+ },
+ {
+  "url": "https://fcbayern.com/en/news/2026/05/europes-best-goalscorer-harry-kane-wins-golden-shoe",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Ffcbayern.com%2Fen%2Fnews%2F2026%2F05%2Feuropes-best-goalscorer-harry-kane-wins-g"
+ },
+ {
+  "url": "https://tribuna.com/en/blogs/did-lamine-yamal-really-cut-off-his-dad-after-being-told-to/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Ftribuna.com%2Fen%2Fblogs%2Fdid-lamine-yamal-really-cut-off-his-dad-after-being-t"
+ },
+ {
+  "url": "https://www.reddit.com/r/CoronavirusCirclejerk/comments/sq5kiv/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.reddit.com%2Fr%2FCoronavirusCirclejerk%2Fcomments%2Fsq5kiv%2F&output=json&li"
+ },
+ {
+  "url": "https://buffalonews.com/news/barker-admits-affair-with-tv-model/article_2c7cf9de-7143-5af4-b5df-2932beff3871.html",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fbuffalonews.com%2Fnews%2Fbarker-admits-affair-with-tv-model%2Farticle_2c7cf9de-7"
+ },
+ {
+  "url": "https://www.wkyc.com/article/news/local/ohio/amy-acton-patrick-havas-incident-injured-multiple-people-at-canfield-fair/95-2e4ce697-150e-4e2d-8cf8-26b2389e6682",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.wkyc.com%2Farticle%2Fnews%2Flocal%2Fohio%2Famy-acton-patrick-havas-incident-"
+ },
+ {
+  "url": "https://www.abc10.com/article/news/local/sacramento/golden-1-center-safety-concerns-rod-wave/103-34e8992f-b258-450f-a7fe-d0ec9c39433e",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.uefa.com/news/02a9-1b32f94c0a5b-096a6058e77a-1000--2026-ballon-d-or-ceremony-date-and-host-city-announced/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.uefa.com%2Fnews%2F02a9-1b32f94c0a5b-096a6058e77a-1000--2026-ballon-d-or-cere"
+ },
+ {
+  "url": "https://www.espn.com/nfl/story/_/id/47027215/chiefs-ot-simmons-keeping-reason-22-day-absence-house",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.espn.com%2Fnfl%2Fstory%2F_%2Fid%2F47027215%2Fchiefs-ot-simmons-keeping-reaso"
+ },
+ {
+  "url": "https://www.imdb.com/news/ni62704859/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.britannica.com/event/Battle-of-the-Chosin-Reservoir",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.washingtonpost.com/business/2026/09/05/greece-economy-mitsotakis-elections-cost-of-living/72e3bb88-a95f-11f1-9e38-f705d048bd5a_story.html",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.cbpp.org/research/official-poverty-measure-masks-gains-made-over-last-50-years",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.facebook.com/RivalsMods1/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.patreon.com/cw/RivlasMods1",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://eastcountymagazine.org/trump-order-targets-wolf-protections-as-california-wolf-center-pushes-coexistence/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.niigata-nippo.co.jp/articles/-/866168",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.niigata-nippo.co.jp%2Farticles%2F-%2F866168&output=json&limit=1&filter=statu"
+ },
+ {
+  "url": "https://ja.wikipedia.org/wiki/%E3%83%84%E3%83%AB%E3%83%8D_-%E9%A2%A8%E2%81%B4%E9%AB%98%E6%A0%A1%E2%81%B3%E9%81%93%E9%83%A8-",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fja.wikipedia.org%2Fwiki%2F%25E3%2583%2584%25E3%2583%25AB%25E3%2583%258D_-%25E9%2"
+ },
+ {
+  "url": "https://www.nipc.gov.ng/wp-content/uploads/2025/07/Nigeria-Tax-Act-2025.pdf",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.nipc.gov.ng%2Fwp-content%2Fuploads%2F2025%2F07%2FNigeria-Tax-Act-2025.pdf&ou"
+ },
+ {
+  "url": "https://www.mayoclinic.org/diseases-conditions/back-pain/expert-answers/inversion-therapy/faq-20057951",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.railwaygazette.com/traction-rolling-stock/2026/03/11/portugal-ups-alstom-fleet-order-to-over-150-units-in-countrys-biggest-ever-train-investment/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.railwaygazette.com%2Ftraction-rolling-stock%2F2026%2F03%2F11%2Fportugal-ups-"
+ },
+ {
+  "url": "https://www.theguardian.com/uk-news/2026/sep/06/hundreds-of-far-right-protesters-descend-on-portsmouth-after-small-boat-arrival",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.theguardian.com%2Fuk-news%2F2026%2Fsep%2F06%2Fhundreds-of-far-right-proteste"
+ },
+ {
+  "url": "https://www.facebook.com/ItsGoneViralOfficial",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.facebook.com%2FItsGoneViralOfficial&output=json&limit=1&filter=statuscode%3A"
+ },
+ {
+  "url": "https://www.reddit.com/r/ufc/comments/j3ey5i",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.reddit.com%2Fr%2Fufc%2Fcomments%2Fj3ey5i&output=json&limit=1&filter=statusco"
+ },
+ {
+  "url": "https://www.reddit.com/r/WizardingWorld/comments/1f9j87d/the_hogwarts_feast_we_remember_isnt_quite_the/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.reddit.com%2Fr%2FWizardingWorld%2Fcomments%2F1f9j87d%2Fthe_hogwarts_feast_we"
+ },
+ {
+  "url": "https://news.sky.com/story/140-migrants-in-one-small-boat-intercepted-in-english-channel-sky-news-understands-13582562",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fnews.sky.com%2Fstory%2F140-migrants-in-one-small-boat-intercepted-in-english-cha"
+ },
+ {
+  "url": "https://diplomacy.state.gov/discover-diplomacy/people-places/locally-employed-staff/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fdiplomacy.state.gov%2Fdiscover-diplomacy%2Fpeople-places%2Flocally-employed-staf"
+ },
+ {
+  "url": "https://www.notus.org/congress/house-stalls-sexual-harassment-records",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.notus.org%2Fcongress%2Fhouse-stalls-sexual-harassment-records&output=json&li"
+ },
+ {
+  "url": "https://plutonium.pw/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.msn.com/en-gb/video/viral/israeli-tourists-fight-with-transgender-prostitutes-in-thai-sin-city-pattaya/vi-AA1Fdwtb",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.sciencedirect.com/science/article/pii/S0025326X23013590",
+  "good": true,
+  "cdx_status": 200,
+  "snapshot": "https://web.archive.org/web/20231230011519id_/https://www.sciencedirect.com/science/article/pii/S0025326X23013590",
+  "status": 200,
+  "chars": 1981,
+  "wall": false,
+  "head": "Contamination and health risk of HMs were evaluated. \u2022 The Hurghada coast wasmoderately polluted with Pb. \u2022 The hazard index (HI) for adults and children was <1.0. \u2022 LCR values indicating no significa"
+ },
+ {
+  "url": "https://espndeportes.espn.com/futbol/argentina/nota/_/id/17211219/carlos-tevez-tendra-su-partido-despedida-en-la-bombonera",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.sportskeeda.com/us/streamers/twitch-streamer-nitro-camden-s-rise-popularity-timeline-explored",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.espn.com/mlb/story/_/id/49852703/pete-crow-armstrong-slugs-40th-hr-cubs-fall-marlins",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.latimes.com/entertainment-arts/tv/story/2021-09-10/how-9-11-changed-the-way-we-watch-cable-tv-news-coverage",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://arborlakes.shopkimco.com/stores",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://encyclopedia.ushmm.org/content/en/article/soviet-forces-liberate-auschwitz",
+  "good": false,
+  "cdx_status": 200,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://newsukraine.rbc.ua/news/russian-gas-grip-on-eu-tightens-despite-ban-but-ukraine-1725607200.html",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://ohiostatebuckeyes.com/news/2026/9/5/football-no-1-ohio-state-start-season-with-resounding-56-3-win-over-ball-state",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fohiostatebuckeyes.com%2Fnews%2F2026%2F9%2F5%2Ffootball-no-1-ohio-state-start-sea"
+ },
+ {
+  "url": "https://www.nghomes.net/news/statement-on-stonyhurst-street-glasgow/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.nghomes.net%2Fnews%2Fstatement-on-stonyhurst-street-glasgow%2F&output=json&l"
+ },
+ {
+  "url": "https://www.dailyrecord.co.uk/news/scottish-news/huge-fire-breaks-glasgows-possilpark-37633466",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.dailyrecord.co.uk%2Fnews%2Fscottish-news%2Fhuge-fire-breaks-glasgows-possilp"
+ },
+ {
+  "url": "https://gwern.net/doc/politics/1997-starr-vincefosterreport.pdf",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fgwern.net%2Fdoc%2Fpolitics%2F1997-starr-vincefosterreport.pdf&output=json&limit="
+ },
+ {
+  "url": "https://www.nbcnews.com/news/us-news/mark-kelly-mark-kelly-s-dog-attacks-sea-lion-california-flna8c9161066",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.nbcnews.com%2Fnews%2Fus-news%2Fmark-kelly-mark-kelly-s-dog-attacks-sea-lion-"
+ },
+ {
+  "url": "https://questions-statements.parliament.uk/written-questions/detail/2025-05-20/53758",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fquestions-statements.parliament.uk%2Fwritten-questions%2Fdetail%2F2025-05-20%2F5"
+ },
+ {
+  "url": "https://www.grandviewresearch.com/industry-analysis/artificial-intelligence-military-market-report",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.grandviewresearch.com%2Findustry-analysis%2Fartificial-intelligence-military"
+ },
+ {
+  "url": "https://www.dhs.gov/human-trafficking-quick-facts",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.dhs.gov%2Fhuman-trafficking-quick-facts&output=json&limit=1&filter=statuscod"
+ },
+ {
+  "url": "https://www.dhs.gov/blue-campaign/forced-labor-united-states/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.dhs.gov%2Fblue-campaign%2Fforced-labor-united-states%2F&output=json&limit=1&"
+ },
+ {
+  "url": "https://www.imj.org.il/en/wings/shrine-book/dead-sea-scrolls",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.imj.org.il%2Fen%2Fwings%2Fshrine-book%2Fdead-sea-scrolls&output=json&limit=1"
+ },
+ {
+  "url": "https://www.yourcentralvalley.com/news/local-news/new-wildlife-coming-to-yosemite-possibly-a-wolf-too/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.yourcentralvalley.com%2Fnews%2Flocal-news%2Fnew-wildlife-coming-to-yosemite-"
+ },
+ {
+  "url": "https://www.psychiatry.org/psychiatrists/practice/clinical-practice-guidelines",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.psychiatry.org%2Fpsychiatrists%2Fpractice%2Fclinical-practice-guidelines&out"
+ },
+ {
+  "url": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/psychedelic-drugs-considerations-clinical-investigations",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.fda.gov%2Fregulatory-information%2Fsearch-fda-guidance-documents%2Fpsychedel"
+ },
+ {
+  "url": "https://www.apa.org/ptsd-guideline/patients-and-families/cognitive-behavioral",
+  "good": true,
+  "cdx_status": 200,
+  "snapshot": "https://web.archive.org/web/20230107193355id_/https://www.apa.org/ptsd-guideline/patients-and-families/cognitive-behavioral",
+  "status": 200,
+  "chars": 2874,
+  "wall": false,
+  "head": "Cognitive behavioral therapy (CBT) is a form of psychological treatment that has been demonstrated to be effective for a range of problems including depression, anxiety disorders, alcohol and drug use"
+ },
+ {
+  "url": "https://www.sfweekly.com/archives/orfn-a-life-under-shadows/article_c3dd0a38-ab57-5405-8bc9-341236ad3745.html",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.sfweekly.com%2Farchives%2Forfn-a-life-under-shadows%2Farticle_c3dd0a38-ab57-"
+ },
+ {
+  "url": "https://www.nytimes.com/2021/07/14/health/speech-brain-implant-computer.html",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.nytimes.com%2F2021%2F07%2F14%2Fhealth%2Fspeech-brain-implant-computer.html&o"
+ },
+ {
+  "url": "https://www.ucsf.edu/news/2021/07/420946/neuroprosthesis-restores-words-man-paralysis",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.ucsf.edu%2Fnews%2F2021%2F07%2F420946%2Fneuroprosthesis-restores-words-man-pa"
+ },
+ {
+  "url": "https://nida.nih.gov/research-topics/cocaine",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.nhtsa.gov/press-releases/nhtsa-estimates-39345-traffic-fatalities-2024",
+  "good": true,
+  "cdx_status": 200,
+  "snapshot": "https://web.archive.org/web/20250923153917id_/https://www.nhtsa.gov/press-releases/nhtsa-estimates-39345-traffic-fatalities-2024",
+  "status": 200,
+  "chars": 2258,
+  "wall": false,
+  "head": "NHTSA Estimates 39,345 Traffic Fatalities in 2024 The U.S. Department of Transportation\u2019s National Highway Traffic Safety Administration today released its early estimates of traffic fatalities for 20"
+ },
+ {
+  "url": "https://www.cnbc.com/2025/05/14/databricks-is-buying-database-startup-neon-for-about-1-billion.html",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.investopedia.com/billionaires-who-bought-publishers-5270187",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.investopedia.com%2Fbillionaires-who-bought-publishers-5270187&output=json&li"
+ },
+ {
+  "url": "https://www.reuters.com/world/americas/us-officials-see-closer-ties-with-trump-ally-princes-security-firm-haiti-2026-07-21/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.reuters.com%2Fworld%2Famericas%2Fus-officials-see-closer-ties-with-trump-all"
+ },
+ {
+  "url": "https://nmaahc.si.edu/explore/stories/african-muslims-early-america",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fnmaahc.si.edu%2Fexplore%2Fstories%2Fafrican-muslims-early-america&output=json&li"
+ },
+ {
+  "url": "https://stateline.org/2025/03/25/noncitizens-cannot-vote-in-new-york-citys-local-elections-state-high-court-rules/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fstateline.org%2F2025%2F03%2F25%2Fnoncitizens-cannot-vote-in-new-york-citys-local"
+ },
+ {
+  "url": "https://www.youtube.com/watch?v=_6WzsNO2Im8",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D_6WzsNO2Im8&output=json&limit=1&filter=statuscode%"
+ },
+ {
+  "url": "https://www.verywellmind.com/opening-your-third-eye-7501747",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.verywellmind.com%2Fopening-your-third-eye-7501747&output=json&limit=1&filter"
+ },
+ {
+  "url": "https://www.fda.gov/food/alerts-advisories-safety-information/fda-issues-warning-about-toxic-amygdalin-found-apricot-seeds",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.fda.gov%2Ffood%2Falerts-advisories-safety-information%2Ffda-issues-warning-a"
+ },
+ {
+  "url": "https://devin.ai/blog/fable-5-1",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fdevin.ai%2Fblog%2Ffable-5-1&output=json&limit=1&filter=statuscode%3A200&from=202"
+ },
+ {
+  "url": "https://thezvi.substack.com/p/claude-mythos-51-and-fable-51-capabilities",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fthezvi.substack.com%2Fp%2Fclaude-mythos-51-and-fable-51-capabilities&output=json"
+ },
+ {
+  "url": "https://spotlight.bloomberg.com/story/battery-metals-outlook/page/7",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fspotlight.bloomberg.com%2Fstory%2Fbattery-metals-outlook%2Fpage%2F7&output=json&"
+ },
+ {
+  "url": "https://oig.ssa.gov/assets/uploads/a-06-21-51022.pdf",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Foig.ssa.gov%2Fassets%2Fuploads%2Fa-06-21-51022.pdf&output=json&limit=1&filter=st"
+ },
+ {
+  "url": "https://www.newsnationnow.com",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.newsnationnow.com&output=json&limit=1&filter=statuscode%3A200&from=2023&fl=t"
+ },
+ {
+  "url": "https://graphsearch.epfl.ch/en/concept/5493064",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fgraphsearch.epfl.ch%2Fen%2Fconcept%2F5493064&output=json&limit=1&filter=statusco"
+ },
+ {
+  "url": "https://thezvi.substack.com/p/claude-fable-51-and-mythos-51-the",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fthezvi.substack.com%2Fp%2Fclaude-fable-51-and-mythos-51-the&output=json&limit=1&"
+ },
+ {
+  "url": "https://aireleasetracker.com/compare/meta/muse-spark/openai/gpt-5.6-luna",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Faireleasetracker.com%2Fcompare%2Fmeta%2Fmuse-spark%2Fopenai%2Fgpt-5.6-luna&outpu"
+ },
+ {
+  "url": "https://www.livescience.com/pangea",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.livescience.com%2Fpangea&output=json&limit=1&filter=statuscode%3A200&from=20"
+ },
+ {
+  "url": "https://www2.jpl.nasa.gov/snc/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww2.jpl.nasa.gov%2Fsnc%2F&output=json&limit=1&filter=statuscode%3A200&from=2023"
+ },
+ {
+  "url": "https://tasminchu.substack.com",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Ftasminchu.substack.com&output=json&limit=1&filter=statuscode%3A200&from=2023&fl="
+ },
+ {
+  "url": "https://www.crunchbase.com/person/ami-vora",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.crunchbase.com%2Fperson%2Fami-vora&output=json&limit=1&filter=statuscode%3A2"
+ },
+ {
+  "url": "https://mcauldronism.substack.com/p/an-automated-takedown-of-amanda-askell",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fmcauldronism.substack.com%2Fp%2Fan-automated-takedown-of-amanda-askell&output=js"
+ },
+ {
+  "url": "https://www.uniaktuell.unibe.ch/2024/hochenergiephysik_weber/index_eng.html",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.uniaktuell.unibe.ch%2F2024%2Fhochenergiephysik_weber%2Findex_eng.html&output"
+ },
+ {
+  "url": "https://aswathdamodaran.substack.com/p/the-situational-awareness-fund-blow",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Faswathdamodaran.substack.com%2Fp%2Fthe-situational-awareness-fund-blow&output=js"
+ },
+ {
+  "url": "https://www.britannica.com/topic/Semitic-languages/Classification",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.britannica.com%2Ftopic%2FSemitic-languages%2FClassification&output=json&limi"
+ },
+ {
+  "url": "https://www.researchgate.net/publication/318851806_Restoring_tone-marks_in_standard_Yoruba_electronic_text_Improved_model",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.researchgate.net%2Fpublication%2F318851806_Restoring_tone-marks_in_standard_"
+ },
+ {
+  "url": "https://videocardz.com/newz/nvidia-announced-the-geforce-gtx-1080-and-gtx-1070-10-years-ago-today",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fvideocardz.com%2Fnewz%2Fnvidia-announced-the-geforce-gtx-1080-and-gtx-1070-10-ye"
+ },
+ {
+  "url": "https://www.vals.ai/news",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.vals.ai%2Fnews&output=json&limit=1&filter=statuscode%3A200&from=2023&fl=time"
+ },
+ {
+  "url": "https://digg.com/tech/9x3pz8ed",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fdigg.com%2Ftech%2F9x3pz8ed&output=json&limit=1&filter=statuscode%3A200&from=2023"
+ },
+ {
+  "url": "https://www.lesswrong.com/posts/oSWae4bE4mqWy5a6Q/ai-2027-tracker-one-year-of-predictions-vs-reality",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.lesswrong.com%2Fposts%2FoSWae4bE4mqWy5a6Q%2Fai-2027-tracker-one-year-of-pred"
+ },
+ {
+  "url": "https://www.lesswrong.com/posts/prSnGGAgfWtZexYLp/is-90-of-code-at-anthropic-being-written-by-ais",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.lesswrong.com%2Fposts%2FprSnGGAgfWtZexYLp%2Fis-90-of-code-at-anthropic-being"
+ },
+ {
+  "url": "https://www.vals.ai/models/google_gemini-3.8-flash",
+  "good": true,
+  "cdx_status": 200,
+  "snapshot": "https://web.archive.org/web/20260903011343id_/https://www.vals.ai/models/google_gemini-3.8-flash",
+  "status": 200,
+  "chars": 346,
+  "wall": false,
+  "head": "Model Release Date: Sep 2, 2026 Developer Google \ud83c\uddfa\ud83c\uddf8 Context Window 1M Max Output Tokens 66k Token Costs (in/out) $1.50/7.50 Weights Private Input Modalities Accuracy 62.25 % \u00b1 1.01 Cost / Test (Vals I"
+ },
+ {
+  "url": "https://www.vals.ai/models/meta_muse_spark_1_3",
+  "good": true,
+  "cdx_status": 200,
+  "snapshot": "https://web.archive.org/web/20260909124628id_/https://www.vals.ai/models/meta_muse_spark_1_3",
+  "status": 200,
+  "chars": 345,
+  "wall": false,
+  "head": "Model Release Date: Sep 2, 2026 Developer Meta \ud83c\uddfa\ud83c\uddf8 Context Window 1M Max Output Tokens 131k Token Costs (in/out) $1.25/4.25 Weights Private Input Modalities Accuracy 60.31 % \u00b1 1.08 Cost / Test (Vals In"
+ },
+ {
+  "url": "https://www.videogameschronicle.com/news/two-thirds-of-total-pc-playtime-last-year-was-on-games-that-are-at-least-six-years-old-report-says/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.businesswire.com/news/home/20251001018306/en",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://time.com/7277591/colossal-biosciences-dire-wolf-de-extinction/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.linkedin.com/in/mark-haefele-7a7b271/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.pnas.org/doi/10.1073/pnas.2505.11584",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.scribd.com/document/911720849/2025-Newzoo-The-PC-and-Console-Gaming-Report-1",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.healthaffairs.org/doi/10.1377/hlthaff.2017.0174",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.pnas.org/doi/10.1073/pnas.1318677111",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.sciencedirect.com/topics/biochemistry-genetics-and-molecular-biology/ketogenesis",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.sciencedirect.com%2Ftopics%2Fbiochemistry-genetics-and-molecular-biology%2Fk"
+ },
+ {
+  "url": "https://digitalcommons.law.byu.edu/cgi/viewcontent.cgi?article=1531&context=jpl",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fdigitalcommons.law.byu.edu%2Fcgi%2Fviewcontent.cgi%3Farticle%3D1531%26context%3D"
+ },
+ {
+  "url": "https://questions.org/attq/were-the-early-christians-capable-of-producing-the-gospels/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fquestions.org%2Fattq%2Fwere-the-early-christians-capable-of-producing-the-gospel"
+ },
+ {
+  "url": "https://www.businesswire.com/news/home/20041027005222/en/Amazon-Announces-Grand-Opening-Beauty-Store---",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.businesswire.com%2Fnews%2Fhome%2F20041027005222%2Fen%2FAmazon-Announces-Gran"
+ },
+ {
+  "url": "http://blog.dialogo.it/italiane-in-formula-1/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=http%3A%2F%2Fblog.dialogo.it%2Fitaliane-in-formula-1%2F&output=json&limit=1&filter=statuscode%"
+ },
+ {
+  "url": "https://smarthistory.org/cuneiform/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fsmarthistory.org%2Fcuneiform%2F&output=json&limit=1&filter=statuscode%3A200&from"
+ },
+ {
+  "url": "https://www.ancient-origins.net/ancient-places-asia/rise-and-fall-sumer-and-akkad-003192",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.ancient-origins.net%2Fancient-places-asia%2Frise-and-fall-sumer-and-akkad-00"
+ },
+ {
+  "url": "https://www.tandfonline.com/doi/full/10.1080/15564894.2021.1950874",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.tandfonline.com%2Fdoi%2Ffull%2F10.1080%2F15564894.2021.1950874&output=json&l"
+ },
+ {
+  "url": "http://www.safarmer.com/Indus/OtherSites.pdf",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=http%3A%2F%2Fwww.safarmer.com%2FIndus%2FOtherSites.pdf&output=json&limit=1&filter=statuscode%3"
+ },
+ {
+  "url": "https://pngaa.org/article/who-started-tok-pisin/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fpngaa.org%2Farticle%2Fwho-started-tok-pisin%2F&output=json&limit=1&filter=status"
+ },
+ {
+  "url": "https://www.espn.com/ufc/story/_/id/48814471/conor-mcgregor-vs-max-holloway-13-years-ago-happened-injury-came-next",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.espn.com%2Fufc%2Fstory%2F_%2Fid%2F48814471%2Fconor-mcgregor-vs-max-holloway-"
+ },
+ {
+  "url": "https://africa.espn.com/mma/story/_/id/33279002/ufc-271-israel-adesanya-now-clear-no-2-middleweight-ufc-history-beating-robert-whittaker-again-catch-anderson-silva",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fafrica.espn.com%2Fmma%2Fstory%2F_%2Fid%2F33279002%2Fufc-271-israel-adesanya-now-"
+ },
+ {
+  "url": "https://www.forbes.com/sites/brianbushard/2024/06/15/feral-swine-bomb-explained-why-wild-hogs-in-35-states-have-scientists-worried/",
+  "good": false,
+  "error": "ConnectionError: HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?url=https%3A%2F%2Fwww.forbes.com%2Fsites%2Fbrianbushard%2F2024%2F06%2F15%2Fferal-swine-bomb-explai"
+ },
+ {
+  "url": "https://www.nj.gov/agriculture/divisions/ah/prog/feralhogs.html",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.youtube.com/watch?v=TIO5hWElPqs",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.espn.com/mma/story/_/id/14829338/rafael-dos-anjos-pulls-ufc-196-fight-vs-conor-mcgregor-broken-foot",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.acs.org/education/whatischemistry/landmarks/highly-active-antiretroviral-therapy-hiv.html",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.niaid.nih.gov/diseases-conditions/antiretroviral-drug-development",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://americanhistory.si.edu/explore/stories/brief-history-azt",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.usnews.com/news/national-news/articles/2024-12-02/controversial-presidential-pardons-in-u-s-history",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.fda.gov/vaccines-blood-biologics/safety-availability-biologics/thimerosal-and-vaccines",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.familysearch.org/en/wiki/Lake_Michigan",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://patmcguinness.substack.com/p/gpt-4-details-revealed",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.iea.org/commentaries/the-carbon-footprint-of-streaming-video-fact-checking-the-headlines",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://jacobs.com/news/187/whats-next-for-the-water-energy-nexus",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.sciencedirect.com/science/article/abs/pii/S0921344922000428",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.district.in/movies/the-paradise-movie-tickets-MV185027",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://glowseoul.co.kr/portfolio/suwon-starfield-project/",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://kintousa.com/pages/about-kinto",
+  "good": false,
+  "cdx_status": 503,
+  "status": "no snapshot"
+ },
+ {
+  "url": "https://www.bls.gov/opub/ted/2026/consumer-prices-up-3-4-over-the-year-in-july-2026.htm",
+  "good": false,
+  "error": "ReadTimeout: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=40)"
+ },
+ {
+  "url": "https://www.lesswrong.com/posts/tjeoLz2GzfFMysZhg/lightcone-commons",
+  "good": true,
+  "cdx_status": 200,
+  "snapshot": "https://web.archive.org/web/20260723200100id_/https://www.lesswrong.com/posts/tjeoLz2GzfFMysZhg/lightcone-commons",
+  "status": 200,
+  "chars": 31616,
+  "wall": false,
+  "head": "For a while now I have been recommending anyone working in an adversarial environment to read the book Character Disturbance by Dr. George Simon. Blurb from amazon: psychologist George Simon explains "
+ },
+ {
+  "url": "https://www.researchgate.net/publication/318677048_Study_and_Translation_of_Sun_Tzu's_Art_of_War_in_Recent_Years",
+  "good": false,
+  "cdx_status": 200,
+  "status": "no snapshot"
+ }
+]

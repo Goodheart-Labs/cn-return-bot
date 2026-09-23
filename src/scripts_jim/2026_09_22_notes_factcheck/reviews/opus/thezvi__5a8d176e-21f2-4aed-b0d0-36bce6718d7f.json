@@ -1,0 +1,16 @@
+{
+  "item_id": "5a8d176e-21f2-4aed-b0d0-36bce6718d7f",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "c953e426-3dad-486d-8488-a78a6f36a374",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence the note corrects is a quoted tweet by Eliezer Yudkowsky, not Zvi's own words. Zvi introduces it with \"Note the bolded passage (bold is mine) in the exchange below\", which flags it as the thing he wants to single out. In the very next two paragraphs Zvi makes exactly the correction the note makes: \"It doesn't mean you should mostly or fully defer to such a person. That would imply they are an 'epistemic superior,' someone whose opinion carries greater weight than your own\", and then \"Epistemic peer means that, if you both have access to the same information, and they have not yet explained to you their reasoning, you should not presume one of you is better at this than the other.\" So the note tells Zvi something he already wrote himself, one paragraph below the quote it is attached to. This is the same failure Andy Masley complained about: fact-checking a claim the author is himself disputing. The note's own content about epistemic peers versus epistemic superiors is accurate and its Stanford Encyclopedia and Routledge sources do support it, but that does not save it."
+    }
+  ]
+}

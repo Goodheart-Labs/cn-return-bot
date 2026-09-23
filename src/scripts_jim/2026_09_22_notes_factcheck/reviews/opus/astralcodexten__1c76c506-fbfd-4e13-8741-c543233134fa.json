@@ -1,0 +1,25 @@
+{
+  "item_id": "1c76c506-fbfd-4e13-8741-c543233134fa",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "114e7a44-d5e1-4ec7-adfa-c5fefeee7fb8",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The post is a comedy sketch. It is a fake Dwarkesh Patel podcast in which God and Iblis argue about whether humans are really intelligent, using the exact vocabulary people use about AI models. The sentence the note corrects is a line of dialogue spoken by the character God: \"Just a few million years ago, we were at australopithecines, who couldn't talk at all. A few hundred thousand years ago, we were at homo habilis, who could only grunt out a few words.\" The dates are there to mimic the way AI people say \"a few years ago we were at GPT-2\", not to state a paleoanthropological timeline. The note's facts are right, and I checked them: Britannica, the Smithsonian and Wikipedia all put Homo habilis at roughly 2.4 to 1.5 million years ago, so the line is loose. But nothing in the joke depends on the number, no reader of a satire about God scaling chimpanzees comes away with a belief that matters, and sending Scott Alexander a public correction about the age of Homo habilis in a punchline would read as missing the joke."
+    },
+    {
+      "note_id": "dc3a211b-ed05-4cce-902d-515a7ddc3741",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "This note does not address the claim it is attached to. The extracted claim is about speech, \"Homo habilis had only very rudimentary vocal communication abilities, limited to a few words or grunts\", but the note text argues only about dates and all three sources are date quotes. Whether Homo habilis could grunt out a few words is never touched, so the note is unsupported as written. It is also a duplicate of the other note on the very same sentence, so sending both would look careless. On top of that it inherits the first note's problem: the sentence is a line of dialogue in a satirical podcast sketch, not an assertion Scott Alexander is making about human evolution."
+    }
+  ]
+}

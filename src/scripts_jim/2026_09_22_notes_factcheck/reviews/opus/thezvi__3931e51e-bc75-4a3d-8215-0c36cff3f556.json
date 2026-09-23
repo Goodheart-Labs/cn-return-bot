@@ -1,0 +1,16 @@
+{
+  "item_id": "3931e51e-bc75-4a3d-8215-0c36cff3f556",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "161fcbb0-de30-416d-94d8-55e5df8465e3",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The claim really is Zvi's own aside: he writes \"the Pangram algorithm can differentiate different AIs, but it doesn't tell the user\". But the note's correction does not hold up. It asserts that Pangram has an \"AI Identification\" feature that names the likely model in the output and that Pangram Labs \"publicly announced and markets\" it. I could not find any such feature anywhere in Pangram's own material: the Pangram 4 model card says the model \"decodes one of three provenance labels for each segment: Human, AI-Assisted, or AI-Generated\", the public API and the Python SDK return only fraction_ai, fraction_ai_assisted, fraction_human, segment labels, confidence and humanizer scores with no generating-model field, and the Pangram 4 technical overview lists \"generator identification\" as future interpretability work rather than a shipped feature. The note's only real support is one third-party Notebookcheck article from April 2025 saying Pangram \"can identify which chatbot family, such as OpenAI ChatGPT, Anthropic Claude, Google Gemini, and xAI Grok, created the text with 93% accuracy\" (that quote is verbatim in the article), which describes exactly the capability Zvi grants and says nothing about it being surfaced to the user. The second source quote is worse: the split-screen view lets a user compare the text against output from a chatbot of their own choosing, which is not the tool naming the model, so the accepted explanation misreads it. On top of being wrong, the point is a parenthetical about a detection tool's interface that carries no weight in Zvi's argument about watermarking, so even a correct version would be tangential."
+    }
+  ]
+}

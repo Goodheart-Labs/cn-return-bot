@@ -1,0 +1,16 @@
+{
+  "item_id": "d67be3e2-a919-4ea4-94b4-d875d7d07589",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "b04a58e8-bd2c-4a56-a770-676d14214d57",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The claim is the author's own. The post opens with \"Lightcone Commons is a funder, who are going to regrant $30m in the next three months\", stated flatly in his own voice, not quoted from anyone. Both sources check out: lightconecommons.com does say \"For the first round, I am expecting participating funders to disburse around $15M-25M\", and the launch post text \"We are helping distribute $20M+ this summer, from Jaan Tallinn, Dustin Moskovitz, and others\" appears on X as the launch thread. The LessWrong announcement says \"we are facilitating ~$20M of grants in our first round\", Zvi's write-up says \"~$20 million\", and the round's timing matches the post's three months (applications closed 23 August, recommendations by 23 October). So $30m is above the top of every public figure and the note is right on the public record. Two things give me pause. First, the author is an evaluator for the fund, so he may be working from a number the fund gave him privately that is newer than the July launch page. Manifund's funder bulletin lists $35M expected from Lightcone Commons in 2026 and sources that figure to \"private communications\", which shows numbers above $25M do circulate, even if that one covers the whole year rather than one round. Second, the correction does not touch the post's point, which is that applying takes ten minutes and is worth trying, so he may read it as nitpicking a figure he wrote off the cuff. He is a forecasting person who cares about calibration and would probably take it well, but a reply of \"no, that is the number they told me\" is a real possibility."
+    }
+  ]
+}

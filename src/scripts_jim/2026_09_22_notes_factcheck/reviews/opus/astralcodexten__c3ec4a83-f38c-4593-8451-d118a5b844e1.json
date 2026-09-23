@@ -1,0 +1,25 @@
+{
+  "item_id": "c3ec4a83-f38c-4593-8451-d118a5b844e1",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "eed4f1e0-adb9-45a9-b159-d5218ada73d4",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "Scott states the number flatly in his own voice: \"OpenAI gave 26% of equity to an associated nonprofit foundation; this is worth ~$300 billion.\" He then adds Anthropic's ~$100 billion and uses the $400 billion total to derive the $40 billion/year flow that the whole section rests on, so the figure is load-bearing rather than decorative. The note is right: OpenAI's last priced valuation before and after this post was $852 billion (the March 2026 round, confirmed again by the $7 billion employee share sale in August 2026), which puts a 26% stake at about $220 billion. Nan Ransohoff's essay, the very piece Scott is summarising in this link, says it outright: \"The OpenAI Foundation holds 26% of OpenAI, worth about $220B at today's valuation.\" So Scott's number disagrees with his own source by roughly $80 billion, and $300 billion would need a valuation near $1.15 trillion that did not exist in July 2026. Two small blemishes keep this from being perfect: the note's \"roughly 25.8%\" is a dilution nitpick on top of the real correction, and the $130 billion October 2025 figure it also mentions is stale enough to distract. Scott corrects numbers like this in his comment round-ups all the time, so he should take it well."
+    },
+    {
+      "note_id": "971736a5-d686-4acf-bd35-70f679ac4b56",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "This is Scott's own estimate, written as \"existing effective altruist funding (probably only ~$5 billion/year...)\", hedged with \"probably\" but stated as the base against which he sizes the incoming AI money. The note's figure is well supported. Open Philanthropy, now Coefficient Giving and by far the largest EA funder, directed just over $1 billion in 2025, which it calls the most in its history, and about $650 million in 2024. Everything else combined (GiveWell's non-Open-Phil money, EA Funds, SFF, Founders Pledge, Longview) does not add another $3 billion, and the EA Grants Database holds roughly $7.6 billion across all funders for the whole period 2012 to 2026. The note also diagnoses the likely source of the mistake correctly: Coefficient Giving reports having directed over $5 billion since 2014, which is a cumulative total, not an annual one. The correction happens to make Scott's point stronger, because $10 billion would then quintuple EA funding rather than triple it, but it is still a roughly threefold error in a number his readers care about, and he is very likely to accept it."
+    }
+  ]
+}

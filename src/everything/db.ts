@@ -604,22 +604,19 @@ export async function resolveNoteRequest(
 
 /** What one creator's visit rows add up to over the ranking window (GOO-135).
  *  Every number except `visits` is counted over rows that carry a reader hash,
- *  because a row without one cannot be attributed to a person. */
+ *  because a row without one cannot be attributed to a browser. */
 export interface CreatorAttention {
   /** The creator's feed address, in one of the capitalisations it was recorded
    *  under. Creators are grouped case-insensitively in the database. */
   feed_url: string;
-  /** Every visit row for this creator, with or without a reader hash. This is
-   *  the number the walk used before GOO-135. */
+  /** Every visit row for this creator, with or without a reader hash. */
   visits: number;
-  /** How many different pages of this creator were opened. Reloading one page
-   *  counts once. */
+  /** How many different pages of this creator were opened. Reloading one page,
+   *  or opening it under another address, counts once. */
   pages: number;
-  /** How many different readers opened anything of this creator's. */
+  /** How many browsers opened at least MIN_PAGES_FOR_A_READER different pages
+   *  of this creator. This is what the walk ranks by. */
   readers: number;
-  /** How many of those readers opened at least MIN_PAGES_FOR_A_REGULAR_READER
-   *  different pages. This is what the walk ranks by. */
-  regular_readers: number;
 }
 
 /** A creator we already know: a project row carrying the feed we poll. A
@@ -637,6 +634,9 @@ export interface CreatorProject {
   /** When the creator's everything_top_posts rows were last recomputed. Null
    *  means never. */
   top_posts_refreshed_at: string | null;
+  /** When a refresh was last tried and failed (migration 101). Null means no
+   *  failed attempt since the last success. */
+  top_posts_attempted_at: string | null;
 }
 
 /** Every creator we have a project for, whether or not they hold priority right
@@ -647,14 +647,15 @@ export async function fetchCreatorProjects(): Promise<CreatorProject[]> {
   const rows = throwOnError(
     await getSupabaseClient()
       .from("everything_projects")
-      .select("slug, feed_url, priority_until, top_posts_refreshed_at")
+      .select("slug, feed_url, priority_until, top_posts_refreshed_at, top_posts_attempted_at")
       .not("feed_url", "is", null),
-  ) as { slug: string; feed_url: string; priority_until: string | null; top_posts_refreshed_at: string | null }[];
+  ) as { slug: string; feed_url: string; priority_until: string | null; top_posts_refreshed_at: string | null; top_posts_attempted_at: string | null }[];
   return rows.map((r) => ({
     project_slug: r.slug,
     feed_url: r.feed_url,
     priority_until: r.priority_until,
     top_posts_refreshed_at: r.top_posts_refreshed_at,
+    top_posts_attempted_at: r.top_posts_attempted_at,
   }));
 }
 
@@ -737,7 +738,18 @@ export async function replaceFeedTopPosts(feedUrl: string, rows: Omit<TopPostRow
   throwOnError(
     await db
       .from("everything_projects")
-      .update({ top_posts_refreshed_at: new Date().toISOString() })
+      .update({ top_posts_refreshed_at: new Date().toISOString(), top_posts_attempted_at: null })
+      .eq("feed_url", feedUrl),
+  );
+}
+
+/** Records that a refresh of this feed's top list was tried and failed, so
+ *  the feed is not tried again until the retry wait has passed. */
+export async function stampTopPostsAttempt(feedUrl: string): Promise<void> {
+  throwOnError(
+    await getSupabaseClient()
+      .from("everything_projects")
+      .update({ top_posts_attempted_at: new Date().toISOString() })
       .eq("feed_url", feedUrl),
   );
 }
@@ -770,10 +782,10 @@ export async function fetchQueueOverview(): Promise<QueuedItemSummary[]> {
   ) as QueuedItemSummary[];
 }
 
-/** What readers did with each creator's pages since the given time, counted in
- *  the database (see everything_creator_attention, migration 089). `minPages`
- *  is how many different pages of a creator one reader must have opened to
- *  count as a regular reader. */
+/** What browsers did with each creator's pages since the given time, counted in
+ *  the database (see everything_creator_attention, migration 102). `minPages`
+ *  is how many different pages of a creator one browser must have opened to
+ *  count as a reader. */
 export async function fetchCreatorAttention(since: Date, minPages: number): Promise<CreatorAttention[]> {
   return (throwOnError(
     await getSupabaseClient().rpc("everything_creator_attention", {
@@ -781,15 +793,6 @@ export async function fetchCreatorAttention(since: Date, minPages: number): Prom
       min_pages: minPages,
     }),
   ) ?? []) as CreatorAttention[];
-}
-
-/** Whether any single creator has ever been visited by two different readers,
- *  over all recorded history. Visit rows written before GOO-135 carry no reader
- *  hash and can never satisfy the reader rule, so the walk keeps its old rule
- *  until this answers true. Reader hashes are per creator by design, so this is
- *  the only form the question "do we have more than one reader" can take. */
-export async function fetchTwoReadersSeen(): Promise<boolean> {
-  return (throwOnError(await getSupabaseClient().rpc("everything_two_readers_seen")) ?? false) as boolean;
 }
 
 /** Total LLM cost in USD recorded in everything_pipeline_runs since the given

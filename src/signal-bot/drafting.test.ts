@@ -20,6 +20,7 @@ function dependencies(overrides: Partial<DraftingDependencies> = {}): DraftingDe
       inputContext: "Original post and inspected media.",
     }),
     discuss: async () => ({ action: "discuss", reply: "The record is relevant to this claim.", draft: null, abstentionReason: null }),
+    chat: async () => ({ reply: "Paste a tweet link and I will draft a note for it." }),
     readSource: async (url) => ({ url, ok: true, content: "The primary document gives the date as 2017." }),
     ...overrides,
   };
@@ -253,6 +254,31 @@ describe("Signal draft adapter", () => {
     expect(result.reply).toContain("separate posting action");
     expect(result.draft).toBeUndefined();
     expect((result as any).submit).toBeUndefined();
+  });
+});
+
+describe("general chat", () => {
+  test("answers from the conversation summaries and cannot report a submission", async () => {
+    const calls: unknown[] = [];
+    const adapter = createDraftingAdapter(dependencies({
+      chat: async (messages) => {
+        calls.push(JSON.parse(messages[1]!.content));
+        return { reply: "Conversation #1 has a draft waiting for your approval." };
+      },
+    }));
+    const reply = await adapter.converse!({
+      text: "what's going on?",
+      history: [],
+      conversations: [{ id: 1, tweetId: "12345", status: "open", draftVersion: 1, draft: "A note https://example.org" }],
+    });
+    expect(reply).toBe("Conversation #1 has a draft waiting for your approval.");
+    expect(calls[0]).toMatchObject({ message: "what's going on?", conversations: [{ id: 1, status: "open" }] });
+
+    const boastful = createDraftingAdapter(dependencies({ chat: async () => ({ reply: "I have posted the note for you." }) }));
+    expect(await boastful.converse!({ text: "post it", history: [], conversations: [] })).not.toContain("posted the note");
+
+    const invalid = createDraftingAdapter(dependencies({ chat: async () => ({ answer: "wrong shape" }) }));
+    await expect(invalid.converse!({ text: "hi", history: [], conversations: [] })).rejects.toThrow("invalid response");
   });
 });
 

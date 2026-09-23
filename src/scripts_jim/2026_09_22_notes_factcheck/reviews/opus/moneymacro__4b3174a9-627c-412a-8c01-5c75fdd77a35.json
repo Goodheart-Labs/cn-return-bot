@@ -1,0 +1,16 @@
+{
+  "item_id": "4b3174a9-627c-412a-8c01-5c75fdd77a35",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "46a19533-030c-4990-b95c-13e545baaedd",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "This is the author speaking in his own voice, not quoting the paper he is reviewing: 'Today, South Korea is at 0.8. If you hold that for a generation, the next generation will be 38% smaller than last.' The arithmetic is wrong in the way the note describes. A fertility rate of 0.8 against a replacement rate of 2.1 leaves the next generation at about 38% of the size of the last one, so it is about 62% smaller, not 38% smaller. The author's own numbers a few seconds later confirm it, because he says Korean births fell from roughly 650,000 a year in the early 1990s to about 230,000, which is a drop of about 65%. The correction matters to his point rather than nibbling at it, since this passage is his main argument that today's ultra low fertility is far more severe than the 1950s declines Acemoglu studied, and the true figure makes that argument stronger. I checked the fertility rate itself against the Korea Times report the note cites, which gives 0.8 for 2025, so the note's starting number is right. One small blemish is that the note quotes both 0.38 and about 40% in the same breath, the first from the 2.1 replacement rate and the second from a simpler 50 women times 0.8 calculation; the two are consistent but a reader could find it dense."
+    }
+  ]
+}

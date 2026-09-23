@@ -1,0 +1,16 @@
+{
+ "item_id": "dc99db8d-9cc4-4bda-9c89-738bda631456",
+ "reviewer": "opus",
+ "source_read": "full_text",
+ "notes": [
+  {
+   "note_id": "2782bbee-916e-4ebf-9e7b-b4498b964b1b",
+   "verdict": "bad",
+   "claim_is_authors_own": "yes",
+   "note_is_correct": "yes",
+   "substantive": "no",
+   "author_would_accept": "unlikely",
+   "reason": "The sentence is Zvi's own: after describing informal favour networks (the friend with a truck, paid back in pizza) he writes that they make \"everyone richer in a real sense\" while lowering measured GDP, and that \"a lot of the story of vibecession and related topics, where economists say you are richer and poor people insist they are instead poorer, is explained by this.\" Nothing in that sentence is factually wrong. His description of the vibecession is the standard one, and his explanation is explicitly hedged as \"a lot of the story\", not all of it. The note does not point out an error. It offers a rival explanation, the Bolhuis, Cramer, Schulz and Summers finding that adding borrowing costs to the inflation measure closes about 70 percent of the 2023 sentiment gap. That research is real and the quoted numbers check out against the VoxEU column and the IMF piece, but a competing account of the same phenomenon is commentary, not a correction, and readers of Zvi's aside would not come away with any false belief. Sending it would read as arguing with him about macroeconomics under the banner of a fact-check."
+  }
+ ]
+}

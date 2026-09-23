@@ -17,7 +17,6 @@ import { getMonitoringContext, buildReferenceBlock } from "../misinfo-monitoring
 import {
   buildSearchSystemPrompt,
   SEARCH_SYSTEM_PROMPT_CLAIM,
-  SEARCH_TIME_TRAVEL_INSTRUCTION,
   SEARCH_RESPONSE_FORMAT,
   SEARCH_INLINE_RESPONSE_SCHEMA,
   SEARCH_PROMPTED_JSON_INSTRUCTION,
@@ -66,13 +65,11 @@ export function getSearchSystemPrompt(): string {
   // A claim from the everything pipeline is an excerpt plus a claim, not an X
   // post. It gets its own claim-checking prompt and skips the X-only assembly
   // below.
-  if (config.search_claim) return SEARCH_SYSTEM_PROMPT_CLAIM;
+  if (config.commonnotes_pipeline) return SEARCH_SYSTEM_PROMPT_CLAIM;
   const monitoring = getMonitoringContext();
-  let prompt = buildSearchSystemPrompt({
+  return buildSearchSystemPrompt({
     referenceBlock: monitoring ? buildReferenceBlock(monitoring) : null,
   });
-  if (config.time_travel_prompt) prompt += SEARCH_TIME_TRAVEL_INSTRUCTION;
-  return prompt;
 }
 
 // --- Public types ---

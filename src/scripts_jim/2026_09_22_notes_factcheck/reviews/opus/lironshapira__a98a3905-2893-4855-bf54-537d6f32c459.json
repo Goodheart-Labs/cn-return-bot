@@ -1,0 +1,25 @@
+{
+  "item_id": "a98a3905-2893-4855-bf54-537d6f32c459",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "628510d4-1222-4ba9-bb21-94a5b89f6d50",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The claim this note is attached to is \"Doom Debates has hosted White House policymakers as guests\", but the note says nothing about White House policymakers. It talks only about Moshe Vardi and the Turing Award. The policymaker part of Liron's sentence is in fact true, because Dean Ball, who appears in his guest list, was a senior AI policy adviser in the White House Office of Science and Technology Policy. So the note answers a claim nobody disputes and corrects a different one. It is also a duplicate of note d68f3645, which makes the same Vardi correction on the passage where Liron actually writes \"Turing Award winner Moshe Vardi\". Sending both would look sloppy, and this one would read to Liron as a non sequitur pinned to the wrong sentence."
+    },
+    {
+      "note_id": "d68f3645-5d81-4ac6-a232-7df8e8d12d3f",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "This is Liron's own line, spoken by him in the guest-list section: \"Max Tegmark, Vitalik Buterin, Nobel Prize winner Michael Levitt, Turing Award winner Moshe Vardi, Dean Ball, Gary Marcus...\". Nobody else is being quoted and he is not hedging. Vardi has not won the ACM Turing Award. Wikipedia's award list for him gives the Goedel Prize, the Kanellakis Award, the Harry H. Goode Award and the Knuth Prize, and the full list of Turing laureates from 1966 to 2025 does not contain his name. The correction matters because the passage is a fundraising pitch about the calibre of the show's guests, and \"Turing Award winner\" is exactly the credential being used to impress donors. Liron is an accuracy-minded host and this is a simple, checkable credential error, so he would most likely just fix it."
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "item_id": "95a747ef-f59c-4f8f-9fa6-6d725eb04587",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "3ba0a2ab-3fc1-4740-a92f-4ce29166045e",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The quoted words are not Eliezer's. The post is a fictional quiz show with two invented contestants, and the line \"You just can't actually get machinery that small\" belongs to Msr. Soberskeptic, the sceptic character the whole piece exists to refute. The post then refutes him immediately in the next paragraph: \"Sorry, Msr. Soberskeptic, but we're afraid you've overlooked an important practical example! A tree is a self-replicating solar-powered factory that builds a complete copy of itself!\", and Oldhand adds that \"small algae cells aren't far off from one micron on a side\". So the note fact-checks a claim the author is himself fact-checking, which is exactly the failure Andy Masley complained about. The Nobel facts in the note are accurate (the 2016 Chemistry prize did go to Sauvage, Stoddart and Feringa for the design and synthesis of molecular machines), but correctness does not save a note aimed at the wrong speaker."
+    },
+    {
+      "note_id": "25e8c6a1-41d6-4170-a4a0-65b406e75051",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "This is the same sentence from the same fictional sceptic, Msr. Soberskeptic, and again the author argues against it rather than asserting it. On top of that the note does not actually answer the claim it is attached to. The extracted claim is about parts of a sub-micron self-replicating factory never having been built, and a molecular motor or a nanocar is not a part of any self-replicating factory design, so even read charitably the correction misses. It also duplicates the previous note on the identical passage, so sending both would look careless. Eliezer would read this as a bot that did not notice his post is a dialogue."
+    },
+    {
+      "note_id": "b0200a4a-0fec-4b81-ad8e-04249d8d5901",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The line is Oldhand's, the character who speaks for the author, so unlike the other two notes this is close to something Eliezer means. But the note is pedantic. Oldhand's point in context is that the sceptic's hypothetical of a man training an untrusted superintelligence on an air-gapped pile of GPUs does not match how frontier AI is actually developed, and pointing out that a hobbyist can run a downloaded Llama in airplane mode does not touch that argument at all. The reader comes away with no corrected belief that matters. The sourcing is also weak: all three quotes come from a single SEO marketing blog post on aithinkerlab.com that sells a \"Local AI Kit\", which is not the kind of source we should be citing at Eliezer Yudkowsky about how AI systems are run."
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "item_id": "d442d7f2-9fbd-45e3-a721-8fc23a25cbca",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "fd552c06-2e9f-4647-b765-35eb28a49f1e",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "The video opens by saying \"according to economists like Gabriel Zucman\" billionaires do not pay their fair share, and then states as fact: \"While average Americans pay an effective tax rate of about 30%. Forbes 400 richest individuals pay only 28%.\" That is his own assertion, not a view he reports and disputes. I read the study he is plainly drawing on (Balkir, Saez, Yagan and Zucman, NBER working paper 34170, 2025) and it gives 23.8% (rounded to 24%) for the top 0.0002% in 2018-2020 against 30.2% for the whole population; the paper's robustness range for the top 400 is 21.7% to 26.4%, and no specification produces 28%. Both of the note's sources say exactly what the accepted quotes say: the NBER abstract and the Berkeley news piece match word for word. The correction matters because 28% against 30% makes the gap look almost nonexistent, while the study he is citing puts it at six points, which is the whole premise of his opening. The number also cuts in his favour, and he pairs it with the same 30% population figure from that study, so an economist would almost certainly accept that he misread the number rather than argue about it. The only small risk is that he took 28% from some other source we cannot see on screen, but the note is worded as \"the study that pairs with a 30% average American tax rate\", which stays accurate either way."
+    },
+    {
+      "note_id": "e96c2b47-349d-4ff1-88ae-a0cfac4e0029",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "reason": "Half of this note is right and half of it is overstated, and neither half changes anything in the video. The tax rate point is correct: the paper says the Swedish wealth tax had \"a simple two-bracket structure: the marginal tax rate was equal to 1.5% above a threshold\", and its comparison table gives a maximum top rate of 1.5% for Sweden and 2.2% for Denmark, so the video's \"around 2%\" is loose for the pair and wrong for Sweden by half a point. But the video never uses that rate in any calculation. Its UK numbers come from the per-percentage-point elasticity, so 1.5% against 2% leaves every conclusion untouched. The emigration point is weaker than the note claims. The paper says the repeal \"reduced the propensity of wealthy taxpayers to leave Sweden by more than 30%\" and that \"about one-third of expatriation events among the top 2% wealthiest households were caused by the wealth tax before 2007\", so the video's 34% sits inside what the paper actually says, even though 30% is the point estimate. The note's flat claim that \"the 34% figure doesn't appear in the research\" is also careless, because 34% is in the paper, as the drop in value added at a firm whose owner emigrates. Sending this to an economist invites exactly the reply that we misread his source, over two numbers that change none of his conclusions."
+    },
+    {
+      "note_id": "c9ddfa9f-91fd-4500-b247-dcf71f085c34",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "This is his own closing number: \"it would bring in closer to 2.4 billion, a microscopic 0.7% of the total UK government spending.\" The arithmetic is simply wrong, and wrong against his own figures. Earlier in the same video he uses a total budget of 1,368 billion pounds and correctly calls 7.8 billion \"roughly half a percent\"; 2.4 billion out of the same 1,368 billion is about 0.18%, not 0.7%. The note's sources hold up: the December 2025 GOV.UK public spending release gives Total Managed Expenditure of 1,288.1 billion pounds for 2024-25, and the note's point that 0.7% would need total spending of only about 340 billion is right under any plausible figure for the year. It is one of the two punchline numbers of his conclusion and it is out by a factor of about three and a half, so a viewer quoting \"0.7% of government spending\" would be quoting something that is not true. The correction also runs in his favour, since the real share is even smaller than he says, so he would very likely treat it as a slip and accept it."
+    }
+  ]
+}

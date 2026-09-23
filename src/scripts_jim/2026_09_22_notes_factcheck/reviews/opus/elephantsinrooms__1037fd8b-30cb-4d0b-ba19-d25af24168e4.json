@@ -1,0 +1,25 @@
+{
+  "item_id": "1037fd8b-30cb-4d0b-ba19-d25af24168e4",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "fe732fe4-fc55-4a8c-994c-899aaf92b853",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note corrects a name that almost certainly comes from the transcript, not from Ken LaCorte. The note's own third source admits this: it cites the pronunciation of Guillebaud and explains that it is 'how a transcript might mishear the name as Gibot'. The transcript for this video is badly mangled throughout in a way the other Elephants in Rooms transcripts are not, with lines like 'the war in the West would have ended before the United States even came into being' and the host introducing himself as 'Ken LeCour', so it reads as a machine-translated caption track rather than a faithful record of what he said. Everything of substance in the passage is correct, and the note's own Princeton source confirms it: Balogh and Guillebaud were two British economists of the late 1930s who argued the Nazi economy would not collapse soon. Sending a creator a public correction whose entire content is the spelling of an economist's surname, when we cannot even show he said it wrong, is exactly the pedantic note that burns the relationship."
+    },
+    {
+      "note_id": "a5880757-a76b-40dd-8e85-6634c6419ac8",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "LaCorte makes three points here: the 30-point programme is 'quoted everywhere', the wartime Gestapo traced it to one fanatic, and the state never adopted it as policy. The note answers only the middle point and asserts the programme was 'publicly released by Alfred Rosenberg'. Its own evidence undercuts that. The sharperiron page rests entirely on a New York Times report of 3 January 1942 that took the text from the Swiss socialist paper Volksrecht in Zurich, and that same report says the programme had not been made public and that 'the people themselves have not been informed'. So the note's word 'publicly' contradicts the only source it has, and it offers no German original, no archival document and no historian for Rosenberg's authorship. Meanwhile the part of LaCorte's sentence that actually carries weight, that it was never official policy and the state never adopted it, is what mainstream accounts of Nazi church policy also say, because Hitler refused to commit openly to a fight with the churches. LaCorte is being careful about a much-circulated document of shaky provenance and then immediately grants the substance anyway, saying 'there is no doubt that Alfred Rosenberg... intended to destroy German Christianity'. A note that tells him he is wrong on the basis of the very wartime press report he is casting doubt on would be an easy and embarrassing rebuttal."
+    }
+  ]
+}

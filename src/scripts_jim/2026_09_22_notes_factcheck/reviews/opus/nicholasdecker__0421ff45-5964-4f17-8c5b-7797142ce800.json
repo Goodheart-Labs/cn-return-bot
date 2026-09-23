@@ -1,0 +1,16 @@
+{
+  "item_id": "0421ff45-5964-4f17-8c5b-7797142ce800",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "756db75a-b033-4d92-8d13-97cc4ee3f9ff",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence the note attacks is immediately qualified by the author himself. He writes \"The result is that they do not sell the drug overseas at any price\" and then, in the very next sentence, reports the cited paper correctly: \"Dubois, Gandhi, and Vasserman (2022) work out the consequences of reference pricing with just Canada, and find that it will not meaningfully decrease prices in America, while greatly increasing them in Canada.\" So the note's first half tells Decker something he already wrote one line later, and no reader is left believing the study predicts withdrawal from Canada. Worse, one of the note's own sources supports him: the Toulouse School of Economics summary says \"Both sides recognize that firms are unlikely to sell in countries that insist on a price that significantly undermines their US profits,\" which is exactly the mechanism he invokes when he closes the paragraph with \"what might be affordable in Canada is prohibitive in Nigeria.\" His claim is about poor countries that cannot pay the raised price, while the paper the note leans on simulates only Canada, so the note is answering a narrower question than the one he asked. The Eli Lilly Mounjaro fact is real (the UK list price of the highest dose rose 170% from £122 to £330 in August 2025), but it is a rich reference country, not the case he was making. Sending this would invite the reply \"read my next sentence, and read your own source.\""
+    }
+  ]
+}

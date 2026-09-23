@@ -1,0 +1,16 @@
+# A Signal bridge dedicated to the bot's own account, beside the gym bridge on :8080.
+# Registration only works in MODE=normal: start with SIGNAL_API_MODE=normal, register
+# and verify the number through the REST API, then recreate the service in json-rpc mode.
+name: cn-signal-api
+services:
+  signal-api:
+    image: bbernhard/signal-cli-rest-api:0.100
+    environment:
+      MODE: ${SIGNAL_API_MODE:-json-rpc}
+    ports:
+      - "127.0.0.1:8081:8080"
+    volumes:
+      - type: bind
+        source: ${CN_SIGNAL_API_CONFIG_DIR:-/opt/cn-return-bot/signal-cli-config}
+        target: /home/.local/share/signal-cli
+    restart: unless-stopped

@@ -25,12 +25,7 @@ export const dbState = {
     visits: number;
     pages: number;
     readers: number;
-    regular_readers: number;
   }[],
-  /** What fetchTwoReadersSeen answers: whether any creator has ever been
-   *  visited by two different readers, which is what switches the walk from the
-   *  old visit rule to the reader rule. */
-  twoReadersSeen: false,
   /** What fetchAllTopPosts answers. */
   topPosts: [] as {
     feed_url: string;
@@ -60,7 +55,6 @@ export const resetDbState = () => {
   dbState.existingItem = null;
   dbState.creatorProjects = [];
   dbState.creatorAttention = [];
-  dbState.twoReadersSeen = false;
   dbState.topPosts = [];
   dbState.feedPacing = {
     dbNow: new Date("2026-09-15T00:00:00Z"),
@@ -88,12 +82,12 @@ export const dbMock = () => ({
   fetchItemUrlsContaining: () => Promise.resolve(dbState.knownItems),
   fetchCreatorProjects: () => Promise.resolve(dbState.creatorProjects),
   fetchCreatorAttention: () => Promise.resolve(dbState.creatorAttention),
-  fetchTwoReadersSeen: () => Promise.resolve(dbState.twoReadersSeen),
   fetchAllTopPosts: () => Promise.resolve(dbState.topPosts),
   fetchFeedPacing: () => Promise.resolve(dbState.feedPacing),
   fetchCostSinceUsd: () => Promise.resolve(0),
   setFeedAlarm: record("setFeedAlarm"),
   replaceFeedTopPosts: record("replaceFeedTopPosts"),
+  stampTopPostsAttempt: record("stampTopPostsAttempt"),
   upsertCreatorPriority: record("upsertCreatorPriority"),
   fetchItemClaims: () => Promise.resolve([]),
   fetchOrphanedProcessingItems: () => Promise.resolve([]),

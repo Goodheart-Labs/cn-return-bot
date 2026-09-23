@@ -114,37 +114,20 @@ export interface BotConfig {
     | "serper_summarized"; // A tool-calling loop calls google_search, and Gemini summarizes the Serper results.
   video_description_strategy: VideoDescriptionStrategy;
   parallel_research: boolean;
-  /**
-   * When this is true, both simple-bot's search prompt and its writer prompt gain
-   * the time-travel test. A correction must have been accurate and fair at the
-   * moment the post was published. A claim that only later events made outdated
-   * is not an error. The instruction arm of TIMING_TREATMENT_TEST sets this;
-   * the context arm sets timing_context instead.
-   */
-  time_travel_prompt?: boolean;
-  /**
-   * When this is true, simple-bot runs an extractor after search that measures
-   * the gap between the event the post describes and the moment the post was
-   * published. A post published within 6 hours of the event, or while the event
-   * was still going on, counts as a fog-window post. Such a post gets a
-   * timing-context block piped into the writer's user message, plus a
-   * pre-computed Post-age line. This is information for the writer, not a gate.
-   * The context arm of TIMING_TREATMENT_TEST sets this instead of
-   * time_travel_prompt. This applies to simple-bot only.
-   */
-  timing_context?: boolean;
   /** Enables the writer's final abstention check. */
   writer_last_check?: boolean;
   /** Requires the writer to dispute a claim the post's central argument rests on. */
   writer_central_claim?: boolean;
   /**
-   * When this is true, simple-bot's search step uses the claim-check prompt. The
-   * input is then a claim extracted from a podcast, an interview, or an article,
-   * together with its surrounding context, rather than an X post. The everything
-   * pipeline forces this on. This applies to simple-bot only.
-   * SIMPLE_BOT_CLAIM_TEST sets it and it defaults to false.
+   * This is true when the run checks a Common Notes claim instead of an X post.
+   * The input is then a claim extracted from a podcast, an interview, or an
+   * article, together with its surrounding context. The Common Notes pipeline
+   * forces this on, and it applies to simple-bot only.
+   * Two steps read it. The search step uses the claim-check prompt. Scoring
+   * skips X's evaluate_note call, because the claim has no real tweet behind it.
+   * COMMONNOTES_PIPELINE_TEST sets it and it defaults to false.
    */
-  search_claim?: boolean;
+  commonnotes_pipeline?: boolean;
   /**
    * The misinfo topic this run matched, when it came from the XXL-feed misinfo
    * pre-pass. This mirrors the forced misinfo_topic pick into the config, so

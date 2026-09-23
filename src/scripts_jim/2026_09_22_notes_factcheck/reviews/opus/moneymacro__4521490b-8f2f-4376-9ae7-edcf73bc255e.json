@@ -1,0 +1,43 @@
+{
+  "item_id": "4521490b-8f2f-4376-9ae7-edcf73bc255e",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "1338d69a-01d0-462b-b832-a315927b81eb",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The claim this note is attached to is only that Okubo cut off his topknot and put on a Western suit in 1871, and that part of the video is fine. The hair-cutting edict (Sanpatsu Dattorei) was issued in September 1871, Okubo was appointed vice-ambassador of the Iwakura Mission that same year, and he is popularly described as the first prominent official to cut his topknot after the edict; Japanese sources note the exact date is not recorded. The note instead says 'the overthrow of the Tokugawa shogunate and restoration of Emperor Meiji occurred in 1868, not 1871' and adds that this was 'three years before the date given here', which reads as a correction of the haircut date and is therefore wrong as attached. It is also a duplicate of note e394e2f4, which makes the same correction against the clause where it actually belongs. Sending both would look careless, and the author could fairly reply that he never dated the haircut to 1868."
+    },
+    {
+      "note_id": "1c202b15-be4c-4474-8b51-add87b963a05",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The first half of this note fact-checks a caption error, not the author. 'Huas Shakab and Weinstein' is the automatic transcript mangling the spoken names Juhasz, Sakabe and Weinstein, so the video almost certainly said the authors correctly and the note would accuse him of getting names wrong that he did not get wrong. The second half is a quibble: the video says technical books in 1870 were 'exclusively available in European languages like English, France, and German', while the paper says most of the world's technical knowledge was in French, English, Italian and German. The paper's own finding for Japan is exactly the video's point, that Japan had basically no technical books in 1870 and was on a par with English by 1910, so dropping Italian and saying 'exclusively' instead of 'most' changes nothing about the argument. A note built on a caption artifact plus a word choice is precisely the kind that burns the relationship."
+    },
+    {
+      "note_id": "e394e2f4-99f8-47c8-88c3-8cd815f60d50",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "The video says 'in 1871, Okubo Toshimichi did something unthinkable... and together with a core group of reformers, he overthrew the reigning shogun and replaced him with Emperor Meiji', so the year 1871 governs the overthrow as well. The Meiji Restoration coup took place in Kyoto on 3 January 1868 and ousted the last shogun, Tokugawa Yoshinobu, which the Britannica sources quoted in the note state accurately. This is the central event of a video about the Meiji Restoration, and the video is inconsistent with itself, since its opening line already puts Japan's turning point in 1868. A viewer with no prior knowledge would come away believing the restoration happened in 1871. The correction is a plain date fix that does not touch the author's argument, so an economist who spent months on the research would most likely accept it, though he may reply that 1871 was meant to date only the haircut."
+    },
+    {
+      "note_id": "2a03a472-10b3-46f4-8d8a-d2dce3d6f5b4",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The extracted claim is that Japan's defeat of Russia contributed to the ending of the unequal treaties, and that is the standard historical account rather than an error. The note's own fifth source says the Japanese, 'in a mood of increased confidence after the Russo-Japanese war, ended the earlier treaties with a view to concluding the Anglo-Japanese Tariff Treaty of 1911', which contradicts the note's closing words 'not a direct result of the war'. The note corrects the abolition of extraterritoriality in 1899, but extraterritoriality is not what the video is talking about: earlier in the video the unequal treaties are defined purely as the cap on import tariffs at 5 percent, and tariff autonomy was only regained in 1911, after the war. The real flaw in the video is compression, since treaty revision began with the 1894 Anglo-Japanese treaty, but the note does not say that and instead denies a causal link its own evidence supports. The author would have an easy and public rebuttal."
+    }
+  ]
+}

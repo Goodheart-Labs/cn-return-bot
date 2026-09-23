@@ -1,0 +1,73 @@
+{
+  "item_id": "1a623387-3fa3-461f-9654-bed2bd306c30",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "2fe2c754-f2f2-4622-956b-01b96b3e7ce1",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "guest",
+      "send_advice": null,
+      "reason": "This is in Sarah Paine's prepared lecture, not the Q&A, and she states it flatly while showing the quote on a slide: \"And then here Deng Xiaoping was in town and he told Carter, we applaud your decision to basically toss all these proliferation human rights considerations for Pakistan and just arm them.\" Dwarkesh publishes the lecture as the whole first half of his episode and never questions it, so the creator presents it as content he stands behind, even though the words are his guest's. I read the State Department record the note cites (FRUS 1977-80 vol. XIII, doc. 292): it is a memorandum of conversation dated January 8, 1980 in the Great Hall of the People in Beijing between Secretary of Defense Brown and Vice Premier Deng, and Deng says \"So now you have decided to put this aside and solve the question of military and economic aid to Pakistan. We applaud this decision\" after Brown says the US will set aside its objections to Pakistan's nuclear programme. Deng's only US visit was January 28 to February 5, 1979, almost a year before the Soviet invasion of Afghanistan that prompted the aid decision, so the lecture's version cannot be right. Her point that China welcomed the decision survives, but a quote pinned to the wrong person, city and year in a history lecture is a real error, and a historian who works from these archives will accept the primary document. The independent singjupost transcript has the same wording, so this is not a caption artefact."
+    },
+    {
+      "note_id": "6df83182-8a54-4345-8fdc-b9410c4cea90",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "whose_words": "guest",
+      "send_advice": null,
+      "reason": "This is Sarah Paine answering Dwarkesh in the Q&A, and she frames the number as an impression she has not yet checked: \"I will eventually compile the stats on this. Not that they're great stats, but it's obscene numbers. I think Congo had a civil war where literally over 10 million people died.\" The note's figures are right, I confirmed the IRC report says \"5.4 million excess deaths have occurred between August 1998 and April 2007\" and the CFR tracker says \"approximately six million deaths\" since 1996, and no serious estimate reaches 10 million for a Congolese civil war. But the number is a passing example for her point that the Cold War was bloody in the third world, a point that stands just as well at five or six million, and she has explicitly flagged it as uncompiled. Correcting a figure the speaker has just labelled provisional reads as a gotcha, and it is a guest's aside that Dwarkesh neither adopts nor builds on. The first reviewer's reservation is disqualifying."
+    },
+    {
+      "note_id": "e29fe306-dd21-4501-b1da-c647a590c1df",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "likely",
+      "whose_words": "guest",
+      "send_advice": "Send it only alongside the Deng note as a second small correction to the lecture, not on its own. Drop \"Eisenhower approved Operation Ajax on July 11, 1953\", which rests on a single opinion piece and is not needed.",
+      "reason": "Sarah Paine says this in the Q&A while answering a question about Cold War miscalculations: \"When the United States deposes Mosaddegh in Iran in 1954, I could see Eisenhower's view as, hey, we're just deposing one guy.\" The singjupost transcript has the same year, so the captions did not mishear it. The coup was on August 19, 1953, as Wikipedia states and every standard account agrees, so the note is correct and its wording is clean. What gives me pause is that this is a one-year slip in an unscripted answer, and nothing in her argument about Eisenhower's trade-off or Iranian resentment depends on the year, so on its own it is close to pedantic. A historian will accept a date correction without fuss, which is why I do not call it bad, but it should ride along with a more substantive note rather than be the reason for contacting the author."
+    },
+    {
+      "note_id": "a1dc2023-0f8a-46f3-bba5-908f4b142956",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "send_advice": "Drop the second sentence (\"That $1 trillion figure reflects the total global Lend-Lease program to all Allies combined, not aid to Stalin alone\"), which is a guess: the whole programme comes to $600-700 billion by consumer prices. In the first sentence say \"adjusted for inflation\" instead of \"in today's dollars\".",
+      "reason": "These are Dwarkesh's own words, not Sarah Paine's. The transcript's editorial note (\"somewhat unclear if Dwarkesh says 'we' or 'he' here\") sits inside this passage, and the singjupost transcript labels \"In today's dollars, we sent Stalin one trillion dollars worth of aid\" as Dwarkesh Patel; he is pushing back on Paine's defence of Lend-Lease and she answers \"We couldn't get it in.\" The National WWII Museum page says Lend-Lease \"transferred over $11 billion dollars of goods to Soviet Russia, roughly the equivalent of $250 billion today\", and Wikipedia gives $11.3 billion, about $205 billion in 2025 dollars, so the price-adjusted figure is four to six times smaller than his, and the number carries his argument that Stalin was showered with aid while China was starved. Two things give me pause. First, if one scales $11.3 billion by its share of the wartime US economy (about 5 percent of GDP) rather than by prices, it comes to roughly $1.5 trillion today, so he can defend the figure by saying he meant the burden on the economy. Second, the note's claim that the $1 trillion is the whole programme is unsupported: the museum's multiplier would put the $50 billion total near $1.1 trillion, but Wikipedia and RFE/RL put it at $600-700 billion, so that sentence is a guess dressed as a fact. With the second sentence removed, the note is a fair correction of a headline number Dwarkesh stated as his own."
+    },
+    {
+      "note_id": "30eb7189-c666-4c75-8e1a-5998aabda56a",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "This is Dwarkesh's own statement (the singjupost transcript labels \"Our Lend-Lease to Chiang Kai-shek was one to two percent of what we're sending to Stalin\" as Dwarkesh Patel), and he is talking about aid during the war against Japan. The note's 14 percent comes from the cumulative programme totals, $1.6 billion for China against $11.3 billion for the Soviet Union, but roughly half of China's total arrived after the war ended. The State Department's April 1946 memorandum (FRUS 1946 vol. X, doc. 414) says China received \"some $700 million in the war period to V-J Day\" and \"some $800 million in the period V-J Day to June 30, 1946\", and the Twentieth Lend-Lease Report to Congress puts shipments to China through June 30, 1945 at $397 million against $9.13 billion to the USSR, which is about 4 percent. Rana Mitter's figures, quoted in a review of his book, put China's share of all Lend-Lease at 1.5 percent in 1941-42 and 0.5 percent in 1943-44, which is about 2 percent of what the Soviets were getting in the peak years. So during the war the true ratio is somewhere between 2 and 7 percent depending on the period and the accounting, and Dwarkesh's \"1 to 2 percent\" is a modest understatement, not a tenfold error. The note's headline correction to 14 percent is the misleading number here, and a note that could at best move him from \"1 to 2 percent\" to \"a few percent\" does not change his point that China got a tiny fraction of what Stalin got, a point Paine herself concedes with \"We couldn't get it in.\""
+    },
+    {
+      "note_id": "e7b933f8-0b4d-44aa-8926-ce59d63d6f7f",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "whose_words": "guest",
+      "send_advice": null,
+      "reason": "Sarah Paine says this as a throwaway line at the very end, in a passage about Russian cruelty: \"Peter the Great, back in the day, he tortured his son to death. Who does that? He didn't have a replacement son either. Unlike Stalin.\" The comparison is with Stalin, who let his son Yakov die in German captivity but still had Vasily, so her meaning is that Peter ended up with no son to succeed him, which is true. The note's facts check out, Wikipedia confirms Peter Petrovich was born in November 1715, became heir in February 1718 when Alexei was removed from the succession, and died in April 1719 aged three, but the note itself ends by conceding her point with \"leaving Peter without a surviving son\". A correction that agrees with the speaker's meaning and only adds that a toddler heir existed for about a year is a technicality, and it touches nothing she argues. The first reviewer's hesitation was right and it is disqualifying."
+    }
+  ]
+}

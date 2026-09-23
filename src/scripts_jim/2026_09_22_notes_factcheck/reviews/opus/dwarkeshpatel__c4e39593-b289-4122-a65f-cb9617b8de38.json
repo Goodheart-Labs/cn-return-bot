@@ -1,0 +1,43 @@
+{
+  "item_id": "c4e39593-b289-4122-a65f-cb9617b8de38",
+  "reviewer": "opus",
+  "source_read": "fetched:https://www.dwarkesh.com/p/dylan-patel",
+  "notes": [
+    {
+      "note_id": "22075a54-073d-4593-99e0-169c27ceda9f",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Dylan Patel did say \"medium-speed reciprocating engines: engines that spin in circles, like a diesel engine\", and it is true that a reciprocating engine's pistons move back and forth rather than in a circle. But this is a throwaway gloss in a spoken podcast, and the note corrects a verbal simplification rather than a belief the speaker is trying to convey. The point of the passage is that gas turbines are not the only way to power a data center: \"There are ten people who make engines that way... these companies all have capacity and could scale and convert that for data center power.\" Nothing in that argument changes if the engine reciprocates instead of spinning, and the crankshaft output of a diesel engine does in fact rotate, so a listener comes away with no wrong belief that matters. Sending this to a semiconductor analyst as a public correction would read as a gotcha on a slip of the tongue. The two not-helpful votes it already has point the same way."
+    },
+    {
+      "note_id": "9beead00-e5c8-4a37-ab2c-88343c93e409",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence is \"Nvidia is now the largest customer at TSMC and SK Hynix, the largest memory manufacturer\", and the descriptor is a passing appositive, not the point. Patel's argument is that there is no more mobile and PC capacity left to slide over to AI, and that argument is untouched by which of Samsung and SK Hynix is currently number one. The underlying number in the note checks out: TrendForce reports Samsung regained the top DRAM spot in Q4 2025 with 36.5% against SK Hynix's 32.1%. But SK Hynix had held the DRAM lead through most of 2025 and still holds roughly 62% of HBM, which is the memory that matters for AI, so calling it the largest memory maker in a podcast recorded in March 2026 is a defensible shorthand rather than an error. Patel runs SemiAnalysis and sells exactly this market-share data, so he would read the note as quibbling over a ranking that flipped one quarter earlier on one metric. This is tangential, and tangential notes are bad."
+    },
+    {
+      "note_id": "412f90c8-43c9-4433-a525-5917bd33423d",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "The note compares ASML's rated specification numbers with what Patel is plainly describing, which is realised throughput in a working fab. ASML quotes 125 wafers per hour for the NXE:3400B at a dose of 20 mJ/cm2, but production layers at the leading edge need far higher doses, and independent analysis of EUV orders puts effective production throughput well under 100 wafers per hour and often nearer 50. Several sources put a working EUV scanner at roughly 1,000 to 1,500 wafers a day, which is 40 to 63 wafers per hour, so Patel's \"roughly 75 wafers per hour\" is a reasonable average over an installed base that still contains many older tools. He also handles uptime separately, saying \"the tool is up roughly 90% of the time\", and later says outright \"For simplicity's sake, we're ignoring the advances in overlay or throughput per tool for this podcast.\" The note would matter if it were right, because the 75 figure drives his three-and-a-half tools per gigawatt and his 200 gigawatt ceiling for 2030, but that is exactly why sending a wrong version of it is the worst outcome. Patel would answer in one line that the note is quoting brochure throughput at a dose nobody prints critical layers at."
+    },
+    {
+      "note_id": "c45c7c0b-be2a-47ad-958a-dac79dc92e16",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note tells Patel that Apple is the first customer on TSMC's 2nm node and holds about half the initial capacity, but he says the same thing himself two paragraphs earlier: \"This year Apple has the majority of N2 that's going to get fabricated.\" His actual claim is narrower and different. He is saying Apple is for the first time not alone at the front of a node, because \"with 2 nm, you've got AMD trying to make a CPU and a GPU chiplet that they use advanced packaging to package together, in the same timeframe as Apple.\" AMD's Zen 6 Venice did tape out on N2 and ships in the same window, so the note does not contradict him at all. The extracted claim is also a broken fragment, \"2 nm is actually the first time they're not. Well, that's besides Huawei\", which on its own says nothing checkable. This is the Andy Masley failure mode exactly: the note argues against a position the author never took and partly restates his own words back at him."
+    }
+  ]
+}

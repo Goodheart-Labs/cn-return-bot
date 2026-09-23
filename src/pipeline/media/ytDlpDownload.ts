@@ -8,11 +8,12 @@
  * `fetchYtDlpMetadata`, `downloadVideoWithYtDlp` and `fetchAutoSubs` instead.
  */
 
-import { execFile, execFileSync } from "child_process";
-import { promisify } from "util";
+import { execFile } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
+import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
 import { decodeHtmlEntities } from "../utils/html";
+import { hideProxyAddress, withResidentialProxy } from "../utils/residentialProxy";
 
 export interface YtDlpMetadata {
   id: string;
@@ -60,7 +61,6 @@ function classifyByExtension(filePath: string): YtDlpKind | null {
 }
 
 const YT_DLP_TIMEOUT_MS = 120_000;
-const execFileAsync = promisify(execFile);
 const LOW_QUALITY_FORMAT = "worst[height<=240]/worst";
 
 export type YtDlpQuality = "default" | "low";
@@ -68,65 +68,158 @@ export type YtDlpQuality = "default" | "low";
 const YOUTUBE_URL_RE = /^https?:\/\/([\w-]+\.)?(youtube\.com|youtu\.be)\//i;
 
 /** YouTube refuses video requests that come from a datacenter IP. It answers
- *  them with "Sign in to confirm you're not a bot". CI therefore sends its
- *  YouTube requests through a residential proxy. Setting YTDLP_PROXY_URL turns
- *  that on. Every other site is always fetched directly. Those sites work
- *  without a proxy, and proxy traffic is paid for by the gigabyte. */
-function ytDlpProxyArgs(url: string): string[] {
-  const proxy = process.env.YTDLP_PROXY_URL;
-  return proxy && YOUTUBE_URL_RE.test(url) ? ["--proxy", proxy] : [];
+ *  them with "Sign in to confirm you're not a bot". So YouTube requests go
+ *  through the residential proxy, with its retries. Every other site is always
+ *  fetched directly. Those sites work without a proxy, and proxy traffic is
+ *  paid for by the gigabyte. */
+function throughProxyIfYoutube<T>(
+  url: string,
+  attempt: (proxyUrl: string | undefined) => Promise<T>,
+  isRetryable?: (err: unknown) => boolean,
+): Promise<T> {
+  return YOUTUBE_URL_RE.test(url) ? withResidentialProxy(url, attempt, isRetryable) : attempt(undefined);
 }
 
-const PROXY_RETRY_ATTEMPTS = 3;
+const proxyArgs = (proxyUrl: string | undefined): string[] => (proxyUrl ? ["--proxy", proxyUrl] : []);
 
-/** Run yt-dlp, adding the proxy flag when the URL needs it. A proxied call is
- *  retried a few times. The proxy pool picks a new egress IP for every
- *  connection, and now and then it hands out an IP that YouTube has already
- *  flagged. A retry simply draws a fresh IP. A direct call runs only once. */
-export function execYtDlp(url: string, args: string[]): string {
-  const proxyArgs = ytDlpProxyArgs(url);
-  const attempts = proxyArgs.length > 0 ? PROXY_RETRY_ATTEMPTS : 1;
-  let lastError: unknown;
-  for (let attempt = 1; attempt <= attempts; attempt++) {
-    try {
-      return execFileSync("yt-dlp", [...proxyArgs, ...args], {
-        timeout: YT_DLP_TIMEOUT_MS,
-        encoding: "utf8",
-        stdio: ["pipe", "pipe", "pipe"],
-      });
-    } catch (err) {
-      lastError = err;
-      if (attempt < attempts) console.warn(`yt-dlp attempt ${attempt}/${attempts} failed for ${url}, retrying with a fresh proxy IP`);
-    }
-  }
-  throw lastError;
+/** yt-dlp's JSON dump of a video with many formats can pass a megabyte. */
+const YT_DLP_MAX_OUTPUT_BYTES = 64 * 1024 * 1024;
+
+/** How much of yt-dlp's complaint goes into a log line or an error message. */
+const MAX_REASON_LENGTH = 200;
+
+interface YtDlpRun {
+  stdout: string;
+  stderr: string;
+  /** Set when yt-dlp exited with an error, was killed, or could not start. */
+  error: (Error & { killed?: boolean; code?: unknown }) | null;
 }
 
-/** The asynchronous twin of execYtDlp, for calls that run several at once.
- *  Same proxy rule and the same retry on a flagged proxy IP. It resolves with
- *  stdout even when yt-dlp exits non-zero, because a multi-URL call keeps
- *  going past a video it cannot read (a private or removed one) and reports
- *  the failure through its exit code while the other videos' lines are
- *  already on stdout; those lines are the point. */
-export async function execYtDlpAsync(url: string, args: string[]): Promise<string> {
-  const proxyArgs = ytDlpProxyArgs(url);
-  const attempts = proxyArgs.length > 0 ? PROXY_RETRY_ATTEMPTS : 1;
-  let lastError: unknown;
-  for (let attempt = 1; attempt <= attempts; attempt++) {
-    try {
-      const { stdout } = await execFileAsync("yt-dlp", [...proxyArgs, ...args], {
-        timeout: YT_DLP_TIMEOUT_MS,
-        encoding: "utf8",
-        maxBuffer: 16 * 1024 * 1024,
-      });
-      return stdout;
-    } catch (err: any) {
-      if (typeof err?.stdout === "string" && err.stdout.trim()) return err.stdout;
-      lastError = err;
-      if (attempt < attempts) console.warn(`yt-dlp attempt ${attempt}/${attempts} failed for ${url}, retrying with a fresh proxy IP`);
-    }
+/** Runs yt-dlp without blocking. The services machine checks several claims
+ *  at once in one process, and a blocking call would stall all of them for as
+ *  long as yt-dlp runs. */
+function runYtDlp(args: string[], timeoutMs: number): Promise<YtDlpRun> {
+  return new Promise((resolve) => {
+    execFile("yt-dlp", args, { timeout: timeoutMs, encoding: "utf8", maxBuffer: YT_DLP_MAX_OUTPUT_BYTES }, (error, stdout, stderr) =>
+      resolve({ stdout, stderr, error }),
+    );
+  });
+}
+
+/** Run yt-dlp and return what it printed, or throw when it failed. A YouTube
+ *  call goes through the residential proxy, and any failure is retried on a
+ *  fresh connection. The thrown error's message is yt-dlp's command line and
+ *  complaint, with the proxy's credentials taken out. */
+export async function execYtDlp(url: string, args: string[]): Promise<string> {
+  return throughProxyIfYoutube(url, async (proxyUrl) => {
+    const run = await runYtDlp([...proxyArgs(proxyUrl), ...args], YT_DLP_TIMEOUT_MS);
+    if (run.error) throw new Error(hideProxyAddress(run.error.message));
+    return run.stdout;
+  });
+}
+
+/** YouTube could not be reached, as opposed to YouTube answering that the
+ *  video has no captions. The caller must treat this as a network failure:
+ *  retry later, never record it as a fact about the video. Before GOO-169
+ *  every such failure became "No transcript available" and the item was
+ *  marked a permanent error. */
+export class YoutubeUnreachableError extends Error {
+  constructor(url: string, reason: string) {
+    super(`YouTube could not be reached for ${url}: ${reason}`);
+    this.name = "YoutubeUnreachableError";
   }
-  throw lastError;
+}
+
+/** What yt-dlp prints when the trouble is the path to YouTube rather than the
+ *  video: the residential proxy's requests hanging or being refused, a proxy
+ *  address YouTube has flagged, our own kill of a hung call, or a PO token
+ *  YouTube did not accept. */
+const YOUTUBE_UNREACHABLE_RE =
+  /Unable to download (API page|webpage)|operation timed out|ETIMEDOUT|wrong version number|HTTP Error 429|Sign in to confirm|PO Token/i;
+
+/** How long one caption call may run before it is killed and counted as not
+ *  having reached YouTube. A good call through the proxy takes 6 to 25
+ *  seconds; one that is still running after a minute is hung on a dead proxy
+ *  address, and a fresh address is what helps, not more waiting. */
+const CAPTION_CALL_TIMEOUT_MS = 60_000;
+
+/** Where the PO token provider listens: the bgutil server that
+ *  ops/cn-pot-provider.service runs on the services machine and that
+ *  .github/actions/setup-youtube-captions starts in an Actions run. */
+const PO_TOKEN_PROVIDER_URL = process.env.PO_TOKEN_PROVIDER_URL ?? "http://127.0.0.1:4416";
+
+/** A PO token for one video's captions. A PO token ("proof of origin") is
+ *  what YouTube's web player presents to show it is a real player; without
+ *  one YouTube lists a video's captions and refuses to hand them over. The
+ *  provider generates it by running YouTube's own attestation script, in ten
+ *  milliseconds once warm.
+ *
+ *  We ask the provider ourselves instead of letting yt-dlp's bgutil plugin do
+ *  it, because the plugin passes yt-dlp's proxy on to the provider. The token
+ *  was then generated through the residential proxy, whose path to Google
+ *  hangs for hours at a time, and every caption call died waiting for it. A
+ *  token is bound to the video, not to an address, so one generated directly
+ *  is accepted for a download that goes through the proxy. */
+async function fetchPoToken(videoId: string): Promise<string> {
+  let answer: { poToken?: string; error?: string };
+  try {
+    const response = await fetch(`${PO_TOKEN_PROVIDER_URL}/get_pot`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ content_binding: videoId }),
+      signal: AbortSignal.timeout(CAPTION_CALL_TIMEOUT_MS),
+    });
+    answer = (await response.json()) as { poToken?: string; error?: string };
+  } catch (err: any) {
+    throw new Error(`The PO token provider at ${PO_TOKEN_PROVIDER_URL} did not answer (${err?.message}). YouTube captions cannot be fetched without it; see ops/README.md.`);
+  }
+  if (!answer.poToken) throw new Error(`The PO token provider gave no token: ${answer.error ?? "empty answer"}`);
+  return answer.poToken;
+}
+
+/** The arguments that make yt-dlp fetch captions as YouTube's own web player
+ *  with the given token. Every other client yt-dlp would try first spends a
+ *  minute and a half timing out on YouTube's internal API through the proxy. */
+const webPlayerArgs = (poToken: string): string[] => ["--extractor-args", `youtube:player_client=web;po_token=web.subs+${poToken}`];
+
+/** One yt-dlp caption process, with the proxy and the web player's token
+ *  when the URL is YouTube's, returning what it wrote on both streams. Unlike
+ *  execYtDlp it never throws on a non-zero exit, because the caption calls
+ *  have to read stderr in every case: with --ignore-no-formats-error yt-dlp
+ *  exits zero after a request that never got an answer, and stderr is the
+ *  only place that says so. A call we killed for taking too long is reported
+ *  as a timeout, which YOUTUBE_UNREACHABLE_RE counts as not having reached
+ *  YouTube. */
+async function runCaptionCall(url: string, args: string[], proxyUrl: string | undefined): Promise<{ stdout: string; stderr: string }> {
+  const videoId = extractYoutubeVideoId(url);
+  const playerArgs = videoId ? webPlayerArgs(await fetchPoToken(videoId)) : [];
+  const run = await runYtDlp([...proxyArgs(proxyUrl), ...playerArgs, ...args], CAPTION_CALL_TIMEOUT_MS);
+  const failure = run.error?.killed ? "yt-dlp operation timed out" : typeof run.error?.code === "string" ? run.error.message : "";
+  return { stdout: run.stdout, stderr: failure ? `${run.stderr}\n${failure}` : run.stderr };
+}
+
+/** Runs a caption call until it got what it came for or YouTube has
+ *  answered. `found` reads the result: caption files on disk, or tracks in a
+ *  listing. Success is judged by that and never by the warnings, because a
+ *  call that wrote the captions can still print "HTTP Error 429" for a page
+ *  it did not need. A call that found nothing and whose output says YouTube
+ *  was not reached throws YoutubeUnreachableError, and the proxy wrapper runs
+ *  it again on a fresh connection until its tries run out. A call that found
+ *  nothing while YouTube did answer returns null: the video has nothing to
+ *  give. */
+async function runCaptionCallUntilReached<Found>(url: string, args: string[], found: (stdout: string) => Found | null): Promise<Found | null> {
+  return throughProxyIfYoutube(
+    url,
+    async (proxyUrl) => {
+      const result = await runCaptionCall(url, args, proxyUrl);
+      const value = found(result.stdout);
+      if (value !== null) return value;
+      const unreachableLine = result.stderr.split("\n").find((line) => YOUTUBE_UNREACHABLE_RE.test(line));
+      if (!unreachableLine) return null;
+      throw new YoutubeUnreachableError(url, unreachableLine.trim().slice(0, MAX_REASON_LENGTH));
+    },
+    (err) => err instanceof YoutubeUnreachableError,
+  );
 }
 
 /**
@@ -137,12 +230,12 @@ export async function execYtDlpAsync(url: string, args: string[]): Promise<strin
  * the duration decides which quality it downloads and whether it asks for
  * auto-generated subtitles.
  */
-export function downloadWithYtDlp(url: string, outputDir: string): YtDlpResult {
+export async function downloadWithYtDlp(url: string, outputDir: string): Promise<YtDlpResult> {
   const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
   try {
-    const meta: YtDlpMetadata = JSON.parse(execYtDlp(url, ["-J", "-o", outputTemplate, url]));
+    const meta: YtDlpMetadata = JSON.parse(await execYtDlp(url, ["-J", "-o", outputTemplate, url]));
 
-    execYtDlp(url, ["-o", outputTemplate, url]);
+    await execYtDlp(url, ["-o", outputTemplate, url]);
 
     return { meta, ...resolveDownloadedFile(meta, outputDir) };
   } catch (err: any) {
@@ -152,9 +245,9 @@ export function downloadWithYtDlp(url: string, outputDir: string): YtDlpResult {
 
 /** Fetch the metadata without downloading anything. The caller uses it to work
  *  out how large the download would be before starting it. */
-export function fetchYtDlpMetadata(url: string): YtDlpMetadata {
+export async function fetchYtDlpMetadata(url: string): Promise<YtDlpMetadata> {
   try {
-    return JSON.parse(execYtDlp(url, ["-J", "--skip-download", url]));
+    return JSON.parse(await execYtDlp(url, ["-J", "--skip-download", url]));
   } catch (err: any) {
     throw new Error(`yt-dlp metadata failed for ${url}: ${err?.message}`);
   }
@@ -167,16 +260,16 @@ export function fetchYtDlpMetadata(url: string): YtDlpMetadata {
  * does have. For a video where we only sample a few frames, this shrinks the
  * number of downloaded bytes a lot.
  */
-export function downloadVideoWithYtDlp(
+export async function downloadVideoWithYtDlp(
   url: string,
   outputDir: string,
   meta: YtDlpMetadata,
   quality: YtDlpQuality = "default",
-): { filePath: string | null; kind: YtDlpKind | null } {
+): Promise<{ filePath: string | null; kind: YtDlpKind | null }> {
   const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
   const formatArgs = quality === "low" ? ["-f", LOW_QUALITY_FORMAT] : [];
   try {
-    execYtDlp(url, [...formatArgs, "-o", outputTemplate, url]);
+    await execYtDlp(url, [...formatArgs, "-o", outputTemplate, url]);
     return resolveDownloadedFile(meta, outputDir);
   } catch (err: any) {
     throw new Error(`yt-dlp download failed for ${url}: ${err?.message}`);
@@ -189,10 +282,10 @@ export function downloadVideoWithYtDlp(
  * when the uploader turned them off. It also happens when the video is in a
  * language we did not ask for.
  */
-export function fetchAutoSubs(url: string, outputDir: string, lang: string = "en"): string | null {
+export async function fetchAutoSubs(url: string, outputDir: string, lang: string = "en"): Promise<string | null> {
   const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
   try {
-    execYtDlp(url, ["--write-auto-sub", "--sub-lang", lang, "--skip-download", "-o", outputTemplate, url]);
+    await execYtDlp(url, ["--write-auto-sub", "--sub-lang", lang, "--skip-download", "-o", outputTemplate, url]);
   } catch {
     // yt-dlp fails when the video has no subtitles. We report that as "no
     // subtitles" instead of throwing.
@@ -219,26 +312,26 @@ export function fetchAutoSubs(url: string, outputDir: string, lang: string = "en
  * `de` before `de-XwLwiJMB_Xs`. YouTube sometimes fails to serve one of them and
  * serves another fine, so every downloaded file is tried in that order.
  */
-export function fetchTimedTranscript(url: string, outputDir: string, lang: string = "en"): SubtitleCue[] | null {
+export async function fetchTimedTranscript(url: string, outputDir: string, lang: string = "en"): Promise<SubtitleCue[] | null> {
   const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
-  try {
-    // Writing subtitles needs no video formats. Without the ignore flag a
-    // degraded player response from a flagged proxy IP, which lists no
-    // formats, aborts the call before the subtitles are fetched.
-    execYtDlp(url, ["--write-subs", "--write-auto-subs", "--sub-lang", lang, "--skip-download", "--ignore-no-formats-error", "-o", outputTemplate, url]);
-  } catch {
-    // A failure here still leaves behind whatever finished downloading, and one
-    // good track is all we need, so the files are read either way.
-  }
-  const matches = fs
-    .readdirSync(outputDir)
-    .filter((f) => f.endsWith(".vtt") || f.endsWith(".ttml") || f.endsWith(".srt"))
-    .sort((a, b) => a.length - b.length);
-  for (const match of matches) {
-    const cues = parseSubtitleToCues(fs.readFileSync(path.join(outputDir, match), "utf-8"));
-    if (cues.length) return cues;
-  }
-  return null;
+  // The first downloaded track that parses into cues. A non-zero exit still
+  // leaves behind whatever finished downloading, and one good track is all we
+  // need, so the files are read whatever the exit was.
+  const downloadedCues = (): SubtitleCue[] | null => {
+    const files = fs
+      .readdirSync(outputDir)
+      .filter((f) => f.endsWith(".vtt") || f.endsWith(".ttml") || f.endsWith(".srt"))
+      .sort((a, b) => a.length - b.length);
+    for (const file of files) {
+      const cues = parseSubtitleToCues(fs.readFileSync(path.join(outputDir, file), "utf-8"));
+      if (cues.length) return cues;
+    }
+    return null;
+  };
+  // Writing subtitles needs no video formats. Without the ignore flag a
+  // player response that lists no formats aborts the call before the
+  // subtitles are fetched.
+  return runCaptionCallUntilReached(url, ["--write-subs", "--write-auto-subs", "--sub-lang", lang, "--skip-download", "--ignore-no-formats-error", "-o", outputTemplate, url], downloadedCues);
 }
 
 /**
@@ -255,12 +348,12 @@ export function fetchTimedTranscript(url: string, outputDir: string, lang: strin
  * The tracks an uploader supplied come first, because they are real subtitles
  * rather than speech recognition.
  */
-export function listOriginalSubtitleLanguages(url: string): string[] {
-  try {
-    return parseSubtitleListing(execYtDlp(url, ["--list-subs", "--skip-download", "--ignore-no-formats-error", "--no-warnings", url]));
-  } catch {
-    return [];
-  }
+export async function listOriginalSubtitleLanguages(url: string): Promise<string[]> {
+  const listedLanguages = (stdout: string): string[] | null => {
+    const languages = parseSubtitleListing(stdout);
+    return languages.length ? languages : null;
+  };
+  return (await runCaptionCallUntilReached(url, ["--list-subs", "--skip-download", "--ignore-no-formats-error", url], listedLanguages)) ?? [];
 }
 
 /** Reads the language codes out of what `yt-dlp --list-subs` prints. */

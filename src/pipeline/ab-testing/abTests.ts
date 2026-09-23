@@ -125,8 +125,8 @@ export function withForcedPicks<T>(picks: Record<string, string>, fn: () => T): 
   if ("simple_bot_correction_extraction" in picks) {
     throw new Error('A/B test "simple_bot_correction_extraction" is retired; search findings now go directly to the writer.');
   }
-  if ("time_travel_prompt" in picks) {
-    throw new Error('A/B test "time_travel_prompt" is retired; use "timing_treatment" instead.');
+  if ("time_travel_prompt" in picks || "timing_treatment" in picks) {
+    throw new Error('Timing A/B tests are retired; the timing stage always runs.');
   }
   if ("simple_bot_anti_pedantic" in picks) {
     throw new Error('A/B test "simple_bot_anti_pedantic" is retired; its winning prompt is always enabled.');

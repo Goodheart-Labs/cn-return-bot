@@ -1,0 +1,43 @@
+{
+  "item_id": "114bb1c0-73b4-43a7-8c67-3739463e8278",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "7ad89145-e535-44f1-8b6f-f46f4684bf63",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence is spoken by the guest, not by Liron. The transcript reads \"Eli 00:23:40 Yeah, I would say it's a pretty good analogy. We get to the level of a larger telescope by just combining multiple of them looking at the same thing. If we have one 50-millimeter telescope and we have another one, that has the opportunity to have an aperture where it's collecting collectively 100 millimeters of light volume.\" Liron never states or endorses this arithmetic; he only asks whether his chip-parallelism analogy is a good one. The physics in the note is right, and I confirmed the Large Binocular Telescope figure on Wikipedia (\"111 m2 combined. This area is equivalent to an 11.8-meter circular aperture\"), but correcting a fourteen-year-old guest's loose phrase about his hobby project is tangential to the episode, which is a debate about AI risk. Sending Liron a correction of something his guest said is exactly the complaint Andy Masley made."
+    },
+    {
+      "note_id": "df39425b-a815-4174-b424-2a65907373cd",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "This is the next sentence of the same guest turn, so again it is Eli speaking and not Liron. \"We can exponentially increase the value of one telescope by adding more\" is ordinary casual speech for \"a lot more\", not a mathematical claim, so treating it as a statement about growth rates is pedantic. The note also contradicts itself: it says collecting area sums linearly, which is true, and then says light-collecting gains scale as the square root of the number of telescopes, which is not true. Ten telescopes collect ten times the light; it is the equivalent aperture diameter that grows as the square root. On top of that, the value of a distributed follow-up network comes largely from sky coverage and time-zone coverage, which is the whole point Eli was making, so light-gathering maths does not settle what he said. It is also a near-duplicate of the other telescope note."
+    },
+    {
+      "note_id": "1b996079-d2fc-444d-b51b-ac087ebc65d2",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "The description of One Day Sooner comes from the guest: \"Eli 01:07:54 What I would counter to that is you're an effective altruist... And one of the main longtermism charities is called One Day Sooner.\" Liron's reply is \"Yeah, One Day Sooner is good, but to be clear, I'm not saying let's wait a million years\", where he is playing along with the phrase as a slogan while arguing against the acceleration conclusion Eli drew from it. The underlying fact-check is sound. Wikipedia says 1Day Sooner \"is a nonprofit that advocates for people who want to participate in medical research, in particular human challenge trials\", founded in March 2020 in response to COVID-19, and nothing about it concerns capturing cosmic resources. So this is the strongest of the four factually, and a listener really would come away confused about what 1Day Sooner is. It still fails the first test, because the mistaken description is the guest's assertion and not Liron's, and Liron would fairly answer that he did not make that claim."
+    },
+    {
+      "note_id": "b8eb629d-027c-49da-a668-b45c3e2c6cf8",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "This note quotes the same guest sentence, \"What One Day Sooner believes is that if we can accelerate humanity's expansion to capture more resources...\", which the transcript attributes to Eli at 01:07:54 and not to Liron. The correction itself holds up: 1Day Sooner organises volunteers for human challenge trials to speed up vaccine development, and its own site describes campaigns \"to stop the world's most harmful infectious diseases\", so the space-expansion description is simply wrong. But the note is addressed to a claim Liron never made, and it is a near-duplicate of the other One Day Sooner note, so at most one of the pair should ever go out. If Nathan wants to raise this with Liron, it should be framed as a correction of his guest, not of him."
+    }
+  ]
+}

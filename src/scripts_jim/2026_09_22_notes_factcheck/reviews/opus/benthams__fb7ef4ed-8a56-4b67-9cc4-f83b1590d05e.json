@@ -1,0 +1,16 @@
+{
+  "item_id": "fb7ef4ed-8a56-4b67-9cc4-f83b1590d05e",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "cf940e50-bc03-4ecf-8c44-9fd11cef38ac",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "The author states this himself as evidence that insects can feel pain: 'When flies' food is laced with capsaicin, making it spicy, they react violently and shake when fed it, eventually starving themselves to death. However, this is counteracted by a painkiller.' I fetched the study he is describing and the note is right. Ordinary fruit flies have no capsaicin receptor, and the paper says hungry control flies kept eating the capsaicin food without any pain behaviour while wild-type larvae ignored a capsaicin brush. The running away, mouthpart rubbing, starvation and the rescue by gabapentin and other painkillers all happened in flies genetically engineered to carry the human TRPV1 receptor in their nociceptors. This matters because the sentence reads as if capsaicin is naturally painful to flies, which would be much stronger evidence for insect pain than a lab-built receptor is. The author cares about getting the empirical case for insect sentience right and the correction is narrow and well sourced, so he is likely to accept it, though he can fairly reply that the behaviour and the painkiller response still show the fly nervous system doing something pain-like."
+    }
+  ]
+}

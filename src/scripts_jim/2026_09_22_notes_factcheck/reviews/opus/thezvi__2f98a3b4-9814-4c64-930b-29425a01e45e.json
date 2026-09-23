@@ -1,0 +1,25 @@
+{
+  "item_id": "2f98a3b4-9814-4c64-930b-29425a01e45e",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "e242543f-4476-4eb7-b548-c9f3059bd0b1",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence about Congress is inside a tweet by Emil Michael that Zvi quotes in order to mock it. Zvi introduces the whole exchange with \"we all need a good laugh\" and calls Michael \"everyone's favorite tilting Undersecretary of War\", and he sides with Dean Ball throughout the section. So the note fact-checks a statement the author quotes and argues against, which is the worst case for us. The note is also wrong on the facts. The FY2026 National Defense Authorization Act, signed on 18 December 2025 as P.L. 119-60, contains Section 1532, which prohibits the Department of Defense from using or acquiring AI systems from DeepSeek and High Flyer and lets the Secretary of Defense grant case-by-case waivers. That is exactly what Michael described, so the note's \"had not been enacted into law\" is false. The note also answers a claim nobody made, because Michael never said Congress acted first and never named the \"No DeepSeek on Government Devices Act\". On top of that, the extracted claim was that Emil Michael is Under Secretary of War, which the note does not address at all."
+    },
+    {
+      "note_id": "92a64bf5-dc40-42f8-a8d5-0db23a3a3fa2",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "This time the sentence really is Zvi's own: \"Ryan Greenblatt... estimates that the pretrain quality is about halfway between Opus 4 and Opus 4.5 based on forward pass math, but with some other advantages, so ~8 months behind.\" But the note's accusation of misattribution is wrong. Greenblatt wrote both things. His first tweet said \"As a pretrain, it's probably somewhere between 4.8 and Mythos (around halfway between?)\", and he then revised it himself, writing \"I did some quick tests that indicated that the Kimi K3 pretrain is around halfway between Opus 4 and Opus 4.5. So ~10 months behind Anthropic. These tests probably understate data improvements, so overall I think it's a similarly good pretrain to Opus 4.5 (~8 months behind).\" In his LessWrong shortform he says outright that his earlier 4.8-to-Mythos claim \"seems significantly too bullish on the model\", and he describes the method as single forward pass tests on a math dataset, which is precisely Zvi's \"based on forward pass math\". Techmeme and Digg both attribute the Opus 4 to Opus 4.5 line to Greenblatt. The MTS Substack post the note leans on is quoting Greenblatt, not making its own estimate, so the source was misread. Zvi is accurate and the note would be an unfair public correction."
+    }
+  ]
+}

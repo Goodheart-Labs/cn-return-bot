@@ -1,0 +1,16 @@
+{
+  "item_id": "c39931b7-8326-4e46-9bf5-2a06527f5811",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "ec42b307-90f7-4920-9a3d-84a20ee96caa",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The post is a piece of surreal short fiction in which every character is named John Rawls. The sentence the note attacks is spoken by an invented four-armed deity who introduces himself as \"John Rawls the great god Brahma\" and who dreams the universe alongside his wife \"Margaret Rawls Sarasvati\". Scott Alexander is not asserting anything about real Hindu cosmology here. He is writing dialogue for a made-up god in a story where the whole point is that familiar things have been replaced by Rawls-flavoured versions of themselves. The underlying arithmetic in the note is right as far as real cosmology goes: Brahma lives 100 years of 360 days each, so 36,000 day-and-night cycles of 8.64 billion years make up the 311.04 trillion year lifespan, and the story's 18,000 is half of that. But correcting the mythology of a fictional deity is exactly the kind of note that misreads a post, and it is tangential to everything the story is about. Sending it would embarrass us."
+    }
+  ]
+}

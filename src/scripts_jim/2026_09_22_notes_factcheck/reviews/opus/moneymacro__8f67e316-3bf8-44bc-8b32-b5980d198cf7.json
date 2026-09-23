@@ -1,0 +1,25 @@
+{
+  "item_id": "8f67e316-3bf8-44bc-8b32-b5980d198cf7",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "c3a33b71-ae0b-40e5-9d92-08a110389ca6",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "reason": "The numbers are the author's own: he says \"at the height of the 1979 oil crisis, oil transactions accounted for about 13 to 15% of the American economy. But today, that's only about 5 to 7% of US GDP.\" The Dallas Fed page the note cites does carry the quoted sentence, and it puts oil and oil product expenditures at near 8 percent of GDP in 1980 and 3 percent in 2024, so both of the author's figures do look roughly twice as high as the standard measure. The trouble is that the note treats one measure as the only one. A peer-reviewed estimate by Knittel (Tax Policy and the Economy, 2014) says US oil outlays exceeded 10% of GDP in both 1979 and 1980, which undercuts the note's confident \"roughly 8-8.65%\", and the wider industry measure that the API uses puts oil and gas at 7.4% of GDP in 2023, which is close to the author's 5 to 7%. The author said \"oil transactions\", not consumer expenditure, so he may well be on a broader basis and will say so. The correction also changes nothing about his argument: whether the fall is 13-15% to 5-7% or 8% to 3%, oil matters far less today than in the 1970s, which is the only thing the passage is there to establish. The second source, eco3min.fr, is a small blog rather than an authority. I would only send this if Nathan is happy to argue about which measure of the oil share is meant."
+    },
+    {
+      "note_id": "a0e07412-23b9-45eb-be9c-a73020e2c4a2",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "This is exactly the failure Andy Masley complained about. The whole video argues that there was never a dollar-exclusivity deal: the author says the FOIA'd 1974 documents contain \"no mention at all whatsoever ... of the Saudis committing to pricing oil in US dollars\" and concludes that \"US dollar transaction exclusivity\" was \"absolutely not in there\". The note then tells him there is no evidence of a formal petrodollar agreement requiring oil sales exclusively in dollars, which is his own thesis, stated back at him as a correction. What he actually asserts in the quoted passage is narrower and factually fine: the 1974 US-Saudi agreement was renewed over the years and is no longer in place. The note's own RFA source confirms it, saying the commission was formed in June 1974 and expired on June 9, 2024. So the note contradicts nothing the author claims and instead contradicts a claim he spends fifteen minutes debunking. Sending this would tell the author we did not watch his video."
+    }
+  ]
+}

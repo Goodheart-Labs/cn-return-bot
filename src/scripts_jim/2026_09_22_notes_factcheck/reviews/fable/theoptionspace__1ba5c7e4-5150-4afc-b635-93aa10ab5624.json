@@ -1,0 +1,18 @@
+{
+  "item_id": "1ba5c7e4-5150-4afc-b635-93aa10ab5624",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "c0730d8b-0928-4f33-be25-d65ca9937c8c",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "The sentence is the author's own statement of fact, footnoted to Kimball (2021): \"Thirty-two states currently remain in the Treaty on Open Skies: Canada, Kyrgyzstan, and 30 European nations.\" Nobody is being quoted or argued against. I fetched the OSCE page the note cites and it lists the 32 States Parties without Kyrgyzstan and adds \"Kyrgyzstan has signed but not yet ratified\"; the Arms Control Association fact sheet the author himself footnotes says the same, as do the State Department, Wikipedia and an Oxford Public International Law entry, so this is a misreading of his own source and not a disputed fact. The error is not just one name: with Kyrgyzstan out, the 32 are Canada plus 31 European and transcontinental states, so the \"30 European nations\" count is wrong too. The same belief appears earlier in the piece (\"many European states were admitted to Open Skies, as were Georgia and Kyrgyzstan\"), which is defensible there because the OSCC did approve Kyrgyzstan's accession, but \"remain in the treaty\" means being a party and Kyrgyzstan never became one. The correction is small in size but this is a careful, heavily footnoted treaty history whose sentence exists only to tell the reader who is still in the treaty, so the author will most likely fix it and thank us."
+    }
+  ]
+}

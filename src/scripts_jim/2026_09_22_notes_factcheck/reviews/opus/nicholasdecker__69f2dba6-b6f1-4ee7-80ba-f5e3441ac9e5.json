@@ -1,0 +1,16 @@
+{
+  "item_id": "69f2dba6-b6f1-4ee7-80ba-f5e3441ac9e5",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "6cd32628-f9b0-483d-ab0a-73ae4d2f987f",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "The claim is Decker's own summary of a paper he is walking his readers through. The paragraph is about Handel and Kolstad (2015) and ends \"with dropping these frictions increasing the losses by 50%.\" I downloaded the published paper and checked the text directly. It says: \"the full model estimates, with lower risk aversion, imply an average welfare loss of $62 per person from increased risk exposure in moving the entire population to the HDHP. The baseline model with (without) inertia implies a more than double $148 ($511) relative loss\", and later \"a $148 relative loss, almost two-and-a-half times as large as that from the full model.\" There is no 50% anywhere in the paper. So the direction is right but the magnitude is understated by a factor of nearly three, and by a factor of eight if inertia is dropped as well. The note gets both comparisons right and cites the correct paper, which is better than the pipeline's extracted claim, which wrongly names Handel (2013) and bolts on an unrelated clause about adverse selection from the following paragraph. Decker is a careful citer of specific numbers and has appended corrections to his posts before, and this correction makes his own argument stronger rather than weaker, so he should take it well. The only thing keeping me from being completely comfortable is that the error does not change his conclusion, so he could shrug it off as a detail."
+    }
+  ]
+}

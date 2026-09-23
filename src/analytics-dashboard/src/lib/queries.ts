@@ -1,5 +1,5 @@
 import { supabase } from "../../../everything-shared/supabase";
-import { VISIT_RANKING_WINDOW_DAYS } from "../../../everything-shared/readers";
+import { MIN_PAGES_FOR_A_READER, VISIT_RANKING_WINDOW_DAYS } from "../../../everything-shared/readers";
 import { noteStatus } from "../../../everything-shared/noteScore";
 
 // Every query runs through a security-definer RPC (migrations 077, 092, 095
@@ -168,7 +168,7 @@ export function pipelineFunnelBars(days: PipelineDayRow[]): PipelineFunnelBars {
   return bars;
 }
 
-// --- The recently checked posts (migration 095) ---
+// --- The recently checked posts (migrations 095 and 102) ---
 
 export interface RecentPostRow {
   id: string;
@@ -181,21 +181,28 @@ export interface RecentPostRow {
   published_at: string | null;
   /** When the pipeline finished the post. */
   processed_at: string;
-  /** Visits to anything by the post's author inside the ranking window. */
-  author_visits: number;
-  /** Different readers among those visits. A visit carries a reader only when
-   *  the extension could tell whose post it was, and only since migration 089,
-   *  so this can be below the number of people who really read the author. */
+  /** Browsers that opened at least MIN_PAGES_FOR_A_READER different pages by
+   *  the author, the number the pipeline walks authors on. A visit carries a
+   *  browser only when the extension could tell whose post it was, and only
+   *  since migration 089, so this can be below the true number. */
   author_readers: number;
+  /** Different pages by the author that anyone opened inside the ranking
+   *  window. The pipeline uses it to order authors with the same readers. */
+  author_pages: number;
   claims_extracted: number;
   claims_checked: number;
   notes: number;
 }
 
-/** The author numbers use the window the pipeline walks creators on, so the
- *  table shows the same attention that decided which posts got checked. */
+/** The author numbers use the window and the reader rule the pipeline walks
+ *  creators on, so the table shows the same attention that decided which posts
+ *  got checked. */
 export function fetchRecentPosts(maxPosts: number): Promise<RecentPostRow[]> {
-  return rpcAllRows<RecentPostRow>("everything_recent_posts", { max_posts: maxPosts, window_days: VISIT_RANKING_WINDOW_DAYS });
+  return rpcAllRows<RecentPostRow>("everything_recent_posts", {
+    max_posts: maxPosts,
+    window_days: VISIT_RANKING_WINDOW_DAYS,
+    min_pages: MIN_PAGES_FOR_A_READER,
+  });
 }
 
 // --- Spend by hour (migration 097) ---

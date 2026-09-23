@@ -41,28 +41,25 @@ describe("retired and standalone A/B picks", () => {
   });
 });
 
-describe("timing treatment", () => {
-  for (const [variant, instruction, context] of [
-    ["off", false, false],
-    ["instruction", true, false],
-    ["context", false, true],
-  ] as const) {
-    test(`${variant} remains the sole timing control`, () => {
-      const { config, picks } = withForcedPicks({ timing_treatment: variant }, () => runABTests(AB_TESTS));
-      expect(config.time_travel_prompt).toBe(instruction);
-      expect(config.timing_context).toBe(context);
-      expect(picks.timing_treatment).toBe(variant);
-      expect(picks.time_travel_prompt).toBeUndefined();
-    });
-  }
+describe("retired timing tests", () => {
+  test("new runs have no timing flag or pick", () => {
+    const { config, picks } = runABTests(AB_TESTS);
+    expect(config).not.toHaveProperty("time_travel_prompt");
+    expect(config).not.toHaveProperty("timing_context");
+    expect(picks.timing_treatment).toBeUndefined();
+    expect(resolvePicks(null).timing_treatment).toBeUndefined();
+  });
 
-  test("the obsolete switch fails explicitly, but historical picks survive", () => {
-    for (const variant of ["on", "off"]) {
-      expect(() => withForcedPicks({ time_travel_prompt: variant }, () => runABTests(AB_TESTS)))
-        .toThrow('use "timing_treatment" instead');
-      expect(resolvePicks({ time_travel_prompt: variant }).time_travel_prompt).toBe(variant);
+  test("forcing either retired test fails explicitly, but historical picks survive", () => {
+    const historical = [
+      ["time_travel_prompt", "on"], ["time_travel_prompt", "off"],
+      ["timing_treatment", "off"], ["timing_treatment", "instruction"], ["timing_treatment", "context"],
+    ] as const;
+    for (const [name, variant] of historical) {
+      expect(() => withForcedPicks({ [name]: variant }, () => runABTests(AB_TESTS)))
+        .toThrow("Timing A/B tests are retired");
+      expect(resolvePicks({ [name]: variant })[name]).toBe(variant);
     }
-    expect(resolvePicks(null).time_travel_prompt).toBeUndefined();
   });
 });
 
@@ -89,8 +86,8 @@ describe("forced picks", () => {
   test("unknown tests and variants fail before starting work", () => {
     const invalidPicks: Record<string, string>[] = [
       { typo: "on" },
-      { timing_treatment: "typo" },
-      { timing_treatment: "" },
+      { media_description: "typo" },
+      { media_description: "" },
       { pangram_note: "typo" },
       { misinfo_concede_shape: "typo" },
     ];
@@ -103,14 +100,14 @@ describe("forced picks", () => {
 
   test("Common Notes can still force its fixed and zero-weight arms", () => {
     const forced = {
-      bot: "simple-bot", note_prefilter: "off", search_claim: "on",
+      bot: "simple-bot", note_prefilter: "off", commonnotes_pipeline: "on",
       simple_bot_search: "sonnet5-native", simple_bot_writer: "sonnet5",
       simple_bot_verifier: "gemini-flash", verifier_citations: "on", verifier_claim_based: "classic",
     };
     const { picks, config } = withForcedPicks(forced, () => runABTests(AB_TESTS));
     expect(picks).toMatchObject(forced);
     expect(config).toMatchObject({
-      note_prefilter: false, search_claim: true,
+      note_prefilter: false, commonnotes_pipeline: true,
       verifier_citations: true, verifier_claim_based: false,
     });
   });

@@ -1,0 +1,41 @@
+{
+  "item_id": "d67be3e2-a919-4ea4-94b4-d875d7d07589",
+  "project_slug": "nathanpmyoung",
+  "creator": "Predictive Text",
+  "source": "substack",
+  "url": "https://nathanpmyoung.substack.com/p/please-consider-applying-to-lightcone",
+  "title": "Please consider applying to Lightcone Commons",
+  "published_at": "2026-08-23",
+  "full_text": "Lightcone Commons is a funder, who are going to regrant $30m in the next three months. I am an evaluator for them (though it’s unclear if any money will go through me). I’ve seen their systems and they seem good.\n\nSo if you have a project that will improve the world, as your friend, I suggest considering applying. You can write a project, what it would do, why people should think you are competent and how much you’d have to be paid to do it. That would take about 10 minutes and for a few such applications (1%? 10%?) it would be hugely worth it.\n\nI think people don’t go out on a limb enough and this is a funder unusually willing (I think) to fund strange projects or untried poeple. So if you have an idea that has been stewing, bang it down.\n\nhttps://www.lightconecommons.com/apply\n\nDeadline tomorrow, 23:59 in any timezone.",
+  "notes": [
+    {
+      "note_id": "b04a58e8-bd2c-4a56-a770-676d14214d57",
+      "commonnotes_url": "https://commonnotes.net/?project=nathanpmyoung&note=b04a58e8-bd2c-4a56-a770-676d14214d57",
+      "note": "Lightcone Commons' first funding round is officially ~$20M, not $30M. The site states \"$15M–25M,\" Habryka's launch post says \"$20M+,\" and the LessWrong announcement cites \"~$20M.\"",
+      "votes": {
+        "helpful": 0,
+        "not_helpful": 0
+      },
+      "claim": "Lightcone Commons is a funder that plans to regrant $30 million in the next three months.",
+      "extractor_judgement": "uncertain",
+      "context_quote": "Lightcone Commons is a funder, who are going to regrant $30m in the next three months.",
+      "updated_quote": null,
+      "context_paragraph": "Lightcone Commons is a funder, who are going to regrant $30m in the next three months. I am an evaluator for them (though it's unclear if any money will go through me). I've seen their systems and they seem good.",
+      "context_url": "https://nathanpmyoung.substack.com/p/please-consider-applying-to-lightcone",
+      "start_seconds": null,
+      "end_seconds": null,
+      "sources": [
+        {
+          "url": "https://www.lightconecommons.com/",
+          "quote": "For the first round, I am expecting participating funders to disburse around $15M–25M.",
+          "explanation": "The official website provides a range of $15M to $25M for the first round, which contradicts the $30M claim."
+        },
+        {
+          "url": "https://x.com/ohabryka/status/2080365171420332117",
+          "quote": "We are helping distribute $20M+ this summer, from Jaan Tallinn, Dustin Moskovitz, and others, then more every 3 months.",
+          "explanation": "The founder's launch post cites a figure of $20M+, supporting the note's claim that the amount is approximately $20M rather than $30M."
+        }
+      ]
+    }
+  ]
+}

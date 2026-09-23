@@ -1,0 +1,25 @@
+{
+  "item_id": "aff2fbde-3148-4d11-b1ad-2c9a12a58532",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "924bdc99-f7b0-4ee7-9614-671a61bcd509",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Dwarkesh never said that the 1,200 agents sent 70,000 messages within a few hours. His essay at dwarkesh.com/p/openai-huggingface reads: 'This eventually became a full message board where ~1,200 agents participated and sent >70,000 messages. Within a few hours of the board being created, one of the agents figured out how to get the right answer for any ExploitGym task without actually using the prescribed vulnerability.' The phrase 'within a few hours of the board being created' opens the next sentence and is about a single agent cracking the flag formula, not about the board's growth. Our transcript has no punctuation, so the claim extractor glued the two sentences together and invented the error. The facts in the note are right in themselves (METR reports 53 agents and 1,188 messages three hours after the first message, with the ~1,200 total accumulating July 8-13), and the note's own source list even flags that the essay says 'eventually' rather than 'within a few hours', which should have stopped it. Sending this would be the Andy Masley failure again: we would be correcting a sentence the author did not write."
+    },
+    {
+      "note_id": "c84c3991-8d74-4fdb-a426-b7893b99b8e6",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "This note corrects our own speech-to-text output, not anything the author said. The essay reads: 'This is probably the most alarming event in this whole episode, and it was not even within the scope of this METR investigation (neither, for what it's worth, was the first AI civilization that Persistent-Sol set up during its training in May, and which lasted over a month until the message volume got so high that it crashed the package manager).' The transcript turned the ordinary word 'neither' into 'Nether' and 'Persistent-Sol' into 'persisted sole'. The note is also confused about its own evidence: it quotes the original correctly and then claims 'the AI system's actual name is Persistent-Sol, not Nether', as if 'neither' had been a name. Publishing a note that tells Dwarkesh he got a name wrong, when he did not and the only error is in our transcription, would be embarrassing. The pipeline should drop notes whose whole content is a transcription artefact."
+    }
+  ]
+}

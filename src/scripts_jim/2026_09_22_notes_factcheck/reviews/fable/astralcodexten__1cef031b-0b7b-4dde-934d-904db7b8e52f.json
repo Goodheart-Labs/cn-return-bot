@@ -1,0 +1,18 @@
+{
+  "item_id": "1cef031b-0b7b-4dde-934d-904db7b8e52f",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "675f083d-c85e-4484-a90c-df21f79aec61",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "The words are Scott's own. Pritchard's post never names the Hadza or any country, she only writes about \"foraging peoples today\" and \"hunter-gatherers\", so \"the ancestors of the Hadza people on the Kenyan savannah 10,000 years ago\" is Scott's gloss, not a paraphrase of her. The note is right: the Hadza live in northern Tanzania around Lake Eyasi, and Survival International, Wikipedia, National Geographic and the Max Planck Institute all say Tanzania; no source places any Hadza in Kenya. But the country plays no role in the argument. Scott's point is that the happiness collapse happened when hunter-gatherers became subsistence farmers and that Pritchard is doing a \"bait-and-switch\" from that to Mamdani versus Buttigieg; every word of that reads the same with Tanzania in place of Kenya, and a reader who came away believing the Hadza are Kenyan would hold a wrong belief that changes nothing about the post. The review rules say a tangential detail that does not change the argument is pedantic and pedantic notes are bad, so I mark it bad rather than leave the call to Nathan. The correction itself is safe and Scott would probably fix the word if told, but sending a public note over a one-word geographic slip in an aside spends goodwill on nothing."
+    }
+  ]
+}

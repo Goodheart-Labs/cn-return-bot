@@ -1,0 +1,34 @@
+{
+  "item_id": "d7e4e3ab-3162-402b-b13c-a9d14e0cd7d6",
+  "reviewer": "opus",
+  "source_read": "fetched:https://thezvi.substack.com/p/dating-roundup-1-this-is-why-youre",
+  "notes": [
+    {
+      "note_id": "c998a4c1-f207-46cd-a963-3dbb7c6723c5",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "This one is Zvi's own prose, not a quotation, so the attribution is fine. He writes that \"On the traditional 0-10 scale, people want to be 10s when you ask them, but as I understand it 10s actually get less attention than 8s because people are scared to approach someone too far out of their league.\" Both of the note's sources check out word for word: TechCrunch does say the most attractive women get five times the messages of the average woman with two thirds of male messages going to the top third, and the Sociological Images guest post does say that the apparent dip at the top is a persons-versus-messages confusion and that messages per person still rises monotonically with attractiveness. What gives me pause is that the evidence is about how many messages women receive on OkCupid in 2009, while the mechanism Zvi names is people being scared to approach someone in person, which inbox counts do not measure. OkCupid's own later analysis, The Mathematics Of Beauty, found that a woman rated uniformly cute gets fewer messages than a more polarising woman with the same average precisely because men assume the competition is heavy, which is a real version of the effect Zvi is gesturing at. He also hedged with \"as I understand it\", and the line is a supporting aside rather than the point of the paragraph, which is that attractiveness matters through channels other than sheer volume of attention. I would expect Zvi to answer that the data is about a different thing rather than to accept the correction."
+    },
+    {
+      "note_id": "20b8f377-f48b-4920-ac5f-d1f5700f8396",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence the note corrects is not Zvi's. It is item 3 of a five-point block quote from Sam Bhagwat, which Zvi introduces with only the words \"Or alternatively:\" after a different quoted tweet, and which he never endorses. The only thing he says afterwards is \"Is it a numbers game? Yes and no, as I'll discuss in the final section\", which does not rely on the photo-quality claim at all. This is exactly the failure Andy Masley complained about: fact-checking somebody else's words as though the author had asserted them. The note is also a weak rebuttal even on its own terms. It reports that the most attractive men got eleven times the messages of the lowest-rated men on OkCupid, but Bhagwat's claim is about matches on a swipe app after improving your own photos, which is a different quantity, and the note never states the contradiction or mentions doubling, so a reader has to work out the inference alone. The stronger source is a self-published Medium post by an amateur analyst rather than the original OkCupid data."
+    },
+    {
+      "note_id": "a24343d6-ffe9-4545-b9d7-546598288aee",
+      "verdict": "good",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "The passage is a block quote of a comment by Kenny Easwaran, but Zvi leans on it in his own voice, writing immediately before it that \"A great point indeed made by Kenny Easwaran in a comment on Scott's post is that there actually isn't much sorting by political affiliation, once you take into account the existence of independents and geographic clustering.\" So the conclusion the note undercuts is one Zvi asserts and relies on. The arithmetic correction is right: if 30 percent of people are Republicans and 30 percent are Democrats, random pairing gives 2 times 0.3 times 0.3, which is 18 percent of marriages, not 9 percent, because a Republican husband with a Democrat wife and a Democrat husband with a Republican wife are both such marriages. The same slip runs through the rest of the quote, where the expected share of Independent with non-Independent marriages is 48 percent rather than the 24 percent given. The correction matters a great deal to the point being made: the real figure of about 4 percent sits four and a half times below random mixing instead of only just over twice below it, so the data show strong political sorting rather than little of it, which reverses what Zvi calls a great point. I checked the underlying number too, and the Institute for Family Studies analysis that reports 21 percent of marriages as politically mixed and 3.6 percent as Democrat with Republican counts couples without regard to which spouse is which, so the comparison the note makes is the right one. Zvi is numerate and posts corrections routinely, so a clean factor-of-two fix is the kind of thing he accepts. The one weakness is that the Gallup link only supports the roughly 27 percent party shares and not the arithmetic, but the arithmetic needs no source."
+    }
+  ]
+}

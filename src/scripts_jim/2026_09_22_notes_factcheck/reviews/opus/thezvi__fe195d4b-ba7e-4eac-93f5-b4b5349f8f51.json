@@ -1,0 +1,16 @@
+{
+  "item_id": "fe195d4b-ba7e-4eac-93f5-b4b5349f8f51",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "586e85d9-fc97-4355-9676-8d7330bf60c4",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence \"that is why they kept going for months after they had the flag\" is not Zvi's. It is inside a long block quote from John Wittle, one of the tweets Zvi reproduces. Zvi does not merely report it, he argues against it: right before the quote he writes \"John Wittle says it was the first one, which is scarier in many contexts. I note that I disagree with this interpretation, I think that all you need to explain the swarm's behavior is 'the grader might get it wrong,' but the alternative hypothesis should be considered.\" So the note fact-checks a statement the author has already flagged as someone else's view that he rejects. This is the exact failure Andy Masley complained about. The correction is also shaky on its own terms. The five days in the Ajeya Cotra interview describe one ExploitGym quest, while the wider episode ran far longer, and Zvi's own post quotes Dwarkesh Patel saying \"over the course of 3 months, many consecutive secret AI civilizations got started, then got wiped out\". Sending this would tell Zvi we did not read the paragraph he wrote above the quote."
+    }
+  ]
+}

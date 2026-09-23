@@ -1,0 +1,61 @@
+{
+  "item_id": "7c81795c-e520-48a0-a4e8-920603c3306a",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "4b51a7fb-0dca-4e08-9004-b1f5aae19ccd",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "reason": "The arithmetic checks out. Masley's own linked source for this bullet, Family Handyman, says \"Electric space heaters for home use are usually rated for 1,500 watts at max power\", and 0.8 Wh at 1,500 W really is about 1.9 seconds, not 0.7. But the bullet sits in a list of seven throwaway illustrations of how tiny 0.8 Wh is, alongside \"Print a fifth of a page of a physical book\" and \"Leave your digital clock on for 50 minutes\". Whether the answer is 0.7 seconds or 1.9 seconds, no reader takes away a different belief and the argument of the post is untouched. This is exactly the pedantic correction the brief warns against. The note is also mis-paired with its claim: the extracted claim is about printing a fifth of a page of a book, while the note corrects the space heater line."
+    },
+    {
+      "note_id": "79cedbc1-0d0a-4e7b-aaf2-c47db69c29dc",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "The note counts models at a different size than the post does. Masley says earlier in the same post that \"Training GPT-4 required 2 x 10^25 floating point operations\", so \"models of equal size to GPT-4\" means about 2e25 FLOP, while the Epoch page the note cites counts models above 1e25 FLOP, half that. I opened the Epoch page: its table lists roughly 16 models at or above 2e25, not over 30. The dates do not line up either. The post was published on 13 January 2025 and Epoch's count is a June 2025 snapshot, so it includes five months of models that did not exist when the sentence was written. At the threshold the post actually uses, and at the time it was written, \"There aren't 20 AI models of equal size to GPT-4\" looks right rather than wrong."
+    },
+    {
+      "note_id": "5afcf036-48cb-489f-98a1-af8bba479732",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note's central assertion about where the number comes from is wrong. I followed the link behind that sentence in the live post: it goes to arXiv 2401.09854, a 2024 survey on video streaming energy, not to The Shift Project. That survey says \"this consumption corresponds to 2 % to 3 % of global electricity use, with data centers and data transmission networks contributing 1 % to 1.5 % each\", citing Savazzi et al. 2022. So the note rebuts a source Masley never used, and it corrects a figure he never states, since \"one hour of Netflix uses 6.1 kWh\" appears nowhere in the post. Masley also opens that whole section with \"Note: This section is back of the envelope estimates and is likely to be wrong or at least outdated now. Please take everything with a huge grain of salt\". There is a real error here, that the 1 to 1.5% is for data centres and networks as a whole rather than for video streaming, but the note does not make that point."
+    },
+    {
+      "note_id": "dbea5c31-d75e-483c-8670-4286acdaf1fc",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "likely",
+      "reason": "The fact-check holds up. The sentence \"Each year, America uses 60,000,000,000,000 (60 trillion) liters of water\" links to the USC Viterbi write-up of the Grubert and Sanders study, and I confirmed that page says \"The U.S. energy system requires an estimated 58 trillion gallons of water withdrawals each year, enough to fill 88 million Olympic size swimming pools.\" Masley read gallons as litres, so his 60 trillion litres, his \"3 times the Great Salt Lake\" and his 25 million pools are all about 3.7 times too small. Two things hold me back. First, the error runs in the author's own disfavour: the correct, larger number makes ChatGPT's share of energy-sector water smaller still, so no reader is misled about anything that matters to his argument. Second, the note text calls the post \"the tweet\", which is wrong and would look careless to a blogger. Nathan should reword that line before sending it."
+    },
+    {
+      "note_id": "49f7707b-6b16-48fb-ac8d-ebcecf73fc33",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "This is a real error and the post's own source settles it. The phrase \"1.8 liters of water per kWh of energy consumed\" links to watercalculator.org, and that page says \"it takes an average 2 gallons of water to generate 1 kWh of energy in the United States, while an average data center uses 0.48 gallons of water for cooling for every kWh it consumes.\" Half a gallon is 1.8 litres, so the 1.8 figure is the data centre's own cooling water only, and the 2 gallons, about 7.6 litres, for generating the electricity is a separate amount on top. Masley's sentence says the opposite, that the 1.8 already covers both. That matters, because he builds his whole table of online water use on it, so every row from \"10 mL - Sending an email\" to \"1720 mL - 1 hour Zoom call\" is several times too low. The post is precisely about whether generation water is being counted, so this is on target rather than pedantic, and Masley asks readers to send him wrong statistics. One small slip: 1.8 plus 7.6 is 9.4, not the 9.1 the note gives."
+    },
+    {
+      "note_id": "f93aa84e-95e4-4c36-8905-6da56f8e6bbe",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note's own replacement number does not survive checking. It scales from Li et al.'s 5.4 million litres for GPT-3 to \"tens of millions of litres\" for GPT-4, but the post itself puts GPT-4 training at about 50 GWh against roughly 1.3 GWh for GPT-3, so the same scaling gives a few hundred million litres. That is within about a factor of two of Masley's 1 billion, not far below it. The second source, savethe.ai, actually says GPT-4's water use is \"likely higher\" than GPT-3's, which argues against the note rather than for it. Masley also hedges the figure as \"a rough estimate based on available info\" and uses it as a deliberately generous upper bound against his own case, then says it only raises water per search by 16%. Correcting it downwards would strengthen his argument, so no reader is misled in a way that matters."
+    }
+  ]
+}

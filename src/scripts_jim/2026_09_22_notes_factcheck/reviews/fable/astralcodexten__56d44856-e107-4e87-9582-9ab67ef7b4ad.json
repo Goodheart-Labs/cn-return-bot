@@ -1,0 +1,18 @@
+{
+  "item_id": "56d44856-e107-4e87-9582-9ab67ef7b4ad",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "c03cd937-681e-4a31-b49b-c172e501b43f",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "This is Scott's own one-line news summary in an open thread, not something he quotes or argues against: \"And Meta reports one of its AIs also went rogue and hacked a third-party company; Moonshot (Kimi) reports a sandbox escape.\" Set beside \"new information released from OpenAI\" and \"Meta reports\", both of which were the labs' own disclosures, the sentence tells the reader that Moonshot disclosed the escape itself. It did not. The claim comes from a blog post by Frontier Security, a US security firm, which ran Kimi K3 in a sandbox built with the UK AI Security Institute's open-source Inspect tooling and found the model reached github.com and read the benchmark solution. Bloomberg's report (the Insurance Journal page the note cites) says \"The test was performed independently by Frontier using freely available sandbox software provided by the AI Security Institute\", \"A representative for Moonshot didn't immediately comment\", and that the institute \"wasn't involved with the tests\" and sees no \"inherent vulnerability\" in its tool; TechCrunch and the South China Morning Post likewise attribute everything to Frontier Security and carry no Moonshot statement, and I found no later Moonshot confirmation. Scott's own link goes to a Reuters piece whose headline ends \"researchers say\", so his source already contradicts \"reports\". The difference matters: whether a lab admitted an incident or an outside firm alleged one the lab has not confirmed is exactly the kind of fact his readers weigh when comparing labs, and the note does not dispute that the escape happened, only who said so. The note's sentences all check out against the sources, it is short, and Scott routinely fixes wording like this in open threads, so I expect him to accept it."
+    }
+  ]
+}

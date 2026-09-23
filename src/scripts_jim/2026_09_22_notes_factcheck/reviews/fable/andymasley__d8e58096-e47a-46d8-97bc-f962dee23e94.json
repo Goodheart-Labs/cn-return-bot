@@ -1,0 +1,40 @@
+{
+  "item_id": "d8e58096-e47a-46d8-97bc-f962dee23e94",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "86f572d4-1dc7-473e-aa1b-61908c25eb0b",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "likely",
+      "reason": "Andy writes in his own voice: \"Every day 400 million people send 1 billion ChatGPT prompts.\" The note is factually right: OpenAI's 400 million figure (Brad Lightcap, February 2025, confirmed by CNBC and Reuters) was weekly active users, the 1 billion messages a day figure came with 300 million weekly users in December 2024, and the sentence's own hyperlink on the live page goes to a TechCrunch story titled \"ChatGPT doubled its weekly active users\". Andy even says \"ChatGPT has 400 million weekly users\" correctly later in the same post, so this is a slip, not a belief. But the correction changes nothing a reader needs: the section's argument, that a service with a billion prompts a day using a small town's electricity is unsurprising, runs on the prompts-per-day number, which is right. That makes the note pedantic under our rules, and the pipeline also attached it to the claim \"ChatGPT is the most downloaded app in the world\", which the note never addresses. A one-line heads-up to Andy would be welcome, but not as a Common Note.",
+      "whose_words": "creator",
+      "send_advice": null
+    },
+    {
+      "note_id": "4cee2e16-e79a-433d-b8ae-027857e431f0",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "likely",
+      "reason": "The live Substack post still reads \"prompts it 2,000 times per day. About one prompt every second every waking hour\", and the copy on andymasley.com reads \"every 20 seconds\", so the Substack line is a typo; 2,000 prompts over a waking day is one every 20 to 30 seconds. The correction is true, but it is a typo fix inside an illustrative hypothetical about a made-up person. The CO2 figures (Kate 70,000 tonnes, Bob 0.4, Freddy 0.2) and the whole point of the example are untouched, so no reader comes away with a wrong belief that matters. The note is also attached to the claim about Freddy preventing 0.2 tonnes, which it does not discuss, and its opening \"The original source (Andy Masley's essay)\" would read oddly to Andy, since the essay is his own. Pedantic, therefore bad, however easily he would accept it.",
+      "whose_words": "creator",
+      "send_advice": null
+    },
+    {
+      "note_id": "840d7b9e-9ac5-4a8a-ab3b-c959d6ed0538",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "Andy writes \"The average American uses 10,700 kWh of energy per year\" and his own hyperlink on the live page goes to an EcoFlow article on how many kWh an average house uses, so the number is average household electricity, not one person's energy. The note's figures hold up: EIA gives about 10,500 kWh per household, 4,437 kWh of residential electricity per person (2020), and 279 million Btu of total primary energy per person in 2023, which is about 81,800 kWh, so the label is wrong whichever way you read it. This is more than a typo because the reader carries away a derived number, \"1 Watt-hour is like half a cent\", that is about 8 times too high against the per-person energy figure a physics teacher writing in David MacKay's style clearly means; the argument that Watt-hours are pennies survives and gets stronger. Andy asks for exactly this kind of numbers fix at the top of the post. Two reservations keep it at uncertain: the correction runs in his favour, so it may look like quibbling with an aside, and the note calls his post \"the tweet\".",
+      "whose_words": "creator",
+      "send_advice": "Replace \"nearly 8x the tweet's figure\" with \"nearly 8 times the post's figure\", and add one sentence saying what it means for his comparison: with the per-person energy figure, a Watt-hour is under a tenth of a cent, not half a cent, which makes his point stronger."
+    }
+  ]
+}
