@@ -17,14 +17,14 @@
     "send_instead": "Mumbai permits, and routinely builds, high-rise towers on slum land under its Slum Rehabilitation scheme, including 42-storey rehab towers at Dhobi Ghat. The scheme is heavily regulated (developers need 51% of slum dwellers' consent, must rehouse them free, and most projects stall), but skyscrapers in slums are allowed."
   },
   "258fcf9d-3f4f-4108-8af9-3ccf984b4089": {
-    "kind": "slip",
     "jim": "Zvi read the slide's '1.6x gap' (run rate over trailing revenue) as 60% growth. The note is right; the rewording names the slide so he sees where the slip came from.",
     "send_instead": "The report gives no 60% growth figure. Its '1.6x gap' slide is run rate ($175bn) over trailing 12-month revenue ($110bn), not a growth rate; the growth slide says 35% per quarter, about 3.2x a year."
   },
   "c6bc38f3-ff6f-4b22-9fc1-aa1def6b1ad2": {
     "kind": "slip",
-    "jim": "Correct for the August 17 rate card. Flash has since been replaced by the cheaper V4.1 Flash, so today's price page no longer shows the $0.44/$1.32 pair; the rewording says 'at the time'.",
-    "send_instead": "The $0.44/$1.32 figure was DeepSeek-V4-Flash's peak rate on the August 17 rate card, not V4-Pro's. V4-Pro's peak price was and still is ¥9/¥27 per million tokens (about $1.32/$3.96), roughly 3x higher."
+    "jim": "Not sure it is a good note. The prices have changed since, so it is hard to verify today. Hold back.",
+    "send_instead": "The $0.44/$1.32 figure was DeepSeek-V4-Flash's peak rate on the August 17 rate card, not V4-Pro's. V4-Pro's peak price was and still is ¥9/¥27 per million tokens (about $1.32/$3.96), roughly 3x higher.",
+    "verdict": "uncertain"
   },
   "1834fd8c-1b06-44ca-9bd0-16f5d2a10370": {
     "verdict": "bad",
@@ -42,14 +42,8 @@
   "6c3ab86e-d1df-4ba7-bfa0-7ff2023bf856": {
     "kind": "slip"
   },
-  "5bfa31a1-db8c-4774-bac7-8b3182183e2f": {
-    "kind": "slip"
-  },
   "e4515c89-ff9a-4ffd-8b42-b832216983af": {
     "verdict": "bad",
     "jim": "Zvi's readers are high context and followed the saga; they know June 26 restored Mythos to a vetted group and June 30 lifted the rest. Pedantic."
-  },
-  "65cc8778-3127-42ec-a1ad-fcfc277c5bb7": {
-    "kind": "slip"
   }
 }
