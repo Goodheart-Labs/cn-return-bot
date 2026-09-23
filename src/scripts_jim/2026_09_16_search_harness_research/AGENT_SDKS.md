@@ -6,7 +6,7 @@ Our own loop is `src/pipeline/tool-calling/toolLoop.ts`, 147 lines. Everything b
 
 ## Summary
 
-Every agent SDK runs the same loop. The model is called with a list of tools. If it asks for tools, the harness runs them, appends the results to the conversation, and calls the model again. If it answers without a tool call, the run ends. That is exactly what our 147 lines do. No SDK has a smarter loop in the sense of planning, search strategy or reasoning. The differences are all in the machinery around the loop, and in the tools.
+This document covers the loop around the tools: error handling, parallelism, size limits and budgets. The tools themselves, which are what matter most, are compared in `TOOLS.md`, with every definition quoted verbatim in `tool_definitions/`.
 
 What the SDKs have that we lack, ordered by how much it matters for a cheap model checking facts:
 
