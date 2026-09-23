@@ -1,0 +1,16 @@
+{
+  "item_id": "12758e67-8fb0-4161-be91-36e717b9f460",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "57e385bd-83f5-4384-b864-2ab6b75f7f69",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "The sentence is Slow Boring's own reporting, not a quote or a claim it attributes to someone else: the Marquette survey \"included former Lieutenant Governor Mandela Barnes, who at the time was no longer in the race but has now stepped back in after Rodriguez pulled out.\" That is a mix-up of two different candidates, and the sentence even contradicts itself, since Barnes could not be both in the poll and out of the race. I checked two of the note's sources directly. The Fox6 timeline says David Crowley suspended his campaign on July 8 and reentered on July 18 with Governor Evers's endorsement, and that Crowley was left out of the poll because he suspended before the July 8 to 16 field period and returned after it closed. Wisconsin Public Radio says the same thing and lists Barnes inside the poll at 15 to 18 percent and as the only Democrat leading Tiffany, 44 to 40, which is exactly the number the post itself uses in the next sentence. I also searched independently for any Barnes exit and reentry, and the only time Barnes left the race was July 30, three days after this post was published, so nothing in the record supports the post's version. The error matters for the section's point, because the post is telling readers who is in the Wisconsin field and it hands Crowley's exit, Evers endorsement and return to Barnes while leaving Crowley out of the piece entirely. Slow Boring is a publication that cares about this kind of accuracy in a races-to-watch roundup, and the correction names a specific, checkable swap rather than quibbling with framing, so it should land well."
+    }
+  ]
+}

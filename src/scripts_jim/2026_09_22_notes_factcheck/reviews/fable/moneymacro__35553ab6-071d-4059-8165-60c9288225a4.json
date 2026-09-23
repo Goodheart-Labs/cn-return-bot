@@ -1,0 +1,18 @@
+{
+  "item_id": "35553ab6-071d-4059-8165-60c9288225a4",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "84278323-0283-45a5-a2a3-0dc2f9ed35e5",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "reason": "The words are the creator's own, in the opening line of the video: 'Trump's tax cuts, foreign policy adventures and proposal to double the US defense budget are projected to push it way higher.' The word 'double' is not a plausible caption error. The note's core point holds: the FY2027 request is $1.5 trillion, and the White House fact sheet says verbatim 'bringing total resources for defense to $1.5 trillion (including a 44% increase for the Department of War (DOW))' on top of 'a historic $1 trillion overall defense topline' for FY2026; CBS calls it 'a 42% increase', CSIS puts the real increase at 38 percent, and Akin Gump says '$445 billion or 44% increase over FY 2026'. So against the prior year the proposal is a rise of a bit under half, not a doubling, and in a video built on fiscal arithmetic that is a meaningful overstatement. Two things stop me from calling it good. First, the note's own baseline is wrong: it says the 42 to 44 percent is 'over the prior year's budget (~$892.6B)', but $892.6 billion is only the FY2026 base discretionary request, and $1.5 trillion against $892.6 billion would be a 68 percent rise; the 42 to 44 percent figures are measured against the roughly $1.05 trillion FY2026 total that includes the $155 billion of reconciliation money. Second, 'double' has a defensible loose reading that the note ignores: AP's own write-up says 2027 defense spending 'would be roughly double what it was in 2021', and against the last pre-Trump enacted level of roughly $850 to $900 billion it is a rise of around 70 percent. An economist could answer that he was speaking loosely about the scale of the buildup and that the note picked the flattering baseline while getting its own baseline wrong.",
+      "send_advice": "Replace 'a 42-44% increase over the prior year's budget (~$892.6B)' with 'a 42-44% increase over the roughly $1.05 trillion FY2026 total (including reconciliation money)'. The $892.6 billion figure is the FY2026 base discretionary request, and against it the rise would be about 68 percent, so the note as written contradicts itself. Consider adding one clause that the request is roughly double the 2021 level, so the note reads as a precise correction rather than a gotcha."
+    }
+  ]
+}

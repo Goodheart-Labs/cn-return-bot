@@ -1,0 +1,16 @@
+{
+  "item_id": "51f28c6f-c617-4ff5-817e-6be95149b1ff",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "4882acce-425f-40bf-9356-24a502e4d1ef",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The facts in the note are right. The UNEP page it cites says \"The Multilateral Fund for the Implementation of the Montreal Protocol was established in 1991 under Article 10 of the treaty\", the Multilateral Fund's own history page dates the financial mechanism to the 1990 London Amendment, and the 1987 Protocol's original Article 10 was about technical assistance, not money. So the Fund was genuinely not in the treaty as proposed in 1987. The passage is the author's own writing, and the point is not a nitpick: his argument is that the 1985 ozone hole worked as a warning shot \"only because a mature set of solutions was waiting\", and one of his three examples of that waiting package is a fund that did not exist until six years after the discovery. Two things hold me back. First, the pipeline filed this note under a different claim than it actually corrects. The claim on the record is \"The UN Environment Programme had established an institutional framework for ozone protection before the Montreal Protocol was created\", which is true and which the note never addresses, so the pairing reads as confused and the note never quotes the words it is correcting. Second, the author names a \"start-and-strengthen\" design in the very same sentence, which shows he knows the treaty was deliberately built to be tightened later, so he could fairly answer that he was listing the Montreal regime's governance tools rather than dating the 1987 draft. Worth sending only if Nathan pairs it with the exact sentence and rewords it to say what the author wrote."
+    }
+  ]
+}

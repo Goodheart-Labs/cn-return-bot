@@ -1,0 +1,29 @@
+{
+  "item_id": "c75269ee-cee5-4cc9-9cba-4a6a8094ee61",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "a2102fec-247b-42d0-9e43-222d933eaa57",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": "Replace the second sentence with one that says where the show makes the claim, for example: \"The show's own guest list (the support page and State of the Show 2026) describes Moshe Vardi as a Turing Award winner, but Vardi has never won it; his honors include the Goedel Prize and the Knuth Prize.\" Vardi is not named anywhere in this post, so \"its only cited Turing laureate guest\" reads as if the post cited him.",
+      "reason": "This is a solo monologue episode, and the sentence is Liron's own: \"Look at the who's who of people who have come on our show. Nobel Prize winners, Turing Award winners, scientists, executives, people in media, across the board.\" The Nobel part is true (Michael Levitt, chemistry 2013), the Turing part is not. Liron's own guest list on his support page (5 August 2026) and his State of the Show 2026 post name every notable guest, and the only one he labels a Turing laureate is Moshe Vardi (\"Moshe Vardi (Turing Award)\", \"Turing Award winner Moshe Vardi\"); Vardi has never won it, as Wikipedia's award list and Vardi's own 2020 post \"I don't have a Turing Award\" show. The real Turing laureates in the archive (Hinton, Bengio, LeCun, Sutton) only appear in reaction episodes where Liron comments on them from outside, not as guests. So the first reviewer's worry that the Vardi sentence is the pipeline's guess is not right: Liron does call Vardi a Turing Award winner, just not in this post, which is why the note's wording \"its only cited Turing laureate guest\" needs to say where. The claim is load-bearing here, since the sentence exists to show that credentialed people take x-risk seriously, and a reader is told the show hosted a Turing laureate when it did not. Note that this and the note on the support page correct the same slip, so Nathan may want to send one message covering both."
+    },
+    {
+      "note_id": "9164ea50-d86e-4408-880e-ec5df2b8e579",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "send_advice": "Drop the sentence \"AI extinction estimates cluster far below 50% over a century\" and the 58% end-times line (Pew, 2022). Replace them with the timeframe point, for example: \"A Yahoo/YouGov poll (Oct 2025) found 53% think AI will likely destroy humanity someday, but that question had no timeframe; in Rethink Priorities' survey only 9% thought AI extinction moderately likely or more within 10 years. No poll shows most Americans expect doom within a decade.\"",
+      "reason": "Liron says it in his own voice in a monologue and insists on it: \"The average American, if you ask them, 'Hey, do you think that our species is doomed in a decade or so?' - they're going to say yes. The average American is literally going to say yes.\" He then builds on it (\"Regular people think we're doomed, and Sam Altman ... doesn't even dignify the question\"), so it is a premise, not a joke. The note's sources check out as quoted: Pew (fielded April 2022) has 39% in the end times and 58% not, Rethink Priorities (September 2023) has 9% seeing AI extinction as moderately likely or more within 10 years, 22% within 50 years, and a median estimate of 15% for this century, and the one-in-three figure is from Billet et al. 2026 (US sample of 1,409), though the Audacy page itself answers 403. The problem is that the note ignores newer polling that Liron can throw back at it: a Yahoo/YouGov poll fielded 23 to 27 October 2025 found 53% of Americans say it is somewhat or very likely that \"AI will destroy humanity\" (no timeframe), and a Politico poll published 16 September 2026 has about two in three seeing at least a moderate risk. Against that, \"Polling doesn't support this\" and \"AI extinction estimates cluster far below 50% over a century\" (a 2023 median) look stale and are easy to rebut. What survives is the timeframe: no poll shows most Americans expect doom within a decade, and the only ten-year number on record is 9%. A note trimmed to that point is correct and fair to what he said; the note as written invites the reply that a majority of Americans do think AI will destroy humanity."
+    }
+  ]
+}

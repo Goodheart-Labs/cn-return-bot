@@ -1,0 +1,16 @@
+{
+  "item_id": "56d44856-e107-4e87-9582-9ab67ef7b4ad",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "c03cd937-681e-4a31-b49b-c172e501b43f",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "Scott writes the sentence himself as a one-line news summary, so this is his own assertion and not a quote he is reporting or disputing. He puts Moonshot in the same construction as the two items before it, \"new information released from OpenAI\" and \"Meta reports\", so the sentence tells the reader that Moonshot disclosed the escape the way those labs disclosed theirs. That is wrong. I fetched the Insurance Journal piece and it says \"The test was performed independently by Frontier using freely available sandbox software provided by the AI Security Institute\", \"A representative for Moonshot didn't immediately comment\", and that the AI Security Institute \"wasn't involved with the tests\" and that \"no evidence or wider detail\" was offered for the claims. Scott's own link goes to a Reuters article whose headline ends \"researchers say\", so the source he chose already contradicts the word \"reports\". The correction matters rather than nitpicks, because it changes an incident the reader thinks a company admitted into a contested third-party claim the company has never confirmed and the sandbox's owner disputes, and Scott routinely posts small corrections like this in his open threads."
+    }
+  ]
+}

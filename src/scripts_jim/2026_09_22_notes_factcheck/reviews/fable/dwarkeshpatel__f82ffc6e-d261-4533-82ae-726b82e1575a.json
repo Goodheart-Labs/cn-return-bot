@@ -1,0 +1,18 @@
+{
+  "item_id": "f82ffc6e-d261-4533-82ae-726b82e1575a",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "c7a696bc-9eb7-4b32-82a2-9ba04dc28d63",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "whose_words": "guest",
+      "send_advice": "Do not send. If anything is sent, it would have to drop the OECD sentence entirely and replace the flat comparison with a range of estimates, and even then it would be a note on Dylan Patel's words, not Dwarkesh's.",
+      "reason": "The sentence is Dylan Patel's, not Dwarkesh's. The published transcript at dwarkesh.com/p/dylan-patel-3 labels the paragraph 'American financial systems are more willing to YOLO into startups... So the Chinese semiconductor industry has significantly more subsidies than the rest of the world's semiconductor industries combined' as Dylan, and Dwarkesh neither repeats nor builds on it; the conversation moves on to how far behind Chinese labs are on compute. The note's first sentence rests on one accounting, the CSIS chart of direct industrial policy support from 2014 to 2023 ($142 billion for China against about $175 billion for the US, South Korea, the EU, Japan and Taiwan together), and the Tom's Hardware source itself says that window leaves out China's Big Fund III, $47.5 billion launched in May 2024, which on its own lifts China to about $190 billion. Other widely cited estimates of China's total support are higher still: Bruegel and the EIU put the national and local funds at $150 billion or more, the Congressional Research Service cites an estimated $322 billion in government outlays, and Dylan Patel's own SemiAnalysis newsletter wrote of 'China's more than $250B in semiconductor subsidies'. So whether China outspends everyone else combined depends on what is counted, and the note presents one contested figure as a settled correction. The OECD sentence is worse: The Register's own article says the report measured tax concessions, grants and subsidised borrowing and excluded government equity, which is the main channel China uses, and the same report finds Chinese firms received support close to 10 percent of revenue, the highest of any region. Dylan Patel knows this literature better than we do and would take the note apart, and Dwarkesh would defer to him; either way the guest's point, that China subsidises a chosen industry far more heavily, stands under every estimate."
+    }
+  ]
+}

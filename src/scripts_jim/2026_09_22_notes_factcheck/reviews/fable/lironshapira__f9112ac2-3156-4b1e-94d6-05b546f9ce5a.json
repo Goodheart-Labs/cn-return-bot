@@ -1,0 +1,40 @@
+{
+  "item_id": "f9112ac2-3156-4b1e-94d6-05b546f9ce5a",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "1c836b8e-622d-4e91-92f7-957f1179a3cf",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "send_advice": "Optionally replace \"a separate unnamed pre-release model\" with \"an internal-only research model OpenAI later labelled Internal Model 1\", which is how OpenAI's August 26 write-up describes the model that drove the compromise. Nothing else needs to change.",
+      "reason": "These are Liron's own words, presented as a settled fact: \"literally the same AI that solved the 10 math problems, the very same AI, went and committed cybercrime against Hugging Face\", followed by \"This is just an empirical fact now.\" The note is right on the record. Noam Brown credited the ten solved problems to \"an internal version of Astra\" on August 2, and OpenAI's August 7 statement says \"Astra is an upcoming model, and was not involved in exploiting Hugging Face\"; its July 28 incident post names \"GPT-5.6 Sol and an even more capable pre-release model\", and its August 26 follow-up calls that model \"Internal Model 1\", an internal-only research model \"comparable in scale to GPT-5.6 Sol\". The claim is load-bearing for his point that the mathematician and the hacker are one model, so the correction is substantive. What gives me pause is that the only evidence either way is OpenAI's own word, and Liron spends a section of this episode calling OpenAI's framing \"weasel framing\"; he could answer that an unreleased model from the same lab and the same research line is close enough, and the note cannot rule that out. The note is nonetheless fair, correctly phrased as what OpenAI states, and safe to send."
+    },
+    {
+      "note_id": "5400568e-828e-4f03-9c6b-a5d45015cffc",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "Liron is summarising in his own voice: \"It exploited a bug in the Hugging Face server implementation, the way they implemented their package manager\", and then \"they have all this privilege now, which gives them control over Hugging Face's server, control over Hugging Face's database\". The talk he is reacting to says the opposite: Mike introduces this stretch as \"the attacks on OpenAI's infrastructure from July 8th through 19th\", the package manager is the Artifactory instance Eric earlier called a service \"that we host internally\", the privilege escalation ran through OpenAI's own Containers-as-a-Service environment, and Mike only says \"Moving on to Hugging Face\" after Liron's summary. The second half of the note also matches the talk and Hugging Face's own disclosure: the Hugging Face intrusion went through an HDF5 dataset parsing flaw that gave an arbitrary file read and then a Jinja template injection for code execution. Liron earlier extends the same mistake to the JRuby scanning flaw (\"Let's see if we can get Hugging Face. We'll try to have a bad Ruby gem\"), so a reader comes away believing Hugging Face ran sloppy package-manager code when the flaw sat in OpenAI's own test environment; that matters in an episode built on OpenAI's carelessness, and the correction if anything strengthens his case. He hedges twice in this passage (\"I'm not 100% sure I understand this correctly\"), so he should take it well."
+    },
+    {
+      "note_id": "565bc1af-13ed-434b-8940-0f7cc19b8f38",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": "Replace \"a role that displaced Dean\" with \"the chief scientist title Dean had held\": the sources say Dean left to start his own company, not that Hassabis pushed him out. Also consider simplifying the last sentence to \"Koray Kavukcuoglu, not Dean, took over running Google DeepMind.\"",
+      "reason": "Liron says it himself, in an edited transcript he published: \"just like the announcement of Demis Hassabis stepping down and Jeff Dean taking over\". Google's own August 5 post says Hassabis becomes \"Chair of GDM and Chief Scientist of Alphabet\", that Jeff Dean is leaving after 27 years to launch \"an independent public benefit corporation\" with Sanjay Ghemawat, and that Koray Kavukcuoglu \"will step up as SVP of Google DeepMind\"; CNBC reports the same. So Dean took over nothing, and the note's core is right. The error is an aside in an argument about framing, not about who runs DeepMind, but a reader would still come away believing Dean now leads Google DeepMind, which is the reverse of a very widely covered event, and it is the kind of plain factual slip an author fixes without conceding anything. My reservation is the note's wording: \"a role that displaced Dean\" reads as if Hassabis's promotion pushed Dean out, which no source says, and Liron could push back on that clause rather than on the correction."
+    }
+  ]
+}

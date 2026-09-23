@@ -1,0 +1,18 @@
+{
+  "item_id": "301aa0b7-4b89-4589-9fa8-6f6ef4ec3b4c",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "d8212028-849f-495e-a149-fd9b3e886d99",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "The words are Liron's own, spoken as the guest on Milk Road AI and republished on his Substack: \"If you naively extrapolate Anthropic's valuation or revenue for another couple years — 'cause they're growing, what is it, 50x per year? So a couple more 50xs and you're talking real money.\" The trouble is that the note's correction is a different measurement, not a refutation. The note measures year over year (CNBC: $65 billion run rate in July 2026, \"a sevenfold increase from a year ago\") and calendar 2025 (about $1 billion to $9 billion). Liron is extrapolating the current pace, and on that reading his figure is defensible: the run rate went from $9 billion at the end of 2025 to $47 billion in May 2026 (TechCrunch), which annualises to roughly 50x, and Anthropic's own CEO said in May 2026 \"We tried to plan very well for a world of 10x growth per year. And yet we saw 80x\", describing annualised growth in the first quarter of 2026 (VentureBeat, New York Times). So a note saying \"7-10x per year, not 50x\" contradicts Dario Amodei's own stated number, and Liron would answer with that quote in one line. He also flagged the figure as a guess (\"what is it, 50x per year?\"). The sources say what the note quotes, but the correction rests on choosing the year-over-year convention over the annualised one, which is a framing difference, not an error in the post."
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "item_id": "c4e39593-b289-4122-a65f-cb9617b8de38",
+  "project_slug": "dwarkeshpatel",
+  "creator": "Dwarkesh Patel",
+  "source": "podcast",
+  "url": "https://www.youtube.com/watch?v=mDG_Hx3BSUE",
+  "title": "Dylan Patel",
+  "published_at": null,
+  "full_text": null,
+  "notes": [
+    {
+      "note_id": "22075a54-073d-4593-99e0-169c27ceda9f",
+      "commonnotes_url": "https://commonnotes.net/?project=dwarkeshpatel&note=22075a54-073d-4593-99e0-169c27ceda9f",
+      "note": "Reciprocating engines use pistons that move back and forth in a linear motion, not in circles. This back-and-forth movement is converted into rotation by a crankshaft. Engines that spin internally to generate power are known as rotary or turbine engines. https://en.wikipedia.org/wiki/Reciprocating_engine https://www.collinsdictionary.com/dictionary/english/reciprocating-engine",
+      "votes": {
+        "helpful": 0,
+        "not_helpful": 2
+      },
+      "claim": "medium-speed reciprocating engines: engines that spin in circles, like a diesel engine",
+      "extractor_judgement": "uncertain",
+      "context_quote": "There are also medium-speed reciprocating engines: engines that spin in circles, like a diesel engine.",
+      "updated_quote": null,
+      "context_paragraph": "… from turbines, that's simple, boring, and easy. Humans and capitalism are far more effective. The whole point of that blog was that, yes, there are only three people making combined-cycle gas turbines, but there's so much more we can do. We can do aeroderivatives. We can take airplane engines and turn them into turbines. There are even new entrants in the market, like Boom Supersonic trying to do that and working with Crusoe. Also there's all the other ones like that already exist in the market. There are also medium-speed reciprocating engines: engines that spin in circles, like a diesel engine. There are ten people who make engines that way. I'm from Georgia, and people used to be like, \"Oh man, you got a Cummins engine in there,\" regarding RAM trucks. Automobile manufacturing is going down, so these companies all have capacity and could scale and convert that for data center power. You stick all these reciprocating engines in. It's not as clean as combined-cycle, but maybe you can convert them from diesel to gas if you want. What about ship engines? All of these engines for …",
+      "context_url": "https://www.youtube.com/watch?v=mDG_Hx3BSUE&t=6303s",
+      "start_seconds": 6303,
+      "end_seconds": 6307,
+      "sources": []
+    },
+    {
+      "note_id": "9beead00-e5c8-4a37-ab2c-88343c93e409",
+      "commonnotes_url": "https://commonnotes.net/?project=dwarkeshpatel&note=9beead00-e5c8-4a37-ab2c-88343c93e409",
+      "note": "Samsung is the world's largest memory manufacturer. While SK Hynix briefly led in DRAM revenue during 2025, Samsung reclaimed the top position in Q4 2025 with a 36.5% market share compared to SK Hynix’s 32.1% and expanded that lead in early 2026. https://www.trendforce.com/presscenter/news/20260226-12937.html https://www.techtimes.com/articles/318052/20260609/samsung-leads-dram-market-share-386-sk-hynix-trails-revenue-tops-profit-margins.htm",
+      "votes": {
+        "helpful": 0,
+        "not_helpful": 0
+      },
+      "claim": "Nvidia is now the largest customer at TSMC and SK Hynix, the largest memory manufacturer.",
+      "extractor_judgement": "uncertain",
+      "context_quote": "Nvidia is now the largest customer at TSMC and SK Hynix, the largest memory manufacturer.",
+      "updated_quote": null,
+      "context_paragraph": "… Power and data centers are ultimately way simpler than the actual manufacturing of the chips. There's been some sliding of capacity across mobile or PC to data center chips, which has been somewhat fungible. Whereas CoWoS, power, and data centers have had to start anew as supply chains. But now there's no more capacity for the mobile and PC industries—which used to be the majority of the semiconductor industry—to shift over to AI. Nvidia is now the largest customer at TSMC and SK Hynix, the largest memory manufacturer. It's sort of impossible for the sliding of resources away from the common person's PCs and smartphones to shift any more towards the AI chips. So now the question is how do we scale AI chip production? That's the biggest bottleneck as we go to 2030. It would be very interesting if there's an absolute gigawatt ceiling that you can project out to 2030 based just on \"We can't produce more …",
+      "context_url": "https://www.youtube.com/watch?v=mDG_Hx3BSUE&t=2186s",
+      "start_seconds": 2186,
+      "end_seconds": 2190,
+      "sources": []
+    },
+    {
+      "note_id": "412f90c8-43c9-4433-a525-5917bd33423d",
+      "commonnotes_url": "https://commonnotes.net/?project=dwarkeshpatel&note=412f90c8-43c9-4433-a525-5917bd33423d",
+      "note": "Commercial EUV lithography tools have significantly higher throughput than 75 wafers per hour. ASML’s early production models reached 125 wph as of 2017, while current third-generation systems like the NXE:3800E can process approximately 195 to 220 wafers per hour. https://www.asml.com/en/products/euv-lithography-systems/twinscan-nxe3400b https://www.tomshardware.com/tech-industry/manufacturing/asml-delivers-3rd-generation-euv-chipmaking-tool-for-2nm-and-beyond",
+      "votes": {
+        "helpful": 1,
+        "not_helpful": 0
+      },
+      "claim": "An EUV tool can do roughly 75 wafers per hour",
+      "extractor_judgement": "uncertain",
+      "context_quote": "An EUV tool can do roughly 75 wafers per hour, and the tool is up roughly 90% of the time.",
+      "updated_quote": null,
+      "context_paragraph": "… gigawatt. It's pretty simple. Once you add the rest of the stuff, it ends up being 2 million, across 5 nm and all the memory. You're at roughly 2 million EUV passes for a single gigawatt. These tools are very complicated. When you think about what it's doing across a wafer, it's taking the wafer and scanning and stepping across. It does this dozens of times across the whole wafer. When you're talking about how many EUV passes, that’s the entire wafer being exposed at a certain rate. An EUV tool can do roughly 75 wafers per hour, and the tool is up roughly 90% of the time. In the end, you need about three and a half EUV tools to do the 2 million EUV wafer passes for the gigawatt. So three and a half EUV tools satisfies a gigawatt. It's funny to think about the numbers. What does a gigawatt cost? It costs roughly $50 billion. Whereas what do three and a half EUV tools cost? That's $1.2 billion. It's actually quite a lower number, which is interesting to think about. Fifty gigawatts of economic CapEx in the data center, and what gets built on top of that in terms of tokens is even larger. …",
+      "context_url": "https://www.youtube.com/watch?v=mDG_Hx3BSUE&t=2417s",
+      "start_seconds": 2417,
+      "end_seconds": 2424,
+      "sources": []
+    },
+    {
+      "note_id": "c45c7c0b-be2a-47ad-958a-dac79dc92e16",
+      "commonnotes_url": "https://commonnotes.net/?project=dwarkeshpatel&note=c45c7c0b-be2a-47ad-958a-dac79dc92e16",
+      "note": "Apple is the first customer to adopt TSMC's 2nm process node. For the iPhone 18's A20 chips, Apple secured approximately half of the initial 2nm capacity, with volume production beginning in Q4 2025. https://www.macrumors.com/2025/08/28/apple-tsmc-2nm-production-iphone-18/ https://applemagazine.com/tsmc-2nm-chip-production-iphone-18/",
+      "votes": {
+        "helpful": 1,
+        "not_helpful": 0
+      },
+      "claim": "2 nm is actually the first time they're not. Well, that's besides Huawei.",
+      "extractor_judgement": "uncertain",
+      "context_quote": "2 nm is actually the first time they're not. Well, that's besides Huawei. Huawei, back in 2020 and before, was the first with Apple, but they were both making smartphones.",
+      "updated_quote": null,
+      "context_paragraph": "… chips and CPU chips early. There's a little bit, but for the most part, it's Apple. As we go forward to the year after that, Apple still gets closer to half of it as other people start ramping, but then it falls drastically, just like for N3, where they were half. When I say N2, that includes A16, which is a variant of N2. Over time, those nodes will be the majority. What's also interesting is traditionally, Apple has been the first to a process node. 2 nm is actually the first time they're not. Well, that's besides Huawei. Huawei, back in 2020 and before, was the first with Apple, but they were both making smartphones. Now, with 2 nm, you've got AMD trying to make a CPU and a GPU chiplet that they use advanced packaging to package together, in the same timeframe as Apple. This is a big risk for AMD that causes potential delays because it's a brand-new process technology. It's hard. But at the end of the day, this is a bet that they want to do to scale faster than Nvidia and try and beat them. As we move forward, when we move to the A16 node, the first customer there is not even Apple. It's AI. As we move forward, …",
+      "context_url": "https://www.youtube.com/watch?v=mDG_Hx3BSUE&t=8460s",
+      "start_seconds": 8460,
+      "end_seconds": 8469,
+      "sources": []
+    }
+  ]
+}

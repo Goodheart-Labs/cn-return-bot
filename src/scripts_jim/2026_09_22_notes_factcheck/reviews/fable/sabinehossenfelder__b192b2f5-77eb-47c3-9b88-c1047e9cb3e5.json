@@ -1,0 +1,18 @@
+{
+  "item_id": "b192b2f5-77eb-47c3-9b88-c1047e9cb3e5",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "aa92ccd3-778b-40c1-a8b0-0a9b7bc3dcf8",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "send_advice": "Add a scope clause so she cannot answer that these catalogs cover something else, for example: \"They cover surface flashes, glows and obscurations like the Apollo sightings, not objects crossing the lunar disc, and the ALPO and the British Astronomical Association still collect such reports today.\"",
+      "reason": "This is her own assertion and it is the premise of her own suggestion: \"You also don't have a database dedicated to moon anomalies. Anomalous moon observations are usually lumped together with general UAP sightings. I think it'd be a good idea to keep these separate.\" The two catalogs the note names are real and are dedicated to lunar anomalies alone: NASA Technical Report R-277, the Chronological Catalog of Reported Lunar Events of 1968, and Winifred Cameron's 1978 Lunar Transient Phenomena Catalog, which NTRS confirms \"lists 1468 descriptions of observed lunar transient phenomena\"; Wikipedia adds that the most recent catalog tallies 2,254 events and that the Association of Lunar and Planetary Observers and the British Astronomical Association coordinate such observations today, so this is not only a historical record. The flashes and lit-up craters she describes from Apollo 11, 12 and 17 are exactly what these catalogs collect, so a viewer who takes her sentence at face value comes away believing something false about the very thing she is proposing. What keeps this at uncertain is scope: the three cases she lists right after are objects crossing the lunar disc, and she ends with \"moon UFOs could get at least a spreadsheet\", so she may mean moving objects rather than surface phenomena, and no transient-lunar-phenomena catalog records objects crossing the disc. She would then have a fair reply that the note answers a different question, and the passage is a side remark before a joke, not the argument of the video. The note is correct and not pedantic, but it should say what the catalogs cover so the reply is pre-empted."
+    }
+  ]
+}

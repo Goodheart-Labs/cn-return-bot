@@ -1,0 +1,61 @@
+{
+  "item_id": "6af85fd3-7903-429e-83a0-6fa3749178e3",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "2e4cf563-ddec-4781-9341-22e7fb36dcb5",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The review states the etymology flatly as fact (\"The area's name comes from Kann er da\"), so it is the author's own assertion and not a quotation he is questioning. Every reference I checked gives the other explanation: the Auschwitz-Birkenau Museum, the USHMM, the English and German Wikipedia articles and the Canadian Jewish News all say prisoners named the warehouses after Canada because Canada stood for wealth and plenty, and none of them mentions a German phrase. \"Kann er da\" also does not mean \"might there be\" in ordinary German. Two things hold me back from calling this good. The Auschwitz Museum itself says the origin \"is unclear, but we assume\" the wealth association, so the note's confident \"historians attribute\" presents a likely story as a settled one. And the author almost certainly took the phrase from the book he is reviewing, since Freedland offers his own explanation for the name, so he may answer that the correction belongs to his source rather than to him. Nothing in the review's argument rests on the etymology either, so this is trivia rather than a belief that matters."
+    },
+    {
+      "note_id": "90f7a2b8-8759-4c69-a4de-2a21c923f80f",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "The sentence \"Both FDR and UK Prime Minister Anthony Eden had received eyewitness testimony of Nazi mass murder by 1943\" is the author's own, not a quotation. Eden was Foreign Secretary from December 1940 to July 1945 with Churchill as Prime Minister, and he became Prime Minister only in 1955, which is what the note says and what Wikipedia and Britannica both confirm. The note is also fair: it explicitly grants the part of the sentence that carries the argument, that Eden did receive Jan Karski's eyewitness account while in office. Its one wobble is the date, since Karski reached London in late 1942 but met Eden in early 1943, and that does not affect the correction. A plain error about who held which office is exactly the kind of thing an author fixes without resentment."
+    },
+    {
+      "note_id": "ee32d559-5b46-4e65-9a03-4a49d97541b2",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "\"Rudi testifies at Nuremberg and in several other high-profile Nazi trials\" is the author's own sentence. I could find no record of Vrba appearing as a witness at Nuremberg: Wikipedia's article on him covers a sworn deposition for the Eichmann trial in 1961, the Mulka trial in Frankfurt in 1964 and the Zundel trial in 1985, with nothing on Nuremberg, and the Vrba-Wetzler report went in at Nuremberg as document 022-L in the anonymous War Refugee Board version. The correction is not a technicality, because it changes the picture from Vrba as a star courtroom witness to his report being used while the prosecutors did not know who had written it, which actually supports the review's own theme that he was forgotten by history. The note is careful where it should be, saying \"reportedly\" about the one claim that rests on the rudolfvrba.com site. The rest of the author's sentence, that he testified at other high-profile trials, is left standing."
+    },
+    {
+      "note_id": "64d8c9e9-144d-461d-b4a3-07a2bfeb830f",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The footnote is the author's own but it is already hedged: \"Accounts differ as to exactly how many Jewish prisoners escaped from Auschwitz, but it was at best a single-digit number.\" The note's headline number answers a different question. The Auschwitz Museum's figure of about 150 Jews is a count of escape attempts out of 928 attempts, while the footnote is about escapes that succeeded, and the museum puts total successes across all groups at 196. Setting \"150\" against \"far above single digits\" makes the author look off by a factor of fifteen when the like-for-like comparison is the note's second sentence, the at least eleven named Jewish prisoners who got away. Eleven against \"at best single digits\" is a tiny difference that leaves the author's actual point untouched, which is that a Jew escaping Auschwitz was vanishingly rare. That is pedantic, and the mismatch in the first sentence invites the reply that we did not read the footnote carefully."
+    },
+    {
+      "note_id": "a559a536-846a-44fd-8f8c-2e9477f57a4e",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "The footnote is the author's own aside and he presents it as the clincher: \"One particularly damning detail: Kasztner served as a character witness for Eichmann even after the war.\" The USHMM article on Kasztner says he intervened after the war for Kurt Becher, Dieter Wisliceny and Hermann Krumey, the SS men he had negotiated with, and that his statement helped Becher avoid prosecution; Eichmann appears only in the wartime negotiations, never in the postwar ones. The dates make it impossible as well, since Kasztner was shot in March 1957 and Eichmann was only captured in 1960 and tried in 1961. This matters because it is an accusation against a real and fiercely disputed person, offered as the decisive fact; the true version is still damning but it is a different fact. Someone writing about the Kasztner controversy should want that right."
+    },
+    {
+      "note_id": "bd06c77d-050a-4348-9f6d-d75e9d9af0aa",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The footnote is written in the review's narrative present, at the moment in spring 1944 when Walter and Fred cross into Slovakia and find a doctor and a working Jewish Council. Read that way the author has a real point: Slovak deportations stopped in October 1942 and did not resume until the German invasion of August 1944, so roughly twenty thousand Jews were still alive there when the two men arrived, and exemptions for Jewish doctors were genuinely part of why. The note answers a different question, the total wartime loss across all of Czechoslovakia measured from 1930 to 1946, which folds in Bohemia and Moravia and Subcarpathian Ruthenia and says nothing about the 1944 snapshot the author is describing. Its comparison is weak too: France, Italy and Denmark are the three best-surviving cases in occupied Europe, and three examples cannot show what \"most other Nazi-occupied countries\" did. The figure of about a thousand people covers Slovak presidential exemptions only, one narrow category, not the professional exemptions for doctors as a whole, so it understates the mechanism the author names. The likely reply is that we scored an aside against a claim he did not make."
+    }
+  ]
+}

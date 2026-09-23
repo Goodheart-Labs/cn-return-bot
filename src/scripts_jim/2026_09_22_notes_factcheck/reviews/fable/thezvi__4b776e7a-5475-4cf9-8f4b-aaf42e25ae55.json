@@ -1,0 +1,18 @@
+{
+  "item_id": "4b776e7a-5475-4cf9-8f4b-aaf42e25ae55",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "65cc8778-3127-42ec-a1ad-fcfc277c5bb7",
+      "verdict": "good",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "quoted source",
+      "send_advice": null,
+      "reason": "The numbers sit inside a block quote of Max Ghenis's July 12 tweet, so they are Ghenis's words, but the note is aimed at Zvi's own editorial parenthetical in front of the quote: \"Max Ghenis (incorporating his later correction into OP)\". I checked the EA Forum post's July 13 update myself. It reads \"median ~70,000 -> ~205,000 QALYs (credulous ~420,000); blended ~$435k -> ~$148k/QALY; ... the frontier multiple ~1,500x -> ~515x\". Zvi's quote carries the corrected $148k per QALY and the corrected ~500x, while keeping the pre-correction ~70,000 and ~200,000 QALYs, so the correction he says he folded in was folded in for two figures and not for the headline ones. Ghenis's original tweet and Bluesky post do say ~70,000 and ~200,000, so the note is right that these are the pre-correction numbers. A reader comes away believing the corrected analysis says ~70,000 QALYs when it says roughly three times that, and Zvi explicitly tried to present the corrected figures, so he should welcome this. One small thing for Nathan to know, not a flaw in the note: Ghenis's live page has since moved to a v1.1 model at ~202,000 and ~415,000, but the note quotes the July 13 update that Zvi said he was incorporating, which is the right comparison."
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "item_id": "75f68b85-de35-4eb9-84fd-446789db73ee",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "4ffaa507-0f71-4778-a150-bb43a1294d0f",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "whose_words": "guest",
+      "send_advice": null,
+      "reason": "The post is a 2026 book review contest entry; Scott's own header says it was 'written by an ACX reader who will remain anonymous until after voting is done', so the sentence is a guest's, and Scott neither adopts nor relies on it. The linguistics in the note are right: Akkadian is East Semitic and extinct, Hebrew and Arabic are West Semitic, and the Biblical Archaeology page really says 'while Hebrew and Aramaic belong to the northwest branch of the Semitic language family, Akkadian belongs to its eastern branch'. But the phrase 'a predecessor of modern Arabic and Hebrew' is a one-clause aside for lay readers inside a paragraph about Sumerian being displaced, and 'predecessor' can be read as 'the earliest recorded member of the same family', which is true. Nothing in the essay depends on it, and a reader who takes the strong reading comes away with no belief that matters to the author's point about cuneiform and Sumerian. That makes it a tangential quibble, and sending it to Scott about a guest's throwaway parenthetical would read as nitpicking."
+    },
+    {
+      "note_id": "c2dbbdd2-9534-44d6-9623-162aa8c90306",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "whose_words": "guest",
+      "send_advice": null,
+      "reason": "Same guest-written contest entry, and the claim sits in footnote 15, which opens 'OK, it's a bit more complicated' and only illustrates how a writing system might handle tone. The note's core fact holds: both arXiv papers say Yoruba orthography 'makes significant use of tonal diacritics' (acute for high, grave for low, mid unmarked), so Yoruba is a poor example of a language that leaves tone to context. But the note's closing sentence, 'It doesn't rely on context alone, unlike the claim made here', overreaches. The same arXiv paper says 'On modern computing platforms, the vast majority of Yorùbá text is written in plain ASCII, without diacritics', and Asahiah (2017) writes that tone diacritics 'are the most violated, being either totally ignored, randomly used or wrongly used in many written texts' and that readers 'rely on context' to disambiguate. So in practice the author's description of Yoruba is closer to true than the note allows, and the disagreement is about the official standard versus everyday use. A footnote-level example choice with no bearing on the essay is not worth a public note, and the note itself is only half right."
+    }
+  ]
+}

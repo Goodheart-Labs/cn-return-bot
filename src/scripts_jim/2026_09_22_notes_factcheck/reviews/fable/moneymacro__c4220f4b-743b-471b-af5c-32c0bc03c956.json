@@ -1,0 +1,18 @@
+{
+  "item_id": "c4220f4b-743b-471b-af5c-32c0bc03c956",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "7ad8ea7b-6f80-496c-bd18-d73c4b0f3691",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "partly",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "reason": "The sentence is the author's own closing judgement, with no attribution: \"so far he has sent mixed signals on just how committed he is to building more, at least market rate, housing, only focusing on publicly subsidized, permanently affordable, union built, rent stabilized homes.\" It is lifted almost word for word from The Atlantic of 2 November 2025, which described Mamdani's campaign platform and already noted that he had hedged and claimed to have changed his mind on the role of the private market. The video went out on 4 August 2026, more than two months after Mamdani, as mayor, released the 112-page plan Block by Block on 26 May 2026. The city's own release pairs the 200,000 new and 200,000 preserved affordable homes with \"an ambitious land use agenda to boost housing production across the five boroughs\", citywide transit-oriented development, neighbourhood rezonings in the Bronx and Brooklyn and mixed-income housing on city-owned sites; CNN on 4 June quotes him citing Austin, Minneapolis and Seattle as proof that loosening zoning brings rents down; and The Real Deal of 16 June reports that the plan relies on for-profit rental developments that are about 70 percent market-rate. So \"only focusing on\" subsidised, union-built, rent-stabilised homes was out of date when the video was made, and that matters for his closing question of whether a mayor can do both. Two things stop me calling it good. The note's first sentence says the plan \"explicitly includes market-rate housing production\", but the plan sets no market-rate target at all, its stated targets are affordable homes only, and The Real Deal's point is that Mamdani's presentation omitted the market-rate reliance, so \"mixed signals\" is still partly defensible. And I could only confirm The Real Deal's wording through search snippets, since the page refuses fetches. The author argues for building more, so a friendly update to his own thesis is one he would likely take, once the overstatement is gone.",
+      "send_advice": "Replace the first sentence with: \"Since Mamdani's May 2026 housing plan 'Block by Block', that is out of date: its targets are affordable homes, but it pursues citywide transit-oriented development and neighbourhood rezonings, and per The Real Deal relies on private mixed-income buildings that are about 70% market-rate to reach them.\" Drop the word \"explicitly\" and do not mention that the sentence comes from The Atlantic."
+    }
+  ]
+}

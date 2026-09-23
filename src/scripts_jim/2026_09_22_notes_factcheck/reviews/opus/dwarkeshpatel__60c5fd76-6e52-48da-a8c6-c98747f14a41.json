@@ -1,0 +1,25 @@
+{
+  "item_id": "60c5fd76-6e52-48da-a8c6-c98747f14a41",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "fa741b4b-77bf-4634-93cd-8643c994ad6b",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The dates in the note are right. Kaplan et al., 'Scaling Laws for Neural Language Models', went up on arXiv on 23 January 2020, and Hoffmann et al., 'Training Compute-Optimal Large Language Models' (Chinchilla), on 29 March 2022. But the sentence is not a claim Dwarkesh makes. The published transcript at dwarkesh.com/p/eric-jang shows two speakers: Dwarkesh asks 'When were Chinchilla or Kaplan scaling laws released?' and Eric Jang answers '2018.'. Our transcript has no speaker labels, so the question and the guest's one-word answer were merged into one line and the wrong year was attributed to the host. Dwarkesh does not build on the year either. His very next sentence is 'So if you're back in 2015, there's not an automated procedure one can easily imagine for knowing which paper is the scaling laws paper', and that point holds whether the papers are from 2018, 2020 or 2022. Sending Dwarkesh a correction of his guest's offhand verbal guess, on a detail that carries none of the argument, is exactly the pedantry that annoyed Andy Masley."
+    },
+    {
+      "note_id": "42c1920c-aa6a-4941-9adc-5f46741fdc69",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "This is the same correction as note fa741b4b on the same sentence, split so that one note is filed under Kaplan and this one under Chinchilla, and both note texts correct both papers. It fails for the same reasons. The '2018' is Eric Jang's spoken one-word answer to Dwarkesh's question, not an assertion by the author, and the published transcript separates the two speakers even though ours does not. The facts check out: the Chinchilla paper is arXiv 2203.15556, submitted 29 March 2022 and published at NeurIPS 2022, and Kaplan et al. is arXiv 2001.08361 from January 2020. Nothing in the conversation rests on the year, since Dwarkesh immediately contrasts it with 2015. On top of that, two near-identical notes anchored to one sentence would look careless even if the correction were worth making."
+    }
+  ]
+}

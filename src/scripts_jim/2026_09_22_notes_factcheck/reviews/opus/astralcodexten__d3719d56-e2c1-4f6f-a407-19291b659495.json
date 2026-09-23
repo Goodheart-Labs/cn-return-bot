@@ -1,0 +1,16 @@
+{
+  "item_id": "d3719d56-e2c1-4f6f-a407-19291b659495",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "e999483e-947b-4f81-b366-dd1d2d1e48e8",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "unsure",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "Scott is relaying a linked tweet by John Wake plus a Berkeleyside article, and he says up front that he has not verified the links and welcomes corrections, so a correction here is fair game in principle. The problem is that the note's arithmetic does not line up with the post. The post was published in July 2026 and says \"2x the rate of five years ago and 10x the rate of ten years ago\", which means 2021 and 2016, but the note compares 2020 (590 units) with 2024 (731 units) and calls that \"1.2x not 2x\". It uses no 2025 or 2026 figures at all, even though Berkeley's Middle Housing ordinance took effect in November 2025, so Scott could answer it in one line by pointing at the years. The rebuttal of the 10x figure is also a logical error: the note argues from a ten-year average of 579 units a year, but an average cannot bound a single-year ratio, and Berkeley's series is very lumpy (887 permits in 2022, 431 in 2023, 731 in 2024 by the city's own count). The rent half is shakier still, because the note's two sources disagree with each other, one saying Zillow typical rents rose about $40 a year and the other saying the median for the same rent-controlled stock fell from $2,600 in 2022 to $2,295 in the third quarter of 2024, and that $2,295 reading is almost two years older than the post. Scott's underlying numbers may well be too high, since Census permit data for Berkeley show roughly 300 to 400 units a year in 2016, 2021 and 2025 alike, but this note does not establish that and would hand him an easy rebuttal instead."
+    }
+  ]
+}

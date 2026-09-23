@@ -1,0 +1,16 @@
+{
+  "item_id": "1fd6ef94-483e-4fec-a413-2657e5001e56",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "3a51b9d0-41cf-414b-a617-33b20192e925",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "reason": "Parnas writes in his own voice that the speaker list \"includes 109 speakers and items across two days, with Trump and Vance speaking Wednesday night and Trump giving another keynote Thursday\", so this is his own assertion. One half of the note holds up: the list released that weekend put Vance on night two, not night one. The Washington Examiner's 5 September piece and CBS both say Trump keynoted night one and Vance night two with Trump closing, so Parnas did put Vance on the wrong night. But the other half of the note is wrong. It tells the reader it is \"not ... Trump keynoting again Thursday\", when Trump did speak again on Thursday and Fox 4's schedule calls it his \"closing keynote address\", so the note disputes a part of the sentence that was correct. The correction is also tangential: the paragraph is about the RNC selling roundtables and photos and about the Hatch Act question over Todd Blanche, and nothing in that argument turns on which evening the vice president spoke. Finally, the claim the pipeline actually extracted was the \"109 speakers and items across two days\" figure, which every source confirms is right, and the note never addresses it."
+    }
+  ]
+}

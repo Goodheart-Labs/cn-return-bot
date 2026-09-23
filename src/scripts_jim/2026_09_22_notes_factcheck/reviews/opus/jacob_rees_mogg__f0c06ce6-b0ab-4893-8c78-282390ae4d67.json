@@ -1,0 +1,25 @@
+{
+  "item_id": "f0c06ce6-b0ab-4893-8c78-282390ae4d67",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "629da884-af03-42e7-b8e4-5690c2623540",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "Rees-Mogg does say it outright: 'stable currencies that limit the amount that they issue are less likely to suffer from inflation. Indeed, they should not suffer from inflation.' The economics in the note is right and I checked every quote against the St. Louis Fed blog post, which says word for word that Bitcoin 'has a more-or-less fixed quantity that cannot respond to fluctuations in demand' and that its inflation rate dwarfs the dollar's. It is also substantive, because the whole video rests on limited issuance making crypto a better store of value than the pound. Two things give me pause. He never names Bitcoin in that passage, and his 'stable currencies' is ambiguous in the transcript between stablecoins and hard-money coins, especially since he later says 'possibly backed by gold or something real and tangible'. And he has already conceded the volatility himself earlier in the same video, saying crypto 'has been a speculative investment rather than a currency' and predicting 'it will cease to be a speculation', so he can wave the note away as measuring the speculative phase he has explicitly set aside. Nathan should expect that reply even though the underlying point about fixed supply and swinging demand survives it."
+    },
+    {
+      "note_id": "0f4fdaab-46ad-484e-825b-eb1263e82ea8",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "This is a gotcha on a figure of speech. In the South Sea Bubble passage his point is that crypto prices were bid up because supply could not expand to meet a surge in demand, and 'new ones weren't being created' is loose shorthand for a capped, inelastic supply. That point is substantially correct: Bitcoin issuance is now under one percent a year and falling, so nothing a reader takes away from his sentence is wrong in any way that matters to his argument. The note also has its own numbers slightly wrong. It says roughly 19.95 million BTC issued with about 1.05 million left, but Wikipedia records 20,057,778 issued as of 12 June 2026, so by September 2026 it is closer to 0.9 million left, and even the note's own lbank source says 20.01 million issued and under 987,000 left, which contradicts the figures the note printed. The two sources are crypto marketing sites rather than anything authoritative. Finally he is talking about cryptocurrencies in general and the note silently narrows him to Bitcoin. Sending this would make us look pedantic for no gain."
+    }
+  ]
+}

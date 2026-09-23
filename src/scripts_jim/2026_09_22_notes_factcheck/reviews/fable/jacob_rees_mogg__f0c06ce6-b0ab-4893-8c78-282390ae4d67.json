@@ -1,0 +1,18 @@
+{
+  "item_id": "f0c06ce6-b0ab-4893-8c78-282390ae4d67",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "629da884-af03-42e7-b8e4-5690c2623540",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "reason": "This is Rees-Mogg's own thesis, in his own words: 'stable currencies that limit the amount that they issue are less likely to suffer from inflation. Indeed, they should not suffer from inflation. And that makes them an interesting store of value over the long term.' He builds the rest of the video on it, and a few sentences earlier he defines inflation purely as a supply phenomenon ('if you create an increase in supply of currency then the value of the currency will decline'). The first reviewer worried that 'stable currencies' might mean stablecoins; I settle that as not disqualifying, because stablecoins have no issuance cap and he describes coins with limited issuance 'possibly backed by gold', so the referent is a hard-cap coin like Bitcoin, and the note's argument does not depend on the name anyway. The note is correct and every quote is verbatim from the St. Louis Fed blog, which prices the CPI basket in Bitcoin and shows that a fixed supply facing changing demand produces large price swings in both directions, the same thing that happened under the gold standard. It is substantive because it targets the mechanism his whole argument rests on: limited issuance removes debasement by the state, but it does not remove inflation. What gives me pause is his likely reply. He concedes in the same video that crypto 'has been a speculative investment rather than a currency' and predicts it 'will cease to be a speculation', and he even says of the 1690 to 1914 pound that 'there was inflation and there was deflation' while still calling it a store of value, so he plainly means long-run erosion of value, not year-to-year price swings. A note whose headline evidence is Bitcoin's inflation rate over a decade in which Bitcoin also rose enormously against the pound invites the answer 'that is the speculative phase I already set aside, and over the long run it held value far better than sterling.' The demand-side point survives that reply, but the note as worded leads with the evidence he can most easily wave away.",
+      "send_advice": "Replace the second sentence with one that leads with the mechanism rather than the Bitcoin inflation rate, for example: 'A fixed supply cannot adjust when demand for the currency changes, so prices measured in a capped currency swing between inflation and deflation, as they did under the gold standard and as they have in Bitcoin. Limited issuance stops debasement by the state; it does not stop inflation.' Drop the clause 'its inflation rate has dwarfed U.S. dollar inflation', which he will answer with Bitcoin's long-run rise against sterling."
+    }
+  ]
+}

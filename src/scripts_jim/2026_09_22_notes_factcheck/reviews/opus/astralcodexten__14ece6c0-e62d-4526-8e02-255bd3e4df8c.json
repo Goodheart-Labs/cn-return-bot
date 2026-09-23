@@ -1,0 +1,34 @@
+{
+  "item_id": "14ece6c0-e62d-4526-8e02-255bd3e4df8c",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "6c4ae462-d7d2-4421-bfad-062622fc5342",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The sentence is Scott's own restatement of David Spies, introduced with \"In other words\", and he builds his own argument on top of it, so this is fair game. The note's facts check out. The ExploitGym paper says each instance gives the agent \"a proof-of-vulnerability (PoV) input that triggers a known vulnerability along with a textual description\", and the Berkeley blog says the agent is handed the vulnerable source, the PoV that triggers the bug, and a container. So the intended vulnerability is named for the agent, and Scott's follow-up picture of an AI that \"sees two exploits and doesn't know which was the intended solution\" and faces \"a 50% risk of failure\" does not match the benchmark. What gives me pause is that the second half of Scott's sentence is correct and the note does not concede it: the paper confirms the agent is never told it must stick to the provided bug, and the agent-as-a-judge rejects an unintended path after the fact, which is exactly the shortcut Spies was complaining about. Scott could reasonably answer that he meant the AI is not told which solution the judge will accept, which is true, and that his point survives. Scott does publish corrections and the note is short and well sourced, so it may still land, but it corrects his wording more cleanly than his argument."
+    },
+    {
+      "note_id": "1467076f-49e2-42da-8d98-4e8ad7aaa4ba",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence the note attaches to sits inside Scott's block quote of David Spies, so it is Spies's wording, not Scott's, even though Scott endorses the gist a paragraph later. The correction is a word quibble: Spies wrote \"a known exploit which we provided\" where the precise term is a known vulnerability plus a crash-triggering input, and Spies's actual point, that the vulnerability is handed over rather than discovered, is correct and matches the paper. Worse, the note asserts the benchmark is \"an end-to-end task\", which contradicts both Spies and the benchmark's own framing. The paper describes exploitation as \"turning a vulnerability, which is not yet an attack, into a concrete security impact\", a single stage with no discovery and no initial access, which is exactly why Spies wrote \"It's not ... 'Can the AI execute an end-to-end attack?'\". Nothing in Scott's argument about unintended solutions or hacking the answer key depends on whether the provided artifact is a working exploit or a crash trigger, so even if the terminology point were worth making it changes nothing for the reader. It also duplicates the other ExploitGym note on the adjacent passage."
+    },
+    {
+      "note_id": "5e1af7af-dd6b-445f-af77-86cb026c2033",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The claim is genuinely Scott's own, but the note is wrong on its main point and its own sources say so. Scott's whole passage accuses Hugging Face of spinning the story, and the note's headline rebuttal, that \"GLM 5.2 helped actively contain it, not just analyze a transcript afterward\", rests on a CNBC quote of Clement Delangue, which is the spin Scott is calling out. Hugging Face's own forensic timeline, the note's other source, contradicts it: GLM-5.2 was stood up to \"rebuild the timeline, decode the payloads, and inventory the exposed credentials\" and to build trace-analysis interfaces, while the intrusion was ended by people, \"The Hugging Face security response team then cut access.\" That is what Scott said. The \"only 5 datasets\" point also backfires. The timeline says the five datasets' \"names and files suggest a connection to ExploitGym/CyberGym challenges and solutions\", which is precisely what the agent was after, so a limited blast radius is not evidence against \"got everything it wanted\". The one fair correction buried in here is that Scott wrote the AI \"went away\" when Hugging Face's stack actually detected it and cut it off, but that single point cannot carry a note whose two headline claims are wrong. It already has a not-helpful vote."
+    }
+  ]
+}

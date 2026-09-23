@@ -1,0 +1,18 @@
+{
+  "item_id": "8709be9c-5930-4093-aa29-d9c7fdcc877b",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "8ec77510-ee49-4ef4-9ef9-9e3c3d1d531f",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "send_advice": "Drop the second sentence's clause about Canio, or replace it with 'his professional stage debut came in 1895'. Sources disagree on his first Canio (Encyclopedia.com says 1896, Wikipedia's repertoire list says 31 December 1897), and the note does not need it: Pagliacci not existing in 1890 and Caruso being a 17-year-old with no stage career already make the point.",
+      "reason": "The sentence is Scott's own, in the body of the essay: 'In 1890, hearing Enrico Caruso sing Pagliacci might be the highlight of your life'. The facts in the note check out against the sources: Wikipedia says 'Pagliacci premiered at the Teatro Dal Verme in Milan on 21 May 1892' with Fiorello Giraud as Canio, and Caruso, born 25 February 1873, 'made his professional stage debut' on 15 March 1895 (infobox 'Years active 1895-1920'). So the scene Scott describes could not have happened in 1890: the opera did not exist and Caruso was a 17-year-old who had never sung on stage. This is more than a rounding error, because the example is the whole sentence, and any opera-literate reader will spot it. Against that, the year is scene-setting for a hypothetical whose argument (a months-long trip versus hearing Caruso at home by 1910) works unchanged with 1900, so Scott may read a public note about an illustrative date as pedantic even though he does post corrections. The one wording flaw is the '1896-97' Canio date, where the sources are not in agreement; see send_advice."
+    }
+  ]
+}

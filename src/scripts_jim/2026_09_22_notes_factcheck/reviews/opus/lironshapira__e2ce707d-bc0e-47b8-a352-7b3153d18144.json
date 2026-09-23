@@ -1,0 +1,25 @@
+{
+  "item_id": "e2ce707d-bc0e-47b8-a352-7b3153d18144",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "aeff9ea9-349c-4bde-a71c-5ae43f9a4d15",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "This is a spoken podcast transcript, and \"Liv Berry\" is simply how the transcriber wrote the sound of \"Liv Boeree\". Correcting the spelling of a name that Liron pronounced correctly is not a factual correction, it is a transcription typo. The note also adds that the Dean Ball episode was published April 1, which suggests Liron got a date wrong, but Liron never dated the episode. He said Holly tweeted the clip on April 4th, and the tweet embedded in the same post is indeed dated 2026-04-04, so that part of the note corrects a claim nobody made. Sending this would look like nitpicking a typist."
+    },
+    {
+      "note_id": "d53bafb3-627a-43a8-9f0a-08b19e21ea2a",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Liron does say it himself: \"And now they're also the most valuable startup in the world. Their valuation has surpassed a trillion dollars.\" The underlying number checks out. Wikipedia, Sacra and the cited Value Add VC pieces all put Anthropic at $965 billion after its May 2026 Series H and its June 1 confidential IPO filing, so it had not crossed a trillion when this episode went out on June 30. But the gap is about three and a half percent on a figure Liron threw out in passing, and the note does not touch his actual point, that Anthropic is now the most valuable startup in the world, which it concedes is true. The note is also aimed at the wrong company: two of its three sentences are about OpenAI's $852 billion valuation and OpenAI's IPO filing, and Liron never mentioned OpenAI here at all. A reader would be confused about what was supposedly corrected."
+    }
+  ]
+}

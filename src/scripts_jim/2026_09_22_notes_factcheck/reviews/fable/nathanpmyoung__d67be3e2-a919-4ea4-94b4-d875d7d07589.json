@@ -1,0 +1,18 @@
+{
+  "item_id": "d67be3e2-a919-4ea4-94b4-d875d7d07589",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "b04a58e8-bd2c-4a56-a770-676d14214d57",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "send_advice": "Send it as a question, not a correction. Keep the two public figures but replace \"not $30M\" with something like: \"Is $30m a newer figure than the July launch numbers? Manifund's funder bulletin lists $35M for Lightcone Commons in 2026, sourced to private communications, so I may just be behind.\"",
+      "reason": "The claim is the author's own: the post opens in his voice with \"Lightcone Commons is a funder, who are going to regrant $30m in the next three months\", and nothing in the five short paragraphs hedges or attributes it. Both sources check out. lightconecommons.com says \"For the first round, I am expecting participating funders to disburse around $15M–25M\", the LessWrong announcement of 23 July says \"We are facilitating ~$20M of grants in our first round\", and Habryka's launch tweet says \"We are helping distribute $20M+ this summer\"; the site's itemised funder list adds up to roughly $24M, and Zvi and the LTFF closing post repeat the $15M to $25M and ~$20M figures. The timing is fine, since applications closed on 23 August and recommendations are due by 23 October, so \"the next three months\" is not the problem. What I could not settle is whether the post is actually wrong rather than merely ahead of the public record: the author is an evaluator for the fund, and Manifund's funder bulletin lists $35M expected from Lightcone Commons in 2026, footnoted to \"Private communications\", while the second round only resolves in January 2027, so the money that lands in 2026 is essentially the first round. That makes a private first-round figure around $30M quite plausible, and a reply of \"that is the number they gave me\" would leave the note looking uninformed. The number is the post's headline fact and $30M is half again the public ~$20M, so it is not pedantic, but it does not touch the post's actual point that applying takes ten minutes and is worth a shot, so it reads best as a query rather than a correction."
+    }
+  ]
+}

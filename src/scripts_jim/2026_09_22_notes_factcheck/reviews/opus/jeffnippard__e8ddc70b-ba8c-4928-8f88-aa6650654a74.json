@@ -1,0 +1,16 @@
+{
+  "item_id": "e8ddc70b-ba8c-4928-8f88-aa6650654a74",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "69334991-4379-46e5-a090-8a5e221e691e",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "The claim is Jeff's own. He says plainly, \"The main technique difference that I made this year was setting the seat back as far as I could get it. This was shown in a new 2024 study to cause about 170% more quad growth than the standard upright seat position.\" There is a real overstatement in there, because the study he means (Larsen et al., Journal of Sports Science 2025, published online December 2024, 22 untrained men, ten weeks) found the advantage only in the rectus femoris and found strong evidence of no difference in the vastus lateralis, and 170% is the top of a roughly 50 to 170 percent range rather than a single headline number. But the note itself gets the study wrong. It says the benefit was \"at the proximal region only\", and the abstract says the opposite: \"extreme evidence supporting a hypertrophic response favouring the 40 degree hip angle for the rectus femoris (BF > 100; p(Distal/ATE & Proximal/ATE >0) > 0.999)\". Both the distal and the proximal sites grew more, the proximal site simply grew more strongly, which is what the Stronger By Science line the note was accepted on actually says: \"The superiority of 40 degrees of hip flexion was larger at the proximal site than the distal site.\" The note's other framing, \"not overall quad growth\", is also contestable, because the authors conclude that both positions are viable for quadriceps hypertrophy and that the reclined position is better for the rectus femoris with no cost to the vastus lateralis, so the reclined seat does produce more total quad growth, just not 170 percent more. Nippard reads this literature closely and covered this exact study, so he would spot the proximal-only error immediately and read the note as a misreading of the paper rather than a correction of his video. A note that only made the accurate point, that the 170 percent figure is the top of a rectus-femoris-specific range and the vastus lateralis showed no difference, could have worked; this one does not."
+    }
+  ]
+}

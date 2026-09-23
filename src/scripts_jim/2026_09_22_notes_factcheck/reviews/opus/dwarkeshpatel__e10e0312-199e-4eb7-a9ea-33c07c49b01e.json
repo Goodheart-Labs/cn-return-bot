@@ -1,0 +1,70 @@
+{
+  "item_id": "e10e0312-199e-4eb7-a9ea-33c07c49b01e",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "fd666ffa-8be0-475b-9f10-fb37c08795fd",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "Ada Palmer says this in her own voice as plain fact, and dwells on it: \"his wife and his loved ones back at home, his children, had to wait months to find out whether he too had been slaughtered.\" The massacre was on the night of 31 December 1502, and Machiavelli's legation to Cesare Borgia ended when he left the court between 18 and 23 January 1503, so his family had him home within about three weeks. Palmer's own blog, Ex Urbe, dates the letter of relief from Biagio Buonaccorsi to 9 January 1503, nine days after the massacre, which is even stronger evidence against her than anything the note cites. The note's sources hold up: the Wikipedia article on the Senigallia massacre carries the dispatch quote, and the Online Library of Liberty gives 23 January 1503 for the end of the mission. The weak point is the note's first sentence, which is about Machiavelli's official dispatch to the Florentine government rather than about his family, so on its own it does not answer what she said; the return date is what does the real work. Because her own published account contradicts what she said here, she would most likely concede she misremembered."
+    },
+    {
+      "note_id": "df721f22-1324-4f36-8db5-db1fb7ea3e3c",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence reads \"if not for the fact that St. Francis of Assisi—and also to some extent St. Dominic a couple of centuries before his time—reformed the Church and brought in a lot more popular support, Christianity would already have cracked under the weight of its own corruption 200 years before.\" The note assumes \"his time\" means Francis's time, which would make the sentence wrong, but the natural reading is that both friars lived a couple of centuries before Machiavelli's time, which is correct, since Dominic died in 1221 and Machiavelli was born in 1469. The closing phrase \"200 years before\" is measured from Machiavelli, and that confirms the reading. Ada Palmer is a historian of exactly this period at the University of Chicago, and the near-simultaneous founding of the two mendicant orders is textbook material, so reading her as saying Dominic came two hundred years before Francis is uncharitable. This is the same failure Andy Masley complained about: the note is built on one parse of an ambiguous spoken sentence rather than on anything she actually asserts. Even if she had misspoken, the aside is tangential to her argument about institutions being corrupted and needing reform."
+    },
+    {
+      "note_id": "4b81ba16-875a-4e7c-9f65-7258c7d49161",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "Palmer states this in her own voice and builds on it: \"The useful example here is Thomas Paine ... Thomas Paine advocated mandatory religion in total indifference to what religion it is.\" Paine wrote the opposite in Common Sense: \"it is the indispensible duty of every government, to protect all conscientious professors thereof, and I know of no other business which government hath to do therewith,\" and I could find no text in which he calls for compulsory religious schooling. The Stanford Encyclopedia entry on Paine records only that he wanted state provision for educating the poor, and says nothing about religious content. What Palmer describes, fear of God and punishment after death as the thing that makes a citizen obey the law, matches Rousseau's civil religion in Social Contract IV.8 almost phrase for phrase, so the note's reattribution is well founded rather than a guess. The example carries her whole parallel between Machiavelli and eighteenth-century thinkers on the civic use of religion, so naming the wrong thinker matters to her point. Paine sits well outside her own period, which makes this the kind of correction a specialist usually takes gracefully."
+    },
+    {
+      "note_id": "09963f94-f929-449a-9ec4-c98225dc3770",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "reason": "This sentence is Dwarkesh's, not Palmer's: he is musing aloud, \"Why does he spend two decades writing Discourses on Livy? Unlike us ... he's presumably just reading this book again and again,\" and she answers only afterwards. The number is wrong as stated, since the Discourses is normally dated to about 1513 to 1519, and Britannica's widest window is 1513 to 1521, never twenty years. What gives me pause is that his actual point is about long immersion in one book, and that point is true: the Livy his father had indexed was in the house from his childhood, so Machiavelli did live with the text for decades even if he did not write about it for that long. The note also says \"about six years\" while its own Britannica source gives an eight-year window, which is a little loose. So the correction is accurate but it fixes a rhetorical flourish inside a question rather than an assertion, and a listener's takeaway hardly changes."
+    },
+    {
+      "note_id": "caa92d63-4d5d-4f3d-9e95-eda0f4dae881",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "reason": "Palmer says it in her own voice, twice, and uses \"Old Nick\" as a running name for the Machiavelli-villain through her closing remarks. The note is right that reference works reject the derivation: Etymonline calls the origin \"obscure\" and suggests either \"nick\" in the sense of catch or seize, or a shortening of \"Old Iniquity,\" and Anatoly Liberman on the Oxford University Press blog calls the Machiavelli etymology \"truly bizarre.\" My hesitation is that she did not say the word comes from Machiavelli, she said it \"became popular because of\" him, and seventeenth-century writers did make that link themselves, which Liberman acknowledges was widely believed in the mid-1600s, exactly when the phrase first appears. That is a thinner target than a plain factual error, and a public argument about etymology with a humanities professor is easy to lose. The detail is also decorative: her point about the split between Machiavelli the patriot and \"the murderous Machiavel\" stands whatever the word's origin is."
+    },
+    {
+      "note_id": "6139e6be-833d-430f-adc5-0e096966958a",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "Palmer asserts this herself and flags it as load-bearing: \"a fact about Spinoza—and I know this feels tangential, but it's not—was that he was the first person in ages and ages to be targeted with the Jewish equivalent of excommunication.\" That is wrong. Yosef Kaplan counts forty people placed under herem by Amsterdam's Portuguese community between 1622 and 1683, and Uriel da Costa was banned for heresy well before Spinoza, first through Hamburg and Venice in 1616, then when Amsterdam upheld that ban in 1623, and again around 1633. What the NEH article actually singles out about Spinoza's 1656 writ is its ferocity and the fact that it was never rescinded, not that it was the first in a long time. The note's sources say what it claims they say. The one blemish is that the note dates da Costa's excommunication to 1618 where the sources give 1616 and 1623, but nothing in the argument turns on that year."
+    },
+    {
+      "note_id": "768644b7-e8bb-4644-9804-decb85ea166c",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "This is Palmer's own vivid detail: \"the Jews of his region actually had to send somebody traveling all around Europe to find a Jew who knew the ceremony, because it was so incredibly rarely done.\" The premise is false. Herem was ordinary communal discipline there, with forty cases between 1622 and 1683 on Kaplan's count, and a University of Washington piece by Marc Cohen states flatly that \"Excommunication was a very common sanction in Spinoza's community.\" The writ itself was drawn up in Portuguese by the ma'amad, the congregation's own lay board, entered in its Book of Ordinances and read out in the synagogue on the Houtgracht, so no outside expert was needed. The note's last clause is an argument from silence, but it is a safe one given how routine and how locally documented the procedure was. It does sit on the sentence immediately after note 6139e6be and makes a similar point, so Nathan may want to send only one of the two."
+    }
+  ]
+}

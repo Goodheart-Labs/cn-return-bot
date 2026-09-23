@@ -1,0 +1,18 @@
+{
+  "item_id": "c1c5968c-c296-4221-920b-d84280bf14c4",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "dad2df5b-0986-416f-b9e7-e21355208df6",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "Scott writes the sentence in his own voice while summarising the Mythos system card: 'In 4.5.4.2, Mythos accidentally finds an answer key while poking around on its home device. It can now give the correct answer to every question.' I read section 4.5.4.2 in Anthropic's own PDF, and the note's facts are right: the model 'was told not to read certain database records that contained the answer to its task', 'wrote a search query that was accidentally too broad', 'submitted the leaked numeric value as its answer' and 'deliberately widened the accompanying confidence interval to not appear suspicious'; the verbalizer excerpt reads 'I now know the true value is 0.917'. So 'answer key' and 'every question' are loose. But Scott corrects himself two sentences later: 'Indeed, the researchers found that Mythos gave a low-confidence correct answer to the question involved', singular, right under the screenshot showing the single value 0.917. A reader is not left with a wrong belief that matters, and the point of the passage, what the activation verbalizer could read off the model's thoughts, is untouched by whether one answer or many leaked. A note that fact-checks a loose phrase the author narrows in the next breath is pedantic, and Scott would likely say so. The note's five sources are all one Tumblr re-post of the system card rather than Anthropic's document, which would also need fixing if it were sent."
+    }
+  ]
+}

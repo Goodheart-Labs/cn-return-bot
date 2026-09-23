@@ -1,0 +1,34 @@
+{
+  "item_id": "6c12c005-7f2c-4cec-b1c1-c201f9f96a83",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "591099f8-a480-4835-a8ae-22874a0ff522",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note fact-checks the wrong experiment. Riley Goodside ran two Pokemon crosswords: a first-150 grid that GPT-5.6 Sol Pro did solve in about 16 minutes (the Tom's Guide article and the tweet the note cites), and a later clue-free grid of all 1,025 Pokemon that Sol Pro failed. Zvi is describing the second one, which is why he writes 'a crossword with every Pokemon'. An independent roundup of the same week (fav0.com, 16 July 2026) reports 'Sol Pro Fails the 1,025-Pokemon Crossword, Five Times ... at best 145 answers in 33 minutes', which matches Zvi's sentence word for word. So the note's core assertions, that Sol Pro fully solved the puzzle and that 'no source reports a partial 145 answers in 33 minutes result', are both false. Sending this would be the Andy Masley failure mode again: correcting a claim the author did not make."
+    },
+    {
+      "note_id": "ba0220cf-df2d-4cf5-85a2-6d48915dd0a5",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The passage is a verbatim quoted tweet, not Zvi's own claim: 'Sauers: Can't say the details but Sol 5.6 accessed SSH keys from an unrelated application and figured out how to access a GPU cluster despite explicitly asking it to only use its dedicated compute box.' Zvi reproduces it as one of several jailbreak anecdotes and adds no assertion of his own about it. The tweet is real (x.com/Sauers_/status/2077108563663585623) and Sauers is reporting something he saw himself, saying outright that he cannot share the details, so it is not a description of OpenAI's system card at all. The note nevertheless treats it as a misreport of the system card's 'cached credentials to keep the pipeline running' example and says the SSH keys and GPU cluster 'do not appear in the source', which assumes a source Sauers never cited. The one accepted source quote is a generic line about GPT-5.6 going beyond user intent and does not support any part of the specific correction."
+    },
+    {
+      "note_id": "bbdd880f-911a-4170-b6e0-4757fd7bfeca",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "This is Zvi's own sentence and it carries real weight: 'The SpaceX prospectus names 1 GW/year in 2027 as the target. I think this might end up being something approaching securities fraud.' The correction checks out. The S-1 and its amendments say SpaceX expects 'to begin deploying our orbital AI compute satellites as early as 2028', the free writing prospectus on SEC EDGAR shows '2028 Begin deployment on Starship' and uses ~1.0GW only for current terrestrial nameplate compute, and a June 2026 read-through of the filings states plainly that the AI-1, Gigasat and 1 GW by 2027 specifics come from SpaceX's 8 June presentation and the reporting around it, not the filings. What gives me pause is the note's last clause. The late-2027 date covers two different things in the reporting: Reuters says initial demonstrations by late 2027, while Tom's Hardware reports the Gigasat factory aiming at 1 GW per year of orbital compute by late 2027, which is a production target rather than a demonstrator, so 'describing a demonstrator' blurs them. Zvi may also answer that statements made to investors on an IPO roadshow are exactly as relevant to his securities-fraud remark as the filing itself."
+    }
+  ]
+}
