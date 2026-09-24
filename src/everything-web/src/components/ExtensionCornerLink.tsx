@@ -1,4 +1,4 @@
-import { CARD, LINK } from "../../../everything-shared/ui";
+import { FLOATING_CARD, SECONDARY_BUTTON } from "../../../everything-shared/ui";
 
 export const EXTENSION_STORE_LINKS = [
   { label: "Chrome", url: "https://chromewebstore.google.com/detail/common-notes/jodkhmefbcmgldokmeicpdogkepmcnij" },
@@ -7,11 +7,12 @@ export const EXTENSION_STORE_LINKS = [
 
 export function ExtensionCornerLink() {
   return (
-    <aside className={`${CARD} hidden xl:block fixed bottom-4 right-4 z-10 w-36 px-3 py-2.5 text-xs text-gray-600 dark:text-gray-300 shadow-sm`}>
-      <p>See Common Notes as you browse?</p>
-      <div className="flex gap-3 mt-1">
+    // 50vw - 464px is the empty gutter right of the note column (16rem sidebar, 40rem column, page padding).
+    <aside className={`${FLOATING_CARD} hidden min-[1440px]:block fixed bottom-4 right-4 z-10 w-[min(20rem,calc(50vw_-_496px))] p-4`}>
+      <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 text-balance">See Common Notes as you browse?</p>
+      <div className="flex gap-2 mt-3">
         {EXTENSION_STORE_LINKS.map(({ label, url }) => (
-          <a key={label} href={url} target="_blank" rel="noopener noreferrer" className={LINK}>
+          <a key={label} href={url} target="_blank" rel="noopener noreferrer" className={`${SECONDARY_BUTTON} flex-1 text-center`}>
             {label}
           </a>
         ))}
