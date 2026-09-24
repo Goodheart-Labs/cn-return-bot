@@ -16,7 +16,7 @@ import { getBrowser } from "../utils/browserManager";
 import {
   GEMINI_MODEL,
   GROK_MODEL, PERPLEXITY_MODEL,
-  calculateGrokCost, extractOpenRouterCost,
+  addTokenCost, calculateGrokCost, extractOpenRouterCost, serperSearchCost,
   type TokenCost,
 } from "../cost-tracking/pricing";
 import { fetchSearchResults, formatSearchResults, SearchUnavailableError, type SearchResult } from "./serper";
@@ -137,7 +137,7 @@ export async function handlePerplexitySearch(prompt: string): Promise<ToolResult
 export async function handleGoogleSearchRaw(query: string): Promise<ToolResult> {
   try {
     const results = await fetchSearchResults(query);
-    return { output: { results: formatSearchResults(results) }, isTerminal: false };
+    return { output: { results: formatSearchResults(results) }, isTerminal: false, cost: serperSearchCost() };
   } catch (err: any) {
     return { output: { error: `Google search failed: ${err?.message}` }, isTerminal: false };
   }
@@ -158,7 +158,8 @@ export async function handleGoogleSearchSummarized(query: string): Promise<ToolR
     messages: [{ role: "user" as const, content: prompt }],
   });
   const summary = response.choices?.[0]?.message?.content ?? "";
-  const cost = extractOpenRouterCost(response);
+  const cost = serperSearchCost();
+  addTokenCost(cost, extractOpenRouterCost(response));
 
   return { output: { results: summary }, isTerminal: false, cost };
 }

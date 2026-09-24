@@ -21,6 +21,7 @@ const ROOT = "note_writer_steps";
 export const COST = {
   satireDetector: "satire_detector",
   queryWriter: "query_writer",
+  fetchAndFormatSearch: "fetch_and_format_search",
   searchAnalyzer: "search_analyzer",
   search: "search",
   noteWriter: "note_writer",
@@ -34,7 +35,7 @@ export const STEP = {
   root: ROOT,
   satireDetector: `${ROOT}.${COST.satireDetector}`,
   queryWriter: `${ROOT}.${COST.queryWriter}`,
-  fetchAndFormatSearch: `${ROOT}.fetch_and_format_search`,
+  fetchAndFormatSearch: `${ROOT}.${COST.fetchAndFormatSearch}`,
   searchAnalyzer: `${ROOT}.${COST.searchAnalyzer}`,
   search: `${ROOT}.${COST.search}`,
   noteWriter: `${ROOT}.${COST.noteWriter}`,

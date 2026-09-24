@@ -31,6 +31,15 @@ export const GROK_PRICING: Record<string, { in: number; out: number }> = {
 };
 const GROK_XSEARCH_PER_CALL = 0.005;
 
+// --- Serper pricing ---
+// Serper bills one credit for each search that returns up to 10 results, and we
+// always ask for 10. We are on the $50 plan, which buys 50,000 credits. A request
+// that fails is not billed, so callers record this cost only for a search that
+// returned.
+const SERPER_PLAN_PRICE_USD = 50;
+const SERPER_PLAN_CREDITS = 50_000;
+export const SERPER_COST_PER_SEARCH = SERPER_PLAN_PRICE_USD / SERPER_PLAN_CREDITS;
+
 // --- Types ---
 
 export interface TokenCost {
@@ -100,6 +109,11 @@ export function calculateGeminiCost(
     output_tokens: outputTokens,
     cost: tokenCost + searchCalls * p.searchPerCall,
   };
+}
+
+/** The cost of one Serper search. It uses no tokens, only the per-search fee. */
+export function serperSearchCost(): TokenCost {
+  return { input_tokens: 0, output_tokens: 0, cost: SERPER_COST_PER_SEARCH };
 }
 
 export function emptyTokenCost(): TokenCost {
