@@ -13,6 +13,13 @@ const server = Bun.serve({
   async fetch(request) {
     const { model } = await request.json() as { model: string };
     requests.set(model, (requests.get(model) ?? 0) + 1);
+    if (model === "cost/empty-once") {
+      const first = requests.get(model) === 1;
+      return Response.json({
+        choices: [{ message: { content: first ? "" : "done" } }],
+        usage: { prompt_tokens: 100, completion_tokens: first ? 50 : 10, cost: first ? 0.01 : 0.02 },
+      });
+    }
     if (model === "scope/empty") {
       return Response.json({ choices: [{ message: { content: "" } }] });
     }
@@ -165,4 +172,14 @@ describe("scoped LLM cancellation", () => {
 
 test("a missed deadline is worth another attempt", () => {
   expect(isRetryableError(new AttemptDeadlineError("test/model", 1000))).toBe(true);
+});
+
+describe("empty-reply retries", () => {
+  test("the kept reply carries the usage of the empty attempt that was billed and discarded", async () => {
+    const result: any = await llm.create({ model: "cost/empty-once", messages: [{ role: "user", content: "hi" }] });
+    expect(result.choices[0].message.content).toBe("done");
+    expect(result.usage.cost).toBeCloseTo(0.03, 10);
+    expect(result.usage.prompt_tokens).toBe(200);
+    expect(result.usage.completion_tokens).toBe(60);
+  });
 });
