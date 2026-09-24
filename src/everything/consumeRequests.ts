@@ -27,6 +27,7 @@ import { cleanCapturedPageText } from "./pipeline/cleanCapturedText";
 import {
   fetchPendingNoteRequests,
   findItemForPageUrl,
+  insertItemRun,
   insertQueuedItem,
   promoteItemToWholePage,
   QUEUE_PRIORITY,
@@ -79,7 +80,11 @@ export async function consumeNoteRequest(request: NoteRequestRow): Promise<NoteR
       // one; without it the worker fetches the page itself.
       const source = classifyRequestSource(request.page_url);
       let fullText = source === "youtube" ? null : (request.page_text ?? null);
-      if (fullText) fullText = await cleanCapturedPageText(fullText);
+      if (fullText) {
+        const cleaned = await cleanCapturedPageText(fullText);
+        fullText = cleaned.text;
+        await recordCaptureCost(existing.id, cleaned.costUsd);
+      }
       await promoteItemToWholePage(existing.id, fullText, QUEUE_PRIORITY.requested);
       // A paragraph request on an existing item cannot be honoured as a
       // paragraph check, because one item holds one body text. The whole page
@@ -107,7 +112,12 @@ export async function consumeNoteRequest(request: NoteRequestRow): Promise<NoteR
   // the web-fetch ladder for a text page, or as transcript and cues for a
   // YouTube video.
   let fullText = request.selection ?? (source === "youtube" ? undefined : request.page_text ?? undefined);
-  if (fullText && fullText === request.page_text) fullText = await cleanCapturedPageText(fullText);
+  let captureCostUsd = 0;
+  if (fullText && fullText === request.page_text) {
+    const cleaned = await cleanCapturedPageText(fullText);
+    fullText = cleaned.text;
+    captureCostUsd = cleaned.costUsd;
+  }
 
   const itemId = await insertQueuedItem({
     project_id: await resolveProjectId({ slug: WEB_PROJECT_SLUG }),
@@ -118,8 +128,15 @@ export async function consumeNoteRequest(request: NoteRequestRow): Promise<NoteR
     priority: QUEUE_PRIORITY.requested,
     checked_scope: request.selection ? "paragraph" : "page",
   });
+  await recordCaptureCost(itemId, captureCostUsd);
   await resolveNoteRequest(request.id, "enqueued", null, itemId);
   return { kind: "queued", detail: `enqueued [${source}]: ${request.page_url}` };
+}
+
+/** Writes what the capture cleanup cost against the item, so the daily spend cap
+ *  counts it. Nothing is written when no cleanup call was made. */
+async function recordCaptureCost(itemId: string, costUsd: number): Promise<void> {
+  if (costUsd > 0) await insertItemRun(itemId, "capture", costUsd);
 }
 
 export async function consumeNoteRequests(): Promise<void> {
