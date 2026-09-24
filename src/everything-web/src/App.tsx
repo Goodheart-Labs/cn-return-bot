@@ -42,6 +42,7 @@ import { NoteCard } from "./components/NoteCard";
 import { ItemChips } from "./components/ItemChips";
 import { Leaderboard } from "./components/Leaderboard";
 import { SystemTheme } from "./components/SystemTheme";
+import { ExtensionCornerLink } from "./components/ExtensionCornerLink";
 import type { NnnRow, NoteRow } from "../../everything-shared/types";
 import { noteStatus, totalVotes } from "../../everything-shared/noteScore";
 
@@ -529,6 +530,7 @@ export function App() {
       </main>
 
       <SystemTheme />
+      <ExtensionCornerLink />
       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
       <WriteNoteModal open={writeOpen} onClose={() => setWriteOpen(false)} />
     </div>
