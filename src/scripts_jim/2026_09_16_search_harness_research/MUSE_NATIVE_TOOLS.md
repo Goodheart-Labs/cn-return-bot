@@ -1,6 +1,6 @@
 # Can Muse use its own search through OpenRouter?
 
-Jim's question, 2026-09-24: can we use Muse's native tooling through OpenRouter instead of our own Serper loop? Answer: **yes, search works today.** Probe script: `probeMuseNativeTools.ts` (run 2026-09-24, six requests, about $0.08 in total).
+Jim's question, 2026-09-24: can we use Muse's native tooling through OpenRouter instead of our own Serper loop? Answer: **yes for search, no for fetch.** Meta's own search works through OpenRouter today. There is no Meta fetch tool: asking for a "native" fetch silently falls back to OpenRouter's plain fetcher, which is worse than ours. Section "Fetch" below has the details. Probe script: `probeMuseNativeTools.ts` (run 2026-09-24, six requests, about $0.08 in total).
 
 ## What was tested
 
@@ -52,3 +52,41 @@ The source verifier is unaffected: it fetches cited pages through our own ladder
 - How often the answer holds up across many claims. Four runs on one easy claim say nothing about accuracy.
 - The sites that block us. A run on claims whose best source is on Reuters, NYT or a .gov site would show whether Meta's fetcher gets through where ours fails.
 - Whether `openrouter:web_fetch` with the native engine behaves the same for Muse in a longer research session.
+
+## Fetch (probe run 2026-09-24)
+
+Jim's follow-up: does native web fetch work too? Probe script: `probeNativeFetch.ts`, raw results in `native_fetch_results.json`, 33 requests for about $0.02 in total.
+
+**Setup.** Eleven URLs. Ten of them failed with our fetch ladder in prod between 2026-09-02 and 2026-09-16, taken from the source verifier's fetches because those URLs came from search results and are real. The eleventh is a long Wikipedia page (168,000 characters of markdown) for testing how much of a page arrives. Each URL was read by Muse through `openrouter:web_fetch` with three engines, and by our own ladder run from this VPS.
+
+- `native`: the provider's own fetcher, if it has one.
+- `openrouter`: OpenRouter's own plain HTTP fetch, free.
+- `exa`: Exa's crawler and page extractor, $1 per 1,000 pages.
+
+| URL | Our ladder (this VPS) | `native` and `openrouter` | `exa` |
+| --- | --- | --- | --- |
+| nytimes.com article | read | 403 | no content |
+| reuters.com article | failed | 401 | no content |
+| forbes.com article | failed | 403 | no content |
+| fsis.usda.gov page | failed | 403 | **read** |
+| britannica.com page | failed | 403 | **read** |
+| factcheck.afp.com article | failed | 403 | **read** |
+| fbi.gov speech | failed | **read** | **read** |
+| usnews.com article | failed | timed out | no content |
+| ndtv.com article | failed | 403 | no content |
+| PDF on uu.diva-portal.org | read | 403 | no content |
+| en.wikipedia.org long article | read, all 168,000 chars | only the first part (raw HTML) | read, whole article |
+| **Pages read** | **3 of 11** | **2 of 11** | **5 of 11** |
+
+What this shows:
+
+- **Meta has no fetch tool of its own through OpenRouter.** `native` and `openrouter` behaved identically on every URL: the same errors, and the same prompt token counts to within 10 tokens (for example 39,746 against 39,753). So asking for `native` falls back to OpenRouter's fetcher.
+- **OpenRouter's own fetcher is a plain HTTP request and returns raw HTML.** Asked to echo its tool output, Muse showed `{"url": …, "content": "<!DOCTYPE html>\n<html class=…"`. On the Wikipedia page the 30,000-token budget was spent on page chrome, so Muse saw the opening sentence but reported every requested section as not visible. It also failed on a PDF our ladder reads. It is worse than our ladder.
+- **Exa recovered four of the eight pages our ladder failed on:** the USDA, Britannica, AFP Fact Check and FBI pages. It returns clean text: about 25,000 to 30,000 characters for the whole Wikipedia article, from which Muse quoted section openings 32,000 and 46,000 characters into the page, and both quotes are real text. It failed on the paywalled or heavily protected news sites and on the PDF.
+- **Our ladder and Exa complement each other.** Together they read 7 of the 11 pages: our ladder alone reads 3, Exa alone 5, with only Wikipedia in common.
+- **The JSON format was ignored.** With a server tool in the request, Muse often answered in plain text even though a strict `json_schema` was set. Every server-tool arm would need a tolerant JSON parse.
+- Every response named "OpenAI" as provider, though the model and the token prices are Muse's. I could not find out why.
+
+**Recommendation for fetch.** Do not replace our fetch with OpenRouter's. Add Exa as a rung inside our own ladder instead, calling Exa's `/contents` endpoint directly, after the three browser identities and before the archives. That keeps the verbatim text in our hands, so it can be logged, cut into windows as `TOOLS.md` section 8 proposes, and checked by the verifier. At $1 per 1,000 pages and only on pages that already failed, it costs cents a day.
+
+**Caveats.** Eleven URLs is a small sample. Our ladder ran from this VPS, not from GitHub Actions: the NYT article and the PDF that it read here failed in prod, so results from the CI runners would likely be worse for our ladder and unchanged for Exa and OpenRouter, which fetch from their own servers.
