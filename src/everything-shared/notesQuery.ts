@@ -1,3 +1,4 @@
+import { fetchAllRows } from "../dashboard-shared/supabasePaging";
 import { noteStatus } from "./noteScore";
 import { extractEmbeddedCanonical, extractYoutubeVideoId } from "./pageUrls";
 import { supabase } from "./supabase";
@@ -208,11 +209,20 @@ export interface CoveredPages {
  *  failed, so a caller does not mistake an outage for "we cover nothing". */
 export async function fetchCoveredPageUrls(): Promise<CoveredPages | null> {
   const s = await detectSchema();
-  const { data, error } = await supabase
-    .from("everything_items")
-    .select(`url, status${s.hasCheckedScope ? ", checked_scope" : ""}`);
-  if (error) return null;
-  const rows = (data ?? []).filter((r: any) => !(r.url as string).startsWith("local:"));
+  // PostgREST silently caps a response at 1,000 rows, so the list is read in
+  // pages. Ordering by id keeps the pages from overlapping or skipping rows.
+  let data: any[];
+  try {
+    data = await fetchAllRows(
+      supabase
+        .from("everything_items")
+        .select(`url, status${s.hasCheckedScope ? ", checked_scope" : ""}`)
+        .order("id"),
+    );
+  } catch {
+    return null;
+  }
+  const rows = data.filter((r: any) => !(r.url as string).startsWith("local:"));
   return {
     all: rows.map((r: any) => r.url as string),
     wholePageChecked: rows.filter((r: any) => isWholePageChecked(r)).map((r: any) => r.url as string),
