@@ -7,6 +7,7 @@ import { castVote, clearVote, fetchMyVotes, type Vote } from "../../everything-s
 import { castNnnVote, clearNnnVote, fetchMyNnnVotes } from "../../everything-shared/noteNotNeeded";
 import { donationPair, priorTally } from "./lib/donationScoring";
 import { noteTally, probabilityHelpful, probabilityHelpfulAfter } from "../../everything-shared/noteBelief";
+import { mergeFeedNotes } from "../../everything-shared/feedOrder";
 import { saveDonation, preferredCharity, type MintedDonation } from "./lib/donations";
 import { readRoute, pushProject, pushItem, pushLeaderboard, type View } from "./lib/routing";
 import { identifyUser, resetAnalytics, track } from "../../everything-shared/analytics";
@@ -404,31 +405,21 @@ export function App() {
   const helpfulNotes = current.filter((n) => rankOf(n).status === "helpful");
   const unhelpfulNotes = current.filter((n) => rankOf(n).status === "not_helpful");
   const staleSourceNotes = orderedNotes.filter(staleSource);
-  // Every group is ordered by p, the latent-quality model's estimate that the
-  // note ends up rated helpful. See everything-shared/noteBelief.ts. The whole
-  // feed therefore reads as one gradient, from the most uncertain notes at the
-  // top down to the most settled ones.
-  // The group needing ratings leads with the note a single Helpful vote would
-  // carry furthest, because that note is the closest to resolving. Attention then
-  // lands where it settles something. Two notes with equal p have identical
-  // tallies, and the older of them goes first because it has waited longest.
+  // Prioritize ratings where one Helpful vote can resolve the most uncertainty.
   needRatings.sort(
     (a, b) =>
       rankOf(b).pAfterOneHelpful - rankOf(a).pAfterOneHelpful ||
       a.created_at.localeCompare(b.created_at) ||
       contentIdx.get(a.id)! - contentIdx.get(b.id)!,
   );
-  // The notes rated helpful are ordered by ascending p, so the most confidently
-  // helpful one sits lowest.
   helpfulNotes.sort(
     (a, b) =>
-      rankOf(a).p - rankOf(b).p ||
-      rankOf(a).votes - rankOf(b).votes ||
+      rankOf(b).p - rankOf(a).p ||
+      rankOf(b).votes - rankOf(a).votes ||
       contentIdx.get(a.id)! - contentIdx.get(b.id)!,
   );
-  // The notes rated unhelpful are ordered by descending p, so the least helpful
-  // one sinks lowest. That mirrors the helpful group and continues the same
-  // gradient.
+  // Lead with our strongest notes, then mix in rating opportunities to keep them visible.
+  const mixedNotes = mergeFeedNotes(helpfulNotes, needRatings);
   const bestFirst = (a: NoteRow, b: NoteRow) =>
     rankOf(b).p - rankOf(a).p || contentIdx.get(a.id)! - contentIdx.get(b.id)!;
   unhelpfulNotes.sort(bestFirst);
@@ -520,8 +511,7 @@ export function App() {
         )}
         {view === "notes" && (
         <div className="space-y-4">
-          {needRatings.map(renderCard)}
-          <NoteSection label="Helpful notes" notes={helpfulNotes} render={renderCard} />
+          {mixedNotes.map(renderCard)}
           <NoteSection label="Unhelpful notes" notes={unhelpfulNotes} render={renderCard} />
           <NoteSection label="Source has since changed" notes={staleSourceNotes} render={renderCard} />
         </div>
