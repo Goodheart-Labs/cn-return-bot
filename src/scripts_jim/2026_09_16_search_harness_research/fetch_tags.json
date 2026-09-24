@@ -1,0 +1,45 @@
+{
+  "x_search": {
+    "HTTP 403": 103,
+    "thin content": 32,
+    "HTTP 401": 18,
+    "HTTP 404": 8,
+    "all attempts failed": 5,
+    "HTTP 429": 3,
+    "HTTP 500": 1
+  },
+  "x_verifier": {
+    "HTTP 403": 129,
+    "HTTP 404": 73,
+    "thin content": 67,
+    "all attempts failed": 23,
+    "HTTP 401": 5,
+    "HTTP 429": 3,
+    "HTTP 400": 1,
+    "HTTP 500": 1,
+    "HTTP 503": 1
+  },
+  "everything_check_search": {
+    "HTTP 403": 92,
+    "thin content": 48,
+    "all attempts failed": 10,
+    "HTTP 401": 10,
+    "HTTP 429": 2,
+    "HTTP 451": 2,
+    "HTTP 503": 1,
+    "HTTP 999": 1,
+    "login wall / anti-bot block": 1
+  },
+  "everything_check_verifier": {
+    "HTTP 403": 46,
+    "thin content": 17,
+    "HTTP 404": 7,
+    "all attempts failed": 6,
+    "HTTP 429": 5,
+    "HTTP 401": 1,
+    "HTTP 405": 1,
+    "HTTP 451": 1,
+    "HTTP 502": 1,
+    "HTTP 999": 1
+  }
+}
