@@ -40,6 +40,14 @@ const SERPER_PLAN_PRICE_USD = 50;
 const SERPER_PLAN_CREDITS = 50_000;
 export const SERPER_COST_PER_SEARCH = SERPER_PLAN_PRICE_USD / SERPER_PLAN_CREDITS;
 
+// --- Groq Whisper pricing ---
+// Groq bills whisper-large-v3 at $0.111 per hour of audio, and a request shorter
+// than 10 seconds is billed as 10 seconds (console.groq.com/docs/speech-to-text,
+// read 2026-09-24).
+const WHISPER_USD_PER_AUDIO_HOUR = 0.111;
+const WHISPER_MIN_BILLED_SECONDS = 10;
+const SECONDS_PER_HOUR = 3600;
+
 // --- Types ---
 
 export interface TokenCost {
@@ -114,6 +122,12 @@ export function calculateGeminiCost(
 /** The cost of one Serper search. It uses no tokens, only the per-search fee. */
 export function serperSearchCost(): TokenCost {
   return { input_tokens: 0, output_tokens: 0, cost: SERPER_COST_PER_SEARCH };
+}
+
+/** The cost of transcribing an audio clip of the given length with Groq Whisper. */
+export function whisperTranscriptionCost(audioSeconds: number): TokenCost {
+  const billedSeconds = Math.max(audioSeconds, WHISPER_MIN_BILLED_SECONDS);
+  return { input_tokens: 0, output_tokens: 0, cost: (billedSeconds / SECONDS_PER_HOUR) * WHISPER_USD_PER_AUDIO_HOUR };
 }
 
 export function emptyTokenCost(): TokenCost {
