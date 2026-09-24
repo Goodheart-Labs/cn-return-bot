@@ -79,7 +79,7 @@ describe("rateClaims cost", () => {
   test("includes what the research tools cost, not only the model", async () => {
     const loop = spyOn(toolLoop, "runToolLoop").mockResolvedValue({
       content: `{"research":"x https://a.b","ratings":[{"claim":1,"rating":"likely true"}]}`,
-      cost: { input_tokens: 100, output_tokens: 10, cost: 0.002 },
+      modelCost: { input_tokens: 100, output_tokens: 10, cost: 0.002 },
       toolCosts: [{ name: "google_search", input_tokens: 0, output_tokens: 0, cost: 0.001 }],
       toolCalls: [{ name: "google_search", args: { query: "q" } }],
       forcedSynthesis: false,

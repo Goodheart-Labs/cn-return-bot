@@ -23,7 +23,7 @@ interface GrokResult {
   steps?: Array<{ toolCalls?: Array<{ toolName: string }>; response?: { body?: unknown } }>;
 }
 
-export function countXSearchCalls(result: GrokResult): number {
+function countXSearchCalls(result: GrokResult): number {
   return result.steps?.reduce((n, s) => n + (s.toolCalls?.filter((tc) => tc.toolName === "x_search").length ?? 0), 0) ?? 0;
 }
 
