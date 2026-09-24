@@ -1,3 +1,4 @@
+import { track } from "../../../everything-shared/analytics";
 import { FLOATING_CARD, SECONDARY_BUTTON } from "../../../everything-shared/ui";
 
 export const EXTENSION_STORE_LINKS = [
@@ -12,7 +13,7 @@ export function ExtensionCornerLink() {
       <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 text-balance">See Common Notes as you browse?</p>
       <div className="flex gap-2 mt-3">
         {EXTENSION_STORE_LINKS.map(({ label, url }) => (
-          <a key={label} href={url} target="_blank" rel="noopener noreferrer" className={`${SECONDARY_BUTTON} flex-1 text-center`}>
+          <a key={label} href={url} target="_blank" rel="noopener noreferrer" onClick={() => track("extension_store_clicked", { browser: label })} className={`${SECONDARY_BUTTON} flex-1 text-center`}>
             {label}
           </a>
         ))}
