@@ -43,7 +43,9 @@ export interface ToolLoopParams {
 export interface ToolLoopResult {
   /** The model's final answer. */
   content: string;
-  cost: TokenCost;
+  /** What the model calls cost. The tools' own fees, such as a paid search, are
+   *  in toolCosts, so a caller that records the loop's spend must add both. */
+  modelCost: TokenCost;
   toolCosts: ToolCallCost[];
   /** Every tool call the model made, in order. */
   toolCalls: { name: string; args: Record<string, any> }[];
@@ -109,7 +111,7 @@ export async function runToolLoop(params: ToolLoopParams): Promise<ToolLoopResul
     if (!message) throw new Error(`tool loop: empty response on turn ${turn}`);
 
     if (!message.tool_calls?.length) {
-      return { content: message.content ?? "", cost, toolCosts, toolCalls, forcedSynthesis: false };
+      return { content: message.content ?? "", modelCost: cost, toolCosts, toolCalls, forcedSynthesis: false };
     }
 
     params.messages.push(message);
@@ -143,5 +145,5 @@ export async function runToolLoop(params: ToolLoopParams): Promise<ToolLoopResul
     ...params.llmParams,
   } as any);
   addTokenCost(cost, extractOpenRouterCost(response));
-  return { content: response.choices?.[0]?.message?.content ?? "", cost, toolCosts, toolCalls, forcedSynthesis: true };
+  return { content: response.choices?.[0]?.message?.content ?? "", modelCost: cost, toolCosts, toolCalls, forcedSynthesis: true };
 }

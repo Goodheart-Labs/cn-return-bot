@@ -1,5 +1,6 @@
-import { describe, expect, test } from "bun:test";
-import { applyRatings, parseRatingOutput, shouldFactCheck } from "./rateClaims";
+import { describe, expect, spyOn, test } from "bun:test";
+import { applyRatings, parseRatingOutput, rateClaims, shouldFactCheck } from "./rateClaims";
+import * as toolLoop from "../../pipeline/tool-calling/toolLoop";
 import type { ExtractedClaim } from "../types";
 
 const claim = (text: string): ExtractedClaim => ({
@@ -71,5 +72,24 @@ describe("shouldFactCheck", () => {
 
   test("checks a judgement it does not recognize", () => {
     expect(shouldFactCheck("no idea")).toBe(true);
+  });
+});
+
+describe("rateClaims cost", () => {
+  test("includes what the research tools cost, not only the model", async () => {
+    const loop = spyOn(toolLoop, "runToolLoop").mockResolvedValue({
+      content: `{"research":"x https://a.b","ratings":[{"claim":1,"rating":"likely true"}]}`,
+      modelCost: { input_tokens: 100, output_tokens: 10, cost: 0.002 },
+      toolCosts: [{ name: "google_search", input_tokens: 0, output_tokens: 0, cost: 0.001 }],
+      toolCalls: [{ name: "google_search", args: { query: "q" } }],
+      forcedSynthesis: false,
+    });
+    try {
+      const result = await rateClaims({ text: "part", introduction: null, claims: [claim("first")], source: "substack" });
+      expect(result.cost.cost).toBeCloseTo(0.003, 10);
+      expect(result.webSearches).toBe(1);
+    } finally {
+      loop.mockRestore();
+    }
   });
 });

@@ -407,7 +407,7 @@ You have access to a google_search tool. Issue search queries to gather evidence
   return {
     findings: parsed.findings,
     correctionNeeded: parsed.correction_needed,
-    costEntry: { name: costName, ...result.cost, tools: result.toolCosts },
+    costEntry: { name: costName, ...result.modelCost, tools: result.toolCosts },
   };
 }
 

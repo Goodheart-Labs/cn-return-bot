@@ -1,6 +1,7 @@
 import { createXai } from "@ai-sdk/xai";
 import { generateText } from "ai";
 import { calculateGrokCost, type TokenCost } from "../cost-tracking/pricing";
+import { addWarning } from "../utils/warnings";
 
 const MAX_RETRIES = 3;
 const INITIAL_BACKOFF_MS = 2000;
@@ -12,6 +13,37 @@ if (!process.env.XAI_API_KEY) {
 export const xai = createXai({
   apiKey: process.env.XAI_API_KEY,
 });
+
+/** One xAI "tick" is a ten-billionth of a dollar (docs.x.ai/developers/cost-tracking). */
+const USD_PER_XAI_TICK = 1e-10;
+
+/** The parts of a Vercel AI SDK generateText result that the cost needs. */
+interface GrokResult {
+  usage?: { inputTokens?: number; outputTokens?: number };
+  steps?: Array<{ toolCalls?: Array<{ toolName: string }>; response?: { body?: unknown } }>;
+}
+
+function countXSearchCalls(result: GrokResult): number {
+  return result.steps?.reduce((n, s) => n + (s.toolCalls?.filter((tc) => tc.toolName === "x_search").length ?? 0), 0) ?? 0;
+}
+
+/** What a Grok call cost. xAI puts the amount it billed into the usage block of
+ *  every raw response, after cache discounts and including the X search fees.
+ *  Since 2026-09-21 those fees depend on how many posts a search returned, which
+ *  our rate table cannot know, so the billed amount is the one to record.
+ *  When a step lacks it we fall back to the rate table and add a warning, so an
+ *  estimated cost is visible on the run. */
+export function grokCallCost(result: GrokResult, model: string): TokenCost {
+  const inputTokens = result.usage?.inputTokens ?? 0;
+  const outputTokens = result.usage?.outputTokens ?? 0;
+  const billedTicks = (result.steps ?? []).map((s) => (s.response?.body as any)?.usage?.cost_in_usd_ticks);
+  if (billedTicks.length > 0 && billedTicks.every((t) => typeof t === "number")) {
+    const ticks = billedTicks.reduce((sum: number, t: number) => sum + t, 0);
+    return { input_tokens: inputTokens, output_tokens: outputTokens, cost: ticks * USD_PER_XAI_TICK };
+  }
+  addWarning(`xAI reported no billed cost for ${model}, so the recorded cost is an estimate from the rate table`);
+  return calculateGrokCost(inputTokens, outputTokens, countXSearchCalls(result), model);
+}
 
 function isRetryableError(err: any): boolean {
   // The Vercel AI SDK reports an APICallError with a statusCode field, and a
@@ -109,17 +141,8 @@ export async function xaiNativeGenerate(p: XaiNativeParams): Promise<XaiNativeRe
     }
   }
 
-  const searchCalls: number = result.steps?.reduce(
-    (n: number, s: any) => n + (s.toolCalls?.filter((tc: any) => tc.toolName === "x_search").length ?? 0),
-    0,
-  ) ?? 0;
-
-  const cost = calculateGrokCost(
-    result.usage?.inputTokens ?? 0,
-    result.usage?.outputTokens ?? 0,
-    searchCalls,
-    p.model,
-  );
+  const searchCalls = countXSearchCalls(result);
+  const cost = grokCallCost(result, p.model);
 
   return { text, parsed, searchCalls, cost };
 }

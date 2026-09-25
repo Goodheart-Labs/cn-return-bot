@@ -482,7 +482,7 @@ export async function setItemProgress(id: string, progress: ItemProgress | null)
  *  of a pipeline_runs row. */
 export interface ClaimPipelineRun {
   claim_id: string | null;
-  kind?: "check" | "extraction" | "rating";
+  kind?: "check" | "extraction" | "rating" | "capture";
   item_id?: string;
   bot_name: string;
   outcome: string;
@@ -501,16 +501,20 @@ export async function insertClaimPipelineRun(run: ClaimPipelineRun): Promise<voi
   throwOnError(await getSupabaseClient().from("everything_pipeline_runs").insert(stripNullChars(run)));
 }
 
+/** The outcome written on a per-item cost row, one per stage. */
+const ITEM_RUN_OUTCOME = { extraction: "extracted", rating: "rated", capture: "cleaned" } as const;
+
 /** Records what one per-item stage cost, so the daily spend cap counts it.
- *  Extraction and rating each write one such row per item. Until these rows
- *  existed the cap silently undercounted by exactly that spend. */
-export async function insertItemRun(itemId: string, kind: "extraction" | "rating", costUsd: number): Promise<void> {
+ *  Extraction and rating each write one such row per item, and so does the
+ *  cleanup of a reader request's captured text. Until these rows existed the
+ *  cap silently undercounted by exactly that spend. */
+export async function insertItemRun(itemId: string, kind: keyof typeof ITEM_RUN_OUTCOME, costUsd: number): Promise<void> {
   throwOnError(
     await getSupabaseClient().from("everything_pipeline_runs").insert({
       kind,
       item_id: itemId,
       claim_id: null,
-      outcome: kind === "extraction" ? "extracted" : "rated",
+      outcome: ITEM_RUN_OUTCOME[kind],
       cost: costUsd,
     }),
   );
