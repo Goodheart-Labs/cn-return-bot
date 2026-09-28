@@ -2,8 +2,8 @@ import { createRoot, type Root } from "react-dom/client";
 import { PASSAGE_TINT_DARK, PASSAGE_TINT_LIGHT } from "./markerPalette";
 import { createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
-import { fetchItemForUrl, isWholePageChecked } from "../../everything-shared/notesQuery";
-import { normalizePageUrl } from "../../everything-shared/pageUrls";
+import { fetchItemForUrl, isWholePageChecked } from "@cn/core/notesQuery";
+import { normalizePageUrl } from "@cn/core/pageUrls";
 import { resolveReaderCanonical } from "./readerCanonical";
 import { indexContainer, findQuoteRange } from "./anchor";
 import { fetchClaimGroups, type ClaimGroup } from "./claimGroups";
@@ -19,7 +19,7 @@ import { listenForRequestInfo } from "./requestInfo";
 import { getSettings, onNoteFiltersChanged, onSettingsChanged, type NoteStyle } from "./settings";
 import { isPageDark, observePageTheme } from "./pageTheme";
 import { InlineNotesApp, type AnchoredGroup } from "../components/InlineNotes";
-import { track } from "../../everything-shared/analytics";
+import { track } from "@cn/core/analytics";
 
 // The highlight registry is global to the page, and any extension could pick
 // a generic name. Ours is namespaced so we never overwrite another
@@ -169,7 +169,8 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     console.warn(`[common-notes] ${pageUrl} → notes fetch failed, mounting nothing`);
     return null;
   }
-  let { groups, counts } = fetched;
+  let groups = fetched.groups;
+  const counts = fetched.counts;
   // The extension's top of funnel: notes were actually displayed to a reader.
   // Once per page by construction — mountForUrl runs once per URL.
   if (groups.length > 0) {
