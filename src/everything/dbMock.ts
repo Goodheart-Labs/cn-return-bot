@@ -103,6 +103,7 @@ export const dbMock = () => ({
   requeueItem: record("requeueItem"),
   resolveNoteRequest: record("resolveNoteRequest"),
   insertQueuedItem: record("insertQueuedItem"),
+  insertItemRun: record("insertItemRun"),
   resolveProjectId: record("resolveProjectId"),
   insertFollowedFeed: record("insertFollowedFeed"),
   resolveFollowRequest: record("resolveFollowRequest"),

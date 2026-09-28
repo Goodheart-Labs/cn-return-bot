@@ -181,6 +181,25 @@ function hasEmptyContent(result: OpenAI.Chat.Completions.ChatCompletion): boolea
   return typeof content === "string" && content.trim().length === 0;
 }
 
+/** Adds the usage of an attempt we threw away to the usage of the reply we keep.
+ *  OpenRouter bills an empty reply like any other, reasoning tokens included, and
+ *  every caller reads the cost from the reply it gets back. So the discarded
+ *  attempts are only counted if their usage travels with that reply. */
+function carryDiscardedUsage(
+  result: OpenAI.Chat.Completions.ChatCompletion,
+  discarded: OpenAI.Chat.Completions.ChatCompletion[],
+): OpenAI.Chat.Completions.ChatCompletion {
+  if (discarded.length === 0) return result;
+  const usage: any = { ...result.usage };
+  for (const attempt of discarded) {
+    const extra: any = attempt.usage ?? {};
+    usage.prompt_tokens = (usage.prompt_tokens ?? 0) + (extra.prompt_tokens ?? 0);
+    usage.completion_tokens = (usage.completion_tokens ?? 0) + (extra.completion_tokens ?? 0);
+    usage.cost = (usage.cost ?? 0) + (extra.cost ?? 0);
+  }
+  return { ...result, usage };
+}
+
 /**
  * Wraps an LLM create call with retries and exponential backoff.
  * It retries the OpenRouter "400 Provider returned error", the 429, 500, 502, 503
@@ -207,6 +226,7 @@ async function callWithRetry(
   const scopeSignal = getLlmAbortSignal();
 
   let lastError: any;
+  const emptyAttempts: OpenAI.Chat.Completions.ChatCompletion[] = [];
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     scopeSignal?.throwIfAborted();
     try {
@@ -221,6 +241,7 @@ async function callWithRetry(
       );
       scopeSignal?.throwIfAborted();
       if (hasEmptyContent(result) && attempt < MAX_RETRIES) {
+        emptyAttempts.push(result);
         const backoff = INITIAL_BACKOFF_MS * Math.pow(2, attempt);
         console.warn(
           `[llm] Empty content (attempt ${attempt + 1}/${MAX_RETRIES + 1}, model: ${params.model}). Retrying in ${backoff}ms...`
@@ -228,7 +249,7 @@ async function callWithRetry(
         await sleep(backoff, scopeSignal);
         continue;
       }
-      return result;
+      return carryDiscardedUsage(result, emptyAttempts);
     } catch (err: any) {
       scopeSignal?.throwIfAborted();
       lastError = err;
