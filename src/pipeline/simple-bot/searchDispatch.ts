@@ -10,7 +10,7 @@ import LinkifyIt from "linkify-it";
 import { llm } from "../llm/llm";
 import { geminiNativeGenerate } from "../llm/gemini";
 import { xaiNativeGenerate } from "../llm/xai";
-import { WEB_SEARCH_TOOL, GOOGLE_SEARCH_TOOL, WEB_FETCH_TOOL } from "../tool-calling/tools";
+import { WEB_SEARCH_TOOL, GOOGLE_SEARCH_TOOL, WEB_FETCH_TOOL, OPENROUTER_NATIVE_WEB_SEARCH_TOOL, stripBrowserLineCitations } from "../tool-calling/tools";
 import { runToolLoop } from "../tool-calling/toolLoop";
 import { getBotConfig } from "../ab-testing/botConfig";
 import { getMonitoringContext, buildReferenceBlock } from "../misinfo-monitoring/monitoringContext";
@@ -32,17 +32,17 @@ import { parseJsonWithRetry } from "../utils/jsonLlmCall";
 const linkify = new LinkifyIt();
 
 /**
- * Makes sure Sonar's grounded URLs always reach the note writer downstream.
+ * Makes sure the URLs a provider's own search grounded its answer in always
+ * reach the note writer downstream.
  *
- * Perplexity puts its grounded URLs in `message.annotations[*].url_citation`,
- * and so do some OpenAI models when web_search_preview is on. The model only
- * sometimes repeats those URLs inside the findings text itself. This function
- * drops the ones that are already in that text and appends the rest under a
- * header. The header is "# Citations" when the findings text held no URL at
- * all. It is "# Additional Citations" when the text held some of the URLs but
- * not all of them.
+ * Perplexity Sonar, OpenRouter's web_search server tool and some OpenAI models
+ * put those URLs in `message.annotations[*].url_citation`. The model only
+ * sometimes repeats them inside the findings text itself. This function drops
+ * the ones that are already in that text and appends the rest under a header.
+ * The header is "# Citations" when the findings text held no URL at all. It is
+ * "# Additional Citations" when the text held some of the URLs but not all.
  */
-function appendSonarCitations(findings: string, annotations: any[] | undefined): string {
+function appendUrlCitations(findings: string, annotations: any[] | undefined): string {
   const annotationUrls = (annotations ?? [])
     .filter((a) => a?.type === "url_citation" && typeof a?.url_citation?.url === "string")
     .map((a) => a.url_citation.url as string);
@@ -160,6 +160,7 @@ export async function dispatchSearch(
     case "native_grok":    return searchWithGrokNative(userMessage, costName);
     case "native_openai":  return searchWithOpenaiNative(userMessage, costName);
     case "bundled":        return searchWithSonarBundled(userMessage, costName);
+    case "openrouter_native": return searchWithOpenRouterNative(userMessage, costName);
     case "serper":
     case "serper_summarized":
                            return searchWithSerperLoop(userMessage, costName);
@@ -351,7 +352,49 @@ async function searchWithSonarBundled(
     createOptions: { model },
     extractJson: stripJsonFences,
   });
-  const findings = appendSonarCitations(result.findings, result.message?.annotations);
+  const findings = appendUrlCitations(result.findings, result.message?.annotations);
+  log?.set(`${STEP.search}.messages.1`, { content: { findings, correction_needed: result.correctionNeeded } });
+
+  return {
+    findings,
+    correctionNeeded: result.correctionNeeded,
+    costEntry: { name: costName, ...result.cost, tools: [] },
+  };
+}
+
+/**
+ * The search step on the model provider's own search engine, run by OpenRouter's
+ * web_search server tool. For Muse that is Meta's own tooling: inside the one
+ * request, Meta searches, opens pages and writes the answer, so no loop runs on
+ * our side. The answer comes back with url_citation annotations naming the pages
+ * it rests on, which are appended to the findings like Sonar's.
+ *
+ * The search fees are part of OpenRouter's usage.cost, so the cost needs no
+ * extra accounting. Meta accepts only tool_choice "auto", so the search cannot be
+ * forced; the prompt asks for it, and Muse searched in every probe. Muse also
+ * narrates its steps before the JSON even when a schema is set, so we ask for
+ * JSON in the prompt and extract the object, the way the Opus path does.
+ */
+async function searchWithOpenRouterNative(
+  userMessage: string,
+  costName: string,
+): Promise<SearchDispatchResult> {
+  const log = getTweetLog();
+  const config = getBotConfig();
+  const model = config.search_model ?? config.model;
+  const systemPrompt = `${getSearchSystemPrompt()}\n\n${SEARCH_PROMPTED_JSON_INSTRUCTION}`;
+  log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage, model });
+
+  const result = await dispatchPromptedJsonSearch({
+    source: "searchWithOpenRouterNative",
+    messages: [
+      { role: "system" as const, content: systemPrompt },
+      { role: "user" as const, content: userMessage },
+    ],
+    createOptions: { model, tools: [OPENROUTER_NATIVE_WEB_SEARCH_TOOL] },
+    extractJson: extractJsonObject,
+  });
+  const findings = appendUrlCitations(stripBrowserLineCitations(result.findings), result.message?.annotations);
   log?.set(`${STEP.search}.messages.1`, { content: { findings, correction_needed: result.correctionNeeded } });
 
   return {
