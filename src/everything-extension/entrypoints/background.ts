@@ -1,9 +1,9 @@
 import { defineBackground } from "#imports";
 import { browser } from "#imports";
-import { fetchCoveredPageUrls, fetchPrioritizedCreatorUrls, fetchItemForUrl, fetchNotedPageCounts, fetchReaderCanonical, isWholePageChecked } from "../../everything-shared/notesQuery";
-import { submitNoteRequest } from "../../everything-shared/noteRequests";
-import { canonicalizePageUrl, isSubstackReaderUrl } from "../../everything-shared/pageUrls";
-import { track } from "../../everything-shared/analytics";
+import { fetchCoveredPageUrls, fetchPrioritizedCreatorUrls, fetchItemForUrl, fetchNotedPageCounts, fetchReaderCanonical, isWholePageChecked } from "@cn/core/notesQuery";
+import { submitNoteRequest } from "@cn/core/noteRequests";
+import { canonicalizePageUrl, isSubstackReaderUrl } from "@cn/core/pageUrls";
+import { track } from "@cn/core/analytics";
 import { initBackgroundAnalytics, trackDailyActivity } from "../utils/analytics";
 import { signInWithXViaWebAuthFlow } from "../utils/oauth";
 import { authorFeedStatusForTab } from "../utils/authorFeed";

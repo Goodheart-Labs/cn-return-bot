@@ -1,10 +1,10 @@
 import { browser } from "#imports";
-import { supabase } from "../../everything-shared/supabase";
-import { setAnalyticsSink } from "../../everything-shared/analytics";
+import { supabase } from "@cn/core/supabase";
+import { setAnalyticsSink } from "@cn/core/analytics";
 
 // The extension's analytics transport: rows in the everything_events table
 // (insert-only for clients, migration 077), registered as the sink behind
-// everything-shared/analytics. No third-party analytics library enters these
+// everything-core/analytics. No third-party analytics library enters these
 // bundles — the shared supabase client is already part of the extension, so
 // analytics adds no new dependency or remote code.
 //

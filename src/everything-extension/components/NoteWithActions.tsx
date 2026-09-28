@@ -1,14 +1,14 @@
 import { useState } from "react";
 import type { Session } from "@supabase/supabase-js";
-import { VoteRatings } from "../../dashboard-shared/Ratings";
-import { NoteBox } from "../../everything-web/src/components/NoteCard";
-import { NoteMenu } from "../../everything-web/src/components/NoteMenu";
-import { VoteDonation } from "../../everything-web/src/components/VoteDonation";
-import { useVotingNudge, VotingNudge } from "../../everything-web/src/components/VotingNudge";
-import { takeMintedDonation, type MintedDonation } from "../../everything-web/src/lib/donations";
-import { noteStatus, noteTallyVisible } from "../../everything-shared/noteScore";
-import type { NoteRow } from "../../everything-shared/types";
-import type { Vote } from "../../everything-shared/votes";
+import { VoteRatings } from "@cn/features/notes/VoteRatings";
+import { NoteBox } from "@cn/features/notes/NoteCard";
+import { NoteMenu } from "@cn/features/notes/NoteMenu";
+import { VoteDonation } from "@cn/features/donations/VoteDonation";
+import { useVotingNudge, VotingNudge } from "@cn/features/notes/VotingNudge";
+import { takeMintedDonation, type MintedDonation } from "@cn/core/donations";
+import { noteStatus, noteTallyVisible } from "@cn/core/noteScore";
+import type { NoteRow } from "@cn/core/types";
+import type { Vote } from "@cn/core/votes";
 
 /** One votable note inside an extension overlay. It draws the box tinted by the
  *  note's status, the rating pills, the donation notice that appears after a

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
-import { supabase } from "../../../everything-shared/supabase";
+import { supabase } from "@cn/core/supabase";
 import { randomUuid } from "./randomUuid";
 import {
   fetchProjectItems,
@@ -9,7 +9,7 @@ import {
   fetchProjectNotes,
   fetchProjects,
 } from "./feedData";
-import type { FeedItemRow, FeedProjectRow, NnnRow, NoteRow } from "../../../everything-shared/types";
+import type { FeedItemRow, FeedProjectRow, NnnRow, NoteRow } from "@cn/core/types";
 
 type RowMap<T> = Map<string, T>;
 

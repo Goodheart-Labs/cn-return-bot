@@ -1,6 +1,6 @@
-import { supabase } from "../../../everything-shared/supabase";
-import { MIN_PAGES_FOR_A_READER, VISIT_RANKING_WINDOW_DAYS } from "../../../everything-shared/readers";
-import { noteStatus } from "../../../everything-shared/noteScore";
+import { supabase } from "../../../everything-core/supabase";
+import { MIN_PAGES_FOR_A_READER, VISIT_RANKING_WINDOW_DAYS } from "../../../everything-core/readers";
+import { noteStatus } from "../../../everything-core/noteScore";
 
 // Every query runs through a security-definer RPC (migrations 077, 092, 095
 // and 097). The anon key cannot read everything_events or everything_votes
@@ -146,7 +146,7 @@ export interface PipelineFunnelBars {
   claims_checked: number;
   ai_notes: number;
   /** AI notes whose tally noteStatus() calls helpful. The rule lives in
-   *  everything-shared/noteScore.ts, not in SQL, so it is applied here. */
+   *  everything-core/noteScore.ts, not in SQL, so it is applied here. */
   ai_notes_helpful: number;
 }
 

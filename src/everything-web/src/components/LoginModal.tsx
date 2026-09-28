@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { BUTTON, INPUT, QUIET_LINK } from "../../../everything-shared/ui";
-import { Modal } from "./Modal";
-import { EMAIL_OTP_LENGTH, getSignedInBefore, signInWithEmailCode, verifyEmailCode, signInWithTwitter, type EmailFlow } from "../../../everything-shared/auth";
-import { track } from "../../../everything-shared/analytics";
+import { BUTTON, INPUT, QUIET_LINK } from "@cn/ui/classes";
+import { Modal } from "@cn/ui/Modal";
+import { EMAIL_OTP_LENGTH, getSignedInBefore, signInWithEmailCode, verifyEmailCode, signInWithTwitter, type EmailFlow } from "@cn/core/auth";
+import { track } from "@cn/core/analytics";
 
 const X_SIGNIN_ENABLED = true;
 

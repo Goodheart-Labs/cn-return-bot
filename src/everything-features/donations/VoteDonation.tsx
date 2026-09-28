@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { MENU } from "../../../everything-shared/ui";
-import { CHARITIES, rememberCharity, setDonationCharity, type CharityId } from "../lib/donations";
-import type { DonationPair } from "../lib/donationScoring";
-import type { NoteStatus } from "../../../everything-shared/noteScore";
+import { MENU } from "@cn/ui/classes";
+import { CHARITIES, rememberCharity, setDonationCharity, type CharityId } from "@cn/core/donations";
+import type { DonationPair } from "@cn/core/donationScoring";
+import type { NoteStatus } from "@cn/core/noteScore";
 
 const charityLabel = (id: CharityId) => CHARITIES.find((c) => c.id === id)!.label;
 

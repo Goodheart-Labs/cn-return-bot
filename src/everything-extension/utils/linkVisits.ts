@@ -1,7 +1,7 @@
 import { browser } from "#imports";
-import { supabase } from "../../everything-shared/supabase";
-import type { PageItem } from "../../everything-shared/notesQuery";
-import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
+import { supabase } from "@cn/core/supabase";
+import type { PageItem } from "@cn/core/notesQuery";
+import { extractYoutubeVideoId } from "@cn/core/pageUrls";
 import { readWatchPageChannel } from "./authorFeed";
 import { isSubstackPostPage } from "./pageShape";
 import {
@@ -83,7 +83,7 @@ export interface VisitMessage {
  *  The row names no account and no person. It carries a reader hash, which is
  *  one value per browser and per creator, so we can count how many people read
  *  a creator without the rows ever adding up to one person's reading across
- *  creators. See everything-shared/readers.ts.
+ *  creators. See everything-core/readers.ts.
  *
  *  Recording is consentful twice over. Nothing is recorded until the welcome
  *  page has asked the user the visit-recording question, and nothing is

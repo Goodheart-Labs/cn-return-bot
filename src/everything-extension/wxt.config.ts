@@ -2,6 +2,7 @@ import path from "node:path";
 import { loadEnv } from "vite";
 import { defineConfig } from "wxt";
 import tailwindcss from "tailwindcss";
+import { CN_ALIASES } from "../cnAliases";
 
 // The repo root's .env supplies the VITE_SUPABASE_* values to import.meta.env, just
 // as it does in the web app's vite config. The anon key is meant to be public.
@@ -25,10 +26,13 @@ export default defineConfig({
   // the browser the user already has open. WXT's dev client then reloads the
   // extension and its tabs on every rebuild.
   webExt: { disabled: true },
+  // WXT hands these to Vite and also writes them into .wxt/tsconfig.json, so
+  // the bundler and the type checker resolve `@cn/...` the same way.
+  alias: CN_ALIASES,
   // The sources zip WXT builds must never contain the Chrome signing private key or
   // the local store assets. That key only exists on developer machines and is
   // gitignored. The zip is not usable for an AMO submission anyway, because imports
-  // such as ../everything-shared live outside sourcesRoot. We build the sources we
+  // such as @cn/core live outside sourcesRoot. We build the sources we
   // send to reviewers with `git archive` instead. This exclusion is a second line of
   // defence.
   zip: { excludeSources: ["chrome-signing-key.pem", "store-assets/**"] },
@@ -149,7 +153,7 @@ export default defineConfig({
       {
         // The same guard as in everything-web/vite.config.ts. A build without the
         // Supabase environment variables inlines `undefined`, which turns the
-        // module-scope check in everything-shared/supabase.ts into a throw that
+        // module-scope check in everything-core/supabase.ts into a throw that
         // always fires. We fail the build loudly instead. In dev the throw shows up
         // at runtime, which is good enough.
         name: "require-supabase-env",

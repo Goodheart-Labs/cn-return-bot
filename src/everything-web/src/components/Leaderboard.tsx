@@ -6,7 +6,7 @@ import {
   setMyLeaderboardOptIn,
   type LeaderboardEntry,
 } from "../lib/leaderboard";
-import { displayName } from "../../../everything-shared/session";
+import { displayName } from "@cn/core/session";
 
 /** Ranks people by how many notes they have rated. A person is listed only if
  *  they opt in. */

@@ -1,7 +1,7 @@
-import { noteStatus, originalsFirst } from "../../everything-shared/noteScore";
-import { fetchNnnForClaims } from "../../everything-shared/noteNotNeeded";
-import { fetchNotesForItem } from "../../everything-shared/notesQuery";
-import type { NnnRow, NoteRow } from "../../everything-shared/types";
+import { noteStatus, originalsFirst } from "@cn/core/noteScore";
+import { fetchNnnForClaims } from "@cn/core/noteNotNeeded";
+import { fetchNotesForItem } from "@cn/core/notesQuery";
+import type { NnnRow, NoteRow } from "@cn/core/types";
 import { getNoteFilters, type NoteFilters } from "./settings";
 
 export type ClaimGroup = { claimId: string; notes: NoteRow[]; nnn: NnnRow[] };

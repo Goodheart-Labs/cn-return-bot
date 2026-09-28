@@ -1,7 +1,12 @@
-import type { VoteValue } from "../dashboard-shared/Ratings";
 import { supabase } from "./supabase";
 
-export type Vote = VoteValue;
+/** A rating on X's three-way scale: helpful, somewhat helpful, not helpful. */
+export type Vote = 1 | 0 | -1;
+
+/** Every vote value, in the order the rating pills draw them. Callers that
+ *  walk all three values, such as scoring each option, use this instead of
+ *  writing the literals out again. */
+export const VOTE_VALUES: readonly Vote[] = [1, 0, -1];
 
 /** Fetches the signed-in user's own votes. Row level security returns only their
  *  rows. */

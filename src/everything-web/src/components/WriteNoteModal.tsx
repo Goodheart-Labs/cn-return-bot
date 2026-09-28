@@ -1,4 +1,4 @@
-import { Modal } from "./Modal";
+import { Modal } from "@cn/ui/Modal";
 
 /** Writing notes has moved to the browser extension. There you write on the
  *  page itself, and the note is anchored to the text you selected. The

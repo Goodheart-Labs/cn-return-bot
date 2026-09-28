@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchRecentPosts, type RecentPostRow } from "../lib/queries";
-import { MIN_PAGES_FOR_A_READER, VISIT_RANKING_WINDOW_DAYS } from "../../../everything-shared/readers";
+import { MIN_PAGES_FOR_A_READER, VISIT_RANKING_WINDOW_DAYS } from "../../../everything-core/readers";
 
 /** How many posts are fetched once, and how many more each "Show more" press
  *  reveals from them. */

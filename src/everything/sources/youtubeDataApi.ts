@@ -15,7 +15,7 @@
  * The key is YOUTUBE_DATA_V3_API_KEY, a plain API key restricted to this API.
  */
 
-import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
+import { extractYoutubeVideoId } from "../../everything-core/pageUrls";
 
 const API_ROOT = "https://www.googleapis.com/youtube/v3";
 

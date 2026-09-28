@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
-import { supabase } from "../../../everything-shared/supabase";
-import { ensureUser } from "../../../everything-shared/auth";
-import { displayName } from "../../../everything-shared/session";
-import { postImprovement } from "../../../everything-shared/postNote";
-import { postNnn } from "../../../everything-shared/noteNotNeeded";
-import type { NoteRow } from "../../../everything-shared/types";
-import { BUTTON, MENU } from "../../../everything-shared/ui";
-import { IconButton } from "./IconButton";
+import { supabase } from "@cn/core/supabase";
+import { ensureUser } from "@cn/core/auth";
+import { displayName } from "@cn/core/session";
+import { postImprovement } from "@cn/core/postNote";
+import { postNnn } from "@cn/core/noteNotNeeded";
+import type { NoteRow } from "@cn/core/types";
+import { BUTTON, MENU } from "@cn/ui/classes";
+import { IconButton } from "@cn/ui/IconButton";
 import { AutoGrowTextarea, PostAsCheckbox, useSignedByline } from "./editorBits";
 
 /** One row of the ⋯ dropdown menu. A row marked as danger turns red, which is

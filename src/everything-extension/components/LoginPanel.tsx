@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { browser } from "#imports";
-import { BUTTON, INPUT, QUIET_LINK, SECONDARY_BUTTON } from "../../everything-shared/ui";
-import { IconButton } from "../../everything-web/src/components/IconButton";
-import { EMAIL_OTP_LENGTH, getSignedInBefore, signInWithEmailCode, verifyEmailCode, type EmailFlow } from "../../everything-shared/auth";
-import { track } from "../../everything-shared/analytics";
+import { BUTTON, INPUT, QUIET_LINK, SECONDARY_BUTTON } from "@cn/ui/classes";
+import { IconButton } from "@cn/ui/IconButton";
+import { EMAIL_OTP_LENGTH, getSignedInBefore, signInWithEmailCode, verifyEmailCode, type EmailFlow } from "@cn/core/auth";
+import { track } from "@cn/core/analytics";
 
 // The login form closes when the user switches away to their mail client to
 // fetch the code. The popup unmounts entirely, and an overlay can get

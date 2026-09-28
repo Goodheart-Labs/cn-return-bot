@@ -1,6 +1,6 @@
 import type { User } from "@supabase/supabase-js";
 import type { DonationPair } from "./donationScoring";
-import { supabase } from "../../../everything-shared/supabase";
+import { supabase } from "./supabase";
 
 /** The charities a voter can direct their donation to. The first entry is the
  *  default. */

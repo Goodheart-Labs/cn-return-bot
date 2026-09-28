@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { BUTTON, FLOATING_CARD } from "../../everything-shared/ui";
-import { IconButton } from "../../everything-web/src/components/IconButton";
+import { BUTTON, FLOATING_CARD } from "@cn/ui/classes";
+import { IconButton } from "@cn/ui/IconButton";
 
 /** How long the overlay stays before it fades out on its own. Hovering pauses
  *  the clock, so a reader who is about to click never loses the card. */

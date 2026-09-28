@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { QUOTE_RAIL } from "../../everything-shared/ui";
-import type { NnnApi } from "../../everything-web/src/components/NoteNotNeeded";
-import type { NnnRow, NoteRow } from "../../everything-shared/types";
+import { QUOTE_RAIL } from "@cn/ui/classes";
+import type { NnnApi } from "@cn/features/notes/NoteNotNeeded";
+import type { NnnRow, NoteRow } from "@cn/core/types";
 import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
 import { setJumpHandler } from "../utils/jumpBus";
 import { onNoteFiltersChanged } from "../utils/settings";

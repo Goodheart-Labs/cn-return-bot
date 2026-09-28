@@ -1,10 +1,10 @@
 import type { ContentScriptContext } from "#imports";
-import { normalizePageUrl } from "../../everything-shared/pageUrls";
-import { progressIsTerminal } from "../../everything-shared/requestProgress";
+import { normalizePageUrl } from "@cn/core/pageUrls";
+import { progressIsTerminal } from "@cn/core/requestProgress";
 import { jumpToNextNote } from "./jumpBus";
 import { getLiveRequest, removeLiveRequest, saveLiveRequest, type LiveRequest } from "./liveRequests";
 import { mountRequestProgress, type RequestProgressHandle } from "./mountRequestProgress";
-import type { RequestProgress } from "../../everything-shared/requestProgress";
+import type { RequestProgress } from "@cn/core/requestProgress";
 import { watchRequestProgress, type RequestWatch } from "./requestProgressController";
 import { forgetRequestedPage } from "./settings";
 

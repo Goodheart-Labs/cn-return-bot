@@ -1,16 +1,17 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { BUTTON, LINK } from "../../everything-shared/ui";
+import { BUTTON, LINK } from "@cn/ui/classes";
 import type { Session } from "@supabase/supabase-js";
 import { useProjectFeed, useProjects } from "./lib/useFeedData";
-import { ensureUser, useSession, signOut } from "../../everything-shared/auth";
-import { castVote, clearVote, fetchMyVotes, type Vote } from "../../everything-shared/votes";
-import { castNnnVote, clearNnnVote, fetchMyNnnVotes } from "../../everything-shared/noteNotNeeded";
-import { donationPair, priorTally } from "./lib/donationScoring";
-import { noteTally, probabilityHelpful, probabilityHelpfulAfter } from "../../everything-shared/noteBelief";
-import { mergeFeedNotes } from "../../everything-shared/feedOrder";
-import { saveDonation, preferredCharity, type MintedDonation } from "./lib/donations";
-import { readRoute, pushProject, pushItem, pushLeaderboard, type View } from "./lib/routing";
-import { identifyUser, resetAnalytics, track } from "../../everything-shared/analytics";
+import { ensureUser, signOut } from "@cn/core/auth";
+import { useSession } from "@cn/features/auth/useSession";
+import { castVote, clearVote, fetchMyVotes, type Vote } from "@cn/core/votes";
+import { castNnnVote, clearNnnVote, fetchMyNnnVotes } from "@cn/core/noteNotNeeded";
+import { donationPair, priorTally } from "@cn/core/donationScoring";
+import { noteTally, probabilityHelpful, probabilityHelpfulAfter } from "@cn/core/noteBelief";
+import { mergeFeedNotes } from "@cn/core/feedOrder";
+import { saveDonation, preferredCharity, type MintedDonation } from "@cn/core/donations";
+import { readRoute, pushProject, pushItem, pushLeaderboard, noteUrl, type View } from "./lib/routing";
+import { identifyUser, resetAnalytics, track } from "@cn/core/analytics";
 import { capturePageview } from "./lib/analytics";
 import { Sidebar } from "./components/Sidebar";
 
@@ -39,13 +40,13 @@ function AuthCorner({ session, onSignIn, onSignOut }: {
 }
 import { LoginModal } from "./components/LoginModal";
 import { WriteNoteModal } from "./components/WriteNoteModal";
-import { NoteCard } from "./components/NoteCard";
+import { NoteCard } from "@cn/features/notes/NoteCard";
 import { ItemChips } from "./components/ItemChips";
 import { Leaderboard } from "./components/Leaderboard";
 import { SystemTheme } from "./components/SystemTheme";
 import { ExtensionCornerLink } from "./components/ExtensionCornerLink";
-import type { NnnRow, NoteRow } from "../../everything-shared/types";
-import { noteStatus, totalVotes } from "../../everything-shared/noteScore";
+import type { NnnRow, NoteRow } from "@cn/core/types";
+import { noteStatus, totalVotes } from "@cn/core/noteScore";
 
 const NO_NNN: NnnRow[] = [];
 
@@ -379,7 +380,7 @@ export function App() {
   // recompute them O(n log n) times on every render.
   //
   // One predicate decides the badge, the feed section and the donation payout.
-  // That is noteStatus in everything-shared/noteScore.ts, the p-based rating
+  // That is noteStatus in everything-core/noteScore.ts, the p-based rating
   // rule.
   const ranking = new Map(
     orderedNotes.map((n) => {
@@ -433,7 +434,7 @@ export function App() {
       improvements={improvementsByOriginal.get(note.id) ?? []}
       nnnEntries={nnnByClaim.get(note.claim_id) ?? NO_NNN}
       nnnApi={nnnApi}
-      projectSlug={selected?.slug ?? ""}
+      shareUrl={noteUrl(selected?.slug ?? "", note.id)}
       myVote={myVotes.get(note.id)}
       onVote={handleVote}
       onAuthored={noteAuthored}

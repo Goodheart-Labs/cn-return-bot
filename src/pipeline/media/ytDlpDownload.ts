@@ -11,7 +11,7 @@
 import { execFile } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
-import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
+import { extractYoutubeVideoId } from "../../everything-core/pageUrls";
 import { decodeHtmlEntities } from "../utils/html";
 import { hideProxyAddress, withResidentialProxy } from "../utils/residentialProxy";
 

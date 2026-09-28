@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { readStored, writeStored } from "./safeStorage";
+import { readStored, writeStored } from "@cn/core/safeStorage";
 
 /** Creates a hook for one preference stored in localStorage. Every instance of
  *  the hook on the page shares it, so setting it anywhere updates all mounted

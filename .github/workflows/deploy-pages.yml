@@ -15,6 +15,10 @@ on:
     paths:
       - "src/stats-dashboard/**"
       - "src/everything-web/**"
+      - "src/everything-core/**"
+      - "src/everything-ui/**"
+      - "src/everything-features/**"
+      - "src/cnAliases.ts"
       - "src/analytics-dashboard/**"
       - "src/dashboard-shared/**"
       - "package.json"

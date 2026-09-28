@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { CARD, SECONDARY_BUTTON } from "../../../everything-shared/ui";
-import { signOut, useSession } from "../../../everything-shared/auth";
+import { CARD, SECONDARY_BUTTON } from "@cn/ui/classes";
+import { signOut } from "@cn/core/auth";
+import { useSession } from "@cn/features/auth/useSession";
 import { LoginPanel } from "../../components/LoginPanel";
 import { NoteFilterToggles, useNoteFilters } from "../../components/NoteFilterToggles";
 import {

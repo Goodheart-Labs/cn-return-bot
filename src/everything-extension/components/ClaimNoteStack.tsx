@@ -1,7 +1,7 @@
 import type { Session } from "@supabase/supabase-js";
-import { NoteNotNeeded, type NnnApi } from "../../everything-web/src/components/NoteNotNeeded";
-import type { Vote } from "../../everything-shared/votes";
-import type { NnnRow, NoteRow } from "../../everything-shared/types";
+import { NoteNotNeeded, type NnnApi } from "@cn/features/notes/NoteNotNeeded";
+import type { Vote } from "@cn/core/votes";
+import type { NnnRow, NoteRow } from "@cn/core/types";
 import { noteShareUrl } from "../utils/share";
 import { LoginPanel } from "./LoginPanel";
 import { NoteWithActions } from "./NoteWithActions";

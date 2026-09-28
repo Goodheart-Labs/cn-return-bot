@@ -1,5 +1,5 @@
-import { track } from "../../../everything-shared/analytics";
-import { FLOATING_CARD, SECONDARY_BUTTON } from "../../../everything-shared/ui";
+import { track } from "@cn/core/analytics";
+import { FLOATING_CARD, SECONDARY_BUTTON } from "@cn/ui/classes";
 
 export const EXTENSION_STORE_LINKS = [
   { label: "Chrome", url: "https://chromewebstore.google.com/detail/common-notes/jodkhmefbcmgldokmeicpdogkepmcnij" },

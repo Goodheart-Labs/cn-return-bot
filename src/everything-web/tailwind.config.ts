@@ -14,7 +14,8 @@ export default {
   content: [
     path.resolve(__dirname, "index.html"),
     path.resolve(__dirname, "src/**/*.{ts,tsx}"),
-    path.resolve(__dirname, "../everything-shared/**/*.ts"),
+    path.resolve(__dirname, "../everything-ui/**/*.{ts,tsx}"),
+    path.resolve(__dirname, "../everything-features/**/*.{ts,tsx}"),
     path.resolve(__dirname, "../dashboard-shared/**/*.tsx"),
   ],
   theme: {

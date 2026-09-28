@@ -1,7 +1,7 @@
 import type { Session } from "@supabase/supabase-js";
-import { createLocalPreference } from "../lib/preference";
-import { INPUT } from "../../../everything-shared/ui";
-import { displayName } from "../../../everything-shared/session";
+import { createLocalPreference } from "../hooks/createLocalPreference";
+import { INPUT } from "@cn/ui/classes";
+import { displayName } from "@cn/core/session";
 
 /** The pieces shared by the two small inline editors, which are suggesting an
  *  improvement and arguing that a claim needs no note: an auto-growing

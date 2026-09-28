@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { FLOATING_CARD } from "../../../everything-shared/ui";
+import { FLOATING_CARD } from "./classes";
 import { IconButton } from "./IconButton";
 
 /** The one modal shell: dimmed backdrop, centred card, title row with a close

@@ -1,6 +1,6 @@
-import { supabase } from "../../../everything-shared/supabase";
-import { detectSchema, noteQuery, normalizeNote } from "../../../everything-shared/notesQuery";
-import type { FeedItemRow, FeedProjectRow, NnnRow, NoteRow } from "../../../everything-shared/types";
+import { supabase } from "@cn/core/supabase";
+import { detectSchema, noteQuery, normalizeNote } from "@cn/core/notesQuery";
+import type { FeedItemRow, FeedProjectRow, NnnRow, NoteRow } from "@cn/core/types";
 
 // The website reads one project at a time, because that is what the feed shows.
 // Every query below either names the project or names the row it needs, and

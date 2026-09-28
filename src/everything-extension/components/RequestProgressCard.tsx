@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { progressLines, type RequestProgress } from "../../everything-shared/requestProgress";
-import { IconButton } from "../../everything-web/src/components/IconButton";
+import { progressLines, type RequestProgress } from "@cn/core/requestProgress";
+import { IconButton } from "@cn/ui/IconButton";
 
 /** How long the finished card lingers before fading out on its own. An opened
  *  card holds it, so a reader reading the count never loses it mid-look. */

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { browser } from "#imports";
-import { BUTTON, CARD, QUIET_LINK, SECONDARY_BUTTON } from "../../../everything-shared/ui";
+import { BUTTON, CARD, QUIET_LINK, SECONDARY_BUTTON } from "@cn/ui/classes";
 import { GroupIcon } from "../../components/ClaimNoteStack";
 import { markWelcomeSeen, updateSettings } from "../../utils/settings";
 

@@ -1,4 +1,4 @@
-import { normalizeText } from "../../everything-shared/normalizeText";
+import { normalizeText } from "@cn/core/normalizeText";
 
 /**
  * Anchoring a claim's quote to a DOM Range.

@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { browser } from "#imports";
-import { fetchItemForUrl, fetchNotesForItem, isWholePageChecked, type PageItem } from "../../../everything-shared/notesQuery";
-import { extractYoutubeVideoId, normalizePageUrl } from "../../../everything-shared/pageUrls";
-import { noteStatus } from "../../../everything-shared/noteScore";
-import type { NoteRow } from "../../../everything-shared/types";
-import { submitNoteRequest } from "../../../everything-shared/noteRequests";
-import { progressIsTerminal, progressLines, type RequestProgress } from "../../../everything-shared/requestProgress";
+import { fetchItemForUrl, fetchNotesForItem, isWholePageChecked, type PageItem } from "@cn/core/notesQuery";
+import { extractYoutubeVideoId, normalizePageUrl } from "@cn/core/pageUrls";
+import { noteStatus } from "@cn/core/noteScore";
+import type { NoteRow } from "@cn/core/types";
+import { submitNoteRequest } from "@cn/core/noteRequests";
+import { progressIsTerminal, progressLines, type RequestProgress } from "@cn/core/requestProgress";
 import { authorFeedStatusForTab, type AuthorFeedStatus } from "../../utils/authorFeed";
 import { getLiveRequest, removeLiveRequest, saveLiveRequest, type LiveRequest } from "../../utils/liveRequests";
 import { fetchProgressSnapshot } from "../../utils/requestProgressController";
@@ -18,7 +18,7 @@ import { isSubstackPostPage, requestMakesSenseForUrl } from "../../utils/pageSha
 import { capturePageFromTab } from "../../utils/pageCapture";
 import { addRequestedPage, getRequestedPages } from "../../utils/settings";
 import { ActionButton, type StatusAction } from "../../components/StatusOverlay";
-import { BUTTON, LINK, QUIET_LINK } from "../../../everything-shared/ui";
+import { BUTTON, LINK, QUIET_LINK } from "@cn/ui/classes";
 import { STATIC_SITE_HOSTNAME } from "../../utils/staticSites";
 import { useNoteFilters } from "../../components/NoteFilterToggles";
 

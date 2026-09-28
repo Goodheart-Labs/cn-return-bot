@@ -1,5 +1,5 @@
 import React from "react";
-import { BUTTON } from "../../../everything-shared/ui";
+import { BUTTON } from "@cn/ui/classes";
 
 /* The last line of defence against a blank page. React unmounts the whole tree
  * when a render throws, and with nothing in its place the reader is left

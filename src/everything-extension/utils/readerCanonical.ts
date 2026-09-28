@@ -1,5 +1,5 @@
 import { browser } from "#imports";
-import { isSubstackReaderUrl } from "../../everything-shared/pageUrls";
+import { isSubstackReaderUrl } from "@cn/core/pageUrls";
 
 /** Turns a Substack reader URL, such as substack.com/home/post/p-<id> or
  *  /@author/p-<id>, into the publication's own post URL. Any other URL returns

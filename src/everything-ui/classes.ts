@@ -1,8 +1,7 @@
 /** The design system's shared class strings. Every surface in the website and
  *  the extension builds from these; a button or card styled some other way is
- *  a bug. Components that need markup as well as classes (IconButton, Modal)
- *  live in everything-web/src/components, which the extension already imports
- *  from. */
+ *  a bug. Components that need markup as well as classes, such as IconButton
+ *  and Modal, sit next to this file. */
 
 export const BUTTON =
   "bg-blue-600 text-white rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-blue-700 disabled:opacity-40";

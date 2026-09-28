@@ -9,8 +9,10 @@ on:
     branches: [main]
     paths:
       - "src/everything-extension/**"
-      - "src/everything-shared/**"
-      - "src/everything-web/src/components/**"
+      - "src/everything-core/**"
+      - "src/everything-ui/**"
+      - "src/everything-features/**"
+      - "src/cnAliases.ts"
       - "src/dashboard-shared/**"
       - "package.json"
       - "bun.lock"

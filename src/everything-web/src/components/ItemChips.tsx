@@ -1,5 +1,5 @@
-import type { FeedItemRow } from "../../../everything-shared/types";
-import { CHIP } from "../../../everything-shared/ui";
+import type { FeedItemRow } from "@cn/core/types";
+import { CHIP } from "@cn/ui/classes";
 
 /** Filter chips for a project's items, which are its episodes, posts or pages.
  *  They show only when the project has more than one item with notes. The "All"

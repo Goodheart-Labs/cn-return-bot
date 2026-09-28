@@ -1,5 +1,5 @@
 import type { RealtimeChannel } from "@supabase/supabase-js";
-import { supabase } from "../../everything-shared/supabase";
+import { supabase } from "@cn/core/supabase";
 import {
   deriveRequestProgress,
   progressIsTerminal,
@@ -7,7 +7,7 @@ import {
   type ProgressItemRow,
   type RequestProgress,
   type RequestStatusRow,
-} from "../../everything-shared/requestProgress";
+} from "@cn/core/requestProgress";
 
 /* The watcher behind the progress card. Phase one exchanges the request's
  * token for its status until the intake has turned it into an item. Phase two

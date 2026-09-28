@@ -1,6 +1,6 @@
 import { browser } from "#imports";
-import type { PageNoteStatusCounts } from "../../everything-shared/notesQuery";
-import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
+import type { PageNoteStatusCounts } from "@cn/core/notesQuery";
+import { extractYoutubeVideoId } from "@cn/core/pageUrls";
 
 // The covered-pages list holds the URL of every ingested item. The background's
 // sync writes it, and content scripts read it before they make any backend

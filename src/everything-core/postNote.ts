@@ -2,8 +2,8 @@ import type { Session } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
 import { displayName } from "./session";
 import type { NoteRow } from "./types";
-import { donationPair } from "../everything-web/src/lib/donationScoring";
-import { parkMintedDonation, preferredCharity, saveDonation } from "../everything-web/src/lib/donations";
+import { donationPair } from "./donationScoring";
+import { parkMintedDonation, preferredCharity, saveDonation } from "./donations";
 
 /** Mints the donation for the author's automatic Helpful vote, which a
  *  database trigger casts the moment a note is inserted. The trigger writes

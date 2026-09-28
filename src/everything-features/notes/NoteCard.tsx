@@ -1,20 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
-import { ContentCard } from "../../../dashboard-shared/TweetCard";
-import { LinkifiedText } from "../../../dashboard-shared/LinkifiedText";
-import { VoteRatings } from "../../../dashboard-shared/Ratings";
-import { quoteFragmentUrl } from "../../../dashboard-shared/textFragment";
-import type { NotedContent } from "../../../dashboard-shared/types";
-import type { ClaimRef, NnnRow, NoteRow, NoteSourceDetail } from "../../../everything-shared/types";
-import { fetchNoteSourceDetails } from "../../../everything-shared/notesQuery";
-import { takeMintedDonation, type MintedDonation } from "../lib/donations";
-import type { Vote } from "../../../everything-shared/votes";
-import { noteStatus, noteTallyVisible, type NoteStatus } from "../../../everything-shared/noteScore";
-import { noteUrl } from "../lib/routing";
-import { CARD, CHIP, LINK, QUOTE_RAIL } from "../../../everything-shared/ui";
+import { LinkifiedText } from "../../dashboard-shared/LinkifiedText";
+import { VoteRatings } from "./VoteRatings";
+import { ClaimContent, type NotedContent } from "./ClaimContent";
+import { quoteFragmentUrl } from "../../dashboard-shared/textFragment";
+import type { ClaimRef, NnnRow, NoteRow, NoteSourceDetail } from "@cn/core/types";
+import { fetchNoteSourceDetails } from "@cn/core/notesQuery";
+import { takeMintedDonation, type MintedDonation } from "@cn/core/donations";
+import type { Vote } from "@cn/core/votes";
+import { noteStatus, noteTallyVisible, type NoteStatus } from "@cn/core/noteScore";
+import { CARD, CHIP, LINK, QUOTE_RAIL } from "@cn/ui/classes";
 import { NoteMenu } from "./NoteMenu";
 import { NoteNotNeeded, type NnnApi } from "./NoteNotNeeded";
-import { VoteDonation } from "./VoteDonation";
+import { VoteDonation } from "../donations/VoteDonation";
 import { useVotingNudge, VotingNudge } from "./VotingNudge";
 
 /** The rating states, in the style of Community Notes. Each one carries the
@@ -342,7 +340,7 @@ function ImprovementLinks({ note, improvements }: { note: NoteRow; improvements:
 // Composed the same way as a card in the review dashboard. The content comes
 // first, then the note, then the stats row. Here the voting is live and the
 // reader can suggest an improvement.
-export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug, myVote, onVote, onAuthored, session, onNeedLogin }: {
+export function NoteCard({ note, improvements, nnnEntries, nnnApi, shareUrl, myVote, onVote, onAuthored, session, onNeedLogin }: {
   note: NoteRow;
   /** The notes that improve this one. This is the reverse of
    *  improved_from_note_id. */
@@ -351,7 +349,8 @@ export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug, 
    *  text shares this list. */
   nnnEntries: NnnRow[];
   nnnApi: NnnApi;
-  projectSlug: string;
+  /** The absolute deep link the Share button copies. */
+  shareUrl: string;
   myVote: Vote | undefined;
   /** Casts the vote and mints its donation. It resolves to the minted donation,
    *  which carries the vote id, the charity and the frozen pair. It resolves to
@@ -417,7 +416,7 @@ export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug, 
               {ctxOpen ? "Hide surrounding context" : "Show surrounding context"}
             </button>
           )}
-          <ContentCard content={claimContent(claim)} />
+          <ClaimContent content={claimContent(claim)} />
         </div>
       )}
 
@@ -452,7 +451,7 @@ export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug, 
 
       <NoteMenu
         note={note}
-        shareUrl={noteUrl(projectSlug, note.id)}
+        shareUrl={shareUrl}
         session={session}
         onNeedLogin={onNeedLogin}
         onAuthored={onAuthored}

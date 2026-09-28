@@ -2,7 +2,7 @@ import path from "node:path";
 import type { Config } from "tailwindcss";
 
 // The content globs are absolute so they hold whatever directory Tailwind is
-// invoked from. The shared components in everything-web and dashboard-shared
+// invoked from. The shared layers (@cn/ui, @cn/features) and dashboard-shared
 // are scanned too, so their utility classes end up in the shadow-root
 // stylesheet.
 export default {
@@ -16,8 +16,8 @@ export default {
     path.resolve(__dirname, "entrypoints/**/*.{ts,tsx}"),
     path.resolve(__dirname, "components/**/*.{ts,tsx}"),
     path.resolve(__dirname, "utils/**/*.{ts,tsx}"),
-    path.resolve(__dirname, "../everything-shared/**/*.ts"),
-    path.resolve(__dirname, "../everything-web/src/components/**/*.tsx"),
+    path.resolve(__dirname, "../everything-ui/**/*.{ts,tsx}"),
+    path.resolve(__dirname, "../everything-features/**/*.{ts,tsx}"),
     path.resolve(__dirname, "../dashboard-shared/**/*.tsx"),
   ],
 } satisfies Config;

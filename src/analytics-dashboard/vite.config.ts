@@ -10,7 +10,7 @@ const envDir = path.resolve(__dirname, "../..");
 
 export default defineConfig(({ command, mode }) => {
   // A build without the Supabase env vars is never valid: Vite inlines them as
-  // `undefined`, the module-scope guard in everything-shared/supabase.ts
+  // `undefined`, the module-scope guard in everything-core/supabase.ts
   // becomes an unconditional throw, and the bundler dead-code-eliminates the
   // entire app — yet the build exits green. Fail loudly instead. Dev is
   // exempt; there the runtime throw surfaces immediately in the browser.

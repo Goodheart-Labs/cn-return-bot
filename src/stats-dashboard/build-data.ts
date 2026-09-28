@@ -28,8 +28,8 @@ import type {
   PipelineRunDayBucket,
   DailyOriginCount,
 } from "./src/lib/types";
-import { resolvePicks } from "../pipeline/ab-testing/abTests.ts";
-import { AB_TESTS } from "../pipeline/ab-testing/abTestsData.ts";
+import { resolvePicks } from "../pipeline/ab-testing/abTests";
+import { AB_TESTS } from "../pipeline/ab-testing/abTestsData";
 
 dotenv.config({ path: join(process.cwd(), ".env") });
 

@@ -2,8 +2,8 @@ import "../assets/tailwind.css";
 import { createRoot } from "react-dom/client";
 import { defineContentScript, createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
-import { fetchItemForUrl, isWholePageChecked, type PageItem } from "../../everything-shared/notesQuery";
-import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
+import { fetchItemForUrl, isWholePageChecked, type PageItem } from "@cn/core/notesQuery";
+import { extractYoutubeVideoId } from "@cn/core/pageUrls";
 import { fetchClaimGroups, type ClaimGroup, type NoteCounts } from "../utils/claimGroups";
 import { mountCoverageBadges } from "../utils/coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "../utils/coveredPages";
@@ -17,7 +17,7 @@ import { listenForLiveRequests } from "../utils/requestLive";
 import { getSettings } from "../utils/settings";
 import { registerDevReloadHook } from "../utils/devReload";
 import { initUiAnalytics } from "../utils/analytics";
-import { track } from "../../everything-shared/analytics";
+import { track } from "@cn/core/analytics";
 
 // YouTube's DOM changes often. Every selector we depend on lives here.
 const PLAYER_SELECTOR = "#movie_player";

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
-import { useSession } from "../../everything-shared/auth";
+import { useSession } from "@cn/features/auth/useSession";
 import { WriteNoteOverlay } from "../components/WriteNoteOverlay";
 import { isPageDark } from "./pageTheme";
 

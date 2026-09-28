@@ -88,3 +88,17 @@ export function extractYoutubeVideoId(url: string): string | null {
 export function normalizeFeedUrl(feedUrl: string): string {
   return feedUrl.replace(/\/+$/, "").toLowerCase();
 }
+
+// Builds the label of the "View on <domain>" link. The common hosts get a nicer
+// name and every other host is shown by its bare hostname.
+export function sourceLinkLabel(url: string): string {
+  let host: string;
+  try {
+    host = new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return "source";
+  }
+  if (host === "x.com" || host === "twitter.com") return "X";
+  if (host === "youtube.com" || host === "youtu.be") return "YouTube";
+  return host;
+}

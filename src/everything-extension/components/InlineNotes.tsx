@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { FLOATING_CARD } from "../../everything-shared/ui";
+import { FLOATING_CARD } from "@cn/ui/classes";
 import { createPortal } from "react-dom";
 import type { Session } from "@supabase/supabase-js";
-import type { NnnApi } from "../../everything-web/src/components/NoteNotNeeded";
-import type { Vote } from "../../everything-shared/votes";
-import type { NnnRow, NoteRow } from "../../everything-shared/types";
-import type { PageItem } from "../../everything-shared/notesQuery";
+import type { NnnApi } from "@cn/features/notes/NoteNotNeeded";
+import type { Vote } from "@cn/core/votes";
+import type { NnnRow, NoteRow } from "@cn/core/types";
+import type { PageItem } from "@cn/core/notesQuery";
 import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
 import { setJumpHandler } from "../utils/jumpBus";
 import { ABSORB_KEYS, ClaimNoteStack, GroupIcon, NOTE_POPOVER_WIDTH, OverlayLogin } from "./ClaimNoteStack";

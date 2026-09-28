@@ -1,5 +1,5 @@
 import { browser } from "#imports";
-import { supabase } from "../../everything-shared/supabase";
+import { supabase } from "@cn/core/supabase";
 
 /** Signs the user in with X from the background script. Supabase builds the provider
  *  URL but does not open it, because `skipBrowserRedirect` is set and we open the

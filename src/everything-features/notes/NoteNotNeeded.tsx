@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
-import type { NnnRow } from "../../../everything-shared/types";
-import type { Vote } from "../../../everything-shared/votes";
-import { deleteNnn } from "../../../everything-shared/noteNotNeeded";
-import { tallyVisible } from "../../../everything-shared/noteScore";
+import type { NnnRow } from "@cn/core/types";
+import type { Vote } from "@cn/core/votes";
+import { deleteNnn } from "@cn/core/noteNotNeeded";
+import { tallyVisible } from "@cn/core/noteScore";
 import { MenuItem, TrashIcon } from "./NoteMenu";
-import { EYEBROW, MENU } from "../../../everything-shared/ui";
-import { IconButton } from "./IconButton";
-import { VoteRatings } from "../../../dashboard-shared/Ratings";
+import { EYEBROW, MENU } from "@cn/ui/classes";
+import { IconButton } from "@cn/ui/IconButton";
+import { VoteRatings } from "./VoteRatings";
 
 /** Voting on entries, and keeping track of the entries you wrote. App owns this
  *  state and hands the same object to every list on the page. */

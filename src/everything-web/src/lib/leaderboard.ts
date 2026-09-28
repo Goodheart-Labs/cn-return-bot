@@ -1,4 +1,4 @@
-import { supabase } from "../../../everything-shared/supabase";
+import { supabase } from "@cn/core/supabase";
 
 /** One ranked rater. It holds a public display name and how many notes that
  *  person has rated. */

@@ -1,11 +1,11 @@
-import { supabase } from "../../../everything-shared/supabase";
-import { setAnalyticsSink, track } from "../../../everything-shared/analytics";
+import { supabase } from "@cn/core/supabase";
+import { setAnalyticsSink, track } from "@cn/core/analytics";
 import { randomUuid } from "./randomUuid";
-import { readStored, writeStored } from "./safeStorage";
+import { readStored, writeStored } from "@cn/core/safeStorage";
 
 // The website's analytics transport: rows in the everything_events table
 // (insert-only for clients, migration 077), registered as the sink behind
-// everything-shared/analytics. Events land in whatever backend
+// everything-core/analytics. Events land in whatever backend
 // VITE_SUPABASE_URL points at, so local dev writes to the local stack and
 // only prod builds touch prod — there is no separate analytics key.
 

@@ -1,6 +1,6 @@
-import type { FeedProjectRow } from "../../../everything-shared/types";
+import type { FeedProjectRow } from "@cn/core/types";
 import type { View } from "../lib/routing";
-import { EYEBROW } from "../../../everything-shared/ui";
+import { EYEBROW } from "@cn/ui/classes";
 
 const DESCRIPTION =
   "Common Notes is an attempt to bring Community Notes everywhere: podcasts, newsletters, and beyond. This is in alpha, but voting works.";

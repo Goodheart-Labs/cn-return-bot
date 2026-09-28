@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
-import { ensureUser } from "../../everything-shared/auth";
-import { ensureWebItem } from "../../everything-shared/ensureWebItem";
-import { postClaimWithNote } from "../../everything-shared/postNote";
-import type { PageItem } from "../../everything-shared/notesQuery";
-import { PostAsCheckbox } from "../../everything-web/src/components/editorBits";
-import { Modal } from "../../everything-web/src/components/Modal";
-import { BUTTON, INPUT, QUOTE_RAIL } from "../../everything-shared/ui";
+import { ensureUser } from "@cn/core/auth";
+import { ensureWebItem } from "@cn/core/ensureWebItem";
+import { postClaimWithNote } from "@cn/core/postNote";
+import type { PageItem } from "@cn/core/notesQuery";
+import { PostAsCheckbox } from "@cn/features/notes/editorBits";
+import { Modal } from "@cn/ui/Modal";
+import { BUTTON, INPUT, QUOTE_RAIL } from "@cn/ui/classes";
 import { LoginPanel } from "./LoginPanel";
 
 /** Write a note anchored to the reader's selection. This is the extension's

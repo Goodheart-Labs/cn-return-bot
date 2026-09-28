@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-import { ensureUser, useSession } from "../../everything-shared/auth";
-import { supabase } from "../../everything-shared/supabase";
-import { castVote, clearVote, fetchMyVotes, type Vote } from "../../everything-shared/votes";
-import { track } from "../../everything-shared/analytics";
-import { castNnnVote, clearNnnVote, fetchMyNnnVotes, fetchNnnEntry } from "../../everything-shared/noteNotNeeded";
-import { fetchNote } from "../../everything-shared/notesQuery";
-import type { NnnRow, NoteRow } from "../../everything-shared/types";
-import { donationPair, priorTally } from "../../everything-web/src/lib/donationScoring";
-import { preferredCharity, saveDonation, type MintedDonation } from "../../everything-web/src/lib/donations";
+import { ensureUser } from "@cn/core/auth";
+import { useSession } from "@cn/features/auth/useSession";
+import { supabase } from "@cn/core/supabase";
+import { castVote, clearVote, fetchMyVotes, type Vote } from "@cn/core/votes";
+import { track } from "@cn/core/analytics";
+import { castNnnVote, clearNnnVote, fetchMyNnnVotes, fetchNnnEntry } from "@cn/core/noteNotNeeded";
+import { fetchNote } from "@cn/core/notesQuery";
+import type { NnnRow, NoteRow } from "@cn/core/types";
+import { donationPair, priorTally } from "@cn/core/donationScoring";
+import { preferredCharity, saveDonation, type MintedDonation } from "@cn/core/donations";
 
 /** The voting state shared by the inline popovers and the YouTube overlay. It
  *  holds the caller's own votes, both on notes and on note-not-needed entries.

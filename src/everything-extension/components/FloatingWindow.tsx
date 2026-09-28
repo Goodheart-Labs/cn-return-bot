@@ -1,6 +1,6 @@
 import { useRef, useState, type CSSProperties, type HTMLAttributes, type ReactNode } from "react";
-import { EYEBROW, FLOATING_CARD } from "../../everything-shared/ui";
-import { IconButton } from "../../everything-web/src/components/IconButton";
+import { EYEBROW, FLOATING_CARD } from "@cn/ui/classes";
+import { IconButton } from "@cn/ui/IconButton";
 
 /** A card's box in page coordinates. Page coordinates are viewport
  *  coordinates plus the page's scroll offset, measured from the top-left
