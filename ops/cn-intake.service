@@ -16,6 +16,11 @@ RestartSec=5
 # Each service gets its own private /tmp, wiped on restart, so a long-lived
 # machine never collects yt-dlp and browser leftovers.
 PrivateTmp=yes
+# No process in this service may talk to a link-local address. That range
+# holds the cloud provider's metadata service, which describes the machine and
+# is reachable from inside it only. The rule sits in the kernel, so it also
+# covers the headless browser and yt-dlp, and every redirect they follow.
+IPAddressDeny=link-local
 
 [Install]
 WantedBy=multi-user.target
