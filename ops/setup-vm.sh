@@ -76,8 +76,9 @@ done
 cp "$REPO_DIR/ops/cn-autodeploy.timer" /etc/systemd/system/cn-autodeploy.timer
 systemctl daemon-reload
 systemctl enable cn-claim-check cn-extraction cn-intake
-# The token provider holds no secrets, so it can start right away.
-systemctl enable --now cn-pot-provider
+# The token provider and the fetcher hold no secrets, so they can start right
+# away. The fetcher must run before the other three services do any work.
+systemctl enable --now cn-pot-provider cn-fetch
 systemctl enable --now cn-autodeploy.timer
 rm -f /etc/sudoers.d/cn-restart
 
