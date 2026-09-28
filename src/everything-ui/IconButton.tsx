@@ -1,21 +1,27 @@
-/** The one icon-button style: the close and overflow buttons on cards, menus
- *  and modals. A fixed 24px hit target, gray at rest in both themes, a subtle
- *  fill on hover. */
-export function IconButton(props: {
+import type { ReactNode } from "react";
+import { cn } from "./cn";
+
+/** A square button that shows only an icon: the close and overflow buttons on
+ *  cards, menus and modals. A fixed 24px hit target, quiet at rest, a subtle
+ *  fill on hover. The label is its accessible name and its tooltip. */
+export function IconButton({ label, onClick, className, children }: {
   label: string;
   onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
   className?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <button
       type="button"
-      aria-label={props.label}
-      title={props.label}
-      onClick={props.onClick}
-      className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-lg leading-none text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:text-gray-500 dark:hover:bg-gray-800 dark:hover:text-gray-300 ${props.className ?? ""}`}
+      aria-label={label}
+      title={label}
+      onClick={onClick}
+      className={cn(
+        "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-control leading-none text-fg-subtle hover:bg-surface-hover hover:text-fg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
+        className,
+      )}
     >
-      {props.children}
+      {children}
     </button>
   );
 }
