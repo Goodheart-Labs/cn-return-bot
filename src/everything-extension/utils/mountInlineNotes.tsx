@@ -2,14 +2,14 @@ import { createRoot, type Root } from "react-dom/client";
 import { QueryClientProvider, QueryObserver } from "@tanstack/react-query";
 import type { NoteSet } from "@cn/features/notes/noteSet";
 import { queryClient } from "@cn/features/query/queryClient";
-import { PASSAGE_TINT_DARK, PASSAGE_TINT_LIGHT } from "./markerPalette";
 import { createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
 import { fetchItemForUrl, isWholePageChecked } from "@cn/core/items";
 import { normalizePageUrl } from "@cn/core/pageUrls";
 import { resolveReaderCanonical } from "./readerCanonical";
-import { indexContainer, findQuoteRange } from "./anchor";
-import { claimGroups, itemNoteSetQuery, noteCounts, type ClaimGroup } from "./claimGroups";
+import { anchorGroups } from "./anchorGroups";
+import { applyHighlights, ensureHighlightStyle, hasHighlightApi, HIGHLIGHT_NAME } from "./passageHighlights";
+import { claimGroups, itemNoteSetQuery, noteCounts } from "./claimGroups";
 import { mountCoverageBadges } from "./coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "./coveredPages";
 import { isSubstackPostPage } from "./pageShape";
@@ -21,13 +21,9 @@ import { REQUEST_NOTES_CHANGED_EVENT } from "./requestLive";
 import { listenForRequestInfo } from "./requestInfo";
 import { getNoteFilters, getSettings, onNoteFiltersChanged, onSettingsChanged, type NoteStyle } from "./settings";
 import { isPageDark, observePageTheme } from "./pageTheme";
-import { InlineNotesApp, type AnchoredGroup } from "../components/InlineNotes";
+import { InlineNotesApp } from "../components/InlineNotes";
 import { track } from "@cn/core/analytics";
 
-// The highlight registry is global to the page, and any extension could pick
-// a generic name. Ours is namespaced so we never overwrite another
-// extension's tint, and our unmount delete never removes theirs.
-const HIGHLIGHT_NAME = "common-notes-passage-tint";
 const REANCHOR_DEBOUNCE_MS = 600;
 
 /** Finds the element that holds the page's readable text. On Substack that is the
@@ -40,97 +36,6 @@ function findContainer(): Element {
     document.querySelector("main") ??
     document.body
   );
-}
-
-/** The stable part of a claim image URL: the original file name. The pipeline
- *  stores Substack CDN fetch URLs, which wrap the original image URL with size
- *  and quality parameters that differ between page renderings; the uploaded
- *  file's name is the piece both sides share. */
-function claimImageFilename(cdnUrl: string): string | null {
-  let decoded = cdnUrl;
-  try {
-    decoded = decodeURIComponent(cdnUrl);
-  } catch {
-    // A malformed escape leaves the raw URL, which still ends in the name.
-  }
-  return decoded.split("/").pop()?.split("?")[0] || null;
-}
-
-/** A range around the image a claim is grounded in, or null when the page does
- *  not show that image. This is how an image-only claim, whose quote columns
- *  are all null, still gets a marker: it hangs off the picture instead of a
- *  passage. */
-function findClaimImageRange(container: Element, imageUrls: string[]): Range | null {
-  for (const url of imageUrls) {
-    const name = claimImageFilename(url);
-    if (!name) continue;
-    for (const img of container.querySelectorAll("img")) {
-      let src = img.currentSrc || img.src || "";
-      try {
-        src = decodeURIComponent(src);
-      } catch {
-        // Compared raw instead.
-      }
-      if (src.includes(name)) {
-        const range = document.createRange();
-        range.selectNode(img);
-        return range;
-      }
-    }
-  }
-  return null;
-}
-
-/** Anchors every claim group to a range inside the container. Each claim
- *  offers three quotes and we try them in order of reliability. First the updated
- *  quote, which is how the passage reads on the page today. Then the quote that was
- *  captured when the claim was extracted. Then the wider paragraph around it.
- *  A claim that has no anchorable text but carries images, such as a note on a
- *  chart, anchors to its image. */
-function anchorGroups(container: Element, groups: ClaimGroup[]): AnchoredGroup[] {
-  const index = indexContainer(container);
-  const anchored: AnchoredGroup[] = [];
-  for (const group of groups) {
-    const { claim } = group;
-    const candidates = [claim.updated_quote, claim.context_quote, claim.context_paragraph];
-    let range: Range | null = null;
-    for (const candidate of candidates) {
-      if (candidate) range = findQuoteRange(index, candidate);
-      if (range) break;
-    }
-    if (!range && claim.image_urls.length > 0) range = findClaimImageRange(container, claim.image_urls);
-    if (range) anchored.push({ ...group, range });
-  }
-  console.info(`[common-notes] anchored ${anchored.length}/${groups.length} claims on this page`);
-  return anchored;
-}
-
-
-/** Whether this browser has the CSS Custom Highlight API. TypeScript's DOM
- *  types assume it always does, but old Firefox ESR releases lack it. */
-const hasHighlightApi = () => "highlights" in CSS;
-
-/** Makes sure the ::highlight rule exists in the host document. The rule cannot live
- *  in our shadow root, because the text it highlights belongs to the page itself.
- *  Calling this again is safe. It reuses the one style element carrying our id, and
- *  it rewrites the tint in place when the page flips between light and dark. */
-function ensureHighlightStyle(dark: boolean) {
-  let style = document.getElementById("common-notes-highlight-style") as HTMLStyleElement | null;
-  if (!style) {
-    style = document.createElement("style");
-    style.id = "common-notes-highlight-style";
-    document.head.appendChild(style);
-  }
-  const text = `::highlight(${HIGHLIGHT_NAME}) { background-color: ${dark ? PASSAGE_TINT_DARK : PASSAGE_TINT_LIGHT}; }`;
-  if (style.textContent !== text) style.textContent = text;
-}
-
-/** Tints the anchored passages with the CSS Custom Highlight API. That API changes no
- *  nodes in the host page, so the page's own framework never notices us. */
-function applyHighlights(ranges: Range[]) {
-  if (!hasHighlightApi()) return; // Old Firefox ESR has no Highlight API. Badges still show, only the tint is missing.
-  if (ranges.length === 0) CSS.highlights.delete(HIGHLIGHT_NAME);
-  else CSS.highlights.set(HIGHLIGHT_NAME, new Highlight(...ranges));
 }
 
 /** Resolves `href` to an ingested item, anchors that item's claims and mounts the
