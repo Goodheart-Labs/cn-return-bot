@@ -45,7 +45,7 @@ describe("consumeNoteRequest", () => {
     expect(outcome.kind).toBe("queued");
     expect(outcome.detail).toContain("promoted");
     expect(dbState.calls.promoteItemToWholePage?.[0]).toEqual(["item-1", "cleaned:body", 2]);
-    expect(dbState.calls.insertItemRun?.[0]).toEqual(["item-1", "capture", 0.004]);
+    expect(dbState.calls.insertItemRun?.[0]).toEqual(["item-1", "capture_cleanup", 0.004]);
     expect(dbState.calls.resolveNoteRequest?.[0]).toEqual(["req-1", "enqueued", null, "item-1"]);
   });
 
@@ -84,7 +84,7 @@ describe("consumeNoteRequest", () => {
     const row = dbState.calls.insertQueuedItem?.[0]?.[0] as Record<string, unknown>;
     expect(row.checked_scope).toBe("page");
     expect(row.full_text).toBe("cleaned:body");
-    expect(dbState.calls.insertItemRun?.[0]).toEqual(["new-item-id", "capture", 0.004]);
+    expect(dbState.calls.insertItemRun?.[0]).toEqual(["new-item-id", "capture_cleanup", 0.004]);
   });
 
   test("a fresh paragraph request inserts a paragraph-scope item whose text is the selection", async () => {

@@ -136,7 +136,7 @@ export async function consumeNoteRequest(request: NoteRequestRow): Promise<NoteR
 /** Writes what the capture cleanup cost against the item, so the daily spend cap
  *  counts it. Nothing is written when no cleanup call was made. */
 async function recordCaptureCost(itemId: string, costUsd: number): Promise<void> {
-  if (costUsd > 0) await insertItemRun(itemId, "capture", costUsd);
+  if (costUsd > 0) await insertItemRun(itemId, "capture_cleanup", costUsd);
 }
 
 export async function consumeNoteRequests(): Promise<void> {
