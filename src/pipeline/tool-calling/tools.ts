@@ -8,7 +8,7 @@ import { generateText } from "ai";
 import { parseHTML } from "linkedom";
 import { extractText, getDocumentProxy } from "unpdf";
 import TurndownService from "turndown";
-import { xai } from "../llm/xai";
+import { grokCallCost, xai } from "../llm/xai";
 import { extractCitations, llm } from "../llm/llm";
 import { countNoteLength } from "../utils/noteLength";
 import { getBotConfig } from "../ab-testing/botConfig";
@@ -16,7 +16,7 @@ import { getBrowser } from "../utils/browserManager";
 import {
   GEMINI_MODEL,
   GROK_MODEL, PERPLEXITY_MODEL,
-  calculateGrokCost, extractOpenRouterCost,
+  addTokenCost, extractOpenRouterCost, serperSearchCost,
   type TokenCost,
 } from "../cost-tracking/pricing";
 import { fetchSearchResults, formatSearchResults, SearchUnavailableError, type SearchResult } from "./serper";
@@ -99,23 +99,15 @@ export async function handleGrokSearch(query: string): Promise<ToolResult> {
     return { output: { error: "XAI_API_KEY not set" }, isTerminal: false };
   }
 
-  const { text, usage, steps } = await generateText({
+  const result = await generateText({
     model: xai.responses(GROK_MODEL) as any,
     prompt: query,
     tools: {
       x_search: xai.tools.xSearch({ enableImageUnderstanding: true }) as any,
     },
   });
-
-  const searchCalls = steps?.reduce(
-    (n, s) => n + (s.toolCalls?.filter((tc) => tc.toolName === "x_search").length ?? 0),
-    0,
-  ) ?? 0;
-  const cost = calculateGrokCost(
-    usage?.inputTokens ?? 0,
-    usage?.outputTokens ?? 0,
-    searchCalls,
-  );
+  const { text } = result;
+  const cost = grokCallCost(result, GROK_MODEL);
 
   return { output: { results: text }, isTerminal: false, cost };
 }
@@ -137,7 +129,7 @@ export async function handlePerplexitySearch(prompt: string): Promise<ToolResult
 export async function handleGoogleSearchRaw(query: string): Promise<ToolResult> {
   try {
     const results = await fetchSearchResults(query);
-    return { output: { results: formatSearchResults(results) }, isTerminal: false };
+    return { output: { results: formatSearchResults(results) }, isTerminal: false, cost: serperSearchCost() };
   } catch (err: any) {
     return { output: { error: `Google search failed: ${err?.message}` }, isTerminal: false };
   }
@@ -158,7 +150,8 @@ export async function handleGoogleSearchSummarized(query: string): Promise<ToolR
     messages: [{ role: "user" as const, content: prompt }],
   });
   const summary = response.choices?.[0]?.message?.content ?? "";
-  const cost = extractOpenRouterCost(response);
+  const cost = serperSearchCost();
+  addTokenCost(cost, extractOpenRouterCost(response));
 
   return { output: { results: summary }, isTerminal: false, cost };
 }
