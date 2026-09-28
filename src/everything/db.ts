@@ -503,7 +503,7 @@ export async function insertClaimPipelineRun(run: ClaimPipelineRun): Promise<voi
 
 /** How each per-item stage is written down. Extraction and rating have a kind
  *  of their own. Smaller costs share the kind "other", and the outcome says what
- *  they were for (migration 103). */
+ *  they were for (migration 104). */
 const ITEM_RUN_ROW = {
   extraction: { kind: "extraction", outcome: "extracted" },
   rating: { kind: "rating", outcome: "rated" },
