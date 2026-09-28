@@ -30,6 +30,15 @@ const RELATIVE_LAYER_IMPORTS = [
   { group: ["**/everything-ui/**"], message: "Import the design system as @cn/ui/..." },
   { group: ["**/everything-features/**"], message: "Import shared features as @cn/features/..." },
 ];
+/** Only the core layer talks to the database. Everything above it calls a core
+ *  function, so a component can never fetch data behind the data layer's
+ *  back. */
+const DATABASE_CLIENT = {
+  group: ["@cn/core/supabase", "@supabase/supabase-js"],
+  // Importing a type such as Session talks to nobody.
+  allowTypeImports: true,
+  message: "Only @cn/core talks to Supabase. Call a function from @cn/core instead.",
+};
 const APPS = [
   { group: ["**/everything-web/**"], message: "Shared code must not import from the website." },
   { group: ["**/everything-extension/**"], message: "Shared code must not import from the extension." },
@@ -39,7 +48,7 @@ const APPS = [
 function layer(files, patterns) {
   return {
     files,
-    rules: { "no-restricted-imports": ["error", { patterns: [...RELATIVE_LAYER_IMPORTS, ...patterns] }] },
+    rules: { "@typescript-eslint/no-restricted-imports": ["error", { patterns: [...RELATIVE_LAYER_IMPORTS, ...patterns] }] },
   };
 }
 
@@ -79,7 +88,7 @@ export default tseslint.config(
     { group: ["**/dashboard-shared/**"], message: "The design system does not depend on the X dashboards." },
     ...APPS,
   ]),
-  layer(["src/everything-features/**/*.{ts,tsx}"], APPS),
-  layer(["src/everything-web/src/**/*.{ts,tsx}"], [APPS[1]]),
-  layer(["src/everything-extension/{components,entrypoints,utils}/**/*.{ts,tsx}"], [APPS[0]]),
+  layer(["src/everything-features/**/*.{ts,tsx}"], [DATABASE_CLIENT, ...APPS]),
+  layer(["src/everything-web/src/**/*.{ts,tsx}"], [DATABASE_CLIENT, APPS[1]]),
+  layer(["src/everything-extension/{components,entrypoints,utils}/**/*.{ts,tsx}"], [DATABASE_CLIENT, APPS[0]]),
 );
