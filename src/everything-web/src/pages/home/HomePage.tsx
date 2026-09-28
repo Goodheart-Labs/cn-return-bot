@@ -1,16 +1,36 @@
-import { useEffect } from "react";
-import logoUrl from "@cn/ui/assets/logo.svg";
+import { useEffect, type ReactNode } from "react";
 import { buttonVariants } from "@cn/ui/Button";
 import { cardVariants } from "@cn/ui/Card";
 import { cn } from "@cn/ui/cn";
 import { NextIcon, PreviousIcon } from "@cn/ui/icons";
-import { BROWSERS, browserById, detectBrowser } from "../../lib/extensionStores";
-import { HEADLINE, PITCH, READING, SCREENSHOTS, scrollToInstall, trackStoreClick } from "./content";
+import { BROWSERS, browserById, detectBrowser, isListed, type Browser, type ListedBrowser } from "../../lib/extensionStores";
+import { HEADLINE, PITCH, SCREENSHOTS, scrollToInstall, trackStoreClick } from "./content";
 import { useCarousel } from "./useCarousel";
 import { useInstallTabs } from "./useInstallTabs";
 
-/* The sketch played straight: one centered column in the sketch's order, at
- * the finish of a well-made extension site. */
+/* The homepage, laid out as Jim sketched it: one centered column with the
+ * headline and the download button, the screenshots, what Common Notes is,
+ * and the install section. */
+
+function BrowserLogo({ browser, size }: { browser: Browser; size: number }) {
+  return <img src={browser.logo} alt="" width={size} height={size} className="shrink-0" />;
+}
+
+/** A link to the browser's store listing, which counts the click. */
+function StoreLink({ browser, children }: { browser: ListedBrowser; children: ReactNode }) {
+  return (
+    <a
+      href={browser.store.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={() => trackStoreClick(browser)}
+      className={cn(buttonVariants({ variant: "primary", size: "lg" }), "gap-2.5")}
+    >
+      <BrowserLogo browser={browser} size={22} />
+      {children}
+    </a>
+  );
+}
 
 function Screenshots() {
   const { index, go, held, holdProps } = useCarousel(SCREENSHOTS.length);
@@ -67,7 +87,7 @@ function Install() {
   const { browser, tabListProps, tabProps, panelProps } = useInstallTabs();
   return (
     <section id="install" aria-labelledby="install-title" className="scroll-mt-20 py-20">
-      <h2 id="install-title" className="text-center font-display text-3xl font-bold text-fg">
+      <h2 id="install-title" className="text-center text-3xl font-bold text-fg">
         Install the extension
       </h2>
       <div className={cn(cardVariants(), "mx-auto mt-8 max-w-2xl overflow-hidden")}>
@@ -76,30 +96,18 @@ function Install() {
             <button
               key={b.id}
               {...tabProps(i)}
-              className="relative flex flex-col items-center gap-0.5 px-2 py-3 text-base font-medium text-fg-secondary hover:bg-surface-hover hover:text-fg aria-selected:text-fg aria-selected:after:absolute aria-selected:after:inset-x-0 aria-selected:after:bottom-0 aria-selected:after:h-0.5 aria-selected:after:bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus [&+&]:border-l [&+&]:border-line"
+              className="relative flex flex-col items-center gap-1.5 px-2 py-3 text-base font-medium text-fg-secondary hover:bg-surface-hover hover:text-fg aria-selected:text-fg aria-selected:after:absolute aria-selected:after:inset-x-0 aria-selected:after:bottom-0 aria-selected:after:h-0.5 aria-selected:after:bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus [&+&]:border-l [&+&]:border-line"
             >
+              <BrowserLogo browser={b} size={28} />
               {b.name}
-              {!b.storeUrl && <span className="text-xs text-fg-muted">Coming soon</span>}
             </button>
           ))}
         </div>
-        <div {...panelProps} className="flex flex-col items-center gap-5 px-6 py-10 text-center">
-          <p className="max-w-[44ch] text-base text-fg-secondary">{browser.howToInstall}</p>
-          {browser.storeUrl ? (
-            <a
-              href={browser.storeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackStoreClick(browser)}
-              className={cn(buttonVariants({ variant: "primary", size: "lg" }), "gap-3")}
-            >
-              <img src={logoUrl} alt="" width={24} height={24} className="rounded-[6px] bg-surface" />
-              Download Common Notes for {browser.name}
-            </a>
+        <div {...panelProps} className="flex justify-center px-6 py-10">
+          {isListed(browser) ? (
+            <StoreLink browser={browser}>Go to {browser.store.name}</StoreLink>
           ) : (
-            <button type="button" disabled className={buttonVariants({ variant: "secondary", size: "lg" })}>
-              Coming soon
-            </button>
+            <p className="text-base text-fg-secondary">The {browser.name} version is coming soon.</p>
           )}
         </div>
       </div>
@@ -107,46 +115,32 @@ function Install() {
   );
 }
 
-export function HomeCanon({ showInstall }: { showInstall: boolean }) {
+export function HomePage({ showInstall }: { showInstall: boolean }) {
   const browser = browserById(detectBrowser());
   useEffect(() => {
     if (showInstall) scrollToInstall();
   }, [showInstall]);
 
   return (
-    <div className="px-4 md:px-8">
+    <div className="bg-surface px-4 md:px-8">
       <section className="pt-16 text-center md:pt-24">
-        <h1 className="mx-auto max-w-4xl font-display text-display font-extrabold tracking-tight text-fg text-balance">{HEADLINE}</h1>
+        <h1 className="mx-auto max-w-4xl text-display font-extrabold tracking-tight text-fg text-balance">{HEADLINE}</h1>
         <div className="mt-8">
-          {browser.storeUrl ? (
-            <a
-              href={browser.storeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackStoreClick(browser)}
-              className={buttonVariants({ variant: "primary", size: "lg" })}
-            >
-              Download for {browser.name}, it's free
-            </a>
+          {isListed(browser) ? (
+            <StoreLink browser={browser}>Download for {browser.name}, it's free</StoreLink>
           ) : (
             <button type="button" onClick={scrollToInstall} className={buttonVariants({ variant: "primary", size: "lg" })}>
-              Download the extension
+              Get the extension
             </button>
           )}
         </div>
         <Screenshots />
       </section>
 
-      <section className="mx-auto max-w-3xl pt-20 text-center">
-        <p className="text-xl text-fg-secondary text-balance">{PITCH}</p>
-        <div className="mt-10 grid gap-4 text-left sm:grid-cols-2">
-          {READING.map((r) => (
-            <a key={r.href} href={r.href} target="_blank" rel="noopener noreferrer" className={cn(cardVariants(), "group block p-6 transition-colors hover:border-line-strong")}>
-              <span className="text-sm text-fg-muted">{r.source}</span>
-              <span className="mt-1 block text-lg font-semibold text-fg group-hover:text-link">{r.title}</span>
-            </a>
-          ))}
-        </div>
+      <section className="mx-auto max-w-[65ch] space-y-4 pt-20 text-center text-lg text-fg-secondary">
+        {PITCH.map((paragraph) => (
+          <p key={paragraph}>{paragraph}</p>
+        ))}
       </section>
 
       <Install />
@@ -158,7 +152,7 @@ export function HomeCanon({ showInstall }: { showInstall: boolean }) {
           <a href="https://goodheartlabs.com" className={buttonVariants({ variant: "link" })}>
             Goodheart Labs
           </a>
-          . It is not affiliated with X or its Community Notes.
+          .
         </p>
         <p className="mt-3 flex justify-center gap-5">
           <a href="privacy/" className="hover:text-fg">

@@ -25,7 +25,7 @@ const STATUS: Record<NoteStatus, { label: string; dot: string; box: string; ask:
 export function StatusBadge({ status }: { status: NoteStatus }) {
   const { label, dot } = STATUS[status];
   return (
-    <div data-status={status} className="cn-note-status flex items-center gap-1.5 text-sm font-semibold text-fg-secondary">
+    <div className="flex items-center gap-1.5 text-sm font-semibold text-fg-secondary">
       {/* The size is given in em so the icon scales with the site's larger
           type scale. */}
       <svg viewBox="0 0 20 20" width="1.05em" height="1.05em" aria-hidden className={`shrink-0 ${dot}`}>
@@ -103,16 +103,16 @@ export function NoteBox({ note, status, sourcesOpen, children }: {
 }) {
   const by = note.author_id ? note.author_name ?? "anonymous" : null;
   return (
-    <div data-status={status} className={`cn-note rounded-control p-3 border ${STATUS[status].box}`}>
-      <div className="cn-note-header -mx-3 px-3 pb-2 mb-3 border-b border-line flex items-center justify-between gap-2">
+    <div className={`rounded-control p-3 border ${STATUS[status].box}`}>
+      <div className="-mx-3 px-3 pb-2 mb-3 border-b border-line flex items-center justify-between gap-2">
         <StatusBadge status={status} />
         {by && <span className="text-xs text-fg-muted shrink-0">by {by}</span>}
       </div>
-      <LinkifiedText className="cn-note-text text-sm text-fg whitespace-pre-wrap" linkClassName="text-link hover:underline break-all" text={noteText(note)} />
+      <LinkifiedText className="text-sm text-fg whitespace-pre-wrap" linkClassName="text-link hover:underline break-all" text={noteText(note)} />
       {note.has_source_details && <SourceDetails open={!!sourcesOpen} noteId={note.id} />}
       {children && (
-        <div className="cn-note-footer -mx-3 mt-3 px-3 pt-2 border-t border-line flex items-center justify-between flex-wrap gap-x-4 gap-y-1">
-          <span className="cn-note-ask text-sm text-fg-secondary">{STATUS[status].ask}</span>
+        <div className="-mx-3 mt-3 px-3 pt-2 border-t border-line flex items-center justify-between flex-wrap gap-x-4 gap-y-1">
+          <span className="text-sm text-fg-secondary">{STATUS[status].ask}</span>
           <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-xs text-fg-muted">{children}</div>
         </div>
       )}

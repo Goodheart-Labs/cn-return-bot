@@ -5,18 +5,12 @@ import { HOME, INSTALL, NOTES, type Route } from "../lib/routing";
 import { AuthCorner } from "./AuthCorner";
 import { RouteLink } from "./RouteLink";
 
-/** What every version of the site header receives. */
-export interface HeaderProps {
-  route: Route;
-  navigate: (route: Route) => void;
-  onSignIn: () => void;
-}
-
 const navLink = "text-sm font-medium text-fg-secondary hover:text-fg aria-[current=page]:text-fg";
 
 /** The bar at the top of every page. The name and the two pages sit on the
- *  left, signing in and getting the extension on the right. */
-export function SiteHeader({ route, navigate, onSignIn }: HeaderProps) {
+ *  left, signing in and getting the extension on the right. Getting the
+ *  extension leads to the homepage's install section. */
+export function SiteHeader({ route, navigate, onSignIn }: { route: Route; navigate: (route: Route) => void; onSignIn: () => void }) {
   return (
     <header className="sticky top-0 z-20 border-b border-line bg-surface">
       <div className="mx-auto flex h-14 max-w-[96rem] items-center gap-2.5 px-3 sm:gap-6 sm:px-4 md:px-8">
@@ -35,7 +29,7 @@ export function SiteHeader({ route, navigate, onSignIn }: HeaderProps) {
         <div className="ml-auto flex items-center gap-3">
           <AuthCorner onSignIn={onSignIn} />
           <RouteLink to={INSTALL} navigate={navigate} className={cn(buttonVariants({ variant: "primary" }), "hidden sm:inline-flex")}>
-            Download
+            Get the extension
           </RouteLink>
         </div>
       </div>

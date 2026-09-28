@@ -9,12 +9,12 @@ import { cn } from "./cn";
  *  controls inside the product, and `lg` for the main action of a whole page. A link that should look like a button uses these too:
  *  `<a className={buttonVariants({ variant: "secondary" })}>`. */
 export const buttonVariants = cva(
-  "cn-button inline-flex items-center justify-center gap-1 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
+  "inline-flex items-center justify-center gap-1 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
   {
     variants: {
       variant: {
-        primary: "cn-button-primary rounded-control font-medium bg-primary text-on-primary hover:bg-primary-hover",
-        secondary: "cn-button-secondary rounded-control font-medium border border-line-strong text-fg hover:bg-surface-hover",
+        primary: "rounded-control font-medium bg-primary text-on-primary hover:bg-primary-hover",
+        secondary: "rounded-control font-medium border border-line-strong text-fg hover:bg-surface-hover",
         link: "text-link hover:underline",
         quiet: "text-fg-muted hover:underline",
       },

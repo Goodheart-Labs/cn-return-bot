@@ -150,11 +150,12 @@
 
   /* Type. The extension uses this scale. The website reads at a larger size,
    * see .cn-reading-scale below. */
-  /* The system font. X's own "TwitterChirp" is deliberately not first in
-   * the list: anyone who has it installed locally, as Nathan does, would see
-   * the whole site in it, and mismatched local weight files make it read
-   * heavy. */
-  --cn-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  /* Hanken Grotesk, which the website loads from Google Fonts. The extension
+   * draws inside other sites' pages and loads no web font, so it falls back to
+   * the system font. X's own "TwitterChirp" is deliberately not in the list:
+   * anyone who has it installed locally, as Nathan does, would see the whole
+   * site in it, and mismatched local weight files make it read heavy. */
+  --cn-font-sans: "Hanken Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --cn-text-2xs: 0.75rem;
   --cn-leading-2xs: 1.625;
   --cn-text-xs: 0.75rem;
@@ -176,8 +177,6 @@
    * between a phone and a wide screen. */
   --cn-text-display: clamp(2.5rem, 1.6rem + 3.6vw, 4.25rem);
   --cn-leading-display: 1.05;
-  /* The face of headings. It is the body face unless a look sets its own. */
-  --cn-font-display: var(--cn-font-sans);
 
   /* Shape */
   --cn-radius-control: 0.5rem;
