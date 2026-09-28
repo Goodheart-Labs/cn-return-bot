@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { extractYoutubeVideoId, sourceLinkLabel } from "@cn/core/pageUrls";
 import { LINK, QUOTE_RAIL } from "@cn/ui/classes";
-import { quoteFragmentUrl } from "../../dashboard-shared/textFragment";
+import { quoteFragmentUrl } from "../../../dashboard-shared/textFragment";
 
 /** What a note is about: a clip of a YouTube video or a quote from an article. */
 export type NotedContent =

@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { MENU } from "@cn/ui/classes";
+import { useAutoDismiss } from "@cn/ui/useAutoDismiss";
+import { useOutsidePress } from "@cn/ui/useOutsidePress";
 import { useMutation } from "@tanstack/react-query";
 import { CHARITIES, rememberCharity, setDonationCharity, type CharityId } from "@cn/core/donations";
 import type { DonationPair } from "@cn/core/donationScoring";
@@ -27,14 +29,7 @@ function CharityPicker({ charity, onPick, open, setOpen }: {
 }) {
   const ref = useRef<HTMLSpanElement>(null);
 
-  useEffect(() => {
-    if (!open) return;
-    const onDown = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
-  }, [open]);
+  useOutsidePress(ref, open, () => setOpen(false));
 
   return (
     <span ref={ref} className="relative">
@@ -102,7 +97,6 @@ export function VoteDonation({ voteId, pair, charity, status, onCharityChange, o
   const failed = redirect.isError;
   const [pickerOpen, setPickerOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
-  const [fading, setFading] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
   const inUse = pickerOpen || hovered || failed;
 
@@ -116,15 +110,7 @@ export function VoteDonation({ voteId, pair, charity, status, onCharityChange, o
 
   // Fade the box out and unmount it once the reader stops using it. Any use
   // cancels a fade already running and starts the wait again from zero.
-  useEffect(() => {
-    if (inUse) return setFading(false);
-    const fade = setTimeout(() => setFading(true), DWELL_MS);
-    const close = setTimeout(onClose, DWELL_MS + FADE_MS);
-    return () => {
-      clearTimeout(fade);
-      clearTimeout(close);
-    };
-  }, [inUse]);
+  const { fading } = useAutoDismiss({ dwellMs: DWELL_MS, fadeMs: FADE_MS, paused: inUse, onDismiss: onClose });
 
   const pickCharity = (picked: CharityId) => redirect.mutate(picked);
 

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { browser } from "#imports";
 import { QUOTE_RAIL } from "@cn/ui/classes";
@@ -6,7 +6,9 @@ import { useSession } from "@cn/features/auth/useSession";
 import { claimGroups, itemNoteSetQuery, type ClaimGroup } from "../utils/claimGroups";
 import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
 import { setJumpHandler } from "../utils/jumpBus";
-import { ABSORB_KEYS, ClaimNoteStack, NOTE_POPOVER_WIDTH, OverlayLoginGate } from "./ClaimNoteStack";
+import { ClaimNoteStack, NOTE_POPOVER_WIDTH } from "./ClaimNoteStack";
+import { OverlayLoginGate } from "./OverlayLoginGate";
+import { ABSORB_KEYS } from "./EventShield";
 import { FloatingWindow, type Box } from "./FloatingWindow";
 import { useNoteFilters } from "./NoteFilterToggles";
 import { ScrubberPins } from "./ScrubberPins";
@@ -49,6 +51,11 @@ function quotePreview(group: TimedGroup): string | null {
   const quote = group.claim.context_quote;
   if (!quote) return null;
   return quote.length > QUOTE_PREVIEW_CHARS ? `${quote.slice(0, QUOTE_PREVIEW_CHARS)}…` : quote;
+}
+
+/** Moves the playback position. The overlay only ever seeks through this. */
+function seek(video: HTMLVideoElement, seconds: number) {
+  video.currentTime = seconds;
 }
 
 /** The player's box in page coordinates, kept current while the player
@@ -141,7 +148,9 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
   // expires. On a paused video the card simply stays, because a paused video
   // means someone is reading.
   const loginOpenRef = useRef(false);
-  loginOpenRef.current = loginOpen && !session;
+  useEffect(() => {
+    loginOpenRef.current = loginOpen && !session;
+  }, [loginOpen, session]);
   const engaged = () => hovered.current || loginOpenRef.current || Date.now() - lastInteraction.current < HOLD_AFTER_INTERACTION_MS;
 
   useEffect(() => {
@@ -194,10 +203,10 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
   }, [group]);
   // Clicking a pin is explicit intent, so we undo any hiding and seek into
   // the claim's window. The resulting timeupdate shows the card.
-  const jumpToPin = (target: TimedGroup) => {
+  const jumpToPin = useCallback((target: TimedGroup) => {
     if (hushed.current === target.claimId) hushed.current = null;
-    video.currentTime = target.startSeconds + 0.01;
-  };
+    seek(video, target.startSeconds + 0.01);
+  }, [video]);
 
   // The popup's jump button brings the player on screen and steps through the
   // claims in time order, wrapping around at the end. This is the same as
@@ -226,7 +235,7 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
       browser.runtime.onMessage.removeListener(listener);
       setJumpHandler(null);
     };
-  }, [groups, video]);
+  }, [groups, video, jumpToPin]);
   const playerBox = usePlayerBox(player);
   // Where the reader last put a card on this video, and how wide they made
   // it. The next note opens there. Its height is not kept: a new card fits

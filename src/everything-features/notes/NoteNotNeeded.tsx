@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { tallyVisible } from "@cn/core/noteScore";
 import type { NnnRow } from "@cn/core/types";
 import { EYEBROW, MENU } from "@cn/ui/classes";
 import { IconButton } from "@cn/ui/IconButton";
+import { useOutsidePress } from "@cn/ui/useOutsidePress";
 import { useSession } from "../auth/useSession";
 import { MenuItem, TrashIcon } from "./NoteMenu";
 import { useDeleteNnn } from "./useNoteWrites";
@@ -32,14 +33,7 @@ const CHEVRON_ICON_PROPS = {
 function OwnEntryMenu({ onDelete }: { onDelete: () => void }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLSpanElement>(null);
-  useEffect(() => {
-    if (!open) return;
-    const onDown = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
-  }, [open]);
+  useOutsidePress(ref, open, () => setOpen(false));
   return (
     <span ref={ref} className="relative">
       <IconButton label="Entry actions" onClick={() => setOpen((o) => !o)}>

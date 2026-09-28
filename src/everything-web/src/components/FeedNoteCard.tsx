@@ -1,105 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { fetchNoteSourceDetails } from "@cn/core/notes";
-import { noteStatus, noteTallyVisible, type NoteStatus } from "@cn/core/noteScore";
-import type { MintedDonation } from "@cn/core/donations";
 import type { ClaimRef, NnnRow, NoteRow } from "@cn/core/types";
 import { CARD, CHIP, LINK, QUOTE_RAIL } from "@cn/ui/classes";
-import { LinkifiedText } from "../../dashboard-shared/LinkifiedText";
-import { quoteFragmentUrl } from "../../dashboard-shared/textFragment";
-import { VoteDonation } from "../donations/VoteDonation";
-import { takeMintedDonation } from "../donations/mintedDonations";
-import { queryKeys } from "../query/queryKeys";
+import { Note } from "@cn/features/notes/Note";
+import { NoteNotNeeded } from "@cn/features/notes/NoteNotNeeded";
 import { ClaimContent, type NotedContent } from "./ClaimContent";
-import { NoteMenu } from "./NoteMenu";
-import { NoteNotNeeded } from "./NoteNotNeeded";
-import { useMyVotes, useVoteOnNote } from "./useVotes";
-import { VoteRatings } from "./VoteRatings";
-import { useVotingNudge, VotingNudge } from "./VotingNudge";
-
-/** The rating states, in the style of Community Notes. Each one carries the
- *  colour of its icon, the copy on its badge, the tint of the note box, and the
- *  question asked in the footer. The design sits halfway to X's own Community
- *  Notes grammar (Nathan, 2026-07-14). The badge and the wording are ours, and
- *  the vote row asks one plain question. */
-const STATUS: Record<NoteStatus, { label: string; color: string; box: string; ask: string }> = {
-  helpful: { label: "Currently rated helpful", color: "#22c55e", box: "bg-blue-50 border-blue-100 dark:bg-blue-950/50 dark:border-blue-900", ask: "Do you find this helpful?" },
-  not_helpful: { label: "Currently rated not helpful", color: "#ef4444", box: "bg-gray-100 border-gray-200 dark:bg-gray-800/60 dark:border-gray-700", ask: "Do you find this helpful?" },
-  needs_ratings: { label: "Needs more ratings", color: "#9ca3af", box: "bg-blue-50 border-blue-100 dark:bg-blue-950/50 dark:border-blue-900", ask: "Is this note helpful?" },
-};
-
-/** The status badge shown above a note. It is a filled circle followed by the
- *  Community Notes copy for that status. A status that has been decided also
- *  draws a ✓ or a ✕ inside the circle. */
-export function StatusBadge({ status }: { status: NoteStatus }) {
-  const { label, color } = STATUS[status];
-  return (
-    <div className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 dark:text-gray-200">
-      {/* The size is given in em so the icon scales with the site's larger
-          type scale. */}
-      <svg viewBox="0 0 20 20" width="1.05em" height="1.05em" aria-hidden className="shrink-0">
-        <circle cx="10" cy="10" r="10" fill={color} />
-        {status === "helpful" && (
-          <path d="M5.5 10.5l3 3 6-6.5" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        )}
-        {status === "not_helpful" && (
-          <path d="M6.5 6.5l7 7M13.5 6.5l-7 7" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-        )}
-      </svg>
-      <span>{label}</span>
-    </div>
-  );
-}
-
-/** Common Notes keeps a note's citations in a separate column. We append their
- *  URLs to the note text so they render as links inside it, the way the review
- *  dashboard and the stats dashboard render a note. A note stores one source
- *  row per supporting quote, so the same URL can appear on several rows when
- *  several passages of one document back the note. The link is shown once;
- *  the individual quotes live behind "Show source details". */
-function noteText(note: NoteRow): string {
-  const urls = [...new Set(note.sources.map((s) => s.url))];
-  return urls.length > 0 ? `${note.note} ${urls.join(" ")}` : note.note;
-}
-
-/** The supporting quote and the explanation for each source, revealed by the
- *  "Show source details" button. The source URLs already sit inline in the note
- *  text, so this shows only the body of each citation. Each quote links out to
- *  that passage in the source.
- *
- *  The quotes are the largest thing a note carries and most readers never open
- *  this, so the feed loads without them and this fetches them the first time it
- *  is opened. */
-function SourceDetails({ open, noteId }: { open: boolean; noteId: string }) {
-  // The query starts the first time the reveal opens and keeps its answer, so
-  // closing and opening again costs nothing.
-  const [requested, setRequested] = useState(open);
-  if (open && !requested) setRequested(true);
-  const detailed = useQuery({
-    queryKey: queryKeys.sourceDetails(noteId),
-    queryFn: () => fetchNoteSourceDetails(noteId),
-    enabled: requested,
-  }).data ?? [];
-  return (
-    <div
-      style={{ display: "grid", gridTemplateRows: open ? "1fr" : "0fr", transition: "grid-template-rows 300ms ease" }}
-      aria-hidden={!open}
-    >
-      <div className="overflow-hidden min-h-0">
-        <div className="mt-3 space-y-3">
-          {detailed.map((s, i) => (
-            <div key={i}>
-              <a href={quoteFragmentUrl(s.url, s.quote)} target="_blank" rel="noopener noreferrer" className="block group">
-                <blockquote className={`${QUOTE_RAIL} group-hover:border-blue-400 text-sm italic text-gray-600 dark:text-gray-300`}>“{s.quote}”</blockquote>
-              </a>
-              {s.explanation && <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{s.explanation}</p>}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 /** Maps a claim's context onto the shared ContentCard shape. A context URL that
  *  points at a video becomes a YouTube clip, embedded at the claim's timestamp
@@ -236,34 +140,6 @@ function ContextParagraph({ paragraph, quote, bare, fitTo }: {
   );
 }
 
-/** The note as one self-contained unit, in the style of X's Community Notes. The
- *  rating-status badge sits on top, then the note text, then the rating pills,
- *  all inside the same box. The tint of the box follows the note's status. */
-export function NoteBox({ note, status, sourcesOpen, children }: {
-  note: NoteRow;
-  status: NoteStatus;
-  sourcesOpen?: boolean;
-  children?: React.ReactNode;
-}) {
-  const by = note.author_id ? note.author_name ?? "anonymous" : null;
-  return (
-    <div className={`cn-notebox rounded-lg p-3 border ${STATUS[status].box}`}>
-      <div className="-mx-3 px-3 pb-2 mb-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between gap-2">
-        <StatusBadge status={status} />
-        {by && <span className="text-xs text-gray-500 dark:text-gray-400 shrink-0">by {by}</span>}
-      </div>
-      <LinkifiedText className="text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap" text={noteText(note)} />
-      {note.has_source_details && <SourceDetails open={!!sourcesOpen} noteId={note.id} />}
-      {children && (
-        <div className="-mx-3 mt-3 px-3 pt-2 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between flex-wrap gap-x-4 gap-y-1">
-          <span className="text-sm text-gray-600 dark:text-gray-300">{STATUS[status].ask}</span>
-          <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500 dark:text-gray-400">{children}</div>
-        </div>
-      )}
-    </div>
-  );
-}
-
 /** Scrolls to another note's card. If that card sits inside a collapsed
  *  <details> element, scrollIntoView silently does nothing, so we open the
  *  <details> first. */
@@ -340,10 +216,10 @@ function ImprovementLinks({ note, improvements }: { note: NoteRow; improvements:
   );
 }
 
-// Composed the same way as a card in the review dashboard. The content comes
-// first, then the note, then the stats row. Here the voting is live and the
-// reader can suggest an improvement.
-export function NoteCard({ note, improvements, nnnEntries, shareUrl }: {
+/** One card of the website's feed: the claim in its source, the note on it,
+ *  and the claim's note-not-needed list. On a wide screen the paragraph around
+ *  the claim sits beside the card. */
+export function FeedNoteCard({ note, improvements, nnnEntries, shareUrl }: {
   note: NoteRow;
   /** The notes that improve this one. This is the reverse of
    *  improved_from_note_id. */
@@ -355,22 +231,7 @@ export function NoteCard({ note, improvements, nnnEntries, shareUrl }: {
   shareUrl: string;
 }) {
   const [ctxOpen, setCtxOpen] = useState(false);
-  // Set right after a vote is cast. It holds the donation just minted, and its
-  // presence is what shows the donation notice beneath the rating pills. The
-  // charity on it is the value in the ledger, and a successful redirect updates
-  // it here too. Retracting the vote clears it.
-  // A note the viewer just posted starts with the parked donation its
-  // automatic Helpful vote minted, so the notice explains the pill that is
-  // already lit.
-  const [cast, setCast] = useState<MintedDonation | null>(() => takeMintedDonation(note.id));
-  const nudge = useVotingNudge();
-  const myVote = useMyVotes().get(note.id);
-  const voteOnNote = useVoteOnNote();
   const cardColRef = useRef<HTMLDivElement>(null);
-  const [sourcesOpen, setSourcesOpen] = useState(false);
-  // The status is computed once per card. The badge, the box tint, the reveal of
-  // the counts and the donation payout all read this same value.
-  const status = noteStatus(note);
   const claim = note.claim;
   // A stored context_paragraph always contains its context_quote word for word.
   // Ingest enforces that, not this component. It is why the bolding below always
@@ -411,43 +272,9 @@ export function NoteCard({ note, improvements, nnnEntries, shareUrl }: {
         <ClaimContent content={claimContent(claim)} />
       </div>
 
-      <div className="mb-2">
-        <NoteBox note={note} status={status} sourcesOpen={sourcesOpen}>
-          <span className="relative inline-flex">
-            {nudge.show && <VotingNudge onDismiss={nudge.dismiss} />}
-            <VoteRatings
-              helpful={note.helpful_count}
-              somewhatHelpful={note.somewhat_helpful_count}
-              notHelpful={note.not_helpful_count}
-              myVote={myVote}
-              showCounts={noteTallyVisible(status, myVote, note.created_at)}
-              onVote={(vote) => {
-                if (nudge.show) nudge.dismiss();
-                void voteOnNote(note, vote).then(setCast);
-              }}
-            />
-          </span>
-        </NoteBox>
-        {cast && myVote !== undefined && (
-          <VoteDonation
-            voteId={cast.voteId}
-            pair={cast.pair}
-            charity={cast.charity}
-            status={status}
-            onCharityChange={(charity) => setCast((prev) => prev && { ...prev, charity })}
-            onClose={() => setCast(null)}
-          />
-        )}
-      </div>
-
-      <NoteMenu
-        note={note}
-        shareUrl={shareUrl}
-        sourcesOpen={sourcesOpen}
-        onToggleSources={() => setSourcesOpen((o) => !o)}
-      >
+      <Note note={note} shareUrl={shareUrl}>
         <ImprovementLinks note={note} improvements={improvements} />
-      </NoteMenu>
+      </Note>
 
       <NoteNotNeeded entries={nnnEntries} />
       </div>

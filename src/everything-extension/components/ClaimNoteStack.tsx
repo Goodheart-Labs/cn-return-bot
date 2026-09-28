@@ -1,26 +1,11 @@
-import { LoginPromptProvider } from "@cn/features/auth/loginPrompt";
-import { useSession } from "@cn/features/auth/useSession";
 import { NoteNotNeeded } from "@cn/features/notes/NoteNotNeeded";
 import type { ClaimGroup } from "../utils/claimGroups";
 import { noteShareUrl } from "../utils/share";
-import { LoginPanel } from "./LoginPanel";
-import { NoteWithActions } from "./NoteWithActions";
+import { Note } from "@cn/features/notes/Note";
 
 /** The width every overlay uses. The Substack popover and the YouTube card are
  *  the same surface, so they get the same size. */
 export const NOTE_POPOVER_WIDTH = 560;
-
-/** Spread this onto the outermost wrapper of an overlay. It keeps our keyboard
- *  events from reaching the host page. Shadow retargeting makes the page see
- *  those events as coming from the shadow host element rather than from an
- *  input, so the page's own "ignore typing" checks never fire. Without this,
- *  YouTube's single-key shortcuts such as k, f, m, the digits and the arrow keys
- *  would drive the player while somebody types in a composer. */
-export const ABSORB_KEYS = {
-  onKeyDown: (e: React.KeyboardEvent) => e.stopPropagation(),
-  onKeyUp: (e: React.KeyboardEvent) => e.stopPropagation(),
-  onKeyPress: (e: React.KeyboardEvent) => e.stopPropagation(),
-} as const;
 
 /** The group-of-people glyph from Material Symbols, named "groups". It is our
  *  community marker and is drawn in a 24 by 24 viewBox. Both marker surfaces use
@@ -43,11 +28,11 @@ export function ClaimNoteStack({ group, projectSlug }: { group: ClaimGroup; proj
   const [original, ...others] = group.notes;
   return (
     <>
-      <NoteWithActions note={original!} shareUrl={noteShareUrl(projectSlug, original!.id)} />
+      <Note note={original!} shareUrl={noteShareUrl(projectSlug, original!.id)} />
       {others.length > 0 && (
         <div className="mt-3 pl-3 border-l-4 border-gray-200 dark:border-gray-700 space-y-3">
           {others.map((note) => (
-            <NoteWithActions key={note.id} note={note} shareUrl={noteShareUrl(projectSlug, note.id)} />
+            <Note key={note.id} note={note} shareUrl={noteShareUrl(projectSlug, note.id)} />
           ))}
         </div>
       )}
@@ -55,27 +40,5 @@ export function ClaimNoteStack({ group, projectSlug }: { group: ClaimGroup; proj
           belongs to every note above. */}
       <NoteNotNeeded entries={group.nnn} />
     </>
-  );
-}
-
-/** Gives the notes inside an overlay a sign-in form of their own. When a
- *  reader who cannot get an anonymous account tries to vote or write, the form
- *  folds in above the notes, and it goes away once they are signed in. The
- *  overlay owns `open`, because the YouTube card stays up while it is open. */
-export function OverlayLoginGate({ open, onOpenChange, children }: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  children: React.ReactNode;
-}) {
-  const { session } = useSession();
-  return (
-    <LoginPromptProvider value={() => onOpenChange(true)}>
-      {open && !session && (
-        <div className="mb-3 pb-3 border-b border-gray-200 dark:border-gray-700">
-          <LoginPanel surface="overlay" onDismiss={() => onOpenChange(false)} />
-        </div>
-      )}
-      {children}
-    </LoginPromptProvider>
   );
 }

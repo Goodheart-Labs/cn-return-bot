@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { browser } from "#imports";
 import { fetchItemForUrl, isWholePageChecked, type PageItem } from "@cn/core/items";
@@ -6,7 +6,7 @@ import { fetchNotesForItem } from "@cn/core/notes";
 import { extractYoutubeVideoId, normalizePageUrl } from "@cn/core/pageUrls";
 import type { NoteRow } from "@cn/core/types";
 import { submitNoteRequest } from "@cn/core/noteRequests";
-import { progressIsTerminal, progressLines, type RequestProgress } from "@cn/core/requestProgress";
+import { progressIsTerminal, progressLines } from "@cn/core/requestProgress";
 import { authorFeedStatusForTab, type AuthorFeedStatus } from "../../utils/authorFeed";
 import { getLiveRequest, removeLiveRequest, saveLiveRequest, type LiveRequest } from "../../utils/liveRequests";
 import { fetchProgressSnapshot } from "../../utils/requestProgressController";
@@ -90,18 +90,16 @@ function useJumped(state: PageState): boolean {
  *  directly. */
 type PageAccess = "on" | "syncing";
 
+async function loadPageAccess(origin: string): Promise<PageAccess> {
+  const hostname = new URL(origin).hostname;
+  if (STATIC_SITE_HOSTNAME.test(hostname)) return "on";
+  const scripts = await browser.scripting.getRegisteredContentScripts({ ids: [genericScriptId(hostname)] }).catch(() => []);
+  return scripts.length > 0 ? "on" : "syncing";
+}
+
 function usePageAccess(state: PageState): PageAccess | null {
-  const [access, setAccess] = useState<PageAccess | null>(null);
-  useEffect(() => {
-    if (state.kind !== "item") return;
-    const hostname = new URL(state.origin).hostname;
-    if (STATIC_SITE_HOSTNAME.test(hostname)) return setAccess("on");
-    (async () => {
-      const scripts = await browser.scripting.getRegisteredContentScripts({ ids: [genericScriptId(hostname)] }).catch(() => []);
-      setAccess(scripts.length > 0 ? "on" : "syncing");
-    })();
-  }, [state]);
-  return access;
+  const origin = state.kind === "item" ? state.origin : null;
+  return useQuery({ queryKey: ["pageAccess", origin], queryFn: () => loadPageAccess(origin!), enabled: !!origin }).data ?? null;
 }
 
 const RESEND_ATTEMPTS = 15;
@@ -228,35 +226,20 @@ function useLiveRequest(state: PageState): [LiveRequest | null, (entry: LiveRequ
 /** The same terse readout the in-page card shows, one fact per line, rendered
  *  while the popup is open. */
 function LiveRequestLine({ entry }: { entry: LiveRequest }) {
-  const [progress, setProgress] = useState<RequestProgress>({ kind: "saved" });
-  const itemIdRef = useRef<string | undefined>(entry.itemId);
-  useEffect(() => {
-    let cancelled = false;
-    let interval: ReturnType<typeof setInterval> | null = null;
-    const tick = async () => {
-      try {
-        const snapshot = await fetchProgressSnapshot({ token: entry.token, itemId: itemIdRef.current });
-        if (cancelled) return;
-        if (snapshot.itemId && !itemIdRef.current) {
-          itemIdRef.current = snapshot.itemId;
-          void saveLiveRequest({ ...entry, itemId: snapshot.itemId }).catch(() => {});
-        }
-        setProgress(snapshot.progress);
-        if (progressIsTerminal(snapshot.progress)) {
-          if (interval) clearInterval(interval);
-          void removeLiveRequest(entry.pageUrl).catch(() => {});
-        }
-      } catch {
-        // A failed read keeps the last line. The next tick tries again.
-      }
-    };
-    void tick();
-    interval = setInterval(() => void tick(), LIVE_LINE_REFRESH_MS);
-    return () => {
-      cancelled = true;
-      if (interval) clearInterval(interval);
-    };
-  }, [entry.token]);
+  // Polled while the popup is open, and no longer once the request reached a
+  // final state. The first answer that names the item is saved on the stored
+  // request, so the next popup skips the lookup; a final answer forgets the
+  // request.
+  const progress = useQuery({
+    queryKey: ["liveRequest", entry.token],
+    queryFn: async () => {
+      const snapshot = await fetchProgressSnapshot({ token: entry.token, itemId: entry.itemId });
+      if (snapshot.itemId && !entry.itemId) void saveLiveRequest({ ...entry, itemId: snapshot.itemId }).catch(() => {});
+      if (progressIsTerminal(snapshot.progress)) void removeLiveRequest(entry.pageUrl).catch(() => {});
+      return snapshot.progress;
+    },
+    refetchInterval: (query) => (query.state.data && progressIsTerminal(query.state.data) ? false : LIVE_LINE_REFRESH_MS),
+  }).data ?? { kind: "saved" };
   return (
     <div className="text-sm text-gray-600">
       {progressLines(progress).map((line) => (

@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { BUTTON, FLOATING_CARD } from "@cn/ui/classes";
 import { IconButton } from "@cn/ui/IconButton";
+import { useAutoDismiss } from "@cn/ui/useAutoDismiss";
 
 /** How long the overlay stays before it fades out on its own. Hovering pauses
  *  the clock, so a reader who is about to click never loses the card. */
@@ -59,40 +60,17 @@ export function ActionButton({ action }: { action: StatusAction }) {
  *  stands, and it fades away after a few seconds so it never becomes
  *  furniture. */
 export function StatusOverlay({ headline, onHeadlineClick }: StatusOverlayProps) {
-  const [phase, setPhase] = useState<"shown" | "fading" | "hidden">("shown");
-  const hideTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const fadeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const [hovered, setHovered] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const { fading } = useAutoDismiss({ dwellMs: AUTO_HIDE_MS, fadeMs: FADE_MS, paused: hovered, onDismiss: () => setHidden(true) });
 
-  const clearTimers = () => {
-    clearTimeout(hideTimer.current);
-    clearTimeout(fadeTimer.current);
-  };
-
-  const hideAfter = (ms: number) => {
-    clearTimers();
-    hideTimer.current = setTimeout(() => {
-      setPhase("fading");
-      fadeTimer.current = setTimeout(() => setPhase("hidden"), FADE_MS);
-    }, ms);
-  };
-
-  const keep = () => {
-    clearTimers();
-    setPhase("shown");
-  };
-
-  useEffect(() => {
-    hideAfter(AUTO_HIDE_MS);
-    return clearTimers;
-  }, []);
-
-  if (phase === "hidden") return null;
+  if (hidden) return null;
   return (
     <div
-      className={`max-w-[24rem] ${FLOATING_CARD} p-4 transition-opacity ease-out ${phase === "fading" ? "opacity-0" : "opacity-100"}`}
+      className={`max-w-[24rem] ${FLOATING_CARD} p-4 transition-opacity ease-out ${fading ? "opacity-0" : "opacity-100"}`}
       style={{ transitionDuration: `${FADE_MS}ms` }}
-      onMouseEnter={keep}
-      onMouseLeave={() => hideAfter(AUTO_HIDE_MS)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       <div className="flex items-start justify-between gap-2">
         {onHeadlineClick ? (
@@ -105,7 +83,7 @@ export function StatusOverlay({ headline, onHeadlineClick }: StatusOverlayProps)
         ) : (
           <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{headline}</p>
         )}
-        <IconButton label="Dismiss" className="ml-auto" onClick={() => setPhase("hidden")}>
+        <IconButton label="Dismiss" className="ml-auto" onClick={() => setHidden(true)}>
           ✕
         </IconButton>
       </div>

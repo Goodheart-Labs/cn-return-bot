@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { progressLines, type RequestProgress } from "@cn/core/requestProgress";
 import { IconButton } from "@cn/ui/IconButton";
+import { useAutoDismiss } from "@cn/ui/useAutoDismiss";
 
 /** How long the finished card lingers before fading out on its own. An opened
  *  card holds it, so a reader reading the count never loses it mid-look. */
@@ -57,22 +58,10 @@ export function RequestProgressCard(props: {
 }) {
   const { progress, onJump, onDismiss } = props;
   const [expanded, setExpanded] = useState(false);
-  const [fading, setFading] = useState(false);
-
   // The finished card fades out by itself after a moment. The timer only runs
   // while the card is collapsed, so an opened readout stays until it is closed
   // or dismissed.
-  useEffect(() => {
-    if (progress.kind !== "done" || expanded) return;
-    const linger = setTimeout(() => setFading(true), DONE_LINGER_MS);
-    return () => clearTimeout(linger);
-  }, [progress.kind, expanded]);
-
-  useEffect(() => {
-    if (!fading) return;
-    const gone = setTimeout(onDismiss, FADE_MS);
-    return () => clearTimeout(gone);
-  }, [fading, onDismiss]);
+  const { fading } = useAutoDismiss({ dwellMs: DONE_LINGER_MS, fadeMs: FADE_MS, paused: progress.kind !== "done" || expanded, onDismiss });
 
   const lines = progressLines(progress);
   const jumpable = progress.kind === "done" && progress.notes > 0 && onJump;
@@ -93,6 +82,9 @@ export function RequestProgressCard(props: {
       style={{ transitionDuration: `${FADE_MS}ms` }}
     >
       {expanded ? (
+        // The whole card collapses on a click as a convenience for the mouse.
+        // Keyboard users have the glyph button inside it, which does the same.
+        // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
         <div
           className={EXPANDED_CARD}
           onPointerDown={(event) => {
@@ -141,10 +133,7 @@ export function RequestProgressCard(props: {
           type="button"
           aria-label="Show what the requested check is doing"
           className={BADGE}
-          onClick={() => {
-            setExpanded(true);
-            setFading(false);
-          }}
+          onClick={() => setExpanded(true)}
         >
           <ProgressGlyph progress={progress} />
         </button>

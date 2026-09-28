@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { displayName } from "@cn/core/session";
 import type { NoteRow } from "@cn/core/types";
 import { BUTTON, MENU } from "@cn/ui/classes";
 import { IconButton } from "@cn/ui/IconButton";
+import { useOutsidePress } from "@cn/ui/useOutsidePress";
 import { useActingUser } from "../auth/useActingUser";
 import { useSession } from "../auth/useSession";
 import { AutoGrowTextarea, PostAsCheckbox, useSignedByline } from "./editorBits";
@@ -117,20 +118,10 @@ export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, childre
   const ref = useRef<HTMLDivElement>(null);
   const mine = !!session && session.user.id === note.author_id;
 
-  /* Close the ⋯ menu when a press lands anywhere outside the action row, which
-   * includes the rest of the note. The composers are not closed this way. Only
-   * an explicit action closes those. The listener runs in the capture phase and
-   * checks composedPath, because the extension's popover swallows bubbling
-   * mousedown events so the host page never sees them. A bubble-phase listener
-   * would therefore never learn about a press inside the card either. */
-  useEffect(() => {
-    if (expanded !== "menu") return;
-    const onDown = (e: MouseEvent) => {
-      if (ref.current && !e.composedPath().includes(ref.current)) setExpanded(null);
-    };
-    document.addEventListener("mousedown", onDown, { capture: true });
-    return () => document.removeEventListener("mousedown", onDown, { capture: true });
-  }, [expanded]);
+  // A press anywhere outside the action row, which includes the rest of the
+  // note, closes the ⋯ menu. The composers are not closed this way. Only an
+  // explicit action closes those.
+  useOutsidePress(ref, expanded === "menu", () => setExpanded(null));
 
   const share = async () => {
     setExpanded((prev) => (prev === "menu" ? null : prev));

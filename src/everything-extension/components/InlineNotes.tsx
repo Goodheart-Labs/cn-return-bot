@@ -6,7 +6,9 @@ import { FLOATING_CARD } from "@cn/ui/classes";
 import type { ClaimGroup } from "../utils/claimGroups";
 import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
 import { setJumpHandler } from "../utils/jumpBus";
-import { ABSORB_KEYS, ClaimNoteStack, GroupIcon, NOTE_POPOVER_WIDTH, OverlayLoginGate } from "./ClaimNoteStack";
+import { ClaimNoteStack, GroupIcon, NOTE_POPOVER_WIDTH } from "./ClaimNoteStack";
+import { OverlayLoginGate } from "./OverlayLoginGate";
+import { EventShield } from "./EventShield";
 import { WriteNoteOverlay } from "./WriteNoteOverlay";
 
 /** One claim anchored to the page: the claim's notes with the original first,
@@ -373,21 +375,15 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
   }, [groups, layoutTick, inlineContainer, container, noteStyle]);
 
   return (
-    // Absorb both mouse and keyboard events here. A mousedown would otherwise
-    // close the popover through the document listener above. A click would leak
-    // to the host page and to our own passage hit test. Keys typed in a composer
-    // would trigger the host page's own hotkeys. See ABSORB_KEYS.
-    <div {...ABSORB_KEYS} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
+    <EventShield>
       {writeSelection && (
         <WriteNoteOverlay item={item} selection={writeSelection} onClose={() => setWriteSelection(null)} />
       )}
       {/* The badges and popovers are portalled into the in-content annotation
-          layer, so they scroll with the text. The wrapper absorbs events again
-          on that side. React attaches its listeners to the portal container, so
-          stopPropagation halts the native event before it reaches the
-          document-level listeners. */}
+          layer, so they scroll with the text. A second shield absorbs events on
+          that side. */}
       {createPortal(
-        <div {...ABSORB_KEYS} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
+        <EventShield>
           {positioned.map(({ group, badgeStyle, popoverStyle, margin }) => (
             <div key={group.claimId}>
               {margin ? (
@@ -408,9 +404,9 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
               )}
             </div>
           ))}
-        </div>,
+        </EventShield>,
         inlineContainer,
       )}
-    </div>
+    </EventShield>
   );
 }
