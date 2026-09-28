@@ -148,8 +148,8 @@
   --cn-negative-line: rgb(var(--cn-red-300));
   --cn-negative-solid: rgb(var(--cn-red-500));
 
-  /* Type. The extension uses this scale. The website reads at a larger size
-   * and overrides it in its own stylesheet. */
+  /* Type. The extension uses this scale. The website reads at a larger size,
+   * see .cn-reading-scale below. */
   /* The system font. X's own "TwitterChirp" is deliberately not first in
    * the list: anyone who has it installed locally, as Nathan does, would see
    * the whole site in it, and mismatched local weight files make it read
@@ -175,6 +175,22 @@
   --cn-radius-card: 0.75rem;
   --cn-shadow-raised: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --cn-shadow-floating: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+/* The larger reading scale of the website. The extension's overlays sit inside
+ * other sites' pages and keep the scale above; the website puts this class on
+ * <html>. Only the text sizes change. */
+.cn-reading-scale {
+  --cn-text-xs: 0.875rem;
+  --cn-leading-xs: 1.25rem;
+  --cn-text-sm: 1rem;
+  --cn-leading-sm: 1.5rem;
+  --cn-text-base: 1.125rem;
+  --cn-leading-base: 1.75rem;
+  --cn-text-lg: 1.25rem;
+  --cn-leading-lg: 1.75rem;
+  --cn-text-2xl: 1.875rem;
+  --cn-leading-2xl: 2.25rem;
 }
 
 .dark,

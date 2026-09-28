@@ -8,7 +8,6 @@ import { ExtensionCornerLink } from "./components/ExtensionCornerLink";
 import { LeaderboardPage } from "./pages/LeaderboardPage";
 import { LoginModal } from "./components/LoginModal";
 import { Sidebar } from "./components/Sidebar";
-import { SystemTheme } from "./components/SystemTheme";
 import { WriteNoteModal } from "./components/WriteNoteModal";
 import { useProjects } from "./lib/feedQueries";
 import { useRoute } from "./lib/routing";
@@ -96,7 +95,6 @@ export function App() {
           {page}
         </main>
 
-        <SystemTheme />
         <ExtensionCornerLink />
         <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
         <WriteNoteModal open={writeOpen} onClose={() => setWriteOpen(false)} />

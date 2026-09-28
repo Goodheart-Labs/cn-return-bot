@@ -1,4 +1,4 @@
-@import "../../everything-ui/tokens.css";
+@import "../everything-ui/tokens.css";
 
 @tailwind base;
 @tailwind components;

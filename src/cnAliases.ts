@@ -1,4 +1,4 @@
-import * as path from "path";
+import { fileURLToPath } from "url";
 
 /** The import aliases of the Common Notes code, shared by every bundler that
  *  builds it: the website's Vite config, the extension's WXT config and
@@ -14,8 +14,10 @@ import * as path from "path";
  *
  *  TypeScript cannot import this file, so tsconfig.json repeats the same
  *  mapping under `paths`. */
+const folder = (name: string) => fileURLToPath(new URL(name, import.meta.url));
+
 export const CN_ALIASES = {
-  "@cn/core": path.resolve(__dirname, "everything-core"),
-  "@cn/ui": path.resolve(__dirname, "everything-ui"),
-  "@cn/features": path.resolve(__dirname, "everything-features"),
+  "@cn/core": folder("everything-core"),
+  "@cn/ui": folder("everything-ui"),
+  "@cn/features": folder("everything-features"),
 };
