@@ -1,7 +1,7 @@
 import { browser } from "#imports";
-import { supabase } from "../../everything-shared/supabase";
-import type { PageItem } from "../../everything-shared/notesQuery";
-import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
+import { insertVisit } from "@cn/core/visits";
+import type { PageItem } from "@cn/core/items";
+import { extractYoutubeVideoId } from "@cn/core/pageUrls";
 import { readWatchPageChannel } from "./authorFeed";
 import { isSubstackPostPage } from "./pageShape";
 import {
@@ -83,7 +83,7 @@ export interface VisitMessage {
  *  The row names no account and no person. It carries a reader hash, which is
  *  one value per browser and per creator, so we can count how many people read
  *  a creator without the rows ever adding up to one person's reading across
- *  creators. See everything-shared/readers.ts.
+ *  creators. See everything-core/readers.ts.
  *
  *  Recording is consentful twice over. Nothing is recorded until the welcome
  *  page has asked the user the visit-recording question, and nothing is
@@ -112,11 +112,10 @@ export function recordPageVisit(pageUrl: string, item: PageItem | null): void {
  *  policy. A failed insert is dropped, because a visit count is not worth an
  *  error surface. */
 export async function writeVisit(visit: VisitMessage): Promise<void> {
-  const { error } = await supabase.from("everything_link_visits").insert({
+  await insertVisit({
     url: visit.url,
-    item_id: visit.itemId,
-    feed_url: visit.feedUrl,
-    reader_hash: visit.feedUrl ? await visitReaderHash(visit.feedUrl) : null,
+    itemId: visit.itemId,
+    feedUrl: visit.feedUrl,
+    readerHash: visit.feedUrl ? await visitReaderHash(visit.feedUrl) : null,
   });
-  if (error) console.debug(`[common-notes] visit not recorded: ${error.message}`);
 }

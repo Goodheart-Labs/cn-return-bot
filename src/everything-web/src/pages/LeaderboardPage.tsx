@@ -1,0 +1,65 @@
+import { displayName } from "@cn/core/session";
+import { Checkbox } from "@cn/ui/Field";
+import { useSession } from "@cn/features/auth/useSession";
+import { useMyVotes } from "@cn/features/notes/useVotes";
+import { useLeaderboard, useLeaderboardOptIn } from "../lib/leaderboardQueries";
+
+/** Ranks people by how many notes they have rated. A person is listed only if
+ *  they opt in. */
+export function LeaderboardPage() {
+  const { session } = useSession();
+  const myVoteCount = useMyVotes().size;
+  const { data: entries, isError: failed } = useLeaderboard();
+  const { optIn, saving, setOptIn } = useLeaderboardOptIn();
+  const myName = session ? displayName(session) : null;
+
+  return (
+    <div className="max-w-xl mx-auto w-full">
+      <p className="text-sm text-fg-muted mb-6">
+        People who opted in, ranked by how many notes they've rated.
+      </p>
+
+      {session && (
+        <div className="flex items-center justify-between gap-3 mb-6 text-sm">
+          <Checkbox checked={optIn} disabled={saving} onChange={setOptIn} className="text-fg-secondary">
+            Show me on the leaderboard
+          </Checkbox>
+          {!optIn && (
+            <span className="text-fg-subtle">
+              You're not listed, you've rated {myVoteCount} {myVoteCount === 1 ? "note" : "notes"}
+            </span>
+          )}
+        </div>
+      )}
+
+      {failed && <p className="text-sm text-fg-muted">Couldn't load the leaderboard.</p>}
+      {!failed && !entries && <p className="text-sm text-fg-muted">Loading…</p>}
+      {!failed && entries?.length === 0 && <p className="text-sm text-fg-muted">No ratings yet.</p>}
+
+      {entries && entries.length > 0 && (
+        <ol className="space-y-1">
+          {entries.map((entry, i) => {
+            const isMe = optIn && entry.name === myName;
+            return (
+              <li
+                key={i}
+                className={`flex items-center gap-3 rounded-control px-3 py-2 ${
+                  isMe ? "bg-tint border border-tint-line font-medium" : ""
+                }`}
+              >
+                <span className="w-8 text-right tabular-nums text-fg-subtle">{i + 1}</span>
+                <span className="flex-1 truncate" title={entry.name}>
+                  {entry.name}
+                  {isMe && <span className="text-fg-subtle font-normal"> (you)</span>}
+                </span>
+                <span className="tabular-nums text-fg-muted">
+                  {entry.rating_count} {entry.rating_count === 1 ? "rating" : "ratings"}
+                </span>
+              </li>
+            );
+          })}
+        </ol>
+      )}
+    </div>
+  );
+}

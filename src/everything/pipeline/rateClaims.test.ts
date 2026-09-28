@@ -1,6 +1,26 @@
-import { describe, expect, spyOn, test } from "bun:test";
+import { afterEach, beforeEach, describe, expect, spyOn, test } from "bun:test";
+import OpenAI from "openai";
 import { applyRatings, parseRatingOutput, rateClaims, shouldFactCheck } from "./rateClaims";
-import * as toolLoop from "../../pipeline/tool-calling/toolLoop";
+
+// The OpenAI SDK's create method is replaced, so no test reaches OpenRouter while
+// our own client code still runs. Each request is kept so a test can check what
+// was sent.
+const requests: any[] = [];
+let nextReplies: any[] = [];
+let createSpy: ReturnType<typeof spyOn>;
+const originalApiKey = process.env.OPENROUTER_API_KEY;
+beforeEach(() => {
+  process.env.OPENROUTER_API_KEY ??= "local-test-only";
+  requests.length = 0;
+  createSpy = spyOn((OpenAI as any).Chat.Completions.prototype, "create").mockImplementation(async (params: any) => {
+    requests.push(params);
+    return nextReplies.shift();
+  });
+});
+afterEach(() => {
+  createSpy.mockRestore();
+  if (originalApiKey === undefined) delete process.env.OPENROUTER_API_KEY;
+});
 import type { ExtractedClaim } from "../types";
 
 const claim = (text: string): ExtractedClaim => ({
@@ -75,21 +95,29 @@ describe("shouldFactCheck", () => {
   });
 });
 
-describe("rateClaims cost", () => {
-  test("includes what the research tools cost, not only the model", async () => {
-    const loop = spyOn(toolLoop, "runToolLoop").mockResolvedValue({
-      content: `{"research":"x https://a.b","ratings":[{"claim":1,"rating":"likely true"}]}`,
-      modelCost: { input_tokens: 100, output_tokens: 10, cost: 0.002 },
-      toolCosts: [{ name: "google_search", input_tokens: 0, output_tokens: 0, cost: 0.001 }],
-      toolCalls: [{ name: "google_search", args: { query: "q" } }],
-      forcedSynthesis: false,
-    });
-    try {
-      const result = await rateClaims({ text: "part", introduction: null, claims: [claim("first")], source: "substack" });
-      expect(result.cost.cost).toBeCloseTo(0.003, 10);
-      expect(result.webSearches).toBe(1);
-    } finally {
-      loop.mockRestore();
-    }
+describe("rateClaims research call", () => {
+  test("researches with Meta's search in one call, reads past the narration, and records its cost and searches", async () => {
+    nextReplies = [{
+      choices: [{ message: { content: `Checking the claim.\n\n{"research":"x https://a.b","ratings":[{"claim":1,"rating":"likely true"}]}` } }],
+      usage: { prompt_tokens: 100, completion_tokens: 10, cost: 0.0125, server_tool_use_details: { web_search_requests: 4 } },
+    }];
+    const result = await rateClaims({ text: "part", introduction: null, claims: [claim("first")], source: "substack" });
+    expect(requests).toHaveLength(1);
+    expect(requests[0].tools).toEqual([{ type: "openrouter:web_search", parameters: { engine: "native" } }]);
+    expect(result.claims[0]!.judgement).toBe("likely true");
+    expect(result.cost.cost).toBeCloseTo(0.0125, 10);
+    expect(result.webSearches).toBe(4);
+  });
+
+  test("a retry for clean JSON goes without the search tool, so the research is not paid for twice", async () => {
+    nextReplies = [
+      { choices: [{ message: { content: "I could not finish." } }], usage: { cost: 0.01, server_tool_use_details: { web_search_requests: 3 } } },
+      { choices: [{ message: { content: `{"research":"x","ratings":[{"claim":1,"rating":"uncertain"}]}` } }], usage: { cost: 0.001 } },
+    ];
+    const result = await rateClaims({ text: "part", introduction: null, claims: [claim("first")], source: "substack" });
+    expect(requests).toHaveLength(2);
+    expect(requests[1].tools).toBeUndefined();
+    expect(result.cost.cost).toBeCloseTo(0.011, 10);
+    expect(result.webSearches).toBe(3);
   });
 });

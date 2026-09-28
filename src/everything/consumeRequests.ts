@@ -20,8 +20,8 @@
  */
 
 import "dotenv/config";
-import { extractYoutubeVideoId } from "../everything-shared/pageUrls";
-import { WEB_PROJECT_SLUG } from "../everything-shared/projects";
+import { extractYoutubeVideoId } from "../everything-core/pageUrls";
+import { WEB_PROJECT_SLUG } from "../everything-core/projects";
 import { group } from "./logFormat";
 import { cleanCapturedPageText } from "./pipeline/cleanCapturedText";
 import {

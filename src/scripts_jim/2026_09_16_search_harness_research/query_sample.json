@@ -1,0 +1,282 @@
+[
+  {
+    "source": "everything_check_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "frontal lobe tumor surgical removal possible",
+    "outcome": "results",
+    "durationMs": 927
+  },
+  {
+    "source": "x_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "\"anttsinc\" Costco soda",
+    "outcome": "results",
+    "durationMs": 824
+  },
+  {
+    "source": "everything_check_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "site:benthams.substack.com pedophiles stigmatized",
+    "outcome": "results",
+    "durationMs": 1525
+  },
+  {
+    "source": "everything_check_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "Nolan Williams Stanford obituary ibogaine SAINT companies",
+    "outcome": "results",
+    "durationMs": 653
+  },
+  {
+    "source": "everything_check_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "\"How Continental Philosophers Argue\" Derrida image",
+    "outcome": "results",
+    "durationMs": 832
+  },
+  {
+    "source": "everything_check_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "site:katu.com Vasiliki",
+    "outcome": "no_results",
+    "durationMs": 712
+  },
+  {
+    "source": "x_search",
+    "model": "z-ai/glm-5.2",
+    "query": "Letitia Wright Angel-Vicki married wedding",
+    "outcome": "results",
+    "durationMs": 729
+  },
+  {
+    "source": "x_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "woman standing bridge railing backflip crocodile pit AI video",
+    "outcome": "results",
+    "durationMs": 896
+  },
+  {
+    "source": "everything_check_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "Affinity Partners investment UAE-based company Trend Rifinitive",
+    "outcome": "results",
+    "durationMs": 1525
+  },
+  {
+    "source": "x_search",
+    "model": "z-ai/glm-5.3-flash",
+    "query": "Coyote vs Acme box office worldwide gross",
+    "outcome": "results",
+    "durationMs": 991
+  },
+  {
+    "source": "everything_check_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "Mithoefer MDMA PTSD trial dose 125 mg weight based mg per kg protocol",
+    "outcome": "results",
+    "durationMs": 2551
+  },
+  {
+    "source": "everything_check_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "cortisol awakening response function chronic stress",
+    "outcome": "results",
+    "durationMs": 700
+  },
+  {
+    "source": "x_search",
+    "model": "z-ai/glm-5.3",
+    "query": "Miami banquet hall shooting September 2026 crowd shot outside",
+    "outcome": "results",
+    "durationMs": 863
+  },
+  {
+    "source": "x_search",
+    "model": "z-ai/glm-5.3-flash",
+    "query": "MSNBC \"This is Boston\" aerial crowd millions marching against Trump policies",
+    "outcome": "results",
+    "durationMs": 1130
+  },
+  {
+    "source": "everything_check_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "\"He like rolls like five or six days a week\" Huberman",
+    "outcome": "no_results",
+    "durationMs": 1345
+  },
+  {
+    "source": "x_search",
+    "model": "moonshotai/kimi-k3",
+    "query": "Lindsay Clancy trial murder charges three children Duxbury Massachusetts",
+    "outcome": "results",
+    "durationMs": 649
+  },
+  {
+    "source": "x_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "Sunderland vs Arsenal September 2026 Xhaka",
+    "outcome": "results",
+    "durationMs": 2605
+  },
+  {
+    "source": "x_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "Israeli settlers killed Palestinian West Bank 2025 names incidents",
+    "outcome": "results",
+    "durationMs": 638
+  },
+  {
+    "source": "x_search",
+    "model": "z-ai/glm-5.3-flash",
+    "query": "Marvel's Wolverine release date Insomniac 2026",
+    "outcome": "results",
+    "durationMs": 1126
+  },
+  {
+    "source": "x_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "OpenAI agents fake logs cover up tamper transcripts METR",
+    "outcome": "results",
+    "durationMs": 2804
+  },
+  {
+    "source": "x_search",
+    "model": "z-ai/glm-5.2",
+    "query": "Thailand ladyboys beat up Indian tourists video",
+    "outcome": "results",
+    "durationMs": 614
+  },
+  {
+    "source": "everything_check_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "Brian Chau Guardian Open Philanthropy journalist salary AI Futures Project article",
+    "outcome": "results",
+    "durationMs": 864
+  },
+  {
+    "source": "everything_check_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "hypothalamus disgust primitive behavior infection avoidance dirt",
+    "outcome": "results",
+    "durationMs": 1593
+  },
+  {
+    "source": "everything_check_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "neuronavigation brain surgery compensates head movement micro movements stereotactic",
+    "outcome": "results",
+    "durationMs": 1115
+  },
+  {
+    "source": "everything_check_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "Dropbox for Government FedRAMP public sector customers",
+    "outcome": "results",
+    "durationMs": 1116
+  },
+  {
+    "source": "everything_check_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "Argentina children drinking mate traditional age culture",
+    "outcome": "results",
+    "durationMs": 1569
+  },
+  {
+    "source": "everything_check_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "AI coding automation speed 2026 code generation capabilities",
+    "outcome": "results",
+    "durationMs": 917
+  },
+  {
+    "source": "everything_check_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "Pioneer Museum executive director Evelyn Weinheimer director",
+    "outcome": "results",
+    "durationMs": 959
+  },
+  {
+    "source": "x_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "Convar WTC hard drives suspicious financial transactions 9/11",
+    "outcome": "results",
+    "durationMs": 706
+  },
+  {
+    "source": "x_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "dbrand X Twitter iPhone Ultra Fold video September 8 2026",
+    "outcome": "results",
+    "durationMs": 893
+  },
+  {
+    "source": "x_search",
+    "model": "z-ai/glm-5.3-flash",
+    "query": "Rana SIIMA 2026 throwing bottle anchor laughing",
+    "outcome": "results",
+    "durationMs": 672
+  },
+  {
+    "source": "x_search",
+    "model": "z-ai/glm-5.2",
+    "query": "benefit cap 2026 monthly amount London outside London gov.uk",
+    "outcome": "results",
+    "durationMs": 652
+  },
+  {
+    "source": "everything_check_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "Dean Potter documentary rival climber jealous",
+    "outcome": "results",
+    "durationMs": 908
+  },
+  {
+    "source": "x_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "JAYVENDELUCA bear raccoon fox wildlife center",
+    "outcome": "results",
+    "durationMs": 1194
+  },
+  {
+    "source": "x_search",
+    "model": "z-ai/glm-5.3-flash",
+    "query": "Walt Disney World 1971 opening day admission $3.50 ride coupons sold separately ticket book",
+    "outcome": "results",
+    "durationMs": 926
+  },
+  {
+    "source": "x_search",
+    "model": "z-ai/glm-5.3-flash",
+    "query": "\"RNC Midterm Convention\" 2026",
+    "outcome": "results",
+    "durationMs": 796
+  },
+  {
+    "source": "x_search",
+    "model": "moonshotai/kimi-k3",
+    "query": "Belift Lab Min Hee-jin lawsuit court ruling plagiarism ILLIT defamation 2026",
+    "outcome": "results",
+    "durationMs": 602
+  },
+  {
+    "source": "x_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "Flight 77 Boeing 757-223 Pentagon 9/11 Commission Report",
+    "outcome": "results",
+    "durationMs": 689
+  },
+  {
+    "source": "everything_check_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "Anthropic METR singular oversight evaluator proposal Amodei",
+    "outcome": "results",
+    "durationMs": 1336
+  },
+  {
+    "source": "everything_check_search",
+    "model": "meta/muse-spark-1.3-contributor",
+    "query": "history electric grid overbuilding capacity planning 100 years",
+    "outcome": "results",
+    "durationMs": 1925
+  }
+]

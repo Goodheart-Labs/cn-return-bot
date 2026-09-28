@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import { createShadowRootUi } from "#imports";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { browser, createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
-import { useSession } from "../../everything-shared/auth";
+import { queryClient } from "@cn/features/query/queryClient";
 import { WriteNoteOverlay } from "../components/WriteNoteOverlay";
 import { isPageDark } from "./pageTheme";
 
@@ -10,7 +11,6 @@ import { isPageDark } from "./pageTheme";
  *  background forwards a click on "Write a Common Note on this". Then the standard
  *  overlay opens, and the page's item is only created at that point. */
 function WriteAnywhereApp({ pageUrl, onPosted }: { pageUrl: string; onPosted: () => void }) {
-  const { session } = useSession();
   const [selection, setSelection] = useState<string | null>(null);
 
   useEffect(() => {
@@ -18,9 +18,8 @@ function WriteAnywhereApp({ pageUrl, onPosted }: { pageUrl: string; onPosted: ()
       const { type, selection: selected } = (message as { type?: string; selection?: string }) ?? {};
       if (type === "cn-write-note" && selected?.trim()) setSelection(selected.trim());
     };
-    const runtime = (globalThis as any).browser?.runtime ?? (globalThis as any).chrome?.runtime;
-    runtime?.onMessage.addListener(listener);
-    return () => runtime?.onMessage.removeListener(listener);
+    browser.runtime.onMessage.addListener(listener);
+    return () => browser.runtime.onMessage.removeListener(listener);
   }, []);
 
   if (!selection) return null;
@@ -29,7 +28,6 @@ function WriteAnywhereApp({ pageUrl, onPosted }: { pageUrl: string; onPosted: ()
       item={null}
       pageForItem={{ url: pageUrl, title: document.title }}
       selection={selection}
-      session={session}
       onClose={() => setSelection(null)}
       onPosted={() => {
         setSelection(null);
@@ -49,9 +47,8 @@ export async function mountWriteAnywhere(
   pageUrl: string,
   onCoverageChanged: () => void,
 ): Promise<() => void> {
-  const runtime = (globalThis as any).browser?.runtime ?? (globalThis as any).chrome?.runtime;
   const handlePosted = async () => {
-    await runtime?.sendMessage({ type: "cn-sync-noted-sites" })?.catch?.(() => {});
+    await browser.runtime.sendMessage({ type: "cn-sync-noted-sites" }).catch(() => {});
     onCoverageChanged();
   };
   let root: Root | null = null;
@@ -63,7 +60,11 @@ export async function mountWriteAnywhere(
       container.classList.add("cn-theme-root");
       container.classList.toggle("dark", isPageDark());
       root = createRoot(container);
-      root.render(<WriteAnywhereApp pageUrl={pageUrl} onPosted={() => void handlePosted()} />);
+      root.render(
+        <QueryClientProvider client={queryClient}>
+          <WriteAnywhereApp pageUrl={pageUrl} onPosted={() => void handlePosted()} />
+        </QueryClientProvider>,
+      );
       return root;
     },
     onRemove(mounted) {

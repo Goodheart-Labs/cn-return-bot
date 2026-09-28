@@ -23,7 +23,7 @@ import os from "node:os";
 import path from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import { contextTimeSpan } from "../../everything/pipeline/extractClaims";
-import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
+import { extractYoutubeVideoId } from "../../everything-core/pageUrls";
 import { fetchTimedTranscript, type SubtitleCue } from "../../pipeline/media/ytDlpDownload";
 
 const cuesDir = process.argv[2];

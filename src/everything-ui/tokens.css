@@ -1,0 +1,240 @@
+/* The design tokens of Common Notes: every colour, text size, corner radius,
+ * shadow and font the website and the extension draw with. Components never
+ * name a raw colour. They use the semantic names below through Tailwind
+ * classes such as `text-fg-muted` or `bg-surface`, which the shared preset
+ * (tailwind.preset.ts) maps onto these variables.
+ *
+ * Two layers:
+ * - Primitives are the raw palette, stored as red, green and blue channels so
+ *   a semantic token can add transparency. Only the steps in use are listed.
+ * - Semantic tokens name a role and point at a primitive. Dark mode swaps only
+ *   this layer, so a component needs no dark: variants for colour.
+ *
+ * The selectors cover both apps. The website sets `.dark` on <html>. The
+ * extension renders inside shadow roots whose container carries
+ * `.cn-theme-root`, and toggles `.dark` on that container to follow the host
+ * page. WXT rewrites `:root` to `:host` in shadow-root stylesheets, which is
+ * why `:host` is listed too. Every name carries the `cn-` prefix, so a host
+ * page's own custom properties cannot collide with ours. */
+
+:root,
+:host,
+.cn-theme-root {
+  /* Primitives */
+  --cn-gray-50: 249 250 251;
+  --cn-gray-100: 243 244 246;
+  --cn-gray-200: 229 231 235;
+  --cn-gray-300: 209 213 219;
+  --cn-gray-400: 156 163 175;
+  --cn-gray-500: 107 114 128;
+  --cn-gray-600: 75 85 99;
+  --cn-gray-700: 55 65 81;
+  --cn-gray-800: 31 41 55;
+  --cn-gray-900: 17 24 39;
+  --cn-gray-950: 3 7 18;
+  --cn-blue-50: 239 246 255;
+  --cn-blue-100: 219 234 254;
+  --cn-blue-300: 147 197 253;
+  --cn-blue-400: 96 165 250;
+  --cn-blue-500: 59 130 246;
+  --cn-blue-600: 37 99 235;
+  --cn-blue-700: 29 78 216;
+  --cn-blue-900: 30 58 138;
+  --cn-blue-950: 23 37 84;
+  --cn-green-50: 240 253 244;
+  --cn-green-100: 220 252 231;
+  --cn-green-300: 134 239 172;
+  --cn-green-400: 74 222 128;
+  --cn-green-500: 34 197 94;
+  --cn-green-700: 21 128 61;
+  --cn-green-800: 22 101 52;
+  --cn-green-900: 20 83 45;
+  --cn-green-950: 5 46 22;
+  --cn-amber-50: 255 251 235;
+  --cn-amber-100: 254 243 199;
+  --cn-amber-300: 252 211 77;
+  --cn-amber-400: 251 191 36;
+  --cn-amber-500: 245 158 11;
+  --cn-amber-700: 180 83 9;
+  --cn-amber-800: 146 64 14;
+  --cn-amber-900: 120 53 15;
+  --cn-amber-950: 69 26 3;
+  --cn-red-50: 254 242 242;
+  --cn-red-100: 254 226 226;
+  --cn-red-300: 252 165 165;
+  --cn-red-400: 248 113 113;
+  --cn-red-500: 239 68 68;
+  --cn-red-600: 220 38 38;
+  --cn-red-700: 185 28 28;
+  --cn-red-800: 153 27 27;
+  --cn-red-900: 127 29 29;
+  --cn-red-950: 69 10 10;
+
+  /* Semantic colours, light */
+  /* The page behind everything. */
+  --cn-canvas: rgb(var(--cn-gray-50));
+  /* Cards, popovers and modals. */
+  --cn-surface: rgb(255 255 255);
+  /* Quoted material and other recessed areas inside a card. */
+  --cn-surface-muted: rgb(var(--cn-gray-50));
+  /* The fill of a quiet control under the pointer. */
+  --cn-surface-hover: rgb(var(--cn-gray-100));
+  /* Body text and headings. */
+  --cn-fg: rgb(var(--cn-gray-900));
+  /* Supporting text: labels, questions, menu entries. */
+  --cn-fg-secondary: rgb(var(--cn-gray-600));
+  /* Captions, metadata and help text. */
+  --cn-fg-muted: rgb(var(--cn-gray-500));
+  /* The quietest text: section labels, placeholders, idle icons. */
+  --cn-fg-subtle: rgb(var(--cn-gray-400));
+  /* Borders and dividers. */
+  --cn-line: rgb(var(--cn-gray-200));
+  /* Borders of inputs and outlined buttons. */
+  --cn-line-strong: rgb(var(--cn-gray-300));
+  /* The fill of the main action. */
+  --cn-primary: rgb(var(--cn-blue-600));
+  /* That fill under the pointer. */
+  --cn-primary-hover: rgb(var(--cn-blue-700));
+  /* Text on the primary fill. */
+  --cn-on-primary: rgb(255 255 255);
+  /* Links and text-only actions. */
+  --cn-link: rgb(var(--cn-blue-600));
+  /* Keyboard focus rings and selection outlines. */
+  --cn-focus: rgb(var(--cn-blue-500));
+  /* The soft glow around a marker under the pointer. */
+  --cn-focus-halo: rgb(var(--cn-blue-500) / 0.2);
+  /* The fill of a note box and the donation notice. */
+  --cn-tint: rgb(var(--cn-blue-50));
+  /* Their border. */
+  --cn-tint-line: rgb(var(--cn-blue-100));
+  /* The dark bubble of a one-time hint. */
+  --cn-inverse: rgb(var(--cn-gray-900));
+  /* Text in that bubble. */
+  --cn-on-inverse: rgb(var(--cn-gray-50));
+  /* Secondary text in that bubble. */
+  --cn-on-inverse-muted: rgb(var(--cn-gray-300));
+  /* A link in that bubble. */
+  --cn-on-inverse-link: rgb(var(--cn-blue-300));
+  /* Its outline, which only shows on a dark page. */
+  --cn-inverse-line: rgb(var(--cn-gray-900));
+
+  /* Positive: Helpful, success. Each tone has a text colour, a soft fill
+   * for hover, a selected fill with its own text and border, and a solid
+   * fill for dots. */
+  --cn-positive: rgb(var(--cn-green-700));
+  --cn-positive-soft: rgb(var(--cn-green-50));
+  --cn-positive-selected: rgb(var(--cn-green-100));
+  --cn-positive-selected-fg: rgb(var(--cn-green-800));
+  --cn-positive-line: rgb(var(--cn-green-300));
+  --cn-positive-solid: rgb(var(--cn-green-500));
+
+  /* Caution: Somewhat helpful, warnings. Each tone has a text colour, a soft fill
+   * for hover, a selected fill with its own text and border, and a solid
+   * fill for dots. */
+  --cn-caution: rgb(var(--cn-amber-700));
+  --cn-caution-soft: rgb(var(--cn-amber-50));
+  --cn-caution-selected: rgb(var(--cn-amber-100));
+  --cn-caution-selected-fg: rgb(var(--cn-amber-800));
+  --cn-caution-line: rgb(var(--cn-amber-300));
+  --cn-caution-solid: rgb(var(--cn-amber-500));
+
+  /* Negative: Not helpful, errors, destructive actions. Each tone has a text colour, a soft fill
+   * for hover, a selected fill with its own text and border, and a solid
+   * fill for dots. */
+  --cn-negative: rgb(var(--cn-red-600));
+  --cn-negative-soft: rgb(var(--cn-red-50));
+  --cn-negative-selected: rgb(var(--cn-red-100));
+  --cn-negative-selected-fg: rgb(var(--cn-red-800));
+  --cn-negative-line: rgb(var(--cn-red-300));
+  --cn-negative-solid: rgb(var(--cn-red-500));
+
+  /* Type. The extension uses this scale. The website reads at a larger size,
+   * see .cn-reading-scale below. */
+  /* The system font. X's own "TwitterChirp" is deliberately not first in
+   * the list: anyone who has it installed locally, as Nathan does, would see
+   * the whole site in it, and mismatched local weight files make it read
+   * heavy. */
+  --cn-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --cn-text-2xs: 0.75rem;
+  --cn-leading-2xs: 1.625;
+  --cn-text-xs: 0.75rem;
+  --cn-leading-xs: 1rem;
+  --cn-text-sm: 0.875rem;
+  --cn-leading-sm: 1.25rem;
+  --cn-text-base: 1rem;
+  --cn-leading-base: 1.5rem;
+  --cn-text-lg: 1.125rem;
+  --cn-leading-lg: 1.75rem;
+  --cn-text-xl: 1.25rem;
+  --cn-leading-xl: 1.75rem;
+  --cn-text-2xl: 1.5rem;
+  --cn-leading-2xl: 2rem;
+
+  /* Shape */
+  --cn-radius-control: 0.5rem;
+  --cn-radius-card: 0.75rem;
+  --cn-shadow-raised: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --cn-shadow-floating: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+/* The larger reading scale of the website. The extension's overlays sit inside
+ * other sites' pages and keep the scale above; the website puts this class on
+ * <html>. Only the text sizes change. */
+.cn-reading-scale {
+  --cn-text-xs: 0.875rem;
+  --cn-leading-xs: 1.25rem;
+  --cn-text-sm: 1rem;
+  --cn-leading-sm: 1.5rem;
+  --cn-text-base: 1.125rem;
+  --cn-leading-base: 1.75rem;
+  --cn-text-lg: 1.25rem;
+  --cn-leading-lg: 1.75rem;
+  --cn-text-2xl: 1.875rem;
+  --cn-leading-2xl: 2.25rem;
+}
+
+.dark,
+.cn-theme-root.dark {
+  /* Semantic colours, dark */
+  --cn-canvas: rgb(var(--cn-gray-950));
+  --cn-surface: rgb(var(--cn-gray-900));
+  --cn-surface-muted: rgb(var(--cn-gray-800) / 0.4);
+  --cn-surface-hover: rgb(var(--cn-gray-800));
+  --cn-fg: rgb(var(--cn-gray-100));
+  --cn-fg-secondary: rgb(var(--cn-gray-300));
+  --cn-fg-muted: rgb(var(--cn-gray-400));
+  --cn-fg-subtle: rgb(var(--cn-gray-500));
+  --cn-line: rgb(var(--cn-gray-700));
+  --cn-line-strong: rgb(var(--cn-gray-600));
+  --cn-primary: rgb(var(--cn-blue-600));
+  --cn-primary-hover: rgb(var(--cn-blue-700));
+  --cn-on-primary: rgb(255 255 255);
+  --cn-link: rgb(var(--cn-blue-400));
+  --cn-focus: rgb(var(--cn-blue-400));
+  --cn-focus-halo: rgb(var(--cn-blue-400) / 0.25);
+  --cn-tint: rgb(var(--cn-blue-950) / 0.5);
+  --cn-tint-line: rgb(var(--cn-blue-900));
+  --cn-inverse: rgb(var(--cn-gray-800));
+  --cn-on-inverse: rgb(var(--cn-gray-50));
+  --cn-on-inverse-muted: rgb(var(--cn-gray-300));
+  --cn-on-inverse-link: rgb(var(--cn-blue-300));
+  --cn-inverse-line: rgb(var(--cn-gray-600));
+  --cn-positive: rgb(var(--cn-green-400));
+  --cn-positive-soft: rgb(var(--cn-green-950) / 0.4);
+  --cn-positive-selected: rgb(var(--cn-green-900) / 0.5);
+  --cn-positive-selected-fg: rgb(var(--cn-green-300));
+  --cn-positive-line: rgb(var(--cn-green-700));
+  --cn-positive-solid: rgb(var(--cn-green-500));
+  --cn-caution: rgb(var(--cn-amber-400));
+  --cn-caution-soft: rgb(var(--cn-amber-950) / 0.4);
+  --cn-caution-selected: rgb(var(--cn-amber-900) / 0.5);
+  --cn-caution-selected-fg: rgb(var(--cn-amber-300));
+  --cn-caution-line: rgb(var(--cn-amber-700));
+  --cn-caution-solid: rgb(var(--cn-amber-500));
+  --cn-negative: rgb(var(--cn-red-400));
+  --cn-negative-soft: rgb(var(--cn-red-950) / 0.4);
+  --cn-negative-selected: rgb(var(--cn-red-900) / 0.5);
+  --cn-negative-selected-fg: rgb(var(--cn-red-300));
+  --cn-negative-line: rgb(var(--cn-red-700));
+  --cn-negative-solid: rgb(var(--cn-red-500));
+}

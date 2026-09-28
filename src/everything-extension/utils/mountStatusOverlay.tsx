@@ -1,7 +1,7 @@
 import { createRoot, type Root } from "react-dom/client";
 import { createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
-import { requestCreatorPriority } from "../../everything-shared/noteRequests";
+import { requestCreatorPriority } from "@cn/core/creators";
 import { StatusOverlay, type StatusAction } from "../components/StatusOverlay";
 import type { NoteCounts } from "./claimGroups";
 import { priorityButtonLabel, priorityDoneLabel, type CreatorTarget } from "./creatorTarget";
@@ -15,7 +15,7 @@ export interface StatusOverlayParams {
    *  the in-page card is mounted with counts alone. */
   counts: NoteCounts | null;
   /** Whether the pipeline has read this page in full
-   *  (everything-shared/notesQuery.ts isWholePageChecked). */
+   *  (everything-core/notesQuery.ts isWholePageChecked). */
   wholePageChecked: boolean;
   /** Jumps to the next note when the reader clicks the count headline. Shares
    *  the popup jump button's cursor (utils/jumpBus.ts). Only used when the

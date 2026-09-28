@@ -26,7 +26,7 @@ import type { SubtitleCue } from "../../pipeline/media/ytDlpDownload";
 import { describeImageFromUrl, type GeminiMediaDescription } from "../../pipeline/media/mediaAnalysisGemini";
 import { IMAGE_MARKER_RE } from "../sources/substack";
 import type { ClaimAnchor, ContentPart, ExtractedClaim, ExtractionResult, FetchedContent } from "../types";
-import { normalizeText } from "../../everything-shared/normalizeText";
+import { normalizeText } from "../../everything-core/normalizeText";
 import { cutCues, cutText, gateAndSplit, joinCues, type GateSplitVerdict, type PartStart } from "./gateAndSplit";
 import { EVERYTHING_MODEL } from "./model";
 

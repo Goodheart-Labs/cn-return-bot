@@ -1,5 +1,5 @@
 import { browser } from "#imports";
-import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
+import { extractYoutubeVideoId } from "@cn/core/pageUrls";
 import { unlessPrioritized } from "./prioritizedCreators";
 import {
   forumAuthorTarget,

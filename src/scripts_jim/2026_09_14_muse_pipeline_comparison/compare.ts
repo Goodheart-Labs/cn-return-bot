@@ -245,7 +245,6 @@ async function compareRating(loaded: Loaded, dir: string) {
     costUsd: rating.cost.cost,
     seconds,
     webSearches: rating.webSearches,
-    webFetches: rating.webFetches,
     output: {
       checkedCount: judgements.filter((j) => j.checked).length,
       agreeCount: judgements.filter((j) => j.judgement === j.oldJudgement).length,
@@ -255,7 +254,7 @@ async function compareRating(loaded: Loaded, dir: string) {
   });
   console.log(
     `  rating: ${judgements.filter((j) => j.checked).length} of ${rows.length} to check (was ${rows.filter((r) => shouldFactCheck(r.judgement)).length}), ` +
-      `${judgements.filter((j) => j.judgement === j.oldJudgement).length} identical judgements, ${rating.webSearches} searches, ${rating.webFetches} fetches, $${rating.cost.cost.toFixed(3)}, ${seconds.toFixed(0)}s`,
+      `${judgements.filter((j) => j.judgement === j.oldJudgement).length} identical judgements, ${rating.webSearches} searches, $${rating.cost.cost.toFixed(3)}, ${seconds.toFixed(0)}s`,
   );
 }
 

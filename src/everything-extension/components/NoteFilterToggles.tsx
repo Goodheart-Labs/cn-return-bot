@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
-import { getNoteFilters, updateNoteFilters, type NoteFilters } from "../utils/settings";
+import { Checkbox } from "@cn/ui/Field";
+import { getNoteFilters, onNoteFiltersChanged, updateNoteFilters, type NoteFilters } from "../utils/settings";
 
 /** The note filters as editable state. A change is written to synced storage,
- *  and the content scripts watch that storage so open pages re-render straight
- *  away. */
+ *  and every page and overlay that reads the filters follows it straight
+ *  away, including a change made in another part of the extension. */
 export function useNoteFilters(): [NoteFilters | null, (patch: Partial<NoteFilters>) => void] {
   const [filters, setFilters] = useState<NoteFilters | null>(null);
   useEffect(() => {
-    getNoteFilters().then(setFilters);
+    const load = () => void getNoteFilters().then(setFilters);
+    load();
+    return onNoteFiltersChanged(load);
   }, []);
   const toggle = (patch: Partial<NoteFilters>) => {
     setFilters((prev) => (prev ? { ...prev, ...patch } : prev));
@@ -19,22 +22,12 @@ export function useNoteFilters(): [NoteFilters | null, (patch: Partial<NoteFilte
 export function NoteFilterToggles({ filters, onToggle }: { filters: NoteFilters; onToggle: (patch: Partial<NoteFilters>) => void }) {
   return (
     <div className="space-y-2">
-      <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-        <input
-          type="checkbox"
-          checked={filters.showNeedsRatings}
-          onChange={(e) => onToggle({ showNeedsRatings: e.target.checked })}
-        />
+      <Checkbox className="text-sm text-fg-secondary" checked={filters.showNeedsRatings} onChange={(checked) => onToggle({ showNeedsRatings: checked })}>
         Show notes that need more ratings
-      </label>
-      <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-        <input
-          type="checkbox"
-          checked={filters.showUnhelpful}
-          onChange={(e) => onToggle({ showUnhelpful: e.target.checked })}
-        />
+      </Checkbox>
+      <Checkbox className="text-sm text-fg-secondary" checked={filters.showUnhelpful} onChange={(checked) => onToggle({ showUnhelpful: checked })}>
         Show unhelpful notes
-      </label>
+      </Checkbox>
     </div>
   );
 }

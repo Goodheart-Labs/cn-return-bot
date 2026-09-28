@@ -1,23 +1,25 @@
 import "../assets/tailwind.css";
 import { createRoot } from "react-dom/client";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "@cn/features/query/queryClient";
 import { defineContentScript, createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
-import { fetchItemForUrl, isWholePageChecked, type PageItem } from "../../everything-shared/notesQuery";
-import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
-import { fetchClaimGroups, type ClaimGroup, type NoteCounts } from "../utils/claimGroups";
+import { fetchItemForUrl, isWholePageChecked, type PageItem } from "@cn/core/items";
+import { extractYoutubeVideoId } from "@cn/core/pageUrls";
+import { claimGroups, itemNoteSetQuery, noteCounts, type NoteCounts } from "../utils/claimGroups";
 import { mountCoverageBadges } from "../utils/coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "../utils/coveredPages";
 import { recordPageVisit } from "../utils/linkVisits";
-import { YoutubeOverlayApp, DEFAULT_CLIP_SECONDS, type TimedGroup } from "../components/YoutubeOverlay";
+import { timedGroups, YoutubeOverlayApp } from "../components/YoutubeOverlay";
 import { jumpToNextNote } from "../utils/jumpBus";
 import { mountStatusOverlay } from "../utils/mountStatusOverlay";
 import { isPageDark, observePageTheme } from "../utils/pageTheme";
 import { listenForRequestInfo } from "../utils/requestInfo";
 import { listenForLiveRequests } from "../utils/requestLive";
-import { getSettings } from "../utils/settings";
+import { getNoteFilters, getSettings } from "../utils/settings";
 import { registerDevReloadHook } from "../utils/devReload";
 import { initUiAnalytics } from "../utils/analytics";
-import { track } from "../../everything-shared/analytics";
+import { track } from "@cn/core/analytics";
 
 // YouTube's DOM changes often. Every selector we depend on lives here.
 const PLAYER_SELECTOR = "#movie_player";
@@ -40,24 +42,6 @@ function waitFor<T extends Element>(selector: string): Promise<T | null> {
     };
     poll();
   });
-}
-
-/** The claims of an item that carry a timestamp, in timeline order. */
-function timedGroups(claimGroups: ClaimGroup[]): TimedGroup[] {
-  return claimGroups
-    .flatMap(({ claimId, notes, nnn }) => {
-      const claim = notes[0]!.claim!;
-      if (claim.start_seconds == null) return [];
-      return [{
-        claimId,
-        primary: notes[0]!,
-        alternatives: notes.slice(1),
-        nnn,
-        startSeconds: claim.start_seconds,
-        endSeconds: claim.end_seconds ?? claim.start_seconds + DEFAULT_CLIP_SECONDS,
-      }];
-    })
-    .sort((a, b) => a.startSeconds - b.startSeconds);
 }
 
 /** The transient note-count card on a checked video, gated by its setting. */
@@ -104,19 +88,17 @@ async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | n
     return null;
   }
   recordWatchVisit(item);
-  // Null on a failed fetch, so the overlay keeps what is on screen.
-  const refetch = async () => {
-    const next = await fetchClaimGroups(item.id);
-    return next === null ? null : timedGroups(next.groups);
-  };
-  const first = await fetchClaimGroups(item.id);
-  if (first === null) {
-    console.warn("[common-notes] notes fetch failed, mounting nothing");
+  let noteSet;
+  try {
+    noteSet = await queryClient.fetchQuery(itemNoteSetQuery(item.id));
+  } catch (err) {
+    console.warn("[common-notes] notes fetch failed, mounting nothing:", err);
     return null;
   }
-  const groups = timedGroups(first.groups);
+  const filters = await getNoteFilters();
+  const groups = timedGroups(claimGroups(noteSet, filters));
   console.info(`[common-notes] ${groups.length} timestamped claims on this video`);
-  const statusTeardown = await mountStatus(ctx, first.counts, isWholePageChecked(item));
+  const statusTeardown = await mountStatus(ctx, noteCounts(noteSet.notes.values(), filters), isWholePageChecked(item));
   if (groups.length === 0) return statusTeardown;
 
   const player = await waitFor<HTMLElement>(PLAYER_SELECTOR);
@@ -140,7 +122,11 @@ async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | n
       container.classList.toggle("dark", isPageDark());
       themeRoot = container;
       const root = createRoot(container);
-      root.render(<YoutubeOverlayApp groups={groups} projectSlug={item.projectSlug} video={video} player={player} refetch={refetch} />);
+      root.render(
+        <QueryClientProvider client={queryClient}>
+          <YoutubeOverlayApp itemId={item.id} projectSlug={item.projectSlug} video={video} player={player} />
+        </QueryClientProvider>,
+      );
       return root;
     },
     onRemove(root) {
@@ -156,7 +142,7 @@ async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | n
       surface: "youtube",
       item_id: item.id,
       claim_count: groups.length,
-      note_count: groups.reduce((n, g) => n + 1 + g.alternatives.length, 0),
+      note_count: groups.reduce((n, g) => n + g.notes.length, 0),
     });
   }
   // YouTube's appearance toggle flips html[dark] without a reload.
