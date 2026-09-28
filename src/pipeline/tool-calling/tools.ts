@@ -13,6 +13,9 @@ import { extractCitations, llm } from "../llm/llm";
 import { countNoteLength } from "../utils/noteLength";
 import { getBotConfig } from "../ab-testing/botConfig";
 import { getBrowser } from "../utils/browserManager";
+import { isWebUrl } from "../utils/webUrl";
+import { callFetchService } from "../../service/client";
+import { FETCH_PAGE_PATH, FETCH_SERVICE_SOCKET_VARIABLE, type FetchPageRequest } from "../../service/contract";
 import {
   GEMINI_MODEL,
   GROK_MODEL, PERPLEXITY_MODEL,
@@ -437,11 +440,25 @@ export interface WebFetchResult {
   ok: boolean;
 }
 
-/** `maxChars` overrides the default return cap. The default is sized for a
+/** Fetches an outside page. On the services machine the sandboxed fetcher does
+ *  the fetching (src/service/fetch/main.ts), so that a hostile page never runs
+ *  inside a process that holds our keys. Everywhere else, such as GitHub
+ *  Actions and local runs, this process fetches the page itself.
+ *
+ *  `maxChars` overrides the default return cap. The default is sized for a
  *  verifier's context window; the everything pipeline passes a much larger cap
  *  because it ingests the whole article. */
 export async function fetchWebPage(url: string, opts?: { maxChars?: number }): Promise<WebFetchResult> {
+  const socket = process.env[FETCH_SERVICE_SOCKET_VARIABLE];
+  if (!socket) return fetchWebPageInProcess(url, opts);
+  return callFetchService<WebFetchResult>(socket, FETCH_PAGE_PATH, { url, maxChars: opts?.maxChars } satisfies FetchPageRequest);
+}
+
+/** The fetch ladder itself. Only the fetcher and processes without one call
+ *  this directly. */
+export async function fetchWebPageInProcess(url: string, opts?: { maxChars?: number }): Promise<WebFetchResult> {
   const maxChars = opts?.maxChars ?? MAX_RETURN_CHARS;
+  if (!isWebUrl(url)) return { content: "Fetch refused: only http and https addresses are fetched", fetchedUrl: url, ok: false };
   const attempts: Array<{ label: string; cls: ContentClass | "fail"; status?: number; chars: number; markdown: string; sourceLabel?: string }> = [];
 
   // Steps 1 to 3 are the HTTP ladder with three user agents. We stop as soon as

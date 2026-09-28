@@ -17,12 +17,13 @@ import { runTweetCheck } from "../../pipeline/orchestration/runTweetCheck";
 import {
   CHECK_CLAIM_PATH,
   CHECK_TWEET_PATH,
+  FETCH_SERVICE_SOCKET_VARIABLE,
   type CheckClaimRequest,
   type CheckClaimResponse,
   type CheckTweetRequest,
   type CheckTweetResponse,
 } from "../contract";
-import { numberFromEnv, startService, type ServiceRoute } from "../serve";
+import { numberFromEnv, requiredEnv, startService, type ServiceRoute } from "../serve";
 
 /** Six at a time. A check takes about a minute and a half, nearly all of it
  *  waiting on searches and model calls, so running several costs little and the
@@ -56,6 +57,11 @@ const checkTweetRoute: ServiceRoute<CheckTweetRequest, CheckTweetResponse> = {
     return { output };
   },
 };
+
+// On the services machine, outside pages and images are fetched only by the
+// sandboxed fetcher. A service started without its socket would fetch them in
+// this process, next to our keys, so it refuses to start instead.
+requiredEnv(FETCH_SERVICE_SOCKET_VARIABLE);
 
 startService({
   name: "claim-check",

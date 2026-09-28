@@ -30,6 +30,8 @@ import { clip } from "../../everything/logFormat";
 import { ensureYtDlp } from "../../everything/sources/youtube";
 import { describeSpend, requestBudgetExhausted, todaySpendUsd } from "../../everything/spendCap";
 import { processQueuedItem } from "../../everything/worker";
+import { FETCH_SERVICE_SOCKET_VARIABLE } from "../contract";
+import { requiredEnv } from "../serve";
 
 /** The backstop for realtime's no-replay gap. One indexed query that almost
  *  always returns nothing. */
@@ -74,6 +76,10 @@ async function handlePendingWork(): Promise<void> {
 }
 
 async function main() {
+  // On the services machine, outside pages and images are fetched only by the
+  // sandboxed fetcher. A service started without its socket would fetch them in
+  // this process, next to our keys, so it refuses to start instead.
+  requiredEnv(FETCH_SERVICE_SOCKET_VARIABLE);
   ensureYtDlp();
   subscribeToRequests();
   console.log("[intake] watching for reader requests");
