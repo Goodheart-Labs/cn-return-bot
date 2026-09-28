@@ -108,6 +108,7 @@ export interface BotConfig {
     | "native_gemini"      // Google's native Gen AI API runs with its googleSearch tool.
     | "native_grok"        // The native xAI API runs with xSearch.
     | "native_openai"      // The OpenAI Responses API runs web_search_preview through OpenRouter.
+    | "openrouter_native"  // OpenRouter's web_search server tool on the provider's own search engine, e.g. Meta's for Muse.
     | "bundled"            // Perplexity Sonar has search built into the model.
     | "perplexity"         // The model calls Perplexity as a tool.
     | "serper"             // A tool-calling loop calls google_search for raw Serper results.
