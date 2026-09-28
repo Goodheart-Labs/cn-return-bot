@@ -77,7 +77,7 @@ export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, childre
   const showSourcesButton = !!onToggleSources && note.has_source_details;
 
   return (
-    <div className="mt-2">
+    <div className="cn-note-actions mt-2">
       <div ref={ref} className="relative flex flex-wrap justify-end items-center gap-x-3 gap-y-1 text-xs text-fg-muted">
         {/* The sources, improve and share actions are visible on every card.
             The ⋯ menu only holds Delete, and only on your own notes. Nathan

@@ -59,7 +59,7 @@ export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVo
 }) {
   const counts: Record<Vote, number> = { 1: helpful, 0: somewhatHelpful, [-1]: notHelpful };
   return (
-    <span className="inline-flex items-center gap-1 flex-wrap">
+    <span className="cn-vote-pills inline-flex items-center gap-1 flex-wrap">
       {VOTE_OPTIONS.map(({ value, label, tone, icon }) => (
         <button
           key={value}
@@ -68,7 +68,8 @@ export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVo
           aria-pressed={myVote === value}
           aria-label={showCounts ? `${label}: ${counts[value]} ratings` : label}
           onClick={() => onVote(value)}
-          className={votePillVariants({ tone, state: myVote === value ? "selected" : compact ? "compact" : "idle" })}
+          data-tone={tone}
+          className={`cn-vote-pill ${votePillVariants({ tone, state: myVote === value ? "selected" : compact ? "compact" : "idle" })}`}
         >
           {compact ? icon : label}
           {showCounts && counts[value] > 0 && <span>{counts[value].toLocaleString("en-US")}</span>}

@@ -1,0 +1,77 @@
+@import url("https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap");
+
+/* Preprint: the first page of a paper. STIX Two, the face scientific
+ * publishers commissioned for their journals, black on white, one red for the
+ * main action, blue links, and no rounded corners anywhere. */
+:root[data-cn-look="preprint"]:not(.dark) {
+  --cn-font-sans: "STIX Two Text", "Times New Roman", serif;
+  --cn-font-display: "STIX Two Text", "Times New Roman", serif;
+  --cn-canvas: #ffffff;
+  --cn-surface: #ffffff;
+  --cn-surface-muted: #f6f6f4;
+  --cn-surface-hover: #f1f1ee;
+  --cn-fg: #141414;
+  --cn-fg-secondary: #333333;
+  --cn-fg-muted: #5b5b5b;
+  --cn-fg-subtle: #8c8c8c;
+  --cn-line: #d9d9d9;
+  --cn-line-strong: #a6a6a6;
+  --cn-primary: #a51c1c;
+  --cn-primary-hover: #7f1414;
+  --cn-link: #1e4f99;
+  --cn-focus: #1e4f99;
+  --cn-focus-halo: rgb(30 79 153 / 0.18);
+  --cn-tint: #ffffff;
+  --cn-tint-line: #141414;
+  --cn-inverse: #141414;
+  --cn-positive: #1f6a3b;
+  --cn-positive-soft: #eef5f0;
+  --cn-positive-selected: #ffffff;
+  --cn-positive-selected-fg: #1f6a3b;
+  --cn-positive-line: #1f6a3b;
+  --cn-positive-solid: #1f6a3b;
+  --cn-caution: #825600;
+  --cn-caution-soft: #f8f2e4;
+  --cn-caution-selected: #ffffff;
+  --cn-caution-selected-fg: #825600;
+  --cn-caution-line: #825600;
+  --cn-caution-solid: #a56d00;
+  --cn-negative: #a51c1c;
+  --cn-negative-soft: #f8ecec;
+  --cn-negative-selected: #ffffff;
+  --cn-negative-selected-fg: #a51c1c;
+  --cn-negative-line: #a51c1c;
+  --cn-negative-solid: #a51c1c;
+  --cn-radius-control: 0px;
+  --cn-radius-card: 0px;
+  --cn-shadow-raised: none;
+  --cn-shadow-floating: 0 8px 24px -10px rgb(0 0 0 / 0.25);
+}
+
+/* Notes read like footnotes: a rule above, the status in small capitals, and
+ * the votes as bracketed words in the text. */
+:root[data-cn-look="preprint"]:not(.dark) .cn-note {
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--cn-fg);
+  padding: 0.6rem 0 0;
+}
+:root[data-cn-look="preprint"]:not(.dark) .cn-note-header { border-bottom: 0; margin-bottom: 0.35rem; padding-bottom: 0; margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; }
+:root[data-cn-look="preprint"]:not(.dark) .cn-note-status { font-variant: small-caps; font-weight: 600; letter-spacing: 0.05em; font-size: 1em; }
+:root[data-cn-look="preprint"]:not(.dark) .cn-note-status svg { width: 0.7em; height: 0.7em; }
+:root[data-cn-look="preprint"]:not(.dark) .cn-note-text { font-size: 1.02em; line-height: 1.55; }
+:root[data-cn-look="preprint"]:not(.dark) .cn-note-footer { border-top: 0; margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; }
+:root[data-cn-look="preprint"]:not(.dark) .cn-note-ask { font-style: italic; }
+:root[data-cn-look="preprint"]:not(.dark) .cn-vote-pill {
+  border: 0;
+  background: none;
+  padding: 0 0.1rem;
+  font-size: 1em;
+  border-radius: 0;
+}
+:root[data-cn-look="preprint"]:not(.dark) .cn-vote-pill::before { content: "["; color: var(--cn-fg-subtle); }
+:root[data-cn-look="preprint"]:not(.dark) .cn-vote-pill::after { content: "]"; color: var(--cn-fg-subtle); }
+:root[data-cn-look="preprint"]:not(.dark) .cn-vote-pill:hover { background: none; text-decoration: underline; text-underline-offset: 3px; }
+:root[data-cn-look="preprint"]:not(.dark) .cn-vote-pill[aria-pressed="true"] { font-weight: 700; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+:root[data-cn-look="preprint"]:not(.dark) .cn-eyebrow { font-variant: small-caps; text-transform: none; letter-spacing: 0.05em; font-size: 0.95rem; color: var(--cn-fg-muted); }
+:root[data-cn-look="preprint"]:not(.dark) .cn-card { border-color: var(--cn-fg); }

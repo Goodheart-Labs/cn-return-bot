@@ -1,36 +1,22 @@
-import type { MouseEvent, ReactNode } from "react";
 import logoUrl from "@cn/ui/assets/logo.svg";
 import { buttonVariants } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
-import { HOME, INSTALL, NOTES, routeHref, type Route } from "../lib/routing";
+import { HOME, INSTALL, NOTES, type Route } from "../lib/routing";
 import { AuthCorner } from "./AuthCorner";
+import { RouteLink } from "./RouteLink";
 
-/** A link that moves inside the app. It is a real link, so it can be opened
- *  in a new tab, but a plain click navigates without reloading the page. */
-function RouteLink({ to, navigate, className, current, children }: {
-  to: Route;
+/** What every version of the site header receives. */
+export interface HeaderProps {
+  route: Route;
   navigate: (route: Route) => void;
-  className?: string;
-  current?: boolean;
-  children: ReactNode;
-}) {
-  const onClick = (event: MouseEvent) => {
-    if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
-    event.preventDefault();
-    navigate(to);
-  };
-  return (
-    <a href={routeHref(to)} onClick={onClick} aria-current={current ? "page" : undefined} className={className}>
-      {children}
-    </a>
-  );
+  onSignIn: () => void;
 }
 
 const navLink = "text-sm font-medium text-fg-secondary hover:text-fg aria-[current=page]:text-fg";
 
 /** The bar at the top of every page. The name and the two pages sit on the
  *  left, signing in and getting the extension on the right. */
-export function SiteHeader({ route, navigate, onSignIn }: { route: Route; navigate: (route: Route) => void; onSignIn: () => void }) {
+export function SiteHeader({ route, navigate, onSignIn }: HeaderProps) {
   return (
     <header className="sticky top-0 z-20 border-b border-line bg-surface">
       <div className="mx-auto flex h-14 max-w-[96rem] items-center gap-2.5 px-3 sm:gap-6 sm:px-4 md:px-8">

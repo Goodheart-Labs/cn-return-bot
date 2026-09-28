@@ -3,7 +3,7 @@ import type { ComponentProps } from "react";
 import { cn } from "./cn";
 
 /** The small uppercase label that marks a section. */
-export const eyebrowVariants = cva("text-xs font-semibold uppercase tracking-wide text-fg-subtle");
+export const eyebrowVariants = cva("cn-eyebrow text-xs font-semibold uppercase tracking-wide text-fg-subtle");
 
 /** Quoted material: a source quote, a claim's context, a selected passage. It
  *  hangs off a rail on the left. */

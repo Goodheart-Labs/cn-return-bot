@@ -5,7 +5,10 @@ import type { Decorator, Preview } from "@storybook/react-vite";
 import { LoginPromptProvider } from "@cn/features/auth/loginPrompt";
 import type { QuerySeed } from "./fixtures";
 import "./preview.css";
-import "./looks.css";
+import "@cn/ui/looks/canon.css";
+import "@cn/ui/looks/preprint.css";
+import "@cn/ui/looks/stamp.css";
+import { LookContext, type LookId } from "../everything-web/src/pages/home/variants";
 
 /** A fresh query cache per story, filled from the story's `queries`
  *  parameter. Nothing is ever fetched: the seeded answers never go stale, and
@@ -43,17 +46,18 @@ const withScale: Decorator = (Story, { globals }) => (
   </ReadingScale>
 );
 
-/** Puts the look picked in the toolbar on <html>, where looks.css reads it. */
-function Look({ look, children }: { look: string; children: ReactNode }) {
+/** Puts the design picked in the toolbar on <html>, where the stylesheets in
+ *  everything-ui/looks read it, and tells the website which header and
+ *  homepage to render. */
+function Look({ look, children }: { look: LookId; children: ReactNode }) {
   useEffect(() => {
-    if (look === "current") delete document.documentElement.dataset.cnLook;
-    else document.documentElement.dataset.cnLook = look;
+    document.documentElement.dataset.cnLook = look;
   }, [look]);
-  return children;
+  return <LookContext.Provider value={look}>{children}</LookContext.Provider>;
 }
 
 const withLook: Decorator = (Story, { globals }) => (
-  <Look look={globals.look ?? "current"}>
+  <Look look={(globals.look as LookId | undefined) ?? "canon"}>
     <Story />
   </Look>
 );
@@ -67,15 +71,14 @@ const preview: Preview = {
   ],
   globalTypes: {
     look: {
-      description: "A candidate look for Common Notes, from looks.css",
+      description: "A candidate design for Common Notes",
       toolbar: {
-        title: "Look",
+        title: "Design",
         icon: "paintbrush",
         items: [
-          { value: "current", title: "Current look" },
-          { value: "figures", title: "A. Sourced figures" },
-          { value: "margin", title: "B. Margin notes" },
-          { value: "proof", title: "C. Claim and proof" },
+          { value: "stamp", title: "A. Stamp" },
+          { value: "preprint", title: "B. Preprint" },
+          { value: "canon", title: "C. The sketch, straight" },
         ],
         dynamicTitle: true,
       },
@@ -93,8 +96,9 @@ const preview: Preview = {
       },
     },
   },
-  initialGlobals: { scale: "website", look: "current" },
+  initialGlobals: { scale: "website", look: "stamp" },
   parameters: {
+    options: { storySort: { order: ["Designs", ["A. Stamp", "B. Preprint", "C. The sketch, straight"]] } },
     layout: "padded",
     backgrounds: { disable: true },
   },

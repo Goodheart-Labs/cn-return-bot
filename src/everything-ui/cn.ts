@@ -10,7 +10,8 @@ const mergeClasses = extendTailwindMerge({
   extend: {
     theme: { colors: Object.keys(CN_COLORS), borderRadius: ["control", "card"] },
     classGroups: {
-      "font-size": [{ text: ["2xs"] }],
+      "font-size": [{ text: ["2xs", "display"] }],
+      "font-family": [{ font: ["display"] }],
       shadow: [{ shadow: ["raised", "floating"] }],
     },
   },
