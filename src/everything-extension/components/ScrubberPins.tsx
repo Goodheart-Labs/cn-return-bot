@@ -71,7 +71,7 @@ function PinGlyph({ dark }: { dark: boolean }) {
 const PIN_TOOLTIP_CHARS = 120;
 
 function pinTitle(group: TimedGroup): string {
-  const quote = group.primary.claim?.context_quote ?? group.primary.claim?.claim ?? "";
+  const quote = group.claim.context_quote ?? group.claim.claim;
   const preview = quote.length > PIN_TOOLTIP_CHARS ? `${quote.slice(0, PIN_TOOLTIP_CHARS)}…` : quote;
   return preview ? `Community note: “${preview}”` : "Click to jump to this community note";
 }

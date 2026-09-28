@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
-import { supabase } from "@cn/core/supabase";
-import { ensureUser } from "@cn/core/auth";
 import { displayName } from "@cn/core/session";
-import { postImprovement } from "@cn/core/postNote";
-import { postNnn } from "@cn/core/noteNotNeeded";
 import type { NoteRow } from "@cn/core/types";
 import { BUTTON, MENU } from "@cn/ui/classes";
 import { IconButton } from "@cn/ui/IconButton";
+import { useActingUser } from "../auth/useActingUser";
+import { useSession } from "../auth/useSession";
 import { AutoGrowTextarea, PostAsCheckbox, useSignedByline } from "./editorBits";
+import { useDeleteNote, usePostImprovement, usePostNnn } from "./useNoteWrites";
 
 /** One row of the ⋯ dropdown menu. A row marked as danger turns red, which is
  *  how a destructive action such as Delete is set apart from the rest. */
@@ -93,30 +92,20 @@ function SpeechBubbleIcon() {
  *  note on the same claim and shows it beside the original. You can copy a deep
  *  link to the note. On a note you wrote yourself there is also a ⋯ menu, and
  *  it holds Delete. */
-export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onNnnAuthored, onDeleted, sourcesOpen, onToggleSources, children }: {
+export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, children }: {
   note: NoteRow;
   /** The absolute deep link to this note. The website builds it from the
    *  project slug. The extension passes the public site's URL instead. */
   shareUrl: string;
-  session: Session | null;
-  onNeedLogin: () => void;
-  /** Called when this user has just posted a note. The database casts the
-   *  author's own helpful vote by trigger, and this mirrors it into local
-   *  state. */
-  onAuthored: (noteId: string) => void;
-  /** Called when this user has just posted a note-not-needed entry. It mirrors
-   *  the author's automatic helpful vote into local state. */
-  onNnnAuthored: (entryId: string) => void;
-  /** Called after the note was deleted. The website does not need it, because
-   *  its realtime channel already drops the note from state. The extension has
-   *  no realtime connection, so it refreshes when this fires. */
-  onDeleted?: () => void;
   sourcesOpen?: boolean;
   onToggleSources?: () => void;
   /** Extra actions rendered between Share and the ⋯ button. The feed uses this
    *  for the chips that jump between a note and its improvement. */
   children?: React.ReactNode;
 }) {
+  const { session } = useSession();
+  const actingUser = useActingUser();
+  const deleteNote = useDeleteNote();
   /* Only one block is expanded at a time. The ⋯ menu and the two composers
    * replace each other. The source details toggle is not part of this group and
    * opens on its own. A hidden editor unmounts, so its draft text is held here
@@ -149,28 +138,16 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
-  const del = async () => {
+  const del = () => {
     setExpanded(null);
-    /* Asking for the deleted ids back tells a real delete apart from one that
-     * matched no rows. Row level security only lets you delete your own draft
-     * notes, and a delete it blocks still succeeds, just with zero rows. */
-    const { data, error } = await supabase.from("everything_notes").delete().eq("id", note.id).select("id");
-    if (error || (data ?? []).length === 0) {
-      console.error("[common-notes] note delete failed:", error?.message ?? "no row deleted (RLS: only your own draft notes)");
-      return;
-    }
-    onDeleted?.();
+    deleteNote.mutate(note.id);
   };
-  // A reader with no session gets an invisible anonymous account on the spot;
-  // the composer then renders as soon as the new session reaches this
+  // A reader with no session gets an invisible anonymous account on the spot,
+  // and the composer renders as soon as the new session reaches this
   // component. Only when even that fails does the sign-in form appear.
-  const toggleImprove = async () => {
-    if (!session && !(await ensureUser())) return onNeedLogin();
-    setExpanded((prev) => (prev === "improve" ? null : "improve"));
-  };
-  const toggleNnn = async () => {
-    if (!session && !(await ensureUser())) return onNeedLogin();
-    setExpanded((prev) => (prev === "nnn" ? null : "nnn"));
+  const toggleComposer = async (composer: "improve" | "nnn") => {
+    if (!(await actingUser())) return;
+    setExpanded((prev) => (prev === composer ? null : composer));
   };
   // Every card already shows its source links. This toggle only reveals the
   // quote and explanation for each source, so it appears only if a quote exists.
@@ -188,13 +165,13 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
             <QuoteIcon /> {sourcesOpen ? "Hide source details" : "Show source details"}
           </button>
         )}
-        <button onClick={toggleNnn} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
+        <button onClick={() => toggleComposer("nnn")} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
           <SpeechBubbleIcon /> Note not needed
         </button>
         {/* Improving your own note makes no sense as a second card beside it.
             An author who wants different wording deletes and rewrites. */}
         {!mine && (
-          <button onClick={toggleImprove} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
+          <button onClick={() => toggleComposer("improve")} className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
             <PencilIcon /> Suggest an improvement
           </button>
         )}
@@ -225,10 +202,10 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
         )}
       </div>
       {expanded === "improve" && session && (
-        <ImproveEditor note={note} session={session} text={improveDraft} onTextChange={setImproveDraft} onAuthored={onAuthored} onClose={() => setExpanded(null)} />
+        <ImproveEditor note={note} session={session} text={improveDraft} onTextChange={setImproveDraft} onClose={() => setExpanded(null)} />
       )}
       {expanded === "nnn" && session && (
-        <NnnComposer note={note} session={session} text={nnnDraft} onTextChange={setNnnDraft} onAuthored={onNnnAuthored} onClose={() => setExpanded(null)} />
+        <NnnComposer note={note} session={session} text={nnnDraft} onTextChange={setNnnDraft} onClose={() => setExpanded(null)} />
       )}
     </div>
   );
@@ -238,38 +215,20 @@ export function NoteMenu({ note, shareUrl, session, onNeedLogin, onAuthored, onN
  *  gate does not apply here, just as it did not apply to the discussion this
  *  replaced. The entry is stored against the claim, so it shows under every
  *  note written on that same text. */
-function NnnComposer({ note, session, text, onTextChange, onAuthored, onClose }: {
+function NnnComposer({ note, session, text, onTextChange, onClose }: {
   note: NoteRow;
   session: Session;
   text: string;
   onTextChange: (text: string) => void;
-  onAuthored: (entryId: string) => void;
   onClose: () => void;
 }) {
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const post = usePostNnn();
   const [signed, setSigned] = useSignedByline();
-
-  const submit = async () => {
-    setBusy(true);
-    setError(null);
-    try {
-      const entryId = await postNnn({
-        claimId: note.claim_id,
-        body: text.trim(),
-        authorId: session.user.id,
-        authorName: signed ? displayName(session) : null,
-      });
-      if (!entryId) return setError("Could not post (try again)");
-      onTextChange("");
-      onAuthored(entryId);
-      onClose();
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  };
+  const submit = () =>
+    post.mutate(
+      { claimId: note.claim_id, body: text.trim(), authorId: session.user.id, authorName: signed ? displayName(session) : null },
+      { onSuccess: () => { onTextChange(""); onClose(); } },
+    );
 
   return (
     <div className="mt-2 space-y-2">
@@ -283,15 +242,15 @@ function NnnComposer({ note, session, text, onTextChange, onAuthored, onClose }:
       <div className="flex gap-2 items-center">
         <button
           onClick={submit}
-          disabled={busy || text.trim().length < 10}
+          disabled={post.isPending || text.trim().length < 10}
           className={BUTTON}
         >
-          {busy ? "Posting…" : "Post"}
+          {post.isPending ? "Posting…" : "Post"}
         </button>
         <button onClick={onClose} className="text-sm text-gray-500 dark:text-gray-400 hover:underline">Cancel</button>
         <PostAsCheckbox signed={signed} onChange={setSigned} session={session} className="ml-auto" />
       </div>
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {post.error && <p className="text-sm text-red-600 dark:text-red-400">{post.error.message}</p>}
     </div>
   );
 }
@@ -299,28 +258,17 @@ function NnnComposer({ note, session, text, onTextChange, onAuthored, onClose }:
 /** Post an improved version as your own draft note on the same claim. It does
  *  not replace the original. It appears as its own card with jump links to and
  *  from the original, and both notes are rated separately. */
-function ImproveEditor({ note, session, text, onTextChange, onAuthored, onClose }: {
+function ImproveEditor({ note, session, text, onTextChange, onClose }: {
   note: NoteRow;
   session: Session;
   text: string;
   onTextChange: (text: string) => void;
-  onAuthored: (noteId: string) => void;
   onClose: () => void;
 }) {
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const post = usePostImprovement();
   const [signed, setSigned] = useSignedByline();
-
-  const submit = async () => {
-    setBusy(true);
-    setError(null);
-    const outcome = await postImprovement({ note, text, session, signed });
-    setBusy(false);
-    if (outcome.type === "error") return setError(outcome.message);
-    onTextChange("");
-    onAuthored(outcome.noteId);
-    onClose();
-  };
+  const submit = () =>
+    post.mutate({ note, text, session, signed }, { onSuccess: () => { onTextChange(""); onClose(); } });
 
   return (
     <div className="mt-2 space-y-2">
@@ -334,15 +282,15 @@ function ImproveEditor({ note, session, text, onTextChange, onAuthored, onClose 
       <div className="flex gap-2 items-center">
         <button
           onClick={submit}
-          disabled={busy || text.trim().length < 10}
+          disabled={post.isPending || text.trim().length < 10}
           className={BUTTON}
         >
-          {busy ? "Posting…" : "Post note"}
+          {post.isPending ? "Posting…" : "Post note"}
         </button>
         <button onClick={onClose} className="text-sm text-gray-500 dark:text-gray-400 hover:underline">Cancel</button>
         <PostAsCheckbox signed={signed} onChange={setSigned} session={session} className="ml-auto" />
       </div>
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {post.error && <p className="text-sm text-red-600 dark:text-red-400">{post.error.message}</p>}
     </div>
   );
 }

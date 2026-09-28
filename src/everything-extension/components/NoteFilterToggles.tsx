@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
-import { getNoteFilters, updateNoteFilters, type NoteFilters } from "../utils/settings";
+import { getNoteFilters, onNoteFiltersChanged, updateNoteFilters, type NoteFilters } from "../utils/settings";
 
 /** The note filters as editable state. A change is written to synced storage,
- *  and the content scripts watch that storage so open pages re-render straight
- *  away. */
+ *  and every page and overlay that reads the filters follows it straight
+ *  away, including a change made in another part of the extension. */
 export function useNoteFilters(): [NoteFilters | null, (patch: Partial<NoteFilters>) => void] {
   const [filters, setFilters] = useState<NoteFilters | null>(null);
   useEffect(() => {
-    getNoteFilters().then(setFilters);
+    const load = () => void getNoteFilters().then(setFilters);
+    load();
+    return onNoteFiltersChanged(load);
   }, []);
   const toggle = (patch: Partial<NoteFilters>) => {
     setFilters((prev) => (prev ? { ...prev, ...patch } : prev));

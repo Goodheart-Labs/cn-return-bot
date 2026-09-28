@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { readBrowserFlag, setBrowserFlag } from "@cn/core/extensionStorage";
 
 /** The one-time voting nudge: a small popup above the vote pills of the first
  *  note a reader opens, telling them their rating counts even without any
@@ -9,36 +10,6 @@ import { useEffect, useState } from "react";
 
 const SEEN_KEY = "cn:votingNudgeSeen";
 
-function extensionSyncStorage(): { get: (key: string) => Promise<Record<string, unknown>>; set: (items: Record<string, unknown>) => Promise<void> } | null {
-  const g = globalThis as { browser?: any; chrome?: any };
-  return g.browser?.storage?.sync ?? g.chrome?.storage?.sync ?? null;
-}
-
-async function getNudgeSeen(): Promise<boolean> {
-  const ext = extensionSyncStorage();
-  if (ext) return !!(await ext.get(SEEN_KEY))[SEEN_KEY];
-  try {
-    return localStorage.getItem(SEEN_KEY) === "true";
-  } catch {
-    // A browser that blocks storage sees the nudge on every load, which beats
-    // never showing it.
-    return false;
-  }
-}
-
-function markNudgeSeen(): void {
-  const ext = extensionSyncStorage();
-  if (ext) {
-    void ext.set({ [SEEN_KEY]: true });
-    return;
-  }
-  try {
-    localStorage.setItem(SEEN_KEY, "true");
-  } catch {
-    // Nothing to do; the flag just cannot persist here.
-  }
-}
-
 // Many note cards can be on screen at once. The first one to mount claims the
 // nudge for this page load, so the reader never sees it twice at a time.
 let claimedThisLoad = false;
@@ -48,7 +19,7 @@ export function useVotingNudge(): { show: boolean; dismiss: () => void } {
   useEffect(() => {
     if (claimedThisLoad) return;
     claimedThisLoad = true;
-    void getNudgeSeen().then((seen) => {
+    void readBrowserFlag(SEEN_KEY, "sync").then((seen) => {
       if (!seen) setShow(true);
     });
   }, []);
@@ -56,7 +27,7 @@ export function useVotingNudge(): { show: boolean; dismiss: () => void } {
     show,
     dismiss: () => {
       setShow(false);
-      markNudgeSeen();
+      setBrowserFlag(SEEN_KEY, "sync");
     },
   };
 }

@@ -1,6 +1,6 @@
 import { browser } from "#imports";
-import { supabase } from "@cn/core/supabase";
-import type { PageItem } from "@cn/core/notesQuery";
+import { insertVisit } from "@cn/core/visits";
+import type { PageItem } from "@cn/core/items";
 import { extractYoutubeVideoId } from "@cn/core/pageUrls";
 import { readWatchPageChannel } from "./authorFeed";
 import { isSubstackPostPage } from "./pageShape";
@@ -112,11 +112,10 @@ export function recordPageVisit(pageUrl: string, item: PageItem | null): void {
  *  policy. A failed insert is dropped, because a visit count is not worth an
  *  error surface. */
 export async function writeVisit(visit: VisitMessage): Promise<void> {
-  const { error } = await supabase.from("everything_link_visits").insert({
+  await insertVisit({
     url: visit.url,
-    item_id: visit.itemId,
-    feed_url: visit.feedUrl,
-    reader_hash: visit.feedUrl ? await visitReaderHash(visit.feedUrl) : null,
+    itemId: visit.itemId,
+    feedUrl: visit.feedUrl,
+    readerHash: visit.feedUrl ? await visitReaderHash(visit.feedUrl) : null,
   });
-  if (error) console.debug(`[common-notes] visit not recorded: ${error.message}`);
 }

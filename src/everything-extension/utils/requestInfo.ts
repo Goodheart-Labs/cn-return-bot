@@ -1,4 +1,5 @@
 import type { ContentScriptContext } from "#imports";
+import { browser } from "#imports";
 import { mountInfoOverlay } from "./mountStatusOverlay";
 
 // The card hides itself after the StatusOverlay auto-hide. Tearing the mount
@@ -10,12 +11,11 @@ const INFO_CARD_LIFETIME_MS = 15_000;
  *  for example because the page is already checked. Registered once per
  *  content script, whatever else is mounted on the page. */
 export function listenForRequestInfo(ctx: ContentScriptContext): void {
-  const runtime = (globalThis as any).browser?.runtime ?? (globalThis as any).chrome?.runtime;
   const listener = (message: unknown) => {
     const { type, headline } = (message as { type?: string; headline?: string }) ?? {};
     if (type !== "cn-request-info" || !headline) return;
     void mountInfoOverlay(ctx, headline).then((teardown) => setTimeout(teardown, INFO_CARD_LIFETIME_MS));
   };
-  runtime?.onMessage.addListener(listener);
-  ctx.onInvalidated(() => runtime?.onMessage.removeListener(listener));
+  browser.runtime.onMessage.addListener(listener);
+  ctx.onInvalidated(() => browser.runtime.onMessage.removeListener(listener));
 }

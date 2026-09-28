@@ -102,3 +102,27 @@ export function sourceLinkLabel(url: string): string {
   if (host === "youtube.com" || host === "youtu.be") return "YouTube";
   return host;
 }
+
+/** Resolves a reader URL to the publication's own post URL by fetching it
+ *  logged out. A home-feed link (substack.com/home/post/p-<id>) answers with a
+ *  redirect to the publication's domain, so the redirect target is the answer
+ *  and the body is never downloaded. A profile link (substack.com/@author/p-<id>)
+ *  answers 200 on substack.com itself, so there the answer is the canonical_url
+ *  in the page's embedded JSON. A fresh fetch is needed even on the reader page
+ *  itself, because the reader is a single-page app and the JSON already in the
+ *  DOM goes stale after a navigation. Extension callers must run this in the
+ *  background script, through the cn-reader-canonical message. A content
+ *  script, or any other context bound by CORS, may neither follow the
+ *  cross-origin redirect nor read the response, and gets null instead. */
+export async function fetchReaderCanonical(href: string): Promise<string | null> {
+  try {
+    const res = await fetch(href, { credentials: "omit" });
+    if (new URL(res.url).hostname !== new URL(href).hostname) {
+      void res.body?.cancel();
+      return res.url;
+    }
+    return extractEmbeddedCanonical(await res.text());
+  } catch {
+    return null;
+  }
+}

@@ -1,7 +1,7 @@
-import type { Session } from "@supabase/supabase-js";
-import { NoteNotNeeded, type NnnApi } from "@cn/features/notes/NoteNotNeeded";
-import type { Vote } from "@cn/core/votes";
-import type { NnnRow, NoteRow } from "@cn/core/types";
+import { LoginPromptProvider } from "@cn/features/auth/loginPrompt";
+import { useSession } from "@cn/features/auth/useSession";
+import { NoteNotNeeded } from "@cn/features/notes/NoteNotNeeded";
+import type { ClaimGroup } from "../utils/claimGroups";
 import { noteShareUrl } from "../utils/share";
 import { LoginPanel } from "./LoginPanel";
 import { NoteWithActions } from "./NoteWithActions";
@@ -35,58 +35,47 @@ export function GroupIcon() {
   );
 }
 
-/** The whole note surface of one claim. It shows the primary note, the peer
- *  alternatives in an indented rail, and the claim's note-not-needed list. The
- *  vote wiring is the website's. The Substack popover and the YouTube overlay
- *  both use it, so the two cannot drift apart. */
-export function ClaimNoteStack({ group, projectSlug, session, myVotes, onVote, onNeedLogin, onAuthored, onNnnAuthored, onDeleted, nnnApi }: {
-  group: { primary: NoteRow; alternatives: NoteRow[]; nnn: NnnRow[] };
-  projectSlug: string | null;
-  session: Session | null;
-  myVotes: Map<string, Vote>;
-  onVote: React.ComponentProps<typeof NoteWithActions>["onVote"];
-  onNeedLogin: () => void;
-  onAuthored: (noteId: string) => void;
-  onNnnAuthored: (entryId: string) => void;
-  onDeleted: () => void;
-  nnnApi: NnnApi;
-}) {
-  const noteProps = (note: NoteRow) => ({
-    note,
-    myVote: myVotes.get(note.id),
-    onVote,
-    session,
-    shareUrl: noteShareUrl(projectSlug, note.id),
-    onNeedLogin,
-    onAuthored,
-    onNnnAuthored,
-    onDeleted,
-  });
+/** The whole note surface of one claim. It shows the original note, the
+ *  other notes on the claim in an indented rail, and the claim's
+ *  note-not-needed list. The Substack popover and the YouTube overlay both use
+ *  it, so the two cannot drift apart. */
+export function ClaimNoteStack({ group, projectSlug }: { group: ClaimGroup; projectSlug: string | null }) {
+  const [original, ...others] = group.notes;
   return (
     <>
-      <NoteWithActions {...noteProps(group.primary)} />
-      {group.alternatives.length > 0 && (
+      <NoteWithActions note={original!} shareUrl={noteShareUrl(projectSlug, original!.id)} />
+      {others.length > 0 && (
         <div className="mt-3 pl-3 border-l-4 border-gray-200 dark:border-gray-700 space-y-3">
-          {group.alternatives.map((d) => (
-            <NoteWithActions key={d.id} {...noteProps(d)} />
+          {others.map((note) => (
+            <NoteWithActions key={note.id} note={note} shareUrl={noteShareUrl(projectSlug, note.id)} />
           ))}
         </div>
       )}
       {/* The list is keyed to the claim, just as it is on the website, so it
           belongs to every note above. */}
-      <NoteNotNeeded entries={group.nnn} api={nnnApi} session={session} />
+      <NoteNotNeeded entries={group.nnn} />
     </>
   );
 }
 
-/** The login form inside an overlay, shown above the note stack when a
- *  signed-out reader tries to vote or write. It replaced a hint that sent
- *  people off to the toolbar icon; now they sign in right here and their vote
- *  is one more click away. Both overlays use it unchanged. */
-export function OverlayLogin({ onDismiss }: { onDismiss: () => void }) {
+/** Gives the notes inside an overlay a sign-in form of their own. When a
+ *  reader who cannot get an anonymous account tries to vote or write, the form
+ *  folds in above the notes, and it goes away once they are signed in. The
+ *  overlay owns `open`, because the YouTube card stays up while it is open. */
+export function OverlayLoginGate({ open, onOpenChange, children }: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  children: React.ReactNode;
+}) {
+  const { session } = useSession();
   return (
-    <div className="mb-3 pb-3 border-b border-gray-200 dark:border-gray-700">
-      <LoginPanel surface="overlay" onDismiss={onDismiss} />
-    </div>
+    <LoginPromptProvider value={() => onOpenChange(true)}>
+      {open && !session && (
+        <div className="mb-3 pb-3 border-b border-gray-200 dark:border-gray-700">
+          <LoginPanel surface="overlay" onDismiss={() => onOpenChange(false)} />
+        </div>
+      )}
+      {children}
+    </LoginPromptProvider>
   );
 }

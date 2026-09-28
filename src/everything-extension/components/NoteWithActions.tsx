@@ -1,14 +1,14 @@
 import { useState } from "react";
-import type { Session } from "@supabase/supabase-js";
-import { VoteRatings } from "@cn/features/notes/VoteRatings";
-import { NoteBox } from "@cn/features/notes/NoteCard";
-import { NoteMenu } from "@cn/features/notes/NoteMenu";
-import { VoteDonation } from "@cn/features/donations/VoteDonation";
-import { useVotingNudge, VotingNudge } from "@cn/features/notes/VotingNudge";
-import { takeMintedDonation, type MintedDonation } from "@cn/core/donations";
+import type { MintedDonation } from "@cn/core/donations";
 import { noteStatus, noteTallyVisible } from "@cn/core/noteScore";
 import type { NoteRow } from "@cn/core/types";
-import type { Vote } from "@cn/core/votes";
+import { VoteDonation } from "@cn/features/donations/VoteDonation";
+import { takeMintedDonation } from "@cn/features/donations/mintedDonations";
+import { NoteBox } from "@cn/features/notes/NoteCard";
+import { NoteMenu } from "@cn/features/notes/NoteMenu";
+import { useMyVotes, useVoteOnNote } from "@cn/features/notes/useVotes";
+import { VoteRatings } from "@cn/features/notes/VoteRatings";
+import { useVotingNudge, VotingNudge } from "@cn/features/notes/VotingNudge";
 
 /** One votable note inside an extension overlay. It draws the box tinted by the
  *  note's status, the rating pills, the donation notice that appears after a
@@ -16,26 +16,7 @@ import type { Vote } from "@cn/core/votes";
  *  saying that no note is needed, and sharing. This is the website's vote flow
  *  at popover size. Every note on a claim renders as its own box beside the
  *  others. */
-export function NoteWithActions({ note, myVote, onVote, session, shareUrl, onNeedLogin, onAuthored, onNnnAuthored, onDeleted }: {
-  note: NoteRow;
-  myVote: Vote | undefined;
-  /** Casts the vote and mints its donation. It resolves to the minted donation.
-   *  It resolves to null when the vote is retracted, when the note is the
-   *  viewer's own, and when nobody is signed in. */
-  onVote: (note: NoteRow, vote: Vote) => Promise<MintedDonation | null>;
-  session: Session | null;
-  shareUrl: string;
-  onNeedLogin: () => void;
-  /** Called when an improvement has just been posted on this note. The handler
-   *  mirrors the author's own vote on it and refreshes the group, so the new
-   *  note appears. */
-  onAuthored: (noteId: string) => void;
-  /** A note-not-needed entry was just posted on this note's claim. */
-  onNnnAuthored?: (entryId: string) => void;
-  /** Called when this note has been deleted. The handler refreshes the group,
-   *  because the extension gets no realtime updates. */
-  onDeleted?: () => void;
-}) {
+export function NoteWithActions({ note, shareUrl }: { note: NoteRow; shareUrl: string }) {
   const [sourcesOpen, setSourcesOpen] = useState(false);
   // The donation that was just minted. It makes the notice appear beneath the
   // pills. A note the viewer just posted starts with the parked donation its
@@ -45,6 +26,8 @@ export function NoteWithActions({ note, myVote, onVote, session, shareUrl, onNee
   const [cast, setCast] = useState<MintedDonation | null>(() => takeMintedDonation(note.id));
   const status = noteStatus(note);
   const nudge = useVotingNudge();
+  const myVote = useMyVotes().get(note.id);
+  const voteOnNote = useVoteOnNote();
   return (
     <div>
       <NoteBox note={note} status={status} sourcesOpen={sourcesOpen}>
@@ -58,12 +41,12 @@ export function NoteWithActions({ note, myVote, onVote, session, shareUrl, onNee
             showCounts={noteTallyVisible(status, myVote, note.created_at)}
             onVote={(vote) => {
               if (nudge.show) nudge.dismiss();
-              void onVote(note, vote).then(setCast);
+              void voteOnNote(note, vote).then(setCast);
             }}
           />
         </span>
       </NoteBox>
-      {cast && myVote !== undefined && session && (
+      {cast && myVote !== undefined && (
         <VoteDonation
           voteId={cast.voteId}
           pair={cast.pair}
@@ -76,11 +59,6 @@ export function NoteWithActions({ note, myVote, onVote, session, shareUrl, onNee
       <NoteMenu
         note={note}
         shareUrl={shareUrl}
-        session={session}
-        onNeedLogin={onNeedLogin}
-        onAuthored={onAuthored}
-        onNnnAuthored={onNnnAuthored ?? (() => {})}
-        onDeleted={onDeleted}
         sourcesOpen={sourcesOpen}
         onToggleSources={() => setSourcesOpen((o) => !o)}
       />

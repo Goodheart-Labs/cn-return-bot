@@ -1,15 +1,12 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { BUTTON, LINK } from "@cn/ui/classes";
 import type { Session } from "@supabase/supabase-js";
-import { useProjectFeed, useProjects } from "./lib/useFeedData";
-import { ensureUser, signOut } from "@cn/core/auth";
+import { useProjectFeed, useProjects } from "./lib/feedQueries";
+import { signOut } from "@cn/core/auth";
 import { useSession } from "@cn/features/auth/useSession";
-import { castVote, clearVote, fetchMyVotes, type Vote } from "@cn/core/votes";
-import { castNnnVote, clearNnnVote, fetchMyNnnVotes } from "@cn/core/noteNotNeeded";
-import { donationPair, priorTally } from "@cn/core/donationScoring";
+import { LoginPromptProvider } from "@cn/features/auth/loginPrompt";
 import { noteTally, probabilityHelpful, probabilityHelpfulAfter } from "@cn/core/noteBelief";
 import { mergeFeedNotes } from "@cn/core/feedOrder";
-import { saveDonation, preferredCharity, type MintedDonation } from "@cn/core/donations";
 import { readRoute, pushProject, pushItem, pushLeaderboard, noteUrl, type View } from "./lib/routing";
 import { identifyUser, resetAnalytics, track } from "@cn/core/analytics";
 import { capturePageview } from "./lib/analytics";
@@ -45,10 +42,14 @@ import { ItemChips } from "./components/ItemChips";
 import { Leaderboard } from "./components/Leaderboard";
 import { SystemTheme } from "./components/SystemTheme";
 import { ExtensionCornerLink } from "./components/ExtensionCornerLink";
-import type { NnnRow, NoteRow } from "@cn/core/types";
+import type { FeedItemRow, FeedProjectRow, NnnRow, NoteRow } from "@cn/core/types";
 import { noteStatus, totalVotes } from "@cn/core/noteScore";
 
 const NO_NNN: NnnRow[] = [];
+const NO_PROJECTS: FeedProjectRow[] = [];
+const NO_ITEMS: ReadonlyMap<string, FeedItemRow> = new Map();
+const NO_NOTES: ReadonlyMap<string, NoteRow> = new Map();
+const NO_ENTRIES: ReadonlyMap<string, NnnRow> = new Map();
 
 /** The three vote counts a note's feed position is derived from. */
 type RankTally = Pick<NoteRow, "helpful_count" | "somewhat_helpful_count" | "not_helpful_count">;
@@ -74,31 +75,26 @@ function NoteSection({ label, notes, render }: {
 }
 
 export function App() {
-  const { projects, failed: projectsFailed } = useProjects();
+  const projectsQuery = useProjects();
+  const projects = projectsQuery.data ?? NO_PROJECTS;
+  const projectsFailed = projectsQuery.isError;
   const { session, event: authEvent } = useSession();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   // The feed holds one project at a time. Selecting another project loads that
   // project's items, notes and entries and drops the previous project's.
-  const { items, notes, nnn, loaded, failed: feedFailed, retry: retryFeed } = useProjectFeed(selectedId);
+  const feed = useProjectFeed(selectedId);
+  const { failed: feedFailed, retry: retryFeed } = feed;
+  const loaded = !!feed.items && !!feed.noteSet;
+  const items = feed.items ?? NO_ITEMS;
+  const notes = feed.noteSet?.notes ?? NO_NOTES;
+  const nnn = feed.noteSet?.nnn ?? NO_ENTRIES;
   // Which top-level view is showing: the note feed or the rating leaderboard.
   const [view, setView] = useState<View>(() => readRoute().view);
   // Which item inside the project the feed is narrowed to. An item is one
   // episode, one post or one page. Null means every item.
   const [itemFilter, setItemFilter] = useState<string | null>(() => readRoute().item);
-  const [myVotes, setMyVotes] = useState<Map<string, Vote>>(new Map());
-  const [myNnnVotes, setMyNnnVotes] = useState<Map<string, Vote>>(new Map());
   const [loginOpen, setLoginOpen] = useState(false);
   const [writeOpen, setWriteOpen] = useState(false);
-
-  useEffect(() => {
-    if (session) {
-      fetchMyVotes().then(setMyVotes);
-      fetchMyNnnVotes().then(setMyNnnVotes);
-    } else {
-      setMyVotes(new Map());
-      setMyNnnVotes(new Map());
-    }
-  }, [session?.user.id]);
 
   // Once the user signs in we attach analytics to their account, and we drop that
   // link again when they sign out. We only reset on a real sign-out. The session
@@ -246,76 +242,6 @@ export function App() {
     }
   }, [loaded, notes, selectedId]);
 
-  // Casts the vote and mints its donation. The outcome-contingent pair is
-  // computed from the tally as it stood before this vote. It is frozen at that
-  // moment and stored against the vote row. The function returns the minted
-  // donation, and returns null in two cases. Retracting a vote returns null,
-  // and the database cascade removes the donation with it. A signed-out visitor
-  // returns null, since no vote is cast at all. A vote on your own note mints
-  // like any other vote.
-  const handleVote = async (note: NoteRow, vote: Vote): Promise<MintedDonation | null> => {
-    // A reader with no session gets an invisible anonymous account on the
-    // spot, so the vote just happens. Only when even that fails does the
-    // sign-in form appear.
-    const user = session?.user ?? (await ensureUser());
-    if (!user) {
-      track("vote_gated_login", { note_id: note.id });
-      setLoginOpen(true);
-      return null;
-    }
-    const current = myVotes.get(note.id);
-    const next = new Map(myVotes);
-    if (current === vote) {
-      next.delete(note.id);
-      setMyVotes(next);
-      await clearVote(note.id);
-      return null;
-    }
-    next.set(note.id, vote);
-    setMyVotes(next);
-    const voteId = await castVote(note.id, user.id, vote, "web");
-    if (!voteId) return null;
-    const pair = donationPair(priorTally(note, current), vote);
-    // The donation goes to the charity remembered on the account. The donation
-    // box lets the voter redirect it afterwards.
-    const charity = preferredCharity(user);
-    // A backend without migration 061 rejects the pair of amount columns. We
-    // keep the vote in that case. We just do not promise the user a donation the
-    // ledger never recorded.
-    const { error } = await saveDonation(voteId, charity, pair);
-    return error ? null : { voteId, charity, pair };
-  };
-
-  const handleNnnVote = async (entry: NnnRow, vote: Vote) => {
-    const user = session?.user ?? (await ensureUser());
-    if (!user) {
-      setLoginOpen(true);
-      return;
-    }
-    const current = myNnnVotes.get(entry.id);
-    const next = new Map(myNnnVotes);
-    if (current === vote) {
-      next.delete(entry.id);
-      setMyNnnVotes(next);
-      await clearNnnVote(entry.id);
-    } else {
-      next.set(entry.id, vote);
-      setMyNnnVotes(next);
-      await castNnnVote(entry.id, user.id, vote);
-    }
-  };
-
-  // A database trigger casts the author's own helpful vote on a note or an entry
-  // the moment they post it. We mirror that into the local vote maps, so the
-  // rating pills light up without refetching anything.
-  const nnnApi = {
-    myVotes: myNnnVotes,
-    onVote: handleNnnVote,
-    onAuthored: (entryId: string) =>
-      setMyNnnVotes((m) => new Map(m).set(entryId, 1)),
-  };
-  const noteAuthored = (noteId: string) => setMyVotes((m) => new Map(m).set(noteId, 1));
-
   const selected = projects.find((p) => p.id === selectedId) ?? null;
   // The project's items that actually have notes, newest first. This list feeds
   // both the chip row and the note feed.
@@ -433,17 +359,12 @@ export function App() {
       note={note}
       improvements={improvementsByOriginal.get(note.id) ?? []}
       nnnEntries={nnnByClaim.get(note.claim_id) ?? NO_NNN}
-      nnnApi={nnnApi}
       shareUrl={noteUrl(selected?.slug ?? "", note.id)}
-      myVote={myVotes.get(note.id)}
-      onVote={handleVote}
-      onAuthored={noteAuthored}
-      session={session}
-      onNeedLogin={() => setLoginOpen(true)}
     />
   );
 
   return (
+    <LoginPromptProvider value={() => setLoginOpen(true)}>
     <div className="md:flex">
       <Sidebar
         projects={projects}
@@ -483,7 +404,7 @@ export function App() {
             <AuthCorner session={session} onSignIn={() => setLoginOpen(true)} onSignOut={() => signOut()} />
           </div>
         </div>
-        {view === "leaderboard" && <Leaderboard session={session} myVoteCount={myVotes.size} />}
+        {view === "leaderboard" && <Leaderboard />}
         {view === "notes" && loaded && (
           <ItemChips
             items={projectItems}
@@ -525,5 +446,6 @@ export function App() {
       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
       <WriteNoteModal open={writeOpen} onClose={() => setWriteOpen(false)} />
     </div>
+    </LoginPromptProvider>
   );
 }

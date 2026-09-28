@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import type { Session } from "@supabase/supabase-js";
 import { ensureUser } from "@cn/core/auth";
-import { ensureWebItem } from "@cn/core/ensureWebItem";
-import { postClaimWithNote } from "@cn/core/postNote";
-import type { PageItem } from "@cn/core/notesQuery";
-import { PostAsCheckbox } from "@cn/features/notes/editorBits";
-import { Modal } from "@cn/ui/Modal";
+import type { PageItem } from "@cn/core/items";
 import { BUTTON, INPUT, QUOTE_RAIL } from "@cn/ui/classes";
+import { Modal } from "@cn/ui/Modal";
+import { useSession } from "@cn/features/auth/useSession";
+import { PostAsCheckbox } from "@cn/features/notes/editorBits";
+import { usePostClaimWithNote } from "@cn/features/notes/useNoteWrites";
 import { LoginPanel } from "./LoginPanel";
 
 /** Write a note anchored to the reader's selection. This is the extension's
@@ -17,17 +16,18 @@ import { LoginPanel } from "./LoginPanel";
  *  `pageForItem` carries what an item needs, and the item is only created
  *  when the note is actually posted. An overlay the reader closes again
  *  therefore leaves no orphan item behind. */
-export function WriteNoteOverlay({ item, pageForItem, selection, session, onClose, onPosted }: {
+export function WriteNoteOverlay({ item, pageForItem, selection, onClose, onPosted }: {
   item: PageItem | null;
   pageForItem?: { url: string; title: string };
   selection: string;
-  session: Session | null;
   onClose: () => void;
-  onPosted: () => void;
+  /** Called once the note is saved. The notes on screen refresh by themselves;
+   *  an uncovered page uses this to switch to the full notes view. */
+  onPosted?: () => void;
 }) {
+  const { session } = useSession();
   const [note, setNote] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const post = usePostClaimWithNote();
   // Bylines are opt-in, so a note is anonymous by default. That is how
   // Community Notes works on X. Nathan asked for this on 2026-07-14.
   const [signed, setSigned] = useState(false);
@@ -42,34 +42,17 @@ export function WriteNoteOverlay({ item, pageForItem, selection, session, onClos
     if (!session) void ensureUser().then((user) => setAnonFailed(!user));
   }, [session]);
 
-  const submit = async () => {
+  const submit = () => {
     if (!session) return;
-    setBusy(true);
-    setError(null);
-    let itemId = item?.id;
-    let itemUrl = item?.url;
-    if (!itemId) {
-      if (!pageForItem) return;
-      try {
-        itemId = await ensureWebItem(pageForItem);
-        itemUrl = pageForItem.url;
-      } catch (err) {
-        setBusy(false);
-        return setError((err as Error).message);
-      }
-    }
-    const outcome = await postClaimWithNote({
-      itemId,
-      itemUrl: itemUrl!,
-      anchorText: selection,
-      note,
-      session,
-      signed,
-    });
-    setBusy(false);
-    if (outcome.type === "error") return setError(outcome.message);
-    onPosted();
-    onClose();
+    post.mutate(
+      { item, page: pageForItem ?? { url: item!.url, title: item!.title ?? "" }, anchorText: selection, note, session, signed },
+      {
+        onSuccess: () => {
+          onPosted?.();
+          onClose();
+        },
+      },
+    );
   };
 
   return (
@@ -92,13 +75,13 @@ export function WriteNoteOverlay({ item, pageForItem, selection, session, onClos
             />
             <div className="flex gap-2 items-center justify-end">
               <PostAsCheckbox signed={signed} onChange={setSigned} session={session} className="mr-auto" />
-              <button onClick={submit} disabled={busy || note.trim().length < 10} className={BUTTON}>
-                {busy ? "Posting…" : "Post draft note"}
+              <button onClick={submit} disabled={post.isPending || note.trim().length < 10} className={BUTTON}>
+                {post.isPending ? "Posting…" : "Post draft note"}
               </button>
             </div>
           </>
         )}
-        {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+        {post.error && <p className="text-sm text-red-600 dark:text-red-400">{post.error.message}</p>}
     </Modal>
   );
 }

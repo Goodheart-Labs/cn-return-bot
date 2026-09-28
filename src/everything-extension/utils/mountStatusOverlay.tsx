@@ -1,7 +1,7 @@
 import { createRoot, type Root } from "react-dom/client";
 import { createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
-import { requestCreatorPriority } from "@cn/core/noteRequests";
+import { requestCreatorPriority } from "@cn/core/creators";
 import { StatusOverlay, type StatusAction } from "../components/StatusOverlay";
 import type { NoteCounts } from "./claimGroups";
 import { priorityButtonLabel, priorityDoneLabel, type CreatorTarget } from "./creatorTarget";

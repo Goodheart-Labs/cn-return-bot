@@ -1,18 +1,20 @@
 import { useEffect, useRef, useState } from "react";
-import type { Session } from "@supabase/supabase-js";
-import { LinkifiedText } from "../../dashboard-shared/LinkifiedText";
-import { VoteRatings } from "./VoteRatings";
-import { ClaimContent, type NotedContent } from "./ClaimContent";
-import { quoteFragmentUrl } from "../../dashboard-shared/textFragment";
-import type { ClaimRef, NnnRow, NoteRow, NoteSourceDetail } from "@cn/core/types";
-import { fetchNoteSourceDetails } from "@cn/core/notesQuery";
-import { takeMintedDonation, type MintedDonation } from "@cn/core/donations";
-import type { Vote } from "@cn/core/votes";
+import { useQuery } from "@tanstack/react-query";
+import { fetchNoteSourceDetails } from "@cn/core/notes";
 import { noteStatus, noteTallyVisible, type NoteStatus } from "@cn/core/noteScore";
+import type { MintedDonation } from "@cn/core/donations";
+import type { ClaimRef, NnnRow, NoteRow } from "@cn/core/types";
 import { CARD, CHIP, LINK, QUOTE_RAIL } from "@cn/ui/classes";
-import { NoteMenu } from "./NoteMenu";
-import { NoteNotNeeded, type NnnApi } from "./NoteNotNeeded";
+import { LinkifiedText } from "../../dashboard-shared/LinkifiedText";
+import { quoteFragmentUrl } from "../../dashboard-shared/textFragment";
 import { VoteDonation } from "../donations/VoteDonation";
+import { takeMintedDonation } from "../donations/mintedDonations";
+import { queryKeys } from "../query/queryKeys";
+import { ClaimContent, type NotedContent } from "./ClaimContent";
+import { NoteMenu } from "./NoteMenu";
+import { NoteNotNeeded } from "./NoteNotNeeded";
+import { useMyVotes, useVoteOnNote } from "./useVotes";
+import { VoteRatings } from "./VoteRatings";
 import { useVotingNudge, VotingNudge } from "./VotingNudge";
 
 /** The rating states, in the style of Community Notes. Each one carries the
@@ -67,16 +69,17 @@ function noteText(note: NoteRow): string {
  *
  *  The quotes are the largest thing a note carries and most readers never open
  *  this, so the feed loads without them and this fetches them the first time it
- *  is opened. It keeps them afterwards, so opening and closing costs one
- *  request. */
+ *  is opened. */
 function SourceDetails({ open, noteId }: { open: boolean; noteId: string }) {
-  const [detailed, setDetailed] = useState<NoteSourceDetail[]>([]);
-  const requested = useRef(false);
-  useEffect(() => {
-    if (!open || requested.current) return;
-    requested.current = true;
-    fetchNoteSourceDetails(noteId).then(setDetailed);
-  }, [open, noteId]);
+  // The query starts the first time the reveal opens and keeps its answer, so
+  // closing and opening again costs nothing.
+  const [requested, setRequested] = useState(open);
+  if (open && !requested) setRequested(true);
+  const detailed = useQuery({
+    queryKey: queryKeys.sourceDetails(noteId),
+    queryFn: () => fetchNoteSourceDetails(noteId),
+    enabled: requested,
+  }).data ?? [];
   return (
     <div
       style={{ display: "grid", gridTemplateRows: open ? "1fr" : "0fr", transition: "grid-template-rows 300ms ease" }}
@@ -340,7 +343,7 @@ function ImprovementLinks({ note, improvements }: { note: NoteRow; improvements:
 // Composed the same way as a card in the review dashboard. The content comes
 // first, then the note, then the stats row. Here the voting is live and the
 // reader can suggest an improvement.
-export function NoteCard({ note, improvements, nnnEntries, nnnApi, shareUrl, myVote, onVote, onAuthored, session, onNeedLogin }: {
+export function NoteCard({ note, improvements, nnnEntries, shareUrl }: {
   note: NoteRow;
   /** The notes that improve this one. This is the reverse of
    *  improved_from_note_id. */
@@ -348,20 +351,8 @@ export function NoteCard({ note, improvements, nnnEntries, nnnApi, shareUrl, myV
   /** The claim's note-not-needed entries, oldest first. Every note on the same
    *  text shares this list. */
   nnnEntries: NnnRow[];
-  nnnApi: NnnApi;
   /** The absolute deep link the Share button copies. */
   shareUrl: string;
-  myVote: Vote | undefined;
-  /** Casts the vote and mints its donation. It resolves to the minted donation,
-   *  which carries the vote id, the charity and the frozen pair. It resolves to
-   *  null when the vote was retracted, when it was cast on the user's own note,
-   *  or when something failed. */
-  onVote: (note: NoteRow, vote: Vote) => Promise<MintedDonation | null>;
-  /** Called when this user has just posted a note. The caller mirrors the note's
-   *  automatic self-vote into its local state. */
-  onAuthored: (noteId: string) => void;
-  session: Session | null;
-  onNeedLogin: () => void;
 }) {
   const [ctxOpen, setCtxOpen] = useState(false);
   // Set right after a vote is cast. It holds the donation just minted, and its
@@ -373,6 +364,8 @@ export function NoteCard({ note, improvements, nnnEntries, nnnApi, shareUrl, myV
   // already lit.
   const [cast, setCast] = useState<MintedDonation | null>(() => takeMintedDonation(note.id));
   const nudge = useVotingNudge();
+  const myVote = useMyVotes().get(note.id);
+  const voteOnNote = useVoteOnNote();
   const cardColRef = useRef<HTMLDivElement>(null);
   const [sourcesOpen, setSourcesOpen] = useState(false);
   // The status is computed once per card. The badge, the box tint, the reveal of
@@ -382,16 +375,16 @@ export function NoteCard({ note, improvements, nnnEntries, nnnApi, shareUrl, myV
   // A stored context_paragraph always contains its context_quote word for word.
   // Ingest enforces that, not this component. It is why the bolding below always
   // finds its span.
-  const paragraph = claim?.context_paragraph;
-  const quoteInParagraph = claim?.context_quote ?? claim?.claim ?? "";
+  const paragraph = claim.context_paragraph;
+  const quoteInParagraph = claim.context_quote ?? claim.claim;
   return (
     <div id={`note-${note.id}`} className="scroll-mt-4 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,40rem)_minmax(0,1fr)] xl:gap-4 items-start">
-      {paragraph && claim && (
+      {paragraph && (
         <div className="hidden xl:block xl:col-start-1 xl:row-start-1">
           <ContextParagraph paragraph={paragraph} quote={quoteInParagraph} fitTo={cardColRef} />
         </div>
       )}
-      {paragraph && claim && (
+      {paragraph && (
         <div
           className="xl:hidden w-full max-w-[40rem] mx-auto"
           style={{ display: "grid", gridTemplateRows: ctxOpen ? "1fr" : "0fr", transition: "grid-template-rows 300ms ease" }}
@@ -405,20 +398,18 @@ export function NoteCard({ note, improvements, nnnEntries, nnnApi, shareUrl, myV
         </div>
       )}
       <div ref={cardColRef} className={`${CARD} p-4 w-full max-w-[40rem] mx-auto xl:max-w-none xl:mx-0 xl:col-start-2 xl:row-start-1`}>
-      {claim && (
-        <div className="mb-3">
-          {claim.image_urls?.length > 0 && <ClaimImages urls={claim.image_urls} />}
-          {paragraph && (
-            <button
-              onClick={() => setCtxOpen((o) => !o)}
-              className={`xl:hidden text-xs mb-2 ${LINK}`}
-            >
-              {ctxOpen ? "Hide surrounding context" : "Show surrounding context"}
-            </button>
-          )}
-          <ClaimContent content={claimContent(claim)} />
-        </div>
-      )}
+      <div className="mb-3">
+        {claim.image_urls.length > 0 && <ClaimImages urls={claim.image_urls} />}
+        {paragraph && (
+          <button
+            onClick={() => setCtxOpen((o) => !o)}
+            className={`xl:hidden text-xs mb-2 ${LINK}`}
+          >
+            {ctxOpen ? "Hide surrounding context" : "Show surrounding context"}
+          </button>
+        )}
+        <ClaimContent content={claimContent(claim)} />
+      </div>
 
       <div className="mb-2">
         <NoteBox note={note} status={status} sourcesOpen={sourcesOpen}>
@@ -432,12 +423,12 @@ export function NoteCard({ note, improvements, nnnEntries, nnnApi, shareUrl, myV
               showCounts={noteTallyVisible(status, myVote, note.created_at)}
               onVote={(vote) => {
                 if (nudge.show) nudge.dismiss();
-                void onVote(note, vote).then(setCast);
+                void voteOnNote(note, vote).then(setCast);
               }}
             />
           </span>
         </NoteBox>
-        {cast && myVote !== undefined && session && (
+        {cast && myVote !== undefined && (
           <VoteDonation
             voteId={cast.voteId}
             pair={cast.pair}
@@ -452,17 +443,13 @@ export function NoteCard({ note, improvements, nnnEntries, nnnApi, shareUrl, myV
       <NoteMenu
         note={note}
         shareUrl={shareUrl}
-        session={session}
-        onNeedLogin={onNeedLogin}
-        onAuthored={onAuthored}
-        onNnnAuthored={nnnApi.onAuthored}
         sourcesOpen={sourcesOpen}
         onToggleSources={() => setSourcesOpen((o) => !o)}
       >
         <ImprovementLinks note={note} improvements={improvements} />
       </NoteMenu>
 
-      <NoteNotNeeded entries={nnnEntries} api={nnnApi} session={session} />
+      <NoteNotNeeded entries={nnnEntries} />
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
-import type { Session, User } from "@supabase/supabase-js";
+import type { AuthChangeEvent, Session, User } from "@supabase/supabase-js";
+import { extensionStorage, readBrowserFlag, setBrowserFlag } from "./extensionStorage";
 import { supabase } from "./supabase";
 
 /* Whether a real account has ever signed in on this browser. Once it has,
@@ -11,40 +12,78 @@ import { supabase } from "./supabase";
  * website keeps it in localStorage. */
 const SIGNED_IN_BEFORE_KEY = "cn:signedInBefore";
 
-function extensionLocalStorage(): { get: (key: string) => Promise<Record<string, unknown>>; set: (items: Record<string, unknown>) => Promise<void> } | null {
-  const g = globalThis as { browser?: any; chrome?: any };
-  return g.browser?.storage?.local ?? g.chrome?.storage?.local ?? null;
-}
-
-export async function getSignedInBefore(): Promise<boolean> {
-  const ext = extensionLocalStorage();
-  if (ext) return !!(await ext.get(SIGNED_IN_BEFORE_KEY))[SIGNED_IN_BEFORE_KEY];
-  try {
-    return localStorage.getItem(SIGNED_IN_BEFORE_KEY) === "true";
-  } catch {
-    return false;
-  }
-}
-
-function rememberSignedInBefore(): void {
-  const ext = extensionLocalStorage();
-  if (ext) {
-    void ext.set({ [SIGNED_IN_BEFORE_KEY]: true });
-    return;
-  }
-  try {
-    localStorage.setItem(SIGNED_IN_BEFORE_KEY, "true");
-  } catch {
-    // A browser that blocks storage cannot remember; the loop stays possible
-    // there, which is no worse than clearing site data.
-  }
-}
+export const getSignedInBefore = () => readBrowserFlag(SIGNED_IN_BEFORE_KEY, "local");
 
 /** Stamps the browser as having held a real account whenever one is seen.
- *  useSession calls this on every session it observes, which covers code
- *  verifies, OAuth returns, and restored sessions on later visits. */
-export function noteRealSession(session: Session | null): void {
-  if (session && !session.user.is_anonymous) rememberSignedInBefore();
+ *  The session store below calls this on every session it observes, which
+ *  covers code verifies, OAuth returns, and restored sessions on later
+ *  visits. */
+function noteRealSession(session: Session | null): void {
+  if (session && !session.user.is_anonymous) setBrowserFlag(SIGNED_IN_BEFORE_KEY, "local");
+}
+
+/** The current session, as one store per JavaScript context. `ready` turns
+ *  true once the stored session has been read. `event` is the last auth
+ *  transition, which lets a consumer tell an actual SIGNED_IN apart from
+ *  INITIAL_SESSION, a returning user's persisted session on page load. */
+export interface SessionState {
+  session: Session | null;
+  ready: boolean;
+  event: AuthChangeEvent | null;
+}
+
+let sessionState: SessionState = { session: null, ready: false, event: null };
+const sessionListeners = new Set<() => void>();
+let watchingSession = false;
+
+function publishSession(next: Partial<SessionState>, label: string) {
+  sessionState = { ...sessionState, ...next };
+  noteRealSession(sessionState.session);
+  // These diagnostics are for the extension only. The website's console stays
+  // clean.
+  if (extensionStorage()) {
+    const s = sessionState.session;
+    console.debug(`[common-notes] session (${label}): ${s ? s.user.email ?? s.user.id : "none"}`);
+  }
+  sessionListeners.forEach((listener) => listener());
+}
+
+/** Starts following the session the first time anyone subscribes. The popup,
+ *  the content scripts and the background each run their own supabase-js
+ *  instance, and all of them share one session in chrome.storage.local.
+ *  onAuthStateChange only fires in the context that made the change, so the
+ *  shared storage is watched as well, and a login in the popup then reaches
+ *  every open page. */
+function watchSession() {
+  watchingSession = true;
+  void supabase.auth.getSession().then(({ data, error }) => {
+    publishSession({ session: data.session, ready: true }, "mount");
+    if (error) console.debug(`[common-notes] getSession error: ${error.message}`);
+  });
+  supabase.auth.onAuthStateChange((event, session) => publishSession({ session, event }, `event ${event}`));
+  extensionStorage()?.onChanged.addListener((changes, area) => {
+    const authKeyChanged = Object.keys(changes).some((k) => k.startsWith("sb-") && k.endsWith("-auth-token"));
+    if (area !== "local" || !authKeyChanged) return;
+    void supabase.auth.getSession().then(({ data }) => publishSession({ session: data.session }, "storage change"));
+  });
+}
+
+/** Subscribes to session changes, in the shape React's useSyncExternalStore
+ *  expects. The returned function unsubscribes. */
+export function subscribeToSession(listener: () => void): () => void {
+  if (!watchingSession) watchSession();
+  sessionListeners.add(listener);
+  return () => sessionListeners.delete(listener);
+}
+
+export const currentSessionState = (): SessionState => sessionState;
+
+/** The signed-in user, read from the stored session, or null. Reading it this
+ *  way refreshes an expired token on demand, which the extension relies on
+ *  because its service worker keeps no timers. */
+export async function signedInUser(): Promise<User | null> {
+  const { data } = await supabase.auth.getSession();
+  return data.session?.user ?? null;
 }
 
 /** Returns the signed-in user, creating an invisible anonymous account when
@@ -56,8 +95,8 @@ export function noteRealSession(session: Session | null): void {
  *  SIGNED_IN_BEFORE_KEY) or the backend refuses; the caller then falls back
  *  to the sign-in form. */
 export async function ensureUser(): Promise<User | null> {
-  const { data } = await supabase.auth.getSession();
-  if (data.session) return data.session.user;
+  const user = await signedInUser();
+  if (user) return user;
   if (await getSignedInBefore()) {
     console.info("[common-notes] not minting an anonymous account: this browser has signed in before");
     return null;
@@ -116,21 +155,51 @@ export function verifyEmailCode(email: string, code: string, flow: EmailFlow = "
   return supabase.auth.verifyOtp({ email, token: code, type: flow === "upgrade" ? "email_change" : "email" });
 }
 
-/** X sign-in. With an anonymous session held, the X identity is linked onto
- *  that account instead, which keeps its votes and notes. Linking fails
- *  before the redirect when manual linking is disabled on the backend; we
- *  fall back to the ordinary sign-in then. An X identity that already
- *  belongs to another account fails after the redirect, and the reader
- *  simply stays anonymous and can try again. */
-export async function signInWithTwitter() {
-  const options = { redirectTo: window.location.href };
-  const { data } = await supabase.auth.getSession();
-  if (data.session?.user.is_anonymous) {
-    const { error } = await supabase.auth.linkIdentity({ provider: "twitter", options });
-    if (!error) return { error: null };
-    console.warn(`[common-notes] X identity link failed, falling back to sign-in: ${error.message}`);
+/** Starts X sign-in. With an anonymous session held, the X identity is linked
+ *  onto that account instead, which keeps its votes and notes. Linking fails
+ *  before the redirect when manual linking is disabled on the backend; we fall
+ *  back to the ordinary sign-in then. An X identity that already belongs to
+ *  another account fails after the redirect, and the reader simply stays
+ *  anonymous and can try again. */
+async function startXSignIn(options: { redirectTo: string; skipBrowserRedirect?: boolean }) {
+  if ((await signedInUser())?.is_anonymous) {
+    const linked = await supabase.auth.linkIdentity({ provider: "twitter", options });
+    if (!linked.error) return linked;
+    console.warn(`[common-notes] X identity link failed, falling back to sign-in: ${linked.error.message}`);
   }
   return supabase.auth.signInWithOAuth({ provider: "twitter", options });
+}
+
+/** The website's X sign-in. The browser leaves for X and comes back to the
+ *  page it left, which must be on the project's redirect allow-list. */
+export const signInWithTwitter = () => startXSignIn({ redirectTo: window.location.href });
+
+/** The extension's X sign-in, run from the background script. Supabase builds
+ *  the provider URL but does not open it, because `skipBrowserRedirect` is set.
+ *  `openPopup` runs the OAuth exchange in a popup window; in the extension that
+ *  is launchWebAuthFlow. This is the implicit flow, so the tokens come back in
+ *  the hash of the redirect URL, and we hand them to setSession. `redirectTo`
+ *  must be on the Supabase redirect allow-list. */
+export async function signInWithTwitterInPopup(
+  redirectTo: string,
+  openPopup: (url: string) => Promise<string | undefined>,
+): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const { data, error } = await startXSignIn({ redirectTo, skipBrowserRedirect: true });
+    if (error || !data?.url) return { ok: false, error: error?.message ?? "could not start OAuth" };
+    const resultUrl = await openPopup(data.url);
+    if (!resultUrl) return { ok: false, error: "sign-in window closed" };
+    const params = new URLSearchParams(new URL(resultUrl).hash.slice(1));
+    const access_token = params.get("access_token");
+    const refresh_token = params.get("refresh_token");
+    if (!access_token || !refresh_token) {
+      return { ok: false, error: params.get("error_description") ?? "no tokens in OAuth redirect" };
+    }
+    const { error: sessionError } = await supabase.auth.setSession({ access_token, refresh_token });
+    return sessionError ? { ok: false, error: sessionError.message } : { ok: true };
+  } catch (err) {
+    return { ok: false, error: (err as Error).message };
+  }
 }
 
 export function signOut() {

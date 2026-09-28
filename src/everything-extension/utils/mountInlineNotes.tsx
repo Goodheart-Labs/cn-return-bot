@@ -1,12 +1,15 @@
 import { createRoot, type Root } from "react-dom/client";
+import { QueryClientProvider, QueryObserver } from "@tanstack/react-query";
+import type { NoteSet } from "@cn/features/notes/noteSet";
+import { queryClient } from "@cn/features/query/queryClient";
 import { PASSAGE_TINT_DARK, PASSAGE_TINT_LIGHT } from "./markerPalette";
 import { createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
-import { fetchItemForUrl, isWholePageChecked } from "@cn/core/notesQuery";
+import { fetchItemForUrl, isWholePageChecked } from "@cn/core/items";
 import { normalizePageUrl } from "@cn/core/pageUrls";
 import { resolveReaderCanonical } from "./readerCanonical";
 import { indexContainer, findQuoteRange } from "./anchor";
-import { fetchClaimGroups, type ClaimGroup } from "./claimGroups";
+import { claimGroups, itemNoteSetQuery, noteCounts, type ClaimGroup } from "./claimGroups";
 import { mountCoverageBadges } from "./coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "./coveredPages";
 import { isSubstackPostPage } from "./pageShape";
@@ -16,7 +19,7 @@ import { mountStatusOverlay } from "./mountStatusOverlay";
 import { mountWriteAnywhere } from "./mountWriteAnywhere";
 import { REQUEST_NOTES_CHANGED_EVENT } from "./requestLive";
 import { listenForRequestInfo } from "./requestInfo";
-import { getSettings, onNoteFiltersChanged, onSettingsChanged, type NoteStyle } from "./settings";
+import { getNoteFilters, getSettings, onNoteFiltersChanged, onSettingsChanged, type NoteStyle } from "./settings";
 import { isPageDark, observePageTheme } from "./pageTheme";
 import { InlineNotesApp, type AnchoredGroup } from "../components/InlineNotes";
 import { track } from "@cn/core/analytics";
@@ -87,8 +90,8 @@ function findClaimImageRange(container: Element, imageUrls: string[]): Range | n
 function anchorGroups(container: Element, groups: ClaimGroup[]): AnchoredGroup[] {
   const index = indexContainer(container);
   const anchored: AnchoredGroup[] = [];
-  for (const { claimId, notes, nnn } of groups) {
-    const claim = notes[0]!.claim!;
+  for (const group of groups) {
+    const { claim } = group;
     const candidates = [claim.updated_quote, claim.context_quote, claim.context_paragraph];
     let range: Range | null = null;
     for (const candidate of candidates) {
@@ -96,12 +99,16 @@ function anchorGroups(container: Element, groups: ClaimGroup[]): AnchoredGroup[]
       if (range) break;
     }
     if (!range && claim.image_urls.length > 0) range = findClaimImageRange(container, claim.image_urls);
-    if (range) anchored.push({ claimId, primary: notes[0]!, alternatives: notes.slice(1), nnn, range });
+    if (range) anchored.push({ ...group, range });
   }
   console.info(`[common-notes] anchored ${anchored.length}/${groups.length} claims on this page`);
   return anchored;
 }
 
+
+/** Whether this browser has the CSS Custom Highlight API. TypeScript's DOM
+ *  types assume it always does, but old Firefox ESR releases lack it. */
+const hasHighlightApi = () => "highlights" in CSS;
 
 /** Makes sure the ::highlight rule exists in the host document. The rule cannot live
  *  in our shadow root, because the text it highlights belongs to the page itself.
@@ -121,10 +128,9 @@ function ensureHighlightStyle(dark: boolean) {
 /** Tints the anchored passages with the CSS Custom Highlight API. That API changes no
  *  nodes in the host page, so the page's own framework never notices us. */
 function applyHighlights(ranges: Range[]) {
-  const highlights = (CSS as any).highlights;
-  if (!highlights) return; // Old Firefox ESR has no Highlight API. Badges still show, only the tint is missing.
-  if (ranges.length === 0) highlights.delete(HIGHLIGHT_NAME);
-  else highlights.set(HIGHLIGHT_NAME, new (globalThis as any).Highlight(...ranges));
+  if (!hasHighlightApi()) return; // Old Firefox ESR has no Highlight API. Badges still show, only the tint is missing.
+  if (ranges.length === 0) CSS.highlights.delete(HIGHLIGHT_NAME);
+  else CSS.highlights.set(HIGHLIGHT_NAME, new Highlight(...ranges));
 }
 
 /** Resolves `href` to an ingested item, anchors that item's claims and mounts the
@@ -161,24 +167,28 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   }
   recordPageVisit(pageUrl, item);
   // We mount even when the item has no notes yet. Writing a note from a selection
-  // works on any ingested page, and refresh() brings the new note in.
-  const fetched = await fetchClaimGroups(item.id);
+  // works on any ingested page, and the cache observer below brings the new
+  // note in.
+  const notesQuery = itemNoteSetQuery(item.id);
   // The same rule as the lookup: a failed notes fetch mounts no status card,
   // because "found nothing to note" must never be an outage in disguise.
-  if (fetched === null) {
-    console.warn(`[common-notes] ${pageUrl} → notes fetch failed, mounting nothing`);
+  let noteSet: NoteSet;
+  try {
+    noteSet = await queryClient.fetchQuery(notesQuery);
+  } catch (err) {
+    console.warn(`[common-notes] ${pageUrl} → notes fetch failed, mounting nothing:`, err);
     return null;
   }
-  let groups = fetched.groups;
-  const counts = fetched.counts;
+  let filters = await getNoteFilters();
+  const counts = () => noteCounts(noteSet.notes.values(), filters);
   // The extension's top of funnel: notes were actually displayed to a reader.
   // Once per page by construction — mountForUrl runs once per URL.
-  if (groups.length > 0) {
+  if (counts().visible > 0) {
     track("notes_shown", {
       surface: "inline",
       item_id: item.id,
-      claim_count: groups.length,
-      note_count: counts.visible,
+      claim_count: claimGroups(noteSet, filters).length,
+      note_count: counts().visible,
     });
   }
 
@@ -193,7 +203,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   const statusCard = (await getSettings()).showNoteCountOverlay
     ? await mountStatusOverlay(ctx, {
         noun: isSubstackPostPage(pageUrl) ? "post" : "page",
-        counts,
+        counts: counts(),
         wholePageChecked: isWholePageChecked(item),
         onOpenNotes: jumpToNextNote,
       })
@@ -233,7 +243,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     const dark = isPageDark(findContainer());
     themeRoot?.classList.toggle("dark", dark);
     inlineUi.uiContainer.classList.toggle("dark", dark);
-    if ((CSS as any).highlights) ensureHighlightStyle(dark);
+    if (hasHighlightApi()) ensureHighlightStyle(dark);
   };
 
   // We look the container up again on every render. A navigation inside a
@@ -249,33 +259,32 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     // the debounced observer once, and then everything settles.
     if (!inlineUi.shadowHost.isConnected) inlineUi.mount();
     const container = findContainer();
-    const anchored = anchorGroups(container, groups);
+    const anchored = anchorGroups(container, claimGroups(noteSet, filters));
     applyHighlights(anchored.map((g) => g.range));
     reactRoot?.render(
-      <InlineNotesApp
-        groups={anchored}
-        item={item}
-        onPosted={refresh}
-        container={container}
-        inlineContainer={inlineUi.uiContainer}
-        noteStyle={noteStyle}
-      />,
+      <QueryClientProvider client={queryClient}>
+        <InlineNotesApp groups={anchored} item={item} container={container} inlineContainer={inlineUi.uiContainer} noteStyle={noteStyle} />
+      </QueryClientProvider>,
     );
   };
 
-  const refresh = async () => {
-    // A failed refresh keeps what is on screen rather than blanking it.
-    const next = await fetchClaimGroups(item.id);
-    if (next === null) return;
-    groups = next.groups;
-    // The status card's sentence follows along. Without this, posting a note
-    // while the card still stands would leave "found nothing to note" up.
-    statusCard?.updateCounts(next.counts);
+  // A vote, a new note or a deletion changes the page's cached notes. The
+  // observer hears every such change, and the status card and the markers
+  // follow it on the spot.
+  const stopNotes = new QueryObserver(queryClient, notesQuery).subscribe(({ data }) => {
+    if (!data || data === noteSet) return;
+    noteSet = data;
+    statusCard?.updateCounts(counts());
     render();
-  };
-  // When the user flips a tickbox in the popup, we re-fetch the notes through the
-  // new filters right away.
-  const stopFilters = onNoteFiltersChanged(() => void refresh());
+  });
+  // A flipped tickbox in the settings applies straight away.
+  const stopFilters = onNoteFiltersChanged(() => {
+    void getNoteFilters().then((next) => {
+      filters = next;
+      statusCard?.updateCounts(counts());
+      render();
+    });
+  });
   // A note-style flip in the settings re-renders the markers in place.
   const stopSettings = onSettingsChanged(() => {
     void getSettings().then((settings) => {
@@ -307,7 +316,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     },
     onRemove(root) {
       root?.unmount();
-      (CSS as any).highlights?.delete(HIGHLIGHT_NAME);
+      if (hasHighlightApi()) CSS.highlights.delete(HIGHLIGHT_NAME);
     },
   });
   ui.mount();
@@ -332,6 +341,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   observer.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
 
   return () => {
+    stopNotes();
     stopFilters();
     stopSettings();
     stopTheme();

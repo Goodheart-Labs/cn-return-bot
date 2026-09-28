@@ -1,5 +1,6 @@
 import { browser } from "#imports";
-import { supabase } from "@cn/core/supabase";
+import { signedInUser } from "@cn/core/auth";
+import { insertEvent } from "@cn/core/events";
 import { setAnalyticsSink } from "@cn/core/analytics";
 
 // The extension's analytics transport: rows in the everything_events table
@@ -102,20 +103,14 @@ async function capture(event: string, props?: Record<string, unknown>): Promise<
   // stored id — a stored id with an expired session would fail the check.
   // An anonymous session carries no user_id: it is not a signed-in user, and
   // stamping its events would flatten the sign-up funnel.
-  const { data } = await supabase.auth.getSession();
-  const user = data.session?.user;
-  const { error } = await supabase.from("everything_events").insert({
+  const user = await signedInUser();
+  return insertEvent({
     event,
     platform: "extension",
-    device_id: await deviceId(),
-    user_id: user && !user.is_anonymous ? user.id : null,
-    props: {
-      browser: import.meta.env.BROWSER,
-      app_version: browser.runtime.getManifest().version,
-      ...props,
-    },
+    deviceId: await deviceId(),
+    userId: user && !user.is_anonymous ? user.id : null,
+    props: { browser: import.meta.env.BROWSER, app_version: browser.runtime.getManifest().version, ...props },
   });
-  return !error;
 }
 
 /** Today as a UTC date, the same day boundary the dashboard buckets on. */

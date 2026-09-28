@@ -1,4 +1,5 @@
 import type { ContentScriptContext } from "#imports";
+import { browser } from "#imports";
 import { normalizePageUrl } from "@cn/core/pageUrls";
 import { progressIsTerminal } from "@cn/core/requestProgress";
 import { jumpToNextNote } from "./jumpBus";
@@ -79,7 +80,6 @@ export function listenForLiveRequests(ctx: ContentScriptContext): void {
     });
   };
 
-  const runtime = (globalThis as any).browser?.runtime ?? (globalThis as any).chrome?.runtime;
   const listener = (message: unknown) => {
     const { type, pageUrl, token } = (message as { type?: string; pageUrl?: string; token?: string }) ?? {};
     if (type !== "cn-request-live" || !pageUrl || !token) return;
@@ -91,9 +91,9 @@ export function listenForLiveRequests(ctx: ContentScriptContext): void {
       .then((stored) => start(stored ?? { pageUrl, token, requestedAt: Date.now() }))
       .catch(() => {});
   };
-  runtime?.onMessage.addListener(listener);
+  browser.runtime.onMessage.addListener(listener);
   ctx.onInvalidated(() => {
-    runtime?.onMessage.removeListener(listener);
+    browser.runtime.onMessage.removeListener(listener);
     teardown();
   });
 

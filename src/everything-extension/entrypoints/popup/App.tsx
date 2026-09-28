@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { browser } from "#imports";
-import { fetchItemForUrl, fetchNotesForItem, isWholePageChecked, type PageItem } from "@cn/core/notesQuery";
+import { fetchItemForUrl, isWholePageChecked, type PageItem } from "@cn/core/items";
+import { fetchNotesForItem } from "@cn/core/notes";
 import { extractYoutubeVideoId, normalizePageUrl } from "@cn/core/pageUrls";
-import { noteStatus } from "@cn/core/noteScore";
 import type { NoteRow } from "@cn/core/types";
 import { submitNoteRequest } from "@cn/core/noteRequests";
 import { progressIsTerminal, progressLines, type RequestProgress } from "@cn/core/requestProgress";
 import { authorFeedStatusForTab, type AuthorFeedStatus } from "../../utils/authorFeed";
 import { getLiveRequest, removeLiveRequest, saveLiveRequest, type LiveRequest } from "../../utils/liveRequests";
 import { fetchProgressSnapshot } from "../../utils/requestProgressController";
-import { noteVisible, type NoteCounts } from "../../utils/claimGroups";
+import { noteCounts, type NoteCounts } from "../../utils/claimGroups";
 import { genericScriptId } from "../../utils/genericScript";
 import { resolveReaderCanonical } from "../../utils/readerCanonical";
 import { priorityActiveLabel, type CreatorTarget } from "../../utils/creatorTarget";
@@ -39,31 +40,26 @@ async function activeTab() {
   return tab;
 }
 
-function usePageState(): PageState {
-  const [state, setState] = useState<PageState>({ kind: "loading" });
-  useEffect(() => {
-    (async () => {
-      const tab = await activeTab();
-      const url = tab?.url;
-      if (!url || !/^https?:/.test(url)) return setState({ kind: "unsupported" });
-      const origin = new URL(url).origin;
-      const readerCanonical = await resolveReaderCanonical(url);
-      // An outage is its own state. Falling through to "no item" would offer
-      // to check a page we may well have checked already.
-      let item;
-      try {
-        item = await fetchItemForUrl(normalizePageUrl(readerCanonical ?? url));
-      } catch {
-        return setState({ kind: "load_failed" });
-      }
-      if (!item) return setState({ kind: "no_item", origin, pageUrl: normalizePageUrl(readerCanonical ?? url) });
-      const notes = await fetchNotesForItem(item.id);
-      if (notes === null) return setState({ kind: "load_failed" });
-      setState({ kind: "item", origin, item, notes });
-    })();
-  }, []);
-  return state;
+/** What the popup knows about the active tab's page. An outage is its own
+ *  state. Falling through to "no item" would offer to check a page we may
+ *  well have checked already. */
+async function loadPageState(): Promise<PageState> {
+  const tab = await activeTab();
+  const url = tab?.url;
+  if (!url || !/^https?:/.test(url)) return { kind: "unsupported" };
+  const origin = new URL(url).origin;
+  const pageUrl = normalizePageUrl((await resolveReaderCanonical(url)) ?? url);
+  try {
+    const item = await fetchItemForUrl(pageUrl);
+    if (!item) return { kind: "no_item", origin, pageUrl };
+    return { kind: "item", origin, item, notes: await fetchNotesForItem(item.id) };
+  } catch {
+    return { kind: "load_failed" };
+  }
 }
+
+const usePageState = (): PageState =>
+  useQuery({ queryKey: ["popupPage"], queryFn: loadPageState }).data ?? { kind: "loading" };
 
 /** Whether this page's content script has already jumped to a note once. This
  *  decides whether the button says "first" or "next". A script we cannot
@@ -416,17 +412,7 @@ export function PopupApp() {
   }, []);
   // The same tallies the in-page card shows: the status counts report what
   // exists and ignore the filters, while `visible` is what a jump can reach.
-  let counts: NoteCounts | null = null;
-  if (state.kind === "item" && filters) {
-    counts = { helpful: 0, needsRatings: 0, notHelpful: 0, visible: 0 };
-    for (const note of state.notes) {
-      const status = noteStatus(note);
-      if (status === "helpful") counts.helpful += 1;
-      else if (status === "needs_ratings") counts.needsRatings += 1;
-      else counts.notHelpful += 1;
-      if (noteVisible(note, filters)) counts.visible += 1;
-    }
-  }
+  const counts = state.kind === "item" && filters ? noteCounts(state.notes, filters) : null;
 
   return (
     <div className="p-4 space-y-4 bg-gray-50 min-h-[120px]">

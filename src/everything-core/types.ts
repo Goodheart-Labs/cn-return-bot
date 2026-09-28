@@ -9,7 +9,7 @@ export interface ProjectRow {
 export interface ItemRow {
   id: string;
   project_id: string | null;
-  source: "youtube" | "substack" | "podcast";
+  source: "youtube" | "substack" | "podcast" | "lesswrong" | "web";
   url: string;
   title: string | null;
   published_at: string | null;
@@ -18,10 +18,8 @@ export interface ItemRow {
   created_at: string;
   /** What the pipeline was asked to read (migration 081). `page` is the whole
    *  article or transcript, `paragraph` only a highlighted passage. Null means
-   *  no run was ever intended: a reader's note created the row. Undefined
-   *  means the backend predates the column, and callers fall back to reading
-   *  `status` alone. */
-  checked_scope?: "page" | "paragraph" | null;
+   *  no run was ever intended: a reader's note created the row. */
+  checked_scope: "page" | "paragraph" | null;
 }
 
 /** A project as the website's sidebar loads it. The sidebar shows the name,
@@ -113,5 +111,5 @@ export interface NoteRow {
   improved_from_note_id: string | null;
   status: "published" | "draft" | "hidden";
   created_at: string;
-  claim: ClaimRef | null;
+  claim: ClaimRef;
 }

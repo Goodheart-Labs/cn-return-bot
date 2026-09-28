@@ -1,4 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
+import type { Database } from "./database.types";
+import { extensionStorage } from "./extensionStorage";
 
 // The anon key is public by design, because it is baked into the static site and
 // into the extension. Migration 050 locks down what the anon role can actually
@@ -16,19 +18,15 @@ if (!url || !anonKey) {
 // scatter a separate session across every site the user visits.
 // autoRefreshToken is off because an MV3 service worker loses its timers when it
 // shuts down. Instead supabase-js refreshes an expired session on demand inside
-// getSession(), and every authenticated call goes through that.
-// We look for `browser` first, which is Firefox's promise-based API and does not
-// exist in Chrome, and then for `chrome`, which is promise-based under MV3. On a
-// plain web page neither of them exposes .storage, so the web app keeps
-// supabase-js's own default of localStorage.
-const extApi = (globalThis as unknown as { browser?: any; chrome?: any }).browser
-  ?? (globalThis as unknown as { chrome?: any }).chrome;
-const local = extApi?.storage?.local;
-const extensionStorage = local
+// getSession(), and every authenticated call goes through that. On a plain web
+// page there is no extension storage, and the website keeps supabase-js's own
+// default of localStorage.
+const local = extensionStorage()?.local;
+const sessionStorageAdapter = local
   ? {
-      getItem: async (key: string) => (await local.get(key))[key] ?? null,
-      setItem: async (key: string, value: string) => { await local.set({ [key]: value }); },
-      removeItem: async (key: string) => { await local.remove(key); },
+      getItem: async (key: string) => ((await local.get(key))[key] as string | undefined) ?? null,
+      setItem: (key: string, value: string) => local.set({ [key]: value }),
+      removeItem: (key: string) => local.remove(key),
     }
   : null;
 
@@ -42,6 +40,6 @@ const extensionStorage = local
 // GoTrue's refresh-token reuse window absorbs that.
 const passthroughLock = <R>(_name: string, _acquireTimeout: number, fn: () => Promise<R>) => fn();
 
-export const supabase = createClient(url, anonKey, extensionStorage
-  ? { auth: { storage: extensionStorage, persistSession: true, autoRefreshToken: false, detectSessionInUrl: false, lock: passthroughLock } }
+export const supabase = createClient<Database>(url, anonKey, sessionStorageAdapter
+  ? { auth: { storage: sessionStorageAdapter, persistSession: true, autoRefreshToken: false, detectSessionInUrl: false, lock: passthroughLock } }
   : undefined);

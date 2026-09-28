@@ -1,27 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import type { Session } from "@supabase/supabase-js";
-import type { NnnRow } from "@cn/core/types";
-import type { Vote } from "@cn/core/votes";
-import { deleteNnn } from "@cn/core/noteNotNeeded";
 import { tallyVisible } from "@cn/core/noteScore";
-import { MenuItem, TrashIcon } from "./NoteMenu";
+import type { NnnRow } from "@cn/core/types";
 import { EYEBROW, MENU } from "@cn/ui/classes";
 import { IconButton } from "@cn/ui/IconButton";
+import { useSession } from "../auth/useSession";
+import { MenuItem, TrashIcon } from "./NoteMenu";
+import { useDeleteNnn } from "./useNoteWrites";
+import { useMyNnnVotes, useVoteOnNnn } from "./useVotes";
 import { VoteRatings } from "./VoteRatings";
-
-/** Voting on entries, and keeping track of the entries you wrote. App owns this
- *  state and hands the same object to every list on the page. */
-export interface NnnApi {
-  myVotes: Map<string, Vote>;
-  onVote: (entry: NnnRow, vote: Vote) => void;
-  /** Mirror the helpful vote the database casts on your own new entry into
-   *  local state. */
-  onAuthored: (entryId: string) => void;
-  /** Called after an entry was deleted. The website's realtime channel already
-   *  drops it, so only the extension needs this. The extension has no realtime
-   *  connection and refreshes when this fires. */
-  onDeleted?: (entryId: string) => void;
-}
 
 /** A short relative timestamp for an entry, such as "now", "5m", "3h" or "2d".
  *  Anything older than a month shows a short date instead. Entries read as
@@ -71,12 +57,14 @@ function OwnEntryMenu({ onDelete }: { onDelete: () => void }) {
 /** The arguments that a claim needs no note. The list is flat, and the same
  *  list renders under every note card on that claim. It starts collapsed, and
  *  the header row is the toggle. */
-export function NoteNotNeeded({ entries, api, session }: {
-  entries: NnnRow[]; // This claim's entries. App sorts them oldest first.
-  api: NnnApi;
-  session: Session | null;
+export function NoteNotNeeded({ entries }: {
+  entries: NnnRow[]; // This claim's entries, oldest first.
 }) {
   const [open, setOpen] = useState(false);
+  const { session } = useSession();
+  const myVotes = useMyNnnVotes();
+  const voteOnEntry = useVoteOnNnn();
+  const deleteEntry = useDeleteNnn();
   if (entries.length === 0) return null;
   return (
     <div className="mt-3 pt-2 border-t border-gray-200 dark:border-gray-700 space-y-4">
@@ -107,12 +95,12 @@ export function NoteNotNeeded({ entries, api, session }: {
               helpful={entry.helpful_count}
               somewhatHelpful={entry.somewhat_helpful_count}
               notHelpful={entry.not_helpful_count}
-              myVote={api.myVotes.get(entry.id)}
-              showCounts={tallyVisible(api.myVotes.get(entry.id), entry.created_at)}
-              onVote={(vote) => api.onVote(entry, vote)}
+              myVote={myVotes.get(entry.id)}
+              showCounts={tallyVisible(myVotes.get(entry.id), entry.created_at)}
+              onVote={(vote) => void voteOnEntry(entry, vote)}
             />
             {!!session && session.user.id === entry.author_id && (
-              <OwnEntryMenu onDelete={() => deleteNnn(entry.id).then(() => api.onDeleted?.(entry.id))} />
+              <OwnEntryMenu onDelete={() => deleteEntry.mutate(entry.id)} />
             )}
           </div>
         </div>

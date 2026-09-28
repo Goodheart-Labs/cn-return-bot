@@ -1,5 +1,5 @@
 import { browser } from "#imports";
-import type { PageNoteStatusCounts } from "@cn/core/notesQuery";
+import type { PageNoteStatusCounts } from "@cn/core/items";
 import { extractYoutubeVideoId } from "@cn/core/pageUrls";
 
 // The covered-pages list holds the URL of every ingested item. The background's

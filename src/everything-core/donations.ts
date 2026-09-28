@@ -1,5 +1,7 @@
 import type { User } from "@supabase/supabase-js";
-import type { DonationPair } from "./donationScoring";
+import { donationPair, priorTally, type DonationPair } from "./donationScoring";
+import type { NoteRow } from "./types";
+import { castVote, type Vote } from "./votes";
 import { supabase } from "./supabase";
 
 /** The charities a voter can direct their donation to. The first entry is the
@@ -62,45 +64,75 @@ export interface MintedDonation {
   pair: DonationPair;
 }
 
-/* Posting a note mints a donation for the author's automatic Helpful vote,
- * but the note's card does not exist yet at that moment. The mint is parked
- * here under the note id, and the card claims it when it first renders, so
- * the donation notice appears under the fresh note the same way it would
- * after a click. The map never grows past a handful of entries, because every
- * render of a note card takes its entry out. */
-const mintedByNote = new Map<string, MintedDonation>();
-export const parkMintedDonation = (noteId: string, donation: MintedDonation) => mintedByNote.set(noteId, donation);
-export function takeMintedDonation(noteId: string): MintedDonation | null {
-  const donation = mintedByNote.get(noteId) ?? null;
-  mintedByNote.delete(noteId);
-  return donation;
-}
-
 /** Mint the donation a vote earns, which is the pair of amounts frozen at vote
  *  time. The unique constraint on vote_id turns this into an update when someone
  *  votes again, so one vote can never mint two donations. */
-export function saveDonation(voteId: string, charity: CharityId, pair: DonationPair) {
-  return supabase.from("everything_donations").upsert(
-    {
-      vote_id: voteId,
-      charity,
-      amount_if_helpful: pair.ifHelpful,
-      amount_if_not_helpful: pair.ifNotHelpful,
-    },
+export async function saveDonation(voteId: string, charity: CharityId, pair: DonationPair): Promise<void> {
+  const { error } = await supabase.from("everything_donations").upsert(
+    { vote_id: voteId, charity, amount_if_helpful: pair.ifHelpful, amount_if_not_helpful: pair.ifNotHelpful },
     { onConflict: "vote_id" },
   );
+  if (error) throw error;
 }
 
-/** Redirect an already-minted donation to a different charity. It resolves true
- *  only when the ledger row really changed. Asking for the updated row back
- *  turns an update that matched no rows, or any other transient failure, into
- *  false. The caller can then roll the display back instead of showing a charity
- *  the ledger does not hold. Jim hit exactly that on 2026-07-21. */
-export async function setDonationCharity(voteId: string, charity: CharityId): Promise<boolean> {
-  const { data, error } = await supabase
-    .from("everything_donations")
-    .update({ charity })
-    .eq("vote_id", voteId)
-    .select("charity");
-  return !error && data.length === 1;
+/** Redirects an already-minted donation to a different charity. It throws
+ *  unless the ledger row really changed. Asking for the updated row back turns
+ *  an update that matched no rows into a failure too, so the caller can roll
+ *  the display back instead of showing a charity the ledger does not hold. Jim
+ *  hit exactly that on 2026-07-21. */
+export async function setDonationCharity(voteId: string, charity: CharityId): Promise<void> {
+  const { data, error } = await supabase.from("everything_donations").update({ charity }).eq("vote_id", voteId).select("charity");
+  if (error) throw error;
+  if (data.length !== 1) throw new Error("the donation row was not updated");
+}
+
+/** Casts a vote on a note and mints the donation it earns. The pair of
+ *  amounts is priced against the tally as it stood before this vote, frozen
+ *  at this moment, and stored against the vote row. The donation goes to the
+ *  charity remembered on the account, and the donation notice lets the voter
+ *  redirect it afterwards. If only the donation fails to save, the vote stays
+ *  and null says no donation was promised. */
+export async function castVoteWithDonation(params: {
+  note: NoteRow;
+  vote: Vote;
+  previousVote: Vote | undefined;
+  user: User;
+  platform: "web" | "extension";
+}): Promise<MintedDonation | null> {
+  const { note, vote, user } = params;
+  const voteId = await castVote(note.id, user.id, vote, params.platform);
+  const pair = donationPair(priorTally(note, params.previousVote), vote);
+  const charity = preferredCharity(user);
+  try {
+    await saveDonation(voteId, charity, pair);
+  } catch (err) {
+    console.error("[common-notes] the vote was cast but its donation was not saved:", err);
+    return null;
+  }
+  return { voteId, charity, pair };
+}
+
+/** Mints the donation for the author's automatic Helpful vote, which a
+ *  database trigger casts the moment a note is inserted. The trigger writes
+ *  the vote row directly, so the client mints its donation here, from the same
+ *  formula every clicked vote uses. The self-vote is always the note's first
+ *  vote, so the prior tally is empty. The note is already saved at this point,
+ *  so a failure is logged and never thrown. */
+export async function mintSelfVoteDonation(noteId: string, author: User): Promise<MintedDonation | null> {
+  try {
+    const { data: vote, error } = await supabase
+      .from("everything_votes")
+      .select("id")
+      .eq("note_id", noteId)
+      .eq("voter_id", author.id)
+      .single();
+    if (error) throw error;
+    const pair = donationPair({ helpful: 0, somewhatHelpful: 0, notHelpful: 0 }, 1);
+    const charity = preferredCharity(author);
+    await saveDonation(vote.id, charity, pair);
+    return { voteId: vote.id, charity, pair };
+  } catch (err) {
+    console.warn("[common-notes] could not mint the self-vote donation:", err);
+    return null;
+  }
 }

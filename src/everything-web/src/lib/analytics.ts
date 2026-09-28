@@ -1,4 +1,4 @@
-import { supabase } from "@cn/core/supabase";
+import { insertEvent } from "@cn/core/events";
 import { setAnalyticsSink, track } from "@cn/core/analytics";
 import { randomUuid } from "./randomUuid";
 import { readStored, writeStored } from "@cn/core/safeStorage";
@@ -41,13 +41,7 @@ function pageUrl(): string {
 
 export function initAnalytics() {
   setAnalyticsSink({
-    capture: (event, props) =>
-      void supabase
-        .from("everything_events")
-        .insert({ event, platform: "web", device_id: deviceId(), user_id: userId, props: props ?? {} })
-        .then(({ error }) => {
-          if (error) console.debug("analytics insert failed", error.message);
-        }),
+    capture: (event, props) => void insertEvent({ event, platform: "web", deviceId: deviceId(), userId, props: props ?? {} }),
     identify: (id) => {
       userId = id;
     },

@@ -1,10 +1,7 @@
-import type { RealtimeChannel } from "@supabase/supabase-js";
-import { supabase } from "@cn/core/supabase";
+import { fetchProgressClaimRows, fetchProgressItemRow, fetchRequestStatus, subscribeToItemProgress } from "@cn/core/requestStatus";
 import {
   deriveRequestProgress,
   progressIsTerminal,
-  type ProgressClaimRow,
-  type ProgressItemRow,
   type RequestProgress,
   type RequestStatusRow,
 } from "@cn/core/requestProgress";
@@ -20,7 +17,7 @@ import {
  *  intake normally answers within a couple of seconds. */
 const STATUS_POLL_MS = 2_000;
 /** When to stop asking. A request unanswered for this long means the intake is
- *  down or the backend is old, and the card says live progress is unavailable
+ *  down, and the card says live progress is unavailable
  *  rather than spinning for ever. */
 const STATUS_GIVE_UP_MS = 10 * 60 * 1000;
 /** A burst of claim updates collapses into one refetch after this pause. */
@@ -35,40 +32,17 @@ const SUBSCRIBE_TIMEOUT_MS = 10_000;
 /** The poll that takes over when the channel never connects. */
 const FALLBACK_POLL_MS = 5_000;
 
-type StatusLookup =
-  | { kind: "row"; row: RequestStatusRow }
-  | { kind: "no_row" }
-  | { kind: "unavailable" }
-  | { kind: "error" };
+type StatusLookup = { kind: "row"; row: RequestStatusRow } | { kind: "no_row" } | { kind: "error" };
 
-/** Exchanges the token for the request's status. "unavailable" means the
- *  backend has no everything_request_status function, so watching is
- *  impossible; a transient failure comes back as "error" and the caller simply
- *  asks again. */
-async function fetchRequestStatus(token: string): Promise<StatusLookup> {
-  const { data, error } = await supabase.rpc("everything_request_status", { token });
-  if (error) {
-    const missingFunction = error.code === "PGRST202" || /function/i.test(error.message);
-    return { kind: missingFunction ? "unavailable" : "error" };
+/** Exchanges the token for the request's status. A failure comes back as
+ *  "error", and the caller simply asks again. */
+async function lookUpRequest(token: string): Promise<StatusLookup> {
+  try {
+    const row = await fetchRequestStatus(token);
+    return row ? { kind: "row", row } : { kind: "no_row" };
+  } catch {
+    return { kind: "error" };
   }
-  const row = ((data ?? []) as RequestStatusRow[])[0];
-  return row ? { kind: "row", row } : { kind: "no_row" };
-}
-
-async function fetchItemRow(itemId: string): Promise<ProgressItemRow | null> {
-  const { data, error } = await supabase
-    .from("everything_items")
-    .select("id, status, checked_scope, progress")
-    .eq("id", itemId)
-    .maybeSingle();
-  if (error) throw new Error(`item refetch failed: ${error.message}`);
-  return data as ProgressItemRow | null;
-}
-
-async function fetchClaimRows(itemId: string): Promise<ProgressClaimRow[]> {
-  const { data, error } = await supabase.from("everything_claims").select("id, status").eq("item_id", itemId);
-  if (error) throw new Error(`claims refetch failed: ${error.message}`);
-  return (data ?? []) as ProgressClaimRow[];
 }
 
 /** One reading of the request's current state, for callers that poll rather
@@ -83,8 +57,7 @@ export async function fetchProgressSnapshot(entry: {
   let itemId = entry.itemId ?? null;
   let request: RequestStatusRow | null = null;
   if (!itemId) {
-    const lookup = await fetchRequestStatus(entry.token);
-    if (lookup.kind === "unavailable") return { progress: { kind: "unavailable" }, itemId: null };
+    const lookup = await lookUpRequest(entry.token);
     // A transient lookup failure, or a request row the intake has not written
     // yet: the request stands, so the reader is simply waiting.
     if (lookup.kind === "error" || lookup.kind === "no_row") return { progress: { kind: "saved" }, itemId: null };
@@ -92,7 +65,7 @@ export async function fetchProgressSnapshot(entry: {
     itemId = lookup.row.item_id;
   }
   if (!itemId) return { progress: deriveRequestProgress(null, [], request), itemId: null };
-  const [item, claims] = await Promise.all([fetchItemRow(itemId), fetchClaimRows(itemId)]);
+  const [item, claims] = await Promise.all([fetchProgressItemRow(itemId), fetchProgressClaimRows(itemId)]);
   return { progress: deriveRequestProgress(item, claims, request), itemId };
 }
 
@@ -115,7 +88,7 @@ export function watchRequestProgress(params: {
   onItemFound?: (itemId: string) => void;
 }): RequestWatch {
   let stopped = false;
-  let channel: RealtimeChannel | null = null;
+  let closeChannel: (() => void) | null = null;
   const timers = new Set<ReturnType<typeof setTimeout>>();
   const intervals = new Set<ReturnType<typeof setInterval>>();
   let lastRequest: RequestStatusRow | null = null;
@@ -126,8 +99,8 @@ export function watchRequestProgress(params: {
     for (const interval of intervals) clearInterval(interval);
     timers.clear();
     intervals.clear();
-    if (channel) void supabase.removeChannel(channel);
-    channel = null;
+    closeChannel?.();
+    closeChannel = null;
   };
 
   const after = (ms: number, fn: () => void) => {
@@ -155,7 +128,7 @@ export function watchRequestProgress(params: {
     const refetch = async () => {
       if (stopped) return;
       try {
-        const [item, claims] = await Promise.all([fetchItemRow(itemId), fetchClaimRows(itemId)]);
+        const [item, claims] = await Promise.all([fetchProgressItemRow(itemId), fetchProgressClaimRows(itemId)]);
         if (!stopped) emit(deriveRequestProgress(item, claims, lastRequest));
       } catch {
         // A failed refetch keeps the last state on screen. The backstop
@@ -175,34 +148,14 @@ export function watchRequestProgress(params: {
 
     let connected = false;
     let fallbackPoll: ReturnType<typeof setInterval> | null = null;
-    // The channel name carries a random suffix so two cards on two tabs never
-    // collide on the shared client. crypto.randomUUID does not exist in a
-    // content script on an insecure page, so plain Math.random has to do.
-    const nonce = Math.random().toString(36).slice(2);
-    channel = supabase
-      .channel(`cn-request-${itemId}-${nonce}`)
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "everything_items", filter: `id=eq.${itemId}` },
-        poke,
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "everything_claims", filter: `item_id=eq.${itemId}` },
-        poke,
-      )
-      // Note inserts cannot be filtered to the item, because a note row only
-      // knows its claim. An insert for another item costs one narrow refetch.
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "everything_notes" }, poke)
-      .subscribe((status) => {
-        if (status !== "SUBSCRIBED") return;
-        connected = true;
-        if (fallbackPoll) {
-          clearInterval(fallbackPoll);
-          intervals.delete(fallbackPoll);
-          fallbackPoll = null;
-        }
-      });
+    closeChannel = subscribeToItemProgress(itemId, poke, () => {
+      connected = true;
+      if (fallbackPoll) {
+        clearInterval(fallbackPoll);
+        intervals.delete(fallbackPoll);
+        fallbackPoll = null;
+      }
+    });
     after(SUBSCRIBE_TIMEOUT_MS, () => {
       if (!connected && !stopped) fallbackPoll = every(FALLBACK_POLL_MS, () => void refetch());
     });
@@ -213,9 +166,8 @@ export function watchRequestProgress(params: {
   const startedAt = Date.now();
   const pollStatus = async () => {
     if (stopped) return;
-    const lookup = await fetchRequestStatus(params.token);
+    const lookup = await lookUpRequest(params.token);
     if (stopped) return;
-    if (lookup.kind === "unavailable") return emit({ kind: "unavailable" });
     if (lookup.kind === "row") {
       lastRequest = lookup.row;
       if (lookup.row.item_id) {

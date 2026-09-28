@@ -1,29 +1,34 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { browser } from "#imports";
 import { QUOTE_RAIL } from "@cn/ui/classes";
-import type { NnnApi } from "@cn/features/notes/NoteNotNeeded";
-import type { NnnRow, NoteRow } from "@cn/core/types";
+import { useSession } from "@cn/features/auth/useSession";
+import { claimGroups, itemNoteSetQuery, type ClaimGroup } from "../utils/claimGroups";
 import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
 import { setJumpHandler } from "../utils/jumpBus";
-import { onNoteFiltersChanged } from "../utils/settings";
-import { ABSORB_KEYS, ClaimNoteStack, NOTE_POPOVER_WIDTH, OverlayLogin } from "./ClaimNoteStack";
+import { ABSORB_KEYS, ClaimNoteStack, NOTE_POPOVER_WIDTH, OverlayLoginGate } from "./ClaimNoteStack";
 import { FloatingWindow, type Box } from "./FloatingWindow";
+import { useNoteFilters } from "./NoteFilterToggles";
 import { ScrubberPins } from "./ScrubberPins";
-import { useNoteVoting, replaceNoteInGroup } from "./useNoteVoting";
 
 /** A claim pinned to a span of the video timeline, together with its notes and
  *  its note-not-needed entries. This is the same shape the Substack popover
  *  renders. */
-export interface TimedGroup {
-  claimId: string;
-  primary: NoteRow;
-  alternatives: NoteRow[];
-  nnn: NnnRow[];
-  startSeconds: number;
-  endSeconds: number;
-}
+export type TimedGroup = ClaimGroup & { startSeconds: number; endSeconds: number };
 
 // A claim without end_seconds stays up this long past its start.
-export const DEFAULT_CLIP_SECONDS = 30;
+const DEFAULT_CLIP_SECONDS = 30;
+
+/** The claims that carry a timestamp, in timeline order. */
+export function timedGroups(groups: ClaimGroup[]): TimedGroup[] {
+  return groups
+    .flatMap((group) => {
+      const start = group.claim.start_seconds;
+      if (start == null) return [];
+      return [{ ...group, startSeconds: start, endSeconds: group.claim.end_seconds ?? start + DEFAULT_CLIP_SECONDS }];
+    })
+    .sort((a, b) => a.startSeconds - b.startSeconds);
+}
 // The card outlives its span by this much, so a note about a sentence someone
 // just said is still there when the reader looks up.
 const TRAILING_GRACE_SECONDS = 1;
@@ -41,7 +46,7 @@ const QUOTE_PREVIEW_CHARS = 160;
 const PLAYER_EDGE_INSET_PX = 16;
 
 function quotePreview(group: TimedGroup): string | null {
-  const quote = group.primary.claim?.context_quote;
+  const quote = group.claim.context_quote;
   if (!quote) return null;
   return quote.length > QUOTE_PREVIEW_CHARS ? `${quote.slice(0, QUOTE_PREVIEW_CHARS)}…` : quote;
 }
@@ -73,17 +78,23 @@ function usePlayerBox(player: HTMLElement) {
  *  as playback leaves that span. It stays up while the pointer is on it and
  *  the reader is mid-interaction. Pins on the scrub bar mark every claim, and
  *  clicking one seeks into that claim's span. */
-export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, player, refetch }: {
-  groups: TimedGroup[];
+export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
+  itemId: string;
   projectSlug: string | null;
   video: HTMLVideoElement;
   player: HTMLElement;
-  /** Re-fetch the item's groups after a note is posted or deleted. There is no
-   *  realtime subscription here. Null means the fetch failed and the overlay
-   *  keeps what it has. */
-  refetch: () => Promise<TimedGroup[] | null>;
 }) {
-  const [groups, setGroups] = useState(initialGroups);
+  // The content script fetched the notes before mounting this, so the cache
+  // already holds them. A vote, a new note or a changed filter flows through
+  // here.
+  const noteSet = useQuery(itemNoteSetQuery(itemId)).data;
+  const [filters] = useNoteFilters();
+  const groups = useMemo(
+    () => (noteSet && filters ? timedGroups(claimGroups(noteSet, filters)) : []),
+    [noteSet, filters],
+  );
+  const { session } = useSession();
+  const [loginOpen, setLoginOpen] = useState(false);
   // `displayed` is the claim whose card is mounted. `visible` drives the
   // opacity transition. Hiding happens in two steps. Setting `visible` to
   // false starts the fade, and a timer unmounts the card after FADE_MS.
@@ -98,14 +109,6 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
   const inWindow = useRef(false);
   const lastInteraction = useRef(0);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const { session, myVotes, myNnnVotes, refreshVotes, handleVote, handleNnnVote, recordAuthored, recordNnnAuthored, onNeedLogin, loginOpen, closeLogin } = useNoteVoting(
-    (updated) => setGroups((prev) => prev.map((g) => replaceNoteInGroup(g, updated))),
-    (updatedEntry) => setGroups((prev) => prev.map((g) => ({
-      ...g,
-      nnn: g.nnn.map((e) => (e.id === updatedEntry.id ? updatedEntry : e)),
-    }))),
-  );
-
   // `shown` mirrors the displayed and hiding state for the event handlers.
   // The timeupdate event fires about four times a second, and reading React
   // state through a closure there would go stale. Re-arming the unmount timer
@@ -216,34 +219,14 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
         sendResponse({ jumped: true });
       }
     };
-    const runtime = (globalThis as any).browser?.runtime ?? (globalThis as any).chrome?.runtime;
-    runtime?.onMessage.addListener(listener);
+    browser.runtime.onMessage.addListener(listener);
     // The note-count card jumps through the same cursor, see utils/jumpBus.ts.
     setJumpHandler(jumpNext);
     return () => {
-      runtime?.onMessage.removeListener(listener);
+      browser.runtime.onMessage.removeListener(listener);
       setJumpHandler(null);
     };
   }, [groups, video]);
-  const refresh = async () => {
-    const next = await refetch();
-    if (next !== null) setGroups(next);
-    // A refresh can carry votes this hook never saw cast, such as the
-    // automatic helpful vote on a note the reader just wrote.
-    refreshVotes();
-  };
-  // Flipping a tickbox in the popup re-fetches the notes through the new
-  // filters straight away.
-  useEffect(() => onNoteFiltersChanged(() => void refresh()), []);
-  const handleAuthored = (noteId: string) => {
-    recordAuthored(noteId);
-    void refresh();
-  };
-  const handleNnnAuthored = (entryId: string) => {
-    recordNnnAuthored(entryId);
-    void refresh();
-  };
-  const nnnApi: NnnApi = { myVotes: myNnnVotes, onVote: handleNnnVote, onAuthored: recordNnnAuthored, onDeleted: () => void refresh() };
   const playerBox = usePlayerBox(player);
   // Where the reader last put a card on this video, and how wide they made
   // it. The next note opens there. Its height is not kept: a new card fits
@@ -284,22 +267,12 @@ export function YoutubeOverlayApp({ groups: initialGroups, projectSlug, video, p
           }}
           className={`transition-opacity duration-[400ms] ease-out ${visible ? "opacity-100" : "opacity-0"}`}
         >
-          {loginOpen && !session && <OverlayLogin onDismiss={closeLogin} />}
-          {quotePreview(group) && (
-            <blockquote className={`${QUOTE_RAIL} mb-2 text-sm text-gray-600 dark:text-gray-300 italic`}>“{quotePreview(group)}”</blockquote>
-          )}
-          <ClaimNoteStack
-            group={group}
-            projectSlug={projectSlug}
-            session={session}
-            myVotes={myVotes}
-            onVote={handleVote}
-            onNeedLogin={onNeedLogin}
-            onAuthored={handleAuthored}
-            onNnnAuthored={handleNnnAuthored}
-            onDeleted={() => void refresh()}
-            nnnApi={nnnApi}
-          />
+          <OverlayLoginGate open={loginOpen} onOpenChange={setLoginOpen}>
+            {quotePreview(group) && (
+              <blockquote className={`${QUOTE_RAIL} mb-2 text-sm text-gray-600 dark:text-gray-300 italic`}>“{quotePreview(group)}”</blockquote>
+            )}
+            <ClaimNoteStack group={group} projectSlug={projectSlug} />
+          </OverlayLoginGate>
         </FloatingWindow>
       )}
     </div>

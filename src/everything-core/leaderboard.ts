@@ -1,4 +1,4 @@
-import { supabase } from "@cn/core/supabase";
+import { supabase } from "./supabase";
 
 /** One ranked rater. It holds a public display name and how many notes that
  *  person has rated. */
@@ -9,16 +9,14 @@ export type LeaderboardEntry = { name: string; rating_count: number };
 export async function fetchLeaderboard(): Promise<LeaderboardEntry[]> {
   const { data, error } = await supabase.rpc("everything_leaderboard");
   if (error) throw error;
-  return (data ?? []) as LeaderboardEntry[];
+  return data;
 }
 
 /** Whether the caller currently shows on the leaderboard. Someone with no
  *  preferences row yet is hidden. */
 export async function fetchMyLeaderboardOptIn(): Promise<boolean> {
-  const { data } = await supabase
-    .from("everything_rater_prefs")
-    .select("show_on_leaderboard")
-    .maybeSingle();
+  const { data, error } = await supabase.from("everything_rater_prefs").select("show_on_leaderboard").maybeSingle();
+  if (error) throw error;
   return data?.show_on_leaderboard ?? false;
 }
 

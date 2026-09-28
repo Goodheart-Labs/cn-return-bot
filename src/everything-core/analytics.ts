@@ -1,5 +1,5 @@
 // Analytics event sink, shared by the website and the browser extension.
-// This module has zero dependencies on purpose. Both apps plug in a transport
+// Both apps plug in a transport
 // that inserts rows into the everything_events table (the website directly,
 // the extension via its background worker so content scripts stay free of
 // cross-origin fetches). Until a sink is registered every call here is a

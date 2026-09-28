@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { MENU } from "@cn/ui/classes";
+import { useMutation } from "@tanstack/react-query";
 import { CHARITIES, rememberCharity, setDonationCharity, type CharityId } from "@cn/core/donations";
 import type { DonationPair } from "@cn/core/donationScoring";
 import type { NoteStatus } from "@cn/core/noteScore";
@@ -84,7 +85,21 @@ export function VoteDonation({ voteId, pair, charity, status, onCharityChange, o
   onCharityChange: (charity: CharityId) => void;
   onClose: () => void;
 }) {
-  const [failed, setFailed] = useState(false);
+  /* The donation row was already written when the vote was cast. Picking a
+   * charity redirects that row, and the pick also becomes the remembered
+   * default for future donations. The display updates first, and it is rolled
+   * back unless the ledger really changed. The box must never show a charity
+   * the row does not hold. */
+  const redirect = useMutation({
+    mutationFn: (picked: CharityId) => setDonationCharity(voteId, picked),
+    onMutate: (picked) => {
+      rememberCharity(picked);
+      onCharityChange(picked);
+      return { previous: charity };
+    },
+    onError: (_err, _picked, context) => context && onCharityChange(context.previous),
+  });
+  const failed = redirect.isError;
   const [pickerOpen, setPickerOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [fading, setFading] = useState(false);
@@ -111,21 +126,7 @@ export function VoteDonation({ voteId, pair, charity, status, onCharityChange, o
     };
   }, [inUse]);
 
-  /* The donation row was already written when the vote was cast. Picking a
-   * charity redirects that row, and the pick also becomes the remembered
-   * default for future donations. The display updates first, and it is rolled
-   * back unless the ledger really changed. The box must never show a charity
-   * the row does not hold. */
-  const pickCharity = async (picked: CharityId) => {
-    const previous = charity;
-    rememberCharity(picked);
-    onCharityChange(picked);
-    setFailed(false);
-    if (!(await setDonationCharity(voteId, picked))) {
-      onCharityChange(previous);
-      setFailed(true);
-    }
-  };
+  const pickCharity = (picked: CharityId) => redirect.mutate(picked);
 
   return (
     <div
