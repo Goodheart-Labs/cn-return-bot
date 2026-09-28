@@ -25,7 +25,7 @@ import { readFile, writeFile, rm, mkdir, stat } from "fs/promises";
 import { getTweetLog } from "../utils/tweetLog";
 import { addWarning } from "../utils/warnings";
 import { getBotConfigIfActive } from "../ab-testing/botConfig";
-import { GEMINI_MODEL } from "../cost-tracking/pricing";
+import { GEMINI_MODEL, whisperTranscriptionCost } from "../cost-tracking/pricing";
 import { trackLlmCall, trackedLlmCreate } from "../cost-tracking/costTracker";
 import { stripJsonFences } from "../utils/jsonOutput";
 import { geminiNativeGenerate, type GeminiContentPart } from "../llm/gemini";
@@ -186,10 +186,11 @@ async function fetchImageInlineData(imageUrl: string): Promise<{ mimeType: strin
 
 // --- Audio transcription (reusing Groq Whisper pattern) ---
 
-async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
+async function transcribeAudio(audioPath: string, costName: string): Promise<string> {
   const groqApiKey = process.env.GROQ_API_KEY;
   if (!groqApiKey) return "";
 
+  const audioBuffer = await readFile(audioPath);
   const formData = new FormData();
   formData.append("file", new Blob([new Uint8Array(audioBuffer)], { type: "audio/mp3" }), "audio.mp3");
   formData.append("model", "whisper-large-v3");
@@ -206,7 +207,9 @@ async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
     throw new Error(`Groq API error: ${response.status} ${errorText}`);
   }
 
-  return (await response.text()).trim();
+  const transcript = (await response.text()).trim();
+  await trackWhisperCost(audioPath, costName);
+  return transcript;
 }
 
 // --- Image analysis ---
@@ -265,7 +268,7 @@ async function hasAudioStream(videoPath: string): Promise<boolean> {
   }
 }
 
-async function extractAudio(videoPath: string, tmpDir: string): Promise<string> {
+async function extractAudio(videoPath: string, tmpDir: string, costName: string): Promise<string> {
   if (!(await hasAudioStream(videoPath))) return "";
   const audioPath = join(tmpDir, "audio.mp3");
   await execAsync(
@@ -274,8 +277,16 @@ async function extractAudio(videoPath: string, tmpDir: string): Promise<string> 
   );
   const audioStat = await stat(audioPath);
   if (audioStat.size < 1000) return "";
-  const audioBuffer = await readFile(audioPath);
-  return transcribeAudio(audioBuffer);
+  return transcribeAudio(audioPath, costName);
+}
+
+/** Records what Groq charged for transcribing the clip, which depends only on its
+ *  length. When ffprobe cannot read the length we record the minimum Groq bills
+ *  and warn, so the gap shows up on the run instead of passing silently. */
+async function trackWhisperCost(audioPath: string, costName: string): Promise<void> {
+  const seconds = await probeDurationSeconds(audioPath);
+  if (seconds === null) addWarning(`Whisper cost recorded at the minimum: could not read the audio length of ${audioPath}`);
+  trackLlmCall({ name: `${costName}.whisper`, ...whisperTranscriptionCost(seconds ?? 0), tools: [] });
 }
 
 async function analyzeShortVideo(videoPath: string, costName: string, entities?: string[]): Promise<GeminiMediaDescription> {
@@ -404,7 +415,7 @@ async function analyzeVideo(
       addWarning(`Video analysis: ${mediaModel()} returned no description (${videoUrl})`);
     }
 
-    const transcription = await resolveTranscription(videoPath, tmpDir, precomputedTranscript);
+    const transcription = await resolveTranscription(videoPath, tmpDir, precomputedTranscript, costName);
 
     return { type: "video", url: videoUrl, description, transcription };
   } catch (err: any) {
@@ -420,6 +431,7 @@ async function resolveTranscription(
   videoPath: string,
   tmpDir: string,
   precomputed: string | null | undefined,
+  costName: string,
 ): Promise<string> {
   // The caller already settled the transcript, so Whisper must not run. A long video
   // takes this path, because auto-subs are its only allowed transcript source.
@@ -428,7 +440,7 @@ async function resolveTranscription(
   }
   if (!(await checkFfmpeg())) return "(ffmpeg unavailable)";
   try {
-    const text = await extractAudio(videoPath, tmpDir);
+    const text = await extractAudio(videoPath, tmpDir, costName);
     return text || "(no audio track)";
   } catch (err: any) {
     console.error("[mediaAnalysis] Audio extraction failed:", err.message);

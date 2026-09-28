@@ -21,6 +21,7 @@ import { runJsonLlmCall } from "../utils/jsonLlmCall";
 import { createTweetLog, withTweetLog, getTweetLog, type TweetLogMap } from "../utils/tweetLog";
 import { withCostTracker, getCostTracker, trackLlmCall } from "../cost-tracking/costTracker";
 import { STEP, COST } from "../utils/noteWriterSteps";
+import { serperSearchCost } from "../cost-tracking/pricing";
 import { withDeadline, withLlmAbortSignal } from "../llm/llm";
 import { addWarning } from "../utils/warnings";
 
@@ -81,6 +82,7 @@ async function gatherFindings(userMessage: string, queries: string[], signal: Ab
     let results: SearchResult[] = [];
     try {
       results = await fetchSearchResults(q, signal);
+      trackLlmCall({ name: `${COST.fetchAndFormatSearch}.serper`, ...serperSearchCost(), tools: [] });
     } catch {
       signal.throwIfAborted();
       // One failed query should not sink the whole prefilter.
