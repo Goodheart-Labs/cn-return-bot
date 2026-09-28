@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&family=Literata:opsz,wght@7..72,600;7..72,700;7..72,800&family=Geist:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&family=Literata:opsz,wght@7..72,600;7..72,700;7..72,800&family=Onest:wght@400;500;600;700;800&display=swap");
 
 /* Candidate looks for Common Notes, switched from the Storybook toolbar. Each
  * look only overrides design tokens, so it restyles every story at once: the
@@ -91,8 +91,8 @@
 /* C. Claim and proof: one neutral grey scale, one blue, soft rounded
  * corners and layered soft shadows. */
 :root[data-cn-look="proof"]:not(.dark) {
-  --cn-font-sans: Geist, system-ui, sans-serif;
-  --cn-font-display: Geist, system-ui, sans-serif;
+  --cn-font-sans: Onest, system-ui, sans-serif;
+  --cn-font-display: Onest, system-ui, sans-serif;
   --cn-canvas: #f7f7f8;
   --cn-surface: #ffffff;
   --cn-surface-muted: #f4f4f5;
