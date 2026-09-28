@@ -141,3 +141,4 @@ storybook-static
 .impeccable/live/roots.json
 .impeccable/live/inject-journal.json
 .impeccable/config.local.json
+.impeccable/hook.cache.json
