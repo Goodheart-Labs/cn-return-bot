@@ -13,7 +13,9 @@ import { extractCitations, llm } from "../llm/llm";
 import { countNoteLength } from "../utils/noteLength";
 import { getBotConfig } from "../ab-testing/botConfig";
 import { getBrowser } from "../utils/browserManager";
-import { NonPublicUrlError, assertPublicUrl, fetchPublicUrl } from "../utils/publicUrl";
+import { isWebUrl } from "../utils/webUrl";
+import { callFetchService } from "../../service/client";
+import { FETCH_PAGE_PATH, FETCH_SERVICE_SOCKET_VARIABLE, type FetchPageRequest } from "../../service/contract";
 import {
   GEMINI_MODEL,
   GROK_MODEL, PERPLEXITY_MODEL,
@@ -62,6 +64,21 @@ export const WEB_FETCH_TOOL = {
 // Claude's built-in web search tool, which OpenRouter passes through. The
 // native-search dispatch of simple-bot uses it.
 export const WEB_SEARCH_TOOL = { type: "web_search_20260209" as const, name: "web_search" };
+
+// OpenRouter's web_search server tool on the model provider's own engine. For a
+// Muse request that is Meta's search, which also opens pages. OpenRouter runs it
+// inside the request and bills the searches in usage.cost.
+export const OPENROUTER_NATIVE_WEB_SEARCH_TOOL = {
+  type: "openrouter:web_search" as const,
+  parameters: { engine: "native" as const },
+};
+
+/** Meta's search tool cites the lines of the pages it opened with markers such
+ *  as 【1586541899417117766†L16-L18】, which point into its own page cache and mean
+ *  nothing to us. They are removed so they cannot leak into a note. */
+export function stripBrowserLineCitations(text: string): string {
+  return text.replace(/\s*【[^】]*†[^】]*】/g, "");
+}
 
 // --- Tool handlers ---
 
@@ -269,11 +286,13 @@ interface RawFetchResult {
 
 async function rawFetch(url: string, ua: string): Promise<RawFetchResult> {
   try {
-    const { response, finalUrl } = await fetchPublicUrl(url, {
+    const response = await fetch(url, {
       headers: { "User-Agent": ua, ...BROWSER_HEADERS },
+      redirect: "follow",
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     });
     const contentType = response.headers.get("content-type") ?? "";
+    const finalUrl = response.url || url;
     if (!response.ok) return { ok: false, status: response.status, contentType, finalUrl };
     if (contentType.includes("application/pdf") || contentType.includes("application/x-pdf")) {
       const bytes = new Uint8Array(await response.arrayBuffer());
@@ -384,21 +403,12 @@ async function tryBrowserRender(url: string): Promise<RawFetchResult> {
   // so cookies and other state from one fetch cannot leak into the next.
   let context: import("playwright").BrowserContext | null = null;
   try {
-    await assertPublicUrl(url);
     const browser = await getBrowser();
     context = await browser.newContext({
       userAgent: FETCH_UAS.desktop,
       viewport: { width: 1280, height: 800 },
       locale: "en-US",
       extraHTTPHeaders: { ...BROWSER_HEADERS },
-    });
-    // The page itself may load scripts, images and frames from anywhere, so
-    // every request it makes passes the same check as the page. Playwright
-    // does not show us the later steps of a redirect, which is why the
-    // network-level rule in the service units still matters here.
-    await context.route("**/*", async (route) => {
-      const isPublic = await assertPublicUrl(route.request().url()).then(() => true, () => false);
-      await (isPublic ? route.continue() : route.abort("blockedbyclient"));
     });
     const page = await context.newPage();
     const response = await page.goto(url, {
@@ -430,20 +440,25 @@ export interface WebFetchResult {
   ok: boolean;
 }
 
-/** `maxChars` overrides the default return cap. The default is sized for a
+/** Fetches an outside page. On the services machine the sandboxed fetcher does
+ *  the fetching (src/service/fetch/main.ts), so that a hostile page never runs
+ *  inside a process that holds our keys. Everywhere else, such as GitHub
+ *  Actions and local runs, this process fetches the page itself.
+ *
+ *  `maxChars` overrides the default return cap. The default is sized for a
  *  verifier's context window; the everything pipeline passes a much larger cap
  *  because it ingests the whole article. */
 export async function fetchWebPage(url: string, opts?: { maxChars?: number }): Promise<WebFetchResult> {
+  const socket = process.env[FETCH_SERVICE_SOCKET_VARIABLE];
+  if (!socket) return fetchWebPageInProcess(url, opts);
+  return callFetchService<WebFetchResult>(socket, FETCH_PAGE_PATH, { url, maxChars: opts?.maxChars } satisfies FetchPageRequest);
+}
+
+/** The fetch ladder itself. Only the fetcher and processes without one call
+ *  this directly. */
+export async function fetchWebPageInProcess(url: string, opts?: { maxChars?: number }): Promise<WebFetchResult> {
   const maxChars = opts?.maxChars ?? MAX_RETURN_CHARS;
-  // An internal address is refused once, here, rather than by each step of the
-  // ladder. The archive steps would otherwise still send it to archive.org.
-  // A host that does not resolve at all goes on down the ladder, because an
-  // archive may still hold a copy of a dead site.
-  try {
-    await assertPublicUrl(url);
-  } catch (err) {
-    if (err instanceof NonPublicUrlError) return { content: `Fetch refused: ${err.message}`, fetchedUrl: url, ok: false };
-  }
+  if (!isWebUrl(url)) return { content: "Fetch refused: only http and https addresses are fetched", fetchedUrl: url, ok: false };
   const attempts: Array<{ label: string; cls: ContentClass | "fail"; status?: number; chars: number; markdown: string; sourceLabel?: string }> = [];
 
   // Steps 1 to 3 are the HTTP ladder with three user agents. We stop as soon as

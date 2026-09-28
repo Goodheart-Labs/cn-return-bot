@@ -1,11 +1,13 @@
 /**
- * The wire contract between the callers and the two services.
+ * The wire contract between the callers and the services.
  *
  * The services are pure functions behind HTTP. One takes a claim and answers
  * whether it needs a note. The other takes some content and answers with the
  * claims in it. Neither touches our database, so everything a caller needs to
  * record afterwards has to travel back in the response. That is why a check
- * answers with the whole run record and not just the note.
+ * answers with the whole run record and not just the note. A third service,
+ * the fetcher, fetches outside pages and images for the others from inside a
+ * sandbox.
  *
  * Both sides import this file, so a change here is a change both sides see.
  */
@@ -152,6 +154,35 @@ export interface RateClaimsResponse {
   webSearches: number;
   webFetches: number;
   costUsd: number | null;
+}
+
+// ---------------------------------------------------------------------------
+// Fetching an outside page or image, through the sandboxed fetcher
+// ---------------------------------------------------------------------------
+
+export const FETCH_PAGE_PATH = "/fetch-page";
+export const FETCH_IMAGE_PATH = "/fetch-image";
+
+/** The environment variable that names the fetcher's Unix socket. The fetcher
+ *  listens on it. In any other process it means: do not fetch outside pages
+ *  and images here, ask the fetcher instead. The unit files set it for every
+ *  service on the machine (ops/cn-*.service). */
+export const FETCH_SERVICE_SOCKET_VARIABLE = "FETCH_SERVICE_SOCKET";
+
+export interface FetchPageRequest {
+  url: string;
+  maxChars?: number;
+}
+
+export interface FetchImageRequest {
+  url: string;
+}
+
+/** An image as Gemini takes it inline: its media type and its bytes in
+ *  base64. */
+export interface FetchedImage {
+  mimeType: string;
+  data: string;
 }
 
 // ---------------------------------------------------------------------------

@@ -39,7 +39,9 @@ import {
 import { downloadWithGalleryDl } from "./galleryDlDownload";
 import { IMAGE_PROMPT, VIDEO_PROMPT, FRAME_PROMPT, MEDIA_RESPONSE_FORMAT } from "../prompts/media/mediaAnalysis";
 import { getBestMediaUrl } from "./bestMediaUrl";
-import { fetchPublicUrl } from "../utils/publicUrl";
+import { isWebUrl } from "../utils/webUrl";
+import { callFetchService } from "../../service/client";
+import { FETCH_IMAGE_PATH, FETCH_SERVICE_SOCKET_VARIABLE, type FetchImageRequest, type FetchedImage } from "../../service/contract";
 
 const execAsync = promisify(exec);
 // The vision model we fall back to when the configured model fails, for example
@@ -174,11 +176,22 @@ async function analyzeMediaParts(parts: GeminiContentPart[], costName: string): 
   return analyzeMediaPartsOn(parts, mediaModel(), costName);
 }
 
-async function fetchImageInlineData(imageUrl: string): Promise<{ mimeType: string; data: string }> {
+/** Reads an image for inline use. A data: URL already holds its bytes. Any
+ *  other image is downloaded, on the services machine by the sandboxed
+ *  fetcher, for the same reason as in fetchWebPage. */
+async function fetchImageInlineData(imageUrl: string): Promise<FetchedImage> {
   const dataUrlMatch = /^data:([^;]+);base64,(.*)$/s.exec(imageUrl);
   if (dataUrlMatch) return { mimeType: dataUrlMatch[1]!, data: dataUrlMatch[2]! };
+  const socket = process.env[FETCH_SERVICE_SOCKET_VARIABLE];
+  if (!socket) return downloadImageInlineData(imageUrl);
+  return callFetchService<FetchedImage>(socket, FETCH_IMAGE_PATH, { url: imageUrl } satisfies FetchImageRequest);
+}
 
-  const { response } = await fetchPublicUrl(imageUrl);
+/** The download itself. Only the fetcher and processes without one call this
+ *  directly. */
+export async function downloadImageInlineData(imageUrl: string): Promise<FetchedImage> {
+  if (!isWebUrl(imageUrl)) throw new Error(`Refusing to fetch an image that is not an http or https address: ${imageUrl.slice(0, 100)}`);
+  const response = await fetch(imageUrl, { redirect: "follow" });
   if (!response.ok) throw new Error(`Failed to fetch image: ${response.status}`);
   const mimeType = response.headers.get("content-type")?.split(";")[0]?.trim() || "image/jpeg";
   const bytes = Buffer.from(await response.arrayBuffer());
@@ -248,7 +261,7 @@ export async function describeImageFromUrl(imageUrl: string, costName: string, e
 
 async function downloadVideo(videoUrl: string, tmpDir: string): Promise<string> {
   const videoPath = join(tmpDir, "video.mp4");
-  const { response } = await fetchPublicUrl(videoUrl);
+  const response = await fetch(videoUrl, { redirect: "follow" });
   if (!response.ok) throw new Error(`Failed to download video: ${response.status}`);
   await writeFile(videoPath, Buffer.from(await response.arrayBuffer()));
   return videoPath;

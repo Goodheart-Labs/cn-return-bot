@@ -17,13 +17,14 @@ import { rateClaims } from "../../everything/pipeline/rateClaims";
 import { aggregateAndLogCosts, withCostTracker } from "../../pipeline/cost-tracking/costTracker";
 import {
   EXTRACT_CLAIMS_PATH,
+  FETCH_SERVICE_SOCKET_VARIABLE,
   RATE_CLAIMS_PATH,
   type ExtractClaimsRequest,
   type ExtractClaimsResponse,
   type RateClaimsRequest,
   type RateClaimsResponse,
 } from "../contract";
-import { numberFromEnv, startService, type ServiceRoute } from "../serve";
+import { numberFromEnv, requiredEnv, startService, type ServiceRoute } from "../serve";
 
 /** Two documents at a time. Each one is already several model calls that run
  *  their parts in parallel inside the call, so a third document in flight buys
@@ -86,6 +87,11 @@ const rateClaimsRoute: ServiceRoute<RateClaimsRequest, RateClaimsResponse> = {
     };
   },
 };
+
+// On the services machine, outside pages and images are fetched only by the
+// sandboxed fetcher. A service started without its socket would fetch them in
+// this process, next to our keys, so it refuses to start instead.
+requiredEnv(FETCH_SERVICE_SOCKET_VARIABLE);
 
 startService({
   name: "extraction",
