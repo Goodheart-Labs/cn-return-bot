@@ -53,7 +53,7 @@ export const CN_COLORS = {
 };
 
 /** The text sizes, each with its line height, read from tokens.css. */
-const TEXT_SIZES = ["2xs", "xs", "sm", "base", "lg", "xl", "2xl"] as const;
+const TEXT_SIZES = ["2xs", "xs", "sm", "base", "lg", "xl", "2xl", "3xl", "display"] as const;
 
 /** The shared Tailwind preset of the website and the extension. A preset is a
  *  Tailwind config that other configs build on. Both apps list it under
@@ -73,7 +73,7 @@ export const cnPreset = {
     // A bare `border` or `ring` class takes these defaults.
     borderColor: { ...CN_COLORS, DEFAULT: "var(--cn-line)" },
     ringColor: { ...CN_COLORS, DEFAULT: "var(--cn-focus)" },
-    fontFamily: { sans: "var(--cn-font-sans)" },
+    fontFamily: { sans: "var(--cn-font-sans)", display: "var(--cn-font-display)" },
     fontSize: Object.fromEntries(
       TEXT_SIZES.map((size) => [size, [`var(--cn-text-${size})`, { lineHeight: `var(--cn-leading-${size})` }]]),
     ),

@@ -169,6 +169,15 @@
   --cn-leading-xl: 1.75rem;
   --cn-text-2xl: 1.5rem;
   --cn-leading-2xl: 2rem;
+  /* Section headings of the website's pages. */
+  --cn-text-3xl: 2rem;
+  --cn-leading-3xl: 2.5rem;
+  /* The one headline at the top of the homepage. It grows with the window
+   * between a phone and a wide screen. */
+  --cn-text-display: clamp(2.5rem, 1.6rem + 3.6vw, 4.25rem);
+  --cn-leading-display: 1.05;
+  /* The face of headings. It is the body face unless a look sets its own. */
+  --cn-font-display: var(--cn-font-sans);
 
   /* Shape */
   --cn-radius-control: 0.5rem;
@@ -191,6 +200,8 @@
   --cn-leading-lg: 1.75rem;
   --cn-text-2xl: 1.875rem;
   --cn-leading-2xl: 2.25rem;
+  --cn-text-3xl: 2.25rem;
+  --cn-leading-3xl: 2.75rem;
 }
 
 .dark,

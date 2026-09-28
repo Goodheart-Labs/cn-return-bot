@@ -23,7 +23,7 @@ export const Colours: StoryObj = {
   ),
 };
 
-const TEXT_SIZES = ["2xs", "xs", "sm", "base", "lg", "xl", "2xl"] as const;
+const TEXT_SIZES = ["2xs", "xs", "sm", "base", "lg", "xl", "2xl", "3xl", "display"] as const;
 
 export const TypeScale: StoryObj = {
   name: "Type scale",

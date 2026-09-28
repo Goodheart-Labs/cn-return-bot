@@ -5,6 +5,7 @@ import type { Decorator, Preview } from "@storybook/react-vite";
 import { LoginPromptProvider } from "@cn/features/auth/loginPrompt";
 import type { QuerySeed } from "./fixtures";
 import "./preview.css";
+import "./looks.css";
 
 /** A fresh query cache per story, filled from the story's `queries`
  *  parameter. Nothing is ever fetched: the seeded answers never go stale, and
@@ -42,13 +43,43 @@ const withScale: Decorator = (Story, { globals }) => (
   </ReadingScale>
 );
 
+/** Puts the look picked in the toolbar on <html>, where looks.css reads it. */
+function Look({ look, children }: { look: string; children: ReactNode }) {
+  useEffect(() => {
+    if (look === "current") delete document.documentElement.dataset.cnLook;
+    else document.documentElement.dataset.cnLook = look;
+  }, [look]);
+  return children;
+}
+
+const withLook: Decorator = (Story, { globals }) => (
+  <Look look={globals.look ?? "current"}>
+    <Story />
+  </Look>
+);
+
 const preview: Preview = {
   decorators: [
     withQueries,
     withScale,
+    withLook,
     withThemeByClassName({ themes: { light: "", dark: "dark" }, defaultTheme: "light" }),
   ],
   globalTypes: {
+    look: {
+      description: "A candidate look for Common Notes, from looks.css",
+      toolbar: {
+        title: "Look",
+        icon: "paintbrush",
+        items: [
+          { value: "current", title: "Current look" },
+          { value: "figures", title: "A. Sourced figures" },
+          { value: "margin", title: "B. Margin notes" },
+          { value: "proof", title: "C. Claim and proof" },
+        ],
+        dynamicTitle: true,
+      },
+    },
     scale: {
       description: "Text size of the website or of the extension",
       toolbar: {
@@ -62,7 +93,7 @@ const preview: Preview = {
       },
     },
   },
-  initialGlobals: { scale: "website" },
+  initialGlobals: { scale: "website", look: "current" },
   parameters: {
     layout: "padded",
     backgrounds: { disable: true },

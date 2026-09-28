@@ -1,9 +1,6 @@
 import type { FeedProjectRow } from "@cn/core/types";
 import { eyebrowVariants } from "@cn/ui/typography";
 
-const DESCRIPTION =
-  "Common Notes is an attempt to bring Community Notes everywhere: podcasts, newsletters, and beyond. This is in alpha, but voting works.";
-
 export function Sidebar({ projects, selectedId, onSelect, leaderboardSelected, onSelectLeaderboard }: {
   projects: FeedProjectRow[];
   selectedId: string | null;
@@ -12,13 +9,9 @@ export function Sidebar({ projects, selectedId, onSelect, leaderboardSelected, o
   onSelectLeaderboard: () => void;
 }) {
   return (
-    <aside className="w-full md:w-64 md:shrink-0 md:h-screen md:sticky md:top-0 border-b md:border-b-0 md:border-r border-line p-6 flex flex-col gap-6">
-      <div className="space-y-3">
-        <h1 className="text-xl font-extrabold">Common Notes</h1>
-        <p className="text-sm text-fg-muted leading-relaxed">{DESCRIPTION}</p>
-      </div>
-
-      {/* On wide screens the sidebar is exactly one screen tall and stays put
+    // 3.5rem is the height of the site header, which stays on top of the page.
+    <aside className="w-full md:w-64 md:shrink-0 md:h-[calc(100vh-3.5rem)] md:sticky md:top-14 border-b md:border-b-0 md:border-r border-line p-6 flex flex-col gap-6">
+      {/* On wide screens the sidebar fills the screen below the header and stays put
           while the feed scrolls, so the project list scrolls on its own.
           Without that, every project past the bottom edge was unreachable. */}
       <nav className="flex flex-col gap-2 md:min-h-0 md:flex-1">

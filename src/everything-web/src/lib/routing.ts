@@ -3,30 +3,43 @@ import { capturePageview } from "./analytics";
 
 /* Deep links use query parameters on the static GitHub Pages path. That needs
  * no server rewrites, and it does not clash with the hash Supabase's auth flow
- * uses. The note feed reads ?project=<slug>&item=<item-id>&note=<id>. The
- * leaderboard is ?view=leaderboard. */
+ * uses. The bare address is the homepage, and ?section=install opens it at the
+ * install section. The note feed is ?view=notes, and a link into it reads
+ * ?project=<slug>&item=<item-id>&note=<id>. The leaderboard is
+ * ?view=leaderboard. */
 
-/** Where the reader is. A null project means the first project in the list,
- *  and a null item means every item of the project. `note` names a shared note
- *  the feed scrolls to. */
+/** Where the reader is. On the homepage, `section` names the part the page
+ *  scrolls to. In the feed, a null project means the first project in the
+ *  list, and a null item means every item of the project. `note` names a
+ *  shared note the feed scrolls to. */
 export type Route =
+  | { view: "home"; section: "install" | null }
   | { view: "notes"; project: string | null; item: string | null; note: string | null }
   | { view: "leaderboard" };
+
+export const HOME: Route = { view: "home", section: null };
+export const INSTALL: Route = { view: "home", section: "install" };
+export const NOTES: Route = { view: "notes", project: null, item: null, note: null };
 
 function readRoute(): Route {
   const q = new URLSearchParams(window.location.search);
   if (q.get("view") === "leaderboard") return { view: "leaderboard" };
   // `episode` is the old name for `item`. Links made before the rename still use it.
-  return { view: "notes", project: q.get("project"), item: q.get("item") ?? q.get("episode"), note: q.get("note") };
+  const project = q.get("project");
+  const item = q.get("item") ?? q.get("episode");
+  const note = q.get("note");
+  if (q.get("view") === "notes" || project || item || note) return { view: "notes", project, item, note };
+  return { view: "home", section: q.get("section") === "install" ? "install" : null };
 }
 
 function routeSearch(route: Route): string {
   if (route.view === "leaderboard") return "?view=leaderboard";
+  if (route.view === "home") return route.section ? `?section=${route.section}` : "";
   const q = new URLSearchParams();
   if (route.project) q.set("project", route.project);
   if (route.item) q.set("item", route.item);
   if (route.note) q.set("note", route.note);
-  return q.size ? `?${q}` : "";
+  return q.size ? `?${q}` : "?view=notes";
 }
 
 /** The current route and the function that moves to another one. Moving
@@ -52,6 +65,9 @@ export function useRoute(): [Route, (next: Route) => void] {
   };
   return [route, navigate];
 }
+
+/** The address of a route, for the href of a link that navigates in-app. */
+export const routeHref = (route: Route): string => `${window.location.pathname}${routeSearch(route)}`;
 
 /** A shareable link straight to one note. */
 export function noteUrl(slug: string, noteId: string): string {

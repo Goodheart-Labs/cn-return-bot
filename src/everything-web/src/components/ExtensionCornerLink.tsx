@@ -2,11 +2,9 @@ import { track } from "@cn/core/analytics";
 import { buttonVariants } from "@cn/ui/Button";
 import { cardVariants } from "@cn/ui/Card";
 import { cn } from "@cn/ui/cn";
+import { browserById } from "../lib/extensionStores";
 
-export const EXTENSION_STORE_LINKS = [
-  { label: "Chrome", url: "https://chromewebstore.google.com/detail/common-notes/jodkhmefbcmgldokmeicpdogkepmcnij" },
-  { label: "Firefox", url: "https://addons.mozilla.org/en-US/firefox/addon/common-notes/" },
-] as const;
+const CORNER_BROWSERS = [browserById("chrome"), browserById("firefox")];
 
 export function ExtensionCornerLink() {
   return (
@@ -14,9 +12,9 @@ export function ExtensionCornerLink() {
     <aside className={cn(cardVariants({ elevation: "floating" }), "hidden min-[1440px]:block fixed bottom-4 right-4 z-10 w-[min(20rem,calc(50vw_-_496px))] p-4")}>
       <p className="text-sm font-semibold text-fg text-balance">See Common Notes as you browse?</p>
       <div className="flex gap-2 mt-3">
-        {EXTENSION_STORE_LINKS.map(({ label, url }) => (
-          <a key={label} href={url} target="_blank" rel="noopener noreferrer" onClick={() => track("extension_store_clicked", { browser: label })} className={cn(buttonVariants({ variant: "secondary" }), "flex-1")}>
-            {label}
+        {CORNER_BROWSERS.map(({ name, storeUrl }) => (
+          <a key={name} href={storeUrl} target="_blank" rel="noopener noreferrer" onClick={() => track("extension_store_clicked", { browser: name })} className={cn(buttonVariants({ variant: "secondary" }), "flex-1")}>
+            {name}
           </a>
         ))}
       </div>

@@ -5,8 +5,8 @@ import { FEED_SEEDS } from "../../../everything-storybook/fixtures";
 import { App } from "../App";
 
 /* The website as a reader sees it, filled from the fixtures. Clicking around
- * works: the sidebar, the item links and the leaderboard link all change the
- * page. */
+ * works: the header, the sidebar, the item links and the leaderboard link all
+ * change the page. */
 const meta = {
   title: "Website/Pages",
   component: App,
@@ -16,10 +16,15 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+export const Home: Story = {
+  parameters: { queries: FEED_SEEDS },
+  decorators: [withWebsiteRoute({})],
+};
+
 export const ProjectFeed: Story = {
   name: "Project feed",
   parameters: { queries: FEED_SEEDS },
-  decorators: [withWebsiteRoute({})],
+  decorators: [withWebsiteRoute({ view: "notes" })],
 };
 
 export const Leaderboard: Story = {
