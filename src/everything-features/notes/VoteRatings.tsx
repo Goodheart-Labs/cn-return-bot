@@ -1,40 +1,38 @@
-import { CHIP } from "@cn/ui/classes";
+import { cva } from "class-variance-authority";
 import type { Vote } from "@cn/core/votes";
-
-const VOTE_ICON_PROPS = {
-  width: 12, height: 12, viewBox: "0 0 14 14",
-  fill: "none", stroke: "currentColor", strokeWidth: 1.8,
-  strokeLinecap: "round", strokeLinejoin: "round",
-} as const;
+import { chipVariants } from "@cn/ui/Chip";
+import { CheckIcon, CloseIcon, WaveIcon } from "@cn/ui/icons";
 
 /* The main pills are coloured by their own meaning even when unselected, with
  * the chosen option set apart by its filled background. Jim prefers this look
  * (2026-08-30); a grey-until-chosen variant was tried and rolled back. The
  * compact icon chips keep grey idles, because an icon-only chip has no label
  * to carry the colour and reads as pressed otherwise. */
-const VOTE_OPTIONS: { value: Vote; label: string; active: string; idle: string; hover: string; icon: React.ReactNode }[] = [
-  {
-    value: 1, label: "Helpful",
-    active: "bg-green-100 text-green-800 border-green-300 dark:bg-green-900/50 dark:text-green-300 dark:border-green-700",
-    idle: "text-green-700 border-gray-200 hover:bg-green-50 dark:text-green-400 dark:border-gray-600 dark:hover:bg-green-950/40",
-    hover: "hover:bg-green-50 hover:text-green-700 dark:hover:bg-green-950/40 dark:hover:text-green-400",
-    icon: <svg {...VOTE_ICON_PROPS} aria-hidden><path d="M3.5 8.5l3 3 6-7" /></svg>,
+const votePillVariants = cva(chipVariants(), {
+  variants: {
+    tone: { positive: "", caution: "", negative: "" },
+    state: { selected: "", idle: "border-line", compact: "border-transparent text-fg-subtle" },
   },
-  {
-    value: 0, label: "Somewhat helpful",
-    active: "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900/50 dark:text-amber-300 dark:border-amber-700",
-    idle: "text-amber-700 border-gray-200 hover:bg-amber-50 dark:text-amber-400 dark:border-gray-600 dark:hover:bg-amber-950/40",
-    hover: "hover:bg-amber-50 hover:text-amber-700 dark:hover:bg-amber-950/40 dark:hover:text-amber-400",
-    icon: <svg {...VOTE_ICON_PROPS} aria-hidden><path d="M2.5 9c1.8-2.6 3.7-2.6 5.5 0s3.7 2.6 5.5 0" /></svg>,
-  },
-  {
-    value: -1, label: "Not helpful",
-    active: "bg-red-100 text-red-800 border-red-300 dark:bg-red-900/50 dark:text-red-300 dark:border-red-700",
-    idle: "text-red-700 border-gray-200 hover:bg-red-50 dark:text-red-400 dark:border-gray-600 dark:hover:bg-red-950/40",
-    hover: "hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950/40 dark:hover:text-red-400",
-    icon: <svg {...VOTE_ICON_PROPS} aria-hidden><path d="M4.5 4.5l7 7M11.5 4.5l-7 7" /></svg>,
-  },
-];
+  compoundVariants: [
+    { tone: "positive", state: "selected", className: "bg-positive-selected text-positive-selected-fg border-positive-line" },
+    { tone: "caution", state: "selected", className: "bg-caution-selected text-caution-selected-fg border-caution-line" },
+    { tone: "negative", state: "selected", className: "bg-negative-selected text-negative-selected-fg border-negative-line" },
+    { tone: "positive", state: ["idle", "compact"], className: "hover:bg-positive-soft hover:text-positive" },
+    { tone: "caution", state: ["idle", "compact"], className: "hover:bg-caution-soft hover:text-caution" },
+    { tone: "negative", state: ["idle", "compact"], className: "hover:bg-negative-soft hover:text-negative" },
+    { tone: "positive", state: "idle", className: "text-positive" },
+    { tone: "caution", state: "idle", className: "text-caution" },
+    { tone: "negative", state: "idle", className: "text-negative" },
+  ],
+});
+
+const VOTE_ICON_SIZE = 12;
+
+const VOTE_OPTIONS = [
+  { value: 1, label: "Helpful", tone: "positive", icon: <CheckIcon size={VOTE_ICON_SIZE} aria-hidden /> },
+  { value: 0, label: "Somewhat helpful", tone: "caution", icon: <WaveIcon size={VOTE_ICON_SIZE} aria-hidden /> },
+  { value: -1, label: "Not helpful", tone: "negative", icon: <CloseIcon size={VOTE_ICON_SIZE} aria-hidden /> },
+] as const satisfies readonly { value: Vote; label: string; tone: string; icon: React.ReactNode }[];
 
 /** The three rating pills under a note. Common Notes uses X's three-way rating
  *  scale, so a rating is helpful, somewhat helpful, or not helpful. A
@@ -60,10 +58,9 @@ export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVo
   compact?: boolean;
 }) {
   const counts: Record<Vote, number> = { 1: helpful, 0: somewhatHelpful, [-1]: notHelpful };
-  const shape = `${CHIP} transition-colors`;
   return (
     <span className="inline-flex items-center gap-1 flex-wrap">
-      {VOTE_OPTIONS.map(({ value, label, active, idle, hover, icon }) => (
+      {VOTE_OPTIONS.map(({ value, label, tone, icon }) => (
         <button
           key={value}
           type="button"
@@ -71,7 +68,7 @@ export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVo
           aria-pressed={myVote === value}
           aria-label={showCounts ? `${label}: ${counts[value]} ratings` : label}
           onClick={() => onVote(value)}
-          className={`${shape} ${myVote === value ? active : compact ? `border-transparent text-gray-400 dark:text-gray-500 ${hover}` : idle}`}
+          className={votePillVariants({ tone, state: myVote === value ? "selected" : compact ? "compact" : "idle" })}
         >
           {compact ? icon : label}
           {showCounts && counts[value] > 0 && <span>{counts[value].toLocaleString("en-US")}</span>}

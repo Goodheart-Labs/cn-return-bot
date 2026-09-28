@@ -1,6 +1,9 @@
 import { useEffect, useRef } from "react";
 import { extractYoutubeVideoId, sourceLinkLabel } from "@cn/core/pageUrls";
-import { LINK, QUOTE_RAIL } from "@cn/ui/classes";
+import { buttonVariants } from "@cn/ui/Button";
+import { Quote } from "@cn/ui/typography";
+
+const SOURCE_LINK = buttonVariants({ variant: "link", className: "text-xs" });
 import { quoteFragmentUrl } from "../../../dashboard-shared/textFragment";
 
 /** What a note is about: a clip of a YouTube video or a quote from an article. */
@@ -35,30 +38,28 @@ function CitationBlock({ quote, url, linkText, fragmentText, updatedQuote, image
 }) {
   const verbatim = !fragmentText;
   return (
-    <div className="bg-gray-50 dark:bg-gray-800/40 rounded-lg border border-gray-200 dark:border-gray-700 p-3">
+    <div className="bg-surface-muted rounded-control border border-line p-3">
       {url && (
         <div className="flex justify-end mb-1">
-          <a href={imageGrounded ? url : quoteFragmentUrl(url, updatedQuote ?? fragmentText ?? quote)} target="_blank" rel="noopener noreferrer" className={`text-xs ${LINK}`}>
+          <a href={imageGrounded ? url : quoteFragmentUrl(url, updatedQuote ?? fragmentText ?? quote)} target="_blank" rel="noopener noreferrer" className={SOURCE_LINK}>
             {linkText} ↗
           </a>
         </div>
       )}
       {verbatim ? (
-        <blockquote className={`${QUOTE_RAIL} text-gray-600 dark:text-gray-300 italic text-sm`}>
-          “{quote}”
-        </blockquote>
+        <Quote>“{quote}”</Quote>
       ) : (
         <div>
-          <p className="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap">{quote}</p>
+          <p className="text-sm text-fg whitespace-pre-wrap">{quote}</p>
           {imageGrounded ? (
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Summarized from the image above, not a text quote</p>
+            <p className="text-xs text-fg-muted mt-1">Summarized from the image above, not a text quote</p>
           ) : (
-            <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">⚠ Not an exact quote. This wording isn’t found in the source</p>
+            <p className="text-xs text-caution mt-1">⚠ Not an exact quote. This wording isn’t found in the source</p>
           )}
         </div>
       )}
       {updatedQuote && (
-        <p className="mt-2 pl-3 text-xs text-green-700 dark:text-green-400">
+        <p className="mt-2 pl-3 text-xs text-positive">
           ✎ The source has since been updated and now reads: <em>“{updatedQuote}”</em>
         </p>
       )}
@@ -167,10 +168,10 @@ function YouTubeClip({ url, quote, fragmentText, updatedQuote, imageGrounded, st
 
   return (
     <div className="space-y-2">
-      {videoId && <div ref={hostRef} className="w-full aspect-video rounded-lg overflow-hidden" />}
+      {videoId && <div ref={hostRef} className="w-full aspect-video rounded-control overflow-hidden" />}
       {quote && <CitationBlock quote={quote} url={url} linkText="watch" fragmentText={fragmentText} updatedQuote={updatedQuote} imageGrounded={imageGrounded} />}
       {!videoId && !quote && (
-        <a href={url} target="_blank" rel="noopener noreferrer" className={`text-xs ${LINK}`}>
+        <a href={url} target="_blank" rel="noopener noreferrer" className={SOURCE_LINK}>
           View on {sourceLinkLabel(url)} ↗
         </a>
       )}

@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { BUTTON, FLOATING_CARD } from "@cn/ui/classes";
+import { Button } from "@cn/ui/Button";
+import { cardVariants } from "@cn/ui/Card";
+import { cn } from "@cn/ui/cn";
+import { CloseIcon } from "@cn/ui/icons";
 import { IconButton } from "@cn/ui/IconButton";
 import { useAutoDismiss } from "@cn/ui/useAutoDismiss";
 
@@ -45,13 +48,13 @@ export function ActionButton({ action }: { action: StatusAction }) {
     }
   };
 
-  if (phase === "done") return <p className="text-sm text-green-700 dark:text-green-400">{action.doneLabel}</p>;
+  if (phase === "done") return <p className="text-sm text-positive">{action.doneLabel}</p>;
   return (
     <div>
-      <button onClick={run} disabled={phase === "busy"} className={`${BUTTON} w-full`}>
+      <Button className="w-full" onClick={run} disabled={phase === "busy"}>
         {action.label}
-      </button>
-      {phase === "error" && <p className="mt-2 text-sm text-red-600 dark:text-red-400">Something went wrong. Try again</p>}
+      </Button>
+      {phase === "error" && <p className="mt-2 text-sm text-negative">Something went wrong. Try again</p>}
     </div>
   );
 }
@@ -67,7 +70,7 @@ export function StatusOverlay({ headline, onHeadlineClick }: StatusOverlayProps)
   if (hidden) return null;
   return (
     <div
-      className={`max-w-[24rem] ${FLOATING_CARD} p-4 transition-opacity ease-out ${fading ? "opacity-0" : "opacity-100"}`}
+      className={cn(cardVariants({ elevation: "floating" }), "max-w-[24rem] p-4 transition-opacity ease-out", fading ? "opacity-0" : "opacity-100")}
       style={{ transitionDuration: `${FADE_MS}ms` }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -76,15 +79,15 @@ export function StatusOverlay({ headline, onHeadlineClick }: StatusOverlayProps)
         {onHeadlineClick ? (
           <button
             onClick={onHeadlineClick}
-            className="text-left text-sm font-medium text-gray-900 underline-offset-2 hover:underline dark:text-gray-100"
+            className="text-left text-sm font-medium text-fg underline-offset-2 hover:underline"
           >
             {headline}
           </button>
         ) : (
-          <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{headline}</p>
+          <p className="text-sm font-medium text-fg">{headline}</p>
         )}
         <IconButton label="Dismiss" className="ml-auto" onClick={() => setHidden(true)}>
-          ✕
+          <CloseIcon size={14} aria-hidden />
         </IconButton>
       </div>
     </div>

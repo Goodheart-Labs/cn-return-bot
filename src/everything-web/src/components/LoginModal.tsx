@@ -10,7 +10,7 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
   if (!open) return null;
   return (
     <Modal title="Sign in" onClose={onClose}>
-      <p className="text-sm text-gray-500 dark:text-gray-400">
+      <p className="text-sm text-fg-muted">
         Signing in keeps your votes and notes together across devices. Reading and voting work without it.
       </p>
       <SignInForm

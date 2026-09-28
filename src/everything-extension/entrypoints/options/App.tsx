@@ -1,5 +1,7 @@
-import { useEffect, useState, type ReactNode } from "react";
-import { CARD, SECONDARY_BUTTON } from "@cn/ui/classes";
+import { useEffect, useState, type ComponentProps, type ReactNode } from "react";
+import { Button } from "@cn/ui/Button";
+import { Card } from "@cn/ui/Card";
+import { Checkbox } from "@cn/ui/Field";
 import { signOut } from "@cn/core/auth";
 import { useSession } from "@cn/features/auth/useSession";
 import { LoginPanel } from "../../components/LoginPanel";
@@ -35,19 +37,14 @@ const VISIT_SITES: { kind: VisitSiteKind; label: string }[] = [
   { kind: "lesswrong", label: "LessWrong and the Alignment Forum" },
 ];
 
-function Checkbox({ checked, onChange, children }: { checked: boolean; onChange: (checked: boolean) => void; children: ReactNode }) {
-  return (
-    <label className="flex items-center gap-2 text-sm text-gray-700">
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} />
-      {children}
-    </label>
-  );
-}
+/** The settings page's checkbox: the design system's, at this page's text
+ *  size. */
+const Setting = (props: ComponentProps<typeof Checkbox>) => <Setting className="text-sm text-fg-secondary" {...props} />;
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="space-y-2 border-t border-gray-200 pt-4 first:border-t-0 first:pt-0">
-      <h2 className="text-sm font-semibold text-gray-900">{title}</h2>
+    <section className="space-y-2 border-t border-line pt-4 first:border-t-0 first:pt-0">
+      <h2 className="text-sm font-semibold text-fg">{title}</h2>
       {children}
     </section>
   );
@@ -68,18 +65,18 @@ function VisitRecordingChoice({ settings, onToggle }: {
     onToggle({ saveVisits: { substack: checked, youtube: checked, lesswrong: checked } });
   return (
     <>
-      <p className="text-sm text-gray-600">
+      <p className="text-sm text-fg-secondary">
         When you open a post on Substack, YouTube, LessWrong, or the Alignment Forum, the extension can save the link and
         the time. That tells us which posts are worth checking next. It is anonymous: never your
         account or the rest of your browsing. Each saved link carries a random code that is
         different for every author, so we can count how many people read an author without joining
         your reading together.
       </p>
-      <Checkbox checked={anyOn} onChange={setAll}>
+      <Setting checked={anyOn} onChange={setAll}>
         Share which posts you open
-      </Checkbox>
+      </Setting>
       {mixed && (
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-fg-muted">
           You have turned this off for some sites. The per-site choices are in the advanced settings.
         </p>
       )}
@@ -96,34 +93,36 @@ function AdvancedSettings({ settings, onToggle }: {
   return (
     <div className="space-y-4">
       <Section title="Overlays">
-        <Checkbox
+        <Setting
           checked={settings.showNoteCountOverlay}
           onChange={(checked) => onToggle({ showNoteCountOverlay: checked })}
         >
           Show the note-count card on pages that have been checked
-        </Checkbox>
-        <Checkbox
+        </Setting>
+        <Setting
           checked={settings.showThumbnailBadges}
           onChange={(checked) => onToggle({ showThumbnailBadges: checked })}
         >
           Show note counts on thumbnails and listings
-        </Checkbox>
+        </Setting>
       </Section>
 
       <Section title="Notes">
-        <p className="text-sm text-gray-600">Where a note opens on article pages.</p>
-        <label className="flex items-center gap-2 text-sm text-gray-700">
+        <p className="text-sm text-fg-secondary">Where a note opens on article pages.</p>
+        <label className="flex items-center gap-2 text-sm text-fg-secondary">
           <input
             type="radio"
+            className="accent-primary"
             name="note-style"
             checked={settings.noteStyle === "margin"}
             onChange={() => onToggle({ noteStyle: "margin" })}
           />
           In the margin, beside the text
         </label>
-        <label className="flex items-center gap-2 text-sm text-gray-700">
+        <label className="flex items-center gap-2 text-sm text-fg-secondary">
           <input
             type="radio"
+            className="accent-primary"
             name="note-style"
             checked={settings.noteStyle === "classic"}
             onChange={() => onToggle({ noteStyle: "classic" })}
@@ -135,13 +134,13 @@ function AdvancedSettings({ settings, onToggle }: {
 
       <Section title="Sharing by site">
         {VISIT_SITES.map(({ kind, label }) => (
-          <Checkbox
+          <Setting
             key={kind}
             checked={settings.saveVisits[kind]}
             onChange={(checked) => onToggle({ saveVisits: { [kind]: checked } })}
           >
             Share which posts you open on {label}
-          </Checkbox>
+          </Setting>
         ))}
       </Section>
     </div>
@@ -161,9 +160,9 @@ export function SettingsApp() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-8">
-      <div className={`${CARD} mx-auto max-w-xl p-6`}>
-        <h1 className="mb-4 text-xl font-extrabold text-gray-900">Settings</h1>
+    <div className="min-h-screen bg-canvas px-4 py-8">
+      <Card className="mx-auto max-w-xl p-6">
+        <h1 className="mb-4 text-xl font-extrabold text-fg">Settings</h1>
         <div className="space-y-4">
 
         <Section title="Help us decide what to check">
@@ -176,21 +175,21 @@ export function SettingsApp() {
               offering the real sign-in, which upgrades that account in place. */}
           {!ready ? null : session && !session.user.is_anonymous ? (
             <div className="space-y-2">
-              {session.user.email && <p className="text-sm text-gray-600">Signed in as {session.user.email}</p>}
-              <button onClick={() => signOut()} className={`w-full ${SECONDARY_BUTTON}`}>
+              {session.user.email && <p className="text-sm text-fg-secondary">Signed in as {session.user.email}</p>}
+              <Button variant="secondary" className="w-full" onClick={() => signOut()}>
                 Sign out
-              </button>
+              </Button>
             </div>
           ) : (
             <LoginPanel surface="settings" />
           )}
         </Section>
 
-        <section className="border-t border-gray-200 pt-4">
+        <section className="border-t border-line pt-4">
           <button
             onClick={() => setAdvancedOpen((open) => !open)}
             aria-expanded={advancedOpen}
-            className="text-sm font-semibold text-gray-900"
+            className="text-sm font-semibold text-fg"
           >
             {advancedOpen ? "Hide advanced settings" : "Advanced settings"}
           </button>
@@ -201,7 +200,7 @@ export function SettingsApp() {
           )}
         </section>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

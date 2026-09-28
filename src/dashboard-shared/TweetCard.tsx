@@ -1,7 +1,8 @@
 import type { Tweet } from "./types";
 import { extractMedia, type MediaImage, type MediaVideo } from "./media";
-import { LINK } from "../everything-ui/classes";
 import { sourceLinkLabel } from "../everything-core/pageUrls";
+
+const LINK = "text-blue-600 dark:text-blue-400 hover:underline";
 
 function MediaBlock({ images, videos }: { images: MediaImage[]; videos: MediaVideo[] }) {
   if (images.length === 0 && videos.length === 0) return null;

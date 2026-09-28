@@ -36,15 +36,15 @@ export function useVotingNudge(): { show: boolean; dismiss: () => void } {
  *  wrapper around the vote pills. */
 export function VotingNudge({ onDismiss }: { onDismiss: () => void }) {
   return (
-    <span className="absolute bottom-full right-0 mb-2.5 z-10 block w-72 max-w-[80vw] rounded-xl bg-gray-900 text-gray-50 shadow-xl dark:bg-gray-800 dark:border dark:border-gray-600 p-3 text-left">
-      <span className="block text-[13px] font-bold">You don't need to be an expert</span>
-      <span className="mt-1 block text-[13px] leading-snug text-gray-300">
+    <span className="absolute bottom-full right-0 mb-2.5 z-10 block w-72 max-w-[80vw] rounded-card border border-inverse-line bg-inverse text-on-inverse shadow-floating p-3 text-left">
+      <span className="block text-xs font-bold">You don't need to be an expert</span>
+      <span className="mt-1 block text-xs leading-snug text-on-inverse-muted">
         Rate whether this note is helpful to you
       </span>
-      <button onClick={onDismiss} className="mt-1.5 block ml-auto text-xs font-semibold text-blue-300 hover:underline">
+      <button onClick={onDismiss} className="mt-1.5 block ml-auto text-xs font-semibold text-on-inverse-link hover:underline">
         Got it
       </button>
-      <span aria-hidden className="absolute -bottom-1.5 right-14 h-3 w-3 rotate-45 bg-gray-900 dark:bg-gray-800 dark:border-b dark:border-r dark:border-gray-600" />
+      <span aria-hidden className="absolute -bottom-1.5 right-14 h-3 w-3 rotate-45 border-b border-r border-inverse-line bg-inverse" />
     </span>
   );
 }

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { track } from "@cn/core/analytics";
 import { EMAIL_OTP_LENGTH, getSignedInBefore, signInWithEmailCode, verifyEmailCode, type EmailFlow } from "@cn/core/auth";
-import { BUTTON, INPUT, QUIET_LINK, SECONDARY_BUTTON } from "@cn/ui/classes";
+import { Button } from "@cn/ui/Button";
+import { Input } from "@cn/ui/Field";
 
 /** Where a half-finished email sign-in waits while the reader fetches the
  *  code. The extension needs one: its popup unmounts when the reader switches
@@ -12,8 +13,6 @@ export interface PendingEmailStore {
   save(email: string, flow: EmailFlow): Promise<void>;
   clear(): Promise<void>;
 }
-
-const FIELD = `flex-1 min-w-0 ${INPUT}`;
 
 /** The sign-in form of both apps. The reader types their email and then the
  *  code we send them, which needs no redirect and works across devices, or
@@ -98,30 +97,30 @@ export function SignInForm({ surface, signInWithX, pendingEmail, onSignedIn }: {
   return (
     <div className="space-y-2">
       {signedInBefore && (
-        <p className="text-xs text-gray-500 dark:text-gray-400">
+        <p className="text-xs text-fg-muted">
           You have signed in on this browser before, so voting and writing need a sign-in.
         </p>
       )}
       {stage === "email" ? (
         <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); void sendCode(); }}>
-          <input
+          <Input
             type="email"
             name="email"
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className={FIELD}
+            className="flex-1 min-w-0"
           />
-          <button type="submit" disabled={busy || !email.includes("@")} className={BUTTON}>
+          <Button type="submit" disabled={busy || !email.includes("@")}>
             Send code
-          </button>
+          </Button>
         </form>
       ) : (
         <form className="space-y-2" onSubmit={(e) => { e.preventDefault(); void verify(); }}>
-          <p className="text-xs text-gray-500 dark:text-gray-400">Enter the code we sent to {email.trim()}.</p>
+          <p className="text-xs text-fg-muted">Enter the code we sent to {email.trim()}.</p>
           <div className="flex gap-2">
-            <input
+            <Input
               inputMode="numeric"
               name="one-time-code"
               autoComplete="one-time-code"
@@ -129,21 +128,21 @@ export function SignInForm({ surface, signInWithX, pendingEmail, onSignedIn }: {
               value={code}
               onChange={(e) => setCode(e.target.value)}
               placeholder="123456"
-              className={`${FIELD} tracking-widest`}
+              className="flex-1 min-w-0 tracking-widest"
             />
-            <button type="submit" disabled={busy || code.trim().length < EMAIL_OTP_LENGTH} className={BUTTON}>
+            <Button type="submit" disabled={busy || code.trim().length < EMAIL_OTP_LENGTH}>
               Verify
-            </button>
+            </Button>
           </div>
-          <button type="button" onClick={() => void backToEmail()} className={`text-xs ${QUIET_LINK}`}>
+          <Button variant="quiet" className="text-xs" onClick={() => void backToEmail()}>
             Use a different email
-          </button>
+          </Button>
         </form>
       )}
-      <button onClick={() => void startX()} disabled={busy} className={`w-full ${SECONDARY_BUTTON}`}>
+      <Button variant="secondary" className="w-full" onClick={() => void startX()} disabled={busy}>
         Sign in with 𝕏
-      </button>
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      </Button>
+      {error && <p className="text-sm text-negative">{error}</p>}
     </div>
   );
 }

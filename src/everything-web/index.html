@@ -17,17 +17,8 @@
      * SystemTheme keeps the class in sync with live OS theme changes. */
     if (window.matchMedia("(prefers-color-scheme: dark)").matches) document.documentElement.classList.add("dark");
   </script>
-  <style>
-    /* System font stack. NOTE: we deliberately do NOT lead with X's proprietary
-     * "TwitterChirp" webfont. The assumption that Chirp "resolves to the system
-     * font because nobody has it installed" is false for anyone who does have it
-     * locally (e.g. Nathan, via ~/Library/Fonts/TwitterChirp-*): they'd render
-     * the whole site in Chirp, and mismapped local weight files make it read
-     * heavy/bold. The system font is what ~all visitors already saw anyway. */
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-  </style>
 </head>
-<body class="bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100 min-h-screen">
+<body class="bg-canvas text-fg font-sans min-h-screen">
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>

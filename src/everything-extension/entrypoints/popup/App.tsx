@@ -19,7 +19,7 @@ import { isSubstackPostPage, requestMakesSenseForUrl } from "../../utils/pageSha
 import { capturePageFromTab } from "../../utils/pageCapture";
 import { addRequestedPage, getRequestedPages } from "../../utils/settings";
 import { ActionButton, type StatusAction } from "../../components/StatusOverlay";
-import { BUTTON, LINK, QUIET_LINK } from "@cn/ui/classes";
+import { Button, buttonVariants } from "@cn/ui/Button";
 import { STATIC_SITE_HOSTNAME } from "../../utils/staticSites";
 import { useNoteFilters } from "../../components/NoteFilterToggles";
 
@@ -184,14 +184,14 @@ function RequestNoteButton({ label, doneLabel, onLive }: {
   };
 
   if (phase === "done") {
-    return <button disabled className={`${BUTTON} w-full`}>{doneLabel}</button>;
+    return <Button disabled className="w-full">{doneLabel}</Button>;
   }
   return (
     <>
-      <button onClick={request} disabled={phase !== "idle"} className={`${BUTTON} w-full`}>
+      <Button className="w-full" onClick={request} disabled={phase !== "idle"}>
         {label}
-      </button>
-      {phase === "error" && <p className="text-sm text-red-600 dark:text-red-400">Could not save the request (try again)</p>}
+      </Button>
+      {phase === "error" && <p className="text-sm text-negative">Could not save the request (try again)</p>}
     </>
   );
 }
@@ -241,7 +241,7 @@ function LiveRequestLine({ entry }: { entry: LiveRequest }) {
     refetchInterval: (query) => (query.state.data && progressIsTerminal(query.state.data) ? false : LIVE_LINE_REFRESH_MS),
   }).data ?? { kind: "saved" };
   return (
-    <div className="text-sm text-gray-600">
+    <div className="text-sm text-fg-secondary">
       {progressLines(progress).map((line) => (
         <p key={line}>{line}</p>
       ))}
@@ -292,9 +292,9 @@ function PrimaryAction({ state, counts, jumped, access }: {
   const authorFeed = useAuthorFeed(state);
   const [liveEntry, setLiveEntry] = useLiveRequest(state);
 
-  if (state.kind === "loading") return <p className="text-sm text-gray-500">Loading notes…</p>;
+  if (state.kind === "loading") return <p className="text-sm text-fg-muted">Loading notes…</p>;
   if (state.kind === "load_failed") {
-    return <p className="text-sm text-gray-600">Couldn't load notes. Check your connection and try again.</p>;
+    return <p className="text-sm text-fg-secondary">Couldn't load notes. Check your connection and try again.</p>;
   }
 
   const isContentPage =
@@ -303,9 +303,9 @@ function PrimaryAction({ state, counts, jumped, access }: {
 
   if (!isContentPage) {
     return (
-      <p className="text-sm text-gray-600">
+      <p className="text-sm text-fg-secondary">
         Open a post or video on a covered site to see Common Notes. You can also see notes on{" "}
-        <a href="https://commonnotes.net" target="_blank" rel="noreferrer" className={LINK}>
+        <a href="https://commonnotes.net" target="_blank" rel="noreferrer" className={buttonVariants({ variant: "link" })}>
           commonnotes.net
         </a>
         .
@@ -314,7 +314,7 @@ function PrimaryAction({ state, counts, jumped, access }: {
   }
   const visibleNoteCount = counts?.visible ?? 0;
   if (!authorFeed || (state.kind === "item" && visibleNoteCount > 0 && !access)) {
-    return <p className="text-sm text-gray-500">Loading notes…</p>;
+    return <p className="text-sm text-fg-muted">Loading notes…</p>;
   }
 
   const jumpToNote = async () => {
@@ -357,11 +357,11 @@ function PrimaryAction({ state, counts, jumped, access }: {
   return (
     <div className="space-y-2">
       {visibleNoteCount > 0 ? (
-        <button onClick={jumpToNote} className={`text-left text-sm font-medium ${LINK}`} title={visibleNoteCount === 1 ? "Jump to the note" : jumped ? "Jump to the next note" : "Jump to the first note"}>
+        <Button variant="link" className="text-left text-sm font-medium" onClick={jumpToNote} title={visibleNoteCount === 1 ? "Jump to the note" : jumped ? "Jump to the next note" : "Jump to the first note"}>
           {statusLine}
-        </button>
+        </Button>
       ) : (
-        <p className="text-sm font-medium text-gray-900">{statusLine}</p>
+        <p className="text-sm font-medium text-fg">{statusLine}</p>
       )}
       {liveEntry && <LiveRequestLine entry={liveEntry} />}
       {requestable &&
@@ -369,7 +369,7 @@ function PrimaryAction({ state, counts, jumped, access }: {
           // A page by a creator whose week is already running needs no press.
           // Every new post gets checked on its own, so the button would only
           // submit noise.
-          <p className="text-sm text-gray-600">{priorityActiveLabel(authorFeed.feed.kind)}</p>
+          <p className="text-sm text-fg-secondary">{priorityActiveLabel(authorFeed.feed.kind)}</p>
         ) : state.kind === "item" ? (
           <RequestNoteButton label="Check this page" doneLabel="You asked us to check this page" onLive={setLiveEntry} />
         ) : (
@@ -398,19 +398,20 @@ export function PopupApp() {
   const counts = state.kind === "item" && filters ? noteCounts(state.notes, filters) : null;
 
   return (
-    <div className="p-4 space-y-4 bg-gray-50 min-h-[120px]">
+    <div className="p-4 space-y-4 bg-canvas min-h-[120px]">
       <PrimaryAction state={state} counts={counts} jumped={jumped} access={access} />
 
-      <div className="border-t border-gray-200 pt-4">
-        <button
+      <div className="border-t border-line pt-4">
+        <Button
+          variant="quiet"
+          className="text-sm"
           onClick={() => {
             void browser.runtime.openOptionsPage();
             window.close();
           }}
-          className={`text-sm ${QUIET_LINK}`}
         >
           Settings
-        </button>
+        </Button>
       </div>
     </div>
   );

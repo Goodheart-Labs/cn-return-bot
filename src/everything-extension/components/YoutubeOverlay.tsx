@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { browser } from "#imports";
-import { QUOTE_RAIL } from "@cn/ui/classes";
+import { Quote } from "@cn/ui/typography";
 import { useSession } from "@cn/features/auth/useSession";
 import { claimGroups, itemNoteSetQuery, type ClaimGroup } from "../utils/claimGroups";
 import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
@@ -278,7 +278,7 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
         >
           <OverlayLoginGate open={loginOpen} onOpenChange={setLoginOpen}>
             {quotePreview(group) && (
-              <blockquote className={`${QUOTE_RAIL} mb-2 text-sm text-gray-600 dark:text-gray-300 italic`}>“{quotePreview(group)}”</blockquote>
+              <Quote className="mb-2">“{quotePreview(group)}”</Quote>
             )}
             <ClaimNoteStack group={group} projectSlug={projectSlug} />
           </OverlayLoginGate>

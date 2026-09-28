@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { isPageDark, observePageTheme } from "../utils/pageTheme";
-import { GROUP_GLYPH_PATH } from "./ClaimNoteStack";
+import { GROUP_GLYPH_PATH } from "@cn/ui/icons";
 import { MARKER_DARK, MARKER_HOVER_SCALE, MARKER_LIGHT } from "../utils/markerPalette";
 import type { TimedGroup } from "./YoutubeOverlay";
 

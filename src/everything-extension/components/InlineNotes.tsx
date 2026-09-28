@@ -2,11 +2,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { browser } from "#imports";
 import { createPortal } from "react-dom";
 import type { PageItem } from "@cn/core/items";
-import { FLOATING_CARD } from "@cn/ui/classes";
+import { cardVariants } from "@cn/ui/Card";
+import { cn } from "@cn/ui/cn";
 import type { ClaimGroup } from "../utils/claimGroups";
 import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
 import { setJumpHandler } from "../utils/jumpBus";
-import { ClaimNoteStack, GroupIcon, NOTE_POPOVER_WIDTH } from "./ClaimNoteStack";
+import { GroupIcon } from "@cn/ui/icons";
+import { ClaimNoteStack, NOTE_POPOVER_WIDTH } from "./ClaimNoteStack";
 import { OverlayLoginGate } from "./OverlayLoginGate";
 import { EventShield } from "./EventShield";
 import { WriteNoteOverlay } from "./WriteNoteOverlay";
@@ -98,7 +100,10 @@ function Badge({ open, onClick, style }: { open: boolean; onClick: () => void; s
       title="Community note on this passage"
       aria-expanded={open}
       style={style}
-      className={`absolute flex items-center justify-center rounded-full border shadow transition-transform hover:scale-110 bg-white border-gray-300 text-blue-600 dark:bg-gray-900 dark:border-gray-600 dark:text-blue-400 ${open ? "ring-2 ring-blue-500" : ""}`}
+      className={cn(
+        "absolute flex items-center justify-center rounded-full border border-line-strong bg-surface text-link shadow-raised transition-transform hover:scale-110",
+        open && "ring-2 ring-focus",
+      )}
     >
       <GroupIcon />
     </button>
@@ -121,11 +126,10 @@ function MarginDot({ open, onClick, style }: { open: boolean; onClick: () => voi
       className="absolute flex items-center justify-center group"
     >
       <span
-        className={`h-2.5 w-2.5 rounded-full bg-gray-400 dark:bg-gray-500 ${
-          open
-            ? ""
-            : "transition-colors group-hover:bg-blue-600 group-hover:ring-4 group-hover:ring-blue-500/20 dark:group-hover:bg-blue-400 dark:group-hover:ring-blue-400/25"
-        }`}
+        className={cn(
+          "h-2.5 w-2.5 rounded-full bg-fg-subtle",
+          !open && "transition-colors group-hover:bg-link group-hover:ring-4 group-hover:ring-focus-halo",
+        )}
       />
     </button>
   );
@@ -142,7 +146,7 @@ function NotePopover({ group, projectSlug, style }: {
     // stack several notes and an open composer, which gets taller than the
     // viewport. The overscroll-contain class stops that inner scroll from
     // carrying on into the host page.
-    <div style={style} className={`absolute ${FLOATING_CARD} p-4 text-left max-h-[70vh] overflow-y-auto overscroll-contain`}>
+    <div style={style} className={cn(cardVariants({ elevation: "floating" }), "absolute p-4 text-left max-h-[70vh] overflow-y-auto overscroll-contain")}>
       <OverlayLoginGate open={loginOpen} onOpenChange={setLoginOpen}>
         <ClaimNoteStack group={group} projectSlug={projectSlug} />
       </OverlayLoginGate>

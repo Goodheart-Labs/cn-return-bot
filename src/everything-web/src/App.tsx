@@ -2,7 +2,7 @@ import { useState } from "react";
 import { track } from "@cn/core/analytics";
 import type { FeedProjectRow } from "@cn/core/types";
 import { LoginPromptProvider } from "@cn/features/auth/loginPrompt";
-import { BUTTON, LINK } from "@cn/ui/classes";
+import { Button } from "@cn/ui/Button";
 import { AuthCorner } from "./components/AuthCorner";
 import { ExtensionCornerLink } from "./components/ExtensionCornerLink";
 import { LeaderboardPage } from "./pages/LeaderboardPage";
@@ -36,8 +36,8 @@ export function App() {
   else if (projectsQuery.isError) {
     page = (
       <div className="space-y-3">
-        <p className="text-sm text-gray-600 dark:text-gray-300">These notes could not be loaded. The connection to our server failed.</p>
-        <button onClick={() => void projectsQuery.refetch()} className={BUTTON}>Try again</button>
+        <p className="text-sm text-fg-secondary">These notes could not be loaded. The connection to our server failed.</p>
+        <Button onClick={() => void projectsQuery.refetch()}>Try again</Button>
       </div>
     );
   } else if (project) {
@@ -50,7 +50,7 @@ export function App() {
         onSelectItem={(item) => navigate({ view: "notes", project: project.slug, item, note: null })}
       />
     );
-  } else page = <p className="text-sm text-gray-500 dark:text-gray-400">Loading…</p>;
+  } else page = <p className="text-sm text-fg-muted">Loading…</p>;
 
   return (
     <LoginPromptProvider value={() => setLoginOpen(true)}>
@@ -78,17 +78,18 @@ export function App() {
               {route.view === "leaderboard" ? "Rating leaderboard" : project?.name}
             </h2>
             <div className="flex items-center gap-4">
-              <button
+              <Button
+                variant="link"
+                className="text-sm font-medium shrink-0"
                 onClick={() => {
                   setWriteOpen(true);
                   // The modal is a "get the extension" teaser. Each open is a
                   // reader asking for a write flow, which is extension demand.
                   track("write_note_teaser_shown");
                 }}
-                className={`text-sm font-medium shrink-0 ${LINK}`}
               >
                 Write a note
-              </button>
+              </Button>
               <AuthCorner onSignIn={() => setLoginOpen(true)} />
             </div>
           </div>

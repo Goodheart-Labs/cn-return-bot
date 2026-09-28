@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Checkbox } from "@cn/ui/Field";
 import { getNoteFilters, onNoteFiltersChanged, updateNoteFilters, type NoteFilters } from "../utils/settings";
 
 /** The note filters as editable state. A change is written to synced storage,
@@ -21,22 +22,12 @@ export function useNoteFilters(): [NoteFilters | null, (patch: Partial<NoteFilte
 export function NoteFilterToggles({ filters, onToggle }: { filters: NoteFilters; onToggle: (patch: Partial<NoteFilters>) => void }) {
   return (
     <div className="space-y-2">
-      <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-        <input
-          type="checkbox"
-          checked={filters.showNeedsRatings}
-          onChange={(e) => onToggle({ showNeedsRatings: e.target.checked })}
-        />
+      <Checkbox className="text-sm text-fg-secondary" checked={filters.showNeedsRatings} onChange={(checked) => onToggle({ showNeedsRatings: checked })}>
         Show notes that need more ratings
-      </label>
-      <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-        <input
-          type="checkbox"
-          checked={filters.showUnhelpful}
-          onChange={(e) => onToggle({ showUnhelpful: e.target.checked })}
-        />
+      </Checkbox>
+      <Checkbox className="text-sm text-fg-secondary" checked={filters.showUnhelpful} onChange={(checked) => onToggle({ showUnhelpful: checked })}>
         Show unhelpful notes
-      </label>
+      </Checkbox>
     </div>
   );
 }

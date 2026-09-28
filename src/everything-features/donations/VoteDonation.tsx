@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { MENU } from "@cn/ui/classes";
+import { Button } from "@cn/ui/Button";
+import { Menu, MenuItem } from "@cn/ui/Menu";
 import { useAutoDismiss } from "@cn/ui/useAutoDismiss";
 import { useOutsidePress } from "@cn/ui/useOutsidePress";
 import { useMutation } from "@tanstack/react-query";
@@ -33,34 +34,25 @@ function CharityPicker({ charity, onPick, open, setOpen }: {
 
   return (
     <span ref={ref} className="relative">
-      <button
-        onClick={() => setOpen(!open)}
-        className="text-blue-600 dark:text-blue-400 font-medium hover:underline"
-        title="Choose a different charity"
-      >
+      <Button variant="link" className="font-medium" onClick={() => setOpen(!open)} title="Choose a different charity">
         {charityLabel(charity)}
-      </button>
+      </Button>
       {open && (
-        <div className={`absolute left-0 top-6 z-20 ${MENU} w-72`}>
+        <Menu className="absolute left-0 top-6 z-20 w-72">
           {CHARITIES.map((c) => (
-            <button
+            <MenuItem
               key={c.id}
-              // The browser scrolls a newly focused element into view, and that
-              // is what reveals a menu opening below the fold of the popover.
               autoFocus={c.id === charity}
+              selected={c.id === charity}
               onClick={() => {
                 onPick(c.id);
                 setOpen(false);
               }}
-              aria-pressed={c.id === charity}
-              className={`flex w-full items-center text-left px-2 py-2 rounded-lg font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 hover:bg-gray-100 dark:hover:bg-gray-800 ${
-                c.id === charity ? "text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-300"
-              }`}
             >
               {c.label}
-            </button>
+            </MenuItem>
           ))}
-        </div>
+        </Menu>
       )}
     </span>
   );
@@ -117,36 +109,36 @@ export function VoteDonation({ voteId, pair, charity, status, onCharityChange, o
   return (
     <div
       ref={boxRef}
-      className="mt-2 rounded-lg border border-blue-200 bg-blue-100 dark:border-blue-800 dark:bg-blue-900/40 p-3 flex items-start justify-between gap-3"
+      className="mt-2 rounded-control border border-tint-line bg-tint p-3 flex items-start justify-between gap-3"
       style={{ opacity: fading ? 0 : 1, transition: `opacity ${FADE_MS}ms ease` }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       <div className="min-w-0">
         {status === "needs_ratings" ? (
-          <p className="text-sm text-gray-700 dark:text-gray-300">
+          <p className="text-sm text-fg-secondary">
             We will donate <strong>${pair.ifHelpful.toFixed(2)}</strong> to{" "}
             <CharityPicker charity={charity} onPick={pickCharity} open={pickerOpen} setOpen={setPickerOpen} /> if this note ends up rated{" "}
-            <span className="font-medium text-green-700 dark:text-green-400">helpful</span> and{" "}
+            <span className="font-medium text-positive">helpful</span> and{" "}
             <strong>${pair.ifNotHelpful.toFixed(2)}</strong> if it ends up rated{" "}
-            <span className="font-medium text-red-600 dark:text-red-400">unhelpful</span>.
+            <span className="font-medium text-negative">unhelpful</span>.
           </p>
         ) : (
-          <p className="text-sm text-gray-700 dark:text-gray-300">
+          <p className="text-sm text-fg-secondary">
             This note is rated{" "}
             {status === "helpful" ? (
-              <span className="font-medium text-green-700 dark:text-green-400">helpful</span>
+              <span className="font-medium text-positive">helpful</span>
             ) : (
-              <span className="font-medium text-red-600 dark:text-red-400">unhelpful</span>
+              <span className="font-medium text-negative">unhelpful</span>
             )}
             , so we will donate{" "}
             <strong>${(status === "helpful" ? pair.ifHelpful : pair.ifNotHelpful).toFixed(2)}</strong> to{" "}
             <CharityPicker charity={charity} onPick={pickCharity} open={pickerOpen} setOpen={setPickerOpen} />.
           </p>
         )}
-        {failed && <p className="text-sm text-red-600 dark:text-red-400 mt-1">Could not switch the charity (try again)</p>}
+        {failed && <p className="text-sm text-negative mt-1">Could not switch the charity (try again)</p>}
       </div>
-      <button onClick={onClose} className="text-sm text-gray-500 dark:text-gray-400 hover:underline shrink-0">Close</button>
+      <Button variant="quiet" className="text-sm shrink-0" onClick={onClose}>Close</Button>
     </div>
   );
 }

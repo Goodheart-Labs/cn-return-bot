@@ -16,7 +16,7 @@ export function OverlayLoginGate({ open, onOpenChange, children }: {
   return (
     <LoginPromptProvider value={() => onOpenChange(true)}>
       {open && !session && (
-        <div className="mb-3 pb-3 border-b border-gray-200 dark:border-gray-700">
+        <div className="mb-3 pb-3 border-b border-line">
           <LoginPanel surface="overlay" onDismiss={() => onOpenChange(false)} />
         </div>
       )}

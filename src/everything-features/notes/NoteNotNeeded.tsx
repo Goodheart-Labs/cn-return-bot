@@ -1,11 +1,13 @@
 import { useRef, useState } from "react";
 import { tallyVisible } from "@cn/core/noteScore";
 import type { NnnRow } from "@cn/core/types";
-import { EYEBROW, MENU } from "@cn/ui/classes";
+import { cn } from "@cn/ui/cn";
+import { ChevronIcon, MoreIcon, TrashIcon } from "@cn/ui/icons";
+import { Menu, MenuItem } from "@cn/ui/Menu";
+import { eyebrowVariants } from "@cn/ui/typography";
 import { IconButton } from "@cn/ui/IconButton";
 import { useOutsidePress } from "@cn/ui/useOutsidePress";
 import { useSession } from "../auth/useSession";
-import { MenuItem, TrashIcon } from "./NoteMenu";
 import { useDeleteNnn } from "./useNoteWrites";
 import { useMyNnnVotes, useVoteOnNnn } from "./useVotes";
 import { VoteRatings } from "./VoteRatings";
@@ -22,14 +24,6 @@ function timeAgo(iso: string): string {
   return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-/* The header row's little chevron. The vote chips draw their own icons inside
- * the shared VoteRatings component. */
-const CHEVRON_ICON_PROPS = {
-  width: 12, height: 12, viewBox: "0 0 14 14",
-  fill: "none", stroke: "currentColor", strokeWidth: 1.8,
-  strokeLinecap: "round", strokeLinejoin: "round",
-} as const;
-
 function OwnEntryMenu({ onDelete }: { onDelete: () => void }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLSpanElement>(null);
@@ -37,12 +31,12 @@ function OwnEntryMenu({ onDelete }: { onDelete: () => void }) {
   return (
     <span ref={ref} className="relative">
       <IconButton label="Entry actions" onClick={() => setOpen((o) => !o)}>
-        <span className="text-base leading-none">⋯</span>
+        <MoreIcon size={16} aria-hidden />
       </IconButton>
       {open && (
-        <div className={`absolute left-0 top-7 z-20 ${MENU}`}>
-          <MenuItem onClick={() => { setOpen(false); onDelete(); }} icon={<TrashIcon />} label="Delete" danger autoFocus />
-        </div>
+        <Menu className="absolute left-0 top-7 z-20">
+          <MenuItem onClick={() => { setOpen(false); onDelete(); }} icon={<TrashIcon size={16} />} danger autoFocus>Delete</MenuItem>
+        </Menu>
       )}
     </span>
   );
@@ -61,28 +55,22 @@ export function NoteNotNeeded({ entries }: {
   const deleteEntry = useDeleteNnn();
   if (entries.length === 0) return null;
   return (
-    <div className="mt-3 pt-2 border-t border-gray-200 dark:border-gray-700 space-y-4">
+    <div className="mt-3 pt-2 border-t border-line space-y-4">
       <button
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
-        className={`flex items-center gap-1.5 py-1 ${EYEBROW} hover:text-gray-700 dark:hover:text-gray-300`}
+        className={cn(eyebrowVariants(), "flex items-center gap-1.5 py-1 hover:text-fg-secondary")}
       >
-        <svg
-          {...CHEVRON_ICON_PROPS}
-          aria-hidden
-          className={`transition-transform ${open ? "rotate-90" : ""}`}
-        >
-          <path d="M6 3.5L11 8l-5 4.5" />
-        </svg>
+        <ChevronIcon size={12} aria-hidden className={cn("transition-transform", open && "rotate-90")} />
         Note not needed ({entries.length})
       </button>
       {open && entries.map((entry) => (
         <div key={entry.id}>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            <span className="font-semibold text-gray-600 dark:text-gray-300">{entry.author_name ?? "anonymous"}</span>
-            <span className="text-gray-400"> · {timeAgo(entry.created_at)}</span>
+          <p className="text-xs text-fg-muted">
+            <span className="font-semibold text-fg-secondary">{entry.author_name ?? "anonymous"}</span>
+            <span className="text-fg-subtle"> · {timeAgo(entry.created_at)}</span>
           </p>
-          <p className="mt-1 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap">{entry.body}</p>
+          <p className="mt-1 text-sm text-fg whitespace-pre-wrap">{entry.body}</p>
           <div className="mt-1 -ml-2 flex items-center gap-1">
             <VoteRatings
               compact

@@ -1,6 +1,6 @@
 import { signOut } from "@cn/core/auth";
 import { useSession } from "@cn/features/auth/useSession";
-import { BUTTON, LINK } from "@cn/ui/classes";
+import { Button } from "@cn/ui/Button";
 
 /** The sign-in button, or the signed-in reader's name with a sign-out link.
  *  An anonymous session is invisible to the reader: it exists only so their
@@ -10,16 +10,16 @@ export function AuthCorner({ onSignIn }: { onSignIn: () => void }) {
   const { session } = useSession();
   if (!session || session.user.is_anonymous) {
     return (
-      <button onClick={onSignIn} className={`${BUTTON} shrink-0`}>
+      <Button className="shrink-0" onClick={onSignIn}>
         Sign in
-      </button>
+      </Button>
     );
   }
   const who = session.user.email ?? session.user.user_metadata?.user_name ?? "signed in";
   return (
-    <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-3 shrink-0 min-w-0">
+    <div className="text-sm text-fg-muted flex items-center gap-3 shrink-0 min-w-0">
       <span className="truncate max-w-[16rem]" title={who}>{who}</span>
-      <button onClick={() => void signOut()} className={LINK}>Sign out</button>
+      <Button variant="link" onClick={() => void signOut()}>Sign out</Button>
     </div>
   );
 }

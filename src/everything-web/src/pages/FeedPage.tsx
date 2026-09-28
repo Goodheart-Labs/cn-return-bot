@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { FeedProjectRow, NnnRow, NoteRow } from "@cn/core/types";
-import { BUTTON } from "@cn/ui/classes";
+import { Button } from "@cn/ui/Button";
 import { FeedNoteCard } from "../components/FeedNoteCard";
 import { ItemChips } from "../components/ItemChips";
 import {
@@ -26,9 +26,9 @@ function NoteSection({ label, notes, render }: { label: string; notes: NoteRow[]
   return (
     <>
       <div className="flex items-center gap-3 py-2 max-w-[40rem] mx-auto w-full" role="separator">
-        <span className="flex-1 border-t-2 border-dotted border-gray-300 dark:border-gray-700" />
-        <span className="text-xs text-gray-400 dark:text-gray-500">{label}</span>
-        <span className="flex-1 border-t-2 border-dotted border-gray-300 dark:border-gray-700" />
+        <span className="flex-1 border-t-2 border-dotted border-line-strong" />
+        <span className="text-xs text-fg-subtle">{label}</span>
+        <span className="flex-1 border-t-2 border-dotted border-line-strong" />
       </div>
       {notes.map(render)}
     </>
@@ -82,12 +82,12 @@ export function FeedPage({ project, itemId, noteId, onSelectItem }: {
   if (failed) {
     return (
       <div className="space-y-3">
-        <p className="text-sm text-gray-600 dark:text-gray-300">These notes could not be loaded. The connection to our server failed.</p>
-        <button onClick={retry} className={BUTTON}>Try again</button>
+        <p className="text-sm text-fg-secondary">These notes could not be loaded. The connection to our server failed.</p>
+        <Button onClick={retry}>Try again</Button>
       </div>
     );
   }
-  if (!loaded) return <p className="text-sm text-gray-500 dark:text-gray-400">Loading…</p>;
+  if (!loaded) return <p className="text-sm text-fg-muted">Loading…</p>;
 
   const projectItems = itemsWithNotes(items.values(), byItem);
   // An item link that is stale or belongs to another project shows the whole
@@ -113,7 +113,7 @@ export function FeedPage({ project, itemId, noteId, onSelectItem }: {
         selected={activeItem}
         onSelect={onSelectItem}
       />
-      {projectItems.length === 0 && <p className="text-sm text-gray-500 dark:text-gray-400">No notes yet for this project.</p>}
+      {projectItems.length === 0 && <p className="text-sm text-fg-muted">No notes yet for this project.</p>}
       <div className="space-y-4">
         {sections.leading.map(renderCard)}
         <NoteSection label="Unhelpful notes" notes={sections.unhelpful} render={renderCard} />

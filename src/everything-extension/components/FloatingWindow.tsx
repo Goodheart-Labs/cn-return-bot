@@ -1,5 +1,8 @@
 import { useRef, useState, type CSSProperties, type HTMLAttributes, type ReactNode } from "react";
-import { EYEBROW, FLOATING_CARD } from "@cn/ui/classes";
+import { cardVariants } from "@cn/ui/Card";
+import { cn } from "@cn/ui/cn";
+import { CloseIcon } from "@cn/ui/icons";
+import { eyebrowVariants } from "@cn/ui/typography";
 import { IconButton } from "@cn/ui/IconButton";
 
 /** A card's box in page coordinates. Page coordinates are viewport
@@ -143,14 +146,14 @@ export function FloatingWindow({ title, dismissLabel, onDismiss, onPlaced, resti
       ref={outer}
       {...divProps}
       style={style}
-      className={`flex flex-col ${box ? "" : "max-w-[85vw] max-h-[70vh]"} ${FLOATING_CARD} ${className}`}
+      className={cn(cardVariants({ elevation: "floating" }), "flex flex-col", !box && "max-w-[85vw] max-h-[70vh]", className)}
     >
       <div
         onPointerDown={startDrag}
         className="flex items-start justify-between gap-2 px-4 pt-4 pb-2 cursor-grab active:cursor-grabbing select-none"
       >
-        <span className={EYEBROW}>{title}</span>
-        <IconButton label={dismissLabel} onClick={onDismiss}>✕</IconButton>
+        <span className={eyebrowVariants()}>{title}</span>
+        <IconButton label={dismissLabel} onClick={onDismiss}><CloseIcon size={14} aria-hidden /></IconButton>
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4">{children}</div>
       {GRIPS.map(({ edge, cursor, style: gripStyle }) => (

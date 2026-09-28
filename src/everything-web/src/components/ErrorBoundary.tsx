@@ -1,5 +1,5 @@
 import React from "react";
-import { BUTTON } from "@cn/ui/classes";
+import { Button } from "@cn/ui/Button";
 
 /* The last line of defence against a blank page. React unmounts the whole tree
  * when a render throws, and with nothing in its place the reader is left
@@ -25,15 +25,10 @@ export class ErrorBoundary extends React.Component<
     return (
       <div className="max-w-lg mx-auto px-4 py-8 space-y-3">
         <h1 className="text-xl font-extrabold">Common Notes could not load</h1>
-        <p className="text-sm text-gray-600 dark:text-gray-300">
+        <p className="text-sm text-fg-secondary">
           Something went wrong while showing this page. Reloading usually fixes it.
         </p>
-        <button
-          onClick={() => window.location.reload()}
-          className={BUTTON}
-        >
-          Reload
-        </button>
+        <Button onClick={() => window.location.reload()}>Reload</Button>
       </div>
     );
   }

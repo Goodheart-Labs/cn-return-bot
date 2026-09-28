@@ -2,6 +2,7 @@ import { browser } from "#imports";
 import type { EmailFlow } from "@cn/core/auth";
 import { SignInForm, type PendingEmailStore } from "@cn/features/auth/SignInForm";
 import { IconButton } from "@cn/ui/IconButton";
+import { CloseIcon } from "@cn/ui/icons";
 
 // The login form closes when the user switches away to their mail client to
 // fetch the code. The popup unmounts entirely, and an overlay can get
@@ -43,8 +44,8 @@ export function LoginPanel({ surface = "settings", onDismiss }: { surface?: "set
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between gap-2">
-        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Sign in to keep your votes and notes across devices</p>
-        {onDismiss && <IconButton label="Not now" onClick={onDismiss}>✕</IconButton>}
+        <p className="text-sm font-medium text-fg-secondary">Sign in to keep your votes and notes across devices</p>
+        {onDismiss && <IconButton label="Not now" onClick={onDismiss}><CloseIcon size={14} aria-hidden /></IconButton>}
       </div>
       <SignInForm surface={surface} signInWithX={signInWithX} pendingEmail={pendingEmailStore} />
     </div>

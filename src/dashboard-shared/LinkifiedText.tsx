@@ -27,7 +27,12 @@ function splitTrailingPunctuation(matched: string): { url: string; trailing: str
 // Renders text with every http and https URL turned into a clickable link. Each
 // URL becomes its own anchor. Two links that sit next to each other are never
 // merged into one.
-export function LinkifiedText({ text, className }: { text: string; className?: string }) {
+// A caller on another design system passes its own `linkClassName`.
+export function LinkifiedText({ text, className, linkClassName = "text-blue-600 dark:text-blue-400 hover:underline break-all" }: {
+  text: string;
+  className?: string;
+  linkClassName?: string;
+}) {
   const nodes: ReactNode[] = [];
   let lastIndex = 0;
 
@@ -43,7 +48,7 @@ export function LinkifiedText({ text, className }: { text: string; className?: s
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-blue-600 dark:text-blue-400 hover:underline break-all"
+        className={linkClassName}
       >
         {url}
       </a>,

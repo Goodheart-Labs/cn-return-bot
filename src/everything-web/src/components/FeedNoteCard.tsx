@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import type { ClaimRef, NnnRow, NoteRow } from "@cn/core/types";
-import { CARD, CHIP, LINK, QUOTE_RAIL } from "@cn/ui/classes";
+import { Button } from "@cn/ui/Button";
+import { Card } from "@cn/ui/Card";
+import { chipVariants } from "@cn/ui/Chip";
+import { cn } from "@cn/ui/cn";
+import { ArrowDownIcon, ArrowUpIcon, PencilIcon } from "@cn/ui/icons";
 import { Note } from "@cn/features/notes/Note";
 import { NoteNotNeeded } from "@cn/features/notes/NoteNotNeeded";
 import { ClaimContent, type NotedContent } from "./ClaimContent";
@@ -49,7 +53,7 @@ function ClaimImages({ urls }: { urls: string[] }) {
             src={url}
             alt="Claim source"
             loading="lazy"
-            className="max-h-48 w-auto rounded-lg border border-gray-200 dark:border-gray-700 object-contain"
+            className="max-h-48 w-auto rounded-control border border-line object-contain"
           />
         </a>
       ))}
@@ -111,7 +115,7 @@ function ContextParagraph({ paragraph, quote, bare, fitTo }: {
     ellipsis = true;
   }
   return (
-    <div className={`cn-context text-xs text-gray-400 dark:text-gray-500 leading-relaxed ${bare ? "" : QUOTE_RAIL}`}>
+    <div className={cn("text-2xs text-fg-subtle", !bare && "border-l-4 border-line-strong pl-3")}>
       <div
         ref={bodyRef}
         style={clampable && !expanded
@@ -126,15 +130,15 @@ function ContextParagraph({ paragraph, quote, bare, fitTo }: {
         ) : (
           <>
             {text.slice(0, idx)}
-            <strong className="font-semibold text-gray-800 dark:text-gray-200">{text.slice(idx, idx + quote.length)}</strong>
+            <strong className="font-semibold text-fg">{text.slice(idx, idx + quote.length)}</strong>
             {text.slice(idx + quote.length)}
           </>
         )}
       </div>
       {clampable && (
-        <button onClick={() => setExpanded((e) => !e)} className={`mt-1 text-xs ${LINK}`}>
+        <Button variant="link" className="mt-1 text-2xs" onClick={() => setExpanded((e) => !e)}>
           {expanded ? "Show less" : "Show more"}
-        </button>
+        </Button>
       )}
     </div>
   );
@@ -150,12 +154,6 @@ function jumpToNote(noteId: string) {
   el.scrollIntoView({ block: "start", behavior: "smooth" });
 }
 
-const JUMP_ARROW_PROPS = {
-  width: 13, height: 13, viewBox: "0 0 16 16",
-  fill: "none", stroke: "currentColor", strokeWidth: 1.8,
-  strokeLinecap: "round", strokeLinejoin: "round",
-} as const;
-
 /** An icon chip that scrolls to a related note. The explanation lives in the
  *  hover tooltip and in the aria-label, so the card itself stays quiet. */
 function JumpChip({ targetNoteId, explain, direction, count }: {
@@ -169,16 +167,10 @@ function JumpChip({ targetNoteId, explain, direction, count }: {
       onClick={() => jumpToNote(targetNoteId)}
       title={explain}
       aria-label={explain}
-      className={`${CHIP} border-gray-200 dark:border-gray-700 text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800`}
+      className={cn(chipVariants(), "border-line text-link hover:bg-surface-hover")}
     >
-      <svg {...JUMP_ARROW_PROPS} aria-hidden>
-        {direction === "up"
-          ? <><path d="M8 13V3" /><path d="M4 7l4-4 4 4" /></>
-          : <><path d="M8 3v10" /><path d="M4 9l4 4 4-4" /></>}
-      </svg>
-      <svg {...JUMP_ARROW_PROPS} width={11} height={11} viewBox="0 0 24 24" aria-hidden>
-        <path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
-      </svg>
+      {direction === "up" ? <ArrowUpIcon size={13} aria-hidden /> : <ArrowDownIcon size={13} aria-hidden />}
+      <PencilIcon size={11} aria-hidden />
       {count !== undefined && count > 1 && count}
     </button>
   );
@@ -258,16 +250,13 @@ export function FeedNoteCard({ note, improvements, nnnEntries, shareUrl }: {
           </div>
         </div>
       )}
-      <div ref={cardColRef} className={`${CARD} p-4 w-full max-w-[40rem] mx-auto xl:max-w-none xl:mx-0 xl:col-start-2 xl:row-start-1`}>
+      <Card ref={cardColRef} className="p-4 w-full max-w-[40rem] mx-auto xl:max-w-none xl:mx-0 xl:col-start-2 xl:row-start-1">
       <div className="mb-3">
         {claim.image_urls.length > 0 && <ClaimImages urls={claim.image_urls} />}
         {paragraph && (
-          <button
-            onClick={() => setCtxOpen((o) => !o)}
-            className={`xl:hidden text-xs mb-2 ${LINK}`}
-          >
+          <Button variant="link" className="xl:hidden text-xs mb-2" onClick={() => setCtxOpen((o) => !o)}>
             {ctxOpen ? "Hide surrounding context" : "Show surrounding context"}
-          </button>
+          </Button>
         )}
         <ClaimContent content={claimContent(claim)} />
       </div>
@@ -277,7 +266,7 @@ export function FeedNoteCard({ note, improvements, nnnEntries, shareUrl }: {
       </Note>
 
       <NoteNotNeeded entries={nnnEntries} />
-      </div>
+      </Card>
     </div>
   );
 }

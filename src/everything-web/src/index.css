@@ -1,12 +1,20 @@
+@import "../../everything-ui/tokens.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* The surrounding-context excerpt stays small even though the site's type
- * scale bumps text-xs up one step. Declared after utilities so it wins on
- * source order. The extension does not load this file, so there the excerpt
- * renders at the default text-xs, same as before. */
-.cn-context {
-  font-size: 0.75rem;
-  line-height: 1.625;
+/* The website reads at a larger size than the extension's overlays, which sit
+ * inside other sites' pages. Only the text-size tokens change. */
+:root {
+  --cn-text-xs: 0.875rem;
+  --cn-leading-xs: 1.25rem;
+  --cn-text-sm: 1rem;
+  --cn-leading-sm: 1.5rem;
+  --cn-text-base: 1.125rem;
+  --cn-leading-base: 1.75rem;
+  --cn-text-lg: 1.25rem;
+  --cn-leading-lg: 1.75rem;
+  --cn-text-2xl: 1.875rem;
+  --cn-leading-2xl: 2.25rem;
 }
