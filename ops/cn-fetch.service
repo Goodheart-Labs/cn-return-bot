@@ -1,0 +1,58 @@
+# The cn-fetch service: the sandboxed fetcher (src/service/fetch/main.ts).
+# Installed by ops/setup-vm.sh. The three other services start it, because
+# their units want it, and ask it for every outside page and image.
+#
+# Everything below builds the sandbox. The fetcher reads pages that strangers
+# chose, so it is locked in with nothing worth stealing:
+#   - no environment file, so no keys;
+#   - a throwaway user, and no view of /home, the secret files or other
+#     processes;
+#   - public internet addresses only, enforced by the kernel.
+[Unit]
+Description=Common Notes sandboxed page fetcher
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+DynamicUser=yes
+WorkingDirectory=/opt/cn-return-bot
+Environment=PATH=/home/cnbot/.bun/bin:/usr/local/bin:/usr/bin:/bin
+Environment=HOME=/tmp
+Environment=FETCH_SERVICE_SOCKET=/run/cn-fetch/fetch.sock
+Environment=PLAYWRIGHT_BROWSERS_PATH=/home/cnbot/.cache/ms-playwright
+ExecStart=/home/cnbot/.bun/bin/bun run src/service/fetch/main.ts
+Restart=always
+RestartSec=5
+
+# The socket lives in /run/cn-fetch, which systemd creates at start and removes
+# at stop. The other services connect to it there.
+RuntimeDirectory=cn-fetch
+RuntimeDirectoryMode=0755
+
+# Files. DynamicUser already makes the whole system read-only. /home is
+# replaced by an empty folder, with only Bun and the Playwright browsers put
+# back, read-only.
+ProtectHome=tmpfs
+BindReadOnlyPaths=/home/cnbot/.bun /home/cnbot/.cache/ms-playwright
+InaccessiblePaths=/etc/cn-return-bot /var/lib/cloud -/run/cloud-init
+ProtectProc=invisible
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+LockPersonality=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+
+# Network. Only public addresses, plus the machine's own DNS resolver, which
+# listens on 127.0.0.53. An allow entry wins over a deny entry. The Unix socket
+# is not an IP address, so these rules do not touch it.
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+IPAddressDeny=localhost link-local multicast 0.0.0.0/8 10.0.0.0/8 100.64.0.0/10 172.16.0.0/12 192.168.0.0/16 fc00::/7
+IPAddressAllow=127.0.0.53/32
+
+[Install]
+WantedBy=multi-user.target

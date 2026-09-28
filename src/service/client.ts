@@ -90,6 +90,23 @@ async function getHealth(baseUrl: string): Promise<HealthResponse> {
   return parseAnswer<HealthResponse>(await response.text(), response.status, HEALTH_PATH);
 }
 
+/** The fetch ladder needs about two minutes in the worst case, when every step
+ *  runs into its own timeout. This ceiling is for a fetcher that has hung. */
+const FETCH_SERVICE_TIMEOUT_MS = 5 * 60_000;
+
+/** Asks the fetcher over its Unix socket. It holds no secrets, so it takes no
+ *  key, and only processes on the same machine can reach it. */
+export async function callFetchService<Answer>(socket: string, path: string, body: unknown): Promise<Answer> {
+  const response = await fetch(`http://fetcher${path}`, {
+    unix: socket,
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(FETCH_SERVICE_TIMEOUT_MS),
+  } as RequestInit);
+  return parseAnswer<Answer>(await response.text(), response.status, path);
+}
+
 /** A health check is the one call that must fail fast. It is what a caller asks
  *  before deciding whether to start at all, so waiting minutes for it would
  *  defeat the point. */
