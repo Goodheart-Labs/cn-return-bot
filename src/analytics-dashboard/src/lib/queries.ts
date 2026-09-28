@@ -1,6 +1,9 @@
-import { supabase } from "../../../everything-shared/supabase";
-import { MIN_PAGES_FOR_A_READER, VISIT_RANKING_WINDOW_DAYS } from "../../../everything-shared/readers";
-import { noteStatus } from "../../../everything-shared/noteScore";
+import type { Database } from "../../../everything-core/database.types";
+import { supabase } from "../../../everything-core/supabase";
+
+type RpcName = keyof Database["public"]["Functions"];
+import { MIN_PAGES_FOR_A_READER, VISIT_RANKING_WINDOW_DAYS } from "../../../everything-core/readers";
+import { noteStatus } from "../../../everything-core/noteScore";
 
 // Every query runs through a security-definer RPC (migrations 077, 092, 095
 // and 097). The anon key cannot read everything_events or everything_votes
@@ -21,8 +24,10 @@ const STATEMENT_TIMEOUT_CODE = "57014";
 const RETRY_PAUSES_MS = [1500, 3000, 6000];
 
 /** One page of an RPC's rows, retrying a statement timeout. */
-async function rpcPage<T>(fn: string, args: Record<string, unknown>, from: number, attempt = 0): Promise<T[]> {
-  const { data, error } = await supabase.rpc(fn, args).range(from, from + PAGE_SIZE - 1);
+async function rpcPage<T>(fn: RpcName, args: Record<string, unknown>, from: number, attempt = 0): Promise<T[]> {
+  // The generated types tie each function to its own arguments, which this
+  // generic pager cannot name, so the arguments go through unchecked.
+  const { data, error } = await supabase.rpc(fn, args as never).range(from, from + PAGE_SIZE - 1);
   const pause = RETRY_PAUSES_MS[attempt];
   if (error?.code === STATEMENT_TIMEOUT_CODE && pause !== undefined) {
     await new Promise((resolve) => setTimeout(resolve, pause));
@@ -34,7 +39,7 @@ async function rpcPage<T>(fn: string, args: Record<string, unknown>, from: numbe
 
 /** Calls a set-returning RPC page by page until a short page arrives, so a
  *  series longer than PostgREST's cap still comes back whole. */
-async function rpcAllRows<T>(fn: string, args: Record<string, unknown>): Promise<T[]> {
+async function rpcAllRows<T>(fn: RpcName, args: Record<string, unknown>): Promise<T[]> {
   const rows: T[] = [];
   for (let from = 0; ; from += PAGE_SIZE) {
     const page = await rpcPage<T>(fn, args, from);
@@ -70,7 +75,9 @@ export const WINDOWS: readonly TimeWindow[] = [
 ];
 
 export async function fetchFunnel(days: number | null): Promise<FunnelRow[]> {
-  const { data, error } = await supabase.rpc("everything_funnel", { window_days: days });
+  // Null means all time. The generated argument type cannot say that an
+  // argument accepts null.
+  const { data, error } = await supabase.rpc("everything_funnel", { window_days: days as number });
   if (error) throw new Error(`everything_funnel failed: ${error.message}`);
   return data as FunnelRow[];
 }
@@ -146,7 +153,7 @@ export interface PipelineFunnelBars {
   claims_checked: number;
   ai_notes: number;
   /** AI notes whose tally noteStatus() calls helpful. The rule lives in
-   *  everything-shared/noteScore.ts, not in SQL, so it is applied here. */
+   *  everything-core/noteScore.ts, not in SQL, so it is applied here. */
   ai_notes_helpful: number;
 }
 

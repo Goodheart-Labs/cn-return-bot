@@ -1,10 +1,11 @@
 import type { ContentScriptContext } from "#imports";
-import { normalizePageUrl } from "../../everything-shared/pageUrls";
-import { progressIsTerminal } from "../../everything-shared/requestProgress";
+import { browser } from "#imports";
+import { normalizePageUrl } from "@cn/core/pageUrls";
+import { progressIsTerminal } from "@cn/core/requestProgress";
 import { jumpToNextNote } from "./jumpBus";
 import { getLiveRequest, removeLiveRequest, saveLiveRequest, type LiveRequest } from "./liveRequests";
 import { mountRequestProgress, type RequestProgressHandle } from "./mountRequestProgress";
-import type { RequestProgress } from "../../everything-shared/requestProgress";
+import type { RequestProgress } from "@cn/core/requestProgress";
 import { watchRequestProgress, type RequestWatch } from "./requestProgressController";
 import { forgetRequestedPage } from "./settings";
 
@@ -79,7 +80,6 @@ export function listenForLiveRequests(ctx: ContentScriptContext): void {
     });
   };
 
-  const runtime = (globalThis as any).browser?.runtime ?? (globalThis as any).chrome?.runtime;
   const listener = (message: unknown) => {
     const { type, pageUrl, token } = (message as { type?: string; pageUrl?: string; token?: string }) ?? {};
     if (type !== "cn-request-live" || !pageUrl || !token) return;
@@ -91,9 +91,9 @@ export function listenForLiveRequests(ctx: ContentScriptContext): void {
       .then((stored) => start(stored ?? { pageUrl, token, requestedAt: Date.now() }))
       .catch(() => {});
   };
-  runtime?.onMessage.addListener(listener);
+  browser.runtime.onMessage.addListener(listener);
   ctx.onInvalidated(() => {
-    runtime?.onMessage.removeListener(listener);
+    browser.runtime.onMessage.removeListener(listener);
     teardown();
   });
 

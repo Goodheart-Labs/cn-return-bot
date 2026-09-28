@@ -16,8 +16,8 @@
  */
 import "dotenv/config";
 import { getSupabaseClient } from "../../api/supabaseClient";
-import { donationPair } from "../../everything-web/src/lib/donationScoring";
-import { CHARITIES } from "../../everything-web/src/lib/donations";
+import { donationPair } from "../../everything-core/donationScoring";
+import { CHARITIES } from "../../everything-core/donations";
 
 const write = process.argv.includes("--write");
 const db = getSupabaseClient();

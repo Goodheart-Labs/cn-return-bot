@@ -1,30 +1,29 @@
-import { noteStatus, originalsFirst } from "../../everything-shared/noteScore";
-import { fetchNnnForClaims } from "../../everything-shared/noteNotNeeded";
-import { fetchNotesForItem } from "../../everything-shared/notesQuery";
-import type { NnnRow, NoteRow } from "../../everything-shared/types";
-import { getNoteFilters, type NoteFilters } from "./settings";
+import { queryOptions } from "@tanstack/react-query";
+import { fetchNnnForClaims } from "@cn/core/noteNotNeeded";
+import { fetchNotesForItem } from "@cn/core/notes";
+import { noteStatus, originalsFirst } from "@cn/core/noteScore";
+import type { ClaimRef, NnnRow, NoteRow } from "@cn/core/types";
+import { noteSetOf, type NoteSet } from "@cn/features/notes/noteSet";
+import { queryKeys } from "@cn/features/query/queryKeys";
+import type { NoteFilters } from "./settings";
 
-export type ClaimGroup = { claimId: string; notes: NoteRow[]; nnn: NnnRow[] };
+/** The query for one page's notes and the note-not-needed entries on their
+ *  claims. The overlays read it from the shared query cache, so a vote or a
+ *  new note updates every overlay on the page. */
+export const itemNoteSetQuery = (itemId: string) =>
+  queryOptions({
+    queryKey: queryKeys.itemNoteSet(itemId),
+    queryFn: async (): Promise<NoteSet> => {
+      const notes = await fetchNotesForItem(itemId);
+      return noteSetOf(notes, await fetchNnnForClaims([...new Set(notes.map((n) => n.claim_id))]));
+    },
+  });
 
-/** Group an item's notes by claim, with an original note before any
- *  improvements to it. Each group also carries that claim's note-not-needed
- *  entries. */
-function groupByClaim(notes: NoteRow[], nnn: NnnRow[]): ClaimGroup[] {
-  const byId = new Map<string, NoteRow[]>();
-  for (const note of notes) {
-    if (!note.claim) continue;
-    const list = byId.get(note.claim_id);
-    if (list) list.push(note);
-    else byId.set(note.claim_id, [note]);
-  }
-  return [...byId.entries()].map(([claimId, group]) => ({
-    claimId,
-    notes: [...group].sort(originalsFirst),
-    nnn: nnn.filter((e) => e.claim_id === claimId),
-  }));
-}
+/** The notes on one claim with the original first, and that claim's
+ *  note-not-needed entries. */
+export type ClaimGroup = { claimId: string; claim: ClaimRef; notes: NoteRow[]; nnn: NnnRow[] };
 
-/** Whether the popup's filter tickboxes let this note render. A note rated
+/** Whether the reader's note filters let this note render. A note rated
  *  helpful always shows. */
 export function noteVisible(note: NoteRow, filters: NoteFilters): boolean {
   const status = noteStatus(note);
@@ -33,30 +32,38 @@ export function noteVisible(note: NoteRow, filters: NoteFilters): boolean {
   return true;
 }
 
-/** The note tallies for the count card. `helpful`, `needsRatings` and
- *  `notHelpful` are disjoint, so "1 Common Note, 1 needs more ratings" means
- *  one helpful note plus one unrated one. All three are counted over ALL of
- *  the item's notes, deliberately ignoring the reader's display filters:
- *  counts report what exists, filters only decide what renders. `visible` is
- *  the filtered count, the notes a jump can actually reach. */
+/** The claims of a page whose notes pass the reader's filters, each with its
+ *  visible notes, original first. */
+export function claimGroups({ notes, nnn }: NoteSet, filters: NoteFilters): ClaimGroup[] {
+  const byClaim = new Map<string, NoteRow[]>();
+  for (const note of notes.values()) {
+    if (!noteVisible(note, filters)) continue;
+    byClaim.set(note.claim_id, [...(byClaim.get(note.claim_id) ?? []), note]);
+  }
+  return [...byClaim].map(([claimId, claimNotes]) => ({
+    claimId,
+    claim: claimNotes[0]!.claim,
+    notes: claimNotes.sort(originalsFirst),
+    nnn: [...nnn.values()].filter((e) => e.claim_id === claimId),
+  }));
+}
+
+/** The note tallies for the count card and the popup. `helpful`,
+ *  `needsRatings` and `notHelpful` are disjoint, so "1 Common Note, 1 needs
+ *  more ratings" means one helpful note plus one unrated one. All three count
+ *  every note on the page, deliberately ignoring the reader's filters: counts
+ *  report what exists, filters only decide what renders. `visible` is the
+ *  filtered count, the notes a jump can actually reach. */
 export type NoteCounts = { helpful: number; needsRatings: number; notHelpful: number; visible: number };
 
-/** An item's notes and its claims' note-not-needed entries, grouped by claim,
- *  with the status filters applied, plus the visible-note counts. Both the
- *  inline mount, used on Substack and on the generic text sites, and the
- *  YouTube overlay call this. Returns null when the notes could not be
- *  fetched, so a caller does not mistake an outage for a page without notes. */
-export async function fetchClaimGroups(itemId: string): Promise<{ groups: ClaimGroup[]; counts: NoteCounts } | null> {
-  const [notes, filters] = await Promise.all([fetchNotesForItem(itemId), getNoteFilters()]);
-  if (notes === null) return null;
-  const visible = notes.filter((note) => noteVisible(note, filters));
-  const counts = { helpful: 0, needsRatings: 0, notHelpful: 0, visible: visible.length };
+export function noteCounts(notes: Iterable<NoteRow>, filters: NoteFilters): NoteCounts {
+  const counts = { helpful: 0, needsRatings: 0, notHelpful: 0, visible: 0 };
   for (const note of notes) {
     const status = noteStatus(note);
     if (status === "helpful") counts.helpful += 1;
     else if (status === "needs_ratings") counts.needsRatings += 1;
     else counts.notHelpful += 1;
+    if (noteVisible(note, filters)) counts.visible += 1;
   }
-  const nnn = await fetchNnnForClaims([...new Set(visible.map((n) => n.claim_id))]);
-  return { groups: groupByClaim(visible, nnn), counts };
+  return counts;
 }

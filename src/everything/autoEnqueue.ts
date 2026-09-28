@@ -48,9 +48,9 @@
  */
 
 import "dotenv/config";
-import { extractYoutubeVideoId } from "../everything-shared/pageUrls";
+import { extractYoutubeVideoId } from "../everything-core/pageUrls";
 import { rankCreators, type RankedCreator } from "./creatorRanking";
-import { MIN_PAGES_FOR_A_READER, VISIT_RANKING_WINDOW_DAYS } from "../everything-shared/readers";
+import { MIN_PAGES_FOR_A_READER, VISIT_RANKING_WINDOW_DAYS } from "../everything-core/readers";
 import { affordablePostsPerDay, computeNextRun, MEAN_COST_RULE } from "./pacing";
 import { FEED_BUDGET_USD } from "./spendCap";
 import {

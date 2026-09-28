@@ -34,8 +34,8 @@
 
 import { fetchCreatorProjects, fetchCreatorAttention, QUEUE_PRIORITY } from "./db";
 import { canonicalFeed, type FeedType } from "./feedUrls";
-import { normalizeFeedUrl } from "../everything-shared/pageUrls";
-import { MIN_PAGES_FOR_A_READER, MIN_READERS_TO_WALK_CREATOR, VISIT_RANKING_WINDOW_DAYS } from "../everything-shared/readers";
+import { normalizeFeedUrl } from "../everything-core/pageUrls";
+import { MIN_PAGES_FOR_A_READER, MIN_READERS_TO_WALK_CREATOR, VISIT_RANKING_WINDOW_DAYS } from "../everything-core/readers";
 
 export interface RankedCreator {
   project_slug: string;

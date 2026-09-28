@@ -1,7 +1,7 @@
 import { createRoot, type Root } from "react-dom/client";
 import { createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
-import type { RequestProgress } from "../../everything-shared/requestProgress";
+import type { RequestProgress } from "@cn/core/requestProgress";
 import { RequestProgressCard } from "../components/RequestProgressCard";
 import { isPageDark } from "./pageTheme";
 

@@ -1,11 +1,13 @@
 import { defineBackground } from "#imports";
 import { browser } from "#imports";
-import { fetchCoveredPageUrls, fetchPrioritizedCreatorUrls, fetchItemForUrl, fetchNotedPageCounts, fetchReaderCanonical, isWholePageChecked } from "../../everything-shared/notesQuery";
-import { submitNoteRequest } from "../../everything-shared/noteRequests";
-import { canonicalizePageUrl, isSubstackReaderUrl } from "../../everything-shared/pageUrls";
-import { track } from "../../everything-shared/analytics";
+import { fetchCoveredPageUrls, fetchItemForUrl, fetchNotedPageCounts, isWholePageChecked } from "@cn/core/items";
+import { fetchPrioritizedCreatorUrls } from "@cn/core/creators";
+import { fetchReaderCanonical } from "@cn/core/pageUrls";
+import { submitNoteRequest } from "@cn/core/noteRequests";
+import { canonicalizePageUrl, isSubstackReaderUrl } from "@cn/core/pageUrls";
+import { signInWithTwitterInPopup } from "@cn/core/auth";
+import { track } from "@cn/core/analytics";
 import { initBackgroundAnalytics, trackDailyActivity } from "../utils/analytics";
-import { signInWithXViaWebAuthFlow } from "../utils/oauth";
 import { authorFeedStatusForTab } from "../utils/authorFeed";
 import { CHECKED_PAGE_URLS_KEY, COVERED_PAGE_URLS_KEY, NOTED_PAGE_STATUS_COUNTS_KEY } from "../utils/coveredPages";
 import { PRIORITIZED_CREATOR_URLS_KEY } from "../utils/prioritizedCreators";
@@ -359,7 +361,9 @@ export default defineBackground(() => {
     if ((message as { type?: string })?.type === "cn-signin-x") {
       // The OAuth window outlives the popup that asked for it, so the flow
       // runs here in the background.
-      signInWithXViaWebAuthFlow().then(sendResponse);
+      signInWithTwitterInPopup(browser.identity.getRedirectURL(), (url) =>
+        browser.identity.launchWebAuthFlow({ url, interactive: true }),
+      ).then(sendResponse);
       return true; // Keep the message channel open for the async reply.
     }
     if ((message as { type?: string })?.type === "cn-reader-canonical") {

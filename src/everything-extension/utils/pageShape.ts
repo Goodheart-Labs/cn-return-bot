@@ -2,7 +2,7 @@
  *  question ("is there anything here worth asking us to check?"), not the
  *  creator question, which lives in creatorTarget.ts. */
 
-import { extractYoutubeVideoId } from "../../everything-shared/pageUrls";
+import { extractYoutubeVideoId } from "@cn/core/pageUrls";
 import { forumOrigin, isForumPostPage } from "./creatorTarget";
 
 /** Substack post pages live under /p/, on subdomains and custom domains alike.

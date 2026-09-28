@@ -1,5 +1,6 @@
-import type { FeedItemRow } from "../../../everything-shared/types";
-import { CHIP } from "../../../everything-shared/ui";
+import type { FeedItemRow } from "@cn/core/types";
+import { chipVariants } from "@cn/ui/Chip";
+import { cn } from "@cn/ui/cn";
 
 /** Filter chips for a project's items, which are its episodes, posts or pages.
  *  They show only when the project has more than one item with notes. The "All"
@@ -12,11 +13,11 @@ export function ItemChips({ items, noteCounts, selected, onSelect }: {
 }) {
   if (items.length < 2) return null;
   const chipClass = (active: boolean) =>
-    `${CHIP} shrink-0 transition-colors ${
-      active
-        ? "bg-blue-600 border-blue-600 text-white"
-        : "border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400"
-    }`;
+    cn(
+      chipVariants(),
+      "shrink-0",
+      active ? "bg-primary border-primary text-on-primary" : "border-line-strong text-fg-secondary hover:border-focus hover:text-link",
+    );
   return (
     <div className="flex gap-2 mb-6 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       <button className={chipClass(selected === null)} onClick={() => onSelect(null)}>
@@ -30,7 +31,7 @@ export function ItemChips({ items, noteCounts, selected, onSelect }: {
           title={item.title ?? item.url}
         >
           {item.title ?? "Untitled"}
-          <span className={selected === item.id ? "text-blue-200" : "text-gray-400 dark:text-gray-500"}>
+          <span className={selected === item.id ? "opacity-70" : "text-fg-subtle"}>
             {noteCounts.get(item.id) ?? 0}
           </span>
         </button>

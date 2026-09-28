@@ -2,7 +2,7 @@
  *  the service key. */
 
 import { getSupabaseClient } from "../api/supabaseClient";
-import { extractYoutubeVideoId } from "../everything-shared/pageUrls";
+import { extractYoutubeVideoId } from "../everything-core/pageUrls";
 import { stripNullChars } from "../utils/stripNullChars";
 import type { CanonicalFeed } from "./feedUrls";
 import type { FeedPacingSnapshot, MeanCostRule } from "./pacing";

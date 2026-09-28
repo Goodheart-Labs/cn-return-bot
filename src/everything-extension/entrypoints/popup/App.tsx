@@ -1,15 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { browser } from "#imports";
-import { fetchItemForUrl, fetchNotesForItem, isWholePageChecked, type PageItem } from "../../../everything-shared/notesQuery";
-import { extractYoutubeVideoId, normalizePageUrl } from "../../../everything-shared/pageUrls";
-import { noteStatus } from "../../../everything-shared/noteScore";
-import type { NoteRow } from "../../../everything-shared/types";
-import { submitNoteRequest } from "../../../everything-shared/noteRequests";
-import { progressIsTerminal, progressLines, type RequestProgress } from "../../../everything-shared/requestProgress";
+import { fetchItemForUrl, isWholePageChecked, type PageItem } from "@cn/core/items";
+import { fetchNotesForItem } from "@cn/core/notes";
+import { extractYoutubeVideoId, normalizePageUrl } from "@cn/core/pageUrls";
+import type { NoteRow } from "@cn/core/types";
+import { submitNoteRequest } from "@cn/core/noteRequests";
+import { progressIsTerminal, progressLines } from "@cn/core/requestProgress";
 import { authorFeedStatusForTab, type AuthorFeedStatus } from "../../utils/authorFeed";
 import { getLiveRequest, removeLiveRequest, saveLiveRequest, type LiveRequest } from "../../utils/liveRequests";
 import { fetchProgressSnapshot } from "../../utils/requestProgressController";
-import { noteVisible, type NoteCounts } from "../../utils/claimGroups";
+import { noteCounts, type NoteCounts } from "../../utils/claimGroups";
 import { genericScriptId } from "../../utils/genericScript";
 import { resolveReaderCanonical } from "../../utils/readerCanonical";
 import { priorityActiveLabel, type CreatorTarget } from "../../utils/creatorTarget";
@@ -18,7 +19,7 @@ import { isSubstackPostPage, requestMakesSenseForUrl } from "../../utils/pageSha
 import { capturePageFromTab } from "../../utils/pageCapture";
 import { addRequestedPage, getRequestedPages } from "../../utils/settings";
 import { ActionButton, type StatusAction } from "../../components/StatusOverlay";
-import { BUTTON, LINK, QUIET_LINK } from "../../../everything-shared/ui";
+import { Button, buttonVariants } from "@cn/ui/Button";
 import { STATIC_SITE_HOSTNAME } from "../../utils/staticSites";
 import { useNoteFilters } from "../../components/NoteFilterToggles";
 
@@ -39,31 +40,26 @@ async function activeTab() {
   return tab;
 }
 
-function usePageState(): PageState {
-  const [state, setState] = useState<PageState>({ kind: "loading" });
-  useEffect(() => {
-    (async () => {
-      const tab = await activeTab();
-      const url = tab?.url;
-      if (!url || !/^https?:/.test(url)) return setState({ kind: "unsupported" });
-      const origin = new URL(url).origin;
-      const readerCanonical = await resolveReaderCanonical(url);
-      // An outage is its own state. Falling through to "no item" would offer
-      // to check a page we may well have checked already.
-      let item;
-      try {
-        item = await fetchItemForUrl(normalizePageUrl(readerCanonical ?? url));
-      } catch {
-        return setState({ kind: "load_failed" });
-      }
-      if (!item) return setState({ kind: "no_item", origin, pageUrl: normalizePageUrl(readerCanonical ?? url) });
-      const notes = await fetchNotesForItem(item.id);
-      if (notes === null) return setState({ kind: "load_failed" });
-      setState({ kind: "item", origin, item, notes });
-    })();
-  }, []);
-  return state;
+/** What the popup knows about the active tab's page. An outage is its own
+ *  state. Falling through to "no item" would offer to check a page we may
+ *  well have checked already. */
+async function loadPageState(): Promise<PageState> {
+  const tab = await activeTab();
+  const url = tab?.url;
+  if (!url || !/^https?:/.test(url)) return { kind: "unsupported" };
+  const origin = new URL(url).origin;
+  const pageUrl = normalizePageUrl((await resolveReaderCanonical(url)) ?? url);
+  try {
+    const item = await fetchItemForUrl(pageUrl);
+    if (!item) return { kind: "no_item", origin, pageUrl };
+    return { kind: "item", origin, item, notes: await fetchNotesForItem(item.id) };
+  } catch {
+    return { kind: "load_failed" };
+  }
 }
+
+const usePageState = (): PageState =>
+  useQuery({ queryKey: ["popupPage"], queryFn: loadPageState }).data ?? { kind: "loading" };
 
 /** Whether this page's content script has already jumped to a note once. This
  *  decides whether the button says "first" or "next". A script we cannot
@@ -94,18 +90,16 @@ function useJumped(state: PageState): boolean {
  *  directly. */
 type PageAccess = "on" | "syncing";
 
+async function loadPageAccess(origin: string): Promise<PageAccess> {
+  const hostname = new URL(origin).hostname;
+  if (STATIC_SITE_HOSTNAME.test(hostname)) return "on";
+  const scripts = await browser.scripting.getRegisteredContentScripts({ ids: [genericScriptId(hostname)] }).catch(() => []);
+  return scripts.length > 0 ? "on" : "syncing";
+}
+
 function usePageAccess(state: PageState): PageAccess | null {
-  const [access, setAccess] = useState<PageAccess | null>(null);
-  useEffect(() => {
-    if (state.kind !== "item") return;
-    const hostname = new URL(state.origin).hostname;
-    if (STATIC_SITE_HOSTNAME.test(hostname)) return setAccess("on");
-    (async () => {
-      const scripts = await browser.scripting.getRegisteredContentScripts({ ids: [genericScriptId(hostname)] }).catch(() => []);
-      setAccess(scripts.length > 0 ? "on" : "syncing");
-    })();
-  }, [state]);
-  return access;
+  const origin = state.kind === "item" ? state.origin : null;
+  return useQuery({ queryKey: ["pageAccess", origin], queryFn: () => loadPageAccess(origin!), enabled: !!origin }).data ?? null;
 }
 
 const RESEND_ATTEMPTS = 15;
@@ -190,14 +184,14 @@ function RequestNoteButton({ label, doneLabel, onLive }: {
   };
 
   if (phase === "done") {
-    return <button disabled className={`${BUTTON} w-full`}>{doneLabel}</button>;
+    return <Button disabled className="w-full">{doneLabel}</Button>;
   }
   return (
     <>
-      <button onClick={request} disabled={phase !== "idle"} className={`${BUTTON} w-full`}>
+      <Button className="w-full" onClick={request} disabled={phase !== "idle"}>
         {label}
-      </button>
-      {phase === "error" && <p className="text-sm text-red-600 dark:text-red-400">Could not save the request (try again)</p>}
+      </Button>
+      {phase === "error" && <p className="text-sm text-negative">Could not save the request (try again)</p>}
     </>
   );
 }
@@ -232,37 +226,22 @@ function useLiveRequest(state: PageState): [LiveRequest | null, (entry: LiveRequ
 /** The same terse readout the in-page card shows, one fact per line, rendered
  *  while the popup is open. */
 function LiveRequestLine({ entry }: { entry: LiveRequest }) {
-  const [progress, setProgress] = useState<RequestProgress>({ kind: "saved" });
-  const itemIdRef = useRef<string | undefined>(entry.itemId);
-  useEffect(() => {
-    let cancelled = false;
-    let interval: ReturnType<typeof setInterval> | null = null;
-    const tick = async () => {
-      try {
-        const snapshot = await fetchProgressSnapshot({ token: entry.token, itemId: itemIdRef.current });
-        if (cancelled) return;
-        if (snapshot.itemId && !itemIdRef.current) {
-          itemIdRef.current = snapshot.itemId;
-          void saveLiveRequest({ ...entry, itemId: snapshot.itemId }).catch(() => {});
-        }
-        setProgress(snapshot.progress);
-        if (progressIsTerminal(snapshot.progress)) {
-          if (interval) clearInterval(interval);
-          void removeLiveRequest(entry.pageUrl).catch(() => {});
-        }
-      } catch {
-        // A failed read keeps the last line. The next tick tries again.
-      }
-    };
-    void tick();
-    interval = setInterval(() => void tick(), LIVE_LINE_REFRESH_MS);
-    return () => {
-      cancelled = true;
-      if (interval) clearInterval(interval);
-    };
-  }, [entry.token]);
+  // Polled while the popup is open, and no longer once the request reached a
+  // final state. The first answer that names the item is saved on the stored
+  // request, so the next popup skips the lookup; a final answer forgets the
+  // request.
+  const progress = useQuery({
+    queryKey: ["liveRequest", entry.token],
+    queryFn: async () => {
+      const snapshot = await fetchProgressSnapshot({ token: entry.token, itemId: entry.itemId });
+      if (snapshot.itemId && !entry.itemId) void saveLiveRequest({ ...entry, itemId: snapshot.itemId }).catch(() => {});
+      if (progressIsTerminal(snapshot.progress)) void removeLiveRequest(entry.pageUrl).catch(() => {});
+      return snapshot.progress;
+    },
+    refetchInterval: (query) => (query.state.data && progressIsTerminal(query.state.data) ? false : LIVE_LINE_REFRESH_MS),
+  }).data ?? { kind: "saved" };
   return (
-    <div className="text-sm text-gray-600">
+    <div className="text-sm text-fg-secondary">
       {progressLines(progress).map((line) => (
         <p key={line}>{line}</p>
       ))}
@@ -313,9 +292,9 @@ function PrimaryAction({ state, counts, jumped, access }: {
   const authorFeed = useAuthorFeed(state);
   const [liveEntry, setLiveEntry] = useLiveRequest(state);
 
-  if (state.kind === "loading") return <p className="text-sm text-gray-500">Loading notes…</p>;
+  if (state.kind === "loading") return <p className="text-sm text-fg-muted">Loading notes…</p>;
   if (state.kind === "load_failed") {
-    return <p className="text-sm text-gray-600">Couldn't load notes. Check your connection and try again.</p>;
+    return <p className="text-sm text-fg-secondary">Couldn't load notes. Check your connection and try again.</p>;
   }
 
   const isContentPage =
@@ -324,9 +303,9 @@ function PrimaryAction({ state, counts, jumped, access }: {
 
   if (!isContentPage) {
     return (
-      <p className="text-sm text-gray-600">
+      <p className="text-sm text-fg-secondary">
         Open a post or video on a covered site to see Common Notes. You can also see notes on{" "}
-        <a href="https://commonnotes.net" target="_blank" rel="noreferrer" className={LINK}>
+        <a href="https://commonnotes.net" target="_blank" rel="noreferrer" className={buttonVariants({ variant: "link" })}>
           commonnotes.net
         </a>
         .
@@ -335,7 +314,7 @@ function PrimaryAction({ state, counts, jumped, access }: {
   }
   const visibleNoteCount = counts?.visible ?? 0;
   if (!authorFeed || (state.kind === "item" && visibleNoteCount > 0 && !access)) {
-    return <p className="text-sm text-gray-500">Loading notes…</p>;
+    return <p className="text-sm text-fg-muted">Loading notes…</p>;
   }
 
   const jumpToNote = async () => {
@@ -378,11 +357,11 @@ function PrimaryAction({ state, counts, jumped, access }: {
   return (
     <div className="space-y-2">
       {visibleNoteCount > 0 ? (
-        <button onClick={jumpToNote} className={`text-left text-sm font-medium ${LINK}`} title={visibleNoteCount === 1 ? "Jump to the note" : jumped ? "Jump to the next note" : "Jump to the first note"}>
+        <Button variant="link" className="text-left text-sm font-medium" onClick={jumpToNote} title={visibleNoteCount === 1 ? "Jump to the note" : jumped ? "Jump to the next note" : "Jump to the first note"}>
           {statusLine}
-        </button>
+        </Button>
       ) : (
-        <p className="text-sm font-medium text-gray-900">{statusLine}</p>
+        <p className="text-sm font-medium text-fg">{statusLine}</p>
       )}
       {liveEntry && <LiveRequestLine entry={liveEntry} />}
       {requestable &&
@@ -390,7 +369,7 @@ function PrimaryAction({ state, counts, jumped, access }: {
           // A page by a creator whose week is already running needs no press.
           // Every new post gets checked on its own, so the button would only
           // submit noise.
-          <p className="text-sm text-gray-600">{priorityActiveLabel(authorFeed.feed.kind)}</p>
+          <p className="text-sm text-fg-secondary">{priorityActiveLabel(authorFeed.feed.kind)}</p>
         ) : state.kind === "item" ? (
           <RequestNoteButton label="Check this page" doneLabel="You asked us to check this page" onLive={setLiveEntry} />
         ) : (
@@ -416,32 +395,23 @@ export function PopupApp() {
   }, []);
   // The same tallies the in-page card shows: the status counts report what
   // exists and ignore the filters, while `visible` is what a jump can reach.
-  let counts: NoteCounts | null = null;
-  if (state.kind === "item" && filters) {
-    counts = { helpful: 0, needsRatings: 0, notHelpful: 0, visible: 0 };
-    for (const note of state.notes) {
-      const status = noteStatus(note);
-      if (status === "helpful") counts.helpful += 1;
-      else if (status === "needs_ratings") counts.needsRatings += 1;
-      else counts.notHelpful += 1;
-      if (noteVisible(note, filters)) counts.visible += 1;
-    }
-  }
+  const counts = state.kind === "item" && filters ? noteCounts(state.notes, filters) : null;
 
   return (
-    <div className="p-4 space-y-4 bg-gray-50 min-h-[120px]">
+    <div className="p-4 space-y-4 bg-canvas min-h-[120px]">
       <PrimaryAction state={state} counts={counts} jumped={jumped} access={access} />
 
-      <div className="border-t border-gray-200 pt-4">
-        <button
+      <div className="border-t border-line pt-4">
+        <Button
+          variant="quiet"
+          className="text-sm"
           onClick={() => {
             void browser.runtime.openOptionsPage();
             window.close();
           }}
-          className={`text-sm ${QUIET_LINK}`}
         >
           Settings
-        </button>
+        </Button>
       </div>
     </div>
   );

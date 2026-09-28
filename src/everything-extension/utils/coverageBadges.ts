@@ -1,8 +1,8 @@
 import { browser } from "#imports";
 import { MARKER_DARK, MARKER_GLYPH_SIZE, MARKER_LIGHT, MARKER_SHADOW } from "./markerPalette";
 import type { ContentScriptContext } from "#imports";
-import { extractYoutubeVideoId, normalizePageUrl } from "../../everything-shared/pageUrls";
-import { GROUP_GLYPH_PATH } from "../components/ClaimNoteStack";
+import { extractYoutubeVideoId, normalizePageUrl } from "@cn/core/pageUrls";
+import { GROUP_GLYPH_PATH } from "@cn/ui/icons";
 import { getNotedPageStatusCounts, getWholePageCheckedUrls, trimSlash } from "./coveredPages";
 import { isPageDark } from "./pageTheme";
 import { getNoteFilters, getSettings, onNoteFiltersChanged } from "./settings";
