@@ -35,6 +35,11 @@ export const isListed = (browser: Browser): browser is ListedBrowser => !!browse
 
 export const browserById = (id: BrowserId): Browser => BROWSERS.find((b) => b.id === id)!;
 
+/** Browser extensions exist on desktop browsers only, which a fine pointer
+ *  such as a mouse or a trackpad gives away. Phones and tablets have none, so
+ *  they get a sentence instead of a store button. */
+export const canInstallExtensions = () => window.matchMedia("(pointer: fine)").matches;
+
 /** Counts a click on a store link (migration 103). */
 export const trackStoreClick = (browser: Browser) => track("extension_store_clicked", { browser: browser.name });
 

@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { withThemeByClassName } from "@storybook/addon-themes";
 import type { Decorator, Preview } from "@storybook/react-vite";
 import { LoginPromptProvider } from "@cn/features/auth/loginPrompt";
+import { PillPaletteContext, type PillPalette } from "@cn/features/notes/pillPalette";
 import type { QuerySeed } from "./fixtures";
 import "./preview.css";
 
@@ -42,13 +43,34 @@ const withScale: Decorator = (Story, { globals }) => (
   </ReadingScale>
 );
 
+/** Shows the rating pills in the palette picked in the toolbar, neutral or
+ *  colourful, while Jim chooses between them. */
+const withPillPalette: Decorator = (Story, { globals }) => (
+  <PillPaletteContext.Provider value={(globals.pills as PillPalette | undefined) ?? "neutral"}>
+    <Story />
+  </PillPaletteContext.Provider>
+);
+
 const preview: Preview = {
   decorators: [
     withQueries,
     withScale,
+    withPillPalette,
     withThemeByClassName({ themes: { light: "", dark: "dark" }, defaultTheme: "light" }),
   ],
   globalTypes: {
+    pills: {
+      description: "How the rating pills are coloured before anyone votes",
+      toolbar: {
+        title: "Rating pills",
+        icon: "circle",
+        items: [
+          { value: "neutral", title: "Neutral pills" },
+          { value: "colourful", title: "Colourful pills" },
+        ],
+        dynamicTitle: true,
+      },
+    },
     scale: {
       description: "Text size of the website or of the extension",
       toolbar: {
@@ -62,7 +84,7 @@ const preview: Preview = {
       },
     },
   },
-  initialGlobals: { scale: "website" },
+  initialGlobals: { scale: "website", pills: "neutral" },
   parameters: {
     layout: "padded",
     backgrounds: { disable: true },

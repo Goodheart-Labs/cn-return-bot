@@ -7,7 +7,7 @@ export interface ProjectRow {
   /** The creator's feed: a Substack publication, a YouTube channel or a forum
    *  profile. Null for a project that is not one creator. */
   feed_url: string | null;
-  /** The creator's picture (migration 105). */
+  /** The creator's picture (migration 106). */
   avatar_url: string | null;
 }
 
@@ -27,7 +27,7 @@ export interface ItemRow {
   checked_scope: "page" | "paragraph" | null;
 }
 
-/** A project as the website's projects overview loads it (migration 105): the
+/** A project as the website's projects overview loads it (migration 106): the
  *  name, the slug for the URL, the creator's feed and picture, how many notes
  *  it has, and the score of the votes on them, which the default order uses.
  *  The description is left in the database. */

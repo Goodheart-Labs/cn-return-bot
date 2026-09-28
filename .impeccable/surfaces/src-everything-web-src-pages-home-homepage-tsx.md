@@ -5,6 +5,13 @@ primary_target: "src/everything-web/src/pages/home/HomePage.tsx"
 related_targets: []
 ---
 
+---
+version: 1
+slug: "src-everything-web-src-pages-home-homepage-tsx"
+primary_target: "src/everything-web/src/pages/home/HomePage.tsx"
+related_targets: []
+---
+
 # Homepage (commonnotes.net)
 
 Mode: Persuade. The visitor is a heavy reader or viewer of long-form content who should leave understanding what Common Notes does and with the extension installed.
@@ -17,11 +24,11 @@ Constraints: light mode; no em dashes in UI copy; Safari shown as coming soon; I
 
 THESIS: Jim's own sketch, played straight. One centered column in the sketch's order. It refuses a split hero, feature grids and marketing sections the sketch never asked for.
 
-OWN-WORLD: The product's existing identity. White page, near-black type in Hanken Grotesk, the logo's blue as the single action colour, rounded cards with hairline borders, the official browser logos wherever a browser is named, and dark screenshots in a soft floating frame.
+OWN-WORLD: The product's existing identity in Substack's type: the system face for text, Apple's display face at bold weight for titles, Spectral for the reading passage. White page, near-black type, the logo's blue as the single action colour, rounded cards with hairline borders, the official browser logos wherever a browser is named, dark screenshots in a soft floating frame. Notes follow X's Community Notes layout: no box around the note, a status line, the text, and one softly filled rating panel with Yes, Somewhat and No.
 
 STORY: The visitor reads the promise, sees a note sitting beside a real claim, learns that Common Notes brings Community Notes to the whole web with ratings deciding which notes count, and installs from the tab for their browser.
 
-FIRST VIEWPORT: The header (logo, Home and Notes left; Sign in and Get the extension right), the headline at display size centred, the download button for the detected browser with its logo directly below, and the top of the screenshot carousel entering the fold.
+FIRST VIEWPORT: The header (logo, Home and Notes left; Sign in and Get the extension right), the headline at display size centred, one line under it saying what Common Notes is, the download button for the detected browser with its logo (on a phone, a sentence that it runs on a computer, with a link to read the notes), and the top of the screenshot carousel entering the fold.
 
 FORM: The category standard (canon exit), chosen by Jim in the second round. Seed key d25e905a. Signature interaction: the screenshot carousel that rotates every six seconds, holds under the pointer or focus, and turns by arrows and dots.
 

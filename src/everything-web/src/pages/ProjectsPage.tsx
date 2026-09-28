@@ -109,7 +109,7 @@ export function ProjectsPage({ navigate }: { navigate: (route: Route) => void })
                 aria-checked={order === id}
                 onClick={() => setOrder(id)}
                 className={cn(
-                  "rounded-[calc(var(--cn-radius-control)-2px)] px-3 py-1 text-sm font-medium text-fg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
+                  "whitespace-nowrap rounded-[calc(var(--cn-radius-control)-2px)] px-3 py-1 text-sm font-medium text-fg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
                   order === id ? "bg-surface text-fg shadow-raised" : "hover:text-fg",
                 )}
               >

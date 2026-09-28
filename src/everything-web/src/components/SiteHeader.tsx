@@ -5,7 +5,8 @@ import { HOME, INSTALL, NOTES, type Route } from "../lib/routing";
 import { AuthCorner } from "./AuthCorner";
 import { RouteLink } from "./RouteLink";
 
-const navLink = "text-sm font-medium text-fg-secondary hover:text-fg aria-[current=page]:text-fg";
+const navLink =
+  "rounded-control text-sm font-medium text-fg-secondary hover:text-fg aria-[current=page]:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2";
 
 /** The bar at the top of every page. The name and the two pages sit on the
  *  left, signing in and getting the extension on the right. Getting the

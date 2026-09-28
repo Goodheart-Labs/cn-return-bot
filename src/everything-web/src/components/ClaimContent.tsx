@@ -38,7 +38,7 @@ function CitationBlock({ quote, url, linkText, fragmentText, updatedQuote, image
 }) {
   const verbatim = !fragmentText;
   return (
-    <div className="bg-surface-muted rounded-control border border-line p-3">
+    <div>
       {url && (
         <div className="flex justify-end mb-1">
           <a href={imageGrounded ? url : quoteFragmentUrl(url, updatedQuote ?? fragmentText ?? quote)} target="_blank" rel="noopener noreferrer" className={SOURCE_LINK}>

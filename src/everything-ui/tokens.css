@@ -27,6 +27,9 @@
   --cn-gray-300: 209 213 219;
   --cn-gray-400: 156 163 175;
   --cn-gray-500: 107 114 128;
+  /* Between 500 and 600, for muted text: the lightest grey that still reads at
+   * 4.5 to 1 on every light surface we draw, including the pale blue tint. */
+  --cn-gray-550: 100 107 118;
   --cn-gray-600: 75 85 99;
   --cn-gray-700: 55 65 81;
   --cn-gray-800: 31 41 55;
@@ -84,7 +87,7 @@
   /* Supporting text: labels, questions, menu entries. */
   --cn-fg-secondary: rgb(var(--cn-gray-600));
   /* Captions, metadata and help text. */
-  --cn-fg-muted: rgb(var(--cn-gray-500));
+  --cn-fg-muted: rgb(var(--cn-gray-550));
   /* The quietest text: section labels, placeholders, idle icons. */
   --cn-fg-subtle: rgb(var(--cn-gray-400));
   /* Borders and dividers. */

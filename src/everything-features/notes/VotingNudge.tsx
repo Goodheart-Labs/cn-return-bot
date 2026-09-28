@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { readBrowserFlag, setBrowserFlag } from "@cn/core/extensionStorage";
+import { RATING_QUESTION } from "./NoteBox";
 
-/** The one-time voting nudge: a small popup above the vote pills of the first
- *  note a reader opens, telling them their rating counts even without any
+/** The one-time voting nudge: on the first note a reader opens, the rating
+ *  panel's question also tells them their rating counts even without any
  *  expertise. It shows once per device and goes away on the first vote or on
  *  "Got it". The website and the extension overlays share this component; the
  *  seen flag lives in synced extension storage where that exists and in
@@ -32,19 +33,16 @@ export function useVotingNudge(): { show: boolean; dismiss: () => void } {
   };
 }
 
-/** The popup itself. The parent supplies the anchor: a relatively positioned
- *  wrapper around the vote pills. */
+/** The hint itself. It takes the place of the question in the note's rating
+ *  panel, so it never covers the note it asks the reader to rate, and a
+ *  screen reader reads it as part of the panel. */
 export function VotingNudge({ onDismiss }: { onDismiss: () => void }) {
   return (
-    <span className="absolute bottom-full right-0 mb-2.5 z-10 block w-72 max-w-[80vw] rounded-card border border-inverse-line bg-inverse text-on-inverse shadow-floating p-3 text-left">
-      <span className="block text-xs font-bold">You don't need to be an expert</span>
-      <span className="mt-1 block text-xs leading-snug text-on-inverse-muted">
-        Rate whether this note is helpful to you
-      </span>
-      <button onClick={onDismiss} className="mt-1.5 block ml-auto text-xs font-semibold text-on-inverse-link hover:underline">
+    <span>
+      <span className="font-semibold">{RATING_QUESTION}</span> <span className="text-fg-secondary">You don't need to be an expert.</span>{" "}
+      <button type="button" onClick={onDismiss} className="font-medium text-link hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-control">
         Got it
       </button>
-      <span aria-hidden className="absolute -bottom-1.5 right-14 h-3 w-3 rotate-45 border-b border-r border-inverse-line bg-inverse" />
     </span>
   );
 }

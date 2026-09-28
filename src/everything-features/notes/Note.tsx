@@ -34,21 +34,18 @@ export function Note({ note, shareUrl, children }: {
   const status = noteStatus(note);
   return (
     <div>
-      <NoteBox note={note} status={status} sourcesOpen={sourcesOpen}>
-        <span className="relative inline-flex">
-          {nudge.show && <VotingNudge onDismiss={nudge.dismiss} />}
-          <VoteRatings
-            helpful={note.helpful_count}
-            somewhatHelpful={note.somewhat_helpful_count}
-            notHelpful={note.not_helpful_count}
-            myVote={myVote}
-            showCounts={noteTallyVisible(status, myVote, note.created_at)}
-            onVote={(vote) => {
-              if (nudge.show) nudge.dismiss();
-              void voteOnNote(note, vote).then(setCast);
-            }}
-          />
-        </span>
+      <NoteBox note={note} status={status} sourcesOpen={sourcesOpen} question={nudge.show ? <VotingNudge onDismiss={nudge.dismiss} /> : undefined}>
+        <VoteRatings
+          helpful={note.helpful_count}
+          somewhatHelpful={note.somewhat_helpful_count}
+          notHelpful={note.not_helpful_count}
+          myVote={myVote}
+          showCounts={noteTallyVisible(status, myVote, note.created_at)}
+          onVote={(vote) => {
+            if (nudge.show) nudge.dismiss();
+            void voteOnNote(note, vote).then(setCast);
+          }}
+        />
       </NoteBox>
       {cast && myVote !== undefined && (
         <VoteDonation

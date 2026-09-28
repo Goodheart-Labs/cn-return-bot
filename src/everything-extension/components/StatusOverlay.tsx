@@ -64,8 +64,11 @@ export function ActionButton({ action }: { action: StatusAction }) {
  *  furniture. */
 export function StatusOverlay({ headline, onHeadlineClick }: StatusOverlayProps) {
   const [hovered, setHovered] = useState(false);
+  // Keyboard focus inside the card holds it just like the pointer does, so a
+  // keyboard user is never timed out of it.
+  const [focused, setFocused] = useState(false);
   const [hidden, setHidden] = useState(false);
-  const { fading } = useAutoDismiss({ dwellMs: AUTO_HIDE_MS, fadeMs: FADE_MS, paused: hovered, onDismiss: () => setHidden(true) });
+  const { fading } = useAutoDismiss({ dwellMs: AUTO_HIDE_MS, fadeMs: FADE_MS, paused: hovered || focused, onDismiss: () => setHidden(true) });
 
   if (hidden) return null;
   return (
@@ -74,6 +77,8 @@ export function StatusOverlay({ headline, onHeadlineClick }: StatusOverlayProps)
       style={{ transitionDuration: `${FADE_MS}ms` }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
     >
       <div className="flex items-start justify-between gap-2">
         {onHeadlineClick ? (

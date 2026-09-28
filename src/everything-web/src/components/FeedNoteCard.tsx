@@ -115,7 +115,7 @@ function ContextParagraph({ paragraph, quote, bare, fitTo }: {
     ellipsis = true;
   }
   return (
-    <div className={cn("text-2xs text-fg-subtle", !bare && "border-l-4 border-line-strong pl-3")}>
+    <div className={cn("text-2xs text-fg-muted", !bare && "border-l-2 border-line-strong pl-3")}>
       <div
         ref={bodyRef}
         style={clampable && !expanded

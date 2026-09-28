@@ -1,5 +1,5 @@
 /**
- * Creator pictures for the website's projects overview (migration 105). Each
+ * Creator pictures for the website's projects overview (migration 106). Each
  * source already has an endpoint the pipeline uses, and each carries the
  * picture: the YouTube channel lookup (one API unit), the Substack RSS feed's
  * channel image, and the LessWrong or Alignment Forum user query.
@@ -18,6 +18,8 @@ import { resolveChannel } from "./sources/youtubeDataApi";
 
 /** How long a fetched picture is trusted before the next attempt. */
 const REFRESH_AFTER_DAYS = 30;
+/** How soon a failed attempt is tried again. */
+const RETRY_AFTER_FAILURE_DAYS = 1;
 const DAY_MS = 24 * 3600 * 1000;
 
 /** How many pictures one feed run refreshes. The first runs after the
@@ -34,16 +36,17 @@ export async function fetchAvatarUrl(feedUrl: string): Promise<string | null> {
 }
 
 async function refreshOne(project: AvatarDue): Promise<void> {
-  let avatarUrl: string | null = null;
   try {
-    avatarUrl = await fetchAvatarUrl(project.feed_url);
+    await recordAvatarAttempt(project.id, await fetchAvatarUrl(project.feed_url), new Date());
   } catch (err) {
     // One creator's feed failing must not stop the run, the same way the walk
-    // skips a feed that will not list. The attempt is still stamped, so the
-    // creator is tried again in a month rather than blocking the others.
+    // skips a feed that will not list. The attempt is back-dated so that it
+    // falls due again in a day: a passing failure such as an exhausted YouTube
+    // quota then heals tomorrow, and a lasting one costs one call a day
+    // instead of blocking the creators queued behind it every run.
     console.log(`  picture of ${project.slug}: ${err instanceof Error ? err.message : String(err)}`);
+    await recordAvatarAttempt(project.id, null, new Date(Date.now() - (REFRESH_AFTER_DAYS - RETRY_AFTER_FAILURE_DAYS) * DAY_MS));
   }
-  await recordAvatarAttempt(project.id, avatarUrl);
 }
 
 /** Refreshes the pictures of up to `limit` due projects. Returns how many it

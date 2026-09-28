@@ -1,10 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { buttonVariants } from "@cn/ui/Button";
 import { cardVariants } from "@cn/ui/Card";
 import { cn } from "@cn/ui/cn";
 import { NextIcon, PreviousIcon } from "@cn/ui/icons";
-import { BrowserLogo, StoreButton } from "../../components/StoreButton";
-import { BROWSERS, browserById, detectBrowser, isListed } from "../../lib/extensionStores";
+import { BrowserLogo, DesktopOnly, StoreButton } from "../../components/StoreButton";
+import { BROWSERS, browserById, canInstallExtensions, detectBrowser, isListed } from "../../lib/extensionStores";
+import type { Route } from "../../lib/routing";
 import { HEADLINE, PITCH, SCREENSHOTS, scrollToInstall } from "./content";
 import { useCarousel } from "./useCarousel";
 import { useInstallTabs } from "./useInstallTabs";
@@ -47,7 +48,7 @@ function Screenshots() {
         <p className="text-sm text-fg-muted" aria-live={held ? "polite" : "off"}>
           {SCREENSHOTS[index]!.caption}
         </p>
-        <div className="flex gap-2">
+        <div className="flex">
           {SCREENSHOTS.map((shot, i) => (
             <button
               key={shot.src}
@@ -55,8 +56,11 @@ function Screenshots() {
               aria-label={`Show screenshot ${i + 1}`}
               aria-current={i === index}
               onClick={() => go(i)}
-              className="h-2 w-2 rounded-full bg-line-strong transition-[width,background-color] duration-300 aria-[current=true]:w-6 aria-[current=true]:bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-            />
+              // The button is a 32 pixel target around the small dot drawn inside it.
+              className="group grid h-8 min-w-8 place-items-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            >
+              <span className="h-2 w-2 rounded-full bg-line-strong transition-[width,background-color] duration-300 group-aria-[current=true]:w-6 group-aria-[current=true]:bg-primary" />
+            </button>
           ))}
         </div>
       </div>
@@ -64,7 +68,7 @@ function Screenshots() {
   );
 }
 
-function Install() {
+function Install({ navigate, desktop }: { navigate: (route: Route) => void; desktop: boolean }) {
   const { browser, tabListProps, tabProps, panelProps } = useInstallTabs();
   return (
     <section id="install" aria-labelledby="install-title" className="scroll-mt-20 py-20">
@@ -84,8 +88,10 @@ function Install() {
             </button>
           ))}
         </div>
-        <div {...panelProps} className="flex justify-center px-6 py-10">
-          {isListed(browser) ? (
+        <div {...panelProps} className="flex justify-center px-6 py-10 text-center">
+          {!desktop ? (
+            <DesktopOnly navigate={navigate} />
+          ) : isListed(browser) ? (
             <StoreButton browser={browser}>Go to {browser.store.name}</StoreButton>
           ) : (
             <p className="text-base text-fg-secondary">The {browser.name} version is coming soon.</p>
@@ -96,8 +102,12 @@ function Install() {
   );
 }
 
-export function HomePage({ showInstall }: { showInstall: boolean }) {
+/** The line under the headline that says what Common Notes is. */
+const SUBLINE = "Notes beside the claims in Substack posts and YouTube videos. AI writes them, readers rate them.";
+
+export function HomePage({ showInstall, navigate }: { showInstall: boolean; navigate: (route: Route) => void }) {
   const browser = browserById(detectBrowser());
+  const [desktop] = useState(canInstallExtensions);
   useEffect(() => {
     if (showInstall) scrollToInstall();
   }, [showInstall]);
@@ -106,8 +116,11 @@ export function HomePage({ showInstall }: { showInstall: boolean }) {
     <div className="bg-surface px-4 md:px-8">
       <section className="pt-16 text-center md:pt-24">
         <h1 className="mx-auto max-w-4xl font-title text-display font-bold tracking-tight text-fg text-balance">{HEADLINE}</h1>
+        <p className="mx-auto mt-5 max-w-[52ch] text-lg text-fg-secondary text-balance">{SUBLINE}</p>
         <div className="mt-8">
-          {isListed(browser) ? (
+          {!desktop ? (
+            <DesktopOnly navigate={navigate} className="mx-auto max-w-[36ch]" />
+          ) : isListed(browser) ? (
             <StoreButton browser={browser}>Download for {browser.name}, it's free</StoreButton>
           ) : (
             <button type="button" onClick={scrollToInstall} className={buttonVariants({ variant: "primary", size: "lg" })}>
@@ -118,17 +131,17 @@ export function HomePage({ showInstall }: { showInstall: boolean }) {
         <Screenshots />
       </section>
 
-      <section className="mx-auto max-w-[62ch] space-y-4 pt-20 text-center font-serif text-xl leading-relaxed text-fg-secondary">
+      <section className="mx-auto max-w-[62ch] space-y-4 pt-20 text-left font-serif text-xl leading-relaxed text-fg-secondary sm:text-center">
         {PITCH.map((paragraph) => (
           <p key={paragraph}>{paragraph}</p>
         ))}
       </section>
 
-      <Install />
+      <Install navigate={navigate} desktop={desktop} />
 
+      {/* The "Impressum" heading returns once its legal details are in. */}
       <footer className="border-t border-line py-10 text-center text-sm text-fg-muted">
-        <h2 className="font-semibold text-fg">Impressum</h2>
-        <p className="mt-2">
+        <p>
           Common Notes is an alpha project by{" "}
           <a href="https://goodheartlabs.com" className={buttonVariants({ variant: "link" })}>
             Goodheart Labs
@@ -136,10 +149,10 @@ export function HomePage({ showInstall }: { showInstall: boolean }) {
           .
         </p>
         <p className="mt-3 flex justify-center gap-5">
-          <a href="privacy/" className="hover:text-fg">
+          <a href="privacy/" className="underline-offset-4 hover:text-fg hover:underline">
             Privacy
           </a>
-          <a href="terms/" className="hover:text-fg">
+          <a href="terms/" className="underline-offset-4 hover:text-fg hover:underline">
             Terms
           </a>
         </p>

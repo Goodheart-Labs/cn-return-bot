@@ -3,10 +3,11 @@ import { track } from "@cn/core/analytics";
 import { creatorPlatform } from "@cn/core/projects";
 import type { FeedItemRow, FeedProjectRow, NnnRow, NoteRow } from "@cn/core/types";
 import { Button } from "@cn/ui/Button";
-import { ExternalLinkIcon, PreviousIcon } from "@cn/ui/icons";
+import { ExternalLinkIcon } from "@cn/ui/icons";
 import { ResizablePanel } from "@cn/ui/ResizablePanel";
 import { ExtensionNudge } from "../components/ExtensionNudge";
 import { FeedNoteCard } from "../components/FeedNoteCard";
+import { BackToProjects } from "../components/BackToProjects";
 import { ItemList } from "../components/ItemList";
 import { ProjectAvatar } from "../components/ProjectAvatar";
 import { RouteLink } from "../components/RouteLink";
@@ -22,7 +23,7 @@ import {
   type RankTally,
 } from "../lib/feed";
 import { useProjectFeed } from "../lib/feedQueries";
-import { NOTES, noteUrl, type Route } from "../lib/routing";
+import { noteUrl, type Route } from "../lib/routing";
 
 const NO_NOTES: NoteRow[] = [];
 const NO_ENTRIES: NnnRow[] = [];
@@ -35,7 +36,7 @@ function NoteSection({ label, notes, render }: { label: string; notes: NoteRow[]
     <>
       <div className="flex items-center gap-3 py-2 max-w-[40rem] mx-auto w-full" role="separator">
         <span className="flex-1 border-t-2 border-dotted border-line-strong" />
-        <span className="text-xs text-fg-subtle">{label}</span>
+        <span className="text-xs text-fg-muted">{label}</span>
         <span className="flex-1 border-t-2 border-dotted border-line-strong" />
       </div>
       {notes.map(render)}
@@ -112,14 +113,6 @@ function PageHeading({ project, item, navigate }: { project: FeedProjectRow; ite
   );
 }
 
-function BackToProjects({ navigate }: { navigate: (route: Route) => void }) {
-  return (
-    <RouteLink to={NOTES} navigate={navigate} className="inline-flex items-center gap-1 text-sm text-fg-muted hover:text-fg">
-      <PreviousIcon size={16} aria-hidden="true" />
-      All projects
-    </RouteLink>
-  );
-}
 
 /** One project: its posts and videos listed on the left, newest first, and
  *  beside them the ranked notes of the one picked, or of all of them. On a

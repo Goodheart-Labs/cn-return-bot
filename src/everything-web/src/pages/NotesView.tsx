@@ -1,7 +1,7 @@
 import type { FeedProjectRow } from "@cn/core/types";
-import { RouteLink } from "../components/RouteLink";
+import { BackToProjects } from "../components/BackToProjects";
 import { useProjects } from "../lib/feedQueries";
-import { NOTES, type Route } from "../lib/routing";
+import type { Route } from "../lib/routing";
 import { LeaderboardPage } from "./LeaderboardPage";
 import { ProjectPage } from "./ProjectPage";
 import { ProjectsPage } from "./ProjectsPage";
@@ -18,11 +18,9 @@ export function NotesView({ route, navigate }: { route: NotesRoute; navigate: (n
 
   if (route.view === "leaderboard") {
     return (
-      <main className="mx-auto w-full max-w-6xl px-4 py-10 md:px-8">
-        <RouteLink to={NOTES} navigate={navigate} className="text-sm text-fg-muted hover:text-fg">
-          All projects
-        </RouteLink>
-        <h1 className="mb-6 mt-2 font-title text-3xl font-bold text-fg">Rating leaderboard</h1>
+      <main className="mx-auto w-full max-w-xl px-4 py-10">
+        <BackToProjects navigate={navigate} />
+        <h1 className="mb-2 mt-3 font-title text-3xl font-bold text-fg">Rating leaderboard</h1>
         <LeaderboardPage />
       </main>
     );

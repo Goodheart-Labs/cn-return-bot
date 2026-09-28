@@ -4,7 +4,7 @@ import { cardVariants } from "@cn/ui/Card";
 import { cn } from "@cn/ui/cn";
 import { IconButton } from "@cn/ui/IconButton";
 import { CloseIcon } from "@cn/ui/icons";
-import { browserById, detectBrowser, isListed } from "../lib/extensionStores";
+import { browserById, canInstallExtensions, detectBrowser, isListed } from "../lib/extensionStores";
 import { StoreButton } from "./StoreButton";
 
 /** How long a reader stays on one project before the nudge appears. */
@@ -31,14 +31,9 @@ function markShown() {
   }
 }
 
-/** Browser extensions exist on desktop browsers only, which a fine pointer
- *  such as a mouse or a trackpad gives away. Phones and tablets never see
- *  the nudge. */
-const canInstallExtensions = () => window.matchMedia("(pointer: fine)").matches;
-
 /** A small card that suggests the extension to a reader who has spent a while
  *  on a project's notes. It appears once per visit, and only on devices that
- *  can install extensions. */
+ *  can install extensions, so phones and tablets never see it. */
 export function ExtensionNudge() {
   const [open, setOpen] = useState(false);
 

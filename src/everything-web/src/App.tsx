@@ -17,7 +17,7 @@ export function App() {
   return (
     <LoginPromptProvider value={() => setLoginOpen(true)}>
       <SiteHeader route={route} navigate={navigate} onSignIn={() => setLoginOpen(true)} />
-      {route.view === "home" ? <HomePage showInstall={route.section === "install"} /> : <NotesView route={route} navigate={navigate} />}
+      {route.view === "home" ? <HomePage showInstall={route.section === "install"} navigate={navigate} /> : <NotesView route={route} navigate={navigate} />}
       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
     </LoginPromptProvider>
   );

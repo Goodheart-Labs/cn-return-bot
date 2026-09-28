@@ -97,7 +97,7 @@ function Badge({ open, onClick, style }: { open: boolean; onClick: () => void; s
   return (
     <button
       onClick={onClick}
-      title="Community note on this passage"
+      title="Common Note on this passage"
       aria-expanded={open}
       style={style}
       className={cn(
@@ -120,7 +120,7 @@ function MarginDot({ open, onClick, style }: { open: boolean; onClick: () => voi
   return (
     <button
       onClick={onClick}
-      title="Community note on this passage"
+      title="Common Note on this passage"
       aria-expanded={open}
       style={style}
       className="absolute flex items-center justify-center group"

@@ -1,4 +1,4 @@
--- 105: a picture for every creator, and the projects overview on commonnotes.net.
+-- 106: a picture for every creator, and the projects overview on commonnotes.net.
 --
 -- The website's Notes page becomes an overview of all projects: each with the
 -- creator's picture, a link to their Substack, YouTube channel or LessWrong

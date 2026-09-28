@@ -874,7 +874,7 @@ export async function setFeedAlarm(at: Date, reason: string): Promise<void> {
   throwOnError(await getSupabaseClient().rpc("everything_set_feed_alarm", { next_at: at.toISOString(), reason }));
 }
 
-/** A project whose picture is due for a refresh (migration 105). */
+/** A project whose picture is due for a refresh (migration 106). */
 export interface AvatarDue {
   id: string;
   slug: string;
@@ -895,9 +895,10 @@ export async function fetchProjectsDueForAvatar(olderThan: Date, limit: number):
   ) as AvatarDue[];
 }
 
-/** Stamps a refresh attempt. A picture found replaces the stored one. A
- *  failed or empty fetch keeps whatever picture the project already had. */
-export async function recordAvatarAttempt(projectId: string, avatarUrl: string | null): Promise<void> {
-  const update = avatarUrl ? { avatar_url: avatarUrl, avatar_refreshed_at: new Date().toISOString() } : { avatar_refreshed_at: new Date().toISOString() };
-  throwOnError(await getSupabaseClient().from("everything_projects").update(update).eq("id", projectId));
+/** Records a refresh attempt at `attemptedAt`. A picture found replaces the
+ *  stored one. A failed or empty fetch keeps whatever picture the project
+ *  already had. */
+export async function recordAvatarAttempt(projectId: string, avatarUrl: string | null, attemptedAt: Date): Promise<void> {
+  const stamp = { avatar_refreshed_at: attemptedAt.toISOString() };
+  throwOnError(await getSupabaseClient().from("everything_projects").update(avatarUrl ? { ...stamp, avatar_url: avatarUrl } : stamp).eq("id", projectId));
 }
