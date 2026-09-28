@@ -81,6 +81,27 @@ systemctl enable --now cn-pot-provider
 systemctl enable --now cn-autodeploy.timer
 rm -f /etc/sudoers.d/cn-restart
 
+echo "── ssh: keys only"
+# Hetzner turns on password login when a server is created without an SSH key.
+# SSH uses the first value it reads for each setting, and it reads this folder
+# before sshd_config, so a file named 00-* overrides both sshd_config and
+# Hetzner's 50-cloud-init.conf. Put your key in /root/.ssh/authorized_keys
+# before running this. The root password keeps working in Hetzner's web
+# console, which does not go through SSH.
+if [ ! -s /root/.ssh/authorized_keys ]; then
+  echo "No key in /root/.ssh/authorized_keys. Add one first, or this would lock SSH." >&2
+  exit 1
+fi
+cat > /etc/ssh/sshd_config.d/00-hardening.conf <<'EOF_SSH'
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PermitRootLogin prohibit-password
+X11Forwarding no
+EOF_SSH
+chmod 0644 /etc/ssh/sshd_config.d/00-hardening.conf
+sshd -t
+systemctl reload ssh
+
 echo "── firewall (only if ufw is active)"
 if command -v ufw &>/dev/null && ufw status | grep -q "Status: active"; then
   ufw allow 8787/tcp comment "cn claim-check service"
