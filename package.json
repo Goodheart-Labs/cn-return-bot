@@ -67,7 +67,7 @@
     "typecheck": "bunx --bun typescript@5.9.3 --noEmit 2>&1 | grep -v 'node_modules/' | grep -q 'error TS' && exit 1 || exit 0",
     "typecheck-review": "bunx --bun typescript@5.9.3 --noEmit -p src/review-dashboard 2>&1 | grep -v 'node_modules/' | grep -q 'error TS' && exit 1 || exit 0",
     "typecheck-ext": "cd src/everything-extension && bunx wxt prepare > /dev/null && cd ../.. && bunx --bun typescript@5.9.3 --noEmit -p src/everything-extension 2>&1 | grep -v 'node_modules/' | grep -q 'error TS' && exit 1 || exit 0",
-    "lint": "eslint",
+    "lint": "eslint --max-warnings 0",
     "gen-db-types": "supabase gen types typescript --project-id ugytvkevhsmcpunfvncw --schema public > src/everything-core/database.types.ts",
     "check": "bun run typecheck && bun run typecheck-review && bun run typecheck-ext && bun run lint && bunx knip",
     "prepare": "husky",

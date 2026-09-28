@@ -64,14 +64,6 @@ export default tseslint.config(
       // expect, so the rule's worry about focus jumping on page load does not
       // apply.
       "jsx-a11y/no-autofocus": "off",
-      // These rules flag code that the data-layer and shared-note rewrites
-      // replace. They warn until those land and then become errors.
-      "@typescript-eslint/no-explicit-any": "warn",
-      "react-hooks/set-state-in-effect": "warn",
-      "react-hooks/refs": "warn",
-      "react-hooks/immutability": "warn",
-      "jsx-a11y/click-events-have-key-events": "warn",
-      "jsx-a11y/no-static-element-interactions": "warn",
       // An argument or a destructured field we deliberately ignore starts with
       // an underscore.
       "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_", destructuredArrayIgnorePattern: "^_" }],
