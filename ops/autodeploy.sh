@@ -13,7 +13,7 @@ set -euo pipefail
 REPO_DIR="/opt/cn-return-bot"
 ENV_FILE="/etc/cn-return-bot/service.env"
 SERVICE_USER="cnbot"
-UNITS=(cn-claim-check cn-extraction cn-intake)
+UNITS=(cn-claim-check cn-extraction cn-intake cn-fetch)
 
 main() {
   # Deploy whatever branch the checkout is on. Before the cutover PR merges

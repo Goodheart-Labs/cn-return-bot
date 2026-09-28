@@ -1,12 +1,13 @@
 # The services machine
 
-One always-on Linux server runs three systemd services:
+One always-on Linux server runs four systemd services:
 
 | Unit | What it does | Port |
 |---|---|---|
 | `cn-claim-check` | one claim in, a note with verified sources out | 8787 |
 | `cn-extraction` | text in, the claims in it out | 8788 |
 | `cn-intake` | watches reader requests and drives them through the other two | none |
+| `cn-fetch` | fetches outside pages and images for the other three, in a sandbox | Unix socket `/run/cn-fetch/fetch.sock` |
 
 The first two are pure functions behind HTTP and hold no database credentials.
 Intake is a caller: it holds the service key and writes the rows. The Actions
@@ -15,6 +16,19 @@ pipelines are the monitor; nothing on this machine phones home.
 Intake is outside the feed pacing. It processes reader-requested pages at once
 and spends from the full daily cap. Its spend still counts in the day's total,
 so a big reader page makes the paced feed run go quiet for the rest of the day.
+
+## The sandboxed fetcher
+
+Pages and images from addresses a stranger or a model chose are fetched only
+by `cn-fetch`. The other services send it the address over a Unix socket and
+get the page text back. Its unit file builds a sandbox around it: a throwaway
+user, no environment file and so no keys, no view of `/home`, the secret files
+or other processes, and a kernel rule that lets it reach public internet
+addresses only. So a hostile page that tricks the fetch code into reading
+something on this machine finds nothing worth taking. The other services refuse
+to start without `FETCH_SERVICE_SOCKET`, which their unit files set, so they
+never fall back to fetching next to the keys. The services start `cn-fetch`
+themselves, because their units want it, and autodeploy restarts it with them.
 
 ## First-time setup
 

@@ -70,7 +70,7 @@ if [ ! -f /swapfile ]; then
 fi
 
 echo "── systemd units"
-for unit in cn-claim-check cn-extraction cn-intake cn-autodeploy cn-pot-provider; do
+for unit in cn-claim-check cn-extraction cn-intake cn-fetch cn-autodeploy cn-pot-provider; do
   cp "$REPO_DIR/ops/$unit.service" "/etc/systemd/system/$unit.service"
 done
 cp "$REPO_DIR/ops/cn-autodeploy.timer" /etc/systemd/system/cn-autodeploy.timer
