@@ -150,12 +150,17 @@
 
   /* Type. The extension uses this scale. The website reads at a larger size,
    * see .cn-reading-scale below. */
-  /* Hanken Grotesk, which the website loads from Google Fonts. The extension
-   * draws inside other sites' pages and loads no web font, so it falls back to
-   * the system font. X's own "TwitterChirp" is deliberately not in the list:
-   * anyone who has it installed locally, as Nathan does, would see the whole
-   * site in it, and mismatched local weight files make it read heavy. */
-  --cn-font-sans: "Hanken Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  /* The type of Substack, where most of our readers read (Jim, 2026-09-28).
+   * Text is the system's own interface face. Titles are Apple's display face
+   * at bold weight, falling back to the system face elsewhere. Longer reading
+   * passages on the website are Spectral, the serif Substack sets its posts
+   * in; the website loads it, and the extension falls back to Georgia. X's own
+   * "TwitterChirp" is deliberately not in any list: anyone who has it
+   * installed locally, as Nathan does, would see the whole site in it, and
+   * mismatched local weight files make it read heavy. */
+  --cn-font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --cn-font-title: "SF Pro Display", -apple-system-headline, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --cn-font-serif: Spectral, Georgia, "Times New Roman", serif;
   --cn-text-2xs: 0.75rem;
   --cn-leading-2xs: 1.625;
   --cn-text-xs: 0.75rem;

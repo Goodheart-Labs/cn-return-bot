@@ -21,10 +21,20 @@ export const Home: Story = {
   decorators: [withWebsiteRoute({})],
 };
 
-export const ProjectFeed: Story = {
-  name: "Project feed",
+export const Projects: Story = {
   parameters: { queries: FEED_SEEDS },
   decorators: [withWebsiteRoute({ view: "notes" })],
+};
+
+export const Project: Story = {
+  parameters: { queries: FEED_SEEDS },
+  decorators: [withWebsiteRoute({ project: "the-weekly-ledger" })],
+};
+
+export const ProjectItem: Story = {
+  name: "Project, one item",
+  parameters: { queries: FEED_SEEDS },
+  decorators: [withWebsiteRoute({ project: "the-weekly-ledger", item: "item-1" })],
 };
 
 export const Leaderboard: Story = {

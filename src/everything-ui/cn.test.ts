@@ -19,7 +19,7 @@ describe("cn", () => {
   });
 });
 
-test("keeps the display size apart from colours", () => {
-  expect(cn("text-display text-fg font-bold")).toBe("text-display text-fg font-bold");
+test("keeps the display size and the title face apart from colours and weights", () => {
+  expect(cn("text-display text-fg font-title font-bold")).toBe("text-display text-fg font-title font-bold");
   expect(cn("text-lg", "text-display")).toBe("text-display");
 });

@@ -1,4 +1,5 @@
 import chromeLogo from "@browser-logos/chrome/chrome.svg";
+import { track } from "@cn/core/analytics";
 import edgeLogo from "@browser-logos/edge/edge.svg";
 import firefoxLogo from "@browser-logos/firefox/firefox.svg";
 import safariLogo from "@browser-logos/safari/safari.svg";
@@ -33,6 +34,9 @@ export type ListedBrowser = Browser & { store: NonNullable<Browser["store"]> };
 export const isListed = (browser: Browser): browser is ListedBrowser => !!browser.store;
 
 export const browserById = (id: BrowserId): Browser => BROWSERS.find((b) => b.id === id)!;
+
+/** Counts a click on a store link (migration 103). */
+export const trackStoreClick = (browser: Browser) => track("extension_store_clicked", { browser: browser.name });
 
 /** The reader's browser, read from the user agent. Edge and Firefox name
  *  themselves. Safari is the one that says Safari without also saying Chrome,

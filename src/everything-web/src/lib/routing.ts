@@ -9,8 +9,8 @@ import { capturePageview } from "./analytics";
  * ?view=leaderboard. */
 
 /** Where the reader is. On the homepage, `section` names the part the page
- *  scrolls to. In the feed, a null project means the first project in the
- *  list, and a null item means every item of the project. `note` names a
+ *  scrolls to. In the notes, a null project means the overview of all
+ *  projects, and a null item means every item of the project. `note` names a
  *  shared note the feed scrolls to. */
 export type Route =
   | { view: "home"; section: "install" | null }

@@ -73,7 +73,7 @@ export const cnPreset = {
     // A bare `border` or `ring` class takes these defaults.
     borderColor: { ...CN_COLORS, DEFAULT: "var(--cn-line)" },
     ringColor: { ...CN_COLORS, DEFAULT: "var(--cn-focus)" },
-    fontFamily: { sans: "var(--cn-font-sans)" },
+    fontFamily: { sans: "var(--cn-font-sans)", title: "var(--cn-font-title)", serif: "var(--cn-font-serif)" },
     fontSize: Object.fromEntries(
       TEXT_SIZES.map((size) => [size, [`var(--cn-text-${size})`, { lineHeight: `var(--cn-leading-${size})` }]]),
     ),

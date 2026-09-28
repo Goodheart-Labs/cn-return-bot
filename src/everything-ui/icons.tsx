@@ -13,6 +13,8 @@ export {
   ChevronRight as ChevronIcon,
   ChevronRight as NextIcon,
   Ellipsis as MoreIcon,
+  ExternalLink as ExternalLinkIcon,
+  Globe as GlobeIcon,
   MessageSquare as SpeechBubbleIcon,
   Pencil as PencilIcon,
   Quote as QuoteIcon,

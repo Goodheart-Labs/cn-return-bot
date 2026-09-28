@@ -1,36 +1,17 @@
-import { useEffect, type ReactNode } from "react";
+import { useEffect } from "react";
 import { buttonVariants } from "@cn/ui/Button";
 import { cardVariants } from "@cn/ui/Card";
 import { cn } from "@cn/ui/cn";
 import { NextIcon, PreviousIcon } from "@cn/ui/icons";
-import { BROWSERS, browserById, detectBrowser, isListed, type Browser, type ListedBrowser } from "../../lib/extensionStores";
-import { HEADLINE, PITCH, SCREENSHOTS, scrollToInstall, trackStoreClick } from "./content";
+import { BrowserLogo, StoreButton } from "../../components/StoreButton";
+import { BROWSERS, browserById, detectBrowser, isListed } from "../../lib/extensionStores";
+import { HEADLINE, PITCH, SCREENSHOTS, scrollToInstall } from "./content";
 import { useCarousel } from "./useCarousel";
 import { useInstallTabs } from "./useInstallTabs";
 
 /* The homepage, laid out as Jim sketched it: one centered column with the
  * headline and the download button, the screenshots, what Common Notes is,
  * and the install section. */
-
-function BrowserLogo({ browser, size }: { browser: Browser; size: number }) {
-  return <img src={browser.logo} alt="" width={size} height={size} className="shrink-0" />;
-}
-
-/** A link to the browser's store listing, which counts the click. */
-function StoreLink({ browser, children }: { browser: ListedBrowser; children: ReactNode }) {
-  return (
-    <a
-      href={browser.store.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      onClick={() => trackStoreClick(browser)}
-      className={cn(buttonVariants({ variant: "primary", size: "lg" }), "gap-2.5")}
-    >
-      <BrowserLogo browser={browser} size={22} />
-      {children}
-    </a>
-  );
-}
 
 function Screenshots() {
   const { index, go, held, holdProps } = useCarousel(SCREENSHOTS.length);
@@ -87,7 +68,7 @@ function Install() {
   const { browser, tabListProps, tabProps, panelProps } = useInstallTabs();
   return (
     <section id="install" aria-labelledby="install-title" className="scroll-mt-20 py-20">
-      <h2 id="install-title" className="text-center text-3xl font-bold text-fg">
+      <h2 id="install-title" className="text-center font-title text-3xl font-bold text-fg">
         Install the extension
       </h2>
       <div className={cn(cardVariants(), "mx-auto mt-8 max-w-2xl overflow-hidden")}>
@@ -105,7 +86,7 @@ function Install() {
         </div>
         <div {...panelProps} className="flex justify-center px-6 py-10">
           {isListed(browser) ? (
-            <StoreLink browser={browser}>Go to {browser.store.name}</StoreLink>
+            <StoreButton browser={browser}>Go to {browser.store.name}</StoreButton>
           ) : (
             <p className="text-base text-fg-secondary">The {browser.name} version is coming soon.</p>
           )}
@@ -124,10 +105,10 @@ export function HomePage({ showInstall }: { showInstall: boolean }) {
   return (
     <div className="bg-surface px-4 md:px-8">
       <section className="pt-16 text-center md:pt-24">
-        <h1 className="mx-auto max-w-4xl text-display font-extrabold tracking-tight text-fg text-balance">{HEADLINE}</h1>
+        <h1 className="mx-auto max-w-4xl font-title text-display font-bold tracking-tight text-fg text-balance">{HEADLINE}</h1>
         <div className="mt-8">
           {isListed(browser) ? (
-            <StoreLink browser={browser}>Download for {browser.name}, it's free</StoreLink>
+            <StoreButton browser={browser}>Download for {browser.name}, it's free</StoreButton>
           ) : (
             <button type="button" onClick={scrollToInstall} className={buttonVariants({ variant: "primary", size: "lg" })}>
               Get the extension
@@ -137,7 +118,7 @@ export function HomePage({ showInstall }: { showInstall: boolean }) {
         <Screenshots />
       </section>
 
-      <section className="mx-auto max-w-[65ch] space-y-4 pt-20 text-center text-lg text-fg-secondary">
+      <section className="mx-auto max-w-[62ch] space-y-4 pt-20 text-center font-serif text-xl leading-relaxed text-fg-secondary">
         {PITCH.map((paragraph) => (
           <p key={paragraph}>{paragraph}</p>
         ))}

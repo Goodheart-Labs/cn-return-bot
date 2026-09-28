@@ -1,8 +1,6 @@
-import { track } from "@cn/core/analytics";
 import noteOnAPost from "../../assets/screenshots/note-on-a-post.webp";
 import noteOnAVideo from "../../assets/screenshots/note-on-a-video.jpg";
 import writeANote from "../../assets/screenshots/write-a-note.webp";
-import type { Browser } from "../../lib/extensionStores";
 
 /* The words and pictures of the homepage. */
 
@@ -40,8 +38,6 @@ export const SCREENSHOTS: readonly Screenshot[] = [
     caption: "Select a sentence on any site to write a note of your own.",
   },
 ];
-
-export const trackStoreClick = (browser: Browser) => track("extension_store_clicked", { browser: browser.name });
 
 /** Scrolls to the install section, without animation for a reader who asked
  *  their system for reduced motion. */

@@ -14,7 +14,7 @@ export function SiteHeader({ route, navigate, onSignIn }: { route: Route; naviga
   return (
     <header className="sticky top-0 z-20 border-b border-line bg-surface">
       <div className="mx-auto flex h-14 max-w-[96rem] items-center gap-2.5 px-3 sm:gap-6 sm:px-4 md:px-8">
-        <RouteLink to={HOME} navigate={navigate} className="flex shrink-0 items-center gap-2 text-sm font-extrabold text-fg sm:text-base">
+        <RouteLink to={HOME} navigate={navigate} className="flex shrink-0 items-center gap-2 font-title text-sm font-bold text-fg sm:text-base">
           <img src={logoUrl} alt="" width={26} height={26} />
           Common Notes
         </RouteLink>

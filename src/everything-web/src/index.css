@@ -3,3 +3,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* A card rising into place, for the extension nudge. */
+@keyframes cn-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}

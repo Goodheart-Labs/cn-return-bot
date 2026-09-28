@@ -103,6 +103,7 @@
     "everything-enqueue": "bun run src/everything/enqueue.ts",
     "everything-auto-enqueue": "bun run src/everything/autoEnqueue.ts",
     "everything-consume-requests": "bun run src/everything/consumeRequests.ts",
+    "everything-refresh-avatars": "bun run src/everything/projectAvatars.ts",
     "everything-prioritize": "bun run src/everything/prioritize.ts",
     "everything-auto-run": "bun run src/everything/autoRun.ts",
     "everything-worker": "bun run src/everything/worker.ts",
