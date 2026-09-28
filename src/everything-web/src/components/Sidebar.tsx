@@ -1,15 +1,14 @@
 import type { FeedProjectRow } from "@cn/core/types";
-import type { View } from "../lib/routing";
 import { EYEBROW } from "@cn/ui/classes";
 
 const DESCRIPTION =
   "Common Notes is an attempt to bring Community Notes everywhere: podcasts, newsletters, and beyond. This is in alpha, but voting works.";
 
-export function Sidebar({ projects, selectedId, view, onSelect, onSelectLeaderboard }: {
+export function Sidebar({ projects, selectedId, onSelect, leaderboardSelected, onSelectLeaderboard }: {
   projects: FeedProjectRow[];
   selectedId: string | null;
-  view: View;
-  onSelect: (id: string) => void;
+  onSelect: (slug: string) => void;
+  leaderboardSelected: boolean;
   onSelectLeaderboard: () => void;
 }) {
   return (
@@ -28,9 +27,9 @@ export function Sidebar({ projects, selectedId, view, onSelect, onSelectLeaderbo
           {projects.map((p) => (
             <button
               key={p.id}
-              onClick={() => onSelect(p.id)}
+              onClick={() => onSelect(p.slug)}
               className={`shrink-0 text-left text-sm hover:underline hover:text-blue-600 dark:hover:text-blue-400 ${
-                p.id === selectedId && view === "notes" ? "text-blue-600 dark:text-blue-400 font-medium" : "text-gray-700 dark:text-gray-300"
+                p.id === selectedId ? "text-blue-600 dark:text-blue-400 font-medium" : "text-gray-700 dark:text-gray-300"
               }`}
             >
               {p.name}
@@ -43,7 +42,7 @@ export function Sidebar({ projects, selectedId, view, onSelect, onSelectLeaderbo
         <button
           onClick={onSelectLeaderboard}
           className={`text-left text-sm hover:underline hover:text-blue-600 dark:hover:text-blue-400 ${
-            view === "leaderboard" ? "text-blue-600 dark:text-blue-400 font-medium" : "text-gray-700 dark:text-gray-300"
+            leaderboardSelected ? "text-blue-600 dark:text-blue-400 font-medium" : "text-gray-700 dark:text-gray-300"
           }`}
         >
           Rating leaderboard

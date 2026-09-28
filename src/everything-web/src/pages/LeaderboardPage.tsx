@@ -5,7 +5,7 @@ import { useLeaderboard, useLeaderboardOptIn } from "../lib/leaderboardQueries";
 
 /** Ranks people by how many notes they have rated. A person is listed only if
  *  they opt in. */
-export function Leaderboard() {
+export function LeaderboardPage() {
   const { session } = useSession();
   const myVoteCount = useMyVotes().size;
   const { data: entries, isError: failed } = useLeaderboard();
