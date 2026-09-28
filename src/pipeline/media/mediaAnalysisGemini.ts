@@ -39,6 +39,7 @@ import {
 import { downloadWithGalleryDl } from "./galleryDlDownload";
 import { IMAGE_PROMPT, VIDEO_PROMPT, FRAME_PROMPT, MEDIA_RESPONSE_FORMAT } from "../prompts/media/mediaAnalysis";
 import { getBestMediaUrl } from "./bestMediaUrl";
+import { fetchPublicUrl } from "../utils/publicUrl";
 
 const execAsync = promisify(exec);
 // The vision model we fall back to when the configured model fails, for example
@@ -177,7 +178,7 @@ async function fetchImageInlineData(imageUrl: string): Promise<{ mimeType: strin
   const dataUrlMatch = /^data:([^;]+);base64,(.*)$/s.exec(imageUrl);
   if (dataUrlMatch) return { mimeType: dataUrlMatch[1]!, data: dataUrlMatch[2]! };
 
-  const response = await fetch(imageUrl, { redirect: "follow" });
+  const { response } = await fetchPublicUrl(imageUrl);
   if (!response.ok) throw new Error(`Failed to fetch image: ${response.status}`);
   const mimeType = response.headers.get("content-type")?.split(";")[0]?.trim() || "image/jpeg";
   const bytes = Buffer.from(await response.arrayBuffer());
@@ -247,7 +248,7 @@ export async function describeImageFromUrl(imageUrl: string, costName: string, e
 
 async function downloadVideo(videoUrl: string, tmpDir: string): Promise<string> {
   const videoPath = join(tmpDir, "video.mp4");
-  const response = await fetch(videoUrl, { redirect: "follow" });
+  const { response } = await fetchPublicUrl(videoUrl);
   if (!response.ok) throw new Error(`Failed to download video: ${response.status}`);
   await writeFile(videoPath, Buffer.from(await response.arrayBuffer()));
   return videoPath;

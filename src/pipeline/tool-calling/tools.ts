@@ -13,6 +13,7 @@ import { extractCitations, llm } from "../llm/llm";
 import { countNoteLength } from "../utils/noteLength";
 import { getBotConfig } from "../ab-testing/botConfig";
 import { getBrowser } from "../utils/browserManager";
+import { NonPublicUrlError, assertPublicUrl, fetchPublicUrl } from "../utils/publicUrl";
 import {
   GEMINI_MODEL,
   GROK_MODEL, PERPLEXITY_MODEL,
@@ -268,13 +269,11 @@ interface RawFetchResult {
 
 async function rawFetch(url: string, ua: string): Promise<RawFetchResult> {
   try {
-    const response = await fetch(url, {
+    const { response, finalUrl } = await fetchPublicUrl(url, {
       headers: { "User-Agent": ua, ...BROWSER_HEADERS },
-      redirect: "follow",
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     });
     const contentType = response.headers.get("content-type") ?? "";
-    const finalUrl = response.url || url;
     if (!response.ok) return { ok: false, status: response.status, contentType, finalUrl };
     if (contentType.includes("application/pdf") || contentType.includes("application/x-pdf")) {
       const bytes = new Uint8Array(await response.arrayBuffer());
@@ -385,12 +384,21 @@ async function tryBrowserRender(url: string): Promise<RawFetchResult> {
   // so cookies and other state from one fetch cannot leak into the next.
   let context: import("playwright").BrowserContext | null = null;
   try {
+    await assertPublicUrl(url);
     const browser = await getBrowser();
     context = await browser.newContext({
       userAgent: FETCH_UAS.desktop,
       viewport: { width: 1280, height: 800 },
       locale: "en-US",
       extraHTTPHeaders: { ...BROWSER_HEADERS },
+    });
+    // The page itself may load scripts, images and frames from anywhere, so
+    // every request it makes passes the same check as the page. Playwright
+    // does not show us the later steps of a redirect, which is why the
+    // network-level rule in the service units still matters here.
+    await context.route("**/*", async (route) => {
+      const isPublic = await assertPublicUrl(route.request().url()).then(() => true, () => false);
+      await (isPublic ? route.continue() : route.abort("blockedbyclient"));
     });
     const page = await context.newPage();
     const response = await page.goto(url, {
@@ -427,6 +435,15 @@ export interface WebFetchResult {
  *  because it ingests the whole article. */
 export async function fetchWebPage(url: string, opts?: { maxChars?: number }): Promise<WebFetchResult> {
   const maxChars = opts?.maxChars ?? MAX_RETURN_CHARS;
+  // An internal address is refused once, here, rather than by each step of the
+  // ladder. The archive steps would otherwise still send it to archive.org.
+  // A host that does not resolve at all goes on down the ladder, because an
+  // archive may still hold a copy of a dead site.
+  try {
+    await assertPublicUrl(url);
+  } catch (err) {
+    if (err instanceof NonPublicUrlError) return { content: `Fetch refused: ${err.message}`, fetchedUrl: url, ok: false };
+  }
   const attempts: Array<{ label: string; cls: ContentClass | "fail"; status?: number; chars: number; markdown: string; sourceLabel?: string }> = [];
 
   // Steps 1 to 3 are the HTTP ladder with three user agents. We stop as soon as
