@@ -4,38 +4,32 @@
  * Extraction gives us the claims of an item but says nothing about whether they
  * are true. This step rates the claims of one part in one call. The model gets
  * the part's text, the piece's introduction ahead of it as context, and the
- * claims as a numbered JSON object, together with our google_search and
- * web_fetch tools, and returns one rating per claim on a seven-level scale.
+ * claims as a numbered JSON object, together with web search, and returns one
+ * rating per claim on a seven-level scale.
  * The rating decides which claims get fact-checked.
  *
  * One call for a whole part is deliberate. The claims of one topic are
  * correlated, and a single good source often settles most of them. A search per
  * claim cannot see that. That is what the per-claim fact-check already does.
  *
- * The research runs through the client-side tool loop rather than Claude's
- * built-in tools, because the model has none of its own.
+ * The research runs on Meta's own search tooling, through OpenRouter's
+ * web_search server tool (GOO-258). Inside the one request Meta searches, opens
+ * pages and writes the answer, so no loop runs on our side. Meta decides how many
+ * searches to run; there is no per-part budget, and the daily spend cap is the
+ * bound.
  */
 
 import { claimCheckFields } from "./claimCheckFields";
 import { EVERYTHING_MODEL } from "./model";
 import { llm } from "../../pipeline/llm/llm";
 import { jsonSchemaResponseFormat } from "../../pipeline/prompts/responseFormat";
-import { GOOGLE_SEARCH_TOOL, WEB_FETCH_TOOL, fetchWebPage, handleGoogleSearchRaw, type ToolResult } from "../../pipeline/tool-calling/tools";
-import { runToolLoop } from "../../pipeline/tool-calling/toolLoop";
+import { OPENROUTER_NATIVE_WEB_SEARCH_TOOL, stripBrowserLineCitations } from "../../pipeline/tool-calling/tools";
 import { parseJsonWithRetry } from "../../pipeline/utils/jsonLlmCall";
-import { stripJsonFences } from "../../pipeline/utils/jsonOutput";
+import { extractJsonObject } from "../../pipeline/utils/jsonOutput";
 import { addTokenCost, emptyTokenCost, extractOpenRouterCost, type TokenCost } from "../../pipeline/cost-tracking/pricing";
 import type { ExtractedClaim, ItemSource, RatedClaim } from "../types";
 
-// Bounds on the research inside one call. Every search costs a fraction of a
-// cent at Serper and every fetched page is billed as input tokens, so these
-// keep a long part cheap. The tool executor refuses calls past the caps and the
-// loop stops after the turn limit.
-const MAX_SEARCHES_PER_PART = 12;
-const MAX_FETCHES_PER_PART = 6;
-const RATING_MAX_TURNS = 8;
-
-// The research happens through the tools, so the model does not need to think
+// The research happens through the search tool, so the model does not need to think
 // long on its own. High effort would only add reasoning tokens.
 const RATING_REASONING_EFFORT = "medium";
 
@@ -93,7 +87,7 @@ const RATING_RESPONSE_FORMAT = jsonSchemaResponseFormat("claim_ratings", {
 
 const RATING_SYSTEM_PROMPT = `You rate how true the factual claims of a text are. You get one part of an article or transcript, possibly with the piece's introduction ahead of it for context, and the claims extracted from that part as a JSON object keyed by claim number. Each claim is the author's own words, with the passage it sits in.
 
-Research first. Use google_search to find sources on the events, people and figures the text is about, and web_fetch to read the most relevant pages in full. Related claims usually share a source, so read the few pages that settle many claims at once. Search before you rate.
+Research first. Search the web for sources on the events, people and figures the text is about, and open the most relevant pages to read them in full. Related claims usually share a source, so read the few pages that settle many claims at once. Search before you rate.
 
 Then rate EVERY numbered claim on this scale: ${JUDGEMENTS.join(", ")}. Rate from the evidence you found plus your own knowledge. Use "uncertain" only when nothing you found bears on the claim. A claim rated uncertain or worse is sent to a costly fact-check, so be as decisive as the evidence allows.
 
@@ -149,40 +143,18 @@ export function applyRatings(claims: ExtractedClaim[], ratings: RatingOutput["ra
   return claims.map((claim, i) => ({ ...claim, judgement: byNumber.get(i + 1) ?? UNRATED_JUDGEMENT }));
 }
 
-/** Runs the two research tools with a budget per rating call. Past the budget
- *  the model gets a refusal back instead of a result, so it stops asking and
- *  rates with what it has. */
-function budgetedToolExecutor() {
-  let searches = 0;
-  let fetches = 0;
-  return async (name: string, args: Record<string, any>): Promise<ToolResult> => {
-    switch (name) {
-      case "google_search":
-        if (searches >= MAX_SEARCHES_PER_PART) return { output: { error: "search budget spent, rate with what you have" }, isTerminal: false };
-        searches++;
-        return handleGoogleSearchRaw(args.query);
-      case "web_fetch":
-        if (fetches >= MAX_FETCHES_PER_PART) return { output: { error: "fetch budget spent, rate with what you have" }, isTerminal: false };
-        fetches++;
-        return { output: (await fetchWebPage(args.url)).content, isTerminal: false };
-      default:
-        return { output: { error: `Unknown tool: ${name}` }, isTerminal: false };
-    }
-  };
-}
-
 export interface ClaimRatingResult {
   claims: RatedClaim[];
   /** What the model found, with its source URLs. This is the only record of the
    *  research, because the step writes no run row. It is logged, not stored. */
   research: string;
   cost: TokenCost;
+  /** How many searches Meta ran. The pages it opened inside them are not reported. */
   webSearches: number;
-  webFetches: number;
 }
 
 export async function rateClaims(params: RateClaimsParams): Promise<ClaimRatingResult> {
-  if (params.claims.length === 0) return { claims: [], research: "", cost: emptyTokenCost(), webSearches: 0, webFetches: 0 };
+  if (params.claims.length === 0) return { claims: [], research: "", cost: emptyTokenCost(), webSearches: 0 };
 
   const messages: any[] = [
     { role: "system", content: RATING_SYSTEM_PROMPT },
@@ -190,48 +162,30 @@ export async function rateClaims(params: RateClaimsParams): Promise<ClaimRatingR
   ];
   const cost = emptyTokenCost();
   let webSearches = 0;
-  let webFetches = 0;
-  // The first attempt is the research loop. A retry only asks for clean JSON
-  // over the conversation the loop already built, so the research is never
+  // The first attempt does the research. A retry only asks for clean JSON over
+  // the conversation so far, without the search tool, so the research is never
   // paid for twice.
   const output = await parseJsonWithRetry<RatingOutput>({
     source: "rateClaims",
     messages,
     schemaHint: RATING_SCHEMA_HINT,
     call: async (msgs, attempt) => {
-      let content: string;
-      if (attempt === 1) {
-        const loop = await runToolLoop({
-          model: EVERYTHING_MODEL,
-          messages: msgs,
-          tools: [GOOGLE_SEARCH_TOOL, WEB_FETCH_TOOL],
-          maxTurns: RATING_MAX_TURNS,
-          responseFormat: RATING_RESPONSE_FORMAT,
-          // Meta rejects a forced tool call, and the prompt asks for research
-          // first, which Muse follows.
-          forceFirstTurn: false,
-          executeTool: budgetedToolExecutor(),
-          llmParams: { reasoning_effort: RATING_REASONING_EFFORT },
-        });
-        addTokenCost(cost, loop.modelCost);
-        for (const toolCost of loop.toolCosts) addTokenCost(cost, toolCost);
-        webSearches += loop.toolCalls.filter((c) => c.name === "google_search").length;
-        webFetches += loop.toolCalls.filter((c) => c.name === "web_fetch").length;
-        content = loop.content;
-      } else {
-        const response: any = await llm.create({
-          model: EVERYTHING_MODEL,
-          messages: msgs,
-          response_format: RATING_RESPONSE_FORMAT,
-          reasoning_effort: RATING_REASONING_EFFORT,
-        } as any);
-        addTokenCost(cost, extractOpenRouterCost(response));
-        content = response.choices?.[0]?.message?.content ?? "";
-      }
-      return { toParse: stripJsonFences(content), assistantEcho: content };
+      const response: any = await llm.create({
+        model: EVERYTHING_MODEL,
+        messages: msgs,
+        response_format: RATING_RESPONSE_FORMAT,
+        reasoning_effort: RATING_REASONING_EFFORT,
+        ...(attempt === 1 ? { tools: [OPENROUTER_NATIVE_WEB_SEARCH_TOOL] } : {}),
+      } as any);
+      addTokenCost(cost, extractOpenRouterCost(response));
+      webSearches += response.usage?.server_tool_use_details?.web_search_requests ?? 0;
+      const content: string = response.choices?.[0]?.message?.content ?? "";
+      // Muse narrates its research steps before the JSON even under a schema,
+      // so the object is extracted rather than parsed whole.
+      return { toParse: extractJsonObject(content), assistantEcho: content };
     },
     parse: parseRatingOutput,
   });
 
-  return { claims: applyRatings(params.claims, output.ratings), research: output.research, cost, webSearches, webFetches };
+  return { claims: applyRatings(params.claims, output.ratings), research: stripBrowserLineCitations(output.research), cost, webSearches };
 }

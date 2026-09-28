@@ -150,7 +150,6 @@ export interface RateClaimsResponse {
    *  stored nowhere else. */
   research: string;
   webSearches: number;
-  webFetches: number;
   costUsd: number | null;
 }
 

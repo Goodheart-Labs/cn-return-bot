@@ -62,6 +62,21 @@ export const WEB_FETCH_TOOL = {
 // native-search dispatch of simple-bot uses it.
 export const WEB_SEARCH_TOOL = { type: "web_search_20260209" as const, name: "web_search" };
 
+// OpenRouter's web_search server tool on the model provider's own engine. For a
+// Muse request that is Meta's search, which also opens pages. OpenRouter runs it
+// inside the request and bills the searches in usage.cost.
+export const OPENROUTER_NATIVE_WEB_SEARCH_TOOL = {
+  type: "openrouter:web_search" as const,
+  parameters: { engine: "native" as const },
+};
+
+/** Meta's search tool cites the lines of the pages it opened with markers such
+ *  as 【1586541899417117766†L16-L18】, which point into its own page cache and mean
+ *  nothing to us. They are removed so they cannot leak into a note. */
+export function stripBrowserLineCitations(text: string): string {
+  return text.replace(/\s*【[^】]*†[^】]*】/g, "");
+}
+
 // --- Tool handlers ---
 
 export interface ToolResult {
