@@ -213,7 +213,8 @@ export async function rateClaims(params: RateClaimsParams): Promise<ClaimRatingR
           executeTool: budgetedToolExecutor(),
           llmParams: { reasoning_effort: RATING_REASONING_EFFORT },
         });
-        addTokenCost(cost, loop.cost);
+        addTokenCost(cost, loop.modelCost);
+        for (const toolCost of loop.toolCosts) addTokenCost(cost, toolCost);
         webSearches += loop.toolCalls.filter((c) => c.name === "google_search").length;
         webFetches += loop.toolCalls.filter((c) => c.name === "web_fetch").length;
         content = loop.content;
