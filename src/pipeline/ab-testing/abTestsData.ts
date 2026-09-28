@@ -96,12 +96,14 @@ const SIMPLE_BOT_WRITER_TEST: ABTest = {
 };
 
 // Text verifier model only. Cited media is described by the media_description arm.
+// 2026-09-25: Gemini Flash alone again, as before 14 Sep. Muse killed more notes that should
+// have posted (numbers in the PR).
 const SIMPLE_BOT_VERIFIER_TEST: ABTest = {
   name: "simple_bot_verifier",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "gemini-flash",     overrides: { verifier_model: "google/gemini-3-flash-preview"   }}, weight: 50 },
-    { variant: { name: "musespark13c",     overrides: { verifier_model: "meta/muse-spark-1.3-contributor" }}, weight: 50 },
+    { variant: { name: "gemini-flash",     overrides: { verifier_model: "google/gemini-3-flash-preview"   }}, weight: 100 },
+    { variant: { name: "musespark13c",     overrides: { verifier_model: "meta/muse-spark-1.3-contributor" }}, weight: 0 },
     { variant: { name: "deepseek-v4flash", overrides: { verifier_model: "deepseek/deepseek-v4-flash"      }}, weight: 0  },
   ],
 };
