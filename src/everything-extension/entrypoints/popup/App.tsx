@@ -20,7 +20,9 @@ import { capturePageFromTab } from "../../utils/pageCapture";
 import { addRequestedPage, getRequestedPages } from "../../utils/settings";
 import { ActionButton, type StatusAction } from "../../components/ActionButton";
 import { Button, buttonVariants } from "@cn/ui/Button";
+import { cn } from "@cn/ui/cn";
 import { STATIC_SITE_HOSTNAME } from "../../utils/staticSites";
+import { FEEDBACK_FORM_URL } from "../../utils/feedbackLinks";
 import { useNoteDisplay } from "../../components/NoteDisplayChoices";
 
 // Requesting notes makes no sense on these pages. They are searches and
@@ -398,7 +400,7 @@ export function PopupApp() {
     <div className="p-4 space-y-4 bg-canvas min-h-[120px]">
       <PrimaryAction state={state} counts={counts} jumped={jumped} access={access} />
 
-      <div className="border-t border-line pt-4">
+      <div className="flex items-center gap-4 border-t border-line pt-4">
         <Button
           variant="quiet"
           className="text-sm"
@@ -409,6 +411,9 @@ export function PopupApp() {
         >
           Settings
         </Button>
+        <a href={FEEDBACK_FORM_URL} target="_blank" rel="noreferrer" className={cn(buttonVariants({ variant: "quiet" }), "text-sm")}>
+          Give feedback
+        </a>
       </div>
     </div>
   );

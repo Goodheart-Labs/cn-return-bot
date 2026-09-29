@@ -1,10 +1,12 @@
 import { useEffect, useState, type ComponentProps, type ReactNode } from "react";
-import { Button } from "@cn/ui/Button";
+import { Button, buttonVariants } from "@cn/ui/Button";
+import { cn } from "@cn/ui/cn";
 import { Card } from "@cn/ui/Card";
 import { Checkbox } from "@cn/ui/Field";
 import { signOut } from "@cn/core/auth";
 import { useSession } from "@cn/features/auth/useSession";
 import { LoginPanel } from "../../components/LoginPanel";
+import { BOOK_CALL_URLS, FEEDBACK_FORM_URL } from "../../utils/feedbackLinks";
 import { NoteDisplayChoices, useNoteDisplay } from "../../components/NoteDisplayChoices";
 import {
   getSettings,
@@ -198,6 +200,26 @@ export function SettingsApp() {
           ) : (
             <LoginPanel surface="settings" />
           )}
+        </Section>
+
+        <Section title="Feedback">
+          <p className="text-sm text-fg-secondary">
+            Common Notes is new, and we want to hear what works for you and what doesn't.
+          </p>
+          <a href={FEEDBACK_FORM_URL} target="_blank" rel="noreferrer" className={cn(buttonVariants({ variant: "link" }), "block text-sm")}>
+            Send us feedback
+          </a>
+          <p className="text-sm text-fg-secondary">
+            Or book a video call with us:{" "}
+            {BOOK_CALL_URLS.map(({ label, url }, index) => (
+              <span key={url}>
+                {index > 0 && " or "}
+                <a href={url} target="_blank" rel="noreferrer" className={buttonVariants({ variant: "link" })}>
+                  {label}
+                </a>
+              </span>
+            ))}
+          </p>
         </Section>
 
         <section className="border-t border-line pt-4">
