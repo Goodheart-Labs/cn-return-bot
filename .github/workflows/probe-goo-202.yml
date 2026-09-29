@@ -3,7 +3,7 @@ name: Probe GOO-202
 on:
   push:
     branches: [fix/youtube-low-quality-format]
-    paths: [.github/workflows/probe-goo-202.yml, src/scripts_jim/2026_09_29_youtube_frames_only/**]
+    paths: [.github/workflows/probe-goo-202.yml, src/scripts_jim/2026_09_29_youtube_frames_only/**, src/pipeline/media/**]
 jobs:
   probe:
     runs-on: ubuntu-latest
