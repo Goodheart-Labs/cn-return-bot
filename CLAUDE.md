@@ -267,7 +267,7 @@ logged into X on the notewriter account; that session persists across runs.
 - The notewriter page virtualizes its list - can't Ctrl+F, need the scraper
 - After compacting, ask Nathan what to do next. 
 - Do not delete database enries without confirming. 
-- Common error for supabase to only display the first 1000. Make sure you are getting them all.
+- Supabase's API returns at most 1,000 rows per request and says nothing when it cuts a result short. So every read that can return more than a handful of rows goes through `fetchAllRows` or `fetchInBatches` in `src/everything-core/paging.ts`. That includes `rpc()` calls to functions that return rows, and `.in()` lists longer than about 200 values, whose URL gets too long on its own. A read is only safe without the helper when it asks for one row (`.single()`, `.maybeSingle()`) or sets a small `.limit()` on purpose. In September 2026 the extension lost 400 of its 1,412 pages with notes this way: the table outgrew the cap and nothing failed.
 - Community Notes has `currentStatus` (overall) and `currentCoreStatus` (core submodel only, can be empty). Always use `currentStatus` / `current_status` when checking if a note is helpful — `currentCoreStatus` misses notes rated helpful by expansion/group models.
 
 ## Running locally
