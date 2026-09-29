@@ -5,7 +5,8 @@ const meta = {
   title: "Features/Voting hint",
   component: VotingNudge,
   args: { onDismiss: () => {} },
-  decorators: [(Story) => <div className="relative ml-80 mt-32 inline-block"><Story /><span className="text-sm text-fg-muted">The rating pills sit here</span></div>],
+  // The hint takes the place of the question in a note's rating panel.
+  decorators: [(Story) => <div className="max-w-xl rounded-card bg-surface-muted px-4 py-3 text-sm text-fg"><Story /></div>],
 } satisfies Meta<typeof VotingNudge>;
 export default meta;
 

@@ -130,6 +130,27 @@ function AdvancedSettings({ settings, onToggle }: {
           Classic: a badge in the text, the note on top of it
         </label>
         {filters && <NoteFilterToggles filters={filters} onToggle={toggleFilters} />}
+        <p className="pt-2 text-sm text-fg-secondary">How the rating buttons look.</p>
+        <label className="flex items-center gap-2 text-sm text-fg-secondary">
+          <input
+            type="radio"
+            className="accent-primary"
+            name="pill-palette"
+            checked={settings.pillPalette === "colourful"}
+            onChange={() => onToggle({ pillPalette: "colourful" })}
+          />
+          Colourful: Yes in green, Somewhat in amber, No in red
+        </label>
+        <label className="flex items-center gap-2 text-sm text-fg-secondary">
+          <input
+            type="radio"
+            className="accent-primary"
+            name="pill-palette"
+            checked={settings.pillPalette === "neutral"}
+            onChange={() => onToggle({ pillPalette: "neutral" })}
+          />
+          Neutral: all three in blue
+        </label>
       </Section>
 
       <Section title="Sharing by site">

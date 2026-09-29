@@ -33,6 +33,7 @@ import { closeBrowser } from "../pipeline/utils/browserManager";
 import { fetchClaimCheckHealth, fetchExtractionHealth, queueIsStuck } from "../service/client";
 import { runAutoEnqueue, triageQueue } from "./autoEnqueue";
 import { fetchFeedPacing, oldestPendingRequestAgeSeconds, setFeedAlarm } from "./db";
+import { AVATARS_PER_RUN, refreshStaleAvatars } from "./projectAvatars";
 import { ensureYtDlp } from "./sources/youtube";
 import { duration } from "./logFormat";
 import {
@@ -128,6 +129,10 @@ async function main() {
     // would sleep until the backstop.
     await setNextAlarm(started);
   }
+  // Creator pictures for the website cost no LLM money, so they refresh even
+  // on a capped day. They run last, after the alarm is set, so a slow source
+  // never delays the item or the schedule.
+  await refreshStaleAvatars(AVATARS_PER_RUN);
   console.log(`\nrun done · today so far: ${describeSpend(await todaySpendUsd())}`);
   try {
     await closeBrowser();

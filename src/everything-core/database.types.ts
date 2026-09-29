@@ -645,6 +645,8 @@ export type Database = {
       }
       everything_projects: {
         Row: {
+          avatar_refreshed_at: string | null
+          avatar_url: string | null
           created_at: string
           description: string | null
           feed_url: string | null
@@ -657,6 +659,8 @@ export type Database = {
           top_posts_refreshed_at: string | null
         }
         Insert: {
+          avatar_refreshed_at?: string | null
+          avatar_url?: string | null
           created_at?: string
           description?: string | null
           feed_url?: string | null
@@ -669,6 +673,8 @@ export type Database = {
           top_posts_refreshed_at?: string | null
         }
         Update: {
+          avatar_refreshed_at?: string | null
+          avatar_url?: string | null
           created_at?: string
           description?: string | null
           feed_url?: string | null
@@ -1970,8 +1976,11 @@ export type Database = {
       everything_projects_by_votes: {
         Args: never
         Returns: {
+          avatar_url: string
+          feed_url: string
           id: string
           name: string
+          note_count: number
           slug: string
           vote_score: number
         }[]

@@ -8,7 +8,7 @@ import { Note } from "@cn/features/notes/Note";
 export const NOTE_POPOVER_WIDTH = 560;
 
 /** The whole note surface of one claim. It shows the original note, the
- *  other notes on the claim in an indented rail, and the claim's
+ *  other notes on the claim indented under a thin rail, and the claim's
  *  note-not-needed list. The Substack popover and the YouTube overlay both use
  *  it, so the two cannot drift apart. */
 export function ClaimNoteStack({ group, projectSlug }: { group: ClaimGroup; projectSlug: string | null }) {
@@ -17,7 +17,7 @@ export function ClaimNoteStack({ group, projectSlug }: { group: ClaimGroup; proj
     <>
       <Note note={original!} shareUrl={noteShareUrl(projectSlug, original!.id)} />
       {others.length > 0 && (
-        <div className="mt-3 pl-3 border-l-4 border-line space-y-3">
+        <div className="mt-4 space-y-4 border-l-2 border-line pl-4">
           {others.map((note) => (
             <Note key={note.id} note={note} shareUrl={noteShareUrl(projectSlug, note.id)} />
           ))}

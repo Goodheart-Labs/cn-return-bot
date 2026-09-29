@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { longFormUploadsPlaylist, parseIsoDuration } from "./youtubeDataApi";
+import { longFormUploadsPlaylist, parseIsoDuration, resolveChannel } from "./youtubeDataApi";
 
 describe("parseIsoDuration", () => {
   it("handles hours, minutes, seconds and the empty duration of a live stream", () => {
@@ -15,5 +15,23 @@ describe("parseIsoDuration", () => {
 describe("longFormUploadsPlaylist", () => {
   it("swaps the channel prefix for the long-form uploads prefix", () => {
     expect(longFormUploadsPlaylist("UCzQUP1qoWDoEbmsQxvdjxgQ")).toBe("UULFzQUP1qoWDoEbmsQxvdjxgQ");
+  });
+});
+
+describe("resolveChannel", () => {
+  it("returns the channel's picture along with its id and title", async () => {
+    const realFetch = globalThis.fetch;
+    const realKey = process.env.YOUTUBE_DATA_V3_API_KEY;
+    process.env.YOUTUBE_DATA_V3_API_KEY = "test-key";
+    globalThis.fetch = (async () =>
+      Response.json({
+        items: [{ id: "UCabc", snippet: { title: "Dwarkesh Patel", thumbnails: { default: { url: "small.jpg" }, medium: { url: "medium.jpg" } } } }],
+      })) as unknown as typeof fetch;
+    try {
+      expect(await resolveChannel("https://www.youtube.com/@DwarkeshPatel")).toEqual({ id: "UCabc", title: "Dwarkesh Patel", thumbnailUrl: "medium.jpg" });
+    } finally {
+      globalThis.fetch = realFetch;
+      process.env.YOUTUBE_DATA_V3_API_KEY = realKey;
+    }
   });
 });

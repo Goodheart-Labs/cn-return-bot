@@ -8,16 +8,20 @@ import { LinkifiedText } from "../../dashboard-shared/LinkifiedText";
 import { quoteFragmentUrl } from "../../dashboard-shared/textFragment";
 import { queryKeys } from "../query/queryKeys";
 
-/** The rating states, in the style of Community Notes. Each one carries the
- *  colour of its icon, the copy on its badge, the tint of the note box, and the
- *  question asked in the footer. The design sits halfway to X's own Community
- *  Notes grammar (Nathan, 2026-07-14). The badge and the wording are ours, and
- *  the vote row asks one plain question. */
-const STATUS: Record<NoteStatus, { label: string; dot: string; box: string; ask: string }> = {
-  helpful: { label: "Currently rated helpful", dot: "text-positive-solid", box: "bg-tint border-tint-line", ask: "Do you find this helpful?" },
-  not_helpful: { label: "Currently rated not helpful", dot: "text-negative-solid", box: "bg-surface-hover border-line", ask: "Do you find this helpful?" },
-  needs_ratings: { label: "Needs more ratings", dot: "text-fg-subtle", box: "bg-tint border-tint-line", ask: "Is this note helpful?" },
+/** The rating states, in the style of Community Notes: the colour of the
+ *  status dot and the copy beside it. The note itself has no box and no tint,
+ *  as on X, so the status line alone says which state a note is in. */
+const STATUS: Record<NoteStatus, { label: string; dot: string }> = {
+  helpful: { label: "Currently rated helpful", dot: "text-positive-solid" },
+  not_helpful: { label: "Currently rated not helpful", dot: "text-negative-solid" },
+  needs_ratings: { label: "Needs more ratings", dot: "text-fg-subtle" },
 };
+
+/** The status line's words for a status, for labels that name it elsewhere. */
+export const statusLabel = (status: NoteStatus): string => STATUS[status].label;
+
+/** The one question every note's rating panel asks, whatever its status. */
+export const RATING_QUESTION = "Is this note helpful?";
 
 /** The status badge shown above a note. It is a filled circle followed by the
  *  Community Notes copy for that status. A status that has been decided also
@@ -92,28 +96,34 @@ function SourceDetails({ open, noteId }: { open: boolean; noteId: string }) {
   );
 }
 
-/** The note as one self-contained unit, in the style of X's Community Notes. The
- *  rating-status badge sits on top, then the note text, then the rating pills,
- *  all inside the same box. The tint of the box follows the note's status. */
-export function NoteBox({ note, status, sourcesOpen, children }: {
+/** The note, laid out like a Community Note on X: the status line, the note
+ *  text with its source links, and then a softly filled rating panel that asks
+ *  the question beside the pills. `children` are the pills. `question`
+ *  replaces the plain question, which is how the one-time voting hint joins
+ *  the panel without covering the note. */
+export function NoteBox({ note, status, sourcesOpen, question, children }: {
   note: NoteRow;
   status: NoteStatus;
   sourcesOpen?: boolean;
+  question?: React.ReactNode;
   children?: React.ReactNode;
 }) {
-  const by = note.author_id ? note.author_name ?? "anonymous" : null;
+  // A note without an author was written by the pipeline. Saying so is part of
+  // "AI writes, people rate": a reader should never mistake a machine's note
+  // for a person's.
+  const byline = note.author_id ? `by ${note.author_name ?? "anonymous"}` : "Written by AI";
   return (
-    <div className={`rounded-control p-3 border ${STATUS[status].box}`}>
-      <div className="-mx-3 px-3 pb-2 mb-3 border-b border-line flex items-center justify-between gap-2">
+    <div>
+      <div className="mb-2 flex items-center justify-between gap-2">
         <StatusBadge status={status} />
-        {by && <span className="text-xs text-fg-muted shrink-0">by {by}</span>}
+        <span className="text-xs text-fg-muted shrink-0">{byline}</span>
       </div>
       <LinkifiedText className="text-sm text-fg whitespace-pre-wrap" linkClassName="text-link hover:underline break-all" text={noteText(note)} />
       {note.has_source_details && <SourceDetails open={!!sourcesOpen} noteId={note.id} />}
       {children && (
-        <div className="-mx-3 mt-3 px-3 pt-2 border-t border-line flex items-center justify-between flex-wrap gap-x-4 gap-y-1">
-          <span className="text-sm text-fg-secondary">{STATUS[status].ask}</span>
-          <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-xs text-fg-muted">{children}</div>
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-card bg-surface-muted px-4 py-3">
+          <div className="text-sm text-fg">{question ?? <span className="font-semibold">{RATING_QUESTION}</span>}</div>
+          {children}
         </div>
       )}
     </div>

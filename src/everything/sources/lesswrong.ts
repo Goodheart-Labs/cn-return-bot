@@ -56,6 +56,20 @@ async function graphql(origin: string, query: string): Promise<any> {
   return body.data;
 }
 
+/** Profile pictures on both sites are Cloudinary uploads. This asks
+ *  Cloudinary for a square crop around the face, the size of a thumbnail. */
+const profileImageUrl = (imageId: string) => `https://res.cloudinary.com/lesswrong-2-0/image/upload/c_fill,g_face,w_240,h_240/${imageId}`;
+
+/** An author's profile picture, or null when they never uploaded one. */
+export async function fetchAuthorProfileImage(feedUrl: string): Promise<string | null> {
+  const author = parseAuthorFeedUrl(feedUrl);
+  if (!author) throw new Error(`Not a LessWrong or Alignment Forum author URL: ${feedUrl}`);
+  const data = await graphql(author.origin, `{ user(input: {selector: {slug: "${author.slug}"}}) { result { _id profileImageId } } }`);
+  const user = data.user?.result;
+  if (!user?._id) throw new Error(`No user found for ${feedUrl}`);
+  return user.profileImageId ? profileImageUrl(user.profileImageId) : null;
+}
+
 export interface ForumPost {
   /** ForumMagnum's post id. Post URLs contain it, and it is the same id on
    *  both sites when a post appears on both, which is what lets the walker

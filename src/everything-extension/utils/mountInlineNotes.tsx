@@ -22,6 +22,7 @@ import { listenForRequestInfo } from "./requestInfo";
 import { getNoteFilters, getSettings, onNoteFiltersChanged, onSettingsChanged, type NoteStyle } from "./settings";
 import { isPageDark, observePageTheme } from "./pageTheme";
 import { InlineNotesApp } from "../components/InlineNotes";
+import { PillPaletteFromSettings } from "../components/PillPaletteFromSettings";
 import { track } from "@cn/core/analytics";
 
 const REANCHOR_DEBOUNCE_MS = 600;
@@ -168,7 +169,9 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     applyHighlights(anchored.map((g) => g.range));
     reactRoot?.render(
       <QueryClientProvider client={queryClient}>
-        <InlineNotesApp groups={anchored} item={item} container={container} inlineContainer={inlineUi.uiContainer} noteStyle={noteStyle} />
+        <PillPaletteFromSettings>
+          <InlineNotesApp groups={anchored} item={item} container={container} inlineContainer={inlineUi.uiContainer} noteStyle={noteStyle} />
+        </PillPaletteFromSettings>
       </QueryClientProvider>,
     );
   };

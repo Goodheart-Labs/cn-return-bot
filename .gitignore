@@ -135,3 +135,10 @@ src/everything-extension/.output/
 src/everything-extension/chrome-signing-key.pem
 .wrangler/
 storybook-static
+
+# impeccable: live-mode session journals and local settings stay on the machine
+.impeccable/live/sessions/
+.impeccable/live/roots.json
+.impeccable/live/inject-journal.json
+.impeccable/config.local.json
+.impeccable/hook.cache.json

@@ -305,8 +305,8 @@ function PrimaryAction({ state, counts, jumped, access }: {
     return (
       <p className="text-sm text-fg-secondary">
         Open a post or video on a covered site to see Common Notes. You can also see notes on{" "}
-        <a href="https://commonnotes.net" target="_blank" rel="noreferrer" className={buttonVariants({ variant: "link" })}>
-          commonnotes.net
+        <a href={`${COMMONNOTES_ORIGIN}/notes`} target="_blank" rel="noreferrer" className={buttonVariants({ variant: "link" })}>
+          commonnotes.net/notes
         </a>
         .
       </p>

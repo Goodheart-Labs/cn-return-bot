@@ -10,7 +10,7 @@ const meta = {
     note: noteById("note-rent"),
     improvements: [noteById("note-rent-improved")],
     nnnEntries: NNN_ENTRIES,
-    shareUrl: "https://commonnotes.net/?note=note-rent",
+    shareUrl: "https://commonnotes.net/notes/rational-rent?note=note-rent",
   },
 } satisfies Meta<typeof FeedNoteCard>;
 export default meta;
