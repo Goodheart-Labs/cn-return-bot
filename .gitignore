@@ -36,6 +36,9 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .env.test.local
 .env.production.local
 .env.local
+# Jim's logged-in Substack cookie. wt-create links it into every worktree
+# from ~/dev/env/cn-return-bot/.
+.substack-session
 
 # caches
 .eslintcache
