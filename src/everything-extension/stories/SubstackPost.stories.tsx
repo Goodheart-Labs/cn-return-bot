@@ -24,7 +24,7 @@ function Overlay({ article, layer, noteStyle }: { article: HTMLElement; layer: H
     if (!noteSet) return [];
     const groups = anchorGroups(article, claimGroups(noteSet, DEFAULT_NOTE_DISPLAY));
     ensureHighlightStyle(document.documentElement.classList.contains("dark"));
-    applyHighlights(groups.filter((g) => !g.collapsed).map((g) => g.range));
+    applyHighlights(groups.filter((g) => g.display !== "faint").map((g) => g.range));
     return groups;
   });
   return <InlineNotesApp groups={anchored} item={PAGE_ITEM} container={article} inlineContainer={layer} noteStyle={noteStyle} />;

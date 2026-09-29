@@ -22,7 +22,7 @@ import { ActionButton, type StatusAction } from "../../components/ActionButton";
 import { Button, buttonVariants } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
 import { STATIC_SITE_HOSTNAME } from "../../utils/staticSites";
-import { FEEDBACK_FORM_URL } from "../../utils/feedbackLinks";
+import { BOOK_CALL_URLS, FEEDBACK_FORM_URL } from "../../utils/feedbackLinks";
 import { useNoteDisplay } from "../../components/NoteDisplayChoices";
 
 // Requesting notes makes no sense on these pages. They are searches and
@@ -381,8 +381,25 @@ function PrimaryAction({ state, counts, jumped, access }: {
   );
 }
 
+/** The ways to reach the team, unfolded under the footer by "Give feedback". */
+function FeedbackLinks() {
+  const links = [{ label: "Feedback form", url: FEEDBACK_FORM_URL }, ...BOOK_CALL_URLS.map(({ label, url }) => ({ label: `Book a call, ${label}`, url }))];
+  return (
+    <ul className="space-y-1">
+      {links.map(({ label, url }) => (
+        <li key={url}>
+          <a href={url} target="_blank" rel="noreferrer" className={cn(buttonVariants({ variant: "link" }), "text-sm")}>
+            {label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function PopupApp() {
   const state = usePageState();
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   const jumped = useJumped(state);
   const access = usePageAccess(state);
   // The display choices are edited on the settings page; the popup only reads
@@ -411,10 +428,11 @@ export function PopupApp() {
         >
           Settings
         </Button>
-        <a href={FEEDBACK_FORM_URL} target="_blank" rel="noreferrer" className={cn(buttonVariants({ variant: "quiet" }), "text-sm")}>
+        <Button variant="quiet" className="text-sm" aria-expanded={feedbackOpen} onClick={() => setFeedbackOpen((open) => !open)}>
           Give feedback
-        </a>
+        </Button>
       </div>
+      {feedbackOpen && <FeedbackLinks />}
     </div>
   );
 }

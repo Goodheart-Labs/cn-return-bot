@@ -49,18 +49,26 @@ export async function forgetRequestedPage(pageUrl: string): Promise<void> {
 // longer read, so every reader starts from the new defaults once.
 const NOTE_DISPLAY_KEY = "cn:noteDisplay";
 
-/** "show" draws the note's marker at full strength, tints its passage and
- *  lets a YouTube card pop up during playback. "collapse" draws only a small,
- *  faint marker: the note opens in full when the marker is clicked, and never
- *  on its own. "hide" leaves the note off the page. */
-export type NoteDisplay = "show" | "collapse" | "hide";
+/** "open" puts the note's card on screen without a click: beside its passage
+ *  in the margin, or over the video while playback is in the note's part.
+ *  "collapse" draws the marker and tints the passage, and the card opens when
+ *  the reader clicks. "faint" draws a pale marker and no tint. "hide" leaves
+ *  the note off the page. */
+export type NoteDisplay = "open" | "collapse" | "faint" | "hide";
 export type NoteDisplaySettings = Record<NoteStatus, NoteDisplay>;
 
-// Jim's call on 2026-09-29: only notes rated helpful are shown in full.
-export const DEFAULT_NOTE_DISPLAY: NoteDisplaySettings = { helpful: "show", needs_ratings: "collapse", not_helpful: "collapse" };
+const NOTE_DISPLAYS: readonly NoteDisplay[] = ["open", "collapse", "faint", "hide"];
 
+// Jim's call on 2026-09-29: helpful notes are open, notes that need ratings
+// wait for a click, and unhelpful notes only leave a pale marker.
+export const DEFAULT_NOTE_DISPLAY: NoteDisplaySettings = { helpful: "open", needs_ratings: "collapse", not_helpful: "faint" };
+
+/** A stored value that is not one of today's choices falls back to the
+ *  default. Early test builds stored a "show" choice that no longer exists. */
 export async function getNoteDisplay(): Promise<NoteDisplaySettings> {
-  return { ...DEFAULT_NOTE_DISPLAY, ...(await readSyncObject<NoteDisplaySettings>(NOTE_DISPLAY_KEY)) };
+  const stored = await readSyncObject<NoteDisplaySettings>(NOTE_DISPLAY_KEY);
+  const valid = Object.entries(stored).filter(([, display]) => NOTE_DISPLAYS.includes(display));
+  return { ...DEFAULT_NOTE_DISPLAY, ...Object.fromEntries(valid) };
 }
 
 export async function updateNoteDisplay(patch: Partial<NoteDisplaySettings>): Promise<void> {

@@ -15,7 +15,7 @@ import type { TimedGroup } from "./YoutubeOverlay";
 // shadow root and cannot reach the host page.
 
 const PIN_STYLE_ID = "common-notes-pin-style";
-const COLLAPSED_PIN_SCALE = 0.75;
+const FAINT_PIN_OPACITY = 0.45;
 const PIN_CSS = `
 .cn-scrub-pin {
   position: absolute;
@@ -30,9 +30,9 @@ const PIN_CSS = `
   z-index: 60;
 }
 .cn-scrub-pin:hover { transform: translateX(-50%) scale(${MARKER_HOVER_SCALE}); }
-/* A collapsed claim's pin is smaller and faint until the pointer reaches it. */
-.cn-scrub-pin.cn-scrub-pin-collapsed { opacity: .5; transform: translateX(-50%) scale(${COLLAPSED_PIN_SCALE}); transform-origin: bottom center; }
-.cn-scrub-pin.cn-scrub-pin-collapsed:hover { opacity: 1; transform: translateX(-50%) scale(${MARKER_HOVER_SCALE}); }
+/* A faint claim's pin is pale until the pointer or the keyboard reaches it. */
+.cn-scrub-pin.cn-scrub-pin-faint { opacity: ${FAINT_PIN_OPACITY}; }
+.cn-scrub-pin.cn-scrub-pin-faint:hover, .cn-scrub-pin.cn-scrub-pin-faint:focus-visible { opacity: 1; }
 .cn-scrub-pin svg { display: block; width: 18px; height: 24px; filter: drop-shadow(0 1px 1px rgba(0,0,0,.5)); }
 .ytp-big-mode .cn-scrub-pin svg { width: 22px; height: 29px; }
 `;
@@ -90,7 +90,7 @@ function pinTitle(group: TimedGroup): string {
 export function ScrubberPins({ groups, openClaimId, video, player, onPinClick }: {
   groups: TimedGroup[];
   /** The claim whose card is on screen. Its pin shows at full strength even
-   *  when the claim is collapsed. */
+   *  when the claim is faint. */
   openClaimId: string | null;
   video: HTMLVideoElement;
   player: HTMLElement;
@@ -146,7 +146,7 @@ export function ScrubberPins({ groups, openClaimId, video, player, onPinClick }:
     groups.map((group) => (
       <button
         key={group.claimId}
-        className={group.collapsed && group.claimId !== openClaimId ? "cn-scrub-pin cn-scrub-pin-collapsed" : "cn-scrub-pin"}
+        className={group.display === "faint" && group.claimId !== openClaimId ? "cn-scrub-pin cn-scrub-pin-faint" : "cn-scrub-pin"}
         style={{ left: `${(group.startSeconds / duration) * 100}%`, background: "none", border: "none", padding: 0 }}
         title={pinTitle(group)}
         aria-label="Jump to this Common Note"

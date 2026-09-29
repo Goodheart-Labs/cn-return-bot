@@ -149,9 +149,8 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     if (!inlineUi.shadowHost.isConnected) inlineUi.mount();
     const container = findContainer();
     const anchored = anchorGroups(container, claimGroups(noteSet, display));
-    // A collapsed claim gets only its faint marker, so its passage stays
-    // untinted.
-    applyHighlights(anchored.filter((g) => !g.collapsed).map((g) => g.range));
+    // A faint claim gets only its pale marker, so its passage stays untinted.
+    applyHighlights(anchored.filter((g) => g.display !== "faint").map((g) => g.range));
     reactRoot?.render(
       <QueryClientProvider client={queryClient}>
         <PillPaletteFromSettings>

@@ -26,12 +26,13 @@ const STATUS_ROWS: { status: NoteStatus; label: string }[] = [
 ];
 
 const DISPLAY_OPTIONS: { value: NoteDisplay; label: string }[] = [
-  { value: "show", label: "Show" },
-  { value: "collapse", label: "Collapse" },
-  { value: "hide", label: "Hide" },
+  { value: "open", label: "Open" },
+  { value: "collapse", label: "Collapsed" },
+  { value: "faint", label: "Faint" },
+  { value: "hide", label: "Hidden" },
 ];
 
-/** One group per note status, each with the three display choices as radio
+/** One group per note status, each with the four display choices as radio
  *  buttons, like the other radio choices on the settings page. */
 export function NoteDisplayChoices({ display, onChange }: {
   display: NoteDisplaySettings;
@@ -40,7 +41,8 @@ export function NoteDisplayChoices({ display, onChange }: {
   return (
     <div className="space-y-3">
       <p className="text-sm text-fg-secondary">
-        How notes appear on the page. A collapsed note shows only a small, faint marker, and opens when you click it.
+        How notes appear on the page. Open notes show beside the text, or over a video when it reaches them. Collapsed notes show a
+        dot you click to open. Faint notes show a pale dot.
       </p>
       {STATUS_ROWS.map(({ status, label }) => (
         <fieldset key={status} className="space-y-1">

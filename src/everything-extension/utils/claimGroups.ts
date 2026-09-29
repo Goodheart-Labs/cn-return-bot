@@ -5,7 +5,7 @@ import { noteStatus, originalsFirst, type NoteStatus } from "@cn/core/noteScore"
 import type { ClaimRef, NnnRow, NoteRow } from "@cn/core/types";
 import { noteSetOf, type NoteSet } from "@cn/features/notes/noteSet";
 import { queryKeys } from "@cn/features/query/queryKeys";
-import type { NoteDisplaySettings } from "./settings";
+import type { NoteDisplay, NoteDisplaySettings } from "./settings";
 
 /** The query for one page's notes and the note-not-needed entries on their
  *  claims. The overlays read it from the shared query cache, so a vote or a
@@ -21,21 +21,25 @@ export const itemNoteSetQuery = (itemId: string) =>
 
 /** The notes on one claim with the original first, and that claim's
  *  note-not-needed entries. `status` is the best status among those notes,
- *  which is the colour the claim's marker draws in. `collapsed` is true when
- *  every one of the notes is set to collapse, so the claim gets only a faint
- *  marker. */
+ *  which is the colour the claim's marker draws in. `display` is the most
+ *  prominent display choice among them, which decides how the claim shows:
+ *  a claim with one open note is open. Never "hide", because a claim whose
+ *  notes are all hidden is left out. */
 export type ClaimGroup = {
   claimId: string;
   claim: ClaimRef;
   notes: NoteRow[];
   nnn: NnnRow[];
   status: NoteStatus;
-  collapsed: boolean;
+  display: Exclude<NoteDisplay, "hide">;
 };
 
 /** Statuses from best to worst. A claim holding a helpful note is marked as
  *  helpful, even when a second note on it still needs ratings. */
 const STATUS_RANK: NoteStatus[] = ["helpful", "needs_ratings", "not_helpful"];
+
+/** Display choices from most to least prominent. */
+const DISPLAY_RANK = ["open", "collapse", "faint"] as const;
 
 /** The claims of a page that have at least one note the reader has not
  *  hidden, each with those notes, original first. */
@@ -47,13 +51,14 @@ export function claimGroups({ notes, nnn }: NoteSet, display: NoteDisplaySetting
   }
   return [...byClaim].map(([claimId, claimNotes]) => {
     const statuses = claimNotes.map(noteStatus);
+    const displays = statuses.map((status) => display[status]);
     return {
       claimId,
       claim: claimNotes[0]!.claim,
       notes: claimNotes.sort(originalsFirst),
       nnn: [...nnn.values()].filter((e) => e.claim_id === claimId),
       status: STATUS_RANK.find((status) => statuses.includes(status))!,
-      collapsed: statuses.every((status) => display[status] === "collapse"),
+      display: DISPLAY_RANK.find((level) => displays.includes(level))!,
     };
   });
 }

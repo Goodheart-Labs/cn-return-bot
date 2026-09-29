@@ -203,9 +203,7 @@ export function SettingsApp() {
         </Section>
 
         <Section title="Feedback">
-          <p className="text-sm text-fg-secondary">
-            Common Notes is new, and we want to hear what works for you and what doesn't.
-          </p>
+          <p className="text-sm text-fg-secondary">We would appreciate feedback.</p>
           <a href={FEEDBACK_FORM_URL} target="_blank" rel="noreferrer" className={cn(buttonVariants({ variant: "link" }), "block text-sm")}>
             Send us feedback
           </a>

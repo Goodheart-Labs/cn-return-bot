@@ -19,8 +19,13 @@ describe("updateSettings", () => {
 });
 
 describe("note display", () => {
-  test("only helpful notes show in full by default", async () => {
-    expect(await getNoteDisplay()).toEqual({ helpful: "show", needs_ratings: "collapse", not_helpful: "collapse" });
+  test("helpful notes are open, notes needing ratings collapsed and unhelpful ones faint by default", async () => {
+    expect(await getNoteDisplay()).toEqual({ helpful: "open", needs_ratings: "collapse", not_helpful: "faint" });
+  });
+
+  test("a stored choice that no longer exists falls back to the default", async () => {
+    await browser.storage.sync.set({ "cn:noteDisplay": { helpful: "show", not_helpful: "hide" } });
+    expect(await getNoteDisplay()).toEqual({ helpful: "open", needs_ratings: "collapse", not_helpful: "hide" });
   });
 
   test("a change stores only the status it names", async () => {

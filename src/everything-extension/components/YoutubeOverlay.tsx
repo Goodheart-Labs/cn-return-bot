@@ -112,9 +112,10 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
   // claim's window: leave the passage and come back, and the note shows
   // again. Nothing removes a note for the rest of the video.
   const hushed = useRef<string | null>(null);
-  // A collapsed claim's card never pops up on its own. It shows only after the
-  // reader asked for it, by clicking its pin or with Next note, and that
-  // request lasts while playback stays inside the claim's window.
+  // Only an open claim's card pops up on its own during playback. A collapsed
+  // or faint claim's card shows only after the reader asked for it, by
+  // clicking its pin or with the note count, and that request lasts while
+  // playback stays inside the claim's window.
   const summoned = useRef<string | null>(null);
   const hovered = useRef(false);
   const inWindow = useRef(false);
@@ -163,7 +164,7 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
       const inClaimWindow = (g: TimedGroup) => t >= g.startSeconds && t <= g.endSeconds + TRAILING_GRACE_SECONDS;
       const summonedGroup = groups.find((g) => g.claimId === summoned.current);
       if (summonedGroup && !inClaimWindow(summonedGroup)) summoned.current = null;
-      const hit = groups.find((g) => inClaimWindow(g) && (!g.collapsed || g.claimId === summoned.current));
+      const hit = groups.find((g) => inClaimWindow(g) && (g.display === "open" || g.claimId === summoned.current));
       inWindow.current = !!hit;
       // A claim hushed by an outside click stays hidden while playback is
       // still inside its window. Once the window is left, the hush ends, so
@@ -206,8 +207,8 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
     document.addEventListener("click", onClick);
     return () => document.removeEventListener("click", onClick);
   }, [group]);
-  // Clicking a pin is explicit intent, so we undo any hiding, summon a
-  // collapsed claim, and seek into the claim's window. The resulting
+  // Clicking a pin is explicit intent, so we undo any hiding, summon a claim
+  // that does not pop up on its own, and seek into the claim's window. The resulting
   // timeupdate shows the card.
   const jumpToPin = useCallback((target: TimedGroup) => {
     if (hushed.current === target.claimId) hushed.current = null;
@@ -215,8 +216,8 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
     seek(video, target.startSeconds + 0.01);
   }, [video]);
 
-  // The popup's jump button, the request progress card and the Next note
-  // button on the card bring the player on screen and step through the claims
+  // The popup's jump button, the request progress card and the note count on
+  // the card bring the player on screen and step through the claims
   // in time order, wrapping around at the end. This is the same as clicking
   // their pins. A jump goes to the claim after the one on screen, or, with no
   // card up, to the claim after the last one a jump reached. That cursor lives

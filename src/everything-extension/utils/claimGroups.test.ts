@@ -27,16 +27,18 @@ function note(id: string, claimId: string, status: keyof typeof TALLIES): NoteRo
 const groupsOf = (notes: NoteRow[], display = DEFAULT_NOTE_DISPLAY) => claimGroups(noteSetOf(notes, []), display);
 
 describe("claimGroups", () => {
-  test("a claim takes the best status among its notes and is not collapsed when one note shows", () => {
+  test("a claim takes the best status and the most prominent display among its notes", () => {
     const [group] = groupsOf([note("a", "c1", "not_helpful"), note("b", "c1", "helpful")]);
     expect(group!.status).toBe("helpful");
-    expect(group!.collapsed).toBe(false);
+    expect(group!.display).toBe("open");
   });
 
-  test("a claim whose notes are all collapsed is collapsed", () => {
-    const [group] = groupsOf([note("a", "c1", "needs_ratings"), note("b", "c1", "not_helpful")]);
-    expect(group!.status).toBe("needs_ratings");
-    expect(group!.collapsed).toBe(true);
+  test("by default a claim that needs ratings is collapsed and an unhelpful one is faint", () => {
+    const groups = groupsOf([note("a", "c1", "needs_ratings"), note("b", "c1", "not_helpful"), note("c", "c2", "not_helpful")]);
+    expect(groups.map((g) => [g.claimId, g.status, g.display])).toEqual([
+      ["c1", "needs_ratings", "collapse"],
+      ["c2", "not_helpful", "faint"],
+    ]);
   });
 
   test("hidden notes leave their claim, and a claim with only hidden notes disappears", () => {
