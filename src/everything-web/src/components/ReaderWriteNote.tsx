@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { ensureUser } from "@cn/core/auth";
+import { ensureUser, signedInUser } from "@cn/core/auth";
 import type { PageItem } from "@cn/core/items";
-import { supabase } from "@cn/core/supabase";
 import { useSession } from "@cn/features/auth/useSession";
 import { Composer } from "@cn/features/notes/Composer";
 import { usePostClaimWithNote } from "@cn/features/notes/useNoteWrites";
@@ -23,28 +22,18 @@ export function ReaderWriteNote({ item, anchor, onClose, onPosted }: {
 }) {
   const { session } = useSession();
   const [note, setNote] = useState("");
-  const [needLogin, setNeedLogin] = useState(false);
+  const [anonFailed, setAnonFailed] = useState(false);
   const post = usePostClaimWithNote();
 
   useEffect(() => {
-    if (session) {
-      setNeedLogin(false);
-      return;
-    }
-    let cancelled = false;
-    void ensureUser().then((user) => {
-      if (!cancelled && !user) setNeedLogin(true);
-    }).catch(() => { if (!cancelled) setNeedLogin(true); });
-    return () => { cancelled = true; };
+    if (!session) void ensureUser().then((user) => setAnonFailed(!user), () => setAnonFailed(true));
   }, [session]);
 
   const closeLogin = async () => {
-    const { data } = await supabase.auth.getSession();
-    if (data.session) setNeedLogin(false);
-    else onClose();
+    if (!(await signedInUser())) onClose();
   };
 
-  if (!session && needLogin) return <LoginModal open onClose={() => void closeLogin()} />;
+  if (!session && anonFailed) return <LoginModal open onClose={() => void closeLogin()} />;
 
   return (
     <Modal title="Add a note" onClose={onClose} widthClassName="max-w-[35rem]">
