@@ -16,7 +16,7 @@
 import { fetchAllTopPosts, replaceFeedTopPosts, stampTopPostsAttempt, type TopPostRow } from "./db";
 import type { RankedCreator } from "./creatorRanking";
 import { fetchTopArchivePosts } from "./sources/substack";
-import { fetchChannelTopVideos } from "./sources/youtubeDataApi";
+import { fetchChannelTopVideos } from "../pipeline/media/youtubeDataApi";
 
 const TOP_POSTS_PER_FEED = 5;
 const REFRESH_AGE_DAYS = 7;

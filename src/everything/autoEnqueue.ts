@@ -75,7 +75,7 @@ import type { FeedType } from "./feedUrls";
 import { fixedRow, groupClose, groupOpen, tally } from "./logFormat";
 import { fetchAuthorPosts } from "./sources/lesswrong";
 import { fetchFeedPosts, fetchPostBodyText, htmlToText } from "./sources/substack";
-import { fetchChannelUploads } from "./sources/youtubeDataApi";
+import { fetchChannelUploads } from "../pipeline/media/youtubeDataApi";
 import { loadTopPosts } from "./topPosts";
 import type { SourceKind } from "./types";
 

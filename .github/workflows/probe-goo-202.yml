@@ -12,6 +12,7 @@ jobs:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      YOUTUBE_DATA_V3_API_KEY: ${{ secrets.YOUTUBE_DATA_V3_API_KEY }}
       YTDLP_PROXY_URL: ${{ secrets.YTDLP_PROXY_URL }}
     steps:
       - uses: actions/checkout@v4
@@ -19,9 +20,7 @@ jobs:
         with:
           bun-version: latest
       - run: bun install
-      - name: Install FFmpeg and yt-dlp
-        run: |
-          sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
-          pipx install yt-dlp
-          yt-dlp --version
+      - uses: ./.github/actions/setup-youtube-captions
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
       - run: bun run src/scripts_jim/2026_09_29_youtube_frames_only/probe.ts
