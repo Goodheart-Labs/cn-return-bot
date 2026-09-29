@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { browser } from "#imports";
 import { createPortal } from "react-dom";
 import type { PageItem } from "@cn/core/items";
-import { noteStatus } from "@cn/core/noteScore";
 import { statusColorClass, statusLabel } from "@cn/features/notes/NoteBox";
 import { cardVariants } from "@cn/ui/Card";
 import { cn } from "@cn/ui/cn";
@@ -93,11 +92,10 @@ function relRect(range: Range, origin: DOMRect) {
 
 
 /** What a marker is called for a screen reader and in its tooltip: how many
- *  notes the passage has and how the first of them is rated. */
+ *  notes the passage has and the status its colour shows. */
 function markerLabel(group: ClaimGroup): string {
-  const first = group.notes[0];
   const count = group.notes.length === 1 ? "Common Note" : `${group.notes.length} Common Notes`;
-  return first ? `${count} on this passage, ${statusLabel(noteStatus(first)).toLowerCase()}` : `${count} on this passage`;
+  return `${count} on this passage, ${statusLabel(group.status).toLowerCase()}`;
 }
 
 /** The markers are real buttons, so they are reachable with Tab and show the
@@ -351,14 +349,22 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
   // that "next" keeps its place when the popup is closed and opened again. It
   // resets when the page does.
   const jumpCursor = useRef(-1);
+  const scrollToOpenedClaim = useRef(false);
   const jumpNext = useCallback(() => {
     if (!ordered.length) return;
     const from = openIndex >= 0 ? openIndex : jumpCursor.current;
     jumpCursor.current = (from + 1) % ordered.length;
-    const target = ordered[jumpCursor.current]!;
-    target.range.startContainer.parentElement?.scrollIntoView({ behavior: "smooth", block: "center" });
-    setOpenClaim(target.claimId);
+    scrollToOpenedClaim.current = true;
+    setOpenClaim(ordered[jumpCursor.current]!.claimId);
   }, [ordered, openIndex]);
+  // The scroll to a jumped-to passage runs after React has put its note on
+  // screen. React restores the page's scroll positions while it updates the
+  // page, and that cancels a smooth scroll started before the update.
+  useEffect(() => {
+    if (!scrollToOpenedClaim.current) return;
+    scrollToOpenedClaim.current = false;
+    ordered[openIndex]?.range.startContainer.parentElement?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [openClaim, ordered, openIndex]);
 
   // Handles the two requests that arrive from elsewhere in the extension. The
   // popup asks to jump to the next note. The background's context menu asks to

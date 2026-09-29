@@ -87,8 +87,11 @@ function pinTitle(group: TimedGroup): string {
  *  in percent resolves against the bar however the bar itself is positioned. A
  *  MutationObserver puts the strip back whenever YouTube rebuilds its control
  *  DOM. Clicking a pin seeks the video to the start of that claim. */
-export function ScrubberPins({ groups, video, player, onPinClick }: {
+export function ScrubberPins({ groups, openClaimId, video, player, onPinClick }: {
   groups: TimedGroup[];
+  /** The claim whose card is on screen. Its pin shows at full strength even
+   *  when the claim is collapsed. */
+  openClaimId: string | null;
   video: HTMLVideoElement;
   player: HTMLElement;
   onPinClick: (group: TimedGroup) => void;
@@ -143,7 +146,7 @@ export function ScrubberPins({ groups, video, player, onPinClick }: {
     groups.map((group) => (
       <button
         key={group.claimId}
-        className={group.collapsed ? "cn-scrub-pin cn-scrub-pin-collapsed" : "cn-scrub-pin"}
+        className={group.collapsed && group.claimId !== openClaimId ? "cn-scrub-pin cn-scrub-pin-collapsed" : "cn-scrub-pin"}
         style={{ left: `${(group.startSeconds / duration) * 100}%`, background: "none", border: "none", padding: 0 }}
         title={pinTitle(group)}
         aria-label="Jump to this Common Note"

@@ -223,14 +223,23 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
   // here so that "next" keeps its place when the popup is closed and reopened.
   // It resets when the page reloads.
   const jumpCursor = useRef(-1);
+  const scrollToPlayer = useRef(false);
   const displayedIndex = groups.findIndex((g) => g.claimId === displayed);
   const jumpNext = useCallback(() => {
     if (!groups.length) return;
     const from = displayedIndex >= 0 ? displayedIndex : jumpCursor.current;
     jumpCursor.current = (from + 1) % groups.length;
-    video.scrollIntoView({ behavior: "smooth", block: "center" });
+    scrollToPlayer.current = true;
     jumpToPin(groups[jumpCursor.current]!);
-  }, [groups, displayedIndex, video, jumpToPin]);
+  }, [groups, displayedIndex, jumpToPin]);
+  // The scroll to the player runs once the jumped-to card is on screen.
+  // React restores the page's scroll positions while it updates the page, and
+  // that cancels a smooth scroll started before the update.
+  useEffect(() => {
+    if (!scrollToPlayer.current || !displayed) return;
+    scrollToPlayer.current = false;
+    video.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [displayed, video]);
   useEffect(() => {
     const listener = (message: unknown, _sender: unknown, sendResponse: (response?: unknown) => void) => {
       const type = (message as { type?: string })?.type;
@@ -258,7 +267,7 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
 
   return (
     <div className="pointer-events-auto text-left">
-      <ScrubberPins groups={groups} video={video} player={player} onPinClick={jumpToPin} />
+      <ScrubberPins groups={groups} openClaimId={displayed} video={video} player={player} onPinClick={jumpToPin} />
       {group && (
         <FloatingWindow
           // A new claim gets a fresh card, which opens where the reader left
