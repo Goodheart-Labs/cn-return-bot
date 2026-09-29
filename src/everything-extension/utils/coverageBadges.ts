@@ -278,9 +278,13 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
     // only-while-the-path-matches guard: after a client-side navigation back
     // to the front page, Substack leaves the previous post's canonical tag in
     // the head, and trusting it raw suppressed exactly that post's badge.
+    // The current address is never translated like a reader link. A reader
+    // page such as substack.com/@author/note/p-<id> shows the post as a card
+    // with replies under it, not as the article. That card is the only place
+    // the page can say the post was checked, so it must keep its badge.
     const currentKeys = new Set<string>();
     for (const href of [location.href, normalizePageUrl(location.href, document)]) {
-      const key = keyFor(href);
+      const key = pageKey(href);
       if (key) currentKeys.add(key);
     }
     for (const anchor of document.querySelectorAll<HTMLAnchorElement>("a[href]")) placeBadge(anchor, currentKeys);
