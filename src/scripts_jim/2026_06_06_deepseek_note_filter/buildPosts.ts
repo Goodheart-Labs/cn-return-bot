@@ -11,7 +11,7 @@ import "dotenv/config";
 import { readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 import { getSupabaseClient } from "../../api/supabaseClient";
-import { fetchInBatches } from "../../api/paging";
+import { fetchInBatches } from "../../everything-core/paging";
 import type { Post } from "../../api/fetchEligiblePosts";
 
 interface DatasetRow {
@@ -29,6 +29,7 @@ async function main() {
   const rows = await fetchInBatches<{ id: string; tweet_id: string; logs: any }>(
     (chunk) => client.from("pipeline_runs").select("id, tweet_id, logs").in("id", chunk),
     runIds,
+    "id",
     { label: "buildPosts.logs" },
   );
   const byId = new Map(rows.map((r) => [r.id, r]));

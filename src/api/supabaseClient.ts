@@ -1,5 +1,5 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
-import { fetchAllRows as fetchAllRowsShared } from "./paging";
+import { fetchAllRows as fetchAllRowsShared } from "../everything-core/paging";
 import type { Post } from "./fetchEligiblePosts";
 import type { FeedSize } from "../pipeline/orchestration/utils/feedSizeStrategy";
 import { NOTE_RATER_SCORE_TYPE } from "../pipeline/prompts/noteRater";
@@ -199,7 +199,7 @@ export class SupabaseLogger {
 
   /**
    * Fetches every row that matches `buildQuery()`. The paging itself is done by
-   * the shared keyset paginator in src/api/paging.ts. The caller must supply a
+   * the shared keyset paginator in src/everything-core/paging.ts. The caller must supply a
    * `keyCol` that is unique and indexed. That is usually the table's primary
    * key.
    */
