@@ -20,6 +20,7 @@
  */
 
 import "dotenv/config";
+import { consumeDirectedNoteRequest } from "./directedNoteRequest";
 import { extractYoutubeVideoId } from "../everything-core/pageUrls";
 import { WEB_PROJECT_SLUG } from "../everything-core/projects";
 import { group } from "./logFormat";
@@ -60,6 +61,7 @@ export type NoteRequestOutcome = {
  *  underneath it. */
 export async function consumeNoteRequest(request: NoteRequestRow): Promise<NoteRequestOutcome> {
   const existing = await findItemForPageUrl(request.page_url);
+  if (existing && (request.steer || request.passage_question_id)) return consumeDirectedNoteRequest(request, existing);
   if (existing) {
     // Only a finished whole-page check refuses the request. An item that
     // exists because a reader wrote a note on the page, or because one
@@ -127,6 +129,7 @@ export async function consumeNoteRequest(request: NoteRequestRow): Promise<NoteR
     full_text: fullText,
     priority: QUEUE_PRIORITY.requested,
     checked_scope: request.selection ? "paragraph" : "page",
+    ...(request.steer ? { request_steer: request.steer } : {}),
   });
   await recordCaptureCost(itemId, captureCostUsd);
   await resolveNoteRequest(request.id, "enqueued", null, itemId);
