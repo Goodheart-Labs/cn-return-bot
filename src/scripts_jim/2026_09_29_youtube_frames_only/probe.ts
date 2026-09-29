@@ -6,8 +6,9 @@
  * a short and a 9-minute YouTube video (downloaded without sound, captions as
  * the transcript), two YouTube videos over 10 minutes (captions only, one of
  * them in Hindi, which tests the fallback to the video's own language), a
- * YouTube video that no longer exists, and a short Vimeo video (downloaded
- * with its sound for Whisper).
+ * YouTube video that no longer exists, and three videos from other sites: a
+ * 1-minute clip (downloaded with its sound for Whisper), a 6-minute film
+ * (pictures only, no transcript) and a 20-minute film (details only).
  *
  * The first run of this probe, on the earlier version of the fix, also showed
  * that the old format rule fails on YouTube with "Requested format is not
@@ -26,7 +27,9 @@ const CASES = [
   "https://www.youtube.com/watch?v=JvrpiccxCEs",
   "https://www.youtube.com/watch?v=402hOvSZ7tA",
   "https://www.youtube.com/watch?v=d_M5U8C2D8Y",
-  "https://vimeo.com/76979871",
+  "https://commons.wikimedia.org/wiki/File:Folgers.ogv",
+  "https://archive.org/details/Popeye_forPresident",
+  "https://archive.org/details/CC_1916_09_04_TheCount",
 ];
 
 function summarize(media: MediaSourceDescription): string {
