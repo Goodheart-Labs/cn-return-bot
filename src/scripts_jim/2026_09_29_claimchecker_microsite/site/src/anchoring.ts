@@ -6,7 +6,7 @@ import type { LabClaim } from "../../labRun";
 export type Anchor = { kind: "text"; range: Range } | { kind: "image"; image: HTMLImageElement };
 
 /** The tint a claim gets, which is also its category in the legend. */
-export type Tint = "lab-note" | "lab-no-note" | "lab-skipped" | "lab-error";
+export type Tint = "lab-note" | "lab-no-note" | "lab-to-check" | "lab-skipped" | "lab-error";
 export const SELECTED_TINT = "lab-selected";
 
 export function tintOf(claim: LabClaim): Tint {
@@ -16,6 +16,8 @@ export function tintOf(claim: LabClaim): Tint {
       return "lab-no-note";
     case "error":
       return "lab-error";
+    case "check_skipped":
+      return "lab-to-check";
     default:
       return "lab-skipped";
   }

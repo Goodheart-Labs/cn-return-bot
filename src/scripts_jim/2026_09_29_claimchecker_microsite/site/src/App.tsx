@@ -8,6 +8,7 @@ import { seedSourceDetails, useArticle, useRun, useRunIndex } from "./data";
 const LEGEND: { tint: Tint; label: string }[] = [
   { tint: "lab-note", label: "Has a note" },
   { tint: "lab-no-note", label: "Checked, no note" },
+  { tint: "lab-to-check", label: "Would be checked" },
   { tint: "lab-skipped", label: "Not checked" },
   { tint: "lab-error", label: "Check failed" },
 ];
@@ -42,9 +43,16 @@ function RunSummary({ run }: { run: LabRun }) {
         {run.basedOn && ` Reuses the ${run.basedOn.reused.join(" and ")} of run ${run.basedOn.runId}.`}
         {run.commit && ` Code at ${run.commit}.`}
       </p>
+      {run.settings && (
+        <p>
+          Extraction and rating on {run.settings.model}, reasoning {run.settings.reasoning}.
+          {!run.settings.checks && " No claims were checked in this run."}
+        </p>
+      )}
       <p>
         {run.claims.length} claims. {notes.length - readerNotes} AI notes
         {readerNotes > 0 && ` and ${readerNotes} reader notes`} on {count("lab-note")} claims. {count("lab-no-note")} checked without a note,{" "}
+        {count("lab-to-check") > 0 && `${count("lab-to-check")} would be checked, `}
         {count("lab-skipped")} not checked, {count("lab-error")} failed.
       </p>
     </div>
@@ -58,6 +66,11 @@ export function App() {
   const [runId, selectRun] = useSelectedRunId(index.data);
   const run = useRun(runId);
   const [showAll, setShowAll] = useState(false);
+  // A run without checks has no notes, so its claims are the only thing to see.
+  const runWithoutChecks = run.data?.settings?.checks === false;
+  useEffect(() => {
+    if (runWithoutChecks) setShowAll(true);
+  }, [runWithoutChecks]);
 
   // The note cards read their source quotes from the cache, so the cache is
   // filled before the run renders.

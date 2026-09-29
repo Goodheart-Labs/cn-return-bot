@@ -5,7 +5,7 @@ import { ClaimCard } from "./ClaimCard";
 
 /** The vertical space between two stacked margin cards, in pixels. */
 const CARD_GAP = 12;
-const ALL_TINTS: Tint[] = ["lab-note", "lab-no-note", "lab-skipped", "lab-error"];
+const ALL_TINTS: Tint[] = ["lab-note", "lab-no-note", "lab-to-check", "lab-skipped", "lab-error"];
 
 /** The article's own markup. It is memoised so React never rewrites the
  *  markup after the first render, because the anchors point into its nodes. */

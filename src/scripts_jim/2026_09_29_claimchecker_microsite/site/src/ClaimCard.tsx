@@ -12,6 +12,7 @@ const OUTCOME_LABEL: Record<LabClaim["outcome"]["type"], string> = {
   skipped: "Not checked, rated true enough",
   error: "Check failed",
   unchecked: "Never checked",
+  check_skipped: "Worth checking, but this run did no checks",
 };
 
 const money = (usd: number) => `$${usd.toFixed(3)}`;

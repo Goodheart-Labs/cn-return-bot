@@ -15,9 +15,13 @@
  * code that changed, not from chance in the steps that did not.
  *
  *   bun run src/scripts_jim/2026_09_29_claimchecker_microsite/runPipeline.ts --label "<what changed>"
- *       [--from <run id> --reuse extraction|rating] [--limit <n>]
+ *       [--from <run id> --reuse extraction|rating] [--limit <n>] [--no-checks]
+ *       [--model anthropic/<model> --reasoning low|medium|high]
  *
- *   --limit <n>  checks only the first n claims worth checking, for a cheap smoke test
+ *   --limit <n>    checks only the first n claims worth checking, for a cheap smoke test
+ *   --no-checks    stops after rating; claims worth checking are marked as such
+ *   --model <id>   runs the gate, extraction and rating on a Claude model with
+ *                  Claude's own search and fetch tools, instead of production's Muse
  */
 
 import "dotenv/config";
@@ -27,6 +31,7 @@ import { join } from "path";
 import PQueue from "p-queue";
 import { buildClaimPost, runClaimCheck } from "../../everything/pipeline/checkClaims";
 import { extractClaims } from "../../everything/pipeline/extractClaims";
+import { claudeExtractionModels, extractionModels, withExtractionModels } from "../../everything/pipeline/model";
 import { freshClaimsPerPart, rateParts } from "../../everything/pipeline/processContent";
 import { rateClaims, shouldFactCheck } from "../../everything/pipeline/rateClaims";
 import type { ExtractionResult, FetchedContent, RatedClaim } from "../../everything/types";
@@ -68,7 +73,11 @@ function parseArgs() {
   if (reuse && reuse !== "extraction" && reuse !== "rating") throw new Error("--reuse takes extraction or rating");
   if (!!from !== !!reuse) throw new Error("--from and --reuse go together");
   const limit = valueOf("--limit");
-  return { label, from, reuse, limit: limit === undefined ? Infinity : Number(limit) };
+  const model = valueOf("--model");
+  if (model && !model.startsWith("anthropic/")) throw new Error("--model only knows Claude models so far, for example anthropic/claude-sonnet-5.5");
+  const reasoning = (valueOf("--reasoning") ?? "medium") as "low" | "medium" | "high";
+  const models = model ? claudeExtractionModels(model, reasoning) : null;
+  return { label, from, reuse, models, checks: !args.includes("--no-checks"), limit: limit === undefined ? Infinity : Number(limit) };
 }
 
 /** A run id sorts by time and reads as one: 2026-09-29-1147. */
@@ -173,6 +182,12 @@ async function checkClaim(claim: PartClaim, index: number, runId: string, publis
 
 async function runChecks(rated: PartClaim[], runId: string, publishedAt: string | undefined, limit: number): Promise<LabClaim[]> {
   const toCheck = rated.filter((c) => shouldFactCheck(c.judgement)).slice(0, limit);
+  if (limit === 0) {
+    console.log(`Skipping the checks of ${toCheck.length} claims`);
+    return rated.map((claim, index) =>
+      shouldFactCheck(claim.judgement) ? { ...unchecked(claim, index, runId), outcome: { type: "check_skipped" } } : skipped(claim, index, runId),
+    );
+  }
   console.log(`Checking ${toCheck.length} of ${rated.length} claims`);
   const queue = new PQueue({ concurrency: CHECK_CONCURRENCY });
   let done = 0;
@@ -193,7 +208,9 @@ async function main() {
   // The local OPENROUTER_API_KEY is dead. The testing key works, and the
   // pipeline reads the key only when it makes its first call.
   if (process.env.OPENROUTER_TESTING_KEY) process.env.OPENROUTER_API_KEY = process.env.OPENROUTER_TESTING_KEY;
-  const { label, from, reuse, limit } = parseArgs();
+  const { label, from, reuse, models, checks, limit } = parseArgs();
+  // Production's models unless --model names another one.
+  const withModels = <T>(fn: () => Promise<T>) => (models ? withExtractionModels(models, fn) : fn());
   const runId = newRunId();
   const commit = currentCommit();
   const article = readArticle();
@@ -208,13 +225,13 @@ async function main() {
   const earlier: RunStages | null = from ? JSON.parse(readFileSync(stagesPath(from), "utf8")) : null;
   console.log(`Run ${runId} "${label}"${from ? `, reusing the ${reuse} of ${from}` : ""}`);
 
-  const extracted = earlier ? { extraction: earlier.extraction, extractionCostUsd: earlier.extractionCostUsd } : await runExtraction(content);
+  const extracted = earlier ? { extraction: earlier.extraction, extractionCostUsd: earlier.extractionCostUsd } : await withModels(() => runExtraction(content));
   saveStages(runId, extracted);
   if (reuse === "rating" && !earlier?.rated) throw new Error(`Run ${from} has no saved rating to reuse`);
-  const rating = reuse === "rating" ? { rated: earlier!.rated!, ratingCostUsd: earlier!.ratingCostUsd ?? null } : await runRating(extracted.extraction);
+  const rating = reuse === "rating" ? { rated: earlier!.rated!, ratingCostUsd: earlier!.ratingCostUsd ?? null } : await withModels(() => runRating(extracted.extraction));
   saveStages(runId, { ...extracted, ...rating });
 
-  const claims = await runChecks(rating.rated, runId, content.publishedAt, limit);
+  const claims = await runChecks(rating.rated, runId, content.publishedAt, checks ? limit : 0);
   const checkCosts = claims.map((c) => c.checkCostUsd).filter((cost): cost is number => cost !== null);
   const run: LabRun = {
     id: runId,
@@ -223,6 +240,11 @@ async function main() {
     source: "local",
     commit,
     basedOn: from && reuse ? { runId: from, reused: reuse === "rating" ? ["extraction", "rating"] : ["extraction"] } : null,
+    settings: {
+      model: (models ?? extractionModels()).model,
+      reasoning: models ? `${models.reasoning.rating} everywhere` : "production's (high for extraction, medium for rating)",
+      checks,
+    },
     costUsd: {
       extraction: extracted.extractionCostUsd,
       rating: rating.ratingCostUsd,

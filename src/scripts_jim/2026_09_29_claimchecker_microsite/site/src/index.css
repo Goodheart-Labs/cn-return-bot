@@ -29,12 +29,14 @@ h1 { font-size: 2rem; line-height: 1.25; }
 :root {
   --lab-note: rgba(250, 204, 21, 0.38);
   --lab-no-note: rgba(59, 130, 246, 0.22);
+  --lab-to-check: rgba(168, 85, 247, 0.25);
   --lab-skipped: rgba(156, 163, 175, 0.28);
   --lab-error: rgba(239, 68, 68, 0.3);
   --lab-selected: rgba(234, 88, 12, 0.45);
 }
 ::highlight(lab-note) { background-color: var(--lab-note); }
 ::highlight(lab-no-note) { background-color: var(--lab-no-note); }
+::highlight(lab-to-check) { background-color: var(--lab-to-check); }
 ::highlight(lab-skipped) { background-color: var(--lab-skipped); }
 ::highlight(lab-error) { background-color: var(--lab-error); }
 ::highlight(lab-selected) { background-color: var(--lab-selected); }

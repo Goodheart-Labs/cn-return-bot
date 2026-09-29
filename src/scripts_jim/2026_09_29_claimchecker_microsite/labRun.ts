@@ -28,7 +28,9 @@ export type ClaimOutcome =
   | { type: "no_note"; reason: string }
   | { type: "skipped"; reason: string }
   | { type: "error"; error: string }
-  | { type: "unchecked" };
+  | { type: "unchecked" }
+  /** Rated worth checking, but the run was started without checks. */
+  | { type: "check_skipped" };
 
 export interface LabSource {
   url: string;
@@ -122,6 +124,9 @@ export interface LabRun {
   /** The earlier run whose extraction, or extraction and rating, this run
    *  started from instead of redoing them. */
   basedOn: { runId: string; reused: Stage[] } | null;
+  /** The model behind extraction and rating, their reasoning effort, and
+   *  whether the claims were checked. Production's snapshot has none. */
+  settings?: { model: string; reasoning: string; checks: boolean };
   /** What each step cost. A reused step carries the cost it had in the run
    *  it came from, so the total is what one full pass would cost. */
   costUsd: { extraction: number | null; rating: number | null; checks: number | null };
