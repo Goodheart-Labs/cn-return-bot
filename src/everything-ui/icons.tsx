@@ -3,14 +3,15 @@ import type { SVGProps } from "react";
 /* The icons the product uses. The generic ones come from Remix Icon, an open
  * icon set drawn on a 24-pixel grid, in its filled style, which suits the
  * product's friendly corners and colours better than a thin outline set. The
- * chevrons and arrows are the exception: Remix draws their filled versions as
- * solid triangles, so they come from its line style. The icons are listed
+ * chevrons are the exception: Remix draws their filled versions as solid
+ * triangles, so they come from its line style. The close icon is Remix's
+ * large cross, because its regular cross looks small beside the check. The icons are listed
  * here under names that say what they mean in Common Notes, so a component
  * asks for "the share icon" and the set can be swapped in one place. Every
  * icon takes a `size` in pixels and inherits the text colour. */
 export {
-  RiArrowDownLine as ArrowDownIcon,
-  RiArrowUpLine as ArrowUpIcon,
+  RiArrowDownFill as ArrowDownIcon,
+  RiArrowUpFill as ArrowUpIcon,
   RiCheckFill as CheckIcon,
   RiArrowLeftSLine as PreviousIcon,
   RiArrowRightSLine as ChevronIcon,
@@ -23,7 +24,7 @@ export {
   RiDoubleQuotesL as QuoteIcon,
   RiUpload2Fill as ShareIcon,
   RiDeleteBinFill as TrashIcon,
-  RiCloseFill as CloseIcon,
+  RiCloseLargeFill as CloseIcon,
 } from "@remixicon/react";
 
 /** Two notes lying on top of each other, the front one with two lines of
@@ -45,12 +46,14 @@ export function NoteStackIcon({ size = 14 }: { size?: number }) {
 
 
 /** A single wave, the mark of a "somewhat helpful" rating. It sits between the
- *  check and the cross. Remix Icon has no plain tilde, so it is drawn here as
- *  a round-capped line. */
+ *  check and the cross. Remix Icon has no plain tilde, so it is drawn here on
+ *  Remix's 24-unit grid, centred and as wide as its check. Its line is a bit
+ *  thicker than the check's 2 units, because a thin curve looks lighter than
+ *  straight strokes of the same width at the chips' 12px. */
 export function WaveIcon({ size = 24, ...props }: SVGProps<SVGSVGElement> & { size?: number }) {
   return (
-    <svg viewBox="0 0 14 14" width={size} height={size} fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" {...props}>
-      <path d="M2.5 9c1.8-2.6 3.7-2.6 5.5 0s3.7 2.6 5.5 0" />
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M4 12c2.7-3.6 5.3-3.6 8 0s5.3 3.6 8 0" />
     </svg>
   );
 }

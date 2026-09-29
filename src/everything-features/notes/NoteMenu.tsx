@@ -12,7 +12,10 @@ import { useSession } from "../auth/useSession";
 import { Composer } from "./Composer";
 import { useDeleteNote, usePostImprovement, usePostNnn } from "./useNoteWrites";
 
-const ACTION_ICON_SIZE = 16;
+/** The action icons are sized relative to the row's text, so they stay in
+ *  proportion on the website's larger text and on the extension's smaller one.
+ *  Filled icons at a fixed 16px looked heavy next to the extension's 12px text. */
+const ACTION_ICON_SIZE = "1.15em";
 
 /** On a touch screen the action links grow to a finger-sized target. */
 const TOUCH_TARGET = "[@media(pointer:coarse)]:min-h-10";
