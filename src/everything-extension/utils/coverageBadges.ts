@@ -2,7 +2,7 @@ import { browser } from "#imports";
 import { MARKER_DARK, MARKER_GLYPH_SIZE, MARKER_LIGHT, MARKER_SHADOW } from "./markerPalette";
 import type { ContentScriptContext } from "#imports";
 import { extractYoutubeVideoId, normalizePageUrl } from "@cn/core/pageUrls";
-import { GROUP_GLYPH_PATH } from "@cn/ui/icons";
+import { NOTE_STACK_GLYPH_PATH } from "@cn/ui/icons";
 import { getNotedPageStatusCounts, getWholePageCheckedUrls, trimSlash } from "./coveredPages";
 import { isPageDark } from "./pageTheme";
 import type { NoteStatus } from "@cn/core/noteScore";
@@ -83,7 +83,7 @@ function createBadge(mark: { count: number } | { checked: true }): HTMLElement {
       `color:${palette.glyph};background:${palette.body};` +
       `border:1px solid ${palette.border};`,
   );
-  const svg = `<svg viewBox="0 0 24 24" width="${MARKER_GLYPH_SIZE}" height="${MARKER_GLYPH_SIZE}" fill="currentColor" aria-hidden="true" style="flex:none"><path d="${GROUP_GLYPH_PATH}"/></svg>`;
+  const svg = `<svg viewBox="0 0 24 24" width="${MARKER_GLYPH_SIZE}" height="${MARKER_GLYPH_SIZE}" fill="currentColor" aria-hidden="true" style="flex:none"><path fill-rule="evenodd" d="${NOTE_STACK_GLYPH_PATH}"/></svg>`;
   if ("count" in mark) {
     badge.title = `${mark.count} Common ${mark.count === 1 ? "Note" : "Notes"} on this page`;
     badge.innerHTML = `${svg}${mark.count}`;

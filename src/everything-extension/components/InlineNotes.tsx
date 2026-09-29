@@ -8,7 +8,7 @@ import { cn } from "@cn/ui/cn";
 import type { ClaimGroup } from "../utils/claimGroups";
 import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
 import { setJumpHandler } from "../utils/jumpBus";
-import { CloseIcon, GroupIcon } from "@cn/ui/icons";
+import { CloseIcon, NoteStackIcon } from "@cn/ui/icons";
 import { IconButton } from "@cn/ui/IconButton";
 import { forgetClosedClaim, rememberClosedClaim } from "../utils/closedNotes";
 import { placeMarginCards } from "../utils/marginCards";
@@ -147,7 +147,7 @@ function Badge({ group, open, onClick, style, label, ref }: MarkerProps) {
         open && "ring-2 ring-focus",
       )}
     >
-      <GroupIcon />
+      <NoteStackIcon />
     </button>
   );
 }
