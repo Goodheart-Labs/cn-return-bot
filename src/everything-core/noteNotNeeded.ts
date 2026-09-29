@@ -1,3 +1,4 @@
+import { fetchAllRows, fetchInBatches } from "./paging";
 import { supabase } from "./supabase";
 import type { NnnRow } from "./types";
 import type { Vote } from "./votes";
@@ -7,30 +8,33 @@ import type { Vote } from "./votes";
 
 const asNnnRows = (rows: unknown[]) => rows as NnnRow[];
 
+const oldestFirst = (a: NnnRow, b: NnnRow) => a.created_at.localeCompare(b.created_at) || a.id.localeCompare(b.id);
+
 /** All entries on a set of claims, oldest first. The extension asks for the
  *  claims of one page at a time, so the set stays small. */
 export async function fetchNnnForClaims(claimIds: string[]): Promise<NnnRow[]> {
-  if (claimIds.length === 0) return [];
-  const { data, error } = await supabase
-    .from("everything_note_not_needed")
-    .select("*")
-    .in("claim_id", claimIds)
-    .order("created_at");
-  if (error) throw error;
-  return asNnnRows(data);
+  const entries = await fetchInBatches<NnnRow>(
+    (chunk) => supabase.from("everything_note_not_needed").select("*").in("claim_id", chunk),
+    claimIds,
+    "id",
+    { label: "nnnForClaims" },
+  );
+  return entries.sort(oldestFirst);
 }
 
 /** Every entry in one project, oldest first, scoped through the same claim
  *  and item join the project's notes use. */
 export async function fetchProjectNnn(projectId: string): Promise<NnnRow[]> {
-  const { data, error } = await supabase
-    .from("everything_note_not_needed")
-    .select("*, claim:everything_claims!inner(item:everything_items!inner(project_id))")
-    .eq("claim.item.project_id", projectId)
-    .order("created_at");
-  if (error) throw error;
+  const rows = await fetchAllRows<NnnRow & { claim: unknown }>(
+    () => supabase
+      .from("everything_note_not_needed")
+      .select("*, claim:everything_claims!inner(item:everything_items!inner(project_id))")
+      .eq("claim.item.project_id", projectId),
+    "id",
+    { label: "projectNnn" },
+  );
   // The joined claim is only there to carry the filter, so it is dropped again.
-  return asNnnRows(data.map(({ claim: _claim, ...entry }) => entry));
+  return asNnnRows(rows.map(({ claim: _claim, ...entry }) => entry)).sort(oldestFirst);
 }
 
 /** Fetches one entry by id, to pick up the counts the database trigger
@@ -63,9 +67,14 @@ export async function deleteNnn(entryId: string): Promise<void> {
 /** The signed-in user's own votes on entries. Row level security returns only
  *  their rows. */
 export async function fetchMyNnnVotes(): Promise<Map<string, Vote>> {
-  const { data, error } = await supabase.from("everything_note_not_needed_votes").select("entry_id, vote");
-  if (error) throw error;
-  return new Map(data.map((v) => [v.entry_id, v.vote as Vote]));
+  // Row level security returns only the caller's own votes, and a voter has
+  // one vote per entry, so entry_id is unique here and can carry the paging.
+  const votes = await fetchAllRows<{ entry_id: string; vote: number }>(
+    () => supabase.from("everything_note_not_needed_votes").select("entry_id, vote"),
+    "entry_id",
+    { label: "myNnnVotes" },
+  );
+  return new Map(votes.map((v) => [v.entry_id, v.vote as Vote]));
 }
 
 /** Casts a vote on an entry, or changes an existing one. A database trigger

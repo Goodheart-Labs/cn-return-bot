@@ -1,3 +1,4 @@
+import { fetchAllRows } from "./paging";
 import { supabase } from "./supabase";
 
 /** A rating on X's three-way scale: helpful, somewhat helpful, not helpful. */
@@ -11,9 +12,14 @@ export const VOTE_VALUES: readonly Vote[] = [1, 0, -1];
 /** Fetches the signed-in user's own votes on notes. Row level security returns
  *  only their rows. */
 export async function fetchMyVotes(): Promise<Map<string, Vote>> {
-  const { data, error } = await supabase.from("everything_votes").select("note_id, vote");
-  if (error) throw error;
-  return new Map(data.map((v) => [v.note_id, v.vote as Vote]));
+  // Row level security returns only the caller's own votes, and a voter has
+  // one vote per note, so note_id is unique here and can carry the paging.
+  const votes = await fetchAllRows<{ note_id: string; vote: number }>(
+    () => supabase.from("everything_votes").select("note_id, vote"),
+    "note_id",
+    { label: "myVotes" },
+  );
+  return new Map(votes.map((v) => [v.note_id, v.vote as Vote]));
 }
 
 /** Casts a vote or changes an existing one, and returns the vote row's id,
