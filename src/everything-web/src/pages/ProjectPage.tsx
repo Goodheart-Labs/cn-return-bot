@@ -56,6 +56,10 @@ function useFrozenTallies(notes: Iterable<NoteRow>): (note: NoteRow) => RankTall
   return (note) => frozen.get(note.id) ?? tallyOf(note);
 }
 
+/** When the scroll to a shared note runs, in milliseconds after its card
+ *  first renders. */
+const SCROLL_TO_NOTE_RETRIES_MS = [0, 400, 1000, 1800];
+
 /** Scrolls to a shared note once its card has rendered. It scrolls again a few
  *  times over the next two seconds, because the YouTube iframes load late and
  *  shift the layout underneath it. */
@@ -64,7 +68,7 @@ function useScrollToNote(noteId: string | null, ready: boolean) {
   useEffect(() => {
     if (done.current || !ready || !noteId || !document.getElementById(`note-${noteId}`)) return;
     done.current = true;
-    for (const ms of [0, 400, 1000, 1800]) {
+    for (const ms of SCROLL_TO_NOTE_RETRIES_MS) {
       setTimeout(() => document.getElementById(`note-${noteId}`)?.scrollIntoView({ block: "start" }), ms);
     }
   });
