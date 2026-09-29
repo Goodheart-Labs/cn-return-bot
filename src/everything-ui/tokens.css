@@ -192,7 +192,9 @@
 
   /* Shape. The corner radii follow Substack's scale, where cards take 8px and
      controls inside them take the smaller 4px step. Most of our readers meet
-     the notes on Substack, so the notes should not look rounder than the page. */
+     the notes on Substack, so the notes should not look rounder than the page.
+     Buttons, including the rating buttons, take the control radius. Only
+     true circles such as markers and avatars are fully round. */
   --cn-radius-control: 0.25rem;
   --cn-radius-card: 0.5rem;
   --cn-shadow-raised: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);

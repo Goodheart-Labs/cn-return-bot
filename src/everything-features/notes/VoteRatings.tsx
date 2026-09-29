@@ -10,7 +10,7 @@ import { PillPaletteContext } from "./pillPalette";
  * icon without a label would read as pressed if it were coloured, so they stay
  * grey until chosen in either palette. */
 const votePillVariants = cva(
-  "inline-flex items-center justify-center gap-1.5 rounded-full border font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
+  "inline-flex items-center justify-center gap-1.5 rounded-control border font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
   {
     variants: {
       size: {
