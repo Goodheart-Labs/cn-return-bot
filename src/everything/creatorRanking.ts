@@ -11,9 +11,9 @@
  * Prioritised creators come first, then everyone by attention. A creator in
  * neither set is not ranked at all, so attention that fades takes its spend
  * with it. Attention has a floor, one reader, below which a creator
- * is not walked however much money is left. Above the floor, how far down
- * the list the walk goes is decided by the budget, in autoEnqueue.ts, so more
- * money per day admits creators further down and less money raises the bar.
+ * is not walked however much money is left. Above the floor, the walk in
+ * autoEnqueue.ts goes down this list from the top and stops at the first
+ * creator with a post we have not checked.
  *
  * Both sides are needed because a creator nobody has ever checked has no row
  * anywhere. Prioritised creators are project rows; read creators are
@@ -67,10 +67,7 @@ const isOpen = (priorityUntil: string | null): boolean =>
   priorityUntil != null && Date.parse(priorityUntil) > Date.now();
 
 /** The floor: at least one reader. A creator below it is not walked at all,
- *  whatever the budget. How far down the list above the floor the walk goes is
- *  not decided here: the auto-enqueue admits creators from the top until what
- *  they publish per day fills the paced budget (see admitCreators in
- *  autoEnqueue.ts). */
+ *  whatever the budget. */
 const qualifies = (creator: RankedCreator): boolean => creator.readers >= MIN_READERS_TO_WALK_CREATOR;
 
 /** Most attention first. The primary number is readers. Different pages breaks
@@ -85,7 +82,8 @@ const byAttention = (a: RankedCreator, b: RankedCreator) =>
   a.feed_url.localeCompare(b.feed_url);
 
 /** Every creator with priority or attention, most important first. The
- *  auto-enqueue walks a prefix of this list, as far as the budget reaches. */
+ *  auto-enqueue walks this list from the top until a creator has something
+ *  unchecked. */
 export async function rankCreators(): Promise<RankedCreator[]> {
   const since = new Date(Date.now() - VISIT_RANKING_WINDOW_DAYS * 24 * 3600_000);
   const [projects, attention] = await Promise.all([

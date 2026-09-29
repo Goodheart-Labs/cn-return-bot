@@ -7,9 +7,12 @@
  * listings through yt-dlp and the residential proxy could not promise
  * (GOO-169: the listings hung on YouTube's internal API most of 2026-09-16).
  *
- * Quota: a Google Cloud project gets 10,000 units a day for free. Every list
- * call here costs one unit, whatever it returns, so a 3000-video channel scan
- * is about 120 units and a walk listing is two. Search would cost 100 a call
+ * Quota: a Google Cloud project gets 10,000 units a day for free, and they
+ * reset at 07:00 UTC. Every list call here costs one unit, whatever it
+ * returns. A channel listing is two calls: one for the playlist of uploads and
+ * one for the videos' details. A 3000-video scan for the all-time top posts is
+ * about 120. Looking up a channel's id from its handle is one more, which is
+ * why the walk stores the id (youtubeChannels.ts). Search would cost 100 a call
  * and is not used.
  *
  * The key is YOUTUBE_DATA_V3_API_KEY, a plain API key restricted to this API.
@@ -59,7 +62,26 @@ function apiKey(): string {
   return key;
 }
 
+/** The day's quota is used up. Every call fails until the reset at 07:00 UTC,
+ *  so this is a different kind of failure from one channel that will not list:
+ *  the feed run finishes its work and then fails, so the exhaustion is seen
+ *  (see autoRun.ts). */
+export class YoutubeQuotaExceededError extends Error {
+  constructor(resource: string, message: string) {
+    super(`YouTube Data API ${resource} failed (quotaExceeded): ${message}`);
+    this.name = "YoutubeQuotaExceededError";
+  }
+}
+
+/** Set by the first call that finds the quota used up. After that no call in
+ *  this process goes to Google, because each would fail the same way. */
+let quotaExceeded: YoutubeQuotaExceededError | null = null;
+
+/** Whether a call in this process found the day's quota used up. */
+export const quotaRanOutThisRun = (): boolean => quotaExceeded !== null;
+
 async function apiGet(resource: string, params: Record<string, string>): Promise<any> {
+  if (quotaExceeded) throw quotaExceeded;
   const url = new URL(`${API_ROOT}/${resource}`);
   for (const [name, value] of Object.entries({ ...params, key: apiKey() })) url.searchParams.set(name, value);
   const response = await fetch(url);
@@ -69,6 +91,7 @@ async function apiGet(resource: string, params: Record<string, string>): Promise
     // it means the day's 10,000 units are gone, not that YouTube is down.
     const reason = body?.error?.errors?.[0]?.reason;
     const message = body?.error?.message ?? `HTTP ${response.status}`;
+    if (reason === "quotaExceeded") throw (quotaExceeded = new YoutubeQuotaExceededError(resource, message));
     throw new Error(`YouTube Data API ${resource} failed${reason ? ` (${reason})` : ""}: ${message}`);
   }
   return body;
@@ -162,16 +185,14 @@ export async function fetchVideo(url: string): Promise<YoutubeVideo> {
 }
 
 /** A channel's newest long-form uploads with their details, newest first.
- *  Two or three list calls per channel. */
-export async function fetchChannelUploads(channelUrl: string, limit: number): Promise<{ channel: YoutubeChannel; videos: YoutubeVideo[] }> {
-  const channel = await resolveChannel(channelUrl);
-  const ids = await listPlaylistVideoIds(longFormUploadsPlaylist(channel.id), limit);
-  return { channel, videos: await fetchVideos(ids) };
+ *  Two list calls for up to 50 videos. */
+export async function fetchChannelUploads(channelId: string, limit: number): Promise<YoutubeVideo[]> {
+  return fetchVideos(await listPlaylistVideoIds(longFormUploadsPlaylist(channelId), limit));
 }
 
 /** A channel's `n` most viewed long-form videos, most viewed first, from a
  *  scan of its newest `scanLimit` uploads. */
-export async function fetchChannelTopVideos(channelUrl: string, n: number, scanLimit = TOP_VIDEOS_SCAN_LIMIT): Promise<{ channel: YoutubeChannel; videos: YoutubeVideo[] }> {
-  const { channel, videos } = await fetchChannelUploads(channelUrl, scanLimit);
-  return { channel, videos: videos.sort((a, b) => b.viewCount - a.viewCount).slice(0, n) };
+export async function fetchChannelTopVideos(channelId: string, n: number, scanLimit = TOP_VIDEOS_SCAN_LIMIT): Promise<YoutubeVideo[]> {
+  const videos = await fetchChannelUploads(channelId, scanLimit);
+  return videos.sort((a, b) => b.viewCount - a.viewCount).slice(0, n);
 }
