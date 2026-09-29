@@ -16,9 +16,8 @@ export const VISIT_RANKING_WINDOW_DAYS = 14;
 
 /** How many readers a creator needs before the pipeline walks them on
  *  attention alone. Below this nothing of theirs is processed however much
- *  money is left; above it the budget decides how far down the ranking the
- *  walk goes. A creator holding priority is walked whatever their readers,
- *  because someone asked for them. */
+ *  money is left. A creator holding priority is walked whatever their
+ *  readers, because someone asked for them. */
 export const MIN_READERS_TO_WALK_CREATOR = 1;
 
 /** The value a visit row carries instead of an identifier: one per browser and
