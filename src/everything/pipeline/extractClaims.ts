@@ -22,7 +22,7 @@ import { trackLlmCall, trackedLlmCreate } from "../../pipeline/cost-tracking/cos
 import { jsonSchemaResponseFormat } from "../../pipeline/prompts/responseFormat";
 import { parseJsonWithRetry } from "../../pipeline/utils/jsonLlmCall";
 import { stripJsonFences } from "../../pipeline/utils/jsonOutput";
-import type { SubtitleCue } from "../../pipeline/media/ytDlpDownload";
+import type { SubtitleCue } from "../../pipeline/media/youtubeCaptions";
 import { describeImageFromUrl, type GeminiMediaDescription } from "../../pipeline/media/mediaAnalysisGemini";
 import { IMAGE_MARKER_RE } from "../sources/substack";
 import type { ClaimAnchor, ContentPart, ExtractedClaim, ExtractionResult, FetchedContent } from "../types";

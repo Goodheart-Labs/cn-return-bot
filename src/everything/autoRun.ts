@@ -36,7 +36,7 @@ import { fetchFeedPacing, oldestPendingRequestAgeSeconds, setFeedAlarm } from ".
 import { AVATARS_PER_RUN, refreshStaleAvatars } from "./projectAvatars";
 import { ensureYtDlp } from "./sources/youtube";
 import { duration } from "./logFormat";
-import { quotaRanOutThisRun } from "./sources/youtubeDataApi";
+import { quotaRanOutThisRun } from "../pipeline/media/youtubeDataApi";
 import {
   computeNextRun,
   describeAlarm,

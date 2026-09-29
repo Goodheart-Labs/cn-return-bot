@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { contextTimeSpan } from "./extractClaims";
-import type { SubtitleCue } from "../../pipeline/media/ytDlpDownload";
+import type { SubtitleCue } from "../../pipeline/media/youtubeCaptions";
 
 /** Cues shaped like the passage that surfaced the bug (GOO-52): the video
  *  https://www.youtube.com/watch?v=koKDP6kPvvY had a noted claim whose short
