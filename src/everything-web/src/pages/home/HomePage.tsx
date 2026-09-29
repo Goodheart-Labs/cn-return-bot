@@ -127,7 +127,7 @@ export function HomePage({ showInstall, navigate }: { showInstall: boolean; navi
         <Screenshots />
       </section>
 
-      <section className="mx-auto max-w-[62ch] space-y-4 pt-20 text-left font-serif text-xl leading-relaxed text-fg-secondary sm:text-center">
+      <section className="mx-auto max-w-[62ch] space-y-4 pt-20 text-left font-serif text-xl leading-relaxed text-fg-secondary sm:text-justify sm:hyphens-auto">
         {PITCH.map((paragraph) => (
           <p key={paragraph}>{paragraph}</p>
         ))}

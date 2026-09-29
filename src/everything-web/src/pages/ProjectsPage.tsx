@@ -99,9 +99,6 @@ export function ProjectsPage({ navigate }: { navigate: (route: Route) => void })
           <p className="mt-1 max-w-xl text-base text-fg-muted">The creators we check, and the notes readers are rating on their posts and videos.</p>
         </div>
         <div className="flex items-center gap-4">
-          <RouteLink to={{ view: "leaderboard" }} navigate={navigate} className="text-sm font-medium text-link hover:underline">
-            Rating leaderboard
-          </RouteLink>
           <div role="radiogroup" aria-label="Order" className="flex rounded-control border border-line bg-surface-muted p-0.5">
             {ORDERS.map(({ id, label }) => (
               <button

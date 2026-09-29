@@ -40,6 +40,11 @@ export const browserById = (id: BrowserId): Browser => BROWSERS.find((b) => b.id
  *  they get a sentence instead of a store button. */
 export const canInstallExtensions = () => window.matchMedia("(pointer: fine)").matches;
 
+/** Whether this browser has the extension. The extension's website content
+ *  script (entrypoints/website.content.ts) marks our pages with a
+ *  data-cn-extension attribute on <html> before they draw. */
+export const extensionInstalled = () => document.documentElement.hasAttribute("data-cn-extension");
+
 /** Counts a click on a store link (migration 103). */
 export const trackStoreClick = (browser: Browser) => track("extension_store_clicked", { browser: browser.name });
 

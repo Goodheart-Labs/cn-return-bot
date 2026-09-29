@@ -3,7 +3,6 @@ import { track } from "@cn/core/analytics";
 import { creatorPlatform } from "@cn/core/projects";
 import type { FeedItemRow, FeedProjectRow, NnnRow, NoteRow } from "@cn/core/types";
 import { Button } from "@cn/ui/Button";
-import { ExternalLinkIcon } from "@cn/ui/icons";
 import { ResizablePanel } from "@cn/ui/ResizablePanel";
 import { ExtensionNudge } from "../components/ExtensionNudge";
 import { FeedNoteCard } from "../components/FeedNoteCard";
@@ -106,13 +105,24 @@ function PageHeading({ project, item, navigate }: { project: FeedProjectRow; ite
     <div className="flex min-w-0 items-center gap-3">
       <ProjectAvatar project={project} size={48} />
       <div className="min-w-0">
-        <h1 className="font-title text-2xl font-bold leading-tight text-fg text-balance">{project.name}</h1>
-        {platform && project.feed_url && (
-          <a href={project.feed_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-fg-muted hover:text-link">
-            On {platform}
-            <ExternalLinkIcon size={13} aria-hidden="true" />
-          </a>
-        )}
+        <h1 className="font-title text-2xl font-bold leading-tight text-fg text-balance">
+          {/* Like an item's title, the project's name is the link to the
+              creator's own page. It reads as a plain title and turns blue
+              under the pointer. */}
+          {project.feed_url ? (
+            <a
+              href={project.feed_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={platform ? `${project.name} on ${platform}` : undefined}
+              className="rounded-control hover:text-link focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            >
+              {project.name}
+            </a>
+          ) : (
+            project.name
+          )}
+        </h1>
       </div>
     </div>
   );
@@ -237,7 +247,7 @@ export function ProjectPage({ project, itemId, noteId, navigate }: {
         {feed}
       </main>
 
-      <ExtensionNudge />
+      <ExtensionNudge navigate={navigate} />
       <WriteNoteModal open={writeOpen} onClose={() => setWriteOpen(false)} navigate={navigate} />
     </div>
   );
