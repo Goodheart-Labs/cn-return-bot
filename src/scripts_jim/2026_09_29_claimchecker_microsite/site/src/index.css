@@ -1,0 +1,39 @@
+@import "../../../../everything-ui/tokens.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* The article keeps the post's own markup. These rules give it plain reading
+ * typography, since Substack's class names were stripped. */
+.article { font-size: 1.05rem; line-height: 1.7; }
+.article p, .article ul, .article ol, .article blockquote, .article figure { margin: 0 0 1.1em; }
+.article h2 { font-size: 1.5rem; font-weight: 700; margin: 1.6em 0 0.6em; }
+.article h3 { font-size: 1.2rem; font-weight: 700; margin: 1.4em 0 0.5em; }
+.article ul { list-style: disc; padding-left: 1.5em; }
+.article ol { list-style: decimal; padding-left: 1.5em; }
+.article blockquote { border-left: 3px solid var(--cn-line); padding-left: 1em; color: var(--cn-fg-muted); }
+.article a { color: var(--cn-link); text-decoration: underline; }
+.article img { max-width: 100%; height: auto; margin: 0 auto; border-radius: 4px; }
+.article figure > div > div { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.article figure picture { flex: 1 1 0; min-width: 0; }
+.article figcaption { font-size: 0.85rem; color: var(--cn-fg-muted); text-align: center; margin-top: 0.4em; }
+.article .footnote-content, .article [id^="footnote-"] { font-size: 0.9rem; }
+.article img.lab-image-claim { outline: 3px solid rgba(250, 204, 21, 0.9); outline-offset: 2px; }
+.article img.lab-image-selected { outline: 3px solid rgba(234, 88, 12, 0.95); }
+
+/* The tint of each kind of claim. The Custom Highlight API draws these over
+ * the text without changing the article's markup. The legend in the header
+ * reads the same variables. */
+:root {
+  --lab-note: rgba(250, 204, 21, 0.38);
+  --lab-no-note: rgba(59, 130, 246, 0.22);
+  --lab-skipped: rgba(156, 163, 175, 0.28);
+  --lab-error: rgba(239, 68, 68, 0.3);
+  --lab-selected: rgba(234, 88, 12, 0.45);
+}
+::highlight(lab-note) { background-color: var(--lab-note); }
+::highlight(lab-no-note) { background-color: var(--lab-no-note); }
+::highlight(lab-skipped) { background-color: var(--lab-skipped); }
+::highlight(lab-error) { background-color: var(--lab-error); }
+::highlight(lab-selected) { background-color: var(--lab-selected); }
