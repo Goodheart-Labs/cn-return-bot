@@ -87,7 +87,9 @@ function ProjectCard({ project, navigate }: { project: FeedProjectRow; navigate:
 export function ProjectsPage({ navigate }: { navigate: (route: Route) => void }) {
   const projects = useProjects();
   const [order, setOrder] = useOrder();
-  const shown = order === "name" ? [...(projects.data ?? [])].sort(byName) : (projects.data ?? []);
+  // A project whose items have no notes yet has nothing to show here.
+  const withNotes = (projects.data ?? []).filter((p) => p.note_count > 0);
+  const shown = order === "name" ? [...withNotes].sort(byName) : withNotes;
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-10 md:px-8">

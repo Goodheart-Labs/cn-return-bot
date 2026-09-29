@@ -17,6 +17,10 @@ export function ProjectAvatar({ project, size, className }: { project: FeedProje
         width={size}
         height={size}
         loading="lazy"
+        // The picture hosts (YouTube's in particular) throttle requests that
+        // name another site as the referrer, and they need not learn which
+        // page the reader is on, so no referrer is sent.
+        referrerPolicy="no-referrer"
         onError={() => setBroken(true)}
         className={cn(frame, "object-cover")}
         style={{ width: size, height: size }}
