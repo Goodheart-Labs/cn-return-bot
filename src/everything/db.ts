@@ -777,6 +777,73 @@ export async function stampTopPostsAttempt(feedUrl: string): Promise<void> {
   );
 }
 
+/** One upload in a YouTube channel's stored listing. */
+export interface StoredUpload {
+  videoId: string;
+  title: string;
+  /** The publish day, YYYY-MM-DD. */
+  publishedAt: string;
+  /** A premiere or stream that has not started, which cannot be checked yet. */
+  upcoming: boolean;
+}
+
+/** What the walk knows about one YouTube feed (everything_youtube_channels,
+ *  migration 107). notified_at is left out, because only the youtube-websub
+ *  Edge Function writes it and the walk only reads it. */
+export interface YoutubeChannelRow {
+  feed_url: string;
+  channel_id: string;
+  title: string;
+  uploads: StoredUpload[];
+  listed_at: string | null;
+  notified_at: string | null;
+  subscribed_at: string | null;
+}
+
+export async function fetchYoutubeChannel(feedUrl: string): Promise<YoutubeChannelRow | null> {
+  return throwOnError(
+    await getSupabaseClient()
+      .from("everything_youtube_channels")
+      .select("feed_url, channel_id, title, uploads, listed_at, notified_at, subscribed_at")
+      .eq("feed_url", feedUrl)
+      .maybeSingle(),
+  ) as YoutubeChannelRow | null;
+}
+
+/** Writes everything the walk owns on the row. notified_at is not written, so
+ *  a notification that arrives while the walk lists the channel is kept. */
+export async function saveYoutubeChannel(row: Omit<YoutubeChannelRow, "notified_at">): Promise<void> {
+  throwOnError(
+    await getSupabaseClient()
+      .from("everything_youtube_channels")
+      .upsert({
+        feed_url: row.feed_url,
+        channel_id: row.channel_id,
+        title: row.title,
+        uploads: row.uploads,
+        listed_at: row.listed_at,
+        subscribed_at: row.subscribed_at,
+      }),
+  );
+}
+
+/** How many YouTube channels the hub told us about since `notifiedSince`, and
+ *  how many we subscribed to since `subscribedSince`, which is how many hold a
+ *  live subscription. The run log prints both, so a hub that stopped sending
+ *  shows up as a zero. */
+export async function countYoutubeNotifications(notifiedSince: Date, subscribedSince: Date): Promise<{ notified: number; subscribed: number }> {
+  const db = getSupabaseClient();
+  const countSince = async (column: "notified_at" | "subscribed_at", since: Date) => {
+    const { count, error } = await db
+      .from("everything_youtube_channels")
+      .select("feed_url", { count: "exact", head: true })
+      .gte(column, since.toISOString());
+    if (error) throw new Error(`Supabase: ${error.message}`);
+    return count ?? 0;
+  };
+  return { notified: await countSince("notified_at", notifiedSince), subscribed: await countSince("subscribed_at", subscribedSince) };
+}
+
 /** One waiting item, for the queue overview the run logs. */
 export interface QueuedItemSummary {
   id: string;
