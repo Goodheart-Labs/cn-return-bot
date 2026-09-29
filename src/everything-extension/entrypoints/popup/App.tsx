@@ -383,7 +383,7 @@ function PrimaryAction({ state, counts, jumped, access }: {
 
 /** The ways to reach the team, unfolded under the footer by "Give feedback". */
 function FeedbackLinks() {
-  const links = [{ label: "Feedback form", url: FEEDBACK_FORM_URL }, ...BOOK_CALL_URLS.map(({ label, url }) => ({ label: `Book a call, ${label}`, url }))];
+  const links = [{ label: "Feedback form", url: FEEDBACK_FORM_URL }, ...BOOK_CALL_URLS.map(({ label, url }) => ({ label: `Book a call: ${label}`, url }))];
   return (
     <ul className="space-y-1">
       {links.map(({ label, url }) => (

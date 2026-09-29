@@ -8,7 +8,10 @@ import { cn } from "@cn/ui/cn";
 import type { ClaimGroup } from "../utils/claimGroups";
 import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
 import { setJumpHandler } from "../utils/jumpBus";
-import { GroupIcon } from "@cn/ui/icons";
+import { CloseIcon, GroupIcon } from "@cn/ui/icons";
+import { IconButton } from "@cn/ui/IconButton";
+import { forgetClosedClaim, rememberClosedClaim } from "../utils/closedNotes";
+import { placeMarginCards } from "../utils/marginCards";
 import { ClaimNoteStack, NOTE_POPOVER_WIDTH, type NoteNavigation } from "./ClaimNoteStack";
 import { OverlayLoginGate } from "./OverlayLoginGate";
 import { EventShield } from "./EventShield";
@@ -30,8 +33,6 @@ const VIEWPORT_MARGIN = 8; // The popover stays this many pixels from the edges.
 const MARGIN_MARKER_GAP = 24;
 const MARGIN_CARD_GAP = 8; // Pixels between a marker and its card.
 const MARGIN_CARD_WIDTH = 380;
-// Open cards that would overlap are pushed down, with this much space between.
-const MARGIN_CARD_STACK_GAP = 12;
 // Below this much usable margin the style falls back to the classic popover:
 // a cramped margin card is worse than the old overlay.
 const MARGIN_CARD_MIN_WIDTH = 300;
@@ -106,10 +107,6 @@ function markerLabel(group: ClaimGroup): string {
  *  same focus ring as every other control. */
 const MARKER_FOCUS = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus";
 
-/** A faint claim's marker: pale until the pointer or the keyboard reaches
- *  it, the same size as every other marker. */
-const FAINT_MARKER = "opacity-40 hover:opacity-100 group-hover:opacity-100 group-focus-visible:opacity-100 focus-visible:opacity-100";
-
 /** What both marker styles are drawn from. */
 interface MarkerProps {
   group: ClaimGroup;
@@ -122,8 +119,7 @@ interface MarkerProps {
 
 /** The small badge at the end of an anchored passage. It draws the community
  *  glyph in the colour of the claim's status on a surface that follows the
- *  host page's light or dark theme. A faint claim's badge is pale until the
- *  pointer reaches it. This is the classic style's marker. */
+ *  host page's light or dark theme. This is the classic style's marker. */
 function Badge({ group, open, onClick, style, label, ref }: MarkerProps) {
   return (
     <button
@@ -138,7 +134,6 @@ function Badge({ group, open, onClick, style, label, ref }: MarkerProps) {
         "absolute flex items-center justify-center rounded-full border border-line-strong bg-surface shadow-raised transition hover:scale-110",
         statusColorClass(group.status),
         MARKER_FOCUS,
-        group.display === "faint" && !open && FAINT_MARKER,
         open && "ring-2 ring-focus",
       )}
     >
@@ -150,9 +145,8 @@ function Badge({ group, open, onClick, style, label, ref }: MarkerProps) {
 /** The margin style's marker: a small dot in the colour of the claim's
  *  status, green for helpful, blue for needs more ratings and red for not
  *  helpful (Jim, 2026-09-29). It gains a soft halo when the pointer is near.
- *  A faint claim's dot is pale until the pointer reaches it. The button box
- *  stays badge-sized so the positioning and collision math is shared; the dot
- *  is drawn smaller inside it. */
+ *  The button box stays badge-sized so the positioning and collision math is
+ *  shared; the dot is drawn smaller inside it. */
 function MarginDot({ group, open, onClick, style, label, ref }: MarkerProps) {
   return (
     <button
@@ -169,7 +163,6 @@ function MarginDot({ group, open, onClick, style, label, ref }: MarkerProps) {
         className={cn(
           "h-2.5 w-2.5 rounded-full bg-current transition",
           statusColorClass(group.status),
-          group.display === "faint" && !open && FAINT_MARKER,
           !open && "group-hover:ring-4 group-hover:ring-focus-halo",
         )}
       />
@@ -229,8 +222,11 @@ function NotePopover({ group, projectSlug, navigation, style, label, takeFocus, 
       aria-label={label}
       tabIndex={-1}
       style={style}
-      className={cn(cardVariants({ elevation: "floating" }), "absolute p-4 text-left max-h-[70vh] overflow-y-auto overscroll-contain focus:outline-none")}
+      className={cn(cardVariants({ elevation: "floating" }), "absolute p-4 pr-10 text-left max-h-[70vh] overflow-y-auto overscroll-contain focus:outline-none")}
     >
+      <IconButton label="Close note" className="absolute right-2 top-2" onClick={onClose}>
+        <CloseIcon size={14} aria-hidden />
+      </IconButton>
       <OverlayLoginGate open={loginOpen} onOpenChange={setLoginOpen}>
         <ClaimNoteStack group={group} projectSlug={projectSlug} navigation={navigation} />
       </OverlayLoginGate>
@@ -238,48 +234,36 @@ function NotePopover({ group, projectSlug, navigation, style, label, takeFocus, 
   );
 }
 
-/** Which note cards are on screen. A card is open when the reader opened it,
- *  or, in the margin style, when its claim is set to open and the reader has
- *  not closed it. The reader's own choice always wins. The classic style
- *  draws its card over the text, so there only the one card the reader opened
- *  is shown. `focused` is the card the reader opened last; Escape closes it. */
-function useOpenCards(useMargin: boolean) {
-  const [choices, setChoices] = useState<ReadonlyMap<string, boolean>>(new Map());
-  const [focused, setFocused] = useState<string | null>(null);
-  const isOpen = useCallback(
-    (group: ClaimGroup) => choices.get(group.claimId) ?? (useMargin && group.display === "open"),
-    [choices, useMargin],
+/** The reader's own open and close choices on this page's cards. True means
+ *  the reader opened the card, false that they closed it, and a claim without
+ *  an entry follows its display setting. A close is remembered across visits
+ *  (utils/closedNotes.ts), so a card that opens by itself stays closed once
+ *  the reader closed it. `focused` is the card the reader opened last; Escape
+ *  closes it. */
+function useCardChoices(initiallyClosed: ReadonlySet<string>, useMargin: boolean) {
+  const [choices, setChoices] = useState<ReadonlyMap<string, boolean>>(
+    () => new Map([...initiallyClosed].map((claimId) => [claimId, false])),
   );
+  const [focused, setFocused] = useState<string | null>(null);
   const open = useCallback((claimId: string) => {
-    setChoices((prev) => (useMargin ? new Map(prev).set(claimId, true) : new Map([[claimId, true]])));
+    // The classic style draws its card over the text, so there the reader
+    // sees one card at a time.
+    setChoices((prev) => (useMargin ? new Map(prev).set(claimId, true) : new Map([...prev].filter(([, opened]) => !opened)).set(claimId, true)));
     setFocused(claimId);
+    void forgetClosedClaim(claimId);
   }, [useMargin]);
   const close = useCallback((claimId: string) => {
     setChoices((prev) => new Map(prev).set(claimId, false));
     setFocused((prev) => (prev === claimId ? null : prev));
+    void rememberClosedClaim(claimId);
   }, []);
-  /** A press on empty page surface closes every card the reader opened. Cards
-   *  that are open by default stay. */
+  /** A press on empty page surface closes every card the reader opened.
+   *  Cards that opened by themselves stay. */
   const closeOpenedByReader = useCallback(() => {
     setChoices((prev) => new Map([...prev].filter(([, opened]) => !opened)));
     setFocused(null);
   }, []);
-  return { isOpen, open, close, closeOpenedByReader, focused };
-}
-
-/** The tops of the open margin cards. Each card starts level with its
- *  passage, and a card that would overlap the one above it is pushed down
- *  below it. A card whose height is not measured yet counts as zero high
- *  until its first measurement arrives. */
-function stackMarginCards(cards: { claimId: string; passageTop: number }[], heights: ReadonlyMap<string, number>): Map<string, number> {
-  const tops = new Map<string, number>();
-  let previousBottom = -Infinity;
-  for (const { claimId, passageTop } of [...cards].sort((a, b) => a.passageTop - b.passageTop)) {
-    const top = Math.max(passageTop, previousBottom + MARGIN_CARD_STACK_GAP);
-    tops.set(claimId, top);
-    previousBottom = top + (heights.get(claimId) ?? 0);
-  }
-  return tops;
+  return { choices, open, close, closeOpenedByReader, focused };
 }
 
 /** Every badge and popover for one page. They are rendered through a portal into
@@ -288,7 +272,7 @@ function stackMarginCards(cards: { claimId: string; passageTop: number }[], heig
  *  The two pieces that are fixed to the viewport, the sign-in hint and the write
  *  modal, stay in the host element at body level. There a transform on an
  *  ancestor of the article cannot break position:fixed. */
-export function InlineNotesApp({ groups, item, container, inlineContainer, noteStyle }: {
+export function InlineNotesApp({ groups, item, container, inlineContainer, noteStyle, initiallyClosed }: {
   groups: AnchoredGroup[];
   item: PageItem;
   /** The article container the ranges live in. It is looked up again on every
@@ -301,6 +285,8 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
    *  the article; "classic" is the old badge-and-popover style. Margin falls
    *  back to classic on its own when there is no usable margin. */
   noteStyle: "margin" | "classic";
+  /** The claims whose card the reader closed on an earlier visit. */
+  initiallyClosed: ReadonlySet<string>;
 }) {
   const projectSlug = item.projectSlug;
   const [writeSelection, setWriteSelection] = useState<string | null>(null);
@@ -428,19 +414,30 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groups, layoutTick, inlineContainer, container, noteStyle]);
 
-  const cards = useOpenCards(layout.useMargin);
+  const cards = useCardChoices(initiallyClosed, layout.useMargin);
   const [cardHeights, setCardHeights] = useState<ReadonlyMap<string, number>>(new Map());
   const reportHeight = useCallback((claimId: string, height: number) => {
     setCardHeights((prev) => (prev.get(claimId) === height ? prev : new Map(prev).set(claimId, height)));
   }, []);
-  const openPlaced = layout.placed.filter(({ group }) => cards.isOpen(group));
-  const marginCardTops = layout.useMargin
-    ? stackMarginCards(openPlaced.map(({ group, passageTop }) => ({ claimId: group.claimId, passageTop })), cardHeights)
-    : new Map<string, number>();
+  // The top of every open card in the margin style, or null in the classic
+  // style, where only the cards the reader opened are shown.
+  const { choices } = cards;
+  const marginCardTops = useMemo(() => {
+    if (!layout.useMargin) return null;
+    const candidates = layout.placed.filter(({ group }) => choices.get(group.claimId) ?? group.display === "open");
+    return placeMarginCards(
+      candidates.map(({ group, passageTop }) => ({ claimId: group.claimId, passageTop, openedByReader: choices.get(group.claimId) === true })),
+      cardHeights,
+    );
+  }, [layout, choices, cardHeights]);
+  const isOpen = useCallback(
+    (group: ClaimGroup) => (marginCardTops ? marginCardTops.has(group.claimId) : choices.get(group.claimId) === true),
+    [marginCardTops, choices],
+  );
 
   // Closing a note hands the focus back to its marker, the way any dialog
   // returns focus to what opened it.
-  const { isOpen, close, open, closeOpenedByReader } = cards;
+  const { close, open, closeOpenedByReader } = cards;
   const closeNote = useCallback((claimId: string) => {
     close(claimId);
     markers.current.get(claimId)?.focus({ preventScroll: true });
@@ -464,8 +461,8 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
   // The passage tint is a CSS highlight rather than an element, so it cannot
   // receive events. We test every host-page click against each tinted claim's
   // range instead. Clicking a tinted passage then toggles its note, just as
-  // clicking the badge does. A faint claim has no tint, so its text stays
-  // plain page text and only its marker opens it. The listener that closes
+  // clicking the badge does. A claim set to dot only has no tint, so its text
+  // stays plain page text and only its marker opens it. The listener that closes
   // the reader's opened cards on an outside press lives here too, and it skips
   // tinted passages. Closing on mousedown and reopening from the click's hit
   // test made a click on a highlight flash the popover shut and open it again
@@ -473,7 +470,7 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
   useEffect(() => {
     const groupAt = (x: number, y: number): ClaimGroup | null => {
       for (const group of groups) {
-        if (group.display === "faint") continue;
+        if (group.display === "dot") continue;
         for (const rect of group.range.getClientRects()) {
           if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) return group;
         }
@@ -515,7 +512,8 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
     () => [...groups].sort((a, b) => a.range.compareBoundaryPoints(Range.START_TO_START, b.range)),
     [groups],
   );
-  const indexOf = (claimId: string | null) => (claimId ? ordered.findIndex((g) => g.claimId === claimId) : -1);
+  const orderIndex = useMemo(() => new Map(ordered.map((g, index) => [g.claimId, index])), [ordered]);
+  const indexOf = (claimId: string | null) => (claimId ? (orderIndex.get(claimId) ?? -1) : -1);
   // A jump goes to the claim after the one given, which is the card whose
   // count was clicked, or else the card the reader opened last. With neither,
   // it goes to the claim after the last one a jump reached. That cursor lives
@@ -575,8 +573,9 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
           that side. */}
       {createPortal(
         <EventShield>
-          {layout.placed.map(({ group, badgeStyle, popoverStyle }) => {
-            const isOpen = cards.isOpen(group);
+          {/* Rendered in reading order, so Tab walks the markers down the page. */}
+          {[...layout.placed].sort((a, b) => indexOf(a.group.claimId) - indexOf(b.group.claimId)).map(({ group, badgeStyle, popoverStyle }) => {
+            const cardOpen = isOpen(group);
             const marker = {
               group,
               ref: (el: HTMLButtonElement | null) => {
@@ -584,7 +583,7 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
                 else markers.current.delete(group.claimId);
               },
               label: markerLabel(group),
-              open: isOpen,
+              open: cardOpen,
               onClick: () => toggle(group),
               style: badgeStyle,
             };
@@ -592,14 +591,14 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
             return (
               <div key={group.claimId}>
                 {layout.useMargin ? <MarginDot {...marker} /> : <Badge {...marker} />}
-                {isOpen && (
+                {cardOpen && (
                   <NotePopover
                     group={group}
                     projectSlug={projectSlug}
                     navigation={{ position: index + 1, total: ordered.length, onNext: () => jumpAfter(index) }}
                     style={{
                       ...popoverStyle,
-                      ...(layout.useMargin && { top: marginCardTops.get(group.claimId) }),
+                      ...(marginCardTops && { top: marginCardTops.get(group.claimId) }),
                       // The card the reader opened last sits above the others.
                       zIndex: focused === group.claimId ? 3 : 2,
                     }}

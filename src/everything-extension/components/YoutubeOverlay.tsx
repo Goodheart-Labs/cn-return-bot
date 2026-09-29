@@ -112,8 +112,8 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
   // claim's window: leave the passage and come back, and the note shows
   // again. Nothing removes a note for the rest of the video.
   const hushed = useRef<string | null>(null);
-  // Only an open claim's card pops up on its own during playback. A collapsed
-  // or faint claim's card shows only after the reader asked for it, by
+  // Only an open claim's card pops up on its own during playback. Any other
+  // claim's card shows only after the reader asked for it, by
   // clicking its pin or with the note count, and that request lasts while
   // playback stays inside the claim's window.
   const summoned = useRef<string | null>(null);
@@ -268,7 +268,7 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
 
   return (
     <div className="pointer-events-auto text-left">
-      <ScrubberPins groups={groups} openClaimId={displayed} video={video} player={player} onPinClick={jumpToPin} />
+      <ScrubberPins groups={groups} video={video} player={player} onPinClick={jumpToPin} />
       {group && (
         <FloatingWindow
           // A new claim gets a fresh card, which opens where the reader left

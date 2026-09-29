@@ -13,6 +13,7 @@ import { claimGroups, itemNoteSetQuery, noteCounts } from "./claimGroups";
 import { mountCoverageBadges } from "./coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "./coveredPages";
 import { recordPageVisit } from "./linkVisits";
+import { getClosedClaims } from "./closedNotes";
 import { mountWriteAnywhere } from "./mountWriteAnywhere";
 import { REQUEST_NOTES_CHANGED_EVENT } from "./requestLive";
 import { listenForRequestInfo } from "./requestInfo";
@@ -97,6 +98,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   // The note style is read once here and kept fresh by the settings listener
   // below, so flipping it in the settings applies without a reload.
   let noteStyle: NoteStyle = (await getSettings()).noteStyle;
+  const closedClaims = await getClosedClaims();
 
   let reactRoot: Root | null = null;
   let themeRoot: HTMLElement | null = null;
@@ -149,12 +151,12 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     if (!inlineUi.shadowHost.isConnected) inlineUi.mount();
     const container = findContainer();
     const anchored = anchorGroups(container, claimGroups(noteSet, display));
-    // A faint claim gets only its pale marker, so its passage stays untinted.
-    applyHighlights(anchored.filter((g) => g.display !== "faint").map((g) => g.range));
+    // A claim set to dot only gets its marker and no tint.
+    applyHighlights(anchored.filter((g) => g.display !== "dot").map((g) => g.range));
     reactRoot?.render(
       <QueryClientProvider client={queryClient}>
         <PillPaletteFromSettings>
-          <InlineNotesApp groups={anchored} item={item} container={container} inlineContainer={inlineUi.uiContainer} noteStyle={noteStyle} />
+          <InlineNotesApp groups={anchored} item={item} container={container} inlineContainer={inlineUi.uiContainer} noteStyle={noteStyle} initiallyClosed={closedClaims} />
         </PillPaletteFromSettings>
       </QueryClientProvider>,
     );

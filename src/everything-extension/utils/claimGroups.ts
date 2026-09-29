@@ -39,7 +39,7 @@ export type ClaimGroup = {
 const STATUS_RANK: NoteStatus[] = ["helpful", "needs_ratings", "not_helpful"];
 
 /** Display choices from most to least prominent. */
-const DISPLAY_RANK = ["open", "collapse", "faint"] as const;
+const DISPLAY_RANK = ["open", "collapse", "dot"] as const;
 
 /** The claims of a page that have at least one note the reader has not
  *  hidden, each with those notes, original first. */

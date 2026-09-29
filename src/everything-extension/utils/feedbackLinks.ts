@@ -6,11 +6,11 @@ export const FEEDBACK_FORM_URL =
 
 export const BOOK_CALL_URLS: { label: string; url: string }[] = [
   {
-    label: "US time zones",
+    label: "US hours",
     url: "https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ3sjH5weBZANv-Gpmk1Ct3ed8GQZD18jm_epiOU1g83-3WXxUlSrulrL3YEaTL4oiDs1MXpethH",
   },
   {
-    label: "European time zones",
+    label: "European hours",
     url: "https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ2VVyS-TxZ-BK_exMqst0CBVHPjexMWhrmuNEJlJE4qQwZt2dtVMqAxkhIgheWAB7FkYQ5iPGU3",
   },
 ];

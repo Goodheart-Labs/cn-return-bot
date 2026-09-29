@@ -28,7 +28,7 @@ const STATUS_ROWS: { status: NoteStatus; label: string }[] = [
 const DISPLAY_OPTIONS: { value: NoteDisplay; label: string }[] = [
   { value: "open", label: "Open" },
   { value: "collapse", label: "Collapsed" },
-  { value: "faint", label: "Faint" },
+  { value: "dot", label: "Dot only" },
   { value: "hide", label: "Hidden" },
 ];
 
@@ -42,7 +42,7 @@ export function NoteDisplayChoices({ display, onChange }: {
     <div className="space-y-3">
       <p className="text-sm text-fg-secondary">
         How notes appear on the page. Open notes show beside the text, or over a video when it reaches them. Collapsed notes show a
-        dot you click to open. Faint notes show a pale dot.
+        dot and a highlighted passage, and open when you click either. Dot only shows just the dot. Hidden notes don't show at all.
       </p>
       {STATUS_ROWS.map(({ status, label }) => (
         <fieldset key={status} className="space-y-1">

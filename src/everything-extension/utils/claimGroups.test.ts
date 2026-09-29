@@ -33,11 +33,11 @@ describe("claimGroups", () => {
     expect(group!.display).toBe("open");
   });
 
-  test("by default a claim that needs ratings is collapsed and an unhelpful one is faint", () => {
+  test("by default a claim that needs ratings is collapsed and an unhelpful one is a dot", () => {
     const groups = groupsOf([note("a", "c1", "needs_ratings"), note("b", "c1", "not_helpful"), note("c", "c2", "not_helpful")]);
     expect(groups.map((g) => [g.claimId, g.status, g.display])).toEqual([
       ["c1", "needs_ratings", "collapse"],
-      ["c2", "not_helpful", "faint"],
+      ["c2", "not_helpful", "dot"],
     ]);
   });
 

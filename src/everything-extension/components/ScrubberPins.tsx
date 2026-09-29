@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { NoteStatus } from "@cn/core/noteScore";
+import { statusLabel } from "@cn/features/notes/NoteBox";
 import { isPageDark, observePageTheme } from "../utils/pageTheme";
 import { GROUP_GLYPH_PATH } from "@cn/ui/icons";
 import { MARKER_DARK, MARKER_HOVER_SCALE, MARKER_LIGHT, STATUS_MARKER_GLYPH } from "../utils/markerPalette";
@@ -15,7 +16,6 @@ import type { TimedGroup } from "./YoutubeOverlay";
 // shadow root and cannot reach the host page.
 
 const PIN_STYLE_ID = "common-notes-pin-style";
-const FAINT_PIN_OPACITY = 0.45;
 const PIN_CSS = `
 .cn-scrub-pin {
   position: absolute;
@@ -30,9 +30,6 @@ const PIN_CSS = `
   z-index: 60;
 }
 .cn-scrub-pin:hover { transform: translateX(-50%) scale(${MARKER_HOVER_SCALE}); }
-/* A faint claim's pin is pale until the pointer or the keyboard reaches it. */
-.cn-scrub-pin.cn-scrub-pin-faint { opacity: ${FAINT_PIN_OPACITY}; }
-.cn-scrub-pin.cn-scrub-pin-faint:hover, .cn-scrub-pin.cn-scrub-pin-faint:focus-visible { opacity: 1; }
 .cn-scrub-pin svg { display: block; width: 18px; height: 24px; filter: drop-shadow(0 1px 1px rgba(0,0,0,.5)); }
 .ytp-big-mode .cn-scrub-pin svg { width: 22px; height: 29px; }
 `;
@@ -87,11 +84,8 @@ function pinTitle(group: TimedGroup): string {
  *  in percent resolves against the bar however the bar itself is positioned. A
  *  MutationObserver puts the strip back whenever YouTube rebuilds its control
  *  DOM. Clicking a pin seeks the video to the start of that claim. */
-export function ScrubberPins({ groups, openClaimId, video, player, onPinClick }: {
+export function ScrubberPins({ groups, video, player, onPinClick }: {
   groups: TimedGroup[];
-  /** The claim whose card is on screen. Its pin shows at full strength even
-   *  when the claim is faint. */
-  openClaimId: string | null;
   video: HTMLVideoElement;
   player: HTMLElement;
   onPinClick: (group: TimedGroup) => void;
@@ -146,10 +140,10 @@ export function ScrubberPins({ groups, openClaimId, video, player, onPinClick }:
     groups.map((group) => (
       <button
         key={group.claimId}
-        className={group.display === "faint" && group.claimId !== openClaimId ? "cn-scrub-pin cn-scrub-pin-faint" : "cn-scrub-pin"}
+        className="cn-scrub-pin"
         style={{ left: `${(group.startSeconds / duration) * 100}%`, background: "none", border: "none", padding: 0 }}
         title={pinTitle(group)}
-        aria-label="Jump to this Common Note"
+        aria-label={`Jump to this Common Note, ${statusLabel(group.status).toLowerCase()}`}
         onClick={(e) => {
           // Keep the click off the bar underneath. A mousedown that leaked
           // through would start a scrub-drag to wherever the pointer sits.

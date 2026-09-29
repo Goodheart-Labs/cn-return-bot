@@ -52,19 +52,20 @@ const NOTE_DISPLAY_KEY = "cn:noteDisplay";
 /** "open" puts the note's card on screen without a click: beside its passage
  *  in the margin, or over the video while playback is in the note's part.
  *  "collapse" draws the marker and tints the passage, and the card opens when
- *  the reader clicks. "faint" draws a pale marker and no tint. "hide" leaves
- *  the note off the page. */
-export type NoteDisplay = "open" | "collapse" | "faint" | "hide";
+ *  the reader clicks either. "dot" draws only the marker, with no tint. "hide"
+ *  leaves the note off the page. */
+export type NoteDisplay = "open" | "collapse" | "dot" | "hide";
 export type NoteDisplaySettings = Record<NoteStatus, NoteDisplay>;
 
-const NOTE_DISPLAYS: readonly NoteDisplay[] = ["open", "collapse", "faint", "hide"];
+const NOTE_DISPLAYS: readonly NoteDisplay[] = ["open", "collapse", "dot", "hide"];
 
 // Jim's call on 2026-09-29: helpful notes are open, notes that need ratings
-// wait for a click, and unhelpful notes only leave a pale marker.
-export const DEFAULT_NOTE_DISPLAY: NoteDisplaySettings = { helpful: "open", needs_ratings: "collapse", not_helpful: "faint" };
+// wait for a click, and unhelpful notes only leave their dot.
+export const DEFAULT_NOTE_DISPLAY: NoteDisplaySettings = { helpful: "open", needs_ratings: "collapse", not_helpful: "dot" };
 
 /** A stored value that is not one of today's choices falls back to the
- *  default. Early test builds stored a "show" choice that no longer exists. */
+ *  default. Early test builds stored "show" and "faint" choices that no
+ *  longer exist. */
 export async function getNoteDisplay(): Promise<NoteDisplaySettings> {
   const stored = await readSyncObject<NoteDisplaySettings>(NOTE_DISPLAY_KEY);
   const valid = Object.entries(stored).filter(([, display]) => NOTE_DISPLAYS.includes(display));

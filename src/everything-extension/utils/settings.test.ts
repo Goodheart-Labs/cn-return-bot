@@ -19,12 +19,12 @@ describe("updateSettings", () => {
 });
 
 describe("note display", () => {
-  test("helpful notes are open, notes needing ratings collapsed and unhelpful ones faint by default", async () => {
-    expect(await getNoteDisplay()).toEqual({ helpful: "open", needs_ratings: "collapse", not_helpful: "faint" });
+  test("helpful notes are open, notes needing ratings collapsed and unhelpful ones a dot by default", async () => {
+    expect(await getNoteDisplay()).toEqual({ helpful: "open", needs_ratings: "collapse", not_helpful: "dot" });
   });
 
   test("a stored choice that no longer exists falls back to the default", async () => {
-    await browser.storage.sync.set({ "cn:noteDisplay": { helpful: "show", not_helpful: "hide" } });
+    await browser.storage.sync.set({ "cn:noteDisplay": { helpful: "show", needs_ratings: "faint", not_helpful: "hide" } });
     expect(await getNoteDisplay()).toEqual({ helpful: "open", needs_ratings: "collapse", not_helpful: "hide" });
   });
 
