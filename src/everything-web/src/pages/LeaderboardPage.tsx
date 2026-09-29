@@ -1,6 +1,7 @@
 import { displayName } from "@cn/core/session";
 import { Button } from "@cn/ui/Button";
 import { Checkbox } from "@cn/ui/Field";
+import { useLoginPrompt } from "@cn/features/auth/loginPrompt";
 import { useSession } from "@cn/features/auth/useSession";
 import { useMyVotes } from "@cn/features/notes/useVotes";
 import { useLeaderboard, useLeaderboardOptIn } from "../lib/leaderboardQueries";
@@ -12,7 +13,13 @@ export function LeaderboardPage() {
   const myVoteCount = useMyVotes().size;
   const { data: entries, isError: failed, refetch } = useLeaderboard();
   const { optIn, saving, setOptIn } = useLeaderboardOptIn();
-  const myName = session ? displayName(session) : null;
+  const openLogin = useLoginPrompt();
+  // An anonymous account has no name to list, so only a real account can
+  // opt in. Everyone else sees the same checkbox, and ticking it opens the
+  // sign-in form.
+  const signedIn = !!session && !session.user.is_anonymous;
+  const listed = signedIn && optIn;
+  const myName = session && signedIn ? displayName(session) : null;
 
   return (
     <div className="w-full">
@@ -20,18 +27,16 @@ export function LeaderboardPage() {
         People who opted in, ranked by how many notes they've rated.
       </p>
 
-      {session && (
-        <div className="flex items-center justify-between gap-3 mb-6 text-sm">
-          <Checkbox checked={optIn} disabled={saving} onChange={setOptIn} className="text-fg-secondary">
-            Show me on the leaderboard
-          </Checkbox>
-          {!optIn && (
-            <span className="text-fg-muted">
-              You're not listed. You've rated {myVoteCount} {myVoteCount === 1 ? "note" : "notes"}.
-            </span>
-          )}
-        </div>
-      )}
+      <div className="flex items-center justify-between gap-3 mb-6 text-sm">
+        <Checkbox checked={listed} disabled={saving} onChange={(show) => (signedIn ? setOptIn(show) : openLogin())} className="text-fg-secondary">
+          Show me on the leaderboard
+        </Checkbox>
+        {!listed && (
+          <span className="text-fg-muted">
+            You're not listed. You've rated {myVoteCount} {myVoteCount === 1 ? "note" : "notes"}.
+          </span>
+        )}
+      </div>
 
       {failed && (
         <div className="space-y-3">
@@ -45,7 +50,7 @@ export function LeaderboardPage() {
       {entries && entries.length > 0 && (
         <ol className="space-y-1">
           {entries.map((entry, i) => {
-            const isMe = optIn && entry.name === myName;
+            const isMe = listed && entry.name === myName;
             return (
               <li
                 key={i}
