@@ -58,14 +58,14 @@ export function StatusBadge({ status }: { status: NoteStatus }) {
  *  dashboard and the stats dashboard render a note. A note stores one source
  *  row per supporting quote, so the same URL can appear on several rows when
  *  several passages of one document back the note. The link is shown once;
- *  the individual quotes live behind "Show source details". */
+ *  the individual quotes live behind "Source details". */
 function noteText(note: NoteRow): string {
   const urls = [...new Set(note.sources.map((s) => s.url))];
   return urls.length > 0 ? `${note.note} ${urls.join(" ")}` : note.note;
 }
 
 /** The supporting quote and the explanation for each source, revealed by the
- *  "Show source details" button. The source URLs already sit inline in the note
+ *  "Source details" button. The source URLs already sit inline in the note
  *  text, so this shows only the body of each citation. Each quote links out to
  *  that passage in the source.
  *
