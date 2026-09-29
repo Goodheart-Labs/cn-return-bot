@@ -122,7 +122,7 @@ export function ArticleView({ article, run, showAll }: { article: Article; run: 
   return (
     <div ref={wrapperRef} className="relative flex gap-8 items-start">
       <div className="flex-1 min-w-0 max-w-[42rem]">
-        <h1 className="text-3xl font-bold mb-2">{article.title}</h1>
+        <h1 className="font-bold mb-2">{article.title}</h1>
         <p className="text-sm text-fg-muted mb-8">
           {article.author} · {article.publishedAt?.slice(0, 10)} ·{" "}
           <a className="text-link underline" href={article.snapshotUrl} target="_blank" rel="noreferrer">

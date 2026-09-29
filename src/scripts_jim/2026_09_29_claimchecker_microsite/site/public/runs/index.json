@@ -16,5 +16,14 @@
   "totalCostUsd": 0.7128023848020001,
   "claims": 764,
   "notes": 1
+ },
+ {
+  "id": "2026-09-29-1011",
+  "label": "Baseline: today's pipeline",
+  "createdAt": "2026-09-29T10:39:07.743Z",
+  "source": "local",
+  "totalCostUsd": 5.8500303194860015,
+  "claims": 764,
+  "notes": 15
  }
 ]

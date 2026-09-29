@@ -7,6 +7,7 @@
 /* The article keeps the post's own markup. These rules give it plain reading
  * typography, since Substack's class names were stripped. */
 .article { font-size: 1.05rem; line-height: 1.7; }
+h1 { font-size: 2rem; line-height: 1.25; }
 .article p, .article ul, .article ol, .article blockquote, .article figure { margin: 0 0 1.1em; }
 .article h2 { font-size: 1.5rem; font-weight: 700; margin: 1.6em 0 0.6em; }
 .article h3 { font-size: 1.2rem; font-weight: 700; margin: 1.4em 0 0.5em; }

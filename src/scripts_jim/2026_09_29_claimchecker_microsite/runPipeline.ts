@@ -32,7 +32,7 @@ import { rateClaims, shouldFactCheck } from "../../everything/pipeline/rateClaim
 import type { ExtractionResult, FetchedContent, RatedClaim } from "../../everything/types";
 import { aggregateAndLogCosts, withCostTracker } from "../../pipeline/cost-tracking/costTracker";
 import { closeBrowser } from "../../pipeline/utils/browserManager";
-import type { LabClaim, LabRun, Stage } from "./labRun";
+import { checkTraceOf, type LabClaim, type LabRun, type Stage } from "./labRun";
 import { LOGS_DIR, STAGES_DIR, readArticle, saveRun } from "./runStore";
 
 /** Parts extracted side by side, the extraction service's default. */
@@ -127,6 +127,7 @@ function unchecked(claim: PartClaim, index: number, runId: string): LabClaim {
     notes: [],
     notNeeded: [],
     checkCostUsd: null,
+    trace: null,
   };
 }
 
@@ -146,7 +147,7 @@ async function checkClaim(claim: PartClaim, index: number, runId: string, publis
     const { check, run } = await runClaimCheck(post);
     mkdirSync(join(LOGS_DIR, runId), { recursive: true });
     writeFileSync(join(LOGS_DIR, runId, `${index}.json`), JSON.stringify(run, null, 1));
-    const checked = { ...base, checkCostUsd: run.costUsd };
+    const checked = { ...base, checkCostUsd: run.costUsd, trace: checkTraceOf(run.logs) };
     if (check.kind === "no_note") return { ...checked, outcome: { type: "no_note", reason: check.reason ?? check.outcome } };
     return {
       ...checked,

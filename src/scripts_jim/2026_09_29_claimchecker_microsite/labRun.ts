@@ -63,6 +63,34 @@ export interface LabNotNeeded {
   votes: LabVotes;
 }
 
+/** What the claim check did before it decided, read out of its log. It is
+ *  what lets a reader judge a "no note" outcome: what the research found, the
+ *  note that was drafted if there was one, and the source check's verdict. */
+export interface CheckTrace {
+  research: string | null;
+  draftNote: string | null;
+  sourceVerdict: string | null;
+}
+
+/** The last entry of a list in a tweet log. The log stores lists as objects
+ *  keyed "0", "1" and so on. Older logs name the search's last message "final". */
+function lastEntry(entries: Record<string, any> | undefined): any {
+  if (entries?.final) return entries.final;
+  const keys = Object.keys(entries ?? {}).filter((k) => /^\d+$/.test(k));
+  return keys.length ? entries![String(Math.max(...keys.map(Number)))] : undefined;
+}
+
+/** Reads the trace out of a claim check's tweet log. It needs only the
+ *  search messages, the writer's attempts and the source check. */
+export function checkTraceOf(logs: any): CheckTrace {
+  const steps = logs?.note_writer_steps;
+  return {
+    research: lastEntry(steps?.search?.messages)?.content?.findings ?? null,
+    draftNote: lastEntry(steps?.note_writer?.attempts)?.response?.note_text ?? null,
+    sourceVerdict: logs?.sourceCheck?.result ?? null,
+  };
+}
+
 export interface LabClaim {
   id: string;
   claim: string;
@@ -78,6 +106,8 @@ export interface LabClaim {
   notes: LabNote[];
   notNeeded: LabNotNeeded[];
   checkCostUsd: number | null;
+  /** Null for a claim that was never checked. */
+  trace: CheckTrace | null;
 }
 
 export type Stage = "extraction" | "rating";

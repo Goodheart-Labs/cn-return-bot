@@ -10,7 +10,7 @@
 
 import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
-import type { ClaimOutcome, LabClaim, LabNote, LabVotes } from "./labRun";
+import { checkTraceOf, type CheckTrace, type ClaimOutcome, type LabClaim, type LabNote, type LabVotes } from "./labRun";
 import { saveRun } from "./runStore";
 
 const PRODUCTION_ITEM_ID = "b5e5ff9c-8862-4b98-90bc-1e9ad0933f81";
@@ -75,7 +75,19 @@ async function main() {
   const notNeeded = await selectIn(claimIds, (slice) =>
     db.from("everything_note_not_needed").select("id, claim_id, body, author_name, helpful_count, somewhat_helpful_count, not_helpful_count").in("claim_id", slice),
   );
-  const claimRuns = await selectIn(claimIds, (slice) => db.from("everything_pipeline_runs").select("claim_id, cost").in("claim_id", slice));
+  // Only the parts of each run's log the trace needs. The whole log holds
+  // every fetched page, which would be tens of megabytes.
+  type ClaimRunRow = { claim_id: string; cost: number | null; searchMessages: unknown; writerAttempts: unknown; sourceCheck: unknown };
+  const claimRuns = await selectIn(claimIds, (slice) =>
+    db
+      .from("everything_pipeline_runs")
+      .select(
+        "claim_id, cost, searchMessages:logs->note_writer_steps->search->messages, " +
+          "writerAttempts:logs->note_writer_steps->note_writer->attempts, sourceCheck:logs->sourceCheck",
+      )
+      .in("claim_id", slice)
+      .returns<ClaimRunRow[]>(),
+  );
   const { data: itemRuns, error: runsError } = await db.from("everything_pipeline_runs").select("kind, cost").eq("item_id", PRODUCTION_ITEM_ID);
   if (runsError) throw runsError;
 
@@ -98,7 +110,12 @@ async function main() {
     labNotes.set(n.claim_id, [...(labNotes.get(n.claim_id) ?? []), note]);
   }
   const checkCost = new Map<string, number>();
-  for (const r of claimRuns) checkCost.set(r.claim_id!, (checkCost.get(r.claim_id!) ?? 0) + Number(r.cost ?? 0));
+  const traces = new Map<string, CheckTrace>();
+  for (const r of claimRuns) {
+    checkCost.set(r.claim_id, (checkCost.get(r.claim_id) ?? 0) + Number(r.cost ?? 0));
+    const logs = { note_writer_steps: { search: { messages: r.searchMessages }, note_writer: { attempts: r.writerAttempts } }, sourceCheck: r.sourceCheck };
+    traces.set(r.claim_id, checkTraceOf(logs));
+  }
   const itemCost = (kind: string) => itemRuns!.filter((r) => r.kind === kind).reduce((sum, r) => sum + Number(r.cost ?? 0), 0);
 
   const labClaims: LabClaim[] = claims!.map((c) => ({
@@ -115,6 +132,7 @@ async function main() {
       .filter((e) => e.claim_id === c.id)
       .map((e) => ({ id: e.id, body: e.body, author: e.author_name, votes: votesOf(e) })),
     checkCostUsd: checkCost.get(c.id) ?? null,
+    trace: traces.get(c.id) ?? null,
   }));
 
   saveRun({

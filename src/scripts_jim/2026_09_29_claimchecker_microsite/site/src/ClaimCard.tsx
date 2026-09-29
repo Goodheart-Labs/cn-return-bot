@@ -16,14 +16,55 @@ const OUTCOME_LABEL: Record<LabClaim["outcome"]["type"], string> = {
 
 const money = (usd: number) => `$${usd.toFixed(3)}`;
 
+/** The pipeline's reason codes for a checked claim without a note, in words. */
+const NO_NOTE_REASON: Record<string, string> = {
+  no_correction_needed: "The research found nothing that needs a note.",
+  check_failed: "A note was drafted, but the source check found its sources do not back it.",
+  unfetchable_sources: "A note was drafted, but none of its sources could be opened.",
+  low_materiality_score: "A note was drafted, but it was judged not important enough to show.",
+};
+
 /** Why the claim ended where it did. A claim skipped for its rating only
  *  repeats the rating, which the header already shows, so it has none. */
 function outcomeDetail(claim: LabClaim): string | null {
   const { outcome } = claim;
   if (outcome.type === "skipped" && outcome.reason === `judged ${claim.judgement}`) return null;
-  if (outcome.type === "no_note" || outcome.type === "skipped") return outcome.reason || null;
+  if (outcome.type === "no_note" || outcome.type === "skipped") return NO_NOTE_REASON[outcome.reason] ?? (outcome.reason || null);
   if (outcome.type === "error") return outcome.error;
   return null;
+}
+
+/** The draft a claim check threw away, and the research behind any check.
+ *  The research is long, so it opens on demand. */
+function TraceDetails({ claim }: { claim: LabClaim }) {
+  const [researchOpen, setResearchOpen] = useState(false);
+  const { trace } = claim;
+  if (!trace) return null;
+  const discardedDraft = claim.notes.length === 0 ? trace.draftNote : null;
+  return (
+    <div className="text-xs space-y-2">
+      {discardedDraft && (
+        <div className="rounded-control border border-dashed border-line-strong p-2">
+          <p className="font-semibold text-fg-secondary mb-1">Drafted note, not published</p>
+          <p className="text-fg whitespace-pre-wrap [overflow-wrap:anywhere]">{discardedDraft}</p>
+          {trace.sourceVerdict && trace.sourceVerdict !== "YES" && (
+            <p className="mt-1 text-fg-muted">Source check: {trace.sourceVerdict.toLowerCase()}</p>
+          )}
+        </div>
+      )}
+      {trace.research && (
+        <div>
+          <button type="button" className="text-fg-muted hover:text-fg underline" onClick={(e) => {
+            e.stopPropagation();
+            setResearchOpen((open) => !open);
+          }}>
+            {researchOpen ? "Hide what the research found" : "Show what the research found"}
+          </button>
+          {researchOpen && <p className="mt-1 text-fg-secondary whitespace-pre-wrap [overflow-wrap:anywhere]">{trace.research}</p>}
+        </div>
+      )}
+    </div>
+  );
 }
 
 /** What the pipeline decided about the claim, above its notes: the rater's
@@ -112,6 +153,7 @@ export function ClaimCard({ claim, showVotes, selected, onSelect, onClose }: {
           </button>
         )}
       </div>
+      <TraceDetails claim={claim} />
       {claim.notes.map((note) => (
         <LabNoteCard key={note.id} note={note} claim={claim} showVotes={showVotes} />
       ))}
