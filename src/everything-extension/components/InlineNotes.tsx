@@ -8,11 +8,11 @@ import { cn } from "@cn/ui/cn";
 import type { ClaimGroup } from "../utils/claimGroups";
 import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
 import { setJumpHandler } from "../utils/jumpBus";
-import { CloseIcon, GroupIcon } from "@cn/ui/icons";
+import { CloseIcon, NoteStackIcon } from "@cn/ui/icons";
 import { IconButton } from "@cn/ui/IconButton";
 import { forgetClosedClaim, rememberClosedClaim } from "../utils/closedNotes";
 import { placeMarginCards } from "../utils/marginCards";
-import { ClaimNoteStack, NOTE_POPOVER_WIDTH, type NoteNavigation } from "./ClaimNoteStack";
+import { ClaimNoteStack, NextNoteButton, NOTE_POPOVER_WIDTH, type NoteNavigation } from "./ClaimNoteStack";
 import { OverlayLoginGate } from "./OverlayLoginGate";
 import { EventShield } from "./EventShield";
 import { WriteNoteOverlay } from "./WriteNoteOverlay";
@@ -147,7 +147,7 @@ function Badge({ group, open, onClick, style, label, ref }: MarkerProps) {
         open && "ring-2 ring-focus",
       )}
     >
-      <GroupIcon />
+      <NoteStackIcon />
     </button>
   );
 }
@@ -238,13 +238,14 @@ function NotePopover({ group, projectSlug, navigation, style, label, openedByRea
       style={style}
       className={cn(cardVariants({ elevation: "floating" }), "absolute p-4 text-left max-h-[70vh] overflow-y-auto overscroll-contain focus:outline-none")}
     >
-      {/* Floated, so only the card's first line makes room for it and the
-          note below keeps the card's full width. */}
-      <IconButton label="Close note" className="float-right -mr-2 -mt-1 ml-2" onClick={onClose}>
-        <CloseIcon size={14} aria-hidden />
-      </IconButton>
+      <div className="-mt-1 mb-3 flex items-center justify-between">
+        <NextNoteButton {...navigation} />
+        <IconButton label="Close note" className="-mr-1.5 ml-auto" onClick={onClose}>
+          <CloseIcon size={14} aria-hidden />
+        </IconButton>
+      </div>
       <OverlayLoginGate open={loginOpen} onOpenChange={setLoginOpen}>
-        <ClaimNoteStack group={group} projectSlug={projectSlug} navigation={navigation} />
+        <ClaimNoteStack group={group} projectSlug={projectSlug} />
       </OverlayLoginGate>
     </div>
   );

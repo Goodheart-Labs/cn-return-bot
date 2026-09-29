@@ -12,7 +12,10 @@ import { useSession } from "../auth/useSession";
 import { Composer } from "./Composer";
 import { useDeleteNote, usePostImprovement, usePostNnn } from "./useNoteWrites";
 
-const ACTION_ICON_SIZE = 16;
+/** The action icons are sized relative to the row's text, so they stay in
+ *  proportion on the website's larger text and on the extension's smaller one.
+ *  Filled icons at a fixed 16px looked heavy next to the extension's 12px text. */
+const ACTION_ICON_SIZE = "1.15em";
 
 /** On a touch screen the action links grow to a finger-sized target. */
 const TOUCH_TARGET = "[@media(pointer:coarse)]:min-h-10";
@@ -96,8 +99,10 @@ export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, childre
             moved the other actions out of it on 2026-07-14, because the menu
             was hiding the whole improvement flow. */}
         {showSourcesButton && (
-          <Button variant="link" className={TOUCH_TARGET} onClick={onToggleSources}>
-            <QuoteIcon size={ACTION_ICON_SIZE} aria-hidden /> {sourcesOpen ? "Hide source details" : "Show source details"}
+          // The label stays the same when the details open. A label that changed
+          // width made the row wrap differently in the two states.
+          <Button variant="link" className={TOUCH_TARGET} aria-expanded={!!sourcesOpen} onClick={onToggleSources}>
+            <QuoteIcon size={ACTION_ICON_SIZE} aria-hidden /> Source details
           </Button>
         )}
         <Button variant="link" className={TOUCH_TARGET} onClick={() => toggleComposer("nnn")}>

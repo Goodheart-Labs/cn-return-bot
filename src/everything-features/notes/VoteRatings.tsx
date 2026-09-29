@@ -10,7 +10,7 @@ import { PillPaletteContext } from "./pillPalette";
  * icon without a label would read as pressed if it were coloured, so they stay
  * grey until chosen in either palette. */
 const votePillVariants = cva(
-  "inline-flex items-center justify-center gap-1.5 rounded-full border font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
+  "inline-flex items-center justify-center gap-1.5 rounded-control border font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
   {
     variants: {
       size: {
@@ -22,17 +22,22 @@ const votePillVariants = cva(
       selected: { true: "", false: "" },
     },
     compoundVariants: [
-      { size: "full", palette: "neutral", selected: false, className: "border-line-strong bg-surface text-link hover:bg-surface-hover" },
-      // Colourful pills wait with a grey border and coloured text, and fill with
-      // their colour only once chosen, so the card stays calm until a vote.
-      { size: "full", palette: "colourful", tone: "positive", selected: false, className: "border-line-strong bg-surface text-positive hover:bg-positive-soft" },
-      { size: "full", palette: "colourful", tone: "caution", selected: false, className: "border-line-strong bg-surface text-caution hover:bg-caution-soft" },
-      { size: "full", palette: "colourful", tone: "negative", selected: false, className: "border-line-strong bg-surface text-negative hover:bg-negative-soft" },
+      // An unchosen pill has no fill of its own. It shows the rating panel's
+      // colour inside its border, as the rating buttons on X do.
+      { size: "full", palette: "neutral", selected: false, className: "border-line-strong text-link hover:bg-surface-hover" },
+      // Colourful pills wait with a grey border and coloured text. A hover
+      // washes the fill faintly in the pill's colour and keeps the border grey.
+      { size: "full", palette: "colourful", tone: "positive", selected: false, className: "border-line-strong text-positive hover:bg-positive-soft" },
+      { size: "full", palette: "colourful", tone: "caution", selected: false, className: "border-line-strong text-caution hover:bg-caution-soft" },
+      { size: "full", palette: "colourful", tone: "negative", selected: false, className: "border-line-strong text-negative hover:bg-negative-soft" },
       { size: "compact", selected: false, className: "border-transparent text-fg-muted hover:bg-surface-hover hover:text-fg" },
       { palette: "neutral", selected: true, className: "border-primary bg-primary text-on-primary" },
-      { palette: "colourful", tone: "positive", selected: true, className: "border-positive bg-positive text-white" },
-      { palette: "colourful", tone: "caution", selected: true, className: "border-caution bg-caution text-white" },
-      { palette: "colourful", tone: "negative", selected: true, className: "border-negative bg-negative text-white" },
+      // A chosen pill is tonal: a stronger wash, a border in its colour and a
+      // deeper text shade. A solid fill with white text glowed in dark mode, and
+      // its text was hard to read there.
+      { palette: "colourful", tone: "positive", selected: true, className: "border-positive-line bg-positive-selected text-positive-selected-fg" },
+      { palette: "colourful", tone: "caution", selected: true, className: "border-caution-line bg-caution-selected text-caution-selected-fg" },
+      { palette: "colourful", tone: "negative", selected: true, className: "border-negative-line bg-negative-selected text-negative-selected-fg" },
     ],
   },
 );

@@ -36,8 +36,10 @@ export function StatusBadge({ status }: { status: NoteStatus }) {
   return (
     <div className="flex items-center gap-1.5 text-sm font-semibold text-fg-secondary">
       {/* The size is given in em so the icon scales with the site's larger
-          type scale. */}
-      <svg viewBox="0 0 20 20" width="1.05em" height="1.05em" aria-hidden className={`shrink-0 ${dot}`}>
+          type scale. The circle fills the whole viewBox, and at a fractional
+          pixel size its softened edge falls just outside the box. The svg
+          would clip that edge flat, so its overflow is left visible. */}
+      <svg viewBox="0 0 20 20" width="1.05em" height="1.05em" aria-hidden overflow="visible" className={`shrink-0 ${dot}`}>
         <circle cx="10" cy="10" r="10" fill="currentColor" />
         {status === "helpful" && (
           <path d="M5.5 10.5l3 3 6-6.5" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -56,14 +58,14 @@ export function StatusBadge({ status }: { status: NoteStatus }) {
  *  dashboard and the stats dashboard render a note. A note stores one source
  *  row per supporting quote, so the same URL can appear on several rows when
  *  several passages of one document back the note. The link is shown once;
- *  the individual quotes live behind "Show source details". */
+ *  the individual quotes live behind "Source details". */
 function noteText(note: NoteRow): string {
   const urls = [...new Set(note.sources.map((s) => s.url))];
   return urls.length > 0 ? `${note.note} ${urls.join(" ")}` : note.note;
 }
 
 /** The supporting quote and the explanation for each source, revealed by the
- *  "Show source details" button. The source URLs already sit inline in the note
+ *  "Source details" button. The source URLs already sit inline in the note
  *  text, so this shows only the body of each citation. Each quote links out to
  *  that passage in the source.
  *

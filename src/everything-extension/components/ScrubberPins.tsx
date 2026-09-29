@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import type { NoteStatus } from "@cn/core/noteScore";
 import { statusLabel } from "@cn/features/notes/NoteBox";
 import { isPageDark, observePageTheme } from "../utils/pageTheme";
-import { GROUP_GLYPH_PATH } from "@cn/ui/icons";
+import { NOTE_STACK_GLYPH_PATH } from "@cn/ui/icons";
 import { MARKER_DARK, MARKER_HOVER_SCALE, MARKER_LIGHT, STATUS_MARKER_GLYPH } from "../utils/markerPalette";
 import type { TimedGroup } from "./YoutubeOverlay";
 
@@ -52,7 +52,7 @@ function ensurePinStyle() {
 
 /** Draws the marker as a round head that tapers into a tail. The tip of the tail
  *  sits at the bottom centre of the viewBox, and that tip is what points at the
- *  timestamp. The head is centred at (12, 10.8) and the group glyph is scaled to
+ *  timestamp. The head is centred at (12, 10.8) and the note glyph is scaled to
  *  fit inside it. */
 function PinGlyph({ dark, status }: { dark: boolean; status: NoteStatus }) {
   const palette = dark ? MARKER_DARK : MARKER_LIGHT;
@@ -65,7 +65,7 @@ function PinGlyph({ dark, status }: { dark: boolean; status: NoteStatus }) {
         strokeWidth="1.5"
       />
       <g transform="translate(4.56 3.36) scale(0.62)">
-        <path d={GROUP_GLYPH_PATH} fill={STATUS_MARKER_GLYPH[status]} />
+        <path d={NOTE_STACK_GLYPH_PATH} fillRule="evenodd" fill={STATUS_MARKER_GLYPH[status]} />
       </g>
     </svg>
   );

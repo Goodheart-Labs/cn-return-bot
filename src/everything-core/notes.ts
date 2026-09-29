@@ -8,7 +8,7 @@ import type { NoteRow, NoteSourceDetail } from "./types";
  *
  * Only the source URLs are read, because the URLs are what the note text
  * renders. The quote and the explanation of each source are much larger and
- * sit behind the "Show source details" button, so fetchNoteSourceDetails
+ * sit behind the "Source details" button, so fetchNoteSourceDetails
  * fetches them when a reader opens that. The button still has to know whether
  * there is anything to show. That is what the second, aliased embed of the
  * same table is for: the query filters it down to the sources that carry a
@@ -78,7 +78,7 @@ export async function fetchProjectNote(noteId: string, projectId: string): Promi
   return data && toNoteRow(data);
 }
 
-/** The quote and the explanation behind one note's "Show source details"
+/** The quote and the explanation behind one note's "Source details"
  *  reveal. A source with no quote has no body to show, so it is left out here
  *  the same way the reveal leaves it out. */
 export async function fetchNoteSourceDetails(noteId: string): Promise<NoteSourceDetail[]> {
