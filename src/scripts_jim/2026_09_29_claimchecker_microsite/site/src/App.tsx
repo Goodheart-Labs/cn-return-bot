@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { totalCost, type LabRun, type RunIndexEntry } from "../../labRun";
+import { totalCost, type LabRun, type RunIndexEntry, type Stage } from "../../labRun";
 import { ArticleView } from "./ArticleView";
 import { tintOf, type Tint } from "./anchoring";
 import { seedSourceDetails, useArticle, useRun, useRunIndex } from "./data";
@@ -12,7 +12,7 @@ const LEGEND: { tint: Tint; label: string }[] = [
   { tint: "lab-error", label: "Check failed" },
 ];
 
-const money = (usd: number | null) => (usd === null ? "reused" : `$${usd.toFixed(2)}`);
+const money = (usd: number | null) => (usd === null ? "unknown" : `$${usd.toFixed(2)}`);
 
 /** The run shown is kept in the address, so a reload stays on it. */
 function useSelectedRunId(index: RunIndexEntry[] | undefined): [string | null, (id: string) => void] {
@@ -32,11 +32,13 @@ function RunSummary({ run }: { run: LabRun }) {
   const notes = run.claims.flatMap((c) => c.notes);
   const readerNotes = notes.filter((n) => !n.isAi).length;
   const { extraction, rating, checks } = run.costUsd;
+  const reused = (stage: Stage) => (run.basedOn?.reused.includes(stage) ? " (reused)" : "");
   return (
     <div className="text-sm text-fg-secondary space-y-1">
       <p>
-        <span className="font-semibold text-fg">{money(totalCost(run))}</span> in total: extraction {money(extraction)}, rating{" "}
-        {money(rating)}, checks {money(checks)}.
+        <span className="font-semibold text-fg">{money(totalCost(run))}</span> in total: extraction {money(extraction)}
+        {reused("extraction")}, rating {money(rating)}
+        {reused("rating")}, checks {money(checks)}.
         {run.basedOn && ` Reuses the ${run.basedOn.reused.join(" and ")} of run ${run.basedOn.runId}.`}
         {run.commit && ` Code at ${run.commit}.`}
       </p>

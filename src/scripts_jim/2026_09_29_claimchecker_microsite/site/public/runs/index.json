@@ -7,5 +7,14 @@
   "totalCostUsd": 4.494681126532003,
   "claims": 395,
   "notes": 22
+ },
+ {
+  "id": "2026-09-29-0945",
+  "label": "Smoke test (3 checks)",
+  "createdAt": "2026-09-29T10:10:56.341Z",
+  "source": "local",
+  "totalCostUsd": 0.7128023848020001,
+  "claims": 764,
+  "notes": 1
  }
 ]

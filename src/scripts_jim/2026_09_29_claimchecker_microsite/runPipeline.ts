@@ -207,10 +207,10 @@ async function main() {
   const earlier: RunStages | null = from ? JSON.parse(readFileSync(stagesPath(from), "utf8")) : null;
   console.log(`Run ${runId} "${label}"${from ? `, reusing the ${reuse} of ${from}` : ""}`);
 
-  const extracted = earlier ? { extraction: earlier.extraction, extractionCostUsd: null } : await runExtraction(content);
+  const extracted = earlier ? { extraction: earlier.extraction, extractionCostUsd: earlier.extractionCostUsd } : await runExtraction(content);
   saveStages(runId, extracted);
   if (reuse === "rating" && !earlier?.rated) throw new Error(`Run ${from} has no saved rating to reuse`);
-  const rating = reuse === "rating" ? { rated: earlier!.rated!, ratingCostUsd: null } : await runRating(extracted.extraction);
+  const rating = reuse === "rating" ? { rated: earlier!.rated!, ratingCostUsd: earlier!.ratingCostUsd ?? null } : await runRating(extracted.extraction);
   saveStages(runId, { ...extracted, ...rating });
 
   const claims = await runChecks(rating.rated, runId, content.publishedAt, limit);

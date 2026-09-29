@@ -92,7 +92,8 @@ export interface LabRun {
   /** The earlier run whose extraction, or extraction and rating, this run
    *  started from instead of redoing them. */
   basedOn: { runId: string; reused: Stage[] } | null;
-  /** What each step cost. A reused step costs nothing in this run. */
+  /** What each step cost. A reused step carries the cost it had in the run
+   *  it came from, so the total is what one full pass would cost. */
   costUsd: { extraction: number | null; rating: number | null; checks: number | null };
   claims: LabClaim[];
 }
