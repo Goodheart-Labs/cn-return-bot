@@ -21,10 +21,11 @@ import { tmpdir } from "os";
 import { join } from "path";
 import { readFile, rm, mkdir } from "fs/promises";
 import { extractYoutubeVideoId } from "../../everything-core/pageUrls";
+import { addWarning } from "../utils/warnings";
 import { analyzeVideo, describeImage, type GeminiMediaItem } from "./mediaAnalysisGemini";
 import { downloadMediaWithYtDlp, fetchYtDlpMetadata, type VideoDownload, type YtDlpMetadata } from "./ytDlpDownload";
 import { downloadWithGalleryDl } from "./galleryDlDownload";
-import { captionsToText, fetchYoutubeCaptions } from "./youtubeCaptions";
+import { captionsToText, fetchYoutubeCaptions, YoutubeUnreachableError } from "./youtubeCaptions";
 import { fetchVideo } from "./youtubeDataApi";
 
 /** The longest video we download. */
@@ -33,6 +34,9 @@ const MAX_DOWNLOAD_DURATION_MS = 600_000;
 /** The longest video whose sound Whisper transcribes, when it has no captions
  *  we can fetch. Up to this length a transcript costs about a cent. */
 const WHISPER_MAX_DURATION_MS = 300_000;
+
+/** How much of an error goes into a run warning. */
+const MAX_WARNING_REASON_LENGTH = 150;
 
 type VideoStrategy = "full_video" | "frames";
 
@@ -68,12 +72,26 @@ export async function describeMediaFromUrl(url: string, costName: string, strate
 async function describeYoutubeVideo(url: string, costName: string, strategy: VideoStrategy): Promise<MediaSourceDescription> {
   const video = await fetchVideo(url);
   const details = { title: video.title, uploader: video.channelTitle, published: video.publishedAt, description: video.description };
-  const cues = await fetchYoutubeCaptions(url);
-  const transcript = cues ? captionsToText(cues) : null;
+  const transcript = await fetchCaptionText(url);
   // A live stream has no duration yet, and is too long to download too.
   const durationMs = video.durationSeconds === null ? undefined : video.durationSeconds * 1000;
   if (durationMs === undefined || durationMs > MAX_DOWNLOAD_DURATION_MS) return { kind: "video_too_long", details, transcript };
   return { details, ...(await downloadAndDescribe(url, costName, strategy, { download: "pictures_only", durationMs, transcript })) };
+}
+
+/** The captions as plain text, or null when the video has none. When YouTube
+ *  could not be reached, the video is still described from its details and
+ *  frames, and the run carries a warning. A verifier that sees the title and
+ *  the pictures can judge more than one that falls back to YouTube's page. */
+async function fetchCaptionText(url: string): Promise<string | null> {
+  try {
+    const cues = await fetchYoutubeCaptions(url);
+    return cues ? captionsToText(cues) : null;
+  } catch (err) {
+    if (!(err instanceof YoutubeUnreachableError)) throw err;
+    addWarning(`YouTube captions could not be fetched, described without a transcript (${url}): ${err.message.slice(0, MAX_WARNING_REASON_LENGTH)}`);
+    return "(the captions could not be fetched)";
+  }
 }
 
 async function describeWithYtDlp(url: string, costName: string, strategy: VideoStrategy): Promise<MediaSourceDescription> {
