@@ -36,8 +36,10 @@ export function StatusBadge({ status }: { status: NoteStatus }) {
   return (
     <div className="flex items-center gap-1.5 text-sm font-semibold text-fg-secondary">
       {/* The size is given in em so the icon scales with the site's larger
-          type scale. */}
-      <svg viewBox="0 0 20 20" width="1.05em" height="1.05em" aria-hidden className={`shrink-0 ${dot}`}>
+          type scale. The circle fills the whole viewBox, and at a fractional
+          pixel size its softened edge falls just outside the box. The svg
+          would clip that edge flat, so its overflow is left visible. */}
+      <svg viewBox="0 0 20 20" width="1.05em" height="1.05em" aria-hidden overflow="visible" className={`shrink-0 ${dot}`}>
         <circle cx="10" cy="10" r="10" fill="currentColor" />
         {status === "helpful" && (
           <path d="M5.5 10.5l3 3 6-6.5" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
