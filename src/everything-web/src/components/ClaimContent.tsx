@@ -4,49 +4,32 @@ import { buttonVariants } from "@cn/ui/Button";
 import { Quote } from "@cn/ui/typography";
 
 const SOURCE_LINK = buttonVariants({ variant: "link", className: "text-xs" });
-import { quoteFragmentUrl } from "../../../dashboard-shared/textFragment";
 
 /** What a note is about: a clip of a YouTube video or a quote from an article. */
 export type NotedContent =
-  | { kind: "youtube"; url: string; quote?: string; fragmentText?: string; updatedQuote?: string; imageGrounded?: boolean; startSeconds?: number | null; endSeconds?: number | null }
-  | { kind: "article"; url: string | null; quote: string; fragmentText?: string; updatedQuote?: string; imageGrounded?: boolean };
+  | { kind: "youtube"; url: string; quote?: string; restated?: boolean; updatedQuote?: string; imageGrounded?: boolean; startSeconds?: number | null; endSeconds?: number | null }
+  | { kind: "article"; quote: string; restated?: boolean; updatedQuote?: string; imageGrounded?: boolean };
 
-/** Shows a quotation from an article or post. The source link sits in the upper
- *  right, in the same place as TweetCard's "View on <host> ↗" link. When
- *  `fragmentText` is set, the displayed text is a restatement of the source and
- *  not the source's own words. Such text renders as ordinary body text instead
- *  of as a quote block. The deep link still points at the verbatim passage. */
-function CitationBlock({ quote, url, linkText, fragmentText, updatedQuote, imageGrounded }: {
+/** Shows a quotation from an article or post. When `restated` is set, the
+ *  displayed text is a restatement of the source and not the source's own
+ *  words, so it renders as ordinary body text instead of as a quote block.
+ *  There is no link to the source here. The item's title on the project page
+ *  already links to it, and a second link on every note was clutter. */
+function CitationBlock({ quote, restated, updatedQuote, imageGrounded }: {
   quote: string;
-  url: string | null;
-  linkText: string;
-  /** The passage exactly as it appears in the source. It is what the `#:~:text=`
-   *  deep link targets when the displayed `quote` is not itself verbatim. It
-   *  defaults to `quote`. */
-  fragmentText?: string;
+  restated?: boolean;
   /** The wording the source carries now. It is set when the source changed after
    *  we captured the quote. The captured quote is still the one displayed, and
-   *  this text is shown below it as what the source now reads. It also becomes
-   *  the deep link's target, because it is the only wording a reader who follows
-   *  the link can still find. */
+   *  this text is shown below it as what the source now reads. */
   updatedQuote?: string;
   /** True when the claim rests on an image rather than on source text. The
    *  restated wording is then expected to be missing from the text, so we show
-   *  no warning about it. The link goes to the plain page with no text fragment,
-   *  because there is no passage to target. */
+   *  no warning about it. */
   imageGrounded?: boolean;
 }) {
-  const verbatim = !fragmentText;
   return (
     <div>
-      {url && (
-        <div className="flex justify-end mb-1">
-          <a href={imageGrounded ? url : quoteFragmentUrl(url, updatedQuote ?? fragmentText ?? quote)} target="_blank" rel="noopener noreferrer" className={SOURCE_LINK}>
-            {linkText} ↗
-          </a>
-        </div>
-      )}
-      {verbatim ? (
+      {!restated ? (
         <Quote>“{quote}”</Quote>
       ) : (
         <div>
@@ -118,10 +101,10 @@ const CLIP_END_POLL_MS = 200;
  *  the end of the clip we rewind to its start and pause. Otherwise YouTube's own
  *  end screen takes over, and its replay button restarts the whole video from
  *  0:00. */
-function YouTubeClip({ url, quote, fragmentText, updatedQuote, imageGrounded, startSeconds, endSeconds }: {
+function YouTubeClip({ url, quote, restated, updatedQuote, imageGrounded, startSeconds, endSeconds }: {
   url: string;
   quote?: string;
-  fragmentText?: string;
+  restated?: boolean;
   updatedQuote?: string;
   imageGrounded?: boolean;
   startSeconds?: number | null;
@@ -169,7 +152,7 @@ function YouTubeClip({ url, quote, fragmentText, updatedQuote, imageGrounded, st
   return (
     <div className="space-y-2">
       {videoId && <div ref={hostRef} className="w-full aspect-video rounded-control overflow-hidden" />}
-      {quote && <CitationBlock quote={quote} url={url} linkText="watch" fragmentText={fragmentText} updatedQuote={updatedQuote} imageGrounded={imageGrounded} />}
+      {quote && <CitationBlock quote={quote} restated={restated} updatedQuote={updatedQuote} imageGrounded={imageGrounded} />}
       {!videoId && !quote && (
         <a href={url} target="_blank" rel="noopener noreferrer" className={SOURCE_LINK}>
           View on {sourceLinkLabel(url)} ↗
@@ -181,13 +164,13 @@ function YouTubeClip({ url, quote, fragmentText, updatedQuote, imageGrounded, st
 
 /**
  * Renders the piece of content a note is about. A YouTube clip is embedded at its start and end timestamps. An
- * article or post is shown as a verbatim citation that links back to the source.
+ * article or post is shown as a verbatim citation.
  */
 export function ClaimContent({ content }: { content: NotedContent }) {
   switch (content.kind) {
     case "youtube":
-      return <YouTubeClip url={content.url} quote={content.quote} fragmentText={content.fragmentText} updatedQuote={content.updatedQuote} imageGrounded={content.imageGrounded} startSeconds={content.startSeconds} endSeconds={content.endSeconds} />;
+      return <YouTubeClip url={content.url} quote={content.quote} restated={content.restated} updatedQuote={content.updatedQuote} imageGrounded={content.imageGrounded} startSeconds={content.startSeconds} endSeconds={content.endSeconds} />;
     case "article":
-      return <CitationBlock quote={content.quote} url={content.url} linkText={content.url ? sourceLinkLabel(content.url) : ""} fragmentText={content.fragmentText} updatedQuote={content.updatedQuote} imageGrounded={content.imageGrounded} />;
+      return <CitationBlock quote={content.quote} restated={content.restated} updatedQuote={content.updatedQuote} imageGrounded={content.imageGrounded} />;
   }
 }
