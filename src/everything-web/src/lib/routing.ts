@@ -61,6 +61,10 @@ export function useRoute(): [Route, (next: Route) => void] {
   const navigate = (next: Route) => {
     window.history.pushState(null, "", `${window.location.pathname}${routeSearch(next)}`);
     setRoute(next);
+    // A new page starts at the top, as it does after following any link. Back
+    // and Forward are left alone, so the browser's own scroll restoration puts
+    // the reader where they were.
+    window.scrollTo(0, 0);
     capturePageview();
   };
   return [route, navigate];

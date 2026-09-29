@@ -36,7 +36,8 @@ export function Modal({ title, onClose, widthClassName = "max-w-sm", children }:
       onClose={onClose}
       onMouseDown={(e) => { pressedOnBackdrop.current = e.target === e.currentTarget; }}
       onClick={(e) => { if (pressedOnBackdrop.current && e.target === e.currentTarget) onClose(); }}
-      className={cn("w-full bg-transparent p-4 backdrop:bg-black/40", widthClassName)}
+      // The dim is stronger on a dark page, where a light one disappears.
+      className={cn("w-full bg-transparent p-4 backdrop:bg-black/50 dark:backdrop:bg-black/75", widthClassName)}
     >
       <div className={cn(cardVariants({ elevation: "floating" }), "max-h-[85vh] space-y-3 overflow-y-auto p-6")}>
         <div className="flex items-center justify-between gap-2">

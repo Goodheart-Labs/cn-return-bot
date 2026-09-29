@@ -4,7 +4,7 @@ import writeANote from "../../assets/screenshots/write-a-note.webp";
 
 /* The words and pictures of the homepage. */
 
-export const HEADLINE = "Towards a more truthful internet";
+export const HEADLINE = "Community Notes 4 Everything";
 
 /** What Common Notes is, in the words of the extension's store listing. */
 export const PITCH = [

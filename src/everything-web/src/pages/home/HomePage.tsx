@@ -102,9 +102,6 @@ function Install({ navigate, desktop }: { navigate: (route: Route) => void; desk
   );
 }
 
-/** The line under the headline that says what Common Notes is. */
-const SUBLINE = "Notes beside the claims in Substack posts and YouTube videos. AI writes them, readers rate them.";
-
 export function HomePage({ showInstall, navigate }: { showInstall: boolean; navigate: (route: Route) => void }) {
   const browser = browserById(detectBrowser());
   const [desktop] = useState(canInstallExtensions);
@@ -116,7 +113,6 @@ export function HomePage({ showInstall, navigate }: { showInstall: boolean; navi
     <div className="bg-surface px-4 md:px-8">
       <section className="pt-16 text-center md:pt-24">
         <h1 className="mx-auto max-w-4xl font-title text-display font-bold tracking-tight text-fg text-balance">{HEADLINE}</h1>
-        <p className="mx-auto mt-5 max-w-[52ch] text-lg text-fg-secondary text-balance">{SUBLINE}</p>
         <div className="mt-8">
           {!desktop ? (
             <DesktopOnly navigate={navigate} className="mx-auto max-w-[36ch]" />

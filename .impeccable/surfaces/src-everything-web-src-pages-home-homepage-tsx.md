@@ -12,6 +12,13 @@ primary_target: "src/everything-web/src/pages/home/HomePage.tsx"
 related_targets: []
 ---
 
+---
+version: 1
+slug: "src-everything-web-src-pages-home-homepage-tsx"
+primary_target: "src/everything-web/src/pages/home/HomePage.tsx"
+related_targets: []
+---
+
 # Homepage (commonnotes.net)
 
 Mode: Persuade. The visitor is a heavy reader or viewer of long-form content who should leave understanding what Common Notes does and with the extension installed.
@@ -28,7 +35,7 @@ OWN-WORLD: The product's existing identity in Substack's type: the system face f
 
 STORY: The visitor reads the promise, sees a note sitting beside a real claim, learns that Common Notes brings Community Notes to the whole web with ratings deciding which notes count, and installs from the tab for their browser.
 
-FIRST VIEWPORT: The header (logo, Home and Notes left; Sign in and Get the extension right), the headline at display size centred, one line under it saying what Common Notes is, the download button for the detected browser with its logo (on a phone, a sentence that it runs on a computer, with a link to read the notes), and the top of the screenshot carousel entering the fold.
+FIRST VIEWPORT: The header (logo, Home and Notes left; Sign in and Get the extension right), the headline "Community Notes 4 Everything" at display size centred, the download button for the detected browser with its logo (on a phone, a sentence that it runs on a computer, with a link to read the notes), and the top of the screenshot carousel entering the fold.
 
 FORM: The category standard (canon exit), chosen by Jim in the second round. Seed key d25e905a. Signature interaction: the screenshot carousel that rotates every six seconds, holds under the pointer or focus, and turns by arrows and dots.
 

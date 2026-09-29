@@ -77,15 +77,10 @@ const ITEM_LIST_WIDTH = { default: 300, min: 220, max: 560 };
 
 /** The top of the notes column. For the whole project it names the project,
  *  with the creator's picture and a link to their own page. For one item it
- *  names the item under the project's name, with a link to the original. */
+ *  names the item under the project's name, and the item's title links to the
+ *  original. */
 function PageHeading({ project, item, navigate }: { project: FeedProjectRow; item: FeedItemRow | null; navigate: (route: Route) => void }) {
   const platform = project.feed_url ? creatorPlatform(project.feed_url) : null;
-  const external = (href: string, label: string) => (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-fg-muted hover:text-link">
-      {label}
-      <ExternalLinkIcon size={13} aria-hidden="true" />
-    </a>
-  );
   if (item) {
     return (
       <div className="min-w-0">
@@ -97,8 +92,13 @@ function PageHeading({ project, item, navigate }: { project: FeedProjectRow; ite
           <ProjectAvatar project={project} size={22} />
           {project.name}
         </RouteLink>
-        <h1 className="mt-2 font-title text-2xl font-bold text-fg text-balance">{item.title ?? "Untitled"}</h1>
-        <p className="mt-1">{external(item.url, "Open the original")}</p>
+        {/* The title is the link to the original post or video. It reads as a
+            plain title and turns blue under the pointer. */}
+        <h1 className="mt-2 font-title text-2xl font-bold text-fg text-balance">
+          <a href={item.url} target="_blank" rel="noopener noreferrer" className="rounded-control hover:text-link focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+            {item.title ?? "Untitled"}
+          </a>
+        </h1>
       </div>
     );
   }
@@ -107,7 +107,12 @@ function PageHeading({ project, item, navigate }: { project: FeedProjectRow; ite
       <ProjectAvatar project={project} size={48} />
       <div className="min-w-0">
         <h1 className="font-title text-2xl font-bold leading-tight text-fg text-balance">{project.name}</h1>
-        {platform && project.feed_url && external(project.feed_url, `On ${platform}`)}
+        {platform && project.feed_url && (
+          <a href={project.feed_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-fg-muted hover:text-link">
+            On {platform}
+            <ExternalLinkIcon size={13} aria-hidden="true" />
+          </a>
+        )}
       </div>
     </div>
   );
@@ -233,7 +238,7 @@ export function ProjectPage({ project, itemId, noteId, navigate }: {
       </main>
 
       <ExtensionNudge />
-      <WriteNoteModal open={writeOpen} onClose={() => setWriteOpen(false)} />
+      <WriteNoteModal open={writeOpen} onClose={() => setWriteOpen(false)} navigate={navigate} />
     </div>
   );
 }
