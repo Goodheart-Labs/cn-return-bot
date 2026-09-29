@@ -1,9 +1,6 @@
-import { normalizeText } from "../../../everything-shared/normalizeText";
-import type { NoteRow } from "../../../everything-shared/types";
+import { normalizeText } from "@cn/core/normalizeText";
+import type { NoteRow } from "@cn/core/types";
 
-/** Plain source wording plus just enough structure for a reading page. Keep the
- * original block too: rendering must never replace the author's words with a
- * claim extracted by the notes pipeline. */
 export interface ReaderBlock {
   id: string;
   kind: "paragraph" | "heading" | "list";
@@ -18,8 +15,7 @@ const HEADING = /^ {0,3}(#{1,6})[ \t]+(.+?)(?:[ \t]+#+)?[ \t]*$/;
 const LIST_ITEM = /^ {0,3}([-+*]|\d+[.)])\s+(.+)$/;
 const SETEXT = /^ {0,3}(=+|-+)\s*$/;
 
-/** Content-based ids survive inserting an earlier paragraph. Identical blocks
- * get a suffix so every fragment still names one element. */
+// Content-based IDs keep passage links stable when earlier paragraphs change.
 function blockId(text: string): string {
   let hash = 2166136261;
   for (let i = 0; i < text.length; i++) {
@@ -80,7 +76,6 @@ export function parseReaderText(fullText: string | null | undefined): ReaderBloc
           items.push(item[2]!);
           i++;
         } else if (!item && /^\s{2,}\S/.test(current)) {
-          // A wrapped list item stays with the item that introduced it.
           sourceLines.push(current);
           items[items.length - 1] += `\n${current.trimStart()}`;
           i++;
@@ -118,9 +113,7 @@ interface Match {
   end: number;
 }
 
-/** The shared normalizer handles punctuation, smart quotes and whitespace.
- * Short, generic phrases are left unanchored instead of selecting a paragraph
- * on very little evidence. No fuzzy word-overlap score is used. */
+// Short, generic phrases do not provide enough evidence to anchor a claim.
 function findMatches(text: string, spans: BlockSpan[], phrase: string | null): Match[] {
   const normalized = normalizeText(phrase ?? "");
   if (normalized.length < 12 || normalized.split(" ").length < 3) return [];
@@ -132,8 +125,7 @@ function findMatches(text: string, spans: BlockSpan[], phrase: string | null): M
     const end = start + normalized.length;
     from = start + 1;
     if ((start > 0 && text[start - 1] !== " ") || (end < text.length && text[end] !== " ")) continue;
-    // A quotation can cross a paragraph boundary. Attach it to the paragraph
-    // that contains most of the matched passage; an equal split uses the first.
+    // Cross-paragraph quotes belong beside their largest overlap.
     let best: BlockSpan | undefined;
     let overlap = 0;
     for (const span of spans) {
@@ -153,10 +145,8 @@ function uniqueBlock(matches: Match[]): string | null {
   return ids.size === 1 ? matches[0]!.blockId : null;
 }
 
-/** Every input note is returned once, either beside a supported passage or in
- * the unanchored list. The latter matters for image-only claims and quotations
- * whose source wording has changed. */
-export function mapNotesToBlocks<T extends Pick<NoteRow, "claim">>(
+// Unmatched notes must remain accessible, including image-only claims.
+export function mapNotesToBlocks<T extends { claim: Pick<NoteRow["claim"], "context_quote" | "context_paragraph" | "updated_quote"> | null }>(
   blocks: readonly ReaderBlock[],
   notes: readonly T[],
 ): { byBlock: Map<string, T[]>; unanchored: T[] } {
@@ -179,8 +169,7 @@ export function mapNotesToBlocks<T extends Pick<NoteRow, "claim">>(
         const matches = findMatches(text, spans, phrase);
         blockId = uniqueBlock(matches);
         if (!blockId && matches.length > 1 && context.length) {
-          // The same quote may appear in an introduction and later in the
-          // argument. Its surrounding paragraph can identify the intended one.
+          // Surrounding context can distinguish repeated quotations.
           blockId = uniqueBlock(matches.filter((match) => context.some(
             (paragraph) => match.start >= paragraph.start && match.end <= paragraph.end,
           )));
@@ -200,69 +189,7 @@ export function mapNotesToBlocks<T extends Pick<NoteRow, "claim">>(
   return { byBlock, unanchored };
 }
 
-/** Drops the blocks at the very start whose every line repeats one of the
- *  given lines. The stored essay opens with its title and date, which the page
- *  already shows in the masthead, and the two may sit on adjacent lines and so
- *  form one block. Nothing after the first non-matching block is touched. */
-export function stripLeadingBlocks(blocks: readonly ReaderBlock[], lines: readonly string[]): ReaderBlock[] {
-  const wanted = new Set(lines.map((line) => normalizeText(line)));
-  const repeats = (block: ReaderBlock) => block.text.split("\n").every((line) => wanted.has(normalizeText(line)));
-  let from = 0;
-  while (from < blocks.length && repeats(blocks[from]!)) from++;
-  return blocks.slice(from);
-}
-
-/** Turns each line that is one of the given section titles into a heading.
- *  The stored text carries no heading markup, and the parser refuses to guess
- *  from shape, so the page names the sections it knows. A title that shares a
- *  paragraph with the lines around it, because no blank line separated them,
- *  splits that paragraph. Ids are rebuilt for every block this creates and
- *  never collide with the ids of the blocks left alone. */
-export function promoteHeadings(blocks: readonly ReaderBlock[], titles: readonly string[]): ReaderBlock[] {
-  const wanted = new Set(titles.map((title) => normalizeText(title)));
-  const isTitle = (line: string) => wanted.has(normalizeText(line));
-  const touched = (block: ReaderBlock) => block.kind === "paragraph" && block.text.split("\n").some(isTitle);
-  const taken = new Set(blocks.filter((block) => !touched(block)).map((block) => block.id));
-  const claim = (base: string) => {
-    let id = base;
-    for (let n = 2; taken.has(id); n++) id = `${base}-${n}`;
-    taken.add(id);
-    return id;
-  };
-  const out: ReaderBlock[] = [];
-  for (const block of blocks) {
-    if (!touched(block)) {
-      out.push(block);
-      continue;
-    }
-    let run: string[] = [];
-    const flush = () => {
-      if (run.length === 0) return;
-      const text = run.join("\n");
-      out.push({ kind: "paragraph", text, sourceText: text, id: claim(blockId(`paragraph:${text}`)) });
-      run = [];
-    };
-    for (const line of block.text.split("\n")) {
-      if (!isTitle(line)) {
-        run.push(line);
-        continue;
-      }
-      flush();
-      const text = line.trim();
-      out.push({ kind: "heading", level: 2, text, sourceText: line, id: claim(blockId(`heading:${text}`)) });
-    }
-    flush();
-  }
-  return out;
-}
-
-/** The anchor a reader's selection makes on a passage, or null when the
- *  selection is too short or is not in this passage. The selection is
- *  widened to whole words, and the length rule is the one findMatches
- *  applies, so an anchor accepted here is one that attaches to this passage
- *  when the note comes back from the database. Rendering wraps lines with
- *  pre-line, so a selection can carry newlines the stored text lacks and the
- *  other way round; both sides are compared with their whitespace collapsed. */
+// Selections must meet the same matching rules as notes read back from storage.
 export function anchorForSelection(block: Pick<ReaderBlock, "text">, selected: string): string | null {
   const passage = block.text.replace(/\s+/g, " ");
   const wanted = selected.replace(/\s+/g, " ").trim();

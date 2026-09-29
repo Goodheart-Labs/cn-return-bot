@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import type { ClaimRef } from "../../../everything-shared/types";
-import { anchorForSelection, mapNotesToBlocks, parseReaderText, promoteHeadings, stripLeadingBlocks } from "./readerText";
+import type { ClaimRef } from "@cn/core/types";
+import { anchorForSelection, mapNotesToBlocks, parseReaderText } from "./readerText";
 
 function note(id: string, context: Partial<ClaimRef> = {}) {
   return {
@@ -121,40 +121,11 @@ describe("reader note anchoring", () => {
 });
 
 describe("reader writing helpers", () => {
-  const essay = "We Must Pace the Frontier\n\nSeptember 2026\n\nI have worked on AI for twelve years.\nA wrapped line follows it.\n\nWhy Pace?\n\nThe idea of pausing has been floated before.";
-
-  test("strips only the leading title and date the masthead already shows", () => {
-    const blocks = stripLeadingBlocks(parseReaderText(essay), ["We Must Pace the Frontier", "September 2026"]);
-    expect(blocks.map((block) => block.text.slice(0, 12))).toEqual(["I have worke", "Why Pace?", "The idea of "]);
-    // A repeat of the title later in the text is left alone.
-    const later = stripLeadingBlocks(parseReaderText("Intro.\n\nWe Must Pace the Frontier"), ["We Must Pace the Frontier"]);
-    expect(later).toHaveLength(2);
-  });
-
-  test("promotes known section titles to headings with a fresh unique id", () => {
-    const before = parseReaderText(essay);
-    const blocks = promoteHeadings(before, ["Why Pace?"]);
-    const heading = blocks.find((block) => block.text === "Why Pace?")!;
-    expect(heading.kind).toBe("heading");
-    expect(heading.level).toBe(2);
-    expect(heading.id).not.toBe(before.find((block) => block.text === "Why Pace?")!.id);
-    expect(new Set(blocks.map((block) => block.id)).size).toBe(blocks.length);
-    expect(blocks.filter((block) => block.kind === "heading")).toHaveLength(1);
-  });
-
-  test("a title with no blank line around it splits the paragraph it sits in", () => {
-    // The stored essay has "Embedded Evaluators" straight after a paragraph
-    // line, and the title and date on adjacent lines at the top.
-    const text = "We Must Pace the Frontier\nSeptember 2026\n\nTesting matters more now.\nEmbedded Evaluators\n\nThe first step is evaluators.";
-    const stripped = stripLeadingBlocks(parseReaderText(text), ["We Must Pace the Frontier", "September 2026"]);
-    expect(stripped.map((block) => block.text.slice(0, 15))).toEqual(["Testing matters", "The first step "]);
-    const blocks = promoteHeadings(stripped, ["Embedded Evaluators"]);
-    expect(blocks.map((block) => [block.kind, block.text])).toEqual([
-      ["paragraph", "Testing matters more now."],
-      ["heading", "Embedded Evaluators"],
-      ["paragraph", "The first step is evaluators."],
-    ]);
-    expect(new Set(blocks.map((block) => block.id)).size).toBe(3);
+  test("keeps title, date and unmarked section lines as source paragraphs", () => {
+    const text = "An Article Title\nSeptember 2026\n\nThe introduction.\nA section title\n\nThe next paragraph.";
+    const blocks = parseReaderText(text);
+    expect(blocks.map((block) => block.kind)).toEqual(["paragraph", "paragraph", "paragraph"]);
+    expect(blocks.map((block) => block.text).join("\n\n")).toBe(text);
   });
 
   test("widens a selection to whole words and refuses short or foreign text", () => {
