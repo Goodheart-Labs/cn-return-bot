@@ -61,9 +61,29 @@ function classifyByExtension(filePath: string): YtDlpKind | null {
 }
 
 const YT_DLP_TIMEOUT_MS = 120_000;
-const LOW_QUALITY_FORMAT = "worst[height<=240]/worst";
 
-export type YtDlpQuality = "default" | "low";
+/** A yt-dlp format selector: yt-dlp's own rule language for choosing among the
+ *  files a video is offered in. Each alternative is separated by a slash, and
+ *  the first one that matches a file wins.
+ *
+ *  The first alternative takes the best video-only stream that is at most 360
+ *  pixels tall. A video-only stream is a file with pictures and no sound, and
+ *  YouTube serves almost everything that way. 360p is 640 pixels wide, which is
+ *  the width the sampled frames are scaled to anyway.
+ *  The second alternative takes the smallest video-only stream, for a video
+ *  whose streams are all taller.
+ *  The last two are for sites that offer no video-only streams. They take a
+ *  combined file of at most 360p, or else the smallest combined file.
+ *
+ *  The old rule was "worst[height<=240]/worst". Plain "worst" only matches a
+ *  combined file, and YouTube no longer offers one we can download, so every
+ *  such download failed with "Requested format is not available". */
+const FRAMES_ONLY_FORMAT = "bv[height<=360]/wv/b[height<=360]/w";
+
+/** "default" downloads the video as yt-dlp would, with its sound.
+ *  "frames_only" downloads a small file without sound, for a caller that only
+ *  samples frames from it and already has the transcript from elsewhere. */
+export type YtDlpQuality = "default" | "frames_only";
 
 const YOUTUBE_URL_RE = /^https?:\/\/([\w-]+\.)?(youtube\.com|youtu\.be)\//i;
 
@@ -106,16 +126,28 @@ function runYtDlp(args: string[], timeoutMs: number): Promise<YtDlpRun> {
   });
 }
 
+/** What yt-dlp prints when YouTube itself answered that the video or the
+ *  requested file does not exist. A fresh proxy connection gets the same
+ *  answer, so these failures are not retried. Between 2026-09-07 and
+ *  2026-09-29 every video that failed with one of these was also missing
+ *  from YouTube's public oEmbed lookup. */
+const YOUTUBE_PERMANENT_ANSWER_RE = /This video is unavailable|Video unavailable|Requested format is not available/i;
+
 /** Run yt-dlp and return what it printed, or throw when it failed. A YouTube
- *  call goes through the residential proxy, and any failure is retried on a
- *  fresh connection. The thrown error's message is yt-dlp's command line and
+ *  call goes through the residential proxy, and a failure is retried on a
+ *  fresh connection unless YouTube answered that the video or the file does
+ *  not exist. The thrown error's message is yt-dlp's command line and
  *  complaint, with the proxy's credentials taken out. */
 export async function execYtDlp(url: string, args: string[]): Promise<string> {
-  return throughProxyIfYoutube(url, async (proxyUrl) => {
-    const run = await runYtDlp([...proxyArgs(proxyUrl), ...args], YT_DLP_TIMEOUT_MS);
-    if (run.error) throw new Error(hideProxyAddress(run.error.message));
-    return run.stdout;
-  });
+  return throughProxyIfYoutube(
+    url,
+    async (proxyUrl) => {
+      const run = await runYtDlp([...proxyArgs(proxyUrl), ...args], YT_DLP_TIMEOUT_MS);
+      if (run.error) throw new Error(hideProxyAddress(run.error.message));
+      return run.stdout;
+    },
+    (err) => !(err instanceof Error && YOUTUBE_PERMANENT_ANSWER_RE.test(err.message)),
+  );
 }
 
 /** YouTube could not be reached, as opposed to YouTube answering that the
@@ -255,10 +287,10 @@ export async function fetchYtDlpMetadata(url: string): Promise<YtDlpMetadata> {
 
 /**
  * Download the file. The caller must have fetched the metadata already.
- * A `quality` of "low" asks for the worst stream that is 240p or smaller. When
- * the video has no stream that small, yt-dlp falls back to the worst stream it
- * does have. For a video where we only sample a few frames, this shrinks the
- * number of downloaded bytes a lot.
+ * A `quality` of "frames_only" asks for a stream of at most 360p without sound
+ * (see FRAMES_ONLY_FORMAT). For a long video where we only sample a few
+ * frames, this shrinks the number of downloaded bytes a lot, and every byte
+ * of a YouTube download goes through the paid proxy.
  */
 export async function downloadVideoWithYtDlp(
   url: string,
@@ -267,7 +299,7 @@ export async function downloadVideoWithYtDlp(
   quality: YtDlpQuality = "default",
 ): Promise<{ filePath: string | null; kind: YtDlpKind | null }> {
   const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
-  const formatArgs = quality === "low" ? ["-f", LOW_QUALITY_FORMAT] : [];
+  const formatArgs = quality === "frames_only" ? ["-f", FRAMES_ONLY_FORMAT] : [];
   try {
     await execYtDlp(url, [...formatArgs, "-o", outputTemplate, url]);
     return resolveDownloadedFile(meta, outputDir);

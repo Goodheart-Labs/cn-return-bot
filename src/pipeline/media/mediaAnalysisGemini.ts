@@ -51,7 +51,7 @@ const HAIKU_FALLBACK_MODEL = "anthropic/claude-haiku-4.5";
 const FRAME_SAMPLE_COUNT = 5;              // How many frames we sample from a video, spaced evenly across it.
 const LONG_VIDEO_THRESHOLD_MS = 210_000;   // 3.5 minutes. A video this long or shorter can be sent to Gemini whole.
 const AUTO_SUBS_THRESHOLD_MS = 300_000;    // 5 minutes. Above this the transcript comes from auto-subs, and Whisper never runs.
-const LOW_QUALITY_THRESHOLD_MS = 900_000;  // 15 minutes. Above this we ask for the lowest-resolution stream to limit download size.
+const FRAMES_ONLY_THRESHOLD_MS = 900_000;  // 15 minutes. Above this we download a small stream without sound, to limit download size.
 
 // --- Types ---
 
@@ -536,9 +536,10 @@ async function describeImageFromLocalFile(filePath: string, costName: string): P
  * For a video the strategy adapts to its duration to keep the cost down.
  * A video longer than 5 minutes takes its transcript from auto-subs only, and never
  * falls back to Whisper.
- * A video longer than 15 minutes is downloaded at the lowest available resolution.
+ * A video longer than 15 minutes is downloaded at 360p at most and without its sound.
  * The frames we sample are scaled down to 640px anyway, so the extra bytes of an HD
- * stream would be wasted.
+ * stream would be wasted. Its transcript already came from auto-subs, so the sound
+ * would be wasted too.
  */
 export async function describeMediaFromUrl(
   url: string,
@@ -564,7 +565,7 @@ async function describeWithYtDlp(
   const meta = await fetchYtDlpMetadata(url);
   const durationMs = meta.duration ? Math.round(meta.duration * 1000) : undefined;
   const isLongAudio = durationMs != null && durationMs > AUTO_SUBS_THRESHOLD_MS;
-  const isLongVideo = durationMs != null && durationMs > LOW_QUALITY_THRESHOLD_MS;
+  const isLongVideo = durationMs != null && durationMs > FRAMES_ONLY_THRESHOLD_MS;
 
   const tmpDir = join(tmpdir(), `cn-yt-media-${Date.now()}-${Math.random().toString(36).slice(2)}`);
   await mkdir(tmpDir, { recursive: true });
@@ -577,7 +578,10 @@ async function describeWithYtDlp(
       precomputedTranscript = (await fetchAutoSubs(url, tmpDir, "en")) ?? null;
     }
 
-    const { filePath, kind } = await downloadVideoWithYtDlp(url, tmpDir, meta, isLongVideo ? "low" : "default");
+    // The sound is only dropped when the transcript is already settled, because
+    // otherwise Whisper would need it.
+    const quality = isLongVideo && precomputedTranscript !== undefined ? "frames_only" : "default";
+    const { filePath, kind } = await downloadVideoWithYtDlp(url, tmpDir, meta, quality);
     if (!filePath || !kind) throw new Error(`yt-dlp produced no usable file for ${url}`);
 
     if (kind === "video") {
