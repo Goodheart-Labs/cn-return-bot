@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import type { NoteRow } from "@cn/core/types";
 import { noteSetOf } from "@cn/features/notes/noteSet";
 import { claimGroups, noteCounts } from "./claimGroups";
-import type { NoteDisplaySettings } from "./settings";
+import { DEFAULT_NOTE_DISPLAY } from "./settings";
 
 // Three Helpful votes rate a note helpful, two Not-helpful votes rate it not
 // helpful, and a note without votes needs more ratings (everything-core/noteScore.ts).
@@ -23,10 +23,6 @@ function note(id: string, claimId: string, status: keyof typeof TALLIES): NoteRo
     ...TALLIES[status],
   } as unknown as NoteRow;
 }
-
-// The shipped defaults (utils/settings.ts), written out because that module
-// needs WXT's browser shim, which bun test does not have.
-const DEFAULT_NOTE_DISPLAY: NoteDisplaySettings = { helpful: "show", needs_ratings: "collapse", not_helpful: "collapse" };
 
 const groupsOf = (notes: NoteRow[], display = DEFAULT_NOTE_DISPLAY) => claimGroups(noteSetOf(notes, []), display);
 
