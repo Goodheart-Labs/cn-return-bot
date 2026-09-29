@@ -1,18 +1,17 @@
 /**
  * yt-dlp Download
  *
- * Shared helper for downloading videos and their metadata from any platform
- * yt-dlp supports, such as X, YouTube, TikTok, Vimeo and Twitch. The local
- * runOnVideos harness calls the combined `downloadWithYtDlp`. The media
- * analysis behind the source verifier calls the granular
- * `fetchYtDlpMetadata`, `downloadVideoWithYtDlp` and `fetchAutoSubs` instead.
+ * Downloads media and its metadata from any site yt-dlp supports, such as
+ * YouTube, TikTok, Vimeo and Twitch, and runs every yt-dlp process the
+ * pipelines start. The local runOnVideos harness calls the combined
+ * `downloadWithYtDlp`. The source verifier calls `fetchYtDlpMetadata` and
+ * `downloadMediaWithYtDlp` separately, because the duration decides what it
+ * downloads. Captions live in youtubeCaptions.ts.
  */
 
 import { execFile } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
-import { extractYoutubeVideoId } from "../../everything-core/pageUrls";
-import { decodeHtmlEntities } from "../utils/html";
 import { hideProxyAddress, withResidentialProxy } from "../utils/residentialProxy";
 
 export interface YtDlpMetadata {
@@ -50,7 +49,7 @@ export interface YtDlpResult {
   kind: YtDlpKind | null;
 }
 
-const VIDEO_EXTS = [".mp4", ".webm", ".mkv", ".mov", ".m4v", ".m4a", ".mp3", ".ogg", ".opus"];
+const VIDEO_EXTS = [".mp4", ".webm", ".mkv", ".mov", ".m4v", ".ogv", ".mpeg", ".mpg", ".avi", ".flv", ".3gp", ".m4a", ".mp3", ".ogg", ".opus"];
 const IMAGE_EXTS = [".jpg", ".jpeg", ".png", ".webp", ".gif", ".heic", ".avif", ".bmp"];
 
 function classifyByExtension(filePath: string): YtDlpKind | null {
@@ -60,10 +59,35 @@ function classifyByExtension(filePath: string): YtDlpKind | null {
   return null;
 }
 
+/** How long one yt-dlp call may run. The source verifier downloads no video
+ *  longer than 10 minutes, at 360p at most. That is 10 to 20 MB, and the
+ *  residential proxy moves it in well under a minute even on a slow device.
+ *  On 2026-09-29 a 95 MB download was killed at this limit twice, which is why
+ *  longer videos are no longer downloaded at all. */
 const YT_DLP_TIMEOUT_MS = 120_000;
-const LOW_QUALITY_FORMAT = "worst[height<=240]/worst";
 
-export type YtDlpQuality = "default" | "low";
+/** Which file of a video to download. The verifier only needs the sound when
+ *  Whisper will transcribe it. */
+export type VideoDownload = "pictures_only" | "with_sound";
+
+/** yt-dlp format selectors, in yt-dlp's own rule language for choosing among
+ *  the files a video is offered in. The alternatives are separated by slashes
+ *  and the first one that matches wins. Every download is capped at 360p,
+ *  because the frames are scaled to 640 pixels wide, which is exactly 360p.
+ *
+ *  "bv" is the best video-only stream, a file with pictures and no sound, and
+ *  "wv" the smallest. YouTube serves almost everything that way. "b" and "w"
+ *  are the best and the smallest combined file, for sites that do not. "wa" is
+ *  the smallest sound-only stream, which yt-dlp merges onto the pictures with
+ *  ffmpeg. The smallest is plenty for Whisper, which hears 16 kHz mono.
+ *
+ *  The old rule was "worst[height<=240]/worst". Plain "worst" only matches a
+ *  combined file, and YouTube no longer offers one we can download, so every
+ *  such download failed with "Requested format is not available". */
+const FORMAT_SELECTORS: Record<VideoDownload, string> = {
+  pictures_only: "bv[height<=360]/wv/b[height<=360]/w",
+  with_sound: "b[height<=360]/bv[height<=360]+wa/w/wv+wa",
+};
 
 const YOUTUBE_URL_RE = /^https?:\/\/([\w-]+\.)?(youtube\.com|youtu\.be)\//i;
 
@@ -72,7 +96,7 @@ const YOUTUBE_URL_RE = /^https?:\/\/([\w-]+\.)?(youtube\.com|youtu\.be)\//i;
  *  through the residential proxy, with its retries. Every other site is always
  *  fetched directly. Those sites work without a proxy, and proxy traffic is
  *  paid for by the gigabyte. */
-function throughProxyIfYoutube<T>(
+export function throughProxyIfYoutube<T>(
   url: string,
   attempt: (proxyUrl: string | undefined) => Promise<T>,
   isRetryable?: (err: unknown) => boolean,
@@ -80,13 +104,10 @@ function throughProxyIfYoutube<T>(
   return YOUTUBE_URL_RE.test(url) ? withResidentialProxy(url, attempt, isRetryable) : attempt(undefined);
 }
 
-const proxyArgs = (proxyUrl: string | undefined): string[] => (proxyUrl ? ["--proxy", proxyUrl] : []);
+export const proxyArgs = (proxyUrl: string | undefined): string[] => (proxyUrl ? ["--proxy", proxyUrl] : []);
 
 /** yt-dlp's JSON dump of a video with many formats can pass a megabyte. */
 const YT_DLP_MAX_OUTPUT_BYTES = 64 * 1024 * 1024;
-
-/** How much of yt-dlp's complaint goes into a log line or an error message. */
-const MAX_REASON_LENGTH = 200;
 
 interface YtDlpRun {
   stdout: string;
@@ -98,7 +119,7 @@ interface YtDlpRun {
 /** Runs yt-dlp without blocking. The services machine checks several claims
  *  at once in one process, and a blocking call would stall all of them for as
  *  long as yt-dlp runs. */
-function runYtDlp(args: string[], timeoutMs: number): Promise<YtDlpRun> {
+export function runYtDlp(args: string[], timeoutMs: number): Promise<YtDlpRun> {
   return new Promise((resolve) => {
     execFile("yt-dlp", args, { timeout: timeoutMs, encoding: "utf8", maxBuffer: YT_DLP_MAX_OUTPUT_BYTES }, (error, stdout, stderr) =>
       resolve({ stdout, stderr, error }),
@@ -106,145 +127,46 @@ function runYtDlp(args: string[], timeoutMs: number): Promise<YtDlpRun> {
   });
 }
 
+/** What yt-dlp prints when YouTube itself answered that the video or the
+ *  requested file does not exist. A fresh proxy connection gets the same
+ *  answer, so these failures are not retried. Between 2026-09-07 and
+ *  2026-09-29 every video that failed with one of these was also missing
+ *  from YouTube's public oEmbed lookup. */
+const YOUTUBE_PERMANENT_ANSWER_RE = /This video is unavailable|Video unavailable|Requested format is not available/i;
+
 /** Run yt-dlp and return what it printed, or throw when it failed. A YouTube
- *  call goes through the residential proxy, and any failure is retried on a
- *  fresh connection. The thrown error's message is yt-dlp's command line and
+ *  call goes through the residential proxy, and a failure is retried on a
+ *  fresh connection unless YouTube answered that the video or the file does
+ *  not exist. The thrown error's message is yt-dlp's command line and
  *  complaint, with the proxy's credentials taken out. */
-export async function execYtDlp(url: string, args: string[]): Promise<string> {
-  return throughProxyIfYoutube(url, async (proxyUrl) => {
-    const run = await runYtDlp([...proxyArgs(proxyUrl), ...args], YT_DLP_TIMEOUT_MS);
-    if (run.error) throw new Error(hideProxyAddress(run.error.message));
-    return run.stdout;
-  });
-}
-
-/** YouTube could not be reached, as opposed to YouTube answering that the
- *  video has no captions. The caller must treat this as a network failure:
- *  retry later, never record it as a fact about the video. Before GOO-169
- *  every such failure became "No transcript available" and the item was
- *  marked a permanent error. */
-export class YoutubeUnreachableError extends Error {
-  constructor(url: string, reason: string) {
-    super(`YouTube could not be reached for ${url}: ${reason}`);
-    this.name = "YoutubeUnreachableError";
-  }
-}
-
-/** What yt-dlp prints when the trouble is the path to YouTube rather than the
- *  video: the residential proxy's requests hanging or being refused, a proxy
- *  address YouTube has flagged, our own kill of a hung call, or a PO token
- *  YouTube did not accept. */
-const YOUTUBE_UNREACHABLE_RE =
-  /Unable to download (API page|webpage)|operation timed out|ETIMEDOUT|wrong version number|HTTP Error 429|Sign in to confirm|PO Token/i;
-
-/** How long one caption call may run before it is killed and counted as not
- *  having reached YouTube. A good call through the proxy takes 6 to 25
- *  seconds; one that is still running after a minute is hung on a dead proxy
- *  address, and a fresh address is what helps, not more waiting. */
-const CAPTION_CALL_TIMEOUT_MS = 60_000;
-
-/** Where the PO token provider listens: the bgutil server that
- *  ops/cn-pot-provider.service runs on the services machine and that
- *  .github/actions/setup-youtube-captions starts in an Actions run. */
-const PO_TOKEN_PROVIDER_URL = process.env.PO_TOKEN_PROVIDER_URL ?? "http://127.0.0.1:4416";
-
-/** A PO token for one video's captions. A PO token ("proof of origin") is
- *  what YouTube's web player presents to show it is a real player; without
- *  one YouTube lists a video's captions and refuses to hand them over. The
- *  provider generates it by running YouTube's own attestation script, in ten
- *  milliseconds once warm.
- *
- *  We ask the provider ourselves instead of letting yt-dlp's bgutil plugin do
- *  it, because the plugin passes yt-dlp's proxy on to the provider. The token
- *  was then generated through the residential proxy, whose path to Google
- *  hangs for hours at a time, and every caption call died waiting for it. A
- *  token is bound to the video, not to an address, so one generated directly
- *  is accepted for a download that goes through the proxy. */
-async function fetchPoToken(videoId: string): Promise<string> {
-  let answer: { poToken?: string; error?: string };
-  try {
-    const response = await fetch(`${PO_TOKEN_PROVIDER_URL}/get_pot`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ content_binding: videoId }),
-      signal: AbortSignal.timeout(CAPTION_CALL_TIMEOUT_MS),
-    });
-    answer = (await response.json()) as { poToken?: string; error?: string };
-  } catch (err: any) {
-    throw new Error(`The PO token provider at ${PO_TOKEN_PROVIDER_URL} did not answer (${err?.message}). YouTube captions cannot be fetched without it; see ops/README.md.`);
-  }
-  if (!answer.poToken) throw new Error(`The PO token provider gave no token: ${answer.error ?? "empty answer"}`);
-  return answer.poToken;
-}
-
-/** The arguments that make yt-dlp fetch captions as YouTube's own web player
- *  with the given token. Every other client yt-dlp would try first spends a
- *  minute and a half timing out on YouTube's internal API through the proxy. */
-const webPlayerArgs = (poToken: string): string[] => ["--extractor-args", `youtube:player_client=web;po_token=web.subs+${poToken}`];
-
-/** One yt-dlp caption process, with the proxy and the web player's token
- *  when the URL is YouTube's, returning what it wrote on both streams. Unlike
- *  execYtDlp it never throws on a non-zero exit, because the caption calls
- *  have to read stderr in every case: with --ignore-no-formats-error yt-dlp
- *  exits zero after a request that never got an answer, and stderr is the
- *  only place that says so. A call we killed for taking too long is reported
- *  as a timeout, which YOUTUBE_UNREACHABLE_RE counts as not having reached
- *  YouTube. */
-async function runCaptionCall(url: string, args: string[], proxyUrl: string | undefined): Promise<{ stdout: string; stderr: string }> {
-  const videoId = extractYoutubeVideoId(url);
-  const playerArgs = videoId ? webPlayerArgs(await fetchPoToken(videoId)) : [];
-  const run = await runYtDlp([...proxyArgs(proxyUrl), ...playerArgs, ...args], CAPTION_CALL_TIMEOUT_MS);
-  const failure = run.error?.killed ? "yt-dlp operation timed out" : typeof run.error?.code === "string" ? run.error.message : "";
-  return { stdout: run.stdout, stderr: failure ? `${run.stderr}\n${failure}` : run.stderr };
-}
-
-/** Runs a caption call until it got what it came for or YouTube has
- *  answered. `found` reads the result: caption files on disk, or tracks in a
- *  listing. Success is judged by that and never by the warnings, because a
- *  call that wrote the captions can still print "HTTP Error 429" for a page
- *  it did not need. A call that found nothing and whose output says YouTube
- *  was not reached throws YoutubeUnreachableError, and the proxy wrapper runs
- *  it again on a fresh connection until its tries run out. A call that found
- *  nothing while YouTube did answer returns null: the video has nothing to
- *  give. */
-async function runCaptionCallUntilReached<Found>(url: string, args: string[], found: (stdout: string) => Found | null): Promise<Found | null> {
+async function execYtDlp(url: string, args: string[]): Promise<string> {
   return throughProxyIfYoutube(
     url,
     async (proxyUrl) => {
-      const result = await runCaptionCall(url, args, proxyUrl);
-      const value = found(result.stdout);
-      if (value !== null) return value;
-      const unreachableLine = result.stderr.split("\n").find((line) => YOUTUBE_UNREACHABLE_RE.test(line));
-      if (!unreachableLine) return null;
-      throw new YoutubeUnreachableError(url, unreachableLine.trim().slice(0, MAX_REASON_LENGTH));
+      const run = await runYtDlp([...proxyArgs(proxyUrl), ...args], YT_DLP_TIMEOUT_MS);
+      if (run.error) throw new Error(hideProxyAddress(run.error.message));
+      return run.stdout;
     },
-    (err) => err instanceof YoutubeUnreachableError,
+    (err) => !(err instanceof Error && YOUTUBE_PERMANENT_ANSWER_RE.test(err.message)),
   );
 }
 
 /**
- * Fetch the metadata and download the video at the default quality. This runs
- * yt-dlp twice. The first call only dumps the metadata as JSON, the second one
- * downloads the file. runOnVideos uses this function. The source verifier uses
- * the granular functions below instead. It needs the duration first, because
- * the duration decides which quality it downloads and whether it asks for
- * auto-generated subtitles.
+ * Fetch the metadata and download the file as yt-dlp chooses by default. This
+ * runs yt-dlp twice. The first call only dumps the metadata as JSON, the second
+ * one downloads the file into `outputDir`, which must be empty.
  */
 export async function downloadWithYtDlp(url: string, outputDir: string): Promise<YtDlpResult> {
-  const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
   try {
-    const meta: YtDlpMetadata = JSON.parse(await execYtDlp(url, ["-J", "-o", outputTemplate, url]));
-
-    await execYtDlp(url, ["-o", outputTemplate, url]);
-
-    return { meta, ...resolveDownloadedFile(meta, outputDir) };
+    const meta: YtDlpMetadata = JSON.parse(await execYtDlp(url, ["-J", "--skip-download", url]));
+    return { meta, ...(await downloadMediaWithYtDlp(url, outputDir)) };
   } catch (err: any) {
     throw new Error(`yt-dlp failed for ${url}: ${err?.message}`);
   }
 }
 
 /** Fetch the metadata without downloading anything. The caller uses it to work
- *  out how large the download would be before starting it. */
+ *  out how long a video is before deciding whether to download it. */
 export async function fetchYtDlpMetadata(url: string): Promise<YtDlpMetadata> {
   try {
     return JSON.parse(await execYtDlp(url, ["-J", "--skip-download", url]));
@@ -254,206 +176,32 @@ export async function fetchYtDlpMetadata(url: string): Promise<YtDlpMetadata> {
 }
 
 /**
- * Download the file. The caller must have fetched the metadata already.
- * A `quality` of "low" asks for the worst stream that is 240p or smaller. When
- * the video has no stream that small, yt-dlp falls back to the worst stream it
- * does have. For a video where we only sample a few frames, this shrinks the
- * number of downloaded bytes a lot.
+ * Download the file into `outputDir`, which must be empty. A `video` choice
+ * picks one of the 360p format selectors above. Without one, yt-dlp picks the
+ * file itself, which is right for an image post, where a height cap could pick
+ * a thumbnail over the real picture.
  */
-export async function downloadVideoWithYtDlp(
+export async function downloadMediaWithYtDlp(
   url: string,
   outputDir: string,
-  meta: YtDlpMetadata,
-  quality: YtDlpQuality = "default",
+  video?: VideoDownload,
 ): Promise<{ filePath: string | null; kind: YtDlpKind | null }> {
-  const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
-  const formatArgs = quality === "low" ? ["-f", LOW_QUALITY_FORMAT] : [];
+  const formatArgs = video ? ["-f", FORMAT_SELECTORS[video]] : [];
   try {
-    await execYtDlp(url, [...formatArgs, "-o", outputTemplate, url]);
-    return resolveDownloadedFile(meta, outputDir);
+    await execYtDlp(url, [...formatArgs, "-o", path.join(outputDir, "%(id)s.%(ext)s"), url]);
   } catch (err: any) {
     throw new Error(`yt-dlp download failed for ${url}: ${err?.message}`);
   }
+  return findDownloadedFile(outputDir);
 }
 
-/**
- * Fetch the automatically generated captions and return them as plain text.
- * This returns null when the URL has no auto-generated captions. That happens
- * when the uploader turned them off. It also happens when the video is in a
- * language we did not ask for.
- */
-export async function fetchAutoSubs(url: string, outputDir: string, lang: string = "en"): Promise<string | null> {
-  const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
-  try {
-    await execYtDlp(url, ["--write-auto-sub", "--sub-lang", lang, "--skip-download", "-o", outputTemplate, url]);
-  } catch {
-    // yt-dlp fails when the video has no subtitles. We report that as "no
-    // subtitles" instead of throwing.
-    return null;
-  }
-  // yt-dlp writes the subtitle file as <id>.<lang>.vtt, and sometimes as ttml.
-  // We take the first file we find.
-  const matches = fs.readdirSync(outputDir).filter((f) => f.endsWith(".vtt") || f.endsWith(".ttml"));
-  if (!matches.length) return null;
-  const subPath = path.join(outputDir, matches[0]!);
-  const raw = fs.readFileSync(subPath, "utf-8");
-  return parseSubtitleToText(raw);
-}
-
-/**
- * Works like fetchAutoSubs, but keeps the timestamps of every cue. It asks for
- * the subtitles a human wrote and falls back to the automatically generated
- * ones. It returns null when the video has no subtitles at all. The timestamps
- * let us point an extracted claim at the moment in the video where it was said.
- *
- * The language is a yt-dlp selector, not a plain code, so `en.*` also picks up
- * the regional and uploader-specific spellings of a track. A video usually
- * carries several files that match, and the shortest name is the plain track:
- * `de` before `de-XwLwiJMB_Xs`. YouTube sometimes fails to serve one of them and
- * serves another fine, so every downloaded file is tried in that order.
- */
-export async function fetchTimedTranscript(url: string, outputDir: string, lang: string = "en"): Promise<SubtitleCue[] | null> {
-  const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
-  // The first downloaded track that parses into cues. A non-zero exit still
-  // leaves behind whatever finished downloading, and one good track is all we
-  // need, so the files are read whatever the exit was.
-  const downloadedCues = (): SubtitleCue[] | null => {
-    const files = fs
-      .readdirSync(outputDir)
-      .filter((f) => f.endsWith(".vtt") || f.endsWith(".ttml") || f.endsWith(".srt"))
-      .sort((a, b) => a.length - b.length);
-    for (const file of files) {
-      const cues = parseSubtitleToCues(fs.readFileSync(path.join(outputDir, file), "utf-8"));
-      if (cues.length) return cues;
-    }
-    return null;
-  };
-  // Writing subtitles needs no video formats. Without the ignore flag a
-  // player response that lists no formats aborts the call before the
-  // subtitles are fetched.
-  return runCaptionCallUntilReached(url, ["--write-subs", "--write-auto-subs", "--sub-lang", lang, "--skip-download", "--ignore-no-formats-error", "-o", outputTemplate, url], downloadedCues);
-}
-
-/**
- * The language codes of every caption track a video has, most useful first.
- *
- * YouTube offers each video's own track plus a machine translation of it into
- * every language it knows, and it names them inconsistently: on one video the
- * translations are `en-de-XwLwiJMB_Xs` and on another plain `en`, so a code
- * alone does not say whether a track is original or translated. The listing's
- * Name column does: a translated row reads "Estonian from German", an original
- * row is either blank or names its own language. So we keep the rows without a
- * "from" and drop the rest.
- *
- * The tracks an uploader supplied come first, because they are real subtitles
- * rather than speech recognition.
- */
-export async function listOriginalSubtitleLanguages(url: string): Promise<string[]> {
-  const listedLanguages = (stdout: string): string[] | null => {
-    const languages = parseSubtitleListing(stdout);
-    return languages.length ? languages : null;
-  };
-  return (await runCaptionCallUntilReached(url, ["--list-subs", "--skip-download", "--ignore-no-formats-error", url], listedLanguages)) ?? [];
-}
-
-/** Reads the language codes out of what `yt-dlp --list-subs` prints. */
-export function parseSubtitleListing(listing: string): string[] {
-  const uploaded: string[] = [];
-  const automatic: string[] = [];
-  let section: "uploaded" | "automatic" | null = null;
-  for (const line of listing.split("\n")) {
-    if (/Available subtitles for/i.test(line)) section = "uploaded";
-    else if (/Available automatic captions for/i.test(line)) section = "automatic";
-    else if (/^\s*$/.test(line)) section = null;
-    if (!section) continue;
-
-    // A row is "<code> <name columns> <formats>". The name is what matters and
-    // the columns are only padded with spaces, so the whole rest of the line is
-    // searched for the "from" that marks a translation. A format name never
-    // contains it.
-    const row = /^([A-Za-z0-9_-]+)\s+(\S.*)$/.exec(line);
-    if (!row || row[1] === "Language") continue;
-    const [, code, rest] = row;
-    if (/\bfrom\b/i.test(rest!)) continue;
-    (section === "uploaded" ? uploaded : automatic).push(code!);
-  }
-  return [...uploaded, ...automatic];
-}
-
-function resolveDownloadedFile(meta: YtDlpMetadata, outputDir: string): { filePath: string | null; kind: YtDlpKind | null } {
-  const expected = meta.filename ?? meta._filename ?? path.join(outputDir, `${meta.id}.${meta.ext ?? "mp4"}`);
-  if (fs.existsSync(expected)) {
-    return { filePath: expected, kind: classifyByExtension(expected) };
-  }
-  // A quality filter or a fallback extension can make yt-dlp write a file name
-  // we did not predict. So we scan the directory for any media file.
+/** The media file yt-dlp wrote. Its name depends on the format yt-dlp picked,
+ *  so the directory is scanned instead of predicting it. */
+function findDownloadedFile(outputDir: string): { filePath: string | null; kind: YtDlpKind | null } {
   for (const file of fs.readdirSync(outputDir)) {
-    const full = path.join(outputDir, file);
-    const kind = classifyByExtension(full);
-    if (kind) return { filePath: full, kind };
+    const filePath = path.join(outputDir, file);
+    const kind = classifyByExtension(filePath);
+    if (kind) return { filePath, kind };
   }
   return { filePath: null, kind: null };
-}
-
-export interface SubtitleCue {
-  /** Start time in seconds (float). */
-  start: number;
-  /** End time in seconds (float). */
-  end: number;
-  text: string;
-}
-
-/** Turn a subtitle timecode into seconds. It accepts the forms "00:01:23.456",
- *  "01:23,456" and "83.4". */
-function parseTimecode(tc: string): number {
-  return tc.replace(",", ".").split(":").reduce((acc, part) => acc * 60 + Number(part), 0);
-}
-
-/**
- * Parse a WEBVTT or SRT subtitle file into cues that carry a start and an end
- * time. Every line is stripped of its cue tags and its HTML entities, and a
- * line that repeats the line before it is dropped. Each surviving line is
- * tagged with the start and the end of the cue it sits in. The plain text
- * version below builds on this function and joins the cue texts together.
- */
-export function parseSubtitleToCues(content: string): SubtitleCue[] {
-  const cues: SubtitleCue[] = [];
-  let prev = "";
-  let curStart = 0;
-  let curEnd = 0;
-  // No spoken text can come before the first timing line, so everything above
-  // it is a header and is thrown away. Naming the headers one by one is not
-  // enough: a file can open with a style block whose CSS would otherwise be
-  // read as the video's first words.
-  let started = false;
-  for (const rawLine of content.split(/\r?\n/)) {
-    const line = rawLine.trim();
-    if (!line) continue;
-    if (line === "WEBVTT") continue;
-    if (line.startsWith("NOTE ")) continue;
-    const arrow = line.indexOf("-->");
-    if (arrow === -1 && !started) continue;
-    if (arrow !== -1) {
-      started = true;
-      // A timing line looks like "00:00:00.000 --> 00:00:02.000 align:start position:0%".
-      // It can carry extra layout settings, so we keep only the word next to
-      // the arrow on each side.
-      curStart = parseTimecode(line.slice(0, arrow).trim().split(/\s+/).pop() ?? "0");
-      curEnd = parseTimecode(line.slice(arrow + 3).trim().split(/\s+/)[0] ?? "0");
-      continue;
-    }
-    if (/^\d+$/.test(line)) continue; // A line of only digits is an SRT cue number.
-    const cleaned = decodeHtmlEntities(line.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ").trim();
-    if (!cleaned) continue;
-    // YouTube's automatic captions build a line up word by word, so they repeat
-    // the same line many times.
-    if (cleaned === prev) continue;
-    cues.push({ start: curStart, end: curEnd, text: cleaned });
-    prev = cleaned;
-  }
-  return cues;
-}
-
-function parseSubtitleToText(content: string): string {
-  return parseSubtitleToCues(content).map((c) => c.text).join(" ").replace(/\s+/g, " ").trim();
 }

@@ -26,7 +26,7 @@
  */
 
 import { fetchYoutubeChannel, saveYoutubeChannel, type StoredUpload, type YoutubeChannelRow } from "./db";
-import { fetchChannelUploads, resolveChannel } from "./sources/youtubeDataApi";
+import { fetchChannelUploads, resolveChannel } from "../pipeline/media/youtubeDataApi";
 
 /** How old a listing may get before it is repeated without any notification. */
 const RELIST_AFTER_HOURS = 24;

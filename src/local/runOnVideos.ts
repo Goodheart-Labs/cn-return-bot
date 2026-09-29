@@ -111,7 +111,7 @@ async function main() {
   fs.mkdirSync(downloadDir, { recursive: true });
 
   const fetchPost: PostFetcher = async (input) => {
-    const { meta, filePath, kind } = await downloadWithYtDlp(input.url, downloadDir);
+    const { meta, filePath, kind } = await downloadWithYtDlp(input.url, fs.mkdtempSync(path.join(downloadDir, "item-")));
     const post = buildPostFromDownload(meta, filePath, kind, input.url);
     return { post, title: meta.title?.slice(0, 80) ?? "" };
   };

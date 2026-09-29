@@ -15,7 +15,7 @@
 import "dotenv/config";
 import { canonicalFeed, type CanonicalFeed } from "../../everything/feedUrls";
 import { fetchFeedPosts } from "../../everything/sources/substack";
-import { resolveChannel } from "../../everything/sources/youtubeDataApi";
+import { resolveChannel } from "../../pipeline/media/youtubeDataApi";
 import { fetchAuthorPosts } from "../../everything/sources/lesswrong";
 
 /** The name a creator's source shows for them today. Each lookup is the same

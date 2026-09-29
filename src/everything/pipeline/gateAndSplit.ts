@@ -13,7 +13,7 @@
  */
 
 import { trackLlmCall, trackedLlmCreate } from "../../pipeline/cost-tracking/costTracker";
-import type { SubtitleCue } from "../../pipeline/media/ytDlpDownload";
+import type { SubtitleCue } from "../../pipeline/media/youtubeCaptions";
 import { jsonSchemaResponseFormat } from "../../pipeline/prompts/responseFormat";
 import { parseJsonWithRetry } from "../../pipeline/utils/jsonLlmCall";
 import { stripJsonFences } from "../../pipeline/utils/jsonOutput";
