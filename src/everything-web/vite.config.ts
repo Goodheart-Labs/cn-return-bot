@@ -56,14 +56,6 @@ export default defineConfig(({ command, mode }) => {
   return {
     plugins: [react(), publicFolderPages],
     base: process.env.BASE_PATH ?? "/",
-    build: {
-      rollupOptions: {
-        input: {
-          main: path.resolve(__dirname, "index.html"),
-          reader: path.resolve(__dirname, "read/index.html"),
-        },
-      },
-    },
     resolve: { alias: CN_ALIASES },
     envDir,
     /* Tailwind is wired inline instead of via a postcss.config file, whose

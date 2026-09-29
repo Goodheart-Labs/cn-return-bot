@@ -1,13 +1,11 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchNotesForItem } from "@cn/core/notes";
 import { fetchNnnForClaims } from "@cn/core/noteNotNeeded";
 import type { NoteRow } from "@cn/core/types";
-import { LoginPromptProvider } from "@cn/features/auth/loginPrompt";
 import { NoteCard } from "@cn/features/notes/NoteCard";
 import { noteSetOf, type NoteSet } from "@cn/features/notes/noteSet";
 import { queryKeys } from "@cn/features/query/queryKeys";
-import { LoginModal } from "./LoginModal";
 
 const ReaderNotesContext = createContext<NoteSet>(noteSetOf([], []));
 
@@ -24,15 +22,7 @@ export function useReaderNoteSet(itemId: string | undefined) {
 }
 
 export function ReaderNotesProvider({ noteSet, children }: { noteSet?: NoteSet; children: ReactNode }) {
-  const [loginOpen, setLoginOpen] = useState(false);
-  return (
-    <LoginPromptProvider value={() => setLoginOpen(true)}>
-      <ReaderNotesContext.Provider value={noteSet ?? noteSetOf([], [])}>
-        {children}
-      </ReaderNotesContext.Provider>
-      <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
-    </LoginPromptProvider>
-  );
+  return <ReaderNotesContext.Provider value={noteSet ?? noteSetOf([], [])}>{children}</ReaderNotesContext.Provider>;
 }
 
 export function ReaderNoteCard({ note, scope }: { note: NoteRow; scope: string }) {

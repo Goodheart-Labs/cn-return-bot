@@ -3,15 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchItemForUrl } from "@cn/core/items";
 import { fetchCheckedClaimsForItem, type CheckedClaim } from "@cn/core/claims";
 import type { NoteRow } from "@cn/core/types";
-import { ReaderExtensionLink } from "./components/ReaderExtensionLink";
+import { buttonVariants } from "@cn/ui/Button";
+import { eyebrowVariants } from "@cn/ui/typography";
 import { ReaderNoteCard, ReaderNotesProvider, useReaderNoteSet } from "./components/ReaderNotes";
 import { ReaderWriteNote, type ReaderAnchor } from "./components/ReaderWriteNote";
 import { anchorForSelection, mapNotesToBlocks, parseReaderText, type ReaderBlock } from "./lib/readerText";
 import "./reader.css";
-
-export function isArticleReaderPath(pathname: string): boolean {
-  return /\/read(?:\/|\/index\.html)?$/.test(pathname);
-}
 
 export function articleUrl(value: string | null): string | null {
   try {
@@ -23,7 +20,7 @@ export function articleUrl(value: string | null): string | null {
 }
 
 function OriginalLink({ url }: { url: string }) {
-  return <a className="reader-action" href={url} target="_blank" rel="noopener noreferrer">Read the original on {new URL(url).host.replace(/^www\./, "")} ↗</a>;
+  return <a className={buttonVariants()} href={url} target="_blank" rel="noopener noreferrer">Read the original on {new URL(url).host.replace(/^www\./, "")} ↗</a>;
 }
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
@@ -36,8 +33,6 @@ function countLine(claims: CheckedClaim[], notes: number): string {
 
 export function ArticleReader() {
   const [search, setSearch] = useState(window.location.search);
-  const [fullOpened, setFullOpened] = useState(false);
-  const fullRef = useRef<HTMLDetailsElement>(null);
   const query = new URLSearchParams(search);
   const source = articleUrl(query.get("url"));
   const full = articleUrl(query.get("full"));
@@ -48,28 +43,13 @@ export function ArticleReader() {
     return () => window.removeEventListener("popstate", sync);
   }, []);
 
-  useEffect(() => {
-    if (new URLSearchParams(search).get("edition") === "full" && fullRef.current) {
-      fullRef.current.open = true;
-      setFullOpened(true);
-    }
-  }, [search]);
-
   return (
     <div className="article-reader">
-      <a className="reader-skip" href="#main-article">Skip to article</a>
-      <header className="reader-header">
-        <a className="reader-brand" href={import.meta.env.BASE_URL}>Common Notes</a>
-        <ReaderExtensionLink />
-      </header>
       <main className="reader-shell">
         {source ? <ArticleEdition key={source} source={source} scope="main" /> : <div className="reader-notice"><h1>Choose an article to read</h1><p>Add a valid article URL with ?url= to this page’s address.</p></div>}
-        {query.has("full") && <details ref={fullRef} className="reader-full" onToggle={(event) => { if (event.currentTarget.open) setFullOpened(true); }}>
-          <summary>Read the full text</summary>
-          {fullOpened && (full ? <ArticleEdition key={full} source={full} scope="full" /> : <p className="reader-notice">The full text URL must be an HTTP or HTTPS address.</p>)}
-        </details>}
-        <div className="reader-extension-footer"><ReaderExtensionLink variant="card" /></div>
-        <footer className="reader-footer"><a href={import.meta.env.BASE_URL}>Common Notes</a><span>Context worth reading.</span><a href={`${import.meta.env.BASE_URL}privacy/`}>Privacy</a></footer>
+        {query.has("full") && <section className="reader-full" aria-label="The full text">
+          {full ? <ArticleEdition key={full} source={full} scope="full" /> : <p className="reader-notice">The full text URL must be an HTTP or HTTPS address.</p>}
+        </section>}
       </main>
     </div>
   );
@@ -247,12 +227,14 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
     <ReaderNotesProvider noteSet={noteQuery.data}>
       <section className="reader-edition" aria-label={title}>
           <div className="reader-intro">
-            <p className="reader-eyebrow">An article with Common Notes</p>
+            <p className={eyebrowVariants()}>{scope === "full" ? "The full text" : "An article with Common Notes"}</p>
             <h1>{title}</h1>
             <p className="reader-byline">{host}{item?.published_at && <> <span aria-hidden="true">·</span> <time dateTime={item.published_at}>{new Date(item.published_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" })}</time></>}{blocks.length > 0 && <> <span aria-hidden="true">·</span> {minutes} min read</>}</p>
             {claimsQuery.isSuccess && noteQuery.isSuccess && <p className="reader-checked-count">{countLine(claimsQuery.data, notes.length)}</p>}
-            {item && <aside className="reader-attribution"><p>This text belongs to {host}. Common Notes shows it here only so notes can sit beside it, and claims no copyright in it.</p><OriginalLink url={original} /></aside>}
-            <p className="reader-deck">Read the article. Add a note to any passage. Rate the notes other readers leave.</p>
+            {item && (scope === "full"
+              ? <p className="reader-full-original"><OriginalLink url={original} /></p>
+              : <aside className="reader-attribution"><p>This text belongs to {host}. Common Notes shows it here only so notes can sit beside it, and claims no copyright in it.</p><OriginalLink url={original} /></aside>)}
+            {scope !== "full" && <p className="reader-deck">Read the article. Add a note to any passage. Rate the notes other readers leave.</p>}
             <div className="reader-toolbar">
               {blocks.length > 0 && <button type="button" className="reader-toggle" aria-pressed={showNotes} onClick={() => setShowNotes((value) => !value)}>
                 {showNotes ? "Hide notes" : "Show notes"}<span className="reader-count">{notes.length}</span>
@@ -261,7 +243,7 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
           </div>
 
           {loading ? <div className="reader-notice" id={articleId} tabIndex={-1} role="status">Loading the reading edition…</div>
-            : failed ? <div className="reader-notice" id={articleId} tabIndex={-1} role="alert"><h2>The reading edition couldn’t load.</h2><p>Please try again, or read the original.</p><button className="reader-action" onClick={() => void itemQuery.refetch()}>Try again</button> <OriginalLink url={original} /></div>
+            : failed ? <div className="reader-notice" id={articleId} tabIndex={-1} role="alert"><h2>The reading edition couldn’t load.</h2><p>Please try again, or read the original.</p><button className={buttonVariants({ variant: "secondary" })} onClick={() => void itemQuery.refetch()}>Try again</button> <OriginalLink url={original} /></div>
             : !item || item.checked_scope === "paragraph" ? <div className="reader-notice" id={articleId}><h2>Common Notes hasn't checked this page yet</h2>{item?.checked_scope === "paragraph" && <p>Only a selected paragraph was checked. It is not presented here as the full article.</p>}<OriginalLink url={original} /></div>
             : blocks.length === 0 ? <div className="reader-notice" id={articleId}><h2>The article text isn't available yet.</h2><OriginalLink url={original} /></div>
             : <>
