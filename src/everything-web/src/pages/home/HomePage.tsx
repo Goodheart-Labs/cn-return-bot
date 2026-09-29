@@ -117,7 +117,7 @@ export function HomePage({ showInstall, navigate }: { showInstall: boolean; navi
           {!desktop ? (
             <DesktopOnly navigate={navigate} className="mx-auto max-w-[36ch]" />
           ) : isListed(browser) ? (
-            <StoreButton browser={browser}>Download for {browser.name}, it's free</StoreButton>
+            <StoreButton browser={browser}>Get the extension</StoreButton>
           ) : (
             <button type="button" onClick={scrollToInstall} className={buttonVariants({ variant: "primary", size: "lg" })}>
               Get the extension
