@@ -6,7 +6,7 @@ import { useSession } from "@cn/features/auth/useSession";
 import { claimGroups, itemNoteSetQuery, type ClaimGroup } from "../utils/claimGroups";
 import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
 import { setJumpHandler } from "../utils/jumpBus";
-import { ClaimNoteStack, NOTE_POPOVER_WIDTH } from "./ClaimNoteStack";
+import { ClaimNoteStack, NextNoteButton, NOTE_POPOVER_WIDTH } from "./ClaimNoteStack";
 import { OverlayLoginGate } from "./OverlayLoginGate";
 import { ABSORB_KEYS } from "./EventShield";
 import { FloatingWindow, type Box } from "./FloatingWindow";
@@ -274,7 +274,8 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
           // A new claim gets a fresh card, which opens where the reader left
           // the previous one on this video.
           key={group.claimId}
-          title="Common Note on this part of the video"
+          label="Common Note on this part of the video"
+          header={<NextNoteButton position={displayedIndex + 1} total={groups.length} onNext={jumpNext} />}
           dismissLabel="Dismiss for this video"
           onDismiss={dismiss}
           onPlaced={({ left, top, width }) => setPlacement({ left, top, width })}
@@ -300,9 +301,9 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
         >
           <OverlayLoginGate open={loginOpen} onOpenChange={setLoginOpen}>
             {quotePreview(group) && (
-              <Quote className="mb-2">“{quotePreview(group)}”</Quote>
+              <Quote className="mb-4">“{quotePreview(group)}”</Quote>
             )}
-            <ClaimNoteStack group={group} projectSlug={projectSlug} navigation={{ position: displayedIndex + 1, total: groups.length, onNext: jumpNext }} />
+            <ClaimNoteStack group={group} projectSlug={projectSlug} />
           </OverlayLoginGate>
         </FloatingWindow>
       )}
