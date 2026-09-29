@@ -14,7 +14,7 @@ const ArticleBody = memo(function ArticleBody({ html, bodyRef }: { html: string;
 });
 
 /** Tints every visible claim by its category, and the selected ones on top. */
-function applyTints(anchors: Map<string, Anchor>, claims: LabClaim[], visible: Set<string>, selected: string[]) {
+function applyTints(container: HTMLElement, anchors: Map<string, Anchor>, claims: LabClaim[], visible: Set<string>, selected: string[]) {
   const byTint = new Map<string, Range[]>([...ALL_TINTS, SELECTED_TINT].map((t) => [t, []]));
   for (const claim of claims) {
     const anchor = anchors.get(claim.id);
@@ -29,7 +29,12 @@ function applyTints(anchors: Map<string, Anchor>, claims: LabClaim[], visible: S
     const anchor = anchors.get(claim.id);
     if (anchor?.kind !== "image") continue;
     anchor.image.classList.toggle("lab-image-claim", visible.has(claim.id) && claim.notes.length > 0);
-    anchor.image.classList.toggle("lab-image-selected", selected.includes(claim.id));
+  }
+  // A selected claim also outlines every image it rests on, because a claim
+  // with a text quote can still be about what its images show.
+  const selectedImages = new Set(claims.filter((c) => selected.includes(c.id)).flatMap((c) => c.imageUrls));
+  for (const image of Array.from(container.querySelectorAll("img"))) {
+    image.classList.toggle("lab-image-selected", selectedImages.has(image.getAttribute("src") ?? ""));
   }
 }
 
@@ -92,7 +97,7 @@ export function ArticleView({ article, run, showAll }: { article: Article; run: 
     setSelected([]);
   }, [run]);
 
-  useEffect(() => applyTints(anchors, run.claims, visible, selected), [anchors, run, visible, selected]);
+  useEffect(() => applyTints(bodyRef.current!, anchors, run.claims, visible, selected), [anchors, run, visible, selected]);
 
   useLayoutEffect(() => {
     const wrapper = wrapperRef.current!;
@@ -143,7 +148,8 @@ export function ArticleView({ article, run, showAll }: { article: Article; run: 
       <aside className="relative w-[26rem] shrink-0" style={{ height: marginHeight }}>
         {carded.map((claim) => {
           const top = cardTops.get(claim.id);
-          if (!anchors.has(claim.id)) return null;
+          const anchor = anchors.get(claim.id);
+          if (!anchor) return null;
           return (
             <div
               key={claim.id}
@@ -156,6 +162,7 @@ export function ArticleView({ article, run, showAll }: { article: Article; run: 
             >
               <ClaimCard
                 claim={claim}
+                wholePassage={anchor.kind === "text" && anchor.wholePassage}
                 showVotes={run.source === "production"}
                 selected={selected.includes(claim.id)}
                 onSelect={() => setSelected([claim.id])}

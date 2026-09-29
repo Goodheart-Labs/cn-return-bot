@@ -3,7 +3,11 @@ import type { LabClaim } from "../../labRun";
 
 /** Where a claim sits in the rendered article: a passage of text, or an image
  *  for a claim that rests only on an image. */
-export type Anchor = { kind: "text"; range: Range } | { kind: "image"; image: HTMLImageElement };
+export type Anchor =
+  /** `wholePassage` is true when the quote was not found and the wider
+   *  passage around it is tinted instead. */
+  | { kind: "text"; range: Range; wholePassage: boolean }
+  | { kind: "image"; image: HTMLImageElement };
 
 /** The tint a claim gets, which is also its category in the legend. */
 export type Tint = "lab-note" | "lab-no-note" | "lab-to-check" | "lab-skipped" | "lab-error";
@@ -32,10 +36,11 @@ export function anchorClaims(container: HTMLElement, claims: LabClaim[]): Map<st
   const images = Array.from(container.querySelectorAll("img"));
   const anchors = new Map<string, Anchor>();
   for (const claim of claims) {
-    const quotes = [claim.contextQuote, claim.contextParagraph].filter((q): q is string => !!q);
-    const range = quotes.map((q) => findQuoteRange(index, q)).find((r) => r !== null);
+    const quoteRange = claim.contextQuote ? findQuoteRange(index, claim.contextQuote) : null;
+    const passageRange = !quoteRange && claim.contextParagraph ? findQuoteRange(index, claim.contextParagraph) : null;
+    const range = quoteRange ?? passageRange;
     if (range) {
-      anchors.set(claim.id, { kind: "text", range });
+      anchors.set(claim.id, { kind: "text", range, wholePassage: !quoteRange });
       continue;
     }
     const image = images.find((img) => claim.imageUrls.includes(img.getAttribute("src") ?? ""));

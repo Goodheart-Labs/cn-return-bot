@@ -70,7 +70,7 @@ function TraceDetails({ claim }: { claim: LabClaim }) {
 
 /** What the pipeline decided about the claim, above its notes: the rater's
  *  judgement, the outcome and its reason, the topic part and the check's cost. */
-function ClaimHeader({ claim }: { claim: LabClaim }) {
+function ClaimHeader({ claim, wholePassage }: { claim: LabClaim; wholePassage: boolean }) {
   const detail = outcomeDetail(claim);
   return (
     <div className="text-xs text-fg-secondary space-y-1">
@@ -86,6 +86,21 @@ function ClaimHeader({ claim }: { claim: LabClaim }) {
         <p className="text-fg-muted">
           <span className="font-medium">Why:</span> {detail}
         </p>
+      )}
+      {wholePassage && <p className="text-fg-muted">The quote was not found in the page, so the whole passage around it is tinted.</p>}
+      {claim.imageUrls.length > 0 && (
+        <div>
+          <p className="text-fg-muted">
+            {claim.contextQuote ? "Also rests on these images, outlined in the article:" : "Rests only on these images:"}
+          </p>
+          <div className="mt-1 flex flex-wrap gap-1">
+            {claim.imageUrls.map((url) => (
+              <a key={url} href={url} target="_blank" rel="noreferrer">
+                <img src={url} alt="" className="h-16 w-auto rounded-sm border border-line" />
+              </a>
+            ))}
+          </div>
+        </div>
       )}
       {claim.part && <p className="text-fg-subtle">Part: {claim.part}</p>}
     </div>
@@ -125,8 +140,9 @@ function LabNoteCard({ note, claim, showVotes }: { note: LabNote; claim: LabClai
 
 /** A claim in the margin: its header and every note written on it, followed
  *  by the readers' arguments that it needs no note. */
-export function ClaimCard({ claim, showVotes, selected, onSelect, onClose }: {
+export function ClaimCard({ claim, wholePassage = false, showVotes, selected, onSelect, onClose }: {
   claim: LabClaim;
+  wholePassage?: boolean;
   showVotes: boolean;
   selected: boolean;
   onSelect: () => void;
@@ -143,7 +159,7 @@ export function ClaimCard({ claim, showVotes, selected, onSelect, onClose }: {
     >
       <div className="flex items-start gap-2">
         <div className="flex-1 min-w-0">
-          <ClaimHeader claim={claim} />
+          <ClaimHeader claim={claim} wholePassage={wholePassage} />
         </div>
         {onClose && (
           <button type="button" aria-label="Close" className="text-fg-muted hover:text-fg text-sm leading-none" onClick={(event) => {
