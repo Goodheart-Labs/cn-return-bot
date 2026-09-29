@@ -154,8 +154,8 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedListing> {
   const { title, uploads, listedBecause } = await youtubeChannelUploads(feed.url, FEED_CANDIDATE_LIMIT);
   const entries = uploads
     // An upcoming premiere cannot be watched yet, and enqueueing it would
-    // leave the item in a permanent error state. The listing after it airs
-    // picks it up, because YouTube notifies us when it does.
+    // leave the item in a permanent error state. A later listing picks it up
+    // once it has aired, after a notification or at the latest a day later.
     .filter((v) => !v.upcoming)
     .map((v) => ({
       source: "youtube" as const,
