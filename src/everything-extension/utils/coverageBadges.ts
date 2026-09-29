@@ -5,7 +5,8 @@ import { extractYoutubeVideoId, normalizePageUrl } from "@cn/core/pageUrls";
 import { GROUP_GLYPH_PATH } from "@cn/ui/icons";
 import { getNotedPageStatusCounts, getWholePageCheckedUrls, trimSlash } from "./coveredPages";
 import { isPageDark } from "./pageTheme";
-import { getNoteFilters, getSettings, onNoteFiltersChanged } from "./settings";
+import type { NoteStatus } from "@cn/core/noteScore";
+import { getNoteDisplay, getSettings, onNoteDisplayChanged } from "./settings";
 
 // The badges that mark noted posts in a listing, for example on a Substack
 // publication's front page or a YouTube channel's videos tab. Every listing
@@ -161,7 +162,7 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
   const statusCounts = (await getNotedPageStatusCounts()) ?? {};
   // A checked page with no notes at all gets its own badge saying we looked
   // and found nothing. Pages whose notes exist but are all hidden by the
-  // reader's filters are not in that set: for them silence stays honest.
+  // reader's display choices are not in that set: for them silence stays honest.
   const notedKeys = new Set<string>();
   for (const url of Object.keys(statusCounts)) {
     const key = pageKey(url);
@@ -174,18 +175,20 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
   }
   if (notedKeys.size === 0 && checkedNoNotesKeys.size === 0) return null;
 
-  // Unlike the count card, whose numbers report what exists, a badge promises
-  // what opening the page will actually show, so it counts only the notes the
-  // reader's filters let through. The map is rebuilt when the filters change.
+  // A badge promises what opening the page will actually show, so it counts
+  // only the notes the reader has not hidden. Collapsed notes count, because
+  // they still get a marker on the page. The map is rebuilt when the display
+  // choices change.
   const countByKey = new Map<string, number>();
   const rebuildCounts = async () => {
-    const filters = await getNoteFilters();
+    const display = await getNoteDisplay();
+    const shown = (status: NoteStatus, count: number) => (display[status] === "hide" ? 0 : count);
     countByKey.clear();
     for (const [url, page] of Object.entries(statusCounts)) {
       const count =
-        page.helpful +
-        (filters.showNeedsRatings ? page.needsRatings : 0) +
-        (filters.showUnhelpful ? page.notHelpful : 0);
+        shown("helpful", page.helpful) +
+        shown("needs_ratings", page.needsRatings) +
+        shown("not_helpful", page.notHelpful);
       if (count === 0) continue;
       const key = pageKey(url);
       if (key) countByKey.set(key, (countByKey.get(key) ?? 0) + count);
@@ -315,9 +318,9 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
   };
 
   scan();
-  // A filter change alters the numbers, so every badge is rebuilt: the count
+  // A display change alters the numbers, so every badge is rebuilt: the count
   // is baked into the badge element when it is created.
-  const stopFilters = onNoteFiltersChanged(() => {
+  const stopDisplay = onNoteDisplayChanged(() => {
     void rebuildCounts().then(() => {
       for (const { badge } of badges.values()) badge.remove();
       badges.clear();
@@ -337,7 +340,7 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
   document.addEventListener("load", onLoad, { capture: true, passive: true });
 
   return () => {
-    stopFilters();
+    stopDisplay();
     observer.disconnect();
     document.removeEventListener("load", onLoad, { capture: true } as EventListenerOptions);
     clearTimeout(timer);

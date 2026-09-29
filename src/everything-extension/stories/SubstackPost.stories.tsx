@@ -5,6 +5,7 @@ import { InlineNotesApp, type AnchoredGroup } from "../components/InlineNotes";
 import { anchorGroups } from "../utils/anchorGroups";
 import { claimGroups, itemNoteSetQuery } from "../utils/claimGroups";
 import { applyHighlights, ensureHighlightStyle } from "../utils/passageHighlights";
+import { DEFAULT_NOTE_DISPLAY } from "../utils/settings";
 import { CHART_IMAGE, PAGE_ITEM, PAGE_SEEDS } from "../../everything-storybook/fixtures";
 
 /* A fictional Substack post with the extension running on it. The page is a
@@ -17,18 +18,18 @@ import { CHART_IMAGE, PAGE_ITEM, PAGE_SEEDS } from "../../everything-storybook/f
  * extension still works there is checked with the preview script in
  * src/everything-extension/scripts. */
 
-const SHOW_EVERY_NOTE = { showNeedsRatings: true, showUnhelpful: true };
+const NOTHING_CLOSED: ReadonlySet<string> = new Set();
 
 function Overlay({ article, layer, noteStyle }: { article: HTMLElement; layer: HTMLElement; noteStyle: "margin" | "classic" }) {
   const noteSet = useQuery(itemNoteSetQuery(PAGE_ITEM.id)).data;
   const [anchored] = useState<AnchoredGroup[]>(() => {
     if (!noteSet) return [];
-    const groups = anchorGroups(article, claimGroups(noteSet, SHOW_EVERY_NOTE));
+    const groups = anchorGroups(article, claimGroups(noteSet, DEFAULT_NOTE_DISPLAY));
     ensureHighlightStyle(document.documentElement.classList.contains("dark"));
-    applyHighlights(groups.map((g) => g.range));
+    applyHighlights(groups.filter((g) => g.display !== "dot").map((g) => g.range));
     return groups;
   });
-  return <InlineNotesApp groups={anchored} item={PAGE_ITEM} container={article} inlineContainer={layer} noteStyle={noteStyle} />;
+  return <InlineNotesApp groups={anchored} item={PAGE_ITEM} container={article} inlineContainer={layer} noteStyle={noteStyle} initiallyClosed={NOTHING_CLOSED} />;
 }
 
 function SubstackPost({ noteStyle }: { noteStyle: "margin" | "classic" }) {

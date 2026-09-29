@@ -10,7 +10,7 @@ import { ClaimNoteStack, NOTE_POPOVER_WIDTH } from "./ClaimNoteStack";
 import { OverlayLoginGate } from "./OverlayLoginGate";
 import { ABSORB_KEYS } from "./EventShield";
 import { FloatingWindow, type Box } from "./FloatingWindow";
-import { useNoteFilters } from "./NoteFilterToggles";
+import { useNoteDisplay } from "./NoteDisplayChoices";
 import { ScrubberPins } from "./ScrubberPins";
 
 /** A claim pinned to a span of the video timeline, together with its notes and
@@ -92,13 +92,13 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
   player: HTMLElement;
 }) {
   // The content script fetched the notes before mounting this, so the cache
-  // already holds them. A vote, a new note or a changed filter flows through
-  // here.
+  // already holds them. A vote, a new note or a changed display choice flows
+  // through here.
   const noteSet = useQuery(itemNoteSetQuery(itemId)).data;
-  const [filters] = useNoteFilters();
+  const [display] = useNoteDisplay();
   const groups = useMemo(
-    () => (noteSet && filters ? timedGroups(claimGroups(noteSet, filters)) : []),
-    [noteSet, filters],
+    () => (noteSet && display ? timedGroups(claimGroups(noteSet, display)) : []),
+    [noteSet, display],
   );
   const { session } = useSession();
   const [loginOpen, setLoginOpen] = useState(false);
@@ -112,6 +112,11 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
   // claim's window: leave the passage and come back, and the note shows
   // again. Nothing removes a note for the rest of the video.
   const hushed = useRef<string | null>(null);
+  // Only an open claim's card pops up on its own during playback. Any other
+  // claim's card shows only after the reader asked for it, by
+  // clicking its pin or with the note count, and that request lasts while
+  // playback stays inside the claim's window.
+  const summoned = useRef<string | null>(null);
   const hovered = useRef(false);
   const inWindow = useRef(false);
   const lastInteraction = useRef(0);
@@ -156,9 +161,10 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
   useEffect(() => {
     const onTime = () => {
       const t = video.currentTime;
-      const hit = groups.find(
-        (g) => t >= g.startSeconds && t <= g.endSeconds + TRAILING_GRACE_SECONDS,
-      );
+      const inClaimWindow = (g: TimedGroup) => t >= g.startSeconds && t <= g.endSeconds + TRAILING_GRACE_SECONDS;
+      const summonedGroup = groups.find((g) => g.claimId === summoned.current);
+      if (summonedGroup && !inClaimWindow(summonedGroup)) summoned.current = null;
+      const hit = groups.find((g) => inClaimWindow(g) && (g.display === "open" || g.claimId === summoned.current));
       inWindow.current = !!hit;
       // A claim hushed by an outside click stays hidden while playback is
       // still inside its window. Once the window is left, the hush ends, so
@@ -201,25 +207,41 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
     document.addEventListener("click", onClick);
     return () => document.removeEventListener("click", onClick);
   }, [group]);
-  // Clicking a pin is explicit intent, so we undo any hiding and seek into
-  // the claim's window. The resulting timeupdate shows the card.
+  // Clicking a pin is explicit intent, so we undo any hiding, summon a claim
+  // that does not pop up on its own, and seek into the claim's window. The resulting
+  // timeupdate shows the card.
   const jumpToPin = useCallback((target: TimedGroup) => {
     if (hushed.current === target.claimId) hushed.current = null;
+    summoned.current = target.claimId;
     seek(video, target.startSeconds + 0.01);
   }, [video]);
 
-  // The popup's jump button brings the player on screen and steps through the
-  // claims in time order, wrapping around at the end. This is the same as
-  // clicking their pins. The cursor lives here so that "next" keeps its place
-  // when the popup is closed and reopened. It resets when the page reloads.
+  // The popup's jump button, the request progress card and the note count on
+  // the card bring the player on screen and step through the claims
+  // in time order, wrapping around at the end. This is the same as clicking
+  // their pins. A jump goes to the claim after the one on screen, or, with no
+  // card up, to the claim after the last one a jump reached. That cursor lives
+  // here so that "next" keeps its place when the popup is closed and reopened.
+  // It resets when the page reloads.
   const jumpCursor = useRef(-1);
+  const scrollToPlayer = useRef(false);
+  const displayedIndex = groups.findIndex((g) => g.claimId === displayed);
+  const jumpNext = useCallback(() => {
+    if (!groups.length) return;
+    const from = displayedIndex >= 0 ? displayedIndex : jumpCursor.current;
+    jumpCursor.current = (from + 1) % groups.length;
+    scrollToPlayer.current = true;
+    jumpToPin(groups[jumpCursor.current]!);
+  }, [groups, displayedIndex, jumpToPin]);
+  // The scroll to the player runs once the jumped-to card is on screen.
+  // React restores the page's scroll positions while it updates the page, and
+  // that cancels a smooth scroll started before the update.
   useEffect(() => {
-    const jumpNext = () => {
-      if (!groups.length) return;
-      jumpCursor.current = (jumpCursor.current + 1) % groups.length;
-      video.scrollIntoView({ behavior: "smooth", block: "center" });
-      jumpToPin(groups[jumpCursor.current]!);
-    };
+    if (!scrollToPlayer.current || !displayed) return;
+    scrollToPlayer.current = false;
+    video.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [displayed, video]);
+  useEffect(() => {
     const listener = (message: unknown, _sender: unknown, sendResponse: (response?: unknown) => void) => {
       const type = (message as { type?: string })?.type;
       if (type === "cn-jump-state") sendResponse({ jumped: jumpCursor.current >= 0 });
@@ -229,13 +251,13 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
       }
     };
     browser.runtime.onMessage.addListener(listener);
-    // The note-count card jumps through the same cursor, see utils/jumpBus.ts.
+    // The request progress card jumps through the same cursor, see utils/jumpBus.ts.
     setJumpHandler(jumpNext);
     return () => {
       browser.runtime.onMessage.removeListener(listener);
       setJumpHandler(null);
     };
-  }, [groups, video, jumpToPin]);
+  }, [groups, jumpNext]);
   const playerBox = usePlayerBox(player);
   // Where the reader last put a card on this video, and how wide they made
   // it. The next note opens there. Its height is not kept: a new card fits
@@ -280,7 +302,7 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
             {quotePreview(group) && (
               <Quote className="mb-2">“{quotePreview(group)}”</Quote>
             )}
-            <ClaimNoteStack group={group} projectSlug={projectSlug} />
+            <ClaimNoteStack group={group} projectSlug={projectSlug} navigation={{ position: displayedIndex + 1, total: groups.length, onNext: jumpNext }} />
           </OverlayLoginGate>
         </FloatingWindow>
       )}

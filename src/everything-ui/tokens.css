@@ -151,6 +151,10 @@
   --cn-negative-line: rgb(var(--cn-red-300));
   --cn-negative-solid: rgb(var(--cn-red-500));
 
+  /* Pending: a note that still needs more ratings. Only a solid fill for
+   * dots, to sit beside the positive and negative ones. */
+  --cn-pending-solid: rgb(var(--cn-blue-500));
+
   /* Type. The extension uses this scale. The website reads at a larger size,
    * see .cn-reading-scale below. */
   /* The type of Substack, where most of our readers read (Jim, 2026-09-28).
@@ -255,4 +259,5 @@
   --cn-negative-selected-fg: rgb(var(--cn-red-300));
   --cn-negative-line: rgb(var(--cn-red-700));
   --cn-negative-solid: rgb(var(--cn-red-500));
+  --cn-pending-solid: rgb(var(--cn-blue-500));
 }

@@ -15,7 +15,7 @@
 import { writeFile } from "fs/promises";
 import { join } from "path";
 import { getSupabaseClient } from "../../api/supabaseClient";
-import { fetchAllRows } from "../../api/paging";
+import { fetchAllRows } from "../../everything-core/paging";
 
 const OUT_DIR = join("src/scripts_jim/2026_06_02_simple_bot_unhelpful");
 const BOT_NAME = "simple-bot";

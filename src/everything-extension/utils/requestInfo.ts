@@ -1,6 +1,6 @@
 import type { ContentScriptContext } from "#imports";
 import { browser } from "#imports";
-import { mountInfoOverlay } from "./mountStatusOverlay";
+import { mountInfoOverlay } from "./mountInfoOverlay";
 
 // The card hides itself after the StatusOverlay auto-hide. Tearing the mount
 // down a little later removes its shadow root too, so repeated clicks cannot

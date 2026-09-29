@@ -30,7 +30,7 @@ if (useLocal) {
 const activeOnly = process.argv.includes("--active");
 
 import { getSupabaseClient } from "../api/supabaseClient";
-import { fetchAllRows } from "../api/paging";
+import { fetchAllRows } from "../everything-core/paging";
 
 const client = getSupabaseClient();
 

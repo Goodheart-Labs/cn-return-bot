@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import type { NoteStatus } from "@cn/core/noteScore";
+import { statusLabel } from "@cn/features/notes/NoteBox";
 import { isPageDark, observePageTheme } from "../utils/pageTheme";
 import { GROUP_GLYPH_PATH } from "@cn/ui/icons";
-import { MARKER_DARK, MARKER_HOVER_SCALE, MARKER_LIGHT } from "../utils/markerPalette";
+import { MARKER_DARK, MARKER_HOVER_SCALE, MARKER_LIGHT, STATUS_MARKER_GLYPH } from "../utils/markerPalette";
 import type { TimedGroup } from "./YoutubeOverlay";
 
 // Map-pin markers on YouTube's scrub bar, one for each timestamped claim. They
@@ -41,8 +43,9 @@ function ensurePinStyle() {
 }
 
 // The Substack passage badge drawn as a pin. The head of the pin is the badge
-// and the tip of its tail points at the timestamp. The colors come from the
-// shared marker palette, because Tailwind cannot reach the host page's DOM.
+// and the tip of its tail points at the timestamp. The glyph takes the colour
+// of the claim's status. The colors come from the shared marker palette,
+// because Tailwind cannot reach the host page's DOM.
 // The pin reads the theme through the same isPageDark and observePageTheme
 // pair that drives the note card's `.dark` class, so every YouTube surface
 // follows one theme source.
@@ -51,7 +54,7 @@ function ensurePinStyle() {
  *  sits at the bottom centre of the viewBox, and that tip is what points at the
  *  timestamp. The head is centred at (12, 10.8) and the group glyph is scaled to
  *  fit inside it. */
-function PinGlyph({ dark }: { dark: boolean }) {
+function PinGlyph({ dark, status }: { dark: boolean; status: NoteStatus }) {
   const palette = dark ? MARKER_DARK : MARKER_LIGHT;
   return (
     <svg viewBox="0 0 24 32" aria-hidden>
@@ -62,7 +65,7 @@ function PinGlyph({ dark }: { dark: boolean }) {
         strokeWidth="1.5"
       />
       <g transform="translate(4.56 3.36) scale(0.62)">
-        <path d={GROUP_GLYPH_PATH} fill={palette.glyph} />
+        <path d={GROUP_GLYPH_PATH} fill={STATUS_MARKER_GLYPH[status]} />
       </g>
     </svg>
   );
@@ -140,7 +143,7 @@ export function ScrubberPins({ groups, video, player, onPinClick }: {
         className="cn-scrub-pin"
         style={{ left: `${(group.startSeconds / duration) * 100}%`, background: "none", border: "none", padding: 0 }}
         title={pinTitle(group)}
-        aria-label="Jump to this Common Note"
+        aria-label={`Jump to this Common Note, ${statusLabel(group.status).toLowerCase()}`}
         onClick={(e) => {
           // Keep the click off the bar underneath. A mousedown that leaked
           // through would start a scrub-drag to wherever the pointer sits.
@@ -150,7 +153,7 @@ export function ScrubberPins({ groups, video, player, onPinClick }: {
         }}
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <PinGlyph dark={dark} />
+        <PinGlyph dark={dark} status={group.status} />
       </button>
     )),
     strip,
