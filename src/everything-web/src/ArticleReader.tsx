@@ -25,6 +25,14 @@ function OriginalLink({ url }: { url: string }) {
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
+// Why a checked article has no notes, so an empty margin reads as a result rather than a gap.
+function noNoteReason(claims: CheckedClaim[]): string {
+  const checked = claims.filter((claim) => claim.status !== "skipped").length;
+  if (!claims.length) return "";
+  if (!checked) return `All ${plural(claims.length, "claim")} we found looked right, so none needed a fact-check. `;
+  return `We fact-checked ${checked} of ${plural(claims.length, "claim")} and none needed a note. `;
+}
+
 // Skipped claims were rated true before any search, so they count as found but not as fact-checked.
 function countLine(claims: CheckedClaim[], notes: number): string {
   const checked = claims.filter((claim) => claim.status !== "skipped").length;
@@ -217,7 +225,10 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
     setShareStatus("Your note is posted. It shows as “Needs more ratings” until other readers rate it.");
   }
 
-  const howToAdd = <p className="reader-margin-hint">Highlight any words in the article, or choose <kbd>Add a note</kbd> under a passage, to write your own.</p>;
+  const marginMessage = notesFailed ? "The notes couldn't load."
+    : noteQuery.isPending ? "Loading notes…"
+    : notes.length ? `${plural(notes.length, "note")} on this article. Choose a marked passage to read ${notes.length === 1 ? "it" : "them"}.`
+    : `No notes yet. ${claimsQuery.data ? noNoteReason(claimsQuery.data) : ""}Highlight any passage to add a note.`;
 
   const renderNotes = (group: NoteRow[]) => group.map((note) => (
     <ReaderNoteCard key={note.id} note={note} scope={scope} />
@@ -249,7 +260,7 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
             : <>
               {claimsQuery.isError && <div className="reader-note-error" role="alert">The checked claims couldn’t load. <button onClick={() => void claimsQuery.refetch()}>Retry checked claims</button></div>}
               {notesFailed && <div className="reader-note-error" role="alert">The notes couldn’t load. You can still read the article. <button onClick={() => void noteQuery.refetch()}>Retry notes</button></div>}
-              {!wide && showNotes && noteQuery.isSuccess && notes.length === 0 && <p className="reader-note-error">No notes on this article yet. Tap “Add a note” under any passage to write the first.</p>}
+              {!wide && showNotes && noteQuery.isSuccess && notes.length === 0 && <p className="reader-note-error">{marginMessage}</p>}
               <div className={`reader-layout ${showNotes ? "" : "reader-layout-quiet"}`}>
                 <nav className="reader-contents" aria-label="Article contents"><p>In this article</p><a href={`#${articleId}`}>Introduction</a>{headings.map((heading) => <a key={heading.id} href={`#${heading.id}`}>{heading.text}</a>)}</nav>
                 <article id={articleId} className="reader-article" aria-label={title}>
@@ -282,7 +293,9 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
                   {showNotes && unanchored.length > 0 && <section id={unanchoredId} className="reader-unanchored"><h2>More notes on this article</h2><p>These notes refer to passages we couldn’t match to this copy of the text.</p><button className="reader-note-trigger" aria-expanded={selectedBlock === "unanchored"} onClick={() => setSelectedBlock(selectedBlock === "unanchored" ? null : "unanchored")}>View {unanchored.length} {unanchored.length === 1 ? "note" : "notes"}</button>{!wide && selectedBlock === "unanchored" && <div className="reader-inline-notes">{renderNotes(unanchored)}</div>}</section>}
                   <div className="reader-source-credit"><OriginalLink url={original} /></div>
                 </article>
-                {wide && showNotes && <aside id={marginId} className="reader-margin" aria-label="Common Notes on the selected passage"><div className="reader-margin-sticky"><div className="reader-margin-heading"><h2>Common Notes</h2>{activeNotes.length > 0 && <button aria-label="Close passage notes" onClick={() => setSelectedBlock(null)}>×</button>}</div>{activeNotes.length > 0 ? <div className="reader-margin-cards">{renderNotes(activeNotes)}</div> : <div className="reader-margin-about"><span className="reader-note-symbol" aria-hidden="true">✳</span><p>{notes.length ? "A little more context, right where you need it." : "An open invitation to add context."}</p><p>{notes.length ? "Select a note beside a passage to see its sources and community ratings." : notesFailed ? "Notes are temporarily unavailable." : noteQuery.isPending ? "Loading notes…" : "There are no notes on this article yet. Be the first."}</p>{!notesFailed && howToAdd}<p className="reader-rating-explanation">A note’s rating is about whether it adds useful context, not whether you agree with the article.</p></div>}</div></aside>}
+                {wide && showNotes && <aside id={marginId} className="reader-margin" aria-label="Common Notes on the selected passage"><div className="reader-margin-sticky">{activeNotes.length > 0
+                  ? <><div className="reader-margin-heading"><h2>Common Notes</h2><button aria-label="Close passage notes" onClick={() => setSelectedBlock(null)}>×</button></div><div className="reader-margin-cards">{renderNotes(activeNotes)}</div></>
+                  : <p className="reader-margin-empty">{marginMessage}</p>}</div></aside>}
               </div>
             </>}
 
