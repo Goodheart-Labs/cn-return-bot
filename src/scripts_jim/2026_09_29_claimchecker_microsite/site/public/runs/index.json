@@ -25,5 +25,14 @@
   "totalCostUsd": 5.8500303194860015,
   "claims": 764,
   "notes": 15
+ },
+ {
+  "id": "2026-09-29-1403",
+  "label": "Sonnet 5.5 extraction and rating, no checks",
+  "createdAt": "2026-09-29T14:14:28.335Z",
+  "source": "local",
+  "totalCostUsd": 3.3485341999999996,
+  "claims": 288,
+  "notes": 0
  }
 ]

@@ -181,13 +181,14 @@ async function checkClaim(claim: PartClaim, index: number, runId: string, publis
 }
 
 async function runChecks(rated: PartClaim[], runId: string, publishedAt: string | undefined, limit: number): Promise<LabClaim[]> {
-  const toCheck = rated.filter((c) => shouldFactCheck(c.judgement)).slice(0, limit);
+  const worthChecking = rated.filter((c) => shouldFactCheck(c.judgement));
   if (limit === 0) {
-    console.log(`Skipping the checks of ${toCheck.length} claims`);
+    console.log(`Skipping the checks of ${worthChecking.length} claims`);
     return rated.map((claim, index) =>
       shouldFactCheck(claim.judgement) ? { ...unchecked(claim, index, runId), outcome: { type: "check_skipped" } } : skipped(claim, index, runId),
     );
   }
+  const toCheck = worthChecking.slice(0, limit);
   console.log(`Checking ${toCheck.length} of ${rated.length} claims`);
   const queue = new PQueue({ concurrency: CHECK_CONCURRENCY });
   let done = 0;
