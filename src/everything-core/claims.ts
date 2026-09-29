@@ -2,7 +2,7 @@ import { supabase } from "./supabase";
 import type { ClaimRef } from "./types";
 
 export type CheckedClaim = Pick<ClaimRef, "id" | "context_quote" | "context_paragraph" | "updated_quote"> & {
-  status: "note" | "no_note";
+  status: "note" | "no_note" | "skipped";
 };
 
 export async function fetchCheckedClaimsForItem(itemId: string): Promise<CheckedClaim[]> {
@@ -14,7 +14,7 @@ export async function fetchCheckedClaimsForItem(itemId: string): Promise<Checked
       .eq("item_id", itemId)
       .is("created_by", null)
       .neq("judgement", "user")
-      .in("status", ["note", "no_note"])
+      .in("status", ["note", "no_note", "skipped"])
       .order("id")
       .range(offset, offset + pageSize - 1);
     if (error) throw error;

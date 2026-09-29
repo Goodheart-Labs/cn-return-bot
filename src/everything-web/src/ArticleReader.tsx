@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchItemForUrl } from "@cn/core/items";
-import { fetchCheckedClaimsForItem } from "@cn/core/claims";
+import { fetchCheckedClaimsForItem, type CheckedClaim } from "@cn/core/claims";
 import type { NoteRow } from "@cn/core/types";
 import { ReaderExtensionLink } from "./components/ReaderExtensionLink";
 import { ReaderNoteCard, ReaderNotesProvider, useReaderNoteSet } from "./components/ReaderNotes";
@@ -23,7 +23,15 @@ export function articleUrl(value: string | null): string | null {
 }
 
 function OriginalLink({ url }: { url: string }) {
-  return <a className="reader-action" href={url} target="_blank" rel="noopener noreferrer">Read the original on {new URL(url).host} ↗</a>;
+  return <a className="reader-action" href={url} target="_blank" rel="noopener noreferrer">Read the original on {new URL(url).host.replace(/^www\./, "")} ↗</a>;
+}
+
+const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
+
+// Skipped claims were rated true before any search, so they count as found but not as fact-checked.
+function countLine(claims: CheckedClaim[], notes: number): string {
+  const checked = claims.filter((claim) => claim.status !== "skipped").length;
+  return `${plural(claims.length, "claim")} found · ${checked} fact-checked · ${plural(notes, "note")}`;
 }
 
 export function ArticleReader() {
@@ -106,7 +114,7 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
   const failed = itemQuery.isError;
   const notesFailed = noteQuery.isError;
   const original = articleUrl(item?.url ?? source) ?? source;
-  const host = new URL(original).host;
+  const host = new URL(original).host.replace(/^www\./, "");
   const title = item?.title || host;
   const articleId = `${scope}-article`;
   const unanchoredId = `${scope}-unanchored`;
@@ -242,7 +250,7 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
             <p className="reader-eyebrow">An article with Common Notes</p>
             <h1>{title}</h1>
             <p className="reader-byline">{host}{item?.published_at && <> <span aria-hidden="true">·</span> <time dateTime={item.published_at}>{new Date(item.published_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" })}</time></>}{blocks.length > 0 && <> <span aria-hidden="true">·</span> {minutes} min read</>}</p>
-            {claimsQuery.isSuccess && noteQuery.isSuccess && <p className="reader-checked-count">{claimsQuery.data.length} claims checked · {notes.length} notes</p>}
+            {claimsQuery.isSuccess && noteQuery.isSuccess && <p className="reader-checked-count">{countLine(claimsQuery.data, notes.length)}</p>}
             {item && <aside className="reader-attribution"><p>This text belongs to {host}. Common Notes shows it here only so notes can sit beside it, and claims no copyright in it.</p><OriginalLink url={original} /></aside>}
             <p className="reader-deck">Read the article. Add a note to any passage. Rate the notes other readers leave.</p>
             <div className="reader-toolbar">
