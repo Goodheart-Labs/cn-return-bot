@@ -6,7 +6,7 @@ const meta = {
   title: "Features/Note",
   component: Note,
   parameters: { queries: FEED_SEEDS },
-  args: { note: noteById("note-rent"), shareUrl: "https://commonnotes.net/?note=note-rent" },
+  args: { note: noteById("note-rent"), shareUrl: "https://commonnotes.net/notes/rational-rent?note=note-rent" },
   decorators: [(Story) => <div className="max-w-xl"><Story /></div>],
 } satisfies Meta<typeof Note>;
 export default meta;

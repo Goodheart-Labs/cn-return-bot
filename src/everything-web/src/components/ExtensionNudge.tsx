@@ -6,7 +6,7 @@ import { INSTALL, type Route } from "../lib/routing";
 import { RouteLink } from "./RouteLink";
 
 /** How long a reader stays on one project before the nudge appears. */
-const NUDGE_DELAY_MS = 15_000;
+const NUDGE_DELAY_MS = 30_000;
 
 /** Set once the nudge has shown in this browser tab, so it appears once per
  *  visit. Session storage ends with the tab. */

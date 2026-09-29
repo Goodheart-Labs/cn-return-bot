@@ -142,10 +142,10 @@ export function HomePage({ showInstall, navigate }: { showInstall: boolean; navi
           .
         </p>
         <p className="mt-3 flex justify-center gap-5">
-          <a href="privacy/" className="underline-offset-4 hover:text-fg hover:underline">
+          <a href={`${import.meta.env.BASE_URL}privacy/`} className="underline-offset-4 hover:text-fg hover:underline">
             Privacy
           </a>
-          <a href="terms/" className="underline-offset-4 hover:text-fg hover:underline">
+          <a href={`${import.meta.env.BASE_URL}terms/`} className="underline-offset-4 hover:text-fg hover:underline">
             Terms
           </a>
         </p>
