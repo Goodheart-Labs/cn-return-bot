@@ -23,6 +23,13 @@
     /* Applied before first paint so a dark system never flashes a light page.
      * SystemTheme keeps the class in sync with live OS theme changes. */
     if (window.matchMedia("(prefers-color-scheme: dark)").matches) document.documentElement.classList.add("dark");
+    /* Safari does not colour the area its trackpad bounce reveals past the
+     * top or bottom of the page the way Chrome does (see OverscrollColor), and
+     * shows black there. So Safari does not bounce at all. Chrome, Edge and
+     * Firefox name Safari in their user agents too, hence the exclusions. */
+    if (/safari/i.test(navigator.userAgent) && !/chrome|chromium|crios|fxios|edg|android/i.test(navigator.userAgent)) {
+      document.documentElement.classList.add("overscroll-y-none");
+    }
   </script>
 </head>
 <body class="bg-canvas text-fg font-sans min-h-screen">
