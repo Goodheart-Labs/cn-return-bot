@@ -14,7 +14,7 @@ import { fetchProjectsDueForAvatar, recordAvatarAttempt, type AvatarDue } from "
 import { canonicalFeed } from "./feedUrls";
 import { fetchAuthorProfileImage } from "./sources/lesswrong";
 import { fetchFeedPosts } from "./sources/substack";
-import { resolveChannel } from "./sources/youtubeDataApi";
+import { resolveChannel } from "../pipeline/media/youtubeDataApi";
 
 /** How long a fetched picture is trusted before the next attempt. */
 const REFRESH_AFTER_DAYS = 30;

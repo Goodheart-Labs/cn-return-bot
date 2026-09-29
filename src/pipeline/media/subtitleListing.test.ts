@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { parseSubtitleListing } from "./ytDlpDownload";
+import { parseSubtitleListing } from "./youtubeCaptions";
 
 /** Trimmed from a real `yt-dlp --list-subs` run on a German video. The hundreds
  *  of translations all read "<Language> from German", and the two rows that are
