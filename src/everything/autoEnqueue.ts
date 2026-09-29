@@ -59,7 +59,7 @@ import type { FeedType } from "./feedUrls";
 import { fixedRow, groupClose, groupOpen, tally } from "./logFormat";
 import { fetchAuthorPosts } from "./sources/lesswrong";
 import { fetchFeedPosts, fetchPostBodyText, htmlToText } from "./sources/substack";
-import { quotaRanOutThisRun } from "./sources/youtubeDataApi";
+import { quotaRanOutThisRun } from "../pipeline/media/youtubeDataApi";
 import { refreshOneStaleTopList } from "./topPosts";
 import type { SourceKind } from "./types";
 import { RESUBSCRIBE_AFTER_DAYS, youtubeChannelUploads, type ListingReason } from "./youtubeChannels";

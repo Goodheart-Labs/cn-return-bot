@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { fetchChannelUploads, fetchChannelTopVideos, fetchVideo } from "../../everything/sources/youtubeDataApi";
+import { fetchChannelUploads, fetchChannelTopVideos, fetchVideo } from "../../pipeline/media/youtubeDataApi";
 let t = Date.now();
 const up = await fetchChannelUploads("https://www.youtube.com/@LilAggy", 15);
 console.log(`uploads ${up.channel.title} in ${Date.now() - t} ms:`, up.videos.slice(0, 3).map((v) => `${v.publishedAt} ${v.durationSeconds}s ${v.title.slice(0, 30)}`).join(" | "), `(${up.videos.length})`);

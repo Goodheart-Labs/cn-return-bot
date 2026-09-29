@@ -1,4 +1,4 @@
-import type { SubtitleCue } from "../pipeline/media/ytDlpDownload";
+import type { SubtitleCue } from "../pipeline/media/youtubeCaptions";
 
 export type SourceKind = "youtube" | "substack" | "lesswrong";
 

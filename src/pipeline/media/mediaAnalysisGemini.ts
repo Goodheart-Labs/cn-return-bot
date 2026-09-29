@@ -14,7 +14,11 @@
  * A video of 3.5 minutes or less is sent whole as inline base64 bytes.
  * Every other video is sampled into 5 equally-spaced frames with ffmpeg. That
  * path works for a clip of any length, including one under 5 seconds.
- * Audio is extracted from the video and transcribed by Groq Whisper.
+ * Audio is extracted from the video and transcribed by Groq Whisper, unless the
+ * caller already has the transcript.
+ *
+ * A media URL that a note cites as its source is handled by describeMediaSource.ts,
+ * which builds on the image and video analysis here.
  */
 
 import { exec } from "child_process";
@@ -29,14 +33,6 @@ import { GEMINI_MODEL, whisperTranscriptionCost } from "../cost-tracking/pricing
 import { trackLlmCall, trackedLlmCreate } from "../cost-tracking/costTracker";
 import { stripJsonFences } from "../utils/jsonOutput";
 import { geminiNativeGenerate, type GeminiContentPart } from "../llm/gemini";
-import {
-  downloadVideoWithYtDlp,
-  fetchAutoSubs,
-  fetchYtDlpMetadata,
-  type YtDlpKind,
-  type YtDlpMetadata,
-} from "./ytDlpDownload";
-import { downloadWithGalleryDl } from "./galleryDlDownload";
 import { IMAGE_PROMPT, VIDEO_PROMPT, FRAME_PROMPT, MEDIA_RESPONSE_FORMAT } from "../prompts/media/mediaAnalysis";
 import { getBestMediaUrl } from "./bestMediaUrl";
 import { isWebUrl } from "../utils/webUrl";
@@ -50,8 +46,6 @@ const execAsync = promisify(exec);
 const HAIKU_FALLBACK_MODEL = "anthropic/claude-haiku-4.5";
 const FRAME_SAMPLE_COUNT = 5;              // How many frames we sample from a video, spaced evenly across it.
 const LONG_VIDEO_THRESHOLD_MS = 210_000;   // 3.5 minutes. A video this long or shorter can be sent to Gemini whole.
-const AUTO_SUBS_THRESHOLD_MS = 300_000;    // 5 minutes. Above this the transcript comes from auto-subs, and Whisper never runs.
-const LOW_QUALITY_THRESHOLD_MS = 900_000;  // 15 minutes. Above this we ask for the lowest-resolution stream to limit download size.
 
 // --- Types ---
 
@@ -231,7 +225,7 @@ async function transcribeAudio(audioPath: string, costName: string): Promise<str
 /** Describes an image with the configured media model, and falls back to Haiku
  *  when that model throws or returns nothing usable. A successful description is
  *  never empty. So an empty result counts as a failure and is retried on Haiku. */
-async function describeImage(
+export async function describeImage(
   inline: { mimeType: string; data: string },
   url: string,
   costName: string,
@@ -385,7 +379,7 @@ function isLocalPath(p: string): boolean {
   return p.startsWith("/") || p.startsWith("./") || p.startsWith("../");
 }
 
-async function analyzeVideo(
+export async function analyzeVideo(
   videoUrl: string,
   durationMs: number | undefined,
   costName: string,
@@ -394,9 +388,10 @@ async function analyzeVideo(
    * The transcript decision the caller has already made.
    * When this is undefined the caller made no decision. We then extract the audio and
    * transcribe it with Whisper, which is the default behaviour.
-   * When it is a string we use that string as the transcript, for example auto-subs.
+   * When it is a string we use that string as the transcript, for example a YouTube
+   * video's captions.
    * When it is null the caller is saying no transcript is available and Whisper must
-   * not run anyway. Long videos use this so the run stays cheap.
+   * not run anyway. A video downloaded without its sound uses this.
    */
   precomputedTranscript?: string | null,
   entities?: string[],
@@ -447,10 +442,9 @@ async function resolveTranscription(
   precomputed: string | null | undefined,
   costName: string,
 ): Promise<string> {
-  // The caller already settled the transcript, so Whisper must not run. A long video
-  // takes this path, because auto-subs are its only allowed transcript source.
+  // The caller already settled the transcript, so Whisper must not run.
   if (precomputed !== undefined) {
-    return precomputed ?? "(no auto-subs available)";
+    return precomputed ?? "(no transcript available)";
   }
   if (!(await checkFfmpeg())) return "(ffmpeg unavailable)";
   try {
@@ -498,110 +492,6 @@ async function analyzeMediaItems(
   }
 
   return results;
-}
-
-// --- External media URLs (used by source verifier) ---
-
-export interface MediaSourceDescription {
-  kind: YtDlpKind;
-  meta: YtDlpMetadata;
-  analysis: GeminiMediaItem;
-}
-
-function imageMimeFromPath(filePath: string): string {
-  const ext = filePath.toLowerCase().split(".").pop();
-  switch (ext) {
-    case "png": return "image/png";
-    case "gif": return "image/gif";
-    case "webp": return "image/webp";
-    case "bmp": return "image/bmp";
-    case "heic": return "image/heic";
-    case "avif": return "image/avif";
-    default: return "image/jpeg";
-  }
-}
-
-async function describeImageFromLocalFile(filePath: string, costName: string): Promise<GeminiMediaItem> {
-  const bytes = await readFile(filePath);
-  return describeImage({ mimeType: imageMimeFromPath(filePath), data: bytes.toString("base64") }, filePath, costName);
-}
-
-/**
- * Downloads and describes a media URL that a source cites. We try yt-dlp first,
- * which handles videos and most image posts. If yt-dlp fails we try gallery-dl,
- * which covers the Facebook, Instagram, Reddit, Tumblr and Imgur image posts that
- * yt-dlp cannot extract. If both fail this throws. The caller catches that error
- * and falls back to fetchWebPage.
- *
- * For a video the strategy adapts to its duration to keep the cost down.
- * A video longer than 5 minutes takes its transcript from auto-subs only, and never
- * falls back to Whisper.
- * A video longer than 15 minutes is downloaded at the lowest available resolution.
- * The frames we sample are scaled down to 640px anyway, so the extra bytes of an HD
- * stream would be wasted.
- */
-export async function describeMediaFromUrl(
-  url: string,
-  costName: string,
-  strategy: "full_video" | "frames" = "frames",
-): Promise<MediaSourceDescription> {
-  try {
-    return await describeWithYtDlp(url, costName, strategy);
-  } catch (ytErr: any) {
-    try {
-      return await describeWithGalleryDl(url, costName);
-    } catch (gdlErr: any) {
-      throw new Error(`yt-dlp failed (${ytErr?.message ?? ytErr}); gallery-dl failed (${gdlErr?.message ?? gdlErr})`);
-    }
-  }
-}
-
-async function describeWithYtDlp(
-  url: string,
-  costName: string,
-  strategy: "full_video" | "frames",
-): Promise<MediaSourceDescription> {
-  const meta = await fetchYtDlpMetadata(url);
-  const durationMs = meta.duration ? Math.round(meta.duration * 1000) : undefined;
-  const isLongAudio = durationMs != null && durationMs > AUTO_SUBS_THRESHOLD_MS;
-  const isLongVideo = durationMs != null && durationMs > LOW_QUALITY_THRESHOLD_MS;
-
-  const tmpDir = join(tmpdir(), `cn-yt-media-${Date.now()}-${Math.random().toString(36).slice(2)}`);
-  await mkdir(tmpDir, { recursive: true });
-  try {
-    let precomputedTranscript: string | null | undefined;
-    if (isLongAudio) {
-      // A video longer than 5 minutes takes its transcript from auto-subs only.
-      // When it has none we accept having no transcript at all. Running Whisper
-      // over hours of audio would cost far more than the transcript is worth.
-      precomputedTranscript = (await fetchAutoSubs(url, tmpDir, "en")) ?? null;
-    }
-
-    const { filePath, kind } = await downloadVideoWithYtDlp(url, tmpDir, meta, isLongVideo ? "low" : "default");
-    if (!filePath || !kind) throw new Error(`yt-dlp produced no usable file for ${url}`);
-
-    if (kind === "video") {
-      const analysis = await analyzeVideo(filePath, durationMs, costName, strategy, precomputedTranscript);
-      return { kind, meta, analysis };
-    }
-    const analysis = await describeImageFromLocalFile(filePath, costName);
-    return { kind, meta, analysis };
-  } finally {
-    try { await rm(tmpDir, { recursive: true, force: true }); } catch {}
-  }
-}
-
-async function describeWithGalleryDl(url: string, costName: string): Promise<MediaSourceDescription> {
-  const tmpDir = join(tmpdir(), `cn-gdl-media-${Date.now()}-${Math.random().toString(36).slice(2)}`);
-  await mkdir(tmpDir, { recursive: true });
-  try {
-    const { meta, filePath } = downloadWithGalleryDl(url, tmpDir);
-    if (!filePath) throw new Error(`gallery-dl produced no file for ${url}`);
-    const analysis = await describeImageFromLocalFile(filePath, costName);
-    return { kind: "image", meta, analysis };
-  } finally {
-    try { await rm(tmpDir, { recursive: true, force: true }); } catch {}
-  }
 }
 
 export async function analyzeMediaGemini(

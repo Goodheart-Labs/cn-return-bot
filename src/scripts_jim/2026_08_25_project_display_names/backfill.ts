@@ -19,7 +19,7 @@
 import "dotenv/config";
 import { execSync } from "child_process";
 import { fetchFeedPosts } from "../../everything/sources/substack";
-import { resolveChannel } from "../../everything/sources/youtubeDataApi";
+import { resolveChannel } from "../../pipeline/media/youtubeDataApi";
 
 const url = process.env.SUPABASE_URL!;
 const key = process.env.SUPABASE_SERVICE_KEY!;

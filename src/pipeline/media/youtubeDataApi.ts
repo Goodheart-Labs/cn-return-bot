@@ -43,6 +43,8 @@ export interface YoutubeVideo {
   url: string;
   title: string;
   channelTitle: string;
+  /** What the uploader wrote under the video. */
+  description: string;
   /** The publish day, YYYY-MM-DD. */
   publishedAt: string;
   viewCount: number;
@@ -153,6 +155,7 @@ function toVideo(item: any): YoutubeVideo {
     url: `https://www.youtube.com/watch?v=${item.id}`,
     title: item.snippet.title,
     channelTitle: item.snippet.channelTitle,
+    description: item.snippet.description ?? "",
     publishedAt: item.snippet.publishedAt.slice(0, 10),
     viewCount: Number(item.statistics?.viewCount ?? 0),
     durationSeconds: seconds > 0 ? seconds : null,
