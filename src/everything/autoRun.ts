@@ -36,8 +36,8 @@ import { fetchFeedPacing, oldestPendingRequestAgeSeconds, setFeedAlarm } from ".
 import { AVATARS_PER_RUN, refreshStaleAvatars } from "./projectAvatars";
 import { ensureYtDlp } from "./sources/youtube";
 import { duration } from "./logFormat";
+import { quotaRanOutThisRun } from "./sources/youtubeDataApi";
 import {
-  affordablePostsPerDay,
   computeNextRun,
   describeAlarm,
   describePacing,
@@ -84,9 +84,8 @@ async function assertMachineHealthy(): Promise<void> {
 }
 
 /** Tidies the queue and processes one feed item. Returns whether an item was
- *  started, which is what the alarm is measured from. The snapshot is read
- *  here for the mean post cost, which decides how many creators the walk
- *  admits. */
+ *  started, which is what the alarm is measured from. The pacing block is
+ *  printed here too, so the log shows the budget before the walk. */
 async function processOneFeedItem(): Promise<boolean> {
   await triageQueue();
   if (await feedBudgetExhausted()) {
@@ -97,7 +96,7 @@ async function processOneFeedItem(): Promise<boolean> {
   const nextRun = computeNextRun(snapshot, FEED_BUDGET_USD);
   console.log(describePacing(nextRun, snapshot, FEED_BUDGET_USD));
   const queue = await logQueue();
-  if (!feedItemsQueued(queue)) await runAutoEnqueue(affordablePostsPerDay(nextRun.meanPostCostUsd, FEED_BUDGET_USD));
+  if (!feedItemsQueued(queue)) await runAutoEnqueue();
   const ended = await processNextFeedItem();
   if (ended === "empty") console.log("Nothing to process · every creator we walk is caught up");
   return ended !== "empty";
@@ -137,6 +136,13 @@ async function main() {
   try {
     await closeBrowser();
   } catch {}
+  // An exhausted YouTube quota does not stop the run, because Substack and
+  // LessWrong posts can still be checked. But it must not stay a log line: for
+  // five days in September 2026 the quota ran out every afternoon and nobody
+  // noticed. So the run fails here, after its item and its alarm.
+  if (quotaRanOutThisRun()) {
+    throw new Error("The YouTube Data API quota is used up until 07:00 UTC. No YouTube channel could be listed. Failing the run so this is seen.");
+  }
 }
 
 main().catch((err) => {

@@ -1,62 +1,47 @@
 /**
- * Auto-enqueue the next unprocessed content of the feeds we keep fact-checked.
- * The walk order comes from the creator ranking: creators holding priority
- * first, then everyone by reader attention (see creatorRanking.ts). The
- * everything-priority-feeds workflow runs this at the start of every feed run
- * when nothing is waiting in the feed tiers of the queue.
+ * Auto-enqueue the next unprocessed post of the creators we keep fact-checked.
+ * The everything-priority-feeds workflow runs this at the start of every feed
+ * run when nothing is waiting in the feed tiers of the queue.
  *
- * Which creators are walked is decided by the budget (admitCreators): the
- * ranked list is walked from the top until the creators' publishing rates add
- * up to the posts a day the paced budget affords, and nobody below that line
- * is listed. Creators holding priority are always walked and counted first.
+ * The walk is one straight line (Jim's design, GOO-225). It goes down the
+ * creator ranking from the top: creators holding priority first, then
+ * everyone by readers (see creatorRanking.ts). At each creator it asks one
+ * question: does this creator have a post we have not checked? A post counts
+ * if it is among the creator's five newest, or among their all-time top posts
+ * (GOO-81, see topPosts.ts). The first creator with such a post gets it
+ * enqueued, and the walk stops there. The newest unchecked recent post goes
+ * first, and after those the most popular unchecked top post.
  *
- * For every walked feed we fetch its latest entries, newest first. A Substack feed
- * comes from its RSS feed, which goes through our Cloudflare Worker when we run
- * in CI. A YouTube feed comes from the channel's /videos tab. Only a feed's
- * newest few entries are candidates, and we drop every candidate that already
- * has a whole-page everything_items row. Any status counts as processed there,
- * including an item that finished with zero notes; an errored item is handled
- * by the retry sweep instead. The remaining candidates from all feeds are
- * ranked together, by a weighted blend of an author-priority rank and a
- * recency rank, and the best ones are enqueued. The author rank carries most
- * of the weight, so the creators readers care about most are served first and
- * a creator who uploads several times a day cannot crowd them out with sheer
- * volume. The recency share keeps a fresh post from a lower creator ahead of
- * a slightly higher creator's stale backlog, and the candidate window bounds
- * how deep any backlog can reach. A gap deeper than the candidate window is
- * left unfilled on purpose.
+ * Only a feed's five newest posts are ever candidates. A newly ranked creator
+ * therefore backfills at most five posts rather than their whole archive. A
+ * gap deeper than that stays unfilled on purpose. A post counts as checked
+ * when it has a whole-page everything_items row in any status, including one
+ * that finished with zero notes; an errored item is handled by the retry sweep
+ * instead.
  *
- * Each creator's all-time top posts join the candidates too (GOO-81, see
- * topPosts.ts). In the author rank they line up behind the creator's recent
- * posts, ordered by popularity, and in the recency rank they carry their real
- * old publish dates. Nothing gates them beyond that. Because the author rank
- * dominates, a top creator's evergreen hits come before the fresh posts of
- * creators far down the walk order, and only behind that creator's own
- * recent posts. A flagged creator's candidates are ranked ahead of everyone
- * else's, so a creator you flagged who has no unchecked new posts contributes
- * their top posts next. That is what flagging is for.
+ * Where the posts come from: a Substack feed from its RSS feed, which goes
+ * through our Cloudflare Worker when we run in CI; a forum author from the
+ * LessWrong GraphQL API; a YouTube channel from its stored listing, which the
+ * Data API refreshes only when YouTube told us the channel published
+ * something or the listing is a day old (see youtubeChannels.ts). Asking the
+ * Data API about every channel on every run used up the daily quota by the
+ * afternoon.
  *
  * A Substack post is enqueued with its RSS body already in full_text. That way
  * the worker never has to fetch Substack, which blocks our CI runners.
  *
  * Usage:
- *   bun run src/everything/autoEnqueue.ts [--dry-run] [--affordable <posts per day>]
- *
- * --affordable answers "what would the walk admit at that budget" without
- * reading the pacing snapshot, which is also how a dry run works before
- * migration 096 exists on the database it points at.
+ *   bun run src/everything/autoEnqueue.ts [--dry-run]
  */
 
 import "dotenv/config";
 import { extractYoutubeVideoId } from "../everything-core/pageUrls";
 import { rankCreators, type RankedCreator } from "./creatorRanking";
 import { MIN_PAGES_FOR_A_READER, VISIT_RANKING_WINDOW_DAYS } from "../everything-core/readers";
-import { affordablePostsPerDay, computeNextRun, MEAN_COST_RULE } from "./pacing";
-import { FEED_BUDGET_USD } from "./spendCap";
 import {
+  countYoutubeNotifications,
   enqueueItems,
   fetchAllTopPosts,
-  fetchFeedPacing,
   fetchItemClaims,
   fetchItemUrlsContaining,
   fetchItemUrlsIn,
@@ -67,7 +52,6 @@ import {
   requeueErroredItem,
   requeueItem,
   resolveProjectId,
-  type EnqueueRow,
   type KnownItemUrl,
   type TopPostRow,
 } from "./db";
@@ -75,21 +59,17 @@ import type { FeedType } from "./feedUrls";
 import { fixedRow, groupClose, groupOpen, tally } from "./logFormat";
 import { fetchAuthorPosts } from "./sources/lesswrong";
 import { fetchFeedPosts, fetchPostBodyText, htmlToText } from "./sources/substack";
-import { fetchChannelUploads } from "./sources/youtubeDataApi";
-import { loadTopPosts } from "./topPosts";
+import { quotaRanOutThisRun } from "./sources/youtubeDataApi";
+import { refreshOneStaleTopList } from "./topPosts";
 import type { SourceKind } from "./types";
+import { RESUBSCRIBE_AFTER_DAYS, youtubeChannelUploads, type ListingReason } from "./youtubeChannels";
 
-/** How many items one run enqueues, and therefore processes, across all feeds. */
-const BATCH_SIZE = 1;
-/** How many entries a feed listing fetches: YouTube channel videos and forum
- *  author posts. Substack's RSS feed has its own fixed window of about twenty. */
-const FEED_FETCH_LIMIT = 15;
-/** Only a feed's newest posts are ever candidates. A newly followed creator
- *  therefore backfills at most this many posts, instead of their whole 15 to
- *  20 entry feed window. Whole-window backfills used to eat the daily spend
- *  cap; one follow brought in archive posts years old while fresh posts from
- *  other feeds waited. A gap deeper than this window stays unfilled on
- *  purpose. */
+/** Only a feed's newest posts are ever candidates, and a YouTube or forum
+ *  listing fetches no more than these. A newly ranked creator therefore
+ *  backfills at most this many posts. Whole-window backfills used to eat the
+ *  daily spend cap; one follow brought in archive posts years old while fresh
+ *  posts from other feeds waited. A gap deeper than this window stays
+ *  unfilled on purpose. */
 const FEED_CANDIDATE_LIMIT = 5;
 
 /** A creator's feed in the shape the fetchers work with. `url` is the feed's
@@ -121,7 +101,7 @@ interface FeedEntry {
   topPopularity?: number;
 }
 
-/** A feed's latest entries, newest first, the source's display name, and how
+/** A feed's newest entries, newest first, the source's display name, and how
  *  many paid posts were left out. */
 interface FeedListing {
   sourceName?: string;
@@ -129,6 +109,10 @@ interface FeedListing {
   /** Paid posts we cannot read. Counted rather than listed: Slow Boring alone
    *  used to print sixteen lines a cycle, which buried everything else. */
   paidPosts: number;
+  /** For a YouTube channel: why the Data API was asked this time, or null when
+   *  the stored listing was used. Undefined for the other feed types, which
+   *  are always fetched live because they cost nothing. */
+  listedBecause?: ListingReason | null;
 }
 
 async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedListing> {
@@ -140,19 +124,22 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedListing> {
     // using `everything-enqueue --doc <canonical-url> <file>`. The item row
     // that creates then marks the post processed here.
     const paidPosts = posts.filter((p) => p.paywalled).length;
-    const entries = posts.filter((p) => !p.paywalled).map((p) => ({
-      source: "substack" as const,
-      url: p.url,
-      matchKey: p.url,
-      label: `${p.publishedAt.slice(0, 10)} ${p.title}`,
-      fullText: htmlToText(p.bodyHtml, true),
-      title: p.title,
-      publishedAt: p.publishedAt.slice(0, 10),
-    }));
+    const entries = posts
+      .filter((p) => !p.paywalled)
+      .slice(0, FEED_CANDIDATE_LIMIT)
+      .map((p) => ({
+        source: "substack" as const,
+        url: p.url,
+        matchKey: p.url,
+        label: `${p.publishedAt.slice(0, 10)} ${p.title}`,
+        fullText: htmlToText(p.bodyHtml, true),
+        title: p.title,
+        publishedAt: p.publishedAt.slice(0, 10),
+      }));
     return { sourceName, entries, paidPosts };
   }
   if (feed.type === "lesswrong") {
-    const { authorName, posts } = await fetchAuthorPosts(feed.url, FEED_FETCH_LIMIT);
+    const { authorName, posts } = await fetchAuthorPosts(feed.url, FEED_CANDIDATE_LIMIT);
     const entries = posts.map((p) => ({
       source: "lesswrong" as const,
       url: p.url,
@@ -164,37 +151,21 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedListing> {
     }));
     return { sourceName: authorName, entries, paidPosts: 0 };
   }
-  const { channel, videos } = await fetchChannelUploads(feed.url, FEED_FETCH_LIMIT);
-  const entries = videos
+  const { title, uploads, listedBecause } = await youtubeChannelUploads(feed.url, FEED_CANDIDATE_LIMIT);
+  const entries = uploads
     // An upcoming premiere cannot be watched yet, and enqueueing it would
-    // leave the item in a permanent error state. A later run picks it up
-    // once the video is live.
+    // leave the item in a permanent error state. A later listing picks it up
+    // once it has aired, after a notification or at the latest a day later.
     .filter((v) => !v.upcoming)
     .map((v) => ({
       source: "youtube" as const,
-      url: v.url,
+      url: `https://www.youtube.com/watch?v=${v.videoId}`,
       matchKey: v.videoId,
       label: `${v.publishedAt} ${v.title}`,
       title: v.title,
       publishedAt: v.publishedAt,
     }));
-  return { sourceName: channel.title, entries, paidPosts: 0 };
-}
-
-/** Feed listings fetched this process, keyed by feed URL. The admission walk
- *  and the top-posts refresh of one run reuse them, so a feed is listed once
- *  per run however many steps look at it. The unprocessed check against the
- *  database still runs on every use, so an entry enqueued earlier in the run
- *  is not picked again. */
-const feedListingCache = new Map<string, FeedListing>();
-
-async function cachedFeedEntries(feed: PriorityFeed): Promise<FeedListing> {
-  let listing = feedListingCache.get(feed.url);
-  if (!listing) {
-    listing = await fetchFeedEntries(feed);
-    feedListingCache.set(feed.url, listing);
-  }
-  return listing;
+  return { sourceName: title, entries, paidPosts: 0, listedBecause };
 }
 
 /** A feed entry that still needs a whole-page check. Most carry no item row
@@ -268,65 +239,6 @@ async function retryErroredItems(): Promise<void> {
   }
 }
 
-/** An unprocessed entry together with the feed it came from, ready for the
- *  cross-feed ranking. `publishedAt` is an ISO date. A missing date sorts
- *  newest, the same way the queue treats an item with no published date. */
-interface Candidate {
-  feed: PriorityFeed;
-  priority: number;
-  /** The feed's position in the walk order. This is the author-priority rank
-   *  input: the creator ranking puts the most-visited creators first. */
-  feedIndex: number;
-  /** A creator holding priority has their posts ranked strictly above the
-   *  blended ranking, right below individually requested pages. */
-  prioritized: boolean;
-  entry: UnprocessedEntry;
-  sourceName?: string;
-  publishedAt?: string;
-  topPopularity?: number;
-}
-
-/** The rank inputs: where the candidate's feed sits in the walk order, when
- *  the post was published, and the popularity count when the candidate is an
- *  all-time top post rather than a recent one. */
-interface Rankable {
-  feedIndex: number;
-  publishedAt?: string;
-  topPopularity?: number;
-}
-
-const recencyKey = (c: Rankable) => c.publishedAt ?? "9999";
-const isTopPost = (c: Rankable) => c.topPopularity !== undefined;
-
-/** Within one feed's slice of the author rank: recent posts come before the
- *  feed's all-time top posts. Recent posts order by recency, top posts by
- *  their popularity count. */
-function withinFeedOrder(a: Rankable, b: Rankable): number {
-  if (isTopPost(a) !== isTopPost(b)) return Number(isTopPost(a)) - Number(isTopPost(b));
-  if (isTopPost(a) && isTopPost(b)) return b.topPopularity! - a.topPopularity!;
-  return recencyKey(b).localeCompare(recencyKey(a));
-}
-
-/** How the two ranks are blended. The author rank carries nine tenths of the
- *  score, so one step down the walk order costs as much as nine steps of
- *  recency. With an even split, creators who upload several times a day took
- *  most of the daily budget because each upload was among the newest
- *  candidates, while the most-read creators waited for days. */
-const AUTHOR_RANK_WEIGHT = 0.9;
-const RECENCY_RANK_WEIGHT = 0.1;
-
-/** Orders the candidates of all feeds by a weighted blend of two ranks: an
- *  author rank (the feed walk order, ordered within a feed by
- *  withinFeedOrder) and a recency rank (newest post first). Each candidate's
- *  score is its position in each ordering, weighted, and the lowest score is
- *  served first. Ties in the score go to the more recent post. */
-export function rankCandidates<T extends Rankable>(candidates: T[]): T[] {
-  const byRecency = [...candidates].sort((a, b) => recencyKey(b).localeCompare(recencyKey(a)));
-  const byAuthor = [...candidates].sort((a, b) => a.feedIndex - b.feedIndex || withinFeedOrder(a, b));
-  const score = (c: T) => AUTHOR_RANK_WEIGHT * byAuthor.indexOf(c) + RECENCY_RANK_WEIGHT * byRecency.indexOf(c);
-  return [...candidates].sort((a, b) => score(a) - score(b) || byRecency.indexOf(a) - byRecency.indexOf(b));
-}
-
 /** Turns a feed's cached top posts into feed entries, leaving out the ones
  *  already among the feed's recent entries so a recent viral post is not a
  *  candidate twice. Exported for the tests. */
@@ -355,73 +267,34 @@ export async function triageQueue(): Promise<void> {
   await retryErroredItems();
 }
 
-/** How many days of a feed's listing the publishing rate is measured over. */
-const PUBLISHING_RATE_WINDOW_DAYS = 14;
-
 const DAY_MS = 24 * 3600_000;
 
-/** A creator's publishing rate in posts per day: the listed entries dated
- *  inside the window, divided by the window's length. Undated entries do not
- *  count. A listing holds about 15 to 20 entries, so a creator who posts more
- *  than that inside the window is undercounted at roughly 1.1 to 1.4 a day.
- *  That is acceptable, because such a creator fills a budget on their own
- *  either way. Exported for the tests. */
-export function publishingRatePerDay(entries: { publishedAt?: string }[], now: Date): number {
-  const since = new Date(now.getTime() - PUBLISHING_RATE_WINDOW_DAYS * DAY_MS).toISOString().slice(0, 10);
-  return entries.filter((e) => e.publishedAt !== undefined && e.publishedAt >= since).length / PUBLISHING_RATE_WINDOW_DAYS;
-}
-
-/** What admitting one creator produced: at least their publishing rate. */
-interface Admitted<C, W> {
-  creator: C;
-  /** The creator's position in the ranked list, which is the author rank. */
-  index: number;
-  walk: W;
-}
-
-/** How many creators with posts to process one walk collects before it stops
- *  looking further down the ranking. Jim's rule (2026-09-15): a run enqueues
- *  one post, so five creators' worth of candidates is plenty. Without it a
- *  cheap day admitted every ranked creator and the walk took 40 minutes. */
-const MAX_CREATORS_WITH_NEW_POSTS = 5;
-
-/** Why the walk stopped where it did, for the log. */
-type Cutoff = "budget" | "enough";
-
-/** Decides which of the ranked creators are walked this run. A creator
- *  holding priority is always walked and counted first. Then attention
- *  creators are walked in order until either the cumulative publishing rate
- *  reaches the affordable rate or enough creators with posts to process have
- *  been found; the creator who crosses the budget line is still walked, so
- *  the budget is filled rather than left short, and nobody below the line is
- *  even listed. A creator whose walk returns null could not be listed and is
- *  skipped without counting. Exported for the tests, which inject the walk. */
-export async function admitCreators<C extends { prioritized: boolean }, W extends { rate: number; newPosts: number }>(
+/** Goes down the ranked creators from the top and stops at the first one whose
+ *  walk found something unchecked. A creator whose walk returns null could not
+ *  be listed and is passed over. `walked` holds every creator that was listed,
+ *  including the one the walk stopped at. Exported for the tests, which
+ *  inject the walk. */
+export async function walkToFirstUnchecked<C, W extends { unchecked: unknown[] }>(
   ranked: C[],
-  affordable: number,
   walk: (creator: C, index: number) => Promise<W | null>,
-  maxWithNewPosts = MAX_CREATORS_WITH_NEW_POSTS,
-): Promise<{ admitted: Admitted<C, W>[]; cumulativeRate: number; cutoffIndex: number | null; cutoff: Cutoff | null }> {
-  const admitted: Admitted<C, W>[] = [];
-  let cumulativeRate = 0;
-  let withNewPosts = 0;
+): Promise<{ walked: C[]; unlisted: number; found: { creator: C; index: number; walk: W } | null }> {
+  const walked: C[] = [];
+  let unlisted = 0;
   for (const [index, creator] of ranked.entries()) {
-    if (!creator.prioritized) {
-      if (cumulativeRate >= affordable) return { admitted, cumulativeRate, cutoffIndex: index, cutoff: "budget" };
-      if (withNewPosts >= maxWithNewPosts) return { admitted, cumulativeRate, cutoffIndex: index, cutoff: "enough" };
-    }
     const result = await walk(creator, index);
-    if (!result) continue;
-    admitted.push({ creator, index, walk: result });
-    cumulativeRate += result.rate;
-    if (result.newPosts > 0) withNewPosts++;
+    if (!result) {
+      unlisted++;
+      continue;
+    }
+    walked.push(creator);
+    if (result.unchecked.length > 0) return { walked, unlisted, found: { creator, index, walk: result } };
   }
-  return { admitted, cumulativeRate, cutoffIndex: null, cutoff: null };
+  return { walked, unlisted, found: null };
 }
 
 /** Column widths of the walk table, fixed so rows can print as they arrive. */
-const CREATOR_COLUMNS = [4, 24, 20, 7, 5, 6, 9, 9, 6];
-const CREATOR_ALIGN: ("left" | "right")[] = ["right", "left", "left", "right", "right", "right", "right", "right", "right"];
+const CREATOR_COLUMNS = [4, 24, 20, 7, 5, 6, 16, 9];
+const CREATOR_ALIGN: ("left" | "right")[] = ["right", "left", "left", "right", "right", "right", "left", "right"];
 
 /** How much of a creator's priority window is left, for the walk table. Rounded
  *  down to whole days, because the exact hour is not worth a column. */
@@ -431,73 +304,125 @@ function priorityLeft(priorityUntil: string | null): string {
   return days >= 1 ? `${days}d` : "<1d";
 }
 
-/** How many posts a day the budget buys at the current mean post cost, from
- *  the same snapshot the pacing rule reads. The command-line entry point uses
- *  this; the feed run passes the number it already computed. */
-export async function affordablePostsPerDayNow(): Promise<number> {
-  const snapshot = await fetchFeedPacing(MEAN_COST_RULE);
-  return affordablePostsPerDay(computeNextRun(snapshot, FEED_BUDGET_USD).meanPostCostUsd, FEED_BUDGET_USD);
+/** Where a creator's posts came from this run, for the walk table. A YouTube
+ *  channel says whether the Data API was asked, and why. */
+function listingSource(feed: PriorityFeed, listing: FeedListing): string {
+  if (feed.type === "substack") return "rss";
+  if (feed.type === "lesswrong") return "forum api";
+  return listing.listedBecause ? `listed, ${listing.listedBecause}` : "stored";
 }
 
-/** Runs one pass of admission, selection, and enqueueing. `affordable` is how
- *  many posts a day the budget buys; the walk admits creators until their
- *  publishing rates add up to it. Returns how many items were enqueued. */
-export async function runAutoEnqueue(affordable: number, dryRun = false): Promise<number> {
+/** What one creator's walk found. */
+interface CreatorWalk {
+  feed: PriorityFeed;
+  sourceName?: string;
+  /** Recent posts first, newest first, then top posts by popularity. The walk
+   *  enqueues the first. */
+  unchecked: UnprocessedEntry[];
+}
+
+/** The two YouTube lines at the end of the walk: how many channels the Data API
+ *  was asked about, and whether YouTube's notifications are arriving. A hub
+ *  that stopped sending shows up as zero notified channels. */
+async function logYoutubeListings(listings: (ListingReason | null)[]): Promise<void> {
+  if (listings.length === 0) return;
+  const listed = listings.filter((reason) => reason !== null);
+  const reasons = new Map<string, number>();
+  for (const reason of listed) reasons.set(reason, (reasons.get(reason) ?? 0) + 1);
+  const now = Date.now();
+  const { notified, subscribed } = await countYoutubeNotifications(
+    new Date(now - DAY_MS),
+    new Date(now - RESUBSCRIBE_AFTER_DAYS * DAY_MS),
+  );
+  console.log(
+    `  YouTube · ${listed.length} of ${listings.length} channels asked the Data API${listed.length ? ` (${tally(reasons)})` : ""}, the rest read their stored listing`,
+  );
+  console.log(`  YouTube · channels the hub told us about in the last 24 hours: ${notified} · channels subscribed: ${subscribed}`);
+  if (quotaRanOutThisRun()) console.log(`  YouTube · the Data API quota is used up until 07:00 UTC · this run will fail at the end so it is seen`);
+}
+
+/** Enqueues one post. An entry whose item row already exists is promoted to a
+ *  whole-page check in place, keeping its claims and notes. A Substack
+ *  promotion carries the RSS body, the same text a fresh enqueue would have
+ *  carried; a YouTube one carries none and the worker fetches the transcript. */
+async function enqueueEntry(creator: RankedCreator, walk: CreatorWalk, entry: UnprocessedEntry): Promise<void> {
+  const { feed, sourceName } = walk;
+  // An all-time top Substack post is too old to appear in the RSS feed, so
+  // its body is fetched here through the API, one call for the picked post.
+  // If that fails the item is enqueued bare, and the worker's web-fetch
+  // ladder is the fallback.
+  if (feed.type === "substack" && entry.topPopularity !== undefined && !entry.fullText) {
+    try {
+      entry.fullText = await fetchPostBodyText(feed.url, entry.url);
+    } catch (err: any) {
+      console.warn(`  body fetch failed for ${entry.url}: ${err?.message}`);
+    }
+  }
+  if (entry.existingItem) {
+    await promoteItemToWholePage(entry.existingItem.id, entry.fullText ?? null, creator.priority);
+    console.log(`  promoted to a whole-page check: ${entry.url}`);
+    return;
+  }
+  await enqueueItems([
+    {
+      project_id: await resolveProjectId({ slug: feed.project, displayName: sourceName, feedUrl: feed.url }),
+      source: entry.source,
+      url: entry.url,
+      title: entry.title,
+      full_text: entry.fullText,
+      // The candidate's date also covers YouTube, whose upload date the
+      // listing already carries. Setting it here keeps the queue's own
+      // ordering honest from the start.
+      published_at: entry.publishedAt,
+      priority: creator.priority,
+    },
+  ]);
+  console.log(`  enqueued`);
+}
+
+/** Walks the ranking to the first creator with an unchecked post and enqueues
+ *  that post. Returns how many items were enqueued or promoted: one, or zero
+ *  when every ranked creator is caught up. */
+export async function runAutoEnqueue(dryRun = false): Promise<number> {
   const ranked = await rankCreators();
-  // The cached top lists serve this walk. The stalest admitted creator's list
-  // is refreshed after the walk, once the admitted set is known, and the fresh
-  // rows serve the next cycle.
+  // The cached top lists serve this walk. The stalest walked creator's list is
+  // refreshed after the walk, and the fresh rows serve the next run.
   const topRows = await fetchAllTopPosts();
 
-  const candidates: Candidate[] = [];
   const skipped: string[] = [];
   const paidByCreator = new Map<string, number>();
+  const youtubeListings: (ListingReason | null)[] = [];
 
-  // The header and the group open before the walk, and each creator's row is
-  // printed the moment their feed has been listed. The walk can take minutes
-  // (each YouTube channel is a yt-dlp call), and a log that said nothing until
-  // the end read as a hang.
+  // Each creator's row is printed the moment their feed has been listed, so a
+  // slow walk never reads as a hang.
   const byPriority = ranked.filter((c) => c.prioritized).length;
   console.log(
     `\nCREATORS · ${ranked.length} ranked · ${byPriority} by priority, ${ranked.length - byPriority} by attention · ranked by readers, a browser that opened at least ${MIN_PAGES_FOR_A_READER} different pages · counted over the last ${VISIT_RANKING_WINDOW_DAYS} days`,
   );
-  console.log(`  the budget affords ${affordable.toFixed(1)} posts a day · creators are walked from the top until their posts per day add up to that`);
+  console.log(`  walked from the top until a creator has a post we have not checked`);
   console.log(groupOpen("the walk, in rank order"));
   console.log(
-    fixedRow(
-      ["rank", "creator", "why", "readers", "pages", "visits", "unchecked", "posts/day", "cum."],
-      CREATOR_COLUMNS,
-      CREATOR_ALIGN,
-    ),
+    fixedRow(["rank", "creator", "why", "readers", "pages", "visits", "listing", "unchecked"], CREATOR_COLUMNS, CREATOR_ALIGN),
   );
 
-  let cumulativeSoFar = 0;
-  const walkCreator = async (creator: RankedCreator, feedIndex: number): Promise<{ rate: number; newPosts: number } | null> => {
+  const walkCreator = async (creator: RankedCreator, feedIndex: number): Promise<CreatorWalk | null> => {
     const feed: PriorityFeed = { project: creator.project_slug, type: creator.feed_type, url: creator.feed_url };
-    let listing;
+    let listing: FeedListing;
     try {
-      listing = await cachedFeedEntries(feed);
+      listing = await fetchFeedEntries(feed);
     } catch (err: any) {
       // One creator whose feed will not load must not take the run down with
       // it. Readers can prioritise anyone, so an unreachable feed is ordinary
-      // rather than exceptional. Nothing is recorded: a creator holding
-      // priority drops out when their seven days lapse, and one walked on
-      // visits drops out when those age out of the fourteen-day window, so a
-      // dead feed costs one failed request per cycle for at most two weeks.
+      // rather than exceptional. An exhausted YouTube quota is the exception,
+      // and the feed run fails at its end for it (see autoRun.ts).
       skipped.push(`  could not list ${feed.project}: ${err?.message ?? "unknown error"}`);
-      console.log(
-        fixedRow([String(feedIndex + 1), feed.project, "could not list", "", "", "", "", "", ""], CREATOR_COLUMNS, CREATOR_ALIGN),
-      );
+      console.log(fixedRow([String(feedIndex + 1), feed.project, "could not list", "", "", "", "", ""], CREATOR_COLUMNS, CREATOR_ALIGN));
       return null;
     }
-    const { sourceName, entries, paidPosts } = listing;
-    if (paidPosts > 0) paidByCreator.set(feed.project, paidPosts);
-    const rate = publishingRatePerDay(entries, new Date());
-    cumulativeSoFar += rate;
-    const latest = entries.slice(0, FEED_CANDIDATE_LIMIT);
-    const tops = topPostEntries(topRows.filter((t) => t.feed_url === feed.url), latest);
-    const unprocessed = await unprocessedEntries(feed, [...latest, ...tops]);
-
+    if (listing.paidPosts > 0) paidByCreator.set(feed.project, listing.paidPosts);
+    if (listing.listedBecause !== undefined) youtubeListings.push(listing.listedBecause);
+    const tops = topPostEntries(topRows.filter((t) => t.feed_url === feed.url), listing.entries);
+    const unchecked = await unprocessedEntries(feed, [...listing.entries, ...tops]);
     console.log(
       fixedRow(
         [
@@ -507,138 +432,51 @@ export async function runAutoEnqueue(affordable: number, dryRun = false): Promis
           String(creator.readers),
           String(creator.pages),
           String(creator.visits),
-          String(unprocessed.length),
-          rate.toFixed(2),
-          cumulativeSoFar.toFixed(1),
+          listingSource(feed, listing),
+          String(unchecked.length),
         ],
         CREATOR_COLUMNS,
         CREATOR_ALIGN,
       ),
     );
-
-    for (const entry of unprocessed) {
-      candidates.push({
-        feed,
-        priority: creator.priority,
-        feedIndex,
-        prioritized: creator.prioritized,
-        entry,
-        sourceName,
-        topPopularity: entry.topPopularity,
-        publishedAt: entry.publishedAt,
-      });
-    }
-    return { rate, newPosts: unprocessed.length };
+    return { feed, sourceName: listing.sourceName, unchecked };
   };
 
-  const { admitted, cumulativeRate, cutoffIndex, cutoff } = await admitCreators(ranked, affordable, walkCreator);
+  const { walked, unlisted, found } = await walkToFirstUnchecked(ranked, walkCreator);
 
   const closing = groupClose();
   if (closing) console.log(closing);
-  console.log(
-    `  walked ${admitted.length} of ${ranked.length}${skipped.length ? `, ${skipped.length} could not be listed` : ""} · their posts add up to ${cumulativeRate.toFixed(1)} a day against ${affordable.toFixed(1)} affordable`,
-  );
-  const last = admitted.at(-1);
-  if (cutoffIndex !== null && last) {
-    const below = ranked.length - cutoffIndex;
-        const why =
-      cutoff === "enough"
-        ? `${MAX_CREATORS_WITH_NEW_POSTS} creators already have posts to process, so the ${below} below the line wait for a later run`
-        : `${below} below the line wait for a cheaper day`;
-    console.log(`  cutoff: rank ${last.index + 1} ${last.creator.project_slug} (${last.creator.readers} readers, ${last.creator.pages} pages) is the last creator walked · ${why}`);
-  } else if (byPriority > 0 && admitted.every((a) => a.creator.prioritized) && byPriority < ranked.length) {
-    console.log(`  creators holding priority fill the budget by themselves · nobody is walked on attention today`);
-  } else {
-    console.log(`  every ranked creator fits in the budget`);
-  }
+  console.log(`  walked ${walked.length + unlisted} of ${ranked.length}${unlisted ? `, ${unlisted} could not be listed` : ""}`);
   for (const line of skipped) console.log(line);
   if (paidByCreator.size > 0) {
     console.log(`  paid posts we cannot read, waiting for the subscriber inbox: ${tally(paidByCreator)}`);
   }
-  // The weekly top-posts refresh is spent on a creator we actually walk. Its
-  // fresh rows are in the table for the next cycle; this one used the cache.
-  if (!dryRun) await loadTopPosts(admitted.map((a) => a.creator));
+  await logYoutubeListings(youtubeListings);
+  // The top-posts refresh is spent on a creator we actually walked. Its fresh
+  // rows are in the table for the next run; this one used the cache.
+  if (!dryRun) await refreshOneStaleTopList(walked);
 
-  // A creator holding priority comes strictly before the blended ranking, so
-  // priority means "next", not "sooner". Within each partition the blend
-  // applies.
-  const rankedCandidates = [
-    ...rankCandidates(candidates.filter((c) => c.prioritized)),
-    ...rankCandidates(candidates.filter((c) => !c.prioritized)),
-  ];
-  const picks = rankedCandidates.slice(0, BATCH_SIZE);
-
-  if (picks.length === 0) {
-    console.log("\nQUEUE · nothing to add, every creator we walk is caught up");
+  if (!found) {
+    console.log("\nQUEUE · nothing to add, every ranked creator is caught up");
     return 0;
   }
-  console.log("");
-  for (const { feed, entry } of picks) {
-    console.log(`  adding: [${feed.project}] ${entry.label}`);
-    console.log(`          ${entry.url}`);
-    if (rankedCandidates.length > picks.length) {
-      console.log(`          it beat ${rankedCandidates.length - picks.length} other candidate posts`);
-    }
-  }
+  const entry = found.walk.unchecked[0]!;
+  console.log(`\n  adding: [${found.walk.feed.project}] ${entry.label}`);
+  console.log(`          ${entry.url}`);
   if (dryRun) {
-    console.log("Dry run — nothing enqueued");
+    console.log("Dry run, nothing enqueued");
     return 0;
   }
-
-  // An entry whose item row already exists is promoted to a whole-page check
-  // in place, keeping its claims and notes. A Substack promotion carries the
-  // RSS body, the same text a fresh enqueue would have carried; a YouTube one
-  // carries none and the worker fetches the transcript. Promotions count
-  // toward the batch exactly like fresh enqueues, because picks was capped
-  // above.
-  const rows: EnqueueRow[] = [];
-  let promoted = 0;
-  for (const { feed, priority, entry, sourceName, publishedAt } of picks) {
-    // An all-time top Substack post is too old to appear in the RSS feed, so
-    // its body is fetched here through the API, one call for the picked post.
-    // If that fails the item is enqueued bare, and the worker's web-fetch
-    // ladder is the fallback.
-    if (feed.type === "substack" && entry.topPopularity !== undefined && !entry.fullText) {
-      try {
-        entry.fullText = await fetchPostBodyText(feed.url, entry.url);
-      } catch (err: any) {
-        console.warn(`  body fetch failed for ${entry.url}: ${err?.message}`);
-      }
-    }
-    if (entry.existingItem) {
-      await promoteItemToWholePage(entry.existingItem.id, entry.fullText ?? null, priority);
-      console.log(`  promoted to a whole-page check: ${entry.url}`);
-      promoted++;
-      continue;
-    }
-    rows.push({
-      project_id: await resolveProjectId({ slug: feed.project, displayName: sourceName, feedUrl: feed.url }),
-      source: entry.source,
-      url: entry.url,
-      title: entry.title,
-      full_text: entry.fullText,
-      // The candidate's date also covers YouTube, whose upload date the walk
-      // already fetched. Setting it here keeps the queue's own ordering
-      // honest from the start.
-      published_at: publishedAt,
-      priority,
-    });
-  }
-  const inserted = rows.length > 0 ? await enqueueItems(rows) : 0;
-  console.log(`Enqueued ${inserted} item(s), promoted ${promoted}`);
-  return inserted + promoted;
+  await enqueueEntry(found.creator, found.walk, entry);
+  return 1;
 }
 
 if (import.meta.main) {
   const dryRun = process.argv.includes("--dry-run");
-  const affordableArg = process.argv[process.argv.indexOf("--affordable") + 1];
-  const affordable = process.argv.includes("--affordable") ? Number(affordableArg) : null;
-  if (affordable !== null && !(affordable > 0)) throw new Error("--affordable needs a positive number of posts per day");
   (dryRun ? Promise.resolve() : triageQueue())
-    .then(() => affordable ?? affordablePostsPerDayNow())
-    .then((posts) => runAutoEnqueue(posts, dryRun))
+    .then(() => runAutoEnqueue(dryRun))
     .catch((err) => {
-    console.error("[autoEnqueue] Fatal error:", err);
-    process.exit(1);
-  });
+      console.error("[autoEnqueue] Fatal error:", err);
+      process.exit(1);
+    });
 }
