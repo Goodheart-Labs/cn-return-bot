@@ -49,7 +49,7 @@ export interface YtDlpResult {
   kind: YtDlpKind | null;
 }
 
-const VIDEO_EXTS = [".mp4", ".webm", ".mkv", ".mov", ".m4v", ".m4a", ".mp3", ".ogg", ".opus"];
+const VIDEO_EXTS = [".mp4", ".webm", ".mkv", ".mov", ".m4v", ".ogv", ".mpeg", ".mpg", ".avi", ".flv", ".3gp", ".m4a", ".mp3", ".ogg", ".opus"];
 const IMAGE_EXTS = [".jpg", ".jpeg", ".png", ".webp", ".gif", ".heic", ".avif", ".bmp"];
 
 function classifyByExtension(filePath: string): YtDlpKind | null {
