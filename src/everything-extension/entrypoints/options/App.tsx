@@ -39,7 +39,7 @@ const VISIT_SITES: { kind: VisitSiteKind; label: string }[] = [
 
 /** The settings page's checkbox: the design system's, at this page's text
  *  size. */
-const Setting = (props: ComponentProps<typeof Checkbox>) => <Setting className="text-sm text-fg-secondary" {...props} />;
+const Setting = (props: ComponentProps<typeof Checkbox>) => <Checkbox className="text-sm text-fg-secondary" {...props} />;
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
