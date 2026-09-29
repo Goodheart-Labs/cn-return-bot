@@ -145,3 +145,6 @@ storybook-static
 .impeccable/live/inject-journal.json
 .impeccable/config.local.json
 .impeccable/hook.cache.json
+
+# Local note-tweets feed, staging and screenshots
+/src/note-tweets/.state/

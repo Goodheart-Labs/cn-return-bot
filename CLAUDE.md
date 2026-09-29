@@ -58,6 +58,7 @@ There are some ranked strategic cruxes (Mar 2026) in Claude's auto-memory coveri
   - `utils/` - tweetLog, browserManager, parseStatusNoteUrl, jsonLlmCall
 - `src/bots/` - Bot configurations (simple-bot is the only active bot)
 - `src/production/` - GitHub Actions entry points (runPipeline, updateNoteFeedback)
+- `src/note-tweets/` - Local Common Notes feed, tweet staging and Typefully drafts
 - `src/local/` - Local testing tools (tryoutNotes, runOnVideos, evaluateResults)
 - `src/scraper/` - Notewriter page scraper
 - `src/everything/` - "Community Notes on Everything" pipeline (see below)
