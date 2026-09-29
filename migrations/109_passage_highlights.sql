@@ -92,4 +92,3 @@ create policy own_highlight_votes_delete on everything_passage_highlight_votes f
   to authenticated using (voter_id = auth.uid());
 
 alter publication supabase_realtime add table everything_passage_highlights;
-

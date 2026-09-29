@@ -204,3 +204,29 @@ export function anchorForSelection(block: Pick<ReaderBlock, "text">, selected: s
   if (normalized.length < 12 || normalized.split(" ").length < 3) return null;
   return anchor;
 }
+
+export function highlightedTextParts(text: string, quotes: string[]): { text: string; highlighted: boolean }[] {
+  const spans: { start: number; end: number }[] = [];
+  for (const quote of quotes) {
+    if (!quote.trim()) continue;
+    const pattern = quote.trim().split(/\s+/).map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("\\s+");
+    for (const match of text.matchAll(new RegExp(pattern, "g"))) {
+      spans.push({ start: match.index, end: match.index + match[0].length });
+    }
+  }
+  const merged: typeof spans = [];
+  for (const span of spans.sort((a, b) => a.start - b.start)) {
+    const previous = merged.at(-1);
+    if (previous && span.start <= previous.end) previous.end = Math.max(previous.end, span.end);
+    else merged.push({ ...span });
+  }
+  const parts: { text: string; highlighted: boolean }[] = [];
+  let start = 0;
+  for (const span of merged) {
+    if (span.start > start) parts.push({ text: text.slice(start, span.start), highlighted: false });
+    parts.push({ text: text.slice(span.start, span.end), highlighted: true });
+    start = span.end;
+  }
+  if (start < text.length) parts.push({ text: text.slice(start), highlighted: false });
+  return parts;
+}

@@ -35,9 +35,9 @@
 .reader-passage:hover .reader-note-add, .reader-passage:focus-within .reader-note-add, .reader-passage-active .reader-note-add, .reader-note-add-selection { opacity: 1; }
 .reader-note-add:hover, .reader-note-add-selection { color: var(--cn-link); background: var(--cn-tint); }
 .reader-note-add-selection { font-weight: 600; }
-.reader-passage-link { color: var(--cn-fg-subtle); font-size: var(--cn-text-2xs); opacity: 0; transition: opacity 120ms; }
-.reader-passage:hover .reader-passage-link, .reader-passage:focus-within .reader-passage-link { opacity: 1; }
-.reader-passage-link:hover { color: var(--cn-link); }
+.reader-passage-ask { color: var(--cn-fg-subtle); font-size: var(--cn-text-2xs); opacity: 0; transition: opacity 120ms; }
+.reader-passage:hover .reader-passage-ask, .reader-passage:focus-within .reader-passage-ask { opacity: 1; }
+.reader-passage-ask:hover { color: var(--cn-link); }
 .reader-checked-marker { display: block; margin-top: 0.75rem; padding-left: 0.5rem; border-left: 2px solid var(--cn-line); color: var(--cn-fg-subtle); font-size: var(--cn-text-2xs); line-height: 1.5; }
 
 .reader-margin { align-self: stretch; min-width: 0; }
@@ -62,8 +62,8 @@
 .reader-full { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--cn-line); }
 .reader-full .reader-intro { padding-top: 1rem; }
 .reader-full-original { margin-top: 1rem; }
-.reader-share-status { position: fixed; bottom: 1.25rem; left: 50%; transform: translateX(-50%); max-width: calc(100% - 2rem); z-index: 30; padding: 0.625rem 1rem; border-radius: var(--cn-radius-control); background: var(--cn-inverse); color: var(--cn-on-inverse); font-size: var(--cn-text-sm); box-shadow: var(--cn-shadow-floating); }
-.reader-share-status:empty { display: none; }
+.reader-status { position: fixed; bottom: 1.25rem; left: 50%; transform: translateX(-50%); max-width: calc(100% - 2rem); z-index: 30; padding: 0.625rem 1rem; border-radius: var(--cn-radius-control); background: var(--cn-inverse); color: var(--cn-on-inverse); font-size: var(--cn-text-sm); box-shadow: var(--cn-shadow-floating); }
+.reader-status:empty { display: none; }
 .article-reader :focus-visible { outline: 2px solid var(--cn-focus); outline-offset: 3px; }
 
 @media (min-width: 768px) { .reader-shell { padding: 0 2rem 4rem; } }
@@ -84,7 +84,7 @@
   .reader-margin { display: none; }
   .reader-inline-notes { display: grid; margin: 1.25rem 0 2rem; }
   .reader-intro { max-width: 42rem; }
-  .reader-note-add, .reader-passage-link { opacity: 1; }
+  .reader-note-add, .reader-passage-ask { opacity: 1; }
   .reader-passage-noted:before { left: -0.625rem; }
 }
 @media (max-width: 599px) {
@@ -93,4 +93,14 @@
   .reader-passage > p, .reader-passage > ul, .reader-passage > ol { font-size: 1.125rem; line-height: 1.75; }
   .reader-notice { padding: 1.25rem; }
 }
-@media (prefers-reduced-motion: reduce) { .reader-note-add, .reader-passage-link { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .reader-note-add, .reader-passage-ask { transition: none; } }
+
+.reader-highlight-quote { background: var(--cn-tint); color: inherit; border-radius: 2px; }
+.reader-highlight-card, .reader-question-panel { padding: 1rem; border: 1px solid var(--cn-line); border-radius: var(--cn-radius-card); background: var(--cn-surface); font-size: var(--cn-text-sm); overflow-wrap: anywhere; }
+.reader-highlight-card p, .reader-question-answer { margin-bottom: 0.75rem; white-space: pre-wrap; }
+.reader-highlight-author { color: var(--cn-fg-muted); font-size: var(--cn-text-xs); }
+.reader-question-panel h3 { font-weight: 600; margin-bottom: 0.75rem; }
+.reader-question-panel textarea, .reader-highlight-form textarea { width: 100%; padding: 0.5rem; border: 1px solid var(--cn-line); border-radius: var(--cn-radius-control); background: var(--cn-surface); color: var(--cn-fg); }
+.reader-highlight-form input[type="number"] { width: 5rem; padding: 0.25rem; border: 1px solid var(--cn-line); background: var(--cn-surface); color: var(--cn-fg); }
+.reader-question-panel button, .reader-highlight-form button { margin: 0.5rem 0.75rem 0 0; color: var(--cn-link); }
+.reader-question-panel button:disabled, .reader-highlight-form button:disabled { opacity: 0.5; }

@@ -7,7 +7,10 @@ import { buttonVariants } from "@cn/ui/Button";
 import { eyebrowVariants } from "@cn/ui/typography";
 import { ReaderNoteCard, ReaderNotesProvider, useReaderNoteSet } from "./components/ReaderNotes";
 import { ReaderWriteNote, type ReaderAnchor } from "./components/ReaderWriteNote";
-import { anchorForSelection, mapNotesToBlocks, parseReaderText, type ReaderBlock } from "./lib/readerText";
+import { highlightedTextParts, anchorForSelection, mapNotesToBlocks, parseReaderText, type ReaderBlock } from "./lib/readerText";
+import { fetchPassageHighlights, subscribeToPassages } from "@cn/core/passages";
+import type { HighlightDraft, PassageHighlight } from "@cn/core/passageHighlights";
+import { ReaderHighlightForm, ReaderHighlights, ReaderPassageQuestions } from "./components/ReaderPassages";
 import "./reader.css";
 
 export function articleUrl(value: string | null): string | null {
@@ -63,13 +66,18 @@ export function ArticleReader() {
   );
 }
 
-function BlockText({ block }: { block: ReaderBlock }) {
-  if (block.kind === "heading") return <h2>{block.text}</h2>;
+function HighlightedText({ text, highlights }: { text: string; highlights: PassageHighlight[] }) {
+  return <>{highlightedTextParts(text, highlights.map((h) => h.quote)).map((part, index) => part.highlighted
+    ? <mark className="reader-highlight-quote" key={index}>{part.text}</mark> : part.text)}</>;
+}
+
+function BlockText({ block, highlights }: { block: ReaderBlock; highlights: PassageHighlight[] }) {
+  if (block.kind === "heading") return <h2><HighlightedText text={block.text} highlights={highlights} /></h2>;
   if (block.kind === "list") {
     const List = block.ordered ? "ol" : "ul";
-    return <List>{block.items?.map((text, index) => <li key={index}>{text}</li>)}</List>;
+    return <List>{block.items?.map((text, index) => <li key={index}><HighlightedText text={text} highlights={highlights} /></li>)}</List>;
   }
-  return <p>{block.text}</p>;
+  return <p><HighlightedText text={block.text} highlights={highlights} /></p>;
 }
 
 function selectionInPassage(): { blockId: string; text: string } | null {
@@ -109,7 +117,16 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
   const marginId = `${scope}-margin`;
   const [showNotes, setShowNotes] = useState(true);
   const [selectedBlock, setSelectedBlock] = useState<string | null>(null);
-  const [shareStatus, setShareStatus] = useState("");
+  const [notice, setNotice] = useState("");
+  const [asking, setAsking] = useState<string | null>(null);
+  const [highlightForm, setHighlightForm] = useState<{ anchor: ReaderAnchor; kind: HighlightDraft["kind"]; draft?: HighlightDraft } | null>(null);
+  const highlightQuery = useQuery({ queryKey: ["passageHighlights", item?.id], queryFn: () => fetchPassageHighlights(item!.id), enabled: !!item });
+  const itemId = item?.id;
+  const { refetch: refetchHighlights } = highlightQuery;
+  useEffect(() => {
+    if (!itemId) return;
+    return subscribeToPassages(itemId, () => { void refetchHighlights(); });
+  }, [itemId, refetchHighlights]);
   const [wide, setWide] = useState(() => window.matchMedia("(min-width: 900px)").matches);
   const [selection, setSelection] = useState<{ blockId: string; text: string } | null>(null);
   const [composer, setComposer] = useState<ReaderAnchor | null>(null);
@@ -129,6 +146,7 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
     [articleText, scope],
   );
   const { byBlock, unanchored } = useMemo(() => mapNotesToBlocks(blocks, notes), [blocks, notes]);
+  const highlightBlocks = useMemo(() => mapNotesToBlocks(blocks, (highlightQuery.data ?? []).map((highlight) => ({ ...highlight, claim: { context_quote: highlight.quote, context_paragraph: highlight.context_paragraph, updated_quote: null } }))), [blocks, highlightQuery.data]);
   const checkedByBlock = useMemo(() => {
     const notedClaims = new Set(notes.map((note) => note.claim_id));
     const claims = (claimsQuery.data ?? []).filter((claim) => claim.status === "no_note" && !notedClaims.has(claim.id));
@@ -190,26 +208,22 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
   }, [notes, composer, selectedBlock, scope]);
 
   useEffect(() => {
-    if (!shareStatus) return;
-    const timer = setTimeout(() => setShareStatus(""), 4000);
+    if (!notice) return;
+    const timer = setTimeout(() => setNotice(""), 4000);
     return () => clearTimeout(timer);
-  }, [shareStatus]);
+  }, [notice]);
 
-  async function sharePassage(blockId: string) {
-    const url = new URL(window.location.href);
-    url.searchParams.delete("note");
-    url.searchParams.set("edition", scope);
-    url.hash = "";
-    url.searchParams.set("passage", blockId);
-    window.history.replaceState(null, "", url);
-    appliedLink.current = url.search;
-    try {
-      await navigator.clipboard.writeText(url.href);
-      setShareStatus("Passage link copied.");
-    } catch {
-      setShareStatus("The address bar now links to this passage. Copy it to share.");
-    }
+  function openHighlight(block: ReaderBlock, text: string, kind: HighlightDraft["kind"], draft?: HighlightDraft) {
+    setHighlightForm({ anchor: { blockId: block.id, text, paragraph: block.text, partial: text !== block.text }, kind, draft });
   }
+
+  const renderPassageExtras = (blockId: string) => {
+    const block = blocks.find((b) => b.id === blockId);
+    return <>
+      <ReaderHighlights highlights={blockId === "unanchored" ? highlightBlocks.unanchored : highlightBlocks.byBlock.get(blockId) ?? []} onChanged={() => void highlightQuery.refetch()} />
+      {asking === blockId && block && item && <ReaderPassageQuestions key={blockId} item={item} passage={block.text} onDraft={(draft) => openHighlight(block, block.text, draft.kind, draft)} />}
+    </>;
+  };
 
   function openComposer(block: ReaderBlock, partial: string | null) {
     setComposer({ blockId: block.id, text: partial ?? block.text, paragraph: block.text, partial: partial !== null });
@@ -222,7 +236,7 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
     setShowNotes(true);
     setSelectedBlock(blockId);
     reveal.current = noteId;
-    setShareStatus("Your note is posted. It shows as “Needs more ratings” until other readers rate it.");
+    setNotice("Your note is posted. It shows as “Needs more ratings” until other readers rate it.");
   }
 
   const marginMessage = notesFailed ? "The notes couldn't load."
@@ -259,6 +273,7 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
             : blocks.length === 0 ? <div className="reader-notice" id={articleId}><h2>The article text isn't available yet.</h2><OriginalLink url={original} /></div>
             : <>
               {claimsQuery.isError && <div className="reader-note-error" role="alert">The checked claims couldn’t load. <button onClick={() => void claimsQuery.refetch()}>Retry checked claims</button></div>}
+              {highlightQuery.isError && <p className="reader-note-error" role="alert">Highlights could not load. <button onClick={() => void highlightQuery.refetch()}>Retry highlights</button></p>}
               {notesFailed && <div className="reader-note-error" role="alert">The notes couldn’t load. You can still read the article. <button onClick={() => void noteQuery.refetch()}>Retry notes</button></div>}
               {!wide && showNotes && noteQuery.isSuccess && notes.length === 0 && <p className="reader-note-error">{marginMessage}</p>}
               <div className={`reader-layout ${showNotes ? "" : "reader-layout-quiet"}`}>
@@ -266,10 +281,11 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
                 <article id={articleId} className="reader-article" aria-label={title}>
                   {blocks.map((block) => {
                     const group = byBlock.get(block.id) ?? [];
+                    const highlights = highlightBlocks.byBlock.get(block.id) ?? [];
                     const open = selectedBlock === block.id;
                     const partial = selection?.blockId === block.id ? anchorForSelection(block, selection.text) : null;
-                    return <section id={block.id} key={block.id} className={`reader-passage ${showNotes && group.length ? "reader-passage-noted" : ""} ${open ? "reader-passage-active" : ""}`}>
-                      <BlockText block={block} />
+                    return <section id={block.id} key={block.id} className={`reader-passage ${showNotes && (group.length || highlights.length) ? "reader-passage-noted" : ""} ${open ? "reader-passage-active" : ""}`}>
+                      <BlockText block={block} highlights={showNotes ? highlights : []} />
                       {showNotes && noteQuery.isSuccess && checkedByBlock.has(block.id) && <span className="reader-checked-marker">Checked, no note needed</span>}
                       <div className="reader-passage-actions">
                         {showNotes && group.length > 0 && <button className="reader-note-trigger" onClick={() => setSelectedBlock(open ? null : block.id)} aria-expanded={open} aria-controls={wide ? marginId : `inline-${block.id}`}>
@@ -285,16 +301,21 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
                         >
                           <span aria-hidden="true">✎</span> {partial ? "Note the highlighted words" : "Add a note"}
                         </button>}
-                        <button className="reader-passage-link" aria-label={`Copy link to passage: ${block.text.slice(0, 60)}`} onClick={() => void sharePassage(block.id)}>Link <span aria-hidden="true">↗</span></button>
+                        {partial && <>
+                          <button className="reader-note-add reader-note-add-selection" onMouseDown={(event) => event.preventDefault()} onClick={() => openHighlight(block, partial, "forecast")}>Forecast</button>
+                          <button className="reader-note-add reader-note-add-selection" onMouseDown={(event) => event.preventDefault()} onClick={() => openHighlight(block, partial, "key_point")}>Key point</button>
+                        </>}
+                        {showNotes && highlights.length > 0 && <button className="reader-note-trigger" aria-expanded={open} onClick={() => setSelectedBlock(open ? null : block.id)}>{plural(highlights.length, "highlight")}</button>}
+                        <button className="reader-passage-ask" onClick={() => { setSelectedBlock(block.id); setAsking(block.id); setShowNotes(true); }}>Ask Opus 5.5</button>
                       </div>
-                      {!wide && showNotes && open && group.length > 0 && <div id={`inline-${block.id}`} className="reader-inline-notes">{renderNotes(group)}</div>}
+                      {!wide && showNotes && open && <div id={`inline-${block.id}`} className="reader-inline-notes">{renderNotes(group)}{renderPassageExtras(block.id)}</div>}
                     </section>;
                   })}
-                  {showNotes && unanchored.length > 0 && <section id={unanchoredId} className="reader-unanchored"><h2>More notes on this article</h2><p>These notes refer to passages we couldn’t match to this copy of the text.</p><button className="reader-note-trigger" aria-expanded={selectedBlock === "unanchored"} onClick={() => setSelectedBlock(selectedBlock === "unanchored" ? null : "unanchored")}>View {unanchored.length} {unanchored.length === 1 ? "note" : "notes"}</button>{!wide && selectedBlock === "unanchored" && <div className="reader-inline-notes">{renderNotes(unanchored)}</div>}</section>}
+                  {showNotes && (unanchored.length > 0 || highlightBlocks.unanchored.length > 0) && <section id={unanchoredId} className="reader-unanchored"><h2>More on this article</h2><p>These entries refer to passages we couldn’t match to this copy of the text.</p><button className="reader-note-trigger" aria-expanded={selectedBlock === "unanchored"} onClick={() => setSelectedBlock(selectedBlock === "unanchored" ? null : "unanchored")}>View {plural(unanchored.length, "note")} and {plural(highlightBlocks.unanchored.length, "highlight")}</button>{!wide && selectedBlock === "unanchored" && <div className="reader-inline-notes">{renderNotes(unanchored)}{renderPassageExtras("unanchored")}</div>}</section>}
                   <div className="reader-source-credit"><OriginalLink url={original} /></div>
                 </article>
-                {wide && showNotes && <aside id={marginId} className="reader-margin" aria-label="Common Notes on the selected passage"><div className="reader-margin-sticky">{activeNotes.length > 0
-                  ? <><div className="reader-margin-heading"><h2>Common Notes</h2><button aria-label="Close passage notes" onClick={() => setSelectedBlock(null)}>×</button></div><div className="reader-margin-cards">{renderNotes(activeNotes)}</div></>
+                {wide && showNotes && <aside id={marginId} className="reader-margin" aria-label="Common Notes on the selected passage"><div className="reader-margin-sticky">{selectedBlock
+                  ? <><div className="reader-margin-heading"><h2>Common Notes</h2><button aria-label="Close passage notes" onClick={() => setSelectedBlock(null)}>×</button></div><div className="reader-margin-cards">{renderNotes(activeNotes)}{renderPassageExtras(selectedBlock)}</div></>
                   : <p className="reader-margin-empty">{marginMessage}</p>}</div></aside>}
               </div>
             </>}
@@ -302,7 +323,10 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
           {!loading && !failed && blocks.length === 0 && notes.length > 0 && <section className="reader-pending-notes" id={unanchoredId} aria-label="Notes on the original article"><h2>Notes on the original article</h2>{renderNotes(notes)}</section>}
 
         {composer && item && <ReaderWriteNote item={item} anchor={composer} onClose={() => setComposer(null)} onPosted={onPosted} />}
-        <p className="reader-share-status" role="status" aria-live="polite">{shareStatus}</p>
+        {highlightForm && item && <ReaderHighlightForm key={`${highlightForm.anchor.blockId}-${highlightForm.kind}`} item={item} {...highlightForm} onClose={() => setHighlightForm(null)} onPosted={() => {
+          setSelectedBlock(highlightForm.anchor.blockId); setShowNotes(true); setHighlightForm(null); document.getSelection()?.removeAllRanges(); void highlightQuery.refetch();
+        }} />}
+        <p className="reader-status" role="status" aria-live="polite">{notice}</p>
       </section>
     </ReaderNotesProvider>
   );

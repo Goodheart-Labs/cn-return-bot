@@ -1,5 +1,6 @@
-import { createContext, useContext, type ReactNode } from "react";
+import { createContext, useContext, useEffect, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { subscribeToItemProgress } from "@cn/core/requestStatus";
 import { fetchNotesForItem } from "@cn/core/notes";
 import { fetchNnnForClaims } from "@cn/core/noteNotNeeded";
 import type { NoteRow } from "@cn/core/types";
@@ -10,7 +11,7 @@ import { queryKeys } from "@cn/features/query/queryKeys";
 const ReaderNotesContext = createContext<NoteSet>(noteSetOf([], []));
 
 export function useReaderNoteSet(itemId: string | undefined) {
-  return useQuery({
+  const query = useQuery({
     queryKey: queryKeys.itemNoteSet(itemId ?? ""),
     enabled: !!itemId,
     queryFn: async () => {
@@ -19,6 +20,12 @@ export function useReaderNoteSet(itemId: string | undefined) {
       return noteSetOf(notes, entries);
     },
   });
+  const { refetch } = query;
+  useEffect(() => {
+    if (!itemId) return;
+    return subscribeToItemProgress(itemId, () => { void refetch(); }, () => { void refetch(); });
+  }, [itemId, refetch]);
+  return query;
 }
 
 export function ReaderNotesProvider({ noteSet, children }: { noteSet?: NoteSet; children: ReactNode }) {

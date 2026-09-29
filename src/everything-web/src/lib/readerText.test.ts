@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { ClaimRef } from "@cn/core/types";
-import { anchorForSelection, mapNotesToBlocks, parseReaderText } from "./readerText";
+import { highlightedTextParts, anchorForSelection, mapNotesToBlocks, parseReaderText } from "./readerText";
 
 function note(id: string, context: Partial<ClaimRef> = {}) {
   return {
@@ -150,4 +150,21 @@ describe("reader writing helpers", () => {
     const whole = mapNotesToBlocks(blocks, [note("n2", { context_quote: second.text, context_paragraph: second.text })]);
     expect(whole.byBlock.get(second.id)?.map((n) => n.id)).toEqual(["n2"]);
   });
+});
+
+
+test("overlapping highlights tint the entire union, including a longer quote after a shorter one", () => {
+  const text = "Demand could double by 2035. Storage matters.";
+  expect(highlightedTextParts(text, ["Demand could double", "Demand could double by 2035."])).toEqual([
+    { text: "Demand could double by 2035.", highlighted: true }, { text: " Storage matters.", highlighted: false },
+  ]);
+  expect(highlightedTextParts(text, ["Demand could double", "double by 2035."])).toEqual([
+    { text: "Demand could double by 2035.", highlighted: true }, { text: " Storage matters.", highlighted: false },
+  ]);
+});
+
+test("highlight matching preserves whitespace and escapes regular expression punctuation", () => {
+  expect(highlightedTextParts("A [50%]\nchance.", ["[50%] chance.", " "])).toEqual([
+    { text: "A ", highlighted: false }, { text: "[50%]\nchance.", highlighted: true },
+  ]);
 });
