@@ -100,7 +100,8 @@
 .reader-highlight-card p, .reader-question-answer { margin-bottom: 0.75rem; white-space: pre-wrap; }
 .reader-highlight-author { color: var(--cn-fg-muted); font-size: var(--cn-text-xs); }
 .reader-question-panel h3 { font-weight: 600; margin-bottom: 0.75rem; }
-.reader-question-panel textarea, .reader-highlight-form textarea { width: 100%; padding: 0.5rem; border: 1px solid var(--cn-line); border-radius: var(--cn-radius-control); background: var(--cn-surface); color: var(--cn-fg); }
-.reader-highlight-form input[type="number"] { width: 5rem; padding: 0.25rem; border: 1px solid var(--cn-line); background: var(--cn-surface); color: var(--cn-fg); }
-.reader-question-panel button, .reader-highlight-form button { margin: 0.5rem 0.75rem 0 0; color: var(--cn-link); }
-.reader-question-panel button:disabled, .reader-highlight-form button:disabled { opacity: 0.5; }
+.reader-highlight-form { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
+.reader-highlight-lead { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
+.reader-highlight-probability { width: 4.5rem; text-align: right; }
+.reader-form-actions { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem; }
+.reader-form-spacer { flex: 1; }

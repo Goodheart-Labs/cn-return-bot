@@ -7,6 +7,8 @@ import { highlightSentence, parseHighlightDraft, validHighlight, type HighlightD
 import { askPassageQuestion, deletePassageHighlight, fetchHighlightVotes, fetchPassageQuestions, postPassageHighlight, subscribeToPassages, voteOnHighlight } from "@cn/core/passages";
 import { useSession } from "@cn/features/auth/useSession";
 import { VoteRatings } from "@cn/features/notes/VoteRatings";
+import { Button } from "@cn/ui/Button";
+import { Checkbox, Input, Textarea } from "@cn/ui/Field";
 import { Modal } from "@cn/ui/Modal";
 import { LoginModal } from "./LoginModal";
 import type { ReaderAnchor } from "./ReaderWriteNote";
@@ -60,11 +62,11 @@ export function ReaderPassageQuestions({ item, passage, onDraft }: { item: PageI
     {questions.data?.map((q) => <div key={q.id} className="reader-question-answer">
       <p><strong>{q.question}</strong></p>
       <p role={q.status === "error" ? "alert" : "status"}>{q.status === "done" ? q.answer : q.status === "error" ? q.error : "Waiting for Opus 5.5…"}</p>
-      {parseHighlightDraft(q.draft) && <button onClick={() => onDraft(parseHighlightDraft(q.draft)!)}>Edit draft</button>}
+      {parseHighlightDraft(q.draft) && <Button variant="link" onClick={() => onDraft(parseHighlightDraft(q.draft)!)}>Edit draft</Button>}
     </div>)}
     <form onSubmit={(event) => { event.preventDefault(); void ask(text.trim()).then((sent) => { if (sent) setText(""); }); }}>
-      <textarea aria-label="Question about this passage" placeholder="Ask about this passage, or ask for a note, a forecast or a key point." maxLength={2000} value={text} onChange={(event) => setText(event.target.value)} rows={3} />
-      <button disabled={!!waiting || !text.trim()} type="submit">Ask</button>
+      <Textarea autoGrow aria-label="Question about this passage" placeholder="Ask about this passage, or ask for a note, a forecast or a key point." maxLength={2000} value={text} onChange={(event) => setText(event.target.value)} rows={3} />
+      <div className="reader-form-actions"><Button disabled={!!waiting || !text.trim()} type="submit">Ask</Button></div>
     </form>
     {(error || questions.isError) && <p role="alert">{error || "Your questions couldn't load."}</p>}
     {login}
@@ -102,15 +104,18 @@ export function ReaderHighlightForm({ item, anchor, kind, draft, onClose, onPost
   return <Modal title={kind === "forecast" ? "Forecast" : "Key point"} onClose={onClose} widthClassName="max-w-[35rem]">
     <blockquote>“{anchor.text}”</blockquote>
     <form className="reader-highlight-form" onSubmit={(event) => { event.preventDefault(); void post(); }}>
-      <p>{kind === "forecast" ? <>This is a forecast of a <input aria-label="Probability (%)" type="number" min={0} max={100} step={1} required value={probability} onChange={(event) => { edited.current.probability = true; setProbability(event.target.value); }} />% chance of </> : "A key point in this article is "}
-        “<textarea aria-label={kind === "forecast" ? "Forecast statement" : "Key point"} required maxLength={2000} value={statement} onChange={(event) => { edited.current.statement = true; setStatement(event.target.value); }} />”
-      </p>
-      <button type="button" disabled={!!agent.waiting} onClick={() => void agent.ask(`Draft a ${kind === "forecast" ? "forecast with an integer probability from 0 to 100" : "key point"} about these highlighted words: ${anchor.text.slice(0, 1500)}`)}>Draft with Opus 5.5</button>
-      {session && <label><input type="checkbox" checked={signed} onChange={(event) => setSigned(event.target.checked)} /> Post as {displayName(session)}</label>}
-      <button type="submit" disabled={posting || !validHighlight(kind, chance, statement)}>Post</button>
-      <button type="button" onClick={onClose}>Cancel</button>
+      <label className="reader-highlight-lead" htmlFor="reader-highlight-statement">
+        {kind === "forecast" ? <>This is a forecast of a <Input aria-label="Probability (%)" type="number" inputMode="numeric" min={0} max={100} step={1} required placeholder="N" className="reader-highlight-probability" value={probability} onChange={(event) => { edited.current.probability = true; setProbability(event.target.value); }} />% chance of</> : "A key point in this article is"}
+      </label>
+      <Textarea autoGrow id="reader-highlight-statement" aria-label={kind === "forecast" ? "Forecast statement" : "Key point"} placeholder={kind === "forecast" ? "what the article expects to happen" : "the point, in a sentence"} required maxLength={2000} rows={2} value={statement} onChange={(event) => { edited.current.statement = true; setStatement(event.target.value); }} />
+      {session && <Checkbox checked={signed} onChange={setSigned}>Post as {displayName(session)}</Checkbox>}
+      <div className="reader-form-actions">
+        <Button variant="secondary" disabled={!!agent.waiting} onClick={() => void agent.ask(`Draft a ${kind === "forecast" ? "forecast with an integer probability from 0 to 100" : "key point"} about these highlighted words: ${anchor.text.slice(0, 1500)}`)}>{agent.waiting ? "Drafting…" : "Draft with Opus 5.5"}</Button>
+        <span className="reader-form-spacer" />
+        <Button variant="quiet" onClick={onClose}>Cancel</Button>
+        <Button type="submit" disabled={posting || !validHighlight(kind, chance, statement)}>Post</Button>
+      </div>
     </form>
-    {agent.waiting && <p role="status">Waiting for Opus 5.5…</p>}
     {(error || agent.error) && <p role="alert">{error || agent.error}</p>}
     {agent.login}<LoginModal open={login} onClose={() => setLogin(false)} />
   </Modal>;
@@ -137,6 +142,6 @@ export function ReaderHighlights({ highlights, onChanged }: { highlights: Passag
       if (!user) { setLogin(true); return; }
       await voteOnHighlight(highlight.id, user.id, votes.data?.get(highlight.id) === vote ? null : vote);
     })} />
-    {session?.user.id === highlight.author_id && <button disabled={pending} onClick={() => void change(() => deletePassageHighlight(highlight.id))}>Delete</button>}
+    {session?.user.id === highlight.author_id && <Button variant="quiet" disabled={pending} onClick={() => void change(() => deletePassageHighlight(highlight.id))}>Delete</Button>}
   </section>)}{error && <p role="alert">{error}</p>}<LoginModal open={login} onClose={() => setLogin(false)} /></>;
 }
