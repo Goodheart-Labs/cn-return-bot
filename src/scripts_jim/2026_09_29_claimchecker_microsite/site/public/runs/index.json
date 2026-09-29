@@ -1,0 +1,11 @@
+[
+ {
+  "id": "production",
+  "label": "Production, 24 Sep (with reader notes and votes)",
+  "createdAt": "2026-09-24T16:23:17.600435+00:00",
+  "source": "production",
+  "totalCostUsd": 4.494681126532003,
+  "claims": 395,
+  "notes": 22
+ }
+]
