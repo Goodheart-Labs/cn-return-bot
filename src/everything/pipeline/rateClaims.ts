@@ -20,18 +20,14 @@
  */
 
 import { claimCheckFields } from "./claimCheckFields";
-import { EVERYTHING_MODEL } from "./model";
+import { extractionModels } from "./model";
 import { llm } from "../../pipeline/llm/llm";
 import { jsonSchemaResponseFormat } from "../../pipeline/prompts/responseFormat";
-import { OPENROUTER_NATIVE_WEB_SEARCH_TOOL, stripBrowserLineCitations } from "../../pipeline/tool-calling/tools";
+import { stripBrowserLineCitations } from "../../pipeline/tool-calling/tools";
 import { parseJsonWithRetry } from "../../pipeline/utils/jsonLlmCall";
 import { extractJsonObject } from "../../pipeline/utils/jsonOutput";
 import { addTokenCost, emptyTokenCost, extractOpenRouterCost, type TokenCost } from "../../pipeline/cost-tracking/pricing";
 import type { ExtractedClaim, ItemSource, RatedClaim } from "../types";
-
-// The research happens through the search tool, so the model does not need to think
-// long on its own. High effort would only add reasoning tokens.
-const RATING_REASONING_EFFORT = "medium";
 
 // The list runs from most true to most false. A judgement's index in it decides
 // whether the claim gets fact-checked.
@@ -122,12 +118,22 @@ interface RatingOutput {
 
 /** Parses the model's reply and checks its shape. Throws on anything else, so
  *  the retry loop can ask the model again. */
+/** Claude ignores the response schema while its server-side tools are on, and
+ *  writes the ratings as an object keyed by claim number instead of a list.
+ *  That shape is read as the list it stands for, so the answer is not thrown
+ *  away and asked for again. */
+function ratingsFromObject(ratings: unknown): unknown {
+  if (!ratings || typeof ratings !== "object" || Array.isArray(ratings)) return ratings;
+  return Object.entries(ratings).map(([claim, rating]) => ({ claim: Number(claim), rating }));
+}
+
 export function parseRatingOutput(toParse: string): RatingOutput {
-  const output = JSON.parse(toParse) as RatingOutput;
+  const raw = JSON.parse(toParse);
+  const output = { ...raw, ratings: ratingsFromObject(raw?.ratings) } as RatingOutput;
   const shapeOk =
     typeof output.research === "string" &&
     Array.isArray(output.ratings) &&
-    output.ratings.every((r) => typeof r?.claim === "number" && typeof r?.rating === "string");
+    output.ratings.every((r) => Number.isInteger(r?.claim) && typeof r?.rating === "string");
   if (!shapeOk) throw new Error("rating JSON missing research/ratings");
   return output;
 }
@@ -170,15 +176,19 @@ export async function rateClaims(params: RateClaimsParams): Promise<ClaimRatingR
     messages,
     schemaHint: RATING_SCHEMA_HINT,
     call: async (msgs, attempt) => {
+      const { model, reasoning, ratingTools } = extractionModels();
       const response: any = await llm.create({
-        model: EVERYTHING_MODEL,
+        model,
         messages: msgs,
         response_format: RATING_RESPONSE_FORMAT,
-        reasoning_effort: RATING_REASONING_EFFORT,
-        ...(attempt === 1 ? { tools: [OPENROUTER_NATIVE_WEB_SEARCH_TOOL] } : {}),
+        reasoning_effort: reasoning.rating,
+        ...(attempt === 1 ? { tools: ratingTools } : {}),
       } as any);
       addTokenCost(cost, extractOpenRouterCost(response));
-      webSearches += response.usage?.server_tool_use_details?.web_search_requests ?? 0;
+      // Meta's search reports its searches. For Claude, OpenRouter reports only
+      // the server-side tool calls, searches and fetches together.
+      const toolUse = response.usage?.server_tool_use_details;
+      webSearches += toolUse?.web_search_requests ?? toolUse?.tool_calls_executed ?? 0;
       const content: string = response.choices?.[0]?.message?.content ?? "";
       // Muse narrates its research steps before the JSON even under a schema,
       // so the object is extracted rather than parsed whole.

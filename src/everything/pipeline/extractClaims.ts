@@ -28,7 +28,7 @@ import { IMAGE_MARKER_RE } from "../sources/substack";
 import type { ClaimAnchor, ContentPart, ExtractedClaim, ExtractionResult, FetchedContent } from "../types";
 import { normalizeText } from "../../everything-core/normalizeText";
 import { cutCues, cutText, gateAndSplit, joinCues, type GateSplitVerdict, type PartStart } from "./gateAndSplit";
-import { EVERYTHING_MODEL } from "./model";
+import { extractionModels } from "./model";
 
 function extractionSystemPrompt(): string {
   const fields = [
@@ -160,11 +160,12 @@ async function runExtraction(content: string): Promise<RawClaim[]> {
       `"image_urls": string[], "very_confident_that_its_true": boolean, "speculation": boolean } ] }`,
     call: async (messages, attempt) => {
       const callName = attempt === 1 ? "claim_extraction" : `claim_extraction.retry.${attempt - 1}`;
+      const { model, reasoning } = extractionModels();
       const { response, costEntry } = await trackedLlmCreate(callName, {
-        model: EVERYTHING_MODEL,
+        model,
         messages,
         response_format: claimsResponseFormat(),
-        reasoning_effort: "high",
+        reasoning_effort: reasoning.extraction,
       } as any);
       trackLlmCall(costEntry);
       const answer = (response as any).choices?.[0]?.message?.content ?? "{}";

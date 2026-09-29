@@ -31,7 +31,7 @@ import {
 import { dropSpeculation } from "./extractClaims";
 import { VERY_CONFIDENT_JUDGEMENT, shouldFactCheck } from "./rateClaims";
 import { requestClaimCheck, requestClaimExtraction, requestClaimRating } from "../../service/client";
-import type { RateClaimsResponse, WorkPriority } from "../../service/contract";
+import type { RateClaimsRequest, RateClaimsResponse, WorkPriority } from "../../service/contract";
 import { group, money } from "../logFormat";
 import { feedBudgetExhausted, requestBudgetExhausted } from "../spendCap";
 import type { ContentPart, ExtractedClaim, FetchedContent, RatedClaim } from "../types";
@@ -153,7 +153,7 @@ function repeatsExistingClaim(claim: ExtractedClaim, existing: ItemClaimRow[]): 
  *  come back twice despite the prompt's rule; the second copy is dropped here.
  *  Returns each part with its surviving claims, and the counts the tally
  *  reports. */
-function freshClaimsPerPart(
+export function freshClaimsPerPart(
   parts: ContentPart[],
   existingClaims: ItemClaimRow[],
 ): { parts: ContentPart[]; extracted: number; speculation: number; duplicates: number } {
@@ -180,15 +180,19 @@ function freshClaimsPerPart(
   return { parts: fresh, extracted, speculation, duplicates };
 }
 
+/** One rating call for one part. The worker sends it to the extraction
+ *  service. The claimchecker lab in scripts_jim runs it in this process. */
+export type RatePart = (request: Pick<RateClaimsRequest, "text" | "introduction" | "claims">) => Promise<RateClaimsResponse>;
+
 /** Rates every part that still has claims, a couple of parts at a time, and
  *  sums what the rating cost. A claim the extractor marked very confident is
  *  not sent to the rater; it comes back with the top judgement and is stored
  *  as skipped. A part with nothing left to rate is skipped, so an
  *  already-covered page does not pay for an empty research call. */
-async function ratePartsOfItem(
-  item: EverythingItem,
+export async function rateParts(
   introduction: string | null,
   parts: ContentPart[],
+  ratePart: RatePart,
 ): Promise<{ claims: RatedClaim[]; costUsd: number | null; webSearches: number; research: string[] }> {
   const rated: RatedClaim[][] = parts.map(() => []);
   const research: string[] = [];
@@ -204,14 +208,12 @@ async function ratePartsOfItem(
           rated[i] = confident;
           return;
         }
-        const rating: RateClaimsResponse = await requestClaimRating({
-          priority: workPriorityOf(item),
+        const rating = await ratePart({
           text: part.text,
           // When there is an introduction it is the first part, and it is not
           // shown its own text as context.
           introduction: part.index === 0 ? null : introduction,
           claims: toRate,
-          source: item.source,
         });
         rated[i] = [...confident, ...rating.claims];
         if (rating.costUsd !== null) costUsd = (costUsd ?? 0) + rating.costUsd;
@@ -247,7 +249,9 @@ export async function processFetchedContent(
   if (parts.length > 1) console.log(`  ${parts.length} parts: ${parts.map((p) => p.title).join(" · ")}`);
 
   await setItemProgress(item.id, { stage: "rating" });
-  const rating = await ratePartsOfItem(item, extraction.introduction, parts);
+  const rating = await rateParts(extraction.introduction, parts, (request) =>
+    requestClaimRating({ priority: workPriorityOf(item), source: item.source, ...request }),
+  );
   if (rating.costUsd !== null) await insertItemRun(item.id, "rating", rating.costUsd);
   const claims = rating.claims;
   const claimIds = await insertClaims(claims.map((c) => buildClaimRow(item.id, c)));
