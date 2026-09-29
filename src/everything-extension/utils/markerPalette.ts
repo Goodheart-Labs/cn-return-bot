@@ -16,11 +16,10 @@ export const MARKER_LIGHT: MarkerColors = { body: "#ffffff", border: "#d1d5db", 
 export const MARKER_DARK: MarkerColors = { body: "#111827", border: "#4b5563", glyph: "#60a5fa" };
 
 /** A scrubber pin's glyph takes the colour of its claim's status. These copy
- *  the light-mode `positive-solid`, `pending-solid` and `negative-solid`
- *  tokens, which the note card's status dot and the article markers draw
- *  with. Each reaches 3 to 1 contrast on both pin bodies above. */
+ *  the `positive-solid`, `pending-solid` and `negative-solid` tokens, which
+ *  the note card's status dot and the article markers draw with. */
 export const STATUS_MARKER_GLYPH: Record<NoteStatus, string> = {
-  helpful: "#16a34a",
+  helpful: "#22c55e",
   needs_ratings: "#3b82f6",
   not_helpful: "#ef4444",
 };

@@ -49,7 +49,6 @@
   --cn-green-300: 134 239 172;
   --cn-green-400: 74 222 128;
   --cn-green-500: 34 197 94;
-  --cn-green-600: 22 163 74;
   --cn-green-700: 21 128 61;
   --cn-green-800: 22 101 52;
   --cn-green-900: 20 83 45;
@@ -130,9 +129,7 @@
   --cn-positive-selected: rgb(var(--cn-green-100));
   --cn-positive-selected-fg: rgb(var(--cn-green-800));
   --cn-positive-line: rgb(var(--cn-green-300));
-  /* A shade darker than in dark mode: the status dots must reach 3 to 1
-   * contrast on a white page, and green-500 only reaches 2.3. */
-  --cn-positive-solid: rgb(var(--cn-green-600));
+  --cn-positive-solid: rgb(var(--cn-green-500));
 
   /* Caution: Somewhat helpful, warnings. Each tone has a text colour, a soft fill
    * for hover, a selected fill with its own text and border, and a solid
