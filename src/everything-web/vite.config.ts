@@ -1,5 +1,6 @@
+import { existsSync } from "fs";
 import * as path from "path";
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "tailwindcss";
 import { CN_ALIASES } from "../cnAliases";
@@ -9,6 +10,24 @@ import { CN_ALIASES } from "../cnAliases";
  * instead. envDir points at the repo root, so the root .env feeds local
  * development. Only variables prefixed with VITE_ reach the client. */
 const envDir = path.resolve(__dirname, "../..");
+
+/* The static pages in public/, such as /privacy/, are folders with an
+ * index.html. The hosts serve that file for the folder's address, but Vite's
+ * development server answers every address it has no exact file for with the
+ * app. So in development a folder address with an index.html is pointed at
+ * that file. */
+const publicFolderPages: Plugin = {
+  name: "public-folder-pages",
+  configureServer(server) {
+    server.middlewares.use((req, _res, next) => {
+      const address = req.url?.split("?")[0];
+      if (address && address !== "/" && existsSync(path.join(__dirname, "public", address, "index.html"))) {
+        req.url = path.posix.join(address, "index.html");
+      }
+      next();
+    });
+  },
+};
 
 export default defineConfig(({ command, mode }) => {
   /* A build without the Supabase environment variables is never valid. Vite
@@ -35,7 +54,7 @@ export default defineConfig(({ command, mode }) => {
     );
   }
   return {
-    plugins: [react()],
+    plugins: [react(), publicFolderPages],
     base: process.env.BASE_PATH ?? "/",
     resolve: { alias: CN_ALIASES },
     envDir,

@@ -68,7 +68,7 @@ export function NoteNotNeeded({ entries }: {
         <div key={entry.id}>
           <p className="text-xs text-fg-muted">
             <span className="font-semibold text-fg-secondary">{entry.author_name ?? "anonymous"}</span>
-            <span className="text-fg-subtle"> · {timeAgo(entry.created_at)}</span>
+            <span className="text-fg-muted"> · {timeAgo(entry.created_at)}</span>
           </p>
           <p className="mt-1 text-sm text-fg whitespace-pre-wrap">{entry.body}</p>
           <div className="mt-1 -ml-2 flex items-center gap-1">

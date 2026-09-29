@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { displayName } from "@cn/core/session";
 import type { NoteRow } from "@cn/core/types";
 import { Button } from "@cn/ui/Button";
+import { cn } from "@cn/ui/cn";
 import { IconButton } from "@cn/ui/IconButton";
 import { MoreIcon, PencilIcon, QuoteIcon, ShareIcon, SpeechBubbleIcon, TrashIcon } from "@cn/ui/icons";
 import { Menu, MenuItem } from "@cn/ui/Menu";
@@ -12,6 +13,14 @@ import { Composer } from "./Composer";
 import { useDeleteNote, usePostImprovement, usePostNnn } from "./useNoteWrites";
 
 const ACTION_ICON_SIZE = 16;
+
+/** On a touch screen the action links grow to a finger-sized target. */
+const TOUCH_TARGET = "[@media(pointer:coarse)]:min-h-10";
+
+/** What a reader sees when posting fails. The database's own message means
+ *  nothing to them, so it goes to the console instead. */
+const POST_FAILED = "That didn't post. Check your connection and try again.";
+const logPostFailure = (what: string) => (err: Error) => console.error(`[common-notes] posting ${what} failed:`, err);
 
 /** The row of actions under a note. You can argue that the claim needs no note.
  *  You can suggest an improvement, which posts your rewrite as your own draft
@@ -42,6 +51,8 @@ export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, childre
   const [improveDraft, setImproveDraft] = useState("");
   const [nnnDraft, setNnnDraft] = useState("");
   const [copied, setCopied] = useState(false);
+  // Delete asks once more before it acts, because a deleted note is gone.
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const mine = !!session && session.user.id === note.author_id;
 
@@ -63,6 +74,7 @@ export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, childre
   };
   const del = () => {
     setExpanded(null);
+    setConfirmingDelete(false);
     deleteNote.mutate(note.id);
   };
   // A reader with no session gets an invisible anonymous account on the spot,
@@ -84,26 +96,32 @@ export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, childre
             moved the other actions out of it on 2026-07-14, because the menu
             was hiding the whole improvement flow. */}
         {showSourcesButton && (
-          <Button variant="link" onClick={onToggleSources}>
+          <Button variant="link" className={TOUCH_TARGET} onClick={onToggleSources}>
             <QuoteIcon size={ACTION_ICON_SIZE} aria-hidden /> {sourcesOpen ? "Hide source details" : "Show source details"}
           </Button>
         )}
-        <Button variant="link" onClick={() => toggleComposer("nnn")}>
+        <Button variant="link" className={TOUCH_TARGET} onClick={() => toggleComposer("nnn")}>
           <SpeechBubbleIcon size={ACTION_ICON_SIZE} aria-hidden /> Note not needed
         </Button>
         {/* Improving your own note makes no sense as a second card beside it.
             An author who wants different wording deletes and rewrites. */}
         {!mine && (
-          <Button variant="link" onClick={() => toggleComposer("improve")}>
+          <Button variant="link" className={TOUCH_TARGET} onClick={() => toggleComposer("improve")}>
             <PencilIcon size={ACTION_ICON_SIZE} aria-hidden /> Suggest an improvement
           </Button>
         )}
-        <Button variant="link" onClick={share} className={copied ? "text-positive" : undefined}>
+        <Button variant="link" onClick={share} className={cn(TOUCH_TARGET, copied && "text-positive")}>
           {copied ? "Link copied" : <><ShareIcon size={ACTION_ICON_SIZE} aria-hidden /> Share</>}
         </Button>
         {children}
         {mine && (
-          <IconButton label="Note actions" onClick={() => setExpanded((prev) => (prev === "menu" ? null : "menu"))}>
+          <IconButton
+            label="Note actions"
+            onClick={() => {
+              setConfirmingDelete(false);
+              setExpanded((prev) => (prev === "menu" ? null : "menu"));
+            }}
+          >
             <MoreIcon size={ACTION_ICON_SIZE} aria-hidden />
           </IconButton>
         )}
@@ -116,7 +134,15 @@ export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, childre
            * flow grows the card instead, the same way the two composers do. */
           <div className="w-full flex justify-end mt-1">
             <Menu>
-              <MenuItem onClick={del} icon={<TrashIcon size={ACTION_ICON_SIZE} />} danger autoFocus>Delete</MenuItem>
+              {confirmingDelete ? (
+                <>
+                  <p className="px-3 py-1.5 text-xs text-fg-secondary">Delete this note?</p>
+                  <MenuItem onClick={del} icon={<TrashIcon size={ACTION_ICON_SIZE} />} danger autoFocus>Delete</MenuItem>
+                  <MenuItem onClick={() => setExpanded(null)}>Cancel</MenuItem>
+                </>
+              ) : (
+                <MenuItem onClick={() => setConfirmingDelete(true)} icon={<TrashIcon size={ACTION_ICON_SIZE} />} danger autoFocus>Delete</MenuItem>
+              )}
             </Menu>
           </div>
         )}
@@ -129,10 +155,12 @@ export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, childre
           placeholder="Write a clearer or better-sourced version"
           rows={3}
           submitLabel="Post note"
-          onSubmit={(signed) => postImprovement.mutate({ note, text: improveDraft, session, signed }, { onSuccess: closeComposer(setImproveDraft) })}
+          onSubmit={(signed) =>
+            postImprovement.mutate({ note, text: improveDraft, session, signed }, { onSuccess: closeComposer(setImproveDraft), onError: logPostFailure("an improvement") })
+          }
           onCancel={() => setExpanded(null)}
           pending={postImprovement.isPending}
-          error={postImprovement.error?.message ?? null}
+          error={postImprovement.error ? POST_FAILED : null}
         />
       )}
       {expanded === "nnn" && session && (
@@ -146,12 +174,12 @@ export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, childre
           onSubmit={(signed) =>
             postNnn.mutate(
               { claimId: note.claim_id, body: nnnDraft.trim(), authorId: session.user.id, authorName: signed ? displayName(session) : null },
-              { onSuccess: closeComposer(setNnnDraft) },
+              { onSuccess: closeComposer(setNnnDraft), onError: logPostFailure("a note-not-needed entry") },
             )
           }
           onCancel={() => setExpanded(null)}
           pending={postNnn.isPending}
-          error={postNnn.error?.message ?? null}
+          error={postNnn.error ? POST_FAILED : null}
         />
       )}
     </div>

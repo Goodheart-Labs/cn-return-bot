@@ -10,12 +10,28 @@ import { queryKeys } from "@cn/features/query/queryKeys";
 const DAY_MS = 86_400_000;
 const daysAgo = (days: number) => new Date(Date.now() - days * DAY_MS).toISOString();
 
-export const PROJECT: FeedProjectRow = { id: "project-1", slug: "the-weekly-ledger", name: "The Weekly Ledger", vote_score: 12 };
+/** A made-up creator picture, drawn inline so no story needs the network. */
+const AVATAR =
+  "data:image/svg+xml;utf8," +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><rect width="120" height="120" fill="#1e3a8a"/><text x="60" y="78" text-anchor="middle" font-family="Georgia" font-size="56" fill="#f9fafb">WL</text></svg>',
+  );
+
+export const PROJECT: FeedProjectRow = {
+  id: "project-1",
+  slug: "the-weekly-ledger",
+  name: "The Weekly Ledger",
+  feed_url: "https://weeklyledger.substack.com",
+  avatar_url: AVATAR,
+  vote_score: 12,
+  note_count: 4,
+};
 
 export const PROJECTS: FeedProjectRow[] = [
   PROJECT,
-  { id: "project-2", slug: "signal-and-noise", name: "Signal and Noise", vote_score: 8 },
-  { id: "project-3", slug: "around-the-web", name: "Around the web", vote_score: 3 },
+  { id: "project-2", slug: "signal-and-noise", name: "Signal and Noise", feed_url: "https://www.youtube.com/@signalandnoise", avatar_url: null, vote_score: 8, note_count: 27 },
+  { id: "project-3", slug: "a-careful-reader", name: "A Careful Reader", feed_url: "https://www.lesswrong.com/users/careful-reader", avatar_url: null, vote_score: 5, note_count: 9 },
+  { id: "project-4", slug: "web", name: "Around the web", feed_url: null, avatar_url: null, vote_score: 3, note_count: 14 },
 ];
 
 export const ITEMS: FeedItemRow[] = [

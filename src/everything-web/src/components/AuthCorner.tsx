@@ -10,7 +10,7 @@ export function AuthCorner({ onSignIn }: { onSignIn: () => void }) {
   const { session } = useSession();
   if (!session || session.user.is_anonymous) {
     return (
-      <Button className="shrink-0" onClick={onSignIn}>
+      <Button variant="secondary" className="shrink-0" onClick={onSignIn}>
         Sign in
       </Button>
     );

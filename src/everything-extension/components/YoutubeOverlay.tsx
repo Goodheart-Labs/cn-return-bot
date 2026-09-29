@@ -252,7 +252,7 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
           // A new claim gets a fresh card, which opens where the reader left
           // the previous one on this video.
           key={group.claimId}
-          title="Community note on this part of the video"
+          title="Common Note on this part of the video"
           dismissLabel="Dismiss for this video"
           onDismiss={dismiss}
           onPlaced={({ left, top, width }) => setPlacement({ left, top, width })}

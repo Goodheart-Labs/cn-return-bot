@@ -1,4 +1,5 @@
 import { browser } from "#imports";
+import { DEFAULT_PILL_PALETTE, type PillPalette } from "@cn/features/notes/pillPalette";
 
 // The pages the user has already asked us to cover with "Request notes on this
 // page". Reopening the popup on such a page shows the done state instead of creating
@@ -91,6 +92,8 @@ export type VisitSiteKind = "substack" | "youtube" | "lesswrong";
 export type NoteStyle = "margin" | "classic";
 
 export type ExtensionSettings = {
+  /** How the rating pills are coloured, see features/notes/pillPalette.ts. */
+  pillPalette: PillPalette;
   /** Whether opening a covered page on this kind of site writes an anonymous
    *  visit row. The welcome page asks about exactly these. */
   saveVisits: Record<VisitSiteKind, boolean>;
@@ -108,6 +111,7 @@ const DEFAULT_SETTINGS: ExtensionSettings = {
   showNoteCountOverlay: false,
   showThumbnailBadges: true,
   noteStyle: "margin",
+  pillPalette: DEFAULT_PILL_PALETTE,
 };
 
 export type SettingsPatch = Partial<Omit<ExtensionSettings, "saveVisits">> & {

@@ -27,6 +27,9 @@
   --cn-gray-300: 209 213 219;
   --cn-gray-400: 156 163 175;
   --cn-gray-500: 107 114 128;
+  /* Between 500 and 600, for muted text: the lightest grey that still reads at
+   * 4.5 to 1 on every light surface we draw, including the pale blue tint. */
+  --cn-gray-550: 100 107 118;
   --cn-gray-600: 75 85 99;
   --cn-gray-700: 55 65 81;
   --cn-gray-800: 31 41 55;
@@ -84,7 +87,7 @@
   /* Supporting text: labels, questions, menu entries. */
   --cn-fg-secondary: rgb(var(--cn-gray-600));
   /* Captions, metadata and help text. */
-  --cn-fg-muted: rgb(var(--cn-gray-500));
+  --cn-fg-muted: rgb(var(--cn-gray-550));
   /* The quietest text: section labels, placeholders, idle icons. */
   --cn-fg-subtle: rgb(var(--cn-gray-400));
   /* Borders and dividers. */
@@ -150,11 +153,17 @@
 
   /* Type. The extension uses this scale. The website reads at a larger size,
    * see .cn-reading-scale below. */
-  /* The system font. X's own "TwitterChirp" is deliberately not first in
-   * the list: anyone who has it installed locally, as Nathan does, would see
-   * the whole site in it, and mismatched local weight files make it read
-   * heavy. */
-  --cn-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  /* The type of Substack, where most of our readers read (Jim, 2026-09-28).
+   * Text is the system's own interface face. Titles are Apple's display face
+   * at bold weight, falling back to the system face elsewhere. Longer reading
+   * passages on the website are Spectral, the serif Substack sets its posts
+   * in; the website loads it, and the extension falls back to Georgia. X's own
+   * "TwitterChirp" is deliberately not in any list: anyone who has it
+   * installed locally, as Nathan does, would see the whole site in it, and
+   * mismatched local weight files make it read heavy. */
+  --cn-font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --cn-font-title: "SF Pro Display", -apple-system-headline, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --cn-font-serif: Spectral, Georgia, "Times New Roman", serif;
   --cn-text-2xs: 0.75rem;
   --cn-leading-2xs: 1.625;
   --cn-text-xs: 0.75rem;
@@ -169,6 +178,13 @@
   --cn-leading-xl: 1.75rem;
   --cn-text-2xl: 1.5rem;
   --cn-leading-2xl: 2rem;
+  /* Section headings of the website's pages. */
+  --cn-text-3xl: 2rem;
+  --cn-leading-3xl: 2.5rem;
+  /* The one headline at the top of the homepage. It grows with the window
+   * between a phone and a wide screen. */
+  --cn-text-display: clamp(2.5rem, 1.6rem + 3.6vw, 4.25rem);
+  --cn-leading-display: 1.05;
 
   /* Shape */
   --cn-radius-control: 0.5rem;
@@ -191,6 +207,8 @@
   --cn-leading-lg: 1.75rem;
   --cn-text-2xl: 1.875rem;
   --cn-leading-2xl: 2.25rem;
+  --cn-text-3xl: 2.25rem;
+  --cn-leading-3xl: 2.75rem;
 }
 
 .dark,
