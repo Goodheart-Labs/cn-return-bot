@@ -47,6 +47,10 @@ jobs:
       # YouTube Data API key: channel listings, publish dates, view counts and
       # video details. No proxy involved, 10,000 free quota units a day.
       YOUTUBE_DATA_V3_API_KEY: ${{ secrets.YOUTUBE_DATA_V3_API_KEY }}
+      # Shared with the youtube-websub Edge Function. The walk sends it to
+      # Google's WebSub hub with each subscription, and the hub signs every
+      # notification with it.
+      YOUTUBE_WEBSUB_SECRET: ${{ secrets.YOUTUBE_WEBSUB_SECRET }}
       # The two services that do the claim extraction and the claim checking.
       # This run asks each one for its health before starting, and fails if it
       # cannot reach them, which is how a machine that is down becomes visible.

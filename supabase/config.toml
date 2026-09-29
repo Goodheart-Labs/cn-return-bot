@@ -386,6 +386,13 @@ authorization_url_path = "/oauth/consent"
 allow_dynamic_registration = false
 
 
+[functions.youtube-websub]
+# Receives YouTube's WebSub notifications about new uploads (GOO-225). Google's
+# hub sends no Supabase token, so verify_jwt is off; the function checks the
+# hub's HMAC signature itself.
+enabled = true
+verify_jwt = false
+
 [edge_runtime]
 enabled = true
 # Supported request policies: `oneshot`, `per_worker`.
