@@ -17,6 +17,9 @@ const STATUS: Record<NoteStatus, { label: string; dot: string }> = {
   needs_ratings: { label: "Needs more ratings", dot: "text-fg-subtle" },
 };
 
+/** The status line's words for a status, for labels that name it elsewhere. */
+export const statusLabel = (status: NoteStatus): string => STATUS[status].label;
+
 /** The one question every note's rating panel asks, whatever its status. */
 export const RATING_QUESTION = "Is this note helpful?";
 
@@ -105,12 +108,15 @@ export function NoteBox({ note, status, sourcesOpen, question, children }: {
   question?: React.ReactNode;
   children?: React.ReactNode;
 }) {
-  const by = note.author_id ? note.author_name ?? "anonymous" : null;
+  // A note without an author was written by the pipeline. Saying so is part of
+  // "AI writes, people rate": a reader should never mistake a machine's note
+  // for a person's.
+  const byline = note.author_id ? `by ${note.author_name ?? "anonymous"}` : "Written by AI";
   return (
     <div>
       <div className="mb-2 flex items-center justify-between gap-2">
         <StatusBadge status={status} />
-        {by && <span className="text-xs text-fg-muted shrink-0">by {by}</span>}
+        <span className="text-xs text-fg-muted shrink-0">{byline}</span>
       </div>
       <LinkifiedText className="text-sm text-fg whitespace-pre-wrap" linkClassName="text-link hover:underline break-all" text={noteText(note)} />
       {note.has_source_details && <SourceDetails open={!!sourcesOpen} noteId={note.id} />}

@@ -1,7 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { browser } from "#imports";
 import { createPortal } from "react-dom";
 import type { PageItem } from "@cn/core/items";
+import { noteStatus } from "@cn/core/noteScore";
+import { statusLabel } from "@cn/features/notes/NoteBox";
 import { cardVariants } from "@cn/ui/Card";
 import { cn } from "@cn/ui/cn";
 import type { ClaimGroup } from "../utils/claimGroups";
@@ -93,15 +95,31 @@ function relRect(range: Range, origin: DOMRect) {
 /** The small badge at the end of an anchored passage. It draws the blue
  *  community glyph on a surface that follows the host page's light or dark
  *  theme. This is the classic style's marker. */
-function Badge({ open, onClick, style }: { open: boolean; onClick: () => void; style: React.CSSProperties }) {
+/** What a marker is called for a screen reader and in its tooltip: how many
+ *  notes the passage has and how the first of them is rated. */
+function markerLabel(group: ClaimGroup): string {
+  const first = group.notes[0];
+  const count = group.notes.length === 1 ? "Common Note" : `${group.notes.length} Common Notes`;
+  return first ? `${count} on this passage, ${statusLabel(noteStatus(first)).toLowerCase()}` : `${count} on this passage`;
+}
+
+/** The markers are real buttons, so they are reachable with Tab and show the
+ *  same focus ring as every other control. */
+const MARKER_FOCUS = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus";
+
+function Badge({ open, onClick, style, label, ref }: { open: boolean; onClick: () => void; style: React.CSSProperties; label: string; ref: React.Ref<HTMLButtonElement> }) {
   return (
     <button
+      ref={ref}
+      type="button"
       onClick={onClick}
-      title="Common Note on this passage"
+      title={label}
+      aria-label={label}
       aria-expanded={open}
       style={style}
       className={cn(
         "absolute flex items-center justify-center rounded-full border border-line-strong bg-surface text-link shadow-raised transition-transform hover:scale-110",
+        MARKER_FOCUS,
         open && "ring-2 ring-focus",
       )}
     >
@@ -116,18 +134,23 @@ function Badge({ open, onClick, style }: { open: boolean; onClick: () => void; s
  *  plain gray: an open-state blue faded back to gray on close and read as a
  *  flicker. The button box stays badge-sized so the positioning and collision
  *  math is shared; the dot is drawn smaller inside it. */
-function MarginDot({ open, onClick, style }: { open: boolean; onClick: () => void; style: React.CSSProperties }) {
+function MarginDot({ open, onClick, style, label, ref }: { open: boolean; onClick: () => void; style: React.CSSProperties; label: string; ref: React.Ref<HTMLButtonElement> }) {
   return (
     <button
+      ref={ref}
+      type="button"
       onClick={onClick}
-      title="Common Note on this passage"
+      title={label}
+      aria-label={label}
       aria-expanded={open}
       style={style}
-      className="absolute flex items-center justify-center group"
+      className={cn("absolute flex items-center justify-center rounded-full group", MARKER_FOCUS)}
     >
+      {/* The muted grey keeps the dot quiet on the page while clearing the 3 to
+          1 contrast a control needs; the lighter grey used before did not. */}
       <span
         className={cn(
-          "h-2.5 w-2.5 rounded-full bg-fg-subtle",
+          "h-2.5 w-2.5 rounded-full bg-fg-muted",
           !open && "transition-colors group-hover:bg-link group-hover:ring-4 group-hover:ring-focus-halo",
         )}
       />
@@ -135,18 +158,43 @@ function MarginDot({ open, onClick, style }: { open: boolean; onClick: () => voi
   );
 }
 
-function NotePopover({ group, projectSlug, style }: {
+function NotePopover({ group, projectSlug, style, label, onClose }: {
   group: AnchoredGroup;
   projectSlug: string | null;
   style: React.CSSProperties;
+  label: string;
+  /** Closes the note and returns the focus to its marker. */
+  onClose: () => void;
 }) {
   const [loginOpen, setLoginOpen] = useState(false);
+  // An opened note takes the keyboard focus, so a keyboard reader lands in it
+  // instead of having to find it. preventScroll keeps the page where it is.
+  const card = useRef<HTMLDivElement>(null);
+  useEffect(() => card.current?.focus({ preventScroll: true }), []);
+  // Escape is handled on the card itself, because the event shield around the
+  // overlay keeps key presses inside it from ever reaching the page.
+  useEffect(() => {
+    const el = card.current;
+    if (!el) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    el.addEventListener("keydown", onKey);
+    return () => el.removeEventListener("keydown", onKey);
+  }, [onClose]);
   return (
     // The popover has a maximum height and scrolls inside itself. One claim can
     // stack several notes and an open composer, which gets taller than the
     // viewport. The overscroll-contain class stops that inner scroll from
     // carrying on into the host page.
-    <div style={style} className={cn(cardVariants({ elevation: "floating" }), "absolute p-4 text-left max-h-[70vh] overflow-y-auto overscroll-contain")}>
+    <div
+      ref={card}
+      role="dialog"
+      aria-label={label}
+      tabIndex={-1}
+      style={style}
+      className={cn(cardVariants({ elevation: "floating" }), "absolute p-4 text-left max-h-[70vh] overflow-y-auto overscroll-contain focus:outline-none")}
+    >
       <OverlayLoginGate open={loginOpen} onOpenChange={setLoginOpen}>
         <ClaimNoteStack group={group} projectSlug={projectSlug} />
       </OverlayLoginGate>
@@ -177,6 +225,24 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
   const projectSlug = item.projectSlug;
   const [openClaim, setOpenClaim] = useState<string | null>(null);
   const [writeSelection, setWriteSelection] = useState<string | null>(null);
+  const markers = useRef(new Map<string, HTMLButtonElement>());
+
+  // Closing a note hands the focus back to its marker, the way any dialog
+  // returns focus to what opened it.
+  const closeNote = useCallback((claimId: string) => {
+    setOpenClaim(null);
+    markers.current.get(claimId)?.focus({ preventScroll: true });
+  }, []);
+  // Escape pressed inside the note is handled by the note itself. This covers
+  // an Escape pressed anywhere else on the page while a note is open.
+  useEffect(() => {
+    if (!openClaim) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeNote(openClaim);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [openClaim, closeNote]);
   // This counter is bumped on a resize, so the positions derived from the ranges
   // are computed again.
   const [layoutTick, setLayoutTick] = useState(0);
@@ -388,26 +454,26 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
           that side. */}
       {createPortal(
         <EventShield>
-          {positioned.map(({ group, badgeStyle, popoverStyle, margin }) => (
-            <div key={group.claimId}>
-              {margin ? (
-                <MarginDot
-                  open={openClaim === group.claimId}
-                  onClick={() => setOpenClaim((cur) => (cur === group.claimId ? null : group.claimId))}
-                  style={badgeStyle}
-                />
-              ) : (
-                <Badge
-                  open={openClaim === group.claimId}
-                  onClick={() => setOpenClaim((cur) => (cur === group.claimId ? null : group.claimId))}
-                  style={badgeStyle}
-                />
-              )}
-              {openClaim === group.claimId && (
-                <NotePopover group={group} projectSlug={projectSlug} style={popoverStyle} />
-              )}
-            </div>
-          ))}
+          {positioned.map(({ group, badgeStyle, popoverStyle, margin }) => {
+            const marker = {
+              ref: (el: HTMLButtonElement | null) => {
+                if (el) markers.current.set(group.claimId, el);
+                else markers.current.delete(group.claimId);
+              },
+              label: markerLabel(group),
+              open: openClaim === group.claimId,
+              onClick: () => setOpenClaim((cur) => (cur === group.claimId ? null : group.claimId)),
+              style: badgeStyle,
+            };
+            return (
+              <div key={group.claimId}>
+                {margin ? <MarginDot {...marker} /> : <Badge {...marker} />}
+                {openClaim === group.claimId && (
+                  <NotePopover group={group} projectSlug={projectSlug} style={popoverStyle} label={marker.label} onClose={() => closeNote(group.claimId)} />
+                )}
+              </div>
+            );
+          })}
         </EventShield>,
         inlineContainer,
       )}

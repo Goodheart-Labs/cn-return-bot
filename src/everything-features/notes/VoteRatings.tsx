@@ -23,9 +23,11 @@ const votePillVariants = cva(
     },
     compoundVariants: [
       { size: "full", palette: "neutral", selected: false, className: "border-line-strong bg-surface text-link hover:bg-surface-hover" },
-      { size: "full", palette: "colourful", tone: "positive", selected: false, className: "border-positive-line bg-surface text-positive hover:bg-positive-soft" },
-      { size: "full", palette: "colourful", tone: "caution", selected: false, className: "border-caution-line bg-surface text-caution hover:bg-caution-soft" },
-      { size: "full", palette: "colourful", tone: "negative", selected: false, className: "border-negative-line bg-surface text-negative hover:bg-negative-soft" },
+      // Colourful pills wait with a grey border and coloured text, and fill with
+      // their colour only once chosen, so the card stays calm until a vote.
+      { size: "full", palette: "colourful", tone: "positive", selected: false, className: "border-line-strong bg-surface text-positive hover:bg-positive-soft" },
+      { size: "full", palette: "colourful", tone: "caution", selected: false, className: "border-line-strong bg-surface text-caution hover:bg-caution-soft" },
+      { size: "full", palette: "colourful", tone: "negative", selected: false, className: "border-line-strong bg-surface text-negative hover:bg-negative-soft" },
       { size: "compact", selected: false, className: "border-transparent text-fg-muted hover:bg-surface-hover hover:text-fg" },
       { palette: "neutral", selected: true, className: "border-primary bg-primary text-on-primary" },
       { palette: "colourful", tone: "positive", selected: true, className: "border-positive bg-positive text-white" },
