@@ -75,11 +75,7 @@ export function useVoteOnNote(): (note: NoteRow, vote: Vote) => Promise<MintedDo
     },
   });
   return async (note, vote) => {
-    const user = await actingUser().catch((err: unknown) => {
-      console.error("[common-notes] vote failed:", err);
-      return undefined;
-    });
-    if (user === undefined) return null;
+    const user = await actingUser();
     if (!user) {
       track("vote_gated_login", { note_id: note.id });
       return null;
@@ -109,10 +105,7 @@ export function useVoteOnNnn(): (entry: NnnRow, vote: Vote) => Promise<void> {
     },
   });
   return async (entry, vote) => {
-    const user = await actingUser().catch((err: unknown) => {
-      console.error("[common-notes] entry vote failed:", err);
-      return null;
-    });
+    const user = await actingUser();
     if (!user) return;
     const previousVote = client.getQueryData<ReadonlyMap<string, Vote>>(queryKeys.myNnnVotes(user.id))?.get(entry.id);
     await mutateAsync({ target: entry, vote, user, previousVote }).catch(() => {});
