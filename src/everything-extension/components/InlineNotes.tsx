@@ -236,9 +236,11 @@ function NotePopover({ group, projectSlug, navigation, style, label, openedByRea
       aria-label={label}
       tabIndex={-1}
       style={style}
-      className={cn(cardVariants({ elevation: "floating" }), "absolute p-4 pr-10 text-left max-h-[70vh] overflow-y-auto overscroll-contain focus:outline-none")}
+      className={cn(cardVariants({ elevation: "floating" }), "absolute p-4 text-left max-h-[70vh] overflow-y-auto overscroll-contain focus:outline-none")}
     >
-      <IconButton label="Close note" className="absolute right-2 top-2" onClick={onClose}>
+      {/* Floated, so only the card's first line makes room for it and the
+          note below keeps the card's full width. */}
+      <IconButton label="Close note" className="float-right -mr-2 -mt-1 ml-2" onClick={onClose}>
         <CloseIcon size={14} aria-hidden />
       </IconButton>
       <OverlayLoginGate open={loginOpen} onOpenChange={setLoginOpen}>
