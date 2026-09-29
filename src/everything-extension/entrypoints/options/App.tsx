@@ -1,6 +1,7 @@
 import { useEffect, useState, type ComponentProps, type ReactNode } from "react";
 import { Button, buttonVariants } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
+import { ChevronIcon } from "@cn/ui/icons";
 import { Card } from "@cn/ui/Card";
 import { Checkbox } from "@cn/ui/Field";
 import { signOut } from "@cn/core/auth";
@@ -203,12 +204,12 @@ export function SettingsApp() {
         </Section>
 
         <Section title="Feedback">
-          <p className="text-sm text-fg-secondary">We would appreciate feedback.</p>
-          <a href={FEEDBACK_FORM_URL} target="_blank" rel="noreferrer" className={cn(buttonVariants({ variant: "link" }), "block text-sm")}>
-            Send us feedback
-          </a>
           <p className="text-sm text-fg-secondary">
-            Or book a video call with us:{" "}
+            We would appreciate feedback. Fill in our{" "}
+            <a href={FEEDBACK_FORM_URL} target="_blank" rel="noreferrer" className={buttonVariants({ variant: "link" })}>
+              feedback form
+            </a>
+            , or book a video call with us in{" "}
             {BOOK_CALL_URLS.map(({ label, url }, index) => (
               <span key={url}>
                 {index > 0 && " or "}
@@ -217,17 +218,20 @@ export function SettingsApp() {
                 </a>
               </span>
             ))}
+            .
           </p>
         </Section>
 
         <section className="border-t border-line pt-4">
-          <button
+          <Button
+            variant="quiet"
             onClick={() => setAdvancedOpen((open) => !open)}
             aria-expanded={advancedOpen}
-            className="text-sm font-semibold text-fg"
+            className="flex items-center gap-1 text-sm"
           >
-            {advancedOpen ? "Hide advanced settings" : "Advanced settings"}
-          </button>
+            <ChevronIcon size={16} aria-hidden className={cn("transition-transform", advancedOpen && "rotate-90")} />
+            {advancedOpen ? "Hide advanced settings" : "Show advanced settings"}
+          </Button>
           {advancedOpen && settings && (
             <div className="mt-4">
               <AdvancedSettings settings={settings} onToggle={toggleSettings} />

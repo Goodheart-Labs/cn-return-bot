@@ -27,11 +27,10 @@ const POPOVER_GAP = 8; // Pixels between the passage and the opened popover.
 const VIEWPORT_MARGIN = 8; // The popover stays this many pixels from the edges.
 
 // The margin note style: the marker sits this far into the whitespace right of
-// the article column, and the card sits just right of the marker, so the
-// marker stays clickable while its card is open. The card is narrower than
-// the classic popover because real margins rarely fit 560px.
+// the article column, and an open card takes the marker's place, starting at
+// the same edge. The card is narrower than the classic popover because real
+// margins rarely fit 560px.
 const MARGIN_MARKER_GAP = 24;
-const MARGIN_CARD_GAP = 8; // Pixels between a marker and its card.
 const MARGIN_CARD_WIDTH = 380;
 // Below this much usable margin the style falls back to the classic popover:
 // a cramped margin card is worse than the old overlay.
@@ -103,6 +102,17 @@ function markerLabel(group: ClaimGroup): string {
   return `${count} on this passage, ${statusLabel(group.status).toLowerCase()}`;
 }
 
+/** The words of the quote a card's screen-reader name starts from. */
+const CARD_LABEL_QUOTE_WORDS = 8;
+
+/** What a note card is called for a screen reader: the marker's name plus the
+ *  start of the quoted passage, so several open cards can be told apart. */
+function cardLabel(group: ClaimGroup): string {
+  const words = (group.claim.context_quote ?? group.claim.claim).split(/\s+/);
+  const quote = words.slice(0, CARD_LABEL_QUOTE_WORDS).join(" ") + (words.length > CARD_LABEL_QUOTE_WORDS ? "…" : "");
+  return `${markerLabel(group)}: “${quote}”`;
+}
+
 /** The markers are real buttons, so they are reachable with Tab and show the
  *  same focus ring as every other control. */
 const MARKER_FOCUS = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus";
@@ -170,12 +180,16 @@ function MarginDot({ group, open, onClick, style, label, ref }: MarkerProps) {
   );
 }
 
-function NotePopover({ group, projectSlug, navigation, style, label, takeFocus, onHeight, onClose }: {
+function NotePopover({ group, projectSlug, navigation, style, label, openedByReader, takeFocus, onHeight, onClose }: {
   group: AnchoredGroup;
   projectSlug: string | null;
   navigation: NoteNavigation;
   style: React.CSSProperties;
   label: string;
+  /** A card the reader opened is a dialog they asked for. A card that opened
+   *  by itself is a side note beside the text, so screen readers do not find
+   *  a page full of dialogs nobody opened. */
+  openedByReader: boolean;
   /** Moves the keyboard focus into the card. True for a card the reader just
    *  opened, false for one that is open by default, which must never pull the
    *  focus away from the page. */
@@ -218,7 +232,7 @@ function NotePopover({ group, projectSlug, navigation, style, label, takeFocus, 
     // carrying on into the host page.
     <div
       ref={card}
-      role="dialog"
+      role={openedByReader ? "dialog" : "complementary"}
       aria-label={label}
       tabIndex={-1}
       style={style}
@@ -344,14 +358,13 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
       ? Math.min(containerRect.right, Math.max(...groups.map((g) => passageBlockRight(g.range, container))))
       : containerRect.right;
     const marginLeft = columnRight + MARGIN_MARKER_GAP;
-    const cardLeft = marginLeft + BADGE_SIZE + MARGIN_CARD_GAP;
-    const availableMargin = window.innerWidth - cardLeft - VIEWPORT_MARGIN;
+    const availableMargin = window.innerWidth - marginLeft - VIEWPORT_MARGIN;
     const clipper = marginClipper(container, marginLeft + BADGE_SIZE);
     const fallbackReason =
       noteStyle !== "margin"
         ? null // Classic was chosen in the settings; nothing to explain.
         : availableMargin < MARGIN_CARD_MIN_WIDTH
-          ? `only ${Math.round(availableMargin)}px of margin right of the markers, the card needs ${MARGIN_CARD_MIN_WIDTH}px`
+          ? `only ${Math.round(availableMargin)}px of margin right of the text column, the card needs ${MARGIN_CARD_MIN_WIDTH}px`
           : clipper
             ? `an element would clip the margin (<${clipper.tagName.toLowerCase()} class="${clipper.className}">)`
             : null;
@@ -382,7 +395,7 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
           badgeStyle: { top: marginTops.get(group)!, left: marginLeft - origin.left, width: BADGE_SIZE, height: BADGE_SIZE } satisfies React.CSSProperties,
           // The top is filled in once the open cards are stacked.
           popoverStyle: {
-            left: cardLeft - origin.left,
+            left: marginLeft - origin.left,
             width: Math.min(MARGIN_CARD_WIDTH, availableMargin),
           } satisfies React.CSSProperties,
         };
@@ -436,12 +449,20 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
   );
 
   // Closing a note hands the focus back to its marker, the way any dialog
-  // returns focus to what opened it.
+  // returns focus to what opened it. In the margin style an open card takes
+  // its marker's place, so the marker only exists again after the next
+  // render, and the focus moves once it does.
   const { close, open, closeOpenedByReader } = cards;
+  const returnFocusTo = useRef<string | null>(null);
   const closeNote = useCallback((claimId: string) => {
     close(claimId);
-    markers.current.get(claimId)?.focus({ preventScroll: true });
+    returnFocusTo.current = claimId;
   }, [close]);
+  useEffect(() => {
+    if (!returnFocusTo.current) return;
+    markers.current.get(returnFocusTo.current)?.focus({ preventScroll: true });
+    returnFocusTo.current = null;
+  });
   const toggle = useCallback(
     (group: ClaimGroup) => (isOpen(group) ? closeNote(group.claimId) : open(group.claimId)),
     [isOpen, closeNote, open],
@@ -590,7 +611,8 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
             const index = indexOf(group.claimId);
             return (
               <div key={group.claimId}>
-                {layout.useMargin ? <MarginDot {...marker} /> : <Badge {...marker} />}
+                {/* In the margin an open card takes its dot's place. */}
+                {layout.useMargin ? !cardOpen && <MarginDot {...marker} /> : <Badge {...marker} />}
                 {cardOpen && (
                   <NotePopover
                     group={group}
@@ -602,7 +624,8 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
                       // The card the reader opened last sits above the others.
                       zIndex: focused === group.claimId ? 3 : 2,
                     }}
-                    label={marker.label}
+                    label={cardLabel(group)}
+                    openedByReader={choices.get(group.claimId) === true}
                     takeFocus={focused === group.claimId}
                     onHeight={(height) => reportHeight(group.claimId, height)}
                     onClose={() => closeNote(group.claimId)}
