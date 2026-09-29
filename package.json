@@ -76,6 +76,8 @@
     "wxt": "^0.20.27"
   },
   "scripts": {
+    "note-tweets": "bun run note-tweets-rank && bun run src/note-tweets/server.ts",
+    "note-tweets-rank": "bun run src/note-tweets/rank.ts",
     "typecheck": "bunx --bun typescript@5.9.3 --noEmit 2>&1 | grep -v 'node_modules/' | grep -q 'error TS' && exit 1 || exit 0",
     "typecheck-review": "bunx --bun typescript@5.9.3 --noEmit -p src/review-dashboard 2>&1 | grep -v 'node_modules/' | grep -q 'error TS' && exit 1 || exit 0",
     "typecheck-ext": "cd src/everything-extension && bunx wxt prepare > /dev/null && cd ../.. && bunx --bun typescript@5.9.3 --noEmit -p src/everything-extension 2>&1 | grep -v 'node_modules/' | grep -q 'error TS' && exit 1 || exit 0",
