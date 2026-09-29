@@ -1,0 +1,140 @@
+diff --git a/src/everything-shared/postNote.ts b/src/everything-shared/postNote.ts
+index 157310bb..5f039c0d 100644
+--- a/src/everything-shared/postNote.ts
++++ b/src/everything-shared/postNote.ts
+@@ -45,12 +45,17 @@ export async function postClaimWithNote(params: {
+   itemId: string;
+   itemUrl: string;
+   anchorText: string;
++  /** The passage around the anchor, when the caller has it. The reading page
++   *  passes the whole paragraph, so a note still lands beside the right
++   *  passage when the anchored words recur elsewhere in the essay. */
++  contextParagraph?: string | null;
+   note: string;
+   session: Session;
+   signed: boolean;
+ }): Promise<PostOutcome> {
+   const { itemId, itemUrl, session, signed } = params;
+   const anchorText = params.anchorText.trim();
++  const contextParagraph = params.contextParagraph?.trim() || null;
+   const note = params.note.trim();
+   try {
+     const { data: claim, error: claimError } = await supabase
+@@ -60,6 +65,9 @@ export async function postClaimWithNote(params: {
+         claim: anchorText.slice(0, CLAIM_PREVIEW_CHARS),
+         judgement: "user",
+         context_quote: anchorText,
++        // Only sent when given, so a backend without the column still accepts
++        // the extension's inserts.
++        ...(contextParagraph ? { context_paragraph: contextParagraph } : {}),
+         context_url: itemUrl,
+         status: "note",
+         created_by: session.user.id,
+diff --git a/src/everything-web/src/components/NoteCard.tsx b/src/everything-web/src/components/NoteCard.tsx
+index 1c3bc739..3e90699c 100644
+--- a/src/everything-web/src/components/NoteCard.tsx
++++ b/src/everything-web/src/components/NoteCard.tsx
+@@ -342,7 +342,7 @@ function ImprovementLinks({ note, improvements }: { note: NoteRow; improvements:
+ // Composed the same way as a card in the review dashboard. The content comes
+ // first, then the note, then the stats row. Here the voting is live and the
+ // reader can suggest an improvement.
+-export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug, myVote, onVote, onAuthored, session, onNeedLogin }: {
++export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug, myVote, onVote, onAuthored, onDeleted, compact, session, onNeedLogin }: {
+   note: NoteRow;
+   /** The notes that improve this one. This is the reverse of
+    *  improved_from_note_id. */
+@@ -361,6 +361,10 @@ export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug,
+   /** Called when this user has just posted a note. The caller mirrors the note's
+    *  automatic self-vote into its local state. */
+   onAuthored: (noteId: string) => void;
++  /** Readers without a realtime feed refresh after deleting their own note. */
++  onDeleted?: () => void;
++  /** Fit a note beside article text without the feed's outer context columns. */
++  compact?: boolean;
+   session: Session | null;
+   onNeedLogin: () => void;
+ }) {
+@@ -386,15 +390,15 @@ export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug,
+   const paragraph = claim?.context_paragraph;
+   const quoteInParagraph = claim?.context_quote ?? claim?.claim ?? "";
+   return (
+-    <div id={`note-${note.id}`} className="scroll-mt-4 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,40rem)_minmax(0,1fr)] xl:gap-4 items-start">
+-      {paragraph && claim && (
++    <div id={`note-${note.id}`} className={`scroll-mt-4 ${compact ? "" : "xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,40rem)_minmax(0,1fr)] xl:gap-4 items-start"}`}>
++      {paragraph && claim && !compact && (
+         <div className="hidden xl:block xl:col-start-1 xl:row-start-1">
+           <ContextParagraph paragraph={paragraph} quote={quoteInParagraph} fitTo={cardColRef} />
+         </div>
+       )}
+       {paragraph && claim && (
+         <div
+-          className="xl:hidden w-full max-w-[40rem] mx-auto"
++          className={`${compact ? "" : "xl:hidden"} w-full max-w-[40rem] mx-auto`}
+           style={{ display: "grid", gridTemplateRows: ctxOpen ? "1fr" : "0fr", transition: "grid-template-rows 300ms ease" }}
+           aria-hidden={!ctxOpen}
+         >
+@@ -405,14 +409,14 @@ export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug,
+           </div>
+         </div>
+       )}
+-      <div ref={cardColRef} className={`${CARD} p-4 w-full max-w-[40rem] mx-auto xl:max-w-none xl:mx-0 xl:col-start-2 xl:row-start-1`}>
++      <div ref={cardColRef} className={`${CARD} p-4 w-full max-w-[40rem] mx-auto ${compact ? "" : "xl:max-w-none xl:mx-0 xl:col-start-2 xl:row-start-1"}`}>
+       {claim && (
+         <div className="mb-3">
+           {claim.image_urls?.length > 0 && <ClaimImages urls={claim.image_urls} />}
+           {paragraph && (
+             <button
+               onClick={() => setCtxOpen((o) => !o)}
+-              className={`xl:hidden text-xs mb-2 ${LINK}`}
++              className={`${compact ? "" : "xl:hidden"} text-xs mb-2 ${LINK}`}
+             >
+               {ctxOpen ? "Hide surrounding context" : "Show surrounding context"}
+             </button>
+@@ -456,6 +460,7 @@ export function NoteCard({ note, improvements, nnnEntries, nnnApi, projectSlug,
+         session={session}
+         onNeedLogin={onNeedLogin}
+         onAuthored={onAuthored}
++        onDeleted={onDeleted}
+         onNnnAuthored={nnnApi.onAuthored}
+         sourcesOpen={sourcesOpen}
+         onToggleSources={() => setSourcesOpen((o) => !o)}
+diff --git a/src/everything-web/src/main.tsx b/src/everything-web/src/main.tsx
+index d04a24f6..4d915878 100644
+--- a/src/everything-web/src/main.tsx
++++ b/src/everything-web/src/main.tsx
+@@ -1,6 +1,7 @@
+ import React from "react";
+ import { createRoot } from "react-dom/client";
+ import { App } from "./App";
++import { FrontierReader, isFrontierReaderPath } from "./FrontierReader";
+ import { ErrorBoundary } from "./components/ErrorBoundary";
+ import { initAnalytics } from "./lib/analytics";
+ import "./index.css";
+@@ -13,7 +14,7 @@ import "./index.css";
+ createRoot(document.getElementById("root")!).render(
+   <React.StrictMode>
+     <ErrorBoundary>
+-      <App />
++      {isFrontierReaderPath(window.location.pathname) ? <FrontierReader /> : <App />}
+     </ErrorBoundary>
+   </React.StrictMode>,
+ );
+diff --git a/src/everything-web/vite.config.ts b/src/everything-web/vite.config.ts
+index bacb78d2..a9213aae 100644
+--- a/src/everything-web/vite.config.ts
++++ b/src/everything-web/vite.config.ts
+@@ -36,6 +36,14 @@ export default defineConfig(({ command, mode }) => {
+   return {
+     plugins: [react()],
+     base: process.env.BASE_PATH ?? "/",
++    build: {
++      rollupOptions: {
++        input: {
++          main: path.resolve(__dirname, "index.html"),
++          frontier: path.resolve(__dirname, "pacing-the-frontier/index.html"),
++        },
++      },
++    },
+     envDir,
+     /* Tailwind is wired inline instead of via a postcss.config file, whose
+      * discovery depends on the working directory. */
