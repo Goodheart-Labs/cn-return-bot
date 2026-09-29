@@ -40,9 +40,11 @@ export function Modal({ title, onClose, widthClassName = "max-w-sm", children }:
       className={cn("w-full bg-transparent p-4 backdrop:bg-black/50 dark:backdrop:bg-black/75", widthClassName)}
     >
       <div className={cn(cardVariants({ elevation: "floating" }), "max-h-[85vh] space-y-3 overflow-y-auto p-6")}>
-        <div className="flex items-center justify-between gap-2">
+        {/* A long title wraps, so the close button sits level with its first
+          * line rather than halfway down the whole title. */}
+        <div className="flex items-start justify-between gap-2">
           <h2 className="text-lg font-extrabold text-fg">{title}</h2>
-          <IconButton label="Close" onClick={onClose}>
+          <IconButton label="Close" onClick={onClose} className="mt-0.5">
             <CloseIcon size={16} aria-hidden />
           </IconButton>
         </div>

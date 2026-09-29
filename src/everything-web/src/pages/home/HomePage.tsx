@@ -4,7 +4,7 @@ import { cardVariants } from "@cn/ui/Card";
 import { cn } from "@cn/ui/cn";
 import { NextIcon, PreviousIcon } from "@cn/ui/icons";
 import { BrowserLogo, DesktopOnly, StoreButton } from "../../components/StoreButton";
-import { BROWSERS, browserById, canInstallExtensions, detectBrowser, isListed } from "../../lib/extensionStores";
+import { BROWSERS, canInstallExtensions, isListed } from "../../lib/extensionStores";
 import type { Route } from "../../lib/routing";
 import { HEADLINE, PITCH, SCREENSHOTS, scrollToInstall } from "./content";
 import { useCarousel } from "./useCarousel";
@@ -103,7 +103,6 @@ function Install({ navigate, desktop }: { navigate: (route: Route) => void; desk
 }
 
 export function HomePage({ showInstall, navigate }: { showInstall: boolean; navigate: (route: Route) => void }) {
-  const browser = browserById(detectBrowser());
   const [desktop] = useState(canInstallExtensions);
   useEffect(() => {
     if (showInstall) scrollToInstall();
@@ -116,8 +115,6 @@ export function HomePage({ showInstall, navigate }: { showInstall: boolean; navi
         <div className="mt-8">
           {!desktop ? (
             <DesktopOnly navigate={navigate} className="mx-auto max-w-[36ch]" />
-          ) : isListed(browser) ? (
-            <StoreButton browser={browser}>Get the extension</StoreButton>
           ) : (
             <button type="button" onClick={scrollToInstall} className={buttonVariants({ variant: "primary", size: "lg" })}>
               Get the extension
