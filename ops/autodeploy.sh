@@ -13,6 +13,11 @@ set -euo pipefail
 REPO_DIR="/opt/cn-return-bot"
 ENV_FILE="/etc/cn-return-bot/service.env"
 SERVICE_USER="cnbot"
+# A deploy runs the copy of this script that was checked out before it, since
+# bash reads all of main() before the reset below. So a unit added to this list
+# is first installed by the deploy after the one that adds it. A new unit must
+# be installed by hand once (cp, daemon-reload, enable --now), as cn-fetch was
+# on 2026-09-28.
 UNITS=(cn-claim-check cn-extraction cn-intake cn-fetch)
 
 main() {

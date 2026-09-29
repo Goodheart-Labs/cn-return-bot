@@ -6,7 +6,7 @@ import type { Decorator } from "@storybook/react-vite";
  *  id and the view mode, are kept. */
 export const withWebsiteRoute = (params: Record<string, string>): Decorator => (Story) => {
   const url = new URL(window.location.href);
-  for (const key of ["project", "item", "note", "view"]) url.searchParams.delete(key);
+  for (const key of ["project", "item", "note", "view", "section"]) url.searchParams.delete(key);
   for (const [key, value] of Object.entries(params)) url.searchParams.set(key, value);
   window.history.replaceState(null, "", url);
   return (

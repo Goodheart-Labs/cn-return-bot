@@ -83,6 +83,11 @@ jobs:
           cp -r src/stats-dashboard/dist/. site/
           cp -r src/everything-web/dist/. site/notes/
           cp -r src/analytics-dashboard/dist/. site/analytics/
+          # GitHub Pages answers every address it has no file for with the
+          # site's 404.html. The notes site gives each page its own path, such
+          # as /cn-return-bot/notes/leaderboard, so that fallback is the notes
+          # app itself. Its asset links are absolute, so it loads at any path.
+          cp site/notes/index.html site/404.html
 
       - name: Build everything SPA at root path (commonnotes.net)
         run: cd src/everything-web && bunx vite build

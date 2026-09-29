@@ -31,6 +31,8 @@ export const TOP_VIDEOS_SCAN_LIMIT = 3000;
 export interface YoutubeChannel {
   id: string;
   title: string;
+  /** The channel's profile picture, 240 pixels square. */
+  thumbnailUrl?: string;
 }
 
 export interface YoutubeVideo {
@@ -79,7 +81,8 @@ export async function resolveChannel(channelUrl: string): Promise<YoutubeChannel
   const body = await apiGet("channels", { part: "snippet", ...(id ? { id } : { forHandle: handle! }) });
   const item = body.items?.[0];
   if (!item) throw new Error(`YouTube knows no channel at ${channelUrl}`);
-  return { id: item.id, title: item.snippet.title };
+  const thumbnails = item.snippet.thumbnails ?? {};
+  return { id: item.id, title: item.snippet.title, thumbnailUrl: (thumbnails.medium ?? thumbnails.default)?.url };
 }
 
 /** The playlist holding a channel's long-form uploads, newest first: the same

@@ -10,6 +10,7 @@ import { claimGroups, itemNoteSetQuery, noteCounts, type NoteCounts } from "../u
 import { mountCoverageBadges } from "../utils/coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "../utils/coveredPages";
 import { recordPageVisit } from "../utils/linkVisits";
+import { PillPaletteFromSettings } from "../components/PillPaletteFromSettings";
 import { timedGroups, YoutubeOverlayApp } from "../components/YoutubeOverlay";
 import { jumpToNextNote } from "../utils/jumpBus";
 import { mountStatusOverlay } from "../utils/mountStatusOverlay";
@@ -124,7 +125,9 @@ async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | n
       const root = createRoot(container);
       root.render(
         <QueryClientProvider client={queryClient}>
-          <YoutubeOverlayApp itemId={item.id} projectSlug={item.projectSlug} video={video} player={player} />
+          <PillPaletteFromSettings>
+            <YoutubeOverlayApp itemId={item.id} projectSlug={item.projectSlug} video={video} player={player} />
+          </PillPaletteFromSettings>
         </QueryClientProvider>,
       );
       return root;

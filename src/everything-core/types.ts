@@ -4,6 +4,11 @@ export interface ProjectRow {
   name: string;
   description: string | null;
   sort_order: number;
+  /** The creator's feed: a Substack publication, a YouTube channel or a forum
+   *  profile. Null for a project that is not one creator. */
+  feed_url: string | null;
+  /** The creator's picture (migration 106). */
+  avatar_url: string | null;
 }
 
 export interface ItemRow {
@@ -22,11 +27,14 @@ export interface ItemRow {
   checked_scope: "page" | "paragraph" | null;
 }
 
-/** A project as the website's sidebar loads it. The sidebar shows the name,
- *  the URL carries the slug, and the list is ordered by the score of the votes
- *  on the project's notes (migration 094). The description is left in the
- *  database. */
-export type FeedProjectRow = Pick<ProjectRow, "id" | "slug" | "name"> & { vote_score: number };
+/** A project as the website's projects overview loads it (migration 106): the
+ *  name, the slug for the URL, the creator's feed and picture, how many notes
+ *  it has, and the score of the votes on them, which the default order uses.
+ *  The description is left in the database. */
+export type FeedProjectRow = Pick<ProjectRow, "id" | "slug" | "name" | "feed_url" | "avatar_url"> & {
+  vote_score: number;
+  note_count: number;
+};
 
 /** An item as the website's feed loads it. The feed only names an item on a
  *  filter chip and orders the chips by date, so it reads these columns and

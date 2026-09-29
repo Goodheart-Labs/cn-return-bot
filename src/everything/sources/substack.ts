@@ -164,6 +164,8 @@ const MAX_PROXY_CACHE_AGE_SECONDS = 24 * 3600;
 export interface SubstackFeed {
   /** The publication's display name, from the feed's channel title. */
   title?: string;
+  /** The publication's logo, from the feed's channel image. */
+  imageUrl?: string;
   posts: FeedPost[];
 }
 
@@ -185,6 +187,7 @@ export async function fetchFeedPosts(publicationUrl: string): Promise<SubstackFe
   // carry <title> tags too, so the channel block is cut out first.
   const channelXml = xml.split("<item>")[0]!;
   const title = decodeHtmlEntities(cdataUnwrap(tagContent(channelXml, "title"))).trim() || undefined;
+  const imageUrl = cdataUnwrap(tagContent(tagContent(channelXml, "image"), "url")).trim() || undefined;
   const posts = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)]
     .map(([, item]) => {
       const bodyHtml = cdataUnwrap(tagContent(item!, "content:encoded"));
@@ -197,7 +200,7 @@ export async function fetchFeedPosts(publicationUrl: string): Promise<SubstackFe
       };
     })
     .filter((p) => p.url && p.bodyHtml);
-  return { title, posts };
+  return { title, imageUrl, posts };
 }
 
 /** The placeholder we leave in the plain text where an image stood. The

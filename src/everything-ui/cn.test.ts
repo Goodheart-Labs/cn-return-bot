@@ -18,3 +18,8 @@ describe("cn", () => {
     expect(cn("p-3", false, null, undefined, "border")).toBe("p-3 border");
   });
 });
+
+test("keeps the display size and the title face apart from colours and weights", () => {
+  expect(cn("text-display text-fg font-title font-bold")).toBe("text-display text-fg font-title font-bold");
+  expect(cn("text-lg", "text-display")).toBe("text-display");
+});

@@ -33,8 +33,8 @@ function deviceId(): string {
 /** The page URL without its fragment. The auth return (magic link, X OAuth)
  *  lands with access and refresh tokens in the fragment, so the fragment must
  *  never be stored; dropping it also stops the app's post-auth hash cleanup
- *  from counting as a second pageview. Routing is query-param based, so the
- *  fragment carries no navigation information anyway. */
+ *  from counting as a second pageview. Routing never uses the fragment, so it
+ *  carries no navigation information anyway. */
 function pageUrl(): string {
   return window.location.origin + window.location.pathname + window.location.search;
 }
