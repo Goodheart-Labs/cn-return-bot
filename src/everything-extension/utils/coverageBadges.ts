@@ -115,25 +115,43 @@ function coverImage(root: HTMLElement): HTMLElement | null {
   return cover;
 }
 
+/** The box that frames a picture on screen, so the badge can sit in the
+ *  picture's own corner. An image that is absolutely positioned fills its
+ *  containing block, which is its offsetParent. That element is already
+ *  positioned, so the badge can use it without any style change.
+ *  Otherwise the frame is the image's nearest ancestor that draws a box.
+ *  Substack wraps its thumbnails in a <picture> with display: contents, which
+ *  draws no box of its own, so a badge positioned against it would land in the
+ *  corner of some larger ancestor instead. */
+function pictureFrame(image: HTMLElement): HTMLElement {
+  if (getComputedStyle(image).position === "absolute" && image.offsetParent instanceof HTMLElement) return image.offsetParent;
+  let frame = image.parentElement!;
+  while (getComputedStyle(frame).display === "contents") frame = frame.parentElement!;
+  return frame;
+}
+
 /** The element the badge is pinned to, or null when this link should carry no
- *  badge. A link that wraps the tile's picture is the preferred surface: every
- *  video tile has one, whatever the host's current component names are, and it
- *  pins the badge to the picture's corner, clear of the card's own controls.
+ *  badge. The preferred surface is the frame of the tile's picture, so the
+ *  badge sits in the picture's corner, clear of the card's dates and menus.
+ *  The picture is looked for inside the link first. On YouTube the link is the
+ *  thumbnail itself. On a Substack profile's post list the link is the whole
+ *  row, and pinning the badge to the link put it over the row's date.
  *  Matching on structure rather than on component tag names is deliberate:
  *  YouTube renders different tile components logged in than logged out, and a
  *  tag-name list silently missed the logged-in ones. A text link falls back to
  *  its listing card, where the badge sits on the card's picture if it has one
  *  and on the card's corner otherwise. */
 function surfaceFor(anchor: HTMLAnchorElement): HTMLElement | null {
-  if (coverImage(anchor)) return anchor;
+  const linkPicture = coverImage(anchor);
+  if (linkPicture) return pictureFrame(linkPicture);
   const card = anchor.closest<HTMLElement>(CARD_SELECTOR);
   if (!card || card.offsetHeight > CARD_MAX_HEIGHT_PX) return null;
-  return coverImage(card)?.parentElement ?? card;
+  const cardPicture = coverImage(card);
+  return cardPicture ? pictureFrame(cardPicture) : card;
 }
 
 /** Marks every listing link that leads to a noted page with a note-count
- *  badge. Badges are appended inside the link itself, so they sit right after
- *  the title and navigate with it. The scan re-runs debounced on DOM changes,
+ *  badge, placed where surfaceFor says. The scan re-runs debounced on DOM changes,
  *  which covers infinite scroll and single-page-app navigations, and each
  *  noted page gets one badge at a time: a badge the host page threw away in a
  *  re-render is simply placed again on the next scan. Returns a teardown
