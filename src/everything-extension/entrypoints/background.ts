@@ -77,8 +77,7 @@ async function syncNotedSites() {
       fetchNotedPageCounts(),
       fetchPrioritizedCreatorUrls(),
     ]);
-    // The listing badges and count cards draw their per-page note counts from
-    // this cache.
+    // The listing badges draw their per-page note counts from this cache.
     if (counts) await browser.storage.local.set({ [NOTED_PAGE_STATUS_COUNTS_KEY]: counts });
     // The follow-button surfaces hide the button for feeds on this list.
     if (prioritized) await browser.storage.local.set({ [PRIORITIZED_CREATOR_URLS_KEY]: prioritized });

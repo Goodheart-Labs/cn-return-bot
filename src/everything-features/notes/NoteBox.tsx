@@ -14,11 +14,16 @@ import { queryKeys } from "../query/queryKeys";
 const STATUS: Record<NoteStatus, { label: string; dot: string }> = {
   helpful: { label: "Currently rated helpful", dot: "text-positive-solid" },
   not_helpful: { label: "Currently rated not helpful", dot: "text-negative-solid" },
-  needs_ratings: { label: "Needs more ratings", dot: "text-fg-subtle" },
+  needs_ratings: { label: "Needs more ratings", dot: "text-pending-solid" },
 };
 
 /** The status line's words for a status, for labels that name it elsewhere. */
 export const statusLabel = (status: NoteStatus): string => STATUS[status].label;
+
+/** The status colour as a text colour class. The extension's page markers
+ *  draw with it too, through `bg-current`, so a marker and the note it opens
+ *  always agree. */
+export const statusColorClass = (status: NoteStatus): string => STATUS[status].dot;
 
 /** The one question every note's rating panel asks, whatever its status. */
 export const RATING_QUESTION = "Is this note helpful?";

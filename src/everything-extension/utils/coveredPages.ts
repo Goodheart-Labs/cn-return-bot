@@ -28,8 +28,8 @@ export async function getWholePageCheckedUrls(): Promise<string[] | null> {
 }
 
 // The per-status note counts per covered page URL. The background's sync
-// writes it next to the coverage list; the listing badges and count cards sum
-// whichever statuses the user's note filters show. Like the coverage list, it
+// writes it next to the coverage list; the listing badges sum whichever
+// statuses the user has not hidden. Like the coverage list, it
 // makes the decision on the user's own device. The key replaced the older
 // cn:notedPageCounts, whose values were plain numbers; the new name means a
 // build never misreads the other build's shape.

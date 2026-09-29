@@ -3,14 +3,14 @@ import { browser } from "#imports";
 import { createPortal } from "react-dom";
 import type { PageItem } from "@cn/core/items";
 import { noteStatus } from "@cn/core/noteScore";
-import { statusLabel } from "@cn/features/notes/NoteBox";
+import { statusColorClass, statusLabel } from "@cn/features/notes/NoteBox";
 import { cardVariants } from "@cn/ui/Card";
 import { cn } from "@cn/ui/cn";
 import type { ClaimGroup } from "../utils/claimGroups";
 import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
 import { setJumpHandler } from "../utils/jumpBus";
 import { GroupIcon } from "@cn/ui/icons";
-import { ClaimNoteStack, NOTE_POPOVER_WIDTH } from "./ClaimNoteStack";
+import { ClaimNoteStack, NOTE_POPOVER_WIDTH, type NoteNavigation } from "./ClaimNoteStack";
 import { OverlayLoginGate } from "./OverlayLoginGate";
 import { EventShield } from "./EventShield";
 import { WriteNoteOverlay } from "./WriteNoteOverlay";
@@ -92,9 +92,6 @@ function relRect(range: Range, origin: DOMRect) {
 }
 
 
-/** The small badge at the end of an anchored passage. It draws the blue
- *  community glyph on a surface that follows the host page's light or dark
- *  theme. This is the classic style's marker. */
 /** What a marker is called for a screen reader and in its tooltip: how many
  *  notes the passage has and how the first of them is rated. */
 function markerLabel(group: ClaimGroup): string {
@@ -107,7 +104,21 @@ function markerLabel(group: ClaimGroup): string {
  *  same focus ring as every other control. */
 const MARKER_FOCUS = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus";
 
-function Badge({ open, onClick, style, label, ref }: { open: boolean; onClick: () => void; style: React.CSSProperties; label: string; ref: React.Ref<HTMLButtonElement> }) {
+/** What both marker styles are drawn from. */
+interface MarkerProps {
+  group: ClaimGroup;
+  open: boolean;
+  onClick: () => void;
+  style: React.CSSProperties;
+  label: string;
+  ref: React.Ref<HTMLButtonElement>;
+}
+
+/** The small badge at the end of an anchored passage. It draws the community
+ *  glyph in the colour of the claim's status on a surface that follows the
+ *  host page's light or dark theme. A collapsed claim's badge is smaller and
+ *  faint until the pointer reaches it. This is the classic style's marker. */
+function Badge({ group, open, onClick, style, label, ref }: MarkerProps) {
   return (
     <button
       ref={ref}
@@ -118,8 +129,10 @@ function Badge({ open, onClick, style, label, ref }: { open: boolean; onClick: (
       aria-expanded={open}
       style={style}
       className={cn(
-        "absolute flex items-center justify-center rounded-full border border-line-strong bg-surface text-link shadow-raised transition-transform hover:scale-110",
+        "absolute flex items-center justify-center rounded-full border border-line-strong bg-surface shadow-raised transition hover:scale-110",
+        statusColorClass(group.status),
         MARKER_FOCUS,
+        group.collapsed && !open && "scale-75 opacity-50 hover:opacity-100",
         open && "ring-2 ring-focus",
       )}
     >
@@ -128,13 +141,13 @@ function Badge({ open, onClick, style, label, ref }: { open: boolean; onClick: (
   );
 }
 
-/** The margin style's marker: a quiet gray dot that turns blue with a soft
- *  halo when the pointer is near (Jim picked this over the circled glyph,
- *  2026-08-31). While the note is open the dot sits under the card and stays
- *  plain gray: an open-state blue faded back to gray on close and read as a
- *  flicker. The button box stays badge-sized so the positioning and collision
- *  math is shared; the dot is drawn smaller inside it. */
-function MarginDot({ open, onClick, style, label, ref }: { open: boolean; onClick: () => void; style: React.CSSProperties; label: string; ref: React.Ref<HTMLButtonElement> }) {
+/** The margin style's marker: a small dot in the colour of the claim's
+ *  status, green for helpful, blue for needs more ratings and red for not
+ *  helpful (Jim, 2026-09-29). It gains a soft halo when the pointer is near.
+ *  A collapsed claim's dot is smaller and faint until the pointer reaches it.
+ *  The button box stays badge-sized so the positioning and collision math is
+ *  shared; the dot is drawn smaller inside it. */
+function MarginDot({ group, open, onClick, style, label, ref }: MarkerProps) {
   return (
     <button
       ref={ref}
@@ -146,21 +159,22 @@ function MarginDot({ open, onClick, style, label, ref }: { open: boolean; onClic
       style={style}
       className={cn("absolute flex items-center justify-center rounded-full group", MARKER_FOCUS)}
     >
-      {/* The muted grey keeps the dot quiet on the page while clearing the 3 to
-          1 contrast a control needs; the lighter grey used before did not. */}
       <span
         className={cn(
-          "h-2.5 w-2.5 rounded-full bg-fg-muted",
-          !open && "transition-colors group-hover:bg-link group-hover:ring-4 group-hover:ring-focus-halo",
+          "rounded-full bg-current transition",
+          statusColorClass(group.status),
+          group.collapsed ? "h-1.5 w-1.5 opacity-50 group-hover:opacity-100" : "h-2.5 w-2.5",
+          !open && "group-hover:ring-4 group-hover:ring-focus-halo",
         )}
       />
     </button>
   );
 }
 
-function NotePopover({ group, projectSlug, style, label, onClose }: {
+function NotePopover({ group, projectSlug, navigation, style, label, onClose }: {
   group: AnchoredGroup;
   projectSlug: string | null;
+  navigation: NoteNavigation;
   style: React.CSSProperties;
   label: string;
   /** Closes the note and returns the focus to its marker. */
@@ -196,7 +210,7 @@ function NotePopover({ group, projectSlug, style, label, onClose }: {
       className={cn(cardVariants({ elevation: "floating" }), "absolute p-4 text-left max-h-[70vh] overflow-y-auto overscroll-contain focus:outline-none")}
     >
       <OverlayLoginGate open={loginOpen} onOpenChange={setLoginOpen}>
-        <ClaimNoteStack group={group} projectSlug={projectSlug} />
+        <ClaimNoteStack group={group} projectSlug={projectSlug} navigation={navigation} />
       </OverlayLoginGate>
     </div>
   );
@@ -278,15 +292,17 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
   }, [container]);
 
   // The passage tint is a CSS highlight rather than an element, so it cannot
-  // receive events. We test every host-page click against each claim's range
-  // instead. Clicking a tinted passage then toggles its note, just as clicking
-  // the badge does. The listener that closes the popover on an outside press
+  // receive events. We test every host-page click against each tinted claim's
+  // range instead. Clicking a tinted passage then toggles its note, just as
+  // clicking the badge does. A collapsed claim has no tint, so its text stays
+  // plain page text and only its marker opens it. The listener that closes the popover on an outside press
   // lives here too, and it skips tinted passages. Closing on mousedown and
   // reopening from the click's hit test made a click on a highlight flash the
   // popover shut and open it again straight away.
   useEffect(() => {
     const claimAt = (x: number, y: number): string | null => {
       for (const group of groups) {
+        if (group.collapsed) continue;
         for (const rect of group.range.getClientRects()) {
           if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) return group.claimId;
         }
@@ -321,21 +337,33 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
     };
   }, [groups]);
 
-  // Handles the two requests that arrive from elsewhere in the extension. The
-  // popup asks to jump through the notes in document order, wrapping around at
-  // the end. The background's context menu asks to write a note on the current
-  // selection. The jump cursor lives here so that "next" keeps its place when
-  // the popup is closed and opened again. It resets when the page does.
+  // The claims in document order. The popup's jump button, the request
+  // progress card and the Next note button in an open note all step through
+  // them, wrapping around at the end.
+  const ordered = useMemo(
+    () => [...groups].sort((a, b) => a.range.compareBoundaryPoints(Range.START_TO_START, b.range)),
+    [groups],
+  );
+  const openIndex = openClaim ? ordered.findIndex((g) => g.claimId === openClaim) : -1;
+  // A jump goes to the claim after the open one, so "next" always means the
+  // one after what the reader is looking at. With no claim open it goes to
+  // the claim after the last one a jump reached. That cursor lives here so
+  // that "next" keeps its place when the popup is closed and opened again. It
+  // resets when the page does.
   const jumpCursor = useRef(-1);
+  const jumpNext = useCallback(() => {
+    if (!ordered.length) return;
+    const from = openIndex >= 0 ? openIndex : jumpCursor.current;
+    jumpCursor.current = (from + 1) % ordered.length;
+    const target = ordered[jumpCursor.current]!;
+    target.range.startContainer.parentElement?.scrollIntoView({ behavior: "smooth", block: "center" });
+    setOpenClaim(target.claimId);
+  }, [ordered, openIndex]);
+
+  // Handles the two requests that arrive from elsewhere in the extension. The
+  // popup asks to jump to the next note. The background's context menu asks to
+  // write a note on the current selection.
   useEffect(() => {
-    const ordered = [...groups].sort((a, b) => a.range.compareBoundaryPoints(Range.START_TO_START, b.range));
-    const jumpNext = () => {
-      if (!ordered.length) return;
-      jumpCursor.current = (jumpCursor.current + 1) % ordered.length;
-      const target = ordered[jumpCursor.current]!;
-      target.range.startContainer.parentElement?.scrollIntoView({ behavior: "smooth", block: "center" });
-      setOpenClaim(target.claimId);
-    };
     const listener = (message: unknown, _sender: unknown, sendResponse: (response?: unknown) => void) => {
       const { type, selection } = (message as { type?: string; selection?: string }) ?? {};
       if (type === "cn-jump-state") sendResponse({ jumped: jumpCursor.current >= 0 });
@@ -346,13 +374,13 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
       if (type === "cn-write-note" && selection?.trim()) setWriteSelection(selection.trim());
     };
     browser.runtime.onMessage.addListener(listener);
-    // The note-count card jumps through the same cursor, see utils/jumpBus.ts.
+    // The request progress card jumps through the same cursor, see utils/jumpBus.ts.
     setJumpHandler(jumpNext);
     return () => {
       browser.runtime.onMessage.removeListener(listener);
       setJumpHandler(null);
     };
-  }, [groups]);
+  }, [ordered, jumpNext]);
 
   const positioned = useMemo(() => {
     // Read the layer's origin and every range rectangle in the same layout pass.
@@ -456,6 +484,7 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
         <EventShield>
           {positioned.map(({ group, badgeStyle, popoverStyle, margin }) => {
             const marker = {
+              group,
               ref: (el: HTMLButtonElement | null) => {
                 if (el) markers.current.set(group.claimId, el);
                 else markers.current.delete(group.claimId);
@@ -469,7 +498,14 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
               <div key={group.claimId}>
                 {margin ? <MarginDot {...marker} /> : <Badge {...marker} />}
                 {openClaim === group.claimId && (
-                  <NotePopover group={group} projectSlug={projectSlug} style={popoverStyle} label={marker.label} onClose={() => closeNote(group.claimId)} />
+                  <NotePopover
+                    group={group}
+                    projectSlug={projectSlug}
+                    navigation={{ position: openIndex + 1, total: ordered.length, onNext: jumpNext }}
+                    style={popoverStyle}
+                    label={marker.label}
+                    onClose={() => closeNote(group.claimId)}
+                  />
                 )}
               </div>
             );

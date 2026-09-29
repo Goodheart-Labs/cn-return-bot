@@ -1,3 +1,5 @@
+import type { NoteStatus } from "@cn/core/noteScore";
+
 /** The one palette for the markers we draw into host pages themselves: the
  *  scrubber pins, the coverage badges and the passage tint. They live in the
  *  page's own DOM, outside our shadow roots, where the design tokens do not
@@ -12,6 +14,15 @@ export interface MarkerColors {
 
 export const MARKER_LIGHT: MarkerColors = { body: "#ffffff", border: "#d1d5db", glyph: "#2563eb" };
 export const MARKER_DARK: MarkerColors = { body: "#111827", border: "#4b5563", glyph: "#60a5fa" };
+
+/** A scrubber pin's glyph takes the colour of its claim's status. These copy
+ *  the `positive-solid`, `pending-solid` and `negative-solid` tokens, which
+ *  the note card's status dot and the article markers draw with. */
+export const STATUS_MARKER_GLYPH: Record<NoteStatus, string> = {
+  helpful: "#22c55e",
+  needs_ratings: "#3b82f6",
+  not_helpful: "#ef4444",
+};
 
 export const MARKER_HOVER_SCALE = 1.1;
 export const MARKER_GLYPH_SIZE = 14;

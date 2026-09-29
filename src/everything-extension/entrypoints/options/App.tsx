@@ -5,7 +5,7 @@ import { Checkbox } from "@cn/ui/Field";
 import { signOut } from "@cn/core/auth";
 import { useSession } from "@cn/features/auth/useSession";
 import { LoginPanel } from "../../components/LoginPanel";
-import { NoteFilterToggles, useNoteFilters } from "../../components/NoteFilterToggles";
+import { NoteDisplayChoices, useNoteDisplay } from "../../components/NoteDisplayChoices";
 import {
   getSettings,
   markWelcomeSeen,
@@ -15,7 +15,7 @@ import {
   type VisitSiteKind,
 } from "../../utils/settings";
 
-/** The settings as editable state, mirroring useNoteFilters: optimistic local
+/** The settings as editable state, mirroring useNoteDisplay: optimistic local
  *  update, then a fire-and-forget write to synced storage. */
 function useExtensionSettings(): [ExtensionSettings | null, (patch: SettingsPatch) => void] {
   const [settings, setSettings] = useState<ExtensionSettings | null>(null);
@@ -89,16 +89,10 @@ function AdvancedSettings({ settings, onToggle }: {
   settings: ExtensionSettings;
   onToggle: (patch: SettingsPatch) => void;
 }) {
-  const [filters, toggleFilters] = useNoteFilters();
+  const [display, changeDisplay] = useNoteDisplay();
   return (
     <div className="space-y-4">
       <Section title="Overlays">
-        <Setting
-          checked={settings.showNoteCountOverlay}
-          onChange={(checked) => onToggle({ showNoteCountOverlay: checked })}
-        >
-          Show the note-count card on pages that have been checked
-        </Setting>
         <Setting
           checked={settings.showThumbnailBadges}
           onChange={(checked) => onToggle({ showThumbnailBadges: checked })}
@@ -129,7 +123,7 @@ function AdvancedSettings({ settings, onToggle }: {
           />
           Classic: a badge in the text, the note on top of it
         </label>
-        {filters && <NoteFilterToggles filters={filters} onToggle={toggleFilters} />}
+        {display && <NoteDisplayChoices display={display} onChange={changeDisplay} />}
         <p className="pt-2 text-sm text-fg-secondary">How the rating buttons look.</p>
         <label className="flex items-center gap-2 text-sm text-fg-secondary">
           <input

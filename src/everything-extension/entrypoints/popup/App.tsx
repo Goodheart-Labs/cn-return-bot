@@ -14,14 +14,14 @@ import { noteCounts, type NoteCounts } from "../../utils/claimGroups";
 import { genericScriptId } from "../../utils/genericScript";
 import { resolveReaderCanonical } from "../../utils/readerCanonical";
 import { priorityActiveLabel, type CreatorTarget } from "../../utils/creatorTarget";
-import { buildPriorityAction, headline } from "../../utils/mountStatusOverlay";
+import { buildPriorityAction, headline } from "../../utils/pageStatus";
 import { isSubstackPostPage, requestMakesSenseForUrl } from "../../utils/pageShape";
 import { capturePageFromTab } from "../../utils/pageCapture";
 import { addRequestedPage, getRequestedPages } from "../../utils/settings";
-import { ActionButton, type StatusAction } from "../../components/StatusOverlay";
+import { ActionButton, type StatusAction } from "../../components/ActionButton";
 import { Button, buttonVariants } from "@cn/ui/Button";
 import { STATIC_SITE_HOSTNAME } from "../../utils/staticSites";
-import { useNoteFilters } from "../../components/NoteFilterToggles";
+import { useNoteDisplay } from "../../components/NoteDisplayChoices";
 
 // Requesting notes makes no sense on these pages. They are searches and
 // portals rather than content. Pages that are not http or https are already
@@ -277,9 +277,8 @@ function PriorityButton({ target }: { target: CreatorTarget }) {
   return <ActionButton action={action} />;
 }
 
-/** The popup for the current page leads with the same status sentence the
- *  in-page card shows: how many notes there are, that we found nothing, or
- *  that the page is unchecked. On a page with notes the sentence itself is
+/** The popup for the current page leads with a status sentence: how many
+ *  notes there are, that we found nothing, or that the page is unchecked. On a page with notes the sentence itself is
  *  the link that jumps to them, first enabling the site if the sync has not
  *  registered it yet. Blue buttons are kept for actions only: requesting a
  *  check and following an author. */
@@ -346,7 +345,6 @@ function PrimaryAction({ state, counts, jumped, access }: {
   const postShaped = requestMakesSenseForUrl(pageUrl) && (!substackFeed || isSubstackPostPage(pageUrl));
   const requestable = postShaped && (state.kind === "no_item" || !isWholePageChecked(state.item));
 
-  // The same sentence the in-page card shows, from the same function.
   const noun = state.kind === "item" && extractYoutubeVideoId(state.item.url) ? "video" : "page";
   const statusLine = headline({
     noun,
@@ -375,8 +373,7 @@ function PrimaryAction({ state, counts, jumped, access }: {
         ) : (
           <RequestNoteButton label="Request notes on this page" doneLabel="You requested notes on this page" onLive={setLiveEntry} />
         ))}
-      {/* The press must not depend on catching a transient in-page card, so the
-          popup offers it on covered pages too. */}
+      {/* The popup offers the press on covered pages too. */}
       {authorFeed.kind === "pressable" && <PriorityButton target={authorFeed.target} />}
     </div>
   );
@@ -386,16 +383,16 @@ export function PopupApp() {
   const state = usePageState();
   const jumped = useJumped(state);
   const access = usePageAccess(state);
-  // The filters are edited on the settings page; the popup only reads them to
-  // count the notes the reader would actually see.
-  const [filters] = useNoteFilters();
+  // The display choices are edited on the settings page; the popup only reads
+  // them to count the notes a jump can reach.
+  const [display] = useNoteDisplay();
   // A fresh site should reach this session now, not on the next scheduled tick.
   useEffect(() => {
     void browser.runtime.sendMessage({ type: "cn-sync-noted-sites" }).catch(() => {});
   }, []);
-  // The same tallies the in-page card shows: the status counts report what
-  // exists and ignore the filters, while `visible` is what a jump can reach.
-  const counts = state.kind === "item" && filters ? noteCounts(state.notes, filters) : null;
+  // The status counts report what exists and ignore the display choices,
+  // while `visible` is what a jump can reach.
+  const counts = state.kind === "item" && display ? noteCounts(state.notes, display) : null;
 
   return (
     <div className="p-4 space-y-4 bg-canvas min-h-[120px]">
