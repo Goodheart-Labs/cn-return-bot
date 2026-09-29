@@ -55,7 +55,7 @@ export function NoteNotNeeded({ entries }: {
   const deleteEntry = useDeleteNnn();
   if (entries.length === 0) return null;
   return (
-    <div className="mt-3 pt-2 border-t border-line space-y-4">
+    <div className="mt-4 space-y-4">
       <button
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
