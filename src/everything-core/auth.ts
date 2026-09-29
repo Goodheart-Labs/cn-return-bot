@@ -1,4 +1,4 @@
-import type { AuthChangeEvent, Session, User } from "@supabase/supabase-js";
+import { isAuthRetryableFetchError, type AuthChangeEvent, type Session, type User } from "@supabase/supabase-js";
 import { extensionStorage, readBrowserFlag, setBrowserFlag } from "./extensionStorage";
 import { supabase } from "./supabase";
 
@@ -86,6 +86,35 @@ export async function signedInUser(): Promise<User | null> {
   return data.session?.user ?? null;
 }
 
+/** How long to wait before asking again when a sign-in could not be renewed
+ *  because the server did not answer. */
+const RENEWAL_RETRY_DELAYS_MS = [500, 2_000];
+
+/** Thrown when a stored sign-in exists but could not be renewed because the
+ *  server did not answer. The reader is still signed in, so this must never
+ *  lead to the sign-in form. */
+export class SignInUnreachableError extends Error {
+  constructor() {
+    super("could not renew the sign-in: the server did not answer");
+  }
+}
+
+/** The signed-in user, like signedInUser, for a reader who is about to act.
+ *  An expired access token is renewed inside getSession. When that renewal
+ *  fails because the server did not answer, supabase-js keeps the stored
+ *  sign-in, so the page still shows the reader as signed in, but answers
+ *  this one call with no session. Treating that as signed out opened the
+ *  sign-in form for a signed-in reader. So the renewal is tried again twice,
+ *  and if the server still does not answer this throws instead. */
+async function userForAction(): Promise<User | null> {
+  for (const delay of [0, ...RENEWAL_RETRY_DELAYS_MS]) {
+    if (delay) await new Promise((resolve) => setTimeout(resolve, delay));
+    const { data, error } = await supabase.auth.getSession();
+    if (!isAuthRetryableFetchError(error)) return data.session?.user ?? null;
+  }
+  throw new SignInUnreachableError();
+}
+
 /** Returns the signed-in user, creating an invisible anonymous account when
  *  there is none. Voting and writing notes call this instead of demanding a
  *  sign-in, so a reader can act right away. The anonymous account lives in
@@ -93,9 +122,10 @@ export async function signedInUser(): Promise<User | null> {
  *  sign-in upgrades it in place, keeping the votes and notes. Returns null
  *  when no account may be minted: the browser has signed in before (see
  *  SIGNED_IN_BEFORE_KEY) or the backend refuses; the caller then falls back
- *  to the sign-in form. */
+ *  to the sign-in form. Throws SignInUnreachableError when a stored sign-in
+ *  could not be renewed. */
 export async function ensureUser(): Promise<User | null> {
-  const user = await signedInUser();
+  const user = await userForAction();
   if (user) return user;
   if (await getSignedInBefore()) {
     console.info("[common-notes] not minting an anonymous account: this browser has signed in before");
