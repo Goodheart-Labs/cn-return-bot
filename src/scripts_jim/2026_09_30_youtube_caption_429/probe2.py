@@ -7,7 +7,6 @@ import os
 import subprocess
 import urllib.request
 
-import yt_dlp
 
 PROXY = os.environ.get("YTDLP_PROXY_URL", "").strip()
 NO_TRACKS = ["uuTG3gFHzbE", "bivyc7JmJXM", "v0QqkLJeJqE"]
