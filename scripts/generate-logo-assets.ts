@@ -39,9 +39,11 @@ const LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="12
 `;
 
 // How much of the tile's width the notes take, and how round the tile's
-// corners are, both as shares of the tile. The logo explorer's "White on a
-// blue tile" preset uses the same proportions.
-const MARK_SHARE_OF_TILE = 0.7;
+// corners are, both as shares of the tile. Jim picked the notes' share in the
+// logo explorer with "Fit to canvas" on a backdrop, which leaves 24 of 128
+// units on each side. The explorer's "White on a blue tile" preset uses the
+// same proportions.
+const MARK_SHARE_OF_TILE = 80 / 128;
 const TILE_CORNER_SHARE = 0.22;
 
 /** White notes on a blue tile, on the glyph's 24 unit grid. `cornerShare` 0
