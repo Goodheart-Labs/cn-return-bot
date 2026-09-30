@@ -1,6 +1,7 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchItemForUrl } from "@cn/core/items";
+import { readRoute } from "./lib/routing";
 import { fetchCheckedClaimsForItem, type CheckedClaim } from "@cn/core/claims";
 import type { NoteRow } from "@cn/core/types";
 import { buttonVariants } from "@cn/ui/Button";
@@ -54,9 +55,10 @@ function countLine(claims: CheckedClaim[], notes: number): string {
 
 export function ArticleReader() {
   const [search, setSearch] = useState(window.location.search);
-  const query = new URLSearchParams(search);
-  const source = articleUrl(query.get("url"));
-  const full = articleUrl(query.get("full"));
+  const route = readRoute(window.location.pathname, search);
+  const source = articleUrl(route.view === "read" ? route.url : null);
+  const fullParam = route.view === "read" ? route.full : null;
+  const full = articleUrl(fullParam);
 
   useEffect(() => {
     const sync = () => setSearch(window.location.search);
@@ -68,7 +70,7 @@ export function ArticleReader() {
     <div className="article-reader">
       <main className="reader-shell">
         {source ? <ArticleEdition key={source} source={source} scope="main" /> : <div className="reader-notice"><h1>Choose an article to read</h1><p>Add a valid article URL with ?url= to this page’s address.</p></div>}
-        {query.has("full") && <section className="reader-full" aria-label="The full text">
+        {fullParam !== null && <section className="reader-full" aria-label="The full text">
           {full ? <ArticleEdition key={full} source={full} scope="full" /> : <p className="reader-notice">The full text URL must be an HTTP or HTTPS address.</p>}
         </section>}
       </main>
@@ -100,10 +102,7 @@ function selectionInPassage(): { blockId: string; text: string } | null {
 }
 
 function scrollNoteIntoView(noteId: string, scope: string) {
-  const card = document.getElementById(`${scope}-note-${noteId}`);
-  const margin = card?.closest(".reader-margin-sticky");
-  if (card && margin) margin.scrollTop += card.getBoundingClientRect().top - margin.getBoundingClientRect().top;
-  else card?.scrollIntoView({ block: "nearest" });
+  document.getElementById(`${scope}-note-${noteId}`)?.scrollIntoView({ block: "nearest" });
 }
 
 function ArticleEdition({ source, scope }: { source: string; scope: string }) {
@@ -142,7 +141,7 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
   const [composer, setComposer] = useState<ReaderAnchor | null>(null);
   const appliedLink = useRef<string | null>(null);
   const marginRef = useRef<HTMLElement>(null);
-  const [marginOffset, setMarginOffset] = useState(0);
+  const marginObserver = useRef<ResizeObserver | null>(null);
   const reveal = useRef<string | null>(null);
 
   useEffect(() => {
@@ -167,19 +166,44 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
   const noteable = useMemo(() => new Set(blocks.filter((block) => anchorForSelection(block, block.text)).map((block) => block.id)), [blocks]);
   const headings = blocks.filter((block) => block.kind === "heading");
   const minutes = Math.max(1, Math.ceil((articleText?.split(/\s+/).length ?? 0) / 230));
-  const activeNotes = selectedBlock === "unanchored" ? unanchored : byBlock.get(selectedBlock ?? "") ?? [];
+  const marginGroups = useMemo(() => {
+    const ids = blocks.map((block) => block.id).filter((id) => byBlock.get(id)?.length || highlightBlocks.byBlock.get(id)?.length || asking?.blockId === id);
+    if (unanchored.length || highlightBlocks.unanchored.length) ids.push("unanchored");
+    return ids;
+  }, [blocks, byBlock, highlightBlocks, unanchored, asking]);
 
-  // The open passage's notes start level with that passage, then stick to the top as the reader scrolls on.
+  // Every passage's notes sit level with the passage, as margin comments do, and a group that would
+  // overlap the one above moves down below it. Positions are written straight to the DOM because they
+  // depend on rendered heights, which change as fonts load, cards expand or answers arrive.
+  const layoutMargin = useCallback(() => {
+    const margin = marginRef.current;
+    if (!margin) return;
+    const base = margin.getBoundingClientRect().top;
+    let floor = 0;
+    for (const group of margin.querySelectorAll<HTMLElement>("[data-margin-for]")) {
+      const passage = document.getElementById(group.dataset.marginFor ?? "");
+      const top = Math.max(passage ? passage.getBoundingClientRect().top - base : floor, floor);
+      group.style.top = `${top}px`;
+      floor = top + group.offsetHeight + 16;
+    }
+    margin.style.minHeight = `${floor}px`;
+  }, []);
+
   useLayoutEffect(() => {
-    const align = () => {
-      const margin = marginRef.current;
-      const passage = selectedBlock && document.getElementById(selectedBlock === "unanchored" ? unanchoredId : selectedBlock);
-      setMarginOffset(margin && passage ? Math.max(0, passage.getBoundingClientRect().top - margin.getBoundingClientRect().top) : 0);
+    layoutMargin();
+    const observer = marginObserver.current ??= new ResizeObserver(() => layoutMargin());
+    const article = document.getElementById(articleId);
+    if (article) observer.observe(article);
+    marginRef.current?.querySelectorAll("[data-margin-for]").forEach((group) => observer.observe(group));
+  });
+
+  useEffect(() => {
+    window.addEventListener("resize", layoutMargin);
+    return () => {
+      window.removeEventListener("resize", layoutMargin);
+      marginObserver.current?.disconnect();
     };
-    align();
-    window.addEventListener("resize", align);
-    return () => window.removeEventListener("resize", align);
-  }, [selectedBlock, wide, showNotes, unanchoredId]);
+  }, [layoutMargin]);
 
   useEffect(() => {
     const update = () => {
@@ -344,9 +368,12 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
                   {showNotes && (unanchored.length > 0 || highlightBlocks.unanchored.length > 0) && <section id={unanchoredId} className="reader-unanchored"><h2>More on this article</h2><p>These entries refer to passages we couldn’t match to this copy of the text.</p><button className="reader-note-trigger" aria-expanded={selectedBlock === "unanchored"} onClick={() => setSelectedBlock(selectedBlock === "unanchored" ? null : "unanchored")}>View {plural(unanchored.length, "note")} and {plural(highlightBlocks.unanchored.length, "highlight")}</button>{!wide && selectedBlock === "unanchored" && <div className="reader-inline-notes">{renderNotes(unanchored)}{renderPassageExtras("unanchored")}</div>}</section>}
                   <div className="reader-source-credit"><OriginalLink url={original} /></div>
                 </article>
-                {wide && showNotes && <aside id={marginId} ref={marginRef} className="reader-margin" aria-label="Common Notes on the selected passage"><div className="reader-margin-sticky" style={{ marginTop: marginOffset }}>{selectedBlock
-                  ? <><div className="reader-margin-heading"><h2>Common Notes</h2><button aria-label="Close passage notes" onClick={() => setSelectedBlock(null)}>×</button></div><div className="reader-margin-cards">{renderNotes(activeNotes)}{renderPassageExtras(selectedBlock)}</div></>
-                  : <p className="reader-margin-empty">{marginMessage}</p>}</div></aside>}
+                {wide && showNotes && <aside id={marginId} ref={marginRef} className="reader-margin" aria-label="Common Notes beside the article">
+                  {marginGroups.length === 0 && <p className="reader-margin-empty">{marginMessage}</p>}
+                  {marginGroups.map((id) => <div key={id} data-margin-for={id === "unanchored" ? unanchoredId : id} className="reader-margin-group">
+                    {renderNotes(id === "unanchored" ? unanchored : byBlock.get(id) ?? [])}{renderPassageExtras(id)}
+                  </div>)}
+                </aside>}
               </div>
             </>}
 

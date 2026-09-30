@@ -138,7 +138,7 @@ export function ReaderHighlights({ highlights, onChanged }: { highlights: Passag
   return <>{highlights.map((highlight) => <section className="reader-highlight-card" key={highlight.id}>
     <p>{highlightSentence(highlight)}</p>
     <p className="reader-highlight-author">{highlight.author_name || "Anonymous reader"}</p>
-    <VoteRatings helpful={highlight.helpful_count} somewhatHelpful={highlight.somewhat_helpful_count} notHelpful={highlight.not_helpful_count} myVote={votes.data?.get(highlight.id)} onVote={(vote) => void change(async () => {
+    <VoteRatings spelledOut helpful={highlight.helpful_count} somewhatHelpful={highlight.somewhat_helpful_count} notHelpful={highlight.not_helpful_count} myVote={votes.data?.get(highlight.id)} onVote={(vote) => void change(async () => {
       const user = await ensureUser();
       if (!user) { setLogin(true); return; }
       await voteOnHighlight(highlight.id, user.id, votes.data?.get(highlight.id) === vote ? null : vote);

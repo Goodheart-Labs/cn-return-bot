@@ -30,6 +30,12 @@ describe("routing", () => {
     expect(readRoute("/notes/zvi/", "")).toEqual({ view: "notes", project: "zvi", item: null, note: null });
   });
 
+  test("a reading edition's short address opens its article and full text", () => {
+    const route = readRoute("/white-house-accord", "");
+    expect(route).toMatchObject({ view: "read", url: "https://truthsocial.com/@realDonaldTrump/117356435739432952" });
+    expect(route.view === "read" && route.full).toContain("whitehouse.gov");
+  });
+
   test("old query-parameter links still open their page", () => {
     expect(readRoute("/", "?view=notes")).toEqual({ view: "notes", project: null, item: null, note: null });
     expect(readRoute("/", "?project=zvi&episode=item-1&note=n-1")).toEqual({ view: "notes", project: "zvi", item: "item-1", note: "n-1" });
