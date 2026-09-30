@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchItemForUrl } from "@cn/core/items";
 import { fetchCheckedClaimsForItem, type CheckedClaim } from "@cn/core/claims";
@@ -141,6 +141,8 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
   const [selection, setSelection] = useState<{ blockId: string; text: string } | null>(null);
   const [composer, setComposer] = useState<ReaderAnchor | null>(null);
   const appliedLink = useRef<string | null>(null);
+  const marginRef = useRef<HTMLElement>(null);
+  const [marginOffset, setMarginOffset] = useState(0);
   const reveal = useRef<string | null>(null);
 
   useEffect(() => {
@@ -166,6 +168,18 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
   const headings = blocks.filter((block) => block.kind === "heading");
   const minutes = Math.max(1, Math.ceil((articleText?.split(/\s+/).length ?? 0) / 230));
   const activeNotes = selectedBlock === "unanchored" ? unanchored : byBlock.get(selectedBlock ?? "") ?? [];
+
+  // The open passage's notes start level with that passage, then stick to the top as the reader scrolls on.
+  useLayoutEffect(() => {
+    const align = () => {
+      const margin = marginRef.current;
+      const passage = selectedBlock && document.getElementById(selectedBlock === "unanchored" ? unanchoredId : selectedBlock);
+      setMarginOffset(margin && passage ? Math.max(0, passage.getBoundingClientRect().top - margin.getBoundingClientRect().top) : 0);
+    };
+    align();
+    window.addEventListener("resize", align);
+    return () => window.removeEventListener("resize", align);
+  }, [selectedBlock, wide, showNotes, unanchoredId]);
 
   useEffect(() => {
     const update = () => {
@@ -330,7 +344,7 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
                   {showNotes && (unanchored.length > 0 || highlightBlocks.unanchored.length > 0) && <section id={unanchoredId} className="reader-unanchored"><h2>More on this article</h2><p>These entries refer to passages we couldn’t match to this copy of the text.</p><button className="reader-note-trigger" aria-expanded={selectedBlock === "unanchored"} onClick={() => setSelectedBlock(selectedBlock === "unanchored" ? null : "unanchored")}>View {plural(unanchored.length, "note")} and {plural(highlightBlocks.unanchored.length, "highlight")}</button>{!wide && selectedBlock === "unanchored" && <div className="reader-inline-notes">{renderNotes(unanchored)}{renderPassageExtras("unanchored")}</div>}</section>}
                   <div className="reader-source-credit"><OriginalLink url={original} /></div>
                 </article>
-                {wide && showNotes && <aside id={marginId} className="reader-margin" aria-label="Common Notes on the selected passage"><div className="reader-margin-sticky">{selectedBlock
+                {wide && showNotes && <aside id={marginId} ref={marginRef} className="reader-margin" aria-label="Common Notes on the selected passage"><div className="reader-margin-sticky" style={{ marginTop: marginOffset }}>{selectedBlock
                   ? <><div className="reader-margin-heading"><h2>Common Notes</h2><button aria-label="Close passage notes" onClick={() => setSelectedBlock(null)}>×</button></div><div className="reader-margin-cards">{renderNotes(activeNotes)}{renderPassageExtras(selectedBlock)}</div></>
                   : <p className="reader-margin-empty">{marginMessage}</p>}</div></aside>}
               </div>
