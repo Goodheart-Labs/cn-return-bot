@@ -81,7 +81,7 @@ export default defineConfig({
     ...(browser === "safari" ? { browser_specific_settings: { safari: { strict_min_version: "18.0" } } } : {}),
   }),
   hooks: {
-    "build:manifestGenerated": (_wxt, manifest) => {
+    "build:manifestGenerated": (wxt, manifest) => {
       // The generic content script is injected at runtime on origins we do not know
       // in advance, so WXT cannot work out which matches its stylesheet needs. It
       // emits an empty list, and that would stop the shadow-root UI from fetching
@@ -91,6 +91,9 @@ export default defineConfig({
         if (typeof resource === "object" && "resources" in resource && RUNTIME_INJECTED_CSS.some((css) => resource.resources.includes(css))) {
           resource.matches = ["<all_urls>"];
         }
+        // Safari does not know use_dynamic_url, and Apple's converter warns
+        // about it. WXT adds the key for every browser.
+        if (wxt.config.browser === "safari" && typeof resource === "object") delete resource.use_dynamic_url;
       }
     },
   },
