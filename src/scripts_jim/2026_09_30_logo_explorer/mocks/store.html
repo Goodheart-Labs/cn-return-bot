@@ -1,0 +1,240 @@
+<style>
+  /* The store inlines these Google Sans rules in its own page. One variable
+     font file serves all three weights. */
+  @font-face {
+    font-family: "Google Sans";
+    font-style: normal;
+    font-weight: 400;
+    src: url(https://fonts.gstatic.com/s/googlesans/v62/4UaRrENHsxJlGDuGo1OIlJfC6l_24rlCK1Yo_Iq2vgCIhM907w.woff2) format("woff2");
+  }
+  @font-face {
+    font-family: "Google Sans";
+    font-style: normal;
+    font-weight: 500;
+    src: url(https://fonts.gstatic.com/s/googlesans/v62/4UaRrENHsxJlGDuGo1OIlJfC6l_24rlCK1Yo_Iq2vgCIhM907w.woff2) format("woff2");
+  }
+  @font-face {
+    font-family: "Google Sans";
+    font-style: normal;
+    font-weight: 700;
+    src: url(https://fonts.gstatic.com/s/googlesans/v62/4UaRrENHsxJlGDuGo1OIlJfC6l_24rlCK1Yo_Iq2vgCIhM907w.woff2) format("woff2");
+  }
+  /* The store loads Google Sans Text from fonts.googleapis.com
+     (family "Google Sans Text_old"). These are the Latin files that
+     stylesheet points to. Only the two button labels use this family. */
+  @font-face {
+    font-family: "Google Sans Text";
+    font-style: normal;
+    font-weight: 400;
+    src: url(https://fonts.gstatic.com/s/googlesanstext/v22/5aUu9-KzpRiLCAt4Unrc-xIKmCU5qEp2i0VBuxM.woff2) format("woff2");
+  }
+  @font-face {
+    font-family: "Google Sans Text";
+    font-style: normal;
+    font-weight: 500;
+    src: url(https://fonts.gstatic.com/s/googlesanstext/v22/5aUp9-KzpRiLCAt4Unrc-xIKmCU5oLlVnmhjtjm4DZw.woff2) format("woff2");
+  }
+
+  .mock-store {
+    --bg: rgb(255, 255, 255);
+    --fg: rgb(31, 31, 31);
+    --link: rgb(11, 87, 208);
+    --chip-bg: rgb(240, 244, 249);
+    --add-bg: rgb(11, 87, 208);
+    --add-fg: rgb(255, 255, 255);
+
+    box-sizing: border-box;
+    padding: 24px 104px;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: "Google Sans", Roboto, Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    letter-spacing: normal;
+    text-align: left;
+    -webkit-font-smoothing: antialiased;
+  }
+  .mock-store[data-theme="dark"] {
+    --bg: rgb(19, 19, 20);
+    --fg: rgb(227, 227, 227);
+    --link: rgb(168, 199, 250);
+    --chip-bg: rgb(30, 31, 32);
+    --add-bg: rgb(168, 199, 250);
+    --add-fg: rgb(6, 46, 111);
+  }
+  .mock-store *,
+  .mock-store *::before,
+  .mock-store *::after {
+    box-sizing: border-box;
+  }
+  .mock-store a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .mock-store button {
+    border: 0;
+    background: none;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+  }
+  .mock-store svg {
+    display: block;
+    flex: none;
+    fill: currentColor;
+  }
+
+  .mock-store .listing {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "logo title install"
+      "rating rating rating"
+      "chips chips chips";
+    gap: 12px 16px;
+    max-width: 1072px;
+    margin: 0 auto;
+  }
+
+  .mock-store .logo-slot {
+    grid-area: logo;
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    flex: none;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .mock-store .logo-slot img {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .mock-store .title {
+    grid-area: title;
+    align-self: center;
+    margin: 0;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 41px;
+  }
+
+  .mock-store .install {
+    grid-area: install;
+    min-width: 192px;
+    padding-top: 6px;
+    text-align: right;
+  }
+  .mock-store .add-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    margin: 4px 0;
+    padding: 0 24px;
+    border-radius: 20px;
+    background: var(--add-bg);
+    color: var(--add-fg);
+    font-family: "Google Sans Text", "Google Sans", Roboto, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 24px;
+  }
+
+  .mock-store .rating-row {
+    grid-area: rating;
+    display: flex;
+    align-items: center;
+    height: 48px;
+    margin-top: 4px;
+  }
+  .mock-store .rating-value {
+    margin-right: 2px;
+    font-weight: 500;
+  }
+  .mock-store .rating-count {
+    margin-left: 3px;
+  }
+  .mock-store .rating-count a {
+    color: var(--link);
+  }
+  .mock-store .info-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 10px;
+    border-radius: 20px;
+  }
+  .mock-store .share-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    padding: 0 16px 0 12px;
+    border-radius: 20px;
+    color: var(--link);
+    font-family: "Google Sans Text", "Google Sans", Roboto, Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+  }
+  .mock-store .share-button svg {
+    margin-right: 8px;
+  }
+
+  .mock-store .chip-row {
+    grid-area: chips;
+    display: flex;
+    align-items: center;
+    height: 36px;
+    font-size: 14px;
+    line-height: 20px;
+  }
+  .mock-store .chip {
+    margin-right: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: var(--chip-bg);
+  }
+  .mock-store .chip:last-of-type {
+    margin-right: 12px;
+  }
+</style>
+<div class="mock-store">
+  <div class="listing">
+    <span class="logo-slot" data-px="60"></span>
+    <h1 class="title">Common Notes</h1>
+    <div class="install">
+      <button type="button" class="add-button">Hinzufügen</button>
+    </div>
+
+    <div class="rating-row">
+      <span class="rating-value">4,0</span>
+      <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z" />
+      </svg>
+      <span class="rating-count">(<a href="#">1 Bewertung</a>)</span>
+      <button type="button" class="info-button" aria-label="Info">
+        <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z" />
+        </svg>
+      </button>
+      <button type="button" class="share-button">
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M18 16c-.79 0-1.5.31-2.03.81L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.53.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.48.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.05 4.12c-.05.22-.09.45-.09.69 0 1.66 1.34 3 3 3s3-1.34 3-3-1.34-3-3-3zm0-12c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM6 13c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm12 7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z" />
+        </svg>
+        Teilen
+      </button>
+    </div>
+
+    <div class="chip-row">
+      <a class="chip" href="#">Erweiterung</a>
+      <a class="chip" href="#">Lernen</a>
+      44 Nutzer
+    </div>
+  </div>
+</div>

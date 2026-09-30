@@ -1,0 +1,140 @@
+<style>
+  .mock-site {
+    --surface: rgb(255, 255, 255);
+    --line: rgb(229, 231, 235);
+    --fg: rgb(17, 24, 39);
+    --fg-secondary: rgb(75, 85, 99);
+    --control-line: rgb(209, 213, 219);
+    --primary: rgb(37, 99, 235);
+    --on-primary: rgb(255, 255, 255);
+    --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-title: "SF Pro Display", -apple-system-headline, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+    box-sizing: border-box;
+    background: var(--surface);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    letter-spacing: normal;
+    text-align: left;
+  }
+  .mock-site[data-theme="dark"] {
+    --surface: rgb(17, 24, 39);
+    --line: rgb(55, 65, 81);
+    --fg: rgb(243, 244, 246);
+    --fg-secondary: rgb(209, 213, 219);
+    --control-line: rgb(75, 85, 99);
+  }
+  .mock-site *,
+  .mock-site *::before,
+  .mock-site *::after {
+    box-sizing: border-box;
+  }
+  .mock-site a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .mock-site .bar {
+    border-bottom: 1px solid var(--line);
+    background: var(--surface);
+  }
+  .mock-site .bar-inner {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    max-width: 1536px;
+    height: 56px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  .mock-site .brand {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-title);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 28px;
+    white-space: nowrap;
+  }
+  .mock-site .logo-slot {
+    display: inline-block;
+    width: 26px;
+    height: 26px;
+    flex: none;
+  }
+  .mock-site .logo-slot img {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .mock-site .nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .mock-site .nav a {
+    color: var(--fg-secondary);
+    font-weight: 500;
+  }
+  .mock-site .nav a[aria-current="page"] {
+    color: var(--fg);
+  }
+
+  .mock-site .actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+  }
+  .mock-site .button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .mock-site .button-outline {
+    border: 1px solid var(--control-line);
+    color: var(--fg);
+  }
+  .mock-site .button-primary {
+    background: var(--primary);
+    color: var(--on-primary);
+  }
+
+  /* A strip of the page below the header. The real page continues in the
+     same surface colour. */
+  .mock-site .page-strip {
+    height: 64px;
+    background: var(--surface);
+  }
+</style>
+<div class="mock-site">
+  <header class="bar">
+    <div class="bar-inner">
+      <a class="brand" href="#">
+        <span class="logo-slot" data-px="26"></span>
+        Common Notes
+      </a>
+      <nav class="nav" aria-label="Main">
+        <a href="#" aria-current="page">Home</a>
+        <a href="#">Notes</a>
+        <a href="#">Leaderboard</a>
+      </nav>
+      <div class="actions">
+        <a class="button button-outline" href="#">Sign in</a>
+        <a class="button button-primary" href="#">Get the extension</a>
+      </div>
+    </div>
+  </header>
+  <div class="page-strip"></div>
+</div>
