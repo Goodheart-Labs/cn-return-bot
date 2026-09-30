@@ -2,6 +2,7 @@
  * is selected, and previews of how each looks where it will be used. */
 
 import { renderControls } from "./controls.js";
+import { element, segments } from "./dom.js";
 import { CANDIDATES, composeSvg, fitPlacement } from "./logos.js";
 import { contexts, loadMocks } from "./previews.js";
 
@@ -35,17 +36,6 @@ const VIEWS = [
 
 const byId = (id) => document.getElementById(id);
 const candidateById = (id) => CANDIDATES.find((candidate) => candidate.id === id);
-
-function element(tag, attributes = {}, children = []) {
-  const node = document.createElement(tag);
-  for (const [name, value] of Object.entries(attributes)) {
-    if (name === "text") node.textContent = value;
-    else if (name in node) node[name] = value;
-    else node.setAttribute(name, value);
-  }
-  node.append(...children);
-  return node;
-}
 
 // ---------------------------------------------------------------------------
 // State. It lives in this browser's storage, so a reload keeps the sliders.
@@ -111,6 +101,13 @@ function drawCandidate(candidate) {
   };
 }
 
+async function loadImage(svg) {
+  const image = new Image();
+  image.src = dataUrl(svg);
+  await image.decode();
+  return image;
+}
+
 /** An image of a candidate that follows the sliders. */
 function logoImage(candidateId, pixels, variant = "plain") {
   const image = element("img", { className: "logo-image", alt: "", width: pixels, height: pixels, src: dataUrl(svgs[candidateId][variant]) });
@@ -133,9 +130,7 @@ function refreshStage() {
 /** Paints the icon into a canvas of exactly `pixels` by `pixels`. The canvas
  *  is shown enlarged with hard edges, so each square is one real pixel. */
 async function refreshZooms() {
-  const image = new Image();
-  image.src = dataUrl(svgs[state.selected].plain);
-  await image.decode();
+  const image = await loadImage(svgs[state.selected].plain);
   for (const canvas of document.querySelectorAll("canvas.zoom")) {
     const context = canvas.getContext("2d");
     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -243,16 +238,6 @@ function select(candidateId) {
 // The three views in the middle.
 // ---------------------------------------------------------------------------
 
-function segments(options, current, choose) {
-  const buttons = options.map(([value, label]) => {
-    const button = element("button", { type: "button", className: "segment", text: label });
-    button.setAttribute("aria-pressed", String(value === current));
-    button.addEventListener("click", () => choose(value));
-    return button;
-  });
-  return element("div", { className: "segments" }, buttons);
-}
-
 function checkbox(label, checked, change) {
   const box = element("input", { type: "checkbox", checked });
   box.addEventListener("change", () => change(box.checked));
@@ -275,8 +260,8 @@ function stageCard() {
   stage.dataset.background = state.stageBackground;
   const backgrounds = segments(STAGE_BACKGROUNDS, state.stageBackground, (value) => {
     state.stageBackground = value;
+    stage.dataset.background = value;
     persist();
-    renderView();
   });
   const guides = checkbox("Construction lines", state.showGuides, (checked) => {
     state.showGuides = checked;
@@ -358,7 +343,6 @@ function renderTabs() {
   const tabs = segments(VIEWS, state.view, (view) => {
     state.view = view;
     persist();
-    renderTabs();
     renderView();
   });
   byId("tabs").replaceChildren(tabs);
@@ -375,11 +359,8 @@ function download(name, href) {
 }
 
 async function pngUrl(svg, pixels) {
-  const image = new Image();
-  image.src = dataUrl(svg);
-  await image.decode();
   const canvas = element("canvas", { width: pixels, height: pixels });
-  canvas.getContext("2d").drawImage(image, 0, 0, pixels, pixels);
+  canvas.getContext("2d").drawImage(await loadImage(svg), 0, 0, pixels, pixels);
   return canvas.toDataURL("image/png");
 }
 
@@ -467,7 +448,7 @@ function saveSnapshot() {
   );
 }
 
-const EXPORT_ACTIONS = {
+const BUTTON_ACTIONS = {
   "copy-svg": async () => {
     await navigator.clipboard.writeText(svgs[state.selected].plain);
     setStatus("SVG copied.");
@@ -480,13 +461,13 @@ const EXPORT_ACTIONS = {
   },
   "paste-settings": pasteSettings,
   "save-snapshot": saveSnapshot,
-  "fit": () => setValues(fitPlacement(selectedCandidate(), selectedValues())),
+  fit: () => setValues(fitPlacement(selectedCandidate(), selectedValues())),
   "reset-all": () => setValues(selectedCandidate().defaults),
 };
 
 function wireButtons() {
   for (const button of document.querySelectorAll("[data-action]")) {
-    button.addEventListener("click", () => EXPORT_ACTIONS[button.dataset.action]());
+    button.addEventListener("click", () => BUTTON_ACTIONS[button.dataset.action]());
   }
 }
 

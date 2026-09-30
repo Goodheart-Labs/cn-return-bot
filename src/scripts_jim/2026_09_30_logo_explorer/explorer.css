@@ -466,6 +466,12 @@ canvas.zoom {
   pointer-events: none;
 }
 
+/* The browser window is the exception: its point is the toolbar button at
+   the right end, so it shrinks to fit instead. */
+.compare-grid .context-frame.context-chrome > * {
+  min-width: 0;
+}
+
 .compare-grid .context-frame .mock-store {
   padding-left: 20px;
 }
@@ -503,6 +509,7 @@ canvas.zoom {
   gap: 2px;
   height: 42px;
   padding: 0 12px;
+  overflow: hidden;
 }
 
 .chrome-lights {
@@ -529,9 +536,10 @@ canvas.zoom {
 
 .chrome-tab {
   display: flex;
+  flex: 0 1 240px;
+  min-width: 0;
   align-items: center;
   gap: 8px;
-  width: 240px;
   height: 34px;
   padding: 0 12px;
   border-radius: 10px 10px 0 0;
@@ -577,6 +585,9 @@ canvas.zoom {
 
 .chrome-address {
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
   height: 34px;
   padding: 0 16px;
   border-radius: 17px;

@@ -167,10 +167,10 @@ const BUBBLE = {
   width: 100,
   height: 74,
   radius: 20,
-  tailPosition: 0.24,
-  tailWidth: 26,
-  tailLength: 20,
-  tailLean: -0.45,
+  tailPosition: 0.26,
+  tailWidth: 22,
+  tailLength: 19,
+  tailLean: -0.5,
   tailRound: 2.5,
   color: BLUE,
 };
@@ -268,7 +268,7 @@ const stripedBubble = {
 // 2 and 3. Two bubbles that overlap.
 // ---------------------------------------------------------------------------
 
-const PAIR_BUBBLE = { ...BUBBLE, width: 70, height: 54, radius: 17, tailWidth: 20, tailLength: 15, tailPosition: 0.26 };
+const PAIR_BUBBLE = { ...BUBBLE, width: 70, height: 54, radius: 17, tailWidth: 16, tailLength: 14, tailPosition: 0.17 };
 const PAIR_DEFAULTS = {
   ...prefixed("a", { ...PAIR_BUBBLE, x: 49, y: 50, rotation: -9, color: GREEN }),
   ...prefixed("b", { ...PAIR_BUBBLE, x: 79, y: 67, rotation: 9, flipH: true, color: RED }),

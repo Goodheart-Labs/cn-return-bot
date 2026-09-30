@@ -1,15 +1,6 @@
 /* Builds the control panel for one candidate from its list of controls. */
 
-const element = (tag, attributes = {}, children = []) => {
-  const node = document.createElement(tag);
-  for (const [name, value] of Object.entries(attributes)) {
-    if (name === "text") node.textContent = value;
-    else if (name in node) node[name] = value;
-    else node.setAttribute(name, value);
-  }
-  node.append(...children);
-  return node;
-};
+import { element, segments } from "./dom.js";
 
 const closedSections = new Set();
 
@@ -50,19 +41,6 @@ function toggleRow(value, change) {
   return [box];
 }
 
-function selectRow(control, value, change) {
-  const buttons = control.options.map(([optionValue, optionLabel]) => {
-    const button = element("button", { type: "button", text: optionLabel, className: "segment" });
-    button.setAttribute("aria-pressed", String(optionValue === value));
-    button.addEventListener("click", () => {
-      for (const other of buttons) other.setAttribute("aria-pressed", String(other === button));
-      change(optionValue);
-    });
-    return button;
-  });
-  return [element("div", { className: "segments" }, buttons)];
-}
-
 function controlRow(control, values, defaults, handlers) {
   if (control.type === "action") {
     const button = element("button", { type: "button", className: "action", text: control.label });
@@ -78,7 +56,7 @@ function controlRow(control, values, defaults, handlers) {
   };
   const value = values[control.key];
   const inputs =
-    control.type === "range" ? rangeRow(control, value, change) : control.type === "color" ? colorRow(value, change) : control.type === "toggle" ? toggleRow(value, change) : selectRow(control, value, change);
+    control.type === "range" ? rangeRow(control, value, change) : control.type === "color" ? colorRow(value, change) : control.type === "toggle" ? toggleRow(value, change) : [segments(control.options, value, change)];
   reset.addEventListener("click", () => handlers.onReset(control.key));
   markChanged(value);
   row.append(element("span", { className: "row-label", text: control.label }), ...inputs, reset);

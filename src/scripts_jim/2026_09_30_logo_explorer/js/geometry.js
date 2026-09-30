@@ -69,16 +69,20 @@ export function bubbleShape(bubble) {
   const radius = Math.min(bubble.radius, width / 2, height / 2);
   let shape = roundedRect(-width / 2, -height / 2, width, height, radius);
   if (bubble.tailLength > 0 && bubble.tailWidth > 0) {
-    // The tail's base sits where the bottom corners start to curve. At that
-    // height the body spans its full width, so the base is inside the body
-    // wherever the tail is placed, even under a corner.
-    const baseY = height / 2 - radius;
+    // The tail is `tailWidth` wide where it leaves the bottom edge. Its two
+    // sides are carried on upwards into the body, to the height where the
+    // bottom corners start to curve. At that height the body spans its full
+    // width, so the tail joins the body wherever it is placed, even under a
+    // corner.
     const centerX = -width / 2 + bubble.tailPosition * width;
-    const clampX = (x) => Math.max(-width / 2, Math.min(width / 2, x));
-    const baseLeft = new paper.Point(clampX(centerX - bubble.tailWidth / 2), baseY);
-    const baseRight = new paper.Point(clampX(centerX + bubble.tailWidth / 2), baseY);
     const tip = new paper.Point(centerX + bubble.tailLean * bubble.tailLength, height / 2 + bubble.tailLength);
-    shape = shape.unite(tailShape(baseLeft, baseRight, tip, bubble.tailRound));
+    const reach = (bubble.tailLength + radius) / bubble.tailLength;
+    const intoBody = (edgeX) => {
+      const inside = tip.add(new paper.Point(edgeX, height / 2).subtract(tip).multiply(reach));
+      return new paper.Point(Math.max(-width / 2, Math.min(width / 2, inside.x)), inside.y);
+    };
+    const tail = tailShape(intoBody(centerX - bubble.tailWidth / 2), intoBody(centerX + bubble.tailWidth / 2), tip, bubble.tailRound);
+    shape = shape.unite(tail);
   }
   shape.transform(bubbleMatrix(bubble));
   return shape;
