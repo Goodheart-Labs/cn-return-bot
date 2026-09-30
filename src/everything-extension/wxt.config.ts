@@ -42,7 +42,11 @@ export default defineConfig({
     version: "0.3.1",
     name: "Common Notes",
     description: "Community Notes Everywhere",
-    icons: { 16: "icon/16.png", 32: "icon/32.png", 48: "icon/48.png", 128: "icon/128.png" },
+    // Chrome and Firefox draw the 16 and 32 pixel icons beside our entries in
+    // the right-click menu. Those two are blue notes on a white tile, which
+    // read on a light and on a dark menu alike. See
+    // scripts/generate-logo-assets.ts.
+    icons: { 16: "icon/menu-16.png", 32: "icon/menu-32.png", 48: "icon/48.png", 128: "icon/128.png" },
     // The toolbar icon follows the browser's light or dark mode, see
     // utils/toolbarIcon.ts. Firefox picks between the two icons itself. The
     // Firefox build is Manifest V2, where the key is browser_action. Firefox
