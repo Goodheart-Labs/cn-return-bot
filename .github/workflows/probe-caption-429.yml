@@ -13,11 +13,6 @@ jobs:
       YTDLP_PROXY_URL: ${{ secrets.YTDLP_PROXY_URL }}
     steps:
       - uses: actions/checkout@v4
-      - name: Start the PO token provider
-        run: |
-          docker run -d --name pot-provider -p 127.0.0.1:4416:4416 brainicism/bgutil-ytdlp-pot-provider:2.0.0
-          for attempt in $(seq 1 20); do curl -fsS -m 5 http://127.0.0.1:4416/ping && exit 0; sleep 2; done; exit 1
-      - name: Install yt-dlp with impersonation
-        run: python3 -m venv v && v/bin/pip install -q "yt-dlp[default,curl-cffi]"
+      - uses: ./.github/actions/setup-youtube-captions
       - name: Probe
-        run: v/bin/python src/scripts_jim/2026_09_30_youtube_caption_429/probe.py
+        run: python3 src/scripts_jim/2026_09_30_youtube_caption_429/probe2.py
