@@ -23,7 +23,7 @@ else
   SIGNING=(CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=)
 fi
 
-xcodebuild -project "Common Notes.xcodeproj" -scheme "Common Notes" -configuration Debug \
+xcodebuild -project "Common Notes.xcodeproj" -scheme "Common Notes" -configuration Debug -destination "generic/platform=macOS" \
   -derivedDataPath build MARKETING_VERSION="$VERSION" "${SIGNING[@]}" -quiet build
 
 echo "$PWD/build/Build/Products/Debug/Common Notes.app"
