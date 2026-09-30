@@ -95,3 +95,8 @@ describe("consumeNoteRequest", () => {
     expect(dbState.calls.insertItemRun).toBeUndefined();
   });
 });
+
+test("a new steered request preserves the steer beside the queued passage", async () => {
+  await consumeNoteRequest(request({ selection: "A bridge opened in 1932.", steer: "the opening date" }) as never);
+  expect(dbState.calls.insertQueuedItem?.[0]?.[0]).toMatchObject({ request_steer: "the opening date", full_text: "A bridge opened in 1932.", checked_scope: "paragraph" });
+});

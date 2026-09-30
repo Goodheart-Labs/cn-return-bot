@@ -10,6 +10,8 @@ import { capturePageview } from "./analytics";
  *   /notes/<slug>         one project
  *   /notes/<slug>/<item>  one post or video of a project
  *   /leaderboard          the rating leaderboard
+ *   /read?url=<article>   one article with its notes in the margin; &full=<url>
+ *                         adds the article's full text below it
  * A link to one note adds ?note=<id> to its project's path. The static pages
  * /privacy/ and /terms/ sit beside the app.
  *
@@ -29,7 +31,8 @@ import { capturePageview } from "./analytics";
 export type Route =
   | { view: "home"; section: "install" | null }
   | { view: "notes"; project: string | null; item: string | null; note: string | null }
-  | { view: "leaderboard" };
+  | { view: "leaderboard" }
+  | { view: "read"; url: string | null; full: string | null };
 
 export const HOME: Route = { view: "home", section: null };
 export const INSTALL: Route = { view: "home", section: "install" };
@@ -57,6 +60,7 @@ export function readRoute(pathname: string, search: string): Route {
   const within = pathname.startsWith(BASE) ? pathname.slice(BASE.length) : "";
   const [page, project, item] = within.split("/").filter(Boolean).map(decodeURIComponent);
   if (page === "leaderboard") return { view: "leaderboard" };
+  if (page === "read") return { view: "read", url: q.get("url"), full: q.get("full") };
   if (page === "install") return INSTALL;
   if (page === "notes") return { view: "notes", project: project ?? null, item: item ?? null, note: q.get("note") };
   return HOME;
@@ -65,6 +69,12 @@ export function readRoute(pathname: string, search: string): Route {
 /** The address of a route, for the href of a link that navigates in-app. */
 export function routeHref(route: Route): string {
   if (route.view === "leaderboard") return `${BASE}leaderboard`;
+  if (route.view === "read") {
+    const q = new URLSearchParams();
+    if (route.url) q.set("url", route.url);
+    if (route.full) q.set("full", route.full);
+    return `${BASE}read${q.size ? `?${q}` : ""}`;
+  }
   if (route.view === "home") return route.section ? `${BASE}${route.section}` : BASE;
   const segments = ["notes", route.project, route.project && route.item].filter((segment) => !!segment) as string[];
   const note = route.note ? `?note=${encodeURIComponent(route.note)}` : "";
