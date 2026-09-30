@@ -445,6 +445,9 @@ const stackedNotes = {
     // units, as "Fit to canvas" leaves them on a backdrop. That is
     // scripts/generate-logo-assets.ts's MARK_SHARE_OF_TILE.
     { name: "White on a blue tile", values: { "bg.shape": "square", "bg.fill": BLUE, "bg.strokeWidth": 0, "bg.inset": 0, "bg.radius": 28, "notes.frontColor": WHITE, "notes.backColor": WHITE, "notes.lines": "cut", "art.scale": 0.83, "art.x": 0, "art.y": 0 } },
+    // The dark mode icon since GOO-299: the blue notes on a black tile, at
+    // the same proportions as the white-on-blue tile above.
+    { name: "Blue on a black tile, the dark mode icon", values: { "bg.shape": "square", "bg.fill": "#000000", "bg.strokeWidth": 0, "bg.inset": 0, "bg.radius": 28, "notes.frontColor": BLUE, "notes.backColor": BLUE, "notes.lines": "cut", "art.scale": 0.83, "art.x": 0, "art.y": 0 } },
     { name: "Green in front of red", values: { "bg.shape": "none", "notes.frontColor": GREEN, "notes.backColor": RED, "notes.lines": "cut", "art.scale": 1 } },
   ],
   defaults: {
