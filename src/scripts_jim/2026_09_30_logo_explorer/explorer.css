@@ -37,7 +37,7 @@ figure {
 }
 
 h1 {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 650;
   white-space: nowrap;
 }
@@ -626,7 +626,7 @@ canvas.zoom {
 }
 
 .panel-head h2 {
-  font-size: 15px;
+  font-size: 16px;
 }
 
 .panel-head .hint {
