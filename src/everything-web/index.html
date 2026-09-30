@@ -16,12 +16,14 @@
   <meta property="og:image" content="https://commonnotes.net/og.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://commonnotes.net/og.png" />
-  <!-- The icon, white notes on a blue tile, and PNGs for browsers and home
-       screens that take no SVG. A tab strip can be any grey, which plain blue
-       notes vanish on. Vite copies each file into the build and rewrites these
-       addresses. scripts/generate-logo-assets.ts draws all three. -->
+  <!-- The favicon is the plain blue notes in light mode and the blue notes on
+       a black tile in dark mode, because a dark tab strip is a grey that plain
+       blue notes vanish on. The SVG switches by itself. Browsers that take no
+       SVG get a PNG per colour scheme. Vite copies each file into the build
+       and rewrites these addresses. scripts/generate-logo-assets.ts draws them. -->
   <link rel="icon" type="image/svg+xml" href="./src/assets/icon.svg" />
-  <link rel="icon" type="image/png" sizes="32x32" href="./src/assets/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./src/assets/favicon-32.png" media="(prefers-color-scheme: light)" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./src/assets/favicon-dark-32.png" media="(prefers-color-scheme: dark)" />
   <link rel="apple-touch-icon" href="./src/assets/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

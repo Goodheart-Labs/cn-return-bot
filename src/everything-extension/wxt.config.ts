@@ -20,6 +20,8 @@ const repoRoot = path.resolve(__dirname, "../..");
 const CHROME_PUBLIC_KEY =
   "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2qdIOMvZuGlFH1UrpRid5yNL/QhfTmU6E9B2jbE5aCs3TBkrTZP6YU8LGRnPZvUAgFLrD4jUFL5eNxqWgsfzgubcNXXvDXYDdbL/jazzIayocG4GH8ONBAKOTSQaQ8s1T2PZSImbuB0I4m2I3IlYtIZKsXqM80ky42+mv04SfBQZxRgP0slrO+4QqrD300uQtBhj8XhLremut05B8mtfgOJDC7S9CT73mae0vbXJEL1dC34mEt98hT1nDGEKeNXXcEIHO3L/c1d101oBsoXG2A+O/ze0OmDIi6xqnU31YSkvcWT20mVKKZXUqz4FUFkKyRaG/mHkSs0Dt/hKePdSEQIDAQAB";
 
+const TOOLBAR_ICON = { 16: "icon/16.png", 32: "icon/32.png" };
+
 export default defineConfig({
   modules: ["@wxt-dev/module-react"],
   // Dev mode must not launch its own Chrome. We load the dev output unpacked into
@@ -41,8 +43,26 @@ export default defineConfig({
     name: "Common Notes",
     description: "Community Notes Everywhere",
     icons: { 16: "icon/16.png", 32: "icon/32.png", 48: "icon/48.png", 128: "icon/128.png" },
-    action: { default_icon: { 16: "icon/16.png", 32: "icon/32.png" } },
-    permissions: ["storage", "identity", "contextMenus", "activeTab", "tabs", "scripting", "alarms"],
+    // The toolbar icon follows the browser's light or dark mode, see
+    // utils/toolbarIcon.ts. Firefox picks between the two icons itself. The
+    // Firefox build is Manifest V2, where the key is browser_action. Firefox
+    // names the icons by text colour: "dark" is shown on themes with dark
+    // text, which are the light themes.
+    action: { default_icon: TOOLBAR_ICON },
+    ...(browser === "firefox"
+      ? {
+          browser_action: {
+            default_icon: TOOLBAR_ICON,
+            theme_icons: [
+              { dark: "icon/16.png", light: "icon/tile-16.png", size: 16 },
+              { dark: "icon/32.png", light: "icon/tile-32.png", size: 32 },
+            ],
+          },
+        }
+      : {}),
+    // Chrome needs "offscreen" for the hidden page that reads the colour
+    // scheme. It shows no warning at install or update.
+    permissions: ["storage", "identity", "contextMenus", "activeTab", "tabs", "scripting", "alarms", ...(browser === "chrome" ? ["offscreen"] : [])],
     // Access to every site is required at install time. The background then
     // registers the generic content script for every hostname that has notes,
     // without asking. The user sees one broad install warning and no per-site

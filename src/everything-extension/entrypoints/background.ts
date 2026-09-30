@@ -17,6 +17,7 @@ import { capturePageFromTab } from "../utils/pageCapture";
 import { VISIT_MESSAGE_TYPE, writeVisit, type VisitMessage } from "../utils/linkVisits";
 import { addRequestedPage, getSettingsOnboardingDone, getWelcomeSeen, markWelcomeSeen } from "../utils/settings";
 import { STATIC_SITE_HOSTNAME } from "../utils/staticSites";
+import { COLOR_SCHEME_MESSAGE_TYPE, showToolbarIconFor, watchColorScheme, type ColorSchemeMessage } from "../utils/toolbarIcon";
 
 const WRITE_MENU_ID = "cn-write-note";
 const REQUEST_MENU_ID = "cn-request-note";
@@ -303,6 +304,7 @@ export default defineBackground(() => {
   // of the day to send the heartbeat.
   void trackDailyActivity();
   registerDevSelfReload();
+  void watchColorScheme();
   // The 5-minute alarm keeps long-lived sessions current (the MV3 worker
   // can't hold a timer), and the popup pings cn-sync-noted-sites on open.
   // The alarm is checked at every worker boot instead of on install/startup
@@ -380,6 +382,11 @@ export default defineBackground(() => {
       const { tabId, pageUrl, token } = message as { tabId: number; pageUrl: string; token: string };
       sendToTabWithInjection(tabId, { type: "cn-request-live", pageUrl, token }).then(sendResponse);
       return true; // Keep the message channel open for the async reply.
+    }
+    if ((message as { type?: string })?.type === COLOR_SCHEME_MESSAGE_TYPE) {
+      // The offscreen document reports the browser's light or dark mode.
+      void showToolbarIconFor(message as ColorSchemeMessage);
+      return undefined;
     }
     if ((message as { type?: string })?.type === VISIT_MESSAGE_TYPE) {
       // A content script has decided this page counts and has read the creator
