@@ -28,13 +28,17 @@ export {
 } from "@remixicon/react";
 
 /** Two notes lying on top of each other, the front one with two lines of
- *  text. It is our note marker and is drawn in a 24 by 24 viewBox. Every
- *  marker surface uses this one path: the passage marker, the note-count badge
- *  on listings, and the pin on YouTube's scrub bar. The text lines are holes in
- *  the front note, so the path must be filled with the evenodd rule. The gap
- *  between the two notes is 3 units wide. A narrower gap falls below one pixel
- *  at the 11px pin size and closes up on dark pages. */
-export const NOTE_STACK_GLYPH_PATH = "M7.5 5.2A2.2 2.2 0 0 1 9.7 3H18.8A2.2 2.2 0 0 1 21 5.2V14.3A2.2 2.2 0 0 1 18.8 16.5V5.2ZM5.6 8.2H13.2A2.6 2.6 0 0 1 15.8 10.8V18.4A2.6 2.6 0 0 1 13.2 21H5.6A2.6 2.6 0 0 1 3 18.4V10.8A2.6 2.6 0 0 1 5.6 8.2ZM7 11.3H11.6a1.4 1.4 0 0 1 0 2.8H7a1.4 1.4 0 0 1 0 -2.8ZM7 15.5H8.9a1.4 1.4 0 0 1 0 2.8H7a1.4 1.4 0 0 1 0 -2.8Z";
+ *  text. It is the Common Notes logo and our note marker, drawn in a 24 by 24
+ *  viewBox. Every marker surface uses this one path: the passage marker, the
+ *  note-count badge on listings, and the pin on YouTube's scrub bar. The
+ *  extension's icons and the website's logo are generated from it too, by
+ *  scripts/generate-logo-assets.ts. The text lines are holes in the front
+ *  note, so the path must be filled with the evenodd rule.
+ *  The proportions were picked in the logo explorer (GOO-299). The mark spans
+ *  18 of the 24 units, and the gap between the two notes is about 1.9 units.
+ *  On the 11 pixel pin that gap is just under one pixel on a normal screen. */
+export const NOTE_STACK_GLYPH_PATH =
+  "M7.06,5.23c0,-1.23 1,-2.23 2.23,-2.23h9.48c1.23,0 2.23,1 2.23,2.23v9.48c0,1.23 -1,2.23 -2.23,2.23h-0.58v-11.13h-11.13zM5.71,21c-1.5,0 -2.71,-1.21 -2.71,-2.71v-7.84c0,-1.5 1.21,-2.71 2.71,-2.71h7.84c1.5,0 2.71,1.21 2.71,2.71v7.84c0,1.5 -1.21,2.71 -2.71,2.71zM11.9,13.84c0.8,0 1.45,-0.65 1.45,-1.45c0,-0.8 -0.65,-1.45 -1.45,-1.45h-4.74c-0.8,0 -1.45,0.65 -1.45,1.45c0,0.8 0.65,1.45 1.45,1.45zM9.1,18.19c0.8,0 1.45,-0.65 1.45,-1.45c0,-0.8 -0.65,-1.45 -1.45,-1.45h-1.94c-0.8,0 -1.45,0.65 -1.45,1.45c0,0.8 0.65,1.45 1.45,1.45z";
 
 export function NoteStackIcon({ size = 14 }: { size?: number }) {
   return (
