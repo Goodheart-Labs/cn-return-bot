@@ -54,8 +54,9 @@ function usePassageQuestions(item: PageItem, passage: string, onDraft: (draft: H
   return { questions, ask, waiting, error, login: <LoginModal open={login} onClose={() => setLogin(false)} /> };
 }
 
-export function ReaderPassageQuestions({ item, passage, onDraft }: { item: PageItem; passage: string; onDraft: (draft: HighlightDraft) => void }) {
-  const [text, setText] = useState("");
+export function ReaderPassageQuestions({ item, passage, quote, onDraft }: { item: PageItem; passage: string; quote?: string | null; onDraft: (draft: HighlightDraft) => void }) {
+  // A question from highlighted words starts with those words quoted, so Opus 5.5 sees which part of the passage is meant.
+  const [text, setText] = useState(quote ? `“${quote.trim()}” ` : "");
   const { questions, ask, waiting, error, login } = usePassageQuestions(item, passage, onDraft);
   return <section className="reader-question-panel">
     <h3>Ask Opus 5.5</h3>

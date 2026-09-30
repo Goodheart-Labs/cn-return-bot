@@ -26,6 +26,16 @@ function OriginalLink({ url }: { url: string }) {
   return <a className={buttonVariants()} href={url} target="_blank" rel="noopener noreferrer">Read the original on {new URL(url).host.replace(/^www\./, "")} ↗</a>;
 }
 
+// Government texts have no copyright to disclaim, so the reader names who issued them instead.
+// The Super Intelligence Accord has no whitehouse.gov page; its signed original is this Truth Social post.
+const WHITE_HOUSE_TEXTS = new Set(["https://truthsocial.com/@realDonaldTrump/117356435739432952"]);
+
+function governmentIssuer(url: string): string | null {
+  const host = new URL(url).hostname;
+  if (WHITE_HOUSE_TEXTS.has(url) || host === "whitehouse.gov" || host.endsWith(".whitehouse.gov")) return "A White House document.";
+  return host.endsWith(".gov") ? "A US government document." : null;
+}
+
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
 // Why a checked article has no notes, so an empty margin reads as a result rather than a gap.
@@ -118,7 +128,7 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
   const [showNotes, setShowNotes] = useState(true);
   const [selectedBlock, setSelectedBlock] = useState<string | null>(null);
   const [notice, setNotice] = useState("");
-  const [asking, setAsking] = useState<string | null>(null);
+  const [asking, setAsking] = useState<{ blockId: string; quote: string | null } | null>(null);
   const [highlightForm, setHighlightForm] = useState<{ anchor: ReaderAnchor; kind: HighlightDraft["kind"]; draft?: HighlightDraft } | null>(null);
   const highlightQuery = useQuery({ queryKey: ["passageHighlights", item?.id], queryFn: () => fetchPassageHighlights(item!.id), enabled: !!item });
   const itemId = item?.id;
@@ -221,9 +231,15 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
     const block = blocks.find((b) => b.id === blockId);
     return <>
       <ReaderHighlights highlights={blockId === "unanchored" ? highlightBlocks.unanchored : highlightBlocks.byBlock.get(blockId) ?? []} onChanged={() => void highlightQuery.refetch()} />
-      {asking === blockId && block && item && <ReaderPassageQuestions key={blockId} item={item} passage={block.text} onDraft={(draft) => openHighlight(block, block.text, draft.kind, draft)} />}
+      {asking?.blockId === blockId && block && item && <ReaderPassageQuestions key={`${blockId}-${asking.quote ?? ""}`} item={item} passage={block.text} quote={asking.quote} onDraft={(draft) => openHighlight(block, block.text, draft.kind, draft)} />}
     </>;
   };
+
+  function openQuestions(block: ReaderBlock, quote: string | null) {
+    setSelectedBlock(block.id);
+    setAsking({ blockId: block.id, quote });
+    setShowNotes(true);
+  }
 
   function openComposer(block: ReaderBlock, partial: string | null) {
     setComposer({ blockId: block.id, text: partial ?? block.text, paragraph: block.text, partial: partial !== null });
@@ -258,8 +274,7 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
             {claimsQuery.isSuccess && noteQuery.isSuccess && <p className="reader-checked-count">{countLine(claimsQuery.data, notes.length)}</p>}
             {item && (scope === "full"
               ? <p className="reader-full-original"><OriginalLink url={original} /></p>
-              : <aside className="reader-attribution"><p>This text belongs to {host}. Common Notes shows it here only so notes can sit beside it, and claims no copyright in it.</p><OriginalLink url={original} /></aside>)}
-            {scope !== "full" && <p className="reader-deck">Read the article. Add a note to any passage. Rate the notes other readers leave.</p>}
+              : <aside className="reader-attribution"><p>{governmentIssuer(original) ?? `This text belongs to ${host}. Common Notes shows it here only so notes can sit beside it, and claims no copyright in it.`}</p><OriginalLink url={original} /></aside>)}
             <div className="reader-toolbar">
               {blocks.length > 0 && <button type="button" className="reader-toggle" aria-pressed={showNotes} onClick={() => setShowNotes((value) => !value)}>
                 {showNotes ? "Hide notes" : "Show notes"}<span className="reader-count">{notes.length}</span>
@@ -304,9 +319,10 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
                         {partial && <>
                           <button className="reader-note-add reader-note-add-selection" onMouseDown={(event) => event.preventDefault()} onClick={() => openHighlight(block, partial, "forecast")}>Forecast</button>
                           <button className="reader-note-add reader-note-add-selection" onMouseDown={(event) => event.preventDefault()} onClick={() => openHighlight(block, partial, "key_point")}>Key point</button>
+                          <button className="reader-note-add reader-note-add-selection" onMouseDown={(event) => event.preventDefault()} onClick={() => openQuestions(block, partial)}>Ask Opus 5.5</button>
                         </>}
                         {showNotes && highlights.length > 0 && <button className="reader-note-trigger" aria-expanded={open} onClick={() => setSelectedBlock(open ? null : block.id)}>{plural(highlights.length, "highlight")}</button>}
-                        <button className="reader-passage-ask" onClick={() => { setSelectedBlock(block.id); setAsking(block.id); setShowNotes(true); }}>Ask Opus 5.5</button>
+                        {!partial && <button className="reader-passage-ask" onClick={() => openQuestions(block, null)}>Ask Opus 5.5</button>}
                       </div>
                       {!wide && showNotes && open && <div id={`inline-${block.id}`} className="reader-inline-notes">{renderNotes(group)}{renderPassageExtras(block.id)}</div>}
                     </section>;
