@@ -381,9 +381,10 @@ const blendPair = {
 };
 
 // ---------------------------------------------------------------------------
-// 4. Two stacked notes, the mark the extension already draws on its markers
-// (NOTE_STACK_GLYPH_PATH in src/everything-ui/icons.tsx). The defaults redraw
-// that path, scaled from its 24 unit grid to this canvas.
+// 4. Two stacked notes, the logo and the extension's note marker
+// (NOTE_STACK_GLYPH_PATH in src/everything-ui/icons.tsx). The defaults are the
+// proportions Jim picked for it (GOO-299), at the full size the mark has in
+// that path's 24 unit grid: 96 of the 128 units here.
 // ---------------------------------------------------------------------------
 
 function renderStackedNotes(values) {
@@ -415,11 +416,30 @@ function renderStackedNotes(values) {
   return { markup: fillPath(backShown, notes.backColor) + fillPath(front, notes.frontColor) + drawnLines, bounds };
 }
 
+/** The marker glyph as it was before GOO-299, in the same units as the
+ *  defaults. */
+const OLD_MARKER_GEOMETRY = prefixed("notes", {
+  frontSize: 68.5,
+  frontRadius: 14,
+  backSize: 72,
+  backRadius: 11.5,
+  offsetX: 24,
+  offsetY: 27.5,
+  gap: 16,
+  lineInset: 14,
+  lineThickness: 15,
+  line1Y: 24,
+  line1Length: 39.5,
+  line2Y: 46.5,
+  line2Length: 25,
+});
+
 const stackedNotes = {
   id: "stacked-notes",
   name: "Two stacked notes",
-  summary: "The mark the extension already shows on its markers, pins and badges.",
+  summary: "The logo. The same mark is the extension's note marker, pin and badge.",
   presets: [
+    { name: "The old marker, before GOO-299", values: OLD_MARKER_GEOMETRY },
     { name: "As in the app", values: { "bg.shape": "none", "notes.frontColor": BLUE, "notes.backColor": BLUE, "notes.lines": "cut", "art.scale": 1 } },
     { name: "White on a blue tile", values: { "bg.shape": "square", "bg.fill": BLUE, "bg.strokeWidth": 0, "notes.frontColor": WHITE, "notes.backColor": WHITE, "notes.lines": "cut", "art.scale": 0.68 } },
     { name: "Green in front of red", values: { "bg.shape": "none", "notes.frontColor": GREEN, "notes.backColor": RED, "notes.lines": "cut", "art.scale": 1 } },
@@ -430,20 +450,20 @@ const stackedNotes = {
       backColor: BLUE,
       lines: "cut",
       lineColor: WHITE,
-      frontSize: 68.5,
-      frontRadius: 14,
-      backSize: 72,
-      backRadius: 11.5,
-      offsetX: 24,
-      offsetY: 27.5,
-      gap: 16,
+      frontSize: 70.71,
+      frontRadius: 14.45,
+      backSize: 74.32,
+      backRadius: 11.87,
+      offsetX: 21.68,
+      offsetY: 25.29,
+      gap: 10.32,
       innerCorner: "square",
-      lineInset: 14,
-      lineThickness: 15,
-      line1Y: 24,
-      line1Length: 39.5,
-      line2Y: 46.5,
-      line2Length: 25,
+      lineInset: 14.45,
+      lineThickness: 15.48,
+      line1Y: 24.77,
+      line1Length: 40.77,
+      line2Y: 48,
+      line2Length: 25.81,
     }),
     ...PLACEMENT_DEFAULTS,
   },

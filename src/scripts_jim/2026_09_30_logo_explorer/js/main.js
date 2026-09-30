@@ -7,6 +7,12 @@ import { CANDIDATES, composeSvg, fitPlacement } from "./logos.js";
 import { contexts, loadMocks } from "./previews.js";
 
 const STORAGE_KEY = "cn-logo-explorer:v1";
+// Raised when a candidate's defaults change so much that values stored by an
+// older version would hide the change. Version 2 made the stacked notes the
+// shipped logo (GOO-299), so values stored before it are dropped for that one
+// candidate.
+const STATE_VERSION = 2;
+const RESET_BY_VERSION_2 = "stacked-notes";
 // The Chrome Web Store asks for the artwork of the 128 pixel icon to be 96
 // pixels wide inside a transparent margin. The icon that ships today does so.
 const STORE_ARTWORK_SHARE = 96 / 128;
@@ -52,12 +58,14 @@ function readStoredState() {
 
 function initialState() {
   const stored = readStoredState();
+  if (stored.values && stored.version !== STATE_VERSION) delete stored.values[RESET_BY_VERSION_2];
   return {
     selected: candidateById(stored.selected) ? stored.selected : CANDIDATES[0].id,
     view: VIEWS.some(([view]) => view === stored.view) ? stored.view : "design",
     stageBackground: stored.stageBackground ?? "white",
     showGuides: stored.showGuides ?? false,
     storeMargin: stored.storeMargin ?? true,
+    version: STATE_VERSION,
     // Stored values go on top of the defaults, so a control added later
     // still gets its default.
     values: Object.fromEntries(CANDIDATES.map((candidate) => [candidate.id, { ...candidate.defaults, ...stored.values?.[candidate.id] }])),
