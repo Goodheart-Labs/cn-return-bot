@@ -3,6 +3,7 @@ import { browser } from "#imports";
 import { Button } from "@cn/ui/Button";
 import { Card } from "@cn/ui/Card";
 import { GroupIcon } from "@cn/ui/icons";
+import { SafariSiteAccess } from "../../components/SafariSiteAccess";
 import { markWelcomeSeen, updateSettings } from "../../utils/settings";
 
 /** How long the confirmation stays on screen before the welcome tab closes
@@ -13,7 +14,8 @@ const CLOSE_AFTER_ANSWER_MS = 1_000;
  *  what Common Notes is and asks the one question that has to be answered
  *  before anything else happens: whether we may count which posts the reader
  *  opens. Visit recording stays inert until the question was answered
- *  (utils/linkVisits.ts). */
+ *  (utils/linkVisits.ts). On Safari it first asks for access to every website,
+ *  because Safari grants none at install. */
 export function WelcomeApp() {
   const [answered, setAnswered] = useState<null | boolean>(null);
 
@@ -38,6 +40,13 @@ export function WelcomeApp() {
           </div>
           <p className="text-sm text-fg-muted">Community Notes for Everything</p>
         </div>
+
+        {import.meta.env.SAFARI && (
+          <div className="border-t border-line pt-5 space-y-3">
+            <h2 className="text-sm font-semibold text-fg">First, let Common Notes see the pages you read</h2>
+            <SafariSiteAccess />
+          </div>
+        )}
 
         <div className="border-t border-line pt-5 space-y-3">
           <h2 className="text-sm font-semibold text-fg">One question before you start</h2>

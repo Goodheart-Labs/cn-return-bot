@@ -6,6 +6,7 @@ import { signOut } from "@cn/core/auth";
 import { useSession } from "@cn/features/auth/useSession";
 import { LoginPanel } from "../../components/LoginPanel";
 import { NoteFilterToggles, useNoteFilters } from "../../components/NoteFilterToggles";
+import { SafariSiteAccess } from "../../components/SafariSiteAccess";
 import {
   getSettings,
   markWelcomeSeen,
@@ -185,6 +186,12 @@ export function SettingsApp() {
       <Card className="mx-auto max-w-xl p-6">
         <h1 className="mb-4 text-xl font-extrabold text-fg">Settings</h1>
         <div className="space-y-4">
+
+        {import.meta.env.SAFARI && (
+          <Section title="Website access">
+            <SafariSiteAccess />
+          </Section>
+        )}
 
         <Section title="Help us decide what to check">
           {settings && <VisitRecordingChoice settings={settings} onToggle={toggleSettings} />}
