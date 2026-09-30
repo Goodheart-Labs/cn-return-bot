@@ -1,4 +1,5 @@
 import { browser } from "#imports";
+import type { NoteStatus } from "@cn/core/noteScore";
 import { DEFAULT_PILL_PALETTE, type PillPalette } from "@cn/features/notes/pillPalette";
 
 // The pages the user has already asked us to cover with "Request notes on this
@@ -41,23 +42,52 @@ export async function forgetRequestedPage(pageUrl: string): Promise<void> {
   await browser.storage.sync.set({ [REQUESTED_PAGES_KEY]: pages });
 }
 
-// Which note statuses are rendered on a page. Notes rated helpful always show. The
-// other two statuses are controlled by tickboxes in the popup. The setting lives in
-// sync storage, so it follows the user across devices.
-const NOTE_FILTERS_KEY = "cn:noteFilters";
+// How the notes of each status appear on a page. The setting lives in sync
+// storage, so it follows the user across devices. It replaced the two "show
+// notes that need more ratings" and "show unhelpful notes" tickboxes on
+// 2026-09-29 (GOO-239). Those were stored under "cn:noteFilters", which is no
+// longer read, so every reader starts from the new defaults once.
+const NOTE_DISPLAY_KEY = "cn:noteDisplay";
 
-export type NoteFilters = { showNeedsRatings: boolean; showUnhelpful: boolean };
-// Both filters default on since 2026-08-31 (Jim's call): a fresh install shows
-// unhelpful notes too, and hiding them is the opt-in.
-const DEFAULT_NOTE_FILTERS: NoteFilters = { showNeedsRatings: true, showUnhelpful: true };
+/** "open" puts the note's card on screen without a click: beside its passage
+ *  in the margin, or over the video while playback is in the note's part.
+ *  "collapse" draws the marker and tints the passage, and the card opens when
+ *  the reader clicks either. "dot" draws only the marker, with no tint. "hide"
+ *  leaves the note off the page. */
+export type NoteDisplay = "open" | "collapse" | "dot" | "hide";
+export type NoteDisplaySettings = Record<NoteStatus, NoteDisplay>;
 
-export async function getNoteFilters(): Promise<NoteFilters> {
-  const stored = (await browser.storage.sync.get(NOTE_FILTERS_KEY))[NOTE_FILTERS_KEY] as Partial<NoteFilters> | undefined;
-  return { ...DEFAULT_NOTE_FILTERS, ...stored };
+const NOTE_DISPLAYS: readonly NoteDisplay[] = ["open", "collapse", "dot", "hide"];
+
+// Jim's call on 2026-09-29: helpful notes are open, notes that need ratings
+// wait for a click, and unhelpful notes only leave their dot.
+export const DEFAULT_NOTE_DISPLAY: NoteDisplaySettings = { helpful: "open", needs_ratings: "collapse", not_helpful: "dot" };
+
+/** A stored value that is not one of today's choices falls back to the
+ *  default. Early test builds stored "show" and "faint" choices that no
+ *  longer exist. */
+export async function getNoteDisplay(): Promise<NoteDisplaySettings> {
+  const stored = await readSyncObject<NoteDisplaySettings>(NOTE_DISPLAY_KEY);
+  const valid = Object.entries(stored).filter(([, display]) => NOTE_DISPLAYS.includes(display));
+  return { ...DEFAULT_NOTE_DISPLAY, ...Object.fromEntries(valid) };
 }
 
-export async function updateNoteFilters(patch: Partial<NoteFilters>): Promise<void> {
-  await browser.storage.sync.set({ [NOTE_FILTERS_KEY]: { ...(await getNoteFilters()), ...patch } });
+export async function updateNoteDisplay(patch: Partial<NoteDisplaySettings>): Promise<void> {
+  await patchSyncObject(NOTE_DISPLAY_KEY, patch);
+}
+
+/** Reads an object this module keeps in sync storage, or an empty one. */
+async function readSyncObject<T extends object>(key: string): Promise<Partial<T>> {
+  return ((await browser.storage.sync.get(key))[key] as Partial<T> | undefined) ?? {};
+}
+
+/** Stores only the keys the user actually changed. Unchanged keys stay
+ *  absent from storage, so a later change of their default reaches this user
+ *  too. Writing the merged object instead is what kept the old note-count
+ *  card on for everyone who had saved any setting before its default
+ *  flipped. */
+async function patchSyncObject(key: string, patch: object): Promise<void> {
+  await browser.storage.sync.set({ [key]: { ...(await readSyncObject(key)), ...patch } });
 }
 
 /** Returns a function that removes the listener again. Content-script mounts come and
@@ -70,7 +100,7 @@ function onSyncKeyChanged(key: string, callback: () => void): () => void {
   return () => browser.storage.onChanged.removeListener(listener);
 }
 
-export const onNoteFiltersChanged = (callback: () => void) => onSyncKeyChanged(NOTE_FILTERS_KEY, callback);
+export const onNoteDisplayChanged = (callback: () => void) => onSyncKeyChanged(NOTE_DISPLAY_KEY, callback);
 
 /** Fires when the general settings object changes, on every context. The note
  *  mounts use it to flip between the margin and classic note styles without a
@@ -97,8 +127,6 @@ export type ExtensionSettings = {
   /** Whether opening a covered page on this kind of site writes an anonymous
    *  visit row. The welcome page asks about exactly these. */
   saveVisits: Record<VisitSiteKind, boolean>;
-  /** The "N Common Notes on this page" card on checked pages. */
-  showNoteCountOverlay: boolean;
   /** The note-count badges on listing thumbnails. */
   showThumbnailBadges: boolean;
   noteStyle: NoteStyle;
@@ -106,9 +134,6 @@ export type ExtensionSettings = {
 
 const DEFAULT_SETTINGS: ExtensionSettings = {
   saveVisits: { substack: true, youtube: true, lesswrong: true },
-  // Off by default since 2026-08-31 (Jim's call): the margin markers already
-  // say there are notes, so the card is opt-in.
-  showNoteCountOverlay: false,
   showThumbnailBadges: true,
   noteStyle: "margin",
   pillPalette: DEFAULT_PILL_PALETTE,
@@ -119,23 +144,17 @@ export type SettingsPatch = Partial<Omit<ExtensionSettings, "saveVisits">> & {
 };
 
 export async function getSettings(): Promise<ExtensionSettings> {
-  const stored = (await browser.storage.sync.get(SETTINGS_KEY))[SETTINGS_KEY] as SettingsPatch | undefined;
+  const stored = await readSyncObject<SettingsPatch>(SETTINGS_KEY);
   return {
     ...DEFAULT_SETTINGS,
     ...stored,
-    saveVisits: { ...DEFAULT_SETTINGS.saveVisits, ...stored?.saveVisits },
+    saveVisits: { ...DEFAULT_SETTINGS.saveVisits, ...stored.saveVisits },
   };
 }
 
 export async function updateSettings(patch: SettingsPatch): Promise<void> {
-  const current = await getSettings();
-  await browser.storage.sync.set({
-    [SETTINGS_KEY]: {
-      ...current,
-      ...patch,
-      saveVisits: { ...current.saveVisits, ...patch.saveVisits },
-    },
-  });
+  const stored = await readSyncObject<SettingsPatch>(SETTINGS_KEY);
+  await patchSyncObject(SETTINGS_KEY, { ...patch, saveVisits: { ...stored.saveVisits, ...patch.saveVisits } });
 }
 
 // Whether the settings onboarding has run. Before the welcome page existed

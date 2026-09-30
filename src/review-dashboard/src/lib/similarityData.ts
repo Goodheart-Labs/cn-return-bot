@@ -4,7 +4,7 @@
 // Supabase, mirroring the fetch patterns in lib/data.ts.
 
 import { supabase } from "./supabase";
-import { fetchInBatches } from "../../../dashboard-shared/supabasePaging";
+import { fetchInBatches } from "../../../everything-core/paging";
 import type { Tweet } from "../../../dashboard-shared/types";
 import similarityResults from "../generated/similarityResults.json";
 
@@ -59,14 +59,14 @@ function rowToTweet(row: any): Tweet {
 }
 
 async function fetchTweets(ids: string[]): Promise<Map<string, Tweet>> {
-  const rows = await fetchInBatches<any>(supabase, "tweets", TWEET_COLS, "tweet_id", ids, undefined, "sim_tweets");
+  const rows = await fetchInBatches<any>((chunk) => supabase.from("tweets").select(TWEET_COLS).in("tweet_id", chunk), ids, "tweet_id", { label: "sim_tweets" });
   return new Map(rows.map((r) => [r.tweet_id, rowToTweet(r)]));
 }
 
 async function fetchNotes(ids: string[]): Promise<Map<string, NoteView[]>> {
   const [ours, competing] = await Promise.all([
-    fetchInBatches<any>(supabase, "notes", "note_id, tweet_id, note_text, cn_status", "tweet_id", ids, undefined, "sim_our_notes"),
-    fetchInBatches<any>(supabase, "competing_notes", "note_id, tweet_id, note_text, current_status", "tweet_id", ids, undefined, "sim_competing"),
+    fetchInBatches<any>((chunk) => supabase.from("notes").select("note_id, tweet_id, note_text, cn_status").in("tweet_id", chunk), ids, "note_id", { label: "sim_our_notes" }),
+    fetchInBatches<any>((chunk) => supabase.from("competing_notes").select("id, note_id, tweet_id, note_text, current_status").in("tweet_id", chunk), ids, "id", { label: "sim_competing" }),
   ]);
   const byTweet = new Map<string, NoteView[]>();
   const push = (tweetId: string, note: NoteView) => {

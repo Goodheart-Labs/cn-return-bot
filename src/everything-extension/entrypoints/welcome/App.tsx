@@ -2,7 +2,7 @@ import { useState } from "react";
 import { browser } from "#imports";
 import { Button } from "@cn/ui/Button";
 import { Card } from "@cn/ui/Card";
-import { GroupIcon } from "@cn/ui/icons";
+import { NoteStackIcon } from "@cn/ui/icons";
 import { SafariSiteAccess } from "../../components/SafariSiteAccess";
 import { markWelcomeSeen, updateSettings } from "../../utils/settings";
 
@@ -34,7 +34,7 @@ export function WelcomeApp() {
         <div className="space-y-1.5">
           <div className="flex items-center gap-2.5">
             <span className="flex h-8 w-8 items-center justify-center rounded-full border border-tint-line bg-tint text-link">
-              <GroupIcon size={18} />
+              <NoteStackIcon size={18} />
             </span>
             <h1 className="text-xl font-extrabold text-fg">Welcome to Common Notes</h1>
           </div>

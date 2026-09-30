@@ -23,22 +23,22 @@ import { ClaimContent, type NotedContent } from "./ClaimContent";
 function claimContent(claim: ClaimRef): NotedContent {
   const url = claim.context_url;
   const quote = claim.context_quote || claim.claim;
-  const fragmentText = claim.context_quote ? undefined : claim.claim;
-  const imageGrounded = !claim.context_quote && (claim.image_urls?.length ?? 0) > 0;
+  const restated = !claim.context_quote;
+  const imageGrounded = restated && (claim.image_urls?.length ?? 0) > 0;
   const updatedQuote = claim.updated_quote ?? undefined;
   if (url && /youtube\.com|youtu\.be/.test(url)) {
     return {
       kind: "youtube",
       url,
       quote,
-      fragmentText,
+      restated,
       updatedQuote,
       imageGrounded,
       startSeconds: claim.start_seconds,
       endSeconds: claim.end_seconds,
     };
   }
-  return { kind: "article", url, quote, fragmentText, updatedQuote, imageGrounded };
+  return { kind: "article", quote, restated, updatedQuote, imageGrounded };
 }
 
 /** The images a claim is grounded in, which are usually Substack charts or
@@ -251,7 +251,7 @@ export function FeedNoteCard({ note, improvements, nnnEntries, shareUrl }: {
         </div>
       )}
       <Card ref={cardColRef} className="p-4 w-full max-w-[40rem] mx-auto xl:max-w-none xl:mx-0 xl:col-start-2 xl:row-start-1">
-      <div className="mb-3">
+      <div className="mb-4">
         {claim.image_urls.length > 0 && <ClaimImages urls={claim.image_urls} />}
         {paragraph && (
           <Button variant="link" className="xl:hidden text-xs mb-2" onClick={() => setCtxOpen((o) => !o)}>

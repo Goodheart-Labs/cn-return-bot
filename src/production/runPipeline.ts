@@ -268,26 +268,22 @@ async function main() {
       : undefined;
 
     // Fetch the skip set and the known-tweet set once here. Otherwise the notes,
-    // pipeline_runs and tweets tables get scanned twice in a single run.
+    // pipeline_runs and tweets tables get scanned twice in a single run. A
+    // failed read ends the run. Carrying on with empty sets would process
+    // tweets we already wrote notes for.
     let skipPostIds: Set<string> | undefined;
     let knownTweetIds: Set<string> | undefined;
     if (supabaseLogger) {
-      try {
-        [skipPostIds, knownTweetIds] = await Promise.all([
-          supabaseLogger.getSkipTweetIds(),
-          supabaseLogger.getKnownTweetIds(),
-        ]);
-      } catch (err) {
-        console.warn("[pipeline] Failed to pre-fetch skip/known sets (the pipeline will fetch its own):", err);
-      }
+      [skipPostIds, knownTweetIds] = await Promise.all([
+        supabaseLogger.getSkipTweetIds(),
+        supabaseLogger.getKnownTweetIds(),
+      ]);
     }
 
     // Track every tweet a pre-pass processes. The known-tweet set above was
     // snapshotted before the pre-passes ran, so without this the regular pass
     // could process the same tweet a second time within one run. knownTweetIds
-    // is undefined when the pre-fetch failed. That case heals itself, because
-    // fetchPosts then queries the database again after the pre-passes have
-    // written their new tweets with bulkInsertNewTweets.
+    // is undefined only when there is no database logger at all.
     const trackPrePassProcessed = (event: TweetProcessedEvent) => {
       knownTweetIds?.add(event.post.id);
       return onTweetProcessed?.(event);

@@ -1,5 +1,5 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
-import { fetchAllRows as fetchAllRowsShared } from "./paging";
+import { fetchAllRows as fetchAllRowsShared, fetchInBatches } from "../everything-core/paging";
 import type { Post } from "./fetchEligiblePosts";
 import type { FeedSize } from "../pipeline/orchestration/utils/feedSizeStrategy";
 import { NOTE_RATER_SCORE_TYPE } from "../pipeline/prompts/noteRater";
@@ -199,7 +199,7 @@ export class SupabaseLogger {
 
   /**
    * Fetches every row that matches `buildQuery()`. The paging itself is done by
-   * the shared keyset paginator in src/api/paging.ts. The caller must supply a
+   * the shared keyset paginator in src/everything-core/paging.ts. The caller must supply a
    * `keyCol` that is unique and indexed. That is usually the table's primary
    * key.
    */
@@ -407,19 +407,12 @@ export class SupabaseLogger {
    * Placeholder ids are left out. The scraper uses this to check its coverage.
    */
   async getScrapedNoteIdsInRange(minId: string, maxId: string): Promise<string[]> {
-    const { data, error } = await this.client
-      .from("notes")
-      .select("note_id")
-      .gte("note_id", minId)
-      .lte("note_id", maxId)
-      .not("note_id", "like", "tweet_%");
-
-    if (error) {
-      console.error("[SupabaseLogger] Error fetching note IDs in range:", error);
-      return [];
-    }
-
-    return (data || []).map((n: { note_id: string }) => n.note_id);
+    const notes = await this.fetchAllRows<{ note_id: string }>(
+      (client) => client.from("notes").select("note_id").gte("note_id", minId).lte("note_id", maxId).not("note_id", "like", "tweet_%"),
+      "note_id",
+      "scrapedNoteIdsInRange",
+    );
+    return notes.map((n) => n.note_id);
   }
 
   /**
@@ -882,37 +875,48 @@ export class SupabaseLogger {
    */
   async fetchQueuedRuns(maxAgeHours: number): Promise<QueuedRun[]> {
     const since = new Date(Date.now() - maxAgeHours * 3_600_000).toISOString();
-    const { data: runs, error } = await this.client
-      .from("pipeline_runs")
-      .select("id, tweet_id, note_text, source_url, bot_name, created_at, velocity:logs->ranking->features->velocityPerHour")
-      .eq("outcome", "candidate")
-      .eq("final_stage", "candidate")
-      .eq("outcome_reason", QUEUED_REASON)
-      .or("bot_name.is.null,bot_name.neq.signal")
-      .gte("created_at", since)
-      .order("created_at", { ascending: true });
-    if (error) throw error;
-    if (!runs?.length) return [];
+    const oldestFirst = (a: { created_at: string }, b: { created_at: string }) => a.created_at.localeCompare(b.created_at);
+    const runs = (await this.fetchAllRows<Record<string, unknown> & { id: string; tweet_id: string; created_at: string }>(
+      (client) => client
+        .from("pipeline_runs")
+        .select("id, tweet_id, note_text, source_url, bot_name, created_at, velocity:logs->ranking->features->velocityPerHour")
+        .eq("outcome", "candidate")
+        .eq("final_stage", "candidate")
+        .eq("outcome_reason", QUEUED_REASON)
+        .or("bot_name.is.null,bot_name.neq.signal")
+        .gte("created_at", since),
+      "id",
+      "queuedRuns",
+    )).sort(oldestFirst);
+    if (!runs.length) return [];
 
-    const tweetIds = [...new Set(runs.map((r) => r.tweet_id as string))];
-    const runIds = runs.map((r) => r.id as string);
-    const [{ data: tweets, error: tErr }, { data: scores, error: sErr }] = await Promise.all([
-      this.client.from("tweets")
-        .select("tweet_id, author_id, author_name, author_description, author_followers, author_tweet_count, text, posted_at, impressions, likes, retweets, replies, quotes, bookmarks, media, referenced_tweets, referenced_tweet_data")
-        .in("tweet_id", tweetIds),
-      this.client.from("pipeline_scores")
-        .select("pipeline_run_id, score_type, score_value, score_metadata, created_at")
-        .in("score_type", [NOTE_RATER_SCORE_TYPE, "evaluation"])
-        .in("pipeline_run_id", runIds)
-        .order("created_at", { ascending: true }),
+    const tweetIds = [...new Set(runs.map((r) => r.tweet_id))];
+    const runIds = runs.map((r) => r.id);
+    const [tweets, scores] = await Promise.all([
+      fetchInBatches<QueuedTweetRow>(
+        (chunk) => this.client.from("tweets")
+          .select("tweet_id, author_id, author_name, author_description, author_followers, author_tweet_count, text, posted_at, impressions, likes, retweets, replies, quotes, bookmarks, media, referenced_tweets, referenced_tweet_data")
+          .in("tweet_id", chunk),
+        tweetIds,
+        "tweet_id",
+        { label: "queuedRuns.tweets" },
+      ),
+      fetchInBatches<Record<string, unknown> & { pipeline_run_id: string; score_type: string; created_at: string }>(
+        (chunk) => this.client.from("pipeline_scores")
+          .select("id, pipeline_run_id, score_type, score_value, score_metadata, created_at")
+          .in("score_type", [NOTE_RATER_SCORE_TYPE, "evaluation"])
+          .in("pipeline_run_id", chunk),
+        runIds,
+        "id",
+        { label: "queuedRuns.scores" },
+      ),
     ]);
-    if (tErr) throw tErr;
-    if (sErr) throw sErr;
 
-    const tweetById = new Map((tweets ?? []).map((t) => [t.tweet_id as string, t as QueuedTweetRow]));
+    const tweetById = new Map(tweets.map((t) => [t.tweet_id, t]));
     const ratingByRun = new Map<string, NoteRating>();
     const evalByRun = new Map<string, number>();
-    for (const s of scores ?? []) {
+    // Oldest first, so a later score for the same run overwrites an earlier one.
+    for (const s of scores.sort(oldestFirst)) {
       if (s.score_type === "evaluation") {
         if (typeof s.score_value === "number") evalByRun.set(s.pipeline_run_id as string, s.score_value);
         continue;
@@ -977,57 +981,48 @@ export class SupabaseLogger {
   async getSkipTweetIds(): Promise<Set<string>> {
     const tweetIds = new Set<string>();
 
-    try {
-      const notesData = await this.fetchAllRows<{ note_id: string; tweet_id: string }>(
-        (client) => client.from("notes").select("note_id, tweet_id"),
-        "note_id",
-        "getSkipTweetIds.notes",
-      );
-      notesData.forEach((row) => {
-        if (row.tweet_id) tweetIds.add(row.tweet_id);
-      });
+    const notesData = await this.fetchAllRows<{ note_id: string; tweet_id: string }>(
+      (client) => client.from("notes").select("note_id, tweet_id"),
+      "note_id",
+      "getSkipTweetIds.notes",
+    );
+    notesData.forEach((row) => {
+      if (row.tweet_id) tweetIds.add(row.tweet_id);
+    });
 
-      try {
-        const pipelineData = await this.fetchAllRows<{ id: string; tweet_id: string; created_at: string }>(
-          (client) => client.from("pipeline_runs").select("id, tweet_id, created_at")
-            .eq("outcome", "rejected"),
-          "id",
-          "getSkipTweetIds.rejected",
-        );
-        const rejectionInfo = new Map<string, { count: number; latestAt: Date }>();
-        for (const row of pipelineData) {
-          if (!row.tweet_id) continue;
-          const ts = new Date(row.created_at);
-          const existing = rejectionInfo.get(row.tweet_id);
-          if (!existing) {
-            rejectionInfo.set(row.tweet_id, { count: 1, latestAt: ts });
-          } else {
-            existing.count++;
-            if (ts > existing.latestAt) existing.latestAt = ts;
-          }
-        }
-
-        const now = new Date();
-        for (const [tweetId, info] of rejectionInfo) {
-          if (info.count >= 3) {
-            tweetIds.add(tweetId);
-          } else {
-            const hoursSinceLatest = (now.getTime() - info.latestAt.getTime()) / (1000 * 60 * 60);
-            const cooldownHours = info.count === 1 ? 1 : 24;
-            if (hoursSinceLatest < cooldownHours) {
-              tweetIds.add(tweetId);
-            }
-          }
-        }
-      } catch (pipelineError) {
-        console.error("[SupabaseLogger] Error fetching pipeline runs:", pipelineError);
+    const pipelineData = await this.fetchAllRows<{ id: string; tweet_id: string; created_at: string }>(
+      (client) => client.from("pipeline_runs").select("id, tweet_id, created_at")
+        .eq("outcome", "rejected"),
+      "id",
+      "getSkipTweetIds.rejected",
+    );
+    const rejectionInfo = new Map<string, { count: number; latestAt: Date }>();
+    for (const row of pipelineData) {
+      if (!row.tweet_id) continue;
+      const ts = new Date(row.created_at);
+      const existing = rejectionInfo.get(row.tweet_id);
+      if (!existing) {
+        rejectionInfo.set(row.tweet_id, { count: 1, latestAt: ts });
+      } else {
+        existing.count++;
+        if (ts > existing.latestAt) existing.latestAt = ts;
       }
-
-      return tweetIds;
-    } catch (error) {
-      console.error("[SupabaseLogger] Error fetching processed tweet IDs:", error);
-      return new Set();
     }
+
+    const now = new Date();
+    for (const [tweetId, info] of rejectionInfo) {
+      if (info.count >= 3) {
+        tweetIds.add(tweetId);
+      } else {
+        const hoursSinceLatest = (now.getTime() - info.latestAt.getTime()) / (1000 * 60 * 60);
+        const cooldownHours = info.count === 1 ? 1 : 24;
+        if (hoursSinceLatest < cooldownHours) {
+          tweetIds.add(tweetId);
+        }
+      }
+    }
+
+    return tweetIds;
   }
 
   /**
@@ -1036,21 +1031,16 @@ export class SupabaseLogger {
    * the set to skip them, so each fetched tweet is processed at most once.
    */
   async getKnownTweetIds(): Promise<Set<string>> {
-    try {
-      // We page by tweet_id. The tweets table holds more than 40,000 rows and
-      // keeps growing roughly in step with the number of pipeline runs. tweet_id
-      // is the primary key, so it is unique and indexed and makes a natural
-      // paging key.
-      const rows = await this.fetchAllRows<{ tweet_id: string }>(
-        (client) => client.from("tweets").select("tweet_id"),
-        "tweet_id",
-        "getKnownTweetIds",
-      );
-      return new Set(rows.map((r) => r.tweet_id).filter(Boolean));
-    } catch (error) {
-      console.error("[SupabaseLogger] Error fetching known tweet IDs:", error);
-      return new Set();
-    }
+    // We page by tweet_id. The tweets table holds more than 40,000 rows and
+    // keeps growing roughly in step with the number of pipeline runs. tweet_id
+    // is the primary key, so it is unique and indexed and makes a natural
+    // paging key.
+    const rows = await this.fetchAllRows<{ tweet_id: string }>(
+      (client) => client.from("tweets").select("tweet_id"),
+      "tweet_id",
+      "getKnownTweetIds",
+    );
+    return new Set(rows.map((r) => r.tweet_id).filter(Boolean));
   }
 
   // ============================================
@@ -1061,22 +1051,16 @@ export class SupabaseLogger {
    * Returns the tweet ids that have already been run through Pangram, whatever
    * the verdict was. It costs one read per run, and it lets the Pangram pre-pass
    * check each long-form post exactly once instead of classifying the same viral
-   * post again on every run. On any error it returns an empty set instead of
-   * throwing. That way the pre-pass still works before migration 049 has been
-   * applied. It simply checks the posts again.
+   * post again on every run. A failed read throws, so the pre-pass is skipped
+   * for that run rather than classifying every post again.
    */
   async getPangramCheckedTweetIds(): Promise<Set<string>> {
-    try {
-      const rows = await this.fetchAllRows<{ tweet_id: string }>(
-        (client) => client.from("pangram_monitoring_sightings").select("tweet_id"),
-        "tweet_id",
-        "getPangramCheckedTweetIds",
-      );
-      return new Set(rows.map((r) => r.tweet_id));
-    } catch (err) {
-      console.warn("[SupabaseLogger] getPangramCheckedTweetIds failed (table missing?):", err);
-      return new Set();
-    }
+    const rows = await this.fetchAllRows<{ tweet_id: string }>(
+      (client) => client.from("pangram_monitoring_sightings").select("tweet_id"),
+      "tweet_id",
+      "getPangramCheckedTweetIds",
+    );
+    return new Set(rows.map((r) => r.tweet_id));
   }
 
   /** Records Pangram verdicts. The write only inserts, so the first verdict we
@@ -1561,28 +1545,21 @@ export class SupabaseLogger {
 
   async fetchRankingSubmitScores(scorer: string, windowDays: number): Promise<{ scores: number[]; spanDays: number; distinctDays: number }> {
     const since = new Date(Date.now() - windowDays * 86_400_000).toISOString();
-    const scores: number[] = [];
-    const seenDays = new Set<string>();
-    let earliest = Infinity;
-    for (let offset = 0; ; offset += 1000) {
-      const { data, error } = await this.client
+    const rows = await this.fetchAllRows<{ id: number; submit_score: number; decided_at: string }>(
+      (client) => client
         .from("ranking_decisions")
-        .select("submit_score,decided_at")
+        .select("id, submit_score, decided_at")
         .eq("scorer", scorer)
         // Rows logged while the note queue was on had no bar, and queued notes'
         // scores are computed late, so they stay out of the bar's history.
         .or("bar_state.is.null,bar_state.neq.queue")
-        .gte("decided_at", since)
-        .order("decided_at", { ascending: true })
-        .range(offset, offset + 999);
-      if (error) throw error;
-      for (const r of data ?? []) {
-        scores.push(Number(r.submit_score));
-        seenDays.add(String(r.decided_at).slice(0, 10));
-        earliest = Math.min(earliest, Date.parse(r.decided_at));
-      }
-      if (!data || data.length < 1000) break;
-    }
+        .gte("decided_at", since),
+      "id",
+      "rankingSubmitScores",
+    );
+    const scores = rows.map((r) => Number(r.submit_score));
+    const seenDays = new Set(rows.map((r) => String(r.decided_at).slice(0, 10)));
+    const earliest = rows.reduce((min, r) => Math.min(min, Date.parse(r.decided_at)), Infinity);
     return { scores, spanDays: scores.length ? Math.min(windowDays, (Date.now() - earliest) / 86_400_000) : 0, distinctDays: seenDays.size };
   }
 

@@ -27,5 +27,11 @@ jobs:
       - name: Lint the Common Notes frontend
         run: bun run lint
 
+      # The extension's tsconfig extends the one WXT generates into the
+      # gitignored .wxt folder, and that file maps the @cn/* imports. Without
+      # it, bun test cannot resolve them in the extension's tests.
+      - name: Generate the extension's TypeScript config
+        run: cd src/everything-extension && bunx wxt prepare
+
       - name: Run unit tests
         run: bun test

@@ -182,16 +182,12 @@ async function fetchPosts(
   // pipeline_runs tables are not scanned twice in one run. Other callers let
   // this branch do the fetching.
   if (supabaseLogger && (!skipPostIds || !knownTweetIds)) {
-    try {
-      const [skip, known] = await Promise.all([
-        supabaseLogger.getSkipTweetIds(),
-        supabaseLogger.getKnownTweetIds(),
-      ]);
-      skipPostIds = skipPostIds ?? skip;
-      knownTweetIds = knownTweetIds ?? known;
-    } catch (err) {
-      console.warn("[generate] Failed to get known tweet IDs:", err);
-    }
+    const [skip, known] = await Promise.all([
+      supabaseLogger.getSkipTweetIds(),
+      supabaseLogger.getKnownTweetIds(),
+    ]);
+    skipPostIds = skipPostIds ?? skip;
+    knownTweetIds = knownTweetIds ?? known;
   }
   skipPostIds = skipPostIds ?? new Set<string>();
   knownTweetIds = knownTweetIds ?? new Set<string>();

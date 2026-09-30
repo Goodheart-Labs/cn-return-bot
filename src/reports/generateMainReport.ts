@@ -18,7 +18,7 @@ if (useLocal) {
 }
 
 import { getSupabaseClient } from "../api/supabaseClient";
-import { fetchAllRows, fetchInBatches } from "../api/paging";
+import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
 import { resolvePicks } from "../pipeline/ab-testing/abTests";
 import { snowflakeToDate } from "../pipeline/utils/snowflake";
 import { writeFileSync, mkdirSync, existsSync } from "fs";
@@ -129,6 +129,7 @@ const submittedTweetIdsArr = [...submittedTweetIds];
 const videoRuns = await fetchInBatches<{ tweet_id: string; has_video: boolean | null; video_duration_ms: number | null }>(
   (chunk) => client.from("tweets").select("tweet_id, has_video, video_duration_ms").in("tweet_id", chunk),
   submittedTweetIdsArr,
+  "tweet_id",
   { label: "report.videoTweets" },
 );
 const videoByTweet = new Map<string, { has_video: boolean; video_duration_ms: number | null }>();

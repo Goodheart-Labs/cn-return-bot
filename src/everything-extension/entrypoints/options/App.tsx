@@ -1,11 +1,14 @@
 import { useEffect, useState, type ComponentProps, type ReactNode } from "react";
-import { Button } from "@cn/ui/Button";
+import { Button, buttonVariants } from "@cn/ui/Button";
+import { cn } from "@cn/ui/cn";
+import { ChevronIcon } from "@cn/ui/icons";
 import { Card } from "@cn/ui/Card";
 import { Checkbox } from "@cn/ui/Field";
 import { signOut } from "@cn/core/auth";
 import { useSession } from "@cn/features/auth/useSession";
 import { LoginPanel } from "../../components/LoginPanel";
-import { NoteFilterToggles, useNoteFilters } from "../../components/NoteFilterToggles";
+import { BOOK_CALL_URLS, FEEDBACK_FORM_URL } from "../../utils/feedbackLinks";
+import { NoteDisplayChoices, useNoteDisplay } from "../../components/NoteDisplayChoices";
 import { SafariSiteAccess } from "../../components/SafariSiteAccess";
 import {
   getSettings,
@@ -16,7 +19,7 @@ import {
   type VisitSiteKind,
 } from "../../utils/settings";
 
-/** The settings as editable state, mirroring useNoteFilters: optimistic local
+/** The settings as editable state, mirroring useNoteDisplay: optimistic local
  *  update, then a fire-and-forget write to synced storage. */
 function useExtensionSettings(): [ExtensionSettings | null, (patch: SettingsPatch) => void] {
   const [settings, setSettings] = useState<ExtensionSettings | null>(null);
@@ -40,7 +43,7 @@ const VISIT_SITES: { kind: VisitSiteKind; label: string }[] = [
 
 /** The settings page's checkbox: the design system's, at this page's text
  *  size. */
-const Setting = (props: ComponentProps<typeof Checkbox>) => <Setting className="text-sm text-fg-secondary" {...props} />;
+const Setting = (props: ComponentProps<typeof Checkbox>) => <Checkbox className="text-sm text-fg-secondary" {...props} />;
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -90,16 +93,10 @@ function AdvancedSettings({ settings, onToggle }: {
   settings: ExtensionSettings;
   onToggle: (patch: SettingsPatch) => void;
 }) {
-  const [filters, toggleFilters] = useNoteFilters();
+  const [display, changeDisplay] = useNoteDisplay();
   return (
     <div className="space-y-4">
       <Section title="Overlays">
-        <Setting
-          checked={settings.showNoteCountOverlay}
-          onChange={(checked) => onToggle({ showNoteCountOverlay: checked })}
-        >
-          Show the note-count card on pages that have been checked
-        </Setting>
         <Setting
           checked={settings.showThumbnailBadges}
           onChange={(checked) => onToggle({ showThumbnailBadges: checked })}
@@ -130,7 +127,7 @@ function AdvancedSettings({ settings, onToggle }: {
           />
           Classic: a badge in the text, the note on top of it
         </label>
-        {filters && <NoteFilterToggles filters={filters} onToggle={toggleFilters} />}
+        {display && <NoteDisplayChoices display={display} onChange={changeDisplay} />}
         <p className="pt-2 text-sm text-fg-secondary">How the rating buttons look.</p>
         <label className="flex items-center gap-2 text-sm text-fg-secondary">
           <input
@@ -213,14 +210,35 @@ export function SettingsApp() {
           )}
         </Section>
 
+        <Section title="Feedback">
+          <p className="text-sm text-fg-secondary">
+            We would appreciate feedback. Fill in our{" "}
+            <a href={FEEDBACK_FORM_URL} target="_blank" rel="noreferrer" className={buttonVariants({ variant: "link" })}>
+              feedback form
+            </a>
+            , or book a video call with us in{" "}
+            {BOOK_CALL_URLS.map(({ label, url }, index) => (
+              <span key={url}>
+                {index > 0 && " or "}
+                <a href={url} target="_blank" rel="noreferrer" className={buttonVariants({ variant: "link" })}>
+                  {label}
+                </a>
+              </span>
+            ))}
+            .
+          </p>
+        </Section>
+
         <section className="border-t border-line pt-4">
-          <button
+          <Button
+            variant="quiet"
             onClick={() => setAdvancedOpen((open) => !open)}
             aria-expanded={advancedOpen}
-            className="text-sm font-semibold text-fg"
+            className="flex items-center gap-1 text-sm"
           >
-            {advancedOpen ? "Hide advanced settings" : "Advanced settings"}
-          </button>
+            <ChevronIcon size={16} aria-hidden className={cn("transition-transform", advancedOpen && "rotate-90")} />
+            {advancedOpen ? "Hide advanced settings" : "Show advanced settings"}
+          </Button>
           {advancedOpen && settings && (
             <div className="mt-4">
               <AdvancedSettings settings={settings} onToggle={toggleSettings} />
