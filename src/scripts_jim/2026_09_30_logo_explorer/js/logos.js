@@ -441,9 +441,10 @@ const stackedNotes = {
   presets: [
     { name: "The old marker, before GOO-299", values: OLD_MARKER_GEOMETRY },
     { name: "As in the app", values: { "bg.shape": "none", "notes.frontColor": BLUE, "notes.backColor": BLUE, "notes.lines": "cut", "art.scale": 1 } },
-    // The extension's icon since GOO-299: the notes fill 70% of the tile, which
-    // is scripts/generate-logo-assets.ts's MARK_SHARE_OF_TILE.
-    { name: "White on a blue tile", values: { "bg.shape": "square", "bg.fill": BLUE, "bg.strokeWidth": 0, "bg.inset": 0, "bg.radius": 28, "notes.frontColor": WHITE, "notes.backColor": WHITE, "notes.lines": "cut", "art.scale": 0.93, "art.x": 0, "art.y": 0 } },
+    // The extension's icon since GOO-299: the notes fill 80 of the tile's 128
+    // units, as "Fit to canvas" leaves them on a backdrop. That is
+    // scripts/generate-logo-assets.ts's MARK_SHARE_OF_TILE.
+    { name: "White on a blue tile", values: { "bg.shape": "square", "bg.fill": BLUE, "bg.strokeWidth": 0, "bg.inset": 0, "bg.radius": 28, "notes.frontColor": WHITE, "notes.backColor": WHITE, "notes.lines": "cut", "art.scale": 0.83, "art.x": 0, "art.y": 0 } },
     { name: "Green in front of red", values: { "bg.shape": "none", "notes.frontColor": GREEN, "notes.backColor": RED, "notes.lines": "cut", "art.scale": 1 } },
   ],
   defaults: {
