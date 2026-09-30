@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { browser } from "#imports";
-import { Button } from "@cn/ui/Button";
 
 const EVERY_WEBSITE = { origins: ["<all_urls>"] };
 
@@ -34,15 +33,13 @@ export function SafariSiteAccess() {
   const granted = useEveryWebsiteAccess();
   if (granted === null) return null;
   if (granted) return <p className="text-sm font-medium text-positive">Done. Common Notes can see every website.</p>;
+  // There is no button here. Safari ignores an extension's request for every
+  // website, so only the user can grant it, from Safari's own toolbar prompt.
   return (
-    <div className="space-y-3">
-      <p className="text-sm leading-relaxed text-fg-secondary">
-        Safari asks you to allow extensions one site at a time. Click the Common Notes button in the toolbar and
-        choose Always Allow on Every Website. If you skip this, notes only appear on sites you allow one by one.
-      </p>
-      {/* Safari answers this request with its own prompt, which carries the
-          Always Allow on Every Website choice. */}
-      <Button onClick={() => void browser.permissions.request(EVERY_WEBSITE)}>Allow on every website</Button>
-    </div>
+    <p className="text-sm leading-relaxed text-fg-secondary">
+      Safari asks you to allow extensions one site at a time. Open any website, click the Common Notes button in the
+      toolbar, and choose Always Allow on Every Website. If you skip this, notes only appear on sites you allow one by
+      one.
+    </p>
   );
 }
