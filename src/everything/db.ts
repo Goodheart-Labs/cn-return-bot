@@ -25,6 +25,7 @@ export const QUEUE_PRIORITY = {
 } as const;
 
 export interface EverythingItem {
+  request_steer?: string | null;
   id: string;
   project_id: string | null;
   source: ItemSource;
@@ -42,7 +43,7 @@ export interface EverythingItem {
   full_text: string | null;
 }
 
-const ITEM_COLUMNS = "id, project_id, source, url, title, published_at, status, priority, full_text";
+const ITEM_COLUMNS = "id, project_id, source, url, title, published_at, status, priority, full_text, request_steer";
 
 export type ClaimStatus = "pending" | "skipped" | "no_note" | "note" | "error";
 
@@ -199,6 +200,7 @@ export type CheckedScope = "page" | "paragraph" | null;
  *  or an item whose body we already have. Local `--doc` files and posts read
  *  from a priority feed's RSS are the second kind. */
 export interface EnqueueRow {
+  request_steer?: string | null;
   project_id: string;
   source: ItemSource;
   url: string;
@@ -275,7 +277,7 @@ export async function promoteItemToWholePage(id: string, fullText: string | null
   throwOnError(
     await getSupabaseClient()
       .from("everything_items")
-      .update({ checked_scope: "page", full_text: fullText, status: "queued", error: null })
+      .update({ checked_scope: "page", full_text: fullText, request_steer: null, status: "queued", error: null })
       .eq("id", id),
   );
   await raiseItemPriority(id, priority);
@@ -563,6 +565,8 @@ export interface NoteRequestRow {
   page_title: string;
   selection: string | null;
   page_text: string | null;
+  steer?: string | null;
+  passage_question_id?: string | null;
 }
 
 export type NoteRequestStatus = "enqueued" | "done" | "skipped" | "error";
@@ -604,7 +608,7 @@ export async function fetchPendingNoteRequests(): Promise<NoteRequestRow[]> {
   return throwOnError(
     await getSupabaseClient()
       .from("everything_note_requests")
-      .select("id, page_url, page_title, selection, page_text")
+      .select("id, page_url, page_title, selection, page_text, steer, passage_question_id")
       .eq("status", "pending")
       .order("created_at"),
   ) as NoteRequestRow[];
