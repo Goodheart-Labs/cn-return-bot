@@ -301,7 +301,7 @@ function designView() {
   const zooms = ["light", "dark"].flatMap((theme) => ZOOMED_SIZES.map((pixels) => zoomFigure(pixels, theme)));
   return [
     stageCard(),
-    card("At the sizes it ships", [storeMarginCheckbox()], [sizeRow("light"), sizeRow("dark")]),
+    card("At the sizes it ships", [storeMarginCheckbox()], [sizeRow("light"), sizeRow("dark"), sizeRow("toolbar-hover")]),
     card(
       "The small icons, enlarged",
       [],

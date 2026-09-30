@@ -27,6 +27,7 @@ const BROWSER_WINDOW = `
     <svg class="chrome-icon" viewBox="0 0 20 20" width="18" height="18"><path d="M15.5 10a5.5 5.5 0 1 1-1.6-3.9M15.5 3.5v3h-3" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
     <div class="chrome-address">commonnotes.net/notes</div>
     <span class="chrome-extension" title="The extension's toolbar button"><span class="logo-slot" data-px="16"></span></span>
+    <span class="chrome-extension chrome-extension-hover" title="The same button under the mouse"><span class="logo-slot" data-px="16"></span></span>
     <svg class="chrome-icon" viewBox="0 0 20 20" width="18" height="18"><path d="M8 3.5a1.75 1.75 0 0 1 3.5 0V5H15v3.5h1.2a1.8 1.8 0 0 1 0 3.6H15V16h-3.6v-1.2a1.75 1.75 0 0 0-3.5 0V16H4v-3.9h1.2a1.8 1.8 0 0 0 0-3.6H4V5h4z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
     <span class="chrome-avatar"></span>
   </div>
