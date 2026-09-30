@@ -19,7 +19,8 @@ const EXTENSION_DIR = path.resolve(import.meta.dir, "../src/everything-extension
 
 const svg = readFileSync(path.join(EXTENSION_DIR, "assets/icon-bold-midpills.svg"), "utf8");
 
-const browser = await chromium.launch({ channel: "chrome" });
+// Chrome itself on a Mac, Playwright's own Chromium elsewhere.
+const browser = await chromium.launch(process.platform === "darwin" ? { channel: "chrome" } : {});
 const page = await browser.newPage();
 
 async function render(size: number, artwork: number, outPath: string) {

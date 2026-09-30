@@ -6,8 +6,8 @@
   <!-- note text lines -->
   <line x1="28" y1="38" x2="100" y2="38" stroke="#1f2937" stroke-width="13" stroke-linecap="round"/>
   <line x1="28" y1="62" x2="82" y2="62" stroke="#1f2937" stroke-width="13" stroke-linecap="round"/>
-  <!-- vote pills: red / amber / green, filled with their outline color -->
-  <rect x="18" y="82" width="26" height="22" rx="6" fill="#dc2626" stroke="#dc2626" stroke-width="7"/>
+  <!-- vote pills: green / amber / red, filled with their outline color -->
+  <rect x="18" y="82" width="26" height="22" rx="6" fill="#16a34a" stroke="#16a34a" stroke-width="7"/>
   <rect x="51" y="82" width="26" height="22" rx="6" fill="#d97706" stroke="#d97706" stroke-width="7"/>
-  <rect x="84" y="82" width="26" height="22" rx="6" fill="#16a34a" stroke="#16a34a" stroke-width="7"/>
+  <rect x="84" y="82" width="26" height="22" rx="6" fill="#dc2626" stroke="#dc2626" stroke-width="7"/>
 </svg>
