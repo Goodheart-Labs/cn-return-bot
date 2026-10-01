@@ -222,6 +222,7 @@ async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: 
       pageTitle: captured?.title ?? tab.title ?? "",
       selection: selection.trim() || null,
       pageText: captured?.text,
+      creatorFeedUrl: authorFeed.kind === "pressable" ? authorFeed.target.feedUrl : null,
     });
     // This is only a local reminder. The request itself is already saved.
     await addRequestedPage(pageUrl).catch(() => {});

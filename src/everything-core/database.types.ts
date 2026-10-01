@@ -442,6 +442,7 @@ export type Database = {
         Row: {
           client_token: string | null
           created_at: string
+          feed_url: string | null
           id: string
           item_id: string | null
           page_text: string | null
@@ -457,6 +458,7 @@ export type Database = {
         Insert: {
           client_token?: string | null
           created_at?: string
+          feed_url?: string | null
           id?: string
           item_id?: string | null
           page_text?: string | null
@@ -472,6 +474,7 @@ export type Database = {
         Update: {
           client_token?: string | null
           created_at?: string
+          feed_url?: string | null
           id?: string
           item_id?: string | null
           page_text?: string | null
