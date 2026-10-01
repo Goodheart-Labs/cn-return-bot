@@ -10,3 +10,6 @@ const meta = {
 export default meta;
 
 export const Email: StoryObj<typeof meta> = {};
+
+/** What the Safari extension shows. Safari cannot run the X flow. */
+export const EmailOnly: StoryObj<typeof meta> = { args: { signInWithX: undefined } };
