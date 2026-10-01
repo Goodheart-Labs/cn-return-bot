@@ -147,3 +147,7 @@ storybook-static
 .impeccable/live/inject-journal.json
 .impeccable/config.local.json
 .impeccable/hook.cache.json
+
+# Xcode's build output and per-user state for the Safari container app
+src/everything-extension/safari/build/
+xcuserdata/
