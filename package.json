@@ -114,9 +114,10 @@
     "build-everything-web": "cd src/everything-web && bunx vite build --mode prod-backend",
     "dev-ext": "cd src/everything-extension && bunx wxt --mode prod-backend",
     "build-ext-dev": "cd src/everything-extension && CN_BUILD=$(date +%H:%M:%S) && VITE_CN_DEV_RELOAD=1 VITE_CN_BUILD=$CN_BUILD bunx wxt build --mode prod-backend && echo $CN_BUILD > .output/chrome-mv3-prod-backend/build-id.txt",
+    "build-ext-safari-dev": "cd src/everything-extension && CN_BUILD=$(date +%H:%M:%S) && VITE_CN_DEV_RELOAD=1 VITE_CN_BUILD=$CN_BUILD bunx wxt build -b safari --mv3 --mode prod-backend && echo $CN_BUILD > .output/safari-mv3-prod-backend/build-id.txt",
     "dev-ext-local": "cd src/everything-extension && bunx wxt",
-    "build-ext": "cd src/everything-extension && bunx wxt build --mode prod-backend && bunx wxt build -b firefox --mode prod-backend",
-    "zip-ext": "cd src/everything-extension && bunx wxt zip --mode prod-backend && bunx wxt zip -b firefox --mode prod-backend"
+    "build-ext": "cd src/everything-extension && bunx wxt build --mode prod-backend && bunx wxt build -b firefox --mode prod-backend && bunx wxt build -b safari --mv3 --mode prod-backend",
+    "zip-ext": "cd src/everything-extension && bunx wxt zip --mode prod-backend && bunx wxt zip -b firefox --mode prod-backend && bunx wxt zip -b safari --mv3 --mode prod-backend"
   },
   "knip": {
     "ignoreBinaries": [
