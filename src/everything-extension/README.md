@@ -50,4 +50,4 @@ NOTE: WXT suffixes the output directory with the mode — prod-backend builds la
 
 `chrome-signing-key.pem` (gitignored) is the private half of the pinned manifest key — only needed to claim the same extension ID when publishing to the Chrome Web Store later. Back it up; don't commit it.
 
-See the "Browser extension" section of the repo's `CLAUDE.md` for architecture, auth flows, and the Supabase dashboard prerequisites.
+How the extension behaves for readers, and the decisions behind it, is in [docs/extension-behaviour.md](../../docs/extension-behaviour.md). The production settings it depends on, such as the sign-in redirect addresses, are in [docs/prod-config.md](../../docs/prod-config.md).

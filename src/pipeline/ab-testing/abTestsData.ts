@@ -65,6 +65,7 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     { variant: { name: "glm53flash-serper",       overrides: { search_model: "z-ai/glm-5.3-flash",                web_search: "serper" }},       weight: 7 },
     { variant: { name: "musespark13c-serper",     overrides: { search_model: "meta/muse-spark-1.3-contributor",   web_search: "serper" }},       weight: 0 },
     { variant: { name: "musespark13c-native",     overrides: { search_model: "meta/muse-spark-1.3-contributor",   web_search: "openrouter_native" }}, weight: 0 },
+    { variant: { name: "gpt6luna-native",         overrides: { search_model: "openai/gpt-6-luna",                 web_search: "openrouter_native" }}, weight: 0 },
     { variant: { name: "deepseek-v32exp-searxng", overrides: { search_model: "deepseek/deepseek-v3.2-exp",        web_search: "serper" }},       weight: 0 },
     { variant: { name: "qwen3max-searxng",        overrides: { search_model: "qwen/qwen3-max",                    web_search: "serper" }},       weight: 0 },
     { variant: { name: "gpt5_4mini-native",       overrides: { search_model: "openai/gpt-5.4-mini",               web_search: "native_openai" }}, weight: 0 },
@@ -91,7 +92,9 @@ const SIMPLE_BOT_WRITER_TEST: ABTest = {
     { variant: { name: "opus5",            overrides: { writer_model: "anthropic/claude-opus-5"       }}, weight: 0 },
     { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 0 },
     { variant: { name: "fable5",           overrides: { writer_model: "anthropic/claude-fable-5"      }}, weight: 0 },
-    { variant: { name: "musespark13c",     overrides: { writer_model: "meta/muse-spark-1.3-contributor" }}, weight: 13 },
+    // 2026-10-01: Meta blocked our Muse access (user_blocked), so Muse's share moved to GPT-6 Luna (GOO-303).
+    { variant: { name: "musespark13c",     overrides: { writer_model: "meta/muse-spark-1.3-contributor" }}, weight: 0 },
+    { variant: { name: "gpt6luna",         overrides: { writer_model: "openai/gpt-6-luna"             }}, weight: 13 },
     { variant: { name: "deepseek-v4flash", overrides: { writer_model: "deepseek/deepseek-v4-flash"    }}, weight: 0 },
   ],
 };
@@ -105,6 +108,7 @@ const SIMPLE_BOT_VERIFIER_TEST: ABTest = {
   variants: [
     { variant: { name: "gemini-flash",     overrides: { verifier_model: "google/gemini-3-flash-preview"   }}, weight: 100 },
     { variant: { name: "musespark13c",     overrides: { verifier_model: "meta/muse-spark-1.3-contributor" }}, weight: 0 },
+    { variant: { name: "gpt6luna",         overrides: { verifier_model: "openai/gpt-6-luna"               }}, weight: 0 },
     { variant: { name: "deepseek-v4flash", overrides: { verifier_model: "deepseek/deepseek-v4-flash"      }}, weight: 0  },
   ],
 };
@@ -117,7 +121,8 @@ const MEDIA_DESCRIPTION_TEST: ABTest = {
   prerequisites: { botId: "simple-bot" },
   variants: [
     { variant: { name: "gemini3flash", overrides: { media_model: "google/gemini-3-flash-preview"   }}, weight: 50 },
-    { variant: { name: "musespark13c", overrides: { media_model: "meta/muse-spark-1.3-contributor" }}, weight: 50 },
+    { variant: { name: "musespark13c", overrides: { media_model: "meta/muse-spark-1.3-contributor" }}, weight: 0 },
+    { variant: { name: "gpt6luna",     overrides: { media_model: "openai/gpt-6-luna"               }}, weight: 50 },
   ],
 };
 
