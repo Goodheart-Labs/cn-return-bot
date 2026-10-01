@@ -121,12 +121,16 @@ channel's details. Invite the bot to the channel first: type `/invite @Claudy`
 in it. Keep each channel id in its own environment variable, named after what
 the channel is for, so the code never contains one.
 
-To check the token on this machine, as root:
+To check the token on this machine, as root. The package script calls `bun`
+by name, and root's PATH does not include it, so the first line adds it:
 
 ```bash
+export PATH=/home/cnbot/.bun/bin:$PATH
 cd /opt/cn-return-bot && set -a && . /etc/cn-return-bot/service.env && set +a
-/home/cnbot/.bun/bin/bun run slack-send C08ABCDEF "hello from the services machine"
+bun run slack-send C0C638V19ED "hello from the services machine"
 ```
+
+`C0C638V19ED` is #daily-report, the only channel Claudy is in so far.
 
 ## The PO token provider (caption downloads)
 
