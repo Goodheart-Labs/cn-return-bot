@@ -178,6 +178,7 @@ export function ProjectPage({ project, itemId, noteId, navigate }: {
       <FeedNoteCard
         key={note.id}
         note={note}
+        post={activeItem ? undefined : items.get(note.claim.item_id)}
         improvements={improvements.get(note.id) ?? NO_NOTES}
         nnnEntries={entries.get(note.claim_id) ?? NO_ENTRIES}
         shareUrl={noteUrl(project.slug, note.id)}
