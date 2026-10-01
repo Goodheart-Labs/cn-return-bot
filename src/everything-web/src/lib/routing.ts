@@ -52,6 +52,15 @@ function readLegacyRoute(q: URLSearchParams): Route {
   return { view: "home", section: q.get("section") === "install" ? "install" : null };
 }
 
+/** Short addresses for reading editions shared by hand, such as
+ *  /white-house-accord, each standing for a /read?url=…&full=… address. */
+export const READING_EDITIONS: Record<string, { url: string; full: string | null }> = {
+  "white-house-accord": {
+    url: "https://truthsocial.com/@realDonaldTrump/117356435739432952",
+    full: "https://www.whitehouse.gov/fact-sheets/2026/09/fact-sheet-president-donald-j-trump-inaugurates-the-era-of-super-intelligence/",
+  },
+};
+
 /** Reads the route from the address. A path the app does not know shows the
  *  homepage. */
 export function readRoute(pathname: string, search: string): Route {
@@ -61,6 +70,8 @@ export function readRoute(pathname: string, search: string): Route {
   const [page, project, item] = within.split("/").filter(Boolean).map(decodeURIComponent);
   if (page === "leaderboard") return { view: "leaderboard" };
   if (page === "read") return { view: "read", url: q.get("url"), full: q.get("full") };
+  const edition = page ? READING_EDITIONS[page] : undefined;
+  if (edition) return { view: "read", ...edition };
   if (page === "install") return INSTALL;
   if (page === "notes") return { view: "notes", project: project ?? null, item: item ?? null, note: q.get("note") };
   return HOME;

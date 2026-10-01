@@ -56,7 +56,7 @@ const VOTE_OPTIONS = [
  *  Clicking a pill casts a vote, and the highlighted pill is the viewer's own
  *  vote. The pills render even when every count is zero, because somebody has
  *  to be able to cast the first vote. */
-export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVote, showCounts = myVote !== undefined, compact = false }: {
+export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVote, showCounts = myVote !== undefined, compact = false, spelledOut = false }: {
   helpful: number;
   somewhatHelpful: number;
   notHelpful: number;
@@ -72,6 +72,10 @@ export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVo
    *  tooltip and the aria label. Both variants share one style table, so the
    *  two cannot drift apart again. */
   compact?: boolean;
+  /** Spells each pill out as "Helpful", "Somewhat helpful" and "Not helpful"
+   *  for surfaces with no "Is this helpful?" question above the pills, such as
+   *  the reader's key points and forecasts. */
+  spelledOut?: boolean;
 }) {
   const palette = useContext(PillPaletteContext);
   const counts: Record<Vote, number> = { 1: helpful, 0: somewhatHelpful, [-1]: notHelpful };
@@ -85,11 +89,11 @@ export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVo
           aria-pressed={myVote === value}
           // "Yes" and "No" alone would be ambiguous to a screen reader that
           // reaches the pills without the question, so the name says both.
-          aria-label={showCounts ? `${label}, ${meaning.toLowerCase()}: ${counts[value]} ratings` : `${label}, ${meaning.toLowerCase()}`}
+          aria-label={`${spelledOut ? meaning : `${label}, ${meaning.toLowerCase()}`}${showCounts ? `: ${counts[value]} ratings` : ""}`}
           onClick={() => onVote(value)}
           className={votePillVariants({ size: compact ? "compact" : "full", palette, tone, selected: myVote === value })}
         >
-          {compact ? icon : label}
+          {compact ? icon : spelledOut ? meaning : label}
           {showCounts && counts[value] > 0 && <span className="tabular-nums">{counts[value].toLocaleString("en-US")}</span>}
         </button>
       ))}

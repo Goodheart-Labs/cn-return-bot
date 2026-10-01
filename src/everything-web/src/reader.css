@@ -39,11 +39,8 @@
 .reader-passage-ask:hover { color: var(--cn-link); }
 .reader-checked-marker { display: block; margin-top: 0.75rem; padding-left: 0.5rem; border-left: 2px solid var(--cn-line); color: var(--cn-fg-subtle); font-size: var(--cn-text-2xs); line-height: 1.5; }
 
-.reader-margin { align-self: stretch; min-width: 0; }
-.reader-margin-sticky { position: sticky; top: 4.5rem; max-height: calc(100vh - 5.5rem); overflow-y: auto; overscroll-behavior: contain; padding: 0 0.25rem 0.75rem; }
-.reader-margin-heading { display: flex; justify-content: space-between; align-items: center; padding: 0.375rem 0 0.75rem; margin-bottom: 1rem; border-bottom: 1px solid var(--cn-line); }
-.reader-margin-heading h2 { font-family: var(--cn-font-title); font-size: var(--cn-text-sm); font-weight: 700; }
-.reader-margin-heading button { font-size: 1.5rem; line-height: 1rem; padding: 0.25rem; color: var(--cn-fg-muted); }
+.reader-margin { position: relative; align-self: stretch; min-width: 0; }
+.reader-margin-group { position: absolute; left: 0.25rem; right: 0.25rem; display: grid; gap: 1rem; transition: top 150ms ease; }
 .reader-margin-empty { padding-top: 0.5rem; color: var(--cn-fg-muted); font-size: var(--cn-text-sm); line-height: var(--cn-leading-sm); }
 .reader-margin-cards, .reader-inline-notes { display: grid; gap: 1rem; }
 .reader-inline-notes { display: none; }
@@ -92,7 +89,7 @@
   .reader-passage > p, .reader-passage > ul, .reader-passage > ol { font-size: 1.125rem; line-height: 1.75; }
   .reader-notice { padding: 1.25rem; }
 }
-@media (prefers-reduced-motion: reduce) { .reader-note-add, .reader-passage-ask { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .reader-note-add, .reader-passage-ask, .reader-margin-group { transition: none; } }
 
 .reader-highlight-quote { background: var(--cn-tint); color: inherit; border-radius: 2px; }
 .reader-highlight-card, .reader-question-panel { padding: 1rem; border: 1px solid var(--cn-line); border-radius: var(--cn-radius-card); background: var(--cn-surface); font-size: var(--cn-text-sm); overflow-wrap: anywhere; }
