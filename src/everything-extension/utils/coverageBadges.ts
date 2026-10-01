@@ -277,16 +277,20 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
     }
   };
 
-  const placeBadge = (anchor: HTMLAnchorElement, currentKeys: Set<string>) => {
+  /** Badges the link if it leads to a noted or checked page. Returns what
+   *  happened, for the scan's summary line. */
+  const placeBadge = (anchor: HTMLAnchorElement, currentKeys: Set<string>): "not-listed" | "badged" | "no-surface" => {
     const key = keyFor(anchor.href);
-    if (!key || currentKeys.has(key) || badges.has(key)) return;
+    if (!key || currentKeys.has(key)) return "not-listed";
+    if (badges.has(key)) return "badged";
     const count = countByKey.get(key);
-    if (!count && !checkedNoNotesKeys.has(key)) return;
+    if (!count && !checkedNoNotesKeys.has(key)) return "not-listed";
     const surface = surfaceFor(anchor);
-    if (!surface) return;
+    if (!surface) return "no-surface";
     const badge = createBadge(count ? { count } : { checked: true });
     seat(badge, surface);
     badges.set(key, { badge, anchor });
+    return "badged";
   };
 
   const scan = () => {
@@ -308,7 +312,22 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
       const key = pageKey(href);
       if (key) currentKeys.add(key);
     }
-    for (const anchor of document.querySelectorAll<HTMLAnchorElement>("a[href]")) placeBadge(anchor, currentKeys);
+    const outcomes = { badged: 0, "no-surface": 0 };
+    for (const anchor of document.querySelectorAll<HTMLAnchorElement>("a[href]")) {
+      const outcome = placeBadge(anchor, currentKeys);
+      if (outcome !== "not-listed") outcomes[outcome] += 1;
+    }
+    logScanSummary(`[common-notes] listing badges: ${outcomes.badged + outcomes["no-surface"]} links to noted pages, ${badges.size} badges on the page, ${outcomes["no-surface"]} links outside any card`);
+  };
+
+  // The badges are otherwise silent, so a page that should show them and does
+  // not gave no clue why (Safari, October 2026). The line is repeated only
+  // when it changes, because every DOM change triggers a scan.
+  let lastSummary = "";
+  const logScanSummary = (summary: string) => {
+    if (summary === lastSummary) return;
+    lastSummary = summary;
+    console.info(summary);
   };
 
   let timer: ReturnType<typeof setTimeout> | undefined;
