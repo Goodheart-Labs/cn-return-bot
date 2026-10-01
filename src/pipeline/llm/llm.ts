@@ -50,6 +50,15 @@ const MODEL_ROUTING: Record<string, ModelRouting> = {
   },
 };
 
+type ReasoningEffort = "low" | "medium" | "high";
+
+// The reasoning effort a model runs at when the call does not set its own.
+// GPT-6 Luna is weak with reasoning off, and published effort curves show medium
+// is where its gains level off, so it always reasons at medium (GOO-303).
+const DEFAULT_REASONING_EFFORT: Record<string, ReasoningEffort> = {
+  "openai/gpt-6-luna": "medium",
+};
+
 /** Raised when an attempt runs past its deadline. It is retryable, because the
  *  next attempt is routed afresh and usually lands on a healthy provider. */
 export class AttemptDeadlineError extends Error {
@@ -214,7 +223,9 @@ async function callWithRetry(
   // this, OpenRouter can pick a provider that quietly ignores the strict schema.
   // The model then wraps its JSON in ```json fences and we cannot parse it.
   const routing = MODEL_ROUTING[params.model];
+  const defaultEffort = DEFAULT_REASONING_EFFORT[params.model];
   const routedParams = {
+    ...(defaultEffort ? { reasoning_effort: defaultEffort } : {}),
     ...params,
     provider: {
       require_parameters: true,
