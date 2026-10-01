@@ -359,7 +359,7 @@ export default defineBackground(() => {
       browser.runtime.reload();
       return undefined;
     }
-    if ((message as { type?: string })?.type === "cn-signin-x") {
+    if (!import.meta.env.SAFARI && (message as { type?: string })?.type === "cn-signin-x") {
       // The OAuth window outlives the popup that asked for it, so the flow
       // runs here in the background.
       signInWithTwitterInPopup(browser.identity.getRedirectURL(), (url) =>

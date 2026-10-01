@@ -64,9 +64,20 @@ export default defineConfig({
           },
         }
       : {}),
-    // Chrome needs "offscreen" for the hidden page that reads the colour
-    // scheme. It shows no warning at install or update.
-    permissions: ["storage", "identity", "contextMenus", "activeTab", "tabs", "scripting", "alarms", ...(browser === "chrome" ? ["offscreen"] : [])],
+    // Safari has no identity API, so its build signs in by email code only and
+    // does not ask for the permission. Chrome needs "offscreen" for the hidden
+    // page that reads the colour scheme. It shows no warning at install or
+    // update.
+    permissions: [
+      "storage",
+      ...(browser === "safari" ? [] : ["identity"]),
+      "contextMenus",
+      "activeTab",
+      "tabs",
+      "scripting",
+      "alarms",
+      ...(browser === "chrome" ? ["offscreen"] : []),
+    ],
     // Access to every site is required at install time. The background then
     // registers the generic content script for every hostname that has notes,
     // without asking. The user sees one broad install warning and no per-site
@@ -74,10 +85,12 @@ export default defineConfig({
     // grant.html; what the user can switch off now lives on the settings page
     // (overlays, thumbnail badges, visit recording). Note for existing
     // installs: Chrome disables an updated extension until the user approves
-    // the newly required permission.
+    // the newly required permission. Safari is the exception. It grants no site
+    // at install, and each user allows sites from the toolbar button, which is
+    // why the Safari welcome page asks for "Always Allow on Every Website".
     host_permissions: ["<all_urls>"],
     ...(browser === "chrome" ? { key: CHROME_PUBLIC_KEY } : {}),
-    browser_specific_settings: {
+    ...(browser === "firefox" ? { browser_specific_settings: {
       // A fixed add-on ID keeps the OAuth redirect URL on extensions.allizom.org
       // the same across every Firefox install. This is not the original ID. AMO
       // burns an ID permanently when its add-on is deleted, and that is what
@@ -96,10 +109,12 @@ export default defineConfig({
           optional: ["authenticationInfo", "personallyIdentifyingInfo"],
         },
       },
-    },
+    } } : {}),
+    // Safari 18 is the oldest version we test on. It runs on macOS 13 and later.
+    ...(browser === "safari" ? { browser_specific_settings: { safari: { strict_min_version: "18.0" } } } : {}),
   }),
   hooks: {
-    "build:manifestGenerated": (_wxt, manifest) => {
+    "build:manifestGenerated": (wxt, manifest) => {
       // The generic content script is injected at runtime on origins we do not know
       // in advance, so WXT cannot work out which matches its stylesheet needs. It
       // emits an empty list, and that would stop the shadow-root UI from fetching
@@ -109,6 +124,9 @@ export default defineConfig({
         if (typeof resource === "object" && "resources" in resource && RUNTIME_INJECTED_CSS.some((css) => resource.resources.includes(css))) {
           resource.matches = ["<all_urls>"];
         }
+        // Safari does not know use_dynamic_url, and Apple's converter warns
+        // about it. WXT adds the key for every browser.
+        if (wxt.config.browser === "safari" && typeof resource === "object") delete resource.use_dynamic_url;
       }
     },
   },

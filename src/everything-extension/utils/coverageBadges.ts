@@ -120,14 +120,20 @@ function coverImage(root: HTMLElement): HTMLElement | null {
  *  picture's own corner. An image that is absolutely positioned fills its
  *  containing block, which is its offsetParent. That element is already
  *  positioned, so the badge can use it without any style change.
- *  Otherwise the frame is the image's nearest ancestor that draws a box.
- *  Substack wraps its thumbnails in a <picture> with display: contents, which
- *  draws no box of its own, so a badge positioned against it would land in the
- *  corner of some larger ancestor instead. */
+ *  Otherwise the frame is the image's nearest ancestor that draws a block box.
+ *  Two kinds of wrapper are skipped. Substack wraps its thumbnails in a
+ *  <picture> with display: contents, which draws no box of its own, so a
+ *  badge positioned against it would land in the corner of some larger
+ *  ancestor instead. YouTube wraps them in a <yt-image> that is an inline
+ *  element, whose box is only one line of text tall. A badge positioned
+ *  against it sat on the thumbnail's bottom edge, where the thumbnail's
+ *  rounded corners clipped it away (October 2026). */
+const WRAPPER_DISPLAYS_WITHOUT_A_FRAME = new Set(["contents", "inline"]);
+
 function pictureFrame(image: HTMLElement): HTMLElement {
   if (getComputedStyle(image).position === "absolute" && image.offsetParent instanceof HTMLElement) return image.offsetParent;
   let frame = image.parentElement!;
-  while (getComputedStyle(frame).display === "contents") frame = frame.parentElement!;
+  while (WRAPPER_DISPLAYS_WITHOUT_A_FRAME.has(getComputedStyle(frame).display)) frame = frame.parentElement!;
   return frame;
 }
 
@@ -153,9 +159,10 @@ function surfaceFor(anchor: HTMLAnchorElement): HTMLElement | null {
 
 /** Marks every listing link that leads to a noted page with a note-count
  *  badge, placed where surfaceFor says. The scan re-runs debounced on DOM changes,
- *  which covers infinite scroll and single-page-app navigations, and each
- *  noted page gets one badge at a time: a badge the host page threw away in a
- *  re-render is simply placed again on the next scan. Returns a teardown
+ *  which covers infinite scroll and single-page-app navigations. Every card
+ *  that links a noted page gets one badge, however often the page is listed.
+ *  A badge the host page threw away in a re-render is simply placed again on
+ *  the next scan. Returns a teardown
  *  function, or null when the counts have never been synced. */
 export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<(() => void) | null> {
   if (!(await getSettings()).showThumbnailBadges) return null;
@@ -241,9 +248,12 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
     return pageKey(canonical);
   };
 
-  // The one badge each noted page currently has, together with the link that
-  // earned it, so a page linked several times in one listing is badged once.
-  const badges = new Map<string, { badge: HTMLElement; anchor: HTMLAnchorElement }>();
+  // Every placed badge, by the link that earned it. A page listed twice, such
+  // as a YouTube video that is both the channel's featured video and a tile in
+  // a shelf below, gets a badge on each copy. Several links inside one card
+  // lead to the same surface, and a surface carries one badge only.
+  const badges = new Map<HTMLAnchorElement, { badge: HTMLElement; key: string }>();
+  const hasBadge = (surface: HTMLElement) => [...surface.children].some((child) => child.classList.contains(BADGE_CLASS));
 
   /** Puts the badge on the best surface its link currently offers. Calling it
    *  again is harmless, and that matters: cover images lazy-load, so the first
@@ -265,28 +275,34 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
    *  getting one. A valid badge is re-seated, which moves it onto the picture
    *  once a lazy-loaded image has arrived. */
   const pruneAndReseat = () => {
-    for (const [key, { badge, anchor }] of badges) {
+    for (const [anchor, { badge, key }] of badges) {
       const valid = badge.isConnected && anchor.isConnected && keyFor(anchor.href) === key;
       const surface = valid ? surfaceFor(anchor) : null;
-      if (surface) {
+      if (surface && (badge.parentElement === surface || !hasBadge(surface))) {
         seat(badge, surface);
       } else {
         badge.remove();
-        badges.delete(key);
+        badges.delete(anchor);
       }
     }
   };
 
-  const placeBadge = (anchor: HTMLAnchorElement, currentKeys: Set<string>) => {
+  /** Badges the link if it leads to a noted or checked page. Returns what
+   *  happened, for the scan's summary line. */
+  const placeBadge = (anchor: HTMLAnchorElement, currentKeys: Set<string>): "not-listed" | "badged" | "no-surface" => {
+    if (badges.has(anchor)) return "badged";
     const key = keyFor(anchor.href);
-    if (!key || currentKeys.has(key) || badges.has(key)) return;
+    if (!key || currentKeys.has(key)) return "not-listed";
     const count = countByKey.get(key);
-    if (!count && !checkedNoNotesKeys.has(key)) return;
+    if (!count && !checkedNoNotesKeys.has(key)) return "not-listed";
     const surface = surfaceFor(anchor);
-    if (!surface) return;
+    if (!surface) return "no-surface";
+    // Another link in the same card already put its badge here.
+    if (hasBadge(surface)) return "badged";
     const badge = createBadge(count ? { count } : { checked: true });
     seat(badge, surface);
-    badges.set(key, { badge, anchor });
+    badges.set(anchor, { badge, key });
+    return "badged";
   };
 
   const scan = () => {
@@ -308,7 +324,22 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
       const key = pageKey(href);
       if (key) currentKeys.add(key);
     }
-    for (const anchor of document.querySelectorAll<HTMLAnchorElement>("a[href]")) placeBadge(anchor, currentKeys);
+    const outcomes = { badged: 0, "no-surface": 0 };
+    for (const anchor of document.querySelectorAll<HTMLAnchorElement>("a[href]")) {
+      const outcome = placeBadge(anchor, currentKeys);
+      if (outcome !== "not-listed") outcomes[outcome] += 1;
+    }
+    logScanSummary(`[common-notes] listing badges: ${outcomes.badged + outcomes["no-surface"]} links to noted pages, ${badges.size} badges on the page, ${outcomes["no-surface"]} links outside any card`);
+  };
+
+  // The badges are otherwise silent, so a page that should show them and does
+  // not gave no clue why (Safari, October 2026). The line is repeated only
+  // when it changes, because every DOM change triggers a scan.
+  let lastSummary = "";
+  const logScanSummary = (summary: string) => {
+    if (summary === lastSummary) return;
+    lastSummary = summary;
+    console.info(summary);
   };
 
   let timer: ReturnType<typeof setTimeout> | undefined;

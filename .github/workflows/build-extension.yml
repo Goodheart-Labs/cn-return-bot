@@ -1,6 +1,6 @@
 name: Build Extension
 
-# Zips the Common Notes browser extension (Chrome MV3 + Firefox) and keeps the
+# Zips the Common Notes browser extension (Chrome, Firefox and Safari) and keeps the
 # rolling "extension-latest" GitHub release updated so people can install it
 # without waiting for store approval (see src/everything-extension/README.md).
 
@@ -36,8 +36,10 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Zip Chrome + Firefox builds
-        run: cd src/everything-extension && bunx wxt zip && bunx wxt zip -b firefox
+      # The Safari zip is the web part of the Safari extension. The Mac app that
+      # carries it is built with Xcode (src/everything-extension/safari/).
+      - name: Zip Chrome, Firefox and Safari builds
+        run: cd src/everything-extension && bunx wxt zip && bunx wxt zip -b firefox && bunx wxt zip -b safari --mv3
         env:
           VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
