@@ -87,6 +87,10 @@ YTDLP_PROXY_URL=
 #SUBSTACK_PROXY_URL=
 #SUBSTACK_PROXY_KEY=
 
+# Slack bot token of "Claudy" (src/utils/slack.ts), the same one the devbox uses.
+# Needed only by code that posts to Slack; see "Posting to Slack" below.
+SLACK_BOT_TOKEN=
+
 # Optional knobs, with their defaults
 #CLAIM_CHECK_PORT=8787
 #CLAIM_CHECK_CONCURRENCY=6
@@ -95,6 +99,33 @@ YTDLP_PROXY_URL=
 #EXTRACTION_CONCURRENCY=2
 #EVERYTHING_DAILY_SPEND_CAP_USD=50
 #EVERYTHING_REQUEST_RESERVE_USD=10
+```
+
+## Posting to Slack
+
+Code in this repository posts to Slack with `postSlackMessage` from
+`src/utils/slack.ts`. It posts as the bot "Claudy", the same Slack app the
+devbox uses (the devbox repository's README explains how the app was made). It
+needs `SLACK_BOT_TOKEN`, from the environment file on this machine or from the
+repository secret of the same name in GitHub Actions. It throws when Slack
+refuses a message, for example with `not_in_channel` when nobody has invited
+the bot to the channel.
+
+```ts
+const ts = await postSlackMessage({ channel: "C08ABCDEF", markdown: "A *new* note" });
+await postSlackMessage({ channel: "C08ABCDEF", markdown: "More detail", threadTs: ts });
+```
+
+A channel is addressed by its id, which Slack shows at the bottom of the
+channel's details. Invite the bot to the channel first: type `/invite @Claudy`
+in it. Keep each channel id in its own environment variable, named after what
+the channel is for, so the code never contains one.
+
+To check the token on this machine, as root:
+
+```bash
+cd /opt/cn-return-bot && set -a && . /etc/cn-return-bot/service.env && set +a
+/home/cnbot/.bun/bin/bun run slack-send C08ABCDEF "hello from the services machine"
 ```
 
 ## The PO token provider (caption downloads)

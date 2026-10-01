@@ -54,6 +54,9 @@ export interface YoutubeVideo {
   /** True for a premiere or stream that has not started. It cannot be watched
    *  yet, so it has no captions and must not be enqueued. */
   upcoming: boolean;
+  /** The language the video is spoken in, as the uploader or YouTube set it,
+   *  such as "en-US" or "ja". Null when nobody set it. */
+  audioLanguage: string | null;
 }
 
 function apiKey(): string {
@@ -160,6 +163,7 @@ function toVideo(item: any): YoutubeVideo {
     viewCount: Number(item.statistics?.viewCount ?? 0),
     durationSeconds: seconds > 0 ? seconds : null,
     upcoming: item.snippet.liveBroadcastContent === "upcoming",
+    audioLanguage: item.snippet.defaultAudioLanguage ?? null,
   };
 }
 
