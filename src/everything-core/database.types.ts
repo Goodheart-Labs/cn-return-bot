@@ -2058,6 +2058,10 @@ export type Database = {
         Returns: Json
       }
       everything_cost_since: { Args: { since: string }; Returns: number }
+      everything_creator_project: {
+        Args: { creator_feed_url: string }
+        Returns: string
+      }
       everything_creator_attention: {
         Args: { min_pages: number; since: string }
         Returns: {

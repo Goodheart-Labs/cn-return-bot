@@ -14,6 +14,10 @@ import {
   type CreatorTarget,
 } from "./creatorTarget";
 
+/** A content script sends this to learn its own tab's creator. The background
+ *  answers with the creator's feed URL, or null when the page has none. */
+export const TAB_CREATOR_MESSAGE_TYPE = "cn-tab-creator";
+
 /** Runs inside the watch page, so it must stay self-contained: executeScript
  *  serializes the function and imports would not exist over there. The visit
  *  recorder also calls it directly, because its content script IS the page. */

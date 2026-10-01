@@ -8,7 +8,7 @@ import { canonicalizePageUrl, isSubstackReaderUrl } from "@cn/core/pageUrls";
 import { signInWithTwitterInPopup } from "@cn/core/auth";
 import { track } from "@cn/core/analytics";
 import { initBackgroundAnalytics, trackDailyActivity } from "../utils/analytics";
-import { authorFeedStatusForTab } from "../utils/authorFeed";
+import { authorFeedForTab, authorFeedStatusForTab, TAB_CREATOR_MESSAGE_TYPE } from "../utils/authorFeed";
 import { CHECKED_PAGE_URLS_KEY, COVERED_PAGE_URLS_KEY, NOTED_PAGE_STATUS_COUNTS_KEY } from "../utils/coveredPages";
 import { PRIORITIZED_CREATOR_URLS_KEY } from "../utils/prioritizedCreators";
 import { GENERIC_SCRIPT_PREFIX, hostnamePattern, registerGenericScripts, genericScriptId } from "../utils/genericScript";
@@ -351,7 +351,7 @@ export default defineBackground(() => {
     }
   });
 
-  browser.runtime.onMessage.addListener((message: unknown, _sender, sendResponse) => {
+  browser.runtime.onMessage.addListener((message: unknown, sender, sendResponse) => {
     // This reloads the unpacked extension from disk when a content script asks
     // for it. See utils/devReload.ts. Store builds compile it out.
     if (import.meta.env.VITE_CN_DEV_RELOAD && (message as { type?: string })?.type === "cn-dev-reload") {
@@ -373,6 +373,17 @@ export default defineBackground(() => {
       // applies; a content script's fetch is bound by CORS and may neither
       // follow the cross-origin redirect nor read the response.
       fetchReaderCanonical((message as { href: string }).href).then(sendResponse);
+      return true; // Keep the message channel open for the async reply.
+    }
+    if ((message as { type?: string })?.type === TAB_CREATOR_MESSAGE_TYPE && sender.tab) {
+      // The write-anywhere overlay asks which creator its page belongs to, so
+      // the page's new item lands in that creator's project. Working that out
+      // can mean scripting the tab or asking LessWrong's API, which only the
+      // background may do.
+      authorFeedForTab(sender.tab).then(
+        (creator) => sendResponse(creator?.feedUrl ?? null),
+        () => sendResponse(null),
+      );
       return true; // Keep the message channel open for the async reply.
     }
     if ((message as { type?: string })?.type === "cn-request-live-forward") {

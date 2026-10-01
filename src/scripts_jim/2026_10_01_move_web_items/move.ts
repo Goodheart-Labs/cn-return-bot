@@ -27,7 +27,7 @@ import { createClient } from "@supabase/supabase-js";
 import { extractYoutubeVideoId, fetchReaderCanonical, isSubstackReaderUrl } from "../../everything-core/pageUrls";
 import { WEB_PROJECT_SLUG } from "../../everything-core/projects";
 import { resolveProjectId } from "../../everything/db";
-import { canonicalLesswrongFeed, canonicalSubstackFeed, canonicalYoutubeFeed, substackFeedOfPage, type CanonicalFeed } from "../../everything/feedUrls";
+import { canonicalLesswrongFeed, canonicalYoutubeFeed, substackFeedInPageHtml, substackFeedOfPage, type CanonicalFeed } from "../../everything/feedUrls";
 import { parsePostUrl } from "../../everything/sources/lesswrong";
 
 const db = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!);
@@ -59,13 +59,9 @@ async function forumCreator(origin: string, postId: string): Promise<CanonicalFe
 
 const PAGE_FETCH_TIMEOUT_MS = 20_000;
 
-/** A Substack page embeds its publication data, subdomain included, the same
- *  blob the extension and the prioritize script read. */
 async function substackCreatorFromPage(url: string): Promise<CanonicalFeed | null> {
   const res = await fetch(url, { signal: AbortSignal.timeout(PAGE_FETCH_TIMEOUT_MS) });
-  if (!res.ok) return null;
-  const subdomain = (await res.text()).match(/subdomain\\?":\\?"([\w-]+)\\?"/)?.[1];
-  return subdomain ? canonicalSubstackFeed(`https://${subdomain.toLowerCase()}.substack.com`) : null;
+  return res.ok ? substackFeedInPageHtml(await res.text()) : null;
 }
 
 /** A forum post sits under /posts/<id>, or under /s/<sequence>/p/<id> when it

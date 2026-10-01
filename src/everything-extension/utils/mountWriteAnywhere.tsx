@@ -5,18 +5,25 @@ import { browser, createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
 import { queryClient } from "@cn/features/query/queryClient";
 import { WriteNoteOverlay } from "../components/WriteNoteOverlay";
+import { TAB_CREATOR_MESSAGE_TYPE } from "./authorFeed";
 import { isPageDark } from "./pageTheme";
 
 /** The write-anywhere shell for pages we do not cover. It renders nothing until the
  *  background forwards a click on "Write a Common Note on this". Then the standard
- *  overlay opens, and the page's item is only created at that point. */
+ *  overlay opens, and the page's item is only created at that point.
+ *  When the overlay opens we also ask the background who the page's creator is,
+ *  so the new item lands in that creator's project. The answer arrives while
+ *  the reader types. A note posted before it arrives goes to "Around the web". */
 function WriteAnywhereApp({ pageUrl, onPosted }: { pageUrl: string; onPosted: () => void }) {
   const [selection, setSelection] = useState<string | null>(null);
+  const [creatorFeedUrl, setCreatorFeedUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const listener = (message: unknown) => {
       const { type, selection: selected } = (message as { type?: string; selection?: string }) ?? {};
-      if (type === "cn-write-note" && selected?.trim()) setSelection(selected.trim());
+      if (type !== "cn-write-note" || !selected?.trim()) return;
+      setSelection(selected.trim());
+      void browser.runtime.sendMessage({ type: TAB_CREATOR_MESSAGE_TYPE }).then(setCreatorFeedUrl, () => setCreatorFeedUrl(null));
     };
     browser.runtime.onMessage.addListener(listener);
     return () => browser.runtime.onMessage.removeListener(listener);
@@ -26,7 +33,7 @@ function WriteAnywhereApp({ pageUrl, onPosted }: { pageUrl: string; onPosted: ()
   return (
     <WriteNoteOverlay
       item={null}
-      pageForItem={{ url: pageUrl, title: document.title }}
+      pageForItem={{ url: pageUrl, title: document.title, creatorFeedUrl }}
       selection={selection}
       onClose={() => setSelection(null)}
       onPosted={() => {
