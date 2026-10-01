@@ -18,7 +18,7 @@ import { LoginPanel } from "./LoginPanel";
  *  therefore leaves no orphan item behind. */
 export function WriteNoteOverlay({ item, pageForItem, selection, onClose, onPosted }: {
   item: PageItem | null;
-  pageForItem?: { url: string; title: string; creatorFeedUrl?: string | null };
+  pageForItem?: { url: string; title: string; creatorFeedUrl?: Promise<string | null> };
   selection: string;
   onClose: () => void;
   /** Called once the note is saved. The notes on screen refresh by themselves;

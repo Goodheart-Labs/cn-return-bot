@@ -12,18 +12,24 @@ import { isPageDark } from "./pageTheme";
  *  background forwards a click on "Write a Common Note on this". Then the standard
  *  overlay opens, and the page's item is only created at that point.
  *  When the overlay opens we also ask the background who the page's creator is,
- *  so the new item lands in that creator's project. The answer arrives while
- *  the reader types. A note posted before it arrives goes to "Around the web". */
+ *  so the new item lands in that creator's project. The question starts while
+ *  the reader types, and posting waits for its answer. A failed lookup answers
+ *  null, and the page then goes to "Around the web". */
 function WriteAnywhereApp({ pageUrl, onPosted }: { pageUrl: string; onPosted: () => void }) {
   const [selection, setSelection] = useState<string | null>(null);
-  const [creatorFeedUrl, setCreatorFeedUrl] = useState<string | null>(null);
+  const [creatorFeedUrl, setCreatorFeedUrl] = useState<Promise<string | null>>();
 
   useEffect(() => {
     const listener = (message: unknown) => {
       const { type, selection: selected } = (message as { type?: string; selection?: string }) ?? {};
       if (type !== "cn-write-note" || !selected?.trim()) return;
       setSelection(selected.trim());
-      void browser.runtime.sendMessage({ type: TAB_CREATOR_MESSAGE_TYPE }).then(setCreatorFeedUrl, () => setCreatorFeedUrl(null));
+      setCreatorFeedUrl(
+        browser.runtime.sendMessage({ type: TAB_CREATOR_MESSAGE_TYPE }).then(
+          (feedUrl: string | null) => feedUrl,
+          () => null,
+        ),
+      );
     };
     browser.runtime.onMessage.addListener(listener);
     return () => browser.runtime.onMessage.removeListener(listener);
