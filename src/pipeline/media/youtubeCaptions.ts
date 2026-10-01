@@ -9,12 +9,10 @@
  * proxy.
  */
 
-import * as fs from "fs";
-import * as path from "path";
-import { tmpdir } from "os";
-import { extractYoutubeVideoId } from "../../everything-core/pageUrls";
 import { decodeHtmlEntities } from "../utils/html";
-import { proxyArgs, runYtDlp, throughProxyIfYoutube } from "./ytDlpDownload";
+import { fetchTextViaResidentialProxy, hideProxyAddress, withResidentialProxy } from "../utils/residentialProxy";
+import type { YoutubeVideo } from "./youtubeDataApi";
+import { proxyArgs, runYtDlp } from "./ytDlpDownload";
 
 /** How much of yt-dlp's complaint goes into an error message. */
 const MAX_REASON_LENGTH = 200;
@@ -83,158 +81,122 @@ async function fetchPoToken(videoId: string): Promise<string> {
  *  minute and a half timing out on YouTube's internal API through the proxy. */
 const webPlayerArgs = (poToken: string): string[] => ["--extractor-args", `youtube:player_client=web;po_token=web.subs+${poToken}`];
 
-/** One yt-dlp caption process, with the proxy and the web player's token
- *  when the URL is YouTube's, returning what it wrote on both streams. Unlike
- *  execYtDlp it never throws on a non-zero exit, because the caption calls
- *  have to read stderr in every case: with --ignore-no-formats-error yt-dlp
- *  exits zero after a request that never got an answer, and stderr is the
- *  only place that says so. A call we killed for taking too long is reported
- *  as a timeout, which YOUTUBE_UNREACHABLE_RE counts as not having reached
- *  YouTube. */
-async function runCaptionCall(url: string, args: string[], proxyUrl: string | undefined): Promise<{ stdout: string; stderr: string }> {
-  const videoId = extractYoutubeVideoId(url);
-  const playerArgs = videoId ? webPlayerArgs(await fetchPoToken(videoId)) : [];
-  const run = await runYtDlp([...proxyArgs(proxyUrl), ...playerArgs, ...args], CAPTION_CALL_TIMEOUT_MS);
+/** One yt-dlp process that dumps the video's details as JSON, through the
+ *  given proxy and as the web player with its token, returning what it wrote
+ *  on both streams. Unlike execYtDlp it never throws on a non-zero exit,
+ *  because the caller has to read stderr in every case: with
+ *  --ignore-no-formats-error yt-dlp exits zero after a request that never got
+ *  an answer, and stderr is the only place that says so. A call we killed for
+ *  taking too long is reported as a timeout, which YOUTUBE_UNREACHABLE_RE
+ *  counts as not having reached YouTube. */
+async function dumpVideoJson(video: YoutubeVideo, proxyUrl: string | undefined): Promise<{ stdout: string; stderr: string }> {
+  const args = [...proxyArgs(proxyUrl), ...webPlayerArgs(await fetchPoToken(video.videoId)), "--dump-single-json", "--skip-download", "--ignore-no-formats-error", video.url];
+  const run = await runYtDlp(args, CAPTION_CALL_TIMEOUT_MS);
   const failure = run.error?.killed ? "yt-dlp operation timed out" : typeof run.error?.code === "string" ? run.error.message : "";
   return { stdout: run.stdout, stderr: failure ? `${run.stderr}\n${failure}` : run.stderr };
 }
 
-/** Runs a caption call until it got what it came for or YouTube has
- *  answered. `found` reads the result: caption files on disk, or tracks in a
- *  listing. Success is judged by that and never by the warnings, because a
- *  call that wrote the captions can still print "HTTP Error 429" for a page
- *  it did not need. A call that found nothing and whose output says YouTube
- *  was not reached throws YoutubeUnreachableError, and the proxy wrapper runs
- *  it again on a fresh connection until its tries run out. A call that found
- *  nothing while YouTube did answer returns null: the video has nothing to
- *  give. */
-async function runCaptionCallUntilReached<Found>(url: string, args: string[], found: (stdout: string) => Found | null): Promise<Found | null> {
-  return throughProxyIfYoutube(
-    url,
+/** One caption track of a video, as yt-dlp's JSON dump describes it. */
+export interface CaptionTrack {
+  /** yt-dlp's name for the track, such as `en`, `en-US-orig` or `en-ko`. */
+  code: string;
+  /** "uploaded" means a person wrote it. "automatic" means YouTube's speech
+   *  recognition made it. */
+  kind: "uploaded" | "automatic";
+  /** The track's WebVTT file. */
+  url: string;
+}
+
+/** The track's language without its region or variant: `en` for `en-US-orig`. */
+const baseLanguage = (code: string): string => code.split("-")[0]!.toLowerCase();
+
+/** YouTube offers every video's captions machine-translated into a hundred
+ *  languages, made on request. Such a file's address carries the target
+ *  language as `tlang`. YouTube answers "HTTP Error 429: Too Many Requests"
+ *  to almost every such request, whatever the address, the timing or the PO
+ *  token (GOO-276). The video's own tracks it serves every time. So we never
+ *  ask for a translation. */
+const isMachineTranslation = (track: CaptionTrack): boolean => new URL(track.url).searchParams.has("tlang");
+
+/** The tracks in yt-dlp's JSON dump of a video, the uploaded ones first. Only
+ *  the WebVTT form of each is kept, because that is the form we parse. */
+export function captionTracksFromDump(dump: { subtitles?: Record<string, any[]>; automatic_captions?: Record<string, any[]> }): CaptionTrack[] {
+  const tracksOf = (kind: CaptionTrack["kind"], byCode: Record<string, any[]> | undefined): CaptionTrack[] =>
+    Object.entries(byCode ?? {}).flatMap(([code, files]) => files.filter((file) => file.ext === "vtt").map((file) => ({ code, kind, url: file.url as string })));
+  return [...tracksOf("uploaded", dump.subtitles), ...tracksOf("automatic", dump.automatic_captions)];
+}
+
+/**
+ * The one track we download, or null when the video has no original track at
+ * all. English comes first, because everything downstream of the transcript
+ * is written in English. After that comes the language the video is spoken
+ * in, which the Data API reports, and then any other original track. Within
+ * one language, a track a person wrote beats speech recognition, and the
+ * shortest code is the plain track: `en` before `en-JkeT_87f4cc`.
+ *
+ * Many channels let YouTube dub their videos into other languages. Such a
+ * video has an audio track per language and a speech recognition track per
+ * audio track, so an English dub of a Spanish video brings its own English
+ * captions. yt-dlp names these `<language>-orig`. On such a video it gives the
+ * plain name `en` to a machine translation. So a code alone never says whether
+ * a track is a translation, and we look at the track's address instead.
+ */
+export function chooseCaptionTrack(tracks: CaptionTrack[], audioLanguage: string | null): CaptionTrack | null {
+  const preferredLanguages = ["en", ...(audioLanguage ? [baseLanguage(audioLanguage)] : [])];
+  const languageRank = (track: CaptionTrack): number => {
+    const rank = preferredLanguages.indexOf(baseLanguage(track.code));
+    return rank === -1 ? preferredLanguages.length : rank;
+  };
+  const kindRank = (track: CaptionTrack): number => (track.kind === "uploaded" ? 0 : 1);
+  const byPreference = (a: CaptionTrack, b: CaptionTrack): number =>
+    languageRank(a) - languageRank(b) || kindRank(a) - kindRank(b) || a.code.length - b.code.length;
+  return tracks.filter((track) => !isMachineTranslation(track)).toSorted(byPreference)[0] ?? null;
+}
+
+/** Every caption track the video has, or none when YouTube answered and the
+ *  video has no captions. The addresses carry the PO token.
+ *
+ *  Success is judged by the tracks in the dump and never by the warnings,
+ *  because a call that got the tracks can still print "HTTP Error 429" for a
+ *  page it did not need. A call that got no tracks and whose output says
+ *  YouTube was not reached throws YoutubeUnreachableError, and the proxy
+ *  wrapper runs it again on a fresh connection until its tries run out. */
+async function listCaptionTracks(video: YoutubeVideo): Promise<CaptionTrack[]> {
+  return withResidentialProxy(
+    video.url,
     async (proxyUrl) => {
-      const result = await runCaptionCall(url, args, proxyUrl);
-      const value = found(result.stdout);
-      if (value !== null) return value;
-      const unreachableLine = result.stderr.split("\n").find((line) => YOUTUBE_UNREACHABLE_RE.test(line));
-      if (!unreachableLine) return null;
-      throw new YoutubeUnreachableError(url, unreachableLine.trim().slice(0, MAX_REASON_LENGTH));
+      const { stdout, stderr } = await dumpVideoJson(video, proxyUrl);
+      const tracks = stdout.trim() ? captionTracksFromDump(JSON.parse(stdout)) : [];
+      if (tracks.length) return tracks;
+      const unreachableLine = stderr.split("\n").find((line) => YOUTUBE_UNREACHABLE_RE.test(line));
+      if (!unreachableLine) return [];
+      throw new YoutubeUnreachableError(video.url, unreachableLine.trim().slice(0, MAX_REASON_LENGTH));
     },
     (err) => err instanceof YoutubeUnreachableError,
   );
 }
 
-/** English is asked for first, because everything downstream of the transcript
- *  is written in English. The `.*` picks up the regional spellings (`en-US`) and
- *  the marker YouTube puts on an original English track (`en-orig`). */
-const PREFERRED_TRANSCRIPT_LANG = "en.*";
-
-/** How many of the video's own tracks are fetched when English is missing. They
- *  go in one call and we keep the first that parses. A video rarely has more
- *  than one original track, and every extra one is paid proxy traffic. */
-const MAX_FALLBACK_LANGUAGES = 3;
+/** The caption file's text, fetched through the residential proxy. When every
+ *  try fails, YouTube was not reached, whatever the reason. */
+async function downloadCaptionFile(videoUrl: string, track: CaptionTrack): Promise<string> {
+  try {
+    return await fetchTextViaResidentialProxy(track.url);
+  } catch (err) {
+    throw new YoutubeUnreachableError(videoUrl, hideProxyAddress(err instanceof Error ? err.message : String(err)).slice(0, MAX_REASON_LENGTH));
+  }
+}
 
 /**
  * The video's captions as timestamped cues, or null when YouTube answered and
- * the video has no captions. When YouTube could not be reached at all, this
- * throws a YoutubeUnreachableError instead, so that a proxy outage is never
- * recorded as a video without captions (GOO-169).
- *
- * A video that is not in English has no English track at all, and its machine
- * translations are throttled hard enough by YouTube to be unusable, so we fall
- * back to the language the video is actually in. Listing the languages costs an
- * extra call, so it only happens once English has come back empty.
+ * the video has no captions in its own language. When YouTube could not be
+ * reached at all, this throws a YoutubeUnreachableError instead, so that a
+ * proxy outage is never recorded as a video without captions (GOO-169).
  */
-export async function fetchYoutubeCaptions(url: string): Promise<SubtitleCue[] | null> {
-  const dir = fs.mkdtempSync(path.join(tmpdir(), "cn-yt-subs-"));
-  try {
-    const english = await fetchTimedTranscript(url, dir, PREFERRED_TRANSCRIPT_LANG);
-    if (english?.length) return english;
-
-    const languages = (await listOriginalSubtitleLanguages(url)).slice(0, MAX_FALLBACK_LANGUAGES);
-    const own = languages.length ? await fetchTimedTranscript(url, dir, languages.join(",")) : null;
-    return own?.length ? own : null;
-  } finally {
-    fs.rmSync(dir, { recursive: true, force: true });
-  }
-}
-
-/**
- * The timestamped cues of the video's captions in the given languages. It asks
- * for the subtitles a human wrote and falls back to the automatically generated
- * ones. It returns null when the video has no subtitles in those languages.
- *
- * The language is a yt-dlp selector, not a plain code, so `en.*` also picks up
- * the regional and uploader-specific spellings of a track. A video usually
- * carries several files that match, and the shortest name is the plain track:
- * `de` before `de-XwLwiJMB_Xs`. YouTube sometimes fails to serve one of them and
- * serves another fine, so every downloaded file is tried in that order.
- */
-async function fetchTimedTranscript(url: string, outputDir: string, lang: string): Promise<SubtitleCue[] | null> {
-  const outputTemplate = path.join(outputDir, "%(id)s.%(ext)s");
-  // The first downloaded track that parses into cues. A non-zero exit still
-  // leaves behind whatever finished downloading, and one good track is all we
-  // need, so the files are read whatever the exit was.
-  const downloadedCues = (): SubtitleCue[] | null => {
-    const files = fs
-      .readdirSync(outputDir)
-      .filter((f) => f.endsWith(".vtt") || f.endsWith(".ttml") || f.endsWith(".srt"))
-      .sort((a, b) => a.length - b.length);
-    for (const file of files) {
-      const cues = parseSubtitleToCues(fs.readFileSync(path.join(outputDir, file), "utf-8"));
-      if (cues.length) return cues;
-    }
-    return null;
-  };
-  // Writing subtitles needs no video formats. Without the ignore flag a
-  // player response that lists no formats aborts the call before the
-  // subtitles are fetched.
-  return runCaptionCallUntilReached(url, ["--write-subs", "--write-auto-subs", "--sub-lang", lang, "--skip-download", "--ignore-no-formats-error", "-o", outputTemplate, url], downloadedCues);
-}
-
-/**
- * The language codes of every caption track a video has, most useful first.
- *
- * YouTube offers each video's own track plus a machine translation of it into
- * every language it knows, and it names them inconsistently: on one video the
- * translations are `en-de-XwLwiJMB_Xs` and on another plain `en`, so a code
- * alone does not say whether a track is original or translated. The listing's
- * Name column does: a translated row reads "Estonian from German", an original
- * row is either blank or names its own language. So we keep the rows without a
- * "from" and drop the rest.
- *
- * The tracks an uploader supplied come first, because they are real subtitles
- * rather than speech recognition.
- */
-async function listOriginalSubtitleLanguages(url: string): Promise<string[]> {
-  const listedLanguages = (stdout: string): string[] | null => {
-    const languages = parseSubtitleListing(stdout);
-    return languages.length ? languages : null;
-  };
-  return (await runCaptionCallUntilReached(url, ["--list-subs", "--skip-download", "--ignore-no-formats-error", url], listedLanguages)) ?? [];
-}
-
-/** Reads the language codes out of what `yt-dlp --list-subs` prints. */
-export function parseSubtitleListing(listing: string): string[] {
-  const uploaded: string[] = [];
-  const automatic: string[] = [];
-  let section: "uploaded" | "automatic" | null = null;
-  for (const line of listing.split("\n")) {
-    if (/Available subtitles for/i.test(line)) section = "uploaded";
-    else if (/Available automatic captions for/i.test(line)) section = "automatic";
-    else if (/^\s*$/.test(line)) section = null;
-    if (!section) continue;
-
-    // A row is "<code> <name columns> <formats>". The name is what matters and
-    // the columns are only padded with spaces, so the whole rest of the line is
-    // searched for the "from" that marks a translation. A format name never
-    // contains it.
-    const row = /^([A-Za-z0-9_-]+)\s+(\S.*)$/.exec(line);
-    if (!row || row[1] === "Language") continue;
-    const [, code, rest] = row;
-    if (/\bfrom\b/i.test(rest!)) continue;
-    (section === "uploaded" ? uploaded : automatic).push(code!);
-  }
-  return [...uploaded, ...automatic];
+export async function fetchYoutubeCaptions(video: YoutubeVideo): Promise<SubtitleCue[] | null> {
+  const track = chooseCaptionTrack(await listCaptionTracks(video), video.audioLanguage);
+  if (!track) return null;
+  const cues = parseSubtitleToCues(await downloadCaptionFile(video.url, track));
+  return cues.length ? cues : null;
 }
 
 export interface SubtitleCue {
