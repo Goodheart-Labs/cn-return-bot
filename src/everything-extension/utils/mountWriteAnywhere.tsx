@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { browser, createShadowRootUi } from "#imports";
+import { browser } from "#imports";
 import type { ContentScriptContext } from "#imports";
 import { queryClient } from "@cn/features/query/queryClient";
 import { WriteNoteOverlay } from "../components/WriteNoteOverlay";
 import { TAB_CREATOR_MESSAGE_TYPE } from "./authorFeed";
 import { isPageDark } from "./pageTheme";
+import { createOverlayUi } from "./overlayUi";
 
 /** The write-anywhere shell for pages we do not cover. It renders nothing until the
  *  background forwards a click on "Write a Common Note on this". Then the standard
@@ -65,7 +66,7 @@ export async function mountWriteAnywhere(
     onCoverageChanged();
   };
   let root: Root | null = null;
-  const ui = await createShadowRootUi(ctx, {
+  const ui = await createOverlayUi(ctx, {
     name: "common-notes-ui",
     position: "inline",
     anchor: "body",
