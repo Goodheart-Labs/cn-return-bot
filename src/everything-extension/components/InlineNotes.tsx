@@ -10,7 +10,8 @@ import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
 import { setJumpHandler } from "../utils/jumpBus";
 import { CloseIcon, NoteStackIcon } from "@cn/ui/icons";
 import { IconButton } from "@cn/ui/IconButton";
-import { forgetClosedClaim, rememberClosedClaim } from "../utils/closedNotes";
+import { closeCardsOpenedByReader, openCard, type CardChoices } from "../utils/cardChoices";
+import { rememberClosedClaim } from "../utils/closedNotes";
 import { placeMarginCards } from "../utils/marginCards";
 import { ClaimNoteStack, NextNoteButton, NOTE_POPOVER_WIDTH, type NoteNavigation } from "./ClaimNoteStack";
 import { OverlayLoginGate } from "./OverlayLoginGate";
@@ -251,24 +252,20 @@ function NotePopover({ group, projectSlug, navigation, style, label, openedByRea
   );
 }
 
-/** The reader's own open and close choices on this page's cards. True means
- *  the reader opened the card, false that they closed it, and a claim without
- *  an entry follows its display setting. A close is remembered across visits
- *  (utils/closedNotes.ts), so a card that opens by itself stays closed once
- *  the reader closed it. `focused` is the card the reader opened last; Escape
- *  closes it. */
-function useCardChoices(initiallyClosed: ReadonlySet<string>, useMargin: boolean) {
-  const [choices, setChoices] = useState<ReadonlyMap<string, boolean>>(
+/** The reader's own open and close choices on this page's cards, with the
+ *  rules in utils/cardChoices.ts. A close through the close button is
+ *  remembered across visits (utils/closedNotes.ts), so a card that opens by
+ *  itself does so only until the reader closes it once. `focused` is the card
+ *  the reader opened last; Escape closes it. */
+function useCardChoices(initiallyClosed: ReadonlySet<string>) {
+  const [choices, setChoices] = useState<CardChoices>(
     () => new Map([...initiallyClosed].map((claimId) => [claimId, false])),
   );
   const [focused, setFocused] = useState<string | null>(null);
   const open = useCallback((claimId: string) => {
-    // The classic style draws its card over the text, so there the reader
-    // sees one card at a time.
-    setChoices((prev) => (useMargin ? new Map(prev).set(claimId, true) : new Map([...prev].filter(([, opened]) => !opened)).set(claimId, true)));
+    setChoices((prev) => openCard(prev, claimId));
     setFocused(claimId);
-    void forgetClosedClaim(claimId);
-  }, [useMargin]);
+  }, []);
   const close = useCallback((claimId: string) => {
     setChoices((prev) => new Map(prev).set(claimId, false));
     setFocused((prev) => (prev === claimId ? null : prev));
@@ -277,7 +274,7 @@ function useCardChoices(initiallyClosed: ReadonlySet<string>, useMargin: boolean
   /** A press on empty page surface closes every card the reader opened.
    *  Cards that opened by themselves stay. */
   const closeOpenedByReader = useCallback(() => {
-    setChoices((prev) => new Map([...prev].filter(([, opened]) => !opened)));
+    setChoices(closeCardsOpenedByReader);
     setFocused(null);
   }, []);
   return { choices, open, close, closeOpenedByReader, focused };
@@ -430,7 +427,7 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groups, layoutTick, inlineContainer, container, noteStyle]);
 
-  const cards = useCardChoices(initiallyClosed, layout.useMargin);
+  const cards = useCardChoices(initiallyClosed);
   const [cardHeights, setCardHeights] = useState<ReadonlyMap<string, number>>(new Map());
   const reportHeight = useCallback((claimId: string, height: number) => {
     setCardHeights((prev) => (prev.get(claimId) === height ? prev : new Map(prev).set(claimId, height)));
@@ -466,9 +463,15 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
     markers.current.get(returnFocusTo.current)?.focus({ preventScroll: true });
     returnFocusTo.current = null;
   });
+  // A click on the marker or the passage opens a closed card and closes one
+  // the reader opened. A card that opened by itself ignores it, because only
+  // its close button closes it.
   const toggle = useCallback(
-    (group: ClaimGroup) => (isOpen(group) ? closeNote(group.claimId) : open(group.claimId)),
-    [isOpen, closeNote, open],
+    (group: ClaimGroup) => {
+      if (!isOpen(group)) open(group.claimId);
+      else if (choices.get(group.claimId) === true) closeNote(group.claimId);
+    },
+    [isOpen, choices, closeNote, open],
   );
   // Escape pressed inside the note is handled by the note itself. This covers
   // an Escape pressed anywhere else on the page while a note is focused.
