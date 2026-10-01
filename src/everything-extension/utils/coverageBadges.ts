@@ -120,14 +120,20 @@ function coverImage(root: HTMLElement): HTMLElement | null {
  *  picture's own corner. An image that is absolutely positioned fills its
  *  containing block, which is its offsetParent. That element is already
  *  positioned, so the badge can use it without any style change.
- *  Otherwise the frame is the image's nearest ancestor that draws a box.
- *  Substack wraps its thumbnails in a <picture> with display: contents, which
- *  draws no box of its own, so a badge positioned against it would land in the
- *  corner of some larger ancestor instead. */
+ *  Otherwise the frame is the image's nearest ancestor that draws a block box.
+ *  Two kinds of wrapper are skipped. Substack wraps its thumbnails in a
+ *  <picture> with display: contents, which draws no box of its own, so a
+ *  badge positioned against it would land in the corner of some larger
+ *  ancestor instead. YouTube wraps them in a <yt-image> that is an inline
+ *  element, whose box is only one line of text tall. A badge positioned
+ *  against it sat on the thumbnail's bottom edge, where the thumbnail's
+ *  rounded corners clipped it away (October 2026). */
+const WRAPPER_DISPLAYS_WITHOUT_A_FRAME = new Set(["contents", "inline"]);
+
 function pictureFrame(image: HTMLElement): HTMLElement {
   if (getComputedStyle(image).position === "absolute" && image.offsetParent instanceof HTMLElement) return image.offsetParent;
   let frame = image.parentElement!;
-  while (getComputedStyle(frame).display === "contents") frame = frame.parentElement!;
+  while (WRAPPER_DISPLAYS_WITHOUT_A_FRAME.has(getComputedStyle(frame).display)) frame = frame.parentElement!;
   return frame;
 }
 
