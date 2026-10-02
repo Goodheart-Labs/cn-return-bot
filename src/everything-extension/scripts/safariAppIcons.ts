@@ -18,10 +18,13 @@ const APP_ICON_SET_DIR = path.join(APP_DIR, "Assets.xcassets/AppIcon.appiconset"
 const APP_ICON_POINT_SIZES = [16, 32, 128, 256, 512];
 const APP_ICON_SCALES = [1, 2];
 
-/** Apple's macOS icon grid leaves a transparent margin around the artwork:
- *  the shape fills 824 of the canvas's 1024 pixels. Without the margin our
- *  icon would look larger than every other icon in the Dock. */
-const ARTWORK_SHARE_OF_CANVAS = 824 / 1024;
+/** Apple's macOS icon grid leaves a transparent margin around the artwork: a
+ *  square app icon fills 824 of the canvas's 1024 pixels. Without the margin
+ *  our icon would look larger than every other icon in the Dock. The logo is
+ *  wider than it is tall and covers little of its square, so at 824 it would
+ *  look smaller than the others instead. It gets the share the Chrome Web
+ *  Store icon has, 112 of 128 (scripts/generate-logo-assets.ts). */
+const ARTWORK_SHARE_OF_CANVAS = 112 / 128;
 
 /** The picture the app's window shows at 128 points, drawn at 2x for Retina
  *  screens. It has no margin because it sits on the window's own background. */

@@ -41,7 +41,7 @@ try {
     const { CANDIDATES, CHOSEN_LOGO, shippedForms } = await import("/js/logos.js");
     const formsOf = (candidate, overrides) => {
       const values = { ...candidate.defaults, ...overrides };
-      return shippedForms(candidate, candidate.render(values), values, storeArtworkShare);
+      return shippedForms(candidate, candidate.render(values), values, candidate.storeArtworkShare ?? storeArtworkShare);
     };
     const chosen = CANDIDATES.find((candidate) => candidate.id === CHOSEN_LOGO.candidate);
     return {

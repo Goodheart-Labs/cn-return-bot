@@ -23,16 +23,20 @@ interface Raster {
   artwork: number;
 }
 
-// The Chrome Web Store asks for the 128 pixel icon to carry its artwork at 96
-// by 96 inside a transparent margin, and the manifest's 128 pixel icon is that
-// same file. Every other size fills its whole square. Mozilla's add-on listing
-// wants a full 128 pixel icon. It is written to assets/ rather than public/,
-// so it never ships inside the extension zip.
+// The Chrome Web Store asks for a transparent margin around the 128 pixel
+// icon's artwork, and the manifest's 128 pixel icon is that same file. Its
+// guide wants a square icon 96 pixels wide, a circle 112, and an irregular
+// shape somewhere near both. The logo is wider than it is tall and covers
+// little of its square, so it gets the circle's 112. Every other size fills
+// its whole square. Mozilla's add-on listing wants a full 128 pixel icon. It
+// is written to assets/ rather than public/, so it never ships inside the
+// extension zip.
+const CHROME_STORE_ARTWORK = 112;
 const RASTERS: Raster[] = [
   { file: "src/everything-extension/public/icon/16.png", size: 16, artwork: 16 },
   { file: "src/everything-extension/public/icon/32.png", size: 32, artwork: 32 },
   { file: "src/everything-extension/public/icon/48.png", size: 48, artwork: 48 },
-  { file: "src/everything-extension/public/icon/128.png", size: 128, artwork: 96 },
+  { file: "src/everything-extension/public/icon/128.png", size: 128, artwork: CHROME_STORE_ARTWORK },
   { file: "src/everything-extension/assets/store-icon-128-full.png", size: 128, artwork: 128 },
   { file: "src/everything-web/src/assets/favicon-32.png", size: 32, artwork: 32 },
   { file: "src/everything-web/src/assets/apple-touch-icon.png", size: 180, artwork: 180 },

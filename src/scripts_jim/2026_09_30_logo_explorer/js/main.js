@@ -17,7 +17,8 @@ const STORAGE_KEY = "cn-logo-explorer:v1";
 const STATE_VERSION = 3;
 const RESET_BY_VERSION = { 2: ["stacked-notes"], 3: ["note-card"] };
 // The Chrome Web Store asks for the artwork of the 128 pixel icon to be 96
-// pixels wide inside a transparent margin. The icon that ships today does so.
+// pixels wide inside a transparent margin, for a square icon. A candidate of
+// another shape can ask for a wider share with its own storeArtworkShare.
 const STORE_ARTWORK_SHARE = 96 / 128;
 // The four icon files the extension ships, and the size the store's listing
 // scales the largest of them to.
@@ -113,7 +114,7 @@ const dataUrl = (svg) => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
 function drawCandidate(candidate) {
   const values = state.values[candidate.id];
   const rendered = candidate.render(values);
-  const storeArtworkShare = state.storeMargin ? STORE_ARTWORK_SHARE : 1;
+  const storeArtworkShare = state.storeMargin ? (candidate.storeArtworkShare ?? STORE_ARTWORK_SHARE) : 1;
   svgs[candidate.id] = {
     plain: composeSvg(rendered, values),
     store: composeSvg(rendered, values, { artworkShare: storeArtworkShare }),

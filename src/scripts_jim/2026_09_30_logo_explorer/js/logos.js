@@ -831,6 +831,10 @@ function overlapPair({ id, name, summary, shape, body, a, b, presets = [] }) {
     presets,
     palettes: PAIR_PALETTES,
     noTiles: true,
+    // The pair is wider than it is tall and covers little of its square, so
+    // the store icon draws it 112 pixels wide, the Chrome Web Store guide's
+    // size for a circle, rather than the 96 for a square.
+    storeArtworkShare: 112 / 128,
     defaults: {
       ...prefixed("a", { ...tailless, ...a, color: GREEN }),
       ...prefixed("b", { ...tailless, ...b, color: RED }),
