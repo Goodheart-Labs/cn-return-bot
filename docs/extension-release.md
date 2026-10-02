@@ -116,4 +116,4 @@ The order as of version 0.4.0:
 1. A note card next to a Substack post.
 2. A note on a Dwarkesh Podcast video on YouTube.
 3. The "Write a note" form on a highlighted sentence.
-4. The toolbar popup on a covered page.
+4. The toolbar popup on a page we have not checked yet, offering "Request notes on this page".
