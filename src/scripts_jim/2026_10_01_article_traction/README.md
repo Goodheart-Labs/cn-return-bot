@@ -146,18 +146,21 @@ Spend on Grok: about $20.
 
 ## What we built and why
 
-Jim chose Grok: one `grok-4.3` call per topic per day, each asking for the posts
-of the previous UTC day that went viral in Nathan Young's crowd within that topic
-and that reference or are about an article or blog post. The answers go to
+Jim chose Grok: one `grok-4.3` call per topic per day, each asking for recent
+posts that went viral in Nathan Young's crowd within that topic and that
+reference or are about an article or blog post. The answers go to
 #trending-posts. The job requests no Common Notes, because too many of the posts
 would be false positives.
 
 - `grok-4.3` because it costs cents per call, against about $2 for `grok-4.7`.
-  The first full dry run cost $0.66 for all 8 topics.
+  A full run of all 8 topics cost between $0.50 and $0.70.
 - One call per topic because a single prompt for the whole crowd drifts to one
   topic.
-- Exactly one finished UTC day per run, so no post can appear twice and the job
-  needs no record of what it posted. It runs at noon UTC, so a post from late
-  the previous day has had at least 12 hours.
+- The search filter covers yesterday and today. Consecutive runs overlap by a
+  day, so the table `trending_posts` remembers which posts were already posted.
 - At most 5 posts per topic, and the prompt says fewer or none is fine, so Grok
   is not pushed to fill the list.
+
+The first two runs differed a lot. The dry run on 2026-10-02 found 14 posts in
+4 topics. The first real run an hour later found 3 posts in 3 topics, and two of
+those were the same post.
