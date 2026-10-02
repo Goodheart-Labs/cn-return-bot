@@ -5,10 +5,8 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "tailwindcss";
 import { CN_ALIASES } from "../cnAliases";
 
-/* The GitHub Pages workflow sets BASE_PATH to "/cn-return-bot/notes/" so that
- * asset URLs carry the project-pages subpath. Local development uses "/"
- * instead. envDir points at the repo root, so the root .env feeds local
- * development. Only variables prefixed with VITE_ reach the client. */
+/* envDir points at the repo root, so the root .env feeds local development.
+ * Only variables prefixed with VITE_ reach the client. */
 const envDir = path.resolve(__dirname, "../..");
 
 /* The static pages in public/, such as /privacy/, are folders with an
@@ -27,18 +25,6 @@ const publicFolderPages: Plugin = {
       next();
     });
   },
-};
-
-/* The website is built twice: at the root for commonnotes.net, and under a
- * subpath for the copy on GitHub Pages. Search engines should list only
- * commonnotes.net. So every build under a subpath tells them not to index its
- * pages. */
-const noindexOffRoot: Plugin = {
-  name: "noindex-off-root",
-  transformIndexHtml: (html, { server }) =>
-    !server && process.env.BASE_PATH && process.env.BASE_PATH !== "/"
-      ? html.replace("<head>", '<head>\n  <meta name="robots" content="noindex" />')
-      : html,
 };
 
 export default defineConfig(({ command, mode }) => {
@@ -66,8 +52,7 @@ export default defineConfig(({ command, mode }) => {
     );
   }
   return {
-    plugins: [react(), publicFolderPages, noindexOffRoot],
-    base: process.env.BASE_PATH ?? "/",
+    plugins: [react(), publicFolderPages],
     resolve: { alias: CN_ALIASES },
     envDir,
     /* Tailwind is wired inline instead of via a postcss.config file, whose
