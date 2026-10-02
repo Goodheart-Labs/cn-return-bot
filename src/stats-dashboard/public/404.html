@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<!-- GitHub Pages answers every address it has no file for with this page.
+     The Common Notes website used to have a copy at /cn-return-bot/notes/.
+     It now lives only on commonnotes.net, so links to the old copy go on to
+     the same page there. -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Page not found</title>
+  <script>
+    const OLD_WEBSITE_PATH = "/cn-return-bot/notes";
+    const { pathname, search, hash } = location;
+    if (pathname === OLD_WEBSITE_PATH || pathname.startsWith(`${OLD_WEBSITE_PATH}/`)) {
+      const page = pathname.slice(OLD_WEBSITE_PATH.length) || "/";
+      location.replace(`https://commonnotes.net${page}${search}${hash}`);
+    }
+  </script>
+</head>
+<body>
+  <p>Page not found.</p>
+</body>
+</html>

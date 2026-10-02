@@ -1,7 +1,6 @@
 # Article reader
 
-Open `/read/?url=<encoded article URL>` (or `/cn-return-bot/notes/read/` on
-GitHub Pages). The separate Vite HTML entry reads an existing item through the
+Open `/read/?url=<encoded article URL>`. The separate Vite HTML entry reads an existing item through the
 shared public queries and renders its stored `full_text`. It does not fetch
 articles or run checks. Missing items and paragraph-only checks link to the
 original instead of presenting a full article.
