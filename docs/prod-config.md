@@ -340,8 +340,9 @@ How to release a new version, and which credentials the store APIs need, is
 in [extension-release.md](extension-release.md). Those credentials are
 `AMO_JWT_ISSUER` and `AMO_JWT_SECRET` from AMO's API key page, and
 `CWS_PUBLISHER_ID` and `CWS_SERVICE_ACCOUNT_KEY_FILE` for a Google Cloud
-service account that the Chrome Web Store dashboard grants API access. All
-four are in `~/dev/env/cn-return-bot/env`. Both listings link to
+service account that the Chrome Web Store dashboard grants API access. The Chrome Web
+Store publisher ID is `386e874a-cc58-4737-9143-c22ec9085c56`. None of the
+four exist yet (2026-10-02). They belong in `~/dev/env/cn-return-bot/env`. Both listings link to
 https://commonnotes.net as their homepage.
 
 Microsoft Edge installs from the Chrome Web Store listing. The website's
