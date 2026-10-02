@@ -174,6 +174,10 @@ Things that are easy to get wrong:
 
 `bun run review` (prod) or `bun run review-local` serves it on port 8001 and frees the port first.
 
+## Trending posts
+
+The `Trending Posts` workflow runs `bun run trending-posts` (`src/production/postTrendingPosts.ts`) once a day at noon UTC. For each topic of Nathan Young's crowd, one `grok-4.3` call with Grok's `x_search` tool, limited to posts from yesterday and today, finds posts that went viral there and are about an article or blog post. Each topic with new posts becomes one Slack message in #trending-posts. The table `trending_posts` remembers every post already posted, so none is posted twice. It requests no Common Notes, because too many of the posts are false positives for that. `--dry-run` prints the messages instead. The investigation behind it is in `src/scripts_jim/2026_10_01_article_traction/` (GOO-289).
+
 ## Database
 
 Schema changes live in `migrations/`; the X bot's queries and types are in `src/api/supabaseClient.ts`. Use `notes` for performance analysis and submission metadata, and `pipeline_runs` plus `pipeline_scores` for debugging.

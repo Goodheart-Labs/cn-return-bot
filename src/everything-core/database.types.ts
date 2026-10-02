@@ -1856,6 +1856,24 @@ export type Database = {
         }
         Relationships: []
       }
+      trending_posts: {
+        Row: {
+          post_id: string
+          posted_at: string
+          topic: string
+        }
+        Insert: {
+          post_id: string
+          posted_at?: string
+          topic: string
+        }
+        Update: {
+          post_id?: string
+          posted_at?: string
+          topic?: string
+        }
+        Relationships: []
+      }
       tweets: {
         Row: {
           author_description: string | null
