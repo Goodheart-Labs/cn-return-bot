@@ -198,17 +198,17 @@ button.primary:hover {
   border-left: 1px solid var(--line);
 }
 
-/* The pull request view has no candidate to edit. */
-body[data-view="pull-requests"] .layout {
+/* The considered logos have no sliders. */
+body[data-view="considered"] .layout {
   grid-template-columns: minmax(0, 1fr);
 }
 
-body[data-view="pull-requests"] :is(.rail, .panel, .topbar-actions) {
+body[data-view="considered"] :is(.rail, .panel, .topbar-actions) {
   display: none;
 }
 
-body[data-view="pull-requests"] .compare-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+body[data-view="considered"] .compare-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .view-intro {

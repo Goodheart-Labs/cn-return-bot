@@ -5,6 +5,13 @@ the page shows it at the sizes it ships and inside copies of the Chrome Web
 Store listing, the website header, a browser's tab and toolbar, and the
 right-click menu.
 
+The logo Jim picked here (GOO-330) is `CHOSEN_LOGO` in `js/logos.js`: the two
+rectangles in the bright colour set, with a gap of 10 between the colours and
+the red rectangle at Y 74. `export-logos.ts` draws it into
+`src/everything-ui/assets/logo.svg`, the file every other logo file in the repo
+is drawn from. `considered/` keeps every option we looked at, with its real
+files, and its README says which is which.
+
 ```bash
 mac-tunnel serve 8007 bun run src/scripts_jim/2026_09_30_logo_explorer/server.ts 8007
 ```
@@ -26,17 +33,14 @@ mac-tunnel serve 8007 bun run src/scripts_jim/2026_09_30_logo_explorer/server.ts
   where R names which file goes there: store, header, favicon, toolbar or menu.
 - "In context" and "Compare all" show each candidate as the extension
   would ship it (`shippedForms` in `js/logos.js`, the same rules as
-  `scripts/generate-logo-assets.ts` in PR #532). A mark without a backdrop
+  the stacked-notes logo of PR #532). A mark without a backdrop
   fills its whole square, sits on a black tile for the dark toolbar and the
   dark favicon, and on a white tile in the right-click menu. The squares and
   rectangles (candidates 6 and 7) skip the tiles and look the same
   everywhere. Today's logo (candidate 5) shows its bold version in the
   toolbar, the tab and the menu, as PR #533 ships it.
-- The view "The two PRs" shows the real icon files of the two logo pull
-  requests side by side: #532 (stacked notes) and #533 (today's logo with the
-  boxes in the order green, yellow, red). `js/pullRequests.js` says which file
-  each PR ships for each role. The server reads the files from the pushed
-  branches with `git show` under `/shipped/<PR number>/<path in the repo>`,
-  and fetches the branches once a minute.
+- The view "Considered logos" shows the files in `considered/` side by side
+  in each place. `js/considered.js` says which file each option puts into
+  each slot.
 - "Save snapshot" on the page writes the selected logo into `snapshots/` as an
   SVG file and a JSON file with every slider value.

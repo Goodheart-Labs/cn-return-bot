@@ -6,7 +6,7 @@ import { renderControls } from "./controls.js";
 import { element, segments } from "./dom.js";
 import { CANDIDATES, composeSvg, fitPlacement, shippedForms } from "./logos.js";
 import { contexts, loadMocks } from "./previews.js";
-import { PULL_REQUESTS, shippedImage } from "./pullRequests.js";
+import { CONSIDERED, consideredImage } from "./considered.js";
 
 const STORAGE_KEY = "cn-logo-explorer:v1";
 // Raised when a candidate's defaults change so much that values stored by an
@@ -41,7 +41,7 @@ const VIEWS = [
   ["design", "Design"],
   ["context", "In context"],
   ["compare", "Compare all"],
-  ["pull-requests", "The two PRs"],
+  ["considered", "Considered logos"],
 ];
 
 const byId = (id) => document.getElementById(id);
@@ -406,27 +406,27 @@ function compareView() {
   })];
 }
 
-/** The files the two logo pull requests ship, as they are on their branches
- *  now. No slider reaches these. */
-function pullRequestView() {
-  const columns = PULL_REQUESTS.map((pullRequest) => ({
-    title: `PR #${pullRequest.number}: ${pullRequest.name}`,
-    places: contexts((pixels, role, theme) => shippedImage(pullRequest, pixels, role, theme)),
+/** Every logo we considered, as the files it shipped or would have shipped,
+ *  side by side in each place. No slider reaches these. */
+function consideredView() {
+  const columns = CONSIDERED.map((option) => ({
+    title: option.name,
+    places: contexts((pixels, role, theme) => consideredImage(option, pixels, role, theme)),
   }));
   const intro = element("p", {
     className: "hint view-intro",
-    text: "The real icon files of both pull requests, read from their branches on GitHub. The server fetches the branches once a minute, so a reload shows a PR's latest push. The sliders do not affect this view.",
+    text: "Every logo we considered, from the files kept in the considered folder. The note card and stacked notes columns are the real files of each stage of their pull requests. The explorer columns show each candidate at its defaults. The sliders do not affect this view.",
   });
   return [intro, ...sideBySide(columns)];
 }
 
-const VIEW_BUILDERS = { design: designView, context: contextView, compare: compareView, "pull-requests": pullRequestView };
+const VIEW_BUILDERS = { design: designView, context: contextView, compare: compareView, considered: consideredView };
 
 function renderView() {
   const view = byId("view");
   view.dataset.view = state.view;
-  // The pull request view has no candidate to edit, so the side columns and
-  // the export buttons are hidden while it is open.
+  // The considered logos have no sliders, so the side columns and the export
+  // buttons are hidden while that view is open.
   document.body.dataset.view = state.view;
   view.replaceChildren(...VIEW_BUILDERS[state.view]());
   refreshStage();

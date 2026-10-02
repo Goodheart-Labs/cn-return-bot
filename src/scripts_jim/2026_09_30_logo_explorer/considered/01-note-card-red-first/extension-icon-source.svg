@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- Common Notes icon (bold variant, medium pill outlines): halfway between
+       icon-bold and icon-bold-thickpills — same pill footprint, stroke 9.
+       Source of truth for public/icon/*.png — regenerate via
+       scripts/generate-extension-icons.ts. -->
+  <rect x="6" y="6" width="116" height="116" rx="24" fill="#aecdf3" stroke="#2563eb" stroke-width="11"/>
+  <!-- note text lines -->
+  <line x1="28" y1="38" x2="100" y2="38" stroke="#1f2937" stroke-width="13" stroke-linecap="round"/>
+  <line x1="28" y1="62" x2="82" y2="62" stroke="#1f2937" stroke-width="13" stroke-linecap="round"/>
+  <!-- vote pills: red / amber / green — outline widened inward, same outer size -->
+  <rect x="19" y="83" width="24" height="20" rx="5" fill="#fecaca" stroke="#dc2626" stroke-width="9"/>
+  <rect x="52" y="83" width="24" height="20" rx="5" fill="#fde68a" stroke="#d97706" stroke-width="9"/>
+  <rect x="85" y="83" width="24" height="20" rx="5" fill="#bbf7d0" stroke="#16a34a" stroke-width="9"/>
+</svg>

@@ -336,9 +336,10 @@ const stripedBubble = {
 // the first shape's colour, the second shape's and the overlap's. Green and red
 // stay because they mean helpful and not helpful in the app, and the overlap
 // sits between them like "somewhat helpful".
+const BRIGHT_PALETTE = { name: "Bright, like Google's logo", colors: ["#34a853", "#ea4335", "#fbbc04"] };
 const PAIR_PALETTES = [
   { name: "The app's rating colours", colors: [GREEN, RED, AMBER] },
-  { name: "Bright, like Google's logo", colors: ["#34a853", "#ea4335", "#fbbc04"] },
+  BRIGHT_PALETTE,
   { name: "Muted: sage, terracotta, mustard", colors: ["#5f9e6e", "#cf5c3c", "#e6b44c"] },
   { name: "Deep: emerald, crimson, gold", colors: ["#047857", "#be123c", "#f59e0b"] },
   { name: "Soft pastels", colors: ["#7fcf9a", "#f28b82", "#fdd663"] },
@@ -821,13 +822,13 @@ const noteCard = {
 
 /** A green and a red shape without tails, with a yellow overlap. `shape`
  *  names it in the panel: "square" or "rectangle". */
-function overlapPair({ id, name, summary, shape, body, a, b }) {
+function overlapPair({ id, name, summary, shape, body, a, b, presets = [] }) {
   const tailless = { ...PAIR_BUBBLE, ...body, tailLength: 0, tailWidth: 0 };
   return {
     id,
     name,
     summary,
-    presets: [],
+    presets,
     palettes: PAIR_PALETTES,
     noTiles: true,
     defaults: {
@@ -868,6 +869,16 @@ const squarePair = overlapPair({
   b: { x: 76, y: 70, rotation: 9 },
 });
 
+/** The logo Jim picked on 2026-10-02 (GOO-330): the two rectangles in the
+ *  bright colour set, with a gap of 10 between the colours and the red
+ *  rectangle a little lower, otherwise at their defaults. export-logos.ts
+ *  draws src/everything-ui/assets/logo.svg from it. */
+const [CHOSEN_GREEN, CHOSEN_RED, CHOSEN_YELLOW] = BRIGHT_PALETTE.colors;
+export const CHOSEN_LOGO = {
+  candidate: "rectangle-pair",
+  values: { "regions.gap": 10, "b.y": 74, "a.color": CHOSEN_GREEN, "b.color": CHOSEN_RED, "overlap.color": CHOSEN_YELLOW },
+};
+
 const rectanglePair = overlapPair({
   id: "rectangle-pair",
   name: "Two rectangles, yellow overlap",
@@ -876,6 +887,7 @@ const rectanglePair = overlapPair({
   body: { width: 72, height: 50, radius: 15 },
   a: { x: 50, y: 52, rotation: -9 },
   b: { x: 78, y: 72, rotation: 9 },
+  presets: [{ name: "The logo we picked (GOO-330)", values: CHOSEN_LOGO.values }],
 });
 
 // The bubbles, squares and rectangles are laid out by eye, so their defaults
