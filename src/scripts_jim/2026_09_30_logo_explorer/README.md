@@ -6,7 +6,7 @@ Store listing, the website header, a browser's tab and toolbar, and the
 right-click menu.
 
 The logo Jim picked here (GOO-330) is `CHOSEN_LOGO` in `js/logos.js`: the two
-rectangles in the bright colour set, with a gap of 10 between the colours and
+rectangles in the bright colour set, with a gap of 8 between the colours and
 the red rectangle at Y 74. `export-logos.ts` draws it into
 `src/everything-ui/assets/logo.svg`, the file every other logo file in the repo
 is drawn from. `considered/` keeps every option we looked at, with its real

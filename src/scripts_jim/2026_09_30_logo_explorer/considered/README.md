@@ -17,7 +17,7 @@ at the named commit, so it is what that option shipped or would have shipped.
 | `05-stacked-notes-plain-blue` | `4abf2d46` (PR #532, GOO-299) | The stacked notes, plain brand blue, everywhere. Rejected because plain blue vanishes on Chrome's dark toolbar (contrast 1.0 to 1 on a hovered button). |
 | `06-stacked-notes-blue-tile` | `04be1540` (PR #532) | White notes on a blue tile, everywhere. |
 | `07-stacked-notes-light-and-dark` | `be0de50a` (PR #532, final) | Plain blue notes in light mode. Blue notes on a black tile (`-tile-`) on the dark toolbar and as the dark favicon. Blue notes on a white tile (`-menu-`) in the right-click menu, in both modes. The extension switched the toolbar icon with the colour scheme through an offscreen page. |
-| `08-two-rectangles` | GOO-330 | The logo we picked: two rounded rectangles in the bright colour set, with a gap of 10 between the colours. The same drawing everywhere, with no tiles. |
+| `08-two-rectangles` | GOO-330 | The logo we picked: two rounded rectangles in the bright colour set, with a gap of 8 between the colours. The same drawing everywhere, with no tiles. |
 
 The file names say where each file went:
 
