@@ -10,6 +10,7 @@
  *    bun run scripts/generate-logo-assets.ts
  */
 import { readFileSync } from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { chromium } from "playwright";
 
@@ -43,7 +44,13 @@ const RASTERS: Raster[] = [
 ];
 
 // Chrome itself on a Mac, Playwright's own Chromium elsewhere.
-const browser = await chromium.launch(process.platform === "darwin" ? { channel: "chrome" } : {});
+// Machines without Chromium's system libraries keep them in this folder.
+const localLibs = path.join(os.homedir(), ".cache/cn-playwright-libs/usr/lib/x86_64-linux-gnu");
+const browser = await chromium.launch(
+  process.platform === "darwin"
+    ? { channel: "chrome" }
+    : { env: { ...process.env, LD_LIBRARY_PATH: [localLibs, process.env.LD_LIBRARY_PATH].filter(Boolean).join(":") } },
+);
 const page = await browser.newPage();
 
 for (const { file, size, artwork } of RASTERS) {

@@ -881,7 +881,7 @@ const squarePair = overlapPair({
 const [CHOSEN_GREEN, CHOSEN_RED, CHOSEN_YELLOW] = BRIGHT_PALETTE.colors;
 export const CHOSEN_LOGO = {
   candidate: "rectangle-pair",
-  values: { "regions.gap": 8, "b.y": 74, "a.rotation": -6, "b.rotation": 4, "a.color": CHOSEN_GREEN, "b.color": CHOSEN_RED, "overlap.color": CHOSEN_YELLOW },
+  values: { "regions.gap": 8, "b.y": 74, "a.rotation": 0, "b.rotation": 0, "a.color": CHOSEN_GREEN, "b.color": CHOSEN_RED, "overlap.color": CHOSEN_YELLOW },
 };
 
 const rectanglePair = overlapPair({
