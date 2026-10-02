@@ -1,8 +1,9 @@
-/** Turn the extension's icon SVG into the PNG sizes the manifest needs.
+/** Turn the logo into the PNG sizes the extension's manifest needs. The
+ *  extension uses the website's logo, src/everything-ui/assets/logo.svg.
  *  It renders through Chrome with Playwright, because Playwright is already a
  *  dependency of this repo. macOS has no reliable command line SVG rasterizer.
  *  sips mangles SVGs, and rsvg-convert is not installed.
- *  The PNGs are checked in, so run this again only when the icon SVG changes:
+ *  The PNGs are checked in, so run this again only when the logo changes:
  *
  *    bun run scripts/generate-extension-icons.ts
  */
@@ -16,8 +17,9 @@ const SIZES = [16, 32, 48, 128];
 // fill their whole square.
 const ARTWORK_SIZE: Record<number, number> = { 128: 96 };
 const EXTENSION_DIR = path.resolve(import.meta.dir, "../src/everything-extension");
+const LOGO_PATH = path.resolve(import.meta.dir, "../src/everything-ui/assets/logo.svg");
 
-const svg = readFileSync(path.join(EXTENSION_DIR, "assets/icon-bold-midpills.svg"), "utf8");
+const svg = readFileSync(LOGO_PATH, "utf8");
 
 // Chrome itself on a Mac, Playwright's own Chromium elsewhere.
 const browser = await chromium.launch(process.platform === "darwin" ? { channel: "chrome" } : {});
