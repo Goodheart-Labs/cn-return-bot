@@ -14,6 +14,10 @@ mac-tunnel serve 8007 bun run src/scripts_jim/2026_09_30_logo_explorer/server.ts
 - The candidates made of a green and a red shape (2, 3, 6 and 7) offer
   "Colour sets" in the panel: `PAIR_PALETTES` in `js/logos.js`. A set changes
   only the colours, so the shapes stay as they are.
+- The squares and rectangles (6 and 7) have "Gaps and outlines": a gap
+  between the three colours and an outline along the inside of each colour.
+  Both are exact, because a rounded rectangle grown or shrunk by a fixed width
+  is again a rounded rectangle (`grownBy` in `js/logos.js`).
 - `js/geometry.js` builds the shapes with Paper.js, which the page loads from
   a CDN.
 - `mocks/` holds the copied headers of the store listing and the website. The

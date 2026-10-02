@@ -425,6 +425,55 @@ function renderBlendPair(values) {
   return { markup, guides: pairGuides(first, second), bounds: boundsOf([first, second]) };
 }
 
+// Below this size a shrunk shape has vanished.
+const VANISHED = 0.01;
+
+/** A tailless bubble grown outwards by `distance` units on every side, or
+ *  shrunk for a negative distance. A rounded rectangle grown by d is a rounded
+ *  rectangle that is d wider on every side, with a corner radius d larger, so
+ *  the result is exact. The distance is on the canvas, and the bubble's own
+ *  units are scaled by its size slider. */
+function grownBy(bubble, distance) {
+  const local = distance / Math.abs(bubble.scale);
+  return bubbleShape({
+    ...bubble,
+    width: Math.max(VANISHED, bubble.width + 2 * local),
+    height: Math.max(VANISHED, bubble.height + 2 * local),
+    radius: Math.max(0, bubble.radius + local),
+  });
+}
+
+/** Two tailless shapes split into three regions: the first alone, the second
+ *  alone, and their overlap. The regions keep a gap of `regions.gap` between
+ *  them, half taken from each side. With `regions.outline` above zero, every
+ *  region gets a line of that width along the inside of its edge. */
+function renderTaillessPair(values) {
+  const halfGap = values["regions.gap"] / 2;
+  const outline = values["regions.outline"];
+  // Without gaps or outlines the regions would touch, and anti-aliasing lets
+  // the page show through as a hairline where they meet. Drawing the shapes on
+  // top of each other avoids that.
+  if (halfGap === 0 && outline === 0) return renderBlendPair(values);
+  const first = group(values, "a");
+  const second = group(values, "b");
+  /** The three regions with every edge moved inwards by `inset`. */
+  const regionsInset = (inset) => [
+    [grownBy(first, -inset).subtract(grownBy(second, halfGap + inset)), values["a.color"]],
+    [grownBy(second, -inset).subtract(grownBy(first, halfGap + inset)), values["b.color"]],
+    [grownBy(first, -(halfGap + inset)).intersect(grownBy(second, -(halfGap + inset))), values["overlap.color"]],
+  ];
+  const regions = regionsInset(0);
+  // The outline colour fills each region whole, and the region's colour is
+  // drawn on top of it, moved in by the outline's width. The outline is drawn
+  // as one shape, so no hairline shows where two regions meet without a gap.
+  const outlineShape = outline > 0 ? regions.map(([shape]) => shape).reduce((all, shape) => all.unite(shape)) : null;
+  const colored = outline > 0 ? regionsInset(outline) : regions;
+  const markup = (outlineShape ? fillPath(outlineShape, values["regions.outlineColor"]) : "") + colored.map(([shape, fill]) => (isEmptyShape(shape) ? "" : fillPath(shape, fill))).join("");
+  const firstShape = bubbleShape(first);
+  const secondShape = bubbleShape(second);
+  return { markup, guides: pairGuides(firstShape, secondShape), bounds: boundsOf([firstShape, secondShape]) };
+}
+
 const splitPair = {
   id: "split-pair",
   name: "Two bubbles, split along the chord",
@@ -785,16 +834,27 @@ function overlapPair({ id, name, summary, shape, body, a, b }) {
       ...prefixed("a", { ...tailless, ...a, color: GREEN }),
       ...prefixed("b", { ...tailless, ...b, color: RED }),
       "overlap.color": AMBER,
+      "regions.gap": 0,
+      "regions.outline": 0,
+      "regions.outlineColor": "#000000",
       ...PLACEMENT_DEFAULTS,
     },
     sections: [
       { title: "The overlap", controls: [color("overlap.color", "Overlap colour")] },
+      {
+        title: "Gaps and outlines",
+        controls: [
+          range("regions.gap", "Gap between the colours", 0, 16, 0.25),
+          range("regions.outline", "Outline inside each colour", 0, 16, 0.25),
+          { ...color("regions.outlineColor", "Outline colour"), visible: (values) => values["regions.outline"] > 0 },
+        ],
+      },
       { title: `Both ${shape}s`, controls: [MIRROR_ACTION, swapColorsAction(`${shape}s`)] },
       { title: `First ${shape}`, controls: bodyControls("a") },
       { title: `Second ${shape}`, controls: bodyControls("b") },
       PLACEMENT_CONTROLS,
     ],
-    render: renderBlendPair,
+    render: renderTaillessPair,
   };
 }
 
