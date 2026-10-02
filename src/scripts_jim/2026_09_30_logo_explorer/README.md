@@ -17,6 +17,11 @@ mac-tunnel serve 8007 bun run src/scripts_jim/2026_09_30_logo_explorer/server.ts
   browser window and the menu are drawn in `js/previews.js`. Each mock marks
   the logo's place with `<span class="logo-slot" data-role="R" data-px="N">`,
   where R names which file goes there: store, header, favicon, toolbar or menu.
+- "In context" and "Compare all five" show each candidate as the extension
+  would ship it (`shippedForms` in `js/logos.js`, the same rules as
+  `scripts/generate-logo-assets.ts` in PR #532). A mark without a backdrop
+  fills its whole square, sits on a black tile for the dark toolbar and the
+  dark favicon, and on a white tile in the right-click menu.
 - The view "The two PRs" shows the real icon files of the two logo pull
   requests side by side: #532 (stacked notes) and #533 (today's logo with the
   boxes in the order green, yellow, red). `js/pullRequests.js` says which file

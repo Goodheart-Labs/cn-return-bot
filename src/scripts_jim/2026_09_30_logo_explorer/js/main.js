@@ -4,7 +4,7 @@
 
 import { renderControls } from "./controls.js";
 import { element, segments } from "./dom.js";
-import { CANDIDATES, composeSvg, fitPlacement } from "./logos.js";
+import { CANDIDATES, composeSvg, fitPlacement, shippedForms } from "./logos.js";
 import { contexts, loadMocks } from "./previews.js";
 import { PULL_REQUESTS, shippedImage } from "./pullRequests.js";
 
@@ -100,15 +100,17 @@ function setStatus(text) {
 
 const dataUrl = (svg) => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 
-/** Draws one candidate in its three forms: as it is, as the store icon, and
- *  with its construction lines. */
+/** Draws one candidate in all its forms: as it is, as the store icon, with
+ *  its construction lines, and as the files the extension would ship. */
 function drawCandidate(candidate) {
   const values = state.values[candidate.id];
   const rendered = candidate.render(values);
+  const storeArtworkShare = state.storeMargin ? STORE_ARTWORK_SHARE : 1;
   svgs[candidate.id] = {
     plain: composeSvg(rendered, values),
-    store: composeSvg(rendered, values, { artworkShare: state.storeMargin ? STORE_ARTWORK_SHARE : 1 }),
+    store: composeSvg(rendered, values, { artworkShare: storeArtworkShare }),
     guides: composeSvg(rendered, values, { guides: true }),
+    ...shippedForms(rendered, values, storeArtworkShare),
   };
 }
 
@@ -318,12 +320,28 @@ function contextFigure({ title, node, name }) {
   return element("figure", { className: "context" }, [element("figcaption", { text: title }), frame]);
 }
 
-// The store listing shows the store's version of the icon, every other place
-// the plain one.
-const contextsOf = (candidateId) => contexts((pixels, role) => logoImage(candidateId, pixels, role === "store" ? "store" : "plain"));
+/** The form of the logo that goes into a slot, as PR #532's extension picks
+ *  it. The toolbar icon and the favicon switch to the tile in dark mode, and
+ *  the right-click menu always shows the tile. */
+function shippedForm(role, theme) {
+  if (role === "store") return "storeIcon";
+  if (role === "menu") return "menuTile";
+  if (theme === "dark" && (role === "toolbar" || role === "favicon")) return "darkTile";
+  return "icon";
+}
+
+const contextsOf = (candidateId) => contexts((pixels, role, theme) => logoImage(candidateId, pixels, shippedForm(role, theme)));
+
+const SHIPPED_FORMS_HINT =
+  "Shown as the extension would ship it. A mark without a backdrop fills its whole square, whatever the placement sliders say. In dark mode the toolbar icon and the favicon put it on a black tile, and the right-click menu always puts it on a white tile. A logo with its own backdrop looks the same everywhere.";
 
 function contextView() {
-  return [card(`${selectedCandidate().name}, where it will be seen`, [storeMarginCheckbox()], contextsOf(state.selected).map(contextFigure))];
+  return [
+    card(`${selectedCandidate().name}, where it will be seen`, [storeMarginCheckbox()], [
+      element("p", { className: "hint", text: SHIPPED_FORMS_HINT }),
+      ...contextsOf(state.selected).map(contextFigure),
+    ]),
+  ];
 }
 
 /** One card per place, with several logos side by side in it. Each column is
@@ -345,12 +363,13 @@ function sideBySide(columns, decorate = () => {}) {
  *  sliders are one click away. */
 function compareView() {
   const columns = CANDIDATES.map((candidate, index) => ({ title: `${index + 1}. ${candidate.name}`, places: contextsOf(candidate.id) }));
-  return sideBySide(columns, (cell, index) => {
+  const intro = element("p", { className: "hint view-intro", text: SHIPPED_FORMS_HINT });
+  return [intro, ...sideBySide(columns, (cell, index) => {
     const { id } = CANDIDATES[index];
     cell.classList.add("context-selectable");
     cell.classList.toggle("context-selected", id === state.selected);
     cell.addEventListener("click", () => select(id));
-  });
+  })];
 }
 
 /** The files the two logo pull requests ship, as they are on their branches

@@ -53,6 +53,8 @@ const outlinePath = (shape) =>
 // mark sits on the canvas.
 // ---------------------------------------------------------------------------
 
+const MAX_MARK_SCALE = 1.6;
+
 const PLACEMENT_CONTROLS = {
   title: "Backdrop and placement",
   controls: [
@@ -66,7 +68,7 @@ const PLACEMENT_CONTROLS = {
     { ...range("bg.inset", "Inset from the edge", 0, 24, 0.5), visible: (values) => values["bg.shape"] !== "none" },
     { ...range("bg.strokeWidth", "Border width", 0, 20, 0.5), visible: (values) => values["bg.shape"] !== "none" },
     { ...color("bg.stroke", "Border colour"), visible: (values) => values["bg.shape"] !== "none" && values["bg.strokeWidth"] > 0 },
-    range("art.scale", "Mark size", 0.3, 1.6, 0.01),
+    range("art.scale", "Mark size", 0.3, MAX_MARK_SCALE, 0.01),
     range("art.x", "Mark shift X", -40, 40, 0.5),
     range("art.y", "Mark shift Y", -40, 40, 0.5),
   ],
@@ -120,18 +122,67 @@ export function composeSvg(rendered, values, { guides = false, artworkShare = 1 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${CANVAS}" height="${CANVAS}" viewBox="${origin} ${origin} ${view} ${view}">${backdropMarkup(values)}${art}</svg>`;
 }
 
+/** The placement values that centre the mark and make its longer side
+ *  `span` units long. */
+function placementFor(bounds, span) {
+  const scale = span / Math.max(bounds.width, bounds.height);
+  return {
+    "art.scale": scale,
+    "art.x": (CANVAS / 2 - bounds.center.x) * scale,
+    "art.y": (CANVAS / 2 - bounds.center.y) * scale,
+  };
+}
+
 /** The placement values that centre the mark and make its longer side fill
  *  the canvas up to a margin. The margin is wider on a backdrop, so the mark
- *  keeps some air around it. */
+ *  keeps some air around it. The values are rounded to the sliders' steps. */
 export function fitPlacement(candidate, values) {
   const bounds = candidate.render(values).bounds;
   if (!bounds) return {};
   const margin = values["bg.shape"] === "none" ? 4 : 24;
-  const scale = (CANVAS - 2 * margin) / Math.max(bounds.width, bounds.height);
+  const placement = placementFor(bounds, Math.min(CANVAS - 2 * margin, MAX_MARK_SCALE * Math.max(bounds.width, bounds.height)));
   return {
-    "art.scale": Math.round(Math.min(1.6, scale) * 100) / 100,
-    "art.x": Math.round((CANVAS / 2 - bounds.center.x) * scale * 2) / 2,
-    "art.y": Math.round((CANVAS / 2 - bounds.center.y) * scale * 2) / 2,
+    "art.scale": Math.round(placement["art.scale"] * 100) / 100,
+    "art.x": Math.round(placement["art.x"] * 2) / 2,
+    "art.y": Math.round(placement["art.y"] * 2) / 2,
+  };
+}
+
+// How scripts/generate-logo-assets.ts (PR #532) turns a mark without a
+// backdrop into the extension's icons. Alone, the mark fills the whole square,
+// whatever the placement sliders say. In dark mode and in the right-click
+// menu, where a plain mark can vanish, it sits on a tile and takes 80 of the
+// tile's 128 units. The tile's corners are rounded by 22% of its width.
+const TILE_MARK_SPAN = 80;
+const TILE_RADIUS = 0.22 * CANVAS;
+const DARK_TILE = "#000000";
+const MENU_TILE = WHITE;
+
+/** The logo's files as the extension and the website would ship them:
+ *  `icon` alone, `storeIcon` inside the store's margin, and the mark on the
+ *  dark mode tile and on the menu's tile. A candidate with its own backdrop
+ *  ships as designed in every place, as today's logo does (PR #533). */
+export function shippedForms(rendered, values, storeArtworkShare) {
+  if (values["bg.shape"] !== "none" || !rendered.bounds) {
+    const asDesigned = composeSvg(rendered, values);
+    return { icon: asDesigned, storeIcon: composeSvg(rendered, values, { artworkShare: storeArtworkShare }), darkTile: asDesigned, menuTile: asDesigned };
+  }
+  const filled = { ...values, ...placementFor(rendered.bounds, CANVAS) };
+  const onTile = (fill) =>
+    composeSvg(rendered, {
+      ...values,
+      ...placementFor(rendered.bounds, TILE_MARK_SPAN),
+      "bg.shape": "square",
+      "bg.fill": fill,
+      "bg.radius": TILE_RADIUS,
+      "bg.inset": 0,
+      "bg.strokeWidth": 0,
+    });
+  return {
+    icon: composeSvg(rendered, filled),
+    storeIcon: composeSvg(rendered, filled, { artworkShare: storeArtworkShare }),
+    darkTile: onTile(DARK_TILE),
+    menuTile: onTile(MENU_TILE),
   };
 }
 
