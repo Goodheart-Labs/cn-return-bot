@@ -269,6 +269,16 @@ by the four-hourly timetable update GitHub Pages alone. The step is in
 and it needs the two Cloudflare secrets above. The API token must be allowed
 to edit Cloudflare Pages.
 
+### Google Search Console
+
+commonnotes.net is verified in Google Search Console as a URL-prefix
+property, with the file
+[google557ce68cd0dd730c.html](../src/everything-web/public/google557ce68cd0dd730c.html)
+that Google handed out (2026-10-02). Google checks it again from time to time,
+so the file must stay on the deployed site. The verification is what lets the
+Chrome Web Store listing name commonnotes.net as its "Official URL" with a
+verified badge.
+
 ### The Substack relay Worker
 
 A Cloudflare Worker is a small program that Cloudflare runs on its own
