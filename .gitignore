@@ -104,6 +104,8 @@ src/scripts_jim/**/__pycache__/
 src/scripts_jim/**/*.jsonl
 src/scripts_jim/**/*.npy
 src/scripts_jim/**/*.html
+# The logo explorer's pages are its source, not generated reports.
+!src/scripts_jim/2026_09_30_logo_explorer/**/*.html
 src/scripts_jim/2026_05_29_xxl_feed_monitor/from_actions/feed_dump.md
 src/scripts_jim/2026_06_12_note_embedding_clusters/notes.json
 src/scripts_jim/2026_05_09_broken_search_variants/url_fetch_buckets.json
