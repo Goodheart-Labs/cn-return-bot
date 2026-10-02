@@ -243,7 +243,10 @@ set on 2026-10-01, so the code's defaults apply:
 GitHub Pages is GitHub's static website hosting. Under Settings → Pages the
 source is "GitHub Actions" (checked on 2026-10-01), so the Deploy Pages
 workflow publishes the site. The site lives at
-`https://goodheart-labs.github.io/cn-return-bot/` and has no custom domain.
+`https://goodheart-labs.github.io/cn-return-bot/` and has no custom domain. It
+holds the stats dashboard and the analytics dashboard. The Common Notes
+website used to have a copy at `/cn-return-bot/notes/`. That copy is gone, and
+its addresses now redirect to the same page on commonnotes.net.
 
 ## Cloudflare
 

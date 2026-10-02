@@ -1,6 +1,6 @@
 /** Draws every PNG of the logo from src/everything-ui/assets/logo.svg: the
  *  extension's icons, the icon Firefox's add-on listing asks for, and the
- *  website's PNG favicon and home screen icon. The Safari app's icons have
+ *  website's PNG favicon, home screen icon and link preview card. The Safari app's icons have
  *  their own script, src/everything-extension/scripts/safariAppIcons.ts.
  *  It renders through Chrome with Playwright, because Playwright is already a
  *  dependency of this repo. macOS has no reliable command line SVG rasterizer.
@@ -10,6 +10,7 @@
  *    bun run scripts/generate-logo-assets.ts
  */
 import { readFileSync } from "node:fs";
+import { pathToFileURL } from "node:url";
 import os from "node:os";
 import path from "node:path";
 import { chromium } from "playwright";
@@ -33,13 +34,17 @@ interface Raster {
 // is written to assets/ rather than public/, so it never ships inside the
 // extension zip.
 const CHROME_STORE_ARTWORK = 112;
+// Google Search shows a site's favicon next to its results only if the icon
+// is square and its width is a multiple of 48 pixels. Browsers scale the same
+// file down for their tabs.
+const FAVICON_SIZE = 96;
 const RASTERS: Raster[] = [
   { file: "src/everything-extension/public/icon/16.png", size: 16, artwork: 16 },
   { file: "src/everything-extension/public/icon/32.png", size: 32, artwork: 32 },
   { file: "src/everything-extension/public/icon/48.png", size: 48, artwork: 48 },
   { file: "src/everything-extension/public/icon/128.png", size: 128, artwork: CHROME_STORE_ARTWORK },
   { file: "src/everything-extension/assets/store-icon-128-full.png", size: 128, artwork: 128 },
-  { file: "src/everything-web/src/assets/favicon-32.png", size: 32, artwork: 32 },
+  { file: "src/everything-web/src/assets/favicon-96.png", size: FAVICON_SIZE, artwork: FAVICON_SIZE },
   { file: "src/everything-web/src/assets/apple-touch-icon.png", size: 180, artwork: 180 },
 ];
 
@@ -63,4 +68,17 @@ for (const { file, size, artwork } of RASTERS) {
   await page.screenshot({ path: outPath, omitBackground: true });
   console.log(`wrote ${outPath}`);
 }
+// The card that link previews and search results show for the website. It is
+// drawn at twice its size, so it stays sharp on high density screens.
+const OG_CARD = { width: 1200, height: 630, scale: 2 };
+const cardPage = await browser.newPage({
+  viewport: { width: OG_CARD.width, height: OG_CARD.height },
+  deviceScaleFactor: OG_CARD.scale,
+});
+await cardPage.goto(pathToFileURL(path.join(ROOT, "src/everything-web/og-card.html")).href);
+await cardPage.evaluate(() => document.fonts.ready);
+const ogPath = path.join(ROOT, "src/everything-web/public/og.png");
+await cardPage.screenshot({ path: ogPath });
+console.log(`wrote ${ogPath}`);
+
 await browser.close();
