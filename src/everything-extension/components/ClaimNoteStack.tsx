@@ -2,7 +2,7 @@ import { NoteNotNeeded } from "@cn/features/notes/NoteNotNeeded";
 import { Note } from "@cn/features/notes/Note";
 import { NextIcon } from "@cn/ui/icons";
 import type { ClaimGroup } from "../utils/claimGroups";
-import { noteShareUrl } from "../utils/share";
+import { noteShareUrl } from "@cn/core/pageUrls";
 
 /** The width every overlay uses. The Substack popover and the YouTube card are
  *  the same surface, so they get the same size. */

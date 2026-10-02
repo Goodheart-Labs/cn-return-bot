@@ -866,6 +866,24 @@ export type Database = {
         }
         Relationships: []
       }
+      everything_slack_announcements: {
+        Row: {
+          channel: string
+          posted_at: string
+          subject_id: string
+        }
+        Insert: {
+          channel: string
+          posted_at?: string
+          subject_id: string
+        }
+        Update: {
+          channel?: string
+          posted_at?: string
+          subject_id?: string
+        }
+        Relationships: []
+      }
       everything_top_posts: {
         Row: {
           feed_url: string
@@ -906,6 +924,7 @@ export type Database = {
           note_id: string
           platform: string | null
           reasoning: string | null
+          updated_at: string
           vote: number
           voter_id: string
         }
@@ -915,6 +934,7 @@ export type Database = {
           note_id: string
           platform?: string | null
           reasoning?: string | null
+          updated_at?: string
           vote: number
           voter_id: string
         }
@@ -924,6 +944,7 @@ export type Database = {
           note_id?: string
           platform?: string | null
           reasoning?: string | null
+          updated_at?: string
           vote?: number
           voter_id?: string
         }
