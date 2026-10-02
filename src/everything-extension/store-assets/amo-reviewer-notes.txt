@@ -5,4 +5,6 @@ Build environment: Bun 1.3 (bun.sh). To reproduce from the source zip:
 2. Create a .env file in the repo root with VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (these are the public backend URL and the public anon key; both are visible verbatim inside the shipped bundle, nothing secret is needed).
 3. bun run zip-ext. This builds the Firefox package into src/everything-extension/.output/.
 
+The validator's innerHTML warnings come from two places. Lines 8143 and 8268 of each bundle are React DOM's own dangerouslySetInnerHTML handling. The other two per content script are the thumbnail badges in utils/coverageBadges.ts, which set a constant SVG icon followed by a note count that is a number; no page or server text reaches innerHTML.
+
 The build is not minified (vite minify is disabled in wxt.config.ts), so the shipped files are readable.
