@@ -874,13 +874,14 @@ const squarePair = overlapPair({
 });
 
 /** The logo Jim picked on 2026-10-02 (GOO-330): the two rectangles in the
- *  bright colour set, with a gap of 8 between the colours and the red
- *  rectangle a little lower, otherwise at their defaults. export-logos.ts
+ *  bright colour set, with a gap of 8 between the colours, the red rectangle
+ *  a little lower, and both turned a little less, otherwise at their
+ *  defaults. export-logos.ts
  *  draws src/everything-ui/assets/logo.svg from it. */
 const [CHOSEN_GREEN, CHOSEN_RED, CHOSEN_YELLOW] = BRIGHT_PALETTE.colors;
 export const CHOSEN_LOGO = {
   candidate: "rectangle-pair",
-  values: { "regions.gap": 8, "b.y": 74, "a.color": CHOSEN_GREEN, "b.color": CHOSEN_RED, "overlap.color": CHOSEN_YELLOW },
+  values: { "regions.gap": 8, "b.y": 74, "a.rotation": -6, "b.rotation": 5, "a.color": CHOSEN_GREEN, "b.color": CHOSEN_RED, "overlap.color": CHOSEN_YELLOW },
 };
 
 const rectanglePair = overlapPair({
