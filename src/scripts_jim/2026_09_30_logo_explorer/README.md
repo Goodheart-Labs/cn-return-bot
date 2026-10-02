@@ -7,7 +7,7 @@ right-click menu.
 
 The logo Jim picked here (GOO-330) is `CHOSEN_LOGO` in `js/logos.js`: the two
 rectangles in the bright colour set, with a gap of 8 between the colours, the
-red rectangle at Y 74, the green one turned by -6 degrees and the red one by 5. `export-logos.ts` draws it into
+red rectangle at Y 74, the green one turned by -6 degrees and the red one by 4. `export-logos.ts` draws it into
 `src/everything-ui/assets/logo.svg`, the file every other logo file in the repo
 is drawn from. `considered/` keeps every option we looked at, with its real
 files, and its README says which is which.
