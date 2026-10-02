@@ -345,9 +345,18 @@ requests fail.
 
 | Store | Listing | Extension ID |
 |---|---|---|
-| Chrome Web Store | [common-notes](https://chromewebstore.google.com/detail/common-notes/jodkhmefbcmgldokmeicpdogkepmcnij) (live on 2026-10-01) | `jodkhmefbcmgldokmeicpdogkepmcnij` |
-| Firefox Add-ons (AMO) | [common-notes](https://addons.mozilla.org/en-US/firefox/addon/common-notes/) (public, version 0.3.1, on 2026-10-01) | `extension@commonnotes.net` |
+| Chrome Web Store | [common-notes](https://chromewebstore.google.com/detail/common-notes/jodkhmefbcmgldokmeicpdogkepmcnij) (version 0.4.0 submitted for review on 2026-10-02, with commonnotes.net as its verified Official URL) | `jodkhmefbcmgldokmeicpdogkepmcnij` |
+| Firefox Add-ons (AMO) | [common-notes](https://addons.mozilla.org/en-US/firefox/addon/common-notes/) (public, version 0.4.0, on 2026-10-02) | `extension@commonnotes.net` |
 | Safari | no listing yet | |
+
+How to release a new version, and which credentials the store APIs need, is
+in [extension-release.md](extension-release.md). Those credentials are
+`AMO_JWT_ISSUER` and `AMO_JWT_SECRET` from AMO's API key page, and
+`CWS_PUBLISHER_ID` and `CWS_SERVICE_ACCOUNT_KEY_FILE` for a Google Cloud
+service account that the Chrome Web Store dashboard grants API access. The Chrome Web
+Store publisher ID is `386e874a-cc58-4737-9143-c22ec9085c56`. None of the
+four exist yet (2026-10-02). They belong in `~/dev/env/cn-return-bot/env`. Both listings link to
+https://commonnotes.net as their homepage.
 
 Microsoft Edge installs from the Chrome Web Store listing. The website's
 install buttons link to these listings from
