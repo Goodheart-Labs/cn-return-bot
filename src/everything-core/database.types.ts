@@ -442,6 +442,7 @@ export type Database = {
         Row: {
           client_token: string | null
           created_at: string
+          feed_url: string | null
           id: string
           item_id: string | null
           page_text: string | null
@@ -457,6 +458,7 @@ export type Database = {
         Insert: {
           client_token?: string | null
           created_at?: string
+          feed_url?: string | null
           id?: string
           item_id?: string | null
           page_text?: string | null
@@ -472,6 +474,7 @@ export type Database = {
         Update: {
           client_token?: string | null
           created_at?: string
+          feed_url?: string | null
           id?: string
           item_id?: string | null
           page_text?: string | null
@@ -2055,6 +2058,10 @@ export type Database = {
         Returns: Json
       }
       everything_cost_since: { Args: { since: string }; Returns: number }
+      everything_creator_project: {
+        Args: { creator_feed_url: string }
+        Returns: string
+      }
       everything_creator_attention: {
         Args: { min_pages: number; since: string }
         Returns: {

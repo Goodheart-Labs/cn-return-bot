@@ -37,14 +37,16 @@ export function usePostImprovement() {
 /** Posts a brand-new note on a passage the reader selected. A page we have
  *  never ingested has no item row yet, so `item` may be missing; the row is
  *  then created from `page` only now, when the note is actually posted, and
- *  closing the composer leaves no orphan item behind. */
+ *  closing the composer leaves no orphan item behind. `page.creatorFeedUrl`
+ *  files that new item under the page's creator instead of "Around the web".
+ *  It is the still-running lookup of that creator, and posting waits for it. */
 export function usePostClaimWithNote() {
   return useMutation({
     mutationFn: async ({ item, page, ...rest }: Omit<Parameters<typeof postClaimWithNote>[0], "itemId" | "itemUrl"> & {
       item: { id: string; url: string } | null;
-      page: { url: string; title: string };
+      page: { url: string; title: string; creatorFeedUrl?: Promise<string | null> };
     }) => {
-      const itemId = item?.id ?? (await ensureWebItem(page));
+      const itemId = item?.id ?? (await ensureWebItem({ ...page, creatorFeedUrl: await page.creatorFeedUrl }));
       return postClaimWithNote({ ...rest, itemId, itemUrl: item?.url ?? page.url });
     },
     onSuccess: useAfterPostingNote(),

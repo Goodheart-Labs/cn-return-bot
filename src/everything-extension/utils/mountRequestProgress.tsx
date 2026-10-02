@@ -1,9 +1,9 @@
 import { createRoot, type Root } from "react-dom/client";
-import { createShadowRootUi } from "#imports";
 import type { ContentScriptContext } from "#imports";
 import type { RequestProgress } from "@cn/core/requestProgress";
 import { RequestProgressCard } from "../components/RequestProgressCard";
 import { isPageDark } from "./pageTheme";
+import { createOverlayUi } from "./overlayUi";
 
 /* The shared stylesheet only carries host rules for the elements it names, so
  * this mount injects its own. It sits in the same corner as the transient
@@ -35,7 +35,7 @@ export async function mountRequestProgress(
   let progress: RequestProgress = { kind: "saved" };
   const render = () =>
     root?.render(<RequestProgressCard progress={progress} onJump={params.onJump} onDismiss={params.onDismiss} />);
-  const ui = await createShadowRootUi(ctx, {
+  const ui = await createOverlayUi(ctx, {
     name: "common-notes-progress",
     position: "inline",
     anchor: "body",
