@@ -145,12 +145,12 @@ bun run slack-send C0C638V19ED "hello from the services machine"
 `cn-notify` (`src/service/notify/`) checks the database once a minute and
 posts to four channels:
 
-| Channel | What it announces |
-|---|---|
-| #on-important-creator | New notes on Astral Codex Ten, Andy Masley, Bentham's Bulldog, Predictive Text and Don't Worry About the Vase. Our AI's notes on one post come as one message once the post is finished. A note a person wrote comes on its own. |
-| #written-by-human | Every note a person wrote or improved, on any creator. |
-| #first-helpful-vote | A note's first Helpful vote from someone other than its author. |
-| #helpful | A note that became rated helpful, by the website's rule (`noteStatus`). |
+| Channel | Id | What it announces |
+|---|---|---|
+| #on-important-creator | `C0C5N7EE6RM` | New notes on Astral Codex Ten, Andy Masley, Bentham's Bulldog, Predictive Text and Don't Worry About the Vase. Our AI's notes on one post come as one message once the post is finished. A note a person wrote comes on its own. |
+| #written-by-human | `C0C6CEFJT9A` | Every note a person wrote or improved, on any creator. |
+| #first-helpful-vote | `C0C5Y8WB02Z` | A note's first Helpful vote from someone other than its author. |
+| #helpful | `C0C5Y91UMA9` | A note that became rated helpful, by the website's rule (`noteStatus`). |
 
 The list of creators is `IMPORTANT_CREATOR_FEED_URLS` in
 `src/service/notify/announcements.ts`. The table
