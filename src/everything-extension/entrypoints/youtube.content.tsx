@@ -2,7 +2,7 @@ import "../assets/tailwind.css";
 import { createRoot } from "react-dom/client";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@cn/features/query/queryClient";
-import { defineContentScript, createShadowRootUi } from "#imports";
+import { defineContentScript } from "#imports";
 import type { ContentScriptContext } from "#imports";
 import { fetchItemForUrl, type PageItem } from "@cn/core/items";
 import { extractYoutubeVideoId } from "@cn/core/pageUrls";
@@ -19,6 +19,7 @@ import { getNoteDisplay } from "../utils/settings";
 import { registerDevReloadHook } from "../utils/devReload";
 import { initUiAnalytics } from "../utils/analytics";
 import { track } from "@cn/core/analytics";
+import { createOverlayUi } from "../utils/overlayUi";
 
 // YouTube's DOM changes often. Every selector we depend on lives here.
 const PLAYER_SELECTOR = "#movie_player";
@@ -94,7 +95,7 @@ async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | n
   // be dragged over the whole page. Its geometry is set in assets/tailwind.css
   // under `:host(common-notes-yt)`. The scrub-bar pins reach the player on
   // their own.
-  const ui = await createShadowRootUi(ctx, {
+  const ui = await createOverlayUi(ctx, {
     name: "common-notes-yt",
     position: "inline",
     anchor: "body",

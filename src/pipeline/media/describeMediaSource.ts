@@ -26,7 +26,7 @@ import { analyzeVideo, describeImage, type GeminiMediaItem } from "./mediaAnalys
 import { downloadMediaWithYtDlp, fetchYtDlpMetadata, type VideoDownload, type YtDlpMetadata } from "./ytDlpDownload";
 import { downloadWithGalleryDl } from "./galleryDlDownload";
 import { captionsToText, fetchYoutubeCaptions, YoutubeUnreachableError } from "./youtubeCaptions";
-import { fetchVideo } from "./youtubeDataApi";
+import { fetchVideo, type YoutubeVideo } from "./youtubeDataApi";
 
 /** The longest video we download. */
 const MAX_DOWNLOAD_DURATION_MS = 600_000;
@@ -72,7 +72,7 @@ export async function describeMediaFromUrl(url: string, costName: string, strate
 async function describeYoutubeVideo(url: string, costName: string, strategy: VideoStrategy): Promise<MediaSourceDescription> {
   const video = await fetchVideo(url);
   const details = { title: video.title, uploader: video.channelTitle, published: video.publishedAt, description: video.description };
-  const transcript = await fetchCaptionText(url);
+  const transcript = await fetchCaptionText(video);
   // A live stream has no duration yet, and is too long to download too.
   const durationMs = video.durationSeconds === null ? undefined : video.durationSeconds * 1000;
   if (durationMs === undefined || durationMs > MAX_DOWNLOAD_DURATION_MS) return { kind: "video_too_long", details, transcript };
@@ -83,13 +83,13 @@ async function describeYoutubeVideo(url: string, costName: string, strategy: Vid
  *  could not be reached, the video is still described from its details and
  *  frames, and the run carries a warning. A verifier that sees the title and
  *  the pictures can judge more than one that falls back to YouTube's page. */
-async function fetchCaptionText(url: string): Promise<string | null> {
+async function fetchCaptionText(video: YoutubeVideo): Promise<string | null> {
   try {
-    const cues = await fetchYoutubeCaptions(url);
+    const cues = await fetchYoutubeCaptions(video);
     return cues ? captionsToText(cues) : null;
   } catch (err) {
     if (!(err instanceof YoutubeUnreachableError)) throw err;
-    addWarning(`YouTube captions could not be fetched, described without a transcript (${url}): ${err.message.slice(0, MAX_WARNING_REASON_LENGTH)}`);
+    addWarning(`YouTube captions could not be fetched, described without a transcript (${video.url}): ${err.message.slice(0, MAX_WARNING_REASON_LENGTH)}`);
     return "(the captions could not be fetched)";
   }
 }
