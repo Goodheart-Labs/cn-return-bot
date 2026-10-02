@@ -456,7 +456,9 @@ const DEFAULT_NOTES = {
   lineColor: WHITE,
   frontSize: 70.71,
   frontRadius: 14.45,
-  backSize: 74.32,
+  // Jim made the back note smaller on 2026-10-02. The glyph that ships in
+  // PR #532 still has a back note of 74.32.
+  backSize: 67,
   backRadius: 11.87,
   shiftRight: 25.29,
   shiftUp: 25.29,
@@ -604,9 +606,10 @@ const stackedNotes = {
 
 // ---------------------------------------------------------------------------
 // 5. The logo that ships today: a note card with two text lines and the three
-// rating boxes. The defaults redraw the extension's icon
-// (src/everything-extension/assets/icon-bold-midpills.svg) with the boxes in
-// the order green, yellow, red.
+// rating boxes. The defaults redraw the website's logo
+// (src/everything-ui/assets/logo.svg) with the boxes in the order green,
+// yellow, red. PR #533 draws the extension's icons from that file too.
+// Before, the extension had a bolder variant of its own.
 // ---------------------------------------------------------------------------
 
 /** The ratings name the colour values: "helpful" reads card.helpfulStroke and
@@ -628,7 +631,7 @@ function renderNoteCard(values) {
   return { markup: textLine(card.line1Y, card.line1Length) + textLine(card.line2Y, card.line2Length) + boxes.join(""), bounds: null };
 }
 
-const SHIPPED_ICON = {
+const BOLD_EXTENSION_ICON = {
   "bg.shape": "square",
   "bg.fill": "#aecdf3",
   "bg.stroke": BLUE,
@@ -652,7 +655,7 @@ const SHIPPED_ICON = {
 };
 
 const WEBSITE_LOGO = {
-  ...SHIPPED_ICON,
+  ...BOLD_EXTENSION_ICON,
   "bg.strokeWidth": 6,
   "bg.inset": 4,
   "card.lineLeft": 26,
@@ -671,15 +674,15 @@ const WEBSITE_LOGO = {
 const noteCard = {
   id: "note-card",
   name: "Today's logo, green first",
-  summary: "The note card that ships today, with the rating boxes in the order green, yellow, red.",
+  summary: "The website's logo, with the rating boxes in the order green, yellow, red. With PR #533 the extension uses it too.",
   presets: [
-    { name: "The extension's icon", values: SHIPPED_ICON },
-    { name: "The website's thinner logo", values: WEBSITE_LOGO },
-    { name: "Solid boxes", values: { ...SHIPPED_ICON, "card.boxStyle": "solid", "card.boxBorder": 7, "card.boxLeft": 18, "card.boxWidth": 26, "card.boxHeight": 22, "card.boxTop": 82, "card.boxRadius": 6 } },
+    { name: "The website's logo", values: WEBSITE_LOGO },
+    { name: "The extension's old bold icon", values: BOLD_EXTENSION_ICON },
+    { name: "Solid boxes", values: { ...BOLD_EXTENSION_ICON, "card.boxStyle": "solid", "card.boxBorder": 7, "card.boxLeft": 18, "card.boxWidth": 26, "card.boxHeight": 22, "card.boxTop": 82, "card.boxRadius": 6 } },
   ],
   defaults: {
     ...PLACEMENT_DEFAULTS,
-    ...SHIPPED_ICON,
+    ...WEBSITE_LOGO,
     "card.lineColor": INK,
     "card.boxOrder": "green-first",
     "card.helpfulStroke": "#16a34a",

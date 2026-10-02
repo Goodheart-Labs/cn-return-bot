@@ -10,11 +10,12 @@ import { PULL_REQUESTS, shippedImage } from "./pullRequests.js";
 
 const STORAGE_KEY = "cn-logo-explorer:v1";
 // Raised when a candidate's defaults change so much that values stored by an
-// older version would hide the change. Version 2 made the stacked notes the
-// shipped logo (GOO-299), so values stored before it are dropped for that one
-// candidate.
-const STATE_VERSION = 2;
-const RESET_BY_VERSION_2 = "stacked-notes";
+// older version would hide the change. The values stored before it are then
+// dropped for the candidates that version reset. Version 2 made the stacked
+// notes the shipped logo (GOO-299). Version 3 made the website's logo the
+// default of today's logo, since PR #533 ships it in the extension too.
+const STATE_VERSION = 3;
+const RESET_BY_VERSION = { 2: ["stacked-notes"], 3: ["note-card"] };
 // The Chrome Web Store asks for the artwork of the 128 pixel icon to be 96
 // pixels wide inside a transparent margin. The icon that ships today does so.
 const STORE_ARTWORK_SHARE = 96 / 128;
@@ -68,7 +69,9 @@ function withDefaults(candidate, values) {
 
 function initialState() {
   const stored = readStoredState();
-  if (stored.values && stored.version !== STATE_VERSION) delete stored.values[RESET_BY_VERSION_2];
+  for (const [version, candidateIds] of Object.entries(RESET_BY_VERSION)) {
+    if (stored.values && (stored.version ?? 1) < Number(version)) for (const id of candidateIds) delete stored.values[id];
+  }
   return {
     selected: candidateById(stored.selected) ? stored.selected : CANDIDATES[0].id,
     view: VIEWS.some(([view]) => view === stored.view) ? stored.view : "design",
