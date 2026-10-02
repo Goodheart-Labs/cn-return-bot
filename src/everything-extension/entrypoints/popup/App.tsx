@@ -139,9 +139,11 @@ async function sendJumpToNote(tabId: number, scriptWasRegistered: boolean) {
  *  checked, it reads "Check this page" so the two meanings stay apart.
  *  Requested pages are remembered in storage rather than in component state,
  *  so closing and reopening the popup cannot submit the same page twice. */
-function RequestNoteButton({ label, doneLabel, onLive }: {
+function RequestNoteButton({ label, doneLabel, creatorFeedUrl, onLive }: {
   label: string;
   doneLabel: string;
+  /** The page's creator, so the pipeline files the page under their project. */
+  creatorFeedUrl: string | null;
   onLive: (entry: LiveRequest) => void;
 }) {
   const [phase, setPhase] = useState<"loading" | "idle" | "busy" | "done" | "error">("loading");
@@ -165,7 +167,7 @@ function RequestNoteButton({ label, doneLabel, onLive }: {
       // cannot fetch arbitrary pages itself. A page we may not inject into
       // still gets a text-less request.
       const captured = tab.id != null ? await capturePageFromTab(tab.id) : null;
-      const token = await submitNoteRequest({ pageUrl, pageTitle: tab.title ?? "", selection: null, pageText: captured?.text });
+      const token = await submitNoteRequest({ pageUrl, pageTitle: tab.title ?? "", selection: null, pageText: captured?.text, creatorFeedUrl });
       // This is only a local reminder. The request itself is already saved.
       await addRequestedPage(pageUrl).catch(() => {});
       // The token is the handle for live progress. Storing the entry is what
@@ -346,6 +348,7 @@ function PrimaryAction({ state, counts, jumped, access }: {
     (authorFeed.kind === "prioritized" && authorFeed.feed.feedType === "substack");
   const postShaped = requestMakesSenseForUrl(pageUrl) && (!substackFeed || isSubstackPostPage(pageUrl));
   const requestable = postShaped && (state.kind === "no_item" || !isWholePageChecked(state.item));
+  const creatorFeedUrl = authorFeed.kind === "pressable" ? authorFeed.target.feedUrl : null;
 
   const noun = state.kind === "item" && extractYoutubeVideoId(state.item.url) ? "video" : "page";
   const statusLine = headline({
@@ -371,9 +374,9 @@ function PrimaryAction({ state, counts, jumped, access }: {
           // submit noise.
           <p className="text-sm text-fg-secondary">{priorityActiveLabel(authorFeed.feed.kind)}</p>
         ) : state.kind === "item" ? (
-          <RequestNoteButton label="Check this page" doneLabel="You asked us to check this page" onLive={setLiveEntry} />
+          <RequestNoteButton label="Check this page" doneLabel="You asked us to check this page" creatorFeedUrl={creatorFeedUrl} onLive={setLiveEntry} />
         ) : (
-          <RequestNoteButton label="Request notes on this page" doneLabel="You requested notes on this page" onLive={setLiveEntry} />
+          <RequestNoteButton label="Request notes on this page" doneLabel="You requested notes on this page" creatorFeedUrl={creatorFeedUrl} onLive={setLiveEntry} />
         ))}
       {/* The popup offers the press on covered pages too. */}
       {authorFeed.kind === "pressable" && <PriorityButton target={authorFeed.target} />}
