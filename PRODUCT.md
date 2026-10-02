@@ -55,7 +55,7 @@ Four things, all true today:
 
 - About 1,300 published notes on about 115 creators (September 2026), readable on commonnotes.net.
 - Store listings: Chrome Web Store (https://chromewebstore.google.com/detail/common-notes/jodkhmefbcmgldokmeicpdogkepmcnij) and Firefox Add-ons (https://addons.mozilla.org/en-US/firefox/addon/common-notes/).
-- Logo: `src/everything-ui/assets/logo.svg`, also the extension's icon.
+- Logo: `src/everything-ui/assets/logo.svg`, also the extension's icon at 48 and 128 pixels. The 16 and 32 pixel toolbar icons use the bolder `src/everything-extension/assets/icon-small.svg`, because the logo's thin lines blur at those sizes.
 - Three screenshots of the extension at work, the same ones the Goodheart Labs website shows (dark mode, September 2026).
 - Awaiting from Jim: the Forethought blog post and the Community Notes TED talk the homepage links to, and the Impressum details.
 - Not available and not to be invented: testimonials, press, user or install counts, partner logos. A demo video of the extension does not exist yet; a screenshot stands in.

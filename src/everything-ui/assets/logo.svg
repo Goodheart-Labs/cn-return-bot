@@ -1,7 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
   <!-- Common Notes logo: a note card with two text lines and the three-way
        vote pills (helpful / somewhat / not helpful), matching the brand's
-       rating colors. The extension's public/icon/*.png are drawn from it. -->
+       rating colors. The extension's 48 and 128 pixel icons are drawn from
+       it. Its 16 and 32 pixel icons come from the bolder
+       src/everything-extension/assets/icon-small.svg. -->
   <rect x="4" y="4" width="120" height="120" rx="24" fill="#aecdf3" stroke="#2563eb" stroke-width="6"/>
   <!-- note text lines -->
   <line x1="26" y1="40" x2="102" y2="40" stroke="#1f2937" stroke-width="8" stroke-linecap="round"/>
