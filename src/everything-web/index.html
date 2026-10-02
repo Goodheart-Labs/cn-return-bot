@@ -16,12 +16,12 @@
   <meta property="og:image" content="https://commonnotes.net/og.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://commonnotes.net/og.png" />
-  <!-- The logo as the tab icon. Browsers without SVG favicons take the PNG,
-       and iOS takes the apple-touch-icon for a home screen bookmark. The PNGs
-       are drawn from the logo by scripts/generate-logo-assets.ts. -->
-  <link rel="icon" type="image/svg+xml" href="../everything-ui/assets/logo.svg" />
-  <link rel="icon" type="image/png" sizes="32x32" href="./src/assets/favicon-32.png" />
-  <link rel="apple-touch-icon" href="./src/assets/apple-touch-icon.png" />
+  <!-- The logo as the tab icon, and the icon iOS uses for a home screen
+       bookmark. Both are drawn from the logo by scripts/generate-logo-assets.ts.
+       The paths start at the website's folder, so they hold on every page
+       path in development too. The build rewrites them under its base path. -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/src/assets/favicon-32.png" />
+  <link rel="apple-touch-icon" href="/src/assets/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" />
