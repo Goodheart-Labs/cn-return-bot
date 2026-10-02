@@ -70,6 +70,9 @@ export interface XaiNativeParams {
   systemPrompt?: string;
   userMessage: string;
   enableXSearch?: boolean;
+  /** Limits X search to posts from fromDate up to the start of toDate, as
+   *  YYYY-MM-DD. xAI documents toDate as inclusive, but in practice it is not. */
+  xSearchDays?: { fromDate: string; toDate: string };
   /**
    * The JSON shape the model is asked to produce. The Vercel AI SDK does not
    * combine structured output with tool use cleanly. So we describe the schema in
@@ -93,7 +96,7 @@ export async function xaiNativeGenerate(p: XaiNativeParams): Promise<XaiNativeRe
 
   const tools: Record<string, unknown> = {};
   if (p.enableXSearch) {
-    tools.x_search = xai.tools.xSearch({ enableImageUnderstanding: true });
+    tools.x_search = xai.tools.xSearch({ enableImageUnderstanding: true, ...p.xSearchDays });
   }
 
   const promptParts: string[] = [];
