@@ -55,7 +55,7 @@ Four things, all true today:
 
 - About 1,300 published notes on about 115 creators (September 2026), readable on commonnotes.net.
 - Store listings: Chrome Web Store (https://chromewebstore.google.com/detail/common-notes/jodkhmefbcmgldokmeicpdogkepmcnij) and Firefox Add-ons (https://addons.mozilla.org/en-US/firefox/addon/common-notes/).
-- Logo: `src/everything-ui/assets/logo.svg`, also the extension's icon.
+- Logo: `src/everything-ui/assets/logo.svg`, two rounded rectangles in green and red with their overlap in yellow, picked in the logo explorer (`src/scripts_jim/2026_09_30_logo_explorer/`). It is also the website's tab icon and the extension's icon at every size, drawn by `scripts/generate-logo-assets.ts`, and the Safari app's icon. The note markers keep the stacked notes (`NOTE_STACK_GLYPH_PATH`).
 - Three screenshots of the extension at work, the same ones the Goodheart Labs website shows (dark mode, September 2026).
 - Awaiting from Jim: the Forethought blog post and the Community Notes TED talk the homepage links to, and the Impressum details.
 - Not available and not to be invented: testimonials, press, user or install counts, partner logos. A demo video of the extension does not exist yet; a screenshot stands in.
