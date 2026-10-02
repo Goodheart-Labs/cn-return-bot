@@ -88,6 +88,7 @@
     "update-feedback": "bun run src/production/updateNoteFeedback.ts",
     "replay-ranking": "bun run src/scripts/replayRanking.ts",
     "slack-send": "bun run src/scripts/slackSend.ts",
+    "trending-posts": "bun run src/production/postTrendingPosts.ts",
     "backfill-ranking-decisions": "bun run src/scripts/backfillRankingDecisions.ts",
     "dev-review": "cd src/review-dashboard && bunx vite --port 8001",
     "build-review": "cd src/review-dashboard && bunx vite build",

@@ -1,0 +1,34 @@
+name: Trending Posts
+
+# Once a day, posts to Slack's #trending-posts the X posts from yesterday and
+# today that are about an article or blog post and went viral in Nathan Young's
+# crowd (src/production/postTrendingPosts.ts). The table trending_posts keeps a
+# post from being posted twice.
+on:
+  schedule:
+    - cron: "0 12 * * *"
+  workflow_dispatch:
+
+jobs:
+  trending-posts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      SLACK_TRENDING_POSTS_CHANNEL_ID: C0C5XD2G0DR
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Post new trending posts
+        run: bun run trending-posts

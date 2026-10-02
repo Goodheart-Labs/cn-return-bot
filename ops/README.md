@@ -138,7 +138,8 @@ cd /opt/cn-return-bot && set -a && . /etc/cn-return-bot/service.env && set +a
 bun run slack-send C0C638V19ED "hello from the services machine"
 ```
 
-`C0C638V19ED` is #daily-report.
+`C0C638V19ED` is #daily-report. `C0C5XD2G0DR` is #trending-posts, where the
+Trending Posts workflow posts (`src/production/postTrendingPosts.ts`).
 
 ## Slack announcements (cn-notify)
 
