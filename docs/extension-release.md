@@ -95,6 +95,29 @@ CWS_SERVICE_ACCOUNT_KEY_FILE=/home/jim/dev/env/cn-return-bot/cws-service-account
 **Never delete the AMO listing**, not even to start over. The reason is in
 prod-config.md.
 
+## Without API credentials
+
+`package` needs no credentials. Every other step can also be done in the
+store dashboards, using the files `package` wrote. A Claude session can do
+that in a Chrome on the Mac: start Chrome there with a remote debugging port,
+which lets a program control it, and with its own profile, because Chrome
+refuses remote debugging on the everyday profile.
+
+```bash
+ssh jimmaar@jims-macbook-air 'open -na "Google Chrome" --args --remote-debugging-port=9222 --user-data-dir=$HOME/.chrome-debug-profile'
+ssh -N -L 9223:localhost:9222 jimmaar@jims-macbook-air   # then Playwright's connectOverCDP("http://localhost:9223")
+```
+
+Copy the upload files to the same absolute path on the Mac, so file uploads
+find them whether Playwright sends the path or the contents. Two traps:
+
+- On AMO, pressing "Continue" after the package upload already creates the
+  version and puts it into the review queue. The source archive and reviewer
+  notes come on the pages after it, so finish those in one go.
+- On AMO, each section of "Edit Product Page" goes live as soon as it is
+  saved. In the Chrome dashboard, "Save draft" changes nothing public; only
+  "Submit for review" does.
+
 ## Screenshots
 
 Both stores get the same screenshots: 1280 by 800 pixels, light mode. The
