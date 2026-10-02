@@ -211,15 +211,40 @@ function renderPresets(candidate) {
   byId("presets-block").hidden = buttons.length === 0;
 }
 
+// The colour keys a colour set fills, in the order its colours are listed.
+const PALETTE_KEYS = ["a.color", "b.color", "overlap.color"];
+
+/** A colour set's colours under the candidate's own keys. A candidate without
+ *  an overlap colour takes only the first two. */
+const paletteValues = (candidate, palette) =>
+  Object.fromEntries(PALETTE_KEYS.map((key, index) => [key, palette.colors[index]]).filter(([key]) => key in candidate.defaults));
+
+/** One button per colour set, with a dot per colour. The set the current
+ *  colours match is shown pressed. */
+function renderPalettes(candidate) {
+  const buttons = (candidate.palettes ?? []).map((palette) => {
+    const colors = paletteValues(candidate, palette);
+    const dots = Object.values(colors).map((color) => element("span", { className: "palette-dot", style: `background:${color}` }));
+    const button = element("button", { type: "button", className: "chip palette" }, [...dots, element("span", { text: palette.name })]);
+    button.setAttribute("aria-pressed", String(Object.entries(colors).every(([key, color]) => selectedValues()[key]?.toLowerCase() === color)));
+    button.addEventListener("click", () => setValues(colors));
+    return button;
+  });
+  byId("palettes").replaceChildren(...buttons);
+  byId("palettes-block").hidden = buttons.length === 0;
+}
+
 function renderPanel() {
   const candidate = selectedCandidate();
   byId("candidate-name").textContent = candidate.name;
   byId("candidate-summary").textContent = candidate.summary;
   renderPresets(candidate);
+  renderPalettes(candidate);
   applyVisibilityRules = renderControls(byId("controls"), candidate, selectedValues(), {
     onChange(key, value) {
       selectedValues()[key] = value;
       applyVisibilityRules(selectedValues());
+      if (PALETTE_KEYS.includes(key)) renderPalettes(candidate);
       queueRedraw();
     },
     onReset: (key) => setValues({ [key]: candidate.defaults[key] }),

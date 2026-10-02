@@ -11,6 +11,9 @@ mac-tunnel serve 8007 bun run src/scripts_jim/2026_09_30_logo_explorer/server.ts
 
 - `js/logos.js` holds the candidates: their controls, defaults, presets
   and the function that draws them.
+- The candidates made of a green and a red shape (2, 3, 6 and 7) offer
+  "Colour sets" in the panel: `PAIR_PALETTES` in `js/logos.js`. A set changes
+  only the colours, so the shapes stay as they are.
 - `js/geometry.js` builds the shapes with Paper.js, which the page loads from
   a CDN.
 - `mocks/` holds the copied headers of the store listing and the website. The

@@ -794,6 +794,27 @@ canvas.zoom {
   color: var(--accent);
 }
 
+.chip.palette {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.chip.palette > span:last-child {
+  margin-left: 4px;
+}
+
+.chip[aria-pressed="true"] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.palette-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
 .chip:disabled {
   background: var(--accent-soft);
   border-color: var(--accent-soft);

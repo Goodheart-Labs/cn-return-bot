@@ -332,6 +332,23 @@ const stripedBubble = {
 // 2 and 3. Two bubbles that overlap.
 // ---------------------------------------------------------------------------
 
+// Colour sets for the candidates made of a green and a red shape. Each lists
+// the first shape's colour, the second shape's and the overlap's. Green and red
+// stay because they mean helpful and not helpful in the app, and the overlap
+// sits between them like "somewhat helpful".
+const PAIR_PALETTES = [
+  { name: "The app's rating colours", colors: [GREEN, RED, AMBER] },
+  { name: "Bright, like Google's logo", colors: ["#34a853", "#ea4335", "#fbbc04"] },
+  { name: "Muted: sage, terracotta, mustard", colors: ["#5f9e6e", "#cf5c3c", "#e6b44c"] },
+  { name: "Deep: emerald, crimson, gold", colors: ["#047857", "#be123c", "#f59e0b"] },
+  { name: "Soft pastels", colors: ["#7fcf9a", "#f28b82", "#fdd663"] },
+  { name: "Flat: emerald, alizarin, sunflower", colors: ["#2ecc71", "#e74c3c", "#f1c40f"] },
+  // Okabe and Ito's palette, the standard set for charts that colour blind
+  // readers must tell apart. Its green leans blue and its red leans orange,
+  // and the two differ in lightness, so they stay apart without hue.
+  { name: "Colour blind safe (Okabe and Ito)", colors: ["#009e73", "#d55e00", "#f0e442"] },
+];
+
 const PAIR_BUBBLE = { ...BUBBLE, width: 70, height: 54, radius: 17, tailWidth: 16, tailLength: 14, tailPosition: 0.17 };
 const PAIR_DEFAULTS = {
   ...prefixed("a", { ...PAIR_BUBBLE, x: 49, y: 50, rotation: -9, color: GREEN }),
@@ -413,6 +430,7 @@ const splitPair = {
   name: "Two bubbles, split along the chord",
   summary: "A green and a red bubble on the same level. Each colour runs through the overlap up to the line through the two points where the outlines cross.",
   presets: [],
+  palettes: PAIR_PALETTES,
   defaults: { ...PAIR_DEFAULTS, "split.tilt": 0, "split.shift": 0, "split.gap": 0, "split.swap": false, ...PLACEMENT_DEFAULTS },
   sections: [
     {
@@ -437,6 +455,7 @@ const blendPair = {
   name: "Two bubbles, yellow overlap",
   summary: "The same two bubbles, with the area they share in yellow.",
   presets: [],
+  palettes: PAIR_PALETTES,
   defaults: { ...PAIR_DEFAULTS, "overlap.color": AMBER, ...PLACEMENT_DEFAULTS },
   sections: [
     { title: "The overlap", controls: [color("overlap.color", "Overlap colour")] },
@@ -760,6 +779,7 @@ function overlapPair({ id, name, summary, shape, body, a, b }) {
     name,
     summary,
     presets: [],
+    palettes: PAIR_PALETTES,
     noTiles: true,
     defaults: {
       ...prefixed("a", { ...tailless, ...a, color: GREEN }),
