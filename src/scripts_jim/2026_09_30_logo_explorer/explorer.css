@@ -96,6 +96,10 @@ textarea:focus-visible {
   border-bottom: 1px solid var(--line);
 }
 
+#tabs {
+  flex: none;
+}
+
 .status {
   flex: 1;
   min-width: 0;
@@ -192,6 +196,23 @@ button.primary:hover {
 
 .panel {
   border-left: 1px solid var(--line);
+}
+
+/* The pull request view has no candidate to edit. */
+body[data-view="pull-requests"] .layout {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+body[data-view="pull-requests"] :is(.rail, .panel, .topbar-actions) {
+  display: none;
+}
+
+body[data-view="pull-requests"] .compare-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.view-intro {
+  max-width: 70ch;
 }
 
 .view {
@@ -455,7 +476,7 @@ canvas.zoom {
   gap: 14px;
 }
 
-.compare-grid .context {
+.compare-grid .context-selectable {
   cursor: pointer;
 }
 
@@ -479,9 +500,10 @@ canvas.zoom {
   pointer-events: none;
 }
 
-/* The browser window is the exception: its point is the toolbar button at
-   the right end, so it shrinks to fit instead. */
-.compare-grid .context-frame.context-chrome > * {
+/* The browser window is an exception: its point is the toolbar button at
+   the right end, so it shrinks to fit instead. The menus wrap onto a second
+   line instead. */
+.compare-grid .context-frame:is(.context-chrome, .context-menu) > * {
   min-width: 0;
 }
 
@@ -636,6 +658,103 @@ canvas.zoom {
   height: 24px;
   border-radius: 50%;
   background: linear-gradient(135deg, #8ab4f8, #c58af9);
+}
+
+/* ---------------------------------------------------------- right-click menu */
+
+/* A macOS context menu as Chrome shows it, in light and dark mode. */
+.mock-menu {
+  --page: #ffffff;
+  --menu: #ececec;
+  --menu-line: rgba(0, 0, 0, 0.12);
+  --menu-text: #1d1d1f;
+  --menu-separator: rgba(0, 0, 0, 0.1);
+  --menu-accent: #0a64d6;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px 28px;
+  padding: 18px 20px 22px;
+  background: var(--page);
+  font: 13px/22px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.mock-menu[data-theme="dark"] {
+  --page: #1e1e1e;
+  --menu: #2b2b2d;
+  --menu-line: rgba(255, 255, 255, 0.14);
+  --menu-text: #f2f2f7;
+  --menu-separator: rgba(255, 255, 255, 0.12);
+}
+
+.menu-stack {
+  display: flex;
+  align-items: flex-start;
+}
+
+.menu {
+  flex: none;
+  margin: 0;
+  padding: 5px;
+  list-style: none;
+  border: 1px solid var(--menu-line);
+  border-radius: 8px;
+  background: var(--menu);
+  color: var(--menu-text);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+}
+
+.menu li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.menu .menu-separator {
+  height: 1px;
+  margin: 5px 10px;
+  padding: 0;
+  background: var(--menu-separator);
+}
+
+.menu-label {
+  flex: 1;
+}
+
+.menu-arrow {
+  margin-left: 18px;
+  font-size: 15px;
+}
+
+.menu-pointed {
+  background: var(--menu-accent);
+  color: #ffffff;
+}
+
+/* macOS opens a submenu level with the row that opened it. That row starts
+   below the border, the padding, four rows of 22 pixels and a separator of
+   11. */
+.menu-sub {
+  margin-top: 99px;
+  margin-left: -4px;
+}
+
+.mock-menu .logo-slot {
+  display: block;
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+.mock-menu .logo-slot img {
+  display: block;
+}
+
+/* Where a pull request has no file for a slot, Chrome's globe fills it. */
+.logo-slot > .chrome-globe {
+  display: block;
 }
 
 /* -------------------------------------------------------------------- panel */

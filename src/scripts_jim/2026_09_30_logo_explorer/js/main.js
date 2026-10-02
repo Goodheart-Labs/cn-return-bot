@@ -1,10 +1,12 @@
 /* The logo explorer: five logo candidates, a panel of sliders for the one that
- * is selected, and previews of how each looks where it will be used. */
+ * is selected, and previews of how each looks where it will be used. One more
+ * view puts the files of the two logo pull requests side by side. */
 
 import { renderControls } from "./controls.js";
 import { element, segments } from "./dom.js";
 import { CANDIDATES, composeSvg, fitPlacement } from "./logos.js";
 import { contexts, loadMocks } from "./previews.js";
+import { PULL_REQUESTS, shippedImage } from "./pullRequests.js";
 
 const STORAGE_KEY = "cn-logo-explorer:v1";
 // Raised when a candidate's defaults change so much that values stored by an
@@ -38,6 +40,7 @@ const VIEWS = [
   ["design", "Design"],
   ["context", "In context"],
   ["compare", "Compare all five"],
+  ["pull-requests", "The two PRs"],
 ];
 
 const byId = (id) => document.getElementById(id);
@@ -315,33 +318,63 @@ function contextFigure({ title, node, name }) {
   return element("figure", { className: "context" }, [element("figcaption", { text: title }), frame]);
 }
 
-const contextsOf = (candidateId) => contexts((pixels, variant) => logoImage(candidateId, pixels, variant));
+// The store listing shows the store's version of the icon, every other place
+// the plain one.
+const contextsOf = (candidateId) => contexts((pixels, role) => logoImage(candidateId, pixels, role === "store" ? "store" : "plain"));
 
 function contextView() {
   return [card(`${selectedCandidate().name}, where it will be seen`, [storeMarginCheckbox()], contextsOf(state.selected).map(contextFigure))];
 }
 
-/** One card per place, with the five candidates side by side in it. Clicking
- *  a candidate selects it, so its sliders are one click away. */
-function compareView() {
-  const perCandidate = CANDIDATES.map((candidate) => contextsOf(candidate.id));
-  return perCandidate[0].map((place, placeIndex) => {
-    const cells = CANDIDATES.map((candidate, candidateIndex) => {
-      const { node, name } = perCandidate[candidateIndex][placeIndex];
-      const cell = contextFigure({ title: `${candidateIndex + 1}. ${candidate.name}`, node, name });
-      cell.classList.toggle("context-selected", candidate.id === state.selected);
-      cell.addEventListener("click", () => select(candidate.id));
+/** One card per place, with several logos side by side in it. Each column is
+ *  a title and its list of places from `contexts`. `decorate` may add to a
+ *  cell. */
+function sideBySide(columns, decorate = () => {}) {
+  return columns[0].places.map((place, placeIndex) => {
+    const cells = columns.map((column, columnIndex) => {
+      const { node, name } = column.places[placeIndex];
+      const cell = contextFigure({ title: column.title, node, name });
+      decorate(cell, columnIndex);
       return cell;
     });
     return card(place.title, [], [element("div", { className: "compare-grid" }, cells)]);
   });
 }
 
-const VIEW_BUILDERS = { design: designView, context: contextView, compare: compareView };
+/** The five candidates side by side. Clicking a candidate selects it, so its
+ *  sliders are one click away. */
+function compareView() {
+  const columns = CANDIDATES.map((candidate, index) => ({ title: `${index + 1}. ${candidate.name}`, places: contextsOf(candidate.id) }));
+  return sideBySide(columns, (cell, index) => {
+    const { id } = CANDIDATES[index];
+    cell.classList.add("context-selectable");
+    cell.classList.toggle("context-selected", id === state.selected);
+    cell.addEventListener("click", () => select(id));
+  });
+}
+
+/** The files the two logo pull requests ship, as they are on their branches
+ *  now. No slider reaches these. */
+function pullRequestView() {
+  const columns = PULL_REQUESTS.map((pullRequest) => ({
+    title: `PR #${pullRequest.number}: ${pullRequest.name}`,
+    places: contexts((pixels, role, theme) => shippedImage(pullRequest, pixels, role, theme)),
+  }));
+  const intro = element("p", {
+    className: "hint view-intro",
+    text: "The real icon files of both pull requests, read from their branches on GitHub. The server fetches the branches once a minute, so a reload shows a PR's latest push. The sliders do not affect this view.",
+  });
+  return [intro, ...sideBySide(columns)];
+}
+
+const VIEW_BUILDERS = { design: designView, context: contextView, compare: compareView, "pull-requests": pullRequestView };
 
 function renderView() {
   const view = byId("view");
   view.dataset.view = state.view;
+  // The pull request view has no candidate to edit, so the side columns and
+  // the export buttons are hidden while it is open.
+  document.body.dataset.view = state.view;
   view.replaceChildren(...VIEW_BUILDERS[state.view]());
   refreshStage();
   refreshZooms();
