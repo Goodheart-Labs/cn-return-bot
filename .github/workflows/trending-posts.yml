@@ -4,9 +4,13 @@ name: Trending Posts
 # today that are about an article or blog post and went viral in Nathan Young's
 # crowd (src/production/postTrendingPosts.ts). The table trending_posts keeps a
 # post from being posted twice.
+#
+# It runs shortly before Nathan wakes up in California. GitHub's schedules are
+# in UTC and don't follow daylight saving time, so 13:00 UTC is 6am in
+# California in summer and 5am in winter.
 on:
   schedule:
-    - cron: "0 12 * * *"
+    - cron: "0 13 * * *"
   workflow_dispatch:
 
 jobs:
