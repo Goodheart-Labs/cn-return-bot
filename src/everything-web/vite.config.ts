@@ -29,6 +29,18 @@ const publicFolderPages: Plugin = {
   },
 };
 
+/* The website is built twice: at the root for commonnotes.net, and under a
+ * subpath for the copy on GitHub Pages. Search engines should list only
+ * commonnotes.net. So every build under a subpath tells them not to index its
+ * pages. */
+const noindexOffRoot: Plugin = {
+  name: "noindex-off-root",
+  transformIndexHtml: (html, { server }) =>
+    !server && process.env.BASE_PATH && process.env.BASE_PATH !== "/"
+      ? html.replace("<head>", '<head>\n  <meta name="robots" content="noindex" />')
+      : html,
+};
+
 export default defineConfig(({ command, mode }) => {
   /* A build without the Supabase environment variables is never valid. Vite
    * inlines them as `undefined`, which turns the guard at the top of
@@ -54,7 +66,7 @@ export default defineConfig(({ command, mode }) => {
     );
   }
   return {
-    plugins: [react(), publicFolderPages],
+    plugins: [react(), publicFolderPages, noindexOffRoot],
     base: process.env.BASE_PATH ?? "/",
     resolve: { alias: CN_ALIASES },
     envDir,
