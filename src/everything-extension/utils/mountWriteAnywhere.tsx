@@ -1,22 +1,36 @@
 import { useEffect, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { browser, createShadowRootUi } from "#imports";
+import { browser } from "#imports";
 import type { ContentScriptContext } from "#imports";
 import { queryClient } from "@cn/features/query/queryClient";
 import { WriteNoteOverlay } from "../components/WriteNoteOverlay";
+import { TAB_CREATOR_MESSAGE_TYPE } from "./authorFeed";
 import { isPageDark } from "./pageTheme";
+import { createOverlayUi } from "./overlayUi";
 
 /** The write-anywhere shell for pages we do not cover. It renders nothing until the
  *  background forwards a click on "Write a Common Note on this". Then the standard
- *  overlay opens, and the page's item is only created at that point. */
+ *  overlay opens, and the page's item is only created at that point.
+ *  When the overlay opens we also ask the background who the page's creator is,
+ *  so the new item lands in that creator's project. The question starts while
+ *  the reader types, and posting waits for its answer. A failed lookup answers
+ *  null, and the page then goes to "Around the web". */
 function WriteAnywhereApp({ pageUrl, onPosted }: { pageUrl: string; onPosted: () => void }) {
   const [selection, setSelection] = useState<string | null>(null);
+  const [creatorFeedUrl, setCreatorFeedUrl] = useState<Promise<string | null>>();
 
   useEffect(() => {
     const listener = (message: unknown) => {
       const { type, selection: selected } = (message as { type?: string; selection?: string }) ?? {};
-      if (type === "cn-write-note" && selected?.trim()) setSelection(selected.trim());
+      if (type !== "cn-write-note" || !selected?.trim()) return;
+      setSelection(selected.trim());
+      setCreatorFeedUrl(
+        browser.runtime.sendMessage({ type: TAB_CREATOR_MESSAGE_TYPE }).then(
+          (feedUrl: string | null) => feedUrl,
+          () => null,
+        ),
+      );
     };
     browser.runtime.onMessage.addListener(listener);
     return () => browser.runtime.onMessage.removeListener(listener);
@@ -26,7 +40,7 @@ function WriteAnywhereApp({ pageUrl, onPosted }: { pageUrl: string; onPosted: ()
   return (
     <WriteNoteOverlay
       item={null}
-      pageForItem={{ url: pageUrl, title: document.title }}
+      pageForItem={{ url: pageUrl, title: document.title, creatorFeedUrl }}
       selection={selection}
       onClose={() => setSelection(null)}
       onPosted={() => {
@@ -52,7 +66,7 @@ export async function mountWriteAnywhere(
     onCoverageChanged();
   };
   let root: Root | null = null;
-  const ui = await createShadowRootUi(ctx, {
+  const ui = await createOverlayUi(ctx, {
     name: "common-notes-ui",
     position: "inline",
     anchor: "body",

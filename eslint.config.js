@@ -48,6 +48,8 @@ const APPS = [
   { group: ["**/everything-extension/**"], message: "Shared code must not import from the extension." },
 ];
 
+const OVERLAY_UI_MESSAGE = "Mount extension UI with createOverlayUi from utils/overlayUi.ts. It stops typed keys from reaching the host page's shortcuts.";
+
 /** One flat-config block that restricts what the files in `files` may import. */
 function layer(files, patterns, ignores = []) {
   return {
@@ -90,6 +92,17 @@ export default tseslint.config(
   layer(["src/everything-features/**/*.{ts,tsx}"], [STORYBOOK, DATABASE_CLIENT, ...APPS]),
   layer(["src/everything-web/src/**/*.{ts,tsx}"], [STORYBOOK, DATABASE_CLIENT, APPS[1]]),
   layer(["src/everything-extension/{components,entrypoints,utils}/**/*.{ts,tsx}"], [STORYBOOK, DATABASE_CLIENT, APPS[0]]),
+  // Every piece of extension UI in a host page mounts through createOverlayUi,
+  // which keeps typed keys from triggering the page's shortcuts. WXT's own
+  // createShadowRootUi skips that, so it may not be imported, nor used through
+  // WXT's auto-import, anywhere else.
+  {
+    files: ["src/everything-extension/{components,entrypoints,utils}/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": ["error", { paths: [{ name: "#imports", importNames: ["createShadowRootUi"], message: OVERLAY_UI_MESSAGE }] }],
+      "no-restricted-globals": ["error", { name: "createShadowRootUi", message: OVERLAY_UI_MESSAGE }],
+    },
+  },
   // A story may reach into Storybook's fixtures, and Storybook may render any
   // layer and either app. The database stays out of reach for both.
   // Storybook's Tailwind config is loaded by Tailwind itself, which knows no
