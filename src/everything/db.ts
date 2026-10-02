@@ -114,9 +114,17 @@ async function freeSlug(base: string): Promise<string> {
   }
 }
 
+/** A string as an ilike pattern that matches only itself, ignoring case. A
+ *  YouTube handle such as @ericsrealm_ contains an underscore, which ilike
+ *  would otherwise read as "any one character". */
+const escapeLikePattern = (text: string): string => text.replace(/[\\%_]/g, "\\$&");
+
 /** Returns the project id for a creator or a slug, creating the project if we
  *  have never seen it. A creator is looked up by feed URL first, because that
- *  is the key everything shares, and by slug second.
+ *  is the key everything shares, and by slug second. Feed URLs are compared
+ *  ignoring letter case, as the database's own functions do (migration 086).
+ *  The same YouTube handle arrives as @DwarkeshPatel from a watch page and as
+ *  @dwarkeshpatel from the Data API.
  *
  *  Two different creators can derive the same slug, such as a YouTube channel
  *  and a Substack that both go by the same handle. When the slug is taken by a
@@ -138,7 +146,7 @@ export async function resolveProjectId(params: {
 
   if (feedUrl) {
     const byFeed = throwOnError(
-      await db.from("everything_projects").select(PROJECT_COLUMNS).eq("feed_url", feedUrl).maybeSingle(),
+      await db.from("everything_projects").select(PROJECT_COLUMNS).ilike("feed_url", escapeLikePattern(feedUrl)).maybeSingle(),
     ) as ProjectRow | null;
     if (byFeed) {
       await fillDisplayName(byFeed, displayName, "feed");
@@ -149,7 +157,7 @@ export async function resolveProjectId(params: {
   const bySlug = throwOnError(
     await db.from("everything_projects").select(PROJECT_COLUMNS).eq("slug", slug).maybeSingle(),
   ) as ProjectRow | null;
-  const sameCreator = bySlug && (!feedUrl || !bySlug.feed_url || bySlug.feed_url === feedUrl);
+  const sameCreator = bySlug && (!feedUrl || !bySlug.feed_url || bySlug.feed_url.toLowerCase() === feedUrl.toLowerCase());
   if (bySlug && sameCreator) {
     if (feedUrl && !bySlug.feed_url) {
       throwOnError(await db.from("everything_projects").update({ feed_url: feedUrl }).eq("id", bySlug.id));
@@ -567,6 +575,9 @@ export interface NoteRequestRow {
   page_text: string | null;
   steer?: string | null;
   passage_question_id?: string | null;
+  /** The creator's feed URL as the extension worked it out. Untrusted input:
+   *  the consumer uses it only when it parses as a creator feed. */
+  feed_url?: string | null;
 }
 
 export type NoteRequestStatus = "enqueued" | "done" | "skipped" | "error";
@@ -608,7 +619,7 @@ export async function fetchPendingNoteRequests(): Promise<NoteRequestRow[]> {
   return throwOnError(
     await getSupabaseClient()
       .from("everything_note_requests")
-      .select("id, page_url, page_title, selection, page_text, steer, passage_question_id")
+      .select("id, page_url, page_title, selection, page_text, steer, passage_question_id, feed_url")
       .eq("status", "pending")
       .order("created_at"),
   ) as NoteRequestRow[];

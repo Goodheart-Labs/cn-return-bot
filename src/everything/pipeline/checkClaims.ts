@@ -24,11 +24,12 @@ import { claimCheckFields } from "./claimCheckFields";
 // too many claims that were worth checking. We also force the claim-check search
 // prompt, because a claim here is an excerpt from a transcript or an article and
 // not an X post.
-// The models are pinned to Muse Spark 1.3 Contributor for search, writer and
-// source verifier alike (GOO-159, see model.ts); media descriptions stay on
-// Gemini. Search runs on Meta's own search tooling through OpenRouter's web_search
-// server tool (GOO-258): Meta searches, opens pages and answers inside one
-// request. Until then it was our client-side Serper loop. Before that, search
+// The models are pinned to GPT-6 Luna for search, writer and source verifier
+// alike (see model.ts); media descriptions stay on Gemini. Search runs on the
+// provider's own search through OpenRouter's web_search server tool (GOO-258):
+// the model searches, opens pages and answers inside one request. Until
+// 2026-10-01 all three ran on Muse Spark 1.3 Contributor (GOO-159), until Meta
+// blocked our access (GOO-303). Before GOO-258 search was our Serper loop. Before that, search
 // and writer ran on Sonnet 5 and the verifier on Gemini 3 Flash; search ran on
 // Opus 5 until August 2026, when the daily spend cap was exhausted by early
 // morning several days in a row.
@@ -39,9 +40,9 @@ const FORCED_PICKS: Record<string, string> = {
   bot: "simple-bot",
   note_prefilter: "off",
   commonnotes_pipeline: "on",
-  simple_bot_search: "musespark13c-native",
-  simple_bot_writer: "musespark13c",
-  simple_bot_verifier: "musespark13c",
+  simple_bot_search: "gpt6luna-native",
+  simple_bot_writer: "gpt6luna",
+  simple_bot_verifier: "gpt6luna",
   media_description: "gemini3flash",
   verifier_citations: "on",
   verifier_claim_based: "classic",

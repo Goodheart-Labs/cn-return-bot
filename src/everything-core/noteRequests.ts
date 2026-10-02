@@ -11,7 +11,10 @@ export const MAX_PAGE_TEXT_LENGTH = 500_000;
  *  no selection; a request on a highlighted paragraph carries it. `pageText` is
  *  the page's body text captured on the reader's device. It lets the pipeline
  *  fact-check pages it cannot fetch itself, so send it whenever the caller can
- *  read the page. Anonymous requests are allowed.
+ *  read the page. `creatorFeedUrl` is the feed of the creator the page belongs
+ *  to, when the caller could tell. The pipeline files the page under that
+ *  creator's project instead of the catch-all "Around the web". Anonymous
+ *  requests are allowed.
  *
  *  Returns the request's client token (migration 087), the device's only
  *  handle on its own request: exchanging it via everything_request_status is
@@ -22,6 +25,7 @@ export async function submitNoteRequest(params: {
   pageTitle: string;
   selection: string | null;
   pageText?: string | null;
+  creatorFeedUrl?: string | null;
 }): Promise<string> {
   const { data } = await supabase.auth.getSession();
   const token = crypto.randomUUID();
@@ -30,6 +34,7 @@ export async function submitNoteRequest(params: {
     page_title: params.pageTitle,
     selection: params.selection,
     page_text: params.pageText?.slice(0, MAX_PAGE_TEXT_LENGTH) || null,
+    feed_url: params.creatorFeedUrl ?? null,
     user_id: data.session?.user.id ?? null,
     client_token: token,
   });

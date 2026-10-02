@@ -2,7 +2,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { QueryClientProvider, QueryObserver } from "@tanstack/react-query";
 import type { NoteSet } from "@cn/features/notes/noteSet";
 import { queryClient } from "@cn/features/query/queryClient";
-import { createShadowRootUi } from "#imports";
+
 import type { ContentScriptContext } from "#imports";
 import { fetchItemForUrl } from "@cn/core/items";
 import { normalizePageUrl } from "@cn/core/pageUrls";
@@ -22,6 +22,7 @@ import { isPageDark, observePageTheme } from "./pageTheme";
 import { InlineNotesApp } from "../components/InlineNotes";
 import { PillPaletteFromSettings } from "../components/PillPaletteFromSettings";
 import { track } from "@cn/core/analytics";
+import { createOverlayUi } from "./overlayUi";
 
 const REANCHOR_DEBOUNCE_MS = 600;
 
@@ -114,7 +115,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   // containing block, and those can sit outside the inner scroller. The anchor is a
   // function, so it is resolved again on every mount(). That way, if the page swaps
   // the article element out, appending the host again lands it in the new article.
-  const inlineUi = await createShadowRootUi(ctx, {
+  const inlineUi = await createOverlayUi(ctx, {
     name: "common-notes-inline",
     position: "inline",
     anchor: () => findContainer(),
@@ -187,7 +188,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     });
   });
 
-  const ui = await createShadowRootUi(ctx, {
+  const ui = await createOverlayUi(ctx, {
     name: "common-notes-ui",
     position: "inline",
     anchor: "body",

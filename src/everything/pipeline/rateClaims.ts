@@ -29,10 +29,6 @@ import { extractJsonObject } from "../../pipeline/utils/jsonOutput";
 import { addTokenCost, emptyTokenCost, extractOpenRouterCost, type TokenCost } from "../../pipeline/cost-tracking/pricing";
 import type { ExtractedClaim, ItemSource, RatedClaim } from "../types";
 
-// The research happens through the search tool, so the model does not need to think
-// long on its own. High effort would only add reasoning tokens.
-const RATING_REASONING_EFFORT = "medium";
-
 // The list runs from most true to most false. A judgement's index in it decides
 // whether the claim gets fact-checked.
 export const JUDGEMENTS = [
@@ -174,7 +170,6 @@ export async function rateClaims(params: RateClaimsParams): Promise<ClaimRatingR
         model: EVERYTHING_MODEL,
         messages: msgs,
         response_format: RATING_RESPONSE_FORMAT,
-        reasoning_effort: RATING_REASONING_EFFORT,
         ...(attempt === 1 ? { tools: [OPENROUTER_NATIVE_WEB_SEARCH_TOOL] } : {}),
       } as any);
       addTokenCost(cost, extractOpenRouterCost(response));

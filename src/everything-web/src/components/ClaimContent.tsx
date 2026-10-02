@@ -2,19 +2,51 @@ import { useEffect, useRef } from "react";
 import { extractYoutubeVideoId, sourceLinkLabel } from "@cn/core/pageUrls";
 import { buttonVariants } from "@cn/ui/Button";
 import { Quote } from "@cn/ui/typography";
+import { quoteFragmentUrl } from "../../../dashboard-shared/textFragment";
 
 const SOURCE_LINK = buttonVariants({ variant: "link", className: "text-xs" });
 
 /** What a note is about: a clip of a YouTube video or a quote from an article. */
 export type NotedContent =
   | { kind: "youtube"; url: string; quote?: string; restated?: boolean; updatedQuote?: string; imageGrounded?: boolean; startSeconds?: number | null; endSeconds?: number | null }
-  | { kind: "article"; quote: string; restated?: boolean; updatedQuote?: string; imageGrounded?: boolean };
+  | { kind: "article"; quote: string; restated?: boolean; updatedQuote?: string; imageGrounded?: boolean; post?: PostRef };
+
+/** The post an article quote comes from. `url` is null for a document we were
+ *  given as a file without a link to the original. */
+interface PostRef {
+  title: string;
+  url: string | null;
+}
+
+/** Names the post a quote comes from, in the upper right corner of the card.
+ *  Only the project's All page shows it. There the notes of many posts are
+ *  mixed, and without it a reader cannot tell which post a note is about.
+ *  The title opens the original post scrolled to the quoted passage. */
+function PostLink({ post, passage, imageGrounded }: {
+  post: PostRef;
+  /** The wording the link scrolls to. When the source has changed, this is the
+   *  new wording, because it is the only one a reader can still find there. */
+  passage: string;
+  /** A claim that rests on an image has no passage in the text, so its link
+   *  opens the plain page. */
+  imageGrounded?: boolean;
+}) {
+  return (
+    <div className="mb-1 flex justify-end text-right">
+      {post.url ? (
+        <a href={imageGrounded ? post.url : quoteFragmentUrl(post.url, passage)} target="_blank" rel="noopener noreferrer" className={SOURCE_LINK}>
+          {post.title} ↗
+        </a>
+      ) : (
+        <span className="text-xs text-fg-muted">{post.title}</span>
+      )}
+    </div>
+  );
+}
 
 /** Shows a quotation from an article or post. When `restated` is set, the
  *  displayed text is a restatement of the source and not the source's own
- *  words, so it renders as ordinary body text instead of as a quote block.
- *  There is no link to the source here. The item's title on the project page
- *  already links to it, and a second link on every note was clutter. */
+ *  words, so it renders as ordinary body text instead of as a quote block. */
 function CitationBlock({ quote, restated, updatedQuote, imageGrounded }: {
   quote: string;
   restated?: boolean;
@@ -164,13 +196,18 @@ function YouTubeClip({ url, quote, restated, updatedQuote, imageGrounded, startS
 
 /**
  * Renders the piece of content a note is about. A YouTube clip is embedded at its start and end timestamps. An
- * article or post is shown as a verbatim citation.
+ * article or post is shown as a verbatim citation, below the post's title when `post` is set.
  */
 export function ClaimContent({ content }: { content: NotedContent }) {
   switch (content.kind) {
     case "youtube":
       return <YouTubeClip url={content.url} quote={content.quote} restated={content.restated} updatedQuote={content.updatedQuote} imageGrounded={content.imageGrounded} startSeconds={content.startSeconds} endSeconds={content.endSeconds} />;
     case "article":
-      return <CitationBlock quote={content.quote} restated={content.restated} updatedQuote={content.updatedQuote} imageGrounded={content.imageGrounded} />;
+      return (
+        <div>
+          {content.post && <PostLink post={content.post} passage={content.updatedQuote ?? content.quote} imageGrounded={content.imageGrounded} />}
+          <CitationBlock quote={content.quote} restated={content.restated} updatedQuote={content.updatedQuote} imageGrounded={content.imageGrounded} />
+        </div>
+      );
   }
 }

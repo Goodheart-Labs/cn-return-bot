@@ -8,7 +8,6 @@ import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
 import { setJumpHandler } from "../utils/jumpBus";
 import { ClaimNoteStack, NextNoteButton, NOTE_POPOVER_WIDTH } from "./ClaimNoteStack";
 import { OverlayLoginGate } from "./OverlayLoginGate";
-import { ABSORB_KEYS } from "./EventShield";
 import { FloatingWindow, type Box } from "./FloatingWindow";
 import { useNoteDisplay } from "./NoteDisplayChoices";
 import { ScrubberPins } from "./ScrubberPins";
@@ -280,15 +279,14 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
           onDismiss={dismiss}
           onPlaced={({ left, top, width }) => setPlacement({ left, top, width })}
           restingStyle={placement ?? { left: playerBox.right - PLAYER_EDGE_INSET_PX, top: playerBox.centreY, width: NOTE_POPOVER_WIDTH, transform: "translate(-100%, -50%)" }}
-          {...ABSORB_KEYS}
           // Clicks on the card must not reach the page's own handlers. They
           // are retargeted to the shadow host element, so the page would read
           // them as clicks on empty surface.
           onMouseDown={(e) => e.stopPropagation()}
           onClick={(e) => e.stopPropagation()}
-          // These run in the capture phase. Otherwise the stopPropagation in
-          // ABSORB_KEYS would stop them from ever firing. A press starting a
-          // drag or a resize counts as an interaction too.
+          // These run in the capture phase, so the stopPropagation calls above
+          // and on the cards inside cannot keep them from firing. A press
+          // starting a drag or a resize counts as an interaction too.
           onClickCapture={() => { lastInteraction.current = Date.now(); }}
           onPointerDownCapture={() => { lastInteraction.current = Date.now(); }}
           onKeyDownCapture={() => { lastInteraction.current = Date.now(); }}

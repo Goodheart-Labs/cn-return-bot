@@ -26,7 +26,7 @@
 
 import "dotenv/config";
 import { upsertCreatorPriority } from "./db";
-import { canonicalFeed, canonicalSubstackFeed, type CanonicalFeed } from "./feedUrls";
+import { canonicalFeed, substackFeedInPageHtml, type CanonicalFeed } from "./feedUrls";
 
 const PRIORITY_DAYS = 7;
 
@@ -38,8 +38,7 @@ async function resolveCreator(url: string): Promise<CanonicalFeed> {
   if (direct) return direct;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`not a known creator URL shape, and fetching it failed (${res.status})`);
-  const m = (await res.text()).match(/subdomain\\?":\\?"([\w-]+)\\?"/);
-  const feed = m && canonicalSubstackFeed(`https://${m[1]!.toLowerCase()}.substack.com`);
+  const feed = substackFeedInPageHtml(await res.text());
   if (!feed) throw new Error("not a Substack publication, YouTube channel, or forum author URL");
   return feed;
 }
