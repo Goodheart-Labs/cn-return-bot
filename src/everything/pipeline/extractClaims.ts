@@ -164,6 +164,7 @@ async function runExtraction(content: string): Promise<RawClaim[]> {
         model: EVERYTHING_MODEL,
         messages,
         response_format: claimsResponseFormat(),
+        reasoning_effort: "high",
       } as any);
       trackLlmCall(costEntry);
       const answer = (response as any).choices?.[0]?.message?.content ?? "{}";
