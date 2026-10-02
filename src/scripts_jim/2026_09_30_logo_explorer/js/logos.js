@@ -1,4 +1,4 @@
-/* The six logo candidates.
+/* The logo candidates.
  *
  * A candidate is a list of controls, their default values, some presets, and
  * a render function that turns the current values into SVG markup on a
@@ -161,20 +161,26 @@ const DARK_TILE = "#000000";
 const MENU_TILE = WHITE;
 
 /** The logo's files as the extension and the website would ship them:
- *  `icon` alone, `storeIcon` inside the store's margin, and the mark on the
- *  dark mode tile and on the menu's tile. A candidate with its own backdrop
- *  ships as designed in every place, as today's logo does (PR #533). A
+ *  `icon` alone, `storeIcon` inside the store's margin, `smallIcon` for the
+ *  16 and 32 pixel places, and the mark on the dark mode tile and on the
+ *  menu's tile.
+ *  A candidate with its own backdrop ships as designed in every place, except
+ *  that its `smallSizeValues`, if it has any, replace some of its values at
+ *  the small sizes. That is how today's logo ships (PR #533): the website's
+ *  thin logo, and a bolder version of it in the toolbar and the menu. A
  *  candidate with `noTiles` ships its plain icon where the others take a
  *  tile. */
 export function shippedForms(candidate, rendered, values, storeArtworkShare) {
   if (values["bg.shape"] !== "none" || !rendered.bounds) {
     const asDesigned = composeSvg(rendered, values);
-    return { icon: asDesigned, storeIcon: composeSvg(rendered, values, { artworkShare: storeArtworkShare }), darkTile: asDesigned, menuTile: asDesigned };
+    const small = { ...values, ...candidate.smallSizeValues };
+    const smallIcon = candidate.smallSizeValues ? composeSvg(candidate.render(small), small) : asDesigned;
+    return { icon: asDesigned, storeIcon: composeSvg(rendered, values, { artworkShare: storeArtworkShare }), smallIcon, darkTile: smallIcon, menuTile: smallIcon };
   }
   const filled = { ...values, ...placementFor(rendered.bounds, CANVAS) };
   const icon = composeSvg(rendered, filled);
   const storeIcon = composeSvg(rendered, filled, { artworkShare: storeArtworkShare });
-  if (candidate.noTiles) return { icon, storeIcon, darkTile: icon, menuTile: icon };
+  if (candidate.noTiles) return { icon, storeIcon, smallIcon: icon, darkTile: icon, menuTile: icon };
   const onTile = (fill) =>
     composeSvg(rendered, {
       ...values,
@@ -185,7 +191,7 @@ export function shippedForms(candidate, rendered, values, storeArtworkShare) {
       "bg.inset": 0,
       "bg.strokeWidth": 0,
     });
-  return { icon, storeIcon, darkTile: onTile(DARK_TILE), menuTile: onTile(MENU_TILE) };
+  return { icon, storeIcon, smallIcon: icon, darkTile: onTile(DARK_TILE), menuTile: onTile(MENU_TILE) };
 }
 
 // ---------------------------------------------------------------------------
@@ -674,7 +680,10 @@ const WEBSITE_LOGO = {
 const noteCard = {
   id: "note-card",
   name: "Today's logo, green first",
-  summary: "The website's logo, with the rating boxes in the order green, yellow, red. With PR #533 the extension uses it too.",
+  summary: "The website's logo, with the rating boxes in the order green, yellow, red. With PR #533 the extension uses it too, but in the toolbar and the menu it keeps its old bold icon.",
+  // The sliders shape the website's logo. The toolbar, the tab and the menu
+  // show the bold icon's lines and borders instead, in the sliders' colours.
+  smallSizeValues: BOLD_EXTENSION_ICON,
   presets: [
     { name: "The website's logo", values: WEBSITE_LOGO },
     { name: "The extension's old bold icon", values: BOLD_EXTENSION_ICON },
@@ -737,38 +746,61 @@ const noteCard = {
 };
 
 // ---------------------------------------------------------------------------
-// 6. Two rounded squares with a yellow overlap: the bubbles of candidate 3
-// without their tails. Jim wants this one without the dark mode and menu
-// tiles, so it ships as the plain mark everywhere.
+// 6 and 7. Two rounded squares or rectangles with a yellow overlap: the
+// bubbles of candidate 3 without their tails. Jim wants these without the dark
+// mode and menu tiles, so they ship as the plain mark everywhere.
 // ---------------------------------------------------------------------------
 
-const PAIR_SQUARE = { ...PAIR_BUBBLE, width: 60, height: 60, radius: 16, tailLength: 0, tailWidth: 0 };
+/** A green and a red shape without tails, with a yellow overlap. `shape`
+ *  names it in the panel: "square" or "rectangle". */
+function overlapPair({ id, name, summary, shape, body, a, b }) {
+  const tailless = { ...PAIR_BUBBLE, ...body, tailLength: 0, tailWidth: 0 };
+  return {
+    id,
+    name,
+    summary,
+    presets: [],
+    noTiles: true,
+    defaults: {
+      ...prefixed("a", { ...tailless, ...a, color: GREEN }),
+      ...prefixed("b", { ...tailless, ...b, color: RED }),
+      "overlap.color": AMBER,
+      ...PLACEMENT_DEFAULTS,
+    },
+    sections: [
+      { title: "The overlap", controls: [color("overlap.color", "Overlap colour")] },
+      { title: `Both ${shape}s`, controls: [MIRROR_ACTION, swapColorsAction(`${shape}s`)] },
+      { title: `First ${shape}`, controls: bodyControls("a") },
+      { title: `Second ${shape}`, controls: bodyControls("b") },
+      PLACEMENT_CONTROLS,
+    ],
+    render: renderBlendPair,
+  };
+}
 
-const squarePair = {
+const squarePair = overlapPair({
   id: "square-pair",
   name: "Two squares, yellow overlap",
   summary: "Two rounded squares, green and red, with the area they share in yellow. It keeps its plain look in dark mode and in the menu.",
-  presets: [],
-  noTiles: true,
-  defaults: {
-    ...prefixed("a", { ...PAIR_SQUARE, x: 52, y: 52, rotation: -9, color: GREEN }),
-    ...prefixed("b", { ...PAIR_SQUARE, x: 76, y: 70, rotation: 9, color: RED }),
-    "overlap.color": AMBER,
-    ...PLACEMENT_DEFAULTS,
-  },
-  sections: [
-    { title: "The overlap", controls: [color("overlap.color", "Overlap colour")] },
-    { title: "Both squares", controls: [MIRROR_ACTION, swapColorsAction("squares")] },
-    { title: "First square", controls: bodyControls("a") },
-    { title: "Second square", controls: bodyControls("b") },
-    PLACEMENT_CONTROLS,
-  ],
-  render: renderBlendPair,
-};
+  shape: "square",
+  body: { width: 60, height: 60, radius: 16 },
+  a: { x: 52, y: 52, rotation: -9 },
+  b: { x: 76, y: 70, rotation: 9 },
+});
 
-// The bubbles and squares are laid out by eye, so their defaults start fitted
-// to the canvas. Otherwise they would be small next to the two marks that
-// fill it.
-for (const candidate of [stripedBubble, splitPair, blendPair, squarePair]) Object.assign(candidate.defaults, fitPlacement(candidate, candidate.defaults));
+const rectanglePair = overlapPair({
+  id: "rectangle-pair",
+  name: "Two rectangles, yellow overlap",
+  summary: "Two rounded rectangles, green and red, with the area they share in yellow. It keeps its plain look in dark mode and in the menu.",
+  shape: "rectangle",
+  body: { width: 72, height: 50, radius: 15 },
+  a: { x: 50, y: 52, rotation: -9 },
+  b: { x: 78, y: 72, rotation: 9 },
+});
 
-export const CANDIDATES = [stripedBubble, splitPair, blendPair, stackedNotes, noteCard, squarePair];
+// The bubbles, squares and rectangles are laid out by eye, so their defaults
+// start fitted to the canvas. Otherwise they would be small next to the two
+// marks that fill it.
+for (const candidate of [stripedBubble, splitPair, blendPair, squarePair, rectanglePair]) Object.assign(candidate.defaults, fitPlacement(candidate, candidate.defaults));
+
+export const CANDIDATES = [stripedBubble, splitPair, blendPair, stackedNotes, noteCard, squarePair, rectanglePair];
